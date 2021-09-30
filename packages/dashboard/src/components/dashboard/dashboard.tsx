@@ -21,11 +21,16 @@ const debug = Debug('Dashboard');
 const UpdateRate = 1000;
 
 const classes = {
+  root: 'dashboard-root',
   buildingPanel: 'dashboard-building-panel',
   mapPanel: 'dashboard-map-panel',
   itemPanels: 'dashboard-item-panels',
 };
 const DashboardRoot = styled('div')(({ theme }) => ({
+  [`&.${classes.root}`]: {
+    height: '100%',
+    backgroundColor: theme.palette.background.default,
+  },
   [`& .${classes.buildingPanel}`]: {
     height: '100vh',
   },
@@ -185,7 +190,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   );
 
   return (
-    <DashboardRoot>
+    <DashboardRoot className={classes.root}>
       <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
         {buildingMap && (
           <Grid container className={classes.buildingPanel} wrap="nowrap">

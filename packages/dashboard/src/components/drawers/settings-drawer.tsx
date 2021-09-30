@@ -1,15 +1,20 @@
 import {
+  Divider,
   Drawer,
   DrawerProps,
+  FormGroup,
+  FormLabel,
+  FormControlLabel,
   Grid,
   IconButton,
+  Switch,
   Typography,
   useMediaQuery,
   styled,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
-import { Settings } from '../../settings';
+import { Settings, ThemeMode } from '../../settings';
 
 export interface SettingsDrawerProps extends DrawerProps {
   settings: Readonly<Settings>;
@@ -24,6 +29,8 @@ const classes = {
   flexBasis: 'settings-drawer-flex-basis',
   heading: 'settings-drawer-heading',
   button: 'settings-drawer-button',
+  formGroup: 'settings-drawer-formgroup',
+  swtichButton: 'settings-drawer-switch-button',
 };
 const SettingsDrawerRoot = styled((props: DrawerProps) => <Drawer {...props} />)(({ theme }) => ({
   [`& .${classes.drawer}`]: {
@@ -66,17 +73,36 @@ const SettingsDrawerRoot = styled((props: DrawerProps) => <Drawer {...props} />)
   [`& .${classes.button}`]: {
     width: '3rem',
   },
+  [`& .${classes.formGroup}`]: {
+    marginTop: '1rem',
+  },
+  [`& .${classes.swtichButton}`]: {
+    margin: '0 auto',
+    marginBottom: '1rem',
+  },
 }));
 
 // Drawer is empty because there is no settings.
 export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactElement {
   const { settings, onSettingsChange, handleCloseButton, ...otherProps } = props;
+  const { themeMode } = settings;
+
+  // get the text of the thememode via generated enum object which is in the second half of the object
+  const themeText = React.useMemo(
+    () => Object.keys(ThemeMode).slice(Object.keys(ThemeMode).length * 0.5),
+    [],
+  );
 
   const drawerAnchor = useMediaQuery('(max-aspect-ratio: 8/10') ? 'bottom' : 'right';
 
   const modalProp = {
     disableEnforceFocus: true,
   };
+
+  function handleThemeModeChange(ev: React.ChangeEvent<HTMLInputElement>): void {
+    const newSettings: Settings = { ...settings, themeMode: Number(ev.target.checked) };
+    onSettingsChange && onSettingsChange(newSettings);
+  }
 
   return (
     <SettingsDrawerRoot
@@ -100,6 +126,23 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
           </IconButton>
         </Grid>
       </Grid>
+      <FormGroup className={classes.formGroup}>
+        <FormLabel component="legend" className={classes.legendLabel}>
+          Theme Mode
+        </FormLabel>
+        <FormControlLabel
+          className={classes.swtichButton}
+          control={
+            <Switch
+              onChange={handleThemeModeChange}
+              name={'theme switch'}
+              checked={themeMode === ThemeMode.Dark}
+            />
+          }
+          label={themeText[settings.themeMode]}
+        />
+        <Divider />
+      </FormGroup>
     </SettingsDrawerRoot>
   );
 }

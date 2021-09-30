@@ -11,7 +11,6 @@ const HeaderBarRoot = styled((props: HeaderBarProps) => <AppBar {...props} />)((
   [`&.${classes.root}`]: {
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center',
     width: '100%',
   },
 }));

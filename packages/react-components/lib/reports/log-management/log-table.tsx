@@ -85,7 +85,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
   }, []);
 
   return (
-    <LogTableRoot style={{ height: '100%', width: '100%' }}>
+    <LogTableRoot style={{ height: '100%', width: '100%' }} id="log-table">
       <DataGrid
         getRowId={(r) => r.container.id}
         autoHeight={true}

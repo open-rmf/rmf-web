@@ -5,8 +5,12 @@ import { LogRowsType, LogTable } from './log-table';
 
 const classes = {
   table: 'log-management-table',
+  background: 'log-management-background',
 };
-const LogManagementRoot = styled('div')(() => ({
+const LogManagementRoot = styled('div')(({ theme }) => ({
+  [`&.${classes.background}`]: {
+    backgroundColor: theme.palette.background.paper,
+  },
   [`& .${classes.table}`]: {
     overflowY: 'scroll',
     paddingTop: '20px',
@@ -50,7 +54,7 @@ export const LogManagement = (props: LogManagementProps): React.ReactElement => 
   };
 
   return (
-    <LogManagementRoot>
+    <LogManagementRoot className={classes.background}>
       <SearchLogForm logLabelValues={logLabels} search={searchLogs}></SearchLogForm>
       <div className={classes.table}>
         {logs.length !== 0 && <LogTable rows={logs} addMoreRows={getMoreLogs} />}

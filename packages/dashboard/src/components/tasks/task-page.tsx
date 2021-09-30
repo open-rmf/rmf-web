@@ -10,12 +10,12 @@ import { TaskPanel, TaskPanelProps } from './task-panel';
 const classes = {
   taskPanel: 'task-page-taskpanel',
 };
-const TaskPageRoot = styled('div')(({ theme }) => ({
-  [`& .${classes.taskPanel}`]: {
-    margin: `${theme.spacing(4)} auto`,
-    width: '100%',
-    height: '100vh',
+const TaskPageRoot = styled((props: TaskPanelProps) => <TaskPanel {...props} />)(({ theme }) => ({
+  [`&.${classes.taskPanel}`]: {
+    padding: `${theme.spacing(4)}`,
     maxWidth: 1600,
+    height: '100%',
+    backgroundColor: theme.palette.background.default,
   },
 }));
 
@@ -114,25 +114,23 @@ export function TaskPage() {
   );
   //extra task panel will be removed
   return (
-    <TaskPageRoot>
-      <TaskPanel
-        className={classes.taskPanel}
-        tasks={tasks}
-        paginationOptions={{
-          page,
-          count: hasMore ? -1 : page * 10 + tasks.length,
-          rowsPerPage: 10,
-          rowsPerPageOptions: [10],
-          onPageChange: (_ev, newPage) => setPage(newPage),
-        }}
-        cleaningZones={placeNames}
-        loopWaypoints={placeNames}
-        deliveryWaypoints={placeNames}
-        submitTasks={submitTasks}
-        cancelTask={cancelTask}
-        onRefresh={handleRefresh}
-        onAutoRefresh={setAutoRefreshEnabled}
-      />
-    </TaskPageRoot>
+    <TaskPageRoot
+      className={classes.taskPanel}
+      tasks={tasks}
+      paginationOptions={{
+        page,
+        count: hasMore ? -1 : page * 10 + tasks.length,
+        rowsPerPage: 10,
+        rowsPerPageOptions: [10],
+        onPageChange: (_ev, newPage) => setPage(newPage),
+      }}
+      cleaningZones={placeNames}
+      loopWaypoints={placeNames}
+      deliveryWaypoints={placeNames}
+      submitTasks={submitTasks}
+      cancelTask={cancelTask}
+      onRefresh={handleRefresh}
+      onAutoRefresh={setAutoRefreshEnabled}
+    />
   );
 }

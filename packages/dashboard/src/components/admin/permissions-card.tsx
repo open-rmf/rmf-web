@@ -96,7 +96,7 @@ export function PermissionsCard({
         </IconButton>
       </Toolbar>
       <Loading loading={loading}>
-        <TableContainer className={classes.tableContainer}>
+        <TableContainer id="permission-table" className={classes.tableContainer}>
           <Table>
             <TableHead>
               <TableRow>

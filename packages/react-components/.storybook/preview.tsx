@@ -1,7 +1,11 @@
-import { ThemeProvider } from '@material-ui/core';
-import { StyledEngineProvider } from '@material-ui/core/styles';
+import { styled } from '@material-ui/core';
+import { Theme } from '@material-ui/core/styles';
 import defaultTheme from '@material-ui/core/styles/defaultTheme';
 import { DecoratorFn } from '@storybook/react';
+import React from 'react';
+import { rmfDark, rmfLight } from '../lib';
+import { ThemeProvider } from '../lib/themes';
+import { StyledEngineProvider } from '@material-ui/core/styles';
 import { ThemeProvider as EmotionThemeProvider } from 'emotion-theming';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
@@ -13,14 +17,42 @@ export const parameters = {
       date: /Date$/,
     },
   },
+  s: { argTypesRegex: '^on[A-Z].*' },
 };
 
+const getTheme = (themeName: string): Theme => {
+  switch (themeName) {
+    case 'rmf-light':
+      return { ...rmfLight };
+    case 'rmf-dark':
+      return rmfDark;
+    default:
+      return defaultTheme;
+  }
+};
+
+// const useStyles = makeStyles((theme) => ({
+//   '@global': {
+//     body: {
+//       backgroundColor: theme.palette.background.paper,
+//     },
+//   },
+// }));
+
+function StorybookBodyStyles() {
+  // useStyles();
+  return null;
+}
+
 const withThemeProvider: DecoratorFn = (Story, context) => {
+  const theme = getTheme(context.globals.theme);
+  // useStyles();
   return (
     <StyledEngineProvider injectFirst>
-      <EmotionThemeProvider theme={defaultTheme}>
-        <ThemeProvider theme={defaultTheme}>
+      <EmotionThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
           <CssBaseline />
+          <StorybookBodyStyles />
           <Story {...context} />
         </ThemeProvider>
       </EmotionThemeProvider>
@@ -28,3 +60,16 @@ const withThemeProvider: DecoratorFn = (Story, context) => {
   );
 };
 export const decorators = [withThemeProvider];
+
+export const globalTypes = {
+  theme: {
+    name: 'Theme',
+    description: 'Global theme for components',
+    defaultValue: 'rmf-light',
+    toolbar: {
+      icon: 'circlehollow',
+      // Array of plain string values or MenuItem shape (see below)
+      items: ['material-default', 'rmf-light', 'rmf-dark'],
+    },
+  },
+};

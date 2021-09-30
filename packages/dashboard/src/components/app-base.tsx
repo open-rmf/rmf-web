@@ -1,8 +1,8 @@
-import { Grid } from '@material-ui/core';
-import { styled } from '@material-ui/core';
-import React, { ProviderProps } from 'react';
-import { ErrorSnackbar } from 'react-components';
-import { loadSettings, saveSettings, Settings } from '../settings';
+import { createTheme, Grid, styled } from '@material-ui/core';
+import { ThemeProviderProps } from '@material-ui/styles';
+import React from 'react';
+import { ErrorSnackbar, rmfDark, ThemeProvider } from 'react-components';
+import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
 import {
   AppController,
   AppControllerContext,
@@ -15,16 +15,16 @@ import HelpDrawer from './drawers/help-drawer';
 import HotKeysDialog from './drawers/hotkeys-dialog';
 import SettingsDrawer from './drawers/settings-drawer';
 
+const defaultTheme = createTheme();
+
 const classes = {
-  appBase: 'app-base-grid',
+  appBase: 'app-base',
 };
-const AppBaseRoot = styled((props: ProviderProps<Settings>) => (
-  <SettingsContext.Provider {...props} />
-))(({ theme }) => ({
+
+const AppRoot = styled((props: ThemeProviderProps) => <ThemeProvider {...props} />)(() => ({
   [`& .${classes.appBase}`]: {
     width: '100%',
     height: '100%',
-    backgroundColor: theme.palette.background.default,
   },
 }));
 
@@ -48,6 +48,11 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
   const [showTooltips, setShowTooltips] = React.useState(false);
   const [showErrorAlert, setShowErrorAlert] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
+
+  const theme = React.useMemo(() => {
+    const preferDarkMode = settings.themeMode === ThemeMode.Dark;
+    return preferDarkMode ? rmfDark : defaultTheme;
+  }, [settings.themeMode]);
 
   const tooltips = React.useMemo<Tooltips>(
     () => ({
@@ -80,45 +85,46 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
   );
 
   return (
-    <AppBaseRoot value={settings}>
-      <TooltipsContext.Provider value={tooltips}>
-        <AppControllerContext.Provider value={appController}>
-          <Grid container direction="column" className={classes.appBase} wrap="nowrap">
-            <AppBar />
-            {children}
-            <SettingsDrawer
-              open={showSettings}
-              settings={settings}
-              onSettingsChange={(settings) => {
-                setSettings(settings);
-                saveSettings(settings);
-              }}
-              handleCloseButton={() => setShowSettings(false)}
-            />
-            <HelpDrawer
-              open={showHelp}
-              handleCloseButton={() => setShowHelp(false)}
-              onClose={() => setShowHelp(false)}
-              setShowHotkeyDialog={() => setShowHotkeysDialog(true)}
-              showTour={() => {
-                setShowHelp(false);
-              }}
-            />
-
-            {showHotkeysDialog && (
-              <HotKeysDialog
-                open={showHotkeysDialog}
-                handleClose={() => setShowHotkeysDialog(false)}
+    <AppRoot theme={theme}>
+      <SettingsContext.Provider value={settings}>
+        <TooltipsContext.Provider value={tooltips}>
+          <AppControllerContext.Provider value={appController}>
+            <Grid container direction="column" className={classes.appBase} wrap="nowrap">
+              <AppBar />
+              {children}
+              <SettingsDrawer
+                open={showSettings}
+                settings={settings}
+                onSettingsChange={(settings) => {
+                  setSettings(settings);
+                  saveSettings(settings);
+                }}
+                handleCloseButton={() => setShowSettings(false)}
               />
-            )}
-            <ErrorSnackbar
-              open={showErrorAlert}
-              message={errorMessage}
-              onClose={() => setShowErrorAlert(false)}
-            />
-          </Grid>
-        </AppControllerContext.Provider>
-      </TooltipsContext.Provider>
-    </AppBaseRoot>
+              <HelpDrawer
+                open={showHelp}
+                handleCloseButton={() => setShowHelp(false)}
+                onClose={() => setShowHelp(false)}
+                setShowHotkeyDialog={() => setShowHotkeysDialog(true)}
+                showTour={() => {
+                  setShowHelp(false);
+                }}
+              />
+              {showHotkeysDialog && (
+                <HotKeysDialog
+                  open={showHotkeysDialog}
+                  handleClose={() => setShowHotkeysDialog(false)}
+                />
+              )}
+              <ErrorSnackbar
+                open={showErrorAlert}
+                message={errorMessage}
+                onClose={() => setShowErrorAlert(false)}
+              />
+            </Grid>
+          </AppControllerContext.Provider>
+        </TooltipsContext.Provider>
+      </SettingsContext.Provider>
+    </AppRoot>
   );
 }

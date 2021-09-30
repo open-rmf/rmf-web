@@ -9,26 +9,14 @@ import { LinearProgressBar } from './linear-progress-bar';
 import { VerboseRobot } from './utils';
 
 const classes = {
-  root: 'robot-info-button-root',
-  disabled: 'robot-info-disabled',
-  logo: 'robot-info-logo',
-  infoValue: 'robot-info-infovalue',
+  button: 'robot-info-button',
 };
-const RobotInfoRoot = styled('div')(({ theme }) => ({
-  [`& .${classes.root}`]: {
-    '&$disabled': {
-      color: theme.palette.primary.main,
-      borderColor: theme.palette.primary.main,
+const RobotInfoRoot = styled('div')(() => ({
+  [`& .${classes.button}`]: {
+    '&:hover': {
+      background: 'none',
+      cursor: 'default',
     },
-  },
-  [`& .${classes.disabled}`]: {},
-  [`& .${classes.logo}`]: {
-    maxWidth: 120,
-    opacity: 1,
-  },
-  [`& .${classes.infoValue}`]: {
-    float: 'right',
-    textAlign: 'right',
   },
 }));
 
@@ -38,7 +26,6 @@ export interface RobotInfoProps {
 
 export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   const theme = useTheme();
-
   const [currentTask, setCurrentTask] = React.useState<Task | undefined>();
   const [hasConcreteEndTime, setHasConcreteEndTime] = React.useState<boolean>(false);
 
@@ -130,8 +117,9 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
           <Button
             disableElevation
             variant="outlined"
-            classes={{ root: classes.root, disabled: classes.disabled }}
-            disabled
+            className={classes.button}
+            disableRipple={true}
+            component="div"
           >
             {taskDetails ? taskDetails.assignedTasks : '-'}
           </Button>
@@ -151,8 +139,8 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
             size="small"
             disableElevation
             variant="outlined"
-            classes={{ root: classes.root, disabled: classes.disabled }}
-            disabled
+            className={classes.button}
+            disableRipple={true}
           >
             {taskDetails ? taskDetails.location : '-'}
           </Button>
@@ -162,8 +150,8 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
             size="small"
             disableElevation
             variant="outlined"
-            classes={{ root: classes.root, disabled: classes.disabled }}
-            disabled
+            className={classes.button}
+            disableRipple={true}
           >
             {taskDetails ? taskDetails.destination : '-'}
           </Button>
@@ -195,8 +183,8 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
               size="small"
               disableElevation
               variant="outlined"
-              classes={{ root: classes.root, disabled: classes.disabled }}
-              disabled
+              className={classes.button}
+              disableRipple={true}
             >
               -
             </Button>
@@ -207,8 +195,8 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
             size="small"
             disableElevation
             variant="outlined"
-            classes={{ root: classes.root, disabled: classes.disabled }}
-            disabled
+            className={classes.button}
+            disableRipple={true}
           >
             {currentTask ? rosTimeToJs(currentTask.summary.end_time).toLocaleTimeString() : '-'}
           </Button>

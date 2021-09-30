@@ -15,8 +15,13 @@ interface SearchLogFormProps {
 const classes = {
   searchForm: 'search-log-search-from',
   searchButton: 'search-log-search-button',
+  formControl: 'search-log-form-form-control',
+  background: 'search-log-form-background',
 };
-const SearchLogRoot = styled('div')(() => ({
+const SearchLogRoot = styled('div')(({ theme }) => ({
+  [`&.${classes.background}`]: {
+    backgroundColor: theme.palette.background.paper,
+  },
   [`& .${classes.searchForm}`]: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr 1fr 1fr',
@@ -25,6 +30,10 @@ const SearchLogRoot = styled('div')(() => ({
   },
   [`& .${classes.searchButton}`]: {
     width: '100%',
+  },
+  [`& .${classes.formControl}`]: {
+    margin: theme.spacing(1),
+    minWidth: 120,
   },
 }));
 
@@ -66,7 +75,7 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
   }, []);
 
   return (
-    <SearchLogRoot>
+    <SearchLogRoot className={classes.background}>
       <div className={classes.searchForm}>
         <SearchFilter
           options={logLabelValues}

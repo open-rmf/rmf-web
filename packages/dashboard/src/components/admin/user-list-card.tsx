@@ -122,12 +122,12 @@ export function UserListCard({
               onClick={() => setOpenCreateDialog(true)}
               aria-label="create user"
             >
-              <AddIcon color="primary" fontSize="large" />
+              <AddIcon fontSize="large" />
             </IconButton>
           </>
         }
       />
-      <TableContainer>
+      <TableContainer id="admin-user-table">
         <Loading loading={searching}>
           <Table size="small">
             <TableHead>

@@ -7,11 +7,12 @@ export const commandFormsClasses = {
   button: 'command-form-button',
   buttonContainer: 'command-form-button-container',
 };
-export const CommandsFormRoot = styled('form')(() => ({
+export const CommandsFormRoot = styled('form')(({ theme }) => ({
   [`&.${commandFormsClasses.form}`]: {
     display: 'flex',
     flexDirection: 'column',
     width: '100%',
+    backgroundColor: theme.palette.background.paper,
   },
   [`& .${commandFormsClasses.divForm}`]: {
     padding: '0.46rem',

@@ -1,5 +1,5 @@
-import { render } from '@testing-library/react';
 import React from 'react';
+import { render } from '../../tests/test-utils';
 import Dashboard from '../dashboard';
 
 // react-leaflet doesn't work well in jsdom.

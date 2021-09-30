@@ -13,6 +13,7 @@ import {
   Typography,
   styled,
 } from '@material-ui/core';
+import * as RmfModels from 'rmf-models';
 import { Refresh as RefreshIcon } from '@material-ui/icons';
 import React from 'react';
 import { taskTypeToStr } from '../tasks/utils';
@@ -22,7 +23,12 @@ const classes = {
   table: 'robot-table',
   title: 'robot-table-title',
   infoRow: 'robot-table-info-row',
+  taskRowHover: 'robot-table-row-hover',
   phasesCell: 'robot-table-phases-cell',
+  robotErrorClass: 'robot-table-error',
+  robotStoppedClass: 'robot-table-stopped',
+  robotInMotionClass: 'robot-table-in-motion',
+  robotChargingClass: 'robot-table-charging',
 };
 const RobotTableRoot = styled((props: PaperProps) => <Paper {...props} />)(({ theme }) => ({
   [`& .${classes.table}`]: {
@@ -31,13 +37,23 @@ const RobotTableRoot = styled((props: PaperProps) => <Paper {...props} />)(({ th
   [`& .${classes.title}`]: {
     flex: '1 1 100%',
   },
-  [`& .${classes.infoRow}`]: {
-    '& > *': {
-      borderBottom: 'unset',
-    },
+  [`& .${classes.taskRowHover}`]: {
+    background: theme.palette.action.hover,
   },
   [`& .${classes.phasesCell}`]: {
     padding: `0 ${theme.spacing(1)}px`,
+  },
+  [`& .${classes.robotErrorClass}`]: {
+    backgroundColor: theme.palette.error.main,
+  },
+  [`& .${classes.robotStoppedClass}`]: {
+    backgroundColor: theme.palette.warning.main,
+  },
+  [`& .${classes.robotInMotionClass}`]: {
+    backgroundColor: theme.palette.success.main,
+  },
+  [`& .${classes.robotChargingClass}`]: {
+    backgroundColor: theme.palette.info.main,
   },
 }));
 
@@ -81,23 +97,45 @@ const returnLocationCells = (robot: VerboseRobot) => {
 };
 
 function RobotRow({ robot, onClick }: RobotRowProps) {
+  const getRobotModeClass = (robotMode: RmfModels.RobotMode) => {
+    switch (robotMode.mode) {
+      case RmfModels.RobotMode.MODE_EMERGENCY:
+        return classes.robotErrorClass;
+      case RmfModels.RobotMode.MODE_CHARGING:
+        return classes.robotChargingClass;
+      case RmfModels.RobotMode.MODE_GOING_HOME:
+      case RmfModels.RobotMode.MODE_DOCKING:
+      case RmfModels.RobotMode.MODE_MOVING:
+        return classes.robotInMotionClass;
+      case RmfModels.RobotMode.MODE_IDLE:
+      case RmfModels.RobotMode.MODE_PAUSED:
+      case RmfModels.RobotMode.MODE_WAITING:
+        return classes.robotStoppedClass;
+      default:
+        return '';
+    }
+  };
+
+  const robotMode = robotModeToString(robot.state.mode);
+  const robotModeClass = getRobotModeClass(robot.state.mode);
+
   if (robot.tasks.length === 0) {
     return (
       <>
-        <TableRow className={classes.infoRow} onClick={onClick}>
+        <TableRow onClick={onClick}>
           <TableCell>{robot.name}</TableCell>
           <TableCell>{'-'}</TableCell>
           <TableCell>{'-'}</TableCell>
           <TableCell>{'-'}</TableCell>
           <TableCell>{robot.state.battery_percent.toFixed(2)}%</TableCell>
-          <TableCell>{robotModeToString(robot.state.mode)}</TableCell>
+          <TableCell className={robotModeClass}>{robotMode}</TableCell>
         </TableRow>
       </>
     );
   } else {
     return (
       <>
-        <TableRow className={classes.infoRow} onClick={onClick}>
+        <TableRow onClick={onClick}>
           <TableCell>{robot.name}</TableCell>
           {returnLocationCells(robot)}
           <TableCell>
@@ -106,7 +144,7 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
               : '-'}
           </TableCell>
           <TableCell>{robot.state.battery_percent.toFixed(2)}%</TableCell>
-          <TableCell>{robotModeToString(robot.state.mode)}</TableCell>
+          <TableCell className={robotModeClass}>{robotMode}</TableCell>
         </TableRow>
       </>
     );
@@ -146,7 +184,7 @@ export function RobotTable({
           <RefreshIcon />
         </IconButton>
       </Toolbar>
-      <TableContainer style={{ flex: '1 1 auto' }}>
+      <TableContainer style={{ flex: '1 1 auto' }} id="robot-table">
         <Table className={classes.table} stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
           <TableHead>
             <TableRow>

@@ -13,7 +13,6 @@ import AccountIcon from '@material-ui/icons/AccountCircle';
 import SecurityIcon from '@material-ui/icons/Security';
 import React from 'react';
 import { matchPath, RouteProps, useHistory, useLocation, useRouteMatch } from 'react-router';
-import { customThemeValues } from '../theme';
 
 export type AdminDrawerValues = 'Users' | 'Roles';
 
@@ -32,7 +31,8 @@ const DrawerRoot = styled((props: DrawerProps) => <Drawer {...props} />)(({ them
   [`& .${classes.drawerPaper}`]: {
     backgroundColor: theme.palette.primary.dark,
     color: theme.palette.getContrastText(theme.palette.primary.dark),
-    minWidth: customThemeValues.appDrawer.width,
+    minWidth: 240,
+    width: '16%',
   },
   [`& .${classes.drawerContainer}`]: {
     overflow: 'auto',

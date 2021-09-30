@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { styled, ListProps } from '@material-ui/core';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -6,6 +7,16 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
+
+const classes = {
+  textAndIcon: 'mlm-text-and-icon',
+};
+
+const AppRoot = styled((props: ListProps) => <List {...props} />)(({ theme }) => ({
+  [`& .${classes.textAndIcon}`]: {
+    color: theme.palette.text.primary,
+  },
+}));
 
 interface ListItemBodyProps {
   icon?: JSX.Element;
@@ -34,7 +45,7 @@ interface MenuItemProps {
 const MenuItem = React.memo(
   (props: MenuItemProps): JSX.Element => {
     return (
-      <ListItem button onClick={props.onClick}>
+      <ListItem className={classes.textAndIcon} button onClick={props.onClick}>
         <ListItemBody icon={props.icon} title={props.title} />
       </ListItem>
     );
@@ -51,14 +62,13 @@ export interface ExpandableMultilevelMenuProps {
 const ExpandableMenuItem = (props: ExpandableMultilevelMenuProps): JSX.Element => {
   const { items, icon, title } = props;
   const [open, setOpen] = useState(false);
-
   const handleClick = () => {
     setOpen(!open);
   };
 
   return (
     <div>
-      <ListItem button onClick={handleClick}>
+      <ListItem className={classes.textAndIcon} button onClick={handleClick}>
         <ListItemBody icon={icon} title={title} />
         {open ? <ExpandLess /> : <ExpandMore />}
       </ListItem>
@@ -102,6 +112,6 @@ export const MultiLevelMenu = React.memo(
       return menu.concat();
     };
 
-    return <List>{createList(props.menuStructure)}</List>;
+    return <AppRoot>{createList(props.menuStructure)}</AppRoot>;
   },
 );

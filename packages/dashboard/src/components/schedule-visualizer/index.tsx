@@ -22,11 +22,18 @@ import {
   WorkcellData,
   WorkcellsOverlay,
 } from 'react-components';
+import { makeStyles } from '@material-ui/core';
 import { AttributionControl, LayersControl, Pane } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { ResourcesContext } from '../app-contexts';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
+
+const scheduleVisualizerStyle = makeStyles((theme) => ({
+  map: {
+    backgroundColor: theme.palette.background.default,
+  },
+}));
 
 const debug = Debug('ScheduleVisualizer');
 const TrajectoryUpdateInterval = 2000;
@@ -76,6 +83,7 @@ export default function ScheduleVisualizer({
 }: ScheduleVisualizerProps): JSX.Element | null {
   debug('render');
   const safeAsync = useAsync();
+  const classes = scheduleVisualizerStyle();
   const levels = React.useMemo(
     () => [...buildingMap.levels].sort((a, b) => a.name.localeCompare(b.name)),
     [buildingMap],
@@ -284,6 +292,7 @@ export default function ScheduleVisualizer({
       zoomDelta={0.5}
       zoomSnap={0.5}
       bounds={bounds}
+      className={classes.map}
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
       <LayersControl

@@ -16,9 +16,10 @@ const classes = {
   filterBar: 'simple-filter-filterbar',
   divider: 'simple-filter-divider',
 };
-const SimpleFilterRoot = styled('div')(() => ({
+const SimpleFilterRoot = styled('div')(({ theme }) => ({
   [`&.${classes.simpleFilter}`]: {
     margin: '1rem',
+    borderColor: theme.palette.success.main,
   },
   [`& .${classes.filterBar}`]: {
     width: '100%',

@@ -2,8 +2,9 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import { createTheme, ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@material-ui/core';
 import React from 'react';
+import { rmfLight } from 'react-components';
 import { BrowserRouter, Link, Redirect, Route, Switch } from 'react-router-dom';
 import { LoginPage, PrivateRoute } from 'rmf-auth';
 import appConfig from '../app-config';
@@ -12,16 +13,6 @@ import { AppConfigContext } from './app-contexts';
 import { AuthenticatorContext, UserContext } from './auth-contexts';
 import Dashboard from './dashboard';
 import { NotFoundPage } from './page-not-found';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#44497a',
-      dark: '#323558',
-      light: '#565d99',
-    },
-  },
-});
 
 export default function App(): JSX.Element | null {
   const authenticator = appConfig.authenticator;
@@ -51,7 +42,7 @@ export default function App(): JSX.Element | null {
     <AppConfigContext.Provider value={appConfig}>
       <AuthenticatorContext.Provider value={authenticator}>
         <UserContext.Provider value={user}>
-          <ThemeProvider theme={theme}>
+          <ThemeProvider theme={rmfLight}>
             <BrowserRouter>
               <Switch>
                 <Route exact path={LOGIN_ROUTE}>

@@ -45,7 +45,7 @@ const TaskPanelRoot = styled('div')(({ theme }) => ({
   [`& .${classes.detailPanelContainer}`]: {
     width: 350,
     padding: theme.spacing(2),
-    marginLeft: theme.spacing(1),
+    marginLeft: theme.spacing(2),
     flex: '0 0 auto',
   },
   [`& .${classes.enabledToggleButton}`]: {
@@ -56,7 +56,7 @@ const TaskPanelRoot = styled('div')(({ theme }) => ({
 function NoSelectedTask() {
   return (
     <Grid container wrap="nowrap" alignItems="center" style={{ height: '100%' }}>
-      <Typography variant="h6" align="center" color="textSecondary">
+      <Typography variant="h6" align="center">
         Click on a task to view more information
       </Typography>
     </Grid>

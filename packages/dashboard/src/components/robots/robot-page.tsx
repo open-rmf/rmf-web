@@ -11,10 +11,10 @@ const classes = {
 const RobotPageRoot = styled((props: RobotPanelProps) => <RobotPanel {...props} />)(
   ({ theme }) => ({
     [`&.${classes.robotPanel}`]: {
-      margin: `${theme.spacing(4)} auto`,
-      width: '100%',
-      height: '100vh',
+      padding: `${theme.spacing(4)}`,
+      height: '100%',
       maxWidth: 1600,
+      backgroundColor: theme.palette.background.default,
     },
   }),
 );

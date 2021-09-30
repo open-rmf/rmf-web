@@ -19,7 +19,6 @@ import Dashboard from './dashboard/dashboard';
 import { RmfApp } from './rmf-app';
 import { RobotPage } from './robots';
 import { TaskPage } from './tasks';
-import { theme } from './theme';
 
 export default function App(): JSX.Element | null {
   const authenticator = appConfig.authenticator;
@@ -67,70 +66,64 @@ export default function App(): JSX.Element | null {
   return authInitialized && appReady ? (
     <ResourcesContext.Provider value={resourceManager.current}>
       <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>
-          <BrowserRouter>
-            {user ? (
-              <RmfApp>
-                <AppBase>
-                  <Switch>
-                    <Route exact path={LoginRoute}>
-                      <Redirect to={DashboardRoute} />
-                    </Route>
-                    <PrivateRoute
-                      exact
-                      path={DashboardRoute}
-                      unauthorizedComponent={loginRedirect}
-                      user={user}
-                    >
-                      <Dashboard />
-                    </PrivateRoute>
-                    <PrivateRoute
-                      exact
-                      path={RobotsRoute}
-                      unauthorizedComponent={loginRedirect}
-                      user={user}
-                    >
-                      <RobotPage />
-                    </PrivateRoute>
-                    <PrivateRoute
-                      exact
-                      path={TasksRoute}
-                      unauthorizedComponent={loginRedirect}
-                      user={user}
-                    >
-                      <TaskPage />
-                    </PrivateRoute>
-                    <PrivateRoute
-                      path={AdminRoute}
-                      unauthorizedComponent={loginRedirect}
-                      user={user}
-                    >
-                      <AdminRouter />
-                    </PrivateRoute>
-                    <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-                      <Redirect to={DashboardRoute} />
-                    </PrivateRoute>
-                  </Switch>
-                </AppBase>
-              </RmfApp>
-            ) : (
-              <Switch>
-                <Route exact path={LoginRoute}>
-                  <LoginPage
-                    title={'Dashboard'}
-                    logo="assets/ros-health.png"
-                    onLoginClick={() =>
-                      authenticator.login(`${window.location.origin}${DashboardRoute}`)
-                    }
-                  />
-                </Route>
-                <Route>
-                  <Redirect to={LoginRoute} />
-                </Route>
-              </Switch>
-            )}
-          </BrowserRouter>
-        </ThemeProvider>
+        <BrowserRouter>
+          {user ? (
+            <RmfApp>
+              <AppBase>
+                <Switch>
+                  <Route exact path={LoginRoute}>
+                    <Redirect to={DashboardRoute} />
+                  </Route>
+                  <PrivateRoute
+                    exact
+                    path={DashboardRoute}
+                    unauthorizedComponent={loginRedirect}
+                    user={user}
+                  >
+                    <Dashboard />
+                  </PrivateRoute>
+                  <PrivateRoute
+                    exact
+                    path={RobotsRoute}
+                    unauthorizedComponent={loginRedirect}
+                    user={user}
+                  >
+                    <RobotPage />
+                  </PrivateRoute>
+                  <PrivateRoute
+                    exact
+                    path={TasksRoute}
+                    unauthorizedComponent={loginRedirect}
+                    user={user}
+                  >
+                    <TaskPage />
+                  </PrivateRoute>
+                  <PrivateRoute path={AdminRoute} unauthorizedComponent={loginRedirect} user={user}>
+                    <AdminRouter />
+                  </PrivateRoute>
+                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
+                    <Redirect to={DashboardRoute} />
+                  </PrivateRoute>
+                </Switch>
+              </AppBase>
+            </RmfApp>
+          ) : (
+            <Switch>
+              <Route exact path={LoginRoute}>
+                <LoginPage
+                  title={'Dashboard'}
+                  logo="assets/ros-health.png"
+                  onLoginClick={() =>
+                    authenticator.login(`${window.location.origin}${DashboardRoute}`)
+                  }
+                />
+              </Route>
+              <Route>
+                <Redirect to={LoginRoute} />
+              </Route>
+            </Switch>
+          )}
+        </BrowserRouter>
       </StyledEngineProvider>
     </ResourcesContext.Provider>
   ) : null;
