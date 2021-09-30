@@ -132,7 +132,7 @@ export function TaskPanel({
           try {
             taskFiles = parseTasksFile(await fileInputEl.files[0].text());
           } catch (err) {
-            showErrorAlert(err.message);
+            showErrorAlert(err.message, 5000);
             return res([]);
           }
           // only submit tasks when all tasks are error free
