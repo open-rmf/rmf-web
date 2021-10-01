@@ -84,7 +84,7 @@ export const RobotsOverlay = ({
                 onClick={onRobotClick}
                 aria-label={robot.name}
                 style={{
-                  transform: `rotate(${theta}) scale(${scale})`,
+                  transform: `rotate(${theta}rad) scale(${scale})`,
                   transformOrigin: `${x}px ${y}px`,
                 }}
               />
