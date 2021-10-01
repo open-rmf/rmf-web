@@ -2,6 +2,8 @@ import { styled } from '@material-ui/core';
 
 export const adminPageClasses = {
   pageRoot: 'admin-pages-root',
+  notFound: 'user-profile-page-notfound',
+  manageRoles: 'user-profile-page-manageroles',
 };
 export const AdminPagesRoot = styled('div')(({ theme }) => ({
   [`&.${adminPageClasses.pageRoot}`]: {
@@ -11,5 +13,12 @@ export const AdminPagesRoot = styled('div')(({ theme }) => ({
     marginLeft: 'auto',
     padding: theme.spacing(4),
     backgroundColor: theme.palette.background.paper,
+  },
+  [`& .${adminPageClasses.notFound}`]: {
+    marginTop: '50%',
+    textAlign: 'center',
+  },
+  [`& .${adminPageClasses.manageRoles}`]: {
+    marginTop: theme.spacing(4),
   },
 }));

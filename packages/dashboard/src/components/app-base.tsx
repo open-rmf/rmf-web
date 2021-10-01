@@ -1,5 +1,4 @@
-import { createTheme, Grid, styled } from '@material-ui/core';
-import { ThemeProviderProps } from '@material-ui/styles';
+import { createTheme, Grid } from '@material-ui/core';
 import React from 'react';
 import { ErrorSnackbar, rmfDark, ThemeProvider } from 'react-components';
 import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
@@ -16,17 +15,6 @@ import HotKeysDialog from './drawers/hotkeys-dialog';
 import SettingsDrawer from './drawers/settings-drawer';
 
 const defaultTheme = createTheme();
-
-const classes = {
-  appBase: 'app-base',
-};
-
-const AppRoot = styled((props: ThemeProviderProps) => <ThemeProvider {...props} />)(() => ({
-  [`& .${classes.appBase}`]: {
-    width: '100%',
-    height: '100%',
-  },
-}));
 
 /**
  * Contains various components that are essential to the app and provides contexts to control them.
@@ -85,11 +73,16 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
   );
 
   return (
-    <AppRoot theme={theme}>
+    <ThemeProvider theme={theme}>
       <SettingsContext.Provider value={settings}>
         <TooltipsContext.Provider value={tooltips}>
           <AppControllerContext.Provider value={appController}>
-            <Grid container direction="column" className={classes.appBase} wrap="nowrap">
+            <Grid
+              container
+              direction="column"
+              style={{ width: '100%', height: '100%' }}
+              wrap="nowrap"
+            >
               <AppBar />
               {children}
               <SettingsDrawer
@@ -125,6 +118,6 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
           </AppControllerContext.Provider>
         </TooltipsContext.Provider>
       </SettingsContext.Provider>
-    </AppRoot>
+    </ThemeProvider>
   );
 }

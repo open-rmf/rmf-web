@@ -1,4 +1,3 @@
-import { styled } from '@material-ui/core';
 import { Theme } from '@material-ui/core/styles';
 import defaultTheme from '@material-ui/core/styles/defaultTheme';
 import { DecoratorFn } from '@storybook/react';
@@ -31,28 +30,13 @@ const getTheme = (themeName: string): Theme => {
   }
 };
 
-// const useStyles = makeStyles((theme) => ({
-//   '@global': {
-//     body: {
-//       backgroundColor: theme.palette.background.paper,
-//     },
-//   },
-// }));
-
-function StorybookBodyStyles() {
-  // useStyles();
-  return null;
-}
-
 const withThemeProvider: DecoratorFn = (Story, context) => {
   const theme = getTheme(context.globals.theme);
-  // useStyles();
   return (
     <StyledEngineProvider injectFirst>
       <EmotionThemeProvider theme={theme}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <StorybookBodyStyles />
           <Story {...context} />
         </ThemeProvider>
       </EmotionThemeProvider>

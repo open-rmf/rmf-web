@@ -11,6 +11,7 @@ import {
   DoorsOverlay,
   LiftsOverlay,
   LMap,
+  LMapProps,
   loadAffineImage,
   RobotData,
   RobotsOverlay,
@@ -22,15 +23,19 @@ import {
   WorkcellData,
   WorkcellsOverlay,
 } from 'react-components';
-import { makeStyles } from '@material-ui/core';
+import { styled } from '@material-ui/core';
 import { AttributionControl, LayersControl, Pane } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { ResourcesContext } from '../app-contexts';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
 
-const scheduleVisualizerStyle = makeStyles((theme) => ({
-  map: {
+const classes = {
+  map: 'schedule-visualizer-map',
+};
+
+const LmapRoot = styled((props: LMapProps) => <LMap {...props} />)(({ theme }) => ({
+  [`&.${classes.map}`]: {
     backgroundColor: theme.palette.background.default,
   },
 }));
@@ -83,7 +88,6 @@ export default function ScheduleVisualizer({
 }: ScheduleVisualizerProps): JSX.Element | null {
   debug('render');
   const safeAsync = useAsync();
-  const classes = scheduleVisualizerStyle();
   const levels = React.useMemo(
     () => [...buildingMap.levels].sort((a, b) => a.name.localeCompare(b.name)),
     [buildingMap],
@@ -284,7 +288,7 @@ export default function ScheduleVisualizer({
   }, [images, levels]);
 
   return bounds ? (
-    <LMap
+    <LmapRoot
       id="schedule-visualizer"
       attributionControl={false}
       minZoom={0}
@@ -395,6 +399,6 @@ export default function ScheduleVisualizer({
         }
       />
       {children}
-    </LMap>
+    </LmapRoot>
   ) : null;
 }
