@@ -1,7 +1,5 @@
-import { IconButton, makeStyles } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
-import CloseIcon from '@material-ui/icons/Close';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React from 'react';
 import * as RmfModels from 'rmf-models';

@@ -128,6 +128,10 @@ export const getTaskSummaryLogs = (): TaskSummaryRowsType => {
 export const reportConfigProps: ReportConfigProps = {
   toLogDate: new Date(),
   fromLogDate: new Date(),
-  onSelectFromDate: (date: Date) => {},
-  onSelectToDate: (date: Date) => {},
+  onSelectFromDate: (/* date: Date */) => {
+    /* no-op */
+  },
+  onSelectToDate: (/* date: Date */) => {
+    /* no-op */
+  },
 };
