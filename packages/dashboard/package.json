@@ -6,6 +6,7 @@
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "concurrently npm:start:rmf-server npm:start:rmf npm:start:react",
     "start:clinic": "RMF_DASHBOARD_DEMO_MAP=clinic.launch.xml npm start",
+    "start:airport": "RMF_DASHBOARD_DEMO_MAP=airport_terminal.launch.xml npm start",
     "start:react": "react-scripts start",
     "start:rmf": "node scripts/start-rmf.js",
     "start:rmf-server": "RMF_SERVER_USE_SIM_TIME=true npm --prefix ../api-server start",

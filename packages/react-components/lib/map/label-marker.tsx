@@ -295,7 +295,7 @@ export function withAutoScaling<PropsType extends ScalableLabelProps>(
     sourceY,
     sourceRadius,
     arrowLength,
-    repositionThreshold = DefaultRepositionThreshold,
+    repositionThreshold = 5,
     transform,
     ...otherProps
   }: PropsType): JSX.Element => {
@@ -309,7 +309,7 @@ export function withAutoScaling<PropsType extends ScalableLabelProps>(
         sourceY={sourceY / scale}
         sourceRadius={sourceRadius / scale}
         arrowLength={arrowLength ? arrowLength / scale : undefined}
-        repositionThreshold={repositionThreshold * scale}
+        repositionThreshold={repositionThreshold / scale}
         transform={clsx(transform, `scale(${scale})`)}
       />
     );
