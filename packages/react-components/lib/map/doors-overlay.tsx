@@ -1,10 +1,10 @@
 import React from 'react';
+import { SVGOverlay, SVGOverlayProps } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { fromRmfCoords } from '../utils/geometry';
 import { DoorMarker as DoorMarker_, DoorMarkerProps } from './door-marker';
 import { useAutoScale } from './hooks';
 import { ScaledNameLabel } from './label-marker';
-import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { getDoorCenter, viewBoxFromLeafletBounds } from './utils';
 
 interface BoundedMarkerProps extends Omit<DoorMarkerProps, 'onClick'> {

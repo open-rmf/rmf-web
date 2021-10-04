@@ -250,7 +250,7 @@ export type ScalableLabelProps = Pick<
 
 export function withAutoScaling<PropsType extends ScalableLabelProps>(
   LabelComponent: React.ComponentType<PropsType>,
-) {
+): React.ComponentType<PropsType> {
   return ({
     sourceX,
     sourceY,

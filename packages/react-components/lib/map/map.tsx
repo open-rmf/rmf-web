@@ -3,9 +3,11 @@ import clsx from 'clsx';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import React from 'react';
-import { Map as LMap_, MapProps as LMapProps_, useLeaflet } from 'react-leaflet';
+import { Map as LMap_, MapProps as LMapProps_, Pane, SVGOverlay, useLeaflet } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { EntityManager, EntityManagerContext } from './entity-manager';
+import { LabelsPortalContext } from './labels-overlay';
+import { viewBoxFromLeafletBounds } from './utils';
 
 const useStyles = makeStyles(() => ({
   map: {
@@ -33,7 +35,7 @@ export function calcMaxBounds(
   return bounds.pad(0.2);
 }
 
-function LabelManagerProvider({ children }: React.PropsWithChildren<{}>) {
+function EntityManagerProvider({ children }: React.PropsWithChildren<{}>) {
   const leaflet = useLeaflet();
   const { current: entityManager } = React.useRef(new EntityManager());
 
@@ -57,9 +59,24 @@ export type LMapProps = Omit<LMapProps_, 'crs'>;
 
 export function LMap({ className, children, ...otherProps }: LMapProps): React.ReactElement {
   const classes = useStyles();
+  const [labelsPortal, setLabelsPortal] = React.useState<SVGSVGElement | null>(null);
+  const viewBox = otherProps.bounds ? viewBoxFromLeafletBounds(otherProps.bounds) : undefined;
   return (
     <LMap_ className={clsx(classes.map, className)} crs={L.CRS.Simple} {...otherProps}>
-      <LabelManagerProvider>{children}</LabelManagerProvider>
+      <EntityManagerProvider>
+        <LabelsPortalContext.Provider value={labelsPortal}>
+          {children}
+          {otherProps.bounds && (
+            <Pane name="label" style={{ zIndex: 1000 }}>
+              <SVGOverlay
+                ref={(current) => setLabelsPortal(current?.container ? current.container : null)}
+                viewBox={viewBox}
+                bounds={otherProps.bounds}
+              />
+            </Pane>
+          )}
+        </LabelsPortalContext.Provider>
+      </EntityManagerProvider>
     </LMap_>
   );
 }

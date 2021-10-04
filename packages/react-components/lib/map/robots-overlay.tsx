@@ -1,10 +1,12 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
+import { SVGOverlay, SVGOverlayProps } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { fromRmfCoords, fromRmfYaw } from '../utils/geometry';
 import { useAutoScale } from './hooks';
 import { ScaledNameLabel } from './label-marker';
+import { LabelsPortalContext } from './labels-overlay';
 import { RobotMarker as RobotMarker_, RobotMarkerProps } from './robot-marker';
-import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
 
 const RobotMarker = React.memo(RobotMarker_);
@@ -62,6 +64,7 @@ export const RobotsOverlay = ({
   const scale = useAutoScale(40);
   // TODO: hardcoded because footprint is not available in rmf.
   const footprint = 0.5;
+  const labelsPortal = React.useContext(LabelsPortalContext);
 
   return (
     <SVGOverlay bounds={bounds} {...otherProps}>
@@ -71,6 +74,7 @@ export const RobotsOverlay = ({
           if (!state) return;
           const [x, y] = fromRmfCoords([state.location.x, state.location.y]);
           const theta = fromRmfYaw(state.location.yaw);
+          console.log('asd', labelsPortal);
 
           return (
             <g key={`${robot.fleet}/${robot.name}`}>
@@ -88,12 +92,16 @@ export const RobotsOverlay = ({
                   transformOrigin: `${x}px ${y}px`,
                 }}
               />
-              <ScaledNameLabel
-                text={robot.name}
-                sourceX={x}
-                sourceY={y}
-                sourceRadius={footprint * scale}
-              />
+              {labelsPortal &&
+                ReactDOM.createPortal(
+                  <ScaledNameLabel
+                    text={robot.name}
+                    sourceX={x}
+                    sourceY={y}
+                    sourceRadius={footprint * scale}
+                  />,
+                  labelsPortal,
+                )}
             </g>
           );
         })}

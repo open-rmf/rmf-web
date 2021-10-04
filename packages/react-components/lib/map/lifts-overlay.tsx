@@ -1,11 +1,11 @@
 import React from 'react';
+import { SVGOverlay, SVGOverlayProps } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { fromRmfCoords, fromRmfYaw, radiansToDegrees } from '../utils';
 import { DoorMarker } from './door-marker';
 import { useAutoScale } from './hooks';
 import { ScaledNameLabel } from './label-marker';
 import { LiftMarker as LiftMarker_, LiftMarkerProps, useLiftMarkerStyles } from './lift-marker';
-import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
 
 function toDoorMode(liftState: RmfModels.LiftState): RmfModels.DoorMode {

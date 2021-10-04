@@ -1,9 +1,9 @@
 import React from 'react';
+import { SVGOverlay, SVGOverlayProps } from 'react-leaflet';
 import { Place } from '../place';
 import { fromRmfCoords } from '../utils/geometry';
 import { useAutoScale } from './hooks';
 import { ScaledNameLabel } from './label-marker';
-import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
 import { WaypointMarker as WaypointMarker_ } from './waypoint-marker';
 
