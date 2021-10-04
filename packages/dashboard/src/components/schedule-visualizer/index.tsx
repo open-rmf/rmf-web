@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 
+import { makeStyles } from '@material-ui/core';
 import { Dispenser, Ingestor } from 'api-client';
 import Debug from 'debug';
 import * as L from 'leaflet';
@@ -22,8 +23,7 @@ import {
   WorkcellData,
   WorkcellsOverlay,
 } from 'react-components';
-import { makeStyles } from '@material-ui/core';
-import { AttributionControl, LayersControl, Pane } from 'react-leaflet';
+import { AttributionControl, LayersControl } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import appConfig from '../../app-config';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
@@ -317,72 +317,58 @@ export default function ScheduleVisualizer({
         ))}
 
         <LayersControl.Overlay name="Trajectories" checked>
-          <Pane>
-            <TrajectoriesOverlay bounds={bounds} trajectoriesData={renderedTrajectories} />
-          </Pane>
+          <TrajectoriesOverlay bounds={bounds} trajectoriesData={renderedTrajectories} />
         </LayersControl.Overlay>
 
         <LayersControl.Overlay name="Waypoints" checked>
-          <Pane>
-            <WaypointsOverlay bounds={bounds} waypoints={waypoints} />
-          </Pane>
-        </LayersControl.Overlay>
-
-        <LayersControl.Overlay name="Robots" checked>
-          <Pane>
-            <RobotsOverlay
-              bounds={bounds}
-              robots={robots}
-              getRobotState={(fleet, robot) => {
-                const state = fleetStates[fleet].robots.find((r) => r.name === robot);
-                return state || null;
-              }}
-              onRobotClick={onRobotClick}
-            />
-          </Pane>
+          <WaypointsOverlay bounds={bounds} waypoints={waypoints} />
         </LayersControl.Overlay>
 
         <LayersControl.Overlay name="Dispensers" checked>
-          <Pane>
-            <WorkcellsOverlay
-              bounds={bounds}
-              workcells={dispensersData}
-              onWorkcellClick={onDispenserClick}
-            />
-          </Pane>
+          <WorkcellsOverlay
+            bounds={bounds}
+            workcells={dispensersData}
+            onWorkcellClick={onDispenserClick}
+          />
         </LayersControl.Overlay>
 
         <LayersControl.Overlay name="Ingestors" checked>
-          <Pane>
-            <WorkcellsOverlay
-              bounds={bounds}
-              workcells={ingestorsData}
-              onWorkcellClick={onIngestorClick}
-            />
-          </Pane>
+          <WorkcellsOverlay
+            bounds={bounds}
+            workcells={ingestorsData}
+            onWorkcellClick={onIngestorClick}
+          />
         </LayersControl.Overlay>
 
         <LayersControl.Overlay name="Lifts" checked>
-          <Pane>
-            <LiftsOverlay
-              bounds={bounds}
-              currentLevel={currentLevel.name}
-              lifts={buildingMap.lifts}
-              liftStates={liftStates}
-              onLiftClick={onLiftClick}
-            />
-          </Pane>
+          <LiftsOverlay
+            bounds={bounds}
+            currentLevel={currentLevel.name}
+            lifts={buildingMap.lifts}
+            liftStates={liftStates}
+            onLiftClick={onLiftClick}
+          />
         </LayersControl.Overlay>
 
         <LayersControl.Overlay name="Doors" checked>
-          <Pane>
-            <DoorsOverlay
-              bounds={bounds}
-              doors={currentLevel.doors}
-              doorStates={doorStates}
-              onDoorClick={onDoorClick}
-            />
-          </Pane>
+          <DoorsOverlay
+            bounds={bounds}
+            doors={currentLevel.doors}
+            doorStates={doorStates}
+            onDoorClick={onDoorClick}
+          />
+        </LayersControl.Overlay>
+
+        <LayersControl.Overlay name="Robots" checked>
+          <RobotsOverlay
+            bounds={bounds}
+            robots={robots}
+            getRobotState={(fleet, robot) => {
+              const state = fleetStates[fleet].robots.find((r) => r.name === robot);
+              return state || null;
+            }}
+            onRobotClick={onRobotClick}
+          />
         </LayersControl.Overlay>
       </LayersControl>
 

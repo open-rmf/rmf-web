@@ -70,7 +70,9 @@ export function LMap({ className, children, ...otherProps }: LMapProps): React.R
           {otherProps.bounds && (
             <Pane name="label" style={{ zIndex: 1000 }}>
               <SVGOverlay
-                ref={(current) => setLabelsPortal(current?.container ? current.container : null)}
+                ref={(current) => {
+                  setLabelsPortal(current?.container || null);
+                }}
                 viewBox={viewBox}
                 bounds={otherProps.bounds}
               />
