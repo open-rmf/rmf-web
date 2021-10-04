@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { SVGOverlay, SVGOverlayProps } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { fromRmfCoords, fromRmfYaw } from '../utils/geometry';
 import { useAutoScale } from './hooks';
 import { ScaledNameLabel } from './label-marker';
 import { LabelsPortalContext } from './labels-overlay';
 import { RobotMarker as RobotMarker_, RobotMarkerProps } from './robot-marker';
+import { SVGOverlay, SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
 
 const RobotMarker = React.memo(RobotMarker_);

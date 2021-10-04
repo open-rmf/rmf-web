@@ -3,10 +3,11 @@ import clsx from 'clsx';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import React from 'react';
-import { Map as LMap_, MapProps as LMapProps_, Pane, SVGOverlay, useLeaflet } from 'react-leaflet';
+import { Map as LMap_, MapProps as LMapProps_, Pane, useLeaflet } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { EntityManager, EntityManagerContext } from './entity-manager';
 import { LabelsPortalContext } from './labels-overlay';
+import { SVGOverlay } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
 
 const useStyles = makeStyles(() => ({

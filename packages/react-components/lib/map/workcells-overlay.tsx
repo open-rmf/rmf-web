@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { SVGOverlay, SVGOverlayProps } from 'react-leaflet';
 import { fromRmfCoords } from '../utils/geometry';
 import { useAutoScale } from './hooks';
 import { ScaledNameLabel } from './label-marker';
 import { LabelsPortalContext } from './labels-overlay';
+import { SVGOverlay, SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
 import { WorkcellMarker as WorkcellMarker_, WorkcellMarkerProps } from './workcell-marker';
 

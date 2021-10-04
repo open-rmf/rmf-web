@@ -1,5 +1,5 @@
 import React from 'react';
-import { SVGOverlay, SVGOverlayProps } from 'react-leaflet';
+import { SVGOverlay, SVGOverlayProps } from './svg-overlay';
 import { TrajectoryMarker as TrajectoryMarker_, TrajectoryMarkerProps } from './trajectory-marker';
 import { viewBoxFromLeafletBounds } from './utils';
 
