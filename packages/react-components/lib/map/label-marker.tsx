@@ -255,9 +255,11 @@ export function NameLabel(props: NameLabelProps): JSX.Element {
   return (
     <>
       {/* Dummy to compute text length */}
-      <Text ref={textRef} className={classes.hide}>
-        {text}
-      </Text>
+      {!show && (
+        <Text ref={textRef} className={classes.hide}>
+          {text}
+        </Text>
+      )}
       {show && (
         <LabelContainer
           contentWidth={contentWidth}
