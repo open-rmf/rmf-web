@@ -129,22 +129,8 @@ export const ScheduleVisualizer: Story<LMapProps> = () => {
               <AffineImageOverlay bounds={levelBounds[level.name]} image={level.images[0]} />
             </LayersControl.BaseLayer>
           ))}
-          {/* zIndex are ordered in reverse,
-          i.e. in this case, trajectories will be on to top most pane and doors is on the bottom most pane*/}
-          <LayersControl.Overlay name="Trajectories" checked>
-            <TrajectoriesOverlay bounds={bounds} trajectoriesData={trajectories} />
-          </LayersControl.Overlay>
           <LayersControl.Overlay name="Waypoints" checked>
             <WaypointsOverlay bounds={bounds} waypoints={waypoints} />
-          </LayersControl.Overlay>
-          <LayersControl.Overlay name="Robots" checked>
-            <RobotsOverlay
-              bounds={bounds}
-              robots={robots}
-              getRobotState={(_fleet, robot) => {
-                return fleetState.robots.find((r) => r.name === robot) || null;
-              }}
-            />
           </LayersControl.Overlay>
           <LayersControl.Overlay name="Dispensers" checked>
             <WorkcellsOverlay bounds={bounds} workcells={dispensers} />
@@ -157,6 +143,18 @@ export const ScheduleVisualizer: Story<LMapProps> = () => {
           </LayersControl.Overlay>
           <LayersControl.Overlay name="Doors" checked>
             <DoorsOverlay bounds={bounds} doors={currentLevel.doors} />
+          </LayersControl.Overlay>
+          <LayersControl.Overlay name="Trajectories" checked>
+            <TrajectoriesOverlay bounds={bounds} trajectoriesData={trajectories} />
+          </LayersControl.Overlay>
+          <LayersControl.Overlay name="Robots" checked>
+            <RobotsOverlay
+              bounds={bounds}
+              robots={robots}
+              getRobotState={(_fleet, robot) => {
+                return fleetState.robots.find((r) => r.name === robot) || null;
+              }}
+            />
           </LayersControl.Overlay>
         </LayersControl>
       </LMap>

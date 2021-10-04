@@ -327,10 +327,6 @@ export default function ScheduleVisualizer({
           </LayersControl.BaseLayer>
         ))}
 
-        <LayersControl.Overlay name="Trajectories" checked>
-          <TrajectoriesOverlay bounds={bounds} trajectoriesData={renderedTrajectories} />
-        </LayersControl.Overlay>
-
         <LayersControl.Overlay name="Waypoints" checked>
           <WaypointsOverlay bounds={bounds} waypoints={waypoints} />
         </LayersControl.Overlay>
@@ -368,6 +364,10 @@ export default function ScheduleVisualizer({
             doorStates={doorStates}
             onDoorClick={onDoorClick}
           />
+        </LayersControl.Overlay>
+
+        <LayersControl.Overlay name="Trajectories" checked>
+          <TrajectoriesOverlay bounds={bounds} trajectoriesData={renderedTrajectories} />
         </LayersControl.Overlay>
 
         <LayersControl.Overlay name="Robots" checked>
