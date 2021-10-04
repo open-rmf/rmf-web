@@ -29,11 +29,16 @@ export class EntityManager {
    * @param searchDepth
    * @returns
    */
-  getNonColliding(bbox: BBox, searchDepth = 4): BBox | null {
+  getNonColliding(bbox: BBox, searchDepth = 4, searchLimit = 16): BBox | null {
     const candidates: BBox[] = [];
     const stack: { bbox: BBox; depth: number }[] = [{ bbox, depth: 0 }];
+    let searchCount = 0;
 
-    for (let top = stack.pop(); top !== undefined; top = stack.pop()) {
+    for (
+      let top = stack.pop();
+      top !== undefined && searchCount < searchLimit;
+      top = stack.pop(), searchCount++
+    ) {
       const { bbox: search, depth } = top;
       const collidingEntites = this._entities.search(search);
       if (collidingEntites.length === 0) {
