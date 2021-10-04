@@ -191,7 +191,11 @@ export default function ScheduleVisualizer({
     if (!dispenserManager) return;
     (async () => {
       const dispenserResources = dispenserManager.dispensers;
-      const availableData = dispensers.filter((wc) => wc.guid in dispenserResources);
+      const availableData = dispensers.filter(
+        (wc) =>
+          wc.guid in dispenserResources &&
+          dispenserResources[wc.guid].location.level_name === currentLevel.name,
+      );
       const promises = availableData.map((wc) => dispenserManager.getIconPath(wc.guid));
       const icons = await safeAsync(Promise.all(promises));
       setDispensersData(
@@ -205,7 +209,7 @@ export default function ScheduleVisualizer({
         })),
       );
     })();
-  }, [safeAsync, resourceManager?.dispensers, dispensers]);
+  }, [safeAsync, resourceManager?.dispensers, dispensers, currentLevel.name]);
 
   const [ingestorsData, setIngestorsData] = React.useState<WorkcellData[]>([]);
   React.useEffect(() => {
@@ -213,7 +217,11 @@ export default function ScheduleVisualizer({
     if (!dispenserManager) return;
     (async () => {
       const dispenserResources = dispenserManager.dispensers;
-      const availableData = ingestors.filter((wc) => wc.guid in dispenserResources);
+      const availableData = ingestors.filter(
+        (wc) =>
+          wc.guid in dispenserResources &&
+          dispenserResources[wc.guid].location.level_name === currentLevel.name,
+      );
       const promises = availableData.map((wc) => dispenserManager.getIconPath(wc.guid));
       const icons = await safeAsync(Promise.all(promises));
       setIngestorsData(
@@ -227,10 +235,13 @@ export default function ScheduleVisualizer({
         })),
       );
     })();
-  }, [safeAsync, resourceManager?.dispensers, ingestors]);
+  }, [safeAsync, resourceManager?.dispensers, ingestors, currentLevel]);
 
   const places = React.useContext(PlacesContext);
-  const waypoints = React.useMemo(() => places.filter((p) => p.vertex.name.length > 0), [places]);
+  const waypoints = React.useMemo(
+    () => places.filter((p) => p.level === currentLevel.name && p.vertex.name.length > 0),
+    [places, currentLevel],
+  );
 
   React.useEffect(() => {
     (async () => {
