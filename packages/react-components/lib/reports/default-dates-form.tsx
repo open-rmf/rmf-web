@@ -27,7 +27,7 @@ const DefaultDatesFormRoot = styled('div')(() => ({
   },
 }));
 
-export const DefaultDatesForm = (props: DefaultDatesFormProps) => {
+export const DefaultDatesForm = (props: DefaultDatesFormProps): JSX.Element | null => {
   const { search, fromLogDate, toLogDate, onSelectToDate, onSelectFromDate } = props;
   const searchQuery = () => {
     search && search({ toLogDate, fromLogDate });

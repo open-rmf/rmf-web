@@ -1,12 +1,7 @@
 import { styled } from '@material-ui/core';
 import clsx from 'clsx';
-import Debug from 'debug';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { fromRmfCoords, fromRmfYaw, radiansToDegrees } from '../geometry-utils';
-import { DoorMarker } from './door-marker';
-
-const debug = Debug('Map:LiftMarker');
 
 // Gets the text to insert to the lift, the text depend on the current mode, motion state and the
 // current and destination floor of the lift.
@@ -98,36 +93,24 @@ const LiftMarkerRoot = styled('g')(() => ({
   },
 }));
 
-function toDoorMode(liftState: RmfModels.LiftState): RmfModels.DoorMode {
-  // LiftState uses its own enum definition of door state/mode which is separated from DoorMode.
-  // But their definitions are equal so we can skip conversion.
-  return { value: liftState.door_state };
-}
-
 export interface LiftMarkerProps extends React.PropsWithRef<React.SVGProps<SVGGElement>> {
-  lift: RmfModels.Lift;
+  cx: number;
+  cy: number;
+  width: number;
+  height: number;
+  yaw: number;
   liftState?: RmfModels.LiftState;
-  /**
-   * Whether the component should perform a translate transform to put it inline with the position
-   * in RMF.
-   *
-   * default: true
-   */
-  translate?: boolean;
   variant?: keyof typeof liftMarkerClasses;
 }
 
 export const LiftMarker = React.forwardRef(function (
-  { lift, liftState, variant, translate = true, ...otherProps }: LiftMarkerProps,
+  { cx, cy, width, height, yaw, liftState, variant, ...otherProps }: LiftMarkerProps,
   ref: React.Ref<SVGGElement>,
 ): JSX.Element {
-  debug(`render ${lift.name}`);
-
-  const { width, depth, ref_x, ref_y, ref_yaw, doors } = lift;
-  const pos = fromRmfCoords([ref_x, ref_y]);
-  // Get properties from lift state
-  const doorMode = liftState ? toDoorMode(liftState) : undefined;
   const markerClass = variant ? liftMarkerClasses[variant] : liftMarkerClasses.onCurrentLevel;
+  const x = cx - width / 2;
+  const y = cy - height / 2;
+  const r = Math.max(width, height) * 0.04;
 
   /**
    * In order to keep consistent spacing, we render at a "unit box" scale it according to the
@@ -135,9 +118,12 @@ export const LiftMarker = React.forwardRef(function (
    */
   const renderStatusText = () => {
     // QN: do we need to take into account rotation?
-    const textScale = Math.min(width, depth); // keep aspect ratio
+    const textScale = Math.min(width, height); // keep aspect ratio
     return liftState ? (
-      <text className={liftMarkerClasses.text} transform={`scale(${textScale})`}>
+      <text
+        className={liftMarkerClasses.text}
+        transform={`translate(${cx} ${cy}) scale(${textScale})`}
+      >
         <tspan x="0" dy="-1.8em">
           {liftState.current_floor}
         </tspan>
@@ -149,7 +135,10 @@ export const LiftMarker = React.forwardRef(function (
         </tspan>
       </text>
     ) : (
-      <text className={liftMarkerClasses.text} transform={`scale(${textScale})`}>
+      <text
+        className={liftMarkerClasses.text}
+        transform={`translate(${cx} ${cy}) scale(${textScale})`}
+      >
         <tspan x="0" dy="-0.5em">
           Unknown
         </tspan>
@@ -169,27 +158,17 @@ export const LiftMarker = React.forwardRef(function (
       )}
       {...otherProps}
     >
-      {/* it is easier to render it translate, and reverse the translation here */}
-      <g transform={!translate ? `translate(${-pos[0]} ${-pos[1]})` : undefined}>
-        <g transform={`translate(${pos[0]} ${pos[1]})`}>
-          <rect
-            className={`${liftMarkerClasses.lift} ${markerClass}`}
-            width={width}
-            height={depth}
-            x={-width / 2}
-            y={-depth / 2}
-            rx="0.1"
-            ry="0.1"
-            transform={`rotate(${radiansToDegrees(fromRmfYaw(ref_yaw))})`}
-          />
-          {renderStatusText()}
-        </g>
-        <g>
-          {doors.map((door, i) => (
-            <DoorMarker key={i} door={door} doorMode={doorMode?.value} translate={true} />
-          ))}
-        </g>
-      </g>
+      <rect
+        className={`${liftMarkerClasses.lift} ${markerClass}`}
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        rx={r}
+        ry={r}
+        style={{ transform: `rotate(${yaw}deg)`, transformOrigin: `${cx}px ${cy}px` }}
+      />
+      {renderStatusText()}
     </LiftMarkerRoot>
   );
 });
