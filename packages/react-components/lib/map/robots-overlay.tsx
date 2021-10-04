@@ -74,7 +74,6 @@ export const RobotsOverlay = ({
           if (!state) return;
           const [x, y] = fromRmfCoords([state.location.x, state.location.y]);
           const theta = fromRmfYaw(state.location.yaw);
-          console.log('asd', labelsPortal);
 
           return (
             <g key={`${robot.fleet}/${robot.name}`}>

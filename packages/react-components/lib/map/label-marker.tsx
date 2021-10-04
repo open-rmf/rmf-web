@@ -4,6 +4,8 @@ import React from 'react';
 import { BBox, EntityManagerContext } from './entity-manager';
 import { useAutoScale } from './hooks';
 
+const DefaultRepositionThreshold = 200;
+
 export interface LabelLocation {
   anchorX1: number;
   anchorY1: number;
@@ -26,10 +28,14 @@ export interface LabelContainerProps extends React.SVGProps<SVGGElement> {
    * Default: -30
    */
   angle?: number;
+  /**
+   * Maximum distance to reposition the label.
+   */
+  repositionThreshold?: number;
   children?: React.ReactNode;
 }
 
-export function LabelContainer(props: LabelContainerProps): JSX.Element {
+export function LabelContainer(props: LabelContainerProps): JSX.Element | null {
   const theme = useTheme();
   const {
     sourceX,
@@ -41,6 +47,7 @@ export function LabelContainer(props: LabelContainerProps): JSX.Element {
     contentBorderRadius = theme.shape.borderRadius / 2,
     arrowLength: preferredArrowLength = theme.spacing(1),
     angle = -30,
+    repositionThreshold = DefaultRepositionThreshold,
     children,
     ...otherProps
   } = props;
@@ -99,9 +106,11 @@ export function LabelContainer(props: LabelContainerProps): JSX.Element {
     sourceY,
   ]);
 
-  const [labelLocation, setLabelLocation] = React.useState(preferredLocation);
+  const [labelLocation, setLabelLocation] = React.useState<LabelLocation | null>(null);
   React.useLayoutEffect(() => {
-    const nonColliding = entityManager.getNonColliding(preferredLocation.borderBBox);
+    const nonColliding = entityManager.getNonColliding(preferredLocation.borderBBox, {
+      distLimit: repositionThreshold,
+    });
     if (!nonColliding) return;
 
     const entity = entityManager.add({ bbox: nonColliding });
@@ -142,10 +151,18 @@ export function LabelContainer(props: LabelContainerProps): JSX.Element {
     return () => {
       entityManager.remove(entity);
     };
-  }, [entityManager, preferredLocation, contentBorderRadius, sourceRadius, sourceX, sourceY]);
+  }, [
+    entityManager,
+    preferredLocation,
+    contentBorderRadius,
+    sourceRadius,
+    sourceX,
+    sourceY,
+    repositionThreshold,
+  ]);
 
   return (
-    <g>
+    labelLocation && (
       <g {...otherProps}>
         <line
           x1={labelLocation.anchorX1}
@@ -170,9 +187,27 @@ export function LabelContainer(props: LabelContainerProps): JSX.Element {
           {children}
         </g>
       </g>
-    </g>
+    )
   );
 }
+
+const Text: React.FC<React.PropsWithRef<React.SVGProps<SVGTextElement>>> = React.forwardRef(
+  ({ children, ...otherProps }: React.SVGProps<SVGTextElement>, ref: React.Ref<SVGTextElement>) => {
+    return (
+      <text
+        ref={ref}
+        x={0}
+        y={0}
+        strokeWidth={0}
+        dominantBaseline="middle"
+        textAnchor="middle"
+        {...otherProps}
+      >
+        {children}
+      </text>
+    );
+  },
+);
 
 const useNameLabelStyles = makeStyles((theme) => ({
   container: {
@@ -209,43 +244,45 @@ export function NameLabel(props: NameLabelProps): JSX.Element {
           updateContentSize();
         });
       } else {
-        setContentWidth(bbox.width);
+        setContentWidth(bbox.width + theme.spacing(2));
         setContentHeight(bbox.height);
         setShow(true);
       }
     };
     updateContentSize();
-  }, []);
+  }, [theme]);
 
   return (
-    <LabelContainer
-      contentWidth={contentWidth}
-      contentHeight={contentHeight}
-      contentPadding={contentPadding}
-      className={clsx(classes.container, !show && classes.hide, className)}
-      stroke={theme.palette.primary.main}
-      strokeWidth={1}
-      {...otherProps}
-    >
-      <text
-        ref={textRef}
-        x={0}
-        y={0}
-        strokeWidth={0}
-        dominantBaseline="middle"
-        textAnchor="middle"
-        fill={theme.palette.primary.main}
-        transform={`translate(${contentWidth / 2},${contentHeight / 2})`}
-      >
+    <>
+      {/* Dummy to compute text length */}
+      <Text ref={textRef} className={classes.hide}>
         {text}
-      </text>
-    </LabelContainer>
+      </Text>
+      {show && (
+        <LabelContainer
+          contentWidth={contentWidth}
+          contentHeight={contentHeight}
+          contentPadding={contentPadding}
+          className={clsx(classes.container, className)}
+          stroke={theme.palette.primary.main}
+          strokeWidth={1}
+          {...otherProps}
+        >
+          <Text
+            fill={theme.palette.primary.main}
+            transform={`translate(${contentWidth / 2},${contentHeight / 2})`}
+          >
+            {text}
+          </Text>
+        </LabelContainer>
+      )}
+    </>
   );
 }
 
 export type ScalableLabelProps = Pick<
   LabelContainerProps,
-  'sourceX' | 'sourceY' | 'sourceRadius' | 'arrowLength' | 'transform'
+  'sourceX' | 'sourceY' | 'sourceRadius' | 'arrowLength' | 'repositionThreshold' | 'transform'
 >;
 
 export function withAutoScaling<PropsType extends ScalableLabelProps>(
@@ -256,6 +293,7 @@ export function withAutoScaling<PropsType extends ScalableLabelProps>(
     sourceY,
     sourceRadius,
     arrowLength,
+    repositionThreshold = DefaultRepositionThreshold,
     transform,
     ...otherProps
   }: PropsType): JSX.Element => {
@@ -269,6 +307,7 @@ export function withAutoScaling<PropsType extends ScalableLabelProps>(
         sourceY={sourceY / scale}
         sourceRadius={sourceRadius / scale}
         arrowLength={arrowLength ? arrowLength / scale : undefined}
+        repositionThreshold={repositionThreshold * scale}
         transform={clsx(transform, `scale(${scale})`)}
       />
     );

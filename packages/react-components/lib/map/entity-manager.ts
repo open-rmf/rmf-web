@@ -13,6 +13,12 @@ class EntityRBush extends RBush<Entity> {
   }
 }
 
+export interface GetNonCollidingOptions {
+  searchDepth?: number;
+  searchLimit?: number;
+  distLimit?: number;
+}
+
 export class EntityManager {
   add(entity: Entity): Entity {
     this._entities.insert(entity);
@@ -29,7 +35,11 @@ export class EntityManager {
    * @param searchDepth
    * @returns
    */
-  getNonColliding(bbox: BBox, searchDepth = 4, searchLimit = 16): BBox | null {
+  getNonColliding(
+    bbox: BBox,
+    { searchDepth = 4, searchLimit = 16, distLimit = 200 }: GetNonCollidingOptions = {},
+  ): BBox | null {
+    const distLimitSq = distLimit ** 2;
     const candidates: BBox[] = [];
     const stack: { bbox: BBox; depth: number }[] = [{ bbox, depth: 0 }];
     let searchCount = 0;
@@ -41,7 +51,8 @@ export class EntityManager {
     ) {
       const { bbox: search, depth } = top;
       const collidingEntites = this._entities.search(search);
-      if (collidingEntites.length === 0) {
+      const distSq = (search.minX - bbox.minX) ** 2 + (search.minY - bbox.minY) ** 2;
+      if (collidingEntites.length === 0 && distSq <= distLimitSq) {
         candidates.push(search);
       } else if (depth < searchDepth) {
         collidingEntites.forEach((colliding) => {
