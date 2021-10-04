@@ -1,10 +1,12 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { SVGOverlay, SVGOverlayProps } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { fromRmfCoords, fromRmfYaw, radiansToDegrees } from '../utils';
 import { DoorMarker } from './door-marker';
 import { useAutoScale } from './hooks';
 import { ScaledNameLabel } from './label-marker';
+import { LabelsPortalContext } from './labels-overlay';
 import { LiftMarker as LiftMarker_, LiftMarkerProps, useLiftMarkerStyles } from './lift-marker';
 import { viewBoxFromLeafletBounds } from './utils';
 
@@ -73,6 +75,7 @@ export const LiftsOverlay = ({
 }: LiftsOverlayProps): JSX.Element => {
   const viewBox = viewBoxFromLeafletBounds(bounds);
   const scale = useAutoScale(40);
+  const labelsPortal = React.useContext(LabelsPortalContext);
 
   return (
     <SVGOverlay bounds={bounds} {...otherProps}>
@@ -114,13 +117,17 @@ export const LiftsOverlay = ({
                   />
                 );
               })}
-              <ScaledNameLabel
-                sourceX={pos[0]}
-                sourceY={pos[1]}
-                sourceRadius={Math.min(lift.width / 2, lift.depth / 2)}
-                arrowLength={Math.max((lift.width / 3) * scale, (lift.depth / 3) * scale)}
-                text={lift.name}
-              />
+              {labelsPortal &&
+                ReactDOM.createPortal(
+                  <ScaledNameLabel
+                    sourceX={pos[0]}
+                    sourceY={pos[1]}
+                    sourceRadius={Math.min(lift.width / 2, lift.depth / 2)}
+                    arrowLength={Math.max((lift.width / 3) * scale, (lift.depth / 3) * scale)}
+                    text={lift.name}
+                  />,
+                  labelsPortal,
+                )}
             </g>
           );
         })}

@@ -1,8 +1,10 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { SVGOverlay, SVGOverlayProps } from 'react-leaflet';
 import { fromRmfCoords } from '../utils/geometry';
 import { useAutoScale } from './hooks';
 import { ScaledNameLabel } from './label-marker';
+import { LabelsPortalContext } from './labels-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
 import { WorkcellMarker as WorkcellMarker_, WorkcellMarkerProps } from './workcell-marker';
 
@@ -46,6 +48,7 @@ export const WorkcellsOverlay = ({
 }: WorkcellsOverlayProps): JSX.Element => {
   const viewBox = viewBoxFromLeafletBounds(bounds);
   const scale = useAutoScale(40);
+  const labelsPortal = React.useContext(LabelsPortalContext);
 
   const BoundedMarker = React.useMemo(() => bindMarker(MarkerComponent), [MarkerComponent]);
 
@@ -66,12 +69,16 @@ export const WorkcellsOverlay = ({
                 aria-label={workcell.guid}
                 style={{ transform: `scale(${scale})`, transformOrigin: `${x}px ${y}px` }}
               />
-              <ScaledNameLabel
-                text={workcell.guid}
-                sourceX={x}
-                sourceY={y}
-                sourceRadius={0.5 * scale}
-              />
+              {labelsPortal &&
+                ReactDOM.createPortal(
+                  <ScaledNameLabel
+                    text={workcell.guid}
+                    sourceX={x}
+                    sourceY={y}
+                    sourceRadius={0.5 * scale}
+                  />,
+                  labelsPortal,
+                )}
             </g>
           );
         })}

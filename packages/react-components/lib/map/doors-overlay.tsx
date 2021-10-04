@@ -1,10 +1,12 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { SVGOverlay, SVGOverlayProps } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { fromRmfCoords } from '../utils/geometry';
 import { DoorMarker as DoorMarker_, DoorMarkerProps } from './door-marker';
 import { useAutoScale } from './hooks';
 import { ScaledNameLabel } from './label-marker';
+import { LabelsPortalContext } from './labels-overlay';
 import { getDoorCenter, viewBoxFromLeafletBounds } from './utils';
 
 interface BoundedMarkerProps extends Omit<DoorMarkerProps, 'onClick'> {
@@ -43,6 +45,7 @@ export const DoorsOverlay = ({
 }: DoorsOverlayProps): JSX.Element => {
   const viewBox = viewBoxFromLeafletBounds(bounds);
   const scale = useAutoScale(40);
+  const labelsPortal = React.useContext(LabelsPortalContext);
 
   return (
     <SVGOverlay bounds={bounds} {...otherProps}>
@@ -70,12 +73,16 @@ export const DoorsOverlay = ({
                   transformOrigin: `${center[0]}px ${center[1]}px`,
                 }}
               />
-              <ScaledNameLabel
-                text={door.name}
-                sourceX={center[0]}
-                sourceY={center[1]}
-                sourceRadius={0}
-              />
+              {labelsPortal &&
+                ReactDOM.createPortal(
+                  <ScaledNameLabel
+                    text={door.name}
+                    sourceX={center[0]}
+                    sourceY={center[1]}
+                    sourceRadius={0}
+                  />,
+                  labelsPortal,
+                )}
             </g>
           );
         })}
