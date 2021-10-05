@@ -56,30 +56,34 @@ function EntityManagerProvider({ children }: React.PropsWithChildren<{}>) {
   ) : null;
 }
 
-export type LMapProps = Omit<LMapProps_, 'crs'>;
-
-export function LMap({ className, children, ...otherProps }: LMapProps): React.ReactElement {
-  const classes = useStyles();
-  const [labelsPortal, setLabelsPortal] = React.useState<SVGSVGElement | null>(null);
-  const viewBox = otherProps.bounds ? viewBoxFromLeafletBounds(otherProps.bounds) : undefined;
-  return (
-    <LMap_ className={clsx(classes.map, className)} crs={L.CRS.Simple} {...otherProps}>
-      <EntityManagerProvider>
-        <LabelsPortalContext.Provider value={labelsPortal}>
-          {children}
-          {otherProps.bounds && (
-            <Pane name="label" style={{ zIndex: 1000 }}>
-              <SVGOverlay
-                ref={(current) => {
-                  setLabelsPortal(current?.container || null);
-                }}
-                viewBox={viewBox}
-                bounds={otherProps.bounds}
-              />
-            </Pane>
-          )}
-        </LabelsPortalContext.Provider>
-      </EntityManagerProvider>
-    </LMap_>
-  );
+export interface LMapProps extends Omit<LMapProps_, 'crs'> {
+  ref?: React.Ref<LMap_>;
 }
+
+export const LMap = React.forwardRef(
+  ({ className, children, ...otherProps }: LMapProps, ref: React.Ref<LMap_>) => {
+    const classes = useStyles();
+    const [labelsPortal, setLabelsPortal] = React.useState<SVGSVGElement | null>(null);
+    const viewBox = otherProps.bounds ? viewBoxFromLeafletBounds(otherProps.bounds) : undefined;
+    return (
+      <LMap_ ref={ref} className={clsx(classes.map, className)} crs={L.CRS.Simple} {...otherProps}>
+        <EntityManagerProvider>
+          <LabelsPortalContext.Provider value={labelsPortal}>
+            {children}
+            {otherProps.bounds && (
+              <Pane name="label" style={{ zIndex: 1000 }}>
+                <SVGOverlay
+                  ref={(current) => {
+                    setLabelsPortal(current?.container || null);
+                  }}
+                  viewBox={viewBox}
+                  bounds={otherProps.bounds}
+                />
+              </Pane>
+            )}
+          </LabelsPortalContext.Provider>
+        </EntityManagerProvider>
+      </LMap_>
+    );
+  },
+);

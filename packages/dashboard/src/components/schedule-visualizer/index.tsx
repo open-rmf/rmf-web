@@ -306,8 +306,22 @@ export default function ScheduleVisualizer({
     setLevelBounds(bounds);
   }, [images, levels]);
 
+  const [layersUnChecked, setLayersUnChecked] = React.useState<Record<string, boolean>>({});
+  const waypointsLayersRef: React.Ref<LayersControl.Overlay> = React.useRef(null);
+  const registeredLayersHandlers = React.useRef(false);
+
   return bounds ? (
     <LMap
+      ref={(cur) => {
+        if (registeredLayersHandlers.current || !cur) return;
+        cur.leafletElement.on('overlayadd', (ev: L.LayersControlEvent) =>
+          setLayersUnChecked((prev) => ({ ...prev, [ev.name]: false })),
+        );
+        cur.leafletElement.on('overlayremove', (ev: L.LayersControlEvent) =>
+          setLayersUnChecked((prev) => ({ ...prev, [ev.name]: true })),
+        );
+        registeredLayersHandlers.current = true;
+      }}
       id="schedule-visualizer"
       attributionControl={false}
       minZoom={0}
@@ -334,41 +348,53 @@ export default function ScheduleVisualizer({
           </LayersControl.BaseLayer>
         ))}
 
-        <LayersControl.Overlay name="Waypoints" checked>
-          <WaypointsOverlay bounds={bounds} waypoints={waypoints} />
+        <LayersControl.Overlay
+          ref={waypointsLayersRef}
+          name="Waypoints"
+          checked={!layersUnChecked['Waypoints']}
+        >
+          <WaypointsOverlay
+            bounds={bounds}
+            waypoints={waypoints}
+            hideLabels={layersUnChecked['Waypoints']}
+          />
         </LayersControl.Overlay>
 
-        <LayersControl.Overlay name="Dispensers" checked>
+        <LayersControl.Overlay name="Dispensers" checked={!layersUnChecked['Dispensers']}>
           <WorkcellsOverlay
             bounds={bounds}
             workcells={dispensersData}
+            hideLabels={layersUnChecked['Dispensers']}
             onWorkcellClick={onDispenserClick}
           />
         </LayersControl.Overlay>
 
-        <LayersControl.Overlay name="Ingestors" checked>
+        <LayersControl.Overlay name="Ingestors" checked={!layersUnChecked['Ingestors']}>
           <WorkcellsOverlay
             bounds={bounds}
             workcells={ingestorsData}
+            hideLabels={layersUnChecked['Ingestors']}
             onWorkcellClick={onIngestorClick}
           />
         </LayersControl.Overlay>
 
-        <LayersControl.Overlay name="Lifts" checked>
+        <LayersControl.Overlay name="Lifts" checked={!layersUnChecked['Lifts']}>
           <LiftsOverlay
             bounds={bounds}
             currentLevel={currentLevel.name}
             lifts={buildingMap.lifts}
             liftStates={liftStates}
+            hideLabels={layersUnChecked['Lifts']}
             onLiftClick={onLiftClick}
           />
         </LayersControl.Overlay>
 
-        <LayersControl.Overlay name="Doors" checked>
+        <LayersControl.Overlay name="Doors" checked={!layersUnChecked['Doors']}>
           <DoorsOverlay
             bounds={bounds}
             doors={currentLevel.doors}
             doorStates={doorStates}
+            hideLabels={layersUnChecked['Doors']}
             onDoorClick={onDoorClick}
           />
         </LayersControl.Overlay>
@@ -377,7 +403,7 @@ export default function ScheduleVisualizer({
           <TrajectoriesOverlay bounds={bounds} trajectoriesData={renderedTrajectories} />
         </LayersControl.Overlay>
 
-        <LayersControl.Overlay name="Robots" checked>
+        <LayersControl.Overlay name="Robots" checked={!layersUnChecked['Robots']}>
           <RobotsOverlay
             bounds={bounds}
             robots={robots}
@@ -385,6 +411,7 @@ export default function ScheduleVisualizer({
               const state = fleetStates[fleet].robots.find((r) => r.name === robot);
               return state || null;
             }}
+            hideLabels={layersUnChecked['Robots']}
             onRobotClick={onRobotClick}
           />
         </LayersControl.Overlay>
