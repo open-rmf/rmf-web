@@ -32,7 +32,7 @@ export interface WorkcellData {
   iconPath?: string;
 }
 
-export interface WorkcellsOverlayProps extends SVGOverlayProps {
+export interface WorkcellsOverlayProps extends Omit<SVGOverlayProps, 'viewBox'> {
   workcells: WorkcellData[];
   actualSizeMinZoom?: number;
   onWorkcellClick?: (event: React.MouseEvent, guid: string) => void;
@@ -43,46 +43,43 @@ export const WorkcellsOverlay = ({
   workcells,
   onWorkcellClick,
   MarkerComponent = WorkcellMarker,
-  bounds,
   ...otherProps
 }: WorkcellsOverlayProps): JSX.Element => {
-  const viewBox = viewBoxFromLeafletBounds(bounds);
+  const viewBox = viewBoxFromLeafletBounds(otherProps.bounds);
   const scale = useAutoScale(40);
   const labelsPortal = React.useContext(LabelsPortalContext);
 
   const BoundedMarker = React.useMemo(() => bindMarker(MarkerComponent), [MarkerComponent]);
 
   return (
-    <SVGOverlay bounds={bounds} {...otherProps}>
-      <svg viewBox={viewBox}>
-        {workcells.map((workcell) => {
-          const [x, y] = fromRmfCoords(workcell.location);
-          return (
-            <g key={workcell.guid}>
-              <BoundedMarker
-                cx={x}
-                cy={y}
-                size={1}
-                guid={workcell.guid}
-                iconPath={workcell.iconPath}
-                onClick={onWorkcellClick}
-                aria-label={workcell.guid}
-                style={{ transform: `scale(${scale})`, transformOrigin: `${x}px ${y}px` }}
-              />
-              {labelsPortal &&
-                ReactDOM.createPortal(
-                  <ScaledNameLabel
-                    text={workcell.guid}
-                    sourceX={x}
-                    sourceY={y}
-                    sourceRadius={0.5 * scale}
-                  />,
-                  labelsPortal,
-                )}
-            </g>
-          );
-        })}
-      </svg>
+    <SVGOverlay viewBox={viewBox} {...otherProps}>
+      {workcells.map((workcell) => {
+        const [x, y] = fromRmfCoords(workcell.location);
+        return (
+          <g key={workcell.guid}>
+            <BoundedMarker
+              cx={x}
+              cy={y}
+              size={1}
+              guid={workcell.guid}
+              iconPath={workcell.iconPath}
+              onClick={onWorkcellClick}
+              aria-label={workcell.guid}
+              style={{ transform: `scale(${scale})`, transformOrigin: `${x}px ${y}px` }}
+            />
+            {labelsPortal &&
+              ReactDOM.createPortal(
+                <ScaledNameLabel
+                  text={workcell.guid}
+                  sourceX={x}
+                  sourceY={y}
+                  sourceRadius={0.5 * scale}
+                />,
+                labelsPortal,
+              )}
+          </g>
+        );
+      })}
     </SVGOverlay>
   );
 };

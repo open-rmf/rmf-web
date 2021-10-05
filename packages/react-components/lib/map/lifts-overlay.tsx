@@ -58,7 +58,7 @@ export const getLiftModeVariant = (
   return 'unknown';
 };
 
-export interface LiftsOverlayProps extends SVGOverlayProps {
+export interface LiftsOverlayProps extends Omit<SVGOverlayProps, 'viewBox'> {
   currentLevel: string;
   lifts: RmfModels.Lift[];
   liftStates?: Record<string, RmfModels.LiftState>;
@@ -70,68 +70,65 @@ export const LiftsOverlay = ({
   liftStates = {},
   onLiftClick,
   currentLevel,
-  bounds,
   ...otherProps
 }: LiftsOverlayProps): JSX.Element => {
-  const viewBox = viewBoxFromLeafletBounds(bounds);
+  const viewBox = viewBoxFromLeafletBounds(otherProps.bounds);
   const scale = useAutoScale(40);
   const labelsPortal = React.useContext(LabelsPortalContext);
 
   return (
-    <SVGOverlay bounds={bounds} {...otherProps}>
-      <svg viewBox={viewBox}>
-        {lifts.map((lift) => {
-          const state = liftStates && liftStates[lift.name];
-          const pos = fromRmfCoords([lift.ref_x, lift.ref_y]);
-          return (
-            <g key={lift.name}>
-              <LiftMarker
-                lift={lift}
-                onClick={onLiftClick}
-                cx={pos[0]}
-                cy={pos[1]}
-                width={lift.width}
-                height={lift.depth}
-                yaw={radiansToDegrees(fromRmfYaw(lift.ref_yaw))}
-                liftState={state}
-                variant={getLiftModeVariant(
-                  currentLevel,
-                  liftStates[lift.name]?.current_mode,
-                  liftStates[lift.name]?.current_floor,
-                )}
-                style={{ transform: `scale(${scale})`, transformOrigin: `${pos[0]}px ${pos[1]}px` }}
-                aria-label={lift.name}
-              />
-              {lift.doors.map((door, idx) => {
-                const [x1, y1] = fromRmfCoords([door.v1_x, door.v1_y]);
-                const [x2, y2] = fromRmfCoords([door.v2_x, door.v2_y]);
-                return (
-                  <DoorMarker
-                    key={idx}
-                    x1={x1}
-                    y1={y1}
-                    x2={x2}
-                    y2={y2}
-                    doorType={door.door_type}
-                    doorMode={state && toDoorMode(state).value}
-                  />
-                );
-              })}
-              {labelsPortal &&
-                ReactDOM.createPortal(
-                  <ScaledNameLabel
-                    sourceX={pos[0]}
-                    sourceY={pos[1]}
-                    sourceRadius={Math.min(lift.width / 2, lift.depth / 2)}
-                    arrowLength={Math.max((lift.width / 3) * scale, (lift.depth / 3) * scale)}
-                    text={lift.name}
-                  />,
-                  labelsPortal,
-                )}
-            </g>
-          );
-        })}
-      </svg>
+    <SVGOverlay viewBox={viewBox} {...otherProps}>
+      {lifts.map((lift) => {
+        const state = liftStates && liftStates[lift.name];
+        const pos = fromRmfCoords([lift.ref_x, lift.ref_y]);
+        return (
+          <g key={lift.name}>
+            <LiftMarker
+              lift={lift}
+              onClick={onLiftClick}
+              cx={pos[0]}
+              cy={pos[1]}
+              width={lift.width}
+              height={lift.depth}
+              yaw={radiansToDegrees(fromRmfYaw(lift.ref_yaw))}
+              liftState={state}
+              variant={getLiftModeVariant(
+                currentLevel,
+                liftStates[lift.name]?.current_mode,
+                liftStates[lift.name]?.current_floor,
+              )}
+              style={{ transform: `scale(${scale})`, transformOrigin: `${pos[0]}px ${pos[1]}px` }}
+              aria-label={lift.name}
+            />
+            {lift.doors.map((door, idx) => {
+              const [x1, y1] = fromRmfCoords([door.v1_x, door.v1_y]);
+              const [x2, y2] = fromRmfCoords([door.v2_x, door.v2_y]);
+              return (
+                <DoorMarker
+                  key={idx}
+                  x1={x1}
+                  y1={y1}
+                  x2={x2}
+                  y2={y2}
+                  doorType={door.door_type}
+                  doorMode={state && toDoorMode(state).value}
+                />
+              );
+            })}
+            {labelsPortal &&
+              ReactDOM.createPortal(
+                <ScaledNameLabel
+                  sourceX={pos[0]}
+                  sourceY={pos[1]}
+                  sourceRadius={Math.min(lift.width / 2, lift.depth / 2)}
+                  arrowLength={Math.max((lift.width / 3) * scale, (lift.depth / 3) * scale)}
+                  text={lift.name}
+                />,
+                labelsPortal,
+              )}
+          </g>
+        );
+      })}
     </SVGOverlay>
   );
 };

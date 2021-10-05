@@ -40,7 +40,7 @@ function bindMarker(MarkerComponent: React.ComponentType<RobotMarkerProps>) {
   };
 }
 
-export interface RobotsOverlayProps extends SVGOverlayProps {
+export interface RobotsOverlayProps extends Omit<SVGOverlayProps, 'viewBox'> {
   robots: RobotData[];
   getRobotState: (fleet: string, robot: string) => RmfModels.RobotState | null;
   /**
@@ -56,10 +56,9 @@ export const RobotsOverlay = ({
   getRobotState,
   onRobotClick,
   MarkerComponent = RobotMarker,
-  bounds,
   ...otherProps
 }: RobotsOverlayProps): JSX.Element => {
-  const viewBox = viewBoxFromLeafletBounds(bounds);
+  const viewBox = viewBoxFromLeafletBounds(otherProps.bounds);
   const BoundedMarker = React.useMemo(() => bindMarker(MarkerComponent), [MarkerComponent]);
   const scale = useAutoScale(40);
   // TODO: hardcoded because footprint is not available in rmf.
@@ -67,44 +66,42 @@ export const RobotsOverlay = ({
   const labelsPortal = React.useContext(LabelsPortalContext);
 
   return (
-    <SVGOverlay bounds={bounds} {...otherProps}>
-      <svg viewBox={viewBox}>
-        {robots.map((robot) => {
-          const state = getRobotState(robot.fleet, robot.name);
-          if (!state) return;
-          const [x, y] = fromRmfCoords([state.location.x, state.location.y]);
-          const theta = fromRmfYaw(state.location.yaw);
+    <SVGOverlay viewBox={viewBox} {...otherProps}>
+      {robots.map((robot) => {
+        const state = getRobotState(robot.fleet, robot.name);
+        if (!state) return;
+        const [x, y] = fromRmfCoords([state.location.x, state.location.y]);
+        const theta = fromRmfYaw(state.location.yaw);
 
-          return (
-            <g key={`${robot.fleet}/${robot.name}`}>
-              <BoundedMarker
-                robotData={robot}
-                cx={x}
-                cy={y}
-                r={footprint}
-                color={robot.color}
-                iconPath={robot.iconPath}
-                onClick={onRobotClick}
-                aria-label={robot.name}
-                style={{
-                  transform: `rotate(${theta}rad) scale(${scale})`,
-                  transformOrigin: `${x}px ${y}px`,
-                }}
-              />
-              {labelsPortal &&
-                ReactDOM.createPortal(
-                  <ScaledNameLabel
-                    text={robot.name}
-                    sourceX={x}
-                    sourceY={y}
-                    sourceRadius={footprint * scale}
-                  />,
-                  labelsPortal,
-                )}
-            </g>
-          );
-        })}
-      </svg>
+        return (
+          <g key={`${robot.fleet}/${robot.name}`}>
+            <BoundedMarker
+              robotData={robot}
+              cx={x}
+              cy={y}
+              r={footprint}
+              color={robot.color}
+              iconPath={robot.iconPath}
+              onClick={onRobotClick}
+              aria-label={robot.name}
+              style={{
+                transform: `rotate(${theta}rad) scale(${scale})`,
+                transformOrigin: `${x}px ${y}px`,
+              }}
+            />
+            {labelsPortal &&
+              ReactDOM.createPortal(
+                <ScaledNameLabel
+                  text={robot.name}
+                  sourceX={x}
+                  sourceY={y}
+                  sourceRadius={footprint * scale}
+                />,
+                labelsPortal,
+              )}
+          </g>
+        );
+      })}
     </SVGOverlay>
   );
 };

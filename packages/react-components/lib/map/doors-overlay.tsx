@@ -30,7 +30,7 @@ function bindMarker(MarkerComponent: React.ComponentType<DoorMarkerProps>) {
 
 const DoorMarker = React.memo(bindMarker(DoorMarker_));
 
-export interface DoorsOverlayProps extends SVGOverlayProps {
+export interface DoorsOverlayProps extends Omit<SVGOverlayProps, 'viewBox'> {
   doors: RmfModels.Door[];
   doorStates?: Record<string, RmfModels.DoorState>;
   onDoorClick?: (ev: React.MouseEvent, door: string) => void;
@@ -40,53 +40,50 @@ export const DoorsOverlay = ({
   doors,
   doorStates = {},
   onDoorClick,
-  bounds,
   ...otherProps
 }: DoorsOverlayProps): JSX.Element => {
-  const viewBox = viewBoxFromLeafletBounds(bounds);
+  const viewBox = viewBoxFromLeafletBounds(otherProps.bounds);
   const scale = useAutoScale(40);
   const labelsPortal = React.useContext(LabelsPortalContext);
 
   return (
-    <SVGOverlay bounds={bounds} {...otherProps}>
-      <svg viewBox={viewBox}>
-        {doors.map((door) => {
-          const center = fromRmfCoords(getDoorCenter(door));
-          const [x1, y1] = fromRmfCoords([door.v1_x, door.v1_y]);
-          const [x2, y2] = fromRmfCoords([door.v2_x, door.v2_y]);
-          return (
-            <g key={door.name}>
-              <DoorMarker
-                door={door}
-                onClick={onDoorClick}
-                x1={x1}
-                y1={y1}
-                x2={x2}
-                y2={y2}
-                doorType={door.door_type}
-                doorMode={
-                  doorStates && doorStates[door.name] && doorStates[door.name].current_mode.value
-                }
-                aria-label={door.name}
-                style={{
-                  transform: `scale(${scale})`,
-                  transformOrigin: `${center[0]}px ${center[1]}px`,
-                }}
-              />
-              {labelsPortal &&
-                ReactDOM.createPortal(
-                  <ScaledNameLabel
-                    text={door.name}
-                    sourceX={center[0]}
-                    sourceY={center[1]}
-                    sourceRadius={0}
-                  />,
-                  labelsPortal,
-                )}
-            </g>
-          );
-        })}
-      </svg>
+    <SVGOverlay viewBox={viewBox} {...otherProps}>
+      {doors.map((door) => {
+        const center = fromRmfCoords(getDoorCenter(door));
+        const [x1, y1] = fromRmfCoords([door.v1_x, door.v1_y]);
+        const [x2, y2] = fromRmfCoords([door.v2_x, door.v2_y]);
+        return (
+          <g key={door.name}>
+            <DoorMarker
+              door={door}
+              onClick={onDoorClick}
+              x1={x1}
+              y1={y1}
+              x2={x2}
+              y2={y2}
+              doorType={door.door_type}
+              doorMode={
+                doorStates && doorStates[door.name] && doorStates[door.name].current_mode.value
+              }
+              aria-label={door.name}
+              style={{
+                transform: `scale(${scale})`,
+                transformOrigin: `${center[0]}px ${center[1]}px`,
+              }}
+            />
+            {labelsPortal &&
+              ReactDOM.createPortal(
+                <ScaledNameLabel
+                  text={door.name}
+                  sourceX={center[0]}
+                  sourceY={center[1]}
+                  sourceRadius={0}
+                />,
+                labelsPortal,
+              )}
+          </g>
+        );
+      })}
     </SVGOverlay>
   );
 };
