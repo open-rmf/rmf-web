@@ -1,15 +1,11 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import * as RmfModels from 'rmf-models';
 import { fromRmfCoords, fromRmfYaw } from '../utils/geometry';
 import { useAutoScale } from './hooks';
-import { ScaledNameLabel } from './label-marker';
-import { LabelsPortalContext } from './labels-overlay';
 import { RobotMarker as RobotMarker_, RobotMarkerProps } from './robot-marker';
 import { SVGOverlay, SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
-
-const RobotMarker = React.memo(RobotMarker_);
+import { withLabel } from './with-label';
 
 export interface RobotData {
   fleet: string;
@@ -40,6 +36,8 @@ function bindMarker(MarkerComponent: React.ComponentType<RobotMarkerProps>) {
   };
 }
 
+const RobotMarker = withLabel(bindMarker(RobotMarker_));
+
 export interface RobotsOverlayProps extends Omit<SVGOverlayProps, 'viewBox'> {
   robots: RobotData[];
   getRobotState: (fleet: string, robot: string) => RmfModels.RobotState | null;
@@ -47,23 +45,21 @@ export interface RobotsOverlayProps extends Omit<SVGOverlayProps, 'viewBox'> {
    * The zoom level at which the markers should transition from actual size to fixed size.
    */
   markerActualSizeMinZoom?: number;
+  hideLabels?: boolean;
   onRobotClick?: (ev: React.MouseEvent, fleet: string, robot: string) => void;
-  MarkerComponent?: React.ComponentType<RobotMarkerProps>;
 }
 
 export const RobotsOverlay = ({
   robots,
   getRobotState,
+  hideLabels = false,
   onRobotClick,
-  MarkerComponent = RobotMarker,
   ...otherProps
 }: RobotsOverlayProps): JSX.Element => {
   const viewBox = viewBoxFromLeafletBounds(otherProps.bounds);
-  const BoundedMarker = React.useMemo(() => bindMarker(MarkerComponent), [MarkerComponent]);
   const scale = useAutoScale(40);
   // TODO: hardcoded because footprint is not available in rmf.
   const footprint = 0.5;
-  const labelsPortal = React.useContext(LabelsPortalContext);
 
   return (
     <SVGOverlay viewBox={viewBox} {...otherProps}>
@@ -75,7 +71,7 @@ export const RobotsOverlay = ({
 
         return (
           <g key={`${robot.fleet}/${robot.name}`}>
-            <BoundedMarker
+            <RobotMarker
               robotData={robot}
               cx={x}
               cy={y}
@@ -88,17 +84,12 @@ export const RobotsOverlay = ({
                 transform: `rotate(${theta}rad) scale(${scale})`,
                 transformOrigin: `${x}px ${y}px`,
               }}
+              labelText={robot.name}
+              labelSourceX={x}
+              labelSourceY={y}
+              labelSourceRadius={footprint * scale}
+              hideLabel={hideLabels}
             />
-            {labelsPortal &&
-              ReactDOM.createPortal(
-                <ScaledNameLabel
-                  text={robot.name}
-                  sourceX={x}
-                  sourceY={y}
-                  sourceRadius={footprint * scale}
-                />,
-                labelsPortal,
-              )}
           </g>
         );
       })}

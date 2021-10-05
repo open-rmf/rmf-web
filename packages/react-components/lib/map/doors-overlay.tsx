@@ -1,13 +1,11 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import * as RmfModels from 'rmf-models';
 import { fromRmfCoords } from '../utils/geometry';
 import { DoorMarker as DoorMarker_, DoorMarkerProps } from './door-marker';
 import { useAutoScale } from './hooks';
-import { ScaledNameLabel } from './label-marker';
-import { LabelsPortalContext } from './labels-overlay';
 import { SVGOverlay, SVGOverlayProps } from './svg-overlay';
 import { getDoorCenter, viewBoxFromLeafletBounds } from './utils';
+import { withLabel } from './with-label';
 
 interface BoundedMarkerProps extends Omit<DoorMarkerProps, 'onClick'> {
   door: RmfModels.Door;
@@ -28,23 +26,24 @@ function bindMarker(MarkerComponent: React.ComponentType<DoorMarkerProps>) {
   };
 }
 
-const DoorMarker = React.memo(bindMarker(DoorMarker_));
+const DoorMarker = withLabel(bindMarker(DoorMarker_));
 
 export interface DoorsOverlayProps extends Omit<SVGOverlayProps, 'viewBox'> {
   doors: RmfModels.Door[];
   doorStates?: Record<string, RmfModels.DoorState>;
+  hideLabels?: boolean;
   onDoorClick?: (ev: React.MouseEvent, door: string) => void;
 }
 
 export const DoorsOverlay = ({
   doors,
   doorStates = {},
+  hideLabels = false,
   onDoorClick,
   ...otherProps
 }: DoorsOverlayProps): JSX.Element => {
   const viewBox = viewBoxFromLeafletBounds(otherProps.bounds);
   const scale = useAutoScale(40);
-  const labelsPortal = React.useContext(LabelsPortalContext);
 
   return (
     <SVGOverlay viewBox={viewBox} {...otherProps}>
@@ -70,17 +69,12 @@ export const DoorsOverlay = ({
                 transform: `scale(${scale})`,
                 transformOrigin: `${center[0]}px ${center[1]}px`,
               }}
+              labelText={door.name}
+              labelSourceX={center[0]}
+              labelSourceY={center[1]}
+              labelSourceRadius={0}
+              hideLabel={hideLabels}
             />
-            {labelsPortal &&
-              ReactDOM.createPortal(
-                <ScaledNameLabel
-                  text={door.name}
-                  sourceX={center[0]}
-                  sourceY={center[1]}
-                  sourceRadius={0}
-                />,
-                labelsPortal,
-              )}
           </g>
         );
       })}

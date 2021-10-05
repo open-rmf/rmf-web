@@ -1,14 +1,12 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import * as RmfModels from 'rmf-models';
 import { fromRmfCoords, fromRmfYaw, radiansToDegrees } from '../utils';
-import { DoorMarker } from './door-marker';
+import { DoorMarker as DoorMarker_ } from './door-marker';
 import { useAutoScale } from './hooks';
-import { ScaledNameLabel } from './label-marker';
-import { LabelsPortalContext } from './labels-overlay';
 import { LiftMarker as LiftMarker_, LiftMarkerProps, useLiftMarkerStyles } from './lift-marker';
 import { SVGOverlay, SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
+import { withLabel } from './with-label';
 
 function toDoorMode(liftState: RmfModels.LiftState): RmfModels.DoorMode {
   // LiftState uses its own enum definition of door state/mode which is separated from DoorMode.
@@ -35,7 +33,8 @@ function bindMarker(MarkerComponent: React.ComponentType<LiftMarkerProps>) {
   };
 }
 
-const LiftMarker = React.memo(bindMarker(LiftMarker_));
+const DoorMarker = React.memo(DoorMarker_);
+const LiftMarker = withLabel(bindMarker(LiftMarker_));
 
 export const getLiftModeVariant = (
   currentLevel: string,
@@ -62,19 +61,20 @@ export interface LiftsOverlayProps extends Omit<SVGOverlayProps, 'viewBox'> {
   currentLevel: string;
   lifts: RmfModels.Lift[];
   liftStates?: Record<string, RmfModels.LiftState>;
+  hideLabels?: boolean;
   onLiftClick?: (ev: React.MouseEvent, lift: string) => void;
 }
 
 export const LiftsOverlay = ({
   lifts,
   liftStates = {},
+  hideLabels = false,
   onLiftClick,
   currentLevel,
   ...otherProps
 }: LiftsOverlayProps): JSX.Element => {
   const viewBox = viewBoxFromLeafletBounds(otherProps.bounds);
   const scale = useAutoScale(40);
-  const labelsPortal = React.useContext(LabelsPortalContext);
 
   return (
     <SVGOverlay viewBox={viewBox} {...otherProps}>
@@ -99,6 +99,12 @@ export const LiftsOverlay = ({
               )}
               style={{ transform: `scale(${scale})`, transformOrigin: `${pos[0]}px ${pos[1]}px` }}
               aria-label={lift.name}
+              labelText={lift.name}
+              labelSourceX={pos[0]}
+              labelSourceY={pos[1]}
+              labelSourceRadius={Math.min(lift.width / 2, lift.depth / 2)}
+              labelArrowLength={Math.max((lift.width / 3) * scale, (lift.depth / 3) * scale)}
+              hideLabel={hideLabels}
             />
             {lift.doors.map((door, idx) => {
               const [x1, y1] = fromRmfCoords([door.v1_x, door.v1_y]);
@@ -115,17 +121,6 @@ export const LiftsOverlay = ({
                 />
               );
             })}
-            {labelsPortal &&
-              ReactDOM.createPortal(
-                <ScaledNameLabel
-                  sourceX={pos[0]}
-                  sourceY={pos[1]}
-                  sourceRadius={Math.min(lift.width / 2, lift.depth / 2)}
-                  arrowLength={Math.max((lift.width / 3) * scale, (lift.depth / 3) * scale)}
-                  text={lift.name}
-                />,
-                labelsPortal,
-              )}
           </g>
         );
       })}

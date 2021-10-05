@@ -1,14 +1,10 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { fromRmfCoords } from '../utils/geometry';
 import { useAutoScale } from './hooks';
-import { ScaledNameLabel } from './label-marker';
-import { LabelsPortalContext } from './labels-overlay';
 import { SVGOverlay, SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
+import { withLabel } from './with-label';
 import { WorkcellMarker as WorkcellMarker_, WorkcellMarkerProps } from './workcell-marker';
-
-const WorkcellMarker = React.memo(WorkcellMarker_);
 
 interface BoundedMarkerProps extends Omit<WorkcellMarkerProps, 'onClick'> {
   guid: string;
@@ -26,6 +22,8 @@ function bindMarker(MarkerComponent: React.ComponentType<WorkcellMarkerProps>) {
   };
 }
 
+const WorkcellMarker = withLabel(bindMarker(WorkcellMarker_));
+
 export interface WorkcellData {
   guid: string;
   location: [x: number, y: number];
@@ -35,21 +33,18 @@ export interface WorkcellData {
 export interface WorkcellsOverlayProps extends Omit<SVGOverlayProps, 'viewBox'> {
   workcells: WorkcellData[];
   actualSizeMinZoom?: number;
+  hideLabels?: boolean;
   onWorkcellClick?: (event: React.MouseEvent, guid: string) => void;
-  MarkerComponent?: React.ComponentType<WorkcellMarkerProps>;
 }
 
 export const WorkcellsOverlay = ({
   workcells,
+  hideLabels = false,
   onWorkcellClick,
-  MarkerComponent = WorkcellMarker,
   ...otherProps
 }: WorkcellsOverlayProps): JSX.Element => {
   const viewBox = viewBoxFromLeafletBounds(otherProps.bounds);
   const scale = useAutoScale(40);
-  const labelsPortal = React.useContext(LabelsPortalContext);
-
-  const BoundedMarker = React.useMemo(() => bindMarker(MarkerComponent), [MarkerComponent]);
 
   return (
     <SVGOverlay viewBox={viewBox} {...otherProps}>
@@ -57,7 +52,7 @@ export const WorkcellsOverlay = ({
         const [x, y] = fromRmfCoords(workcell.location);
         return (
           <g key={workcell.guid}>
-            <BoundedMarker
+            <WorkcellMarker
               cx={x}
               cy={y}
               size={1}
@@ -66,17 +61,12 @@ export const WorkcellsOverlay = ({
               onClick={onWorkcellClick}
               aria-label={workcell.guid}
               style={{ transform: `scale(${scale})`, transformOrigin: `${x}px ${y}px` }}
+              labelText={workcell.guid}
+              labelSourceX={x}
+              labelSourceY={y}
+              labelSourceRadius={0.5 * scale}
+              hideLabel={hideLabels}
             />
-            {labelsPortal &&
-              ReactDOM.createPortal(
-                <ScaledNameLabel
-                  text={workcell.guid}
-                  sourceX={x}
-                  sourceY={y}
-                  sourceRadius={0.5 * scale}
-                />,
-                labelsPortal,
-              )}
           </g>
         );
       })}

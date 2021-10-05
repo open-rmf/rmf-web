@@ -9,19 +9,19 @@ import {
   affineImageBounds,
   AffineImageOverlay,
   ColorManager,
-  DoorsOverlay,
-  LiftsOverlay,
+  DoorsOverlay as DoorsOverlay_,
+  LiftsOverlay as LiftsOverlay_,
   LMap,
   loadAffineImage,
   RobotData,
-  RobotsOverlay,
-  TrajectoriesOverlay,
+  RobotsOverlay as RobotsOverlay_,
+  TrajectoriesOverlay as TrajectoriesOverlay_,
   TrajectoryData,
   TrajectoryTimeControl,
   useAsync,
-  WaypointsOverlay,
+  WaypointsOverlay as WaypointsOverlay_,
   WorkcellData,
-  WorkcellsOverlay,
+  WorkcellsOverlay as WorkcellsOverlay_,
 } from 'react-components';
 import { AttributionControl, LayersControl } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
@@ -29,6 +29,13 @@ import appConfig from '../../app-config';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { ResourcesContext } from '../app-contexts';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
+
+const DoorsOverlay = React.memo(DoorsOverlay_);
+const LiftsOverlay = React.memo(LiftsOverlay_);
+const RobotsOverlay = React.memo(RobotsOverlay_);
+const TrajectoriesOverlay = React.memo(TrajectoriesOverlay_);
+const WaypointsOverlay = React.memo(WaypointsOverlay_);
+const WorkcellsOverlay = React.memo(WorkcellsOverlay_);
 
 const scheduleVisualizerStyle = makeStyles((theme) => ({
   map: {
