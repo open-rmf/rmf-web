@@ -1,5 +1,6 @@
 import React from 'react';
 import * as RmfModels from 'rmf-models';
+import { almostShallowEqual } from '../utils';
 import { fromRmfCoords } from '../utils/geometry';
 import { DoorMarker as DoorMarker_, DoorMarkerProps } from './door-marker';
 import { useAutoScale } from './hooks';
@@ -26,7 +27,9 @@ function bindMarker(MarkerComponent: React.ComponentType<DoorMarkerProps>) {
   };
 }
 
-const DoorMarker = withLabel(bindMarker(DoorMarker_));
+const DoorMarker = React.memo(withLabel(bindMarker(DoorMarker_)), (prev, next) =>
+  almostShallowEqual(prev, next, ['style']),
+);
 
 export interface DoorsOverlayProps extends Omit<SVGOverlayProps, 'viewBox'> {
   doors: RmfModels.Door[];
@@ -52,30 +55,29 @@ export const DoorsOverlay = ({
         const [x1, y1] = fromRmfCoords([door.v1_x, door.v1_y]);
         const [x2, y2] = fromRmfCoords([door.v2_x, door.v2_y]);
         return (
-          <g key={door.name}>
-            <DoorMarker
-              door={door}
-              onClick={onDoorClick}
-              x1={x1}
-              y1={y1}
-              x2={x2}
-              y2={y2}
-              doorType={door.door_type}
-              doorMode={
-                doorStates && doorStates[door.name] && doorStates[door.name].current_mode.value
-              }
-              aria-label={door.name}
-              style={{
-                transform: `scale(${scale})`,
-                transformOrigin: `${center[0]}px ${center[1]}px`,
-              }}
-              labelText={door.name}
-              labelSourceX={center[0]}
-              labelSourceY={center[1]}
-              labelSourceRadius={0}
-              hideLabel={hideLabels}
-            />
-          </g>
+          <DoorMarker
+            key={door.name}
+            door={door}
+            onClick={onDoorClick}
+            x1={x1}
+            y1={y1}
+            x2={x2}
+            y2={y2}
+            doorType={door.door_type}
+            doorMode={
+              doorStates && doorStates[door.name] && doorStates[door.name].current_mode.value
+            }
+            aria-label={door.name}
+            style={{
+              transform: `scale(${scale})`,
+              transformOrigin: `${center[0]}px ${center[1]}px`,
+            }}
+            labelText={door.name}
+            labelSourceX={center[0]}
+            labelSourceY={center[1]}
+            labelSourceRadius={0}
+            hideLabel={hideLabels}
+          />
         );
       })}
     </SVGOverlay>

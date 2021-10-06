@@ -7,6 +7,7 @@ import { viewBoxFromLeafletBounds } from './utils';
 import { WaypointMarker as WaypointMarker_ } from './waypoint-marker';
 import { withLabel } from './with-label';
 
+// no need memo since waypoint doesn't have state and should never re-render.
 const WaypointMarker = withLabel(WaypointMarker_);
 
 export interface WaypointsOverlayProps extends Omit<SVGOverlayProps, 'viewBox'> {

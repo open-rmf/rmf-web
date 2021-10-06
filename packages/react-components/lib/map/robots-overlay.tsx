@@ -1,5 +1,6 @@
 import React from 'react';
 import * as RmfModels from 'rmf-models';
+import { almostShallowEqual } from '../utils';
 import { fromRmfCoords, fromRmfYaw } from '../utils/geometry';
 import { useAutoScale } from './hooks';
 import { RobotMarker as RobotMarker_, RobotMarkerProps } from './robot-marker';
@@ -18,7 +19,8 @@ export interface RobotData {
 }
 
 interface BoundedMarkerProps extends Omit<RobotMarkerProps, 'onClick'> {
-  robotData: RobotData;
+  fleet: string;
+  name: string;
   onClick?: (ev: React.MouseEvent, fleet: string, robot: string) => void;
 }
 
@@ -27,16 +29,19 @@ interface BoundedMarkerProps extends Omit<RobotMarkerProps, 'onClick'> {
  * This is needed to avoid re-rendering all markers when only one of them changes.
  */
 function bindMarker(MarkerComponent: React.ComponentType<RobotMarkerProps>) {
-  return ({ robotData, onClick, ...otherProps }: BoundedMarkerProps) => {
-    const handleClick = React.useCallback(
-      (ev) => onClick && onClick(ev, robotData.fleet, robotData.name),
-      [onClick, robotData.fleet, robotData.name],
-    );
+  return ({ fleet, name, onClick, ...otherProps }: BoundedMarkerProps) => {
+    const handleClick = React.useCallback((ev) => onClick && onClick(ev, fleet, name), [
+      onClick,
+      fleet,
+      name,
+    ]);
     return <MarkerComponent onClick={onClick && handleClick} {...otherProps} />;
   };
 }
 
-const RobotMarker = withLabel(bindMarker(RobotMarker_));
+const RobotMarker = React.memo(withLabel(bindMarker(RobotMarker_)), (prev, next) =>
+  almostShallowEqual(prev, next, ['style']),
+);
 
 export interface RobotsOverlayProps extends Omit<SVGOverlayProps, 'viewBox'> {
   robots: RobotData[];
@@ -70,27 +75,27 @@ export const RobotsOverlay = ({
         const theta = fromRmfYaw(state.location.yaw);
 
         return (
-          <g key={`${robot.fleet}/${robot.name}`}>
-            <RobotMarker
-              robotData={robot}
-              cx={x}
-              cy={y}
-              r={footprint}
-              color={robot.color}
-              iconPath={robot.iconPath}
-              onClick={onRobotClick}
-              aria-label={robot.name}
-              style={{
-                transform: `rotate(${theta}rad) scale(${scale})`,
-                transformOrigin: `${x}px ${y}px`,
-              }}
-              labelText={robot.name}
-              labelSourceX={x}
-              labelSourceY={y}
-              labelSourceRadius={footprint * scale}
-              hideLabel={hideLabels}
-            />
-          </g>
+          <RobotMarker
+            key={`${robot.fleet}/${robot.name}`}
+            fleet={robot.fleet}
+            name={robot.name}
+            cx={x}
+            cy={y}
+            r={footprint}
+            color={robot.color}
+            iconPath={robot.iconPath}
+            onClick={onRobotClick}
+            aria-label={robot.name}
+            style={{
+              transform: `rotate(${theta}rad) scale(${scale})`,
+              transformOrigin: `${x}px ${y}px`,
+            }}
+            labelText={robot.name}
+            labelSourceX={x}
+            labelSourceY={y}
+            labelSourceRadius={footprint * scale}
+            hideLabel={hideLabels}
+          />
         );
       })}
     </SVGOverlay>

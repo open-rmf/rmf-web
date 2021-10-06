@@ -1,6 +1,9 @@
 import * as RmfModels from 'rmf-models';
 
-export function liftModeToString(liftMode: number): string {
+export function liftModeToString(liftMode?: number): string {
+  if (liftMode === undefined) {
+    return `Unknown (${liftMode})`;
+  }
   switch (liftMode) {
     case RmfModels.LiftState.MODE_AGV:
       return 'AGV';

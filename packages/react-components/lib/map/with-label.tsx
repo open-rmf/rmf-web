@@ -18,34 +18,31 @@ type WithLabelProps<P> = P & {
  */
 export const withLabel = <P,>(
   Component: React.ComponentType<P>,
-): React.MemoExoticComponent<React.ComponentType<WithLabelProps<P>>> => {
-  const HOC: React.FC<WithLabelProps<P>> = ({
-    labelText,
-    labelSourceX,
-    labelSourceY,
-    labelSourceRadius,
-    labelArrowLength,
-    hideLabel = false,
-    ...componentProps
-  }) => {
-    const labelsPortal = React.useContext(LabelsPortalContext);
-    return (
-      <g>
-        <Component {...(componentProps as P)} />
-        {!hideLabel &&
-          labelsPortal &&
-          ReactDOM.createPortal(
-            <ScaledNameLabel
-              text={labelText}
-              sourceX={labelSourceX}
-              sourceY={labelSourceY}
-              sourceRadius={labelSourceRadius}
-              arrowLength={labelArrowLength}
-            />,
-            labelsPortal,
-          )}
-      </g>
-    );
-  };
-  return React.memo<React.ComponentType<WithLabelProps<P>>>(HOC);
+): React.ComponentType<WithLabelProps<P>> => ({
+  labelText,
+  labelSourceX,
+  labelSourceY,
+  labelSourceRadius,
+  labelArrowLength,
+  hideLabel = false,
+  ...componentProps
+}) => {
+  const labelsPortal = React.useContext(LabelsPortalContext);
+  return (
+    <g>
+      <Component {...(componentProps as P)} />
+      {!hideLabel &&
+        labelsPortal &&
+        ReactDOM.createPortal(
+          <ScaledNameLabel
+            text={labelText}
+            sourceX={labelSourceX}
+            sourceY={labelSourceY}
+            sourceRadius={labelSourceRadius}
+            arrowLength={labelArrowLength}
+          />,
+          labelsPortal,
+        )}
+    </g>
+  );
 };

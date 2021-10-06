@@ -1,6 +1,6 @@
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { fromRmfCoords, fromRmfYaw, radiansToDegrees } from '../utils';
+import { almostShallowEqual, fromRmfCoords, fromRmfYaw, radiansToDegrees } from '../utils';
 import { DoorMarker as DoorMarker_ } from './door-marker';
 import { useAutoScale } from './hooks';
 import { LiftMarker as LiftMarker_, LiftMarkerProps, useLiftMarkerStyles } from './lift-marker';
@@ -34,7 +34,9 @@ function bindMarker(MarkerComponent: React.ComponentType<LiftMarkerProps>) {
 }
 
 const DoorMarker = React.memo(DoorMarker_);
-const LiftMarker = withLabel(bindMarker(LiftMarker_));
+const LiftMarker = React.memo(withLabel(bindMarker(LiftMarker_)), (prev, next) =>
+  almostShallowEqual(prev, next, ['style']),
+);
 
 export const getLiftModeVariant = (
   currentLevel: string,

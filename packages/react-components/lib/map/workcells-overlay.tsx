@@ -1,4 +1,5 @@
 import React from 'react';
+import { almostShallowEqual } from '../utils';
 import { fromRmfCoords } from '../utils/geometry';
 import { useAutoScale } from './hooks';
 import { SVGOverlay, SVGOverlayProps } from './svg-overlay';
@@ -22,7 +23,9 @@ function bindMarker(MarkerComponent: React.ComponentType<WorkcellMarkerProps>) {
   };
 }
 
-const WorkcellMarker = withLabel(bindMarker(WorkcellMarker_));
+const WorkcellMarker = React.memo(withLabel(bindMarker(WorkcellMarker_)), (prev, next) =>
+  almostShallowEqual(prev, next, ['style']),
+);
 
 export interface WorkcellData {
   guid: string;
