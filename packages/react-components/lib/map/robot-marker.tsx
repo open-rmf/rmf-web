@@ -33,6 +33,7 @@ export const RobotMarker = React.forwardRef(
     const [imageHasError, setImageHasError] = React.useState(false);
     const classes = useStyles();
     const useImageMarker = !!iconPath && !imageHasError;
+    const imageErrorHandler = React.useCallback(() => setImageHasError(true), []);
 
     return (
       <g ref={ref} {...otherProps}>
@@ -44,7 +45,7 @@ export const RobotMarker = React.forwardRef(
               r={r}
               // iconPath should always be truthy if useImageMarker is truthy due to above check.
               iconPath={iconPath!} // eslint-disable-line @typescript-eslint/no-non-null-assertion
-              onError={() => setImageHasError(true)}
+              onError={imageErrorHandler}
               inConflict={inConflict}
             />
           ) : (

@@ -56,7 +56,12 @@ export const ImageMarker = ({
         <Shadow id={shadowId} />
         <ShadowConflict id={conflictShadowId} />
       </defs>
-      <circle r={r * 1.3} fill={inConflict ? `url(#${conflictShadowId})` : `url(#${shadowId})`} />
+      <circle
+        r={r * 1.3}
+        cx={cx}
+        cy={cy}
+        fill={inConflict ? `url(#${conflictShadowId})` : `url(#${shadowId})`}
+      />
       <image href={iconPath} width={r * 2} height={r * 2} x={cx - r} y={cy - r} onError={onError} />
     </g>
   ) : null;

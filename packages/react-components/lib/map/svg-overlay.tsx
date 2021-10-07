@@ -1,3 +1,4 @@
+import React from 'react';
 import { SVGOverlay as SVGOverlay_, SVGOverlayProps as SVGOverlayProps_ } from 'react-leaflet';
 
 /**
@@ -7,6 +8,16 @@ export interface SVGOverlayProps extends SVGOverlayProps_ {
   bounds: L.LatLngBoundsExpression;
 }
 
-export const SVGOverlay = (SVGOverlay_ as unknown) as React.ComponentType<SVGOverlayProps>;
+interface SVGOverlayComponent extends SVGOverlay_<SVGOverlayProps> {
+  container?: SVGSVGElement;
+}
+
+export const SVGOverlay = (SVGOverlay_ as unknown) as React.ClassType<
+  SVGOverlayProps,
+  SVGOverlayComponent,
+  {
+    new (props: SVGOverlayProps, context?: unknown): SVGOverlayComponent;
+  }
+>;
 
 export default SVGOverlay;

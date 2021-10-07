@@ -37,7 +37,10 @@ export interface LiftPanelProps {
 
 export interface LiftCellProps {
   lift: RmfModels.Lift;
-  liftState?: RmfModels.LiftState;
+  doorState?: number;
+  motionState?: number;
+  destinationFloor?: string;
+  currentFloor?: string;
   onRequestSubmit?(
     event: React.FormEvent,
     lift: RmfModels.Lift,
@@ -93,20 +96,27 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const LiftCell = React.memo(
-  ({ lift, liftState, onRequestSubmit }: LiftCellProps): JSX.Element => {
+  ({
+    lift,
+    doorState,
+    motionState,
+    destinationFloor,
+    currentFloor,
+    onRequestSubmit,
+  }: LiftCellProps): JSX.Element => {
     const classes = useStyles();
 
     const [showForms, setShowForms] = React.useState(false);
 
-    const currMotion = motionStateToString(liftState?.motion_state);
+    const currMotion = motionStateToString(motionState);
     const getMotionArrowColor = (currMotion: string, arrowDirection: string) => {
       return currMotion === arrowDirection ? classes.iconMoving : classes.iconOtherStates;
     };
 
-    const currDoorMotion = doorStateToString(liftState?.door_state);
+    const currDoorMotion = doorStateToString(doorState);
     const doorModeLabelClasses = React.useCallback(
-      (liftState?: RmfModels.LiftState): string => {
-        switch (liftState?.door_state) {
+      (doorState?: number): string => {
+        switch (doorState) {
           case RmfModels.DoorMode.MODE_OPEN:
             return `${classes.doorLabelOpen}`;
           case RmfModels.DoorMode.MODE_CLOSED:
@@ -130,9 +140,9 @@ const LiftCell = React.memo(
               {lift.name}
             </Typography>
             <Box border={1} borderColor="divider" m={0.5}>
-              <Typography align="center">{liftState?.destination_floor || 'Unknown'}</Typography>
+              <Typography align="center">{destinationFloor || 'Unknown'}</Typography>
             </Box>
-            <Typography align="center" className={doorModeLabelClasses(liftState)}>
+            <Typography align="center" className={doorModeLabelClasses(doorState)}>
               {currDoorMotion}
             </Typography>
           </Grid>
@@ -140,7 +150,7 @@ const LiftCell = React.memo(
             <Typography align="center" className={getMotionArrowColor(currMotion, 'Up')}>
               <ArrowUpwardIcon />
             </Typography>
-            <Typography align="center">{liftState?.current_floor || '?'}</Typography>
+            <Typography align="center">{currentFloor || '?'}</Typography>
             <Typography align="center" className={getMotionArrowColor(currMotion, 'Down')}>
               <ArrowDownwardIcon />
             </Typography>
@@ -195,11 +205,15 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
       <Grid className={classes.grid} container direction="row" spacing={1}>
         {isCellView ? (
           lifts.map((lift, i) => {
+            const state: RmfModels.LiftState | undefined = liftStates[lift.name];
             return (
               <Grid item xs={4} key={`${lift.name}_${i}`}>
                 <LiftCell
                   lift={lift}
-                  liftState={liftStates[lift.name]}
+                  doorState={state?.door_state}
+                  motionState={state?.motion_state}
+                  destinationFloor={state?.destination_floor}
+                  currentFloor={state?.current_floor}
                   onRequestSubmit={onRequestSubmit}
                 />
               </Grid>

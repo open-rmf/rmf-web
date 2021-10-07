@@ -36,7 +36,7 @@ export const getDoorLogs = (): DoorStateRowsType => {
 };
 
 export const getFleetLogs = (): FleetStateRowsType => {
-  const rows = [];
+  const rows: FleetStateRowsType = [];
   for (let i = 0; i < 200; i++) {
     rows.push({
       created: timestamp,
@@ -44,7 +44,7 @@ export const getFleetLogs = (): FleetStateRowsType => {
       robot: { id: 1, name: 'robot_test', model: 'model' },
       robot_battery_percent: 'test',
       robot_location: 'test',
-      robot_name: 'test',
+      robot_mode: 'test',
       robot_seq: 1,
       robot_task_id: 'test',
     });

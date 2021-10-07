@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 
+import { makeStyles } from '@material-ui/core';
 import { Dispenser, Ingestor } from 'api-client';
 import Debug from 'debug';
 import * as L from 'leaflet';
@@ -8,27 +9,33 @@ import {
   affineImageBounds,
   AffineImageOverlay,
   ColorManager,
-  DoorsOverlay,
-  LiftsOverlay,
+  DoorsOverlay as DoorsOverlay_,
+  LiftsOverlay as LiftsOverlay_,
   LMap,
   loadAffineImage,
   RobotData,
-  RobotsOverlay,
-  TrajectoriesOverlay,
+  RobotsOverlay as RobotsOverlay_,
+  TrajectoriesOverlay as TrajectoriesOverlay_,
   TrajectoryData,
   TrajectoryTimeControl,
   useAsync,
-  WaypointsOverlay,
+  WaypointsOverlay as WaypointsOverlay_,
   WorkcellData,
-  WorkcellsOverlay,
+  WorkcellsOverlay as WorkcellsOverlay_,
 } from 'react-components';
-import { makeStyles } from '@material-ui/core';
-import { AttributionControl, LayersControl, Pane } from 'react-leaflet';
+import { AttributionControl, LayersControl } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import appConfig from '../../app-config';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { ResourcesContext } from '../app-contexts';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
+
+const DoorsOverlay = React.memo(DoorsOverlay_);
+const LiftsOverlay = React.memo(LiftsOverlay_);
+const RobotsOverlay = React.memo(RobotsOverlay_);
+const TrajectoriesOverlay = React.memo(TrajectoriesOverlay_);
+const WaypointsOverlay = React.memo(WaypointsOverlay_);
+const WorkcellsOverlay = React.memo(WorkcellsOverlay_);
 
 const scheduleVisualizerStyle = makeStyles((theme) => ({
   map: {
@@ -191,7 +198,11 @@ export default function ScheduleVisualizer({
     if (!dispenserManager) return;
     (async () => {
       const dispenserResources = dispenserManager.dispensers;
-      const availableData = dispensers.filter((wc) => wc.guid in dispenserResources);
+      const availableData = dispensers.filter(
+        (wc) =>
+          wc.guid in dispenserResources &&
+          dispenserResources[wc.guid].location.level_name === currentLevel.name,
+      );
       const promises = availableData.map((wc) => dispenserManager.getIconPath(wc.guid));
       const icons = await safeAsync(Promise.all(promises));
       setDispensersData(
@@ -205,7 +216,7 @@ export default function ScheduleVisualizer({
         })),
       );
     })();
-  }, [safeAsync, resourceManager?.dispensers, dispensers]);
+  }, [safeAsync, resourceManager?.dispensers, dispensers, currentLevel.name]);
 
   const [ingestorsData, setIngestorsData] = React.useState<WorkcellData[]>([]);
   React.useEffect(() => {
@@ -213,7 +224,11 @@ export default function ScheduleVisualizer({
     if (!dispenserManager) return;
     (async () => {
       const dispenserResources = dispenserManager.dispensers;
-      const availableData = ingestors.filter((wc) => wc.guid in dispenserResources);
+      const availableData = ingestors.filter(
+        (wc) =>
+          wc.guid in dispenserResources &&
+          dispenserResources[wc.guid].location.level_name === currentLevel.name,
+      );
       const promises = availableData.map((wc) => dispenserManager.getIconPath(wc.guid));
       const icons = await safeAsync(Promise.all(promises));
       setIngestorsData(
@@ -227,10 +242,13 @@ export default function ScheduleVisualizer({
         })),
       );
     })();
-  }, [safeAsync, resourceManager?.dispensers, ingestors]);
+  }, [safeAsync, resourceManager?.dispensers, ingestors, currentLevel]);
 
   const places = React.useContext(PlacesContext);
-  const waypoints = React.useMemo(() => places.filter((p) => p.vertex.name.length > 0), [places]);
+  const waypoints = React.useMemo(
+    () => places.filter((p) => p.level === currentLevel.name && p.vertex.name.length > 0),
+    [places, currentLevel],
+  );
 
   React.useEffect(() => {
     (async () => {
@@ -288,8 +306,22 @@ export default function ScheduleVisualizer({
     setLevelBounds(bounds);
   }, [images, levels]);
 
+  const [layersUnChecked, setLayersUnChecked] = React.useState<Record<string, boolean>>({});
+  const waypointsLayersRef: React.Ref<LayersControl.Overlay> = React.useRef(null);
+  const registeredLayersHandlers = React.useRef(false);
+
   return bounds ? (
     <LMap
+      ref={(cur) => {
+        if (registeredLayersHandlers.current || !cur) return;
+        cur.leafletElement.on('overlayadd', (ev: L.LayersControlEvent) =>
+          setLayersUnChecked((prev) => ({ ...prev, [ev.name]: false })),
+        );
+        cur.leafletElement.on('overlayremove', (ev: L.LayersControlEvent) =>
+          setLayersUnChecked((prev) => ({ ...prev, [ev.name]: true })),
+        );
+        registeredLayersHandlers.current = true;
+      }}
       id="schedule-visualizer"
       attributionControl={false}
       minZoom={0}
@@ -316,73 +348,72 @@ export default function ScheduleVisualizer({
           </LayersControl.BaseLayer>
         ))}
 
+        <LayersControl.Overlay
+          ref={waypointsLayersRef}
+          name="Waypoints"
+          checked={!layersUnChecked['Waypoints']}
+        >
+          <WaypointsOverlay
+            bounds={bounds}
+            waypoints={waypoints}
+            hideLabels={layersUnChecked['Waypoints']}
+          />
+        </LayersControl.Overlay>
+
+        <LayersControl.Overlay name="Dispensers" checked={!layersUnChecked['Dispensers']}>
+          <WorkcellsOverlay
+            bounds={bounds}
+            workcells={dispensersData}
+            hideLabels={layersUnChecked['Dispensers']}
+            onWorkcellClick={onDispenserClick}
+          />
+        </LayersControl.Overlay>
+
+        <LayersControl.Overlay name="Ingestors" checked={!layersUnChecked['Ingestors']}>
+          <WorkcellsOverlay
+            bounds={bounds}
+            workcells={ingestorsData}
+            hideLabels={layersUnChecked['Ingestors']}
+            onWorkcellClick={onIngestorClick}
+          />
+        </LayersControl.Overlay>
+
+        <LayersControl.Overlay name="Lifts" checked={!layersUnChecked['Lifts']}>
+          <LiftsOverlay
+            bounds={bounds}
+            currentLevel={currentLevel.name}
+            lifts={buildingMap.lifts}
+            liftStates={liftStates}
+            hideLabels={layersUnChecked['Lifts']}
+            onLiftClick={onLiftClick}
+          />
+        </LayersControl.Overlay>
+
+        <LayersControl.Overlay name="Doors" checked={!layersUnChecked['Doors']}>
+          <DoorsOverlay
+            bounds={bounds}
+            doors={currentLevel.doors}
+            doorStates={doorStates}
+            hideLabels={layersUnChecked['Doors']}
+            onDoorClick={onDoorClick}
+          />
+        </LayersControl.Overlay>
+
         <LayersControl.Overlay name="Trajectories" checked>
-          <Pane>
-            <TrajectoriesOverlay bounds={bounds} trajectoriesData={renderedTrajectories} />
-          </Pane>
+          <TrajectoriesOverlay bounds={bounds} trajectoriesData={renderedTrajectories} />
         </LayersControl.Overlay>
 
-        <LayersControl.Overlay name="Waypoints" checked>
-          <Pane>
-            <WaypointsOverlay bounds={bounds} waypoints={waypoints} />
-          </Pane>
-        </LayersControl.Overlay>
-
-        <LayersControl.Overlay name="Robots" checked>
-          <Pane>
-            <RobotsOverlay
-              bounds={bounds}
-              robots={robots}
-              getRobotState={(fleet, robot) => {
-                const state = fleetStates[fleet].robots.find((r) => r.name === robot);
-                return state || null;
-              }}
-              onRobotClick={onRobotClick}
-            />
-          </Pane>
-        </LayersControl.Overlay>
-
-        <LayersControl.Overlay name="Dispensers" checked>
-          <Pane>
-            <WorkcellsOverlay
-              bounds={bounds}
-              workcells={dispensersData}
-              onWorkcellClick={onDispenserClick}
-            />
-          </Pane>
-        </LayersControl.Overlay>
-
-        <LayersControl.Overlay name="Ingestors" checked>
-          <Pane>
-            <WorkcellsOverlay
-              bounds={bounds}
-              workcells={ingestorsData}
-              onWorkcellClick={onIngestorClick}
-            />
-          </Pane>
-        </LayersControl.Overlay>
-
-        <LayersControl.Overlay name="Lifts" checked>
-          <Pane>
-            <LiftsOverlay
-              bounds={bounds}
-              currentLevel={currentLevel.name}
-              lifts={buildingMap.lifts}
-              liftStates={liftStates}
-              onLiftClick={onLiftClick}
-            />
-          </Pane>
-        </LayersControl.Overlay>
-
-        <LayersControl.Overlay name="Doors" checked>
-          <Pane>
-            <DoorsOverlay
-              bounds={bounds}
-              doors={currentLevel.doors}
-              doorStates={doorStates}
-              onDoorClick={onDoorClick}
-            />
-          </Pane>
+        <LayersControl.Overlay name="Robots" checked={!layersUnChecked['Robots']}>
+          <RobotsOverlay
+            bounds={bounds}
+            robots={robots}
+            getRobotState={(fleet, robot) => {
+              const state = fleetStates[fleet].robots.find((r) => r.name === robot);
+              return state || null;
+            }}
+            hideLabels={layersUnChecked['Robots']}
+            onRobotClick={onRobotClick}
+          />
         </LayersControl.Overlay>
       </LayersControl>
 

@@ -38,7 +38,10 @@ export interface LiftTableProps {
 
 export interface LiftRowProps {
   lift: RmfModels.Lift;
-  liftState: RmfModels.LiftState;
+  doorState?: number;
+  destinationFloor?: string;
+  currentFloor?: string;
+  currentMode?: number;
   onRequestSubmit?(
     event: React.FormEvent,
     lift: RmfModels.Lift,
@@ -48,58 +51,67 @@ export interface LiftRowProps {
   ): void;
 }
 
-const LiftRow = React.memo(({ lift, liftState, onRequestSubmit }: LiftRowProps) => {
-  const classes = useStyles();
+const LiftRow = React.memo(
+  ({
+    lift,
+    doorState,
+    destinationFloor,
+    currentFloor,
+    currentMode,
+    onRequestSubmit,
+  }: LiftRowProps) => {
+    const classes = useStyles();
 
-  const [showForms, setShowForms] = React.useState(false);
+    const [showForms, setShowForms] = React.useState(false);
 
-  const doorModeLabelClasses = React.useCallback(
-    (liftState?: RmfModels.LiftState): string => {
-      switch (liftState?.door_state) {
-        case RmfModels.DoorMode.MODE_OPEN:
-          return `${classes.doorLabelOpen}`;
-        case RmfModels.DoorMode.MODE_CLOSED:
-          return `${classes.doorLabelClosed}`;
-        case RmfModels.DoorMode.MODE_MOVING:
-          return `${classes.doorLabelMoving}`;
-        default:
-          return '';
-      }
-    },
-    [classes],
-  );
+    const doorModeLabelClasses = React.useCallback(
+      (doorState?: number): string => {
+        switch (doorState) {
+          case RmfModels.DoorMode.MODE_OPEN:
+            return `${classes.doorLabelOpen}`;
+          case RmfModels.DoorMode.MODE_CLOSED:
+            return `${classes.doorLabelClosed}`;
+          case RmfModels.DoorMode.MODE_MOVING:
+            return `${classes.doorLabelMoving}`;
+          default:
+            return '';
+        }
+      },
+      [classes],
+    );
 
-  return (
-    <TableRow aria-label={`${lift.name}`}>
-      <TableCell>{lift.name}</TableCell>
-      <TableCell>{liftModeToString(liftState.current_mode)}</TableCell>
-      <TableCell>{liftState.current_floor}</TableCell>
-      <TableCell>{liftState.destination_floor}</TableCell>
-      <TableCell className={doorModeLabelClasses(liftState)}>
-        {doorStateToString(liftState.door_state)}
-      </TableCell>
-      <TableCell>
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          size="small"
-          onClick={() => setShowForms(true)}
-        >
-          Request Form
-        </Button>
-        <LiftRequestFormDialog
-          lift={lift}
-          availableDoorModes={requestDoorModes}
-          availableRequestTypes={requestModes}
-          showFormDialog={showForms}
-          onRequestSubmit={onRequestSubmit}
-          onClose={() => setShowForms(false)}
-        />
-      </TableCell>
-    </TableRow>
-  );
-});
+    return (
+      <TableRow aria-label={`${lift.name}`}>
+        <TableCell>{lift.name}</TableCell>
+        <TableCell>{liftModeToString(currentMode)}</TableCell>
+        <TableCell>{currentFloor}</TableCell>
+        <TableCell>{destinationFloor}</TableCell>
+        <TableCell className={doorModeLabelClasses(doorState)}>
+          {doorStateToString(doorState)}
+        </TableCell>
+        <TableCell>
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            size="small"
+            onClick={() => setShowForms(true)}
+          >
+            Request Form
+          </Button>
+          <LiftRequestFormDialog
+            lift={lift}
+            availableDoorModes={requestDoorModes}
+            availableRequestTypes={requestModes}
+            showFormDialog={showForms}
+            onRequestSubmit={onRequestSubmit}
+            onClose={() => setShowForms(false)}
+          />
+        </TableCell>
+      </TableRow>
+    );
+  },
+);
 
 export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps): JSX.Element => {
   return (
@@ -116,10 +128,14 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
       </TableHead>
       <TableBody>
         {lifts.map((lift, i) => {
+          const state: RmfModels.LiftState | undefined = liftStates[lift.name];
           return (
             <LiftRow
               lift={lift}
-              liftState={liftStates[lift.name]}
+              doorState={state?.door_state}
+              destinationFloor={state?.destination_floor}
+              currentFloor={state?.current_floor}
+              currentMode={state?.current_mode}
               key={`${lift.name}_${i}`}
               onRequestSubmit={onRequestSubmit}
             />
