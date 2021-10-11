@@ -1,4 +1,4 @@
-import { Card, Grid, IconButton, makeStyles, Paper, Typography } from '@material-ui/core';
+import { Card, Divider, Grid, IconButton, makeStyles, Paper, Typography } from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import { Dispenser } from 'api-client';
@@ -29,9 +29,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.primary.main,
   },
   cellContainer: {
-    paddingLeft: '1rem',
-    paddingRight: '1rem',
-    paddingBottom: '1rem',
+    padding: '1rem',
   },
   cellPaper: {
     padding: '0.5rem',
@@ -117,7 +115,6 @@ export function WorkcellPanel({
       {isCellView ? (
         <React.Fragment>
           <div className={classes.cellContainer}>
-            <Typography variant="h6">Dispenser Table</Typography>
             <Grid container direction="row" spacing={1}>
               {dispensers.length > 0
                 ? dispensers.map((dispenser, i) => {
@@ -136,8 +133,8 @@ export function WorkcellPanel({
                 : null}
             </Grid>
           </div>
+          <Divider />
           <div className={classes.cellContainer}>
-            <Typography variant="h6">Ingester Table</Typography>
             <Grid container direction="row" spacing={1}>
               {ingestors.length > 0
                 ? ingestors.map((ingestor, i) => {
