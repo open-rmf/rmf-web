@@ -33,6 +33,7 @@
     "@types/leaflet": "^1.5.17",
     "@types/rbush": "^3.0.0",
     "@types/react-leaflet": "^2.5.2",
+    "@types/shallowequal": "^1.1.1",
     "api-client": "*",
     "clsx": "^1.1.1",
     "crc": "^3.8.0",
@@ -44,7 +45,8 @@
     "rbush": "^3.0.1",
     "react-customizable-progressbar": "^1.0.3",
     "react-leaflet": "^2.7.0",
-    "rmf-models": "*"
+    "rmf-models": "*",
+    "shallowequal": "^1.1.0"
   },
   "devDependencies": {
     "@jsdevtools/coverage-istanbul-loader": "^3.0.5",

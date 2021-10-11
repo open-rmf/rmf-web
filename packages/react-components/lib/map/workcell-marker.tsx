@@ -68,7 +68,7 @@ export const WorkcellMarker = React.forwardRef(function (
 
   return (
     <WorkCellMarkerRoot ref={ref} {...otherProps}>
-      <g id="asdasd" className={otherProps.onClick && classes.clickable}>
+      <g className={otherProps.onClick && classes.clickable}>
         {useImageIcon ? (
           <image
             href={iconPath}

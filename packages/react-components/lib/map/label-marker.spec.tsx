@@ -6,7 +6,7 @@ describe('NameLabel', () => {
   it('smoke test', () => {
     const root = render(
       <svg>
-        <NameLabel sourceX={0} sourceY={0} sourceRadius={0} text="test" />,
+        <NameLabel sourceX={100} sourceY={100} sourceRadius={0} text="test" />,
       </svg>,
     );
     expect(() => root.getByText('test')).not.toThrow();

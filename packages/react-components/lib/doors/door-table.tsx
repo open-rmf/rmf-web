@@ -1,16 +1,16 @@
-import React from 'react';
-import * as RmfModels from 'rmf-models';
 import {
+  Button,
+  ButtonGroup,
+  styled,
   Table,
   TableProps,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  ButtonGroup,
-  Button,
-  styled,
 } from '@material-ui/core';
+import React from 'react';
+import * as RmfModels from 'rmf-models';
 import { DoorData, doorModeToString, doorTypeToString } from './utils';
 
 export interface DoorTableProps {
@@ -21,7 +21,7 @@ export interface DoorTableProps {
 
 export interface DoorRowProps {
   door: DoorData;
-  doorState: RmfModels.DoorState;
+  doorMode?: number;
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
 
@@ -42,18 +42,18 @@ const DoorTableRoot = styled((props: TableProps) => <Table {...props} />)(({ the
   },
 }));
 
-const getOpMode = (doorState: RmfModels.DoorState) => {
-  const getState = doorModeToString(doorState);
+const getOpMode = (doorMode?: number) => {
+  const getState = doorModeToString(doorMode);
   return getState === 'N/A' ? 'Offline' : 'Online';
 };
 
-const DoorRow = React.memo(({ door, doorState, onDoorControlClick }: DoorRowProps) => {
+const DoorRow = React.memo(({ door, doorMode, onDoorControlClick }: DoorRowProps) => {
   const doorModeLabelClasses = React.useCallback(
-    (doorState?: RmfModels.DoorState): string => {
-      if (!doorState) {
+    (doorMode?: number): string => {
+      if (doorMode === undefined) {
         return '';
       }
-      switch (doorState.current_mode.value) {
+      switch (doorMode) {
         case RmfModels.DoorMode.MODE_OPEN:
           return `${classes.doorLabelOpen}`;
         case RmfModels.DoorMode.MODE_CLOSED:
@@ -67,21 +67,21 @@ const DoorRow = React.memo(({ door, doorState, onDoorControlClick }: DoorRowProp
     [classes],
   );
 
-  const doorStatusClass = doorModeLabelClasses(doorState);
+  const doorStatusClass = doorModeLabelClasses(doorMode);
 
   return (
     <TableRow arial-label={`${door.door.name}`}>
       <TableCell>{door.door.name}</TableCell>
       <TableCell
         className={
-          getOpMode(doorState) === 'Offline' ? classes.doorLabelClosed : classes.doorLabelOpen
+          getOpMode(doorMode) === 'Offline' ? classes.doorLabelClosed : classes.doorLabelOpen
         }
       >
-        {getOpMode(doorState)}
+        {getOpMode(doorMode)}
       </TableCell>
       <TableCell>{door.level}</TableCell>
       <TableCell>{doorTypeToString(door.door.door_type)}</TableCell>
-      <TableCell className={doorStatusClass}>{doorModeToString(doorState)}</TableCell>
+      <TableCell className={doorStatusClass}>{doorModeToString(doorMode)}</TableCell>
       <TableCell>
         <ButtonGroup size="small">
           <Button
@@ -128,7 +128,7 @@ export const DoorTable = ({
         {doors.map((door) => (
           <DoorRow
             door={door}
-            doorState={doorStates[door.door.name]}
+            doorMode={doorStates[door.door.name]?.current_mode.value}
             onDoorControlClick={onDoorControlClick}
             key={door.door.name}
           />

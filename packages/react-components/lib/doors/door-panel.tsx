@@ -24,7 +24,7 @@ export interface DoorPanelProps {
 
 export interface DoorInfoProps {
   door: DoorData;
-  doorState: RmfModels.DoorState;
+  doorMode?: number;
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
 
@@ -80,13 +80,13 @@ const DoorPanelRoot = styled((props: CardProps) => <Card {...props} />)(({ theme
 }));
 
 const DoorCell = React.memo(
-  ({ door, doorState, onDoorControlClick }: DoorInfoProps): JSX.Element => {
+  ({ door, doorMode, onDoorControlClick }: DoorInfoProps): JSX.Element => {
     const doorModeLabelClasses = React.useCallback(
-      (doorState?: RmfModels.DoorState): string => {
-        if (!doorState) {
+      (doorMode?: number): string => {
+        if (doorMode === undefined) {
           return '';
         }
-        switch (doorState.current_mode.value) {
+        switch (doorMode) {
           case RmfModels.DoorMode.MODE_OPEN:
             return `${classes.doorLabelOpen}`;
           case RmfModels.DoorMode.MODE_CLOSED:
@@ -100,7 +100,7 @@ const DoorCell = React.memo(
       [classes],
     );
 
-    const doorStatusClass = doorModeLabelClasses(doorState);
+    const doorStatusClass = doorModeLabelClasses(doorMode);
     const labelId = `door-cell-${door.door.name}`;
 
     return (
@@ -116,7 +116,7 @@ const DoorCell = React.memo(
           </Grid>
           <Grid item xs={6}>
             <Typography className={doorStatusClass} variant="body2" align="center" role="status">
-              {doorModeToString(doorState)}
+              {doorModeToString(doorMode)}
             </Typography>
           </Grid>
         </Grid>
@@ -178,7 +178,7 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
               <Grid item xs={4} key={door.door.name}>
                 <DoorCell
                   door={door}
-                  doorState={doorStates[door.door.name]}
+                  doorMode={doorStates[door.door.name]?.current_mode.value}
                   onDoorControlClick={onDoorControlClick}
                 />
               </Grid>

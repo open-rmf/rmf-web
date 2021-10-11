@@ -36,6 +36,7 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
   const [showTooltips, setShowTooltips] = React.useState(false);
   const [showErrorAlert, setShowErrorAlert] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
+  const [errDuration, setErrDuration] = React.useState(2000);
 
   const theme = React.useMemo(() => {
     const preferDarkMode = settings.themeMode === ThemeMode.Dark;
@@ -64,9 +65,10 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
       toggleHotkeysDialog: () => setShowHotkeysDialog((prev) => !prev),
       showTooltips: setShowTooltips,
       toggleTooltips: () => setShowTooltips((prev) => !prev),
-      showErrorAlert: (message) => {
+      showErrorAlert: (message, autoHideDuration) => {
         setErrorMessage(message);
         setShowErrorAlert(true);
+        autoHideDuration && setErrDuration(autoHideDuration);
       },
     }),
     [updateSettings],
@@ -113,6 +115,7 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
                 open={showErrorAlert}
                 message={errorMessage}
                 onClose={() => setShowErrorAlert(false)}
+                autoHideDuration={errDuration}
               />
             </Grid>
           </AppControllerContext.Provider>

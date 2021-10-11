@@ -8,7 +8,9 @@ export interface ErrorSnackbarProps extends SnackbarProps {
 export function ErrorSnackbar({ message, ...otherProps }: ErrorSnackbarProps): JSX.Element {
   return (
     <Snackbar autoHideDuration={2000} {...otherProps}>
-      <Alert severity="error">{message}</Alert>
+      <Alert severity="error">
+        {message.split('\n').length > 0 ? message.split('\n').map((m) => <div>{m}</div>) : message}
+      </Alert>
     </Snackbar>
   );
 }
