@@ -39,6 +39,8 @@ const useStyles = makeStyles((theme) => ({
   },
   grid: {
     padding: '1rem',
+    maxHeight: '50vh',
+    overflowY: 'scroll',
   },
   doorLabelOpen: {
     backgroundColor: theme.palette.success.main,
@@ -52,6 +54,7 @@ const useStyles = makeStyles((theme) => ({
   cellPaper: {
     padding: '0.5rem',
     backgroundColor: theme.palette.info.light,
+    margin: '0.25rem',
   },
   itemIcon: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
@@ -162,7 +165,7 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
           </Grid>
         </Grid>
       </Paper>
-      <Grid className={classes.grid} container direction="row" spacing={1}>
+      <Grid className={classes.grid} container direction="row">
         {isCellView ? (
           doors.map((door) => {
             return (

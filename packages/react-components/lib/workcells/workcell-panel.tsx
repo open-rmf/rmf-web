@@ -30,10 +30,13 @@ const useStyles = makeStyles((theme) => ({
   },
   cellContainer: {
     padding: '1rem',
+    maxHeight: '25vh',
+    overflowY: 'scroll',
   },
   cellPaper: {
     padding: '0.5rem',
     backgroundColor: theme.palette.info.light,
+    margin: '0.25rem',
   },
   itemIcon: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
@@ -115,7 +118,10 @@ export function WorkcellPanel({
       {isCellView ? (
         <React.Fragment>
           <div className={classes.cellContainer}>
-            <Grid container direction="row" spacing={1}>
+            <Grid container direction="row">
+              <Grid item xs={12}>
+                <Typography variant="h6">Dispensers</Typography>
+              </Grid>
               {dispensers.length > 0
                 ? dispensers.map((dispenser, i) => {
                     const state: RmfModels.DispenserState | undefined =
@@ -136,6 +142,9 @@ export function WorkcellPanel({
           <Divider />
           <div className={classes.cellContainer}>
             <Grid container direction="row" spacing={1}>
+              <Grid item xs={12}>
+                <Typography variant="h6">Ingestors</Typography>
+              </Grid>
               {ingestors.length > 0
                 ? ingestors.map((ingestor, i) => {
                     const state: RmfModels.IngestorState | undefined =

@@ -1,4 +1,12 @@
-import { makeStyles, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
+import {
+  makeStyles,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@material-ui/core';
 import { Dispenser } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
@@ -13,6 +21,9 @@ const useStyles = makeStyles((theme) => ({
   },
   offlineLabelOffline: {
     color: theme.palette.warning.main,
+  },
+  tableContainer: {
+    maxHeight: '25vh',
   },
 }));
 
@@ -80,32 +91,36 @@ export const WorkcellTable = ({
   workcells,
   workcellStates,
 }: WorkcellTableProps): JSX.Element => {
+  const classes = useStyles();
+
   return (
-    <Table stickyHeader size="small" aria-label="workcell-table">
-      <TableHead>
-        <TableRow>
-          <TableCell>{type} Name</TableCell>
-          <TableCell>Op. Mode</TableCell>
-          <TableCell>No. Queued Requests</TableCell>
-          <TableCell>Request Queue ID</TableCell>
-          <TableCell>Seconds Remaining</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {workcells.map((workcell) => {
-          const state: RmfModels.DispenserState | RmfModels.IngestorState | undefined =
-            workcellStates[workcell.guid];
-          return (
-            <WorkcellRow
-              key={workcell.guid}
-              workcell={workcell}
-              mode={state?.mode}
-              requestGuidQueue={state?.request_guid_queue}
-              secondsRemaining={state?.seconds_remaining}
-            />
-          );
-        })}
-      </TableBody>
-    </Table>
+    <TableContainer className={classes.tableContainer}>
+      <Table stickyHeader size="small" aria-label="workcell-table">
+        <TableHead>
+          <TableRow>
+            <TableCell>{type} Name</TableCell>
+            <TableCell>Op. Mode</TableCell>
+            <TableCell>No. Queued Requests</TableCell>
+            <TableCell>Request Queue ID</TableCell>
+            <TableCell>Seconds Remaining</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {workcells.map((workcell) => {
+            const state: RmfModels.DispenserState | RmfModels.IngestorState | undefined =
+              workcellStates[workcell.guid];
+            return (
+              <WorkcellRow
+                key={workcell.guid}
+                workcell={workcell}
+                mode={state?.mode}
+                requestGuidQueue={state?.request_guid_queue}
+                secondsRemaining={state?.seconds_remaining}
+              />
+            );
+          })}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
