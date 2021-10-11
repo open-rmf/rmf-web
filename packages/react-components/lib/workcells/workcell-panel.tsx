@@ -63,13 +63,13 @@ const WorkcellCell = React.memo(
               {workcell.guid}
             </Typography>
             <Grid container direction="row">
-              <Grid item xs={6}>
+              <Grid item xs={8}>
                 <Typography
                   align="center"
                   variant="body2"
                 >{`Queue: ${requestGuidQueue.length}`}</Typography>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={4}>
                 <Typography align="center" variant="body2">
                   {requestGuidQueue.length}
                 </Typography>
@@ -124,7 +124,7 @@ export function WorkcellPanel({
                     const state: RmfModels.DispenserState | undefined =
                       workCellStates[dispenser.guid];
                     return (
-                      <Grid item xs={4} key={`${dispenser.guid}_${i}`}>
+                      <Grid item xs="auto" key={`${dispenser.guid}_${i}`}>
                         <WorkcellCell
                           workcell={dispenser}
                           requestGuidQueue={state?.request_guid_queue}
@@ -144,7 +144,7 @@ export function WorkcellPanel({
                     const state: RmfModels.IngestorState | undefined =
                       workCellStates[ingestor.guid];
                     return (
-                      <Grid item xs={4} key={`${ingestor.guid}_${i}`}>
+                      <Grid item xs="auto" key={`${ingestor.guid}_${i}`}>
                         <WorkcellCell
                           workcell={ingestor}
                           requestGuidQueue={state?.request_guid_queue}

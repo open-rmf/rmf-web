@@ -166,7 +166,7 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
         {isCellView ? (
           doors.map((door) => {
             return (
-              <Grid item xs={4} key={door.door.name}>
+              <Grid item xs="auto" key={door.door.name}>
                 <DoorCell
                   door={door}
                   doorMode={doorStates[door.door.name]?.current_mode.value}
