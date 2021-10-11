@@ -20,11 +20,12 @@ import ScheduleVisualizer from '../schedule-visualizer';
 const debug = Debug('Dashboard');
 const UpdateRate = 1000;
 
+const prefix = 'dashboard';
 const classes = {
-  root: 'dashboard-root',
-  buildingPanel: 'dashboard-building-panel',
-  mapPanel: 'dashboard-map-panel',
-  itemPanels: 'dashboard-item-panels',
+  root: `${prefix}-root`,
+  buildingPanel: `${prefix}-building-panel`,
+  mapPanel: `${prefix}-map-panel`,
+  itemPanels: `${prefix}-item-panels`,
 };
 const DashboardRoot = styled('div')(({ theme }) => ({
   [`&.${classes.root}`]: {

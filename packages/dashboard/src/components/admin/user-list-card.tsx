@@ -28,9 +28,10 @@ import { CreateUserDialog, CreateUserDialogProps } from './create-user-dialog';
 
 const ItemsPerPage = 20;
 
+const prefix = 'user-list-card';
 const classes = {
-  controlsButton: 'user-list-card-controls-button',
-  tableRow: 'user-list-card-table-row',
+  controlsButton: `${prefix}-controls-button`,
+  tableRow: `${prefix}-table-row`,
 };
 const UserListRoot = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
   [`& .${classes.controlsButton}`]: {

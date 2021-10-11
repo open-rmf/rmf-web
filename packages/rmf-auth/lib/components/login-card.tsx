@@ -1,10 +1,11 @@
 import { Button, Typography, styled } from '@material-ui/core';
 import React from 'react';
 
+const prefix = 'login-card';
 const classes = {
-  container: 'login-card-container',
-  title: 'login-card-title',
-  logo: 'login-card-logo',
+  container: `${prefix}-container`,
+  title: `${prefix}-title`,
+  logo: `${prefix}-logo`,
 };
 const LoginCardRoot = styled('div')(({ theme }) => ({
   [`&.${classes.container}`]: {

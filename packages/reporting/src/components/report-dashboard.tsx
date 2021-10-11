@@ -33,18 +33,19 @@ import UserLogoutReportConfig from './reports/user-logout-report';
 
 const drawerWidth = 240;
 
+const prefix = 'report-dashboard';
 const classes = {
-  root: 'report-dashboard-root',
-  appBar: 'report-dashboard-appbar',
-  appBarShift: 'report-dashboard-appbar-shift',
-  menuButton: 'report-dashboard-menu-button',
-  hide: 'report-dashboard-hide',
-  drawer: 'report-dashboard-drawer',
-  drawerPaper: 'report-dashboard-drawer-paper',
-  drawerHeader: 'report-dashboard-drawer-header',
-  content: 'report-dashboard-content',
-  contentShift: 'report-dashboard-content-shift',
-  toolbarTitle: 'report-dashboard-toolbar-title',
+  root: `${prefix}-root`,
+  appBar: `${prefix}-appbar`,
+  appBarShift: `${prefix}-appbar-shift`,
+  menuButton: `${prefix}-menu-button`,
+  hide: `${prefix}-hide`,
+  drawer: `${prefix}-drawer`,
+  drawerPaper: `${prefix}-drawer-paper`,
+  drawerHeader: `${prefix}-drawer-header`,
+  content: `${prefix}-content`,
+  contentShift: `${prefix}-content-shift`,
+  toolbarTitle: `${prefix}-toolbar-title`,
 };
 
 const ReportDashboardRoot = styled('div')(({ theme }) => ({

@@ -22,15 +22,16 @@ export interface SettingsDrawerProps extends DrawerProps {
   handleCloseButton: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+const prefix = 'settings-drawer';
 const classes = {
-  drawer: 'settings-drawer-paper',
-  legendLabel: 'settings-drawer-legend-label',
-  trajGroup: 'settings-drawer-traj-group',
-  flexBasis: 'settings-drawer-flex-basis',
-  heading: 'settings-drawer-heading',
-  button: 'settings-drawer-button',
-  formGroup: 'settings-drawer-formgroup',
-  swtichButton: 'settings-drawer-switch-button',
+  drawer: `${prefix}-paper`,
+  legendLabel: `${prefix}-legend-label`,
+  trajGroup: `${prefix}-traj-group`,
+  flexBasis: `${prefix}-flex-basis`,
+  heading: `${prefix}-heading`,
+  button: `${prefix}-button`,
+  formGroup: `${prefix}-formgroup`,
+  swtichButton: `${prefix}-switch-button`,
 };
 const SettingsDrawerRoot = styled((props: DrawerProps) => <Drawer {...props} />)(({ theme }) => ({
   [`& .${classes.drawer}`]: {

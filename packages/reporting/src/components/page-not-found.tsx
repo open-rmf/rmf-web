@@ -9,11 +9,12 @@ export interface NotFoundPageProps {
   linkComponent: React.ReactElement<Link>;
 }
 
+const prefix = 'page-not-found';
 const classes = {
-  div: 'page-not-found-root',
-  img: 'page-not-found-img',
-  text: 'page-not-found-text',
-  author: 'page-not-found-author',
+  div: `${prefix}-root`,
+  img: `${prefix}-img`,
+  text: `${prefix}-text`,
+  author: `${prefix}-author`,
 };
 
 const PageNotRoot = styled('div')(() => ({

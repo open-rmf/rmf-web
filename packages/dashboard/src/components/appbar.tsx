@@ -31,10 +31,11 @@ import {
 } from './app-contexts';
 import { customThemeValues } from './theme';
 
+const prefix = 'app-bar';
 const classes = {
-  appBar: 'app-bar-root',
-  logoBtn: 'app-bar-logo-button',
-  toolbar: 'app-bar-toolbar',
+  appBar: `${prefix}-root`,
+  logoBtn: `${prefix}-logo-button`,
+  toolbar: `${prefix}-toolbar`,
 };
 
 const AppBarRoot = styled((props: HeaderBarProps) => <HeaderBar {...props} />)(({ theme }) => ({

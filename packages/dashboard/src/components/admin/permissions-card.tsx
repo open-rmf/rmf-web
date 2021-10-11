@@ -22,10 +22,11 @@ import { AppControllerContext } from '../app-contexts';
 import { getActionText } from '../permissions';
 import { AddPermissionDialog, AddPermissionDialogProps } from './add-permission-dialog';
 
+const prefix = 'permissions-card';
 const classes = {
-  title: 'permissions-card-title',
-  tableContainer: 'permissions-card-table-container',
-  controlsButton: 'permissions-card-controls-button',
+  title: `${prefix}-title`,
+  tableContainer: `${prefix}-table-container`,
+  controlsButton: `${prefix}-controls-button`,
 };
 const PermissionsCardRoot = styled((props: PaperProps) => <Paper {...props} />)(({ theme }) => ({
   [`& .${classes.title}`]: {

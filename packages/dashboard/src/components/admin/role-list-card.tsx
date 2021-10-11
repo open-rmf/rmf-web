@@ -23,9 +23,10 @@ import { AppControllerContext } from '../app-contexts';
 import { CreateRoleDialog, CreateRoleDialogProps } from './create-role-dialog';
 import { PermissionsCard, PermissionsCardProps } from './permissions-card';
 
+const prefix = 'role-list-card';
 const classes = {
-  permissionsCard: 'role-list-card-permissionscard',
-  deleteRoleButton: 'role-list-card-deleterolebutton',
+  permissionsCard: `${prefix}-permissionscard`,
+  deleteRoleButton: `${prefix}-deleterolebutton`,
 };
 const RoleListCardRoot = styled((props: CardProps) => <Card {...props} />)(() => ({
   [`& .${classes.permissionsCard}`]: {

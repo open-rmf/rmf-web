@@ -9,9 +9,10 @@ interface DrawerHeaderProps {
   title: string;
 }
 
+const prefix = 'drawer-header';
 const classes = {
-  heading: 'drawer-header-heading',
-  button: 'drawer-heading-button',
+  heading: `${prefix}-heading`,
+  button: `${prefix}-button`,
 };
 const DrawerHeaderRoot = styled('div')(() => ({
   [`& .${classes.heading}`]: {

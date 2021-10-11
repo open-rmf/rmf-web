@@ -21,11 +21,12 @@ const drawerValuesRoutesMap: Record<AdminDrawerValues, RouteProps> = {
   Roles: { path: '/roles', exact: true },
 };
 
+const prefix = 'drawer';
 const classes = {
-  drawerPaper: 'drawer-paper',
-  drawerContainer: 'drawer-container',
-  itemIcon: 'drawer-itemicon',
-  activeItem: 'drawer-active-item',
+  drawerPaper: `${prefix}-paper`,
+  drawerContainer: `${prefix}-container`,
+  itemIcon: `${prefix}-itemicon`,
+  activeItem: `${prefix}-active-item`,
 };
 const DrawerRoot = styled((props: DrawerProps) => <Drawer {...props} />)(({ theme }) => ({
   [`& .${classes.drawerPaper}`]: {

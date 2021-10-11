@@ -8,9 +8,10 @@ export interface LoadingScreenProps extends React.PropsWithChildren<{}> {
   variant?: 'loading' | 'success' | 'error';
 }
 
+const prefix = 'loading-screen';
 const classes = {
-  root: 'loading-screen-root',
-  caption: 'loading-screen-caption',
+  root: `${prefix}-root`,
+  caption: `${prefix}-caption`,
 };
 const LoadingScreenRoot = styled('div')(({ theme }) => ({
   [`& .${classes.root}`]: {

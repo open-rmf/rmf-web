@@ -27,11 +27,12 @@ import * as RmfModels from 'rmf-models';
 import { Enforcer } from '../permissions';
 import { parseTasksFile } from './utils';
 
+const prefix = 'task-panel';
 const classes = {
-  tableContainer: 'task-panel-table-container',
-  tableTitle: 'task-panel-table-title',
-  detailPanelContainer: 'task-panel-detail-panel-container',
-  enabledToggleButton: 'task-panel-enable-toggle-button',
+  tableContainer: `${prefix}-table-container`,
+  tableTitle: `${prefix}-table-title`,
+  detailPanelContainer: `${prefix}-detail-panel-container`,
+  enabledToggleButton: `${prefix}-enable-toggle-button`,
 };
 
 const TaskPanelRoot = styled('div')(({ theme }) => ({

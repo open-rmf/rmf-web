@@ -20,10 +20,11 @@ export interface HotKeysDrawerProps extends DrawerProps {
   showTour(): void;
 }
 
+const prefix = 'help-drawer';
 const classes = {
-  detailLine: 'help-drawer-detail-line',
-  detail: 'help-drawer-detail',
-  drawer: 'help-drawer-root',
+  detailLine: `${prefix}-detail-line`,
+  detail: `${prefix}-detail`,
+  drawer: `${prefix}-root`,
 };
 const HelpDrawerRoot = styled((props: DrawerProps) => <Drawer {...props} />)(({ theme }) => ({
   [`& .${classes.detailLine}`]: {

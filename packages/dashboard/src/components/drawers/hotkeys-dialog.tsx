@@ -19,12 +19,13 @@ export interface HotKeysDialogProps {
   open: boolean;
 }
 
+const prefix = 'hotkey-dialog';
 const classes = {
-  closeButton: 'hotkey-dialog-close-button',
-  dialogContent: 'hotkey-dialog-content',
-  dialogActions: 'hotkey-dialog-actions',
-  detailLine: 'hotkey-dialog-detail-line',
-  detail: 'hotkey-dialog-detail',
+  closeButton: `${prefix}-close-button`,
+  dialogContent: `${prefix}-content`,
+  dialogActions: `${prefix}-actions`,
+  detailLine: `${prefix}-detail-line`,
+  detail: `${prefix}-detail`,
 };
 const HotKeysDialogRoot = styled((props: DialogProps) => <Dialog {...props} />)(({ theme }) => ({
   [`& .${classes.closeButton}`]: {

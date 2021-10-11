@@ -19,11 +19,12 @@ import React from 'react';
 import { Loading, TransferList, useAsync } from 'react-components';
 import { AppControllerContext } from '../app-contexts';
 
+const prefix = 'manage-roles-dialog';
 const classes = {
-  action: 'manage-roles-dialog-action',
-  list: 'manage-roles-dialog-list',
-  dialogContent: 'manage-roles-dialog-content',
-  dialogButton: 'manage-roles-dialog-button',
+  action: `${prefix}-action`,
+  list: `${prefix}-list`,
+  dialogContent: `${prefix}-content`,
+  dialogButton: `${prefix}-button`,
 };
 const ManageRolesDialogRoot = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
   [`& .${classes.action}`]: {

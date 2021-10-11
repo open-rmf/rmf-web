@@ -2,8 +2,9 @@ import { styled } from '@material-ui/core';
 import React from 'react';
 import { LoginCard, LoginCardProps } from './login-card';
 
+const prefix = 'login-page';
 const classes = {
-  container: 'login-page-container',
+  container: `prefix-container`,
 };
 const LoginPageRoot = styled('div')(({ theme }) => ({
   [`&.${classes.container}`]: {
