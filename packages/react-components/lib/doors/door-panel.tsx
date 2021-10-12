@@ -66,14 +66,16 @@ const useStyles = makeStyles((theme) => ({
   buttonGroup: {
     display: 'flex',
     justifyContent: 'center',
-    backgroundColor: theme.palette.primary.main,
-    borderRadius: '8px',
-    boxShadow: '0px 4px 4px 0px #00000040',
-    boxSizing: 'border-box',
   },
   openCloseButtons: {
     border: '1px solid #ffffff',
+    borderRadius: '8px',
+    backgroundColor: theme.palette.primary.main,
+    boxShadow: '0px 4px 4px 0px #00000040',
     color: theme.palette.getContrastText(theme.palette.primary.main),
+    '&:hover': {
+      color: theme.palette.primary.main,
+    },
   },
   panelHeader: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
