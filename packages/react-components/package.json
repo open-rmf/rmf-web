@@ -29,6 +29,7 @@
     "@types/crc": "^3.4.0",
     "@types/leaflet": "^1.5.17",
     "@types/rbush": "^3.0.0",
+    "@types/react-grid-layout": "^1.1.2",
     "@types/react-leaflet": "^2.5.2",
     "api-client": "*",
     "clsx": "^1.1.1",
@@ -41,6 +42,7 @@
     "node-vibrant": "^3.1.6",
     "rbush": "^3.0.1",
     "react-customizable-progressbar": "^1.0.3",
+    "react-grid-layout": "^1.3.0",
     "react-leaflet": "^2.7.0",
     "rmf-models": "*"
   },
