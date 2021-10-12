@@ -38,11 +38,11 @@ const useStyles = makeStyles((theme) =>
   }),
 );
 
-export type TabValue = 'building' | 'robots' | 'tasks' | 'admin';
+export type TabValue = 'infrastructure' | 'robots' | 'tasks' | 'admin';
 
 function locationToTabValue(pathname: string): TabValue | undefined {
   // `DashboardRoute` being the root, it is a prefix to all routes, so we need to check exactly.
-  if (pathname === DashboardRoute) return 'building';
+  if (pathname === DashboardRoute) return 'infrastructure';
   if (pathname.startsWith(TasksRoute)) return 'tasks';
   if (pathname.startsWith(RobotsRoute)) return 'robots';
   if (pathname.startsWith(AdminRoute)) return 'admin';
@@ -94,9 +94,9 @@ export const AppBar = React.memo(
         <LogoButton src={brandingIconPath} alt="logo" className={classes.logoBtn} />
         <NavigationBar value={tabValue}>
           <Tab
-            label="Building"
-            value="building"
-            aria-label="Building"
+            label="Infrastructure"
+            value="infrastructure"
+            aria-label="Infrastructure"
             onClick={() => history.push(DashboardRoute)}
           />
           <Tab
