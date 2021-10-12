@@ -53,8 +53,9 @@ const useStyles = makeStyles((theme) => ({
   },
   cellPaper: {
     padding: '0.5rem',
-    backgroundColor: theme.palette.info.light,
+    backgroundColor: theme.palette.common.white,
     margin: '0.25rem',
+    border: '1px solid' + theme.palette.primary.main,
   },
   itemIcon: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
@@ -62,6 +63,14 @@ const useStyles = makeStyles((theme) => ({
   buttonGroup: {
     display: 'flex',
     justifyContent: 'center',
+    backgroundColor: theme.palette.primary.main,
+    borderRadius: '8px',
+    boxShadow: '0px 4px 4px 0px #00000040',
+    boxSizing: 'border-box',
+  },
+  openCloseButtons: {
+    border: '1px solid #ffffff',
+    color: theme.palette.getContrastText(theme.palette.primary.main),
   },
   panelHeader: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
@@ -118,6 +127,7 @@ const DoorCell = React.memo(
         <div className={classes.buttonGroup}>
           <ButtonGroup size="small">
             <Button
+              className={classes.openCloseButtons}
               onClick={(ev) =>
                 onDoorControlClick &&
                 onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_OPEN)
@@ -126,6 +136,7 @@ const DoorCell = React.memo(
               Open
             </Button>
             <Button
+              className={classes.openCloseButtons}
               onClick={(ev) =>
                 onDoorControlClick &&
                 onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_CLOSED)

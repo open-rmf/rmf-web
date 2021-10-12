@@ -35,8 +35,9 @@ const useStyles = makeStyles((theme) => ({
   },
   cellPaper: {
     padding: '0.5rem',
-    backgroundColor: theme.palette.info.light,
+    backgroundColor: theme.palette.common.white,
     margin: '0.25rem',
+    border: '1px solid' + theme.palette.primary.main,
   },
   itemIcon: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
