@@ -140,7 +140,7 @@ const LiftCell = React.memo(
       <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
         <Grid container direction="row">
           <Grid item xs={9}>
-            <Typography id={labelId} align="center" style={{ fontWeight: 'bold' }}>
+            <Typography id={labelId} noWrap align="center" style={{ fontWeight: 'bold' }}>
               {lift.name}
             </Typography>
             <Box border={1} borderColor="divider" m={0.5}>

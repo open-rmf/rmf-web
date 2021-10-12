@@ -52,6 +52,7 @@ export const doors: RmfModels.Door[] = [
   makeDoor({ name: 'coe_door' }),
   makeDoor({ name: 'exit_door' }),
   makeDoor({ name: 'extra_door' }),
+  makeDoor({ name: 'door_with_a_really_long_name' }),
 ];
 
 export const doorStates: Record<string, RmfModels.DoorState> = {
