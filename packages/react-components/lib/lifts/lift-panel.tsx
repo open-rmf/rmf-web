@@ -53,6 +53,8 @@ export interface LiftCellProps {
 const useStyles = makeStyles((theme) => ({
   container: {
     margin: theme.spacing(1),
+    maxHeight: '40vh',
+    overflowY: 'scroll',
   },
   buttonBar: {
     display: 'flex',
@@ -66,6 +68,7 @@ const useStyles = makeStyles((theme) => ({
   cellPaper: {
     padding: '0.5rem',
     backgroundColor: theme.palette.info.light,
+    margin: '0.25rem',
   },
   itemIcon: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
@@ -142,7 +145,7 @@ const LiftCell = React.memo(
             <Box border={1} borderColor="divider" m={0.5}>
               <Typography align="center">{destinationFloor || 'Unknown'}</Typography>
             </Box>
-            <Typography align="center" className={doorModeLabelClasses(doorState)}>
+            <Typography variant="body2" align="center" className={doorModeLabelClasses(doorState)}>
               {currDoorMotion}
             </Typography>
           </Grid>
@@ -207,7 +210,7 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
           lifts.map((lift, i) => {
             const state: RmfModels.LiftState | undefined = liftStates[lift.name];
             return (
-              <Grid item xs={4} key={`${lift.name}_${i}`}>
+              <Grid item xs="auto" key={`${lift.name}_${i}`}>
                 <LiftCell
                   lift={lift}
                   doorState={state?.door_state}

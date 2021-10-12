@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
   },
   grid: {
     padding: '1rem',
-    maxHeight: '50vh',
+    maxHeight: '40vh',
     overflowY: 'scroll',
   },
   doorLabelOpen: {
