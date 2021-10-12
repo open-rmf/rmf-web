@@ -44,12 +44,15 @@ const useStyles = makeStyles((theme) => ({
   },
   doorLabelOpen: {
     backgroundColor: theme.palette.success.main,
+    padding: '0 0.2rem',
   },
   doorLabelClosed: {
     backgroundColor: theme.palette.error.main,
+    padding: '0 0.2rem',
   },
   doorLabelMoving: {
     backgroundColor: theme.palette.warning.main,
+    padding: '0 0.2rem',
   },
   cellPaper: {
     padding: '0.5rem',
@@ -110,12 +113,12 @@ const DoorCell = React.memo(
           {door.door.name}
         </Typography>
         <Grid container direction="row" spacing={1}>
-          <Grid item xs={6}>
+          <Grid item xs={4}>
             <Typography variant="body2" align="center">
               {door.level}
             </Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={8}>
             <Typography className={doorStatusClass} variant="body2" align="center" role="status">
               {doorModeToString(doorMode)}
             </Typography>
