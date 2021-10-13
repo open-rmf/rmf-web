@@ -11,9 +11,6 @@ export default {
     title: {
       defaultValue: 'Example',
     },
-    disableMove: {
-      defaultValue: false,
-    },
   },
 } as Meta;
 
