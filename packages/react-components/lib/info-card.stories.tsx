@@ -1,10 +1,14 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { SimpleInfo } from '../lib';
-import { makeStyles } from '@material-ui/core';
+import { styled } from '@material-ui/core';
 
-const useStyles = makeStyles((theme) => ({
-  background: {
+const classes = {
+  background: 'info-card-root',
+};
+
+const InfoCardRoot = styled('div')(({ theme }) => ({
+  [`&.${classes.background}`]: {
     backgroundColor: theme.palette.background.paper,
     color: theme.palette.text.primary,
   },
@@ -36,7 +40,7 @@ export const SimpleData: Story = ({
   ...args
 }) => {
   return (
-    <div className={useStyles().background}>
+    <InfoCardRoot className={classes.background}>
       <SimpleInfo
         infoData={[
           { name: stringDisplayName, value: stringValue },
@@ -44,7 +48,7 @@ export const SimpleData: Story = ({
         ]}
         {...args}
       />
-    </div>
+    </InfoCardRoot>
   );
 };
 SimpleData.args = {
@@ -56,8 +60,8 @@ SimpleData.args = {
 
 export const Array: Story = (args) => {
   return (
-    <div className={useStyles().background}>
+    <InfoCardRoot className={classes.background}>
       <SimpleInfo infoData={[{ name: 'strings', value: ['hello', 'world'] }]} {...args} />
-    </div>
+    </InfoCardRoot>
   );
 };

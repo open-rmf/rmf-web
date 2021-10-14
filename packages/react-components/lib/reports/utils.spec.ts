@@ -96,7 +96,7 @@ export const getTaskSummaryLogs = (): TaskSummaryRowsType => {
       station: { task_id: '', robot_type: '', place_name: '' },
       loop: { task_id: '', robot_type: '', num_loops: 1, start_name: '', finish_name: '' },
       delivery: {
-        task_id: 1,
+        task_id: '1',
         items: [],
         pickup_place_name: '',
         pickup_dispenser: '',

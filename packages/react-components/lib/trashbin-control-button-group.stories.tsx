@@ -1,10 +1,19 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { TrashBinControlButtonGroup } from './trashbin-control-button-group';
-import { makeStyles } from '@material-ui/core';
+import {
+  TrashBinControlButtonGroup,
+  TrashBinControlButtonGroupProps,
+} from './trashbin-control-button-group';
+import { styled } from '@material-ui/core';
 
-const useStyles = makeStyles((theme) => ({
-  omnipanel: {
+const classes = {
+  omnipanel: 'trashbin-control-root',
+};
+
+const TrashBinControlButtonGroupRoot = styled((props: TrashBinControlButtonGroupProps) => (
+  <TrashBinControlButtonGroup {...props} />
+))(({ theme }) => ({
+  [`&.${classes.omnipanel}`]: {
     backgroundColor: theme.palette.background.paper,
   },
 }));
@@ -19,5 +28,5 @@ export default {
 
 export const SimpleTrashBinControlButtonGroup: Story = (args) => (
   // add a background to visualize different theme colors properly
-  <TrashBinControlButtonGroup className={useStyles().omnipanel} {...args} />
+  <TrashBinControlButtonGroupRoot className={classes.omnipanel} {...args} />
 );

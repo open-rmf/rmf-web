@@ -53,7 +53,7 @@ export const Table: Story<TaskTableProps> = (args) => {
         rowsPerPage={10}
         rowsPerPageOptions={[10]}
         page={page}
-        onChangePage={(_ev, newPage) => setPage(newPage)}
+        onPageChange={(_ev, newPage) => setPage(newPage)}
       />
     </Paper>
   );
