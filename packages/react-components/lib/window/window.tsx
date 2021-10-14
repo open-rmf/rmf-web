@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import React from 'react';
 import { Layout } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
-import { WindowManagerStateContext } from './context';
+import { WindowContainerStateContext } from './context';
 import WindowToolbar from './window-toolbar';
 
 const useStyles = makeStyles({
@@ -12,6 +12,7 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     flexWrap: 'nowrap',
+    overflow: 'auto',
   },
 });
 
@@ -25,7 +26,7 @@ export interface WindowProps extends PaperProps {
 
 export const Window: React.FC<WindowProps> = React.forwardRef(
   ({ title, toolbar, onClose, className, children, ...otherProps }, ref) => {
-    const windowManagerState = React.useContext(WindowManagerStateContext);
+    const windowContainerState = React.useContext(WindowContainerStateContext);
     const classes = useStyles();
     return (
       <Paper
@@ -37,7 +38,7 @@ export const Window: React.FC<WindowProps> = React.forwardRef(
         <Grid item>
           <WindowToolbar title={title}>
             {toolbar}
-            {windowManagerState.designMode && (
+            {windowContainerState.designMode && (
               <IconButton color="inherit" onClick={() => onClose && onClose()}>
                 <CloseIcon />
               </IconButton>

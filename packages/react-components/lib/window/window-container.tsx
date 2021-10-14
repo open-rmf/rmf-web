@@ -10,10 +10,10 @@ import {
   WidthProviderProps,
 } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
-import { WindowManagerStateContext } from './context';
+import { WindowContainerStateContext } from './context';
 import { WindowProps } from './window';
 
-type ResponsiveLayout = { [k in Breakpoint]?: Layout[] };
+export type ResponsiveLayout = { [k in Breakpoint]?: Layout[] };
 
 const Responsive = WidthProvider(Responsive_);
 
@@ -23,7 +23,7 @@ const useStyles = makeStyles({
   },
 });
 
-export interface WindowManagerProps extends Omit<ResponsiveProps, 'layouts'>, WidthProviderProps {
+export interface WindowContainerProps extends Omit<ResponsiveProps, 'layouts'>, WidthProviderProps {
   layouts?: ResponsiveLayout | Layout[];
   /**
    * Enables dragging and resizing of windows.
@@ -32,9 +32,9 @@ export interface WindowManagerProps extends Omit<ResponsiveProps, 'layouts'>, Wi
   children?: React.ReactElement<WindowProps> | React.ReactElement<WindowProps>[];
 }
 
-export const WindowManager = React.forwardRef(
+export const WindowContainer = React.forwardRef(
   (
-    { layouts, designMode, className, children, ...otherProps }: WindowManagerProps,
+    { layouts, designMode, className, children, ...otherProps }: WindowContainerProps,
     ref: React.Ref<Responsive_>,
   ) => {
     const theme = useTheme();
@@ -48,17 +48,22 @@ export const WindowManager = React.forwardRef(
       [theme.breakpoints.keys],
     );
 
+    const largestBreakpoint = React.useMemo(() => {
+      const breakpointValues = Object.entries(theme.breakpoints.values);
+      return Object.entries(theme.breakpoints.values).reduce<[string, number]>(
+        (acc, entry) => (entry[1] > acc[1] ? entry : acc),
+        breakpointValues[0],
+      )[0];
+    }, [theme.breakpoints.values]);
+
     const convertedLayouts = React.useMemo(() => {
       if (Array.isArray(layouts)) {
-        return theme.breakpoints.keys.reduce(
-          (acc, k) => ((acc[k] = layouts), acc),
-          {} as ResponsiveLayout,
-        );
+        return { [largestBreakpoint]: layouts };
       }
       return layouts;
-    }, [theme.breakpoints.keys, layouts]);
+    }, [largestBreakpoint, layouts]);
 
-    const windowManagerState = React.useMemo(
+    const windowContainerState = React.useMemo(
       () => ({
         designMode: designMode ?? false,
       }),
@@ -68,7 +73,7 @@ export const WindowManager = React.forwardRef(
     const classes = useStyles();
 
     return (
-      <WindowManagerStateContext.Provider value={windowManagerState}>
+      <WindowContainerStateContext.Provider value={windowContainerState}>
         <Responsive
           ref={ref}
           className={clsx(classes.windowContainer, className)}
@@ -85,9 +90,9 @@ export const WindowManager = React.forwardRef(
         >
           {children}
         </Responsive>
-      </WindowManagerStateContext.Provider>
+      </WindowContainerStateContext.Provider>
     );
   },
 );
 
-export default WindowManager;
+export default WindowContainer;
