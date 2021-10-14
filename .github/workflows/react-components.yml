@@ -29,6 +29,7 @@ jobs:
           cache: 'npm'
       - name: bootstrap
         run: |
+          echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
           pip3 install pipenv
           npm config set unsafe-perm
           npm install -g lerna@4
