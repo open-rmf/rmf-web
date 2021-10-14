@@ -25,7 +25,7 @@ export interface AppController {
    * a tooltip to show.
    */
   toggleTooltips(): void;
-  showErrorAlert: (message: string) => void;
+  showErrorAlert: (message: string, autoHideDuration?: number) => void;
 }
 
 export interface Tooltips {

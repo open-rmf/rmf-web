@@ -1,3 +1,4 @@
+import { almostShallowEqual } from '.';
 import { defaultDict } from './misc';
 
 it('sets correct default value', () => {
@@ -18,4 +19,16 @@ it('assigning overwrites previous value', () => {
   expect(dict['world']).toBe('world');
   dict['world'] = '!';
   expect(dict['world']).toBe('!');
+});
+
+describe('almostShallowEqual', () => {
+  it('smoke test', () => {
+    // `foo` is not strict equal even though they contain objects with the same content.
+    const a = { foo: { bar: 'baz' } };
+    const b = { foo: { bar: 'baz' } };
+    expect(almostShallowEqual(a, b)).toBeFalse();
+    // this should traverse into `foo` and check the contents shallowing, rather than checking
+    // `foo` itself.
+    expect(almostShallowEqual(a, b, ['foo'])).toBeTrue();
+  });
 });
