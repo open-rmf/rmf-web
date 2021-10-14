@@ -1,4 +1,5 @@
 module.exports = {
+  root: true,
   env: {
     node: true,
     es2021: true,
@@ -13,6 +14,8 @@ module.exports = {
       plugins: ['@typescript-eslint'],
       rules: {
         '@typescript-eslint/ban-types': ['error', { types: { '{}': false }, extendDefaults: true }],
+        // allow `declare namespace`
+        '@typescript-eslint/no-namespace': ['error', { allowDeclarations: true }],
       },
     },
     {
