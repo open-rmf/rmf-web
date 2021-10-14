@@ -11,10 +11,10 @@ describe('Window', () => {
       render(
         <WindowManager layouts={layouts}>
           {layouts.map(({ i }) => (
-            <Window key={i} title={i} />
+            <Window key={i} title={`Window ${i}`} />
           ))}
         </WindowManager>,
       ),
-    );
+    ).not.toThrow();
   });
 });
