@@ -111,7 +111,14 @@ const DoorCell = React.memo(
 
     return (
       <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
-        <Typography id={labelId} variant="body1" align="center" style={{ fontWeight: 'bold' }}>
+        <Typography
+          noWrap
+          id={labelId}
+          variant="body1"
+          align="center"
+          style={{ fontWeight: 'bold', width: '120px' }}
+          title={door.door.name}
+        >
           {door.door.name}
         </Typography>
         <Grid container direction="row" spacing={1}>

@@ -61,7 +61,13 @@ const WorkcellCell = React.memo(
       <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
         {requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
           <React.Fragment>
-            <Typography id={labelId} align="center" style={{ fontWeight: 'bold' }}>
+            <Typography
+              noWrap
+              id={labelId}
+              align="center"
+              style={{ fontWeight: 'bold', width: '120px' }}
+              title={workcell.guid}
+            >
               {workcell.guid}
             </Typography>
             <Grid container direction="row">

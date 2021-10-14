@@ -14,13 +14,14 @@ describe('door table', () => {
     expect(root.getByText('coe_door')).toBeTruthy();
     expect(root.getByText('exit_door')).toBeTruthy();
     expect(root.getByText('extra_door')).toBeTruthy();
+    expect(root.getByText('door_with_a_really_long_name')).toBeTruthy();
 
     // test if op mode is displayed correctly
     expect(root.getAllByText('Online').length).toEqual(3);
-    expect(root.getAllByText('Offline').length).toEqual(2);
+    expect(root.getAllByText('Offline').length).toEqual(3);
 
     // test if door state is displayed correctly
-    expect(root.getAllByText('N/A').length).toEqual(2);
+    expect(root.getAllByText('N/A').length).toEqual(3);
     expect(root.getAllByText('CLOSED').length).toEqual(1);
     expect(root.getAllByText('OPEN').length).toEqual(1);
     expect(root.getAllByText('MOVING').length).toEqual(1);
