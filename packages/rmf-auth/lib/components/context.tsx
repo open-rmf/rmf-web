@@ -39,7 +39,9 @@ export function UserProfileProvider({
       new DefaultApi({
         basePath,
         baseOptions: {
-          Authorization: token && `Bearer ${token}`,
+          headers: {
+            Authorization: token && `Bearer ${token}`,
+          }
         },
       }),
     [token, basePath],
