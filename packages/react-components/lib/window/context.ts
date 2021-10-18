@@ -1,9 +1,9 @@
 import React from 'react';
 
-export interface WindowContainerState {
+export interface WindowManagerState {
   designMode: boolean;
 }
 
-export const WindowContainerStateContext = React.createContext<WindowContainerState>({
+export const WindowManagerStateContext = React.createContext<WindowManagerState>({
   designMode: false,
 });

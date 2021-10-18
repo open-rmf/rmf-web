@@ -1,54 +1,69 @@
-import { useTheme } from '@material-ui/core';
+import { Typography, useTheme } from '@material-ui/core';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { makeTask } from '../tasks/test-data.spec';
+import { makeLayouts } from './test-utils.spec';
 import { Window } from './window';
-import { WindowContainer, WindowContainerProps } from './window-container';
-import { useWindowManager, WindowPreference } from './window-manager';
+import { WindowManager, WindowManagerProps } from './window-manager';
 
 export default {
   title: 'Window/Demo',
 } as Meta;
 
-const windowClasses = {
-  empty: new WindowPreference('empty', 'Window', { xl: { w: 2, h: 4 } }),
-  taskTable: new WindowPreference('taskTable', 'Tasks', { xl: { w: 8, h: 4, minW: 8, minH: 4 } }),
-};
+const defaultLayouts: WindowManagerProps['layouts'] = makeLayouts();
 
-const tasks = [makeTask('active_task', 3, 3), makeTask('active_task_2', 4, 3)];
-const defaultWindows = Array.from(new Array(4)).map(() => windowClasses.empty.createWindow());
-
-export const Demo: Story<WindowContainerProps> = () => {
-  const windowManager = useWindowManager(defaultWindows);
+export const Demo: Story<WindowManagerProps> = () => {
+  const [layouts, setLayouts] = React.useState(defaultLayouts);
   const [designMode, setDesignMode] = React.useState(true);
+  const counter = React.useRef(defaultLayouts.length - 1);
   const theme = useTheme();
   return (
     <div>
-      <div>
-        {/* <button onClick={() => setLayouts(defaultLayouts)}>Reset</button> */}
-        <button onClick={() => setDesignMode(!designMode)}>
-          {designMode ? 'Normal Mode' : 'Design Mode'}
-        </button>
-      </div>
-      <div>
-        <button onClick={() => windowManager.addWindow(windowClasses.empty.createWindow())}>
-          Add Empty
-        </button>
-      </div>
-      <WindowContainer
+      <button
+        onClick={() => {
+          setLayouts(defaultLayouts);
+          counter.current = defaultLayouts.length - 1;
+        }}
+      >
+        Reset
+      </button>
+      <button
+        onClick={() =>
+          setLayouts((prev) => [
+            ...prev,
+            { i: (++counter.current).toString(), x: 0, y: 0, w: 2, h: 4 },
+          ])
+        }
+      >
+        Add
+      </button>
+      <button onClick={() => setDesignMode(!designMode)}>
+        {designMode ? 'Normal Mode' : 'Design Mode'}
+      </button>
+      <WindowManager
         designMode={designMode}
-        layouts={windowManager.layouts}
-        onLayoutChange={windowManager.onLayoutChange}
+        layouts={layouts}
+        onLayoutChange={(newLayout) => setLayouts(newLayout)}
         style={{ background: theme.palette.background.default, height: '95vh' }}
       >
-        {Object.values(windowManager.windows).map(({ key, windowProps }) => (
+        {layouts.map(({ i }) => (
           <Window
-            {...windowProps}
-            key={key}
-            onClose={() => windowManager.removeWindow(key)}
-          ></Window>
+            key={i}
+            title={`Window ${i}`}
+            onClose={() => setLayouts((prev) => prev.filter((l) => l.i !== i))}
+          >
+            <div
+              style={{
+                display: 'flex',
+                height: '100%',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <Typography style={{ textAlign: 'center' }}>{i}</Typography>
+            </div>
+          </Window>
         ))}
-      </WindowContainer>
+      </WindowManager>
     </div>
   );
 };
