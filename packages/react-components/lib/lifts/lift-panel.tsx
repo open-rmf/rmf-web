@@ -22,6 +22,7 @@ import {
   requestDoorModes,
   requestModes,
 } from './lift-utils';
+import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
 
 export interface LiftPanelProps {
   lifts: RmfModels.Lift[];
@@ -35,20 +36,24 @@ export interface LiftPanelProps {
   ): void;
 }
 
-export interface LiftCellProps {
-  lift: RmfModels.Lift;
-  doorState?: number;
-  motionState?: number;
-  destinationFloor?: string;
-  currentFloor?: string;
-  onRequestSubmit?(
-    event: React.FormEvent,
-    lift: RmfModels.Lift,
-    doorState: number,
-    requestType: number,
-    destination: string,
-  ): void;
+export interface LiftCellProps extends GridChildComponentProps {
+  data: LiftPanelProps;
 }
+
+// export interface LiftCellProps extends GridChildComponentProps {
+//   lift: RmfModels.Lift;
+//   doorState?: number;
+//   motionState?: number;
+//   destinationFloor?: string;
+//   currentFloor?: string;
+//   onRequestSubmit?(
+//     event: React.FormEvent,
+//     lift: RmfModels.Lift,
+//     doorState: number,
+//     requestType: number,
+//     destination: string,
+//   ): void;
+// }
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -96,14 +101,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const LiftCell = React.memo(
-  ({
-    lift,
-    doorState,
-    motionState,
-    destinationFloor,
-    currentFloor,
-    onRequestSubmit,
-  }: LiftCellProps): JSX.Element => {
+  ({ data, columnIndex, rowIndex, style }: LiftCellProps): JSX.Element => {
+    let lift: RmfModels.Lift | undefined;
+    let liftState: RmfModels.LiftState | undefined;
+    let doorState: number | undefined;
+    let motionState: number | undefined;
+    let destinationFloor: string | undefined;
+    let currentFloor: string | undefined;
+    let labelId: string | undefined;
+    const columnCount = 3;
     const classes = useStyles();
 
     const [showForms, setShowForms] = React.useState(false);
@@ -130,50 +136,62 @@ const LiftCell = React.memo(
       [classes],
     );
 
-    const labelId = `lift-cell-${lift.name}`;
-
+    if (rowIndex * columnCount + columnIndex <= data.lifts.length - 1) {
+      lift = data.lifts[rowIndex * columnCount + columnIndex];
+      liftState = data.liftStates[lift.name];
+      doorState = liftState?.door_state;
+      motionState = liftState?.motion_state;
+      destinationFloor = liftState?.destination_floor;
+      currentFloor = liftState?.current_floor;
+      labelId = `lift-cell-${lift.name}`;
+    }
+    const onRequestSubmit = data.onRequestSubmit;
     return (
-      <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
-        <Grid container direction="row">
-          <Grid item xs={9}>
-            <Typography id={labelId} align="center" style={{ fontWeight: 'bold' }}>
-              {lift.name}
-            </Typography>
-            <Box border={1} borderColor="divider" m={0.5}>
-              <Typography align="center">{destinationFloor || 'Unknown'}</Typography>
-            </Box>
-            <Typography align="center" className={doorModeLabelClasses(doorState)}>
-              {currDoorMotion}
-            </Typography>
+      <div style={style}>
+        <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
+          <Grid container direction="row">
+            <Grid item xs={9}>
+              <Typography id={labelId} align="center" style={{ fontWeight: 'bold' }}>
+                {lift?.name}
+              </Typography>
+              <Box border={1} borderColor="divider" m={0.5}>
+                <Typography align="center">{destinationFloor || 'Unknown'}</Typography>
+              </Box>
+              <Typography align="center" className={doorModeLabelClasses(doorState)}>
+                {currDoorMotion}
+              </Typography>
+            </Grid>
+            <Grid item xs>
+              <Typography align="center" className={getMotionArrowColor(currMotion, 'Up')}>
+                <ArrowUpwardIcon />
+              </Typography>
+              <Typography align="center">{currentFloor || '?'}</Typography>
+              <Typography align="center" className={getMotionArrowColor(currMotion, 'Down')}>
+                <ArrowDownwardIcon />
+              </Typography>
+            </Grid>
           </Grid>
-          <Grid item xs>
-            <Typography align="center" className={getMotionArrowColor(currMotion, 'Up')}>
-              <ArrowUpwardIcon />
-            </Typography>
-            <Typography align="center">{currentFloor || '?'}</Typography>
-            <Typography align="center" className={getMotionArrowColor(currMotion, 'Down')}>
-              <ArrowDownwardIcon />
-            </Typography>
-          </Grid>
-        </Grid>
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          size="small"
-          onClick={() => setShowForms(true)}
-        >
-          Request Form
-        </Button>
-        <LiftRequestFormDialog
-          lift={lift}
-          availableDoorModes={requestDoorModes}
-          availableRequestTypes={requestModes}
-          showFormDialog={showForms}
-          onRequestSubmit={onRequestSubmit}
-          onClose={() => setShowForms(false)}
-        />
-      </Paper>
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            size="small"
+            onClick={() => setShowForms(true)}
+          >
+            Request Form
+          </Button>
+          {lift && (
+            <LiftRequestFormDialog
+              lift={lift}
+              availableDoorModes={requestDoorModes}
+              availableRequestTypes={requestModes}
+              showFormDialog={showForms}
+              onRequestSubmit={onRequestSubmit}
+              onClose={() => setShowForms(false)}
+            />
+          )}
+        </Paper>
+      </div>
     );
   },
 );
@@ -204,21 +222,21 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
       </Paper>
       <Grid className={classes.grid} container direction="row" spacing={1}>
         {isCellView ? (
-          lifts.map((lift, i) => {
-            const state: RmfModels.LiftState | undefined = liftStates[lift.name];
-            return (
-              <Grid item xs={4} key={`${lift.name}_${i}`}>
-                <LiftCell
-                  lift={lift}
-                  doorState={state?.door_state}
-                  motionState={state?.motion_state}
-                  destinationFloor={state?.destination_floor}
-                  currentFloor={state?.current_floor}
-                  onRequestSubmit={onRequestSubmit}
-                />
-              </Grid>
-            );
-          })
+          <FixedSizeGrid
+            columnCount={3}
+            columnWidth={250}
+            height={250}
+            rowCount={Math.ceil(lifts.length / 3)}
+            rowHeight={120}
+            width={760}
+            itemData={{
+              lifts,
+              liftStates,
+              onRequestSubmit,
+            }}
+          >
+            {LiftCell}
+          </FixedSizeGrid>
         ) : (
           <LiftTable lifts={lifts} liftStates={liftStates} onRequestSubmit={onRequestSubmit} />
         )}
