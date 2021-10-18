@@ -30,7 +30,7 @@ export const Demo: Story<WindowManagerProps> = () => {
         onClick={() =>
           setLayouts((prev) => [
             ...prev,
-            { i: (++counter.current).toString(), x: 0, y: 0, w: 2, h: 4 },
+            { i: (++counter.current).toString(), x: 0, y: 0, w: 2, h: 4, minW: 2, minH: 4 },
           ])
         }
       >

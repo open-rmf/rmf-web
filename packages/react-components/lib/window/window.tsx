@@ -24,7 +24,7 @@ export interface WindowProps extends PaperProps {
 }
 
 export const Window: React.FC<WindowProps> = React.forwardRef(
-  ({ title, toolbar, onClose, className, children, ...otherProps }, ref) => {
+  ({ title, toolbar, onClose, className, children, style, ...otherProps }, ref) => {
     const windowManagerState = React.useContext(WindowManagerStateContext);
     const classes = useStyles();
     return (
@@ -32,6 +32,7 @@ export const Window: React.FC<WindowProps> = React.forwardRef(
         ref={ref}
         variant="outlined"
         className={clsx(classes.window, className)}
+        style={{ cursor: windowManagerState.designMode ? 'move' : undefined, ...style }}
         {...otherProps}
       >
         <Grid item>
