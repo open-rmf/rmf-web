@@ -40,21 +40,6 @@ export interface LiftCellProps extends GridChildComponentProps {
   data: LiftPanelProps;
 }
 
-// export interface LiftCellProps extends GridChildComponentProps {
-//   lift: RmfModels.Lift;
-//   doorState?: number;
-//   motionState?: number;
-//   destinationFloor?: string;
-//   currentFloor?: string;
-//   onRequestSubmit?(
-//     event: React.FormEvent,
-//     lift: RmfModels.Lift,
-//     doorState: number,
-//     requestType: number,
-//     destination: string,
-//   ): void;
-// }
-
 const useStyles = makeStyles((theme) => ({
   container: {
     margin: theme.spacing(1),
