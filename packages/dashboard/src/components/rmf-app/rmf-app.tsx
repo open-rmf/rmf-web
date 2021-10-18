@@ -12,8 +12,10 @@ import {
   IngestorsContext,
   PlacesContext,
   RmfIngressContext,
+  RxRmfContext,
 } from './contexts';
 import { RmfIngress } from './rmf-ingress';
+import { RxRmf } from './rx-rmf';
 
 function PlacesProvider({ children }: React.PropsWithChildren<unknown>): JSX.Element {
   const buildingMap = React.useContext(BuildingMapContext);
@@ -123,6 +125,7 @@ function FleetsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
 function RmfIngressProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   const { authenticator } = React.useContext(AppConfigContext);
   const [rmfIngress, setRmfIngress] = React.useState<RmfIngress | undefined>(undefined);
+  const rxRmf = React.useMemo(() => (rmfIngress ? new RxRmf(rmfIngress) : null), [rmfIngress]);
 
   React.useEffect(() => {
     if (authenticator.user) {
@@ -134,7 +137,9 @@ function RmfIngressProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   }, [authenticator]);
 
   return (
-    <RmfIngressContext.Provider value={rmfIngress}>{props.children}</RmfIngressContext.Provider>
+    <RmfIngressContext.Provider value={rmfIngress}>
+      <RxRmfContext.Provider value={rxRmf}>{props.children}</RxRmfContext.Provider>
+    </RmfIngressContext.Provider>
   );
 }
 

@@ -96,5 +96,8 @@
       "!**/tests/**",
       "!src/components/__trash/**"
     ]
+  },
+  "dependencies": {
+    "rxjs": "^7.4.0"
   }
 }
