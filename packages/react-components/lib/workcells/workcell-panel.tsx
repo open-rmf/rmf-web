@@ -5,6 +5,7 @@ import { Dispenser } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { WorkcellTable } from './workcell-table';
+import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
 
 export interface WorkcellPanelProps {
   dispensers: Dispenser[];
@@ -12,11 +13,19 @@ export interface WorkcellPanelProps {
   workCellStates: Record<string, RmfModels.DispenserState>;
 }
 
-export interface WorkcellCellProps {
-  workcell: Dispenser;
-  requestGuidQueue?: string[];
-  secondsRemaining?: number;
+export interface WorkcellDataProps extends WorkcellPanelProps {
+  type: 'ingestors' | 'dispensers';
 }
+
+export interface WorkcellCellProps extends GridChildComponentProps {
+  data: WorkcellDataProps;
+}
+
+// export interface WorkcellCellProps {
+//   workcell: Dispenser;
+//   requestGuidQueue?: string[];
+//   secondsRemaining?: number;
+// }
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -36,6 +45,8 @@ const useStyles = makeStyles((theme) => ({
   cellPaper: {
     padding: '0.5rem',
     backgroundColor: theme.palette.info.light,
+    margin: '0.5rem',
+    height: '84px',
   },
   itemIcon: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
@@ -50,38 +61,52 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const WorkcellCell = React.memo(
-  ({ workcell, requestGuidQueue, secondsRemaining }: WorkcellCellProps): JSX.Element => {
+  ({ data, columnIndex, rowIndex, style }: WorkcellCellProps): JSX.Element | null => {
+    let workcell: Dispenser | undefined;
+    const columnCount = 3;
+    let requestGuidQueue: string[] | undefined;
+    let secondsRemaining: number | undefined;
+    let labelId: string | undefined;
     const classes = useStyles();
 
-    const labelId = `workcell-cell-${workcell.guid}`;
+    const getWorkCell = data.type === 'dispensers' ? data.dispensers : data.ingestors;
+    if (rowIndex * columnCount + columnIndex <= getWorkCell.length - 1) {
+      workcell = getWorkCell[rowIndex * columnCount + columnIndex];
+      const state: RmfModels.DispenserState | undefined = data.workCellStates[workcell.guid];
+      requestGuidQueue = state?.request_guid_queue;
+      secondsRemaining = state?.seconds_remaining;
+      labelId = `workcell-cell-${workcell.guid}`;
+    }
 
-    return (
-      <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
-        {requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
-          <React.Fragment>
-            <Typography id={labelId} align="center" style={{ fontWeight: 'bold' }}>
-              {workcell.guid}
-            </Typography>
-            <Grid container direction="row">
-              <Grid item xs={6}>
-                <Typography
-                  align="center"
-                  variant="body2"
-                >{`Queue: ${requestGuidQueue.length}`}</Typography>
+    return workcell ? (
+      <div style={style}>
+        <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
+          {requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
+            <React.Fragment>
+              <Typography id={labelId} align="center" style={{ fontWeight: 'bold' }}>
+                {workcell?.guid}
+              </Typography>
+              <Grid container direction="row">
+                <Grid item xs={6}>
+                  <Typography
+                    align="center"
+                    variant="body2"
+                  >{`Queue: ${requestGuidQueue.length}`}</Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography align="center" variant="body2">
+                    {requestGuidQueue.length}
+                  </Typography>
+                </Grid>
               </Grid>
-              <Grid item xs={6}>
-                <Typography align="center" variant="body2">
-                  {requestGuidQueue.length}
-                </Typography>
-              </Grid>
-            </Grid>
-            <Typography align="center">{`Remaining: ${secondsRemaining}s`}</Typography>
-          </React.Fragment>
-        ) : (
-          <Typography id={labelId} color="error">{`${workcell} not sending states`}</Typography>
-        )}
-      </Paper>
-    );
+              <Typography align="center">{`Remaining: ${secondsRemaining}s`}</Typography>
+            </React.Fragment>
+          ) : (
+            <Typography id={labelId} color="error">{`${workcell} not sending states`}</Typography>
+          )}
+        </Paper>
+      </div>
+    ) : null;
   },
 );
 
@@ -119,41 +144,43 @@ export function WorkcellPanel({
           <div className={classes.cellContainer}>
             <Typography variant="h6">Dispenser Table</Typography>
             <Grid container direction="row" spacing={1}>
-              {dispensers.length > 0
-                ? dispensers.map((dispenser, i) => {
-                    const state: RmfModels.DispenserState | undefined =
-                      workCellStates[dispenser.guid];
-                    return (
-                      <Grid item xs={4} key={`${dispenser.guid}_${i}`}>
-                        <WorkcellCell
-                          workcell={dispenser}
-                          requestGuidQueue={state?.request_guid_queue}
-                          secondsRemaining={state?.seconds_remaining}
-                        />
-                      </Grid>
-                    );
-                  })
-                : null}
+              <FixedSizeGrid
+                columnCount={3}
+                columnWidth={250}
+                height={250}
+                rowCount={Math.ceil(dispensers.length / 3)}
+                rowHeight={120}
+                width={760}
+                itemData={{
+                  dispensers,
+                  ingestors,
+                  workCellStates,
+                  type: 'dispensers',
+                }}
+              >
+                {WorkcellCell}
+              </FixedSizeGrid>
             </Grid>
           </div>
           <div className={classes.cellContainer}>
             <Typography variant="h6">Ingester Table</Typography>
             <Grid container direction="row" spacing={1}>
-              {ingestors.length > 0
-                ? ingestors.map((ingestor, i) => {
-                    const state: RmfModels.IngestorState | undefined =
-                      workCellStates[ingestor.guid];
-                    return (
-                      <Grid item xs={4} key={`${ingestor.guid}_${i}`}>
-                        <WorkcellCell
-                          workcell={ingestor}
-                          requestGuidQueue={state?.request_guid_queue}
-                          secondsRemaining={state?.seconds_remaining}
-                        />
-                      </Grid>
-                    );
-                  })
-                : null}
+              <FixedSizeGrid
+                columnCount={3}
+                columnWidth={250}
+                height={250}
+                rowCount={Math.ceil(ingestors.length / 3)}
+                rowHeight={120}
+                width={760}
+                itemData={{
+                  dispensers,
+                  ingestors,
+                  workCellStates,
+                  type: 'ingestors',
+                }}
+              >
+                {WorkcellCell}
+              </FixedSizeGrid>
             </Grid>
           </div>
         </React.Fragment>
