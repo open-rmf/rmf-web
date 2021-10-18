@@ -71,6 +71,7 @@ const useStyles = makeStyles((theme) => ({
   cellPaper: {
     padding: '0.5rem',
     backgroundColor: theme.palette.info.light,
+    margin: '0.5rem',
   },
   itemIcon: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
@@ -227,7 +228,7 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
             columnWidth={250}
             height={250}
             rowCount={Math.ceil(lifts.length / 3)}
-            rowHeight={120}
+            rowHeight={140}
             width={760}
             itemData={{
               lifts,
