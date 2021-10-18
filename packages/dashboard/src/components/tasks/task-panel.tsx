@@ -25,6 +25,7 @@ import { UserProfileContext } from 'rmf-auth';
 import * as RmfModels from 'rmf-models';
 import { Enforcer } from '../permissions';
 import { parseTasksFile } from './utils';
+import { AppControllerContext } from '../app-contexts';
 
 const useStyles = makeStyles((theme) => ({
   tableContainer: {
@@ -37,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   detailPanelContainer: {
     width: 350,
     padding: theme.spacing(2),
-    marginLeft: theme.spacing(1),
+    marginLeft: theme.spacing(2),
     flex: '0 0 auto',
   },
   enabledToggleButton: {
@@ -48,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
 function NoSelectedTask() {
   return (
     <Grid container wrap="nowrap" alignItems="center" style={{ height: '100%' }}>
-      <Typography variant="h6" align="center" color="textSecondary">
+      <Typography variant="h6" align="center">
         Click on a task to view more information
       </Typography>
     </Grid>
@@ -96,6 +97,7 @@ export function TaskPanel({
   const [snackbarSeverity, setSnackbarSeverity] = React.useState<AlertProps['severity']>('success');
   const [autoRefresh, setAutoRefresh] = React.useState(true);
   const profile = React.useContext(UserProfileContext);
+  const { showErrorAlert } = React.useContext(AppControllerContext);
 
   const handleCancelTaskClick = React.useCallback<React.MouseEventHandler>(async () => {
     if (!cancelTask || !selectedTask) {
@@ -121,12 +123,20 @@ export function TaskPanel({
       if (!fileInputEl) {
         return [];
       }
+      let taskFiles: SubmitTask[];
       const listener = async () => {
         try {
           if (!fileInputEl.files || fileInputEl.files.length === 0) {
             return res([]);
           }
-          return res(parseTasksFile(await fileInputEl.files[0].text()));
+          try {
+            taskFiles = parseTasksFile(await fileInputEl.files[0].text());
+          } catch (err) {
+            showErrorAlert(err.message, 5000);
+            return res([]);
+          }
+          // only submit tasks when all tasks are error free
+          return res(taskFiles);
         } finally {
           fileInputEl.removeEventListener('input', listener);
           fileInputEl.value = '';

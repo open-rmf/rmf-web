@@ -71,16 +71,16 @@ const DoorCell = React.memo(
     const classes = useStyles();
     const columnCount = 3;
     let door: DoorData | undefined;
-    let doorState: RmfModels.DoorState | undefined;
+    let doorMode: number | undefined;
     let doorStatusClass: string | undefined;
     let labelId: string | undefined;
 
     const doorModeLabelClasses = React.useCallback(
-      (doorState?: RmfModels.DoorState): string => {
-        if (!doorState) {
+      (doorMode?: number): string => {
+        if (doorMode === undefined) {
           return '';
         }
-        switch (doorState.current_mode.value) {
+        switch (doorMode) {
           case RmfModels.DoorMode.MODE_OPEN:
             return `${classes.doorLabelOpen}`;
           case RmfModels.DoorMode.MODE_CLOSED:
@@ -96,8 +96,8 @@ const DoorCell = React.memo(
 
     if (rowIndex * columnCount + columnIndex <= data.doors.length - 1) {
       door = data.doors[rowIndex * columnCount + columnIndex];
-      doorState = data.doorStates[door.door.name];
-      doorStatusClass = doorModeLabelClasses(doorState);
+      doorMode = data.doorStates[door.door.name]?.current_mode.value;
+      doorStatusClass = doorModeLabelClasses(doorMode);
       labelId = `door-cell-${door.door.name}`;
     }
     const onDoorControlClick = data.onDoorControlClick;
@@ -115,7 +115,7 @@ const DoorCell = React.memo(
             </Grid>
             <Grid item xs={6}>
               <Typography className={doorStatusClass} variant="body2" align="center" role="status">
-                {doorModeToString(doorState)}
+                {doorModeToString(doorMode)}
               </Typography>
             </Grid>
           </Grid>

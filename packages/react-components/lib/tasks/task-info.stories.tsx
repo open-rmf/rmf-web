@@ -3,6 +3,7 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { TaskInfo, TaskInfoProps } from './task-info';
 import { makeTask } from './test-data.spec';
+import { Paper } from '@material-ui/core';
 
 export default {
   title: 'Tasks/Task Infos',
@@ -10,7 +11,11 @@ export default {
 } as Meta;
 
 export const CleanTask: Story<TaskInfoProps> = (args) => {
-  return <TaskInfo {...args}></TaskInfo>;
+  return (
+    <Paper style={{ padding: '1rem' }}>
+      <TaskInfo {...args}></TaskInfo>
+    </Paper>
+  );
 };
 
 const cleanTask = makeTask('clean_task', 1, 1);
@@ -19,11 +24,14 @@ cleanTask.task_profile.description.clean.start_waypoint = 'test_waypoint';
 
 CleanTask.args = {
   task: cleanTask,
-  timeline: true,
 };
 
 export const LoopTask: Story<TaskInfoProps> = (args) => {
-  return <TaskInfo {...args}></TaskInfo>;
+  return (
+    <Paper style={{ padding: '1rem' }}>
+      <TaskInfo {...args}></TaskInfo>
+    </Paper>
+  );
 };
 
 const loopTask = makeTask('loop_task', 1, 1);
@@ -34,11 +42,14 @@ loopTask.task_profile.description.loop.num_loops = 3;
 
 LoopTask.args = {
   task: loopTask,
-  timeline: true,
 };
 
 export const DeliveryTask: Story<TaskInfoProps> = (args) => {
-  return <TaskInfo {...args}></TaskInfo>;
+  return (
+    <Paper style={{ padding: '1rem' }}>
+      <TaskInfo {...args}></TaskInfo>
+    </Paper>
+  );
 };
 
 const deliveryTask = makeTask('delivery_task', 1, 1);
@@ -50,5 +61,4 @@ deliveryTask.task_profile.description.delivery.dropoff_ingestor = 'test_ingestor
 
 DeliveryTask.args = {
   task: deliveryTask,
-  timeline: true,
 };

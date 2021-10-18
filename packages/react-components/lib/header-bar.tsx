@@ -9,7 +9,6 @@ const useStyles = makeStyles(() =>
     root: {
       display: 'flex',
       flexDirection: 'row',
-      alignItems: 'center',
       width: '100%',
     },
   }),

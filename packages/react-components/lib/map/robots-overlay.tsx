@@ -1,10 +1,12 @@
 import React from 'react';
 import * as RmfModels from 'rmf-models';
+import { almostShallowEqual } from '../utils';
+import { fromRmfCoords, fromRmfYaw } from '../utils/geometry';
+import { useAutoScale } from './hooks';
 import { RobotMarker as RobotMarker_, RobotMarkerProps } from './robot-marker';
-import SVGOverlay, { SVGOverlayProps } from './svg-overlay';
+import { SVGOverlay, SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
-
-const RobotMarker = React.memo(RobotMarker_);
+import { withLabel } from './with-label';
 
 export interface RobotData {
   fleet: string;
@@ -17,6 +19,8 @@ export interface RobotData {
 }
 
 interface BoundedMarkerProps extends Omit<RobotMarkerProps, 'onClick'> {
+  fleet: string;
+  name: string;
   onClick?: (ev: React.MouseEvent, fleet: string, robot: string) => void;
 }
 
@@ -25,51 +29,75 @@ interface BoundedMarkerProps extends Omit<RobotMarkerProps, 'onClick'> {
  * This is needed to avoid re-rendering all markers when only one of them changes.
  */
 function bindMarker(MarkerComponent: React.ComponentType<RobotMarkerProps>) {
-  return ({ onClick, ...otherProps }: BoundedMarkerProps) => {
-    const handleClick = React.useCallback(
-      (ev) => onClick && onClick(ev, otherProps.fleet, otherProps.name),
-      [onClick, otherProps.fleet, otherProps.name],
-    );
+  return ({ fleet, name, onClick, ...otherProps }: BoundedMarkerProps) => {
+    const handleClick = React.useCallback((ev) => onClick && onClick(ev, fleet, name), [
+      onClick,
+      fleet,
+      name,
+    ]);
     return <MarkerComponent onClick={onClick && handleClick} {...otherProps} />;
   };
 }
 
-export interface RobotsOverlayProps extends SVGOverlayProps {
+const RobotMarker = React.memo(withLabel(bindMarker(RobotMarker_)), (prev, next) =>
+  almostShallowEqual(prev, next, ['style']),
+);
+
+export interface RobotsOverlayProps extends Omit<SVGOverlayProps, 'viewBox'> {
   robots: RobotData[];
   getRobotState: (fleet: string, robot: string) => RmfModels.RobotState | null;
+  /**
+   * The zoom level at which the markers should transition from actual size to fixed size.
+   */
+  markerActualSizeMinZoom?: number;
+  hideLabels?: boolean;
   onRobotClick?: (ev: React.MouseEvent, fleet: string, robot: string) => void;
-  MarkerComponent?: React.ComponentType<RobotMarkerProps>;
 }
 
 export const RobotsOverlay = ({
   robots,
   getRobotState,
+  hideLabels = false,
   onRobotClick,
-  MarkerComponent = RobotMarker,
-  bounds,
   ...otherProps
 }: RobotsOverlayProps): JSX.Element => {
-  const viewBox = viewBoxFromLeafletBounds(bounds);
-  const BoundedMarker = React.useMemo(() => bindMarker(MarkerComponent), [MarkerComponent]);
+  const viewBox = viewBoxFromLeafletBounds(otherProps.bounds);
+  const scale = useAutoScale(40);
+  // TODO: hardcoded because footprint is not available in rmf.
+  const footprint = 0.5;
 
   return (
-    <SVGOverlay bounds={bounds} {...otherProps}>
-      <svg viewBox={viewBox}>
-        {robots
-          .map((robot) => {
-            const state = getRobotState(robot.fleet, robot.name);
-            return state ? (
-              <BoundedMarker
-                key={robot.name}
-                state={state}
-                onClick={onRobotClick}
-                aria-label={robot.name}
-                {...robot}
-              />
-            ) : null;
-          })
-          .filter((x) => x !== null)}
-      </svg>
+    <SVGOverlay viewBox={viewBox} {...otherProps}>
+      {robots.map((robot) => {
+        const state = getRobotState(robot.fleet, robot.name);
+        if (!state) return;
+        const [x, y] = fromRmfCoords([state.location.x, state.location.y]);
+        const theta = fromRmfYaw(state.location.yaw);
+
+        return (
+          <RobotMarker
+            key={`${robot.fleet}/${robot.name}`}
+            fleet={robot.fleet}
+            name={robot.name}
+            cx={x}
+            cy={y}
+            r={footprint}
+            color={robot.color}
+            iconPath={robot.iconPath}
+            onClick={onRobotClick}
+            aria-label={robot.name}
+            style={{
+              transform: `rotate(${theta}rad) scale(${scale})`,
+              transformOrigin: `${x}px ${y}px`,
+            }}
+            labelText={robot.name}
+            labelSourceX={x}
+            labelSourceY={y}
+            labelSourceRadius={footprint * scale}
+            hideLabel={hideLabels}
+          />
+        );
+      })}
     </SVGOverlay>
   );
 };

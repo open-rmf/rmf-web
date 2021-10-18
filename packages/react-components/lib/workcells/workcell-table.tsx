@@ -23,52 +23,56 @@ export interface WorkcellTableProps {
 
 export interface WorkcellRowProps {
   workcell: Dispenser;
-  workcellState: RmfModels.DispenserState;
+  mode?: number;
+  requestGuidQueue?: string[];
+  secondsRemaining?: number;
 }
 
-const WorkcellRow = React.memo(({ workcell, workcellState }: WorkcellRowProps) => {
-  const classes = useStyles();
+const WorkcellRow = React.memo(
+  ({ workcell, mode, requestGuidQueue, secondsRemaining }: WorkcellRowProps) => {
+    const classes = useStyles();
 
-  const dispenserModeLabelClasses = React.useCallback(
-    (mode: number): string => {
-      switch (mode) {
-        case RmfModels.DispenserState.IDLE:
-          return `${classes.dispenserLabelIdle}`;
-        case RmfModels.DispenserState.BUSY:
-          return `${classes.dispenserLabelBusy}`;
-        case RmfModels.DispenserState.OFFLINE:
-          return `${classes.offlineLabelOffline}`;
-        default:
-          return '';
-      }
-    },
-    [classes],
-  );
+    const dispenserModeLabelClasses = React.useCallback(
+      (mode: number): string => {
+        switch (mode) {
+          case RmfModels.DispenserState.IDLE:
+            return `${classes.dispenserLabelIdle}`;
+          case RmfModels.DispenserState.BUSY:
+            return `${classes.dispenserLabelBusy}`;
+          case RmfModels.DispenserState.OFFLINE:
+            return `${classes.offlineLabelOffline}`;
+          default:
+            return '';
+        }
+      },
+      [classes],
+    );
 
-  return (
-    <TableRow aria-label={`${workcell.guid}`}>
-      {workcellState ? (
-        <React.Fragment>
-          <TableCell>{workcell.guid}</TableCell>
-          <TableCell className={dispenserModeLabelClasses(workcellState.mode)}>
-            {dispenserModeToString(workcellState.mode)}
-          </TableCell>
-          <TableCell>{workcellState.request_guid_queue.length}</TableCell>
-          <TableCell>{workcellState.request_guid_queue}</TableCell>
-          <TableCell>{workcellState.seconds_remaining}</TableCell>
-        </React.Fragment>
-      ) : (
-        <React.Fragment>
-          <TableCell>{workcell.guid}</TableCell>
-          <TableCell>{'NA'}</TableCell>
-          <TableCell>{'NA'}</TableCell>
-          <TableCell>{'NA'}</TableCell>
-          <TableCell>{'NA'}</TableCell>
-        </React.Fragment>
-      )}
-    </TableRow>
-  );
-});
+    return (
+      <TableRow aria-label={`${workcell.guid}`}>
+        {mode !== undefined && requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
+          <React.Fragment>
+            <TableCell>{workcell.guid}</TableCell>
+            <TableCell className={dispenserModeLabelClasses(mode)}>
+              {dispenserModeToString(mode)}
+            </TableCell>
+            <TableCell>{requestGuidQueue.length}</TableCell>
+            <TableCell>{requestGuidQueue}</TableCell>
+            <TableCell>{secondsRemaining}</TableCell>
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <TableCell>{workcell.guid}</TableCell>
+            <TableCell>{'NA'}</TableCell>
+            <TableCell>{'NA'}</TableCell>
+            <TableCell>{'NA'}</TableCell>
+            <TableCell>{'NA'}</TableCell>
+          </React.Fragment>
+        )}
+      </TableRow>
+    );
+  },
+);
 
 export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps): JSX.Element => {
   return (
@@ -84,11 +88,15 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
       </TableHead>
       <TableBody>
         {workcells.map((workcell) => {
+          const state: RmfModels.DispenserState | RmfModels.IngestorState | undefined =
+            workcellStates[workcell.guid];
           return (
             <WorkcellRow
-              workcell={workcell}
-              workcellState={workcellStates[workcell.guid]}
               key={workcell.guid}
+              workcell={workcell}
+              mode={state?.mode}
+              requestGuidQueue={state?.request_guid_queue}
+              secondsRemaining={state?.seconds_remaining}
             />
           );
         })}

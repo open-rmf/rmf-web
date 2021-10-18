@@ -59,7 +59,7 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
   }, []);
 
   return (
-    <>
+    <div className={classes.background}>
       <div className={classes.searchForm}>
         <SearchFilter
           options={logLabelValues}
@@ -103,7 +103,7 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
       >
         Retrieve Logs
       </Button>
-    </>
+    </div>
   );
 };
 
@@ -120,5 +120,8 @@ const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
+  },
+  background: {
+    backgroundColor: theme.palette.background.paper,
   },
 }));

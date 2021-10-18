@@ -25,11 +25,11 @@ export interface DoorData {
   door: RmfModels.Door;
 }
 
-export function doorModeToString(doorState?: RmfModels.DoorState): string {
-  if (!doorState) {
+export function doorModeToString(doorMode?: number): string {
+  if (doorMode === undefined) {
     return 'N/A';
   }
-  switch (doorState.current_mode.value) {
+  switch (doorMode) {
     case RmfModels.DoorMode.MODE_OPEN:
       return 'OPEN';
     case RmfModels.DoorMode.MODE_CLOSED:

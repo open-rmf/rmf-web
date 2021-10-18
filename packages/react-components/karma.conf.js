@@ -31,7 +31,6 @@ module.exports = (config) => {
     // list of files / patterns to load in the browser
     files: [
       {
-        // pattern: 'lib/**/*spec.+(ts|tsx)',
         pattern: 'test/index.spec.js',
         watched: false,
       },

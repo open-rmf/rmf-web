@@ -1,7 +1,8 @@
 import { cleanup, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { allDoorModes, allDoorTypes, makeDoor } from '../doors/test-utils.spec';
+import * as RmfModels from 'rmf-models';
+import { allDoorModes, allDoorTypes } from '../doors/test-utils.spec';
 import { DoorMarker } from './door-marker';
 
 describe('DoorMarker', () => {
@@ -9,7 +10,14 @@ describe('DoorMarker', () => {
     allDoorModes().forEach((mode) => {
       render(
         <svg>
-          <DoorMarker door={makeDoor()} doorMode={mode.value} />
+          <DoorMarker
+            x1={0}
+            y1={0}
+            x2={1}
+            y2={1}
+            doorType={RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING}
+            doorMode={mode.value}
+          />
         </svg>,
       );
       cleanup();
@@ -17,20 +25,14 @@ describe('DoorMarker', () => {
   });
 
   it('smoke test with different door types', () => {
-    allDoorTypes()
-      .map((type) =>
-        makeDoor({
-          door_type: type,
-        }),
-      )
-      .forEach((door) => {
-        render(
-          <svg>
-            <DoorMarker door={door} />
-          </svg>,
-        );
-        cleanup();
-      });
+    allDoorTypes().forEach((type) => {
+      render(
+        <svg>
+          <DoorMarker x1={0} y1={0} x2={1} y2={1} doorType={type} />
+        </svg>,
+      );
+      cleanup();
+    });
   });
 
   it('triggers onClick callback when button is clicked', () => {
@@ -38,7 +40,15 @@ describe('DoorMarker', () => {
 
     const root = render(
       <svg>
-        <DoorMarker door={makeDoor()} onClick={mockOnClick} data-testid="marker" />
+        <DoorMarker
+          x1={0}
+          y1={0}
+          x2={1}
+          y2={1}
+          doorType={RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING}
+          onClick={mockOnClick}
+          data-testid="marker"
+        />
       </svg>,
     );
     userEvent.click(root.getByTestId('marker'));

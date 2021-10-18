@@ -1,8 +1,9 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { RobotMarker } from '../robots';
+import { RobotMarker } from '../map';
 import { makeRobot } from '../robots/test-utils.spec';
+import { fromRmfCoords } from '../utils';
 
 export default {
   title: 'Benchmarks/Robots',
@@ -102,19 +103,10 @@ export const RobotMarkers: Story<RobotMarkerArgs> = ({ count, ...args }) => {
 
   return (
     <svg viewBox="0 0 20 20" style={{ width: '100%', height: '100%', position: 'absolute' }}>
-      {animationStates.map(({ robot }) => (
-        <RobotMarker
-          key={robot.name}
-          name={robot.name}
-          model={robot.model}
-          x={robot.location.x}
-          y={robot.location.y}
-          yaw={robot.location.yaw}
-          fleetName="test_fleet"
-          footprint={1}
-          {...args}
-        />
-      ))}
+      {animationStates.map(({ robot }) => {
+        const [x, y] = fromRmfCoords([robot.location.x, robot.location.y]);
+        <RobotMarker key={robot.name} cx={x} cy={y} r={1} color="lightblue" {...args} />;
+      })}
     </svg>
   );
 };

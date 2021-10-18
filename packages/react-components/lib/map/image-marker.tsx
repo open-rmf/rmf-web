@@ -1,7 +1,7 @@
 import React from 'react';
 import { ColorContext } from '../color-manager';
 import { uniqueId } from '../utils';
-import { BaseRobotMarkerProps } from './base-robot-marker';
+import type { RobotMarkerProps } from './robot-marker';
 
 /**
  *
@@ -20,23 +20,23 @@ function makeGradientShadow(
   );
 }
 
-export interface ImageMarkerProps extends BaseRobotMarkerProps {
+export interface ImageMarkerProps extends Omit<RobotMarkerProps, 'color'> {
   iconPath: string;
   onError?: React.EventHandler<React.SyntheticEvent<SVGImageElement, Event>>;
 }
 
+// TODO: Support rectangle markers?
+/**
+ * Image should be 1x1 aspect ratio.
+ */
 export const ImageMarker = ({
+  cx,
+  cy,
+  r,
   iconPath,
-  onError,
-  footprint,
   inConflict = false,
+  onError,
 }: ImageMarkerProps): JSX.Element | null => {
-  // The default icon uses footprint as the radius, so we * 2 here because the width/height
-  // is in a square. With the double size of the footprint, we achieved a similar
-  // size to the robot default svg icon.
-  const [imgIconWidth, imgIconHeight] = React.useMemo(() => [footprint * 2, footprint * 2], [
-    footprint,
-  ]);
   const colorManager = React.useContext(ColorContext);
 
   const componentId = React.useMemo(uniqueId, []);
@@ -57,17 +57,12 @@ export const ImageMarker = ({
         <ShadowConflict id={conflictShadowId} />
       </defs>
       <circle
-        r={footprint * 1.3}
+        r={r * 1.3}
+        cx={cx}
+        cy={cy}
         fill={inConflict ? `url(#${conflictShadowId})` : `url(#${shadowId})`}
       />
-      <image
-        href={iconPath}
-        width={imgIconWidth}
-        height={imgIconHeight}
-        x={-footprint}
-        y={-footprint}
-        onError={onError}
-      />
+      <image href={iconPath} width={r * 2} height={r * 2} x={cx - r} y={cy - r} onError={onError} />
     </g>
   ) : null;
 };

@@ -1,15 +1,15 @@
-import React from 'react';
-import * as RmfModels from 'rmf-models';
 import {
+  Button,
+  ButtonGroup,
   makeStyles,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  ButtonGroup,
-  Button,
 } from '@material-ui/core';
+import React from 'react';
+import * as RmfModels from 'rmf-models';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import { DoorData, doorModeToString, doorTypeToString, doorCellConfig } from './utils';
 import clsx from 'clsx';
@@ -59,23 +59,23 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const getOpMode = (doorState: RmfModels.DoorState) => {
-  const getState = doorModeToString(doorState);
+const getOpMode = (doorMode?: number) => {
+  const getState = doorModeToString(doorMode);
   return getState === 'N/A' ? 'Offline' : 'Online';
 };
 
 const DoorRow = React.memo(({ data, index, style }: DoorRowProps) => {
   const classes = useStyles();
   const door = data.doors[index];
-  const doorState = data.doorStates[door.door.name];
+  const doorMode = data.doorStates[door.door.name]?.current_mode.value;
   const onDoorControlClick = data.onDoorControlClick;
 
   const doorModeLabelClasses = React.useCallback(
-    (doorState?: RmfModels.DoorState): string => {
-      if (!doorState) {
+    (doorMode?: number): string => {
+      if (doorMode === undefined) {
         return '';
       }
-      switch (doorState.current_mode.value) {
+      switch (doorMode) {
         case RmfModels.DoorMode.MODE_OPEN:
           return `${classes.doorLabelOpen}`;
         case RmfModels.DoorMode.MODE_CLOSED:
@@ -89,7 +89,7 @@ const DoorRow = React.memo(({ data, index, style }: DoorRowProps) => {
     [classes],
   );
 
-  const doorStatusClass = doorModeLabelClasses(doorState);
+  const doorStatusClass = doorModeLabelClasses(doorMode);
 
   return (
     <TableRow
@@ -110,13 +110,13 @@ const DoorRow = React.memo(({ data, index, style }: DoorRowProps) => {
         component="div"
         variant="body"
         className={clsx(
-          getOpMode(doorState) === 'Offline' ? classes.doorLabelClosed : classes.doorLabelOpen,
+          getOpMode(doorMode) === 'Offline' ? classes.doorLabelClosed : classes.doorLabelOpen,
           classes.tableCell,
           classes.expandingCell,
         )}
         style={{ minWidth: doorCellConfig.doorMode, height: doorCellConfig.rowHeight }}
       >
-        {getOpMode(doorState)}
+        {getOpMode(doorMode)}
       </TableCell>
       <TableCell
         component="div"
@@ -128,18 +128,19 @@ const DoorRow = React.memo(({ data, index, style }: DoorRowProps) => {
       </TableCell>
       <TableCell
         component="div"
+        variant="body"
         className={clsx(classes.tableCell, classes.expandingCell)}
         style={{ minWidth: doorCellConfig.doorType, height: doorCellConfig.rowHeight }}
       >
         {doorTypeToString(door.door.door_type)}
       </TableCell>
       <TableCell
-        className={clsx(doorStatusClass, classes.tableCell, classes.expandingCell)}
         component="div"
         variant="body"
+        className={clsx(doorStatusClass, classes.tableCell, classes.expandingCell)}
         style={{ minWidth: doorCellConfig.doorState, height: doorCellConfig.rowHeight }}
       >
-        {doorModeToString(doorState)}
+        {doorModeToString(doorMode)}
       </TableCell>
       <TableCell
         component="div"

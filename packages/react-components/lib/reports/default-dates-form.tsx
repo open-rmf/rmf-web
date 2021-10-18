@@ -14,7 +14,7 @@ interface DefaultDatesFormProps {
   onSelectToDate?: (date: MaterialUiPickersDate) => void;
 }
 
-export const DefaultDatesForm = (props: DefaultDatesFormProps) => {
+export const DefaultDatesForm = (props: DefaultDatesFormProps): JSX.Element | null => {
   const { search, fromLogDate, toLogDate, onSelectToDate, onSelectFromDate } = props;
 
   const classes = useStyles();
