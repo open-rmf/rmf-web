@@ -71,21 +71,6 @@ export interface LiftRowProps extends ListChildComponentProps {
   data: LiftTableProps;
 }
 
-// export interface LiftRowProps {
-//   lift: RmfModels.Lift;
-//   doorState?: number;
-//   destinationFloor?: string;
-//   currentFloor?: string;
-//   currentMode?: number;
-//   onRequestSubmit?(
-//     event: React.FormEvent,
-//     lift: RmfModels.Lift,
-//     doorState: number,
-//     requestType: number,
-//     destination: string,
-//   ): void;
-// }
-
 const LiftRow = React.memo(({ data, index, style }: LiftRowProps) => {
   const classes = useStyles();
   const lift = data.lifts[index];
