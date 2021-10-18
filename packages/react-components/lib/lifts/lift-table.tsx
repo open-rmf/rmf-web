@@ -10,7 +10,13 @@ import {
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import LiftRequestFormDialog from './lift-request-form-dialog';
-import { doorStateToString, liftModeToString, requestDoorModes, requestModes } from './lift-utils';
+import {
+  doorStateToString,
+  liftModeToString,
+  requestDoorModes,
+  requestModes,
+  liftTableCellConfig,
+} from './lift-utils';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import clsx from 'clsx';
 
@@ -114,22 +120,55 @@ const LiftRow = React.memo(({ data, index, style }: LiftRowProps) => {
       className={classes.tableRow}
       style={style}
     >
-      <TableCell component="div" variant="body">
+      <TableCell
+        component="div"
+        variant="body"
+        className={clsx(classes.tableCell, classes.expandingCell)}
+        style={{ minWidth: liftTableCellConfig.liftName, height: liftTableCellConfig.rowHeight }}
+      >
         {lift.name}
       </TableCell>
-      <TableCell component="div" variant="body">
+      <TableCell
+        component="div"
+        variant="body"
+        className={clsx(classes.tableCell, classes.expandingCell)}
+        style={{ minWidth: liftTableCellConfig.opMode, height: liftTableCellConfig.rowHeight }}
+      >
         {liftModeToString(currentMode)}
       </TableCell>
-      <TableCell component="div" variant="body">
+      <TableCell
+        component="div"
+        variant="body"
+        className={clsx(classes.tableCell, classes.expandingCell)}
+        style={{
+          minWidth: liftTableCellConfig.currentFloor,
+          height: liftTableCellConfig.rowHeight,
+        }}
+      >
         {currentFloor}
       </TableCell>
-      <TableCell component="div" variant="body">
+      <TableCell
+        component="div"
+        variant="body"
+        className={clsx(classes.tableCell, classes.expandingCell)}
+        style={{ minWidth: liftTableCellConfig.destination, height: liftTableCellConfig.rowHeight }}
+      >
         {destinationFloor}
       </TableCell>
-      <TableCell component="div" variant="body" className={doorModeLabelClasses(doorState)}>
+      <TableCell
+        component="div"
+        variant="body"
+        className={clsx(doorModeLabelClasses(doorState), classes.tableCell, classes.expandingCell)}
+        style={{ minWidth: liftTableCellConfig.doorState, height: liftTableCellConfig.rowHeight }}
+      >
         {doorStateToString(doorState)}
       </TableCell>
-      <TableCell component="div" variant="body">
+      <TableCell
+        component="div"
+        variant="body"
+        className={clsx(classes.tableCell, classes.expandingCell)}
+        style={{ minWidth: liftTableCellConfig.button, height: liftTableCellConfig.rowHeight }}
+      >
         <Button
           variant="contained"
           color="primary"
@@ -156,14 +195,68 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
   const classes = useStyles();
   return (
     <Table stickyHeader size="small" aria-label="lift-table">
-      <TableHead>
-        <TableRow>
-          <TableCell>Lift Name</TableCell>
-          <TableCell>Op. Mode</TableCell>
-          <TableCell>Current Floor</TableCell>
-          <TableCell>Destination</TableCell>
-          <TableCell>Doors State</TableCell>
-          <TableCell>Request Form</TableCell>
+      <TableHead component="div">
+        <TableRow component="div" className={classes.tableRow}>
+          <TableCell
+            component="div"
+            variant="body"
+            className={clsx(classes.tableCell, classes.expandingCell)}
+            style={{
+              minWidth: liftTableCellConfig.liftName,
+              height: liftTableCellConfig.rowHeight,
+            }}
+          >
+            Lift Name
+          </TableCell>
+          <TableCell
+            component="div"
+            variant="body"
+            className={clsx(classes.tableCell, classes.expandingCell)}
+            style={{ minWidth: liftTableCellConfig.opMode, height: liftTableCellConfig.rowHeight }}
+          >
+            Op. Mode
+          </TableCell>
+          <TableCell
+            component="div"
+            variant="body"
+            className={clsx(classes.tableCell, classes.expandingCell)}
+            style={{
+              minWidth: liftTableCellConfig.currentFloor,
+              height: liftTableCellConfig.rowHeight,
+            }}
+          >
+            Current Floor
+          </TableCell>
+          <TableCell
+            component="div"
+            variant="body"
+            className={clsx(classes.tableCell, classes.expandingCell)}
+            style={{
+              minWidth: liftTableCellConfig.destination,
+              height: liftTableCellConfig.rowHeight,
+            }}
+          >
+            Destination
+          </TableCell>
+          <TableCell
+            component="div"
+            variant="body"
+            className={clsx(classes.tableCell, classes.expandingCell)}
+            style={{
+              minWidth: liftTableCellConfig.doorState,
+              height: liftTableCellConfig.rowHeight,
+            }}
+          >
+            Doors State
+          </TableCell>
+          <TableCell
+            component="div"
+            variant="body"
+            className={clsx(classes.tableCell, classes.expandingCell)}
+            style={{ minWidth: liftTableCellConfig.button, height: liftTableCellConfig.rowHeight }}
+          >
+            Request Form
+          </TableCell>
         </TableRow>
       </TableHead>
       <TableBody component="div" className={classes.tableBody}>

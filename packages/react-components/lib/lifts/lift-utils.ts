@@ -79,3 +79,16 @@ export const requestDoorModeStrings: Record<number, string> = {
 export function requestDoorModeToString(requestDoorMode: number): string {
   return requestDoorModeStrings[requestDoorMode] || 'Unknown';
 }
+
+// table cell has padding of 16px left and 24px right respectively
+// need to deduct 40px away from actual width
+export const liftTableCellConfig = {
+  liftName: 59.2,
+  opMode: 129.6,
+  currentFloor: 80,
+  destination: 73.6,
+  doorState: 70.4,
+  // last column deduct 32px
+  button: 102.8,
+  rowHeight: 31,
+};

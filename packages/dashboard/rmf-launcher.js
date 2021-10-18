@@ -45,7 +45,7 @@ exports.LocalLauncher = class {
     }
 
     const headless = !process.env.RMF_DASHBOARD_NO_HEADLESS;
-    const demoMap = process.env.RMF_DASHBOARD_DEMO_MAP || 'clinic.launch.xml';
+    const demoMap = process.env.RMF_DASHBOARD_DEMO_MAP || 'office.launch.xml';
     const demoArgs = ['launch', 'rmf_demos_gz', demoMap];
     if (headless) {
       demoArgs.push('headless:=true');
