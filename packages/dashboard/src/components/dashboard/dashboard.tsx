@@ -14,7 +14,6 @@ import {
   DispensersContext,
   IngestorsContext,
   RmfIngressContext,
-  RxRmfContext,
 } from '../rmf-app';
 import ScheduleVisualizer from '../schedule-visualizer';
 
@@ -48,7 +47,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const appController = React.useContext(AppControllerContext);
   const rmfIngress = React.useContext(RmfIngressContext);
   const sioClient = rmfIngress?.sioClient;
-  const rxRmf = React.useContext(RxRmfContext);
   const buildingMap = React.useContext(BuildingMapContext);
 
   const [_triggerRender, setTriggerRender] = React.useState(0); // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -67,16 +65,17 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }, [buildingMap]);
 
   React.useEffect(() => {
-    if (!rxRmf) return;
+    if (!sioClient) return;
     const subs = doors.map((d) =>
-      rxRmf
-        .doorStates(d.door.name)
-        .subscribe((state) => state && (doorStatesRef.current[d.door.name] = state)),
+      sioClient.subscribeDoorState(
+        d.door.name,
+        (state) => (doorStatesRef.current[d.door.name] = state),
+      ),
     );
     return () => {
-      subs.forEach((s) => s.unsubscribe());
+      subs.forEach((s) => sioClient.unsubscribe(s));
     };
-  }, [rxRmf, doors]);
+  }, [sioClient, doors]);
 
   const liftStatesRef = React.useRef<Record<string, RmfModels.LiftState>>({});
   const lifts: RmfModels.Lift[] = React.useMemo(() => (buildingMap ? buildingMap.lifts : []), [
