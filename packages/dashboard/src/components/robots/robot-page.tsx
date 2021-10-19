@@ -1,22 +1,67 @@
 /* istanbul ignore file */
 
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, Grid, Card } from '@material-ui/core';
 import React from 'react';
+import * as RmfModels from 'rmf-models';
+import { Fleet } from 'api-client';
 import { RobotPanel, VerboseRobot } from 'react-components';
-import { RmfIngressContext } from '../rmf-app';
+import { BuildingMapContext, RmfIngressContext } from '../rmf-app';
+import ScheduleVisualizer from '../schedule-visualizer';
 
 const useStyles = makeStyles((theme) => ({
   robotPanel: {
-    padding: `${theme.spacing(4)}px`,
+    padding: `${theme.spacing(2)}px`,
     height: '100%',
     backgroundColor: theme.palette.background.default,
+  },
+  container: {
+    height: '100%',
+    backgroundColor: theme.palette.background.default,
+  },
+  mapPanel: {
+    height: '100%',
+    margin: theme.spacing(1),
+    flex: '1 0 auto',
   },
 }));
 
 export function RobotPage() {
   const classes = useStyles();
   const { fleetsApi } = React.useContext(RmfIngressContext) || {};
+  const sioClient = React.useContext(RmfIngressContext)?.sioClient;
+  const buildingMap = React.useContext(BuildingMapContext);
 
+  // schedule visualizer fleet
+  const [fleets, setFleets] = React.useState<Fleet[]>([]);
+  React.useEffect(() => {
+    if (!fleetsApi) return;
+    let cancel = false;
+    (async () => {
+      const result = await fleetsApi.getFleetsFleetsGet();
+      if (cancel || result.status !== 200) return;
+      setFleets(result.data);
+    })();
+    return () => {
+      cancel = true;
+    };
+  }, [fleetsApi]);
+  const fleetStatesRef = React.useRef<Record<string, RmfModels.FleetState>>({});
+  React.useEffect(() => {
+    if (!sioClient) return;
+    const subs = fleets.map((f) =>
+      sioClient.subscribeFleetState(f.name, (state) => (fleetStatesRef.current[f.name] = state)),
+    );
+    return () => {
+      subs.forEach((s) => sioClient.unsubscribe(s));
+    };
+  }, [sioClient, fleets]);
+  const fleetNames = React.useRef<string[]>([]);
+  const newFleetNames = Object.keys(fleetStatesRef.current);
+  if (newFleetNames.some((fleetName) => !fleetNames.current.includes(fleetName))) {
+    fleetNames.current = newFleetNames;
+  }
+
+  // robot panel stuff
   const [hasMore, setHasMore] = React.useState(true);
   const [page, setPage] = React.useState(0);
   const [verboseRobots, setVerboseRobots] = React.useState<VerboseRobot[]>([]);
@@ -44,17 +89,34 @@ export function RobotPage() {
   }, [fetchVerboseRobots]);
 
   return (
-    <RobotPanel
-      className={classes.robotPanel}
-      fetchVerboseRobots={fetchVerboseRobots}
-      paginationOptions={{
-        count: hasMore ? -1 : page * 10 + verboseRobots.length,
-        rowsPerPage: 10,
-        rowsPerPageOptions: [10],
-        page,
-        onChangePage: (_ev, newPage) => setPage(newPage),
-      }}
-      verboseRobots={verboseRobots}
-    />
+    buildingMap && (
+      <Grid container className={classes.container}>
+        <Grid item xs={3}>
+          <Card variant="outlined" className={classes.mapPanel}>
+            <ScheduleVisualizer
+              buildingMap={buildingMap}
+              dispensers={[]}
+              ingestors={[]}
+              fleetStates={Object.assign({}, fleetStatesRef.current)}
+              mode="normal"
+            />
+          </Card>
+        </Grid>
+        <Grid item xs={9}>
+          <RobotPanel
+            className={classes.robotPanel}
+            fetchVerboseRobots={fetchVerboseRobots}
+            paginationOptions={{
+              count: hasMore ? -1 : page * 10 + verboseRobots.length,
+              rowsPerPage: 10,
+              rowsPerPageOptions: [10],
+              page,
+              onChangePage: (_ev, newPage) => setPage(newPage),
+            }}
+            verboseRobots={verboseRobots}
+          />
+        </Grid>
+      </Grid>
+    )
   );
 }
