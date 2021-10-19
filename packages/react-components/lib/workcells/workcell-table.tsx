@@ -270,7 +270,7 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
           </TableCell>
         </TableRow>
       </TableHead>
-      <TableBody>
+      <TableBody component="div" className={classes.tableBody}>
         <FixedSizeList
           itemSize={43}
           itemCount={workcells.length}

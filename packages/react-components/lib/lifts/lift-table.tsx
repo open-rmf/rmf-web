@@ -179,7 +179,7 @@ const LiftRow = React.memo(({ data, index, style }: LiftRowProps) => {
 export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps): JSX.Element => {
   const classes = useStyles();
   return (
-    <Table stickyHeader size="small" aria-label="lift-table">
+    <Table component="div" stickyHeader size="small" aria-label="lift-table">
       <TableHead component="div">
         <TableRow component="div" className={classes.tableRow}>
           <TableCell
