@@ -110,6 +110,7 @@ const LiftRow = React.memo(({ data, index, style }: LiftRowProps) => {
         variant="body"
         className={clsx(classes.tableCell, classes.expandingCell)}
         style={{ minWidth: liftTableCellConfig.liftName, height: liftTableCellConfig.rowHeight }}
+        title={lift?.name}
       >
         {lift.name}
       </TableCell>

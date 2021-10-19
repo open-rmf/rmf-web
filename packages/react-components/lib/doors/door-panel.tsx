@@ -64,6 +64,12 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.getContrastText(theme.palette.primary.main),
     marginLeft: '1rem',
   },
+  nameField: {
+    fontWeight: 'bold',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 const DoorCell = React.memo(
@@ -104,7 +110,13 @@ const DoorCell = React.memo(
     return door ? (
       <div style={style}>
         <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
-          <Typography id={labelId} variant="body1" align="center" style={{ fontWeight: 'bold' }}>
+          <Typography
+            id={labelId}
+            variant="body1"
+            align="center"
+            className={classes.nameField}
+            title={door?.door.name}
+          >
             {door?.door.name}
           </Typography>
           <Grid container direction="row" spacing={1}>

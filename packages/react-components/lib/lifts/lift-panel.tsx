@@ -84,6 +84,12 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.getContrastText(theme.palette.primary.main),
     marginLeft: '1rem',
   },
+  nameField: {
+    fontWeight: 'bold',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 const LiftCell = React.memo(
@@ -137,7 +143,12 @@ const LiftCell = React.memo(
         <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
           <Grid container direction="row">
             <Grid item xs={9}>
-              <Typography id={labelId} align="center" style={{ fontWeight: 'bold' }}>
+              <Typography
+                id={labelId}
+                align="center"
+                className={classes.nameField}
+                title={lift?.name}
+              >
                 {lift?.name}
               </Typography>
               <Box border={1} borderColor="divider" m={0.5}>

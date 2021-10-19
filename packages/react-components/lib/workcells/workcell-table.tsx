@@ -92,6 +92,7 @@ const WorkcellRow = React.memo(({ data, index, style }: WorkcellRowProps) => {
               minWidth: workCellTableCellConfig.dispenserName,
               height: workCellTableCellConfig.rowHeight,
             }}
+            title={workcell?.guid}
           >
             {workcell.guid}
           </TableCell>
@@ -154,6 +155,7 @@ const WorkcellRow = React.memo(({ data, index, style }: WorkcellRowProps) => {
               minWidth: workCellTableCellConfig.dispenserName,
               height: workCellTableCellConfig.rowHeight,
             }}
+            title={workcell?.guid}
           >
             {workcell.guid}
           </TableCell>

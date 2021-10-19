@@ -103,6 +103,7 @@ const DoorRow = React.memo(({ data, index, style }: DoorRowProps) => {
         variant="body"
         className={clsx(classes.tableCell, classes.expandingCell)}
         style={{ minWidth: doorTableCellConfig.doorName, height: doorTableCellConfig.rowHeight }}
+        title={door?.door.name}
       >
         {door.door.name}
       </TableCell>

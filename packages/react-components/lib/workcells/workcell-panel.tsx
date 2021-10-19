@@ -52,6 +52,12 @@ const useStyles = makeStyles((theme) => ({
   tableDiv: {
     margin: '0 1rem',
   },
+  nameField: {
+    fontWeight: 'bold',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 const WorkcellCell = React.memo(
@@ -77,7 +83,12 @@ const WorkcellCell = React.memo(
         <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
           {requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
             <React.Fragment>
-              <Typography id={labelId} align="center" style={{ fontWeight: 'bold' }}>
+              <Typography
+                id={labelId}
+                align="center"
+                className={classes.nameField}
+                title={workcell?.guid}
+              >
                 {workcell?.guid}
               </Typography>
               <Grid container direction="row">
@@ -96,7 +107,10 @@ const WorkcellCell = React.memo(
               <Typography align="center">{`Remaining: ${secondsRemaining}s`}</Typography>
             </React.Fragment>
           ) : (
-            <Typography id={labelId} color="error">{`${workcell} not sending states`}</Typography>
+            <Typography
+              id={labelId}
+              color="error"
+            >{`${workcell.guid} not sending states`}</Typography>
           )}
         </Paper>
       </div>
