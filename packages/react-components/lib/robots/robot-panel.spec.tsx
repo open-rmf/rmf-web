@@ -20,7 +20,7 @@ describe('RobotPanel', () => {
     );
     userEvent.click(root.getByText('test_robot1'));
     expect(root.getByRole('heading', { name: 'test_robot1' })).toBeTruthy();
-    expect(root.getAllByRole('button', { name: '-' }).length).toBe(5);
+    expect(root.getAllByRole('button', { name: '-' }).length).toBe(4);
   });
 
   it('shows detailed information when robot is clicked', () => {
