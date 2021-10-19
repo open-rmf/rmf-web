@@ -49,8 +49,8 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.getContrastText(theme.palette.primary.main),
     marginLeft: '1rem',
   },
-  subPanelHeader: {
-    marginLeft: '1rem',
+  tableDiv: {
+    margin: '0 1rem',
   },
 }));
 
@@ -181,18 +181,14 @@ export function WorkcellPanel({
       ) : (
         <React.Fragment>
           {dispensers.length > 0 ? (
-            <div>
-              <Typography variant="h6" className={classes.subPanelHeader}>
-                Dispenser Table
-              </Typography>
+            <div className={classes.tableDiv}>
+              <Typography variant="h6">Dispenser Table</Typography>
               <WorkcellTable workcells={dispensers} workcellStates={workCellStates} />
             </div>
           ) : null}
           {ingestors.length > 0 ? (
-            <div>
-              <Typography variant="h6" className={classes.subPanelHeader}>
-                Ingestor Table
-              </Typography>
+            <div className={classes.tableDiv}>
+              <Typography variant="h6">Ingestor Table</Typography>
               <WorkcellTable workcells={ingestors} workcellStates={workCellStates} />
             </div>
           ) : null}

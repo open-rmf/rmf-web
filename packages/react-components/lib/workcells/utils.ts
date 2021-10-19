@@ -16,11 +16,11 @@ export function dispenserModeToString(mode: number): string {
 // table cell has padding of 16px left and 24px right respectively
 // need to deduct 40px away from actual width
 export const workCellTableCellConfig = {
-  dispenserName: 113.6,
-  opMode: 68,
-  numQueueRequest: 148,
-  requestQueueId: 123.2,
+  dispenserName: 107.2,
+  opMode: 63.2,
+  numQueueRequest: 140.8,
+  requestQueueId: 116,
   // last column deduct 32px
-  secRemaining: 136.8,
+  secRemaining: 130.4,
   rowHeight: 31,
 };
