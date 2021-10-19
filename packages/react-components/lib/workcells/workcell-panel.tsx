@@ -21,12 +21,6 @@ export interface WorkcellCellProps extends GridChildComponentProps {
   data: WorkcellDataProps;
 }
 
-// export interface WorkcellCellProps {
-//   workcell: Dispenser;
-//   requestGuidQueue?: string[];
-//   secondsRemaining?: number;
-// }
-
 const useStyles = makeStyles((theme) => ({
   container: {
     margin: theme.spacing(1),
