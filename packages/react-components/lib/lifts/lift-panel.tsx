@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
   },
   cellPaper: {
     padding: '0.5rem',
-    backgroundColor: theme.palette.common.white,
+    backgroundColor: theme.palette.background.paper,
     margin: '0.25rem',
     border: '1px solid' + theme.palette.primary.main,
   },

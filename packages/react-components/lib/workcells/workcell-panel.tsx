@@ -29,15 +29,17 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.primary.main,
   },
   cellContainer: {
-    padding: '1rem',
+    padding: theme.spacing(2),
     maxHeight: '25vh',
-    overflowY: 'scroll',
+    overflowY: 'auto',
   },
   cellPaper: {
-    padding: '0.5rem',
-    backgroundColor: theme.palette.common.white,
+    padding: theme.spacing(1),
+    backgroundColor: theme.palette.background.paper,
     margin: '0.25rem',
-    border: '1px solid' + theme.palette.primary.main,
+    border: 1,
+    borderStyle: 'solid',
+    borderColor: theme.palette.primary.main,
   },
   itemIcon: {
     color: theme.palette.getContrastText(theme.palette.primary.main),

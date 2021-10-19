@@ -14,6 +14,7 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { DoorTable } from './door-table';
 import { DoorData, doorModeToString, doorTypeToString } from './utils';
+import clsx from 'clsx';
 
 export interface DoorPanelProps {
   doors: DoorData[];
@@ -40,23 +41,23 @@ const useStyles = makeStyles((theme) => ({
   grid: {
     padding: '1rem',
     maxHeight: '40vh',
-    overflowY: 'scroll',
+    overflowY: 'auto',
+  },
+  doorLabelDefault: {
+    padding: theme.spacing(0) + theme.spacing(0.2),
   },
   doorLabelOpen: {
     backgroundColor: theme.palette.success.main,
-    padding: '0 0.2rem',
   },
   doorLabelClosed: {
     backgroundColor: theme.palette.error.main,
-    padding: '0 0.2rem',
   },
   doorLabelMoving: {
     backgroundColor: theme.palette.warning.main,
-    padding: '0 0.2rem',
   },
   cellPaper: {
     padding: '0.5rem',
-    backgroundColor: theme.palette.common.white,
+    backgroundColor: theme.palette.background.paper,
     margin: '0.25rem',
     border: '1px solid' + theme.palette.primary.main,
   },
@@ -68,10 +69,12 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
   },
   openCloseButtons: {
-    border: '1px solid #ffffff',
-    borderRadius: '8px',
+    border: 1,
+    borderStyle: 'solid',
+    borderColor: theme.palette.common.white,
+    borderRadius: theme.shape.borderRadius,
     backgroundColor: theme.palette.primary.main,
-    boxShadow: '0px 4px 4px 0px #00000040',
+    boxShadow: theme.shadows[3],
     color: theme.palette.getContrastText(theme.palette.primary.main),
     '&:hover': {
       color: theme.palette.primary.main,
@@ -128,7 +131,12 @@ const DoorCell = React.memo(
             </Typography>
           </Grid>
           <Grid item xs={8}>
-            <Typography className={doorStatusClass} variant="body2" align="center" role="status">
+            <Typography
+              className={clsx(doorStatusClass, classes.doorLabelDefault)}
+              variant="body2"
+              align="center"
+              role="status"
+            >
               {doorModeToString(doorMode)}
             </Typography>
           </Grid>
