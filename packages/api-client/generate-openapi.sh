@@ -9,26 +9,24 @@ cd $(dirname $0)
 
 source ../../scripts/version.sh
 
-expected_sha='cde6255246cf76b9e4c20e85968d36505930700f8adad68e76c0bc5a6721bfe5'
+expected_sha='b2d46d4990af3d442e4e228e1e627b93ca371ad972f54a7e82272b0ce7968c8b'
 
-if [[ ! -f '.bin/swagger-codegen-cli.jar' ]]; then
+if [[ ! -f '.bin/openapi-generator-cli-5.2.1.jar' ]]; then
   mkdir -p .bin
-  wget https://repo1.maven.org/maven2/io/swagger/codegen/v3/swagger-codegen-cli/3.0.25/swagger-codegen-cli-3.0.25.jar -O .bin/swagger-codegen-cli.jar
+  wget https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/5.2.1/openapi-generator-cli-5.2.1.jar -O .bin/openapi-generator-cli-5.2.1.jar
 fi
 
-sha=$(sha256sum .bin/swagger-codegen-cli.jar | awk '{print $1}')
+sha=$(sha256sum .bin/openapi-generator-cli-5.2.1.jar | awk '{print $1}')
 
 if [[ $sha != $expected_sha ]]; then
-  echo "ERR: .bin/swagger-codegen-cli.jar sha doesn't match"
+  echo "ERR: .bin/openapi-generator-cli-5.2.1.jar sha doesn't match"
   exit 1
 fi
 
-swagger_ver=$(java -jar .bin/swagger-codegen-cli.jar version)
+openapi_generator_ver=$(java -jar .bin/openapi-generator-cli-5.2.1.jar version)
 pipenv run python generate-openapi.py
-rm -r 'lib/openapi'
-java -jar .bin/swagger-codegen-cli.jar generate -i'build/openapi.json' -ltypescript-axios -olib/openapi -cswagger-codegen.json
-# There is a bug with `ModelObject` type being missing, workaround it by adding a type to the generated models.
-echo 'export type ModelObject = Record<string, any>;' >> lib/openapi/models/index.ts
+rm -rf 'lib/openapi'
+java -jar .bin/openapi-generator-cli-5.2.1.jar generate -i'build/openapi.json' -gtypescript-axios -olib/openapi -copenapi-generator.json
 
 rmf_server_ver=$(getVersion .)
 
@@ -39,7 +37,7 @@ import { version as rmfModelVer } from 'rmf-models';
 export const version = {
   rmfModels: rmfModelVer,
   rmfServer: '$rmf_server_ver',
-  swaggerCodegen: '$swagger_ver',
+  openapiGenerator: '$openapi_generator_ver',
 };
 
 EOF
