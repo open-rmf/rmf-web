@@ -73,9 +73,9 @@ const useStyles = makeStyles((theme) => ({
     borderStyle: 'solid',
     borderColor: theme.palette.common.white,
     borderRadius: theme.shape.borderRadius,
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.primary.light,
     boxShadow: theme.shadows[3],
-    color: theme.palette.getContrastText(theme.palette.primary.main),
+    color: theme.palette.getContrastText(theme.palette.primary.light),
     '&:hover': {
       color: theme.palette.primary.main,
     },

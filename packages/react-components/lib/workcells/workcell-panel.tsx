@@ -174,24 +174,20 @@ export function WorkcellPanel({
         </React.Fragment>
       ) : (
         <React.Fragment>
-          {dispensers.length > 0 ? (
-            <div className={classes.firstTable}>
-              <WorkcellTable
-                type={'Dispenser'}
-                workcells={dispensers}
-                workcellStates={workCellStates}
-              />
-            </div>
-          ) : null}
-          {ingestors.length > 0 ? (
-            <div>
-              <WorkcellTable
-                type={'Ingestor'}
-                workcells={ingestors}
-                workcellStates={workCellStates}
-              />
-            </div>
-          ) : null}
+          <div className={classes.cellContainer}>
+            {dispensers.length > 0 ? (
+              <div className={classes.firstTable}>
+                <Typography variant="h6">Dispensers</Typography>
+                <WorkcellTable workcells={dispensers} workcellStates={workCellStates} />
+              </div>
+            ) : null}
+            {ingestors.length > 0 ? (
+              <div>
+                <Typography variant="h6">Ingestors</Typography>
+                <WorkcellTable workcells={ingestors} workcellStates={workCellStates} />
+              </div>
+            ) : null}
+          </div>
         </React.Fragment>
       )}
     </Card>

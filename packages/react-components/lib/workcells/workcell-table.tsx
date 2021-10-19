@@ -28,7 +28,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export interface WorkcellTableProps {
-  type?: string;
   workcells: Dispenser[];
   workcellStates: Record<string, RmfModels.DispenserState>;
 }
@@ -86,11 +85,7 @@ const WorkcellRow = React.memo(
   },
 );
 
-export const WorkcellTable = ({
-  type,
-  workcells,
-  workcellStates,
-}: WorkcellTableProps): JSX.Element => {
+export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps): JSX.Element => {
   const classes = useStyles();
 
   return (
@@ -98,7 +93,7 @@ export const WorkcellTable = ({
       <Table stickyHeader size="small" aria-label="workcell-table">
         <TableHead>
           <TableRow>
-            <TableCell>{type} Name</TableCell>
+            <TableCell>Name</TableCell>
             <TableCell>Op. Mode</TableCell>
             <TableCell>No. Queued Requests</TableCell>
             <TableCell>Request Queue ID</TableCell>
