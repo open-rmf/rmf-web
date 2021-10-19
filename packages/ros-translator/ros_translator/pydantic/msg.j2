@@ -10,7 +10,7 @@ from ..{{ dep_msg.spec.base_type.pkg_name }}.{{ dep_msg.spec.base_type.type }} i
 
 class {{ msg.spec.base_type.type }}(pydantic.BaseModel):
 {% for field in msg.spec.fields %}
-    {{ field.name }}: {{ field.pydantic_type.type }} = {{ field.pydantic_type.default_value }} # {% if field.type.pkg_name %}{{ field.type.pkg_name }}/{% endif %}{{ field.type.type }}
+    {{ field.name }}: {{ field.pydantic_type.type }}
 {% endfor %}
 {% if not msg.spec.fields %}
     pass
@@ -18,6 +18,18 @@ class {{ msg.spec.base_type.type }}(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+
+    def __init__(
+        self,
+{% for field in msg.spec.fields %}
+        {{ field.name }}: {{ field.pydantic_type.type }} = {{ field.pydantic_type.default_value }}, # {% if field.type.pkg_name %}{{ field.type.pkg_name }}/{% endif %}{{ field.type.type }}
+{% endfor %}
+    ):
+        super().__init__(
+{% for field in msg.spec.fields %}
+            {{ field.name }}={{ field.name }},
+{% endfor %}
+        )
 
 
 {{ msg.commented_raw }}
