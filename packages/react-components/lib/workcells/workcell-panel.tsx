@@ -26,19 +26,20 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'flex-end',
     borderRadius: '0px',
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.primary.light,
   },
   cellContainer: {
     paddingLeft: '1rem',
     paddingRight: '1rem',
     paddingBottom: '1rem',
+    backgroundColor: theme.palette.primary.light,
   },
   cellPaper: {
     padding: '0.5rem',
-    backgroundColor: theme.palette.info.light,
+    backgroundColor: theme.palette.primary.light,
   },
   itemIcon: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
+    color: theme.palette.getContrastText(theme.palette.primary.light),
   },
   panelHeader: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
@@ -46,6 +47,7 @@ const useStyles = makeStyles((theme) => ({
   },
   subPanelHeader: {
     marginLeft: '1rem',
+    color: theme.palette.getContrastText(theme.palette.primary.light),
   },
 }));
 

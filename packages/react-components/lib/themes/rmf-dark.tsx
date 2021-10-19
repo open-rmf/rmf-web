@@ -6,13 +6,15 @@ const base = createMuiTheme({
     type: 'dark',
     ...commonTheme,
     primary: {
-      main: '#84693d',
-      dark: '#533b11',
-      light: '#bea582',
+      //Charcoal, Rich Black Fogra 29, Cadet
+      main: '#37474F',
+      dark: '#102027',
+      light: '#62727B',
     },
     background: {
-      default: '#103375',
-      paper: '#2e4d83',
+      //Rich Black Fogra 29, Cadet
+      default: '#102027',
+      paper: '#62727B',
     },
   },
 });

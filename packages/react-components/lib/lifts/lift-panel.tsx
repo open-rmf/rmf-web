@@ -53,32 +53,34 @@ export interface LiftCellProps {
 const useStyles = makeStyles((theme) => ({
   container: {
     margin: theme.spacing(1),
+    backgroundColor: theme.palette.primary.main,
   },
   buttonBar: {
     display: 'flex',
     justifyContent: 'flex-end',
     borderRadius: '0px',
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.primary.light,
   },
   grid: {
     padding: '1rem',
   },
   cellPaper: {
     padding: '0.5rem',
-    backgroundColor: theme.palette.info.light,
+    backgroundColor: theme.palette.primary.light,
+    margin: '0.25rem',
   },
   itemIcon: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
+    color: theme.palette.getContrastText(theme.palette.primary.light),
   },
   buttonGroup: {
     display: 'flex',
     justifyContent: 'center',
   },
   iconMoving: {
-    color: theme.palette.success.dark,
+    color: theme.palette.success.main,
   },
   iconOtherStates: {
-    color: 'white',
+    color: theme.palette.primary.main,
   },
   doorLabelOpen: {
     backgroundColor: theme.palette.success.main,
