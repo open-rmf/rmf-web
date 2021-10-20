@@ -13,8 +13,9 @@ const Responsive = WidthProvider(Responsive_);
 
 const useStyles = makeStyles({
   windowContainer: {
-    overflow: 'auto',
-    minHeight: '100%',
+    overflow: 'hidden',
+    height: '100%',
+    maxHeight: '100%',
   },
 });
 
@@ -90,14 +91,16 @@ export const WindowManager: React.FC<WindowManagerProps> = ({
             containerPadding={[theme.spacing(2), theme.spacing(2)]}
             cols={cols}
             rowHeight={rowHeight}
+            maxRows={12}
             layouts={layouts}
             compactType={null}
             preventCollision
+            autoSize={false}
             isResizable={designMode}
             isDraggable={designMode}
-            onLayoutChange={handleLayoutChange}
             measureBeforeMount
             useCSSTransforms={designMode}
+            onLayoutChange={handleLayoutChange}
           >
             {children}
           </Responsive>
