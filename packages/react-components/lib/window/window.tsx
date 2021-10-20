@@ -12,6 +12,7 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     flexWrap: 'nowrap',
+    overflow: 'hidden',
   },
 });
 
