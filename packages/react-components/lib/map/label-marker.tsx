@@ -177,7 +177,7 @@ export function LabelContainer(props: LabelContainerProps): JSX.Element | null {
           height={labelLocation.borderBBox.maxY - labelLocation.borderBBox.minY}
           rx={contentBorderRadius}
           ry={contentBorderRadius}
-          fill={theme.palette.background.paper}
+          fill={theme.palette.info.dark}
         />
         <g
           transform={`translate(${labelLocation.borderBBox.minX + contentPadding} ${
@@ -266,12 +266,12 @@ export function NameLabel(props: NameLabelProps): JSX.Element {
           contentHeight={contentHeight}
           contentPadding={contentPadding}
           className={clsx(classes.container, className)}
-          stroke={theme.palette.primary.main}
+          stroke={theme.palette.info.main}
           strokeWidth={1}
           {...otherProps}
         >
           <Text
-            fill={theme.palette.primary.main}
+            fill={theme.palette.getContrastText(theme.palette.info.dark)}
             transform={`translate(${contentWidth / 2},${contentHeight / 2})`}
           >
             {text}

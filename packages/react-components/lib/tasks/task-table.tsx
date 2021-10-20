@@ -31,25 +31,31 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
   },
   taskActiveCell: {
-    backgroundColor: theme.palette.primary.light,
+    backgroundColor: theme.palette.info.light,
+    color: theme.palette.getContrastText(theme.palette.info.light),
   },
   taskCancelledCell: {
     backgroundColor: theme.palette.grey[500],
   },
   taskCompletedCell: {
-    backgroundColor: theme.palette.success.light,
+    backgroundColor: theme.palette.success.main,
+    color: theme.palette.getContrastText(theme.palette.success.main),
   },
   taskFailedCell: {
-    backgroundColor: theme.palette.error.light,
+    backgroundColor: theme.palette.error.main,
+    color: theme.palette.getContrastText(theme.palette.error.main),
   },
   taskPendingCell: {
-    backgroundColor: theme.palette.info.light,
+    backgroundColor: theme.palette.info.dark,
+    color: theme.palette.getContrastText(theme.palette.info.light),
   },
   taskQueuedCell: {
-    backgroundColor: theme.palette.info.light,
+    backgroundColor: theme.palette.info.dark,
+    color: theme.palette.getContrastText(theme.palette.info.light),
   },
   taskUnknownCell: {
-    backgroundColor: theme.palette.warning.light,
+    backgroundColor: theme.palette.warning.main,
+    color: theme.palette.getContrastText(theme.palette.warning.main),
   },
 }));
 

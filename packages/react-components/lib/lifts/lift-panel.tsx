@@ -68,6 +68,7 @@ const useStyles = makeStyles((theme) => ({
     padding: '0.5rem',
     backgroundColor: theme.palette.primary.light,
     margin: '0.25rem',
+    color: theme.palette.getContrastText(theme.palette.primary.light),
   },
   itemIcon: {
     color: theme.palette.getContrastText(theme.palette.primary.light),
@@ -84,12 +85,15 @@ const useStyles = makeStyles((theme) => ({
   },
   doorLabelOpen: {
     backgroundColor: theme.palette.success.main,
+    color: theme.palette.getContrastText(theme.palette.success.main),
   },
   doorLabelClosed: {
     backgroundColor: theme.palette.error.main,
+    color: theme.palette.getContrastText(theme.palette.error.main),
   },
   doorLabelMoving: {
     backgroundColor: theme.palette.warning.main,
+    color: theme.palette.getContrastText(theme.palette.warning.main),
   },
   panelHeader: {
     color: theme.palette.getContrastText(theme.palette.primary.main),

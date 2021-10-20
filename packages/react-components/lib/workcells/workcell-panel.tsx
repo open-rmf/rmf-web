@@ -32,11 +32,13 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: '1rem',
     paddingRight: '1rem',
     paddingBottom: '1rem',
-    backgroundColor: theme.palette.primary.light,
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.getContrastText(theme.palette.primary.main),
   },
   cellPaper: {
     padding: '0.5rem',
     backgroundColor: theme.palette.primary.light,
+    color: theme.palette.getContrastText(theme.palette.primary.light),
   },
   itemIcon: {
     color: theme.palette.getContrastText(theme.palette.primary.light),

@@ -43,16 +43,20 @@ const useStyles = makeStyles((theme) => ({
   },
   doorLabelOpen: {
     backgroundColor: theme.palette.success.main,
+    color: theme.palette.getContrastText(theme.palette.success.main),
   },
   doorLabelClosed: {
     backgroundColor: theme.palette.error.main,
+    color: theme.palette.getContrastText(theme.palette.error.main),
   },
   doorLabelMoving: {
     backgroundColor: theme.palette.warning.main,
+    color: theme.palette.getContrastText(theme.palette.warning.main),
   },
   cellPaper: {
     padding: '0.5rem',
     backgroundColor: theme.palette.primary.light,
+    color: theme.palette.getContrastText(theme.palette.primary.light),
   },
   itemIcon: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
@@ -63,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
   },
   buttons: {
     backgroundColor: theme.palette.primary.main,
-    color: theme.palette.getContrastText(theme.palette.primary.dark),
+    color: theme.palette.getContrastText(theme.palette.primary.light),
     boxShadow: theme.shadows[3],
   },
   panelHeader: {
