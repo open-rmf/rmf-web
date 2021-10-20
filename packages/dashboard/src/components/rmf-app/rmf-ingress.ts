@@ -1,5 +1,6 @@
 import {
   AdminApi,
+  BuildingApi,
   Configuration,
   DefaultApi,
   DispensersApi,
@@ -22,6 +23,7 @@ import {
 export class RmfIngress {
   sioClient: SioClient;
   defaultApi: DefaultApi;
+  buildingApi: BuildingApi;
   doorsApi: DoorsApi;
   liftsApi: LiftsApi;
   dispensersApi: DispensersApi;
@@ -72,6 +74,7 @@ export class RmfIngress {
     };
 
     this.defaultApi = new DefaultApi(apiConfig, undefined, axiosInst);
+    this.buildingApi = new BuildingApi(apiConfig, undefined, axiosInst);
     this.doorsApi = new DoorsApi(apiConfig, undefined, axiosInst);
     this.liftsApi = new LiftsApi(apiConfig, undefined, axiosInst);
     this.dispensersApi = new DispensersApi(apiConfig, undefined, axiosInst);

@@ -34,17 +34,12 @@ export interface WindowManagerProps extends React.HTMLProps<HTMLDivElement> {
 
 export const WindowManager: React.FC<WindowManagerProps> = ({
   layouts,
-  designMode,
+  designMode = false,
   onLayoutChange,
   children,
   ...otherProps
 }: WindowManagerProps) => {
   const theme = useTheme();
-
-  const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const cols = React.useMemo(
     () =>
@@ -63,7 +58,7 @@ export const WindowManager: React.FC<WindowManagerProps> = ({
   );
 
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const [rowHeight, setRowHeight] = React.useState(32);
+  const [rowHeight, setRowHeight] = React.useState<number | null>(null);
   React.useEffect(() => {
     if (!containerRef.current) return;
     const resizeObserver = new ResizeObserver((entries) => {
@@ -86,24 +81,26 @@ export const WindowManager: React.FC<WindowManagerProps> = ({
   return (
     <div ref={containerRef} {...otherProps}>
       <WindowManagerStateContext.Provider value={windowManagerState}>
-        <Responsive
-          className={classes.windowContainer}
-          breakpoints={theme.breakpoints.values}
-          margin={[theme.spacing(2), theme.spacing(2)]}
-          containerPadding={[theme.spacing(2), theme.spacing(2)]}
-          cols={cols}
-          rowHeight={rowHeight}
-          layouts={layouts}
-          compactType={null}
-          preventCollision
-          isResizable={designMode}
-          isDraggable={designMode}
-          onLayoutChange={handleLayoutChange}
-          measureBeforeMount
-          useCSSTransforms={!mounted}
-        >
-          {children}
-        </Responsive>
+        {rowHeight !== null && (
+          <Responsive
+            className={classes.windowContainer}
+            breakpoints={theme.breakpoints.values}
+            margin={[theme.spacing(2), theme.spacing(2)]}
+            containerPadding={[theme.spacing(2), theme.spacing(2)]}
+            cols={cols}
+            rowHeight={rowHeight}
+            layouts={layouts}
+            compactType={null}
+            preventCollision
+            isResizable={designMode}
+            isDraggable={designMode}
+            onLayoutChange={handleLayoutChange}
+            measureBeforeMount
+            useCSSTransforms={designMode}
+          >
+            {children}
+          </Responsive>
+        )}
       </WindowManagerStateContext.Provider>
     </div>
   );

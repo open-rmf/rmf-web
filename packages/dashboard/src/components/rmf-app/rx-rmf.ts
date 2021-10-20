@@ -8,28 +8,12 @@ import { RmfIngress } from './rmf-ingress';
  */
 export class RxRmf {
   rmfIngress: RmfIngress;
-  private _buildingMap: Observable<RmfModels.BuildingMap | null>;
-  private _doorStates: Record<string, Observable<RmfModels.DoorState | null>> = {};
-  private _doorHealth: Record<string, Observable<RmfModels.DoorHealth | null>> = {};
-  private _liftStates: Record<string, Observable<RmfModels.LiftState | null>> = {};
-  private _liftHealth: Record<string, Observable<RmfModels.LiftHealth | null>> = {};
-  private _dispenserStates: Record<string, Observable<RmfModels.DispenserState | null>> = {};
-  private _dispenserHealth: Record<string, Observable<RmfModels.DispenserHealth | null>> = {};
-  private _ingestorStates: Record<string, Observable<RmfModels.IngestorState | null>> = {};
-  private _ingestorHealth: Record<string, Observable<RmfModels.IngestorHealth | null>> = {};
-  private _fleetStates: Record<string, Observable<RmfModels.FleetState | null>> = {};
-  private _robotStates: Record<
-    string,
-    Observable<{ fleet: string; robotState: RmfModels.RobotState } | null>
-  > = {};
-  private _robotHealth: Record<string, Observable<RmfModels.RobotHealth | null>> = {};
-  private _taskSummaries: Record<string, Observable<RmfModels.TaskSummary | null>> = {};
 
   constructor(rmfIngress: RmfIngress) {
     this.rmfIngress = rmfIngress;
 
-    this._buildingMap = this._wrapSioEvent<RmfModels.BuildingMap>(
-      this.rmfIngress.sioClient.subscribeBuildingMap,
+    this._buildingMap = this._wrapSioEvent((cb) =>
+      this.rmfIngress.sioClient.subscribeBuildingMap(cb),
     );
   }
 
@@ -41,15 +25,6 @@ export class RxRmf {
     result = factory();
     obj[key] = result;
     return result;
-  }
-
-  private _wrapSioEvent<T>(sioSubFunc: (cb: (data: T) => void) => RmfSubscription) {
-    return new Observable<T | null>((subscriber) => {
-      const rmfSub = sioSubFunc((data) => subscriber.next(data));
-      return () => {
-        this.rmfIngress.sioClient.unsubscribe(rmfSub);
-      };
-    }).pipe(share({ connector: () => new BehaviorSubject<T | null>(null) }));
   }
 
   buildingMap(): Observable<RmfModels.BuildingMap | null> {
@@ -141,4 +116,30 @@ export class RxRmf {
       this._wrapSioEvent((cb) => this.rmfIngress.sioClient.subscribeTaskSummary(taskId, cb)),
     );
   }
+
+  private _wrapSioEvent<T>(sioSubFunc: (cb: (data: T) => void) => RmfSubscription) {
+    return new Observable<T | null>((subscriber) => {
+      const rmfSub = sioSubFunc((data) => subscriber.next(data));
+      return () => {
+        this.rmfIngress.sioClient.unsubscribe(rmfSub);
+      };
+    }).pipe(share({ connector: () => new BehaviorSubject<T | null>(null) }));
+  }
+
+  private _buildingMap: Observable<RmfModels.BuildingMap | null>;
+  private _doorStates: Record<string, Observable<RmfModels.DoorState | null>> = {};
+  private _doorHealth: Record<string, Observable<RmfModels.DoorHealth | null>> = {};
+  private _liftStates: Record<string, Observable<RmfModels.LiftState | null>> = {};
+  private _liftHealth: Record<string, Observable<RmfModels.LiftHealth | null>> = {};
+  private _dispenserStates: Record<string, Observable<RmfModels.DispenserState | null>> = {};
+  private _dispenserHealth: Record<string, Observable<RmfModels.DispenserHealth | null>> = {};
+  private _ingestorStates: Record<string, Observable<RmfModels.IngestorState | null>> = {};
+  private _ingestorHealth: Record<string, Observable<RmfModels.IngestorHealth | null>> = {};
+  private _fleetStates: Record<string, Observable<RmfModels.FleetState | null>> = {};
+  private _robotStates: Record<
+    string,
+    Observable<{ fleet: string; robotState: RmfModels.RobotState } | null>
+  > = {};
+  private _robotHealth: Record<string, Observable<RmfModels.RobotHealth | null>> = {};
+  private _taskSummaries: Record<string, Observable<RmfModels.TaskSummary | null>> = {};
 }
