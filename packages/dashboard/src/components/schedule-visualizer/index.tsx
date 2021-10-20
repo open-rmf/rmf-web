@@ -62,6 +62,7 @@ export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
    * default: 'normal'
    */
   mode?: 'normal' | 'negotiation';
+  zoom?: number | undefined;
   onDoorClick?: (ev: React.MouseEvent, door: string) => void;
   onLiftClick?: (ev: React.MouseEvent, lift: string) => void;
   onRobotClick?: (ev: React.MouseEvent, fleet: string, robot: string) => void;
@@ -81,6 +82,7 @@ export default function ScheduleVisualizer({
   doorStates = {},
   liftStates = {},
   fleetStates = {},
+  zoom,
   mode = 'normal',
   onDoorClick,
   onLiftClick,
@@ -102,16 +104,12 @@ export default function ScheduleVisualizer({
     {},
   );
   const bounds = React.useMemo(() => levelBounds[currentLevel.name], [levelBounds, currentLevel]);
-
   const [robots, setRobots] = React.useState<RobotData[]>([]);
   const { current: robotsStore } = React.useRef<Record<string, RobotData>>({});
-
   // FIXME: trajectory manager should handle the tokens
   const authenticator = appConfig.authenticator;
-
   const [trajectories, setTrajectories] = React.useState<TrajectoryData[]>([]);
   const { trajectoryManager: trajManager } = React.useContext(RmfIngressContext) || {};
-
   const [
     scheduleVisualizerSettings,
     setScheduleVisualizerSettings,
@@ -330,6 +328,7 @@ export default function ScheduleVisualizer({
       zoomSnap={0.5}
       bounds={bounds}
       className={classes.map}
+      zoom={zoom}
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
       <LayersControl

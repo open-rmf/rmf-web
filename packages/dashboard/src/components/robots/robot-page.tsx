@@ -8,11 +8,12 @@ import { RobotPanel, VerboseRobot } from 'react-components';
 import { BuildingMapContext, RmfIngressContext } from '../rmf-app';
 import ScheduleVisualizer from '../schedule-visualizer';
 
+const UpdateRate = 1000;
+
 const useStyles = makeStyles((theme) => ({
   robotPanel: {
-    padding: `${theme.spacing(2)}px`,
+    padding: `${theme.spacing(1)}px`,
     height: '100%',
-    backgroundColor: theme.palette.background.default,
   },
   container: {
     height: '100%',
@@ -27,24 +28,30 @@ const useStyles = makeStyles((theme) => ({
 
 export function RobotPage() {
   const classes = useStyles();
-  const { fleetsApi } = React.useContext(RmfIngressContext) || {};
+  const rmfIngress = React.useContext(RmfIngressContext);
   const sioClient = React.useContext(RmfIngressContext)?.sioClient;
   const buildingMap = React.useContext(BuildingMapContext);
+
+  const [_triggerRender, setTriggerRender] = React.useState(0); // eslint-disable-line @typescript-eslint/no-unused-vars
+  React.useEffect(() => {
+    const interval = setInterval(() => setTriggerRender((prev) => prev + 1), UpdateRate);
+    return () => clearInterval(interval);
+  }, []);
 
   // schedule visualizer fleet
   const [fleets, setFleets] = React.useState<Fleet[]>([]);
   React.useEffect(() => {
-    if (!fleetsApi) return;
+    if (!rmfIngress) return;
     let cancel = false;
     (async () => {
-      const result = await fleetsApi.getFleetsFleetsGet();
+      const result = await rmfIngress.fleetsApi.getFleetsFleetsGet();
       if (cancel || result.status !== 200) return;
       setFleets(result.data);
     })();
     return () => {
       cancel = true;
     };
-  }, [fleetsApi]);
+  }, [rmfIngress]);
   const fleetStatesRef = React.useRef<Record<string, RmfModels.FleetState>>({});
   React.useEffect(() => {
     if (!sioClient) return;
@@ -55,22 +62,17 @@ export function RobotPage() {
       subs.forEach((s) => sioClient.unsubscribe(s));
     };
   }, [sioClient, fleets]);
-  const fleetNames = React.useRef<string[]>([]);
-  const newFleetNames = Object.keys(fleetStatesRef.current);
-  if (newFleetNames.some((fleetName) => !fleetNames.current.includes(fleetName))) {
-    fleetNames.current = newFleetNames;
-  }
 
   // robot panel stuff
   const [hasMore, setHasMore] = React.useState(true);
   const [page, setPage] = React.useState(0);
   const [verboseRobots, setVerboseRobots] = React.useState<VerboseRobot[]>([]);
   const fetchVerboseRobots = React.useCallback(async () => {
-    if (!fleetsApi) {
+    if (!rmfIngress) {
       setHasMore(false);
       return [];
     }
-    const resp = await fleetsApi?.getRobotsFleetsRobotsGet(
+    const resp = await rmfIngress.fleetsApi.getRobotsFleetsRobotsGet(
       undefined,
       undefined,
       11,
@@ -82,41 +84,42 @@ export function RobotPage() {
     const slicedRobots = robots.slice(0, 10);
     setVerboseRobots(slicedRobots);
     return slicedRobots;
-  }, [fleetsApi, page]);
+  }, [rmfIngress, page]);
 
   React.useEffect(() => {
     fetchVerboseRobots();
   }, [fetchVerboseRobots]);
 
   return (
-    buildingMap && (
-      <Grid container className={classes.container}>
-        <Grid item xs={3}>
-          <Card variant="outlined" className={classes.mapPanel}>
+    <Grid container className={classes.container}>
+      <Grid item xs={3}>
+        <Card variant="outlined" className={classes.mapPanel}>
+          {buildingMap && (
             <ScheduleVisualizer
               buildingMap={buildingMap}
               dispensers={[]}
               ingestors={[]}
               fleetStates={Object.assign({}, fleetStatesRef.current)}
               mode="normal"
+              zoom={4.5}
             />
-          </Card>
-        </Grid>
-        <Grid item xs={9}>
-          <RobotPanel
-            className={classes.robotPanel}
-            fetchVerboseRobots={fetchVerboseRobots}
-            paginationOptions={{
-              count: hasMore ? -1 : page * 10 + verboseRobots.length,
-              rowsPerPage: 10,
-              rowsPerPageOptions: [10],
-              page,
-              onChangePage: (_ev, newPage) => setPage(newPage),
-            }}
-            verboseRobots={verboseRobots}
-          />
-        </Grid>
+          )}
+        </Card>
       </Grid>
-    )
+      <Grid item xs={9}>
+        <RobotPanel
+          className={classes.robotPanel}
+          fetchVerboseRobots={fetchVerboseRobots}
+          paginationOptions={{
+            count: hasMore ? -1 : page * 10 + verboseRobots.length,
+            rowsPerPage: 10,
+            rowsPerPageOptions: [10],
+            page,
+            onChangePage: (_ev, newPage) => setPage(newPage),
+          }}
+          verboseRobots={verboseRobots}
+        />
+      </Grid>
+    </Grid>
   );
 }

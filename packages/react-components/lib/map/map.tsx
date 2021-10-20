@@ -36,12 +36,12 @@ export function calcMaxBounds(
   return bounds.pad(0.2);
 }
 
-function EntityManagerProvider({ children }: React.PropsWithChildren<{}>) {
+function EntityManagerProvider({ zoom, children }: React.PropsWithChildren<{ zoom?: number }>) {
   const leaflet = useLeaflet();
   const { current: entityManager } = React.useRef(new EntityManager());
-
   React.useEffect(() => {
     if (!leaflet.map) return;
+    if (zoom) leaflet.map.setZoom(zoom);
     const listener = () => {
       // TODO: recalculate positions
     };
@@ -61,13 +61,13 @@ export interface LMapProps extends Omit<LMapProps_, 'crs'> {
 }
 
 export const LMap = React.forwardRef(
-  ({ className, children, ...otherProps }: LMapProps, ref: React.Ref<LMap_>) => {
+  ({ className, children, zoom, ...otherProps }: LMapProps, ref: React.Ref<LMap_>) => {
     const classes = useStyles();
     const [labelsPortal, setLabelsPortal] = React.useState<SVGSVGElement | null>(null);
     const viewBox = otherProps.bounds ? viewBoxFromLeafletBounds(otherProps.bounds) : undefined;
     return (
       <LMap_ ref={ref} className={clsx(classes.map, className)} crs={L.CRS.Simple} {...otherProps}>
-        <EntityManagerProvider>
+        <EntityManagerProvider zoom={zoom}>
           <LabelsPortalContext.Provider value={labelsPortal}>
             {children}
             {otherProps.bounds && (
