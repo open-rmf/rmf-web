@@ -14,6 +14,7 @@ const Responsive = WidthProvider(Responsive_);
 const useStyles = makeStyles({
   windowContainer: {
     overflow: 'auto',
+    minHeight: '100%',
   },
 });
 
