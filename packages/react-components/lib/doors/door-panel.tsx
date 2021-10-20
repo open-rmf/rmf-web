@@ -8,9 +8,9 @@ import {
   Paper,
   Typography,
   styled,
-} from '@material-ui/core';
-import ViewListIcon from '@material-ui/icons/ViewList';
-import ViewModuleIcon from '@material-ui/icons/ViewModule';
+} from '@mui/material';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { DoorTable } from './door-table';

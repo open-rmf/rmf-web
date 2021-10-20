@@ -13,8 +13,8 @@ import {
   ListItem,
   ListItemText,
   styled,
-} from '@material-ui/core';
-import SecurityIcon from '@material-ui/icons/Security';
+} from '@mui/material';
+import SecurityIcon from '@mui/icons-material/Security';
 import React from 'react';
 import { Loading, TransferList, useAsync } from 'react-components';
 import { AppControllerContext } from '../app-contexts';

@@ -1,6 +1,6 @@
 import React from 'react';
-import ErrorIcon from '@material-ui/icons/Error';
-import { Typography, Grid, styled } from '@material-ui/core';
+import ErrorIcon from '@mui/icons-material/Error';
+import { Typography, Grid, styled } from '@mui/material';
 
 const classes = {
   errorIcon: 'erroroverlay-error-icon',

@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { styled } from '@material-ui/core';
+import { styled } from '@mui/material';
 import React from 'react';
 import { RobotPanel, RobotPanelProps, VerboseRobot } from 'react-components';
 import { RmfIngressContext } from '../rmf-app';

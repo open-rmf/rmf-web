@@ -1,4 +1,4 @@
-import { CircularProgress, CircularProgressProps, styled } from '@material-ui/core';
+import { CircularProgress, CircularProgressProps, styled } from '@mui/material';
 import React from 'react';
 
 const classes = {

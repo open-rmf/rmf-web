@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled } from '@material-ui/core';
+import { styled } from '@mui/material';
 import { SearchLogForm } from './search-log-form';
 import { LogRowsType, LogTable } from './log-table';
 

@@ -4,7 +4,7 @@ import {
   TrashBinControlButtonGroup,
   TrashBinControlButtonGroupProps,
 } from './trashbin-control-button-group';
-import { styled } from '@material-ui/core';
+import { styled } from '@mui/material';
 
 const classes = {
   omnipanel: 'trashbin-control-root',

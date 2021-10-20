@@ -23,7 +23,7 @@ import {
   WorkcellData,
   WorkcellsOverlay as WorkcellsOverlay_,
 } from 'react-components';
-import { styled } from '@material-ui/core';
+import { styled } from '@mui/material';
 import { AttributionControl, LayersControl } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';

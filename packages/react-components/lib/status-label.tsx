@@ -1,4 +1,4 @@
-import { Typography, styled } from '@material-ui/core';
+import { Typography, styled } from '@mui/material';
 import clsx from 'clsx';
 import React from 'react';
 

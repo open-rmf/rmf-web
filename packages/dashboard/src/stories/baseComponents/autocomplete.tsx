@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField, Typography, Divider, Autocomplete } from '@material-ui/core';
+import { TextField, Typography, Divider, Autocomplete } from '@mui/material';
 import { StyleTyping, FormProps, defaultStyles } from './utils';
 
 const styles: StyleTyping = {

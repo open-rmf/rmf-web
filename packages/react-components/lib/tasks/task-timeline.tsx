@@ -1,6 +1,6 @@
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import { styled } from '@material-ui/core';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { styled } from '@mui/material';
 import {
   Timeline,
   TimelineConnector,
@@ -10,7 +10,7 @@ import {
   TimelineOppositeContent,
   TimelineSeparator,
   TimelineProps,
-} from '@material-ui/lab';
+} from '@mui/lab';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { rosTimeToJs } from '../utils';

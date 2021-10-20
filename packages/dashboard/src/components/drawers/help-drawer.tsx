@@ -7,9 +7,9 @@ import {
   Typography,
   useMediaQuery,
   styled,
-} from '@material-ui/core';
-import BugReportIcon from '@material-ui/icons/BugReport';
-import DirectionsIcon from '@material-ui/icons/Directions';
+} from '@mui/material';
+import BugReportIcon from '@mui/icons-material/BugReport';
+import DirectionsIcon from '@mui/icons-material/Directions';
 import React from 'react';
 import { AppControllerContext, TooltipsContext } from '../app-contexts';
 import DrawerHeader from './drawer-header';

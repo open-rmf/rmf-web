@@ -1,4 +1,4 @@
-import { useTheme, styled } from '@material-ui/core';
+import { useTheme, styled } from '@mui/material';
 import Debug from 'debug';
 import React from 'react';
 

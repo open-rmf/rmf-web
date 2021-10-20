@@ -1,5 +1,5 @@
-import { styled } from '@material-ui/core';
-import Tabs, { TabsProps } from '@material-ui/core/Tabs';
+import { styled } from '@mui/material';
+import Tabs, { TabsProps } from '@mui/material/Tabs';
 import React from 'react';
 
 const classes = {

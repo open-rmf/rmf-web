@@ -11,12 +11,12 @@ import {
   TableRow,
   Toolbar,
   Typography,
-} from '@material-ui/core';
-import AddIcon from '@material-ui/icons/AddCircle';
-import DeleteIcon from '@material-ui/icons/Delete';
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/AddCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Permission } from 'api-client';
 import React from 'react';
-import { styled } from '@material-ui/core';
+import { styled } from '@mui/material';
 import { Loading, useAsync } from 'react-components';
 import { AppControllerContext } from '../app-contexts';
 import { getActionText } from '../permissions';

@@ -8,9 +8,9 @@ import {
   Menu,
   MenuItem,
   styled,
-} from '@material-ui/core';
-import AccountIcon from '@material-ui/icons/AccountCircle';
-import MoreIcon from '@material-ui/icons/MoreVert';
+} from '@mui/material';
+import AccountIcon from '@mui/icons-material/AccountCircle';
+import MoreIcon from '@mui/icons-material/MoreVert';
 import { User } from 'api-client';
 import React from 'react';
 import { useAsync } from 'react-components';

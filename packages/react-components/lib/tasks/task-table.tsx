@@ -6,7 +6,7 @@ import {
   TableRow,
   TableProps,
   styled,
-} from '@material-ui/core';
+} from '@mui/material';
 import clsx from 'clsx';
 import { formatDistanceToNow } from 'date-fns';
 import React from 'react';

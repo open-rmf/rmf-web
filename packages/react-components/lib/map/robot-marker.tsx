@@ -1,4 +1,4 @@
-import { styled } from '@material-ui/core';
+import { styled } from '@mui/material';
 import clsx from 'clsx';
 import Debug from 'debug';
 import React from 'react';

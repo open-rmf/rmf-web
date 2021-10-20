@@ -1,7 +1,7 @@
 import React from 'react';
 import ProgressBar from 'react-customizable-progressbar';
 import { ReactCustomizableProgressbarProps } from 'react-customizable-progressbar';
-import { styled } from '@material-ui/core';
+import { styled } from '@mui/material';
 
 export interface CircularProgressBarProps {
   progress: number;

@@ -1,9 +1,9 @@
-import { ThemeProvider } from '@material-ui/core';
-import { StyledEngineProvider } from '@material-ui/core/styles';
-import defaultTheme from '@material-ui/core/styles/defaultTheme';
+import { ThemeProvider } from '@mui/material';
+import { StyledEngineProvider } from '@mui/material/styles';
+import defaultTheme from '@mui/material/styles/defaultTheme';
 import { DecoratorFn } from '@storybook/react';
 import { ThemeProvider as EmotionThemeProvider } from 'emotion-theming';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import CssBaseline from '@mui/material/CssBaseline';
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },

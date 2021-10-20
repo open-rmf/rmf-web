@@ -1,4 +1,4 @@
-import { styled } from '@material-ui/core';
+import { styled } from '@mui/material';
 import Debug from 'debug';
 import React from 'react';
 import { uniqueId } from '../utils';

@@ -11,11 +11,11 @@ import {
   IconButton,
   Typography,
   styled,
-} from '@material-ui/core';
-import AddIcon from '@material-ui/icons/AddCircle';
-import DeleteIcon from '@material-ui/icons/Delete';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import SecurityIcon from '@material-ui/icons/Security';
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/AddCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import SecurityIcon from '@mui/icons-material/Security';
 import { Permission } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog, Loading, useAsync } from 'react-components';

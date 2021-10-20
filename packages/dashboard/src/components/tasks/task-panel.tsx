@@ -13,12 +13,12 @@ import {
   Typography,
   useTheme,
   styled,
-} from '@material-ui/core';
+} from '@mui/material';
 import {
   AddOutlined as AddOutlinedIcon,
   Autorenew as AutorenewIcon,
   Refresh as RefreshIcon,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 import { SubmitTask, Task } from 'api-client';
 import React from 'react';
 import { CreateTaskForm, CreateTaskFormProps, TaskInfo, TaskTable } from 'react-components';

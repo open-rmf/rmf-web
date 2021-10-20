@@ -8,7 +8,7 @@ import {
   DialogTitle,
   Grid,
   styled,
-} from '@material-ui/core';
+} from '@mui/material';
 import clsx from 'clsx';
 import React from 'react';
 import { Loading } from './loading';

@@ -1,5 +1,5 @@
-import { styled, Autocomplete } from '@material-ui/core';
-import TextField from '@material-ui/core/TextField';
+import { styled, Autocomplete } from '@mui/material';
+import TextField from '@mui/material/TextField';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';

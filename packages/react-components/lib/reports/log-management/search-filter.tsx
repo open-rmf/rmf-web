@@ -6,7 +6,7 @@ import {
   Select,
   SelectChangeEvent,
   styled,
-} from '@material-ui/core';
+} from '@mui/material';
 
 const classes = {
   formControl: 'search-filter-formcontrol',

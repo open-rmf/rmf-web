@@ -3,7 +3,7 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { TaskInfo, TaskInfoProps } from './task-info';
 import { makeTask } from './test-data.spec';
-import { Paper } from '@material-ui/core';
+import { Paper } from '@mui/material';
 
 export default {
   title: 'Tasks/Task Infos',

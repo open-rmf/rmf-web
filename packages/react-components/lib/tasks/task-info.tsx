@@ -1,5 +1,5 @@
-import { Divider, Typography, useTheme } from '@material-ui/core';
-import { styled } from '@material-ui/core';
+import { Divider, Typography, useTheme } from '@mui/material';
+import { styled } from '@mui/material';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { rosTimeToJs } from '../utils';

@@ -1,17 +1,12 @@
 import React from 'react';
 import Debug from 'debug';
 import * as RmfModels from 'rmf-models';
-import { IconButton, Typography, styled } from '@material-ui/core';
-import {
-  MultiSelectTreeViewProps,
-  SingleSelectTreeViewProps,
-  TreeItem,
-  TreeView,
-} from '@material-ui/lab';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite';
-import PauseCircleFilledIcon from '@material-ui/icons/PauseCircleFilled';
+import { IconButton, Typography, styled } from '@mui/material';
+import { MultiSelectTreeViewProps, SingleSelectTreeViewProps, TreeItem, TreeView } from '@mui/lab';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite';
+import PauseCircleFilledIcon from '@mui/icons-material/PauseCircleFilled';
 import { SimpleInfo, SimpleInfoData } from '../simple-info';
 import { formatStatus, getActorFromStatus, getStateLabel } from './task-summary-utils';
 

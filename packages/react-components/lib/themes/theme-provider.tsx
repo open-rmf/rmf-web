@@ -1,5 +1,5 @@
-import { ThemeProvider as ThemeProvider_, createTheme } from '@material-ui/core';
-import { ThemeProviderProps } from '@material-ui/styles';
+import { ThemeProvider as ThemeProvider_, createTheme } from '@mui/material';
+import { ThemeProviderProps } from '@mui/styles';
 import React from 'react';
 
 const GlobalStyles: React.FC = () => {

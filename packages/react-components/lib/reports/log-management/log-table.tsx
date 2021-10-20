@@ -1,7 +1,7 @@
 import React from 'react';
 import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid';
 import { LogLevel } from '.';
-import { Typography, styled } from '@material-ui/core';
+import { Typography, styled } from '@mui/material';
 import { format } from 'date-fns';
 import { CustomLookupFilter } from './custom-lookup-filter';
 

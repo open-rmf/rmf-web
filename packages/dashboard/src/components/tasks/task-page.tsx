@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { styled } from '@material-ui/core';
+import { styled } from '@mui/material';
 import type { Task, TaskSummary } from 'api-client';
 import type { AxiosError } from 'axios';
 import React from 'react';

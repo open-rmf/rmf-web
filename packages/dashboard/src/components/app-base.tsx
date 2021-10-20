@@ -1,4 +1,4 @@
-import { createTheme, Grid } from '@material-ui/core';
+import { createTheme, Grid } from '@mui/material';
 import React from 'react';
 import { ErrorSnackbar, rmfDark, ThemeProvider } from 'react-components';
 import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';

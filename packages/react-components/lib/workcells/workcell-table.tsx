@@ -6,7 +6,7 @@ import {
   TableRow,
   TableProps,
   styled,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Dispenser } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';

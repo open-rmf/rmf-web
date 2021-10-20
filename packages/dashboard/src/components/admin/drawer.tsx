@@ -7,10 +7,10 @@ import {
   ListItemText,
   Toolbar,
   styled,
-} from '@material-ui/core';
-import { SvgIconComponent } from '@material-ui/icons';
-import AccountIcon from '@material-ui/icons/AccountCircle';
-import SecurityIcon from '@material-ui/icons/Security';
+} from '@mui/material';
+import { SvgIconComponent } from '@mui/icons-material';
+import AccountIcon from '@mui/icons-material/AccountCircle';
+import SecurityIcon from '@mui/icons-material/Security';
 import React from 'react';
 import { matchPath, RouteProps, useHistory, useLocation, useRouteMatch } from 'react-router';
 

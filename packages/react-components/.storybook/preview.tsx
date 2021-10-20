@@ -1,12 +1,12 @@
-import { Theme } from '@material-ui/core/styles';
-import defaultTheme from '@material-ui/core/styles/defaultTheme';
+import { Theme } from '@mui/material/styles';
+import defaultTheme from '@mui/material/styles/defaultTheme';
 import { DecoratorFn } from '@storybook/react';
 import React from 'react';
 import { rmfDark, rmfLight } from '../lib';
 import { ThemeProvider } from '../lib/themes';
-import { StyledEngineProvider } from '@material-ui/core/styles';
+import { StyledEngineProvider } from '@mui/material/styles';
 import { ThemeProvider as EmotionThemeProvider } from 'emotion-theming';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import CssBaseline from '@mui/material/CssBaseline';
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },

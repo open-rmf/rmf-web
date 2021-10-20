@@ -10,9 +10,9 @@ import {
   TextField,
   useTheme,
   styled,
-} from '@material-ui/core';
-import { DateTimePicker, LocalizationProvider, LocalizationProviderProps } from '@material-ui/lab';
-import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
+} from '@mui/material';
+import { DateTimePicker, LocalizationProvider, LocalizationProviderProps } from '@mui/lab';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import type {
   CleanTaskDescription,
   DeliveryTaskDescription,

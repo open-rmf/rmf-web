@@ -1,4 +1,4 @@
-import { styled } from '@material-ui/core';
+import { styled } from '@mui/material';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { ErrorOverlay } from './error-overlay';

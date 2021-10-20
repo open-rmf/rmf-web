@@ -6,7 +6,7 @@ import {
   ListItemText,
   MenuItem,
   Select,
-} from '@material-ui/core';
+} from '@mui/material';
 import React from 'react';
 
 const ITEM_HEIGHT = 48;

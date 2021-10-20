@@ -12,9 +12,9 @@ import {
   Toolbar,
   Typography,
   styled,
-} from '@material-ui/core';
+} from '@mui/material';
 import * as RmfModels from 'rmf-models';
-import { Refresh as RefreshIcon } from '@material-ui/icons';
+import { Refresh as RefreshIcon } from '@mui/icons-material';
 import React from 'react';
 import { taskTypeToStr } from '../tasks/utils';
 import { robotModeToString, VerboseRobot } from './utils';

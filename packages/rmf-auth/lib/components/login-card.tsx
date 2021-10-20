@@ -1,4 +1,4 @@
-import { Button, Typography, styled } from '@material-ui/core';
+import { Button, Typography, styled } from '@mui/material';
 import React from 'react';
 
 const prefix = 'login-card';

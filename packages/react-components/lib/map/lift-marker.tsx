@@ -1,4 +1,4 @@
-import { styled } from '@material-ui/core';
+import { styled } from '@mui/material';
 import clsx from 'clsx';
 import React from 'react';
 import * as RmfModels from 'rmf-models';

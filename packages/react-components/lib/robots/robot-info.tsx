@@ -1,4 +1,4 @@
-import { Button, Divider, Grid, Typography, useTheme, styled } from '@material-ui/core';
+import { Button, Divider, Grid, Typography, useTheme, styled } from '@mui/material';
 import { Task } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';

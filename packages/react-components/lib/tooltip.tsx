@@ -1,4 +1,4 @@
-import { Tooltip as MuiTooltip, styled } from '@material-ui/core';
+import { Tooltip as MuiTooltip, styled } from '@mui/material';
 import React from 'react';
 
 export interface TooltipProps {

@@ -1,6 +1,6 @@
-import { Backdrop, CircularProgress, Typography, useTheme } from '@material-ui/core';
-import { styled } from '@material-ui/core';
-import { Check as SuccessIcon, ErrorOutline as ErrorIcon } from '@material-ui/icons';
+import { Backdrop, CircularProgress, Typography, useTheme } from '@mui/material';
+import { styled } from '@mui/material';
+import { Check as SuccessIcon, ErrorOutline as ErrorIcon } from '@mui/icons-material';
 import React from 'react';
 
 export interface LoadingScreenProps extends React.PropsWithChildren<{}> {

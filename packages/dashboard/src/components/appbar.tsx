@@ -7,9 +7,9 @@ import {
   Typography,
   styled,
   TabProps,
-} from '@material-ui/core';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import HelpIcon from '@material-ui/icons/Help';
+} from '@mui/material';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import HelpIcon from '@mui/icons-material/Help';
 import React from 'react';
 import {
   HeaderBar,
