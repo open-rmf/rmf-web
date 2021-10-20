@@ -1,8 +1,8 @@
-import { Layout } from 'react-grid-layout';
+import { WindowLayout } from './window-manager';
 
-export const makeLayouts: () => Layout[] = () => [
-  { i: '0', x: 0, y: 0, w: 2, h: 4, minW: 2, minH: 4 },
-  { i: '1', x: 2, y: 0, w: 2, h: 4, minW: 2, minH: 4 },
-  { i: '2', x: 0, y: 4, w: 2, h: 4, minW: 2, minH: 4 },
-  { i: '3', x: 2, y: 4, w: 2, h: 4, minW: 2, minH: 4 },
+export const makeLayouts: () => WindowLayout[] = () => [
+  { i: '0', x: 0, y: 0, w: 4, h: 4, minW: 4, minH: 4 },
+  { i: '1', x: 4, y: 0, w: 4, h: 4, minW: 4, minH: 4 },
+  { i: '2', x: 0, y: 4, w: 4, h: 4, minW: 4, minH: 4 },
+  { i: '3', x: 4, y: 4, w: 4, h: 4, minW: 4, minH: 4 },
 ];

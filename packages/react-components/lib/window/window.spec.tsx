@@ -9,7 +9,7 @@ describe('Window', () => {
     const layouts = makeLayouts();
     expect(() =>
       render(
-        <WindowManager layouts={layouts}>
+        <WindowManager layouts={{ xl: layouts }}>
           {layouts.map(({ i }) => (
             <Window key={i} title={`Window ${i}`} />
           ))}

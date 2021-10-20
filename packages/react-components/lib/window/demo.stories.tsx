@@ -9,10 +9,10 @@ export default {
   title: 'Window/Demo',
 } as Meta;
 
-const defaultLayouts: WindowManagerProps['layouts'] = makeLayouts();
+const defaultLayouts = makeLayouts();
 
 export const Demo: Story<WindowManagerProps> = () => {
-  const [layouts, setLayouts] = React.useState(defaultLayouts);
+  const [layouts, setLayouts] = React.useState({ xl: defaultLayouts });
   const [designMode, setDesignMode] = React.useState(true);
   const counter = React.useRef(defaultLayouts.length - 1);
   const theme = useTheme();
@@ -20,7 +20,7 @@ export const Demo: Story<WindowManagerProps> = () => {
     <div>
       <button
         onClick={() => {
-          setLayouts(defaultLayouts);
+          setLayouts({ xl: defaultLayouts });
           counter.current = defaultLayouts.length - 1;
         }}
       >
@@ -28,10 +28,12 @@ export const Demo: Story<WindowManagerProps> = () => {
       </button>
       <button
         onClick={() =>
-          setLayouts((prev) => [
-            ...prev,
-            { i: (++counter.current).toString(), x: 0, y: 0, w: 2, h: 4, minW: 2, minH: 4 },
-          ])
+          setLayouts((prev) => ({
+            xl: [
+              ...prev.xl,
+              { i: (++counter.current).toString(), x: 0, y: 0, w: 2, h: 4, minW: 2, minH: 4 },
+            ],
+          }))
         }
       >
         Add
@@ -42,14 +44,14 @@ export const Demo: Story<WindowManagerProps> = () => {
       <WindowManager
         designMode={designMode}
         layouts={layouts}
-        onLayoutChange={(newLayout) => setLayouts(newLayout)}
+        onLayoutChange={(newLayouts) => setLayouts(newLayouts as typeof layouts)}
         style={{ background: theme.palette.background.default, height: '95vh' }}
       >
-        {layouts.map(({ i }) => (
+        {layouts.xl.map(({ i }) => (
           <Window
             key={i}
             title={`Window ${i}`}
-            onClose={() => setLayouts((prev) => prev.filter((l) => l.i !== i))}
+            onClose={() => setLayouts((prev) => ({ xl: prev.xl.filter((l) => l.i !== i) }))}
           >
             <div
               style={{
