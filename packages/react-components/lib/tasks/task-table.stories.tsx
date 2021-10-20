@@ -8,6 +8,12 @@ import { makeTask } from './test-data.spec';
 const failedTask = makeTask('failed_task', 3, 3);
 failedTask.state = RmfModels.TaskSummary.STATE_FAILED;
 
+const pendingTask = makeTask('pending_task', 3, 0);
+pendingTask.state = RmfModels.TaskSummary.STATE_PENDING;
+
+const queuedTask = makeTask('pending_task', 3, 0);
+queuedTask.state = RmfModels.TaskSummary.STATE_QUEUED;
+
 const completedtasks = Array.from(Array(100)).map((_, idx) => {
   const task = makeTask(`completed_task_${idx}`, 3, 3);
   task.state = RmfModels.TaskSummary.STATE_COMPLETED;
@@ -18,6 +24,8 @@ const tasks = [
   makeTask('active_task', 3, 3),
   makeTask('active_task_2', 4, 3),
   failedTask,
+  pendingTask,
+  queuedTask,
   ...completedtasks,
 ];
 
