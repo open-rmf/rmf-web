@@ -1,9 +1,9 @@
 const commonTheme = {
   secondary: {
-    // Pansy Purple, Smitten, Tyrian Purple
-    main: '#880E4F',
-    light: '#BC477B',
-    dark: '#560027',
+    // Smitten, Cyclamen, Pansy Purple
+    main: '#BC477B',
+    light: '#F178AA',
+    dark: '#880E4F',
   },
   success: {
     // Apple Green, Inchworm, Avocado
