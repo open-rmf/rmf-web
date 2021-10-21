@@ -5,6 +5,7 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { Fleet } from 'api-client';
 import { RobotPanel, VerboseRobot } from 'react-components';
+import { LeafletContext } from 'react-leaflet';
 import {
   BuildingMapContext,
   RmfIngressContext,
@@ -17,16 +18,16 @@ const UpdateRate = 1000;
 
 const useStyles = makeStyles((theme) => ({
   robotPanel: {
-    padding: `${theme.spacing(1)}px`,
     height: '100%',
   },
   container: {
+    padding: `${theme.spacing(4)}px`,
     height: '100%',
     backgroundColor: theme.palette.background.default,
   },
   mapPanel: {
     height: '100%',
-    margin: theme.spacing(1),
+    marginRight: theme.spacing(2),
     flex: '1 0 auto',
   },
 }));
@@ -37,6 +38,7 @@ export function RobotPage() {
   const sioClient = React.useContext(RmfIngressContext)?.sioClient;
   const buildingMap = React.useContext(BuildingMapContext);
 
+  const [leafletMap, setLeafletMap] = React.useState<LeafletContext>({});
   const [_triggerRender, setTriggerRender] = React.useState(0); // eslint-disable-line @typescript-eslint/no-unused-vars
   React.useEffect(() => {
     const interval = setInterval(() => setTriggerRender((prev) => prev + 1), UpdateRate);
@@ -138,6 +140,7 @@ export function RobotPage() {
               fleetStates={Object.assign({}, fleetStatesRef.current)}
               mode="normal"
               zoom={4.5}
+              setLeafletMap={setLeafletMap}
             />
           )}
         </Card>
@@ -154,6 +157,7 @@ export function RobotPage() {
             onChangePage: (_ev, newPage) => setPage(newPage),
           }}
           verboseRobots={verboseRobots}
+          leafletMap={leafletMap}
         />
       </Grid>
     </Grid>

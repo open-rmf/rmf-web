@@ -23,7 +23,7 @@ import {
   WorkcellData,
   WorkcellsOverlay as WorkcellsOverlay_,
 } from 'react-components';
-import { AttributionControl, LayersControl } from 'react-leaflet';
+import { AttributionControl, LayersControl, LeafletContext } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import appConfig from '../../app-config';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
@@ -68,6 +68,7 @@ export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   onRobotClick?: (ev: React.MouseEvent, fleet: string, robot: string) => void;
   onDispenserClick?: (ev: React.MouseEvent, guid: string) => void;
   onIngestorClick?: (ev: React.MouseEvent, guid: string) => void;
+  setLeafletMap?: React.Dispatch<React.SetStateAction<LeafletContext>>;
 }
 
 interface ScheduleVisualizerSettings {
@@ -89,6 +90,7 @@ export default function ScheduleVisualizer({
   onRobotClick,
   onDispenserClick,
   onIngestorClick,
+  setLeafletMap,
   children,
 }: ScheduleVisualizerProps): JSX.Element | null {
   debug('render');
@@ -329,6 +331,7 @@ export default function ScheduleVisualizer({
       bounds={bounds}
       className={classes.map}
       zoom={zoom}
+      setLeafletMap={setLeafletMap}
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
       <LayersControl
