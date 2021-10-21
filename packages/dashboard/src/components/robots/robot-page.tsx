@@ -5,7 +5,12 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { Fleet } from 'api-client';
 import { RobotPanel, VerboseRobot } from 'react-components';
-import { BuildingMapContext, RmfIngressContext } from '../rmf-app';
+import {
+  BuildingMapContext,
+  RmfIngressContext,
+  DispensersContext,
+  IngestorsContext,
+} from '../rmf-app';
 import ScheduleVisualizer from '../schedule-visualizer';
 
 const UpdateRate = 1000;
@@ -37,6 +42,37 @@ export function RobotPage() {
     const interval = setInterval(() => setTriggerRender((prev) => prev + 1), UpdateRate);
     return () => clearInterval(interval);
   }, []);
+
+  // get work cells to display on map
+  const dispensers = React.useContext(DispensersContext);
+  const dispenserStatesRef = React.useRef<Record<string, RmfModels.DispenserState>>({});
+  React.useEffect(() => {
+    if (!sioClient) return;
+    const subs = dispensers.map((d) =>
+      sioClient.subscribeDispenserState(
+        d.guid,
+        (state) => (dispenserStatesRef.current[d.guid] = state),
+      ),
+    );
+    return () => {
+      subs.forEach((s) => sioClient.unsubscribe(s));
+    };
+  }, [sioClient, dispensers]);
+
+  const ingestors = React.useContext(IngestorsContext);
+  const ingestorStatesRef = React.useRef<Record<string, RmfModels.IngestorState>>({});
+  React.useEffect(() => {
+    if (!sioClient) return;
+    const subs = ingestors.map((d) =>
+      sioClient.subscribeIngestorState(
+        d.guid,
+        (state) => (ingestorStatesRef.current[d.guid] = state),
+      ),
+    );
+    return () => {
+      subs.forEach((s) => sioClient.unsubscribe(s));
+    };
+  }, [sioClient, ingestors]);
 
   // schedule visualizer fleet
   const [fleets, setFleets] = React.useState<Fleet[]>([]);
@@ -97,8 +133,8 @@ export function RobotPage() {
           {buildingMap && (
             <ScheduleVisualizer
               buildingMap={buildingMap}
-              dispensers={[]}
-              ingestors={[]}
+              dispensers={dispensers}
+              ingestors={ingestors}
               fleetStates={Object.assign({}, fleetStatesRef.current)}
               mode="normal"
               zoom={4.5}
