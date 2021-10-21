@@ -106,7 +106,9 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          {currentTask && <LinearProgressBar value={currentTask.progress.status || 0} />}
+          {currentTask && (
+            <LinearProgressBar value={parseInt(currentTask.progress.status.slice(0, -1)) || 0} />
+          )}
         </Grid>
         <Grid container item xs={12} justify="center">
           <Typography variant="h6" gutterBottom>
