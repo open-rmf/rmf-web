@@ -25,6 +25,7 @@ setup(
         "tortoise-orm~=0.17.4",
         "pyjwt[crypto]~=2.0",
         "pydantic~=1.8",
+        "numpy~=1.17.4",
     ],
     extras_require={
         "postgres": ["asyncpg~=0.22.0"],
