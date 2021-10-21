@@ -46,6 +46,23 @@ You may also choose to bootstrap only the dashboard
 lerna bootstrap --scope=rmf-dashboard
 ```
 
+If you would like to use PostgreSQL, you will also need to install and set it up. For `apt` based systems:
+```
+apt install postgresql postgresql-contrib -y
+# Set a default password
+sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"
+
+sudo systemctl restart postgresql
+# interactive prompt
+sudo -i -u postgres
+```
+The defaults are for PostgreSQL to be listening on 127.0.0.1:5432.
+
+To manually reset the database:
+```
+sudo -u postgres bash -c "dropdb postgres; createdb postgres"
+```
+
 ## Launching
 
 Before running the commands, make sure that rmf is sourced.
