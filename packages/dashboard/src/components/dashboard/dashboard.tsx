@@ -7,6 +7,7 @@ import React from 'react';
 import { DoorData, DoorPanel, LiftPanel, LiftPanelProps, WorkcellPanel } from 'react-components';
 import { GlobalHotKeys } from 'react-hotkeys';
 import * as RmfModels from 'rmf-models';
+import { LeafletContext } from 'react-leaflet';
 import { buildHotKeys } from '../../hotkeys';
 import { AppControllerContext } from '../app-contexts';
 import {
@@ -187,6 +188,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [appController],
   );
 
+  const [leafletMap, setLeafletMap] = React.useState<LeafletContext>({});
+
   return (
     <div className={classes.root}>
       <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
@@ -201,6 +204,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 liftStates={Object.assign({}, liftStatesRef.current)}
                 fleetStates={Object.assign({}, fleetStatesRef.current)}
                 mode="normal"
+                setLeafletMap={setLeafletMap}
               ></ScheduleVisualizer>
             </Card>
             <Grid item className={classes.itemPanels}>
