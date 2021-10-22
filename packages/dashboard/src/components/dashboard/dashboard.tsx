@@ -5,6 +5,7 @@ import React from 'react';
 import { WindowManager, WindowManagerProps } from 'react-components';
 import { DoorsWindow, doorsWindowClass } from '../doors';
 import { LiftsWindow, liftsWindowClass } from '../lifts';
+import { ScheduleVisualizerWindow, scheduleVisualizerWindowClass } from '../schedule-visualizer';
 import { WorkcellsWindow, workcellsWindowClass } from '../workcells';
 
 const useStyles = makeStyles({
@@ -19,18 +20,26 @@ export const Dashboard: React.FC<{}> = () => {
   const layouts = React.useMemo<WindowManagerProps['layouts']>(
     () => ({
       xl: [
-        doorsWindowClass.createLayout('xl', { i: 'doors', x: 8 }),
-        liftsWindowClass.createLayout('xl', { i: 'lifts', x: 8, y: 4 }),
-        workcellsWindowClass.createLayout('xl', { i: 'workcells', x: 8, y: 8 }),
+        scheduleVisualizerWindowClass.createLayout('xl', {
+          i: 'infrastructure-scheduleVisualizer',
+          x: 0,
+          y: 0,
+          w: 8,
+          h: 12,
+        }),
+        doorsWindowClass.createLayout('xl', { i: 'infrastructure-doors', x: 8 }),
+        liftsWindowClass.createLayout('xl', { i: 'infrastructure-lifts', x: 8, y: 4 }),
+        workcellsWindowClass.createLayout('xl', { i: 'infrastructure-workcells', x: 8, y: 8 }),
       ],
     }),
     [],
   );
   return (
     <WindowManager layouts={layouts} className={classes.windowManager}>
-      <DoorsWindow key="doors" />
-      <LiftsWindow key="lifts" />
-      <WorkcellsWindow key="workcells" />
+      <ScheduleVisualizerWindow key="infrastructure-scheduleVisualizer" />
+      <DoorsWindow key="infrastructure-doors" />
+      <LiftsWindow key="infrastructure-lifts" />
+      <WorkcellsWindow key="infrastructure-workcells" />
     </WindowManager>
   );
 };

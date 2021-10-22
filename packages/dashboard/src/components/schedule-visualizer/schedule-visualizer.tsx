@@ -73,7 +73,7 @@ interface ScheduleVisualizerSettings {
   trajectoryTime: number;
 }
 
-export default function ScheduleVisualizer({
+export function ScheduleVisualizer({
   buildingMap,
   negotiationTrajStore = {},
   dispensers = [],
@@ -434,3 +434,5 @@ export default function ScheduleVisualizer({
     </LMap>
   ) : null;
 }
+
+export default ScheduleVisualizer;

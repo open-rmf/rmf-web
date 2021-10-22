@@ -6,12 +6,11 @@ import React from 'react';
 import { useAsync, Window, WorkcellCell, WorkcellTable } from 'react-components';
 import * as RmfModels from 'rmf-models';
 import { throttleTime } from 'rxjs';
-import { v4 as uuidv4 } from 'uuid';
 import { RmfIngressContext, RxRmfContext } from '../rmf-app';
 import { allWindows, ManagedWindowProps, WindowClass } from '../window';
 
 export const WorkcellsWindow: React.FC<ManagedWindowProps> = React.forwardRef(
-  ({ key, children, ...otherProps }, ref) => {
+  ({ children, ...otherProps }, ref) => {
     const safeAsync = useAsync();
     const rmfIngress = React.useContext(RmfIngressContext);
     const rxRmf = React.useContext(RxRmfContext);
@@ -76,7 +75,6 @@ export const WorkcellsWindow: React.FC<ManagedWindowProps> = React.forwardRef(
     return (
       <Window
         ref={ref}
-        key={key}
         title="Workcells"
         toolbar={
           <IconButton
@@ -172,18 +170,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const workcellsWindowClass: WindowClass = {
-  Component: WorkcellsWindow,
-  createLayout: (_bp, layout = {}) => ({
-    i: uuidv4(),
-    x: 0,
-    y: 0,
-    w: 4,
-    h: 4,
-    minW: 4,
-    minH: 4,
-    ...layout,
-  }),
-};
+export const workcellsWindowClass = new WindowClass('Workcells', WorkcellsWindow, {
+  x: 0,
+  y: 0,
+  w: 4,
+  h: 4,
+  minW: 4,
+  minH: 4,
+});
 
 allWindows['workcells'] = workcellsWindowClass;
