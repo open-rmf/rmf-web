@@ -35,11 +35,11 @@ const useStyles = makeStyles((theme) => ({
   buttonBar: {
     display: 'flex',
     justifyContent: 'flex-end',
-    borderRadius: '0px',
+    borderRadius: 0,
     backgroundColor: theme.palette.primary.main,
   },
   grid: {
-    padding: '1rem',
+    padding: theme.spacing(2),
     maxHeight: '40vh',
     overflowY: 'auto',
   },
@@ -48,18 +48,22 @@ const useStyles = makeStyles((theme) => ({
   },
   doorLabelOpen: {
     backgroundColor: theme.palette.success.main,
+    color: theme.palette.getContrastText(theme.palette.success.main),
   },
   doorLabelClosed: {
     backgroundColor: theme.palette.error.main,
+    color: theme.palette.getContrastText(theme.palette.success.main),
   },
   doorLabelMoving: {
     backgroundColor: theme.palette.warning.main,
+    color: theme.palette.getContrastText(theme.palette.success.main),
   },
   cellPaper: {
-    padding: '0.5rem',
+    padding: theme.spacing(2),
     backgroundColor: theme.palette.background.paper,
-    margin: '0.25rem',
-    border: '1px solid' + theme.palette.primary.main,
+    border: 1,
+    borderStyle: 'solid',
+    borderColor: theme.palette.primary.main,
   },
   itemIcon: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
@@ -82,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
   },
   panelHeader: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
-    marginLeft: '1rem',
+    marginLeft: theme.spacing(2),
   },
 }));
 
@@ -196,7 +200,7 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
           </Grid>
         </Grid>
       </Paper>
-      <Grid className={classes.grid} container direction="row">
+      <Grid className={classes.grid} container direction="row" spacing={2}>
         {isCellView ? (
           doors.map((door) => {
             return (

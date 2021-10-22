@@ -1,4 +1,13 @@
-import { Card, Divider, Grid, IconButton, makeStyles, Paper, Typography } from '@material-ui/core';
+import {
+  Box,
+  Card,
+  Divider,
+  Grid,
+  IconButton,
+  makeStyles,
+  Paper,
+  Typography,
+} from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import { Dispenser } from 'api-client';
@@ -25,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   buttonBar: {
     display: 'flex',
     justifyContent: 'flex-end',
-    borderRadius: '0px',
+    borderRadius: 0,
     backgroundColor: theme.palette.primary.main,
   },
   cellContainer: {
@@ -36,7 +45,6 @@ const useStyles = makeStyles((theme) => ({
   cellPaper: {
     padding: theme.spacing(1),
     backgroundColor: theme.palette.background.paper,
-    margin: '0.25rem',
     border: 1,
     borderStyle: 'solid',
     borderColor: theme.palette.primary.main,
@@ -46,10 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
   panelHeader: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
-    marginLeft: '1rem',
-  },
-  firstTable: {
-    paddingBottom: '1rem',
+    marginLeft: theme.spacing(2),
   },
 }));
 
@@ -150,7 +155,7 @@ export function WorkcellPanel({
           </div>
           <Divider />
           <div className={classes.cellContainer}>
-            <Grid container direction="row" spacing={1}>
+            <Grid container direction="row">
               <Grid item xs={12}>
                 <Typography variant="h6">Ingestors</Typography>
               </Grid>
@@ -176,16 +181,16 @@ export function WorkcellPanel({
         <React.Fragment>
           <div className={classes.cellContainer}>
             {dispensers.length > 0 ? (
-              <div className={classes.firstTable}>
+              <Box>
                 <Typography variant="h6">Dispensers</Typography>
                 <WorkcellTable workcells={dispensers} workcellStates={workCellStates} />
-              </div>
+              </Box>
             ) : null}
             {ingestors.length > 0 ? (
-              <div>
+              <Box>
                 <Typography variant="h6">Ingestors</Typography>
                 <WorkcellTable workcells={ingestors} workcellStates={workCellStates} />
-              </div>
+              </Box>
             ) : null}
           </div>
         </React.Fragment>
