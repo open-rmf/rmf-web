@@ -26,12 +26,13 @@ export const LiftsWindow: React.FC<ManagedWindowProps> = React.forwardRef(
     const [liftStates, setLiftStates] = React.useState<Record<string, RmfModels.LiftState>>({});
 
     React.useEffect(() => {
-      if (!rxRmf) return;
-      rxRmf.buildingMap().subscribe((buildingMap) => {
-        if (!buildingMap) return;
+      if (!rmfIngress) return;
+      (async () => {
+        const buildingMap = (await safeAsync(rmfIngress.buildingApi.getBuildingMapBuildingMapGet()))
+          .data as RmfModels.BuildingMap;
         setLifts(buildingMap.lifts);
-      });
-    }, [safeAsync, rxRmf]);
+      })();
+    }, [safeAsync, rmfIngress]);
 
     React.useEffect(() => {
       if (!rxRmf) return;

@@ -23,15 +23,16 @@ export const DoorsWindow: React.FC<ManagedWindowProps> = React.forwardRef(
     const [isCellView, setIsCellView] = React.useState(true);
 
     React.useEffect(() => {
-      if (!rxRmf) return;
-      rxRmf.buildingMap().subscribe((buildingMap) => {
-        if (!buildingMap) return;
+      if (!rmfIngress) return;
+      (async () => {
+        const buildingMap = (await safeAsync(rmfIngress.buildingApi.getBuildingMapBuildingMapGet()))
+          .data as RmfModels.BuildingMap;
         const doors = buildingMap.levels.flatMap((level) =>
           level.doors.map((door) => ({ level: level.name, door } as DoorData)),
         );
         setDoors(doors);
-      });
-    }, [safeAsync, rxRmf]);
+      })();
+    }, [safeAsync, rmfIngress]);
 
     React.useEffect(() => {
       if (!rxRmf) return;
