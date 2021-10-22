@@ -52,30 +52,28 @@ export interface LiftCellProps {
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    margin: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
   },
   buttonBar: {
     display: 'flex',
     justifyContent: 'flex-end',
-    borderRadius: '0px',
+    borderRadius: 0,
     backgroundColor: theme.palette.primary.light,
   },
   grid: {
-    padding: '1rem',
+    padding: theme.spacing(1),
   },
   cellPaper: {
-    padding: '0.5rem',
+    padding: theme.spacing(2),
     backgroundColor: theme.palette.primary.light,
-    margin: '0.25rem',
+    margin: theme.spacing(1),
     color: theme.palette.getContrastText(theme.palette.primary.light),
+  },
+  requestButton: {
+    marginTop: theme.spacing(1),
   },
   itemIcon: {
     color: theme.palette.getContrastText(theme.palette.primary.light),
-  },
-  buttonGroup: {
-    display: 'flex',
-    justifyContent: 'center',
   },
   iconMoving: {
     color: theme.palette.success.main,
@@ -97,7 +95,7 @@ const useStyles = makeStyles((theme) => ({
   },
   panelHeader: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
-    marginLeft: '1rem',
+    marginLeft: theme.spacing(2),
   },
 }));
 
@@ -145,7 +143,7 @@ const LiftCell = React.memo(
             <Typography id={labelId} align="center" style={{ fontWeight: 'bold' }}>
               {lift.name}
             </Typography>
-            <Box border={1} borderColor="divider" m={0.5}>
+            <Box border={1} borderColor="divider" marginTop={1} marginBottom={1}>
               <Typography align="center">{destinationFloor || 'Unknown'}</Typography>
             </Box>
             <Typography align="center" className={doorModeLabelClasses(doorState)}>
@@ -168,6 +166,7 @@ const LiftCell = React.memo(
           fullWidth
           size="small"
           onClick={() => setShowForms(true)}
+          className={classes.requestButton}
         >
           Request Form
         </Button>

@@ -35,11 +35,11 @@ const useStyles = makeStyles((theme) => ({
   buttonBar: {
     display: 'flex',
     justifyContent: 'flex-end',
-    borderRadius: '0px',
+    borderRadius: 0,
     backgroundColor: theme.palette.primary.light,
   },
   grid: {
-    padding: '1rem',
+    padding: theme.spacing(1),
   },
   doorLabelOpen: {
     backgroundColor: theme.palette.success.main,
@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.getContrastText(theme.palette.warning.main),
   },
   cellPaper: {
-    padding: '0.5rem',
+    padding: theme.spacing(2),
     backgroundColor: theme.palette.primary.light,
     color: theme.palette.getContrastText(theme.palette.primary.light),
   },
@@ -62,17 +62,18 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.getContrastText(theme.palette.primary.main),
   },
   buttonGroup: {
+    marginTop: theme.spacing(1),
     display: 'flex',
     justifyContent: 'center',
   },
   buttons: {
     backgroundColor: theme.palette.primary.main,
-    color: theme.palette.getContrastText(theme.palette.primary.light),
+    color: theme.palette.getContrastText(theme.palette.primary.main),
     boxShadow: theme.shadows[3],
   },
   panelHeader: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
-    marginLeft: '1rem',
+    marginLeft: theme.spacing(2),
   },
 }));
 

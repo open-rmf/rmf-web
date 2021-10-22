@@ -19,24 +19,20 @@ export interface WorkcellCellProps {
 }
 
 const useStyles = makeStyles((theme) => ({
-  container: {
-    margin: theme.spacing(1),
-  },
   buttonBar: {
     display: 'flex',
     justifyContent: 'flex-end',
-    borderRadius: '0px',
+    borderRadius: 0,
     backgroundColor: theme.palette.primary.light,
   },
   cellContainer: {
-    paddingLeft: '1rem',
-    paddingRight: '1rem',
-    paddingBottom: '1rem',
+    padding: theme.spacing(2),
+    paddingTop: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.getContrastText(theme.palette.primary.main),
   },
   cellPaper: {
-    padding: '0.5rem',
+    padding: theme.spacing(1),
     backgroundColor: theme.palette.primary.light,
     color: theme.palette.getContrastText(theme.palette.primary.light),
   },
@@ -45,10 +41,10 @@ const useStyles = makeStyles((theme) => ({
   },
   panelHeader: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
-    marginLeft: '1rem',
+    marginLeft: theme.spacing(2),
   },
   subPanelHeader: {
-    marginLeft: '1rem',
+    marginLeft: theme.spacing(2),
     color: theme.palette.getContrastText(theme.palette.primary.light),
   },
 }));
@@ -99,7 +95,7 @@ export function WorkcellPanel({
   const [isCellView, setIsCellView] = React.useState(true);
 
   return (
-    <Card variant="outlined" className={classes.container}>
+    <Card variant="outlined">
       <Paper className={classes.buttonBar}>
         <Grid container direction="row" justify="space-between" alignItems="center">
           <Grid item xs={6}>
@@ -121,7 +117,7 @@ export function WorkcellPanel({
       {isCellView ? (
         <React.Fragment>
           <div className={classes.cellContainer}>
-            <Typography variant="h6">Dispenser Table</Typography>
+            <Typography variant="h6">Dispensers</Typography>
             <Grid container direction="row" spacing={1}>
               {dispensers.length > 0
                 ? dispensers.map((dispenser, i) => {
@@ -141,7 +137,7 @@ export function WorkcellPanel({
             </Grid>
           </div>
           <div className={classes.cellContainer}>
-            <Typography variant="h6">Ingester Table</Typography>
+            <Typography variant="h6">Ingestors</Typography>
             <Grid container direction="row" spacing={1}>
               {ingestors.length > 0
                 ? ingestors.map((ingestor, i) => {
