@@ -14,7 +14,7 @@ import React from 'react';
 import { HeaderBar, LogoButton, NavigationBar, Tooltip, useAsync } from 'react-components';
 import { useHistory, useLocation } from 'react-router-dom';
 import { UserProfileContext } from 'rmf-auth';
-import { AdminRoute, DashboardRoute, RobotsRoute, TasksRoute } from '../util/url';
+import { AdminRoute, InfrastructureRoute, RobotsRoute, TasksRoute } from '../util/url';
 import {
   AppConfigContext,
   AppControllerContext,
@@ -41,8 +41,9 @@ const useStyles = makeStyles((theme) =>
 export type TabValue = 'building' | 'robots' | 'tasks' | 'admin';
 
 function locationToTabValue(pathname: string): TabValue | undefined {
-  // `DashboardRoute` being the root, it is a prefix to all routes, so we need to check exactly.
-  if (pathname === DashboardRoute) return 'building';
+  // `InfrastructureRoute` being the root, it is a prefix to all routes, so we need to check exactly.
+  // TODO: Overview route will be the root in the future.
+  if (pathname === InfrastructureRoute) return 'building';
   if (pathname.startsWith(TasksRoute)) return 'tasks';
   if (pathname.startsWith(RobotsRoute)) return 'robots';
   if (pathname.startsWith(AdminRoute)) return 'admin';
@@ -97,7 +98,7 @@ export const AppBar = React.memo(
             label="Building"
             value="building"
             aria-label="Building"
-            onClick={() => history.push(DashboardRoute)}
+            onClick={() => history.push(InfrastructureRoute)}
           />
           <Tab
             label="Robots"

@@ -15,7 +15,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const Dashboard: React.FC<{}> = () => {
+export const InfrastructurePage: React.FC<{}> = () => {
   const classes = useStyles();
   const layouts = React.useMemo<WindowManagerProps['layouts']>(
     () => ({
@@ -44,4 +44,4 @@ export const Dashboard: React.FC<{}> = () => {
   );
 };
 
-export default Dashboard;
+export default InfrastructurePage;

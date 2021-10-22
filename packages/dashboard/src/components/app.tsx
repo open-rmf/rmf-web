@@ -9,12 +9,12 @@ import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { LoginPage, PrivateRoute } from 'rmf-auth';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
-import { AdminRoute, DashboardRoute, LoginRoute, RobotsRoute, TasksRoute } from '../util/url';
+import { AdminRoute, InfrastructureRoute, LoginRoute, RobotsRoute, TasksRoute } from '../util/url';
 import { AdminRouter } from './admin';
 import { AppBase } from './app-base';
 import { ResourcesContext } from './app-contexts';
 import './app.css';
-import Dashboard from './dashboard/dashboard';
+import { InfrastructurePage } from './pages';
 import { RmfApp } from './rmf-app';
 import { RobotPage } from './robots';
 import { TaskPage } from './tasks';
@@ -70,15 +70,15 @@ export default function App(): JSX.Element | null {
             <AppBase>
               <Switch>
                 <Route exact path={LoginRoute}>
-                  <Redirect to={DashboardRoute} />
+                  <Redirect to={InfrastructureRoute} />
                 </Route>
                 <PrivateRoute
                   exact
-                  path={DashboardRoute}
+                  path={InfrastructureRoute}
                   unauthorizedComponent={loginRedirect}
                   user={user}
                 >
-                  <Dashboard />
+                  <InfrastructurePage />
                 </PrivateRoute>
                 <PrivateRoute
                   exact
@@ -100,7 +100,7 @@ export default function App(): JSX.Element | null {
                   <AdminRouter />
                 </PrivateRoute>
                 <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-                  <Redirect to={DashboardRoute} />
+                  <Redirect to={InfrastructureRoute} />
                 </PrivateRoute>
               </Switch>
             </AppBase>
@@ -112,7 +112,7 @@ export default function App(): JSX.Element | null {
                 title={'Dashboard'}
                 logo="assets/ros-health.png"
                 onLoginClick={() =>
-                  authenticator.login(`${window.location.origin}${DashboardRoute}`)
+                  authenticator.login(`${window.location.origin}${InfrastructureRoute}`)
                 }
               />
             </Route>
