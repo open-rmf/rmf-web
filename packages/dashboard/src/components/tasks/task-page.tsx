@@ -4,7 +4,9 @@ import { makeStyles } from '@material-ui/core';
 import type { Task, TaskSummary } from 'api-client';
 import type { AxiosError } from 'axios';
 import React from 'react';
-import { PlacesContext, RmfIngressContext } from '../rmf-app';
+import { getPlaces, Place, useAsync } from 'react-components';
+import * as RmfModels from 'rmf-models';
+import { RmfIngressContext } from '../rmf-app';
 import { TaskPanel, TaskPanelProps } from './task-panel';
 
 const useStyles = makeStyles((theme) => ({
@@ -18,14 +20,26 @@ const useStyles = makeStyles((theme) => ({
 
 export function TaskPage() {
   const classes = useStyles();
-  const { tasksApi, sioClient } = React.useContext(RmfIngressContext) || {};
+  const { buildingApi, tasksApi, sioClient } = React.useContext(RmfIngressContext) || {};
   const [fetchedTasks, setFetchedTasks] = React.useState<Task[]>([]);
   const [updatedSummaries, setUpdatedSummaries] = React.useState<Record<string, TaskSummary>>({});
   const [autoRefreshEnabled, setAutoRefreshEnabled] = React.useState(true);
   const [page, setPage] = React.useState(0);
   const [hasMore, setHasMore] = React.useState(true);
-  const places = React.useContext(PlacesContext);
-  const placeNames = places.map((p) => p.vertex.name);
+
+  const safeAsync = useAsync();
+  const [places, setPlaces] = React.useState<Place[] | null>(null);
+  React.useEffect(() => {
+    if (!buildingApi) return;
+    (async () => {
+      const buildingMap = (await safeAsync(buildingApi.getBuildingMapBuildingMapGet()))
+        .data as RmfModels.BuildingMap;
+      setPlaces(getPlaces(buildingMap));
+    })();
+  }, [safeAsync, buildingApi]);
+  const placeNames = React.useMemo(() => (places ? places.map((p) => p.vertex.name) : null), [
+    places,
+  ]);
   const tasks = React.useMemo(
     () => fetchedTasks.map((t) => ({ ...t, summary: updatedSummaries[t.task_id] || t.summary })),
     [fetchedTasks, updatedSummaries],
@@ -112,23 +126,25 @@ export function TaskPage() {
   );
   //extra task panel will be removed
   return (
-    <TaskPanel
-      className={classes.taskPanel}
-      tasks={tasks}
-      paginationOptions={{
-        page,
-        count: hasMore ? -1 : page * 10 + tasks.length,
-        rowsPerPage: 10,
-        rowsPerPageOptions: [10],
-        onChangePage: (_ev, newPage) => setPage(newPage),
-      }}
-      cleaningZones={placeNames}
-      loopWaypoints={placeNames}
-      deliveryWaypoints={placeNames}
-      submitTasks={submitTasks}
-      cancelTask={cancelTask}
-      onRefresh={handleRefresh}
-      onAutoRefresh={setAutoRefreshEnabled}
-    />
+    placeNames && (
+      <TaskPanel
+        className={classes.taskPanel}
+        tasks={tasks}
+        paginationOptions={{
+          page,
+          count: hasMore ? -1 : page * 10 + tasks.length,
+          rowsPerPage: 10,
+          rowsPerPageOptions: [10],
+          onChangePage: (_ev, newPage) => setPage(newPage),
+        }}
+        cleaningZones={placeNames}
+        loopWaypoints={placeNames}
+        deliveryWaypoints={placeNames}
+        submitTasks={submitTasks}
+        cancelTask={cancelTask}
+        onRefresh={handleRefresh}
+        onAutoRefresh={setAutoRefreshEnabled}
+      />
+    )
   );
 }

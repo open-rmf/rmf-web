@@ -10,11 +10,13 @@ import {
   AffineImageOverlay,
   ColorManager,
   DoorsOverlay as DoorsOverlay_,
+  getPlaces,
   LiftsOverlay as LiftsOverlay_,
   LMap,
   loadAffineImage,
   RobotData,
   RobotsOverlay as RobotsOverlay_,
+  RobotsOverlayProps,
   TrajectoriesOverlay as TrajectoriesOverlay_,
   TrajectoryData,
   TrajectoryTimeControl,
@@ -25,10 +27,11 @@ import {
 } from 'react-components';
 import { AttributionControl, LayersControl } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
+import { Subscription, throttleTime } from 'rxjs';
 import appConfig from '../../app-config';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { ResourcesContext } from '../app-contexts';
-import { PlacesContext, RmfIngressContext } from '../rmf-app';
+import { RmfIngressContext, RxRmfContext } from '../rmf-app';
 
 const DoorsOverlay = React.memo(DoorsOverlay_);
 const LiftsOverlay = React.memo(LiftsOverlay_);
@@ -51,13 +54,6 @@ const SettingsKey = 'scheduleVisualizerSettings';
 const colorManager = new ColorManager();
 
 export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
-  buildingMap: RmfModels.BuildingMap;
-  negotiationTrajStore?: Record<string, NegotiationTrajectoryResponse>;
-  dispensers?: Dispenser[];
-  ingestors?: Ingestor[];
-  doorStates?: Record<string, RmfModels.DoorState>;
-  liftStates?: Record<string, RmfModels.LiftState>;
-  fleetStates?: Record<string, RmfModels.FleetState>;
   /**
    * default: 'normal'
    */
@@ -74,13 +70,6 @@ interface ScheduleVisualizerSettings {
 }
 
 export function ScheduleVisualizer({
-  buildingMap,
-  negotiationTrajStore = {},
-  dispensers = [],
-  ingestors = [],
-  doorStates = {},
-  liftStates = {},
-  fleetStates = {},
   mode = 'normal',
   onDoorClick,
   onLiftClick,
@@ -91,26 +80,79 @@ export function ScheduleVisualizer({
 }: ScheduleVisualizerProps): JSX.Element | null {
   debug('render');
   const safeAsync = useAsync();
+  const rmfIngress = React.useContext(RmfIngressContext);
+  const rxRmf = React.useContext(RxRmfContext);
+
+  const [buildingMap, setBuildingMap] = React.useState<RmfModels.BuildingMap | null>(null);
+  React.useEffect(() => {
+    if (!rmfIngress) return;
+    (async () => {
+      const buildingMap = (await safeAsync(rmfIngress.buildingApi.getBuildingMapBuildingMapGet()))
+        .data as RmfModels.BuildingMap;
+      setBuildingMap(buildingMap);
+    })();
+  }, [safeAsync, rmfIngress]);
+
   const classes = scheduleVisualizerStyle();
   const levels = React.useMemo(
-    () => [...buildingMap.levels].sort((a, b) => a.name.localeCompare(b.name)),
+    () => (buildingMap ? [...buildingMap.levels].sort((a, b) => a.name.localeCompare(b.name)) : []),
     [buildingMap],
   );
-  const [currentLevel, setCurrentLevel] = React.useState(levels[0]);
+  const [currentLevel, setCurrentLevel] = React.useState<RmfModels.Level | null>(null);
+  React.useEffect(() => {
+    if (levels.length === 0) return;
+    setCurrentLevel(levels[0]);
+  }, [levels]);
+
   const [images, setImages] = React.useState<Record<string, HTMLImageElement>>({});
   const [levelBounds, setLevelBounds] = React.useState<Record<string, L.LatLngBoundsExpression>>(
     {},
   );
-  const bounds = React.useMemo(() => levelBounds[currentLevel.name], [levelBounds, currentLevel]);
+  const bounds = React.useMemo(
+    () => (currentLevel !== null ? levelBounds[currentLevel.name] : null),
+    [levelBounds, currentLevel],
+  );
 
-  const [robots, setRobots] = React.useState<RobotData[]>([]);
-  const { current: robotsStore } = React.useRef<Record<string, RobotData>>({});
+  const [doorStates, setDoorStates] = React.useState<Record<string, RmfModels.DoorState>>({});
+  React.useEffect(() => {
+    if (!rxRmf || !buildingMap) return;
+    const doors = buildingMap.levels.flatMap((level) => level.doors);
+    const subs = doors.map((door) =>
+      rxRmf
+        .doorStates(door.name)
+        .pipe(throttleTime(1000))
+        .subscribe(
+          (doorState) =>
+            doorState && setDoorStates((prev) => ({ ...prev, [door.name]: doorState })),
+        ),
+    );
+    return () => {
+      subs.forEach((sub) => sub.unsubscribe());
+    };
+  }, [rxRmf, buildingMap]);
+
+  const [liftStates, setLiftStates] = React.useState<Record<string, RmfModels.LiftState>>({});
+  React.useEffect(() => {
+    if (!rxRmf || !buildingMap) return;
+    const subs = buildingMap.lifts.map((lift) =>
+      rxRmf
+        .liftStates(lift.name)
+        .pipe(throttleTime(1000))
+        .subscribe(
+          (liftState) =>
+            liftState && setLiftStates((prev) => ({ ...prev, [lift.name]: liftState })),
+        ),
+    );
+    return () => {
+      subs.forEach((sub) => sub.unsubscribe());
+    };
+  }, [rxRmf, buildingMap]);
 
   // FIXME: trajectory manager should handle the tokens
   const authenticator = appConfig.authenticator;
 
   const [trajectories, setTrajectories] = React.useState<TrajectoryData[]>([]);
-  const { trajectoryManager: trajManager } = React.useContext(RmfIngressContext) || {};
+  const trajManager = rmfIngress ? rmfIngress.trajectoryManager : null;
 
   const [
     scheduleVisualizerSettings,
@@ -122,8 +164,11 @@ export function ScheduleVisualizer({
   const trajectoryTime = scheduleVisualizerSettings.trajectoryTime;
   const trajectoryAnimScale = trajectoryTime / (0.9 * TrajectoryUpdateInterval);
 
+  const { current: negotiationTrajStore } = React.useRef<
+    Record<string, NegotiationTrajectoryResponse>
+  >({});
   const negoTrajectories = React.useMemo<TrajectoryData[]>(() => {
-    if (mode !== 'negotiation') return [];
+    if (mode !== 'negotiation' || currentLevel === null) return [];
     const negoTrajs = negotiationTrajStore[currentLevel.name];
     return negoTrajs
       ? negoTrajs.values.map((v) => ({
@@ -146,10 +191,10 @@ export function ScheduleVisualizer({
   }, [mode, trajectories, negoTrajectories]);
 
   React.useEffect(() => {
+    if (mode !== 'normal' || currentLevel === null) return;
+
     let interval: number;
     let cancel = false;
-
-    if (mode !== 'normal') return;
 
     const updateTrajectory = async () => {
       debug('updating trajectories');
@@ -194,9 +239,14 @@ export function ScheduleVisualizer({
 
   const [dispensersData, setDispensersData] = React.useState<WorkcellData[]>([]);
   React.useEffect(() => {
+    if (!rmfIngress || currentLevel === null) return;
     const dispenserManager = resourceManager?.dispensers;
     if (!dispenserManager) return;
+
     (async () => {
+      const dispensers = (await safeAsync(rmfIngress.dispensersApi.getDispensersDispensersGet()))
+        .data as Dispenser[];
+
       const dispenserResources = dispenserManager.dispensers;
       const availableData = dispensers.filter(
         (wc) =>
@@ -216,13 +266,18 @@ export function ScheduleVisualizer({
         })),
       );
     })();
-  }, [safeAsync, resourceManager?.dispensers, dispensers, currentLevel.name]);
+  }, [safeAsync, rmfIngress, resourceManager?.dispensers, currentLevel]);
 
   const [ingestorsData, setIngestorsData] = React.useState<WorkcellData[]>([]);
   React.useEffect(() => {
+    if (!rmfIngress || currentLevel === null) return;
     const dispenserManager = resourceManager?.dispensers;
     if (!dispenserManager) return;
+
     (async () => {
+      const ingestors = (await safeAsync(rmfIngress.ingestorsApi.getIngestorsIngestorsGet()))
+        .data as Ingestor[];
+
       const dispenserResources = dispenserManager.dispensers;
       const availableData = ingestors.filter(
         (wc) =>
@@ -242,47 +297,74 @@ export function ScheduleVisualizer({
         })),
       );
     })();
-  }, [safeAsync, resourceManager?.dispensers, ingestors, currentLevel]);
+  }, [safeAsync, rmfIngress, resourceManager?.dispensers, currentLevel]);
 
-  const places = React.useContext(PlacesContext);
-  const waypoints = React.useMemo(
-    () => places.filter((p) => p.level === currentLevel.name && p.vertex.name.length > 0),
-    [places, currentLevel],
-  );
-
-  React.useEffect(() => {
-    (async () => {
-      const promises = Object.values(fleetStates).flatMap((fleetState) =>
-        fleetState.robots.map(async (r) => {
-          const robotId = `${fleetState.name}/${r.name}`;
-          if (robotId in robotsStore) return;
-          robotsStore[robotId] = {
-            fleet: fleetState.name,
-            name: r.name,
-            model: r.model,
-            footprint: 0.5,
-            color: await colorManager.robotPrimaryColor(fleetState.name, r.name, r.model),
-            iconPath:
-              (await resourceManager?.robots.getIconPath(fleetState.name, r.model)) || undefined,
-          };
-        }),
-      );
-      await safeAsync(Promise.all(promises));
-    })();
-  }, [safeAsync, fleetStates, robotsStore, resourceManager]);
-
-  React.useEffect(() => {
-    const newRobots = Object.values(fleetStates).flatMap((fleetState) =>
-      fleetState.robots
-        .filter(
-          (r) =>
-            r.location.level_name === currentLevel.name &&
-            `${fleetState.name}/${r.name}` in robotsStore,
-        )
-        .map((r) => robotsStore[`${fleetState.name}/${r.name}`]),
+  const waypoints = React.useMemo(() => {
+    if (!buildingMap || currentLevel === null) return [];
+    return getPlaces(buildingMap).filter(
+      (p) => p.level === currentLevel.name && p.vertex.name.length > 0,
     );
-    setRobots(newRobots);
-  }, [safeAsync, fleetStates, robotsStore, currentLevel]);
+  }, [buildingMap, currentLevel]);
+
+  const [fleetStates, setFleetStates] = React.useState<Record<string, RmfModels.FleetState>>({});
+  React.useEffect(() => {
+    if (!rmfIngress || !rxRmf) return;
+    let subs: Subscription[] = [];
+    (async () => {
+      const fleets = (await safeAsync(rmfIngress.fleetsApi.getFleetsFleetsGet())).data;
+      subs = fleets.map((fleet) =>
+        rxRmf
+          .fleetStates(fleet.name)
+          .pipe(throttleTime(1000))
+          .subscribe(
+            (fleetState) =>
+              fleetState && setFleetStates((s) => ({ ...s, [fleet.name]: fleetState })),
+          ),
+      );
+    })();
+    return () => {
+      subs.forEach((s) => s.unsubscribe());
+    };
+  }, [safeAsync, rmfIngress, rxRmf]);
+
+  const [robotsRecord, setRobotsRecord] = React.useState<Record<string, RobotData>>({});
+  React.useEffect(() => {
+    Object.values(fleetStates).forEach(async (fleetState) => {
+      if (!fleetState) return;
+      fleetState.robots.map(async (r) => {
+        const robotId = `${fleetState.name}/${r.name}`;
+        const color = await safeAsync(
+          colorManager.robotPrimaryColor(fleetState.name, r.name, r.model),
+        );
+        const iconPath =
+          (await safeAsync(resourceManager?.robots.getIconPath(fleetState.name, r.model))) ||
+          undefined;
+        setRobotsRecord((prev) => {
+          if (robotId in prev) return prev;
+          return {
+            ...prev,
+            [robotId]: {
+              fleet: fleetState.name,
+              name: r.name,
+              model: r.model,
+              footprint: 0.5,
+              color,
+              iconPath,
+            },
+          };
+        });
+      });
+    });
+  }, [safeAsync, fleetStates, resourceManager?.robots]);
+  const robots = React.useMemo(() => Object.values(robotsRecord), [robotsRecord]);
+
+  const getRobotState = React.useCallback<RobotsOverlayProps['getRobotState']>(
+    (fleet, robot) => {
+      const state = fleetStates[fleet].robots.find((r) => r.name === robot);
+      return state || null;
+    },
+    [fleetStates],
+  );
 
   React.useEffect(() => {
     (async () => {
@@ -297,6 +379,7 @@ export function ScheduleVisualizer({
   }, [levels, safeAsync]);
 
   React.useEffect(() => {
+    if (levels === null) return;
     const bounds = levels.reduce((acc, l) => {
       const imageEl = images[l.name];
       if (!imageEl) return acc;
@@ -338,7 +421,7 @@ export function ScheduleVisualizer({
           setCurrentLevel(levels.find((l) => l.name === ev.name) || levels[0])
         }
       >
-        {buildingMap.levels.map((level) => (
+        {levels.map((level) => (
           <LayersControl.BaseLayer
             key={level.name}
             name={level.name}
@@ -379,24 +462,28 @@ export function ScheduleVisualizer({
         </LayersControl.Overlay>
 
         <LayersControl.Overlay name="Lifts" checked={!layersUnChecked['Lifts']}>
-          <LiftsOverlay
-            bounds={bounds}
-            currentLevel={currentLevel.name}
-            lifts={buildingMap.lifts}
-            liftStates={liftStates}
-            hideLabels={layersUnChecked['Lifts']}
-            onLiftClick={onLiftClick}
-          />
+          {buildingMap && currentLevel && (
+            <LiftsOverlay
+              bounds={bounds}
+              currentLevel={currentLevel.name}
+              lifts={buildingMap.lifts}
+              liftStates={liftStates}
+              hideLabels={layersUnChecked['Lifts']}
+              onLiftClick={onLiftClick}
+            />
+          )}
         </LayersControl.Overlay>
 
         <LayersControl.Overlay name="Doors" checked={!layersUnChecked['Doors']}>
-          <DoorsOverlay
-            bounds={bounds}
-            doors={currentLevel.doors}
-            doorStates={doorStates}
-            hideLabels={layersUnChecked['Doors']}
-            onDoorClick={onDoorClick}
-          />
+          {currentLevel && (
+            <DoorsOverlay
+              bounds={bounds}
+              doors={currentLevel.doors}
+              doorStates={doorStates}
+              hideLabels={layersUnChecked['Doors']}
+              onDoorClick={onDoorClick}
+            />
+          )}
         </LayersControl.Overlay>
 
         <LayersControl.Overlay name="Trajectories" checked>
@@ -407,10 +494,7 @@ export function ScheduleVisualizer({
           <RobotsOverlay
             bounds={bounds}
             robots={robots}
-            getRobotState={(fleet, robot) => {
-              const state = fleetStates[fleet].robots.find((r) => r.name === robot);
-              return state || null;
-            }}
+            getRobotState={getRobotState}
             hideLabels={layersUnChecked['Robots']}
             onRobotClick={onRobotClick}
           />
