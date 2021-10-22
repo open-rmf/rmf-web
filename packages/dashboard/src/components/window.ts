@@ -41,4 +41,12 @@ export class WindowClass {
   }
 }
 
+export function getWindowSettings<SettingsType>(windowKey: string): SettingsType | undefined {
+  return (window.localStorage.getItem(`window.${windowKey}`) as unknown) as SettingsType;
+}
+
+export function saveWindowSettings(windowKey: string, settings: unknown): void {
+  window.localStorage.setItem(`window.${windowKey}`, JSON.stringify(settings));
+}
+
 export const allWindows: Record<string, WindowClass> = {};

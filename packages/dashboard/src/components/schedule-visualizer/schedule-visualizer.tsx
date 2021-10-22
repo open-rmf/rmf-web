@@ -48,12 +48,10 @@ const scheduleVisualizerStyle = makeStyles((theme) => ({
 
 const debug = Debug('ScheduleVisualizer');
 const TrajectoryUpdateInterval = 2000;
-// schedule visualizer manages it's own settings so that it doesn't cause a re-render
-// of the whole app when it changes.
-const SettingsKey = 'scheduleVisualizerSettings';
 const colorManager = new ColorManager();
 
 export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
+  settings?: ScheduleVisualizerSettings;
   /**
    * default: 'normal'
    */
@@ -63,19 +61,24 @@ export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   onRobotClick?: (ev: React.MouseEvent, fleet: string, robot: string) => void;
   onDispenserClick?: (ev: React.MouseEvent, guid: string) => void;
   onIngestorClick?: (ev: React.MouseEvent, guid: string) => void;
+  onSettingsChange?: (newSettings: ScheduleVisualizerSettings) => void;
 }
 
-interface ScheduleVisualizerSettings {
+export interface ScheduleVisualizerSettings {
   trajectoryTime: number;
 }
 
+const defaultSettings: ScheduleVisualizerSettings = { trajectoryTime: 60000 /* 1 min */ };
+
 export function ScheduleVisualizer({
+  settings = defaultSettings,
   mode = 'normal',
   onDoorClick,
   onLiftClick,
   onRobotClick,
   onDispenserClick,
   onIngestorClick,
+  onSettingsChange,
   children,
 }: ScheduleVisualizerProps): JSX.Element | null {
   debug('render');
@@ -154,14 +157,7 @@ export function ScheduleVisualizer({
   const [trajectories, setTrajectories] = React.useState<TrajectoryData[]>([]);
   const trajManager = rmfIngress ? rmfIngress.trajectoryManager : null;
 
-  const [
-    scheduleVisualizerSettings,
-    setScheduleVisualizerSettings,
-  ] = React.useState<ScheduleVisualizerSettings>(() => {
-    const settings = window.localStorage.getItem(SettingsKey);
-    return settings ? JSON.parse(settings) : { trajectoryTime: 60000 /* 1 min */ };
-  });
-  const trajectoryTime = scheduleVisualizerSettings.trajectoryTime;
+  const trajectoryTime = settings.trajectoryTime;
   const trajectoryAnimScale = trajectoryTime / (0.9 * TrajectoryUpdateInterval);
 
   const { current: negotiationTrajStore } = React.useRef<
@@ -506,13 +502,10 @@ export function ScheduleVisualizer({
         value={trajectoryTime}
         min={60000}
         max={600000}
-        onChange={(_ev, newValue) =>
-          setScheduleVisualizerSettings((prev) => {
-            const newSettings = { ...prev, trajectoryTime: newValue };
-            window.localStorage.setItem(SettingsKey, JSON.stringify(newSettings));
-            return newSettings;
-          })
-        }
+        onChange={(_ev, newValue) => {
+          const newSettings = { ...settings, trajectoryTime: newValue };
+          onSettingsChange && onSettingsChange(newSettings);
+        }}
       />
       {children}
     </LMap>
