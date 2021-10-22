@@ -64,8 +64,8 @@ export const WindowManager: React.FC<WindowManagerProps> = ({
   React.useEffect(() => {
     if (!containerRef.current) return;
     const resizeObserver = new ResizeObserver((entries) => {
-      const contentSize = entries[0].contentBoxSize[0];
-      setRowHeight((contentSize.blockSize - theme.spacing(26)) / 12);
+      const contentRect = entries[0].contentRect;
+      setRowHeight((contentRect.height - theme.spacing(26)) / 12);
     });
     resizeObserver.observe(containerRef.current);
     return () => {
