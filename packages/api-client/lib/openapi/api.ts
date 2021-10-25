@@ -42,37 +42,37 @@ export interface AffineImage {
    * @type {string}
    * @memberof AffineImage
    */
-  name?: string;
+  name: string;
   /**
    *
    * @type {number}
    * @memberof AffineImage
    */
-  x_offset?: number;
+  x_offset: number;
   /**
    *
    * @type {number}
    * @memberof AffineImage
    */
-  y_offset?: number;
+  y_offset: number;
   /**
    *
    * @type {number}
    * @memberof AffineImage
    */
-  yaw?: number;
+  yaw: number;
   /**
    *
    * @type {number}
    * @memberof AffineImage
    */
-  scale?: number;
+  scale: number;
   /**
    *
    * @type {string}
    * @memberof AffineImage
    */
-  encoding?: string;
+  encoding: string;
   /**
    *
    * @type {string}
@@ -91,49 +91,49 @@ export interface ApiServerModelsFleetsRobotState {
    * @type {string}
    * @memberof ApiServerModelsFleetsRobotState
    */
-  name?: string;
+  name: string;
   /**
    *
    * @type {string}
    * @memberof ApiServerModelsFleetsRobotState
    */
-  model?: string;
+  model: string;
   /**
    *
    * @type {string}
    * @memberof ApiServerModelsFleetsRobotState
    */
-  task_id?: string;
+  task_id: string;
   /**
    *
    * @type {number}
    * @memberof ApiServerModelsFleetsRobotState
    */
-  seq?: number;
+  seq: number;
   /**
    *
    * @type {RobotMode}
    * @memberof ApiServerModelsFleetsRobotState
    */
-  mode?: RobotMode;
+  mode: RobotMode;
   /**
    *
    * @type {number}
    * @memberof ApiServerModelsFleetsRobotState
    */
-  battery_percent?: number;
+  battery_percent: number;
   /**
    *
    * @type {Location}
    * @memberof ApiServerModelsFleetsRobotState
    */
-  location?: Location;
+  location: Location;
   /**
    *
    * @type {Array<Location>}
    * @memberof ApiServerModelsFleetsRobotState
    */
-  path?: Array<Location>;
+  path: Array<Location>;
 }
 /**
  *
@@ -146,49 +146,49 @@ export interface ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState {
    * @type {string}
    * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
    */
-  name?: string;
+  name: string;
   /**
    *
    * @type {string}
    * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
    */
-  model?: string;
+  model: string;
   /**
    *
    * @type {string}
    * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
    */
-  task_id?: string;
+  task_id: string;
   /**
    *
    * @type {number}
    * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
    */
-  seq?: number;
+  seq: number;
   /**
    *
    * @type {RobotMode}
    * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
    */
-  mode?: RobotMode;
+  mode: RobotMode;
   /**
    *
    * @type {number}
    * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
    */
-  battery_percent?: number;
+  battery_percent: number;
   /**
    *
    * @type {Location}
    * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
    */
-  location?: Location;
+  location: Location;
   /**
    *
    * @type {Array<Location>}
    * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
    */
-  path?: Array<Location>;
+  path: Array<Location>;
 }
 /**
  *
@@ -201,13 +201,13 @@ export interface Behavior {
    * @type {string}
    * @memberof Behavior
    */
-  name?: string;
+  name: string;
   /**
    *
    * @type {Array<BehaviorParameter>}
    * @memberof Behavior
    */
-  parameters?: Array<BehaviorParameter>;
+  parameters: Array<BehaviorParameter>;
 }
 /**
  *
@@ -220,13 +220,13 @@ export interface BehaviorParameter {
    * @type {string}
    * @memberof BehaviorParameter
    */
-  name?: string;
+  name: string;
   /**
    *
    * @type {string}
    * @memberof BehaviorParameter
    */
-  value?: string;
+  value: string;
 }
 /**
  *
@@ -239,7 +239,7 @@ export interface BuildingMap {
    * @type {string}
    * @memberof BuildingMap
    */
-  name?: string;
+  name: string;
   /**
    *
    * @type {Array<Level>}
@@ -251,7 +251,7 @@ export interface BuildingMap {
    * @type {Array<Lift>}
    * @memberof BuildingMap
    */
-  lifts?: Array<Lift>;
+  lifts: Array<Lift>;
 }
 /**
  *
@@ -277,7 +277,7 @@ export interface Clean {
    * @type {string}
    * @memberof Clean
    */
-  start_waypoint?: string;
+  start_waypoint: string;
 }
 /**
  *
@@ -303,49 +303,49 @@ export interface Delivery {
    * @type {string}
    * @memberof Delivery
    */
-  task_id?: string;
+  task_id: string;
   /**
    *
    * @type {Array<DispenserRequestItem>}
    * @memberof Delivery
    */
-  items?: Array<DispenserRequestItem>;
+  items: Array<DispenserRequestItem>;
   /**
    *
    * @type {string}
    * @memberof Delivery
    */
-  pickup_place_name?: string;
+  pickup_place_name: string;
   /**
    *
    * @type {string}
    * @memberof Delivery
    */
-  pickup_dispenser?: string;
+  pickup_dispenser: string;
   /**
    *
    * @type {Behavior}
    * @memberof Delivery
    */
-  pickup_behavior?: Behavior;
+  pickup_behavior: Behavior;
   /**
    *
    * @type {string}
    * @memberof Delivery
    */
-  dropoff_place_name?: string;
+  dropoff_place_name: string;
   /**
    *
    * @type {string}
    * @memberof Delivery
    */
-  dropoff_ingestor?: string;
+  dropoff_ingestor: string;
   /**
    *
    * @type {Behavior}
    * @memberof Delivery
    */
-  dropoff_behavior?: Behavior;
+  dropoff_behavior: Behavior;
 }
 /**
  *
@@ -427,19 +427,19 @@ export interface DispenserRequestItem {
    * @type {string}
    * @memberof DispenserRequestItem
    */
-  type_guid?: string;
+  type_guid: string;
   /**
    *
    * @type {number}
    * @memberof DispenserRequestItem
    */
-  quantity?: number;
+  quantity: number;
   /**
    *
    * @type {string}
    * @memberof DispenserRequestItem
    */
-  compartment_name?: string;
+  compartment_name: string;
 }
 /**
  *
@@ -452,31 +452,31 @@ export interface DispenserState {
    * @type {Time}
    * @memberof DispenserState
    */
-  time?: Time;
+  time: Time;
   /**
    *
    * @type {string}
    * @memberof DispenserState
    */
-  guid?: string;
+  guid: string;
   /**
    *
    * @type {number}
    * @memberof DispenserState
    */
-  mode?: number;
+  mode: number;
   /**
    *
    * @type {Array<string>}
    * @memberof DispenserState
    */
-  request_guid_queue?: Array<string>;
+  request_guid_queue: Array<string>;
   /**
    *
    * @type {number}
    * @memberof DispenserState
    */
-  seconds_remaining?: number;
+  seconds_remaining: number;
 }
 /**
  *
@@ -489,49 +489,49 @@ export interface Door {
    * @type {string}
    * @memberof Door
    */
-  name?: string;
+  name: string;
   /**
    *
    * @type {number}
    * @memberof Door
    */
-  v1_x?: number;
+  v1_x: number;
   /**
    *
    * @type {number}
    * @memberof Door
    */
-  v1_y?: number;
+  v1_y: number;
   /**
    *
    * @type {number}
    * @memberof Door
    */
-  v2_x?: number;
+  v2_x: number;
   /**
    *
    * @type {number}
    * @memberof Door
    */
-  v2_y?: number;
+  v2_y: number;
   /**
    *
    * @type {number}
    * @memberof Door
    */
-  door_type?: number;
+  door_type: number;
   /**
    *
    * @type {number}
    * @memberof Door
    */
-  motion_range?: number;
+  motion_range: number;
   /**
    *
    * @type {number}
    * @memberof Door
    */
-  motion_direction?: number;
+  motion_direction: number;
 }
 /**
  *
@@ -569,7 +569,7 @@ export interface DoorMode {
    * @type {number}
    * @memberof DoorMode
    */
-  value?: number;
+  value: number;
 }
 /**
  *
@@ -595,19 +595,19 @@ export interface DoorState {
    * @type {Time}
    * @memberof DoorState
    */
-  door_time?: Time;
+  door_time: Time;
   /**
    *
    * @type {string}
    * @memberof DoorState
    */
-  door_name?: string;
+  door_name: string;
   /**
    *
    * @type {DoorMode}
    * @memberof DoorState
    */
-  current_mode?: DoorMode;
+  current_mode: DoorMode;
 }
 /**
  *
@@ -639,13 +639,13 @@ export interface FleetState {
    * @type {string}
    * @memberof FleetState
    */
-  name?: string;
+  name: string;
   /**
    *
    * @type {Array<ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState>}
    * @memberof FleetState
    */
-  robots?: Array<ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState>;
+  robots: Array<ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState>;
 }
 /**
  *
@@ -658,25 +658,25 @@ export interface Graph {
    * @type {string}
    * @memberof Graph
    */
-  name?: string;
+  name: string;
   /**
    *
    * @type {Array<GraphNode>}
    * @memberof Graph
    */
-  vertices?: Array<GraphNode>;
+  vertices: Array<GraphNode>;
   /**
    *
    * @type {Array<GraphEdge>}
    * @memberof Graph
    */
-  edges?: Array<GraphEdge>;
+  edges: Array<GraphEdge>;
   /**
    *
    * @type {Array<Param>}
    * @memberof Graph
    */
-  params?: Array<Param>;
+  params: Array<Param>;
 }
 /**
  *
@@ -689,25 +689,25 @@ export interface GraphEdge {
    * @type {number}
    * @memberof GraphEdge
    */
-  v1_idx?: number;
+  v1_idx: number;
   /**
    *
    * @type {number}
    * @memberof GraphEdge
    */
-  v2_idx?: number;
+  v2_idx: number;
   /**
    *
    * @type {Array<Param>}
    * @memberof GraphEdge
    */
-  params?: Array<Param>;
+  params: Array<Param>;
   /**
    *
    * @type {number}
    * @memberof GraphEdge
    */
-  edge_type?: number;
+  edge_type: number;
 }
 /**
  *
@@ -720,25 +720,25 @@ export interface GraphNode {
    * @type {number}
    * @memberof GraphNode
    */
-  x?: number;
+  x: number;
   /**
    *
    * @type {number}
    * @memberof GraphNode
    */
-  y?: number;
+  y: number;
   /**
    *
    * @type {string}
    * @memberof GraphNode
    */
-  name?: string;
+  name: string;
   /**
    *
    * @type {Array<Param>}
    * @memberof GraphNode
    */
-  params?: Array<Param>;
+  params: Array<Param>;
 }
 /**
  *
@@ -802,31 +802,31 @@ export interface IngestorState {
    * @type {Time}
    * @memberof IngestorState
    */
-  time?: Time;
+  time: Time;
   /**
    *
    * @type {string}
    * @memberof IngestorState
    */
-  guid?: string;
+  guid: string;
   /**
    *
    * @type {number}
    * @memberof IngestorState
    */
-  mode?: number;
+  mode: number;
   /**
    *
    * @type {Array<string>}
    * @memberof IngestorState
    */
-  request_guid_queue?: Array<string>;
+  request_guid_queue: Array<string>;
   /**
    *
    * @type {number}
    * @memberof IngestorState
    */
-  seconds_remaining?: number;
+  seconds_remaining: number;
 }
 /**
  *
@@ -839,13 +839,13 @@ export interface Level {
    * @type {string}
    * @memberof Level
    */
-  name?: string;
+  name: string;
   /**
    *
    * @type {number}
    * @memberof Level
    */
-  elevation?: number;
+  elevation: number;
   /**
    *
    * @type {Array<AffineImage>}
@@ -857,25 +857,25 @@ export interface Level {
    * @type {Array<Place>}
    * @memberof Level
    */
-  places?: Array<Place>;
+  places: Array<Place>;
   /**
    *
    * @type {Array<Door>}
    * @memberof Level
    */
-  doors?: Array<Door>;
+  doors: Array<Door>;
   /**
    *
    * @type {Array<Graph>}
    * @memberof Level
    */
-  nav_graphs?: Array<Graph>;
+  nav_graphs: Array<Graph>;
   /**
    *
    * @type {Graph}
    * @memberof Level
    */
-  wall_graph?: Graph;
+  wall_graph: Graph;
 }
 /**
  *
@@ -888,55 +888,55 @@ export interface Lift {
    * @type {string}
    * @memberof Lift
    */
-  name?: string;
+  name: string;
   /**
    *
    * @type {Array<string>}
    * @memberof Lift
    */
-  levels?: Array<string>;
+  levels: Array<string>;
   /**
    *
    * @type {Array<Door>}
    * @memberof Lift
    */
-  doors?: Array<Door>;
+  doors: Array<Door>;
   /**
    *
    * @type {Graph}
    * @memberof Lift
    */
-  wall_graph?: Graph;
+  wall_graph: Graph;
   /**
    *
    * @type {number}
    * @memberof Lift
    */
-  ref_x?: number;
+  ref_x: number;
   /**
    *
    * @type {number}
    * @memberof Lift
    */
-  ref_y?: number;
+  ref_y: number;
   /**
    *
    * @type {number}
    * @memberof Lift
    */
-  ref_yaw?: number;
+  ref_yaw: number;
   /**
    *
    * @type {number}
    * @memberof Lift
    */
-  width?: number;
+  width: number;
   /**
    *
    * @type {number}
    * @memberof Lift
    */
-  depth?: number;
+  depth: number;
 }
 /**
  *
@@ -999,43 +999,43 @@ export interface LiftState {
    * @type {Time}
    * @memberof LiftState
    */
-  lift_time?: Time;
+  lift_time: Time;
   /**
    *
    * @type {string}
    * @memberof LiftState
    */
-  lift_name?: string;
+  lift_name: string;
   /**
    *
    * @type {Array<string>}
    * @memberof LiftState
    */
-  available_floors?: Array<string>;
+  available_floors: Array<string>;
   /**
    *
    * @type {string}
    * @memberof LiftState
    */
-  current_floor?: string;
+  current_floor: string;
   /**
    *
    * @type {string}
    * @memberof LiftState
    */
-  destination_floor?: string;
+  destination_floor: string;
   /**
    *
    * @type {number}
    * @memberof LiftState
    */
-  door_state?: number;
+  door_state: number;
   /**
    *
    * @type {number}
    * @memberof LiftState
    */
-  motion_state?: number;
+  motion_state: number;
   /**
    *
    * @type {Array<number>}
@@ -1047,13 +1047,13 @@ export interface LiftState {
    * @type {number}
    * @memberof LiftState
    */
-  current_mode?: number;
+  current_mode: number;
   /**
    *
    * @type {string}
    * @memberof LiftState
    */
-  session_id?: string;
+  session_id: string;
 }
 /**
  *
@@ -1066,37 +1066,37 @@ export interface Location {
    * @type {Time}
    * @memberof Location
    */
-  t?: Time;
+  t: Time;
   /**
    *
    * @type {number}
    * @memberof Location
    */
-  x?: number;
+  x: number;
   /**
    *
    * @type {number}
    * @memberof Location
    */
-  y?: number;
+  y: number;
   /**
    *
    * @type {number}
    * @memberof Location
    */
-  yaw?: number;
+  yaw: number;
   /**
    *
    * @type {string}
    * @memberof Location
    */
-  level_name?: string;
+  level_name: string;
   /**
    *
    * @type {number}
    * @memberof Location
    */
-  index?: number;
+  index: number;
 }
 /**
  *
@@ -1109,31 +1109,31 @@ export interface Loop {
    * @type {string}
    * @memberof Loop
    */
-  task_id?: string;
+  task_id: string;
   /**
    *
    * @type {string}
    * @memberof Loop
    */
-  robot_type?: string;
+  robot_type: string;
   /**
    *
    * @type {number}
    * @memberof Loop
    */
-  num_loops?: number;
+  num_loops: number;
   /**
    *
    * @type {string}
    * @memberof Loop
    */
-  start_name?: string;
+  start_name: string;
   /**
    *
    * @type {string}
    * @memberof Loop
    */
-  finish_name?: string;
+  finish_name: string;
 }
 /**
  *
@@ -1171,37 +1171,37 @@ export interface Param {
    * @type {string}
    * @memberof Param
    */
-  name?: string;
+  name: string;
   /**
    *
    * @type {number}
    * @memberof Param
    */
-  type?: number;
+  type: number;
   /**
    *
    * @type {number}
    * @memberof Param
    */
-  value_int?: number;
+  value_int: number;
   /**
    *
    * @type {number}
    * @memberof Param
    */
-  value_float?: number;
+  value_float: number;
   /**
    *
    * @type {string}
    * @memberof Param
    */
-  value_string?: string;
+  value_string: string;
   /**
    *
    * @type {boolean}
    * @memberof Param
    */
-  value_bool?: boolean;
+  value_bool: boolean;
 }
 /**
  *
@@ -1233,37 +1233,37 @@ export interface Place {
    * @type {string}
    * @memberof Place
    */
-  name?: string;
+  name: string;
   /**
    *
    * @type {number}
    * @memberof Place
    */
-  x?: number;
+  x: number;
   /**
    *
    * @type {number}
    * @memberof Place
    */
-  y?: number;
+  y: number;
   /**
    *
    * @type {number}
    * @memberof Place
    */
-  yaw?: number;
+  yaw: number;
   /**
    *
    * @type {number}
    * @memberof Place
    */
-  position_tolerance?: number;
+  position_tolerance: number;
   /**
    *
    * @type {number}
    * @memberof Place
    */
-  yaw_tolerance?: number;
+  yaw_tolerance: number;
 }
 /**
  *
@@ -1321,7 +1321,7 @@ export interface Priority {
    * @type {number}
    * @memberof Priority
    */
-  value?: number;
+  value: number;
 }
 /**
  *
@@ -1390,13 +1390,13 @@ export interface RobotMode {
    * @type {number}
    * @memberof RobotMode
    */
-  mode?: number;
+  mode: number;
   /**
    *
    * @type {number}
    * @memberof RobotMode
    */
-  mode_request_id?: number;
+  mode_request_id: number;
 }
 /**
  *
@@ -1409,19 +1409,19 @@ export interface Station {
    * @type {string}
    * @memberof Station
    */
-  task_id?: string;
+  task_id: string;
   /**
    *
    * @type {string}
    * @memberof Station
    */
-  robot_type?: string;
+  robot_type: string;
   /**
    *
    * @type {string}
    * @memberof Station
    */
-  place_name?: string;
+  place_name: string;
 }
 /**
  *
@@ -1509,43 +1509,43 @@ export interface TaskDescription {
    * @type {Time}
    * @memberof TaskDescription
    */
-  start_time?: Time;
+  start_time: Time;
   /**
    *
    * @type {Priority}
    * @memberof TaskDescription
    */
-  priority?: Priority;
+  priority: Priority;
   /**
    *
    * @type {TaskType}
    * @memberof TaskDescription
    */
-  task_type?: TaskType;
+  task_type: TaskType;
   /**
    *
    * @type {Station}
    * @memberof TaskDescription
    */
-  station?: Station;
+  station: Station;
   /**
    *
    * @type {Loop}
    * @memberof TaskDescription
    */
-  loop?: Loop;
+  loop: Loop;
   /**
    *
    * @type {Delivery}
    * @memberof TaskDescription
    */
-  delivery?: Delivery;
+  delivery: Delivery;
   /**
    *
    * @type {Clean}
    * @memberof TaskDescription
    */
-  clean?: Clean;
+  clean: Clean;
 }
 /**
  *
@@ -1558,19 +1558,19 @@ export interface TaskProfile {
    * @type {string}
    * @memberof TaskProfile
    */
-  task_id?: string;
+  task_id: string;
   /**
    *
    * @type {Time}
    * @memberof TaskProfile
    */
-  submission_time?: Time;
+  submission_time: Time;
   /**
    *
    * @type {TaskDescription}
    * @memberof TaskProfile
    */
-  description?: TaskDescription;
+  description: TaskDescription;
 }
 /**
  *
@@ -1596,55 +1596,55 @@ export interface TaskSummary {
    * @type {string}
    * @memberof TaskSummary
    */
-  fleet_name?: string;
+  fleet_name: string;
   /**
    *
    * @type {string}
    * @memberof TaskSummary
    */
-  task_id?: string;
+  task_id: string;
   /**
    *
    * @type {TaskProfile}
    * @memberof TaskSummary
    */
-  task_profile?: TaskProfile;
+  task_profile: TaskProfile;
   /**
    *
    * @type {number}
    * @memberof TaskSummary
    */
-  state?: number;
+  state: number;
   /**
    *
    * @type {string}
    * @memberof TaskSummary
    */
-  status?: string;
+  status: string;
   /**
    *
    * @type {Time}
    * @memberof TaskSummary
    */
-  submission_time?: Time;
+  submission_time: Time;
   /**
    *
    * @type {Time}
    * @memberof TaskSummary
    */
-  start_time?: Time;
+  start_time: Time;
   /**
    *
    * @type {Time}
    * @memberof TaskSummary
    */
-  end_time?: Time;
+  end_time: Time;
   /**
    *
    * @type {string}
    * @memberof TaskSummary
    */
-  robot_name?: string;
+  robot_name: string;
   /**
    *
    * @type {string}
@@ -1663,7 +1663,7 @@ export interface TaskType {
    * @type {number}
    * @memberof TaskType
    */
-  type?: number;
+  type: number;
 }
 /**
  * An enumeration.
@@ -1688,13 +1688,13 @@ export interface Time {
    * @type {number}
    * @memberof Time
    */
-  sec?: number;
+  sec: number;
   /**
    *
    * @type {number}
    * @memberof Time
    */
-  nanosec?: number;
+  nanosec: number;
 }
 /**
  *

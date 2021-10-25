@@ -1,4 +1,5 @@
 import Debug from 'debug';
+import { io, Socket } from 'socket.io-client';
 import {
   BuildingMap,
   DispenserHealth,
@@ -12,8 +13,7 @@ import {
   LiftState,
   RobotHealth,
   TaskSummary,
-} from 'rmf-models';
-import { io, Socket } from 'socket.io-client';
+} from './openapi';
 
 const debug = Debug('rmf-client');
 
