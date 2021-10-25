@@ -14,7 +14,6 @@ coverage = "~=5.5"
 api-server = {editable = true, path = "./packages/api-server"}
 requests = "~=2.25"
 asyncpg = "~=0.24.0"
-numpy = "~=1.17.4"
 # reporting-server
 reporting-server = {editable = true, path = "./packages/reporting-server"}
 # ros-translator
