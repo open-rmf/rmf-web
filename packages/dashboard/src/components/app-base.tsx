@@ -1,6 +1,7 @@
-import { createMuiTheme, Grid, makeStyles } from '@material-ui/core';
+import { createMuiTheme, Grid, makeStyles, Snackbar, SnackbarProps } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import React from 'react';
-import { ErrorSnackbar, rmfDark, ThemeProvider } from 'react-components';
+import { rmfDark, ThemeProvider } from 'react-components';
 import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
 import {
   AppController,
@@ -14,6 +15,7 @@ import HelpDrawer from './drawers/help-drawer';
 import HotKeysDialog from './drawers/hotkeys-dialog';
 import SettingsDrawer from './drawers/settings-drawer';
 
+const SnackbarAutoHideDuration = 2000;
 const defaultTheme = createMuiTheme();
 
 const useStyles = makeStyles({
@@ -23,6 +25,10 @@ const useStyles = makeStyles({
   },
 });
 
+export interface ManagedSnackbarProps extends Omit<SnackbarProps, 'open' | 'onClose'> {
+  key: React.Key;
+}
+
 /**
  * Contains various components that are essential to the app and provides contexts to control them.
  * Components include:
@@ -31,7 +37,7 @@ const useStyles = makeStyles({
  * - Help
  * - Tooltip
  * - Hotkeys reference
- * - Notifications
+ * - Snackbars
  *
  * Also provides `AppControllerContext` to allow children components to control them.
  */
@@ -43,9 +49,6 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
   const [showHelp, setShowHelp] = React.useState(false);
   const [showHotkeysDialog, setShowHotkeysDialog] = React.useState(false);
   const [showTooltips, setShowTooltips] = React.useState(false);
-  const [showErrorAlert, setShowErrorAlert] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState('');
-  const [errDuration, setErrDuration] = React.useState(2000);
 
   const theme = React.useMemo(() => {
     const preferDarkMode = settings.themeMode === ThemeMode.Dark;
@@ -64,6 +67,14 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
     setSettings(newSettings);
   }, []);
 
+  /**
+   * According to material design guidelines, multiple snackbars should display one after another
+   * instead of stacking.
+   */
+  const [snackbars, setSnackbars] = React.useState<ManagedSnackbarProps[]>([]);
+  const currentSnackbarProps: ManagedSnackbarProps | undefined = snackbars[0];
+  const snackbarsCountersRef = React.useRef(0);
+
   const appController = React.useMemo<AppController>(
     () => ({
       setShowSettings,
@@ -74,10 +85,25 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
       toggleHotkeysDialog: () => setShowHotkeysDialog((prev) => !prev),
       showTooltips: setShowTooltips,
       toggleTooltips: () => setShowTooltips((prev) => !prev),
-      showErrorAlert: (message, autoHideDuration) => {
-        setErrorMessage(message);
-        setShowErrorAlert(true);
-        autoHideDuration && setErrDuration(autoHideDuration);
+      showErrorAlert: (message, autoHideDuration = SnackbarAutoHideDuration) => {
+        setSnackbars((prev) => [
+          ...prev,
+          {
+            key: ++snackbarsCountersRef.current,
+            autoHideDuration,
+            children: <Alert severity="error">{message}</Alert>,
+          },
+        ]);
+      },
+      showSuccessAlert: (message, autoHideDuration = SnackbarAutoHideDuration) => {
+        setSnackbars((prev) => [
+          ...prev,
+          {
+            key: ++snackbarsCountersRef.current,
+            autoHideDuration,
+            children: <Alert severity="success">{message}</Alert>,
+          },
+        ]);
       },
     }),
     [updateSettings],
@@ -115,12 +141,11 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
                   handleClose={() => setShowHotkeysDialog(false)}
                 />
               )}
-              <ErrorSnackbar
-                open={showErrorAlert}
-                message={errorMessage}
-                onClose={() => setShowErrorAlert(false)}
-                autoHideDuration={errDuration}
-              />
+              <Snackbar
+                open={!!currentSnackbarProps}
+                onClose={() => setSnackbars((prev) => prev.slice(1))}
+                {...currentSnackbarProps}
+              ></Snackbar>
             </Grid>
           </AppControllerContext.Provider>
         </TooltipsContext.Provider>

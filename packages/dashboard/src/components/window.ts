@@ -1,6 +1,8 @@
 import { Breakpoint } from '@material-ui/core/styles/createBreakpoints';
 import React from 'react';
 import { WindowLayout, WindowManagerProps, WindowProps } from 'react-components';
+import * as RmfModels from 'rmf-models';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 
 export type ManagedWindowProps = Omit<WindowProps, 'title' | 'children'>;
@@ -48,5 +50,15 @@ export function getWindowSettings<SettingsType>(windowKey: string): SettingsType
 export function saveWindowSettings(windowKey: string, settings: unknown): void {
   window.localStorage.setItem(`window.${windowKey}`, JSON.stringify(settings));
 }
+
+export class WindowBus {
+  taskSelected: Observable<RmfModels.TaskSummary | null>;
+
+  constructor() {
+    this.taskSelected = new BehaviorSubject(null);
+  }
+}
+
+export const WindowBusContext = React.createContext(new WindowBus());
 
 export const allWindows: Record<string, WindowClass> = {};
