@@ -2,14 +2,14 @@ import { render } from '@testing-library/react';
 import type { Task } from 'api-client';
 import React from 'react';
 import { TaskType as RmfTaskType } from 'rmf-models';
-import { makeTask } from '../tasks/test-data.spec';
+import { makeTaskSummaryWithPhases } from '../tasks/test-data.spec';
 import { RobotInfo } from './robot-info';
 import { makeRandomRobot } from './test-utils.spec';
 
 describe('RobotInfo', () => {
   it('information renders correctly', () => {
     const robot = makeRandomRobot('test_robot', 'test_fleet', 1);
-    const deliveryTask = makeTask('delivery_task', 1, 1);
+    const deliveryTask = makeTaskSummaryWithPhases('delivery_task', 1, 1);
     deliveryTask.task_profile.description.task_type.type = RmfTaskType.TYPE_DELIVERY;
     deliveryTask.task_profile.description.delivery.pickup_place_name = 'test_waypoint_1';
     deliveryTask.task_profile.description.delivery.pickup_dispenser = 'test_dispenser';

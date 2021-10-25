@@ -3,7 +3,7 @@ import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { TaskType as RmfTaskType } from 'rmf-models';
 import { TaskInfo, TaskInfoProps } from './task-info';
-import { makeTask } from './test-data.spec';
+import { makeTaskSummaryWithPhases } from './test-data.spec';
 
 export default {
   title: 'Tasks/Task Infos',
@@ -18,7 +18,7 @@ export const CleanTask: Story<TaskInfoProps> = (args) => {
   );
 };
 
-const cleanTask = makeTask('clean_task', 1, 1);
+const cleanTask = makeTaskSummaryWithPhases('clean_task', 1, 1);
 cleanTask.task_profile.description.task_type.type = RmfTaskType.TYPE_CLEAN;
 cleanTask.task_profile.description.clean.start_waypoint = 'test_waypoint';
 
@@ -34,7 +34,7 @@ export const LoopTask: Story<TaskInfoProps> = (args) => {
   );
 };
 
-const loopTask = makeTask('loop_task', 1, 1);
+const loopTask = makeTaskSummaryWithPhases('loop_task', 1, 1);
 loopTask.task_profile.description.task_type.type = RmfTaskType.TYPE_LOOP;
 loopTask.task_profile.description.loop.start_name = 'test_waypoint_1';
 loopTask.task_profile.description.loop.finish_name = 'test_waypoint_2';
@@ -52,7 +52,7 @@ export const DeliveryTask: Story<TaskInfoProps> = (args) => {
   );
 };
 
-const deliveryTask = makeTask('delivery_task', 1, 1);
+const deliveryTask = makeTaskSummaryWithPhases('delivery_task', 1, 1);
 deliveryTask.task_profile.description.task_type.type = RmfTaskType.TYPE_DELIVERY;
 deliveryTask.task_profile.description.delivery.pickup_place_name = 'test_waypoint_1';
 deliveryTask.task_profile.description.delivery.pickup_dispenser = 'test_dispenser';

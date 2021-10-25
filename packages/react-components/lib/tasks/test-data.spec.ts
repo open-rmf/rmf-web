@@ -110,7 +110,11 @@ export function makeTaskSummary(taskSummary: Partial<TaskSummary> = {}): TaskSum
   };
 }
 
-export function makeTask(id: string, numberOfPhases: number, currentPhase: number): TaskSummary {
+export function makeTaskSummaryWithPhases(
+  id: string,
+  numberOfPhases: number,
+  currentPhase: number,
+): TaskSummary {
   let status = '';
   for (let i = 0; i < numberOfPhases; i++) {
     if (currentPhase === i + 1) {

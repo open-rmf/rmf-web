@@ -3,20 +3,20 @@ import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { TaskSummary as RmfTaskSummary } from 'rmf-models';
 import { TaskTable, TaskTableProps } from './task-table';
-import { makeTask } from './test-data.spec';
+import { makeTaskSummaryWithPhases } from './test-data.spec';
 
-const failedTask = makeTask('failed_task', 3, 3);
+const failedTask = makeTaskSummaryWithPhases('failed_task', 3, 3);
 failedTask.state = RmfTaskSummary.STATE_FAILED;
 
 const completedtasks = Array.from(Array(100)).map((_, idx) => {
-  const task = makeTask(`completed_task_${idx}`, 3, 3);
+  const task = makeTaskSummaryWithPhases(`completed_task_${idx}`, 3, 3);
   task.state = RmfTaskSummary.STATE_COMPLETED;
   return task;
 });
 
 const tasks = [
-  makeTask('active_task', 3, 3),
-  makeTask('active_task_2', 4, 3),
+  makeTaskSummaryWithPhases('active_task', 3, 3),
+  makeTaskSummaryWithPhases('active_task_2', 4, 3),
   failedTask,
   ...completedtasks,
 ];
