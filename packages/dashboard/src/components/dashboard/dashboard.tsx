@@ -1,12 +1,21 @@
 /* istanbul ignore file */
 
 import { Card, Grid, makeStyles } from '@material-ui/core';
-import { Fleet, Level } from 'api-client';
+import {
+  DispenserState,
+  Door,
+  DoorState,
+  Fleet,
+  IngestorState,
+  Level,
+  Lift,
+  LiftState,
+  FleetState,
+} from 'api-client';
 import Debug from 'debug';
 import React from 'react';
 import { DoorData, DoorPanel, LiftPanel, LiftPanelProps, WorkcellPanel } from 'react-components';
 import { GlobalHotKeys } from 'react-hotkeys';
-import * as RmfModels from 'rmf-models';
 import { buildHotKeys } from '../../hotkeys';
 import { AppControllerContext } from '../app-contexts';
 import {
@@ -55,11 +64,11 @@ export default function Dashboard(_props: {}): React.ReactElement {
     return () => clearInterval(interval);
   }, []);
 
-  const doorStatesRef = React.useRef<Record<string, RmfModels.DoorState>>({});
+  const doorStatesRef = React.useRef<Record<string, DoorState>>({});
   const doors: DoorData[] = React.useMemo(() => {
     return buildingMap
       ? (buildingMap.levels as Level[]).flatMap((x) =>
-          (x.doors as RmfModels.Door[]).map((door) => ({ door, level: x.name })),
+          (x.doors as Door[]).map((door) => ({ door, level: x.name })),
         )
       : [];
   }, [buildingMap]);
@@ -77,10 +86,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
     };
   }, [sioClient, doors]);
 
-  const liftStatesRef = React.useRef<Record<string, RmfModels.LiftState>>({});
-  const lifts: RmfModels.Lift[] = React.useMemo(() => (buildingMap ? buildingMap.lifts : []), [
-    buildingMap,
-  ]);
+  const liftStatesRef = React.useRef<Record<string, LiftState>>({});
+  const lifts: Lift[] = React.useMemo(() => (buildingMap ? buildingMap.lifts : []), [buildingMap]);
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = lifts.map((l) =>
@@ -92,7 +99,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }, [sioClient, lifts]);
 
   const dispensers = React.useContext(DispensersContext);
-  const dispenserStatesRef = React.useRef<Record<string, RmfModels.DispenserState>>({});
+  const dispenserStatesRef = React.useRef<Record<string, DispenserState>>({});
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = dispensers.map((d) =>
@@ -107,7 +114,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }, [sioClient, dispensers]);
 
   const ingestors = React.useContext(IngestorsContext);
-  const ingestorStatesRef = React.useRef<Record<string, RmfModels.IngestorState>>({});
+  const ingestorStatesRef = React.useRef<Record<string, IngestorState>>({});
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = ingestors.map((d) =>
@@ -137,7 +144,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
       cancel = true;
     };
   }, [rmfIngress]);
-  const fleetStatesRef = React.useRef<Record<string, RmfModels.FleetState>>({});
+  const fleetStatesRef = React.useRef<Record<string, FleetState>>({});
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = fleets.map((f) =>
@@ -156,26 +163,20 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const { doorsApi, liftsApi } = React.useContext(RmfIngressContext) || {};
 
   const handleOnDoorControlClick = React.useCallback(
-    (_ev, door: RmfModels.Door, mode: number) =>
-      doorsApi?.postDoorRequestDoorsDoorNameRequestPost(
-        {
-          mode: mode,
-        },
-        door.name,
-      ),
+    (_ev, door: Door, mode: number) =>
+      doorsApi?.postDoorRequestDoorsDoorNameRequestPost(door.name, {
+        mode: mode,
+      }),
     [doorsApi],
   );
 
   const handleLiftRequestSubmit = React.useCallback<Required<LiftPanelProps>['onRequestSubmit']>(
     (_ev, lift, doorState, requestType, destination) =>
-      liftsApi?.postLiftRequestLiftsLiftNameRequestPost(
-        {
-          destination,
-          request_type: requestType,
-          door_mode: doorState,
-        },
-        lift.name,
-      ),
+      liftsApi?.postLiftRequestLiftsLiftNameRequestPost(lift.name, {
+        destination,
+        request_type: requestType,
+        door_mode: doorState,
+      }),
     [liftsApi],
   );
 
