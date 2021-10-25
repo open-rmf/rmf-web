@@ -38,7 +38,7 @@ export const rmfDark = createMuiTheme(
       },
       '.leaflet-pane img': {
         filter:
-          'invert(90%) sepia(12%) saturate(5773%) hue-rotate(193deg) brightness(92%) contrast(92%)',
+          'invert(90%) sepia(20%) saturate(120%) hue-rotate(180deg) brightness(95%) contrast(80%)',
       },
     },
   },
