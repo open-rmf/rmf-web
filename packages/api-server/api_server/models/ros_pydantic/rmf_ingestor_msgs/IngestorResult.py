@@ -8,13 +8,27 @@ from ..builtin_interfaces.Time import Time
 
 
 class IngestorResult(pydantic.BaseModel):
-    time: Time = Time()  # builtin_interfaces/Time
-    request_guid: str = ""  # string
-    source_guid: str = ""  # string
-    status: pydantic.conint(ge=0, le=255) = 0  # uint8
+    time: Time
+    request_guid: str
+    source_guid: str
+    status: pydantic.conint(ge=0, le=255)
 
     class Config:
         orm_mode = True
+
+    def __init__(
+        self,
+        time: Time = Time(),  # builtin_interfaces/Time
+        request_guid: str = "",  # string
+        source_guid: str = "",  # string
+        status: pydantic.conint(ge=0, le=255) = 0,  # uint8
+    ):
+        super().__init__(
+            time=time,
+            request_guid=request_guid,
+            source_guid=source_guid,
+            status=status,
+        )
 
 
 # builtin_interfaces/Time time

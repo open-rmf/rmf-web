@@ -8,15 +8,33 @@ from ..builtin_interfaces.Time import Time
 
 
 class LiftRequest(pydantic.BaseModel):
-    lift_name: str = ""  # string
-    request_time: Time = Time()  # builtin_interfaces/Time
-    session_id: str = ""  # string
-    request_type: pydantic.conint(ge=0, le=255) = 0  # uint8
-    destination_floor: str = ""  # string
-    door_state: pydantic.conint(ge=0, le=255) = 0  # uint8
+    lift_name: str
+    request_time: Time
+    session_id: str
+    request_type: pydantic.conint(ge=0, le=255)
+    destination_floor: str
+    door_state: pydantic.conint(ge=0, le=255)
 
     class Config:
         orm_mode = True
+
+    def __init__(
+        self,
+        lift_name: str = "",  # string
+        request_time: Time = Time(),  # builtin_interfaces/Time
+        session_id: str = "",  # string
+        request_type: pydantic.conint(ge=0, le=255) = 0,  # uint8
+        destination_floor: str = "",  # string
+        door_state: pydantic.conint(ge=0, le=255) = 0,  # uint8
+    ):
+        super().__init__(
+            lift_name=lift_name,
+            request_time=request_time,
+            session_id=session_id,
+            request_type=request_type,
+            destination_floor=destination_floor,
+            door_state=door_state,
+        )
 
 
 # string lift_name

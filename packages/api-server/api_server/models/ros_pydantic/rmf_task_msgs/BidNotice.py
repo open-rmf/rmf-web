@@ -9,11 +9,21 @@ from ..rmf_task_msgs.TaskProfile import TaskProfile
 
 
 class BidNotice(pydantic.BaseModel):
-    task_profile: TaskProfile = TaskProfile()  # rmf_task_msgs/TaskProfile
-    time_window: Duration = Duration()  # builtin_interfaces/Duration
+    task_profile: TaskProfile
+    time_window: Duration
 
     class Config:
         orm_mode = True
+
+    def __init__(
+        self,
+        task_profile: TaskProfile = TaskProfile(),  # rmf_task_msgs/TaskProfile
+        time_window: Duration = Duration(),  # builtin_interfaces/Duration
+    ):
+        super().__init__(
+            task_profile=task_profile,
+            time_window=time_window,
+        )
 
 
 # # This message is published by the Task Dispatcher node to notify all

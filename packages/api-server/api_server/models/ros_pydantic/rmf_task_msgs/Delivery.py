@@ -9,17 +9,41 @@ from ..rmf_task_msgs.Behavior import Behavior
 
 
 class Delivery(pydantic.BaseModel):
-    task_id: str = ""  # string
-    items: List[DispenserRequestItem] = []  # rmf_dispenser_msgs/DispenserRequestItem
-    pickup_place_name: str = ""  # string
-    pickup_dispenser: str = ""  # string
-    pickup_behavior: Behavior = Behavior()  # rmf_task_msgs/Behavior
-    dropoff_place_name: str = ""  # string
-    dropoff_ingestor: str = ""  # string
-    dropoff_behavior: Behavior = Behavior()  # rmf_task_msgs/Behavior
+    task_id: str
+    items: List[DispenserRequestItem]
+    pickup_place_name: str
+    pickup_dispenser: str
+    pickup_behavior: Behavior
+    dropoff_place_name: str
+    dropoff_ingestor: str
+    dropoff_behavior: Behavior
 
     class Config:
         orm_mode = True
+
+    def __init__(
+        self,
+        task_id: str = "",  # string
+        items: List[
+            DispenserRequestItem
+        ] = [],  # rmf_dispenser_msgs/DispenserRequestItem
+        pickup_place_name: str = "",  # string
+        pickup_dispenser: str = "",  # string
+        pickup_behavior: Behavior = Behavior(),  # rmf_task_msgs/Behavior
+        dropoff_place_name: str = "",  # string
+        dropoff_ingestor: str = "",  # string
+        dropoff_behavior: Behavior = Behavior(),  # rmf_task_msgs/Behavior
+    ):
+        super().__init__(
+            task_id=task_id,
+            items=items,
+            pickup_place_name=pickup_place_name,
+            pickup_dispenser=pickup_dispenser,
+            pickup_behavior=pickup_behavior,
+            dropoff_place_name=dropoff_place_name,
+            dropoff_ingestor=dropoff_ingestor,
+            dropoff_behavior=dropoff_behavior,
+        )
 
 
 # # task_id is intended to be a pseudo-random string generated

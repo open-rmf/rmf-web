@@ -6,11 +6,21 @@ import pydantic
 
 
 class ModeParameter(pydantic.BaseModel):
-    name: str = ""  # string
-    value: str = ""  # string
+    name: str
+    value: str
 
     class Config:
         orm_mode = True
+
+    def __init__(
+        self,
+        name: str = "",  # string
+        value: str = "",  # string
+    ):
+        super().__init__(
+            name=name,
+            value=value,
+        )
 
 
 # string name

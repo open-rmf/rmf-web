@@ -8,11 +8,21 @@ from ..rmf_fleet_msgs.RobotState import RobotState
 
 
 class FleetState(pydantic.BaseModel):
-    name: str = ""  # string
-    robots: List[RobotState] = []  # rmf_fleet_msgs/RobotState
+    name: str
+    robots: List[RobotState]
 
     class Config:
         orm_mode = True
+
+    def __init__(
+        self,
+        name: str = "",  # string
+        robots: List[RobotState] = [],  # rmf_fleet_msgs/RobotState
+    ):
+        super().__init__(
+            name=name,
+            robots=robots,
+        )
 
 
 # string name

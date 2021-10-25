@@ -8,11 +8,21 @@ from ..rmf_fleet_msgs.DockParameter import DockParameter
 
 
 class Dock(pydantic.BaseModel):
-    fleet_name: str = ""  # string
-    params: List[DockParameter] = []  # rmf_fleet_msgs/DockParameter
+    fleet_name: str
+    params: List[DockParameter]
 
     class Config:
         orm_mode = True
+
+    def __init__(
+        self,
+        fleet_name: str = "",  # string
+        params: List[DockParameter] = [],  # rmf_fleet_msgs/DockParameter
+    ):
+        super().__init__(
+            fleet_name=fleet_name,
+            params=params,
+        )
 
 
 # string fleet_name

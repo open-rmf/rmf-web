@@ -6,15 +6,33 @@ import pydantic
 
 
 class Param(pydantic.BaseModel):
-    name: str = ""  # string
-    type: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
-    value_int: pydantic.conint(ge=-2147483648, le=2147483647) = 0  # int32
-    value_float: float = 0  # float32
-    value_string: str = ""  # string
-    value_bool: bool = False  # bool
+    name: str
+    type: pydantic.conint(ge=0, le=4294967295)
+    value_int: pydantic.conint(ge=-2147483648, le=2147483647)
+    value_float: float
+    value_string: str
+    value_bool: bool
 
     class Config:
         orm_mode = True
+
+    def __init__(
+        self,
+        name: str = "",  # string
+        type: pydantic.conint(ge=0, le=4294967295) = 0,  # uint32
+        value_int: pydantic.conint(ge=-2147483648, le=2147483647) = 0,  # int32
+        value_float: float = 0,  # float32
+        value_string: str = "",  # string
+        value_bool: bool = False,  # bool
+    ):
+        super().__init__(
+            name=name,
+            type=type,
+            value_int=value_int,
+            value_float=value_float,
+            value_string=value_string,
+            value_bool=value_bool,
+        )
 
 
 # string name

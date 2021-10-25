@@ -6,11 +6,21 @@ import pydantic
 
 
 class ReviveTask_Request(pydantic.BaseModel):
-    requester: str = ""  # string
-    task_id: str = ""  # string
+    requester: str
+    task_id: str
 
     class Config:
         orm_mode = True
+
+    def __init__(
+        self,
+        requester: str = "",  # string
+        task_id: str = "",  # string
+    ):
+        super().__init__(
+            requester=requester,
+            task_id=task_id,
+        )
 
 
 # # Revive a previously cancelled or failed task. This will reinitiate

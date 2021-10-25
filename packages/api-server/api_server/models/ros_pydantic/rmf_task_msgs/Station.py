@@ -6,12 +6,24 @@ import pydantic
 
 
 class Station(pydantic.BaseModel):
-    task_id: str = ""  # string
-    robot_type: str = ""  # string
-    place_name: str = ""  # string
+    task_id: str
+    robot_type: str
+    place_name: str
 
     class Config:
         orm_mode = True
+
+    def __init__(
+        self,
+        task_id: str = "",  # string
+        robot_type: str = "",  # string
+        place_name: str = "",  # string
+    ):
+        super().__init__(
+            task_id=task_id,
+            robot_type=robot_type,
+            place_name=place_name,
+        )
 
 
 # # task_id is intended to be a pseudo-random string generated

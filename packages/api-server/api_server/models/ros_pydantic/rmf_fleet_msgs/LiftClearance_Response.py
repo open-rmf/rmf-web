@@ -6,10 +6,18 @@ import pydantic
 
 
 class LiftClearance_Response(pydantic.BaseModel):
-    decision: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
+    decision: pydantic.conint(ge=0, le=4294967295)
 
     class Config:
         orm_mode = True
+
+    def __init__(
+        self,
+        decision: pydantic.conint(ge=0, le=4294967295) = 0,  # uint32
+    ):
+        super().__init__(
+            decision=decision,
+        )
 
 
 #

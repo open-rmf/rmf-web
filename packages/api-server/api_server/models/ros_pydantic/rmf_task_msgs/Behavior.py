@@ -8,11 +8,21 @@ from ..rmf_task_msgs.BehaviorParameter import BehaviorParameter
 
 
 class Behavior(pydantic.BaseModel):
-    name: str = ""  # string
-    parameters: List[BehaviorParameter] = []  # rmf_task_msgs/BehaviorParameter
+    name: str
+    parameters: List[BehaviorParameter]
 
     class Config:
         orm_mode = True
+
+    def __init__(
+        self,
+        name: str = "",  # string
+        parameters: List[BehaviorParameter] = [],  # rmf_task_msgs/BehaviorParameter
+    ):
+        super().__init__(
+            name=name,
+            parameters=parameters,
+        )
 
 
 # string name

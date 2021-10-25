@@ -8,14 +8,30 @@ from ..builtin_interfaces.Duration import Duration
 
 
 class ChargerRequest(pydantic.BaseModel):
-    charger_name: str = ""  # string
-    fleet_name: str = ""  # string
-    robot_name: str = ""  # string
-    start_timeout: Duration = Duration()  # builtin_interfaces/Duration
-    request_id: str = ""  # string
+    charger_name: str
+    fleet_name: str
+    robot_name: str
+    start_timeout: Duration
+    request_id: str
 
     class Config:
         orm_mode = True
+
+    def __init__(
+        self,
+        charger_name: str = "",  # string
+        fleet_name: str = "",  # string
+        robot_name: str = "",  # string
+        start_timeout: Duration = Duration(),  # builtin_interfaces/Duration
+        request_id: str = "",  # string
+    ):
+        super().__init__(
+            charger_name=charger_name,
+            fleet_name=fleet_name,
+            robot_name=robot_name,
+            start_timeout=start_timeout,
+            request_id=request_id,
+        )
 
 
 # # The name of the charger that should process this message

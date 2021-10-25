@@ -6,12 +6,24 @@ import pydantic
 
 
 class SubmitTask_Response(pydantic.BaseModel):
-    success: bool = False  # bool
-    task_id: str = ""  # string
-    message: str = ""  # string
+    success: bool
+    task_id: str
+    message: str
 
     class Config:
         orm_mode = True
+
+    def __init__(
+        self,
+        success: bool = False,  # bool
+        task_id: str = "",  # string
+        message: str = "",  # string
+    ):
+        super().__init__(
+            success=success,
+            task_id=task_id,
+            message=message,
+        )
 
 
 #

@@ -6,10 +6,18 @@ import pydantic
 
 
 class DoorMode(pydantic.BaseModel):
-    value: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
+    value: pydantic.conint(ge=0, le=4294967295)
 
     class Config:
         orm_mode = True
+
+    def __init__(
+        self,
+        value: pydantic.conint(ge=0, le=4294967295) = 0,  # uint32
+    ):
+        super().__init__(
+            value=value,
+        )
 
 
 # # The DoorMode message captures the "mode" of an automatic door controller.

@@ -10,3 +10,8 @@ class GetBuildingMap_Request(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+
+    def __init__(
+        self,
+    ):
+        super().__init__()

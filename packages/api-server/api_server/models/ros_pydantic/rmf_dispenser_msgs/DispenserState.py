@@ -8,14 +8,30 @@ from ..builtin_interfaces.Time import Time
 
 
 class DispenserState(pydantic.BaseModel):
-    time: Time = Time()  # builtin_interfaces/Time
-    guid: str = ""  # string
-    mode: pydantic.conint(ge=-2147483648, le=2147483647) = 0  # int32
-    request_guid_queue: List[str] = []  # string
-    seconds_remaining: float = 0  # float32
+    time: Time
+    guid: str
+    mode: pydantic.conint(ge=-2147483648, le=2147483647)
+    request_guid_queue: List[str]
+    seconds_remaining: float
 
     class Config:
         orm_mode = True
+
+    def __init__(
+        self,
+        time: Time = Time(),  # builtin_interfaces/Time
+        guid: str = "",  # string
+        mode: pydantic.conint(ge=-2147483648, le=2147483647) = 0,  # int32
+        request_guid_queue: List[str] = [],  # string
+        seconds_remaining: float = 0,  # float32
+    ):
+        super().__init__(
+            time=time,
+            guid=guid,
+            mode=mode,
+            request_guid_queue=request_guid_queue,
+            seconds_remaining=seconds_remaining,
+        )
 
 
 # builtin_interfaces/Time time

@@ -6,11 +6,21 @@ import pydantic
 
 
 class RobotMode(pydantic.BaseModel):
-    mode: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
-    mode_request_id: pydantic.conint(ge=0, le=18446744073709551615) = 0  # uint64
+    mode: pydantic.conint(ge=0, le=4294967295)
+    mode_request_id: pydantic.conint(ge=0, le=18446744073709551615)
 
     class Config:
         orm_mode = True
+
+    def __init__(
+        self,
+        mode: pydantic.conint(ge=0, le=4294967295) = 0,  # uint32
+        mode_request_id: pydantic.conint(ge=0, le=18446744073709551615) = 0,  # uint64
+    ):
+        super().__init__(
+            mode=mode,
+            mode_request_id=mode_request_id,
+        )
 
 
 # uint32 mode
@@ -26,5 +36,7 @@ class RobotMode(pydantic.BaseModel):
 # # Use this when a command received from the fleet adapter
 # # has a problem and needs to be recomputed.
 # uint32 MODE_ADAPTER_ERROR=8
+#
+# uint32 MODE_CLEANING=9
 #
 # uint64 mode_request_id

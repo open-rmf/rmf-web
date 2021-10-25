@@ -10,13 +10,27 @@ from ..rmf_building_map_msgs.Param import Param
 
 
 class Graph(pydantic.BaseModel):
-    name: str = ""  # string
-    vertices: List[GraphNode] = []  # rmf_building_map_msgs/GraphNode
-    edges: List[GraphEdge] = []  # rmf_building_map_msgs/GraphEdge
-    params: List[Param] = []  # rmf_building_map_msgs/Param
+    name: str
+    vertices: List[GraphNode]
+    edges: List[GraphEdge]
+    params: List[Param]
 
     class Config:
         orm_mode = True
+
+    def __init__(
+        self,
+        name: str = "",  # string
+        vertices: List[GraphNode] = [],  # rmf_building_map_msgs/GraphNode
+        edges: List[GraphEdge] = [],  # rmf_building_map_msgs/GraphEdge
+        params: List[Param] = [],  # rmf_building_map_msgs/Param
+    ):
+        super().__init__(
+            name=name,
+            vertices=vertices,
+            edges=edges,
+            params=params,
+        )
 
 
 # string name

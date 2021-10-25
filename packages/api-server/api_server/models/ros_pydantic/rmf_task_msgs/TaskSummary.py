@@ -9,18 +9,42 @@ from ..rmf_task_msgs.TaskProfile import TaskProfile
 
 
 class TaskSummary(pydantic.BaseModel):
-    fleet_name: str = ""  # string
-    task_id: str = ""  # string
-    task_profile: TaskProfile = TaskProfile()  # rmf_task_msgs/TaskProfile
-    state: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
-    status: str = ""  # string
-    submission_time: Time = Time()  # builtin_interfaces/Time
-    start_time: Time = Time()  # builtin_interfaces/Time
-    end_time: Time = Time()  # builtin_interfaces/Time
-    robot_name: str = ""  # string
+    fleet_name: str
+    task_id: str
+    task_profile: TaskProfile
+    state: pydantic.conint(ge=0, le=4294967295)
+    status: str
+    submission_time: Time
+    start_time: Time
+    end_time: Time
+    robot_name: str
 
     class Config:
         orm_mode = True
+
+    def __init__(
+        self,
+        fleet_name: str = "",  # string
+        task_id: str = "",  # string
+        task_profile: TaskProfile = TaskProfile(),  # rmf_task_msgs/TaskProfile
+        state: pydantic.conint(ge=0, le=4294967295) = 0,  # uint32
+        status: str = "",  # string
+        submission_time: Time = Time(),  # builtin_interfaces/Time
+        start_time: Time = Time(),  # builtin_interfaces/Time
+        end_time: Time = Time(),  # builtin_interfaces/Time
+        robot_name: str = "",  # string
+    ):
+        super().__init__(
+            fleet_name=fleet_name,
+            task_id=task_id,
+            task_profile=task_profile,
+            state=state,
+            status=status,
+            submission_time=submission_time,
+            start_time=start_time,
+            end_time=end_time,
+            robot_name=robot_name,
+        )
 
 
 # # Publish by Fleet Adapter (aka DispatchStatus)
