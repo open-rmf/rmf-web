@@ -1,6 +1,12 @@
 import React from 'react';
 import { Window } from 'react-components';
-import { allWindows, getWindowSettings, ManagedWindowProps, WindowClass } from '../window';
+import {
+  allWindows,
+  getWindowSettings,
+  ManagedWindowProps,
+  saveWindowSettings,
+  WindowClass,
+} from '../window';
 import { ScheduleVisualizer, ScheduleVisualizerSettings } from './schedule-visualizer';
 
 const defaultSettings: ScheduleVisualizerSettings = { trajectoryTime: 60000 /* 1 min */ };
@@ -11,7 +17,10 @@ export const ScheduleVisualizerWindow: React.FC<ManagedWindowProps> = React.forw
       getWindowSettings<ScheduleVisualizerSettings>(otherProps.key) || defaultSettings;
     return (
       <Window ref={ref} title="Map" {...otherProps}>
-        <ScheduleVisualizer settings={settings} />
+        <ScheduleVisualizer
+          settings={settings}
+          onSettingsChange={(newSettings) => saveWindowSettings(otherProps.key, newSettings)}
+        />
       </Window>
     );
   },
