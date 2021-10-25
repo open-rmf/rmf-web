@@ -4,7 +4,7 @@ from fastapi import Depends, Query
 from rx import operators as rxops
 
 from api_server.base_app import BaseApp
-from api_server.dependencies import pagination_query
+from api_server.dependencies import cache_control, pagination_query
 from api_server.fast_io import FastIORouter, WatchRequest
 from api_server.models import Fleet, FleetState, Pagination, Robot, RobotHealth, Task
 from api_server.repositories import RmfRepository
@@ -18,7 +18,9 @@ class FleetsRouter(FastIORouter):
         super().__init__(tags=["Fleets"])
         logger = app.logger
 
-        @self.get("", response_model=List[Fleet])
+        @self.get(
+            "", response_model=List[Fleet], dependencies=[Depends(cache_control())]
+        )
         async def get_fleets(
             rmf_repo: RmfRepository = Depends(app.rmf_repo),
             pagination: Pagination = Depends(pagination_query),
@@ -28,7 +30,11 @@ class FleetsRouter(FastIORouter):
         ):
             return await rmf_repo.query_fleets(pagination, fleet_name=fleet_name)
 
-        @self.get("/robots", response_model=List[Robot])
+        @self.get(
+            "/robots",
+            response_model=List[Robot],
+            dependencies=[Depends(cache_control())],
+        )
         async def get_robots(
             rmf_repo: RmfRepository = Depends(app.rmf_repo),
             pagination: Pagination = Depends(pagination_query),

@@ -4,6 +4,7 @@ from fastapi import Depends
 from rx import operators as rxops
 
 from api_server.base_app import BaseApp
+from api_server.dependencies import cache_control
 from api_server.fast_io import FastIORouter, WatchRequest
 from api_server.models import Ingestor, IngestorHealth, IngestorState
 from api_server.repositories import RmfRepository
@@ -15,7 +16,9 @@ class IngestorsRouter(FastIORouter):
     def __init__(self, app: BaseApp):
         super().__init__(tags=["Ingestors"])
 
-        @self.get("", response_model=List[Ingestor])
+        @self.get(
+            "", response_model=List[Ingestor], dependencies=[Depends(cache_control())]
+        )
         async def get_ingestors(rmf_repo: RmfRepository = Depends(app.rmf_repo)):
             return await rmf_repo.get_ingestors()
 

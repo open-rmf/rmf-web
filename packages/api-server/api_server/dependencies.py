@@ -1,6 +1,6 @@
 from typing import Callable, Optional
 
-from fastapi import Depends, Query
+from fastapi import Depends, Query, Response
 
 from .models import Pagination, User
 from .repositories.rmf import RmfRepository
@@ -20,5 +20,12 @@ def pagination_query(
 def rmf_repo(user_dep: Callable[..., User]) -> Callable[..., RmfRepository]:
     def dep(user: User = Depends(user_dep)):
         return RmfRepository(user)
+
+    return dep
+
+
+def cache_control(age: int = 10) -> Callable[..., None]:
+    def dep(resp: Response) -> None:
+        resp.headers["Cache-Control"] = f"max-age={age}, must-revalidate"
 
     return dep

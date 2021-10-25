@@ -4,6 +4,7 @@ from fastapi import Depends
 from rx import operators as rxops
 
 from api_server.base_app import BaseApp
+from api_server.dependencies import cache_control
 from api_server.fast_io import FastIORouter, WatchRequest
 from api_server.models import Door, DoorHealth, DoorRequest, DoorState
 from api_server.repositories import RmfRepository
@@ -15,7 +16,9 @@ class DoorsRouter(FastIORouter):
     def __init__(self, app: BaseApp):
         super().__init__(tags=["Doors"])
 
-        @self.get("", response_model=List[Door])
+        @self.get(
+            "", response_model=List[Door], dependencies=[Depends(cache_control())]
+        )
         async def get_doors(rmf_repo: RmfRepository = Depends(app.rmf_repo)):
             return await rmf_repo.get_doors()
 
