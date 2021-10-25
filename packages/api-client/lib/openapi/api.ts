@@ -83,116 +83,6 @@ export interface AffineImage {
 /**
  *
  * @export
- * @interface ApiServerModelsFleetsRobotState
- */
-export interface ApiServerModelsFleetsRobotState {
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsFleetsRobotState
-   */
-  name: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsFleetsRobotState
-   */
-  model: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsFleetsRobotState
-   */
-  task_id: string;
-  /**
-   *
-   * @type {number}
-   * @memberof ApiServerModelsFleetsRobotState
-   */
-  seq: number;
-  /**
-   *
-   * @type {RobotMode}
-   * @memberof ApiServerModelsFleetsRobotState
-   */
-  mode: RobotMode;
-  /**
-   *
-   * @type {number}
-   * @memberof ApiServerModelsFleetsRobotState
-   */
-  battery_percent: number;
-  /**
-   *
-   * @type {Location}
-   * @memberof ApiServerModelsFleetsRobotState
-   */
-  location: Location;
-  /**
-   *
-   * @type {Array<Location>}
-   * @memberof ApiServerModelsFleetsRobotState
-   */
-  path: Array<Location>;
-}
-/**
- *
- * @export
- * @interface ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
- */
-export interface ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState {
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
-   */
-  name: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
-   */
-  model: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
-   */
-  task_id: string;
-  /**
-   *
-   * @type {number}
-   * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
-   */
-  seq: number;
-  /**
-   *
-   * @type {RobotMode}
-   * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
-   */
-  mode: RobotMode;
-  /**
-   *
-   * @type {number}
-   * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
-   */
-  battery_percent: number;
-  /**
-   *
-   * @type {Location}
-   * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
-   */
-  location: Location;
-  /**
-   *
-   * @type {Array<Location>}
-   * @memberof ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState
-   */
-  path: Array<Location>;
-}
-/**
- *
- * @export
  * @interface Behavior
  */
 export interface Behavior {
@@ -642,10 +532,10 @@ export interface FleetState {
   name: string;
   /**
    *
-   * @type {Array<ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState>}
+   * @type {Array<RobotState>}
    * @memberof FleetState
    */
-  robots: Array<ApiServerModelsRosPydanticRmfFleetMsgsRobotStateRobotState>;
+  robots: Array<RobotState>;
 }
 /**
  *
@@ -1343,10 +1233,10 @@ export interface Robot {
   name: string;
   /**
    *
-   * @type {ApiServerModelsFleetsRobotState}
+   * @type {RobotState}
    * @memberof Robot
    */
-  state: ApiServerModelsFleetsRobotState;
+  state: RobotState;
   /**
    *
    * @type {Array<Task>}
@@ -1397,6 +1287,61 @@ export interface RobotMode {
    * @memberof RobotMode
    */
   mode_request_id: number;
+}
+/**
+ *
+ * @export
+ * @interface RobotState
+ */
+export interface RobotState {
+  /**
+   *
+   * @type {string}
+   * @memberof RobotState
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof RobotState
+   */
+  model: string;
+  /**
+   *
+   * @type {string}
+   * @memberof RobotState
+   */
+  task_id: string;
+  /**
+   *
+   * @type {number}
+   * @memberof RobotState
+   */
+  seq: number;
+  /**
+   *
+   * @type {RobotMode}
+   * @memberof RobotState
+   */
+  mode: RobotMode;
+  /**
+   *
+   * @type {number}
+   * @memberof RobotState
+   */
+  battery_percent: number;
+  /**
+   *
+   * @type {Location}
+   * @memberof RobotState
+   */
+  location: Location;
+  /**
+   *
+   * @type {Array<Location>}
+   * @memberof RobotState
+   */
+  path: Array<Location>;
 }
 /**
  *
