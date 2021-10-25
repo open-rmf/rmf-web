@@ -1,7 +1,7 @@
 import { Button, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import type { Behavior } from 'api-client';
 import React, { ChangeEvent } from 'react';
-import * as RmfModels from 'rmf-models';
 import { useFormStyles } from './form-styles';
 
 export type DoDeliveryRequest = (
@@ -9,8 +9,8 @@ export type DoDeliveryRequest = (
   pickupDispenser: string,
   dropOffPlaceName: string,
   dropOffDispenser: string,
-  pickupBehaviour?: RmfModels.Behavior,
-  dropOffBehavior?: RmfModels.Behavior,
+  pickupBehaviour?: Behavior,
+  dropOffBehavior?: Behavior,
 ) => void;
 
 export interface DeliveryRequestFormProps {

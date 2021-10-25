@@ -1,7 +1,7 @@
 import { makeStyles, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
-import { Dispenser } from 'api-client';
+import type { Dispenser, DispenserState, IngestorState } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import { DispenserState as RmfDispenserState } from 'rmf-models';
 import { dispenserModeToString } from './utils';
 
 const useStyles = makeStyles((theme) => ({
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
 
 export interface WorkcellTableProps {
   workcells: Dispenser[];
-  workcellStates: Record<string, RmfModels.DispenserState>;
+  workcellStates: Record<string, DispenserState | IngestorState>;
 }
 
 export interface WorkcellRowProps {
@@ -35,11 +35,11 @@ const WorkcellRow = React.memo(
     const dispenserModeLabelClasses = React.useCallback(
       (mode: number): string => {
         switch (mode) {
-          case RmfModels.DispenserState.IDLE:
+          case RmfDispenserState.IDLE:
             return `${classes.dispenserLabelIdle}`;
-          case RmfModels.DispenserState.BUSY:
+          case RmfDispenserState.BUSY:
             return `${classes.dispenserLabelBusy}`;
-          case RmfModels.DispenserState.OFFLINE:
+          case RmfDispenserState.OFFLINE:
             return `${classes.offlineLabelOffline}`;
           default:
             return '';
@@ -88,8 +88,7 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
       </TableHead>
       <TableBody>
         {workcells.map((workcell) => {
-          const state: RmfModels.DispenserState | RmfModels.IngestorState | undefined =
-            workcellStates[workcell.guid];
+          const state: DispenserState | IngestorState | undefined = workcellStates[workcell.guid];
           return (
             <WorkcellRow
               key={workcell.guid}

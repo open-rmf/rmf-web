@@ -1,9 +1,9 @@
+import type { AffineImage } from 'api-client';
 import React from 'react';
 import { ImageOverlay, ImageOverlayProps } from 'react-leaflet';
-import * as RmfModels from 'rmf-models';
 
 export interface AffineImageOverlayProps extends Omit<ImageOverlayProps, 'url'> {
-  image: RmfModels.AffineImage;
+  image: AffineImage;
 }
 
 export function AffineImageOverlay({

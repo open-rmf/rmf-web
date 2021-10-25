@@ -12,8 +12,9 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
+import type { Lift, LiftState } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import { DoorMode as RmfDoorMode } from 'rmf-models';
 import LiftRequestFormDialog from './lift-request-form-dialog';
 import { LiftTable } from './lift-table';
 import {
@@ -24,11 +25,11 @@ import {
 } from './lift-utils';
 
 export interface LiftPanelProps {
-  lifts: RmfModels.Lift[];
-  liftStates: Record<string, RmfModels.LiftState>;
+  lifts: Lift[];
+  liftStates: Record<string, LiftState>;
   onRequestSubmit?(
     event: React.FormEvent,
-    lift: RmfModels.Lift,
+    lift: Lift,
     doorState: number,
     requestType: number,
     destination: string,
@@ -36,14 +37,14 @@ export interface LiftPanelProps {
 }
 
 export interface LiftCellProps {
-  lift: RmfModels.Lift;
+  lift: Lift;
   doorState?: number;
   motionState?: number;
   destinationFloor?: string;
   currentFloor?: string;
   onRequestSubmit?(
     event: React.FormEvent,
-    lift: RmfModels.Lift,
+    lift: Lift,
     doorState: number,
     requestType: number,
     destination: string,
@@ -117,11 +118,11 @@ const LiftCell = React.memo(
     const doorModeLabelClasses = React.useCallback(
       (doorState?: number): string => {
         switch (doorState) {
-          case RmfModels.DoorMode.MODE_OPEN:
+          case RmfDoorMode.MODE_OPEN:
             return `${classes.doorLabelOpen}`;
-          case RmfModels.DoorMode.MODE_CLOSED:
+          case RmfDoorMode.MODE_CLOSED:
             return `${classes.doorLabelClosed}`;
-          case RmfModels.DoorMode.MODE_MOVING:
+          case RmfDoorMode.MODE_MOVING:
             return `${classes.doorLabelMoving}`;
           default:
             return '';
@@ -205,7 +206,7 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
       <Grid className={classes.grid} container direction="row" spacing={1}>
         {isCellView ? (
           lifts.map((lift, i) => {
-            const state: RmfModels.LiftState | undefined = liftStates[lift.name];
+            const state: LiftState | undefined = liftStates[lift.name];
             return (
               <Grid item xs={4} key={`${lift.name}_${i}`}>
                 <LiftCell

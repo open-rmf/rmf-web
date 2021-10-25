@@ -1,6 +1,6 @@
 import { Meta, Story } from '@storybook/react';
+import type { LiftState } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
 import { makeLiftState } from '../lifts/test-utils.spec';
 import { LiftMarker, LiftMarkerProps } from './lift-marker';
 
@@ -13,7 +13,7 @@ function makeStory(
   width: number,
   height: number,
   yaw: number,
-  liftState?: RmfModels.LiftState,
+  liftState?: LiftState,
   variant?: LiftMarkerProps['variant'],
 ): Story {
   return (args) => (

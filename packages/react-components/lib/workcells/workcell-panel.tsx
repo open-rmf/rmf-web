@@ -1,15 +1,14 @@
 import { Card, Grid, IconButton, makeStyles, Paper, Typography } from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
-import { Dispenser } from 'api-client';
+import type { Dispenser, DispenserState, IngestorState } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
 import { WorkcellTable } from './workcell-table';
 
 export interface WorkcellPanelProps {
   dispensers: Dispenser[];
   ingestors: Dispenser[];
-  workCellStates: Record<string, RmfModels.DispenserState>;
+  workCellStates: Record<string, DispenserState>;
 }
 
 export interface WorkcellCellProps {
@@ -121,8 +120,7 @@ export function WorkcellPanel({
             <Grid container direction="row" spacing={1}>
               {dispensers.length > 0
                 ? dispensers.map((dispenser, i) => {
-                    const state: RmfModels.DispenserState | undefined =
-                      workCellStates[dispenser.guid];
+                    const state: DispenserState | undefined = workCellStates[dispenser.guid];
                     return (
                       <Grid item xs={4} key={`${dispenser.guid}_${i}`}>
                         <WorkcellCell
@@ -141,8 +139,7 @@ export function WorkcellPanel({
             <Grid container direction="row" spacing={1}>
               {ingestors.length > 0
                 ? ingestors.map((ingestor, i) => {
-                    const state: RmfModels.IngestorState | undefined =
-                      workCellStates[ingestor.guid];
+                    const state: IngestorState | undefined = workCellStates[ingestor.guid];
                     return (
                       <Grid item xs={4} key={`${ingestor.guid}_${i}`}>
                         <WorkcellCell
