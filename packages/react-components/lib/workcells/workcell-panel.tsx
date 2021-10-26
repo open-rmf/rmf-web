@@ -50,10 +50,10 @@ const useStyles = makeStyles((theme) => ({
     borderColor: theme.palette.primary.main,
   },
   itemIcon: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
+    color: theme.palette.primary.contrastText,
   },
   panelHeader: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
+    color: theme.palette.primary.contrastText,
     marginLeft: theme.spacing(2),
   },
 }));

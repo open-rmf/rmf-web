@@ -44,19 +44,19 @@ const useStyles = makeStyles((theme) => ({
     overflowY: 'auto',
   },
   doorLabelDefault: {
-    padding: theme.spacing(0) + theme.spacing(0.2),
+    padding: theme.spacing(0, 0.2),
   },
   doorLabelOpen: {
     backgroundColor: theme.palette.success.main,
-    color: theme.palette.getContrastText(theme.palette.success.main),
+    color: theme.palette.success.contrastText,
   },
   doorLabelClosed: {
     backgroundColor: theme.palette.error.main,
-    color: theme.palette.getContrastText(theme.palette.success.main),
+    color: theme.palette.error.contrastText,
   },
   doorLabelMoving: {
     backgroundColor: theme.palette.warning.main,
-    color: theme.palette.getContrastText(theme.palette.success.main),
+    color: theme.palette.warning.contrastText,
   },
   cellPaper: {
     padding: theme.spacing(2),
@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
     borderColor: theme.palette.primary.main,
   },
   itemIcon: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
+    color: theme.palette.primary.contrastText,
   },
   buttonGroup: {
     display: 'flex',
@@ -79,13 +79,13 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: theme.shape.borderRadius,
     backgroundColor: theme.palette.primary.light,
     boxShadow: theme.shadows[3],
-    color: theme.palette.getContrastText(theme.palette.primary.light),
+    color: theme.palette.primary.contrastText,
     '&:hover': {
       color: theme.palette.primary.main,
     },
   },
   panelHeader: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
+    color: theme.palette.primary.contrastText,
     marginLeft: theme.spacing(2),
   },
 }));
