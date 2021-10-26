@@ -21,11 +21,13 @@ class DoorState(pydantic.BaseModel):
         door_time: Time = Time(),  # builtin_interfaces/Time
         door_name: str = "",  # string
         current_mode: DoorMode = DoorMode(),  # rmf_door_msgs/DoorMode
+        **kwargs,
     ):
         super().__init__(
             door_time=door_time,
             door_name=door_name,
             current_mode=current_mode,
+            **kwargs,
         )
 
 

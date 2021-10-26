@@ -20,11 +20,13 @@ class LaneRequest(pydantic.BaseModel):
         close_lanes: List[
             pydantic.conint(ge=0, le=18446744073709551615)
         ] = [],  # uint64
+        **kwargs,
     ):
         super().__init__(
             fleet_name=fleet_name,
             open_lanes=open_lanes,
             close_lanes=close_lanes,
+            **kwargs,
         )
 
 

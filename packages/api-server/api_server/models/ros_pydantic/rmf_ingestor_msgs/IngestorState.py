@@ -24,6 +24,7 @@ class IngestorState(pydantic.BaseModel):
         mode: pydantic.conint(ge=-2147483648, le=2147483647) = 0,  # int32
         request_guid_queue: List[str] = [],  # string
         seconds_remaining: float = 0,  # float32
+        **kwargs,
     ):
         super().__init__(
             time=time,
@@ -31,6 +32,7 @@ class IngestorState(pydantic.BaseModel):
             mode=mode,
             request_guid_queue=request_guid_queue,
             seconds_remaining=seconds_remaining,
+            **kwargs,
         )
 
 

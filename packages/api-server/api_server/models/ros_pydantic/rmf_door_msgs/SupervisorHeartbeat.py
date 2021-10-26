@@ -16,9 +16,11 @@ class SupervisorHeartbeat(pydantic.BaseModel):
     def __init__(
         self,
         all_sessions: List[DoorSessions] = [],  # rmf_door_msgs/DoorSessions
+        **kwargs,
     ):
         super().__init__(
             all_sessions=all_sessions,
+            **kwargs,
         )
 
 

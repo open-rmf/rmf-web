@@ -16,10 +16,12 @@ class ModeParameter(pydantic.BaseModel):
         self,
         name: str = "",  # string
         value: str = "",  # string
+        **kwargs,
     ):
         super().__init__(
             name=name,
             value=value,
+            **kwargs,
         )
 
 

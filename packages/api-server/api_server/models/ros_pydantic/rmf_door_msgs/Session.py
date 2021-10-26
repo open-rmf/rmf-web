@@ -18,10 +18,12 @@ class Session(pydantic.BaseModel):
         self,
         request_time: Time = Time(),  # builtin_interfaces/Time
         requester_id: str = "",  # string
+        **kwargs,
     ):
         super().__init__(
             request_time=request_time,
             requester_id=requester_id,
+            **kwargs,
         )
 
 

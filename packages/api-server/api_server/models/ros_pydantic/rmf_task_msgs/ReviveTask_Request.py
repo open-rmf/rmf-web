@@ -16,10 +16,12 @@ class ReviveTask_Request(pydantic.BaseModel):
         self,
         requester: str = "",  # string
         task_id: str = "",  # string
+        **kwargs,
     ):
         super().__init__(
             requester=requester,
             task_id=task_id,
+            **kwargs,
         )
 
 

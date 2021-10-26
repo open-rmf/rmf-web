@@ -24,12 +24,14 @@ class Graph(pydantic.BaseModel):
         vertices: List[GraphNode] = [],  # rmf_building_map_msgs/GraphNode
         edges: List[GraphEdge] = [],  # rmf_building_map_msgs/GraphEdge
         params: List[Param] = [],  # rmf_building_map_msgs/Param
+        **kwargs,
     ):
         super().__init__(
             name=name,
             vertices=vertices,
             edges=edges,
             params=params,
+            **kwargs,
         )
 
 

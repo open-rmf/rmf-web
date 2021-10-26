@@ -27,6 +27,7 @@ class BidProposal(pydantic.BaseModel):
         new_cost: float = 0,  # float64
         finish_time: Time = Time(),  # builtin_interfaces/Time
         robot_name: str = "",  # string
+        **kwargs,
     ):
         super().__init__(
             fleet_name=fleet_name,
@@ -35,6 +36,7 @@ class BidProposal(pydantic.BaseModel):
             new_cost=new_cost,
             finish_time=finish_time,
             robot_name=robot_name,
+            **kwargs,
         )
 
 

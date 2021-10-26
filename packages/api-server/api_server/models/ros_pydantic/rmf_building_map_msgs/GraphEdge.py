@@ -22,12 +22,14 @@ class GraphEdge(pydantic.BaseModel):
         v2_idx: pydantic.conint(ge=0, le=4294967295) = 0,  # uint32
         params: List[Param] = [],  # rmf_building_map_msgs/Param
         edge_type: pydantic.conint(ge=0, le=255) = 0,  # uint8
+        **kwargs,
     ):
         super().__init__(
             v1_idx=v1_idx,
             v2_idx=v2_idx,
             params=params,
             edge_type=edge_type,
+            **kwargs,
         )
 
 

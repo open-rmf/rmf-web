@@ -33,6 +33,7 @@ class Lift(pydantic.BaseModel):
         ref_yaw: float = 0,  # float32
         width: float = 0,  # float32
         depth: float = 0,  # float32
+        **kwargs,
     ):
         super().__init__(
             name=name,
@@ -44,6 +45,7 @@ class Lift(pydantic.BaseModel):
             ref_yaw=ref_yaw,
             width=width,
             depth=depth,
+            **kwargs,
         )
 
 

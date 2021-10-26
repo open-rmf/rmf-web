@@ -24,6 +24,7 @@ class Place(pydantic.BaseModel):
         yaw: float = 0,  # float32
         position_tolerance: float = 0,  # float32
         yaw_tolerance: float = 0,  # float32
+        **kwargs,
     ):
         super().__init__(
             name=name,
@@ -32,6 +33,7 @@ class Place(pydantic.BaseModel):
             yaw=yaw,
             position_tolerance=position_tolerance,
             yaw_tolerance=yaw_tolerance,
+            **kwargs,
         )
 
 

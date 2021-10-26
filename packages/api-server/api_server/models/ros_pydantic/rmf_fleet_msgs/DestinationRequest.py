@@ -22,12 +22,14 @@ class DestinationRequest(pydantic.BaseModel):
         robot_name: str = "",  # string
         destination: Location = Location(),  # rmf_fleet_msgs/Location
         task_id: str = "",  # string
+        **kwargs,
     ):
         super().__init__(
             fleet_name=fleet_name,
             robot_name=robot_name,
             destination=destination,
             task_id=task_id,
+            **kwargs,
         )
 
 

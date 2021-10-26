@@ -14,9 +14,11 @@ class LiftClearance_Response(pydantic.BaseModel):
     def __init__(
         self,
         decision: pydantic.conint(ge=0, le=4294967295) = 0,  # uint32
+        **kwargs,
     ):
         super().__init__(
             decision=decision,
+            **kwargs,
         )
 
 

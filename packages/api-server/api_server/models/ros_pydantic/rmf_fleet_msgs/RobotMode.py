@@ -16,10 +16,12 @@ class RobotMode(pydantic.BaseModel):
         self,
         mode: pydantic.conint(ge=0, le=4294967295) = 0,  # uint32
         mode_request_id: pydantic.conint(ge=0, le=18446744073709551615) = 0,  # uint64
+        **kwargs,
     ):
         super().__init__(
             mode=mode,
             mode_request_id=mode_request_id,
+            **kwargs,
         )
 
 

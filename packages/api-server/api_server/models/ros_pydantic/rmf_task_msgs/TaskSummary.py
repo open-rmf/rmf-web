@@ -33,6 +33,7 @@ class TaskSummary(pydantic.BaseModel):
         start_time: Time = Time(),  # builtin_interfaces/Time
         end_time: Time = Time(),  # builtin_interfaces/Time
         robot_name: str = "",  # string
+        **kwargs,
     ):
         super().__init__(
             fleet_name=fleet_name,
@@ -44,6 +45,7 @@ class TaskSummary(pydantic.BaseModel):
             start_time=start_time,
             end_time=end_time,
             robot_name=robot_name,
+            **kwargs,
         )
 
 

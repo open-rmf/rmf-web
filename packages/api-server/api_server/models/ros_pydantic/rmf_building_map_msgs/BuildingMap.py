@@ -21,11 +21,13 @@ class BuildingMap(pydantic.BaseModel):
         name: str = "",  # string
         levels: List[Level] = [],  # rmf_building_map_msgs/Level
         lifts: List[Lift] = [],  # rmf_building_map_msgs/Lift
+        **kwargs,
     ):
         super().__init__(
             name=name,
             levels=levels,
             lifts=lifts,
+            **kwargs,
         )
 
 

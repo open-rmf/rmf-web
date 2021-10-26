@@ -21,11 +21,13 @@ class TaskProfile(pydantic.BaseModel):
         task_id: str = "",  # string
         submission_time: Time = Time(),  # builtin_interfaces/Time
         description: TaskDescription = TaskDescription(),  # rmf_task_msgs/TaskDescription
+        **kwargs,
     ):
         super().__init__(
             task_id=task_id,
             submission_time=submission_time,
             description=description,
+            **kwargs,
         )
 
 

@@ -22,6 +22,7 @@ class Loop(pydantic.BaseModel):
         num_loops: pydantic.conint(ge=0, le=4294967295) = 0,  # uint32
         start_name: str = "",  # string
         finish_name: str = "",  # string
+        **kwargs,
     ):
         super().__init__(
             task_id=task_id,
@@ -29,6 +30,7 @@ class Loop(pydantic.BaseModel):
             num_loops=num_loops,
             start_name=start_name,
             finish_name=finish_name,
+            **kwargs,
         )
 
 

@@ -18,10 +18,12 @@ class SubmitTask_Request(pydantic.BaseModel):
         self,
         requester: str = "",  # string
         description: TaskDescription = TaskDescription(),  # rmf_task_msgs/TaskDescription
+        **kwargs,
     ):
         super().__init__(
             requester=requester,
             description=description,
+            **kwargs,
         )
 
 

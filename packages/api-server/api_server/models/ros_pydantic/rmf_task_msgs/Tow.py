@@ -26,6 +26,7 @@ class Tow(pydantic.BaseModel):
         pickup_place_name: str = "",  # string
         is_dropoff_place_known: bool = False,  # bool
         dropoff_place_name: str = "",  # string
+        **kwargs,
     ):
         super().__init__(
             task_id=task_id,
@@ -35,6 +36,7 @@ class Tow(pydantic.BaseModel):
             pickup_place_name=pickup_place_name,
             is_dropoff_place_known=is_dropoff_place_known,
             dropoff_place_name=dropoff_place_name,
+            **kwargs,
         )
 
 

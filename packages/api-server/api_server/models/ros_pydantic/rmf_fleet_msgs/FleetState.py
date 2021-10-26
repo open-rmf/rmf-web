@@ -18,10 +18,12 @@ class FleetState(pydantic.BaseModel):
         self,
         name: str = "",  # string
         robots: List[RobotState] = [],  # rmf_fleet_msgs/RobotState
+        **kwargs,
     ):
         super().__init__(
             name=name,
             robots=robots,
+            **kwargs,
         )
 
 

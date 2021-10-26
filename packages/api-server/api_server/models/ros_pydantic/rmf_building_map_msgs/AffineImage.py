@@ -26,6 +26,7 @@ class AffineImage(pydantic.BaseModel):
         scale: float = 0,  # float32
         encoding: str = "",  # string
         data: bytes = bytes(),  # uint8
+        **kwargs,
     ):
         super().__init__(
             name=name,
@@ -35,6 +36,7 @@ class AffineImage(pydantic.BaseModel):
             scale=scale,
             encoding=encoding,
             data=data,
+            **kwargs,
         )
 
 

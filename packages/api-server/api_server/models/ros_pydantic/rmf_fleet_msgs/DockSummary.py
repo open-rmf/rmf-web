@@ -16,9 +16,11 @@ class DockSummary(pydantic.BaseModel):
     def __init__(
         self,
         docks: List[Dock] = [],  # rmf_fleet_msgs/Dock
+        **kwargs,
     ):
         super().__init__(
             docks=docks,
+            **kwargs,
         )
 
 

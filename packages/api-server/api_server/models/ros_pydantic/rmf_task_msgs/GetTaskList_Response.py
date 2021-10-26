@@ -20,11 +20,13 @@ class GetTaskList_Response(pydantic.BaseModel):
         success: bool = False,  # bool
         active_tasks: List[TaskSummary] = [],  # rmf_task_msgs/TaskSummary
         terminated_tasks: List[TaskSummary] = [],  # rmf_task_msgs/TaskSummary
+        **kwargs,
     ):
         super().__init__(
             success=success,
             active_tasks=active_tasks,
             terminated_tasks=terminated_tasks,
+            **kwargs,
         )
 
 

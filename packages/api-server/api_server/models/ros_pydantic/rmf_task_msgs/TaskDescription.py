@@ -34,6 +34,7 @@ class TaskDescription(pydantic.BaseModel):
         loop: Loop = Loop(),  # rmf_task_msgs/Loop
         delivery: Delivery = Delivery(),  # rmf_task_msgs/Delivery
         clean: Clean = Clean(),  # rmf_task_msgs/Clean
+        **kwargs,
     ):
         super().__init__(
             start_time=start_time,
@@ -43,6 +44,7 @@ class TaskDescription(pydantic.BaseModel):
             loop=loop,
             delivery=delivery,
             clean=clean,
+            **kwargs,
         )
 
 

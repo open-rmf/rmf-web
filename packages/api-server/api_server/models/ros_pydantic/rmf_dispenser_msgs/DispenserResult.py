@@ -22,12 +22,14 @@ class DispenserResult(pydantic.BaseModel):
         request_guid: str = "",  # string
         source_guid: str = "",  # string
         status: pydantic.conint(ge=0, le=255) = 0,  # uint8
+        **kwargs,
     ):
         super().__init__(
             time=time,
             request_guid=request_guid,
             source_guid=source_guid,
             status=status,
+            **kwargs,
         )
 
 

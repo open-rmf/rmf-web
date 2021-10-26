@@ -26,6 +26,7 @@ class Location(pydantic.BaseModel):
         yaw: float = 0,  # float32
         level_name: str = "",  # string
         index: pydantic.conint(ge=0, le=18446744073709551615) = 0,  # uint64
+        **kwargs,
     ):
         super().__init__(
             t=t,
@@ -34,6 +35,7 @@ class Location(pydantic.BaseModel):
             yaw=yaw,
             level_name=level_name,
             index=index,
+            **kwargs,
         )
 
 

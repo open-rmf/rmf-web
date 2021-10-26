@@ -19,10 +19,12 @@ class BidNotice(pydantic.BaseModel):
         self,
         task_profile: TaskProfile = TaskProfile(),  # rmf_task_msgs/TaskProfile
         time_window: Duration = Duration(),  # builtin_interfaces/Duration
+        **kwargs,
     ):
         super().__init__(
             task_profile=task_profile,
             time_window=time_window,
+            **kwargs,
         )
 
 

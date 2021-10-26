@@ -18,10 +18,12 @@ class DoorSessions(pydantic.BaseModel):
         self,
         door_name: str = "",  # string
         sessions: List[Session] = [],  # rmf_door_msgs/Session
+        **kwargs,
     ):
         super().__init__(
             door_name=door_name,
             sessions=sessions,
+            **kwargs,
         )
 
 

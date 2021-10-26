@@ -16,10 +16,12 @@ class ChargerCancel(pydantic.BaseModel):
         self,
         charger_name: str = "",  # string
         request_id: str = "",  # string
+        **kwargs,
     ):
         super().__init__(
             charger_name=charger_name,
             request_id=request_id,
+            **kwargs,
         )
 
 

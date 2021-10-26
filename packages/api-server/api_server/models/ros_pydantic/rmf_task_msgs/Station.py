@@ -18,11 +18,13 @@ class Station(pydantic.BaseModel):
         task_id: str = "",  # string
         robot_type: str = "",  # string
         place_name: str = "",  # string
+        **kwargs,
     ):
         super().__init__(
             task_id=task_id,
             robot_type=robot_type,
             place_name=place_name,
+            **kwargs,
         )
 
 

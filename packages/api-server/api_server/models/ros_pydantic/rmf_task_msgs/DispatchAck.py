@@ -18,10 +18,12 @@ class DispatchAck(pydantic.BaseModel):
         self,
         dispatch_request: DispatchRequest = DispatchRequest(),  # rmf_task_msgs/DispatchRequest
         success: bool = False,  # bool
+        **kwargs,
     ):
         super().__init__(
             dispatch_request=dispatch_request,
             success=success,
+            **kwargs,
         )
 
 

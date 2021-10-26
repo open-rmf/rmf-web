@@ -31,6 +31,7 @@ class RobotState(pydantic.BaseModel):
         battery_percent: float = 0,  # float32
         location: Location = Location(),  # rmf_fleet_msgs/Location
         path: List[Location] = [],  # rmf_fleet_msgs/Location
+        **kwargs,
     ):
         super().__init__(
             name=name,
@@ -41,6 +42,7 @@ class RobotState(pydantic.BaseModel):
             battery_percent=battery_percent,
             location=location,
             path=path,
+            **kwargs,
         )
 
 

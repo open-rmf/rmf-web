@@ -14,9 +14,11 @@ class Clean(pydantic.BaseModel):
     def __init__(
         self,
         start_waypoint: str = "",  # string
+        **kwargs,
     ):
         super().__init__(
             start_waypoint=start_waypoint,
+            **kwargs,
         )
 
 

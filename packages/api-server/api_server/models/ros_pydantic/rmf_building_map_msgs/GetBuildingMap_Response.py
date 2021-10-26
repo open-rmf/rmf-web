@@ -16,9 +16,11 @@ class GetBuildingMap_Response(pydantic.BaseModel):
     def __init__(
         self,
         building_map: BuildingMap = BuildingMap(),  # rmf_building_map_msgs/BuildingMap
+        **kwargs,
     ):
         super().__init__(
             building_map=building_map,
+            **kwargs,
         )
 
 

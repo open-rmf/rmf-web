@@ -31,6 +31,7 @@ class Level(pydantic.BaseModel):
         doors: List[Door] = [],  # rmf_building_map_msgs/Door
         nav_graphs: List[Graph] = [],  # rmf_building_map_msgs/Graph
         wall_graph: Graph = Graph(),  # rmf_building_map_msgs/Graph
+        **kwargs,
     ):
         super().__init__(
             name=name,
@@ -40,6 +41,7 @@ class Level(pydantic.BaseModel):
             doors=doors,
             nav_graphs=nav_graphs,
             wall_graph=wall_graph,
+            **kwargs,
         )
 
 

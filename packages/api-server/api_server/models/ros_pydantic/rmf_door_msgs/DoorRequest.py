@@ -23,12 +23,14 @@ class DoorRequest(pydantic.BaseModel):
         requester_id: str = "",  # string
         door_name: str = "",  # string
         requested_mode: DoorMode = DoorMode(),  # rmf_door_msgs/DoorMode
+        **kwargs,
     ):
         super().__init__(
             request_time=request_time,
             requester_id=requester_id,
             door_name=door_name,
             requested_mode=requested_mode,
+            **kwargs,
         )
 
 

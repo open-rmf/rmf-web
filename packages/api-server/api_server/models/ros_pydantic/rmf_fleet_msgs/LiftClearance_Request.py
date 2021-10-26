@@ -16,10 +16,12 @@ class LiftClearance_Request(pydantic.BaseModel):
         self,
         robot_name: str = "",  # string
         lift_name: str = "",  # string
+        **kwargs,
     ):
         super().__init__(
             robot_name=robot_name,
             lift_name=lift_name,
+            **kwargs,
         )
 
 

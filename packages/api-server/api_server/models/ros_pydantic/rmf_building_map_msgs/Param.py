@@ -24,6 +24,7 @@ class Param(pydantic.BaseModel):
         value_float: float = 0,  # float32
         value_string: str = "",  # string
         value_bool: bool = False,  # bool
+        **kwargs,
     ):
         super().__init__(
             name=name,
@@ -32,6 +33,7 @@ class Param(pydantic.BaseModel):
             value_float=value_float,
             value_string=value_string,
             value_bool=value_bool,
+            **kwargs,
         )
 
 

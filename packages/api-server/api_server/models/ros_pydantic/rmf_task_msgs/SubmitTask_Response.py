@@ -18,11 +18,13 @@ class SubmitTask_Response(pydantic.BaseModel):
         success: bool = False,  # bool
         task_id: str = "",  # string
         message: str = "",  # string
+        **kwargs,
     ):
         super().__init__(
             success=success,
             task_id=task_id,
             message=message,
+            **kwargs,
         )
 
 

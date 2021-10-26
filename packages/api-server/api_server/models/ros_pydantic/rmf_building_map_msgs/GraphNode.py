@@ -22,12 +22,14 @@ class GraphNode(pydantic.BaseModel):
         y: float = 0,  # float32
         name: str = "",  # string
         params: List[Param] = [],  # rmf_building_map_msgs/Param
+        **kwargs,
     ):
         super().__init__(
             x=x,
             y=y,
             name=name,
             params=params,
+            **kwargs,
         )
 
 

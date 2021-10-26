@@ -24,6 +24,7 @@ class ChargerRequest(pydantic.BaseModel):
         robot_name: str = "",  # string
         start_timeout: Duration = Duration(),  # builtin_interfaces/Duration
         request_id: str = "",  # string
+        **kwargs,
     ):
         super().__init__(
             charger_name=charger_name,
@@ -31,6 +32,7 @@ class ChargerRequest(pydantic.BaseModel):
             robot_name=robot_name,
             start_timeout=start_timeout,
             request_id=request_id,
+            **kwargs,
         )
 
 

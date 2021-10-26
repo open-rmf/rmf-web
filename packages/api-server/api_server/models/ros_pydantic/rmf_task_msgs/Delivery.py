@@ -33,6 +33,7 @@ class Delivery(pydantic.BaseModel):
         dropoff_place_name: str = "",  # string
         dropoff_ingestor: str = "",  # string
         dropoff_behavior: Behavior = Behavior(),  # rmf_task_msgs/Behavior
+        **kwargs,
     ):
         super().__init__(
             task_id=task_id,
@@ -43,6 +44,7 @@ class Delivery(pydantic.BaseModel):
             dropoff_place_name=dropoff_place_name,
             dropoff_ingestor=dropoff_ingestor,
             dropoff_behavior=dropoff_behavior,
+            **kwargs,
         )
 
 

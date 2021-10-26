@@ -18,10 +18,12 @@ class ClosedLanes(pydantic.BaseModel):
         closed_lanes: List[
             pydantic.conint(ge=0, le=18446744073709551615)
         ] = [],  # uint64
+        **kwargs,
     ):
         super().__init__(
             fleet_name=fleet_name,
             closed_lanes=closed_lanes,
+            **kwargs,
         )
 
 

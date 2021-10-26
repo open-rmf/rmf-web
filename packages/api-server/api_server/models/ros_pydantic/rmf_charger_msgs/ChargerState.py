@@ -31,6 +31,7 @@ class ChargerState(pydantic.BaseModel):
         robot_fleet: str = "",  # string
         robot_name: str = "",  # string
         time_to_fully_charged: Duration = Duration(),  # builtin_interfaces/Duration
+        **kwargs,
     ):
         super().__init__(
             charger_time=charger_time,
@@ -41,6 +42,7 @@ class ChargerState(pydantic.BaseModel):
             robot_fleet=robot_fleet,
             robot_name=robot_name,
             time_to_fully_charged=time_to_fully_charged,
+            **kwargs,
         )
 
 

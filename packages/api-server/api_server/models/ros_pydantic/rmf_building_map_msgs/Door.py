@@ -28,6 +28,7 @@ class Door(pydantic.BaseModel):
         door_type: pydantic.conint(ge=0, le=255) = 0,  # uint8
         motion_range: float = 0,  # float32
         motion_direction: pydantic.conint(ge=-2147483648, le=2147483647) = 0,  # int32
+        **kwargs,
     ):
         super().__init__(
             name=name,
@@ -38,6 +39,7 @@ class Door(pydantic.BaseModel):
             door_type=door_type,
             motion_range=motion_range,
             motion_direction=motion_direction,
+            **kwargs,
         )
 
 

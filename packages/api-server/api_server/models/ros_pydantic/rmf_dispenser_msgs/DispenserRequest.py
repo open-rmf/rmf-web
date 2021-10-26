@@ -27,6 +27,7 @@ class DispenserRequest(pydantic.BaseModel):
         items: List[
             DispenserRequestItem
         ] = [],  # rmf_dispenser_msgs/DispenserRequestItem
+        **kwargs,
     ):
         super().__init__(
             time=time,
@@ -34,6 +35,7 @@ class DispenserRequest(pydantic.BaseModel):
             target_guid=target_guid,
             transporter_type=transporter_type,
             items=items,
+            **kwargs,
         )
 
 

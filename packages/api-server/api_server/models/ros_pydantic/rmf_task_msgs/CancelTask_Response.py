@@ -16,10 +16,12 @@ class CancelTask_Response(pydantic.BaseModel):
         self,
         success: bool = False,  # bool
         message: str = "",  # string
+        **kwargs,
     ):
         super().__init__(
             success=success,
             message=message,
+            **kwargs,
         )
 
 

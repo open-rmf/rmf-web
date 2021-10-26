@@ -34,6 +34,7 @@ class LiftState(pydantic.BaseModel):
         available_modes: bytes = bytes(),  # uint8
         current_mode: pydantic.conint(ge=0, le=255) = 0,  # uint8
         session_id: str = "",  # string
+        **kwargs,
     ):
         super().__init__(
             lift_time=lift_time,
@@ -46,6 +47,7 @@ class LiftState(pydantic.BaseModel):
             available_modes=available_modes,
             current_mode=current_mode,
             session_id=session_id,
+            **kwargs,
         )
 
 

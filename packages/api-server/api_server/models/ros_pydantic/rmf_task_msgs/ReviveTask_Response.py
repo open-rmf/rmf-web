@@ -14,9 +14,11 @@ class ReviveTask_Response(pydantic.BaseModel):
     def __init__(
         self,
         success: bool = False,  # bool
+        **kwargs,
     ):
         super().__init__(
             success=success,
+            **kwargs,
         )
 
 
