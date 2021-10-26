@@ -1,18 +1,43 @@
 from enum import IntEnum
-from typing import Optional, Union
+from typing import Callable, Optional, Union, cast
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, conint, validator
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 from rmf_task_msgs.msg import TaskType as RmfTaskType
 
 from api_server.ros_time import ros_to_py_datetime
 
 from . import tortoise_models as ttm
-from .ros_pydantic import rmf_task_msgs
+from .ros_pydantic import builtin_interfaces, rmf_task_msgs
 
 
 class TaskSummary(rmf_task_msgs.TaskSummary):
     authz_grp: Optional[str] = None
+
+    # pylint: disable=unused-argument
+    class __InitProto__:
+        def __call__(self, f: Callable):
+            def sig(
+                self,
+                *,
+                authz_grp: str = "",
+                fleet_name: str = "",  # string
+                task_id: str = "",  # string
+                task_profile: rmf_task_msgs.TaskProfile = rmf_task_msgs.TaskProfile(),  # rmf_task_msgs/TaskProfile
+                state: conint(ge=0, le=4294967295) = 0,  # uint32
+                status: str = "",  # string
+                submission_time: builtin_interfaces.Time = builtin_interfaces.Time(),  # builtin_interfaces/Time
+                start_time: builtin_interfaces.Time = builtin_interfaces.Time(),  # builtin_interfaces/Time
+                end_time: builtin_interfaces.Time = builtin_interfaces.Time(),  # builtin_interfaces/Time
+                robot_name: str = "",  # string
+            ):
+                ...
+
+            return cast(sig, f)
+
+    @__InitProto__()
+    def __init__(self, *args, authz_grp: str = "", **kwargs):
+        super().__init__(*args, authz_grp=authz_grp, **kwargs)
 
     @staticmethod
     def from_tortoise(tortoise: ttm.TaskSummary) -> "TaskSummary":
