@@ -25,6 +25,13 @@ const useStyles = makeStyles((theme) => ({
   tableContainer: {
     maxHeight: '25vh',
   },
+  firstCell: {
+    width: theme.spacing(16),
+    maxWidth: theme.spacing(16),
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+  },
 }));
 
 export interface WorkcellTableProps {
@@ -63,7 +70,7 @@ const WorkcellRow = React.memo(
       <TableRow aria-label={`${workcell.guid}`}>
         {mode !== undefined && requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
           <React.Fragment>
-            <TableCell>{workcell.guid}</TableCell>
+            <TableCell className={classes.firstCell}>{workcell.guid}</TableCell>
             <TableCell className={dispenserModeLabelClasses(mode)}>
               {dispenserModeToString(mode)}
             </TableCell>
@@ -93,7 +100,7 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
       <Table stickyHeader size="small" aria-label="workcell-table">
         <TableHead>
           <TableRow>
-            <TableCell>Name</TableCell>
+            <TableCell className={classes.firstCell}>Name</TableCell>
             <TableCell>Op. Mode</TableCell>
             <TableCell>No. Queued Requests</TableCell>
             <TableCell>Request Queue ID</TableCell>
