@@ -46,6 +46,47 @@ You may also choose to bootstrap only the dashboard
 lerna bootstrap --scope=rmf-dashboard
 ```
 
+### Keycloak
+If you would like to test out authentication and authorization locally, you will need to install and set up Keycloak. The defaults are for Keycloak to be listening on 127.0.0.1:8080 with:
+* An administrator with username `admin` and password `admin`
+* A user with username `admin` and password `admin`
+* A user with username `example` and password `example`
+
+The JWT Public Key for rmf-server authentication configuration will be saved in `/tmp/jwt-pub-key.pub`.
+
+#### Docker
+We can use Docker to quickly bring up a Keycloak instance.
+
+Install docker: `https://docs.docker.com/engine/install/ubuntu/`
+
+start a a database instance: `docker run -it --rm --name rmf-keycloak --network=host -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin jboss/keycloak`
+
+to stop the instance: `docker kill rmf-keycloak
+
+Then, run the following script to bootstrap Keycloak with default configurations:
+```
+bash scripts/bootstrap-keycloak.bash
+```
+
+#### Bare Metal
+The Keycloak executables can be found in the `rmf-web` root folder in the hidden holder `.keycloak`.
+You can run the following script to set up a local Keycloak instance
+```
+bash scripts/setup-local-keycloak.bash  
+```
+
+Then, run the following script to bootstrap Keycloak with default configurations:
+```
+bash scripts/bootstrap-keycloak.bash
+```
+
+#### Issues
+If you get an error "Signature Verification Failed" on the rmf-server, try the following:
+* Terminate all instances of the dashboard client currently open
+* Terminate all instances of api-server and keycloak currently running
+* Delete `.keycloak` folder
+* Relaunch everything
+
 ## Launching
 
 Before running the commands, make sure that rmf is sourced.
