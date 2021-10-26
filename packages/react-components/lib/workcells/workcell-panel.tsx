@@ -222,7 +222,7 @@ export function WorkcellPanel({
             </div>
           ) : null}
           {ingestors.length > 0 ? (
-            <div className={classes.tableDiv}>
+            <div className={classes.tableDiv} style={{ marginTop: '1rem' }}>
               <Typography variant="h6">Ingestor Table</Typography>
               <WorkcellTable workcells={ingestors} workcellStates={workCellStates} />
             </div>

@@ -39,9 +39,6 @@ const useStyles = makeStyles((theme) => ({
   doorLabelMoving: {
     color: theme.palette.warning.main,
   },
-  expandingCell: {
-    flex: 1,
-  },
   tableRow: {
     display: 'flex',
     flexDirection: 'row',
@@ -52,15 +49,9 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
   },
   tableCell: {
-    display: 'block',
-    flexGrow: 0,
-    flexShrink: 0,
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-  },
-  tableBody: {
-    width: '100%',
   },
 }));
 
@@ -107,7 +98,7 @@ const DoorRow = React.memo(({ data, index, style }: DoorRowProps) => {
       <TableCell
         component="div"
         variant="body"
-        className={clsx(classes.tableCell, classes.expandingCell)}
+        className={classes.tableCell}
         style={{
           minWidth: width * doorTableCellConfig.doorName - 40,
           height: doorTableCellConfig.rowHeight,
@@ -122,7 +113,6 @@ const DoorRow = React.memo(({ data, index, style }: DoorRowProps) => {
         className={clsx(
           getOpMode(doorMode) === 'Offline' ? classes.doorLabelClosed : classes.doorLabelOpen,
           classes.tableCell,
-          classes.expandingCell,
         )}
         style={{
           minWidth: width * doorTableCellConfig.doorMode - 40,
@@ -134,7 +124,7 @@ const DoorRow = React.memo(({ data, index, style }: DoorRowProps) => {
       <TableCell
         component="div"
         variant="body"
-        className={clsx(classes.tableCell, classes.expandingCell)}
+        className={classes.tableCell}
         style={{
           minWidth: width * doorTableCellConfig.doorLevel - 40,
           height: doorTableCellConfig.rowHeight,
@@ -145,7 +135,7 @@ const DoorRow = React.memo(({ data, index, style }: DoorRowProps) => {
       <TableCell
         component="div"
         variant="body"
-        className={clsx(classes.tableCell, classes.expandingCell)}
+        className={classes.tableCell}
         style={{
           minWidth: width * doorTableCellConfig.doorType - 40,
           height: doorTableCellConfig.rowHeight,
@@ -156,7 +146,7 @@ const DoorRow = React.memo(({ data, index, style }: DoorRowProps) => {
       <TableCell
         component="div"
         variant="body"
-        className={clsx(doorStatusClass, classes.tableCell, classes.expandingCell)}
+        className={clsx(doorStatusClass, classes.tableCell)}
         style={{
           minWidth: width * doorTableCellConfig.doorState - 40,
           height: doorTableCellConfig.rowHeight,
@@ -167,7 +157,7 @@ const DoorRow = React.memo(({ data, index, style }: DoorRowProps) => {
       <TableCell
         component="div"
         variant="body"
-        className={clsx(classes.tableCell, classes.expandingCell)}
+        className={classes.tableCell}
         style={{
           minWidth: width * doorTableCellConfig.doorControl - 32,
           height: doorTableCellConfig.rowHeight,
@@ -203,84 +193,82 @@ export const DoorTable = ({
   onDoorControlClick,
 }: DoorTableProps): JSX.Element => {
   const classes = useStyles();
-  const [width, setWidth] = React.useState(0);
   return (
-    <Table stickyHeader size="small" aria-label="door-table" component="div">
-      <TableHead component="div">
-        <TableRow component="div" className={classes.tableRow}>
-          <TableCell
-            component="div"
-            variant="head"
-            className={clsx(classes.tableCell, classes.expandingCell)}
-            style={{
-              minWidth: width * doorTableCellConfig.doorName - 40,
-              height: doorTableCellConfig.rowHeight,
-            }}
-          >
-            Door Name
-          </TableCell>
-          <TableCell
-            component="div"
-            variant="head"
-            className={clsx(classes.tableCell, classes.expandingCell)}
-            style={{
-              minWidth: width * doorTableCellConfig.doorMode - 40,
-              height: doorTableCellConfig.rowHeight,
-            }}
-          >
-            Op. Mode
-          </TableCell>
-          <TableCell
-            component="div"
-            variant="head"
-            className={clsx(classes.tableCell, classes.expandingCell)}
-            style={{
-              minWidth: width * doorTableCellConfig.doorLevel - 40,
-              height: doorTableCellConfig.rowHeight,
-            }}
-          >
-            Level
-          </TableCell>
-          <TableCell
-            component="div"
-            variant="head"
-            className={clsx(classes.tableCell, classes.expandingCell)}
-            style={{
-              minWidth: width * doorTableCellConfig.doorType - 40,
-              height: doorTableCellConfig.rowHeight,
-            }}
-          >
-            Door Type
-          </TableCell>
-          <TableCell
-            component="div"
-            variant="head"
-            className={clsx(classes.tableCell, classes.expandingCell)}
-            style={{
-              minWidth: width * doorTableCellConfig.doorState - 40,
-              height: doorTableCellConfig.rowHeight,
-            }}
-          >
-            Doors State
-          </TableCell>
-          <TableCell
-            component="div"
-            variant="head"
-            className={clsx(classes.tableCell, classes.expandingCell)}
-            style={{
-              minWidth: width * doorTableCellConfig.doorControl - 32,
-              height: doorTableCellConfig.rowHeight,
-            }}
-          >
-            Door Control
-          </TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody component="div" className={classes.tableBody}>
-        <AutoSizer disableHeight>
-          {({ width }) => {
-            setWidth(width);
-            return (
+    <AutoSizer disableHeight>
+      {({ width }) => {
+        return (
+          <Table stickyHeader size="small" aria-label="door-table" component="div">
+            <TableHead component="div">
+              <TableRow component="div" className={classes.tableRow}>
+                <TableCell
+                  component="div"
+                  variant="head"
+                  className={classes.tableCell}
+                  style={{
+                    minWidth: width * doorTableCellConfig.doorName - 40,
+                    height: doorTableCellConfig.rowHeight,
+                  }}
+                >
+                  Door Name
+                </TableCell>
+                <TableCell
+                  component="div"
+                  variant="head"
+                  className={classes.tableCell}
+                  style={{
+                    minWidth: width * doorTableCellConfig.doorMode - 40,
+                    height: doorTableCellConfig.rowHeight,
+                  }}
+                >
+                  Op. Mode
+                </TableCell>
+                <TableCell
+                  component="div"
+                  variant="head"
+                  className={classes.tableCell}
+                  style={{
+                    minWidth: width * doorTableCellConfig.doorLevel - 40,
+                    height: doorTableCellConfig.rowHeight,
+                  }}
+                >
+                  Level
+                </TableCell>
+                <TableCell
+                  component="div"
+                  variant="head"
+                  className={classes.tableCell}
+                  style={{
+                    minWidth: width * doorTableCellConfig.doorType - 40,
+                    height: doorTableCellConfig.rowHeight,
+                  }}
+                >
+                  Door Type
+                </TableCell>
+                <TableCell
+                  component="div"
+                  variant="head"
+                  className={classes.tableCell}
+                  style={{
+                    minWidth: width * doorTableCellConfig.doorState - 40,
+                    height: doorTableCellConfig.rowHeight,
+                  }}
+                >
+                  Doors State
+                </TableCell>
+                <TableCell
+                  component="div"
+                  variant="head"
+                  className={classes.tableCell}
+                  style={{
+                    minWidth: width * doorTableCellConfig.doorControl - 32,
+                    height: doorTableCellConfig.rowHeight,
+                  }}
+                >
+                  Door Control
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody component="div">
               <FixedSizeList
                 itemSize={43}
                 itemCount={doors.length}
@@ -295,10 +283,10 @@ export const DoorTable = ({
               >
                 {DoorRow}
               </FixedSizeList>
-            );
-          }}
-        </AutoSizer>
-      </TableBody>
-    </Table>
+            </TableBody>
+          </Table>
+        );
+      }}
+    </AutoSizer>
   );
 };
