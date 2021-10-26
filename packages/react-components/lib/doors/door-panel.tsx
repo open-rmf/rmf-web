@@ -198,24 +198,22 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
             {({ width }) => {
               const columnCount = Math.floor(width / columnWidth);
               return (
-                columnCount && (
-                  <FixedSizeGrid
-                    columnCount={columnCount}
-                    columnWidth={columnWidth}
-                    height={250}
-                    rowCount={Math.ceil(doors.length / columnCount)}
-                    rowHeight={120}
-                    width={width}
-                    itemData={{
-                      columnCount,
-                      doors,
-                      doorStates,
-                      onDoorControlClick,
-                    }}
-                  >
-                    {DoorCell}
-                  </FixedSizeGrid>
-                )
+                <FixedSizeGrid
+                  columnCount={columnCount}
+                  columnWidth={columnWidth}
+                  height={250}
+                  rowCount={Math.ceil(doors.length / columnCount)}
+                  rowHeight={120}
+                  width={width}
+                  itemData={{
+                    columnCount,
+                    doors,
+                    doorStates,
+                    onDoorControlClick,
+                  }}
+                >
+                  {DoorCell}
+                </FixedSizeGrid>
               );
             }}
           </AutoSizer>

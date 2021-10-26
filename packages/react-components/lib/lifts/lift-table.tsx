@@ -19,6 +19,7 @@ import {
 } from './lift-utils';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import clsx from 'clsx';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 const useStyles = makeStyles((theme) => ({
   doorLabelOpen: {
@@ -67,14 +68,19 @@ export interface LiftTableProps {
   ): void;
 }
 
+export interface LiftFixListDataProps extends LiftTableProps {
+  width: number;
+}
+
 export interface LiftRowProps extends ListChildComponentProps {
-  data: LiftTableProps;
+  data: LiftFixListDataProps;
 }
 
 const LiftRow = React.memo(({ data, index, style }: LiftRowProps) => {
   const classes = useStyles();
   const lift = data.lifts[index];
   const liftState = data.liftStates[lift.name];
+  const width = data.width;
   const doorState = liftState?.door_state;
   const destinationFloor = liftState?.destination_floor;
   const currentFloor = liftState?.current_floor;
@@ -109,7 +115,10 @@ const LiftRow = React.memo(({ data, index, style }: LiftRowProps) => {
         component="div"
         variant="body"
         className={clsx(classes.tableCell, classes.expandingCell)}
-        style={{ minWidth: liftTableCellConfig.liftName, height: liftTableCellConfig.rowHeight }}
+        style={{
+          minWidth: width * liftTableCellConfig.liftName - 40,
+          height: liftTableCellConfig.rowHeight,
+        }}
         title={lift?.name}
       >
         {lift.name}
@@ -118,7 +127,10 @@ const LiftRow = React.memo(({ data, index, style }: LiftRowProps) => {
         component="div"
         variant="body"
         className={clsx(classes.tableCell, classes.expandingCell)}
-        style={{ minWidth: liftTableCellConfig.opMode, height: liftTableCellConfig.rowHeight }}
+        style={{
+          minWidth: width * liftTableCellConfig.opMode - 40,
+          height: liftTableCellConfig.rowHeight,
+        }}
       >
         {liftModeToString(currentMode)}
       </TableCell>
@@ -127,7 +139,7 @@ const LiftRow = React.memo(({ data, index, style }: LiftRowProps) => {
         variant="body"
         className={clsx(classes.tableCell, classes.expandingCell)}
         style={{
-          minWidth: liftTableCellConfig.currentFloor,
+          minWidth: width * liftTableCellConfig.currentFloor - 40,
           height: liftTableCellConfig.rowHeight,
         }}
       >
@@ -137,7 +149,10 @@ const LiftRow = React.memo(({ data, index, style }: LiftRowProps) => {
         component="div"
         variant="body"
         className={clsx(classes.tableCell, classes.expandingCell)}
-        style={{ minWidth: liftTableCellConfig.destination, height: liftTableCellConfig.rowHeight }}
+        style={{
+          minWidth: width * liftTableCellConfig.destination - 40,
+          height: liftTableCellConfig.rowHeight,
+        }}
       >
         {destinationFloor}
       </TableCell>
@@ -145,7 +160,10 @@ const LiftRow = React.memo(({ data, index, style }: LiftRowProps) => {
         component="div"
         variant="body"
         className={clsx(doorModeLabelClasses(doorState), classes.tableCell, classes.expandingCell)}
-        style={{ minWidth: liftTableCellConfig.doorState, height: liftTableCellConfig.rowHeight }}
+        style={{
+          minWidth: width * liftTableCellConfig.doorState - 40,
+          height: liftTableCellConfig.rowHeight,
+        }}
       >
         {doorStateToString(doorState)}
       </TableCell>
@@ -153,7 +171,10 @@ const LiftRow = React.memo(({ data, index, style }: LiftRowProps) => {
         component="div"
         variant="body"
         className={clsx(classes.tableCell, classes.expandingCell)}
-        style={{ minWidth: liftTableCellConfig.button, height: liftTableCellConfig.rowHeight }}
+        style={{
+          minWidth: width * liftTableCellConfig.button - 32,
+          height: liftTableCellConfig.rowHeight,
+        }}
       >
         <Button
           variant="contained"
@@ -179,6 +200,7 @@ const LiftRow = React.memo(({ data, index, style }: LiftRowProps) => {
 
 export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps): JSX.Element => {
   const classes = useStyles();
+  const [width, setWidth] = React.useState(0);
   return (
     <Table component="div" stickyHeader size="small" aria-label="lift-table">
       <TableHead component="div">
@@ -188,7 +210,7 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
             variant="body"
             className={clsx(classes.tableCell, classes.expandingCell)}
             style={{
-              minWidth: liftTableCellConfig.liftName,
+              minWidth: width * liftTableCellConfig.liftName - 40,
               height: liftTableCellConfig.rowHeight,
             }}
           >
@@ -198,7 +220,10 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
             component="div"
             variant="body"
             className={clsx(classes.tableCell, classes.expandingCell)}
-            style={{ minWidth: liftTableCellConfig.opMode, height: liftTableCellConfig.rowHeight }}
+            style={{
+              minWidth: width * liftTableCellConfig.opMode - 40,
+              height: liftTableCellConfig.rowHeight,
+            }}
           >
             Op. Mode
           </TableCell>
@@ -207,7 +232,7 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
             variant="body"
             className={clsx(classes.tableCell, classes.expandingCell)}
             style={{
-              minWidth: liftTableCellConfig.currentFloor,
+              minWidth: width * liftTableCellConfig.currentFloor - 40,
               height: liftTableCellConfig.rowHeight,
             }}
           >
@@ -218,7 +243,7 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
             variant="body"
             className={clsx(classes.tableCell, classes.expandingCell)}
             style={{
-              minWidth: liftTableCellConfig.destination,
+              minWidth: width * liftTableCellConfig.destination - 40,
               height: liftTableCellConfig.rowHeight,
             }}
           >
@@ -229,7 +254,7 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
             variant="body"
             className={clsx(classes.tableCell, classes.expandingCell)}
             style={{
-              minWidth: liftTableCellConfig.doorState,
+              minWidth: width * liftTableCellConfig.doorState - 40,
               height: liftTableCellConfig.rowHeight,
             }}
           >
@@ -239,26 +264,37 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
             component="div"
             variant="body"
             className={clsx(classes.tableCell, classes.expandingCell)}
-            style={{ minWidth: liftTableCellConfig.button, height: liftTableCellConfig.rowHeight }}
+            style={{
+              minWidth: width * liftTableCellConfig.button - 32,
+              height: liftTableCellConfig.rowHeight,
+            }}
           >
             Request Form
           </TableCell>
         </TableRow>
       </TableHead>
       <TableBody component="div" className={classes.tableBody}>
-        <FixedSizeList
-          itemSize={43}
-          itemCount={lifts.length}
-          height={200}
-          width={760}
-          itemData={{
-            lifts,
-            liftStates,
-            onRequestSubmit,
+        <AutoSizer disableHeight>
+          {({ width }) => {
+            setWidth(width);
+            return (
+              <FixedSizeList
+                itemSize={43}
+                itemCount={lifts.length}
+                height={200}
+                width={width}
+                itemData={{
+                  lifts,
+                  liftStates,
+                  width,
+                  onRequestSubmit,
+                }}
+              >
+                {LiftRow}
+              </FixedSizeList>
+            );
           }}
-        >
-          {LiftRow}
-        </FixedSizeList>
+        </AutoSizer>
       </TableBody>
     </Table>
   );

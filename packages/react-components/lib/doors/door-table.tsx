@@ -279,7 +279,6 @@ export const DoorTable = ({
       <TableBody component="div" className={classes.tableBody}>
         <AutoSizer disableHeight>
           {({ width }) => {
-            console.log(width);
             setWidth(width);
             return (
               <FixedSizeList

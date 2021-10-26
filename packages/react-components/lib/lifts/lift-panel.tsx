@@ -23,6 +23,7 @@ import {
   requestModes,
 } from './lift-utils';
 import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 export interface LiftPanelProps {
   lifts: RmfModels.Lift[];
@@ -36,8 +37,12 @@ export interface LiftPanelProps {
   ): void;
 }
 
+export interface LiftGridDataProps extends LiftPanelProps {
+  columnCount: number;
+}
+
 export interface LiftCellProps extends GridChildComponentProps {
-  data: LiftPanelProps;
+  data: LiftGridDataProps;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -93,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const LiftCell = React.memo(
-  ({ data, columnIndex, rowIndex, style }: LiftCellProps): JSX.Element => {
+  ({ data, columnIndex, rowIndex, style }: LiftCellProps): JSX.Element | null => {
     let lift: RmfModels.Lift | undefined;
     let liftState: RmfModels.LiftState | undefined;
     let doorState: number | undefined;
@@ -101,10 +106,10 @@ const LiftCell = React.memo(
     let destinationFloor: string | undefined;
     let currentFloor: string | undefined;
     let labelId: string | undefined;
-    const columnCount = 3;
     const classes = useStyles();
 
     const [showForms, setShowForms] = React.useState(false);
+    const columnCount = data.columnCount;
 
     const currMotion = motionStateToString(motionState);
     const getMotionArrowColor = (currMotion: string, arrowDirection: string) => {
@@ -138,7 +143,7 @@ const LiftCell = React.memo(
       labelId = `lift-cell-${lift.name}`;
     }
     const onRequestSubmit = data.onRequestSubmit;
-    return (
+    return lift ? (
       <div style={style}>
         <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
           <Grid container direction="row">
@@ -189,13 +194,14 @@ const LiftCell = React.memo(
           )}
         </Paper>
       </div>
-    );
+    ) : null;
   },
 );
 
 export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps): JSX.Element {
   const classes = useStyles();
   const [isCellView, setIsCellView] = React.useState(true);
+  const columnWidth = 250;
 
   return (
     <Card variant="outlined" className={classes.container}>
@@ -219,21 +225,29 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
       </Paper>
       <Grid className={classes.grid} container direction="row" spacing={1}>
         {isCellView ? (
-          <FixedSizeGrid
-            columnCount={3}
-            columnWidth={250}
-            height={250}
-            rowCount={Math.ceil(lifts.length / 3)}
-            rowHeight={140}
-            width={760}
-            itemData={{
-              lifts,
-              liftStates,
-              onRequestSubmit,
+          <AutoSizer disableHeight>
+            {({ width }) => {
+              const columnCount = Math.floor(width / columnWidth);
+              return (
+                <FixedSizeGrid
+                  columnCount={columnCount}
+                  columnWidth={columnWidth}
+                  height={250}
+                  rowCount={Math.ceil(lifts.length / columnCount)}
+                  rowHeight={140}
+                  width={width}
+                  itemData={{
+                    columnCount,
+                    lifts,
+                    liftStates,
+                    onRequestSubmit,
+                  }}
+                >
+                  {LiftCell}
+                </FixedSizeGrid>
+              );
             }}
-          >
-            {LiftCell}
-          </FixedSizeGrid>
+          </AutoSizer>
         ) : (
           <LiftTable lifts={lifts} liftStates={liftStates} onRequestSubmit={onRequestSubmit} />
         )}
