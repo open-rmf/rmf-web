@@ -19,7 +19,7 @@ class Loop(pydantic.BaseModel):
         self,
         task_id: str = "",  # string
         robot_type: str = "",  # string
-        num_loops: pydantic.conint(ge=0, le=4294967295) = 0,  # uint32
+        num_loops: int = 0,  # uint32
         start_name: str = "",  # string
         finish_name: str = "",  # string
         **kwargs,

@@ -25,9 +25,9 @@ class Door(pydantic.BaseModel):
         v1_y: float = 0,  # float32
         v2_x: float = 0,  # float32
         v2_y: float = 0,  # float32
-        door_type: pydantic.conint(ge=0, le=255) = 0,  # uint8
+        door_type: int = 0,  # uint8
         motion_range: float = 0,  # float32
-        motion_direction: pydantic.conint(ge=-2147483648, le=2147483647) = 0,  # int32
+        motion_direction: int = 0,  # int32
         **kwargs,
     ):
         super().__init__(

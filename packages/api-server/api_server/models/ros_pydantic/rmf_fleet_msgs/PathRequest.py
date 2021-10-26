@@ -20,14 +20,14 @@ class PathRequest(pydantic.BaseModel):
         self,
         fleet_name: str = "",  # string
         robot_name: str = "",  # string
-        path: List[Location] = [],  # rmf_fleet_msgs/Location
+        path: List = None,  # rmf_fleet_msgs/Location
         task_id: str = "",  # string
         **kwargs,
     ):
         super().__init__(
             fleet_name=fleet_name,
             robot_name=robot_name,
-            path=path,
+            path=path or [],
             task_id=task_id,
             **kwargs,
         )

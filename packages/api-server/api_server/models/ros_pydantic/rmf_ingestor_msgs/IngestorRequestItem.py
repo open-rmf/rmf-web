@@ -16,7 +16,7 @@ class IngestorRequestItem(pydantic.BaseModel):
     def __init__(
         self,
         type_guid: str = "",  # string
-        quantity: pydantic.conint(ge=-2147483648, le=2147483647) = 0,  # int32
+        quantity: int = 0,  # int32
         compartment_name: str = "",  # string
         **kwargs,
     ):

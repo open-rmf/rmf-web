@@ -23,9 +23,9 @@ class LiftRequest(pydantic.BaseModel):
         lift_name: str = "",  # string
         request_time: Time = Time(),  # builtin_interfaces/Time
         session_id: str = "",  # string
-        request_type: pydantic.conint(ge=0, le=255) = 0,  # uint8
+        request_type: int = 0,  # uint8
         destination_floor: str = "",  # string
-        door_state: pydantic.conint(ge=0, le=255) = 0,  # uint8
+        door_state: int = 0,  # uint8
         **kwargs,
     ):
         super().__init__(

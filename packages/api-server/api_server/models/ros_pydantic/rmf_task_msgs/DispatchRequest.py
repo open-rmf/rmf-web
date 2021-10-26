@@ -19,7 +19,7 @@ class DispatchRequest(pydantic.BaseModel):
         self,
         fleet_name: str = "",  # string
         task_profile: TaskProfile = TaskProfile(),  # rmf_task_msgs/TaskProfile
-        method: pydantic.conint(ge=0, le=255) = 0,  # uint8
+        method: int = 0,  # uint8
         **kwargs,
     ):
         super().__init__(

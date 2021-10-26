@@ -24,7 +24,7 @@ class ChargerState(pydantic.BaseModel):
     def __init__(
         self,
         charger_time: Time = Time(),  # builtin_interfaces/Time
-        state: pydantic.conint(ge=0, le=4294967295) = 0,  # uint32
+        state: int = 0,  # uint32
         charger_name: str = "",  # string
         error_message: str = "",  # string
         request_id: str = "",  # string

@@ -14,8 +14,8 @@ class RobotMode(pydantic.BaseModel):
 
     def __init__(
         self,
-        mode: pydantic.conint(ge=0, le=4294967295) = 0,  # uint32
-        mode_request_id: pydantic.conint(ge=0, le=18446744073709551615) = 0,  # uint64
+        mode: int = 0,  # uint32
+        mode_request_id: int = 0,  # uint64
         **kwargs,
     ):
         super().__init__(

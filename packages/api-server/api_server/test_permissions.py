@@ -1,16 +1,15 @@
 import unittest
 
 from tortoise import Tortoise
-from tortoise.fields import CharField
-from tortoise.models import Model as TortoiseModel
+from tortoise.fields.data import CharField
 
 from .models import User
-from .models.tortoise_models import ProtectedResource, ResourcePermission, Role
+from .models.tortoise_models import BaseModels, ResourcePermission, Role
 from .permissions import Enforcer
 from .test import init_db
 
 
-class Greeting(TortoiseModel, ProtectedResource):
+class Greeting(BaseModels.ProtectedResourceModel):
     message = CharField(255, pk=True)
 
 
@@ -36,12 +35,12 @@ class TestPermissions(unittest.IsolatedAsyncioTestCase):
         await Greeting.create(message="hello", authz_grp="test_group")
 
         # user with permission can see resource
-        q = Enforcer.query(user, Greeting, "test_action").count()
+        q = Enforcer.query(user, Greeting.all(), "test_action").count()
         self.assertEqual(1, await q)
 
         # user without permission cannot see the resource
         user2 = User(username="test_user2")
-        q = Enforcer.query(user2, Greeting, "test_action").count()
+        q = Enforcer.query(user2, Greeting.all(), "test_action").count()
         self.assertEqual(0, await q)
 
     async def test_user_without_permissions_is_not_authorized_to_perform_action(self):

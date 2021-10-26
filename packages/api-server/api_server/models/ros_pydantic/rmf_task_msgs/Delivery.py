@@ -24,9 +24,7 @@ class Delivery(pydantic.BaseModel):
     def __init__(
         self,
         task_id: str = "",  # string
-        items: List[
-            DispenserRequestItem
-        ] = [],  # rmf_dispenser_msgs/DispenserRequestItem
+        items: List = None,  # rmf_dispenser_msgs/DispenserRequestItem
         pickup_place_name: str = "",  # string
         pickup_dispenser: str = "",  # string
         pickup_behavior: Behavior = Behavior(),  # rmf_task_msgs/Behavior
@@ -37,7 +35,7 @@ class Delivery(pydantic.BaseModel):
     ):
         super().__init__(
             task_id=task_id,
-            items=items,
+            items=items or [],
             pickup_place_name=pickup_place_name,
             pickup_dispenser=pickup_dispenser,
             pickup_behavior=pickup_behavior,

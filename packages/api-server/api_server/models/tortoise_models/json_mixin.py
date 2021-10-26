@@ -1,6 +1,6 @@
-from tortoise import fields
+from tortoise.fields.data import CharField, JSONField
 
 
 class JsonMixin:
-    id_ = fields.CharField(255, pk=True, source_field="id")
-    data = fields.JSONField()
+    id_ = CharField(255, pk=True, source_field="id")
+    data = JSONField()

@@ -26,11 +26,11 @@ class RobotState(pydantic.BaseModel):
         name: str = "",  # string
         model: str = "",  # string
         task_id: str = "",  # string
-        seq: pydantic.conint(ge=0, le=18446744073709551615) = 0,  # uint64
+        seq: int = 0,  # uint64
         mode: RobotMode = RobotMode(),  # rmf_fleet_msgs/RobotMode
         battery_percent: float = 0,  # float32
         location: Location = Location(),  # rmf_fleet_msgs/Location
-        path: List[Location] = [],  # rmf_fleet_msgs/Location
+        path: List = None,  # rmf_fleet_msgs/Location
         **kwargs,
     ):
         super().__init__(
@@ -41,7 +41,7 @@ class RobotState(pydantic.BaseModel):
             mode=mode,
             battery_percent=battery_percent,
             location=location,
-            path=path,
+            path=path or [],
             **kwargs,
         )
 

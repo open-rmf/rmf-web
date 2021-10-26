@@ -39,7 +39,7 @@ if [[ -z $ros_translator_ver ]]; then
   ros_translator_ver=$(getVersion .)
 fi
 
-build_and_source_rmf_msgs "$rmf_tag"
+# build_and_source_rmf_msgs "$rmf_tag"
 pipenv run ros_translator -t=pydantic -o=api_server/models/ros_pydantic "${rmf_msgs[@]}"
 
 rmf_internal_msgs_ver=$(getVersion "build/rmf/src/rmf_internal_msgs")

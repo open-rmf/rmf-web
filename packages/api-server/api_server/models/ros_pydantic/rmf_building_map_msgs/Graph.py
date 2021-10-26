@@ -21,16 +21,16 @@ class Graph(pydantic.BaseModel):
     def __init__(
         self,
         name: str = "",  # string
-        vertices: List[GraphNode] = [],  # rmf_building_map_msgs/GraphNode
-        edges: List[GraphEdge] = [],  # rmf_building_map_msgs/GraphEdge
-        params: List[Param] = [],  # rmf_building_map_msgs/Param
+        vertices: List = None,  # rmf_building_map_msgs/GraphNode
+        edges: List = None,  # rmf_building_map_msgs/GraphEdge
+        params: List = None,  # rmf_building_map_msgs/Param
         **kwargs,
     ):
         super().__init__(
             name=name,
-            vertices=vertices,
-            edges=edges,
-            params=params,
+            vertices=vertices or [],
+            edges=edges or [],
+            params=params or [],
             **kwargs,
         )
 

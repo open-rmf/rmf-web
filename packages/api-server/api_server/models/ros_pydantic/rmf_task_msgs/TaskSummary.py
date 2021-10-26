@@ -27,7 +27,7 @@ class TaskSummary(pydantic.BaseModel):
         fleet_name: str = "",  # string
         task_id: str = "",  # string
         task_profile: TaskProfile = TaskProfile(),  # rmf_task_msgs/TaskProfile
-        state: pydantic.conint(ge=0, le=4294967295) = 0,  # uint32
+        state: int = 0,  # uint32
         status: str = "",  # string
         submission_time: Time = Time(),  # builtin_interfaces/Time
         start_time: Time = Time(),  # builtin_interfaces/Time

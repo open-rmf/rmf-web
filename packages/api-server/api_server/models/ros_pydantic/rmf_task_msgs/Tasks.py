@@ -15,11 +15,11 @@ class Tasks(pydantic.BaseModel):
 
     def __init__(
         self,
-        tasks: List[TaskSummary] = [],  # rmf_task_msgs/TaskSummary
+        tasks: List = None,  # rmf_task_msgs/TaskSummary
         **kwargs,
     ):
         super().__init__(
-            tasks=tasks,
+            tasks=tasks or [],
             **kwargs,
         )
 

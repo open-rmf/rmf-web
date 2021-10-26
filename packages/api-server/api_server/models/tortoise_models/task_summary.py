@@ -1,19 +1,19 @@
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
-from tortoise import Model, fields
+from tortoise.fields.data import CharField, DatetimeField, IntField
 
-from .authorization import ProtectedResource
+from .base_models import BaseModels
 from .json_mixin import JsonMixin
 
 
-class TaskSummary(Model, JsonMixin, ProtectedResource):
-    fleet_name = fields.CharField(255, null=True, index=True)
-    submission_time = fields.DatetimeField(null=True, index=True)
-    start_time = fields.DatetimeField(null=True, index=True)
-    end_time = fields.DatetimeField(null=True, index=True)
-    robot_name = fields.CharField(255, null=True, index=True)
-    state = fields.IntField(null=True, index=True)
-    task_type = fields.IntField(null=True, index=True)
-    priority = fields.IntField(null=True, index=True)
+class TaskSummary(BaseModels.ProtectedResourceModel, JsonMixin):
+    fleet_name = CharField(255, null=True, index=True)
+    submission_time = DatetimeField(null=True, index=True)
+    start_time = DatetimeField(null=True, index=True)
+    end_time = DatetimeField(null=True, index=True)
+    robot_name = CharField(255, null=True, index=True)
+    state = IntField(null=True, index=True)
+    task_type = IntField(null=True, index=True)
+    priority = IntField(null=True, index=True)
 
     ACTIVE_STATES = [
         RmfTaskSummary.STATE_ACTIVE,

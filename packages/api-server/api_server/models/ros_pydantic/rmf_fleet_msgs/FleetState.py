@@ -17,12 +17,12 @@ class FleetState(pydantic.BaseModel):
     def __init__(
         self,
         name: str = "",  # string
-        robots: List[RobotState] = [],  # rmf_fleet_msgs/RobotState
+        robots: List = None,  # rmf_fleet_msgs/RobotState
         **kwargs,
     ):
         super().__init__(
             name=name,
-            robots=robots,
+            robots=robots or [],
             **kwargs,
         )
 

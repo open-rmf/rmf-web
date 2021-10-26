@@ -13,7 +13,7 @@ class Priority(pydantic.BaseModel):
 
     def __init__(
         self,
-        value: pydantic.conint(ge=0, le=18446744073709551615) = 0,  # uint64
+        value: int = 0,  # uint64
         **kwargs,
     ):
         super().__init__(

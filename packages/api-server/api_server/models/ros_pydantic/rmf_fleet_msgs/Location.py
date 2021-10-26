@@ -25,7 +25,7 @@ class Location(pydantic.BaseModel):
         y: float = 0,  # float32
         yaw: float = 0,  # float32
         level_name: str = "",  # string
-        index: pydantic.conint(ge=0, le=18446744073709551615) = 0,  # uint64
+        index: int = 0,  # uint64
         **kwargs,
     ):
         super().__init__(

@@ -22,13 +22,13 @@ class {{ msg.spec.base_type.type }}(pydantic.BaseModel):
     def __init__(
         self,
 {% for field in msg.spec.fields %}
-        {{ field.name }}: {{ field.pydantic_type.type }} = {{ field.pydantic_type.default_value }}, # {% if field.type.pkg_name %}{{ field.type.pkg_name }}/{% endif %}{{ field.type.type }}
+        {{ field.name }}: {{ field.pydantic_type.annonate }} = {{ field.pydantic_type.default_value }}, # {% if field.type.pkg_name %}{{ field.type.pkg_name }}/{% endif %}{{ field.type.type }}
 {% endfor %}
         **kwargs,
     ):
         super().__init__(
 {% for field in msg.spec.fields %}
-            {{ field.name }}={{ field.name }},
+            {{ field.name }}={{ field.pydantic_type.construct_default_value }},
 {% endfor %}
             **kwargs,
         )

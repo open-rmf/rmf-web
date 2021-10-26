@@ -13,7 +13,7 @@ class DoorMode(pydantic.BaseModel):
 
     def __init__(
         self,
-        value: pydantic.conint(ge=0, le=4294967295) = 0,  # uint32
+        value: int = 0,  # uint32
         **kwargs,
     ):
         super().__init__(

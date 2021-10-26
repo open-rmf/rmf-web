@@ -1,7 +1,7 @@
 from enum import IntEnum
-from typing import Callable, Optional, Union, cast
+from typing import Optional, Union
 
-from pydantic import BaseModel, conint, validator
+from pydantic import BaseModel, validator
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 from rmf_task_msgs.msg import TaskType as RmfTaskType
 
@@ -14,36 +14,41 @@ from .ros_pydantic import builtin_interfaces, rmf_task_msgs
 class TaskSummary(rmf_task_msgs.TaskSummary):
     authz_grp: Optional[str] = None
 
-    # pylint: disable=unused-argument
-    class __InitProto__:
-        def __call__(self, f: Callable):
-            def sig(
-                self,
-                *,
-                authz_grp: str = "",
-                fleet_name: str = "",  # string
-                task_id: str = "",  # string
-                task_profile: rmf_task_msgs.TaskProfile = rmf_task_msgs.TaskProfile(),  # rmf_task_msgs/TaskProfile
-                state: conint(ge=0, le=4294967295) = 0,  # uint32
-                status: str = "",  # string
-                submission_time: builtin_interfaces.Time = builtin_interfaces.Time(),  # builtin_interfaces/Time
-                start_time: builtin_interfaces.Time = builtin_interfaces.Time(),  # builtin_interfaces/Time
-                end_time: builtin_interfaces.Time = builtin_interfaces.Time(),  # builtin_interfaces/Time
-                robot_name: str = "",  # string
-            ):
-                ...
-
-            return cast(sig, f)
-
-    @__InitProto__()
-    def __init__(self, *args, authz_grp: str = "", **kwargs):
-        super().__init__(*args, authz_grp=authz_grp, **kwargs)
+    # pylint: disable=useless-super-delegation
+    def __init__(
+        self,
+        *,
+        authz_grp: str = "",
+        fleet_name: str = "",  # string
+        task_id: str = "",  # string
+        task_profile: rmf_task_msgs.TaskProfile = rmf_task_msgs.TaskProfile(),  # rmf_task_msgs/TaskProfile
+        state: int = 0,  # uint32
+        status: str = "",  # string
+        submission_time: builtin_interfaces.Time = builtin_interfaces.Time(),  # builtin_interfaces/Time
+        start_time: builtin_interfaces.Time = builtin_interfaces.Time(),  # builtin_interfaces/Time
+        end_time: builtin_interfaces.Time = builtin_interfaces.Time(),  # builtin_interfaces/Time
+        robot_name: str = "",  # string
+        **kwargs,
+    ):
+        super().__init__(
+            authz_grp=authz_grp,
+            fleet_name=fleet_name,
+            task_id=task_id,
+            task_profile=task_profile,
+            state=state,
+            status=status,
+            submission_time=submission_time,
+            start_time=start_time,
+            end_time=end_time,
+            robot_name=robot_name,
+            **kwargs,
+        )
 
     @staticmethod
     def from_tortoise(tortoise: ttm.TaskSummary) -> "TaskSummary":
         return TaskSummary(authz_grp=tortoise.authz_grp, **tortoise.data)
 
-    async def save(self, authz_grp: Optional[str] = None) -> None:
+    async def save(self, authz_grp: Optional[str] = None):
         dic = self.dict()
         del dic["authz_grp"]
 
@@ -60,8 +65,7 @@ class TaskSummary(rmf_task_msgs.TaskSummary):
         }
         if authz_grp is not None:
             defaults["authz_grp"] = authz_grp
-        result = await ttm.TaskSummary.update_or_create(defaults, id_=self.task_id)
-        return result[0]
+        await ttm.TaskSummary.update_or_create(defaults, id_=self.task_id)
 
 
 class TaskStateEnum(IntEnum):

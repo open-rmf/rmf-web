@@ -21,8 +21,8 @@ class DispenserState(pydantic.BaseModel):
         self,
         time: Time = Time(),  # builtin_interfaces/Time
         guid: str = "",  # string
-        mode: pydantic.conint(ge=-2147483648, le=2147483647) = 0,  # int32
-        request_guid_queue: List[str] = [],  # string
+        mode: int = 0,  # int32
+        request_guid_queue: List = None,  # string
         seconds_remaining: float = 0,  # float32
         **kwargs,
     ):
@@ -30,7 +30,7 @@ class DispenserState(pydantic.BaseModel):
             time=time,
             guid=guid,
             mode=mode,
-            request_guid_queue=request_guid_queue,
+            request_guid_queue=request_guid_queue or [],
             seconds_remaining=seconds_remaining,
             **kwargs,
         )

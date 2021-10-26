@@ -17,12 +17,12 @@ class DoorSessions(pydantic.BaseModel):
     def __init__(
         self,
         door_name: str = "",  # string
-        sessions: List[Session] = [],  # rmf_door_msgs/Session
+        sessions: List = None,  # rmf_door_msgs/Session
         **kwargs,
     ):
         super().__init__(
             door_name=door_name,
-            sessions=sessions,
+            sessions=sessions or [],
             **kwargs,
         )
 

@@ -1,3 +1,4 @@
+from typing import cast
 from unittest.mock import Mock
 
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
@@ -47,8 +48,7 @@ class TestLiftsRoute(AppFixture):
             },
         )
         self.assertEqual(resp.status_code, 200)
-        mock = self.app.rmf_gateway().request_lift
-        mock: Mock
+        mock = cast(Mock, self.app.rmf_gateway().request_lift)
         self.assertEqual(mock.call_args.args[0], "test_lift")
         self.assertEqual(mock.call_args.args[1], "L1")
         self.assertEqual(mock.call_args.args[2], RmfLiftRequest.REQUEST_AGV_MODE)

@@ -17,12 +17,12 @@ class Dock(pydantic.BaseModel):
     def __init__(
         self,
         fleet_name: str = "",  # string
-        params: List[DockParameter] = [],  # rmf_fleet_msgs/DockParameter
+        params: List = None,  # rmf_fleet_msgs/DockParameter
         **kwargs,
     ):
         super().__init__(
             fleet_name=fleet_name,
-            params=params,
+            params=params or [],
             **kwargs,
         )
 

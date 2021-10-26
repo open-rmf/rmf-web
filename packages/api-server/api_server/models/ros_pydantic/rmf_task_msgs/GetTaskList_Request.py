@@ -15,12 +15,12 @@ class GetTaskList_Request(pydantic.BaseModel):
     def __init__(
         self,
         requester: str = "",  # string
-        task_id: List[str] = [],  # string
+        task_id: List = None,  # string
         **kwargs,
     ):
         super().__init__(
             requester=requester,
-            task_id=task_id,
+            task_id=task_id or [],
             **kwargs,
         )
 

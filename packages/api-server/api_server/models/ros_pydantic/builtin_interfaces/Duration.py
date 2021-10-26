@@ -14,8 +14,8 @@ class Duration(pydantic.BaseModel):
 
     def __init__(
         self,
-        sec: pydantic.conint(ge=-2147483648, le=2147483647) = 0,  # int32
-        nanosec: pydantic.conint(ge=0, le=4294967295) = 0,  # uint32
+        sec: int = 0,  # int32
+        nanosec: int = 0,  # uint32
         **kwargs,
     ):
         super().__init__(

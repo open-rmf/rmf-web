@@ -18,14 +18,14 @@ class GetTaskList_Response(pydantic.BaseModel):
     def __init__(
         self,
         success: bool = False,  # bool
-        active_tasks: List[TaskSummary] = [],  # rmf_task_msgs/TaskSummary
-        terminated_tasks: List[TaskSummary] = [],  # rmf_task_msgs/TaskSummary
+        active_tasks: List = None,  # rmf_task_msgs/TaskSummary
+        terminated_tasks: List = None,  # rmf_task_msgs/TaskSummary
         **kwargs,
     ):
         super().__init__(
             success=success,
-            active_tasks=active_tasks,
-            terminated_tasks=terminated_tasks,
+            active_tasks=active_tasks or [],
+            terminated_tasks=terminated_tasks or [],
             **kwargs,
         )
 

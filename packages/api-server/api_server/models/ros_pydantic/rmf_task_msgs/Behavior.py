@@ -17,12 +17,12 @@ class Behavior(pydantic.BaseModel):
     def __init__(
         self,
         name: str = "",  # string
-        parameters: List[BehaviorParameter] = [],  # rmf_task_msgs/BehaviorParameter
+        parameters: List = None,  # rmf_task_msgs/BehaviorParameter
         **kwargs,
     ):
         super().__init__(
             name=name,
-            parameters=parameters,
+            parameters=parameters or [],
             **kwargs,
         )
 

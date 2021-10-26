@@ -6,7 +6,7 @@ from tortoise.queryset import QuerySet
 from .models import User
 from .models import tortoise_models as ttm
 
-ResourceT = TypeVar("ResourceT", bound=ttm.ProtectedResource)
+ResourceT = TypeVar("ResourceT", bound=ttm.BaseModels.ProtectedResourceModel)
 
 
 class RmfAction:

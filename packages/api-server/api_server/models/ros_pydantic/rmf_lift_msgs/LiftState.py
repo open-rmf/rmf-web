@@ -26,25 +26,25 @@ class LiftState(pydantic.BaseModel):
         self,
         lift_time: Time = Time(),  # builtin_interfaces/Time
         lift_name: str = "",  # string
-        available_floors: List[str] = [],  # string
+        available_floors: List = None,  # string
         current_floor: str = "",  # string
         destination_floor: str = "",  # string
-        door_state: pydantic.conint(ge=0, le=255) = 0,  # uint8
-        motion_state: pydantic.conint(ge=0, le=255) = 0,  # uint8
-        available_modes: bytes = bytes(),  # uint8
-        current_mode: pydantic.conint(ge=0, le=255) = 0,  # uint8
+        door_state: int = 0,  # uint8
+        motion_state: int = 0,  # uint8
+        available_modes: List = bytes(),  # uint8
+        current_mode: int = 0,  # uint8
         session_id: str = "",  # string
         **kwargs,
     ):
         super().__init__(
             lift_time=lift_time,
             lift_name=lift_name,
-            available_floors=available_floors,
+            available_floors=available_floors or [],
             current_floor=current_floor,
             destination_floor=destination_floor,
             door_state=door_state,
             motion_state=motion_state,
-            available_modes=available_modes,
+            available_modes=available_modes or [],
             current_mode=current_mode,
             session_id=session_id,
             **kwargs,

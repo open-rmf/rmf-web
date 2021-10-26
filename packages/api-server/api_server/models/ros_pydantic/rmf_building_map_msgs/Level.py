@@ -26,20 +26,20 @@ class Level(pydantic.BaseModel):
         self,
         name: str = "",  # string
         elevation: float = 0,  # float32
-        images: List[AffineImage] = [],  # rmf_building_map_msgs/AffineImage
-        places: List[Place] = [],  # rmf_building_map_msgs/Place
-        doors: List[Door] = [],  # rmf_building_map_msgs/Door
-        nav_graphs: List[Graph] = [],  # rmf_building_map_msgs/Graph
+        images: List = None,  # rmf_building_map_msgs/AffineImage
+        places: List = None,  # rmf_building_map_msgs/Place
+        doors: List = None,  # rmf_building_map_msgs/Door
+        nav_graphs: List = None,  # rmf_building_map_msgs/Graph
         wall_graph: Graph = Graph(),  # rmf_building_map_msgs/Graph
         **kwargs,
     ):
         super().__init__(
             name=name,
             elevation=elevation,
-            images=images,
-            places=places,
-            doors=doors,
-            nav_graphs=nav_graphs,
+            images=images or [],
+            places=places or [],
+            doors=doors or [],
+            nav_graphs=nav_graphs or [],
             wall_graph=wall_graph,
             **kwargs,
         )

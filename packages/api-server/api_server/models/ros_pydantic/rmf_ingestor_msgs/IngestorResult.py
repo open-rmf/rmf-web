@@ -21,7 +21,7 @@ class IngestorResult(pydantic.BaseModel):
         time: Time = Time(),  # builtin_interfaces/Time
         request_guid: str = "",  # string
         source_guid: str = "",  # string
-        status: pydantic.conint(ge=0, le=255) = 0,  # uint8
+        status: int = 0,  # uint8
         **kwargs,
     ):
         super().__init__(

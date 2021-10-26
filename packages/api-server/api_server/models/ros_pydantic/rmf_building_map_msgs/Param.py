@@ -19,8 +19,8 @@ class Param(pydantic.BaseModel):
     def __init__(
         self,
         name: str = "",  # string
-        type: pydantic.conint(ge=0, le=4294967295) = 0,  # uint32
-        value_int: pydantic.conint(ge=-2147483648, le=2147483647) = 0,  # int32
+        type: int = 0,  # uint32
+        value_int: int = 0,  # int32
         value_float: float = 0,  # float32
         value_string: str = "",  # string
         value_bool: bool = False,  # bool

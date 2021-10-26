@@ -19,13 +19,13 @@ class DockParameter(pydantic.BaseModel):
         self,
         start: str = "",  # string
         finish: str = "",  # string
-        path: List[Location] = [],  # rmf_fleet_msgs/Location
+        path: List = None,  # rmf_fleet_msgs/Location
         **kwargs,
     ):
         super().__init__(
             start=start,
             finish=finish,
-            path=path,
+            path=path or [],
             **kwargs,
         )
 

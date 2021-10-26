@@ -1,8 +1,10 @@
+from typing import Dict, cast
+
 import pydantic
 import socketio
 from rx import operators as rxops
-from rx.core.typing import Observable
-from rx.subject import Subject
+from rx.core.observable.observable import Observable
+from rx.subject.subject import Subject
 
 from api_server.fast_io import FastIO, FastIORouter, WatchRequest
 from api_server.routes.utils import rx_watcher
@@ -24,7 +26,10 @@ class ReturnVideo(pydantic.BaseModel):
 
 
 def handler(req: WatchRequest, film_title: str, target_obs: Observable):
-    rx_watcher(req, target_obs.pipe(rxops.filter(lambda x: x["film"] == film_title)))
+    rx_watcher(
+        req,
+        target_obs.pipe(rxops.filter(lambda x: cast(Dict, x)["film"] == film_title)),
+    )
 
 
 @router.watch("/video_rental/{film_title}/available")

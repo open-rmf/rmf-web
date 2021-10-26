@@ -1,14 +1,15 @@
 import logging
 import unittest
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, cast
 
 from rmf_dispenser_msgs.msg import DispenserState
 from rmf_door_msgs.msg import DoorMode
 from rmf_fleet_msgs.msg import RobotMode
 from rmf_ingestor_msgs.msg import IngestorState
 from rmf_lift_msgs.msg import LiftState
-from rx import Observable
+from rx.core.observable.observable import Observable
 from rx.scheduler.historicalscheduler import HistoricalScheduler
+from rx.subject.subject import Subject
 from tortoise import Tortoise
 
 from api_server.models import (
@@ -19,6 +20,7 @@ from api_server.models import (
     LiftHealth,
     RobotHealth,
 )
+from api_server.models.health import BaseBasicHealth
 from api_server.test import init_db, test_data
 
 from .events import RmfEvents
@@ -44,7 +46,7 @@ class BaseFixture(unittest.IsolatedAsyncioTestCase):
 async def check_heartbeat(
     test: BaseFixture,
     health_obs: Observable,
-    source: Observable,
+    source: Subject,
     factory: Callable[[str], Any],
 ):
     """
@@ -53,7 +55,7 @@ async def check_heartbeat(
     :param factory: Callable[[str], SourceType], a factory function that returns an object of
         the source observable sequence type
     """
-    health = None
+    health: BaseBasicHealth = cast(Any, None)
 
     def assign(v):
         nonlocal health
@@ -101,6 +103,8 @@ class TestHealthWatchdog_DoorHealth(BaseFixture):
             door_state = test_data.make_door_state("test_door")
             door_state.current_mode.value = test[0]
             health = HealthWatchdog.door_mode_to_health(door_state)
+            self.assertIsNotNone(health)
+            health = cast(DoorHealth, health)
             self.assertEqual(health.health_status, test[1])
 
     async def test_heartbeat_with_no_state(self):
@@ -119,6 +123,7 @@ class TestHealthWatchdog_DoorHealth(BaseFixture):
 
         self.scheduler.advance_by(self.health_watchdog.LIVELINESS)
         self.assertIsNotNone(health)
+        health = cast(DoorHealth, health)
         self.assertEqual(health.id_, "test_door")
         self.assertEqual(health.health_status, HealthStatus.DEAD)
 
@@ -152,6 +157,7 @@ class TestHealthWatchdog_LiftHealth(BaseFixture):
 
         self.scheduler.advance_by(self.health_watchdog.LIVELINESS)
         self.assertIsNotNone(health)
+        health = cast(LiftHealth, health)
         self.assertEqual(health.id_, "test_lift")
         self.assertEqual(health.health_status, HealthStatus.DEAD)
 
@@ -169,6 +175,8 @@ class TestHealthWatchdog_LiftHealth(BaseFixture):
             lift_state = test_data.make_lift_state("test_lift")
             lift_state.current_mode = test[0]
             health = HealthWatchdog.lift_mode_to_health(lift_state)
+            self.assertIsNotNone(health)
+            health = cast(LiftHealth, health)
             self.assertEqual(health.health_status, test[1])
 
 
@@ -196,6 +204,7 @@ class TestHealthWatchdog_DispenserHealth(BaseFixture):
 
         self.scheduler.advance_by(self.health_watchdog.LIVELINESS)
         self.assertIsNotNone(health)
+        health = cast(DispenserHealth, health)
         self.assertEqual(health.id_, "test_dispenser")
         self.assertEqual(health.health_status, HealthStatus.DEAD)
 
@@ -210,6 +219,8 @@ class TestHealthWatchdog_DispenserHealth(BaseFixture):
             dispenser_state = test_data.make_dispenser_state("test_dispenser")
             dispenser_state.mode = test[0]
             health = HealthWatchdog.dispenser_mode_to_health(dispenser_state)
+            self.assertIsNotNone(health)
+            health = cast(DispenserHealth, health)
             self.assertEqual(health.health_status, test[1])
 
 
@@ -237,6 +248,7 @@ class TestHealthWatchdog_IngestorHealth(BaseFixture):
 
         self.scheduler.advance_by(self.health_watchdog.LIVELINESS)
         self.assertIsNotNone(health)
+        health = cast(IngestorHealth, health)
         self.assertEqual(health.id_, "test_ingestor")
         self.assertEqual(health.health_status, HealthStatus.DEAD)
 
@@ -273,21 +285,29 @@ class TestHealthWatchdog_RobotHealth(BaseFixture):
 
         robot_id = "test_fleet/test_robot"
         self.rmf.fleet_states.on_next(factory())
+        self.assertIsNotNone(health)
+        health = cast(RobotHealth, health)
         self.assertEqual(health.health_status, HealthStatus.HEALTHY)
         self.assertEqual(health.id_, robot_id)
 
         # it should not be dead yet
         self.scheduler.advance_by(HealthWatchdog.LIVELINESS / 2)
+        self.assertIsNotNone(health)
+        health = cast(RobotHealth, health)
         self.assertEqual(health.health_status, HealthStatus.HEALTHY)
         self.assertEqual(health.id_, robot_id)
 
         # # it should be dead now because the time between states has reached the threshold
         self.scheduler.advance_by(HealthWatchdog.LIVELINESS / 2)
+        self.assertIsNotNone(health)
+        health = cast(RobotHealth, health)
         self.assertEqual(health.health_status, HealthStatus.DEAD)
         self.assertEqual(health.id_, robot_id)
 
         # # it should become alive again when a new state is emitted
         self.rmf.fleet_states.on_next(factory())
+        self.assertIsNotNone(health)
+        health = cast(RobotHealth, health)
         self.assertEqual(health.health_status, HealthStatus.HEALTHY)
         self.assertEqual(health.id_, robot_id)
 
@@ -312,6 +332,8 @@ class TestHealthWatchdog_RobotHealth(BaseFixture):
 
         robot_id = "test_fleet/test_robot"
         self.scheduler.advance_by(self.health_watchdog.LIVELINESS)
+        self.assertIsNotNone(health)
+        health = cast(RobotHealth, health)
         self.assertEqual(health.id_, robot_id)
         self.assertEqual(health.health_status, HealthStatus.DEAD)
 
@@ -334,4 +356,6 @@ class TestHealthWatchdog_RobotHealth(BaseFixture):
             health = HealthWatchdog.robot_mode_to_health(
                 "test_fleet/test_robot", robot_state
             )
+            self.assertIsNotNone(health)
+            health = cast(RobotHealth, health)
             self.assertEqual(health.health_status, test[1])

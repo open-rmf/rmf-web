@@ -33,6 +33,18 @@ class Robot(BaseModel):
 class FleetState(rmf_fleet_msgs.FleetState):
     robots: List[RobotState]
 
+    def __init__(
+        self,
+        name: str = "",  # string
+        robots: List[RobotState] = None,  # rmf_fleet_msgs/RobotState
+        **kwargs,
+    ):
+        super().__init__(
+            name=name,
+            robots=robots or [],
+            **kwargs,
+        )
+
     @staticmethod
     def from_tortoise(tortoise: ttm.FleetState) -> "FleetState":
         return FleetState(**tortoise.data)

@@ -24,7 +24,7 @@ class IngestorRequest(pydantic.BaseModel):
         request_guid: str = "",  # string
         target_guid: str = "",  # string
         transporter_type: str = "",  # string
-        items: List[IngestorRequestItem] = [],  # rmf_ingestor_msgs/IngestorRequestItem
+        items: List = None,  # rmf_ingestor_msgs/IngestorRequestItem
         **kwargs,
     ):
         super().__init__(
@@ -32,7 +32,7 @@ class IngestorRequest(pydantic.BaseModel):
             request_guid=request_guid,
             target_guid=target_guid,
             transporter_type=transporter_type,
-            items=items,
+            items=items or [],
             **kwargs,
         )
 

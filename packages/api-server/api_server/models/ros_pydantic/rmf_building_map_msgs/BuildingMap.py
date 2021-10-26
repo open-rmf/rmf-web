@@ -19,14 +19,14 @@ class BuildingMap(pydantic.BaseModel):
     def __init__(
         self,
         name: str = "",  # string
-        levels: List[Level] = [],  # rmf_building_map_msgs/Level
-        lifts: List[Lift] = [],  # rmf_building_map_msgs/Lift
+        levels: List = None,  # rmf_building_map_msgs/Level
+        lifts: List = None,  # rmf_building_map_msgs/Lift
         **kwargs,
     ):
         super().__init__(
             name=name,
-            levels=levels,
-            lifts=lifts,
+            levels=levels or [],
+            lifts=lifts or [],
             **kwargs,
         )
 

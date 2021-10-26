@@ -5,14 +5,17 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from re import Pattern
 from typing import (
+    Any,
     AsyncContextManager,
     Callable,
     Dict,
     Generic,
     List,
+    Match,
     Optional,
     Protocol,
     Sequence,
+    Tuple,
     TypedDict,
     TypeVar,
     Union,
@@ -73,9 +76,7 @@ class WatchRequest:
         await self.sio.emit(self.path, data, to=to)
 
 
-class OnSubscribe(Protocol):
-    def __call__(self, req: WatchRequest, **path_params):
-        ...
+OnSubscribe = Callable[..., Any]
 
 
 @dataclass
@@ -160,10 +161,11 @@ class FastIORouter(APIRouter):
         Registers a socket.io endpoint.
         """
 
-        def decorator(func: OnSubscribe) -> DecoratedCallable:
+        def decorator(func: OnSubscribe) -> OnSubscribe:
             self.watches.append(
                 Watch(func=func, prefix=self.prefix, path=self.prefix + path)
             )
+            return func
 
         return decorator
 
@@ -175,7 +177,7 @@ class FastIO(socketio.ASGIApp):
         *,
         authenticator: Optional[JwtAuthenticator] = None,
         logger: logging.Logger = None,
-        dependencies: Optional[Sequence[Depends]] = None,
+        dependencies: Optional[Sequence[Any]] = None,
         **fast_api_args,
     ):
         """
@@ -186,7 +188,7 @@ class FastIO(socketio.ASGIApp):
         self.sio = cast(_CustomSio, sio)
         self.authenticator = authenticator or StubAuthenticator()
         self.auth_dep = self.authenticator.fastapi_dep()
-        dependencies = dependencies or []
+        dependencies = list(dependencies or [])
         dependencies.append(Depends(self.auth_dep))
         self.fapi = FastAPI(dependencies=dependencies, **fast_api_args)
         super().__init__(self.sio, other_asgi_app=self.fapi)
@@ -207,7 +209,7 @@ class FastIO(socketio.ASGIApp):
                     session["user"] = user
                     return True
                 except AuthenticationError as e:
-                    logger.error(f"authentication failed: {e}")
+                    self.logger.error(f"authentication failed: {e}")
                     return False
 
         sio.on("connect", on_connect)
@@ -228,6 +230,13 @@ class FastIO(socketio.ASGIApp):
         path = url_unquote(data["path"])
         return SubscriptionData(path=path)
 
+    def _match_path(self, path: str) -> Optional[Tuple[Match, SioRoute]]:
+        for route in self._sio_routes:
+            match = route.pattern.match(path)
+            if match:
+                return match, route
+        return None
+
     async def _on_subscribe(self, sid: str, data: dict):
         try:
             sub_data = self._parse_sub_data(data)
@@ -235,9 +244,14 @@ class FastIO(socketio.ASGIApp):
             await self.sio.emit("subscribe", {"success": False, "error": str(e)})
             return
 
-        matches = ((r.pattern.match(sub_data.path), r) for r in self._sio_routes)
         try:
-            match, sio_route = next((m for m in matches if m[0]))
+            result = self._match_path(sub_data.path)
+            if result is None:
+                await self.sio.emit(
+                    "subscribe", {"success": False, "error": "no events in path"}
+                )
+                return
+            match, sio_route = result
 
             # pylint: disable=protected-access
             async with self.sio.session(sid) as session:
@@ -248,11 +262,6 @@ class FastIO(socketio.ASGIApp):
                 if asyncio.iscoroutine(maybe_coro):
                     req._subscribe_task = asyncio.create_task(maybe_coro)
                 self.sio.enter_room(sid, sub_data.path)
-        except StopIteration:
-            await self.sio.emit(
-                "subscribe", {"success": False, "error": "no events in path"}
-            )
-            return
         except HTTPException as e:
             await self.sio.emit(
                 "subscribe", {"success": False, "error": f"{e.status_code} {e.detail}"}
@@ -265,7 +274,7 @@ class FastIO(socketio.ASGIApp):
             sub_data = self._parse_sub_data(data)
             # pylint: disable=protected-access
             async with self.sio.session(sid) as session:
-                req: WatchRequest = session["subscriptions"].get(sub_data.path, None)
+                req = session["subscriptions"].get(sub_data.path)
                 if req is None:
                     raise SubscribeError("not subscribed to topic")
                 if req._subscribe_task and not req._subscribe_task.done():

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from os import makedirs
 from os.path import basename, dirname, exists
 from os.path import join as joinp
-from typing import List, Sequence
+from typing import List, Optional, Sequence
 
 import jinja2
 from jinja2 import Environment, FileSystemLoader
@@ -38,6 +38,24 @@ PRIMITIVE_TYPES = {
     "uint16": "pydantic.conint(ge=0, le=65535)",
     "uint32": "pydantic.conint(ge=0, le=4294967295)",
     "uint64": "pydantic.conint(ge=0, le=18446744073709551615)",
+}
+
+PRIMITIVE_ANNOTATIONS = {
+    "bool": "bool",
+    "byte": "int",
+    "char": "int",
+    "float32": "float",
+    "float64": "float",
+    "int8": "int",
+    "int16": "int",
+    "int32": "int",
+    "int64": "int",
+    "string": "str",
+    "wstring": "str",
+    "uint8": "int",
+    "uint16": "int",
+    "uint32": "int",
+    "uint64": "int",
 }
 
 DEFAULT_VALUES = {
@@ -74,18 +92,28 @@ DEFAULT_ARRAY_VALUES = {
 class PydanticType:
     type: str
     default_value: str
+    construct_default_value: str
+    annonate: str
 
-    def __init__(self, ros_type):
+    def __init__(self, ros_field):
+        ros_type = ros_field.type
+
         if ros_type.is_array:
             self._init_array_type(ros_type)
+            self.construct_default_value = f"{ros_field.name} or []"
+            self.annonate = "List"
             return
+        else:
+            self.construct_default_value = ros_field.name
 
         if ros_type.is_primitive_type():
             self.type = PRIMITIVE_TYPES[ros_type.type]
             self.default_value = DEFAULT_VALUES[ros_type.type]
+            self.annonate = PRIMITIVE_ANNOTATIONS[ros_type.type]
         else:
             self.type = ros_type.type
             self.default_value = f"{ros_type.type}()"
+            self.annonate = ros_type.type
 
     def _get_array_type(self, ros_type, elem_type):
         if ros_type.is_upper_bound:
@@ -104,15 +132,15 @@ class PydanticType:
                 self.type = self._get_array_type(
                     ros_type, PRIMITIVE_TYPES[ros_type.type]
                 )
-                self.default_value = "[]"
+                self.default_value = "None"
         else:
             self.type = self._get_array_type(ros_type, ros_type.type)
-            self.default_value = "[]"
+            self.default_value = "None"
 
 
 def augment_message(msg: Message):
     for field in msg.spec.fields:
-        field.pydantic_type = PydanticType(field.type)
+        field.pydantic_type = PydanticType(field)
     msg.commented_raw = "".join(
         map(lambda x: f"# {x}", msg.raw.splitlines(keepends=True))
     )

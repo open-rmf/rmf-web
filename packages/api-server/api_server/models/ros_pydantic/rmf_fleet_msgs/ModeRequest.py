@@ -24,7 +24,7 @@ class ModeRequest(pydantic.BaseModel):
         robot_name: str = "",  # string
         mode: RobotMode = RobotMode(),  # rmf_fleet_msgs/RobotMode
         task_id: str = "",  # string
-        parameters: List[ModeParameter] = [],  # rmf_fleet_msgs/ModeParameter
+        parameters: List = None,  # rmf_fleet_msgs/ModeParameter
         **kwargs,
     ):
         super().__init__(
@@ -32,7 +32,7 @@ class ModeRequest(pydantic.BaseModel):
             robot_name=robot_name,
             mode=mode,
             task_id=task_id,
-            parameters=parameters,
+            parameters=parameters or [],
             **kwargs,
         )
 

@@ -1,3 +1,4 @@
+from typing import cast
 from unittest.mock import Mock
 
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
@@ -43,8 +44,7 @@ class TestDoorsRoute(AppFixture):
             "/doors/test_door/request", json={"mode": RmfDoorMode.MODE_OPEN}
         )
         self.assertEqual(resp.status_code, 200)
-        mock = self.app.rmf_gateway().request_door
-        mock: Mock
+        mock = cast(Mock, self.app.rmf_gateway().request_door)
         mock.assert_called()
         self.assertEqual("test_door", mock.call_args.args[0])
         self.assertEqual(RmfDoorMode.MODE_OPEN, mock.call_args.args[1])
