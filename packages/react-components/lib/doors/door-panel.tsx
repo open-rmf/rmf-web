@@ -15,6 +15,7 @@ import * as RmfModels from 'rmf-models';
 import { DoorTable } from './door-table';
 import { DoorData, doorModeToString, doorTypeToString } from './utils';
 import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 export interface DoorPanelProps {
   doors: DoorData[];
@@ -22,8 +23,12 @@ export interface DoorPanelProps {
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
 
+export interface DoorGridDataProps extends DoorPanelProps {
+  columnCount: number;
+}
+
 export interface DoorInfoProps extends GridChildComponentProps {
-  data: DoorPanelProps;
+  data: DoorGridDataProps;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -75,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
 const DoorCell = React.memo(
   ({ data, columnIndex, rowIndex, style }: DoorInfoProps): JSX.Element | null => {
     const classes = useStyles();
-    const columnCount = 3;
+    const columnCount = data.columnCount;
     let door: DoorData | undefined;
     let doorMode: number | undefined;
     let doorStatusClass: string | undefined;
@@ -165,6 +170,7 @@ const DoorCell = React.memo(
 export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelProps): JSX.Element {
   const classes = useStyles();
   const [isCellView, setIsCellView] = React.useState(true);
+  const columnWidth = 250;
 
   return (
     <Card variant="outlined" className={classes.container}>
@@ -188,21 +194,31 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
       </Paper>
       <Grid className={classes.grid} container direction="row" spacing={1}>
         {isCellView ? (
-          <FixedSizeGrid
-            columnCount={3}
-            columnWidth={250}
-            height={250}
-            rowCount={Math.ceil(doors.length / 3)}
-            rowHeight={120}
-            width={760}
-            itemData={{
-              doors,
-              doorStates,
-              onDoorControlClick,
+          <AutoSizer disableHeight>
+            {({ width }) => {
+              const columnCount = Math.floor(width / columnWidth);
+              return (
+                columnCount && (
+                  <FixedSizeGrid
+                    columnCount={columnCount}
+                    columnWidth={columnWidth}
+                    height={250}
+                    rowCount={Math.ceil(doors.length / columnCount)}
+                    rowHeight={120}
+                    width={width}
+                    itemData={{
+                      columnCount,
+                      doors,
+                      doorStates,
+                      onDoorControlClick,
+                    }}
+                  >
+                    {DoorCell}
+                  </FixedSizeGrid>
+                )
+              );
             }}
-          >
-            {DoorCell}
-          </FixedSizeGrid>
+          </AutoSizer>
         ) : (
           <DoorTable
             doors={doors}
