@@ -5,6 +5,7 @@ import * as RmfModels from 'rmf-models';
 import { dispenserModeToString, workCellTableCellConfig } from './utils';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import clsx from 'clsx';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 const useStyles = makeStyles((theme) => ({
   dispenserLabelIdle: {
@@ -46,8 +47,12 @@ export interface WorkcellTableProps {
   workcellStates: Record<string, RmfModels.DispenserState>;
 }
 
+export interface WorkcellFixListDataProps extends WorkcellTableProps {
+  width: number;
+}
+
 export interface WorkcellRowProps extends ListChildComponentProps {
-  data: WorkcellTableProps;
+  data: WorkcellFixListDataProps;
 }
 
 const WorkcellRow = React.memo(({ data, index, style }: WorkcellRowProps) => {
@@ -58,6 +63,7 @@ const WorkcellRow = React.memo(({ data, index, style }: WorkcellRowProps) => {
   const mode = state?.mode;
   const requestGuidQueue = state?.request_guid_queue;
   const secondsRemaining = state?.seconds_remaining;
+  const width = data.width;
 
   const dispenserModeLabelClasses = React.useCallback(
     (mode: number): string => {
@@ -89,7 +95,7 @@ const WorkcellRow = React.memo(({ data, index, style }: WorkcellRowProps) => {
             variant="head"
             className={clsx(classes.tableCell, classes.expandingCell)}
             style={{
-              minWidth: workCellTableCellConfig.dispenserName,
+              minWidth: width * workCellTableCellConfig.dispenserName - 40,
               height: workCellTableCellConfig.rowHeight,
             }}
             title={workcell?.guid}
@@ -105,7 +111,7 @@ const WorkcellRow = React.memo(({ data, index, style }: WorkcellRowProps) => {
               classes.expandingCell,
             )}
             style={{
-              minWidth: workCellTableCellConfig.opMode,
+              minWidth: width * workCellTableCellConfig.opMode - 40,
               height: workCellTableCellConfig.rowHeight,
             }}
           >
@@ -116,7 +122,7 @@ const WorkcellRow = React.memo(({ data, index, style }: WorkcellRowProps) => {
             variant="head"
             className={clsx(classes.tableCell, classes.expandingCell)}
             style={{
-              minWidth: workCellTableCellConfig.numQueueRequest,
+              minWidth: width * workCellTableCellConfig.numQueueRequest - 40,
               height: workCellTableCellConfig.rowHeight,
             }}
           >
@@ -127,7 +133,7 @@ const WorkcellRow = React.memo(({ data, index, style }: WorkcellRowProps) => {
             variant="head"
             className={clsx(classes.tableCell, classes.expandingCell)}
             style={{
-              minWidth: workCellTableCellConfig.requestQueueId,
+              minWidth: width * workCellTableCellConfig.requestQueueId - 40,
               height: workCellTableCellConfig.rowHeight,
             }}
           >
@@ -138,7 +144,7 @@ const WorkcellRow = React.memo(({ data, index, style }: WorkcellRowProps) => {
             variant="head"
             className={clsx(classes.tableCell, classes.expandingCell)}
             style={{
-              minWidth: workCellTableCellConfig.secRemaining,
+              minWidth: width * workCellTableCellConfig.secRemaining - 32,
               height: workCellTableCellConfig.rowHeight,
             }}
           >
@@ -152,7 +158,7 @@ const WorkcellRow = React.memo(({ data, index, style }: WorkcellRowProps) => {
             variant="head"
             className={clsx(classes.tableCell, classes.expandingCell)}
             style={{
-              minWidth: workCellTableCellConfig.dispenserName,
+              minWidth: width * workCellTableCellConfig.dispenserName - 40,
               height: workCellTableCellConfig.rowHeight,
             }}
             title={workcell?.guid}
@@ -164,7 +170,7 @@ const WorkcellRow = React.memo(({ data, index, style }: WorkcellRowProps) => {
             variant="head"
             className={clsx(classes.tableCell, classes.expandingCell)}
             style={{
-              minWidth: workCellTableCellConfig.opMode,
+              minWidth: width * workCellTableCellConfig.opMode - 40,
               height: workCellTableCellConfig.rowHeight,
             }}
           >
@@ -175,7 +181,7 @@ const WorkcellRow = React.memo(({ data, index, style }: WorkcellRowProps) => {
             variant="head"
             className={clsx(classes.tableCell, classes.expandingCell)}
             style={{
-              minWidth: workCellTableCellConfig.numQueueRequest,
+              minWidth: width * workCellTableCellConfig.numQueueRequest - 40,
               height: workCellTableCellConfig.rowHeight,
             }}
           >
@@ -186,7 +192,7 @@ const WorkcellRow = React.memo(({ data, index, style }: WorkcellRowProps) => {
             variant="head"
             className={clsx(classes.tableCell, classes.expandingCell)}
             style={{
-              minWidth: workCellTableCellConfig.requestQueueId,
+              minWidth: width * workCellTableCellConfig.requestQueueId - 40,
               height: workCellTableCellConfig.rowHeight,
             }}
           >
@@ -197,7 +203,7 @@ const WorkcellRow = React.memo(({ data, index, style }: WorkcellRowProps) => {
             variant="head"
             className={clsx(classes.tableCell, classes.expandingCell)}
             style={{
-              minWidth: workCellTableCellConfig.secRemaining,
+              minWidth: width * workCellTableCellConfig.secRemaining - 32,
               height: workCellTableCellConfig.rowHeight,
             }}
           >
@@ -211,6 +217,7 @@ const WorkcellRow = React.memo(({ data, index, style }: WorkcellRowProps) => {
 
 export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps): JSX.Element => {
   const classes = useStyles();
+  const [width, setWidth] = React.useState(0);
   return (
     <Table component="div" stickyHeader size="small" aria-label="workcell-table">
       <TableHead component="div">
@@ -220,7 +227,7 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
             variant="head"
             className={clsx(classes.tableCell, classes.expandingCell)}
             style={{
-              minWidth: workCellTableCellConfig.dispenserName,
+              minWidth: width * workCellTableCellConfig.dispenserName - 40,
               height: workCellTableCellConfig.rowHeight,
             }}
           >
@@ -231,7 +238,7 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
             variant="head"
             className={clsx(classes.tableCell, classes.expandingCell)}
             style={{
-              minWidth: workCellTableCellConfig.opMode,
+              minWidth: width * workCellTableCellConfig.opMode - 40,
               height: workCellTableCellConfig.rowHeight,
             }}
           >
@@ -242,7 +249,7 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
             variant="head"
             className={clsx(classes.tableCell, classes.expandingCell)}
             style={{
-              minWidth: workCellTableCellConfig.numQueueRequest,
+              minWidth: width * workCellTableCellConfig.numQueueRequest - 40,
               height: workCellTableCellConfig.rowHeight,
             }}
           >
@@ -253,7 +260,7 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
             variant="head"
             className={clsx(classes.tableCell, classes.expandingCell)}
             style={{
-              minWidth: workCellTableCellConfig.requestQueueId,
+              minWidth: width * workCellTableCellConfig.requestQueueId - 40,
               height: workCellTableCellConfig.rowHeight,
             }}
           >
@@ -264,7 +271,7 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
             variant="head"
             className={clsx(classes.tableCell, classes.expandingCell)}
             style={{
-              minWidth: workCellTableCellConfig.secRemaining,
+              minWidth: width * workCellTableCellConfig.secRemaining - 32,
               height: workCellTableCellConfig.rowHeight,
             }}
           >
@@ -273,18 +280,26 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
         </TableRow>
       </TableHead>
       <TableBody component="div" className={classes.tableBody}>
-        <FixedSizeList
-          itemSize={43}
-          itemCount={workcells.length}
-          height={200}
-          width={760}
-          itemData={{
-            workcells,
-            workcellStates,
+        <AutoSizer disableHeight>
+          {({ width }) => {
+            setWidth(width);
+            return (
+              <FixedSizeList
+                itemSize={43}
+                itemCount={workcells.length}
+                height={200}
+                width={width}
+                itemData={{
+                  workcells,
+                  workcellStates,
+                  width,
+                }}
+              >
+                {WorkcellRow}
+              </FixedSizeList>
+            );
           }}
-        >
-          {WorkcellRow}
-        </FixedSizeList>
+        </AutoSizer>
       </TableBody>
     </Table>
   );

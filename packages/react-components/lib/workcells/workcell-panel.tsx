@@ -6,6 +6,7 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { WorkcellTable } from './workcell-table';
 import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 export interface WorkcellPanelProps {
   dispensers: Dispenser[];
@@ -17,8 +18,12 @@ export interface WorkcellDataProps extends WorkcellPanelProps {
   type: 'ingestors' | 'dispensers';
 }
 
+export interface WorkcellGridDataProps extends WorkcellDataProps {
+  columnCount: number;
+}
+
 export interface WorkcellCellProps extends GridChildComponentProps {
-  data: WorkcellDataProps;
+  data: WorkcellGridDataProps;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -63,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
 const WorkcellCell = React.memo(
   ({ data, columnIndex, rowIndex, style }: WorkcellCellProps): JSX.Element | null => {
     let workcell: Dispenser | undefined;
-    const columnCount = 3;
+    const columnCount = data.columnCount;
     let requestGuidQueue: string[] | undefined;
     let secondsRemaining: number | undefined;
     let labelId: string | undefined;
@@ -124,8 +129,8 @@ export function WorkcellPanel({
   workCellStates,
 }: WorkcellPanelProps): JSX.Element {
   const classes = useStyles();
-
   const [isCellView, setIsCellView] = React.useState(true);
+  const columnWidth = 250;
 
   return (
     <Card variant="outlined" className={classes.container}>
@@ -152,43 +157,59 @@ export function WorkcellPanel({
           <div className={classes.cellContainer}>
             <Typography variant="h6">Dispenser Table</Typography>
             <Grid container direction="row" spacing={1}>
-              <FixedSizeGrid
-                columnCount={3}
-                columnWidth={250}
-                height={250}
-                rowCount={Math.ceil(dispensers.length / 3)}
-                rowHeight={120}
-                width={760}
-                itemData={{
-                  dispensers,
-                  ingestors,
-                  workCellStates,
-                  type: 'dispensers',
+              <AutoSizer disableHeight>
+                {({ width }) => {
+                  const columnCount = Math.floor(width / columnWidth);
+                  return (
+                    <FixedSizeGrid
+                      columnCount={columnCount}
+                      columnWidth={columnWidth}
+                      height={250}
+                      rowCount={Math.ceil(dispensers.length / columnCount)}
+                      rowHeight={120}
+                      width={width}
+                      itemData={{
+                        columnCount,
+                        dispensers,
+                        ingestors,
+                        workCellStates,
+                        type: 'dispensers',
+                      }}
+                    >
+                      {WorkcellCell}
+                    </FixedSizeGrid>
+                  );
                 }}
-              >
-                {WorkcellCell}
-              </FixedSizeGrid>
+              </AutoSizer>
             </Grid>
           </div>
           <div className={classes.cellContainer}>
             <Typography variant="h6">Ingester Table</Typography>
             <Grid container direction="row" spacing={1}>
-              <FixedSizeGrid
-                columnCount={3}
-                columnWidth={250}
-                height={250}
-                rowCount={Math.ceil(ingestors.length / 3)}
-                rowHeight={120}
-                width={760}
-                itemData={{
-                  dispensers,
-                  ingestors,
-                  workCellStates,
-                  type: 'ingestors',
+              <AutoSizer disableHeight>
+                {({ width }) => {
+                  const columnCount = Math.floor(width / columnWidth);
+                  return (
+                    <FixedSizeGrid
+                      columnCount={columnCount}
+                      columnWidth={columnWidth}
+                      height={250}
+                      rowCount={Math.ceil(ingestors.length / columnCount)}
+                      rowHeight={120}
+                      width={width}
+                      itemData={{
+                        columnCount,
+                        dispensers,
+                        ingestors,
+                        workCellStates,
+                        type: 'ingestors',
+                      }}
+                    >
+                      {WorkcellCell}
+                    </FixedSizeGrid>
+                  );
                 }}
-              >
-                {WorkcellCell}
-              </FixedSizeGrid>
+              </AutoSizer>
             </Grid>
           </div>
         </React.Fragment>
