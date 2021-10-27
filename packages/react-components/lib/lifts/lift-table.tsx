@@ -10,13 +10,7 @@ import {
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import LiftRequestFormDialog from './lift-request-form-dialog';
-import {
-  doorStateToString,
-  liftModeToString,
-  requestDoorModes,
-  requestModes,
-  liftTableCellConfig,
-} from './lift-utils';
+import { doorStateToString, liftModeToString, requestDoorModes, requestModes } from './lift-utils';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import clsx from 'clsx';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -67,20 +61,35 @@ export interface LiftRowProps extends ListChildComponentProps {
   data: LiftFixListDataProps;
 }
 
+// table cell has padding of 16px left and 24px right respectively
+// need to deduct 40px away from actual width
+const liftTableCellConfig = {
+  // column width in percent
+  liftName: 0.133,
+  opMode: 0.227,
+  currentFloor: 0.16,
+  destination: 0.152,
+  doorState: 0.148,
+  // last column deduct 32px
+  button: 0.18,
+  // row height in pixels
+  rowHeight: 31,
+};
+
 const LiftRow = React.memo(({ data, index, style }: LiftRowProps) => {
   const classes = useStyles();
   const lift = data.lifts[index];
   const liftState = data.liftStates[lift.name];
   const width = data.width;
-  const doorState = liftState?.door_state;
-  const destinationFloor = liftState?.destination_floor;
-  const currentFloor = liftState?.current_floor;
-  const currentMode = liftState?.current_mode;
+  const doorState = liftState.door_state;
+  const destinationFloor = liftState.destination_floor;
+  const currentFloor = liftState.current_floor;
+  const currentMode = liftState.current_mode;
   const onRequestSubmit = data.onRequestSubmit;
   const [showForms, setShowForms] = React.useState(false);
 
   const doorModeLabelClasses = React.useCallback(
-    (doorState?: number): string => {
+    (doorState: number): string => {
       switch (doorState) {
         case RmfModels.DoorMode.MODE_OPEN:
           return `${classes.doorLabelOpen}`;
@@ -110,7 +119,7 @@ const LiftRow = React.memo(({ data, index, style }: LiftRowProps) => {
           minWidth: width * liftTableCellConfig.liftName - 40,
           height: liftTableCellConfig.rowHeight,
         }}
-        title={lift?.name}
+        title={lift.name}
       >
         {lift.name}
       </TableCell>

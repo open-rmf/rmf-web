@@ -11,7 +11,7 @@ import {
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
-import { DoorData, doorModeToString, doorTypeToString, doorTableCellConfig } from './utils';
+import { DoorData, doorModeToString, doorTypeToString } from './utils';
 import clsx from 'clsx';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
@@ -28,6 +28,21 @@ export interface DoorFixListDataProps extends DoorTableProps {
 export interface DoorRowProps extends ListChildComponentProps {
   data: DoorFixListDataProps;
 }
+
+// table cell has padding of 16px left and 24px right respectively
+// need to deduct 40px away from actual width
+const doorTableCellConfig = {
+  // column width in percent of row width
+  doorName: 0.187,
+  doorMode: 0.141,
+  doorLevel: 0.129,
+  doorType: 0.176,
+  doorState: 0.16,
+  // last column deduct 32px
+  doorControl: 0.207,
+  // row height in pixels
+  rowHeight: 31,
+};
 
 const useStyles = makeStyles((theme) => ({
   doorLabelOpen: {
@@ -85,7 +100,6 @@ const DoorRow = React.memo(({ data, index, style }: DoorRowProps) => {
     },
     [classes],
   );
-  -40;
   const doorStatusClass = doorModeLabelClasses(doorMode);
 
   return (

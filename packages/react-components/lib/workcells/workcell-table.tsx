@@ -2,7 +2,7 @@ import { makeStyles, Table, TableBody, TableCell, TableHead, TableRow } from '@m
 import { Dispenser } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { dispenserModeToString, workCellTableCellConfig } from './utils';
+import { dispenserModeToString } from './utils';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import clsx from 'clsx';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -45,15 +45,26 @@ export interface WorkcellFixListDataProps extends WorkcellTableProps {
 export interface WorkcellRowProps extends ListChildComponentProps {
   data: WorkcellFixListDataProps;
 }
+// table cell has padding of 16px left and 24px right respectively
+// need to deduct 40px away from actual width
+const workCellTableCellConfig = {
+  dispenserName: 0.196,
+  opMode: 0.138,
+  numQueueRequest: 0.241,
+  requestQueueId: 0.208,
+  // last column deduct 32px
+  secRemaining: 0.217,
+  rowHeight: 31,
+};
 
 const WorkcellRow = React.memo(({ data, index, style }: WorkcellRowProps) => {
   const classes = useStyles();
   const workcell = data.workcells[index];
   const state: RmfModels.DispenserState | RmfModels.IngestorState | undefined =
     data.workcellStates[workcell.guid];
-  const mode = state?.mode;
-  const requestGuidQueue = state?.request_guid_queue;
-  const secondsRemaining = state?.seconds_remaining;
+  const mode = state.mode;
+  const requestGuidQueue = state.request_guid_queue;
+  const secondsRemaining = state.seconds_remaining;
   const width = data.width;
 
   const dispenserModeLabelClasses = React.useCallback(
@@ -89,7 +100,7 @@ const WorkcellRow = React.memo(({ data, index, style }: WorkcellRowProps) => {
               minWidth: width * workCellTableCellConfig.dispenserName - 40,
               height: workCellTableCellConfig.rowHeight,
             }}
-            title={workcell?.guid}
+            title={workcell.guid}
           >
             {workcell.guid}
           </TableCell>
@@ -148,7 +159,7 @@ const WorkcellRow = React.memo(({ data, index, style }: WorkcellRowProps) => {
               minWidth: width * workCellTableCellConfig.dispenserName - 40,
               height: workCellTableCellConfig.rowHeight,
             }}
-            title={workcell?.guid}
+            title={workcell.guid}
           >
             {workcell.guid}
           </TableCell>

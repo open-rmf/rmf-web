@@ -59,18 +59,3 @@ export function doorTypeToString(doorType: number): string {
       return `Unknown (${doorType})`;
   }
 }
-
-// table cell has padding of 16px left and 24px right respectively
-// need to deduct 40px away from actual width
-export const doorTableCellConfig = {
-  // column width in percent of row width
-  doorName: 0.187,
-  doorMode: 0.141,
-  doorLevel: 0.129,
-  doorType: 0.176,
-  doorState: 0.16,
-  // last column deduct 32px
-  doorControl: 0.207,
-  // row height in pixels
-  rowHeight: 31,
-};

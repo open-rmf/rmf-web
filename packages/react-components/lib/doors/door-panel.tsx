@@ -120,14 +120,14 @@ const DoorCell = React.memo(
             variant="body1"
             align="center"
             className={classes.nameField}
-            title={door?.door.name}
+            title={door.door.name}
           >
-            {door?.door.name}
+            {door.door.name}
           </Typography>
           <Grid container direction="row" spacing={1}>
             <Grid item xs={6}>
               <Typography variant="body2" align="center">
-                {door?.level}
+                {door.level}
               </Typography>
             </Grid>
             <Grid item xs={6}>
