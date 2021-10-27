@@ -59,7 +59,7 @@ We can use Docker to quickly bring up a Keycloak instance.
 
 Install docker: `https://docs.docker.com/engine/install/ubuntu/`
 
-start a a database instance: `docker run -it --rm --name rmf-keycloak --network=host -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin jboss/keycloak`
+start a a database instance: `docker run -it --rm --name rmf-keycloak --network=host -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin quay.io/keycloak/keycloak`
 
 to stop the instance: `docker kill rmf-keycloak
 
