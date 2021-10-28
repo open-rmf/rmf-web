@@ -41,8 +41,20 @@ export interface LiftGridDataProps extends LiftPanelProps {
   columnCount: number;
 }
 
-export interface LiftCellProps extends GridChildComponentProps {
+export interface LiftGridRendererProps extends GridChildComponentProps {
   data: LiftGridDataProps;
+}
+
+export interface LiftCellProps {
+  lift: RmfModels.Lift;
+  liftState?: RmfModels.LiftState;
+  onRequestSubmit?(
+    event: React.FormEvent,
+    lift: RmfModels.Lift,
+    doorState: number,
+    requestType: number,
+    destination: string,
+  ): void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -98,19 +110,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const LiftCell = React.memo(
-  ({ data, columnIndex, rowIndex, style }: LiftCellProps): JSX.Element | null => {
-    let lift: RmfModels.Lift | undefined;
-    let liftState: RmfModels.LiftState | undefined;
-    let doorState: number | undefined;
-    let motionState: number | undefined;
-    let destinationFloor: string | undefined;
-    let currentFloor: string | undefined;
-    let labelId: string | undefined;
+  ({ lift, liftState, onRequestSubmit }: LiftCellProps): JSX.Element | null => {
+    const doorState = liftState?.door_state;
+    const motionState = liftState?.motion_state;
+    const destinationFloor = liftState?.destination_floor;
+    const currentFloor = liftState?.current_floor;
+    const labelId = `lift-cell-${lift.name}`;
     const classes = useStyles();
 
     const [showForms, setShowForms] = React.useState(false);
-    const columnCount = data.columnCount;
-
     const currMotion = motionStateToString(motionState);
     const getMotionArrowColor = (currMotion: string, arrowDirection: string) => {
       return currMotion === arrowDirection ? classes.iconMoving : classes.iconOtherStates;
@@ -133,70 +141,75 @@ const LiftCell = React.memo(
       [classes],
     );
 
-    if (rowIndex * columnCount + columnIndex <= data.lifts.length - 1) {
-      lift = data.lifts[rowIndex * columnCount + columnIndex];
-      liftState = data.liftStates[lift.name];
-      doorState = liftState?.door_state;
-      motionState = liftState?.motion_state;
-      destinationFloor = liftState?.destination_floor;
-      currentFloor = liftState?.current_floor;
-      labelId = `lift-cell-${lift.name}`;
-    }
-    const onRequestSubmit = data.onRequestSubmit;
-    return lift ? (
-      <div style={style}>
-        <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
-          <Grid container direction="row">
-            <Grid item xs={9}>
-              <Typography
-                id={labelId}
-                align="center"
-                className={classes.nameField}
-                title={lift?.name}
-              >
-                {lift?.name}
-              </Typography>
-              <Box border={1} borderColor="divider" m={0.5}>
-                <Typography align="center">{destinationFloor || 'Unknown'}</Typography>
-              </Box>
-              <Typography align="center" className={doorModeLabelClasses(doorState)}>
-                {currDoorMotion}
-              </Typography>
-            </Grid>
-            <Grid item xs>
-              <Typography align="center" className={getMotionArrowColor(currMotion, 'Up')}>
-                <ArrowUpwardIcon />
-              </Typography>
-              <Typography align="center">{currentFloor || '?'}</Typography>
-              <Typography align="center" className={getMotionArrowColor(currMotion, 'Down')}>
-                <ArrowDownwardIcon />
-              </Typography>
-            </Grid>
+    return (
+      <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
+        <Grid container direction="row">
+          <Grid item xs={9}>
+            <Typography
+              id={labelId}
+              align="center"
+              className={classes.nameField}
+              title={lift?.name}
+            >
+              {lift?.name}
+            </Typography>
+            <Box border={1} borderColor="divider" m={0.5}>
+              <Typography align="center">{destinationFloor || 'Unknown'}</Typography>
+            </Box>
+            <Typography align="center" className={doorModeLabelClasses(doorState)}>
+              {currDoorMotion}
+            </Typography>
           </Grid>
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            size="small"
-            onClick={() => setShowForms(true)}
-          >
-            Request Form
-          </Button>
-          {lift && (
-            <LiftRequestFormDialog
-              lift={lift}
-              availableDoorModes={requestDoorModes}
-              availableRequestTypes={requestModes}
-              showFormDialog={showForms}
-              onRequestSubmit={onRequestSubmit}
-              onClose={() => setShowForms(false)}
-            />
-          )}
-        </Paper>
-      </div>
-    ) : null;
+          <Grid item xs>
+            <Typography align="center" className={getMotionArrowColor(currMotion, 'Up')}>
+              <ArrowUpwardIcon />
+            </Typography>
+            <Typography align="center">{currentFloor || '?'}</Typography>
+            <Typography align="center" className={getMotionArrowColor(currMotion, 'Down')}>
+              <ArrowDownwardIcon />
+            </Typography>
+          </Grid>
+        </Grid>
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          size="small"
+          onClick={() => setShowForms(true)}
+        >
+          Request Form
+        </Button>
+        {lift && (
+          <LiftRequestFormDialog
+            lift={lift}
+            availableDoorModes={requestDoorModes}
+            availableRequestTypes={requestModes}
+            showFormDialog={showForms}
+            onRequestSubmit={onRequestSubmit}
+            onClose={() => setShowForms(false)}
+          />
+        )}
+      </Paper>
+    );
   },
 );
+
+const LiftGridRenderer = ({ data, columnIndex, rowIndex, style }: LiftGridRendererProps) => {
+  let lift: RmfModels.Lift | undefined;
+  let liftState: RmfModels.LiftState | undefined;
+  const columnCount = data.columnCount;
+
+  if (rowIndex * columnCount + columnIndex <= data.lifts.length - 1) {
+    lift = data.lifts[rowIndex * columnCount + columnIndex];
+    liftState = data.liftStates[lift.name];
+  }
+
+  return lift ? (
+    <div style={style}>
+      <LiftCell lift={lift} liftState={liftState} onRequestSubmit={data.onRequestSubmit} />
+    </div>
+  ) : null;
+};
 
 export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps): JSX.Element {
   const classes = useStyles();
@@ -243,7 +256,7 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
                     onRequestSubmit,
                   }}
                 >
-                  {LiftCell}
+                  {LiftGridRenderer}
                 </FixedSizeGrid>
               );
             }}

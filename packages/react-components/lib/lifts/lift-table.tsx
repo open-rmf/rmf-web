@@ -57,8 +57,22 @@ export interface LiftFixListDataProps extends LiftTableProps {
   width: number;
 }
 
-export interface LiftRowProps extends ListChildComponentProps {
+export interface LiftListRendererProps extends ListChildComponentProps {
   data: LiftFixListDataProps;
+}
+
+export interface LiftRowProps {
+  lift: RmfModels.Lift;
+  liftState: RmfModels.LiftState;
+  style: React.CSSProperties;
+  width: number;
+  onRequestSubmit?(
+    event: React.FormEvent,
+    lift: RmfModels.Lift,
+    doorState: number,
+    requestType: number,
+    destination: string,
+  ): void;
 }
 
 // table cell has padding of 16px left and 24px right respectively
@@ -76,16 +90,12 @@ const liftTableCellConfig = {
   rowHeight: 31,
 };
 
-const LiftRow = React.memo(({ data, index, style }: LiftRowProps) => {
+const LiftRow = React.memo(({ lift, liftState, style, width, onRequestSubmit }: LiftRowProps) => {
   const classes = useStyles();
-  const lift = data.lifts[index];
-  const liftState = data.liftStates[lift.name];
-  const width = data.width;
-  const doorState = liftState.door_state;
-  const destinationFloor = liftState.destination_floor;
-  const currentFloor = liftState.current_floor;
-  const currentMode = liftState.current_mode;
-  const onRequestSubmit = data.onRequestSubmit;
+  const doorState = liftState?.door_state;
+  const destinationFloor = liftState?.destination_floor;
+  const currentFloor = liftState?.current_floor;
+  const currentMode = liftState?.current_mode;
   const [showForms, setShowForms] = React.useState(false);
 
   const doorModeLabelClasses = React.useCallback(
@@ -198,6 +208,21 @@ const LiftRow = React.memo(({ data, index, style }: LiftRowProps) => {
   );
 });
 
+const LiftListRenderer = ({ data, index, style }: LiftListRendererProps) => {
+  const lift = data.lifts[index];
+  const liftState = data.liftStates[lift.name];
+
+  return (
+    <LiftRow
+      lift={lift}
+      liftState={liftState}
+      onRequestSubmit={data.onRequestSubmit}
+      style={style}
+      width={data.width}
+    />
+  );
+};
+
 export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps): JSX.Element => {
   const classes = useStyles();
   return (
@@ -288,7 +313,7 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
                   onRequestSubmit,
                 }}
               >
-                {LiftRow}
+                {LiftListRenderer}
               </FixedSizeList>
             </TableBody>
           </Table>

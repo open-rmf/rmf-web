@@ -22,8 +22,13 @@ export interface WorkcellGridDataProps extends WorkcellDataProps {
   columnCount: number;
 }
 
-export interface WorkcellCellProps extends GridChildComponentProps {
+export interface WorkcellGridRendererProps extends GridChildComponentProps {
   data: WorkcellGridDataProps;
+}
+
+export interface WorkcellCellProps {
+  workcell: Dispenser;
+  workCellState?: RmfModels.DispenserState;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -66,62 +71,72 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const WorkcellCell = React.memo(
-  ({ data, columnIndex, rowIndex, style }: WorkcellCellProps): JSX.Element | null => {
-    let workcell: Dispenser | undefined;
-    const columnCount = data.columnCount;
-    let requestGuidQueue: string[] | undefined;
-    let secondsRemaining: number | undefined;
-    let labelId: string | undefined;
+  ({ workcell, workCellState }: WorkcellCellProps): JSX.Element | null => {
+    let requestGuidQueue = workCellState?.request_guid_queue;
+    let secondsRemaining = workCellState?.seconds_remaining;
+    let labelId = `workcell-cell-${workcell.guid}`;
     const classes = useStyles();
 
-    const getWorkCell = data.type === 'dispensers' ? data.dispensers : data.ingestors;
-    if (rowIndex * columnCount + columnIndex <= getWorkCell.length - 1) {
-      workcell = getWorkCell[rowIndex * columnCount + columnIndex];
-      const state: RmfModels.DispenserState | undefined = data.workCellStates[workcell.guid];
-      requestGuidQueue = state?.request_guid_queue;
-      secondsRemaining = state?.seconds_remaining;
-      labelId = `workcell-cell-${workcell.guid}`;
-    }
-
-    return workcell ? (
-      <div style={style}>
-        <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
-          {requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
-            <React.Fragment>
-              <Typography
-                id={labelId}
-                align="center"
-                className={classes.nameField}
-                title={workcell?.guid}
-              >
-                {workcell?.guid}
-              </Typography>
-              <Grid container direction="row">
-                <Grid item xs={6}>
-                  <Typography
-                    align="center"
-                    variant="body2"
-                  >{`Queue: ${requestGuidQueue.length}`}</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography align="center" variant="body2">
-                    {requestGuidQueue.length}
-                  </Typography>
-                </Grid>
-              </Grid>
-              <Typography align="center">{`Remaining: ${secondsRemaining}s`}</Typography>
-            </React.Fragment>
-          ) : (
+    return (
+      <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
+        {requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
+          <React.Fragment>
             <Typography
               id={labelId}
-              color="error"
-            >{`${workcell.guid} not sending states`}</Typography>
-          )}
-        </Paper>
-      </div>
-    ) : null;
+              align="center"
+              className={classes.nameField}
+              title={workcell?.guid}
+            >
+              {workcell?.guid}
+            </Typography>
+            <Grid container direction="row">
+              <Grid item xs={6}>
+                <Typography
+                  align="center"
+                  variant="body2"
+                >{`Queue: ${requestGuidQueue.length}`}</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography align="center" variant="body2">
+                  {requestGuidQueue.length}
+                </Typography>
+              </Grid>
+            </Grid>
+            <Typography align="center">{`Remaining: ${secondsRemaining}s`}</Typography>
+          </React.Fragment>
+        ) : (
+          <Typography
+            id={labelId}
+            color="error"
+          >{`${workcell.guid} not sending states`}</Typography>
+        )}
+      </Paper>
+    );
   },
 );
+
+const WorkcellGridRenderer = ({
+  data,
+  columnIndex,
+  rowIndex,
+  style,
+}: WorkcellGridRendererProps) => {
+  let workcell: Dispenser | undefined;
+  let workcellState: RmfModels.DispenserState | undefined;
+  const columnCount = data.columnCount;
+  const getWorkCell = data.type === 'dispensers' ? data.dispensers : data.ingestors;
+
+  if (rowIndex * columnCount + columnIndex <= getWorkCell.length - 1) {
+    workcell = getWorkCell[rowIndex * columnCount + columnIndex];
+    workcellState = data.workCellStates[workcell.guid];
+  }
+
+  return workcell ? (
+    <div style={style}>
+      <WorkcellCell workcell={workcell} workCellState={workcellState} />
+    </div>
+  ) : null;
+};
 
 export function WorkcellPanel({
   dispensers,
@@ -176,7 +191,7 @@ export function WorkcellPanel({
                         type: 'dispensers',
                       }}
                     >
-                      {WorkcellCell}
+                      {WorkcellGridRenderer}
                     </FixedSizeGrid>
                   );
                 }}
@@ -205,7 +220,7 @@ export function WorkcellPanel({
                         type: 'ingestors',
                       }}
                     >
-                      {WorkcellCell}
+                      {WorkcellGridRenderer}
                     </FixedSizeGrid>
                   );
                 }}

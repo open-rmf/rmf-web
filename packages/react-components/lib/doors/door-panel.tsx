@@ -27,8 +27,14 @@ export interface DoorGridDataProps extends DoorPanelProps {
   columnCount: number;
 }
 
-export interface DoorInfoProps extends GridChildComponentProps {
+export interface DoorGridRendererProps extends GridChildComponentProps {
   data: DoorGridDataProps;
+}
+
+export interface DoorcellProps {
+  door: DoorData;
+  doorState?: RmfModels.DoorState;
+  onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -78,14 +84,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DoorCell = React.memo(
-  ({ data, columnIndex, rowIndex, style }: DoorInfoProps): JSX.Element | null => {
+  ({ door, doorState, onDoorControlClick }: DoorcellProps): JSX.Element => {
     const classes = useStyles();
-    const columnCount = data.columnCount;
-    let door: DoorData | undefined;
-    let doorMode: number | undefined;
-    let doorStatusClass: string | undefined;
-    let labelId: string | undefined;
-
+    const doorMode = doorState?.current_mode.value;
     const doorModeLabelClasses = React.useCallback(
       (doorMode?: number): string => {
         if (doorMode === undefined) {
@@ -104,68 +105,78 @@ const DoorCell = React.memo(
       },
       [classes],
     );
+    const doorStatusClass = doorModeLabelClasses(doorMode);
+    const labelId = `door-cell-${door.door.name}`;
 
-    if (rowIndex * columnCount + columnIndex <= data.doors.length - 1) {
-      door = data.doors[rowIndex * columnCount + columnIndex];
-      doorMode = data.doorStates[door.door.name]?.current_mode.value;
-      doorStatusClass = doorModeLabelClasses(doorMode);
-      labelId = `door-cell-${door.door.name}`;
-    }
-    const onDoorControlClick = data.onDoorControlClick;
-    return door ? (
-      <div style={style}>
-        <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
-          <Typography
-            id={labelId}
-            variant="body1"
-            align="center"
-            className={classes.nameField}
-            title={door.door.name}
-          >
-            {door.door.name}
-          </Typography>
-          <Grid container direction="row" spacing={1}>
-            <Grid item xs={6}>
-              <Typography variant="body2" align="center">
-                {door.level}
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography className={doorStatusClass} variant="body2" align="center" role="status">
-                {doorModeToString(doorMode)}
-              </Typography>
-            </Grid>
+    return (
+      <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
+        <Typography
+          id={labelId}
+          variant="body1"
+          align="center"
+          className={classes.nameField}
+          title={door.door.name}
+        >
+          {door.door.name}
+        </Typography>
+        <Grid container direction="row" spacing={1}>
+          <Grid item xs={6}>
+            <Typography variant="body2" align="center">
+              {door.level}
+            </Typography>
           </Grid>
-          <Typography variant="body1" align="center">
-            {door && doorTypeToString(door.door.door_type)}
-          </Typography>
-          <div className={classes.buttonGroup}>
-            <ButtonGroup size="small">
-              <Button
-                onClick={(ev) =>
-                  door &&
-                  onDoorControlClick &&
-                  onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_OPEN)
-                }
-              >
-                Open
-              </Button>
-              <Button
-                onClick={(ev) =>
-                  door &&
-                  onDoorControlClick &&
-                  onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_CLOSED)
-                }
-              >
-                Close
-              </Button>
-            </ButtonGroup>
-          </div>
-        </Paper>
-      </div>
-    ) : null;
+          <Grid item xs={6}>
+            <Typography className={doorStatusClass} variant="body2" align="center" role="status">
+              {doorModeToString(doorMode)}
+            </Typography>
+          </Grid>
+        </Grid>
+        <Typography variant="body1" align="center">
+          {door && doorTypeToString(door.door.door_type)}
+        </Typography>
+        <div className={classes.buttonGroup}>
+          <ButtonGroup size="small">
+            <Button
+              onClick={(ev) =>
+                door &&
+                onDoorControlClick &&
+                onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_OPEN)
+              }
+            >
+              Open
+            </Button>
+            <Button
+              onClick={(ev) =>
+                door &&
+                onDoorControlClick &&
+                onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_CLOSED)
+              }
+            >
+              Close
+            </Button>
+          </ButtonGroup>
+        </div>
+      </Paper>
+    );
   },
 );
+
+const DoorGridRenderer = ({ data, columnIndex, rowIndex, style }: DoorGridRendererProps) => {
+  let door: DoorData | undefined;
+  let doorState: RmfModels.DoorState | undefined;
+  const columnCount = data.columnCount;
+
+  if (rowIndex * columnCount + columnIndex <= data.doors.length - 1) {
+    door = data.doors[rowIndex * columnCount + columnIndex];
+    doorState = data.doorStates[door.door.name];
+  }
+
+  return door ? (
+    <div style={style}>
+      <DoorCell door={door} doorState={doorState} onDoorControlClick={data.onDoorControlClick} />
+    </div>
+  ) : null;
+};
 
 export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelProps): JSX.Element {
   const classes = useStyles();
@@ -212,7 +223,7 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
                     onDoorControlClick,
                   }}
                 >
-                  {DoorCell}
+                  {DoorGridRenderer}
                 </FixedSizeGrid>
               );
             }}

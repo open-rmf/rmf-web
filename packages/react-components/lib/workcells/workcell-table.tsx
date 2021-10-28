@@ -42,9 +42,17 @@ export interface WorkcellFixListDataProps extends WorkcellTableProps {
   width: number;
 }
 
-export interface WorkcellRowProps extends ListChildComponentProps {
+export interface WorkcellListRendererProps extends ListChildComponentProps {
   data: WorkcellFixListDataProps;
 }
+
+export interface WorkcellRowProps {
+  width: number;
+  workcell: Dispenser;
+  workcellState: RmfModels.DispenserState;
+  style: React.CSSProperties;
+}
+
 // table cell has padding of 16px left and 24px right respectively
 // need to deduct 40px away from actual width
 const workCellTableCellConfig = {
@@ -57,15 +65,11 @@ const workCellTableCellConfig = {
   rowHeight: 31,
 };
 
-const WorkcellRow = React.memo(({ data, index, style }: WorkcellRowProps) => {
+const WorkcellRow = React.memo(({ width, workcell, workcellState, style }: WorkcellRowProps) => {
   const classes = useStyles();
-  const workcell = data.workcells[index];
-  const state: RmfModels.DispenserState | RmfModels.IngestorState | undefined =
-    data.workcellStates[workcell.guid];
-  const mode = state.mode;
-  const requestGuidQueue = state.request_guid_queue;
-  const secondsRemaining = state.seconds_remaining;
-  const width = data.width;
+  const mode = workcellState?.mode;
+  const requestGuidQueue = workcellState?.request_guid_queue;
+  const secondsRemaining = workcellState?.seconds_remaining;
 
   const dispenserModeLabelClasses = React.useCallback(
     (mode: number): string => {
@@ -213,6 +217,21 @@ const WorkcellRow = React.memo(({ data, index, style }: WorkcellRowProps) => {
   );
 });
 
+const WorkcellListRenderer = ({ data, index, style }: WorkcellListRendererProps) => {
+  const workcell = data.workcells[index];
+  const workcellState: RmfModels.DispenserState | RmfModels.IngestorState | undefined =
+    data.workcellStates[workcell.guid];
+
+  return (
+    <WorkcellRow
+      width={data.width}
+      workcell={workcell}
+      workcellState={workcellState}
+      style={style}
+    />
+  );
+};
+
 export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps): JSX.Element => {
   const classes = useStyles();
   return (
@@ -291,7 +310,7 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
                   width,
                 }}
               >
-                {WorkcellRow}
+                {WorkcellListRenderer}
               </FixedSizeList>
             </TableBody>
           </Table>
