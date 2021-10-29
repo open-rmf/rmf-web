@@ -15,7 +15,7 @@ from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
 
 from . import routes
-from .app_config import AppConfig, load_config
+from .app_config import AppConfig
 from .authenticator import JwtAuthenticator, StubAuthenticator
 from .base_app import BaseApp
 from .dependencies import rmf_repo as rmf_repo_dep
@@ -42,17 +42,12 @@ class App(FastIO, BaseApp):
     def __init__(
         self,
         *,
-        app_config: AppConfig = None,
+        app_config: AppConfig,
         rmf_gateway_fc: Callable[
             [RmfEvents, StaticFilesRepository], RmfGateway
         ] = RmfGateway,
     ):
-        self.app_config = app_config or load_config(
-            os.environ.get(
-                "RMF_API_SERVER_CONFIG",
-                f"{os.path.dirname(__file__)}/default_config.py",
-            )
-        )
+        self.app_config = app_config
 
         self.loop: asyncio.AbstractEventLoop = None
         logger = logging.getLogger("app")
