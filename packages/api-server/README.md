@@ -148,6 +148,45 @@ rmf-server maintains its own database of users, roles and permissions. In order 
 
 A resource's authorizaion group is determined by it's contents. Exactly how they are determined for each type of resource is still either undecided or lacking information from RMF to be implemented, so currently every resource is put into a default empty group of `` (empty string).
 
+## Database Migration
+Aerich is a tool that can be used for database migration. Aerich requires a configuration file for initialization before doing any mutations, which can be found in `api_server.__main__.TORTOISE_ORM`.
+
+To initialize `aerich`:
+```bash
+# We will first export the RMF_API_SERVER_CONFIG variable
+export RMF_API_SERVER_CONFIG=api_server/psql_local_config.py 
+
+# Init aerich and save migration workspace to /tmp
+aerich init -t api_server.__main__.TORTOISE_ORM --location /tmp/migrations 
+aerich init-db
+```
+
+We will use PostgreSQL as the database for working with `aerich`, because the version of psql bundled with Ubuntu 20.04 supports all the necessary SQL queries for `aerich` to work. Start a psql database instance using Docker or Bare Metal as described [in the root README](/README.md). Then run the api-server with `psql`:
+```
+rmf_api_server
+```
+
+You can check the current schema of a table. For example, using the doorhealth table, if psql is running bare-metal,
+```
+sudo -u postgres bash -c "psql -c '\d+ robotstate;'"
+```
+
+Now, you can modify the `RobotState` class in the `api_server/modes/tortoise_models/fleet_state.py` to add a new field:
+```
+new_field = fields.CharField(255)
+```
+
+Do a database upgrade:
+```
+aerich upgrade
+```
+
+Now, inspecting the database schema, you will find "new_field" available in the schema
+```
+sudo -u postgres bash -c "psql -c '\d+ robotstate;'"
+```
+
+
 ## Running tests
 
 ### Running unit tests

@@ -15,7 +15,7 @@ from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
 
 from . import routes
-from .app_config import AppConfig
+from .app_config import AppConfig, load_config
 from .authenticator import JwtAuthenticator, StubAuthenticator
 from .base_app import BaseApp
 from .dependencies import rmf_repo as rmf_repo_dep

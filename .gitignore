@@ -4,3 +4,6 @@ npm-debug.log
 
 __pycache__/
 /static
+
+aerich.ini
+migrations/

@@ -18,6 +18,11 @@ A recent version of pipenv is needed, the system packaged version is too old.
 pip3 install pipenv
 ```
 
+To use database migration, you will also need the `aerich` database migration tool.
+```
+pip3 install aerich
+```
+
 ### Install rmf
 
 Refer to the following documentation:
@@ -48,6 +53,8 @@ lerna bootstrap --scope=rmf-dashboard
 
 ### PostgreSQL
 If you would like to use PostgreSQL, you will also need to install and set it up. The defaults are for PostgreSQL to be listening on 127.0.0.1:5432.
+
+Note that as of Ubuntu 20.04, the only database that supports database migration is currently PostgreSQL.
 
 #### Docker
 We can use Docker to quickly bring up a PostgreSQL instance.
