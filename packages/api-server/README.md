@@ -163,6 +163,7 @@ aerich init-db
 
 We will use PostgreSQL as the database for working with `aerich`, because the version of psql bundled with Ubuntu 20.04 supports all the necessary SQL queries for `aerich` to work. Start a psql database instance using Docker or Bare Metal as described [in the root README](/README.md). Then run the api-server with `psql`:
 ```
+export RMF_API_SERVER_CONFIG=api_server/psql_local_config.py 
 rmf_api_server
 ```
 
@@ -184,6 +185,11 @@ aerich upgrade
 Now, inspecting the database schema, you will find "new_field" available in the schema
 ```
 sudo -u postgres bash -c "psql -c '\d+ robotstate;'"
+```
+
+Doing a downgrade should revert the database schema:
+```
+aerich downgrade
 ```
 
 
