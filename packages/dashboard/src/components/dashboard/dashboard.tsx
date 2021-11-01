@@ -221,6 +221,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   lifts={lifts}
                   liftStates={liftStatesRef.current}
                   onRequestSubmit={handleLiftRequestSubmit}
+                  leafletMap={leafletMap}
                 />
               ) : null}
               {workcells.length > 0 ? (

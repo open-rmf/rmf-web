@@ -14,6 +14,7 @@ import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
+import { LeafletContext } from 'react-leaflet';
 import LiftRequestFormDialog from './lift-request-form-dialog';
 import { LiftTable } from './lift-table';
 import {
@@ -21,11 +22,13 @@ import {
   motionStateToString,
   requestDoorModes,
   requestModes,
+  onClickLift,
 } from './lift-utils';
 
 export interface LiftPanelProps {
   lifts: RmfModels.Lift[];
   liftStates: Record<string, RmfModels.LiftState>;
+  leafletMap?: LeafletContext;
   onRequestSubmit?(
     event: React.FormEvent,
     lift: RmfModels.Lift,
@@ -41,6 +44,7 @@ export interface LiftCellProps {
   motionState?: number;
   destinationFloor?: string;
   currentFloor?: string;
+  leafletMap?: LeafletContext;
   onRequestSubmit?(
     event: React.FormEvent,
     lift: RmfModels.Lift,
@@ -113,6 +117,7 @@ const LiftCell = React.memo(
     motionState,
     destinationFloor,
     currentFloor,
+    leafletMap,
     onRequestSubmit,
   }: LiftCellProps): JSX.Element => {
     const classes = useStyles();
@@ -144,7 +149,12 @@ const LiftCell = React.memo(
     const labelId = `lift-cell-${lift.name}`;
 
     return (
-      <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
+      <Paper
+        className={classes.cellPaper}
+        role="region"
+        aria-labelledby={labelId}
+        onClick={() => onClickLift(lift, leafletMap)}
+      >
         <Grid container direction="row">
           <Grid item xs={9}>
             <Typography
@@ -196,7 +206,12 @@ const LiftCell = React.memo(
   },
 );
 
-export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps): JSX.Element {
+export function LiftPanel({
+  lifts,
+  liftStates,
+  leafletMap,
+  onRequestSubmit,
+}: LiftPanelProps): JSX.Element {
   const classes = useStyles();
   const [isCellView, setIsCellView] = React.useState(true);
 
@@ -232,6 +247,7 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
                   motionState={state?.motion_state}
                   destinationFloor={state?.destination_floor}
                   currentFloor={state?.current_floor}
+                  leafletMap={leafletMap}
                   onRequestSubmit={onRequestSubmit}
                 />
               </Grid>
