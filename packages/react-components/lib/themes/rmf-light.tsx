@@ -8,8 +8,8 @@ export const rmfLight = createMuiTheme({
     ...commonTheme,
     primary: {
       main: '#D6D6D6 ',
-      dark: '#C3C3C3',
       light: '#F5F5F5',
+      dark: '#C3C3C3',
     },
     background: {
       //Gainsboro, White

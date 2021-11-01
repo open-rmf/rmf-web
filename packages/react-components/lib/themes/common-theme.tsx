@@ -12,23 +12,23 @@ const commonTheme = {
     dark: '#4C8800',
   },
   error: {
-    // Radical Red, Red NCS, Salmon Pink
+    // Radical Red, Salmon Pink, Red NCS
     main: '#EF5264',
-    dark: '#B7153A',
     light: '#FF8591',
+    dark: '#B7153A',
   },
   warning: {
-    // Honey Yellow, Harvest Gold, Minion Yellow
+    // Honey Yellow, Minion Yellow,  Harvest Gold
     main: '#FFB400',
-    dark: '#C68500',
     light: '#FFE64C',
+    dark: '#C68500',
   },
   info: {
-    // Sky Blue Crayola, Viridian Green, Electric Blue
+    // Sky Blue Crayola, Electric Blue, Viridian Green
     // used in admin/information/indicators
     main: '#64D4EE',
-    dark: '#009FAF',
     light: '#64E9EE',
+    dark: '#009FAF',
   },
 };
 
