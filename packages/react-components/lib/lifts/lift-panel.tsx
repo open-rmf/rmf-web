@@ -37,17 +37,20 @@ export interface LiftPanelProps {
   ): void;
 }
 
-export interface LiftGridDataProps extends LiftPanelProps {
+interface LiftGridData extends LiftPanelProps {
   columnCount: number;
 }
 
-export interface LiftGridRendererProps extends GridChildComponentProps {
-  data: LiftGridDataProps;
+interface LiftGridRendererProps extends GridChildComponentProps {
+  data: LiftGridData;
 }
 
 export interface LiftCellProps {
   lift: RmfModels.Lift;
-  liftState?: RmfModels.LiftState;
+  doorState?: number;
+  motionState?: number;
+  currentFloor?: string;
+  destinationFloor?: string;
   onRequestSubmit?(
     event: React.FormEvent,
     lift: RmfModels.Lift,
@@ -110,11 +113,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const LiftCell = React.memo(
-  ({ lift, liftState, onRequestSubmit }: LiftCellProps): JSX.Element | null => {
-    const doorState = liftState?.door_state;
-    const motionState = liftState?.motion_state;
-    const destinationFloor = liftState?.destination_floor;
-    const currentFloor = liftState?.current_floor;
+  ({
+    lift,
+    doorState,
+    motionState,
+    currentFloor,
+    destinationFloor,
+    onRequestSubmit,
+  }: LiftCellProps): JSX.Element | null => {
     const labelId = `lift-cell-${lift.name}`;
     const classes = useStyles();
 
@@ -197,16 +203,31 @@ const LiftCell = React.memo(
 const LiftGridRenderer = ({ data, columnIndex, rowIndex, style }: LiftGridRendererProps) => {
   let lift: RmfModels.Lift | undefined;
   let liftState: RmfModels.LiftState | undefined;
+  let doorState: number | undefined;
+  let motionState: number | undefined;
+  let destinationFloor: string | undefined;
+  let currentFloor: string | undefined;
   const columnCount = data.columnCount;
 
   if (rowIndex * columnCount + columnIndex <= data.lifts.length - 1) {
     lift = data.lifts[rowIndex * columnCount + columnIndex];
     liftState = data.liftStates[lift.name];
+    doorState = liftState?.door_state;
+    motionState = liftState?.motion_state;
+    destinationFloor = liftState?.destination_floor;
+    currentFloor = liftState?.current_floor;
   }
 
   return lift ? (
     <div style={style}>
-      <LiftCell lift={lift} liftState={liftState} onRequestSubmit={data.onRequestSubmit} />
+      <LiftCell
+        lift={lift}
+        doorState={doorState}
+        motionState={motionState}
+        currentFloor={currentFloor}
+        destinationFloor={destinationFloor}
+        onRequestSubmit={data.onRequestSubmit}
+      />
     </div>
   ) : null;
 };

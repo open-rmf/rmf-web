@@ -53,17 +53,20 @@ export interface LiftTableProps {
   ): void;
 }
 
-export interface LiftFixListDataProps extends LiftTableProps {
+interface LiftFixListData extends LiftTableProps {
   width: number;
 }
 
-export interface LiftListRendererProps extends ListChildComponentProps {
-  data: LiftFixListDataProps;
+interface LiftListRendererProps extends ListChildComponentProps {
+  data: LiftFixListData;
 }
 
 export interface LiftRowProps {
   lift: RmfModels.Lift;
-  liftState: RmfModels.LiftState;
+  doorState: number;
+  currentMode: number;
+  currentFloor: string;
+  destinationFloor: string;
   style: React.CSSProperties;
   width: number;
   onRequestSubmit?(
@@ -90,123 +93,130 @@ const liftTableCellConfig = {
   rowHeight: 31,
 };
 
-const LiftRow = React.memo(({ lift, liftState, style, width, onRequestSubmit }: LiftRowProps) => {
-  const classes = useStyles();
-  const doorState = liftState?.door_state;
-  const destinationFloor = liftState?.destination_floor;
-  const currentFloor = liftState?.current_floor;
-  const currentMode = liftState?.current_mode;
-  const [showForms, setShowForms] = React.useState(false);
+const LiftRow = React.memo(
+  ({
+    lift,
+    doorState,
+    destinationFloor,
+    currentFloor,
+    currentMode,
+    style,
+    width,
+    onRequestSubmit,
+  }: LiftRowProps) => {
+    const classes = useStyles();
+    const [showForms, setShowForms] = React.useState(false);
 
-  const doorModeLabelClasses = React.useCallback(
-    (doorState: number): string => {
-      switch (doorState) {
-        case RmfModels.DoorMode.MODE_OPEN:
-          return `${classes.doorLabelOpen}`;
-        case RmfModels.DoorMode.MODE_CLOSED:
-          return `${classes.doorLabelClosed}`;
-        case RmfModels.DoorMode.MODE_MOVING:
-          return `${classes.doorLabelMoving}`;
-        default:
-          return '';
-      }
-    },
-    [classes],
-  );
+    const doorModeLabelClasses = React.useCallback(
+      (doorState: number): string => {
+        switch (doorState) {
+          case RmfModels.DoorMode.MODE_OPEN:
+            return `${classes.doorLabelOpen}`;
+          case RmfModels.DoorMode.MODE_CLOSED:
+            return `${classes.doorLabelClosed}`;
+          case RmfModels.DoorMode.MODE_MOVING:
+            return `${classes.doorLabelMoving}`;
+          default:
+            return '';
+        }
+      },
+      [classes],
+    );
 
-  return (
-    <TableRow
-      aria-label={`${lift.name}`}
-      component="div"
-      className={classes.tableRow}
-      style={style}
-    >
-      <TableCell
+    return (
+      <TableRow
+        aria-label={`${lift.name}`}
         component="div"
-        variant="body"
-        className={classes.tableCell}
-        style={{
-          minWidth: width * liftTableCellConfig.liftName - 40,
-          height: liftTableCellConfig.rowHeight,
-        }}
-        title={lift.name}
+        className={classes.tableRow}
+        style={style}
       >
-        {lift.name}
-      </TableCell>
-      <TableCell
-        component="div"
-        variant="body"
-        className={classes.tableCell}
-        style={{
-          minWidth: width * liftTableCellConfig.opMode - 40,
-          height: liftTableCellConfig.rowHeight,
-        }}
-      >
-        {liftModeToString(currentMode)}
-      </TableCell>
-      <TableCell
-        component="div"
-        variant="body"
-        className={classes.tableCell}
-        style={{
-          minWidth: width * liftTableCellConfig.currentFloor - 40,
-          height: liftTableCellConfig.rowHeight,
-        }}
-      >
-        {currentFloor}
-      </TableCell>
-      <TableCell
-        component="div"
-        variant="body"
-        className={classes.tableCell}
-        style={{
-          minWidth: width * liftTableCellConfig.destination - 40,
-          height: liftTableCellConfig.rowHeight,
-        }}
-      >
-        {destinationFloor}
-      </TableCell>
-      <TableCell
-        component="div"
-        variant="body"
-        className={clsx(doorModeLabelClasses(doorState), classes.tableCell)}
-        style={{
-          minWidth: width * liftTableCellConfig.doorState - 40,
-          height: liftTableCellConfig.rowHeight,
-        }}
-      >
-        {doorStateToString(doorState)}
-      </TableCell>
-      <TableCell
-        component="div"
-        variant="body"
-        className={classes.tableCell}
-        style={{
-          minWidth: width * liftTableCellConfig.button - 32,
-          height: liftTableCellConfig.rowHeight,
-        }}
-      >
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          size="small"
-          onClick={() => setShowForms(true)}
+        <TableCell
+          component="div"
+          variant="body"
+          className={classes.tableCell}
+          style={{
+            minWidth: width * liftTableCellConfig.liftName - 40,
+            height: liftTableCellConfig.rowHeight,
+          }}
+          title={lift.name}
         >
-          Request Form
-        </Button>
-        <LiftRequestFormDialog
-          lift={lift}
-          availableDoorModes={requestDoorModes}
-          availableRequestTypes={requestModes}
-          showFormDialog={showForms}
-          onRequestSubmit={onRequestSubmit}
-          onClose={() => setShowForms(false)}
-        />
-      </TableCell>
-    </TableRow>
-  );
-});
+          {lift.name}
+        </TableCell>
+        <TableCell
+          component="div"
+          variant="body"
+          className={classes.tableCell}
+          style={{
+            minWidth: width * liftTableCellConfig.opMode - 40,
+            height: liftTableCellConfig.rowHeight,
+          }}
+        >
+          {liftModeToString(currentMode)}
+        </TableCell>
+        <TableCell
+          component="div"
+          variant="body"
+          className={classes.tableCell}
+          style={{
+            minWidth: width * liftTableCellConfig.currentFloor - 40,
+            height: liftTableCellConfig.rowHeight,
+          }}
+        >
+          {currentFloor}
+        </TableCell>
+        <TableCell
+          component="div"
+          variant="body"
+          className={classes.tableCell}
+          style={{
+            minWidth: width * liftTableCellConfig.destination - 40,
+            height: liftTableCellConfig.rowHeight,
+          }}
+        >
+          {destinationFloor}
+        </TableCell>
+        <TableCell
+          component="div"
+          variant="body"
+          className={clsx(doorModeLabelClasses(doorState), classes.tableCell)}
+          style={{
+            minWidth: width * liftTableCellConfig.doorState - 40,
+            height: liftTableCellConfig.rowHeight,
+          }}
+        >
+          {doorStateToString(doorState)}
+        </TableCell>
+        <TableCell
+          component="div"
+          variant="body"
+          className={classes.tableCell}
+          style={{
+            minWidth: width * liftTableCellConfig.button - 32,
+            height: liftTableCellConfig.rowHeight,
+          }}
+        >
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            size="small"
+            onClick={() => setShowForms(true)}
+          >
+            Request Form
+          </Button>
+          <LiftRequestFormDialog
+            lift={lift}
+            availableDoorModes={requestDoorModes}
+            availableRequestTypes={requestModes}
+            showFormDialog={showForms}
+            onRequestSubmit={onRequestSubmit}
+            onClose={() => setShowForms(false)}
+          />
+        </TableCell>
+      </TableRow>
+    );
+  },
+);
 
 const LiftListRenderer = ({ data, index, style }: LiftListRendererProps) => {
   const lift = data.lifts[index];
@@ -215,7 +225,10 @@ const LiftListRenderer = ({ data, index, style }: LiftListRendererProps) => {
   return (
     <LiftRow
       lift={lift}
-      liftState={liftState}
+      doorState={liftState?.door_state}
+      currentMode={liftState?.current_mode}
+      currentFloor={liftState?.current_floor}
+      destinationFloor={liftState?.destination_floor}
       onRequestSubmit={data.onRequestSubmit}
       style={style}
       width={data.width}

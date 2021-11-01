@@ -23,17 +23,17 @@ export interface DoorPanelProps {
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
 
-export interface DoorGridDataProps extends DoorPanelProps {
+interface DoorGridData extends DoorPanelProps {
   columnCount: number;
 }
 
-export interface DoorGridRendererProps extends GridChildComponentProps {
-  data: DoorGridDataProps;
+interface DoorGridRendererProps extends GridChildComponentProps {
+  data: DoorGridData;
 }
 
 export interface DoorcellProps {
   door: DoorData;
-  doorState?: RmfModels.DoorState;
+  doorMode?: number;
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
 
@@ -84,9 +84,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DoorCell = React.memo(
-  ({ door, doorState, onDoorControlClick }: DoorcellProps): JSX.Element => {
+  ({ door, doorMode, onDoorControlClick }: DoorcellProps): JSX.Element => {
     const classes = useStyles();
-    const doorMode = doorState?.current_mode.value;
     const doorModeLabelClasses = React.useCallback(
       (doorMode?: number): string => {
         if (doorMode === undefined) {
@@ -173,7 +172,11 @@ const DoorGridRenderer = ({ data, columnIndex, rowIndex, style }: DoorGridRender
 
   return door ? (
     <div style={style}>
-      <DoorCell door={door} doorState={doorState} onDoorControlClick={data.onDoorControlClick} />
+      <DoorCell
+        door={door}
+        doorMode={doorState?.current_mode.value}
+        onDoorControlClick={data.onDoorControlClick}
+      />
     </div>
   ) : null;
 };

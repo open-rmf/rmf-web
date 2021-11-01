@@ -38,18 +38,20 @@ export interface WorkcellTableProps {
   workcellStates: Record<string, RmfModels.DispenserState>;
 }
 
-export interface WorkcellFixListDataProps extends WorkcellTableProps {
+interface WorkcellFixListData extends WorkcellTableProps {
   width: number;
 }
 
-export interface WorkcellListRendererProps extends ListChildComponentProps {
-  data: WorkcellFixListDataProps;
+interface WorkcellListRendererProps extends ListChildComponentProps {
+  data: WorkcellFixListData;
 }
 
 export interface WorkcellRowProps {
   width: number;
   workcell: Dispenser;
-  workcellState: RmfModels.DispenserState;
+  mode?: number;
+  requestGuidQueue?: string[];
+  secondsRemaining?: number;
   style: React.CSSProperties;
 }
 
@@ -65,157 +67,155 @@ const workCellTableCellConfig = {
   rowHeight: 31,
 };
 
-const WorkcellRow = React.memo(({ width, workcell, workcellState, style }: WorkcellRowProps) => {
-  const classes = useStyles();
-  const mode = workcellState?.mode;
-  const requestGuidQueue = workcellState?.request_guid_queue;
-  const secondsRemaining = workcellState?.seconds_remaining;
+const WorkcellRow = React.memo(
+  ({ width, workcell, mode, requestGuidQueue, secondsRemaining, style }: WorkcellRowProps) => {
+    const classes = useStyles();
+    const dispenserModeLabelClasses = React.useCallback(
+      (mode: number): string => {
+        switch (mode) {
+          case RmfModels.DispenserState.IDLE:
+            return `${classes.dispenserLabelIdle}`;
+          case RmfModels.DispenserState.BUSY:
+            return `${classes.dispenserLabelBusy}`;
+          case RmfModels.DispenserState.OFFLINE:
+            return `${classes.offlineLabelOffline}`;
+          default:
+            return '';
+        }
+      },
+      [classes],
+    );
 
-  const dispenserModeLabelClasses = React.useCallback(
-    (mode: number): string => {
-      switch (mode) {
-        case RmfModels.DispenserState.IDLE:
-          return `${classes.dispenserLabelIdle}`;
-        case RmfModels.DispenserState.BUSY:
-          return `${classes.dispenserLabelBusy}`;
-        case RmfModels.DispenserState.OFFLINE:
-          return `${classes.offlineLabelOffline}`;
-        default:
-          return '';
-      }
-    },
-    [classes],
-  );
-
-  return (
-    <TableRow
-      aria-label={`${workcell.guid}`}
-      className={classes.tableRow}
-      component="div"
-      style={style}
-    >
-      {mode !== undefined && requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
-        <React.Fragment>
-          <TableCell
-            component="div"
-            variant="head"
-            className={classes.tableCell}
-            style={{
-              minWidth: width * workCellTableCellConfig.dispenserName - 40,
-              height: workCellTableCellConfig.rowHeight,
-            }}
-            title={workcell.guid}
-          >
-            {workcell.guid}
-          </TableCell>
-          <TableCell
-            component="div"
-            variant="head"
-            className={clsx(dispenserModeLabelClasses(mode), classes.tableCell)}
-            style={{
-              minWidth: width * workCellTableCellConfig.opMode - 40,
-              height: workCellTableCellConfig.rowHeight,
-            }}
-          >
-            {dispenserModeToString(mode)}
-          </TableCell>
-          <TableCell
-            component="div"
-            variant="head"
-            className={classes.tableCell}
-            style={{
-              minWidth: width * workCellTableCellConfig.numQueueRequest - 40,
-              height: workCellTableCellConfig.rowHeight,
-            }}
-          >
-            {requestGuidQueue.length}
-          </TableCell>
-          <TableCell
-            component="div"
-            variant="head"
-            className={classes.tableCell}
-            style={{
-              minWidth: width * workCellTableCellConfig.requestQueueId - 40,
-              height: workCellTableCellConfig.rowHeight,
-            }}
-          >
-            {requestGuidQueue}
-          </TableCell>
-          <TableCell
-            component="div"
-            variant="head"
-            className={classes.tableCell}
-            style={{
-              minWidth: width * workCellTableCellConfig.secRemaining - 32,
-              height: workCellTableCellConfig.rowHeight,
-            }}
-          >
-            {secondsRemaining}
-          </TableCell>
-        </React.Fragment>
-      ) : (
-        <React.Fragment>
-          <TableCell
-            component="div"
-            variant="head"
-            className={classes.tableCell}
-            style={{
-              minWidth: width * workCellTableCellConfig.dispenserName - 40,
-              height: workCellTableCellConfig.rowHeight,
-            }}
-            title={workcell.guid}
-          >
-            {workcell.guid}
-          </TableCell>
-          <TableCell
-            component="div"
-            variant="head"
-            className={classes.tableCell}
-            style={{
-              minWidth: width * workCellTableCellConfig.opMode - 40,
-              height: workCellTableCellConfig.rowHeight,
-            }}
-          >
-            {'NA'}
-          </TableCell>
-          <TableCell
-            component="div"
-            variant="head"
-            className={classes.tableCell}
-            style={{
-              minWidth: width * workCellTableCellConfig.numQueueRequest - 40,
-              height: workCellTableCellConfig.rowHeight,
-            }}
-          >
-            {'NA'}
-          </TableCell>
-          <TableCell
-            component="div"
-            variant="head"
-            className={classes.tableCell}
-            style={{
-              minWidth: width * workCellTableCellConfig.requestQueueId - 40,
-              height: workCellTableCellConfig.rowHeight,
-            }}
-          >
-            {'NA'}
-          </TableCell>
-          <TableCell
-            component="div"
-            variant="head"
-            className={classes.tableCell}
-            style={{
-              minWidth: width * workCellTableCellConfig.secRemaining - 32,
-              height: workCellTableCellConfig.rowHeight,
-            }}
-          >
-            {'NA'}
-          </TableCell>
-        </React.Fragment>
-      )}
-    </TableRow>
-  );
-});
+    return (
+      <TableRow
+        aria-label={`${workcell.guid}`}
+        className={classes.tableRow}
+        component="div"
+        style={style}
+      >
+        {mode !== undefined && requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
+          <React.Fragment>
+            <TableCell
+              component="div"
+              variant="head"
+              className={classes.tableCell}
+              style={{
+                minWidth: width * workCellTableCellConfig.dispenserName - 40,
+                height: workCellTableCellConfig.rowHeight,
+              }}
+              title={workcell.guid}
+            >
+              {workcell.guid}
+            </TableCell>
+            <TableCell
+              component="div"
+              variant="head"
+              className={clsx(dispenserModeLabelClasses(mode), classes.tableCell)}
+              style={{
+                minWidth: width * workCellTableCellConfig.opMode - 40,
+                height: workCellTableCellConfig.rowHeight,
+              }}
+            >
+              {dispenserModeToString(mode)}
+            </TableCell>
+            <TableCell
+              component="div"
+              variant="head"
+              className={classes.tableCell}
+              style={{
+                minWidth: width * workCellTableCellConfig.numQueueRequest - 40,
+                height: workCellTableCellConfig.rowHeight,
+              }}
+            >
+              {requestGuidQueue.length}
+            </TableCell>
+            <TableCell
+              component="div"
+              variant="head"
+              className={classes.tableCell}
+              style={{
+                minWidth: width * workCellTableCellConfig.requestQueueId - 40,
+                height: workCellTableCellConfig.rowHeight,
+              }}
+            >
+              {requestGuidQueue}
+            </TableCell>
+            <TableCell
+              component="div"
+              variant="head"
+              className={classes.tableCell}
+              style={{
+                minWidth: width * workCellTableCellConfig.secRemaining - 32,
+                height: workCellTableCellConfig.rowHeight,
+              }}
+            >
+              {secondsRemaining}
+            </TableCell>
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <TableCell
+              component="div"
+              variant="head"
+              className={classes.tableCell}
+              style={{
+                minWidth: width * workCellTableCellConfig.dispenserName - 40,
+                height: workCellTableCellConfig.rowHeight,
+              }}
+              title={workcell.guid}
+            >
+              {workcell.guid}
+            </TableCell>
+            <TableCell
+              component="div"
+              variant="head"
+              className={classes.tableCell}
+              style={{
+                minWidth: width * workCellTableCellConfig.opMode - 40,
+                height: workCellTableCellConfig.rowHeight,
+              }}
+            >
+              {'NA'}
+            </TableCell>
+            <TableCell
+              component="div"
+              variant="head"
+              className={classes.tableCell}
+              style={{
+                minWidth: width * workCellTableCellConfig.numQueueRequest - 40,
+                height: workCellTableCellConfig.rowHeight,
+              }}
+            >
+              {'NA'}
+            </TableCell>
+            <TableCell
+              component="div"
+              variant="head"
+              className={classes.tableCell}
+              style={{
+                minWidth: width * workCellTableCellConfig.requestQueueId - 40,
+                height: workCellTableCellConfig.rowHeight,
+              }}
+            >
+              {'NA'}
+            </TableCell>
+            <TableCell
+              component="div"
+              variant="head"
+              className={classes.tableCell}
+              style={{
+                minWidth: width * workCellTableCellConfig.secRemaining - 32,
+                height: workCellTableCellConfig.rowHeight,
+              }}
+            >
+              {'NA'}
+            </TableCell>
+          </React.Fragment>
+        )}
+      </TableRow>
+    );
+  },
+);
 
 const WorkcellListRenderer = ({ data, index, style }: WorkcellListRendererProps) => {
   const workcell = data.workcells[index];
@@ -226,7 +226,9 @@ const WorkcellListRenderer = ({ data, index, style }: WorkcellListRendererProps)
     <WorkcellRow
       width={data.width}
       workcell={workcell}
-      workcellState={workcellState}
+      mode={workcellState?.mode}
+      requestGuidQueue={workcellState?.request_guid_queue}
+      secondsRemaining={workcellState?.seconds_remaining}
       style={style}
     />
   );

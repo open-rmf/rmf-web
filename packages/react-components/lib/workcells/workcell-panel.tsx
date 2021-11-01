@@ -18,17 +18,18 @@ export interface WorkcellDataProps extends WorkcellPanelProps {
   type: 'ingestors' | 'dispensers';
 }
 
-export interface WorkcellGridDataProps extends WorkcellDataProps {
+interface WorkcellGridData extends WorkcellDataProps {
   columnCount: number;
 }
 
-export interface WorkcellGridRendererProps extends GridChildComponentProps {
-  data: WorkcellGridDataProps;
+interface WorkcellGridRendererProps extends GridChildComponentProps {
+  data: WorkcellGridData;
 }
 
 export interface WorkcellCellProps {
   workcell: Dispenser;
-  workCellState?: RmfModels.DispenserState;
+  requestGuidQueue?: string[];
+  secondsRemaining?: number;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -71,9 +72,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const WorkcellCell = React.memo(
-  ({ workcell, workCellState }: WorkcellCellProps): JSX.Element | null => {
-    let requestGuidQueue = workCellState?.request_guid_queue;
-    let secondsRemaining = workCellState?.seconds_remaining;
+  ({ workcell, requestGuidQueue, secondsRemaining }: WorkcellCellProps): JSX.Element | null => {
     let labelId = `workcell-cell-${workcell.guid}`;
     const classes = useStyles();
 
@@ -133,7 +132,11 @@ const WorkcellGridRenderer = ({
 
   return workcell ? (
     <div style={style}>
-      <WorkcellCell workcell={workcell} workCellState={workcellState} />
+      <WorkcellCell
+        workcell={workcell}
+        requestGuidQueue={workcellState?.request_guid_queue}
+        secondsRemaining={workcellState?.seconds_remaining}
+      />
     </div>
   ) : null;
 };

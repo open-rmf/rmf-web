@@ -21,17 +21,17 @@ export interface DoorTableProps {
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
 
-export interface DoorFixListDataProps extends DoorTableProps {
+interface DoorFixListData extends DoorTableProps {
   width: number;
 }
 
-export interface DoorListRendererProps extends ListChildComponentProps {
-  data: DoorFixListDataProps;
+interface DoorListRendererProps extends ListChildComponentProps {
+  data: DoorFixListData;
 }
 
 export interface DoorRowProps {
   door: DoorData;
-  doorState: RmfModels.DoorState;
+  doorMode: number;
   style: React.CSSProperties;
   width: number;
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
@@ -83,131 +83,126 @@ const getOpMode = (doorMode?: number) => {
   return getState === 'N/A' ? 'Offline' : 'Online';
 };
 
-const DoorRow = React.memo(
-  ({ door, doorState, style, width, onDoorControlClick }: DoorRowProps) => {
-    const classes = useStyles();
-    const doorMode = doorState?.current_mode.value;
-
-    const doorModeLabelClasses = React.useCallback(
-      (doorMode?: number): string => {
-        if (doorMode === undefined) {
+const DoorRow = React.memo(({ door, doorMode, style, width, onDoorControlClick }: DoorRowProps) => {
+  const classes = useStyles();
+  const doorModeLabelClasses = React.useCallback(
+    (doorMode?: number): string => {
+      if (doorMode === undefined) {
+        return '';
+      }
+      switch (doorMode) {
+        case RmfModels.DoorMode.MODE_OPEN:
+          return `${classes.doorLabelOpen}`;
+        case RmfModels.DoorMode.MODE_CLOSED:
+          return `${classes.doorLabelClosed}`;
+        case RmfModels.DoorMode.MODE_MOVING:
+          return `${classes.doorLabelMoving}`;
+        default:
           return '';
-        }
-        switch (doorMode) {
-          case RmfModels.DoorMode.MODE_OPEN:
-            return `${classes.doorLabelOpen}`;
-          case RmfModels.DoorMode.MODE_CLOSED:
-            return `${classes.doorLabelClosed}`;
-          case RmfModels.DoorMode.MODE_MOVING:
-            return `${classes.doorLabelMoving}`;
-          default:
-            return '';
-        }
-      },
-      [classes],
-    );
-    const doorStatusClass = doorModeLabelClasses(doorMode);
+      }
+    },
+    [classes],
+  );
+  const doorStatusClass = doorModeLabelClasses(doorMode);
 
-    return (
-      <TableRow
-        arial-label={`${door.door.name}`}
+  return (
+    <TableRow
+      arial-label={`${door.door.name}`}
+      component="div"
+      className={classes.tableRow}
+      style={style}
+    >
+      <TableCell
         component="div"
-        className={classes.tableRow}
-        style={style}
+        variant="body"
+        className={classes.tableCell}
+        style={{
+          minWidth: width * doorTableCellConfig.doorName - 40,
+          height: doorTableCellConfig.rowHeight,
+        }}
+        title={door?.door.name}
       >
-        <TableCell
-          component="div"
-          variant="body"
-          className={classes.tableCell}
-          style={{
-            minWidth: width * doorTableCellConfig.doorName - 40,
-            height: doorTableCellConfig.rowHeight,
-          }}
-          title={door?.door.name}
-        >
-          {door.door.name}
-        </TableCell>
-        <TableCell
-          component="div"
-          variant="body"
-          className={clsx(
-            getOpMode(doorMode) === 'Offline' ? classes.doorLabelClosed : classes.doorLabelOpen,
-            classes.tableCell,
-          )}
-          style={{
-            minWidth: width * doorTableCellConfig.doorMode - 40,
-            height: doorTableCellConfig.rowHeight,
-          }}
-        >
-          {getOpMode(doorMode)}
-        </TableCell>
-        <TableCell
-          component="div"
-          variant="body"
-          className={classes.tableCell}
-          style={{
-            minWidth: width * doorTableCellConfig.doorLevel - 40,
-            height: doorTableCellConfig.rowHeight,
-          }}
-        >
-          {door.level}
-        </TableCell>
-        <TableCell
-          component="div"
-          variant="body"
-          className={classes.tableCell}
-          style={{
-            minWidth: width * doorTableCellConfig.doorType - 40,
-            height: doorTableCellConfig.rowHeight,
-          }}
-        >
-          {doorTypeToString(door.door.door_type)}
-        </TableCell>
-        <TableCell
-          component="div"
-          variant="body"
-          className={clsx(doorStatusClass, classes.tableCell)}
-          style={{
-            minWidth: width * doorTableCellConfig.doorState - 40,
-            height: doorTableCellConfig.rowHeight,
-          }}
-        >
-          {doorModeToString(doorMode)}
-        </TableCell>
-        <TableCell
-          component="div"
-          variant="body"
-          className={classes.tableCell}
-          style={{
-            minWidth: width * doorTableCellConfig.doorControl - 32,
-            height: doorTableCellConfig.rowHeight,
-          }}
-        >
-          <ButtonGroup size="small">
-            <Button
-              aria-label={`${door.door.name}_open`}
-              onClick={(ev) =>
-                onDoorControlClick &&
-                onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_OPEN)
-              }
-            >
-              Open
-            </Button>
-            <Button
-              aria-label={`${door.door.name}_close`}
-              onClick={(ev) =>
-                onDoorControlClick &&
-                onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_CLOSED)
-              }
-            >
-              Close
-            </Button>
-          </ButtonGroup>
-        </TableCell>
-      </TableRow>
-    );
-  },
-);
+        {door.door.name}
+      </TableCell>
+      <TableCell
+        component="div"
+        variant="body"
+        className={clsx(
+          getOpMode(doorMode) === 'Offline' ? classes.doorLabelClosed : classes.doorLabelOpen,
+          classes.tableCell,
+        )}
+        style={{
+          minWidth: width * doorTableCellConfig.doorMode - 40,
+          height: doorTableCellConfig.rowHeight,
+        }}
+      >
+        {getOpMode(doorMode)}
+      </TableCell>
+      <TableCell
+        component="div"
+        variant="body"
+        className={classes.tableCell}
+        style={{
+          minWidth: width * doorTableCellConfig.doorLevel - 40,
+          height: doorTableCellConfig.rowHeight,
+        }}
+      >
+        {door.level}
+      </TableCell>
+      <TableCell
+        component="div"
+        variant="body"
+        className={classes.tableCell}
+        style={{
+          minWidth: width * doorTableCellConfig.doorType - 40,
+          height: doorTableCellConfig.rowHeight,
+        }}
+      >
+        {doorTypeToString(door.door.door_type)}
+      </TableCell>
+      <TableCell
+        component="div"
+        variant="body"
+        className={clsx(doorStatusClass, classes.tableCell)}
+        style={{
+          minWidth: width * doorTableCellConfig.doorState - 40,
+          height: doorTableCellConfig.rowHeight,
+        }}
+      >
+        {doorModeToString(doorMode)}
+      </TableCell>
+      <TableCell
+        component="div"
+        variant="body"
+        className={classes.tableCell}
+        style={{
+          minWidth: width * doorTableCellConfig.doorControl - 32,
+          height: doorTableCellConfig.rowHeight,
+        }}
+      >
+        <ButtonGroup size="small">
+          <Button
+            aria-label={`${door.door.name}_open`}
+            onClick={(ev) =>
+              onDoorControlClick && onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_OPEN)
+            }
+          >
+            Open
+          </Button>
+          <Button
+            aria-label={`${door.door.name}_close`}
+            onClick={(ev) =>
+              onDoorControlClick &&
+              onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_CLOSED)
+            }
+          >
+            Close
+          </Button>
+        </ButtonGroup>
+      </TableCell>
+    </TableRow>
+  );
+});
 
 const DoorListRenderer = ({ data, index, style }: DoorListRendererProps) => {
   const door = data.doors[index];
@@ -216,7 +211,7 @@ const DoorListRenderer = ({ data, index, style }: DoorListRendererProps) => {
   return (
     <DoorRow
       door={door}
-      doorState={doorState}
+      doorMode={doorState?.current_mode.value}
       onDoorControlClick={data.onDoorControlClick}
       style={style}
       width={data.width}
