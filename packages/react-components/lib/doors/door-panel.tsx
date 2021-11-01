@@ -11,20 +11,23 @@ import {
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import React from 'react';
+import { LeafletContext } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { DoorTable } from './door-table';
-import { DoorData, doorModeToString, doorTypeToString } from './utils';
+import { DoorData, doorModeToString, doorTypeToString, onDoorClick } from './utils';
 import clsx from 'clsx';
 
 export interface DoorPanelProps {
   doors: DoorData[];
   doorStates: Record<string, RmfModels.DoorState>;
+  leafletMap?: LeafletContext;
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
 
 export interface DoorInfoProps {
   door: DoorData;
   doorMode?: number;
+  leafletMap?: LeafletContext;
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
 
@@ -91,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DoorCell = React.memo(
-  ({ door, doorMode, onDoorControlClick }: DoorInfoProps): JSX.Element => {
+  ({ door, doorMode, leafletMap, onDoorControlClick }: DoorInfoProps): JSX.Element => {
     const classes = useStyles();
 
     const doorModeLabelClasses = React.useCallback(
@@ -117,7 +120,12 @@ const DoorCell = React.memo(
     const labelId = `door-cell-${door.door.name}`;
 
     return (
-      <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
+      <Paper
+        className={classes.cellPaper}
+        role="region"
+        aria-labelledby={labelId}
+        onClick={() => onDoorClick(door.door, leafletMap)}
+      >
         <Typography
           noWrap
           id={labelId}
@@ -175,7 +183,12 @@ const DoorCell = React.memo(
   },
 );
 
-export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelProps): JSX.Element {
+export function DoorPanel({
+  doors,
+  doorStates,
+  leafletMap,
+  onDoorControlClick,
+}: DoorPanelProps): JSX.Element {
   const classes = useStyles();
 
   const [isCellView, setIsCellView] = React.useState(true);
@@ -209,6 +222,7 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
                   door={door}
                   doorMode={doorStates[door.door.name]?.current_mode.value}
                   onDoorControlClick={onDoorControlClick}
+                  leafletMap={leafletMap}
                 />
               </Grid>
             );
@@ -218,6 +232,7 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
             doors={doors}
             doorStates={doorStates}
             onDoorControlClick={onDoorControlClick}
+            leafletMap={leafletMap}
           />
         )}
       </Grid>

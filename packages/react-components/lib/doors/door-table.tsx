@@ -10,17 +10,20 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { DoorData, doorModeToString, doorTypeToString } from './utils';
+import { LeafletContext } from 'react-leaflet';
+import { DoorData, doorModeToString, doorTypeToString, onDoorClick } from './utils';
 
 export interface DoorTableProps {
   doors: DoorData[];
   doorStates: Record<string, RmfModels.DoorState>;
+  leafletMap?: LeafletContext;
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
 
 export interface DoorRowProps {
   door: DoorData;
   doorMode?: number;
+  leafletMap?: LeafletContext;
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
 
@@ -41,7 +44,7 @@ const getOpMode = (doorMode?: number) => {
   return getState === 'N/A' ? 'Offline' : 'Online';
 };
 
-const DoorRow = React.memo(({ door, doorMode, onDoorControlClick }: DoorRowProps) => {
+const DoorRow = React.memo(({ door, doorMode, leafletMap, onDoorControlClick }: DoorRowProps) => {
   const classes = useStyles();
 
   const doorModeLabelClasses = React.useCallback(
@@ -66,7 +69,7 @@ const DoorRow = React.memo(({ door, doorMode, onDoorControlClick }: DoorRowProps
   const doorStatusClass = doorModeLabelClasses(doorMode);
 
   return (
-    <TableRow arial-label={`${door.door.name}`}>
+    <TableRow arial-label={`${door.door.name}`} onClick={() => onDoorClick(door.door, leafletMap)}>
       <TableCell>{door.door.name}</TableCell>
       <TableCell
         className={
@@ -106,6 +109,7 @@ const DoorRow = React.memo(({ door, doorMode, onDoorControlClick }: DoorRowProps
 export const DoorTable = ({
   doors,
   doorStates,
+  leafletMap,
   onDoorControlClick,
 }: DoorTableProps): JSX.Element => {
   return (
@@ -125,6 +129,7 @@ export const DoorTable = ({
           <DoorRow
             door={door}
             doorMode={doorStates[door.door.name]?.current_mode.value}
+            leafletMap={leafletMap}
             onDoorControlClick={onDoorControlClick}
             key={door.door.name}
           />

@@ -213,6 +213,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   doors={doors}
                   doorStates={doorStatesRef.current}
                   onDoorControlClick={handleOnDoorControlClick}
+                  leafletMap={leafletMap}
                 />
               ) : null}
               {lifts.length > 0 ? (
