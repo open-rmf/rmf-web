@@ -21,8 +21,8 @@ class BaseBasicHealth(Generic[HealthModelT], ABC, PydanticModel):
     health_status: str
     health_message: Optional[str]
 
-    @abstractmethod
     @staticmethod
+    @abstractmethod
     async def from_tortoise(_tortoise: HealthModelT) -> "BaseBasicHealth":
         pass
 

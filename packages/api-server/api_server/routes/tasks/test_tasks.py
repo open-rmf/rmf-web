@@ -277,7 +277,8 @@ class TestTasksRoute(TasksFixture):
 
         def wait():
             self.app.rmf_events().task_summaries.on_next(task_summary)
-            return fut.result(0)
+            return fut.done()
 
-        result = try_until(wait, lambda _: True)
+        try_until(wait, lambda x: x)
+        result = fut.result(0)
         self.assertEqual(1, result["start_time"]["sec"])

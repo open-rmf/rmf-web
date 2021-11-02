@@ -34,9 +34,10 @@ class TestDoorsRoute(AppFixture):
 
         def wait():
             self.app.rmf_events().door_states.on_next(door_state)
-            return fut.result(0)
+            return fut.done()
 
-        result = try_until(wait, lambda _: True)
+        try_until(wait, lambda x: x)
+        result = fut.result(0)
         self.assertEqual(1, result["door_time"]["sec"])
 
     def test_post_door_request(self):

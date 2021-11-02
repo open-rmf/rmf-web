@@ -49,6 +49,7 @@ def try_until(
                 return result
         except Exception:  # pylint: disable=broad-except
             pass
+        time.sleep(interval)
     return result
 
 

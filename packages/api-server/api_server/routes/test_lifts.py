@@ -33,9 +33,10 @@ class TestLiftsRoute(AppFixture):
 
         def wait():
             self.app.rmf_events().lift_states.on_next(lift_state)
-            return fut.result(0)
+            return fut.done()
 
-        result = try_until(wait, lambda _: True)
+        try_until(wait, lambda x: x)
+        result = fut.result(0)
         self.assertEqual(1, result["lift_time"]["sec"])
 
     def test_request_lift(self):

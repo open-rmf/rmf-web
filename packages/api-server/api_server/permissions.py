@@ -43,7 +43,7 @@ class Enforcer:
         @param resource: A query set of a model which implements `ProtectedResource`.
         """
         if user.is_admin:
-            return resource.all()
+            return resource
         permissions = ttm.ResourcePermission.filter(
             action=action, role__name__in=user.roles
         ).values("authz_grp")

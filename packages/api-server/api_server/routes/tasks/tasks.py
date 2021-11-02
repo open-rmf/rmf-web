@@ -52,7 +52,10 @@ class TasksRouter(FastIORouter):
 
         @self.watch("/{task_id}/summary")
         async def watch_task_summary(req: WatchRequest, task_id: str):
-            await req.emit(await get_task_summary(RmfRepository(req.user), task_id))
+            try:
+                await req.emit(await get_task_summary(RmfRepository(req.user), task_id))
+            except HTTPException:
+                pass
             rx_watcher(
                 req,
                 app.rmf_events().task_summaries.pipe(
