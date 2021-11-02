@@ -254,7 +254,12 @@ export function LiftPanel({
             );
           })
         ) : (
-          <LiftTable lifts={lifts} liftStates={liftStates} onRequestSubmit={onRequestSubmit} />
+          <LiftTable
+            leafletMap={leafletMap}
+            lifts={lifts}
+            liftStates={liftStates}
+            onRequestSubmit={onRequestSubmit}
+          />
         )}
       </Grid>
     </Card>

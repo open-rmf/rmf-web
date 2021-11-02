@@ -17,6 +17,7 @@ import {
   RmfIngressContext,
 } from '../rmf-app';
 import ScheduleVisualizer from '../schedule-visualizer';
+import { ResourcesContext } from '../app-contexts';
 
 const debug = Debug('Dashboard');
 const UpdateRate = 1000;
@@ -49,6 +50,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const rmfIngress = React.useContext(RmfIngressContext);
   const sioClient = rmfIngress?.sioClient;
   const buildingMap = React.useContext(BuildingMapContext);
+  const workcellContext = React.useContext(ResourcesContext)?.dispensers?.dispensers;
 
   const [_triggerRender, setTriggerRender] = React.useState(0); // eslint-disable-line @typescript-eslint/no-unused-vars
   React.useEffect(() => {
@@ -224,11 +226,13 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   leafletMap={leafletMap}
                 />
               ) : null}
-              {workcells.length > 0 ? (
+              {workcells.length > 0 && workcellContext ? (
                 <WorkcellPanel
+                  leafletMap={leafletMap}
                   dispensers={dispensers}
                   ingestors={ingestors}
                   workCellStates={workcellStates}
+                  workcellContext={workcellContext}
                 />
               ) : null}
             </Grid>

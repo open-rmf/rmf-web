@@ -12,16 +12,22 @@ import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import { Dispenser } from 'api-client';
 import React from 'react';
+import { LeafletContext } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { WorkcellTable } from './workcell-table';
+import { onWorkcellClick, DispenserResource } from './utils';
 
 export interface WorkcellPanelProps {
   dispensers: Dispenser[];
   ingestors: Dispenser[];
+  leafletMap?: LeafletContext;
   workCellStates: Record<string, RmfModels.DispenserState>;
+  workcellContext: Record<string, DispenserResource>;
 }
 
 export interface WorkcellCellProps {
+  workcellResource: DispenserResource;
+  leafletMap?: LeafletContext;
   workcell: Dispenser;
   requestGuidQueue?: string[];
   secondsRemaining?: number;
@@ -59,13 +65,24 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const WorkcellCell = React.memo(
-  ({ workcell, requestGuidQueue, secondsRemaining }: WorkcellCellProps): JSX.Element => {
+  ({
+    workcellResource,
+    leafletMap,
+    workcell,
+    requestGuidQueue,
+    secondsRemaining,
+  }: WorkcellCellProps): JSX.Element => {
     const classes = useStyles();
 
     const labelId = `workcell-cell-${workcell.guid}`;
 
     return (
-      <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
+      <Paper
+        className={classes.cellPaper}
+        role="region"
+        aria-labelledby={labelId}
+        onClick={() => onWorkcellClick(workcellResource, leafletMap)}
+      >
         {requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
           <React.Fragment>
             <Typography
@@ -102,8 +119,10 @@ const WorkcellCell = React.memo(
 
 export function WorkcellPanel({
   dispensers,
+  leafletMap,
   ingestors,
   workCellStates,
+  workcellContext,
 }: WorkcellPanelProps): JSX.Element {
   const classes = useStyles();
 
@@ -143,6 +162,8 @@ export function WorkcellPanel({
                     return (
                       <Grid item xs="auto" key={`${dispenser.guid}_${i}`}>
                         <WorkcellCell
+                          workcellResource={workcellContext[dispenser.guid]}
+                          leafletMap={leafletMap}
                           workcell={dispenser}
                           requestGuidQueue={state?.request_guid_queue}
                           secondsRemaining={state?.seconds_remaining}
@@ -166,6 +187,8 @@ export function WorkcellPanel({
                     return (
                       <Grid item xs="auto" key={`${ingestor.guid}_${i}`}>
                         <WorkcellCell
+                          workcellResource={workcellContext[ingestor.guid]}
+                          leafletMap={leafletMap}
                           workcell={ingestor}
                           requestGuidQueue={state?.request_guid_queue}
                           secondsRemaining={state?.seconds_remaining}
@@ -183,13 +206,23 @@ export function WorkcellPanel({
             {dispensers.length > 0 ? (
               <Box>
                 <Typography variant="h6">Dispensers</Typography>
-                <WorkcellTable workcells={dispensers} workcellStates={workCellStates} />
+                <WorkcellTable
+                  leafletMap={leafletMap}
+                  workcells={dispensers}
+                  workcellStates={workCellStates}
+                  workcellContext={workcellContext}
+                />
               </Box>
             ) : null}
             {ingestors.length > 0 ? (
               <Box>
                 <Typography variant="h6">Ingestors</Typography>
-                <WorkcellTable workcells={ingestors} workcellStates={workCellStates} />
+                <WorkcellTable
+                  leafletMap={leafletMap}
+                  workcells={ingestors}
+                  workcellStates={workCellStates}
+                  workcellContext={workcellContext}
+                />
               </Box>
             ) : null}
           </div>

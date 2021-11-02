@@ -1,6 +1,5 @@
 import * as RmfModels from 'rmf-models';
 import { LeafletContext } from 'react-leaflet';
-import { fromRmfCoords } from '../utils';
 
 export function liftModeToString(liftMode?: number): string {
   if (liftMode === undefined) {

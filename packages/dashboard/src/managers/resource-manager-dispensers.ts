@@ -1,22 +1,7 @@
 import Debug from 'debug';
+import { DispenserResource, RawDispenserResource } from 'react-components';
 
 const debug = Debug('ResourceManager');
-
-interface Location {
-  x: number;
-  y: number;
-  yaw: number;
-  level_name: string;
-}
-
-export interface RawDispenserResource {
-  icons: Record<string, string>;
-  location: Location;
-}
-
-export interface DispenserResource extends RawDispenserResource {
-  guid: string;
-}
 
 export class DispenserResourceManager {
   dispensers: Record<string, DispenserResource>;
