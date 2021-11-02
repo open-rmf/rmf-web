@@ -18,7 +18,9 @@ describe('Workcell table', () => {
       test2: makeDispenserState({ mode: RmfModels.DispenserState.OFFLINE }),
       test3: makeDispenserState({ mode: -1 }),
     };
-    const root = render(<WorkcellTable workcells={workcells} workcellStates={workcellStates} />);
+    const root = render(
+      <WorkcellTable workcellContext={{}} workcells={workcells} workcellStates={workcellStates} />,
+    );
 
     // check if all dispensers are rendered
     expect(root.getByLabelText('test')).toBeTruthy();

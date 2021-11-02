@@ -16,7 +16,7 @@ import {
   liftModeToString,
   requestDoorModes,
   requestModes,
-  onClickLift,
+  onLiftClick,
 } from './lift-utils';
 
 const useStyles = makeStyles((theme) => ({
@@ -28,6 +28,11 @@ const useStyles = makeStyles((theme) => ({
   },
   doorLabelMoving: {
     color: theme.palette.warning.main,
+  },
+  tableRow: {
+    '&:hover': {
+      cursor: 'pointer',
+    },
   },
 }));
 
@@ -91,7 +96,11 @@ const LiftRow = React.memo(
     );
 
     return (
-      <TableRow aria-label={`${lift.name}`} onClick={() => onClickLift(lift, leafletMap)}>
+      <TableRow
+        aria-label={`${lift.name}`}
+        className={classes.tableRow}
+        onClick={() => onLiftClick(lift, leafletMap)}
+      >
         <TableCell>{lift.name}</TableCell>
         <TableCell>{liftModeToString(currentMode)}</TableCell>
         <TableCell>{currentFloor}</TableCell>

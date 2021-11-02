@@ -37,6 +37,11 @@ const useStyles = makeStyles((theme) => ({
   doorLabelMoving: {
     color: theme.palette.warning.main,
   },
+  tableRow: {
+    '&:hover': {
+      cursor: 'pointer',
+    },
+  },
 }));
 
 const getOpMode = (doorMode?: number) => {
@@ -69,7 +74,11 @@ const DoorRow = React.memo(({ door, doorMode, leafletMap, onDoorControlClick }: 
   const doorStatusClass = doorModeLabelClasses(doorMode);
 
   return (
-    <TableRow arial-label={`${door.door.name}`} onClick={() => onDoorClick(door.door, leafletMap)}>
+    <TableRow
+      arial-label={`${door.door.name}`}
+      className={classes.tableRow}
+      onClick={() => onDoorClick(door.door, leafletMap)}
+    >
       <TableCell>{door.door.name}</TableCell>
       <TableCell
         className={

@@ -54,6 +54,9 @@ const useStyles = makeStyles((theme) => ({
     border: 1,
     borderStyle: 'solid',
     borderColor: theme.palette.primary.main,
+    '&:hover': {
+      cursor: 'pointer',
+    },
   },
   itemIcon: {
     color: theme.palette.primary.contrastText,

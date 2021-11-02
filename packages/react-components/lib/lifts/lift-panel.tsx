@@ -22,7 +22,7 @@ import {
   motionStateToString,
   requestDoorModes,
   requestModes,
-  onClickLift,
+  onLiftClick,
 } from './lift-utils';
 
 export interface LiftPanelProps {
@@ -74,6 +74,9 @@ const useStyles = makeStyles((theme) => ({
     border: 1,
     borderStyle: 'solid',
     borderColor: theme.palette.primary.main,
+    '&:hover': {
+      cursor: 'pointer',
+    },
   },
   requestButton: {
     marginTop: theme.spacing(1),
@@ -153,7 +156,7 @@ const LiftCell = React.memo(
         className={classes.cellPaper}
         role="region"
         aria-labelledby={labelId}
-        onClick={() => onClickLift(lift, leafletMap)}
+        onClick={() => onLiftClick(lift, leafletMap)}
       >
         <Grid container direction="row">
           <Grid item xs={9}>

@@ -16,6 +16,7 @@ function renderWorkcellPanel() {
         test_dispenser: makeDispenserState({ guid: 'test_dispenser' }),
         test_ingestor: makeDispenserState({ guid: 'test_ingestor' }),
       }}
+      workcellContext={{}}
     />,
   );
 }
@@ -34,6 +35,7 @@ describe('Workcell Panel', () => {
           test_dispenser: makeDispenserState({ guid: 'test_dispenser' }),
           test_ingestor: makeDispenserState({ guid: 'test_ingestor' }),
         }}
+        workcellContext={{}}
       />,
     );
   });

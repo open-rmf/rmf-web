@@ -33,6 +33,11 @@ const useStyles = makeStyles((theme) => ({
     whiteSpace: 'nowrap',
     overflow: 'hidden',
   },
+  tableRow: {
+    '&:hover': {
+      cursor: 'pointer',
+    },
+  },
 }));
 
 export interface WorkcellTableProps {
@@ -81,6 +86,7 @@ const WorkcellRow = React.memo(
     return (
       <TableRow
         aria-label={`${workcell.guid}`}
+        className={classes.tableRow}
         onClick={() => onWorkcellClick(workcellResource, leafletMap)}
       >
         {mode !== undefined && requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
