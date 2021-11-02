@@ -11,6 +11,7 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import LiftRequestFormDialog from './lift-request-form-dialog';
 import { doorStateToString, liftModeToString, requestDoorModes, requestModes } from './lift-utils';
+import { tableCellStyle } from '../utils';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import clsx from 'clsx';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -28,11 +29,6 @@ const useStyles = makeStyles((theme) => ({
   tableRow: {
     display: 'flex',
     flexDirection: 'row',
-    flexWrap: 'nowrap',
-    alignItems: 'center',
-    boxSizing: 'border-box',
-    minWidth: '100%',
-    width: '100%',
   },
   tableCell: {
     whiteSpace: 'nowrap',
@@ -53,12 +49,8 @@ export interface LiftTableProps {
   ): void;
 }
 
-interface LiftFixListData extends LiftTableProps {
-  width: number;
-}
-
 interface LiftListRendererProps extends ListChildComponentProps {
-  data: LiftFixListData;
+  data: LiftTableProps;
 }
 
 export interface LiftRowProps {
@@ -68,7 +60,6 @@ export interface LiftRowProps {
   currentFloor: string;
   destinationFloor: string;
   style: React.CSSProperties;
-  width: number;
   onRequestSubmit?(
     event: React.FormEvent,
     lift: RmfModels.Lift,
@@ -78,21 +69,6 @@ export interface LiftRowProps {
   ): void;
 }
 
-// table cell has padding of 16px left and 24px right respectively
-// need to deduct 40px away from actual width
-const liftTableCellConfig = {
-  // column width in percent
-  liftName: 0.133,
-  opMode: 0.227,
-  currentFloor: 0.16,
-  destination: 0.152,
-  doorState: 0.148,
-  // last column deduct 32px
-  button: 0.18,
-  // row height in pixels
-  rowHeight: 31,
-};
-
 const LiftRow = React.memo(
   ({
     lift,
@@ -101,7 +77,6 @@ const LiftRow = React.memo(
     currentFloor,
     currentMode,
     style,
-    width,
     onRequestSubmit,
   }: LiftRowProps) => {
     const classes = useStyles();
@@ -134,10 +109,7 @@ const LiftRow = React.memo(
           component="div"
           variant="body"
           className={classes.tableCell}
-          style={{
-            minWidth: width * liftTableCellConfig.liftName - 40,
-            height: liftTableCellConfig.rowHeight,
-          }}
+          style={tableCellStyle('1')}
           title={lift.name}
         >
           {lift.name}
@@ -146,10 +118,7 @@ const LiftRow = React.memo(
           component="div"
           variant="body"
           className={classes.tableCell}
-          style={{
-            minWidth: width * liftTableCellConfig.opMode - 40,
-            height: liftTableCellConfig.rowHeight,
-          }}
+          style={tableCellStyle('1')}
         >
           {liftModeToString(currentMode)}
         </TableCell>
@@ -157,10 +126,7 @@ const LiftRow = React.memo(
           component="div"
           variant="body"
           className={classes.tableCell}
-          style={{
-            minWidth: width * liftTableCellConfig.currentFloor - 40,
-            height: liftTableCellConfig.rowHeight,
-          }}
+          style={tableCellStyle('1')}
         >
           {currentFloor}
         </TableCell>
@@ -168,10 +134,7 @@ const LiftRow = React.memo(
           component="div"
           variant="body"
           className={classes.tableCell}
-          style={{
-            minWidth: width * liftTableCellConfig.destination - 40,
-            height: liftTableCellConfig.rowHeight,
-          }}
+          style={tableCellStyle('1')}
         >
           {destinationFloor}
         </TableCell>
@@ -179,10 +142,7 @@ const LiftRow = React.memo(
           component="div"
           variant="body"
           className={clsx(doorModeLabelClasses(doorState), classes.tableCell)}
-          style={{
-            minWidth: width * liftTableCellConfig.doorState - 40,
-            height: liftTableCellConfig.rowHeight,
-          }}
+          style={tableCellStyle('1')}
         >
           {doorStateToString(doorState)}
         </TableCell>
@@ -190,10 +150,7 @@ const LiftRow = React.memo(
           component="div"
           variant="body"
           className={classes.tableCell}
-          style={{
-            minWidth: width * liftTableCellConfig.button - 32,
-            height: liftTableCellConfig.rowHeight,
-          }}
+          style={tableCellStyle('1.5')}
         >
           <Button
             variant="contained"
@@ -231,7 +188,6 @@ const LiftListRenderer = ({ data, index, style }: LiftListRendererProps) => {
       destinationFloor={liftState?.destination_floor}
       onRequestSubmit={data.onRequestSubmit}
       style={style}
-      width={data.width}
     />
   );
 };
@@ -249,10 +205,7 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
                   component="div"
                   variant="body"
                   className={classes.tableCell}
-                  style={{
-                    minWidth: width * liftTableCellConfig.liftName - 40,
-                    height: liftTableCellConfig.rowHeight,
-                  }}
+                  style={tableCellStyle('1')}
                 >
                   Lift Name
                 </TableCell>
@@ -260,10 +213,7 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
                   component="div"
                   variant="body"
                   className={classes.tableCell}
-                  style={{
-                    minWidth: width * liftTableCellConfig.opMode - 40,
-                    height: liftTableCellConfig.rowHeight,
-                  }}
+                  style={tableCellStyle('1')}
                 >
                   Op. Mode
                 </TableCell>
@@ -271,10 +221,7 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
                   component="div"
                   variant="body"
                   className={classes.tableCell}
-                  style={{
-                    minWidth: width * liftTableCellConfig.currentFloor - 40,
-                    height: liftTableCellConfig.rowHeight,
-                  }}
+                  style={tableCellStyle('1')}
                 >
                   Current Floor
                 </TableCell>
@@ -282,10 +229,7 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
                   component="div"
                   variant="body"
                   className={classes.tableCell}
-                  style={{
-                    minWidth: width * liftTableCellConfig.destination - 40,
-                    height: liftTableCellConfig.rowHeight,
-                  }}
+                  style={tableCellStyle('1')}
                 >
                   Destination
                 </TableCell>
@@ -293,10 +237,7 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
                   component="div"
                   variant="body"
                   className={classes.tableCell}
-                  style={{
-                    minWidth: width * liftTableCellConfig.doorState - 40,
-                    height: liftTableCellConfig.rowHeight,
-                  }}
+                  style={tableCellStyle('1')}
                 >
                   Doors State
                 </TableCell>
@@ -304,10 +245,7 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
                   component="div"
                   variant="body"
                   className={classes.tableCell}
-                  style={{
-                    minWidth: width * liftTableCellConfig.button - 32,
-                    height: liftTableCellConfig.rowHeight,
-                  }}
+                  style={tableCellStyle('1.5')}
                 >
                   Request Form
                 </TableCell>

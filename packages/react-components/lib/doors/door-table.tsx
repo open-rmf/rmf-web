@@ -12,6 +12,7 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import { DoorData, doorModeToString, doorTypeToString } from './utils';
+import { tableCellStyle } from '../utils';
 import clsx from 'clsx';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
@@ -21,36 +22,16 @@ export interface DoorTableProps {
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
 
-interface DoorFixListData extends DoorTableProps {
-  width: number;
-}
-
 interface DoorListRendererProps extends ListChildComponentProps {
-  data: DoorFixListData;
+  data: DoorTableProps;
 }
 
 export interface DoorRowProps {
   door: DoorData;
   doorMode: number;
   style: React.CSSProperties;
-  width: number;
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
-
-// table cell has padding of 16px left and 24px right respectively
-// need to deduct 40px away from actual width
-const doorTableCellConfig = {
-  // column width in percent of row width
-  doorName: 0.187,
-  doorMode: 0.141,
-  doorLevel: 0.129,
-  doorType: 0.176,
-  doorState: 0.16,
-  // last column deduct 32px
-  doorControl: 0.207,
-  // row height in pixels
-  rowHeight: 31,
-};
 
 const useStyles = makeStyles((theme) => ({
   doorLabelOpen: {
@@ -65,11 +46,6 @@ const useStyles = makeStyles((theme) => ({
   tableRow: {
     display: 'flex',
     flexDirection: 'row',
-    flexWrap: 'nowrap',
-    alignItems: 'center',
-    boxSizing: 'border-box',
-    minWidth: '100%',
-    width: '100%',
   },
   tableCell: {
     whiteSpace: 'nowrap',
@@ -83,7 +59,7 @@ const getOpMode = (doorMode?: number) => {
   return getState === 'N/A' ? 'Offline' : 'Online';
 };
 
-const DoorRow = React.memo(({ door, doorMode, style, width, onDoorControlClick }: DoorRowProps) => {
+const DoorRow = React.memo(({ door, doorMode, style, onDoorControlClick }: DoorRowProps) => {
   const classes = useStyles();
   const doorModeLabelClasses = React.useCallback(
     (doorMode?: number): string => {
@@ -116,10 +92,7 @@ const DoorRow = React.memo(({ door, doorMode, style, width, onDoorControlClick }
         component="div"
         variant="body"
         className={classes.tableCell}
-        style={{
-          minWidth: width * doorTableCellConfig.doorName - 40,
-          height: doorTableCellConfig.rowHeight,
-        }}
+        style={tableCellStyle('1')}
         title={door?.door.name}
       >
         {door.door.name}
@@ -131,10 +104,7 @@ const DoorRow = React.memo(({ door, doorMode, style, width, onDoorControlClick }
           getOpMode(doorMode) === 'Offline' ? classes.doorLabelClosed : classes.doorLabelOpen,
           classes.tableCell,
         )}
-        style={{
-          minWidth: width * doorTableCellConfig.doorMode - 40,
-          height: doorTableCellConfig.rowHeight,
-        }}
+        style={tableCellStyle('1')}
       >
         {getOpMode(doorMode)}
       </TableCell>
@@ -142,10 +112,7 @@ const DoorRow = React.memo(({ door, doorMode, style, width, onDoorControlClick }
         component="div"
         variant="body"
         className={classes.tableCell}
-        style={{
-          minWidth: width * doorTableCellConfig.doorLevel - 40,
-          height: doorTableCellConfig.rowHeight,
-        }}
+        style={tableCellStyle('1')}
       >
         {door.level}
       </TableCell>
@@ -153,10 +120,7 @@ const DoorRow = React.memo(({ door, doorMode, style, width, onDoorControlClick }
         component="div"
         variant="body"
         className={classes.tableCell}
-        style={{
-          minWidth: width * doorTableCellConfig.doorType - 40,
-          height: doorTableCellConfig.rowHeight,
-        }}
+        style={tableCellStyle('1')}
       >
         {doorTypeToString(door.door.door_type)}
       </TableCell>
@@ -164,10 +128,7 @@ const DoorRow = React.memo(({ door, doorMode, style, width, onDoorControlClick }
         component="div"
         variant="body"
         className={clsx(doorStatusClass, classes.tableCell)}
-        style={{
-          minWidth: width * doorTableCellConfig.doorState - 40,
-          height: doorTableCellConfig.rowHeight,
-        }}
+        style={tableCellStyle('1')}
       >
         {doorModeToString(doorMode)}
       </TableCell>
@@ -175,10 +136,7 @@ const DoorRow = React.memo(({ door, doorMode, style, width, onDoorControlClick }
         component="div"
         variant="body"
         className={classes.tableCell}
-        style={{
-          minWidth: width * doorTableCellConfig.doorControl - 32,
-          height: doorTableCellConfig.rowHeight,
-        }}
+        style={tableCellStyle('1.5')}
       >
         <ButtonGroup size="small">
           <Button
@@ -214,7 +172,6 @@ const DoorListRenderer = ({ data, index, style }: DoorListRendererProps) => {
       doorMode={doorState?.current_mode.value}
       onDoorControlClick={data.onDoorControlClick}
       style={style}
-      width={data.width}
     />
   );
 };
@@ -231,15 +188,12 @@ export const DoorTable = ({
         return (
           <Table stickyHeader size="small" aria-label="door-table" component="div">
             <TableHead component="div">
-              <TableRow component="div" className={classes.tableRow}>
+              <TableRow component="div" className={classes.tableRow} style={{ width: width }}>
                 <TableCell
                   component="div"
                   variant="head"
                   className={classes.tableCell}
-                  style={{
-                    minWidth: width * doorTableCellConfig.doorName - 40,
-                    height: doorTableCellConfig.rowHeight,
-                  }}
+                  style={tableCellStyle('1')}
                 >
                   Door Name
                 </TableCell>
@@ -247,10 +201,7 @@ export const DoorTable = ({
                   component="div"
                   variant="head"
                   className={classes.tableCell}
-                  style={{
-                    minWidth: width * doorTableCellConfig.doorMode - 40,
-                    height: doorTableCellConfig.rowHeight,
-                  }}
+                  style={tableCellStyle('1')}
                 >
                   Op. Mode
                 </TableCell>
@@ -258,10 +209,7 @@ export const DoorTable = ({
                   component="div"
                   variant="head"
                   className={classes.tableCell}
-                  style={{
-                    minWidth: width * doorTableCellConfig.doorLevel - 40,
-                    height: doorTableCellConfig.rowHeight,
-                  }}
+                  style={tableCellStyle('1')}
                 >
                   Level
                 </TableCell>
@@ -269,10 +217,7 @@ export const DoorTable = ({
                   component="div"
                   variant="head"
                   className={classes.tableCell}
-                  style={{
-                    minWidth: width * doorTableCellConfig.doorType - 40,
-                    height: doorTableCellConfig.rowHeight,
-                  }}
+                  style={tableCellStyle('1')}
                 >
                   Door Type
                 </TableCell>
@@ -280,10 +225,7 @@ export const DoorTable = ({
                   component="div"
                   variant="head"
                   className={classes.tableCell}
-                  style={{
-                    minWidth: width * doorTableCellConfig.doorState - 40,
-                    height: doorTableCellConfig.rowHeight,
-                  }}
+                  style={tableCellStyle('1')}
                 >
                   Doors State
                 </TableCell>
@@ -291,10 +233,7 @@ export const DoorTable = ({
                   component="div"
                   variant="head"
                   className={classes.tableCell}
-                  style={{
-                    minWidth: width * doorTableCellConfig.doorControl - 32,
-                    height: doorTableCellConfig.rowHeight,
-                  }}
+                  style={tableCellStyle('1.5')}
                 >
                   Door Control
                 </TableCell>

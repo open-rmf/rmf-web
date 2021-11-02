@@ -3,6 +3,7 @@ import { Dispenser } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { dispenserModeToString } from './utils';
+import { tableCellStyle } from '../utils';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import clsx from 'clsx';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -20,11 +21,6 @@ const useStyles = makeStyles((theme) => ({
   tableRow: {
     display: 'flex',
     flexDirection: 'row',
-    flexWrap: 'nowrap',
-    alignItems: 'center',
-    boxSizing: 'border-box',
-    minWidth: '100%',
-    width: '100%',
   },
   tableCell: {
     whiteSpace: 'nowrap',
@@ -38,16 +34,11 @@ export interface WorkcellTableProps {
   workcellStates: Record<string, RmfModels.DispenserState>;
 }
 
-interface WorkcellFixListData extends WorkcellTableProps {
-  width: number;
-}
-
 interface WorkcellListRendererProps extends ListChildComponentProps {
-  data: WorkcellFixListData;
+  data: WorkcellTableProps;
 }
 
 export interface WorkcellRowProps {
-  width: number;
   workcell: Dispenser;
   mode?: number;
   requestGuidQueue?: string[];
@@ -55,20 +46,8 @@ export interface WorkcellRowProps {
   style: React.CSSProperties;
 }
 
-// table cell has padding of 16px left and 24px right respectively
-// need to deduct 40px away from actual width
-const workCellTableCellConfig = {
-  dispenserName: 0.196,
-  opMode: 0.138,
-  numQueueRequest: 0.241,
-  requestQueueId: 0.208,
-  // last column deduct 32px
-  secRemaining: 0.217,
-  rowHeight: 31,
-};
-
 const WorkcellRow = React.memo(
-  ({ width, workcell, mode, requestGuidQueue, secondsRemaining, style }: WorkcellRowProps) => {
+  ({ workcell, mode, requestGuidQueue, secondsRemaining, style }: WorkcellRowProps) => {
     const classes = useStyles();
     const dispenserModeLabelClasses = React.useCallback(
       (mode: number): string => {
@@ -99,10 +78,7 @@ const WorkcellRow = React.memo(
               component="div"
               variant="head"
               className={classes.tableCell}
-              style={{
-                minWidth: width * workCellTableCellConfig.dispenserName - 40,
-                height: workCellTableCellConfig.rowHeight,
-              }}
+              style={tableCellStyle('1')}
               title={workcell.guid}
             >
               {workcell.guid}
@@ -111,10 +87,7 @@ const WorkcellRow = React.memo(
               component="div"
               variant="head"
               className={clsx(dispenserModeLabelClasses(mode), classes.tableCell)}
-              style={{
-                minWidth: width * workCellTableCellConfig.opMode - 40,
-                height: workCellTableCellConfig.rowHeight,
-              }}
+              style={tableCellStyle('1')}
             >
               {dispenserModeToString(mode)}
             </TableCell>
@@ -122,10 +95,7 @@ const WorkcellRow = React.memo(
               component="div"
               variant="head"
               className={classes.tableCell}
-              style={{
-                minWidth: width * workCellTableCellConfig.numQueueRequest - 40,
-                height: workCellTableCellConfig.rowHeight,
-              }}
+              style={tableCellStyle('1')}
             >
               {requestGuidQueue.length}
             </TableCell>
@@ -133,10 +103,7 @@ const WorkcellRow = React.memo(
               component="div"
               variant="head"
               className={classes.tableCell}
-              style={{
-                minWidth: width * workCellTableCellConfig.requestQueueId - 40,
-                height: workCellTableCellConfig.rowHeight,
-              }}
+              style={tableCellStyle('1')}
             >
               {requestGuidQueue}
             </TableCell>
@@ -144,10 +111,7 @@ const WorkcellRow = React.memo(
               component="div"
               variant="head"
               className={classes.tableCell}
-              style={{
-                minWidth: width * workCellTableCellConfig.secRemaining - 32,
-                height: workCellTableCellConfig.rowHeight,
-              }}
+              style={tableCellStyle('1')}
             >
               {secondsRemaining}
             </TableCell>
@@ -158,10 +122,7 @@ const WorkcellRow = React.memo(
               component="div"
               variant="head"
               className={classes.tableCell}
-              style={{
-                minWidth: width * workCellTableCellConfig.dispenserName - 40,
-                height: workCellTableCellConfig.rowHeight,
-              }}
+              style={tableCellStyle('1')}
               title={workcell.guid}
             >
               {workcell.guid}
@@ -170,10 +131,7 @@ const WorkcellRow = React.memo(
               component="div"
               variant="head"
               className={classes.tableCell}
-              style={{
-                minWidth: width * workCellTableCellConfig.opMode - 40,
-                height: workCellTableCellConfig.rowHeight,
-              }}
+              style={tableCellStyle('1')}
             >
               {'NA'}
             </TableCell>
@@ -181,10 +139,7 @@ const WorkcellRow = React.memo(
               component="div"
               variant="head"
               className={classes.tableCell}
-              style={{
-                minWidth: width * workCellTableCellConfig.numQueueRequest - 40,
-                height: workCellTableCellConfig.rowHeight,
-              }}
+              style={tableCellStyle('1')}
             >
               {'NA'}
             </TableCell>
@@ -192,10 +147,7 @@ const WorkcellRow = React.memo(
               component="div"
               variant="head"
               className={classes.tableCell}
-              style={{
-                minWidth: width * workCellTableCellConfig.requestQueueId - 40,
-                height: workCellTableCellConfig.rowHeight,
-              }}
+              style={tableCellStyle('1')}
             >
               {'NA'}
             </TableCell>
@@ -203,10 +155,7 @@ const WorkcellRow = React.memo(
               component="div"
               variant="head"
               className={classes.tableCell}
-              style={{
-                minWidth: width * workCellTableCellConfig.secRemaining - 32,
-                height: workCellTableCellConfig.rowHeight,
-              }}
+              style={tableCellStyle('1')}
             >
               {'NA'}
             </TableCell>
@@ -224,7 +173,6 @@ const WorkcellListRenderer = ({ data, index, style }: WorkcellListRendererProps)
 
   return (
     <WorkcellRow
-      width={data.width}
       workcell={workcell}
       mode={workcellState?.mode}
       requestGuidQueue={workcellState?.request_guid_queue}
@@ -247,10 +195,7 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
                   component="div"
                   variant="head"
                   className={classes.tableCell}
-                  style={{
-                    minWidth: width * workCellTableCellConfig.dispenserName - 40,
-                    height: workCellTableCellConfig.rowHeight,
-                  }}
+                  style={tableCellStyle('1')}
                 >
                   Dispenser Name
                 </TableCell>
@@ -258,10 +203,7 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
                   component="div"
                   variant="head"
                   className={classes.tableCell}
-                  style={{
-                    minWidth: width * workCellTableCellConfig.opMode - 40,
-                    height: workCellTableCellConfig.rowHeight,
-                  }}
+                  style={tableCellStyle('1')}
                 >
                   Op. Mode
                 </TableCell>
@@ -269,10 +211,7 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
                   component="div"
                   variant="head"
                   className={classes.tableCell}
-                  style={{
-                    minWidth: width * workCellTableCellConfig.numQueueRequest - 40,
-                    height: workCellTableCellConfig.rowHeight,
-                  }}
+                  style={tableCellStyle('1')}
                 >
                   No. Queued Requests
                 </TableCell>
@@ -280,10 +219,7 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
                   component="div"
                   variant="head"
                   className={classes.tableCell}
-                  style={{
-                    minWidth: width * workCellTableCellConfig.requestQueueId - 40,
-                    height: workCellTableCellConfig.rowHeight,
-                  }}
+                  style={tableCellStyle('1')}
                 >
                   Request Queue ID
                 </TableCell>
@@ -291,10 +227,7 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
                   component="div"
                   variant="head"
                   className={classes.tableCell}
-                  style={{
-                    minWidth: width * workCellTableCellConfig.secRemaining - 32,
-                    height: workCellTableCellConfig.rowHeight,
-                  }}
+                  style={tableCellStyle('1')}
                 >
                   Seconds Remaining
                 </TableCell>
