@@ -1,12 +1,13 @@
 from typing import List, TypeVar
 
 from tortoise.expressions import Subquery
+from tortoise.models import Model as TortoiseModel
 from tortoise.queryset import QuerySet
 
 from .models import User
 from .models import tortoise_models as ttm
 
-ResourceT = TypeVar("ResourceT", bound=ttm.BaseModels.ProtectedResourceModel)
+ResourceT = TypeVar("ResourceT", bound=TortoiseModel)
 
 
 class RmfAction:
@@ -38,6 +39,8 @@ class Enforcer:
         Augments a query with the read permissions of an user, this returns a query
         that only returns results that the user can see. The admin roles can always see
         all resources.
+
+        @param resource: A query set of a model which implements `ProtectedResource`.
         """
         if user.is_admin:
             return resource.all()

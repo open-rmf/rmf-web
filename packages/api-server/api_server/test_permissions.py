@@ -2,14 +2,15 @@ import unittest
 
 from tortoise import Tortoise
 from tortoise.fields.data import CharField
+from tortoise.models import Model as TortoiseModel
 
 from .models import User
-from .models.tortoise_models import BaseModels, ResourcePermission, Role
+from .models.tortoise_models import ProtectedResource, ResourcePermission, Role
 from .permissions import Enforcer
 from .test import init_db
 
 
-class Greeting(BaseModels.ProtectedResourceModel):
+class Greeting(TortoiseModel, ProtectedResource):
     message = CharField(255, pk=True)
 
 
