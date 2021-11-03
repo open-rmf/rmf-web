@@ -6,26 +6,19 @@ import pydantic
 
 
 class SubmitTask_Response(pydantic.BaseModel):
-    success: bool
-    task_id: str
-    message: str
+    success: bool = False  # bool
+    task_id: str = ""  # string
+    message: str = ""  # string
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        success: bool = False,  # bool
-        task_id: str = "",  # string
-        message: str = "",  # string
-        **kwargs,
-    ):
-        super().__init__(
-            success=success,
-            task_id=task_id,
-            message=message,
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "success",
+                "task_id",
+                "message",
+            ],
+        }
 
 
 #

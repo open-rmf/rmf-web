@@ -8,23 +8,17 @@ from ..rmf_task_msgs.TaskDescription import TaskDescription
 
 
 class SubmitTask_Request(pydantic.BaseModel):
-    requester: str
-    description: TaskDescription
+    requester: str = ""  # string
+    description: TaskDescription = TaskDescription()  # rmf_task_msgs/TaskDescription
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        requester: str = "",  # string
-        description: TaskDescription = TaskDescription(),  # rmf_task_msgs/TaskDescription
-        **kwargs,
-    ):
-        super().__init__(
-            requester=requester,
-            description=description,
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "requester",
+                "description",
+            ],
+        }
 
 
 # # Submit Task | POST service call

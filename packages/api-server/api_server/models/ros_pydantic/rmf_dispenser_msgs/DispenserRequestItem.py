@@ -6,26 +6,19 @@ import pydantic
 
 
 class DispenserRequestItem(pydantic.BaseModel):
-    type_guid: str
-    quantity: pydantic.conint(ge=-2147483648, le=2147483647)
-    compartment_name: str
+    type_guid: str = ""  # string
+    quantity: pydantic.conint(ge=-2147483648, le=2147483647) = 0  # int32
+    compartment_name: str = ""  # string
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        type_guid: str = "",  # string
-        quantity: int = 0,  # int32
-        compartment_name: str = "",  # string
-        **kwargs,
-    ):
-        super().__init__(
-            type_guid=type_guid,
-            quantity=quantity,
-            compartment_name=compartment_name,
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "type_guid",
+                "quantity",
+                "compartment_name",
+            ],
+        }
 
 
 # string type_guid

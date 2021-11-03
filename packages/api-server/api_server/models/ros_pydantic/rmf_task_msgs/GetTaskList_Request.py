@@ -6,23 +6,17 @@ import pydantic
 
 
 class GetTaskList_Request(pydantic.BaseModel):
-    requester: str
-    task_id: List[str]
+    requester: str = ""  # string
+    task_id: List[str] = []  # string
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        requester: str = "",  # string
-        task_id: List = None,  # string
-        **kwargs,
-    ):
-        super().__init__(
-            requester=requester,
-            task_id=task_id or [],
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "requester",
+                "task_id",
+            ],
+        }
 
 
 # # Query list of submitted tasks | Get service call

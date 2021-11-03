@@ -6,32 +6,23 @@ import pydantic
 
 
 class Loop(pydantic.BaseModel):
-    task_id: str
-    robot_type: str
-    num_loops: pydantic.conint(ge=0, le=4294967295)
-    start_name: str
-    finish_name: str
+    task_id: str = ""  # string
+    robot_type: str = ""  # string
+    num_loops: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
+    start_name: str = ""  # string
+    finish_name: str = ""  # string
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        task_id: str = "",  # string
-        robot_type: str = "",  # string
-        num_loops: int = 0,  # uint32
-        start_name: str = "",  # string
-        finish_name: str = "",  # string
-        **kwargs,
-    ):
-        super().__init__(
-            task_id=task_id,
-            robot_type=robot_type,
-            num_loops=num_loops,
-            start_name=start_name,
-            finish_name=finish_name,
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "task_id",
+                "robot_type",
+                "num_loops",
+                "start_name",
+                "finish_name",
+            ],
+        }
 
 
 # # task_id is intended to be a pseudo-random string generated

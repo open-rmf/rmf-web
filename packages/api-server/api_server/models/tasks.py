@@ -8,41 +8,11 @@ from rmf_task_msgs.msg import TaskType as RmfTaskType
 from api_server.ros_time import ros_to_py_datetime
 
 from . import tortoise_models as ttm
-from .ros_pydantic import builtin_interfaces, rmf_task_msgs
+from .ros_pydantic import rmf_task_msgs
 
 
 class TaskSummary(rmf_task_msgs.TaskSummary):
     authz_grp: Optional[str] = None
-
-    # pylint: disable=useless-super-delegation
-    def __init__(
-        self,
-        *,
-        authz_grp: str = "",
-        fleet_name: str = "",  # string
-        task_id: str = "",  # string
-        task_profile: rmf_task_msgs.TaskProfile = rmf_task_msgs.TaskProfile(),  # rmf_task_msgs/TaskProfile
-        state: int = 0,  # uint32
-        status: str = "",  # string
-        submission_time: builtin_interfaces.Time = builtin_interfaces.Time(),  # builtin_interfaces/Time
-        start_time: builtin_interfaces.Time = builtin_interfaces.Time(),  # builtin_interfaces/Time
-        end_time: builtin_interfaces.Time = builtin_interfaces.Time(),  # builtin_interfaces/Time
-        robot_name: str = "",  # string
-        **kwargs,
-    ):
-        super().__init__(
-            authz_grp=authz_grp,
-            fleet_name=fleet_name,
-            task_id=task_id,
-            task_profile=task_profile,
-            state=state,
-            status=status,
-            submission_time=submission_time,
-            start_time=start_time,
-            end_time=end_time,
-            robot_name=robot_name,
-            **kwargs,
-        )
 
     @staticmethod
     def from_tortoise(tortoise: ttm.TaskSummary) -> "TaskSummary":

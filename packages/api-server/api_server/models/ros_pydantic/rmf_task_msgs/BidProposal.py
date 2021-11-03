@@ -9,35 +9,25 @@ from ..rmf_task_msgs.TaskProfile import TaskProfile
 
 
 class BidProposal(pydantic.BaseModel):
-    fleet_name: str
-    task_profile: TaskProfile
-    prev_cost: float
-    new_cost: float
-    finish_time: Time
-    robot_name: str
+    fleet_name: str = ""  # string
+    task_profile: TaskProfile = TaskProfile()  # rmf_task_msgs/TaskProfile
+    prev_cost: float = 0  # float64
+    new_cost: float = 0  # float64
+    finish_time: Time = Time()  # builtin_interfaces/Time
+    robot_name: str = ""  # string
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        fleet_name: str = "",  # string
-        task_profile: TaskProfile = TaskProfile(),  # rmf_task_msgs/TaskProfile
-        prev_cost: float = 0,  # float64
-        new_cost: float = 0,  # float64
-        finish_time: Time = Time(),  # builtin_interfaces/Time
-        robot_name: str = "",  # string
-        **kwargs,
-    ):
-        super().__init__(
-            fleet_name=fleet_name,
-            task_profile=task_profile,
-            prev_cost=prev_cost,
-            new_cost=new_cost,
-            finish_time=finish_time,
-            robot_name=robot_name,
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "fleet_name",
+                "task_profile",
+                "prev_cost",
+                "new_cost",
+                "finish_time",
+                "robot_name",
+            ],
+        }
 
 
 # # This message is published by a Fleet Adapter in response to a BidNotice

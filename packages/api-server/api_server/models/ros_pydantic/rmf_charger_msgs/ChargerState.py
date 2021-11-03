@@ -9,41 +9,29 @@ from ..builtin_interfaces.Time import Time
 
 
 class ChargerState(pydantic.BaseModel):
-    charger_time: Time
-    state: pydantic.conint(ge=0, le=4294967295)
-    charger_name: str
-    error_message: str
-    request_id: str
-    robot_fleet: str
-    robot_name: str
-    time_to_fully_charged: Duration
+    charger_time: Time = Time()  # builtin_interfaces/Time
+    state: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
+    charger_name: str = ""  # string
+    error_message: str = ""  # string
+    request_id: str = ""  # string
+    robot_fleet: str = ""  # string
+    robot_name: str = ""  # string
+    time_to_fully_charged: Duration = Duration()  # builtin_interfaces/Duration
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        charger_time: Time = Time(),  # builtin_interfaces/Time
-        state: int = 0,  # uint32
-        charger_name: str = "",  # string
-        error_message: str = "",  # string
-        request_id: str = "",  # string
-        robot_fleet: str = "",  # string
-        robot_name: str = "",  # string
-        time_to_fully_charged: Duration = Duration(),  # builtin_interfaces/Duration
-        **kwargs,
-    ):
-        super().__init__(
-            charger_time=charger_time,
-            state=state,
-            charger_name=charger_name,
-            error_message=error_message,
-            request_id=request_id,
-            robot_fleet=robot_fleet,
-            robot_name=robot_name,
-            time_to_fully_charged=time_to_fully_charged,
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "charger_time",
+                "state",
+                "charger_name",
+                "error_message",
+                "request_id",
+                "robot_fleet",
+                "robot_name",
+                "time_to_fully_charged",
+            ],
+        }
 
 
 # # Time when this state message was created

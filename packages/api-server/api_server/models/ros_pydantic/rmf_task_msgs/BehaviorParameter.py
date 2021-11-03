@@ -6,23 +6,17 @@ import pydantic
 
 
 class BehaviorParameter(pydantic.BaseModel):
-    name: str
-    value: str
+    name: str = ""  # string
+    value: str = ""  # string
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        name: str = "",  # string
-        value: str = "",  # string
-        **kwargs,
-    ):
-        super().__init__(
-            name=name,
-            value=value,
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "name",
+                "value",
+            ],
+        }
 
 
 # string name

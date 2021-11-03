@@ -6,20 +6,15 @@ import pydantic
 
 
 class ReviveTask_Response(pydantic.BaseModel):
-    success: bool
+    success: bool = False  # bool
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        success: bool = False,  # bool
-        **kwargs,
-    ):
-        super().__init__(
-            success=success,
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "success",
+            ],
+        }
 
 
 #

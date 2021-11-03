@@ -8,23 +8,17 @@ from ..rmf_task_msgs.BehaviorParameter import BehaviorParameter
 
 
 class Behavior(pydantic.BaseModel):
-    name: str
-    parameters: List[BehaviorParameter]
+    name: str = ""  # string
+    parameters: List[BehaviorParameter] = []  # rmf_task_msgs/BehaviorParameter
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        name: str = "",  # string
-        parameters: List = None,  # rmf_task_msgs/BehaviorParameter
-        **kwargs,
-    ):
-        super().__init__(
-            name=name,
-            parameters=parameters or [],
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "name",
+                "parameters",
+            ],
+        }
 
 
 # string name

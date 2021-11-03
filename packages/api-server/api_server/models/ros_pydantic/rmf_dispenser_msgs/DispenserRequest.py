@@ -9,32 +9,23 @@ from ..rmf_dispenser_msgs.DispenserRequestItem import DispenserRequestItem
 
 
 class DispenserRequest(pydantic.BaseModel):
-    time: Time
-    request_guid: str
-    target_guid: str
-    transporter_type: str
-    items: List[DispenserRequestItem]
+    time: Time = Time()  # builtin_interfaces/Time
+    request_guid: str = ""  # string
+    target_guid: str = ""  # string
+    transporter_type: str = ""  # string
+    items: List[DispenserRequestItem] = []  # rmf_dispenser_msgs/DispenserRequestItem
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        time: Time = Time(),  # builtin_interfaces/Time
-        request_guid: str = "",  # string
-        target_guid: str = "",  # string
-        transporter_type: str = "",  # string
-        items: List = None,  # rmf_dispenser_msgs/DispenserRequestItem
-        **kwargs,
-    ):
-        super().__init__(
-            time=time,
-            request_guid=request_guid,
-            target_guid=target_guid,
-            transporter_type=transporter_type,
-            items=items or [],
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "time",
+                "request_guid",
+                "target_guid",
+                "transporter_type",
+                "items",
+            ],
+        }
 
 
 # builtin_interfaces/Time time

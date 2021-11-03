@@ -10,11 +10,6 @@ class GetBuildingMap_Request(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        **kwargs,
-    ):
-        super().__init__(
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [],
+        }

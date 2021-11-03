@@ -6,23 +6,17 @@ import pydantic
 
 
 class ChargerCancel(pydantic.BaseModel):
-    charger_name: str
-    request_id: str
+    charger_name: str = ""  # string
+    request_id: str = ""  # string
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        charger_name: str = "",  # string
-        request_id: str = "",  # string
-        **kwargs,
-    ):
-        super().__init__(
-            charger_name=charger_name,
-            request_id=request_id,
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "charger_name",
+                "request_id",
+            ],
+        }
 
 
 # string charger_name  # the charger that should process this message

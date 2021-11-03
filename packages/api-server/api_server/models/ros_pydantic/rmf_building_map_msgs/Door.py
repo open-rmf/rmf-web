@@ -6,41 +6,29 @@ import pydantic
 
 
 class Door(pydantic.BaseModel):
-    name: str
-    v1_x: float
-    v1_y: float
-    v2_x: float
-    v2_y: float
-    door_type: pydantic.conint(ge=0, le=255)
-    motion_range: float
-    motion_direction: pydantic.conint(ge=-2147483648, le=2147483647)
+    name: str = ""  # string
+    v1_x: float = 0  # float32
+    v1_y: float = 0  # float32
+    v2_x: float = 0  # float32
+    v2_y: float = 0  # float32
+    door_type: pydantic.conint(ge=0, le=255) = 0  # uint8
+    motion_range: float = 0  # float32
+    motion_direction: pydantic.conint(ge=-2147483648, le=2147483647) = 0  # int32
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        name: str = "",  # string
-        v1_x: float = 0,  # float32
-        v1_y: float = 0,  # float32
-        v2_x: float = 0,  # float32
-        v2_y: float = 0,  # float32
-        door_type: int = 0,  # uint8
-        motion_range: float = 0,  # float32
-        motion_direction: int = 0,  # int32
-        **kwargs,
-    ):
-        super().__init__(
-            name=name,
-            v1_x=v1_x,
-            v1_y=v1_y,
-            v2_x=v2_x,
-            v2_y=v2_y,
-            door_type=door_type,
-            motion_range=motion_range,
-            motion_direction=motion_direction,
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "name",
+                "v1_x",
+                "v1_y",
+                "v2_x",
+                "v2_y",
+                "door_type",
+                "motion_range",
+                "motion_direction",
+            ],
+        }
 
 
 # string name

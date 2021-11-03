@@ -6,23 +6,17 @@ import pydantic
 
 
 class CancelTask_Response(pydantic.BaseModel):
-    success: bool
-    message: str
+    success: bool = False  # bool
+    message: str = ""  # string
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        success: bool = False,  # bool
-        message: str = "",  # string
-        **kwargs,
-    ):
-        super().__init__(
-            success=success,
-            message=message,
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "success",
+                "message",
+            ],
+        }
 
 
 #

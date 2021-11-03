@@ -8,20 +8,15 @@ from ..rmf_fleet_msgs.Dock import Dock
 
 
 class DockSummary(pydantic.BaseModel):
-    docks: List[Dock]
+    docks: List[Dock] = []  # rmf_fleet_msgs/Dock
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        docks: List = None,  # rmf_fleet_msgs/Dock
-        **kwargs,
-    ):
-        super().__init__(
-            docks=docks or [],
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "docks",
+            ],
+        }
 
 
 # Dock[] docks

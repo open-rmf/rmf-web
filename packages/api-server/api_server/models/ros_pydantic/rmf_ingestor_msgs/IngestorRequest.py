@@ -9,32 +9,23 @@ from ..rmf_ingestor_msgs.IngestorRequestItem import IngestorRequestItem
 
 
 class IngestorRequest(pydantic.BaseModel):
-    time: Time
-    request_guid: str
-    target_guid: str
-    transporter_type: str
-    items: List[IngestorRequestItem]
+    time: Time = Time()  # builtin_interfaces/Time
+    request_guid: str = ""  # string
+    target_guid: str = ""  # string
+    transporter_type: str = ""  # string
+    items: List[IngestorRequestItem] = []  # rmf_ingestor_msgs/IngestorRequestItem
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        time: Time = Time(),  # builtin_interfaces/Time
-        request_guid: str = "",  # string
-        target_guid: str = "",  # string
-        transporter_type: str = "",  # string
-        items: List = None,  # rmf_ingestor_msgs/IngestorRequestItem
-        **kwargs,
-    ):
-        super().__init__(
-            time=time,
-            request_guid=request_guid,
-            target_guid=target_guid,
-            transporter_type=transporter_type,
-            items=items or [],
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "time",
+                "request_guid",
+                "target_guid",
+                "transporter_type",
+                "items",
+            ],
+        }
 
 
 # builtin_interfaces/Time time

@@ -6,20 +6,15 @@ import pydantic
 
 
 class TaskType(pydantic.BaseModel):
-    type: pydantic.conint(ge=0, le=4294967295)
+    type: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        type: int = 0,  # uint32
-        **kwargs,
-    ):
-        super().__init__(
-            type=type,
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "type",
+            ],
+        }
 
 
 # uint32 type

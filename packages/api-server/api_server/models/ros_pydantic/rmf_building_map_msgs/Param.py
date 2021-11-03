@@ -6,35 +6,25 @@ import pydantic
 
 
 class Param(pydantic.BaseModel):
-    name: str
-    type: pydantic.conint(ge=0, le=4294967295)
-    value_int: pydantic.conint(ge=-2147483648, le=2147483647)
-    value_float: float
-    value_string: str
-    value_bool: bool
+    name: str = ""  # string
+    type: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
+    value_int: pydantic.conint(ge=-2147483648, le=2147483647) = 0  # int32
+    value_float: float = 0  # float32
+    value_string: str = ""  # string
+    value_bool: bool = False  # bool
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        name: str = "",  # string
-        type: int = 0,  # uint32
-        value_int: int = 0,  # int32
-        value_float: float = 0,  # float32
-        value_string: str = "",  # string
-        value_bool: bool = False,  # bool
-        **kwargs,
-    ):
-        super().__init__(
-            name=name,
-            type=type,
-            value_int=value_int,
-            value_float=value_float,
-            value_string=value_string,
-            value_bool=value_bool,
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "name",
+                "type",
+                "value_int",
+                "value_float",
+                "value_string",
+                "value_bool",
+            ],
+        }
 
 
 # string name

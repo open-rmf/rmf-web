@@ -8,20 +8,15 @@ from ..rmf_task_msgs.TaskSummary import TaskSummary
 
 
 class Tasks(pydantic.BaseModel):
-    tasks: List[TaskSummary]
+    tasks: List[TaskSummary] = []  # rmf_task_msgs/TaskSummary
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        tasks: List = None,  # rmf_task_msgs/TaskSummary
-        **kwargs,
-    ):
-        super().__init__(
-            tasks=tasks or [],
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "tasks",
+            ],
+        }
 
 
 # TaskSummary[] tasks

@@ -8,23 +8,17 @@ from ..builtin_interfaces.Time import Time
 
 
 class Session(pydantic.BaseModel):
-    request_time: Time
-    requester_id: str
+    request_time: Time = Time()  # builtin_interfaces/Time
+    requester_id: str = ""  # string
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        request_time: Time = Time(),  # builtin_interfaces/Time
-        requester_id: str = "",  # string
-        **kwargs,
-    ):
-        super().__init__(
-            request_time=request_time,
-            requester_id=requester_id,
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "request_time",
+                "requester_id",
+            ],
+        }
 
 
 #

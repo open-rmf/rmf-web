@@ -8,29 +8,21 @@ from ..rmf_building_map_msgs.Param import Param
 
 
 class GraphNode(pydantic.BaseModel):
-    x: float
-    y: float
-    name: str
-    params: List[Param]
+    x: float = 0  # float32
+    y: float = 0  # float32
+    name: str = ""  # string
+    params: List[Param] = []  # rmf_building_map_msgs/Param
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        x: float = 0,  # float32
-        y: float = 0,  # float32
-        name: str = "",  # string
-        params: List = None,  # rmf_building_map_msgs/Param
-        **kwargs,
-    ):
-        super().__init__(
-            x=x,
-            y=y,
-            name=name,
-            params=params or [],
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "x",
+                "y",
+                "name",
+                "params",
+            ],
+        }
 
 
 # float32 x

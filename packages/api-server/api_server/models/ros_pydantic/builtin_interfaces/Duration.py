@@ -6,23 +6,17 @@ import pydantic
 
 
 class Duration(pydantic.BaseModel):
-    sec: pydantic.conint(ge=-2147483648, le=2147483647)
-    nanosec: pydantic.conint(ge=0, le=4294967295)
+    sec: pydantic.conint(ge=-2147483648, le=2147483647) = 0  # int32
+    nanosec: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        sec: int = 0,  # int32
-        nanosec: int = 0,  # uint32
-        **kwargs,
-    ):
-        super().__init__(
-            sec=sec,
-            nanosec=nanosec,
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "sec",
+                "nanosec",
+            ],
+        }
 
 
 # # Duration defines a period between two time points. It is comprised of a

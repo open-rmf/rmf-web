@@ -6,20 +6,15 @@ import pydantic
 
 
 class LiftClearance_Response(pydantic.BaseModel):
-    decision: pydantic.conint(ge=0, le=4294967295)
+    decision: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        decision: int = 0,  # uint32
-        **kwargs,
-    ):
-        super().__init__(
-            decision=decision,
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "decision",
+            ],
+        }
 
 
 #

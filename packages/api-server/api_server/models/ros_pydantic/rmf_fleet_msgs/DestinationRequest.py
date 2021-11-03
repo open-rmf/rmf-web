@@ -8,29 +8,21 @@ from ..rmf_fleet_msgs.Location import Location
 
 
 class DestinationRequest(pydantic.BaseModel):
-    fleet_name: str
-    robot_name: str
-    destination: Location
-    task_id: str
+    fleet_name: str = ""  # string
+    robot_name: str = ""  # string
+    destination: Location = Location()  # rmf_fleet_msgs/Location
+    task_id: str = ""  # string
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        fleet_name: str = "",  # string
-        robot_name: str = "",  # string
-        destination: Location = Location(),  # rmf_fleet_msgs/Location
-        task_id: str = "",  # string
-        **kwargs,
-    ):
-        super().__init__(
-            fleet_name=fleet_name,
-            robot_name=robot_name,
-            destination=destination,
-            task_id=task_id,
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "fleet_name",
+                "robot_name",
+                "destination",
+                "task_id",
+            ],
+        }
 
 
 # string fleet_name

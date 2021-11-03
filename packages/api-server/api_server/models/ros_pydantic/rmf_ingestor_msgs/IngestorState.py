@@ -8,32 +8,23 @@ from ..builtin_interfaces.Time import Time
 
 
 class IngestorState(pydantic.BaseModel):
-    time: Time
-    guid: str
-    mode: pydantic.conint(ge=-2147483648, le=2147483647)
-    request_guid_queue: List[str]
-    seconds_remaining: float
+    time: Time = Time()  # builtin_interfaces/Time
+    guid: str = ""  # string
+    mode: pydantic.conint(ge=-2147483648, le=2147483647) = 0  # int32
+    request_guid_queue: List[str] = []  # string
+    seconds_remaining: float = 0  # float32
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        time: Time = Time(),  # builtin_interfaces/Time
-        guid: str = "",  # string
-        mode: int = 0,  # int32
-        request_guid_queue: List = None,  # string
-        seconds_remaining: float = 0,  # float32
-        **kwargs,
-    ):
-        super().__init__(
-            time=time,
-            guid=guid,
-            mode=mode,
-            request_guid_queue=request_guid_queue or [],
-            seconds_remaining=seconds_remaining,
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "time",
+                "guid",
+                "mode",
+                "request_guid_queue",
+                "seconds_remaining",
+            ],
+        }
 
 
 # builtin_interfaces/Time time

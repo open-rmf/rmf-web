@@ -6,32 +6,23 @@ import pydantic
 
 
 class PauseRequest(pydantic.BaseModel):
-    fleet_name: str
-    robot_name: str
-    mode_request_id: pydantic.conint(ge=0, le=18446744073709551615)
-    type: pydantic.conint(ge=0, le=4294967295)
-    at_checkpoint: pydantic.conint(ge=0, le=4294967295)
+    fleet_name: str = ""  # string
+    robot_name: str = ""  # string
+    mode_request_id: pydantic.conint(ge=0, le=18446744073709551615) = 0  # uint64
+    type: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
+    at_checkpoint: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        fleet_name: str = "",  # string
-        robot_name: str = "",  # string
-        mode_request_id: int = 0,  # uint64
-        type: int = 0,  # uint32
-        at_checkpoint: int = 0,  # uint32
-        **kwargs,
-    ):
-        super().__init__(
-            fleet_name=fleet_name,
-            robot_name=robot_name,
-            mode_request_id=mode_request_id,
-            type=type,
-            at_checkpoint=at_checkpoint,
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "fleet_name",
+                "robot_name",
+                "mode_request_id",
+                "type",
+                "at_checkpoint",
+            ],
+        }
 
 
 # string fleet_name

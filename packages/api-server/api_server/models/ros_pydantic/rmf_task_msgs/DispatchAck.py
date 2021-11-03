@@ -8,23 +8,19 @@ from ..rmf_task_msgs.DispatchRequest import DispatchRequest
 
 
 class DispatchAck(pydantic.BaseModel):
-    dispatch_request: DispatchRequest
-    success: bool
+    dispatch_request: DispatchRequest = (
+        DispatchRequest()
+    )  # rmf_task_msgs/DispatchRequest
+    success: bool = False  # bool
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        dispatch_request: DispatchRequest = DispatchRequest(),  # rmf_task_msgs/DispatchRequest
-        success: bool = False,  # bool
-        **kwargs,
-    ):
-        super().__init__(
-            dispatch_request=dispatch_request,
-            success=success,
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "dispatch_request",
+                "success",
+            ],
+        }
 
 
 # # This message is published by the fleet adapter in response to a

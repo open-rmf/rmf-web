@@ -14,38 +14,27 @@ from ..rmf_task_msgs.TaskType import TaskType
 
 
 class TaskDescription(pydantic.BaseModel):
-    start_time: Time
-    priority: Priority
-    task_type: TaskType
-    station: Station
-    loop: Loop
-    delivery: Delivery
-    clean: Clean
+    start_time: Time = Time()  # builtin_interfaces/Time
+    priority: Priority = Priority()  # rmf_task_msgs/Priority
+    task_type: TaskType = TaskType()  # rmf_task_msgs/TaskType
+    station: Station = Station()  # rmf_task_msgs/Station
+    loop: Loop = Loop()  # rmf_task_msgs/Loop
+    delivery: Delivery = Delivery()  # rmf_task_msgs/Delivery
+    clean: Clean = Clean()  # rmf_task_msgs/Clean
 
     class Config:
         orm_mode = True
-
-    def __init__(
-        self,
-        start_time: Time = Time(),  # builtin_interfaces/Time
-        priority: Priority = Priority(),  # rmf_task_msgs/Priority
-        task_type: TaskType = TaskType(),  # rmf_task_msgs/TaskType
-        station: Station = Station(),  # rmf_task_msgs/Station
-        loop: Loop = Loop(),  # rmf_task_msgs/Loop
-        delivery: Delivery = Delivery(),  # rmf_task_msgs/Delivery
-        clean: Clean = Clean(),  # rmf_task_msgs/Clean
-        **kwargs,
-    ):
-        super().__init__(
-            start_time=start_time,
-            priority=priority,
-            task_type=task_type,
-            station=station,
-            loop=loop,
-            delivery=delivery,
-            clean=clean,
-            **kwargs,
-        )
+        schema_extra = {
+            "required": [
+                "start_time",
+                "priority",
+                "task_type",
+                "station",
+                "loop",
+                "delivery",
+                "clean",
+            ],
+        }
 
 
 # # Desired start time of a task
