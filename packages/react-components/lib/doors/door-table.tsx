@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
   tableRow: {
     '&:hover': {
       cursor: 'pointer',
+      backgroundColor: theme.palette.action.hover,
     },
   },
 }));

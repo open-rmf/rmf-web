@@ -56,6 +56,7 @@ const useStyles = makeStyles((theme) => ({
     borderColor: theme.palette.primary.main,
     '&:hover': {
       cursor: 'pointer',
+      backgroundColor: theme.palette.action.hover,
     },
   },
   itemIcon: {
