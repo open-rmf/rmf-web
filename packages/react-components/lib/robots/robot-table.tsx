@@ -44,6 +44,12 @@ const useStyles = makeStyles((theme) => ({
   robotChargingClass: {
     backgroundColor: theme.palette.info.main,
   },
+  tableRow: {
+    '&:hover': {
+      cursor: 'pointer',
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
 }));
 
 interface RobotRowProps {
@@ -113,7 +119,7 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
   if (robot.tasks.length === 0) {
     return (
       <>
-        <TableRow onClick={onClick}>
+        <TableRow onClick={onClick} className={classes.tableRow}>
           <TableCell>{robot.name}</TableCell>
           <TableCell>{'-'}</TableCell>
           <TableCell>{'-'}</TableCell>
@@ -126,7 +132,7 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
   } else {
     return (
       <>
-        <TableRow onClick={onClick}>
+        <TableRow onClick={onClick} className={classes.tableRow}>
           <TableCell>{robot.name}</TableCell>
           {returnLocationCells(robot)}
           <TableCell>

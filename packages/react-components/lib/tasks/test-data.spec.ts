@@ -129,5 +129,10 @@ export function makeDefinedTask(
 
   const progress = Math.floor(Math.random() * 100);
 
-  return { task_id: id, authz_grp: 'test_group', summary: taskSummary, progress: progress };
+  return {
+    task_id: id,
+    authz_grp: 'test_group',
+    summary: taskSummary,
+    progress: { status: `${progress}%` },
+  };
 }

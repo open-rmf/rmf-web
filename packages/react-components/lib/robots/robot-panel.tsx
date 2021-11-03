@@ -62,7 +62,10 @@ export function RobotPanel({
     robot: VerboseRobot,
   ) => {
     setSelectedRobot(robot);
-    leafletMap && leafletMap.map?.setView([robot.state.location.y, robot.state.location.x], 5.5);
+    leafletMap &&
+      leafletMap.map?.setView([robot.state.location.y, robot.state.location.x], 5.5, {
+        animate: true,
+      });
   };
 
   return (
