@@ -31,5 +31,8 @@ export function dispenserModeToString(mode: number): string {
 }
 
 export function onWorkcellClick(workcell: DispenserResource, leafletMap?: LeafletContext) {
-  leafletMap && leafletMap.map?.setView([workcell.location.y, workcell.location.x], 5.5);
+  leafletMap &&
+    leafletMap.map?.setView([workcell.location.y, workcell.location.x], 5.5, {
+      animate: true,
+    });
 }

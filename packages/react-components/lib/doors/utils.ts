@@ -64,5 +64,8 @@ export function doorTypeToString(doorType: number): string {
 
 export const onDoorClick = (door: RmfModels.Door, leafletMap?: LeafletContext) => {
   const center = getDoorCenter(door);
-  leafletMap && leafletMap.map?.setView([center[1], center[0]], 5.5);
+  leafletMap &&
+    leafletMap.map?.setView([center[1], center[0]], 5.5, {
+      animate: true,
+    });
 };

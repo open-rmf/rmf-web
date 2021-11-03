@@ -82,5 +82,8 @@ export function requestDoorModeToString(requestDoorMode: number): string {
 }
 
 export function onLiftClick(lift: RmfModels.Lift, leafletMap?: LeafletContext) {
-  leafletMap && leafletMap.map?.setView([lift.ref_y, lift.ref_x], 5.5);
+  leafletMap &&
+    leafletMap.map?.setView([lift.ref_y, lift.ref_x], 5.5, {
+      animate: true,
+    });
 }
