@@ -7,7 +7,7 @@ export enum RmfAction {
   TaskCancel = 'task_cancel',
 }
 
-export function getActionText(action: RmfAction): string {
+export function getActionText(action: string): string {
   return action.replace(/(?:^|_)([a-z])/g, (_, p1: string) => ` ${p1.toUpperCase()}`).slice(1);
 }
 

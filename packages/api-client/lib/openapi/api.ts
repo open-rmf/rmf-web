@@ -1658,13 +1658,13 @@ export interface User {
    * @type {boolean}
    * @memberof User
    */
-  is_admin?: boolean;
+  is_admin: boolean;
   /**
    *
    * @type {Array<string>}
    * @memberof User
    */
-  roles?: Array<string>;
+  roles: Array<string>;
 }
 /**
  *

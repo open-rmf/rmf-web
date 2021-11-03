@@ -52,4 +52,6 @@ def basic_health_model(
             del dic["id_"]
             await TortoiseModel.update_or_create(dic, id_=self.id_)
 
+    _BasicHealth.__name__ = TortoiseModel.__name__
+
     return cast(Type[BaseBasicHealth[HealthModelT]], _BasicHealth)
