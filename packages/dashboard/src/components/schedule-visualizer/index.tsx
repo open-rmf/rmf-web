@@ -62,7 +62,6 @@ export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
    * default: 'normal'
    */
   mode?: 'normal' | 'negotiation';
-  zoom?: number | undefined;
   onDoorClick?: (ev: React.MouseEvent, door: string) => void;
   onLiftClick?: (ev: React.MouseEvent, lift: string) => void;
   onRobotClick?: (ev: React.MouseEvent, fleet: string, robot: string) => void;
@@ -84,7 +83,6 @@ export default function ScheduleVisualizer({
   liftStates = {},
   fleetStates = {},
   mode = 'normal',
-  zoom,
   onDoorClick,
   onLiftClick,
   onRobotClick,
@@ -334,7 +332,6 @@ export default function ScheduleVisualizer({
       zoomSnap={0.5}
       bounds={bounds}
       className={classes.map}
-      zoom={zoom}
       setLeafletMap={setLeafletMap}
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
