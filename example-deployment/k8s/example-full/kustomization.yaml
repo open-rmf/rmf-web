@@ -33,3 +33,7 @@ configMapGenerator:
   - name: reporting-server-config
     files:
       - reporting_server_config.py
+  - name: rmf-server-config
+    files:
+      - rmf_server_config.py
+    behavior: replace
