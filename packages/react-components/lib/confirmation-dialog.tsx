@@ -76,7 +76,7 @@ export function ConfirmationDialog({
           <Button
             variant="contained"
             type="submit"
-            color="secondary"
+            color="primary"
             disabled={submitting}
             className={clsx(myClasses.actionBtn, classes?.button)}
           >
