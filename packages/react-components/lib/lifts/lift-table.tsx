@@ -11,7 +11,7 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import LiftRequestFormDialog from './lift-request-form-dialog';
 import { doorStateToString, liftModeToString, requestDoorModes, requestModes } from './lift-utils';
-import { tableCellStyle } from '../utils';
+import { useFixedTableCellStyles } from '../utils';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import clsx from 'clsx';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -81,6 +81,8 @@ const LiftRow = React.memo(
   }: LiftRowProps) => {
     const classes = useStyles();
     const [showForms, setShowForms] = React.useState(false);
+    const fixedtableCellClass = useFixedTableCellStyles().fixedTableCell;
+    const lastTableCellClass = useFixedTableCellStyles().fixedLastTableCell;
 
     const doorModeLabelClasses = React.useCallback(
       (doorState: number): string => {
@@ -108,8 +110,7 @@ const LiftRow = React.memo(
         <TableCell
           component="div"
           variant="body"
-          className={classes.tableCell}
-          style={tableCellStyle('1')}
+          className={clsx(classes.tableCell, fixedtableCellClass)}
           title={lift.name}
         >
           {lift.name}
@@ -117,40 +118,35 @@ const LiftRow = React.memo(
         <TableCell
           component="div"
           variant="body"
-          className={classes.tableCell}
-          style={tableCellStyle('1')}
+          className={clsx(classes.tableCell, fixedtableCellClass)}
         >
           {liftModeToString(currentMode)}
         </TableCell>
         <TableCell
           component="div"
           variant="body"
-          className={classes.tableCell}
-          style={tableCellStyle('1')}
+          className={clsx(classes.tableCell, fixedtableCellClass)}
         >
           {currentFloor}
         </TableCell>
         <TableCell
           component="div"
           variant="body"
-          className={classes.tableCell}
-          style={tableCellStyle('1')}
+          className={clsx(classes.tableCell, fixedtableCellClass)}
         >
           {destinationFloor}
         </TableCell>
         <TableCell
           component="div"
           variant="body"
-          className={clsx(doorModeLabelClasses(doorState), classes.tableCell)}
-          style={tableCellStyle('1')}
+          className={clsx(doorModeLabelClasses(doorState), classes.tableCell, fixedtableCellClass)}
         >
           {doorStateToString(doorState)}
         </TableCell>
         <TableCell
           component="div"
           variant="body"
-          className={classes.tableCell}
-          style={tableCellStyle('1.5')}
+          className={clsx(classes.tableCell, lastTableCellClass)}
         >
           <Button
             variant="contained"
@@ -194,6 +190,8 @@ const LiftListRenderer = ({ data, index, style }: LiftListRendererProps) => {
 
 export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps): JSX.Element => {
   const classes = useStyles();
+  const fixedtableCellClass = useFixedTableCellStyles().fixedTableCell;
+  const lastTableCellClass = useFixedTableCellStyles().fixedLastTableCell;
   return (
     <AutoSizer disableHeight>
       {({ width }) => {
@@ -204,48 +202,42 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
                 <TableCell
                   component="div"
                   variant="body"
-                  className={classes.tableCell}
-                  style={tableCellStyle('1')}
+                  className={clsx(classes.tableCell, fixedtableCellClass)}
                 >
                   Lift Name
                 </TableCell>
                 <TableCell
                   component="div"
                   variant="body"
-                  className={classes.tableCell}
-                  style={tableCellStyle('1')}
+                  className={clsx(classes.tableCell, fixedtableCellClass)}
                 >
                   Op. Mode
                 </TableCell>
                 <TableCell
                   component="div"
                   variant="body"
-                  className={classes.tableCell}
-                  style={tableCellStyle('1')}
+                  className={clsx(classes.tableCell, fixedtableCellClass)}
                 >
                   Current Floor
                 </TableCell>
                 <TableCell
                   component="div"
                   variant="body"
-                  className={classes.tableCell}
-                  style={tableCellStyle('1')}
+                  className={clsx(classes.tableCell, fixedtableCellClass)}
                 >
                   Destination
                 </TableCell>
                 <TableCell
                   component="div"
                   variant="body"
-                  className={classes.tableCell}
-                  style={tableCellStyle('1')}
+                  className={clsx(classes.tableCell, fixedtableCellClass)}
                 >
                   Doors State
                 </TableCell>
                 <TableCell
                   component="div"
                   variant="body"
-                  className={classes.tableCell}
-                  style={tableCellStyle('1.5')}
+                  className={clsx(classes.tableCell, lastTableCellClass)}
                 >
                   Request Form
                 </TableCell>

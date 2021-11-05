@@ -3,7 +3,7 @@ import { Dispenser } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { dispenserModeToString } from './utils';
-import { tableCellStyle } from '../utils';
+import { useFixedTableCellStyles } from '../utils';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import clsx from 'clsx';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -49,6 +49,7 @@ export interface WorkcellRowProps {
 const WorkcellRow = React.memo(
   ({ workcell, mode, requestGuidQueue, secondsRemaining, style }: WorkcellRowProps) => {
     const classes = useStyles();
+    const fixedtableCellClass = useFixedTableCellStyles().fixedTableCell;
     const dispenserModeLabelClasses = React.useCallback(
       (mode: number): string => {
         switch (mode) {
@@ -77,8 +78,7 @@ const WorkcellRow = React.memo(
             <TableCell
               component="div"
               variant="head"
-              className={classes.tableCell}
-              style={tableCellStyle('1')}
+              className={clsx(classes.tableCell, fixedtableCellClass)}
               title={workcell.guid}
             >
               {workcell.guid}
@@ -86,32 +86,32 @@ const WorkcellRow = React.memo(
             <TableCell
               component="div"
               variant="head"
-              className={clsx(dispenserModeLabelClasses(mode), classes.tableCell)}
-              style={tableCellStyle('1')}
+              className={clsx(
+                dispenserModeLabelClasses(mode),
+                classes.tableCell,
+                fixedtableCellClass,
+              )}
             >
               {dispenserModeToString(mode)}
             </TableCell>
             <TableCell
               component="div"
               variant="head"
-              className={classes.tableCell}
-              style={tableCellStyle('1')}
+              className={clsx(classes.tableCell, fixedtableCellClass)}
             >
               {requestGuidQueue.length}
             </TableCell>
             <TableCell
               component="div"
               variant="head"
-              className={classes.tableCell}
-              style={tableCellStyle('1')}
+              className={clsx(classes.tableCell, fixedtableCellClass)}
             >
               {requestGuidQueue}
             </TableCell>
             <TableCell
               component="div"
               variant="head"
-              className={classes.tableCell}
-              style={tableCellStyle('1')}
+              className={clsx(classes.tableCell, fixedtableCellClass)}
             >
               {secondsRemaining}
             </TableCell>
@@ -121,8 +121,7 @@ const WorkcellRow = React.memo(
             <TableCell
               component="div"
               variant="head"
-              className={classes.tableCell}
-              style={tableCellStyle('1')}
+              className={clsx(classes.tableCell, fixedtableCellClass)}
               title={workcell.guid}
             >
               {workcell.guid}
@@ -130,32 +129,28 @@ const WorkcellRow = React.memo(
             <TableCell
               component="div"
               variant="head"
-              className={classes.tableCell}
-              style={tableCellStyle('1')}
+              className={clsx(classes.tableCell, fixedtableCellClass)}
             >
               {'NA'}
             </TableCell>
             <TableCell
               component="div"
               variant="head"
-              className={classes.tableCell}
-              style={tableCellStyle('1')}
+              className={clsx(classes.tableCell, fixedtableCellClass)}
             >
               {'NA'}
             </TableCell>
             <TableCell
               component="div"
               variant="head"
-              className={classes.tableCell}
-              style={tableCellStyle('1')}
+              className={clsx(classes.tableCell, fixedtableCellClass)}
             >
               {'NA'}
             </TableCell>
             <TableCell
               component="div"
               variant="head"
-              className={classes.tableCell}
-              style={tableCellStyle('1')}
+              className={clsx(classes.tableCell, fixedtableCellClass)}
             >
               {'NA'}
             </TableCell>
@@ -184,6 +179,7 @@ const WorkcellListRenderer = ({ data, index, style }: WorkcellListRendererProps)
 
 export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps): JSX.Element => {
   const classes = useStyles();
+  const fixedtableCellClass = useFixedTableCellStyles().fixedTableCell;
   return (
     <AutoSizer disableHeight>
       {({ width }) => {
@@ -194,40 +190,35 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
                 <TableCell
                   component="div"
                   variant="head"
-                  className={classes.tableCell}
-                  style={tableCellStyle('1')}
+                  className={clsx(classes.tableCell, fixedtableCellClass)}
                 >
                   Dispenser Name
                 </TableCell>
                 <TableCell
                   component="div"
                   variant="head"
-                  className={classes.tableCell}
-                  style={tableCellStyle('1')}
+                  className={clsx(classes.tableCell, fixedtableCellClass)}
                 >
                   Op. Mode
                 </TableCell>
                 <TableCell
                   component="div"
                   variant="head"
-                  className={classes.tableCell}
-                  style={tableCellStyle('1')}
+                  className={clsx(classes.tableCell, fixedtableCellClass)}
                 >
                   No. Queued Requests
                 </TableCell>
                 <TableCell
                   component="div"
                   variant="head"
-                  className={classes.tableCell}
-                  style={tableCellStyle('1')}
+                  className={clsx(classes.tableCell, fixedtableCellClass)}
                 >
                   Request Queue ID
                 </TableCell>
                 <TableCell
                   component="div"
                   variant="head"
-                  className={classes.tableCell}
-                  style={tableCellStyle('1')}
+                  className={clsx(classes.tableCell, fixedtableCellClass)}
                 >
                   Seconds Remaining
                 </TableCell>

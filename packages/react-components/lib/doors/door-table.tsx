@@ -12,7 +12,7 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import { DoorData, doorModeToString, doorTypeToString } from './utils';
-import { tableCellStyle } from '../utils';
+import { useFixedTableCellStyles } from '../utils';
 import clsx from 'clsx';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
@@ -61,6 +61,8 @@ const getOpMode = (doorMode?: number) => {
 
 const DoorRow = React.memo(({ door, doorMode, style, onDoorControlClick }: DoorRowProps) => {
   const classes = useStyles();
+  const fixedtableCellClass = useFixedTableCellStyles().fixedTableCell;
+  const lastTableCellClass = useFixedTableCellStyles().fixedLastTableCell;
   const doorModeLabelClasses = React.useCallback(
     (doorMode?: number): string => {
       if (doorMode === undefined) {
@@ -91,8 +93,7 @@ const DoorRow = React.memo(({ door, doorMode, style, onDoorControlClick }: DoorR
       <TableCell
         component="div"
         variant="body"
-        className={classes.tableCell}
-        style={tableCellStyle('1')}
+        className={clsx(classes.tableCell, fixedtableCellClass)}
         title={door?.door.name}
       >
         {door.door.name}
@@ -103,40 +104,36 @@ const DoorRow = React.memo(({ door, doorMode, style, onDoorControlClick }: DoorR
         className={clsx(
           getOpMode(doorMode) === 'Offline' ? classes.doorLabelClosed : classes.doorLabelOpen,
           classes.tableCell,
+          fixedtableCellClass,
         )}
-        style={tableCellStyle('1')}
       >
         {getOpMode(doorMode)}
       </TableCell>
       <TableCell
         component="div"
         variant="body"
-        className={classes.tableCell}
-        style={tableCellStyle('1')}
+        className={clsx(classes.tableCell, fixedtableCellClass)}
       >
         {door.level}
       </TableCell>
       <TableCell
         component="div"
         variant="body"
-        className={classes.tableCell}
-        style={tableCellStyle('1')}
+        className={clsx(classes.tableCell, fixedtableCellClass)}
       >
         {doorTypeToString(door.door.door_type)}
       </TableCell>
       <TableCell
         component="div"
         variant="body"
-        className={clsx(doorStatusClass, classes.tableCell)}
-        style={tableCellStyle('1')}
+        className={clsx(doorStatusClass, classes.tableCell, fixedtableCellClass)}
       >
         {doorModeToString(doorMode)}
       </TableCell>
       <TableCell
         component="div"
         variant="body"
-        className={classes.tableCell}
-        style={tableCellStyle('1.5')}
+        className={clsx(classes.tableCell, lastTableCellClass)}
       >
         <ButtonGroup size="small">
           <Button
@@ -182,6 +179,8 @@ export const DoorTable = ({
   onDoorControlClick,
 }: DoorTableProps): JSX.Element => {
   const classes = useStyles();
+  const fixedtableCellClass = useFixedTableCellStyles().fixedTableCell;
+  const lastTableCellClass = useFixedTableCellStyles().fixedLastTableCell;
   return (
     <AutoSizer disableHeight>
       {({ width }) => {
@@ -192,48 +191,42 @@ export const DoorTable = ({
                 <TableCell
                   component="div"
                   variant="head"
-                  className={classes.tableCell}
-                  style={tableCellStyle('1')}
+                  className={clsx(classes.tableCell, fixedtableCellClass)}
                 >
                   Door Name
                 </TableCell>
                 <TableCell
                   component="div"
                   variant="head"
-                  className={classes.tableCell}
-                  style={tableCellStyle('1')}
+                  className={clsx(classes.tableCell, fixedtableCellClass)}
                 >
                   Op. Mode
                 </TableCell>
                 <TableCell
                   component="div"
                   variant="head"
-                  className={classes.tableCell}
-                  style={tableCellStyle('1')}
+                  className={clsx(classes.tableCell, fixedtableCellClass)}
                 >
                   Level
                 </TableCell>
                 <TableCell
                   component="div"
                   variant="head"
-                  className={classes.tableCell}
-                  style={tableCellStyle('1')}
+                  className={clsx(classes.tableCell, fixedtableCellClass)}
                 >
                   Door Type
                 </TableCell>
                 <TableCell
                   component="div"
                   variant="head"
-                  className={classes.tableCell}
-                  style={tableCellStyle('1')}
+                  className={clsx(classes.tableCell, fixedtableCellClass)}
                 >
                   Doors State
                 </TableCell>
                 <TableCell
                   component="div"
                   variant="head"
-                  className={classes.tableCell}
-                  style={tableCellStyle('1.5')}
+                  className={clsx(classes.tableCell, lastTableCellClass)}
                 >
                   Door Control
                 </TableCell>
