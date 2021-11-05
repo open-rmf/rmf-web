@@ -41,7 +41,7 @@ export function UserProfileProvider({
         baseOptions: {
           headers: {
             Authorization: token && `Bearer ${token}`,
-          }
+          },
         },
       }),
     [token, basePath],
