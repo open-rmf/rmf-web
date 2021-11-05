@@ -95,7 +95,7 @@ export function RobotPage() {
 
   return (
     <Grid container className={classes.container}>
-      <Grid item xs={3}>
+      <Grid item xs={4}>
         <Card variant="outlined" className={classes.mapPanel}>
           {buildingMap && (
             <ScheduleVisualizer
@@ -104,13 +104,13 @@ export function RobotPage() {
               ingestors={ingestors}
               fleetStates={Object.assign({}, fleetStatesRef.current)}
               mode="normal"
-              zoom={4.5}
               setLeafletMap={setLeafletMap}
+              zoom={4.5}
             />
           )}
         </Card>
       </Grid>
-      <Grid item xs={9}>
+      <Grid item xs={8}>
         <RobotPanel
           className={classes.robotPanel}
           fetchVerboseRobots={fetchVerboseRobots}

@@ -20,9 +20,6 @@ import { taskTypeToStr } from '../tasks/utils';
 import { robotModeToString, VerboseRobot } from './utils';
 
 const useStyles = makeStyles((theme) => ({
-  table: {
-    minWidth: 650,
-  },
   title: {
     flex: '1 1 100%',
   },
@@ -184,7 +181,7 @@ export function RobotTable({
         </IconButton>
       </Toolbar>
       <TableContainer style={{ flex: '1 1 auto' }} id="robot-table">
-        <Table className={classes.table} stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
+        <Table stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
           <TableHead>
             <TableRow>
               <TableCell>Robot Name</TableCell>
