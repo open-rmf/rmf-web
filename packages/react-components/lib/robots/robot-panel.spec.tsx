@@ -12,18 +12,18 @@ function makeFetchRobots(robots: VerboseRobot[]): RobotPanelProps['fetchVerboseR
   };
 }
 
-describe('RobotPanel', () => {
-  it('shows empty information when robot is clicked when there are no assigned tasks', () => {
+fdescribe('RobotPanel', () => {
+  it('shows empty information when robot is clicked when there are no assigned tasks', async () => {
     const robots = [makeRandomRobot('test_robot1', 'test_fleet', 2)];
     const root = render(
       <RobotPanel verboseRobots={robots} fetchVerboseRobots={makeFetchRobots(robots)} />,
     );
-    userEvent.click(root.getByText('test_robot1'));
+    await userEvent.click(root.getByText('test_robot1'));
     expect(root.getByRole('heading', { name: 'test_robot1' })).toBeTruthy();
     expect(root.getAllByRole('button', { name: '-' }).length).toBe(4);
   });
 
-  it('shows detailed information when robot is clicked', () => {
+  it('shows detailed information when robot is clicked', async () => {
     const tasks = [
       { ...makeDefinedTask('Loop', 'test_robot1', 'task_1', 3, 3), progress: { status: '10%' } },
     ];
@@ -35,7 +35,7 @@ describe('RobotPanel', () => {
         fetchVerboseRobots={makeFetchRobots(verboseRobot)}
       />,
     );
-    userEvent.click(root.getByText('test_robot1'));
+    await userEvent.click(root.getByText('test_robot1'));
     expect(root.getByRole('progressbar')).toBeTruthy();
   });
 });
