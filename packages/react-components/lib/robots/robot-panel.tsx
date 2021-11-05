@@ -57,10 +57,11 @@ export function RobotPanel({
     })();
   };
 
-  const handleRobotClick = (
+  const handleRobotClick = async (
     _ev: React.MouseEvent<HTMLDivElement, MouseEvent>,
     robot: VerboseRobot,
   ) => {
+    await handleRefresh(robot);
     setSelectedRobot(robot);
     leafletMap &&
       leafletMap.map?.setView([robot.state.location.y, robot.state.location.x], 5.5, {
