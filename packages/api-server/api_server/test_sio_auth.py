@@ -39,7 +39,9 @@ class TestSioAuth(unittest.TestCase):
                     client.connect(self.base_url, auth=auth)
                     return True
                 except socketio.exceptions.ConnectionError as e:
-                    if str(e) == "Connection refused by the server" and tries < 10:
+                    # Check specifically for connection refused "Errno 111"
+                    # Likely a race condition, wait for server to start
+                    if "Errno 111" in str(e) and tries < 10:
                         time.sleep(0.5)
                     else:
                         return False
