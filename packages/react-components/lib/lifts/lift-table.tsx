@@ -9,8 +9,15 @@ import {
 } from '@material-ui/core';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
+import { LeafletContext } from 'react-leaflet';
 import LiftRequestFormDialog from './lift-request-form-dialog';
-import { doorStateToString, liftModeToString, requestDoorModes, requestModes } from './lift-utils';
+import {
+  doorStateToString,
+  liftModeToString,
+  requestDoorModes,
+  requestModes,
+  onLiftClick,
+} from './lift-utils';
 
 const useStyles = makeStyles((theme) => ({
   doorLabelOpen: {
@@ -22,11 +29,18 @@ const useStyles = makeStyles((theme) => ({
   doorLabelMoving: {
     color: theme.palette.warning.main,
   },
+  tableRow: {
+    '&:hover': {
+      cursor: 'pointer',
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
 }));
 
 export interface LiftTableProps {
   lifts: RmfModels.Lift[];
   liftStates: Record<string, RmfModels.LiftState>;
+  leafletMap?: LeafletContext;
   onRequestSubmit?(
     event: React.FormEvent,
     lift: RmfModels.Lift,
@@ -42,6 +56,7 @@ export interface LiftRowProps {
   destinationFloor?: string;
   currentFloor?: string;
   currentMode?: number;
+  leafletMap?: LeafletContext;
   onRequestSubmit?(
     event: React.FormEvent,
     lift: RmfModels.Lift,
@@ -58,6 +73,7 @@ const LiftRow = React.memo(
     destinationFloor,
     currentFloor,
     currentMode,
+    leafletMap,
     onRequestSubmit,
   }: LiftRowProps) => {
     const classes = useStyles();
@@ -81,7 +97,11 @@ const LiftRow = React.memo(
     );
 
     return (
-      <TableRow aria-label={`${lift.name}`}>
+      <TableRow
+        aria-label={`${lift.name}`}
+        className={classes.tableRow}
+        onClick={() => onLiftClick(lift, leafletMap)}
+      >
         <TableCell>{lift.name}</TableCell>
         <TableCell>{liftModeToString(currentMode)}</TableCell>
         <TableCell>{currentFloor}</TableCell>
@@ -113,7 +133,12 @@ const LiftRow = React.memo(
   },
 );
 
-export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps): JSX.Element => {
+export const LiftTable = ({
+  leafletMap,
+  lifts,
+  liftStates,
+  onRequestSubmit,
+}: LiftTableProps): JSX.Element => {
   return (
     <Table stickyHeader size="small" aria-label="lift-table">
       <TableHead>
@@ -136,6 +161,7 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
               destinationFloor={state?.destination_floor}
               currentFloor={state?.current_floor}
               currentMode={state?.current_mode}
+              leafletMap={leafletMap}
               key={`${lift.name}_${i}`}
               onRequestSubmit={onRequestSubmit}
             />

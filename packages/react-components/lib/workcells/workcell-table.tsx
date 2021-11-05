@@ -9,8 +9,9 @@ import {
 } from '@material-ui/core';
 import { Dispenser } from 'api-client';
 import React from 'react';
+import { LeafletContext } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
-import { dispenserModeToString } from './utils';
+import { dispenserModeToString, onWorkcellClick, DispenserResource } from './utils';
 
 const useStyles = makeStyles((theme) => ({
   dispenserLabelIdle: {
@@ -32,14 +33,24 @@ const useStyles = makeStyles((theme) => ({
     whiteSpace: 'nowrap',
     overflow: 'hidden',
   },
+  tableRow: {
+    '&:hover': {
+      cursor: 'pointer',
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
 }));
 
 export interface WorkcellTableProps {
+  leafletMap?: LeafletContext;
   workcells: Dispenser[];
   workcellStates: Record<string, RmfModels.DispenserState>;
+  workcellContext: Record<string, DispenserResource>;
 }
 
 export interface WorkcellRowProps {
+  leafletMap?: LeafletContext;
+  workcellResource: DispenserResource;
   workcell: Dispenser;
   mode?: number;
   requestGuidQueue?: string[];
@@ -47,7 +58,14 @@ export interface WorkcellRowProps {
 }
 
 const WorkcellRow = React.memo(
-  ({ workcell, mode, requestGuidQueue, secondsRemaining }: WorkcellRowProps) => {
+  ({
+    leafletMap,
+    workcell,
+    workcellResource,
+    mode,
+    requestGuidQueue,
+    secondsRemaining,
+  }: WorkcellRowProps) => {
     const classes = useStyles();
 
     const dispenserModeLabelClasses = React.useCallback(
@@ -67,7 +85,11 @@ const WorkcellRow = React.memo(
     );
 
     return (
-      <TableRow aria-label={`${workcell.guid}`}>
+      <TableRow
+        aria-label={`${workcell.guid}`}
+        className={classes.tableRow}
+        onClick={() => onWorkcellClick(workcellResource, leafletMap)}
+      >
         {mode !== undefined && requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
           <React.Fragment>
             <TableCell className={classes.firstCell}>{workcell.guid}</TableCell>
@@ -92,7 +114,12 @@ const WorkcellRow = React.memo(
   },
 );
 
-export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps): JSX.Element => {
+export const WorkcellTable = ({
+  leafletMap,
+  workcells,
+  workcellStates,
+  workcellContext,
+}: WorkcellTableProps): JSX.Element => {
   const classes = useStyles();
 
   return (
@@ -113,11 +140,13 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
               workcellStates[workcell.guid];
             return (
               <WorkcellRow
+                leafletMap={leafletMap}
                 key={workcell.guid}
                 workcell={workcell}
                 mode={state?.mode}
                 requestGuidQueue={state?.request_guid_queue}
                 secondsRemaining={state?.seconds_remaining}
+                workcellResource={workcellContext[workcell.guid]}
               />
             );
           })}

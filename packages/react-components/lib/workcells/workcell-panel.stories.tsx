@@ -21,6 +21,7 @@ export const WorkcellPanelStory: Story = (args) => {
         test_dispenser: makeDispenserState({ guid: 'test_dispenser' }),
         test_ingestor: makeDispenserState({ guid: 'test_ingestor' }),
       }}
+      workcellContext={{}}
       {...args}
     />
   );

@@ -3,7 +3,13 @@ import clsx from 'clsx';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import React from 'react';
-import { Map as LMap_, MapProps as LMapProps_, Pane, useLeaflet } from 'react-leaflet';
+import {
+  Map as LMap_,
+  MapProps as LMapProps_,
+  Pane,
+  useLeaflet,
+  LeafletContext,
+} from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { EntityManager, EntityManagerContext } from './entity-manager';
 import { LabelsPortalContext } from './labels-overlay';
@@ -36,12 +42,18 @@ export function calcMaxBounds(
   return bounds.pad(0.2);
 }
 
-function EntityManagerProvider({ children }: React.PropsWithChildren<{}>) {
+function EntityManagerProvider({
+  setLeafletMap,
+  children,
+}: React.PropsWithChildren<{
+  setLeafletMap?: React.Dispatch<React.SetStateAction<LeafletContext>>;
+}>) {
   const leaflet = useLeaflet();
   const { current: entityManager } = React.useRef(new EntityManager());
 
   React.useEffect(() => {
     if (!leaflet.map) return;
+    if (setLeafletMap) setLeafletMap(leaflet);
     const listener = () => {
       // TODO: recalculate positions
     };
@@ -58,16 +70,17 @@ function EntityManagerProvider({ children }: React.PropsWithChildren<{}>) {
 
 export interface LMapProps extends Omit<LMapProps_, 'crs'> {
   ref?: React.Ref<LMap_>;
+  setLeafletMap?: React.Dispatch<React.SetStateAction<LeafletContext>>;
 }
 
 export const LMap = React.forwardRef(
-  ({ className, children, ...otherProps }: LMapProps, ref: React.Ref<LMap_>) => {
+  ({ className, children, setLeafletMap, ...otherProps }: LMapProps, ref: React.Ref<LMap_>) => {
     const classes = useStyles();
     const [labelsPortal, setLabelsPortal] = React.useState<SVGSVGElement | null>(null);
     const viewBox = otherProps.bounds ? viewBoxFromLeafletBounds(otherProps.bounds) : undefined;
     return (
       <LMap_ ref={ref} className={clsx(classes.map, className)} crs={L.CRS.Simple} {...otherProps}>
-        <EntityManagerProvider>
+        <EntityManagerProvider setLeafletMap={setLeafletMap}>
           <LabelsPortalContext.Provider value={labelsPortal}>
             {children}
             {otherProps.bounds && (

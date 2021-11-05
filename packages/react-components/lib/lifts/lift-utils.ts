@@ -1,4 +1,5 @@
 import * as RmfModels from 'rmf-models';
+import { LeafletContext } from 'react-leaflet';
 
 export function liftModeToString(liftMode?: number): string {
   if (liftMode === undefined) {
@@ -78,4 +79,11 @@ export const requestDoorModeStrings: Record<number, string> = {
 
 export function requestDoorModeToString(requestDoorMode: number): string {
   return requestDoorModeStrings[requestDoorMode] || 'Unknown';
+}
+
+export function onLiftClick(lift: RmfModels.Lift, leafletMap?: LeafletContext) {
+  leafletMap &&
+    leafletMap.map?.setView([lift.ref_y, lift.ref_x], 5.5, {
+      animate: true,
+    });
 }

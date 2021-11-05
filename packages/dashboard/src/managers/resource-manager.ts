@@ -1,5 +1,6 @@
 import Debug from 'debug';
-import { DispenserResourceManager, RawDispenserResource } from './resource-manager-dispensers';
+import { RawDispenserResource } from 'react-components';
+import { DispenserResourceManager } from './resource-manager-dispensers';
 import { LogoResource, LogoResourceManager } from './resource-manager-logos';
 import { RobotResource, RobotResourceManager } from './resource-manager-robots';
 
