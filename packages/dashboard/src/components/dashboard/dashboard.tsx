@@ -223,7 +223,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 <WorkcellPanel
                   dispensers={dispensers}
                   ingestors={ingestors}
-                  workCellStates={workcellStates}
+                  workcellStates={workcellStates}
                 />
               ) : null}
             </Grid>
