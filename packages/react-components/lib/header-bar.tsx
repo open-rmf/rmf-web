@@ -7,7 +7,7 @@ export type HeaderBarProps = React.PropsWithChildren<AppBarProps>;
 const classes = {
   root: 'header-bar-root',
 };
-const HeaderBarRoot = styled((props: HeaderBarProps) => <AppBar {...props} />)(() => ({
+const StyledAppBar = styled((props: HeaderBarProps) => <AppBar {...props} />)(() => ({
   [`&.${classes.root}`]: {
     display: 'flex',
     flexDirection: 'row',
@@ -22,8 +22,8 @@ export const HeaderBar = ({
   children,
 }: HeaderBarProps): React.ReactElement => {
   return (
-    <HeaderBarRoot id={id} position={position} className={clsx(classes.root, className)}>
+    <StyledAppBar id={id} position={position} className={clsx(classes.root, className)}>
       {children}
-    </HeaderBarRoot>
+    </StyledAppBar>
   );
 };

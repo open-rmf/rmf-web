@@ -35,7 +35,7 @@ const classes = {
   map: 'schedule-visualizer-map',
 };
 
-const LmapRoot = styled((props: LMapProps) => <LMap {...props} />)(({ theme }) => ({
+const StyledLMap = styled((props: LMapProps) => <LMap {...props} />)(({ theme }) => ({
   [`&.${classes.map}`]: {
     backgroundColor: theme.palette.background.default,
   },
@@ -312,7 +312,7 @@ export default function ScheduleVisualizer({
   const registeredLayersHandlers = React.useRef(false);
 
   return bounds ? (
-    <LmapRoot
+    <StyledLMap
       ref={(cur) => {
         if (registeredLayersHandlers.current || !cur) return;
         cur.leafletElement.on('overlayadd', (ev: L.LayersControlEvent) =>
@@ -432,6 +432,6 @@ export default function ScheduleVisualizer({
         }
       />
       {children}
-    </LmapRoot>
+    </StyledLMap>
   ) : null;
 }

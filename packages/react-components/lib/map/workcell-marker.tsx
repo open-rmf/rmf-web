@@ -38,7 +38,7 @@ const classes = {
   text: 'workcell-marker-text',
   clickable: 'workcell-marker-clickable',
 };
-const WorkCellMarkerRoot = styled('g')(() => ({
+const StyledWorkCellMarker = styled('g')(() => ({
   [`& .${classes.text}`]: {
     dominantBaseline: 'central',
     textAnchor: 'middle',
@@ -67,7 +67,7 @@ export const WorkcellMarker = React.forwardRef(function (
   const useImageIcon = !!iconPath && !imageHasError;
 
   return (
-    <WorkCellMarkerRoot ref={ref} {...otherProps}>
+    <StyledWorkCellMarker ref={ref} {...otherProps}>
       <g className={otherProps.onClick && classes.clickable}>
         {useImageIcon ? (
           <image
@@ -90,7 +90,7 @@ export const WorkcellMarker = React.forwardRef(function (
           fill="transparent"
         ></rect>
       </g>
-    </WorkCellMarkerRoot>
+    </StyledWorkCellMarker>
   );
 });
 

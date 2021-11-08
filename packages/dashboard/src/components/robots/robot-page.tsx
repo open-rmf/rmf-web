@@ -8,7 +8,7 @@ import { RmfIngressContext } from '../rmf-app';
 const classes = {
   robotPanel: 'robot-page-container',
 };
-const RobotPageRoot = styled((props: RobotPanelProps) => <RobotPanel {...props} />)(
+const StyledRobotPanel = styled((props: RobotPanelProps) => <RobotPanel {...props} />)(
   ({ theme }) => ({
     [`&.${classes.robotPanel}`]: {
       padding: `${theme.spacing(4)}`,
@@ -49,7 +49,7 @@ export function RobotPage() {
   }, [fetchVerboseRobots]);
 
   return (
-    <RobotPageRoot
+    <StyledRobotPanel
       className={classes.robotPanel}
       fetchVerboseRobots={fetchVerboseRobots}
       paginationOptions={{

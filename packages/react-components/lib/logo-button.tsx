@@ -6,7 +6,7 @@ const classes = {
   logoBtn: 'logo-button-root',
   logoImg: 'logo-button-image',
 };
-const LogoButtonRoot = styled((props: ButtonBaseProps) => <ButtonBase {...props} />)(
+const StyledButtonBase = styled((props: ButtonBaseProps) => <ButtonBase {...props} />)(
   ({ theme }) => ({
     [`&.${classes.logoBtn}`]: {
       padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
@@ -31,8 +31,8 @@ export const LogoButton = ({
   ...otherProps
 }: LogoButtonProps): JSX.Element => {
   return (
-    <LogoButtonRoot className={clsx(classes.logoBtn, className)} disableRipple {...otherProps}>
+    <StyledButtonBase className={clsx(classes.logoBtn, className)} disableRipple {...otherProps}>
       <img src={src} alt={alt} className={classes.logoImg} />
-    </LogoButtonRoot>
+    </StyledButtonBase>
   );
 };

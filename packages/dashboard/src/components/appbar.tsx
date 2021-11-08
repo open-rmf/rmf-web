@@ -38,18 +38,20 @@ const classes = {
   toolbar: `${prefix}-toolbar`,
 };
 
-const AppBarRoot = styled((props: HeaderBarProps) => <HeaderBar {...props} />)(({ theme }) => ({
-  [`&.${classes.appBar}`]: {
-    zIndex: theme.zIndex.drawer + 1,
-  },
-  [`& .${classes.logoBtn}`]: {
-    width: customThemeValues.appBar.logoSize,
-  },
-  [`& .${classes.toolbar}`]: {
-    textAlign: 'right',
-    flexGrow: -1,
-  },
-}));
+const StyledHeaderBar = styled((props: HeaderBarProps) => <HeaderBar {...props} />)(
+  ({ theme }) => ({
+    [`&.${classes.appBar}`]: {
+      zIndex: theme.zIndex.drawer + 1,
+    },
+    [`& .${classes.logoBtn}`]: {
+      width: customThemeValues.appBar.logoSize,
+    },
+    [`& .${classes.toolbar}`]: {
+      textAlign: 'right',
+      flexGrow: -1,
+    },
+  }),
+);
 
 const StyledTab = styled((props: TabProps) => <Tab {...props} />)(({ theme }) => ({
   color: 'rgba(255, 255, 255, 0.7)',
@@ -112,7 +114,7 @@ export const AppBar = React.memo(
     }, [logoResourcesContext, safeAsync, curTheme]);
 
     return (
-      <AppBarRoot className={classes.appBar}>
+      <StyledHeaderBar className={classes.appBar}>
         <LogoButton src={brandingIconPath} alt="logo" className={classes.logoBtn} />
         <NavigationBar value={tabValue}>
           <StyledTab
@@ -193,7 +195,7 @@ export const AppBar = React.memo(
             </IconButton>
           </Tooltip>
         </Toolbar>
-      </AppBarRoot>
+      </StyledHeaderBar>
     );
   },
 );

@@ -1,7 +1,7 @@
 import { Button, TextField, Autocomplete } from '@mui/material';
 import React, { ChangeEvent } from 'react';
 import * as RmfModels from 'rmf-models';
-import { CommandsFormRoot, commandFormsClasses } from './form-styles';
+import { StyledForm, commandFormsClasses } from './form-styles';
 
 export type DoDeliveryRequest = (
   pickupPlaceName: string,
@@ -169,7 +169,7 @@ export const DeliveryRequestForm = React.forwardRef(
     };
 
     return (
-      <CommandsFormRoot ref={ref} className={commandFormsClasses.form} onSubmit={handleSubmit}>
+      <StyledForm ref={ref} className={commandFormsClasses.form} onSubmit={handleSubmit}>
         <div className={commandFormsClasses.divForm}>
           <Autocomplete
             getOptionLabel={(option) => option}
@@ -275,7 +275,7 @@ export const DeliveryRequestForm = React.forwardRef(
             Request
           </Button>
         </div>
-      </CommandsFormRoot>
+      </StyledForm>
     );
   },
 );

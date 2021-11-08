@@ -15,7 +15,7 @@ const classes = {
   buttonContainer: 'lift-request-button-container',
   dialogContent: 'lift-request-dialog-content',
 };
-const LiftRequestFormDialogRoot = styled((props: ConfirmationDialogProps) => (
+const StyledConfirmationDialog = styled((props: ConfirmationDialogProps) => (
   <ConfirmationDialog {...props} />
 ))(({ theme }) => ({
   [`& .${classes.closeButton}`]: {
@@ -118,7 +118,7 @@ export const LiftRequestFormDialog = ({
   };
 
   return (
-    <LiftRequestFormDialogRoot
+    <StyledConfirmationDialog
       open={showFormDialog}
       onClose={() => onClose()}
       fullWidth={true}
@@ -184,7 +184,7 @@ export const LiftRequestFormDialog = ({
           value={requestType}
         />
       </div>
-    </LiftRequestFormDialogRoot>
+    </StyledConfirmationDialog>
   );
 };
 

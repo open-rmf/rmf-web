@@ -9,7 +9,7 @@ const classes = {
   marker: 'waypoint-marker-marker',
   text: 'waypoint-marker-text',
 };
-const WayPointMarkerRoot = styled('g')(() => ({
+const StyledWaypointMarker = styled('g')(() => ({
   [`& .${classes.marker}`]: {
     pointerEvents: 'none',
   },
@@ -26,7 +26,7 @@ export const WaypointMarker = React.forwardRef(
     debug('render');
     const waypointId = React.useMemo(uniqueId, []);
     return (
-      <WayPointMarkerRoot ref={ref} {...otherProps}>
+      <StyledWaypointMarker ref={ref} {...otherProps}>
         <defs>
           <filter
             id={`waypoint-${waypointId}-shadow`}
@@ -53,7 +53,7 @@ export const WaypointMarker = React.forwardRef(
           fill={'#FFBF00'}
           filter={`url(#waypoint-${waypointId}-shadow)`}
         />
-      </WayPointMarkerRoot>
+      </StyledWaypointMarker>
     );
   },
 );

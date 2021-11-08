@@ -12,7 +12,7 @@ export interface CircularProgressBarProps {
 const classes = {
   indicator: 'circular-progressbar-indicator',
 };
-const CircularProgressBarRoot = styled((props: ReactCustomizableProgressbarProps) => (
+const StyledCircularProgressBar = styled((props: ReactCustomizableProgressbarProps) => (
   <ProgressBar {...props} />
 ))(() => ({
   [`& .${classes.indicator}`]: {
@@ -32,7 +32,7 @@ export function CircularProgressBar(props: CircularProgressBarProps): JSX.Elemen
   const { progress, strokeColor, children } = props;
 
   return (
-    <CircularProgressBarRoot
+    <StyledCircularProgressBar
       radius={60}
       progress={progress}
       cut={120}
@@ -42,6 +42,6 @@ export function CircularProgressBar(props: CircularProgressBarProps): JSX.Elemen
       trackStrokeWidth={10}
     >
       <div className={classes.indicator}>{children}</div>
-    </CircularProgressBarRoot>
+    </StyledCircularProgressBar>
   );
 }

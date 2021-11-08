@@ -12,7 +12,7 @@ const classes = {
   phaseSeparator: 'task-phase-phase-separator',
   phaseStatus: 'task-phase-phase-status',
 };
-const PhasesRoot = styled((props: BoxProps) => <Box {...props} />)(({ theme }) => ({
+const StyledBox = styled((props: BoxProps) => <Box {...props} />)(({ theme }) => ({
   [`& .${classes.taskPhasesContainer}`]: {
     overflowX: 'auto',
   },
@@ -141,7 +141,7 @@ export function TaskPhases({ taskSummary, ...boxProps }: TaskPhasesProps): JSX.E
   });
 
   return (
-    <PhasesRoot {...boxProps}>
+    <StyledBox {...boxProps}>
       <Grid container={true} wrap="nowrap" className={classes.taskPhasesContainer}>
         {phases.map((phase, idx) => (
           <React.Fragment key={idx}>
@@ -155,6 +155,6 @@ export function TaskPhases({ taskSummary, ...boxProps }: TaskPhasesProps): JSX.E
           </React.Fragment>
         ))}
       </Grid>
-    </PhasesRoot>
+    </StyledBox>
   );
 }

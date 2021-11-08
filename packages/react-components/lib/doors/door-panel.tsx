@@ -40,7 +40,7 @@ const classes = {
   buttonGroup: 'door-panel-button-group',
   panelHeader: 'door-panel-panel-header',
 };
-const DoorPanelRoot = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
+const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
   [`&.${classes.container}`]: {
     margin: theme.spacing(1),
   },
@@ -152,7 +152,7 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
   const [isCellView, setIsCellView] = React.useState(true);
 
   return (
-    <DoorPanelRoot variant="outlined" className={classes.container}>
+    <StyledCard variant="outlined" className={classes.container}>
       <Paper className={classes.buttonBar}>
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Grid item xs={6}>
@@ -192,6 +192,6 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
           />
         )}
       </Grid>
-    </DoorPanelRoot>
+    </StyledCard>
   );
 }

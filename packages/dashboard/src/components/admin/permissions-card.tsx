@@ -28,7 +28,7 @@ const classes = {
   tableContainer: `${prefix}-table-container`,
   controlsButton: `${prefix}-controls-button`,
 };
-const PermissionsCardRoot = styled((props: PaperProps) => <Paper {...props} />)(({ theme }) => ({
+const StyledPaper = styled((props: PaperProps) => <Paper {...props} />)(({ theme }) => ({
   [`& .${classes.title}`]: {
     flex: '1 1 100%',
   },
@@ -87,7 +87,7 @@ export function PermissionsCard({
   }, [refresh]);
 
   return (
-    <PermissionsCardRoot elevation={0} {...otherProps}>
+    <StyledPaper elevation={0} {...otherProps}>
       <Toolbar>
         <Typography variant="h6" className={classes.title}>
           Permissions
@@ -151,6 +151,6 @@ export function PermissionsCard({
           }
         />
       )}
-    </PermissionsCardRoot>
+    </StyledPaper>
   );
 }

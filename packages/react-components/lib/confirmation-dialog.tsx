@@ -17,7 +17,7 @@ const dialogClasses = {
   title: 'confirmation-dialogue-info-value',
   actionBtn: 'confirmation-dialogue-action-button',
 };
-const ConfirmationDialogRoot = styled((props: DialogProps) => <Dialog {...props} />)(() => ({
+const StyledDialog = styled((props: DialogProps) => <Dialog {...props} />)(() => ({
   [`& .${dialogClasses.title}`]: {
     flex: '1 1 auto',
   },
@@ -50,7 +50,7 @@ export function ConfirmationDialog({
   ...otherProps
 }: ConfirmationDialogProps): JSX.Element {
   return (
-    <ConfirmationDialogRoot onClose={onClose} {...otherProps}>
+    <StyledDialog onClose={onClose} {...otherProps}>
       <form
         onSubmit={(ev) => {
           ev.preventDefault();
@@ -90,6 +90,6 @@ export function ConfirmationDialog({
           </Button>
         </DialogActions>
       </form>
-    </ConfirmationDialogRoot>
+    </StyledDialog>
   );
 }

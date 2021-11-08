@@ -28,7 +28,7 @@ const classes = {
   taskQueuedCell: 'task-table-queued-cell',
   taskUnknownCell: 'task-table-unknown-cell',
 };
-const TableRoot = styled((props: TableProps) => <Table {...props} />)(({ theme }) => ({
+const StyledTable = styled((props: TableProps) => <Table {...props} />)(({ theme }) => ({
   [`&.${classes.table}`]: {
     minWidth: 650,
   },
@@ -137,7 +137,12 @@ export interface TaskTableProps {
 
 export function TaskTable({ tasks, onTaskClick }: TaskTableProps): JSX.Element {
   return (
-    <TableRoot className={classes.table} stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
+    <StyledTable
+      className={classes.table}
+      stickyHeader
+      size="small"
+      style={{ tableLayout: 'fixed' }}
+    >
       <TableHead>
         <TableRow>
           <TableCell>Task Id</TableCell>
@@ -156,6 +161,6 @@ export function TaskTable({ tasks, onTaskClick }: TaskTableProps): JSX.Element {
           />
         ))}
       </TableBody>
-    </TableRoot>
+    </StyledTable>
   );
 }

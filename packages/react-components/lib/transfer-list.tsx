@@ -19,7 +19,7 @@ const classes = {
   transferControls: 'transfer-list-controls',
   cardContainer: 'transfer-list-card-container',
 };
-const TransferListRoot = styled((props: GridProps) => <Grid {...props} />)(({ theme }) => ({
+const StyledGrid = styled((props: GridProps) => <Grid {...props} />)(({ theme }) => ({
   [`&.${classes.container}`]: {
     height: '100%',
     '& > *': {
@@ -146,7 +146,7 @@ export function TransferList({
   const [rightChecked, setRightChecked] = React.useState<Set<string>>(new Set());
 
   return (
-    <TransferListRoot
+    <StyledGrid
       container
       spacing={2}
       justifyContent="center"
@@ -207,6 +207,6 @@ export function TransferList({
           setChecked={setRightChecked}
         />
       </Grid>
-    </TransferListRoot>
+    </StyledGrid>
   );
 }

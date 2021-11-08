@@ -27,7 +27,7 @@ const classes = {
   detailLine: `${prefix}-detail-line`,
   detail: `${prefix}-detail`,
 };
-const HotKeysDialogRoot = styled((props: DialogProps) => <Dialog {...props} />)(({ theme }) => ({
+const StyledDialog = styled((props: DialogProps) => <Dialog {...props} />)(({ theme }) => ({
   [`& .${classes.closeButton}`]: {
     position: 'absolute',
     right: theme.spacing(1),
@@ -58,7 +58,7 @@ export default function HotKeysDialog(props: HotKeysDialogProps): React.ReactEle
   const { open, handleClose } = props;
   const keyMap = getApplicationKeyMap();
   return (
-    <HotKeysDialogRoot
+    <StyledDialog
       onClose={handleClose}
       aria-labelledby="customized-dialog-title"
       open={open}
@@ -99,6 +99,6 @@ export default function HotKeysDialog(props: HotKeysDialogProps): React.ReactEle
           OK
         </Button>
       </DialogActions>
-    </HotKeysDialogRoot>
+    </StyledDialog>
   );
 }

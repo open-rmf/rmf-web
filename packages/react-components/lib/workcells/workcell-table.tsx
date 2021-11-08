@@ -17,7 +17,7 @@ const classes = {
   dispenserLabelBusy: 'workcell-dispenser-label-busy',
   dispenserLabelOffline: 'workcell-offline-label',
 };
-const WorkCellTableRoot = styled((props: TableProps) => <Table {...props} />)(({ theme }) => ({
+const StyledTable = styled((props: TableProps) => <Table {...props} />)(({ theme }) => ({
   [`& .${classes.dispenserLabelIdle}`]: {
     color: theme.palette.success.main,
   },
@@ -87,7 +87,7 @@ const WorkcellRow = React.memo(
 
 export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps): JSX.Element => {
   return (
-    <WorkCellTableRoot stickyHeader size="small" aria-label="workcell-table">
+    <StyledTable stickyHeader size="small" aria-label="workcell-table">
       <TableHead>
         <TableRow>
           <TableCell>Dispenser Name</TableCell>
@@ -112,6 +112,6 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
           );
         })}
       </TableBody>
-    </WorkCellTableRoot>
+    </StyledTable>
   );
 };

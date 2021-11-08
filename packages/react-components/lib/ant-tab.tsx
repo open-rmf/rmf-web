@@ -5,7 +5,7 @@ interface StyledTabProps {
   label: string;
 }
 
-export const AntTabs = styled((props: TabsProps) => <Tabs disableRipple {...props} />)(() => ({
+export const StyledTabs = styled((props: TabsProps) => <Tabs disableRipple {...props} />)(() => ({
   root: {
     borderBottom: '1px solid #e8e8e8',
   },
@@ -14,7 +14,7 @@ export const AntTabs = styled((props: TabsProps) => <Tabs disableRipple {...prop
   },
 }));
 
-export const AntTab = styled((props: StyledTabProps) => <Tab disableRipple {...props} />)(
+export const StyledTab = styled((props: StyledTabProps) => <Tab disableRipple {...props} />)(
   ({ theme }) => ({
     root: {
       textTransform: 'none',

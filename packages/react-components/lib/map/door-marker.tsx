@@ -12,7 +12,7 @@ const classes = {
   unknown: 'door-marker-unknown',
   transparent: 'door-marker-transparent',
 };
-const DoorMarkerRoot = styled('g')(() => ({
+const StyledDoorMarker = styled('g')(() => ({
   [`& .${classes.marker}`]: {
     cursor: 'pointer',
     pointerEvents: 'auto',
@@ -156,9 +156,9 @@ export const DoorMarker = React.forwardRef(
 
     try {
       return (
-        <DoorMarkerRoot ref={ref} {...otherProps}>
+        <StyledDoorMarker ref={ref} {...otherProps}>
           <g className={otherProps.onClick ? classes.marker : undefined}>{renderDoor()}</g>
-        </DoorMarkerRoot>
+        </StyledDoorMarker>
       );
     } catch (e) {
       console.error((e as Error).message);

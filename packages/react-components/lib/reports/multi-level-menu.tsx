@@ -12,7 +12,7 @@ const classes = {
   textAndIcon: 'mlm-text-and-icon',
 };
 
-const AppRoot = styled((props: ListProps) => <List {...props} />)(({ theme }) => ({
+const StyledList = styled((props: ListProps) => <List {...props} />)(({ theme }) => ({
   [`& .${classes.textAndIcon}`]: {
     color: theme.palette.text.primary,
   },
@@ -112,6 +112,6 @@ export const MultiLevelMenu = React.memo(
       return menu.concat();
     };
 
-    return <AppRoot>{createList(props.menuStructure)}</AppRoot>;
+    return <StyledList>{createList(props.menuStructure)}</StyledList>;
   },
 );

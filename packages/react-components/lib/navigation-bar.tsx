@@ -5,7 +5,7 @@ import React from 'react';
 const classes = {
   tabsContainer: 'navigation-bar-root',
 };
-const NavigationBarRoot = styled((props: TabsProps) => <Tabs {...props} />)(() => ({
+const StyledTabs = styled((props: TabsProps) => <Tabs {...props} />)(() => ({
   [`&.${classes.tabsContainer}`]: {
     flexGrow: 4,
   },
@@ -20,7 +20,7 @@ export interface NavigationBarProps {
 export const NavigationBar = (props: NavigationBarProps): JSX.Element => {
   const { value, onTabChange, children } = props;
   return (
-    <NavigationBarRoot
+    <StyledTabs
       variant="scrollable"
       scrollButtons="auto"
       value={value}
@@ -29,6 +29,6 @@ export const NavigationBar = (props: NavigationBarProps): JSX.Element => {
       TabIndicatorProps={{ style: { backgroundColor: '#d32f2f' } }}
     >
       {children}
-    </NavigationBarRoot>
+    </StyledTabs>
   );
 };

@@ -27,7 +27,7 @@ const classes = {
   panelHeader: 'workcell-panel-header',
   subPanelHeader: 'workcell-sub-panel-header',
 };
-const WorkCellPanelRoot = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
+const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
   [`&.${classes.container}`]: {
     margin: theme.spacing(1),
   },
@@ -100,7 +100,7 @@ export function WorkcellPanel({
   const [isCellView, setIsCellView] = React.useState(true);
 
   return (
-    <WorkCellPanelRoot variant="outlined" className={classes.container}>
+    <StyledCard variant="outlined" className={classes.container}>
       <Paper className={classes.buttonBar}>
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Grid item xs={6}>
@@ -182,6 +182,6 @@ export function WorkcellPanel({
           ) : null}
         </React.Fragment>
       )}
-    </WorkCellPanelRoot>
+    </StyledCard>
   );
 }

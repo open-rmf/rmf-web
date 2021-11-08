@@ -65,7 +65,7 @@ const classes = {
   doorLabelMoving: 'lift-panel-door-label-moving',
   panelHeader: 'lift-panel-panel-header',
 };
-const LiftPanelRoot = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
+const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
   [`&.${classes.container}`]: {
     margin: theme.spacing(1),
   },
@@ -195,7 +195,7 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
   const [isCellView, setIsCellView] = React.useState(true);
 
   return (
-    <LiftPanelRoot variant="outlined" className={classes.container}>
+    <StyledCard variant="outlined" className={classes.container}>
       <Paper className={classes.buttonBar}>
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Grid item xs={6}>
@@ -235,6 +235,6 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
           <LiftTable lifts={lifts} liftStates={liftStates} onRequestSubmit={onRequestSubmit} />
         )}
       </Grid>
-    </LiftPanelRoot>
+    </StyledCard>
   );
 }

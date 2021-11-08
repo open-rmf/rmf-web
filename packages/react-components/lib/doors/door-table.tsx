@@ -30,7 +30,7 @@ const classes = {
   doorLabelClosed: 'door-table-label-closed',
   doorLabelMoving: 'door-table-label-moving',
 };
-const DoorTableRoot = styled((props: TableProps) => <Table {...props} />)(({ theme }) => ({
+const StyledTable = styled((props: TableProps) => <Table {...props} />)(({ theme }) => ({
   [`& .${classes.doorLabelOpen}`]: {
     color: theme.palette.success.main,
   },
@@ -113,7 +113,7 @@ export const DoorTable = ({
   onDoorControlClick,
 }: DoorTableProps): JSX.Element => {
   return (
-    <DoorTableRoot stickyHeader size="small" aria-label="door-table">
+    <StyledTable stickyHeader size="small" aria-label="door-table">
       <TableHead>
         <TableRow>
           <TableCell>Door Name</TableCell>
@@ -134,6 +134,6 @@ export const DoorTable = ({
           />
         ))}
       </TableBody>
-    </DoorTableRoot>
+    </StyledTable>
   );
 };

@@ -19,7 +19,7 @@ import { AppControllerContext } from '../app-contexts';
 const classes = {
   avatar: 'user-profile-action',
 };
-const UserProfileRoot = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
+const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
   [`& .${classes.avatar}`]: {
     color: theme.palette.mode === 'light' ? theme.palette.grey[400] : theme.palette.grey[600],
     fontSize: '3em',
@@ -38,7 +38,7 @@ export function UserProfileCard({ user, makeAdmin }: UserProfileCardProps): JSX.
   const { showErrorAlert } = React.useContext(AppControllerContext);
 
   return (
-    <UserProfileRoot variant="outlined">
+    <StyledCard variant="outlined">
       <CardHeader
         title={user.username}
         titleTypographyProps={{ variant: 'h5' }}
@@ -69,6 +69,6 @@ export function UserProfileCard({ user, makeAdmin }: UserProfileCardProps): JSX.
           />
         </MenuItem>
       </Menu>
-    </UserProfileRoot>
+    </StyledCard>
   );
 }

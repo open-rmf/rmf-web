@@ -28,7 +28,7 @@ const classes = {
   permissionsCard: `${prefix}-permissionscard`,
   deleteRoleButton: `${prefix}-deleterolebutton`,
 };
-const RoleListCardRoot = styled((props: CardProps) => <Card {...props} />)(() => ({
+const StyledCard = styled((props: CardProps) => <Card {...props} />)(() => ({
   [`& .${classes.permissionsCard}`]: {
     width: '100%',
   },
@@ -148,7 +148,7 @@ export function RoleListCard({
   );
 
   return (
-    <RoleListCardRoot variant="outlined">
+    <StyledCard variant="outlined">
       <CardHeader
         title="Roles"
         titleTypographyProps={{ variant: 'h5' }}
@@ -207,6 +207,6 @@ export function RoleListCard({
           <Typography>{`Are you sure you want to delete "${selectedDeleteRole}"?`}</Typography>
         </ConfirmationDialog>
       )}
-    </RoleListCardRoot>
+    </StyledCard>
   );
 }

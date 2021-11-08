@@ -18,7 +18,7 @@ const classes = {
   doorLabelClosed: 'lift-table-doorlabelclosed',
   doorLabelMoving: 'lift-table-doorlabelmoving',
 };
-const LiftTableRoot = styled((props: TableProps) => <Table {...props} />)(({ theme }) => ({
+const StyledTable = styled((props: TableProps) => <Table {...props} />)(({ theme }) => ({
   [`& .${classes.doorLabelOpen}`]: {
     color: theme.palette.success.main,
   },
@@ -119,7 +119,7 @@ const LiftRow = React.memo(
 
 export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps): JSX.Element => {
   return (
-    <LiftTableRoot stickyHeader size="small" aria-label="lift-table">
+    <StyledTable stickyHeader size="small" aria-label="lift-table">
       <TableHead>
         <TableRow>
           <TableCell>Lift Name</TableCell>
@@ -146,6 +146,6 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
           );
         })}
       </TableBody>
-    </LiftTableRoot>
+    </StyledTable>
   );
 };

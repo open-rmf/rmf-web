@@ -26,7 +26,7 @@ const classes = {
   dialogContent: `${prefix}-content`,
   dialogButton: `${prefix}-button`,
 };
-const ManageRolesDialogRoot = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
+const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
   [`& .${classes.action}`]: {
     margin: 0,
   },
@@ -163,7 +163,7 @@ export function ManageRolesCard({
   const [openDialog, setOpenDialog] = React.useState(false);
 
   return (
-    <ManageRolesDialogRoot variant="outlined" {...otherProps}>
+    <StyledCard variant="outlined" {...otherProps}>
       <CardHeader
         title="Roles"
         titleTypographyProps={{ variant: 'h5' }}
@@ -197,6 +197,6 @@ export function ManageRolesCard({
         getAllRoles={getAllRoles}
         saveRoles={saveRoles}
       />
-    </ManageRolesDialogRoot>
+    </StyledCard>
   );
 }

@@ -30,7 +30,7 @@ const classes = {
   robotInMotionClass: 'robot-table-in-motion',
   robotChargingClass: 'robot-table-charging',
 };
-const RobotTableRoot = styled((props: PaperProps) => <Paper {...props} />)(({ theme }) => ({
+const StyledPaper = styled((props: PaperProps) => <Paper {...props} />)(({ theme }) => ({
   [`& .${classes.table}`]: {
     minWidth: 650,
   },
@@ -175,7 +175,7 @@ export function RobotTable({
   ...paperProps
 }: RobotTableProps): JSX.Element {
   return (
-    <RobotTableRoot {...paperProps}>
+    <StyledPaper {...paperProps}>
       <Toolbar>
         <Typography className={classes.title} variant="h6">
           Robots
@@ -211,6 +211,6 @@ export function RobotTable({
       {paginationOptions && (
         <TablePagination component="div" {...paginationOptions} style={{ flex: '0 0 auto' }} />
       )}
-    </RobotTableRoot>
+    </StyledPaper>
   );
 }

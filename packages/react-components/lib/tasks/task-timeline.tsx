@@ -27,7 +27,7 @@ const classes = {
   failedPhase: 'timeline-failed-phase',
   timelineRoot: 'timeline-root',
 };
-const TimeLineRoot = styled((props: TimeLinePropsWithRef) => <Timeline {...props} />)(
+const StyledTimeLine = styled((props: TimeLinePropsWithRef) => <Timeline {...props} />)(
   ({ theme }) => ({
     [`& .${classes.paper}`]: {
       padding: '6px 16px',
@@ -92,7 +92,7 @@ export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
   });
 
   return (
-    <TimeLineRoot position="left" className={classes.timelineRoot}>
+    <StyledTimeLine position="left" className={classes.timelineRoot}>
       {timelineInfo.map((dotInfo, idx) => {
         return (
           <TimelineItem key={idx}>
@@ -116,6 +116,6 @@ export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
           </TimelineItem>
         );
       })}
-    </TimeLineRoot>
+    </StyledTimeLine>
   );
 }

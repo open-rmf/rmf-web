@@ -47,7 +47,7 @@ export const liftMarkerClasses = {
   human: 'lift-marker-human',
 };
 
-const LiftMarkerRoot = styled('g')(() => ({
+const StyledLiftMarker = styled('g')(() => ({
   [`&.${liftMarkerClasses.marker}`]: {
     cursor: 'pointer',
     pointerEvents: 'auto',
@@ -150,7 +150,7 @@ export const LiftMarker = React.forwardRef(function (
   };
 
   return (
-    <LiftMarkerRoot
+    <StyledLiftMarker
       ref={ref}
       className={clsx(
         otherProps.onClick ? liftMarkerClasses.marker : undefined,
@@ -169,7 +169,7 @@ export const LiftMarker = React.forwardRef(function (
         style={{ transform: `rotate(${yaw}deg)`, transformOrigin: `${cx}px ${cy}px` }}
       />
       {renderStatusText()}
-    </LiftMarkerRoot>
+    </StyledLiftMarker>
   );
 });
 

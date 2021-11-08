@@ -31,7 +31,7 @@ const classes = {
   taskList: 'create-task-task-list',
   selectedTask: 'create-task-selected-task',
 };
-const CreateTaskRoot = styled((props: LocalizationProviderProps) => (
+const StyledLocalizationProvider = styled((props: LocalizationProviderProps) => (
   <LocalizationProvider {...props} />
 ))(({ theme }) => ({
   [`& .${classes.selectFileBtn}`]: {
@@ -487,7 +487,7 @@ export function CreateTaskForm({
   const submitText = tasks.length > 1 ? 'Submit All' : 'Submit';
 
   return (
-    <CreateTaskRoot dateAdapter={AdapterDateFns}>
+    <StyledLocalizationProvider dateAdapter={AdapterDateFns}>
       <ConfirmationDialog
         title="Create Task"
         submitting={submitting}
@@ -577,6 +577,6 @@ export function CreateTaskForm({
           )}
         </Grid>
       </ConfirmationDialog>
-    </CreateTaskRoot>
+    </StyledLocalizationProvider>
   );
 }

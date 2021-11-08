@@ -7,7 +7,7 @@ export const commandFormsClasses = {
   button: 'command-form-button',
   buttonContainer: 'command-form-button-container',
 };
-export const CommandsFormRoot = styled('form')(({ theme }) => ({
+export const StyledForm = styled('form')(({ theme }) => ({
   [`&.${commandFormsClasses.form}`]: {
     display: 'flex',
     flexDirection: 'column',

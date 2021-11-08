@@ -13,7 +13,7 @@ import { viewBoxFromLeafletBounds } from './utils';
 const classes = {
   map: 'map-root',
 };
-const MapRoot = styled((props: LMapProps_) => <LMap_ {...props} />)(() => ({
+const StyledLMap_ = styled((props: LMapProps_) => <LMap_ {...props} />)(() => ({
   [`&.${classes.map}`]: {
     height: '100%',
     width: '100%',
@@ -68,7 +68,7 @@ export const LMap = React.forwardRef(
     const [labelsPortal, setLabelsPortal] = React.useState<SVGSVGElement | null>(null);
     const viewBox = otherProps.bounds ? viewBoxFromLeafletBounds(otherProps.bounds) : undefined;
     return (
-      <MapRoot
+      <StyledLMap_
         ref={ref}
         className={clsx(classes.map, className)}
         crs={L.CRS.Simple}
@@ -90,7 +90,7 @@ export const LMap = React.forwardRef(
             )}
           </LabelsPortalContext.Provider>
         </EntityManagerProvider>
-      </MapRoot>
+      </StyledLMap_>
     );
   },
 );

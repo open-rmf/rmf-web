@@ -10,7 +10,7 @@ import { TaskPanel, TaskPanelProps } from './task-panel';
 const classes = {
   taskPanel: 'task-page-taskpanel',
 };
-const TaskPageRoot = styled((props: TaskPanelProps) => <TaskPanel {...props} />)(({ theme }) => ({
+const StyledTaskPage = styled((props: TaskPanelProps) => <TaskPanel {...props} />)(({ theme }) => ({
   [`&.${classes.taskPanel}`]: {
     padding: `${theme.spacing(4)}`,
     maxWidth: 1600,
@@ -114,7 +114,7 @@ export function TaskPage() {
   );
   //extra task panel will be removed
   return (
-    <TaskPageRoot
+    <StyledTaskPage
       className={classes.taskPanel}
       tasks={tasks}
       paginationOptions={{

@@ -33,7 +33,7 @@ const classes = {
   controlsButton: `${prefix}-controls-button`,
   tableRow: `${prefix}-table-row`,
 };
-const UserListRoot = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
+const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
   [`& .${classes.controlsButton}`]: {
     float: 'right',
   },
@@ -92,7 +92,7 @@ export function UserListCard({
   }, [refresh]);
 
   return (
-    <UserListRoot variant="outlined">
+    <StyledCard variant="outlined">
       <CardHeader
         title="Users"
         titleTypographyProps={{ variant: 'h5' }}
@@ -210,6 +210,6 @@ export function UserListCard({
           }
         />
       )}
-    </UserListRoot>
+    </StyledCard>
   );
 }

@@ -1,6 +1,6 @@
 import { Button, TextField, Autocomplete } from '@mui/material';
 import React, { ChangeEvent } from 'react';
-import { CommandsFormRoot, commandFormsClasses } from './form-styles';
+import { StyledForm, commandFormsClasses } from './form-styles';
 
 export type DoLoopRequest = (
   fleetName: string,
@@ -120,7 +120,7 @@ export const LoopRequestForm = React.forwardRef(
     };
 
     return (
-      <CommandsFormRoot ref={ref} className={commandFormsClasses.form} onSubmit={handleSubmit}>
+      <StyledForm ref={ref} className={commandFormsClasses.form} onSubmit={handleSubmit}>
         <div className={commandFormsClasses.divForm}>
           <Autocomplete
             getOptionLabel={(option) => option}
@@ -203,7 +203,7 @@ export const LoopRequestForm = React.forwardRef(
             Request
           </Button>
         </div>
-      </CommandsFormRoot>
+      </StyledForm>
     );
   },
 );

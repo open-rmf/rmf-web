@@ -26,7 +26,7 @@ const classes = {
   detail: `${prefix}-detail`,
   drawer: `${prefix}-root`,
 };
-const HelpDrawerRoot = styled((props: DrawerProps) => <Drawer {...props} />)(({ theme }) => ({
+const StyledDrawer = styled((props: DrawerProps) => <Drawer {...props} />)(({ theme }) => ({
   [`& .${classes.detailLine}`]: {
     display: 'inline-flex',
     padding: theme.spacing(0.5),
@@ -64,7 +64,7 @@ export default function HelpDrawer(props: HotKeysDrawerProps): React.ReactElemen
   const { toggleTooltips } = React.useContext(AppControllerContext);
 
   return (
-    <HelpDrawerRoot
+    <StyledDrawer
       PaperProps={{ className: classes.drawer }}
       anchor={drawerAnchor}
       ModalProps={modalProp}
@@ -110,6 +110,6 @@ export default function HelpDrawer(props: HotKeysDrawerProps): React.ReactElemen
         </div>
         <Divider />
       </div>
-    </HelpDrawerRoot>
+    </StyledDrawer>
   );
 }

@@ -33,7 +33,7 @@ const classes = {
   formGroup: `${prefix}-formgroup`,
   swtichButton: `${prefix}-switch-button`,
 };
-const SettingsDrawerRoot = styled((props: DrawerProps) => <Drawer {...props} />)(({ theme }) => ({
+const StyledDrawer = styled((props: DrawerProps) => <Drawer {...props} />)(({ theme }) => ({
   [`& .${classes.drawer}`]: {
     '@media (min-aspect-ratio: 8/10)': {
       width: 300,
@@ -106,7 +106,7 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
   }
 
   return (
-    <SettingsDrawerRoot
+    <StyledDrawer
       PaperProps={{ className: classes.drawer }}
       anchor={drawerAnchor}
       ModalProps={modalProp}
@@ -144,6 +144,6 @@ export default function SettingsDrawer(props: SettingsDrawerProps): React.ReactE
         />
         <Divider />
       </FormGroup>
-    </SettingsDrawerRoot>
+    </StyledDrawer>
   );
 }

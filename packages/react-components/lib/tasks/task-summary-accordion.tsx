@@ -34,7 +34,7 @@ const classes = {
   overrideContainer: 'task-summary-accordion-override-container',
   overrideValue: 'task-summary-accordion-override-value',
 };
-const TaskSummaryAccordianRoot = styled((props: TreeViewRootProps) => <TreeView {...props} />)(
+const StyledTreeView = styled((props: TreeViewRootProps) => <TreeView {...props} />)(
   ({ theme }) => ({
     [`& .${classes.root}`]: {
       padding: '1rem',
@@ -195,7 +195,7 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
   };
 
   return (
-    <TaskSummaryAccordianRoot
+    <StyledTreeView
       className={classes.root}
       onNodeSelect={handleSelect}
       onNodeToggle={handleToggle}
@@ -206,7 +206,7 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
       selected={selected}
     >
       {tasks.map((task) => renderTaskTreeItem(task))}
-    </TaskSummaryAccordianRoot>
+    </StyledTreeView>
   );
 });
 
