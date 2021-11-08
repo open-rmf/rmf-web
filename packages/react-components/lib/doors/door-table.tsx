@@ -29,7 +29,6 @@ interface DoorListRendererProps extends ListChildComponentProps {
 export interface DoorRowProps {
   door: DoorData;
   doorMode: number;
-  style: React.CSSProperties;
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
 
@@ -59,10 +58,9 @@ const getOpMode = (doorMode?: number) => {
   return getState === 'N/A' ? 'Offline' : 'Online';
 };
 
-const DoorRow = React.memo(({ door, doorMode, style, onDoorControlClick }: DoorRowProps) => {
+const DoorRow = React.memo(({ door, doorMode, onDoorControlClick }: DoorRowProps) => {
   const classes = useStyles();
-  const fixedtableCellClass = useFixedTableCellStyles().fixedTableCell;
-  const lastTableCellClass = useFixedTableCellStyles().fixedLastTableCell;
+  const { fixedTableCell, fixedLastTableCell } = useFixedTableCellStyles();
   const doorModeLabelClasses = React.useCallback(
     (doorMode?: number): string => {
       if (doorMode === undefined) {
@@ -84,16 +82,11 @@ const DoorRow = React.memo(({ door, doorMode, style, onDoorControlClick }: DoorR
   const doorStatusClass = doorModeLabelClasses(doorMode);
 
   return (
-    <TableRow
-      arial-label={`${door.door.name}`}
-      component="div"
-      className={classes.tableRow}
-      style={style}
-    >
+    <TableRow arial-label={`${door.door.name}`} component="div" className={classes.tableRow}>
       <TableCell
         component="div"
         variant="body"
-        className={clsx(classes.tableCell, fixedtableCellClass)}
+        className={clsx(classes.tableCell, fixedTableCell)}
         title={door?.door.name}
       >
         {door.door.name}
@@ -104,36 +97,28 @@ const DoorRow = React.memo(({ door, doorMode, style, onDoorControlClick }: DoorR
         className={clsx(
           getOpMode(doorMode) === 'Offline' ? classes.doorLabelClosed : classes.doorLabelOpen,
           classes.tableCell,
-          fixedtableCellClass,
+          fixedTableCell,
         )}
       >
         {getOpMode(doorMode)}
       </TableCell>
-      <TableCell
-        component="div"
-        variant="body"
-        className={clsx(classes.tableCell, fixedtableCellClass)}
-      >
+      <TableCell component="div" variant="body" className={clsx(classes.tableCell, fixedTableCell)}>
         {door.level}
       </TableCell>
-      <TableCell
-        component="div"
-        variant="body"
-        className={clsx(classes.tableCell, fixedtableCellClass)}
-      >
+      <TableCell component="div" variant="body" className={clsx(classes.tableCell, fixedTableCell)}>
         {doorTypeToString(door.door.door_type)}
       </TableCell>
       <TableCell
         component="div"
         variant="body"
-        className={clsx(doorStatusClass, classes.tableCell, fixedtableCellClass)}
+        className={clsx(doorStatusClass, classes.tableCell, fixedTableCell)}
       >
         {doorModeToString(doorMode)}
       </TableCell>
       <TableCell
         component="div"
         variant="body"
-        className={clsx(classes.tableCell, lastTableCellClass)}
+        className={clsx(classes.tableCell, fixedLastTableCell)}
       >
         <ButtonGroup size="small">
           <Button
@@ -159,7 +144,7 @@ const DoorRow = React.memo(({ door, doorMode, style, onDoorControlClick }: DoorR
   );
 });
 
-const DoorListRenderer = ({ data, index, style }: DoorListRendererProps) => {
+const DoorListRenderer = ({ data, index }: DoorListRendererProps) => {
   const door = data.doors[index];
   const doorState = data.doorStates[door.door.name];
 
@@ -168,7 +153,6 @@ const DoorListRenderer = ({ data, index, style }: DoorListRendererProps) => {
       door={door}
       doorMode={doorState?.current_mode.value}
       onDoorControlClick={data.onDoorControlClick}
-      style={style}
     />
   );
 };
@@ -179,8 +163,7 @@ export const DoorTable = ({
   onDoorControlClick,
 }: DoorTableProps): JSX.Element => {
   const classes = useStyles();
-  const fixedtableCellClass = useFixedTableCellStyles().fixedTableCell;
-  const lastTableCellClass = useFixedTableCellStyles().fixedLastTableCell;
+  const { fixedTableCell, fixedLastTableCell } = useFixedTableCellStyles();
   return (
     <AutoSizer disableHeight>
       {({ width }) => {
@@ -191,42 +174,42 @@ export const DoorTable = ({
                 <TableCell
                   component="div"
                   variant="head"
-                  className={clsx(classes.tableCell, fixedtableCellClass)}
+                  className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Door Name
                 </TableCell>
                 <TableCell
                   component="div"
                   variant="head"
-                  className={clsx(classes.tableCell, fixedtableCellClass)}
+                  className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Op. Mode
                 </TableCell>
                 <TableCell
                   component="div"
                   variant="head"
-                  className={clsx(classes.tableCell, fixedtableCellClass)}
+                  className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Level
                 </TableCell>
                 <TableCell
                   component="div"
                   variant="head"
-                  className={clsx(classes.tableCell, fixedtableCellClass)}
+                  className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Door Type
                 </TableCell>
                 <TableCell
                   component="div"
                   variant="head"
-                  className={clsx(classes.tableCell, fixedtableCellClass)}
+                  className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Doors State
                 </TableCell>
                 <TableCell
                   component="div"
                   variant="head"
-                  className={clsx(classes.tableCell, lastTableCellClass)}
+                  className={clsx(classes.tableCell, fixedLastTableCell)}
                 >
                   Door Control
                 </TableCell>

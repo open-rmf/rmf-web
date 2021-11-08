@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
 
 const WorkcellCell = React.memo(
   ({ workcell, requestGuidQueue, secondsRemaining }: WorkcellCellProps): JSX.Element | null => {
-    let labelId = `workcell-cell-${workcell.guid}`;
+    const labelId = `workcell-cell-${workcell.guid}`;
     const classes = useStyles();
 
     return (
@@ -114,12 +114,7 @@ const WorkcellCell = React.memo(
   },
 );
 
-const WorkcellGridRenderer = ({
-  data,
-  columnIndex,
-  rowIndex,
-  style,
-}: WorkcellGridRendererProps) => {
+const WorkcellGridRenderer = ({ data, columnIndex, rowIndex }: WorkcellGridRendererProps) => {
   let workcell: Dispenser | undefined;
   let workcellState: RmfModels.DispenserState | undefined;
   const columnCount = data.columnCount;
@@ -131,7 +126,7 @@ const WorkcellGridRenderer = ({
   }
 
   return workcell ? (
-    <div style={style}>
+    <div>
       <WorkcellCell
         workcell={workcell}
         requestGuidQueue={workcellState?.request_guid_queue}
