@@ -43,9 +43,11 @@ export function LabelContainer(props: LabelContainerProps): JSX.Element | null {
     sourceRadius,
     contentWidth,
     contentHeight,
-    contentPadding = Number(theme.spacing(1)),
-    contentBorderRadius = Number(theme.shape.borderRadius) / 2,
-    arrowLength: preferredArrowLength = Number(theme.spacing(1)),
+    // theme.spacing default value = 8
+    contentPadding = 8,
+    // theme.shape.borderRadius default = 4
+    contentBorderRadius = 2,
+    arrowLength: preferredArrowLength = 8,
     angle = -30,
     repositionThreshold = DefaultRepositionThreshold,
     children,
@@ -233,7 +235,7 @@ export interface NameLabelProps
 
 export function NameLabel(props: NameLabelProps): JSX.Element {
   const theme = useTheme();
-  const { text, contentPadding = Number(theme.spacing(0.5)), className, ...otherProps } = props;
+  const { text, contentPadding = 4, className, ...otherProps } = props;
   const [contentWidth, setContentWidth] = React.useState(0);
   const [contentHeight, setContentHeight] = React.useState(0);
   const [show, setShow] = React.useState(false);
@@ -249,7 +251,7 @@ export function NameLabel(props: NameLabelProps): JSX.Element {
           updateContentSize();
         });
       } else {
-        setContentWidth(bbox.width + Number(theme.spacing(2)));
+        setContentWidth(bbox.width + 16);
         setContentHeight(bbox.height);
         setShow(true);
       }
