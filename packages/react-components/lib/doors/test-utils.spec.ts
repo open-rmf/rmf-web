@@ -53,6 +53,7 @@ export const doors: Door[] = [
   makeDoor({ name: 'coe_door' }),
   makeDoor({ name: 'exit_door' }),
   makeDoor({ name: 'extra_door' }),
+  makeDoor({ name: 'door_with_super_super_long_name' }),
 ];
 
 export const doorStates: Record<string, DoorState> = {

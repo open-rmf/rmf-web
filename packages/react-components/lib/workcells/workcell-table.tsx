@@ -1,7 +1,11 @@
 import { makeStyles, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
-import type { Dispenser, DispenserState, IngestorState } from 'api-client';
+import clsx from 'clsx';
 import React from 'react';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import { DispenserState as RmfDispenserState } from 'rmf-models';
+import { Workcell, WorkcellState } from '.';
+import { useFixedTableCellStyles } from '../utils';
 import { dispenserModeToString } from './utils';
 
 const useStyles = makeStyles((theme) => ({
@@ -14,15 +18,28 @@ const useStyles = makeStyles((theme) => ({
   offlineLabelOffline: {
     color: theme.palette.warning.main,
   },
+  tableRow: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  tableCell: {
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 export interface WorkcellTableProps {
-  workcells: Dispenser[];
-  workcellStates: Record<string, DispenserState | IngestorState>;
+  workcells: Workcell[];
+  workcellStates: Record<string, WorkcellState>;
+}
+
+interface WorkcellListRendererProps extends ListChildComponentProps {
+  data: WorkcellTableProps;
 }
 
 export interface WorkcellRowProps {
-  workcell: Dispenser;
+  workcell: Workcell;
   mode?: number;
   requestGuidQueue?: string[];
   secondsRemaining?: number;
@@ -31,7 +48,7 @@ export interface WorkcellRowProps {
 const WorkcellRow = React.memo(
   ({ workcell, mode, requestGuidQueue, secondsRemaining }: WorkcellRowProps) => {
     const classes = useStyles();
-
+    const { fixedTableCell } = useFixedTableCellStyles();
     const dispenserModeLabelClasses = React.useCallback(
       (mode: number): string => {
         switch (mode) {
@@ -49,24 +66,84 @@ const WorkcellRow = React.memo(
     );
 
     return (
-      <TableRow aria-label={`${workcell.guid}`}>
+      <TableRow aria-label={`${workcell.guid}`} className={classes.tableRow} component="div">
         {mode !== undefined && requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
           <React.Fragment>
-            <TableCell>{workcell.guid}</TableCell>
-            <TableCell className={dispenserModeLabelClasses(mode)}>
+            <TableCell
+              component="div"
+              variant="head"
+              className={clsx(classes.tableCell, fixedTableCell)}
+              title={workcell.guid}
+            >
+              {workcell.guid}
+            </TableCell>
+            <TableCell
+              component="div"
+              variant="head"
+              className={clsx(dispenserModeLabelClasses(mode), classes.tableCell, fixedTableCell)}
+            >
               {dispenserModeToString(mode)}
             </TableCell>
-            <TableCell>{requestGuidQueue.length}</TableCell>
-            <TableCell>{requestGuidQueue}</TableCell>
-            <TableCell>{secondsRemaining}</TableCell>
+            <TableCell
+              component="div"
+              variant="head"
+              className={clsx(classes.tableCell, fixedTableCell)}
+            >
+              {requestGuidQueue.length}
+            </TableCell>
+            <TableCell
+              component="div"
+              variant="head"
+              className={clsx(classes.tableCell, fixedTableCell)}
+            >
+              {requestGuidQueue}
+            </TableCell>
+            <TableCell
+              component="div"
+              variant="head"
+              className={clsx(classes.tableCell, fixedTableCell)}
+            >
+              {secondsRemaining}
+            </TableCell>
           </React.Fragment>
         ) : (
           <React.Fragment>
-            <TableCell>{workcell.guid}</TableCell>
-            <TableCell>{'NA'}</TableCell>
-            <TableCell>{'NA'}</TableCell>
-            <TableCell>{'NA'}</TableCell>
-            <TableCell>{'NA'}</TableCell>
+            <TableCell
+              component="div"
+              variant="head"
+              className={clsx(classes.tableCell, fixedTableCell)}
+              title={workcell.guid}
+            >
+              {workcell.guid}
+            </TableCell>
+            <TableCell
+              component="div"
+              variant="head"
+              className={clsx(classes.tableCell, fixedTableCell)}
+            >
+              {'NA'}
+            </TableCell>
+            <TableCell
+              component="div"
+              variant="head"
+              className={clsx(classes.tableCell, fixedTableCell)}
+            >
+              {'NA'}
+            </TableCell>
+            <TableCell
+              component="div"
+              variant="head"
+              className={clsx(classes.tableCell, fixedTableCell)}
+            >
+              {'NA'}
+            </TableCell>
+            <TableCell
+              component="div"
+              variant="head"
+              className={clsx(classes.tableCell, fixedTableCell)}
+            >
+              {'NA'}
+            </TableCell>
           </React.Fragment>
         )}
       </TableRow>
@@ -74,32 +151,85 @@ const WorkcellRow = React.memo(
   },
 );
 
-export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps): JSX.Element => {
+const WorkcellListRenderer = ({ data, index }: WorkcellListRendererProps) => {
+  const workcell = data.workcells[index];
+  const workcellState: WorkcellState | undefined = data.workcellStates[workcell.guid];
+
   return (
-    <Table stickyHeader size="small" aria-label="workcell-table">
-      <TableHead>
-        <TableRow>
-          <TableCell>Dispenser Name</TableCell>
-          <TableCell>Op. Mode</TableCell>
-          <TableCell>No. Queued Requests</TableCell>
-          <TableCell>Request Queue ID</TableCell>
-          <TableCell>Seconds Remaining</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {workcells.map((workcell) => {
-          const state: DispenserState | IngestorState | undefined = workcellStates[workcell.guid];
-          return (
-            <WorkcellRow
-              key={workcell.guid}
-              workcell={workcell}
-              mode={state?.mode}
-              requestGuidQueue={state?.request_guid_queue}
-              secondsRemaining={state?.seconds_remaining}
-            />
-          );
-        })}
-      </TableBody>
-    </Table>
+    <WorkcellRow
+      workcell={workcell}
+      mode={workcellState?.mode}
+      requestGuidQueue={workcellState?.request_guid_queue}
+      secondsRemaining={workcellState?.seconds_remaining}
+    />
+  );
+};
+
+export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps): JSX.Element => {
+  const classes = useStyles();
+  const { fixedTableCell } = useFixedTableCellStyles();
+  return (
+    <AutoSizer disableHeight>
+      {({ width }) => {
+        return (
+          <Table component="div" stickyHeader size="small" aria-label="workcell-table">
+            <TableHead component="div">
+              <TableRow component="div" className={classes.tableRow}>
+                <TableCell
+                  component="div"
+                  variant="head"
+                  className={clsx(classes.tableCell, fixedTableCell)}
+                >
+                  Dispenser Name
+                </TableCell>
+                <TableCell
+                  component="div"
+                  variant="head"
+                  className={clsx(classes.tableCell, fixedTableCell)}
+                >
+                  Op. Mode
+                </TableCell>
+                <TableCell
+                  component="div"
+                  variant="head"
+                  className={clsx(classes.tableCell, fixedTableCell)}
+                >
+                  No. Queued Requests
+                </TableCell>
+                <TableCell
+                  component="div"
+                  variant="head"
+                  className={clsx(classes.tableCell, fixedTableCell)}
+                >
+                  Request Queue ID
+                </TableCell>
+                <TableCell
+                  component="div"
+                  variant="head"
+                  className={clsx(classes.tableCell, fixedTableCell)}
+                >
+                  Seconds Remaining
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody component="div">
+              <FixedSizeList
+                itemSize={43}
+                itemCount={workcells.length}
+                height={200}
+                width={width}
+                itemData={{
+                  workcells,
+                  workcellStates,
+                  width,
+                }}
+              >
+                {WorkcellListRenderer}
+              </FixedSizeList>
+            </TableBody>
+          </Table>
+        );
+      }}
+    </AutoSizer>
   );
 };
