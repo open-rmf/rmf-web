@@ -171,10 +171,7 @@ export class NegotiationStatusManager extends TrajectorySocketManager {
     request: NegotiationTrajectoryRequest,
   ): Promise<NegotiationTrajectoryResponse> {
     await this._authenticator?.refreshToken();
-    const event = await this.send(
-      JSON.stringify({ ...request, token: this._authenticator?.token }),
-      this._webSocket,
-    );
+    const event = await this.send(JSON.stringify(request), this._webSocket);
     const resp = JSON.parse(event.data);
 
     if (resp.values === null) {

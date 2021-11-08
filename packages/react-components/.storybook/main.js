@@ -12,6 +12,8 @@ module.exports = {
         extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.cjs'],
         alias: {
           ...config.resolve.alias,
+          // FIXME - need to let storybook use the latest version of emotion so that
+          // the theme gets picked up correctly
           '@emotion/core': require.resolve('@emotion/react'),
           'emotion-theming': require.resolve('@emotion/react'),
         },

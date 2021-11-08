@@ -22,7 +22,7 @@ export const parameters = {
 const getTheme = (themeName: string): Theme => {
   switch (themeName) {
     case 'rmf-light':
-      return { ...rmfLight };
+      return rmfLight;
     case 'rmf-dark':
       return rmfDark;
     default:
