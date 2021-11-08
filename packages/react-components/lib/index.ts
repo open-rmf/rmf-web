@@ -3,6 +3,7 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
+export * from './appbar-tab';
 export * from './color-manager';
 export * from './commands';
 export * from './confirmation-dialog';

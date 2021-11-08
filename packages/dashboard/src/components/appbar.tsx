@@ -12,6 +12,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import HelpIcon from '@mui/icons-material/Help';
 import React from 'react';
 import {
+  AppBarTab,
   HeaderBar,
   HeaderBarProps,
   LogoButton,
@@ -29,7 +30,7 @@ import {
   SettingsContext,
   TooltipsContext,
 } from './app-contexts';
-import { customThemeValues } from './theme';
+import { logoSize } from '../managers/resource-manager';
 
 const prefix = 'app-bar';
 const classes = {
@@ -44,7 +45,7 @@ const StyledHeaderBar = styled((props: HeaderBarProps) => <HeaderBar {...props} 
       zIndex: theme.zIndex.drawer + 1,
     },
     [`& .${classes.logoBtn}`]: {
-      width: customThemeValues.appBar.logoSize,
+      width: logoSize,
     },
     [`& .${classes.toolbar}`]: {
       textAlign: 'right',
@@ -52,16 +53,6 @@ const StyledHeaderBar = styled((props: HeaderBarProps) => <HeaderBar {...props} 
     },
   }),
 );
-
-const StyledTab = styled((props: TabProps) => <Tab {...props} />)(({ theme }) => ({
-  color: 'rgba(255, 255, 255, 0.7)',
-  '&.Mui-selected': {
-    color: theme.palette.text.primary,
-  },
-  '&.Mui-focusVisible': {
-    backgroundColor: 'rgba(100, 95, 228, 0.32)',
-  },
-}));
 
 export type TabValue = 'building' | 'robots' | 'tasks' | 'admin';
 
@@ -117,30 +108,30 @@ export const AppBar = React.memo(
       <StyledHeaderBar className={classes.appBar}>
         <LogoButton src={brandingIconPath} alt="logo" className={classes.logoBtn} />
         <NavigationBar value={tabValue}>
-          <StyledTab
+          <AppBarTab
             label="Building"
             value="building"
             aria-label="Building"
-            onClick={() => history.push(DashboardRoute)}
+            onTabClick={() => history.push(DashboardRoute)}
           />
-          <StyledTab
+          <AppBarTab
             label="Robots"
             value="robots"
             aria-label="Robots"
-            onClick={() => history.push(RobotsRoute)}
+            onTabClick={() => history.push(RobotsRoute)}
           />
-          <StyledTab
+          <AppBarTab
             label="Tasks"
             value="tasks"
             aria-label="Tasks"
-            onClick={() => history.push(TasksRoute)}
+            onTabClick={() => history.push(TasksRoute)}
           />
           {profile?.user.is_admin && (
-            <StyledTab
+            <AppBarTab
               label="Admin"
               value="admin"
               aria-label="Admin"
-              onClick={() => history.push(AdminRoute)}
+              onTabClick={() => history.push(AdminRoute)}
             />
           )}
         </NavigationBar>

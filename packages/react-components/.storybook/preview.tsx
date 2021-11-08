@@ -5,7 +5,6 @@ import React from 'react';
 import { rmfDark, rmfLight } from '../lib';
 import { ThemeProvider } from '../lib/themes';
 import { StyledEngineProvider } from '@mui/material/styles';
-import { ThemeProvider as EmotionThemeProvider } from 'emotion-theming';
 import CssBaseline from '@mui/material/CssBaseline';
 
 export const parameters = {
@@ -34,12 +33,10 @@ const withThemeProvider: DecoratorFn = (Story, context) => {
   const theme = getTheme(context.globals.theme);
   return (
     <StyledEngineProvider injectFirst>
-      <EmotionThemeProvider theme={theme}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Story {...context} />
-        </ThemeProvider>
-      </EmotionThemeProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Story {...context} />
+      </ThemeProvider>
     </StyledEngineProvider>
   );
 };

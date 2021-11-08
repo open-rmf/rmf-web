@@ -1,5 +1,4 @@
-import { IconButton, Toolbar, Typography, TabProps, styled } from '@mui/material';
-import Tab from '@mui/material/Tab';
+import { IconButton, Tabs, Toolbar, Typography, styled } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import TabContext from '@mui/lab/TabContext';
 import TabPanel from '@mui/lab/TabPanel';
@@ -8,21 +7,12 @@ import React from 'react';
 import { HeaderBar } from '../lib/header-bar';
 import { LogoButton } from './logo-button';
 import { NavigationBar } from './navigation-bar';
+import { AppBarTab } from './appbar-tab';
 
 export default {
   title: 'Header Bar',
   component: HeaderBar,
 } as Meta;
-
-const StyledTab = styled((props: TabProps) => <Tab {...props} />)(({ theme }) => ({
-  color: 'rgba(255, 255, 255, 0.7)',
-  '&.Mui-selected': {
-    color: theme.palette.text.primary,
-  },
-  '&.Mui-focusVisible': {
-    backgroundColor: 'rgba(100, 95, 228, 0.32)',
-  },
-}));
 
 export const NavBar: Story = () => {
   const [value, setValue] = React.useState('building');
@@ -36,13 +26,13 @@ export const NavBar: Story = () => {
       <TabContext value={value}>
         <HeaderBar>
           <NavigationBar onTabChange={onTabChange} value={value}>
-            <StyledTab
+            <AppBarTab
               key={'building-tab'}
               label={'Building'}
               value={'building'}
               aria-label={`building-tab`}
             />
-            <StyledTab
+            <AppBarTab
               key={'robots'}
               label={'Robots'}
               value={'robots'}
@@ -95,13 +85,13 @@ export const FullHeaderBar: Story = () => {
         <HeaderBar>
           <LogoButton src="/assets/roshealth-logo-white.png" />
           <NavigationBar onTabChange={onTabChange} value={value}>
-            <StyledTab
+            <AppBarTab
               key="building-tab"
               label="Building"
               value="building"
               aria-label="building-tab"
             />
-            <StyledTab
+            <AppBarTab
               key={'robots'}
               label={'Robots'}
               value={'robots'}

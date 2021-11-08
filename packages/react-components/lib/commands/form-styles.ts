@@ -1,5 +1,8 @@
 import { styled } from '@mui/material';
 
+// TODO - refactor classes base on the function of the class
+// instead of component name, for eg, command-form-input would
+// be full-width as it specify width of component to be 100%
 export const commandFormsClasses = {
   form: 'command-form-root',
   divForm: 'command-form-div-wrapper',

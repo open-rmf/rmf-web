@@ -1,5 +1,6 @@
 import { ThemeProvider as ThemeProvider_, createTheme } from '@mui/material';
 import { ThemeProviderProps } from '@mui/styles';
+import { ThemeProvider as EmotionThemeProvider } from 'emotion-theming';
 import React from 'react';
 
 const GlobalStyles: React.FC = () => {
@@ -12,9 +13,11 @@ const GlobalStyles: React.FC = () => {
  */
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, ...otherProps }) => {
   return (
-    <ThemeProvider_ {...otherProps}>
-      <GlobalStyles />
-      {children}
-    </ThemeProvider_>
+    <EmotionThemeProvider theme={otherProps.theme}>
+      <ThemeProvider_ {...otherProps}>
+        <GlobalStyles />
+        {children}
+      </ThemeProvider_>
+    </EmotionThemeProvider>
   );
 };
