@@ -15,6 +15,8 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { DoorTable } from './door-table';
 import { DoorData, doorModeToString, doorTypeToString } from './utils';
+import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 export interface DoorPanelProps {
   doors: DoorData[];
@@ -22,7 +24,15 @@ export interface DoorPanelProps {
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
 
-export interface DoorInfoProps {
+interface DoorGridData extends DoorPanelProps {
+  columnCount: number;
+}
+
+interface DoorGridRendererProps extends GridChildComponentProps {
+  data: DoorGridData;
+}
+
+export interface DoorcellProps {
   door: DoorData;
   doorMode?: number;
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
@@ -39,6 +49,7 @@ const classes = {
   itemIcon: 'door-panel-item-icon',
   buttonGroup: 'door-panel-button-group',
   panelHeader: 'door-panel-panel-header',
+  nameField: 'door-panel-name-field',
 };
 const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
   [`&.${classes.container}`]: {
@@ -65,6 +76,7 @@ const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme })
   [`& .${classes.cellPaper}`]: {
     padding: '0.5rem',
     backgroundColor: theme.palette.info.light,
+    margin: '0.5rem',
   },
   [`& .${classes.itemIcon}`]: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
@@ -77,10 +89,16 @@ const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme })
     color: theme.palette.getContrastText(theme.palette.primary.main),
     marginLeft: '1rem',
   },
+  [`& .${classes.nameField}`]: {
+    fontWeight: 'bold',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 const DoorCell = React.memo(
-  ({ door, doorMode, onDoorControlClick }: DoorInfoProps): JSX.Element => {
+  ({ door, doorMode, onDoorControlClick }: DoorcellProps): JSX.Element => {
     const doorModeLabelClasses = React.useCallback(
       (doorMode?: number): string => {
         if (doorMode === undefined) {
@@ -99,13 +117,18 @@ const DoorCell = React.memo(
       },
       [classes],
     );
-
     const doorStatusClass = doorModeLabelClasses(doorMode);
     const labelId = `door-cell-${door.door.name}`;
 
     return (
       <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
-        <Typography id={labelId} variant="body1" align="center" style={{ fontWeight: 'bold' }}>
+        <Typography
+          id={labelId}
+          variant="body1"
+          align="center"
+          className={classes.nameField}
+          title={door.door.name}
+        >
           {door.door.name}
         </Typography>
         <Grid container direction="row" spacing={1}>
@@ -121,12 +144,13 @@ const DoorCell = React.memo(
           </Grid>
         </Grid>
         <Typography variant="body1" align="center">
-          {doorTypeToString(door.door.door_type)}
+          {door && doorTypeToString(door.door.door_type)}
         </Typography>
         <div className={classes.buttonGroup}>
           <ButtonGroup size="small">
             <Button
               onClick={(ev) =>
+                door &&
                 onDoorControlClick &&
                 onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_OPEN)
               }
@@ -135,6 +159,7 @@ const DoorCell = React.memo(
             </Button>
             <Button
               onClick={(ev) =>
+                door &&
                 onDoorControlClick &&
                 onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_CLOSED)
               }
@@ -148,8 +173,30 @@ const DoorCell = React.memo(
   },
 );
 
+const DoorGridRenderer = ({ data, columnIndex, rowIndex, style }: DoorGridRendererProps) => {
+  let door: DoorData | undefined;
+  let doorState: RmfModels.DoorState | undefined;
+  const columnCount = data.columnCount;
+
+  if (rowIndex * columnCount + columnIndex <= data.doors.length - 1) {
+    door = data.doors[rowIndex * columnCount + columnIndex];
+    doorState = data.doorStates[door.door.name];
+  }
+
+  return door ? (
+    <div style={style}>
+      <DoorCell
+        door={door}
+        doorMode={doorState?.current_mode.value}
+        onDoorControlClick={data.onDoorControlClick}
+      />
+    </div>
+  ) : null;
+};
+
 export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelProps): JSX.Element {
   const [isCellView, setIsCellView] = React.useState(true);
+  const columnWidth = 250;
 
   return (
     <StyledCard variant="outlined" className={classes.container}>
@@ -173,17 +220,29 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
       </Paper>
       <Grid className={classes.grid} container direction="row" spacing={1}>
         {isCellView ? (
-          doors.map((door) => {
-            return (
-              <Grid item xs={4} key={door.door.name}>
-                <DoorCell
-                  door={door}
-                  doorMode={doorStates[door.door.name]?.current_mode.value}
-                  onDoorControlClick={onDoorControlClick}
-                />
-              </Grid>
-            );
-          })
+          <AutoSizer disableHeight>
+            {({ width }) => {
+              const columnCount = Math.floor(width / columnWidth);
+              return (
+                <FixedSizeGrid
+                  columnCount={columnCount}
+                  columnWidth={columnWidth}
+                  height={250}
+                  rowCount={Math.ceil(doors.length / columnCount)}
+                  rowHeight={120}
+                  width={width}
+                  itemData={{
+                    columnCount,
+                    doors,
+                    doorStates,
+                    onDoorControlClick,
+                  }}
+                >
+                  {DoorGridRenderer}
+                </FixedSizeGrid>
+              );
+            }}
+          </AutoSizer>
         ) : (
           <DoorTable
             doors={doors}

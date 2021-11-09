@@ -12,23 +12,40 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import LiftRequestFormDialog from './lift-request-form-dialog';
 import { doorStateToString, liftModeToString, requestDoorModes, requestModes } from './lift-utils';
+import { useFixedTableCellStyles } from '../utils';
+import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import clsx from 'clsx';
+import AutoSizer, { AutoSizerProps } from 'react-virtualized-auto-sizer';
 
 const classes = {
   doorLabelOpen: 'lift-table-doorlabelopen',
   doorLabelClosed: 'lift-table-doorlabelclosed',
   doorLabelMoving: 'lift-table-doorlabelmoving',
+  tableRow: 'lift-table-row',
+  tableCell: 'lift-table-cell',
 };
-const StyledTable = styled((props: TableProps) => <Table {...props} />)(({ theme }) => ({
-  [`& .${classes.doorLabelOpen}`]: {
-    color: theme.palette.success.main,
-  },
-  [`& .${classes.doorLabelClosed}`]: {
-    color: theme.palette.error.main,
-  },
-  [`& .${classes.doorLabelMoving}`]: {
-    color: theme.palette.warning.main,
-  },
-}));
+const StyledAutosizer = styled((props: AutoSizerProps) => <AutoSizer {...props} />)(
+  ({ theme }) => ({
+    [`& .${classes.doorLabelOpen}`]: {
+      color: theme.palette.success.main,
+    },
+    [`& .${classes.doorLabelClosed}`]: {
+      color: theme.palette.error.main,
+    },
+    [`& .${classes.doorLabelMoving}`]: {
+      color: theme.palette.warning.main,
+    },
+    [`& .${classes.tableRow}`]: {
+      display: 'flex',
+      flexDirection: 'row',
+    },
+    [`& .${classes.tableCell}`]: {
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+    },
+  }),
+);
 
 export interface LiftTableProps {
   lifts: RmfModels.Lift[];
@@ -42,12 +59,16 @@ export interface LiftTableProps {
   ): void;
 }
 
+interface LiftListRendererProps extends ListChildComponentProps {
+  data: LiftTableProps;
+}
+
 export interface LiftRowProps {
   lift: RmfModels.Lift;
-  doorState?: number;
-  destinationFloor?: string;
-  currentFloor?: string;
-  currentMode?: number;
+  doorState: number;
+  currentMode: number;
+  currentFloor: string;
+  destinationFloor: string;
   onRequestSubmit?(
     event: React.FormEvent,
     lift: RmfModels.Lift,
@@ -67,9 +88,10 @@ const LiftRow = React.memo(
     onRequestSubmit,
   }: LiftRowProps) => {
     const [showForms, setShowForms] = React.useState(false);
+    const { fixedTableCell, fixedLastTableCell } = useFixedTableCellStyles;
 
     const doorModeLabelClasses = React.useCallback(
-      (doorState?: number): string => {
+      (doorState: number): string => {
         switch (doorState) {
           case RmfModels.DoorMode.MODE_OPEN:
             return `${classes.doorLabelOpen}`;
@@ -85,15 +107,48 @@ const LiftRow = React.memo(
     );
 
     return (
-      <TableRow aria-label={`${lift.name}`}>
-        <TableCell>{lift.name}</TableCell>
-        <TableCell>{liftModeToString(currentMode)}</TableCell>
-        <TableCell>{currentFloor}</TableCell>
-        <TableCell>{destinationFloor}</TableCell>
-        <TableCell className={doorModeLabelClasses(doorState)}>
+      <TableRow aria-label={`${lift.name}`} component="div" className={classes.tableRow}>
+        <TableCell
+          component="div"
+          variant="body"
+          className={clsx(classes.tableCell, fixedTableCell)}
+          title={lift.name}
+        >
+          {lift.name}
+        </TableCell>
+        <TableCell
+          component="div"
+          variant="body"
+          className={clsx(classes.tableCell, fixedTableCell)}
+        >
+          {liftModeToString(currentMode)}
+        </TableCell>
+        <TableCell
+          component="div"
+          variant="body"
+          className={clsx(classes.tableCell, fixedTableCell)}
+        >
+          {currentFloor}
+        </TableCell>
+        <TableCell
+          component="div"
+          variant="body"
+          className={clsx(classes.tableCell, fixedTableCell)}
+        >
+          {destinationFloor}
+        </TableCell>
+        <TableCell
+          component="div"
+          variant="body"
+          className={clsx(doorModeLabelClasses(doorState), classes.tableCell, fixedTableCell)}
+        >
           {doorStateToString(doorState)}
         </TableCell>
-        <TableCell>
+        <TableCell
+          component="div"
+          variant="body"
+          className={clsx(classes.tableCell, fixedLastTableCell)}
+        >
           <Button
             variant="contained"
             color="primary"
@@ -117,35 +172,94 @@ const LiftRow = React.memo(
   },
 );
 
-export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps): JSX.Element => {
+const LiftListRenderer = ({ data, index }: LiftListRendererProps) => {
+  const lift = data.lifts[index];
+  const liftState = data.liftStates[lift.name];
+
   return (
-    <StyledTable stickyHeader size="small" aria-label="lift-table">
-      <TableHead>
-        <TableRow>
-          <TableCell>Lift Name</TableCell>
-          <TableCell>Op. Mode</TableCell>
-          <TableCell>Current Floor</TableCell>
-          <TableCell>Destination</TableCell>
-          <TableCell>Doors State</TableCell>
-          <TableCell>Request Form</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {lifts.map((lift, i) => {
-          const state: RmfModels.LiftState | undefined = liftStates[lift.name];
-          return (
-            <LiftRow
-              lift={lift}
-              doorState={state?.door_state}
-              destinationFloor={state?.destination_floor}
-              currentFloor={state?.current_floor}
-              currentMode={state?.current_mode}
-              key={`${lift.name}_${i}`}
-              onRequestSubmit={onRequestSubmit}
-            />
-          );
-        })}
-      </TableBody>
-    </StyledTable>
+    <LiftRow
+      lift={lift}
+      doorState={liftState?.door_state}
+      currentMode={liftState?.current_mode}
+      currentFloor={liftState?.current_floor}
+      destinationFloor={liftState?.destination_floor}
+      onRequestSubmit={data.onRequestSubmit}
+    />
+  );
+};
+
+export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps): JSX.Element => {
+  const { fixedTableCell, fixedLastTableCell } = useFixedTableCellStyles;
+  return (
+    <StyledAutosizer disableHeight>
+      {({ width }) => {
+        return (
+          <Table component="div" stickyHeader size="small" aria-label="lift-table">
+            <TableHead component="div">
+              <TableRow component="div" className={classes.tableRow}>
+                <TableCell
+                  component="div"
+                  variant="body"
+                  className={clsx(classes.tableCell, fixedTableCell)}
+                >
+                  Lift Name
+                </TableCell>
+                <TableCell
+                  component="div"
+                  variant="body"
+                  className={clsx(classes.tableCell, fixedTableCell)}
+                >
+                  Op. Mode
+                </TableCell>
+                <TableCell
+                  component="div"
+                  variant="body"
+                  className={clsx(classes.tableCell, fixedTableCell)}
+                >
+                  Current Floor
+                </TableCell>
+                <TableCell
+                  component="div"
+                  variant="body"
+                  className={clsx(classes.tableCell, fixedTableCell)}
+                >
+                  Destination
+                </TableCell>
+                <TableCell
+                  component="div"
+                  variant="body"
+                  className={clsx(classes.tableCell, fixedTableCell)}
+                >
+                  Doors State
+                </TableCell>
+                <TableCell
+                  component="div"
+                  variant="body"
+                  className={clsx(classes.tableCell, fixedLastTableCell)}
+                >
+                  Request Form
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody component="div">
+              <FixedSizeList
+                itemSize={43}
+                itemCount={lifts.length}
+                height={200}
+                width={width}
+                itemData={{
+                  lifts,
+                  liftStates,
+                  width,
+                  onRequestSubmit,
+                }}
+              >
+                {LiftListRenderer}
+              </FixedSizeList>
+            </TableBody>
+          </Table>
+        );
+      }}
+    </StyledAutosizer>
   );
 };

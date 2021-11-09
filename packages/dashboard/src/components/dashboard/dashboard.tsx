@@ -40,7 +40,7 @@ const DashboardRoot = styled('div')(({ theme }) => ({
     flex: '1 0 auto',
   },
   [`& .${classes.itemPanels}`]: {
-    width: 800,
+    width: '55%',
   },
 }));
 

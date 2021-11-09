@@ -11,7 +11,11 @@ import {
 } from '@mui/material';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
+import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import { DoorData, doorModeToString, doorTypeToString } from './utils';
+import { useFixedTableCellStyles } from '../utils';
+import clsx from 'clsx';
+import AutoSizer, { AutoSizerProps } from 'react-virtualized-auto-sizer';
 
 export interface DoorTableProps {
   doors: DoorData[];
@@ -19,9 +23,13 @@ export interface DoorTableProps {
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
 
+interface DoorListRendererProps extends ListChildComponentProps {
+  data: DoorTableProps;
+}
+
 export interface DoorRowProps {
   door: DoorData;
-  doorMode?: number;
+  doorMode: number;
   onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
 }
 
@@ -29,18 +37,31 @@ const classes = {
   doorLabelOpen: 'door-table-label-open',
   doorLabelClosed: 'door-table-label-closed',
   doorLabelMoving: 'door-table-label-moving',
+  tableRow: 'door-table-row',
+  tableCell: 'door-table-cell',
 };
-const StyledTable = styled((props: TableProps) => <Table {...props} />)(({ theme }) => ({
-  [`& .${classes.doorLabelOpen}`]: {
-    color: theme.palette.success.main,
-  },
-  [`& .${classes.doorLabelClosed}`]: {
-    color: theme.palette.error.main,
-  },
-  [`& .${classes.doorLabelMoving}`]: {
-    color: theme.palette.warning.main,
-  },
-}));
+const StyledAutoSizer = styled((props: AutoSizerProps) => <AutoSizer {...props} />)(
+  ({ theme }) => ({
+    [`& .${classes.doorLabelOpen}`]: {
+      color: theme.palette.success.main,
+    },
+    [`& .${classes.doorLabelClosed}`]: {
+      color: theme.palette.error.main,
+    },
+    [`& .${classes.doorLabelMoving}`]: {
+      color: theme.palette.warning.main,
+    },
+    [`& .${classes.tableRow}`]: {
+      display: 'flex',
+      flexDirection: 'row',
+    },
+    [`& .${classes.tableCell}`]: {
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+    },
+  }),
+);
 
 const getOpMode = (doorMode?: number) => {
   const getState = doorModeToString(doorMode);
@@ -48,6 +69,7 @@ const getOpMode = (doorMode?: number) => {
 };
 
 const DoorRow = React.memo(({ door, doorMode, onDoorControlClick }: DoorRowProps) => {
+  const { fixedTableCell, fixedLastTableCell } = useFixedTableCellStyles;
   const doorModeLabelClasses = React.useCallback(
     (doorMode?: number): string => {
       if (doorMode === undefined) {
@@ -66,23 +88,47 @@ const DoorRow = React.memo(({ door, doorMode, onDoorControlClick }: DoorRowProps
     },
     [classes],
   );
-
   const doorStatusClass = doorModeLabelClasses(doorMode);
 
   return (
-    <TableRow arial-label={`${door.door.name}`}>
-      <TableCell>{door.door.name}</TableCell>
+    <TableRow arial-label={`${door.door.name}`} component="div" className={classes.tableRow}>
       <TableCell
-        className={
-          getOpMode(doorMode) === 'Offline' ? classes.doorLabelClosed : classes.doorLabelOpen
-        }
+        component="div"
+        variant="body"
+        className={clsx(classes.tableCell, fixedTableCell)}
+        title={door?.door.name}
+      >
+        {door.door.name}
+      </TableCell>
+      <TableCell
+        component="div"
+        variant="body"
+        className={clsx(
+          getOpMode(doorMode) === 'Offline' ? classes.doorLabelClosed : classes.doorLabelOpen,
+          classes.tableCell,
+          fixedTableCell,
+        )}
       >
         {getOpMode(doorMode)}
       </TableCell>
-      <TableCell>{door.level}</TableCell>
-      <TableCell>{doorTypeToString(door.door.door_type)}</TableCell>
-      <TableCell className={doorStatusClass}>{doorModeToString(doorMode)}</TableCell>
-      <TableCell>
+      <TableCell component="div" variant="body" className={clsx(classes.tableCell, fixedTableCell)}>
+        {door.level}
+      </TableCell>
+      <TableCell component="div" variant="body" className={clsx(classes.tableCell, fixedTableCell)}>
+        {doorTypeToString(door.door.door_type)}
+      </TableCell>
+      <TableCell
+        component="div"
+        variant="body"
+        className={clsx(doorStatusClass, classes.tableCell, fixedTableCell)}
+      >
+        {doorModeToString(doorMode)}
+      </TableCell>
+      <TableCell
+        component="div"
+        variant="body"
+        className={clsx(classes.tableCell, fixedLastTableCell)}
+      >
         <ButtonGroup size="small">
           <Button
             aria-label={`${door.door.name}_open`}
@@ -107,33 +153,95 @@ const DoorRow = React.memo(({ door, doorMode, onDoorControlClick }: DoorRowProps
   );
 });
 
+const DoorListRenderer = ({ data, index }: DoorListRendererProps) => {
+  const door = data.doors[index];
+  const doorState = data.doorStates[door.door.name];
+
+  return (
+    <DoorRow
+      door={door}
+      doorMode={doorState?.current_mode.value}
+      onDoorControlClick={data.onDoorControlClick}
+    />
+  );
+};
+
 export const DoorTable = ({
   doors,
   doorStates,
   onDoorControlClick,
 }: DoorTableProps): JSX.Element => {
+  const { fixedTableCell, fixedLastTableCell } = useFixedTableCellStyles;
   return (
-    <StyledTable stickyHeader size="small" aria-label="door-table">
-      <TableHead>
-        <TableRow>
-          <TableCell>Door Name</TableCell>
-          <TableCell>Op. Mode</TableCell>
-          <TableCell>Level</TableCell>
-          <TableCell>Door Type</TableCell>
-          <TableCell>Doors State</TableCell>
-          <TableCell>Door Control</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {doors.map((door) => (
-          <DoorRow
-            door={door}
-            doorMode={doorStates[door.door.name]?.current_mode.value}
-            onDoorControlClick={onDoorControlClick}
-            key={door.door.name}
-          />
-        ))}
-      </TableBody>
-    </StyledTable>
+    <StyledAutoSizer disableHeight>
+      {({ width }) => {
+        return (
+          <Table stickyHeader size="small" aria-label="door-table" component="div">
+            <TableHead component="div">
+              <TableRow component="div" className={classes.tableRow} style={{ width: width }}>
+                <TableCell
+                  component="div"
+                  variant="head"
+                  className={clsx(classes.tableCell, fixedTableCell)}
+                >
+                  Door Name
+                </TableCell>
+                <TableCell
+                  component="div"
+                  variant="head"
+                  className={clsx(classes.tableCell, fixedTableCell)}
+                >
+                  Op. Mode
+                </TableCell>
+                <TableCell
+                  component="div"
+                  variant="head"
+                  className={clsx(classes.tableCell, fixedTableCell)}
+                >
+                  Level
+                </TableCell>
+                <TableCell
+                  component="div"
+                  variant="head"
+                  className={clsx(classes.tableCell, fixedTableCell)}
+                >
+                  Door Type
+                </TableCell>
+                <TableCell
+                  component="div"
+                  variant="head"
+                  className={clsx(classes.tableCell, fixedTableCell)}
+                >
+                  Doors State
+                </TableCell>
+                <TableCell
+                  component="div"
+                  variant="head"
+                  className={clsx(classes.tableCell, fixedLastTableCell)}
+                >
+                  Door Control
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody component="div">
+              <FixedSizeList
+                itemSize={43}
+                itemCount={doors.length}
+                height={200}
+                width={width}
+                itemData={{
+                  doors,
+                  doorStates,
+                  width,
+                  onDoorControlClick,
+                }}
+              >
+                {DoorListRenderer}
+              </FixedSizeList>
+            </TableBody>
+          </Table>
+        );
+      }}
+    </StyledAutoSizer>
   );
 };

@@ -5,11 +5,25 @@ import { Dispenser } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { WorkcellTable } from './workcell-table';
+import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 export interface WorkcellPanelProps {
   dispensers: Dispenser[];
   ingestors: Dispenser[];
   workCellStates: Record<string, RmfModels.DispenserState>;
+}
+
+export interface WorkcellDataProps extends WorkcellPanelProps {
+  type: 'ingestors' | 'dispensers';
+}
+
+interface WorkcellGridData extends WorkcellDataProps {
+  columnCount: number;
+}
+
+interface WorkcellGridRendererProps extends GridChildComponentProps {
+  data: WorkcellGridData;
 }
 
 export interface WorkcellCellProps {
@@ -26,6 +40,8 @@ const classes = {
   itemIcon: 'workcell-item-icon',
   panelHeader: 'workcell-panel-header',
   subPanelHeader: 'workcell-sub-panel-header',
+  tableDiv: 'workcell-table-div',
+  nameField: 'workcell-name-field',
 };
 const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
   [`&.${classes.container}`]: {
@@ -45,6 +61,8 @@ const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme })
   [`& .${classes.cellPaper}`]: {
     padding: '0.5rem',
     backgroundColor: theme.palette.info.light,
+    margin: '0.5rem',
+    height: '84px',
   },
   [`& .${classes.itemIcon}`]: {
     color: theme.palette.getContrastText(theme.palette.primary.main),
@@ -53,21 +71,31 @@ const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme })
     color: theme.palette.getContrastText(theme.palette.primary.main),
     marginLeft: '1rem',
   },
-  [`& .${classes.subPanelHeader}`]: {
-    marginLeft: '1rem',
+  [`& .${classes.tableDiv}`]: {
+    margin: '0 1rem',
+  },
+  [`& .${classes.nameField}`]: {
+    fontWeight: 'bold',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
 }));
 
 const WorkcellCell = React.memo(
-  ({ workcell, requestGuidQueue, secondsRemaining }: WorkcellCellProps): JSX.Element => {
+  ({ workcell, requestGuidQueue, secondsRemaining }: WorkcellCellProps): JSX.Element | null => {
     const labelId = `workcell-cell-${workcell.guid}`;
-
     return (
       <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
         {requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
           <React.Fragment>
-            <Typography id={labelId} align="center" style={{ fontWeight: 'bold' }}>
-              {workcell.guid}
+            <Typography
+              id={labelId}
+              align="center"
+              className={classes.nameField}
+              title={workcell?.guid}
+            >
+              {workcell?.guid}
             </Typography>
             <Grid container direction="row">
               <Grid item xs={6}>
@@ -85,12 +113,37 @@ const WorkcellCell = React.memo(
             <Typography align="center">{`Remaining: ${secondsRemaining}s`}</Typography>
           </React.Fragment>
         ) : (
-          <Typography id={labelId} color="error">{`${workcell} not sending states`}</Typography>
+          <Typography
+            id={labelId}
+            color="error"
+          >{`${workcell.guid} not sending states`}</Typography>
         )}
       </Paper>
     );
   },
 );
+
+const WorkcellGridRenderer = ({ data, columnIndex, rowIndex }: WorkcellGridRendererProps) => {
+  let workcell: Dispenser | undefined;
+  let workcellState: RmfModels.DispenserState | undefined;
+  const columnCount = data.columnCount;
+  const getWorkCell = data.type === 'dispensers' ? data.dispensers : data.ingestors;
+
+  if (rowIndex * columnCount + columnIndex <= getWorkCell.length - 1) {
+    workcell = getWorkCell[rowIndex * columnCount + columnIndex];
+    workcellState = data.workCellStates[workcell.guid];
+  }
+
+  return workcell ? (
+    <div>
+      <WorkcellCell
+        workcell={workcell}
+        requestGuidQueue={workcellState?.request_guid_queue}
+        secondsRemaining={workcellState?.seconds_remaining}
+      />
+    </div>
+  ) : null;
+};
 
 export function WorkcellPanel({
   dispensers,
@@ -98,6 +151,7 @@ export function WorkcellPanel({
   workCellStates,
 }: WorkcellPanelProps): JSX.Element {
   const [isCellView, setIsCellView] = React.useState(true);
+  const columnWidth = 250;
 
   return (
     <StyledCard variant="outlined" className={classes.container}>
@@ -124,59 +178,73 @@ export function WorkcellPanel({
           <div className={classes.cellContainer}>
             <Typography variant="h6">Dispenser Table</Typography>
             <Grid container direction="row" spacing={1}>
-              {dispensers.length > 0
-                ? dispensers.map((dispenser, i) => {
-                    const state: RmfModels.DispenserState | undefined =
-                      workCellStates[dispenser.guid];
-                    return (
-                      <Grid item xs={4} key={`${dispenser.guid}_${i}`}>
-                        <WorkcellCell
-                          workcell={dispenser}
-                          requestGuidQueue={state?.request_guid_queue}
-                          secondsRemaining={state?.seconds_remaining}
-                        />
-                      </Grid>
-                    );
-                  })
-                : null}
+              <AutoSizer disableHeight>
+                {({ width }) => {
+                  const columnCount = Math.floor(width / columnWidth);
+                  return (
+                    <FixedSizeGrid
+                      columnCount={columnCount}
+                      columnWidth={columnWidth}
+                      height={250}
+                      rowCount={Math.ceil(dispensers.length / columnCount)}
+                      rowHeight={120}
+                      width={width}
+                      itemData={{
+                        columnCount,
+                        dispensers,
+                        ingestors,
+                        workCellStates,
+                        type: 'dispensers',
+                      }}
+                    >
+                      {WorkcellGridRenderer}
+                    </FixedSizeGrid>
+                  );
+                }}
+              </AutoSizer>
             </Grid>
           </div>
           <div className={classes.cellContainer}>
             <Typography variant="h6">Ingester Table</Typography>
             <Grid container direction="row" spacing={1}>
-              {ingestors.length > 0
-                ? ingestors.map((ingestor, i) => {
-                    const state: RmfModels.IngestorState | undefined =
-                      workCellStates[ingestor.guid];
-                    return (
-                      <Grid item xs={4} key={`${ingestor.guid}_${i}`}>
-                        <WorkcellCell
-                          workcell={ingestor}
-                          requestGuidQueue={state?.request_guid_queue}
-                          secondsRemaining={state?.seconds_remaining}
-                        />
-                      </Grid>
-                    );
-                  })
-                : null}
+              <AutoSizer disableHeight>
+                {({ width }) => {
+                  const columnCount = Math.floor(width / columnWidth);
+                  return (
+                    <FixedSizeGrid
+                      columnCount={columnCount}
+                      columnWidth={columnWidth}
+                      height={250}
+                      rowCount={Math.ceil(ingestors.length / columnCount)}
+                      rowHeight={120}
+                      width={width}
+                      itemData={{
+                        columnCount,
+                        dispensers,
+                        ingestors,
+                        workCellStates,
+                        type: 'ingestors',
+                      }}
+                    >
+                      {WorkcellGridRenderer}
+                    </FixedSizeGrid>
+                  );
+                }}
+              </AutoSizer>
             </Grid>
           </div>
         </React.Fragment>
       ) : (
         <React.Fragment>
           {dispensers.length > 0 ? (
-            <div>
-              <Typography variant="h6" className={classes.subPanelHeader}>
-                Dispenser Table
-              </Typography>
+            <div className={classes.tableDiv}>
+              <Typography variant="h6">Dispenser Table</Typography>
               <WorkcellTable workcells={dispensers} workcellStates={workCellStates} />
             </div>
           ) : null}
           {ingestors.length > 0 ? (
-            <div>
-              <Typography variant="h6" className={classes.subPanelHeader}>
-                Ingestor Table
-              </Typography>
+            <div className={classes.tableDiv}>
+              <Typography variant="h6">Ingestor Table</Typography>
               <WorkcellTable workcells={ingestors} workcellStates={workCellStates} />
             </div>
           ) : null}
