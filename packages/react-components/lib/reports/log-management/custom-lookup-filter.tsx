@@ -23,27 +23,26 @@ const MenuProps = {
 export interface CustomLookupFilterProps {
   lookup: Record<string, string>;
   selectedFilter: string[];
-  setSelectedFilter: React.Dispatch<React.SetStateAction<string[]>>;
+  onFilterChange: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export const CustomLookupFilter = (props: CustomLookupFilterProps): React.ReactElement => {
-  const { lookup, selectedFilter, setSelectedFilter } = props;
-  const [filterTracker, setFilterTracker] = React.useState<string[]>(selectedFilter);
+  // FIXME - select closes every time a filter param is selected, which is bad for ux
+  const { lookup, selectedFilter, onFilterChange } = props;
   return (
     <FormControl style={{ width: '100%', padding: '1rem' }}>
       <InputLabel htmlFor={'select-multiple-checkbox'}>Level Filter</InputLabel>
       <Select
         multiple
-        value={filterTracker}
+        value={selectedFilter}
         onClose={() => {
-          setSelectedFilter(filterTracker);
-          setFilterTracker(filterTracker);
+          onFilterChange(selectedFilter);
         }}
         onChange={(event) => {
           if (typeof event.target.value === 'string') {
-            setFilterTracker([...filterTracker, event.target.value]);
+            onFilterChange([...selectedFilter, event.target.value]);
           } else {
-            setFilterTracker(event.target.value);
+            onFilterChange(event.target.value);
           }
         }}
         input={<Input id={'select-multiple-checkbox'} />}
@@ -55,7 +54,7 @@ export const CustomLookupFilter = (props: CustomLookupFilterProps): React.ReactE
       >
         {Object.keys(lookup).map((key: string) => (
           <MenuItem key={key} value={key}>
-            <Checkbox checked={filterTracker.indexOf(key.toString()) > -1} />
+            <Checkbox checked={selectedFilter.indexOf(key.toString()) > -1} />
             <ListItemText primary={lookup[key]} />
           </MenuItem>
         ))}

@@ -70,5 +70,5 @@ export const SimpleLogTable: Story = (args) => {
     container: { id: 0, name: 'container_test' },
   });
 
-  return <LogTable rows={logs} tableSize={500} {...args} />;
+  return <LogTable rows={logs} {...args} />;
 };

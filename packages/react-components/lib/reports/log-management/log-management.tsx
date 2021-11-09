@@ -18,8 +18,8 @@ const LogManagementRoot = styled('div')(({ theme }) => ({
 }));
 
 export interface LogQueryPayload {
-  toLogDate?: Date | null;
-  fromLogDate?: Date | null;
+  toLogDate?: unknown | null;
+  fromLogDate?: unknown | null;
   logLabel?: string | null;
   logLevel?: string | null;
   offset?: number | null;

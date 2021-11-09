@@ -3,6 +3,7 @@ import { TextField, SelectChangeEvent, styled } from '@mui/material';
 import Button from '@mui/material/Button';
 import { SearchFilter } from './search-filter';
 import DateAndTimePickers from '../../date-time-picker';
+import { DateTimePickerProps } from '@mui/lab';
 import { LogLevel } from './log-level';
 
 import { LogQueryPayload } from '.';
@@ -51,8 +52,8 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
   // The log contains information from different services, the label help us differentiate the service
   const [logLabel, setLogLabel] = React.useState('');
   const [logLevel, setLogLevel] = React.useState(LogLevel.All);
-  const [fromLogDate, setFromLogDate] = React.useState<Date>(new Date());
-  const [toLogDate, setToLogDate] = React.useState<Date>(new Date());
+  const [fromLogDate, setFromLogDate] = React.useState<unknown>(new Date());
+  const [toLogDate, setToLogDate] = React.useState<unknown>(new Date());
 
   const searchQuery = () => {
     search && search({ toLogDate, fromLogDate, logLabel, logLevel });
@@ -66,13 +67,19 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
     setLogLevel(event.target.value as LogLevel);
   }, []);
 
-  const handleFromLogDateChange = React.useCallback((date: any) => {
-    setFromLogDate(date);
-  }, []);
+  const handleFromLogDateChange: Required<DateTimePickerProps>['onChange'] = React.useCallback(
+    (date) => {
+      setFromLogDate(date);
+    },
+    [],
+  );
 
-  const handleToLogDateChange = React.useCallback((date: any) => {
-    setToLogDate(date);
-  }, []);
+  const handleToLogDateChange: Required<DateTimePickerProps>['onChange'] = React.useCallback(
+    (date) => {
+      setToLogDate(date);
+    },
+    [],
+  );
 
   return (
     <SearchLogRoot className={classes.background}>

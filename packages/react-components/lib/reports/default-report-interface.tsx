@@ -11,8 +11,8 @@ export const DefaultReportRoot = styled('div')(() => ({
 }));
 
 export interface DefaultReportQueryPayload {
-  toLogDate?: Date | null;
-  fromLogDate?: Date | null;
+  toLogDate?: unknown | null;
+  fromLogDate?: unknown | null;
   offset?: number | null;
   limit?: number | null;
 }

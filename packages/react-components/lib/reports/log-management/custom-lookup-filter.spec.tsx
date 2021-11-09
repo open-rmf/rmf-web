@@ -18,7 +18,7 @@ describe('Custom Lookup filter', () => {
       <CustomLookupFilter
         selectedFilter={['error']}
         lookup={{ error: 'error', warn: 'warn' }}
-        setSelectedFilter={mockOnChange}
+        onFilterChange={mockOnChange}
       />,
     );
     userEvent.click(screen.getByText('error'));
@@ -31,7 +31,7 @@ describe('Custom Lookup filter', () => {
       <CustomLookupFilter
         selectedFilter={['error']}
         lookup={{ error: 'error', warn: 'warn' }}
-        setSelectedFilter={mockOnChange}
+        onFilterChange={mockOnChange}
       />,
     );
     userEvent.click(screen.getByText('error'));

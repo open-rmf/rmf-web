@@ -19,7 +19,6 @@ export type LogRowsType = {
 
 export interface LogTableProps {
   rows: LogRowsType | [];
-  tableSize?: number; // units vh or rem
   addMoreRows?(): void;
 }
 
@@ -153,7 +152,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
             <CustomLookupFilter
               lookup={logLevels}
               selectedFilter={selectedFilter}
-              setSelectedFilter={setSelectedFilter}
+              onFilterChange={setSelectedFilter}
             />
           ),
         }}
