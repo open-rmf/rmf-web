@@ -193,22 +193,19 @@ export function LabelContainer(props: LabelContainerProps): JSX.Element | null {
   );
 }
 
-const prefix = 'name-label';
 const classes = {
-  container: `${prefix}-container`,
-  hide: `${prefix}-hide`,
+  container: 'name-label-container',
 };
 
-const LabelContainerRoot = styled('div')(({ theme }) => ({
-  [`& .${classes.container}`]: {
-    fontSize: theme.typography.fontSize,
-    fontFamily: theme.typography.fontFamily,
-    userSelect: 'none',
-  },
-  [`& .${classes.hide}`]: {
-    visibility: 'hidden',
-  },
-}));
+const StyledLabelContainer = styled((props: LabelContainerProps) => <LabelContainer {...props} />)(
+  ({ theme }) => ({
+    [`&.${classes.container}`]: {
+      fontSize: theme.typography.fontSize,
+      fontFamily: theme.typography.fontFamily,
+      userSelect: 'none',
+    },
+  }),
+);
 
 const Text: React.FC<React.PropsWithRef<React.SVGProps<SVGTextElement>>> = React.forwardRef(
   ({ children, ...otherProps }: React.SVGProps<SVGTextElement>, ref: React.Ref<SVGTextElement>) => {
@@ -260,15 +257,15 @@ export function NameLabel(props: NameLabelProps): JSX.Element {
   }, [theme]);
 
   return (
-    <LabelContainerRoot>
+    <>
       {/* Dummy to compute text length */}
       {!show && (
-        <Text ref={textRef} className={classes.hide}>
+        <Text ref={textRef} style={{ visibility: 'hidden' }}>
           {text}
         </Text>
       )}
       {show && (
-        <LabelContainer
+        <StyledLabelContainer
           contentWidth={contentWidth}
           contentHeight={contentHeight}
           contentPadding={contentPadding}
@@ -283,9 +280,9 @@ export function NameLabel(props: NameLabelProps): JSX.Element {
           >
             {text}
           </Text>
-        </LabelContainer>
+        </StyledLabelContainer>
       )}
-    </LabelContainerRoot>
+    </>
   );
 }
 
