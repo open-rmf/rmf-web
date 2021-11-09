@@ -106,14 +106,14 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
           label="From"
           value={fromLogDate}
           onChange={handleFromLogDateChange}
-          renderInput={(props) => <TextField {...props} />}
+          renderInput={(props) => <TextField id={'From'} {...props} />}
         />
         <DateAndTimePickers
           maxDate={new Date()}
           label="To"
           value={toLogDate}
           onChange={handleToLogDateChange}
-          renderInput={(props) => <TextField {...props} />}
+          renderInput={(props) => <TextField id={'To'} {...props} />}
         />
       </div>
 
