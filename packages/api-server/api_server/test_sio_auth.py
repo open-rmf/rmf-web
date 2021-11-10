@@ -39,9 +39,13 @@ class TestSioAuth(unittest.TestCase):
                     client.connect(self.base_url, auth=auth)
                     return True
                 except socketio.exceptions.ConnectionError as e:
-                    # Check specifically for connection refused "Errno 111"
-                    # Likely a race condition, wait for server to start
-                    if "Errno 111" in str(e) and tries < 10:
+                    # We will attempt to retry unless socketio fails
+                    # False positives like race conditions, irrelevant for auth
+                    # This string test is fragile to changes in dependencies
+                    if (
+                        str(e) != "One or more namespaces failed to connect"
+                        and tries < 10
+                    ):
                         time.sleep(0.5)
                     else:
                         return False
