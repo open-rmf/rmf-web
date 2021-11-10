@@ -39,7 +39,13 @@ class TestSioAuth(unittest.TestCase):
                     client.connect(self.base_url, auth=auth)
                     return True
                 except socketio.exceptions.ConnectionError as e:
-                    if str(e) == "Connection refused by the server" and tries < 10:
+                    # We will attempt to retry unless socketio fails
+                    # False positives like race conditions, irrelevant for auth
+                    # This string test is fragile to changes in dependencies
+                    if (
+                        str(e) != "One or more namespaces failed to connect"
+                        and tries < 10
+                    ):
                         time.sleep(0.5)
                     else:
                         return False
