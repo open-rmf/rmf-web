@@ -33,7 +33,7 @@ module.exports = (options) => {
         ...(options.coverage
           ? [
               {
-                test: /\.(ts|tsx)$/,
+                test: /(?<!spec\.)(ts|tsx)$/,
                 exclude: /node_modules|\.test.(ts|tsx)|tasks.ts|test-utils.ts$/,
                 use: ['@jsdevtools/coverage-istanbul-loader'],
               },

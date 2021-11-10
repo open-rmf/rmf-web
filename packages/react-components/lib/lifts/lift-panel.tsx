@@ -24,6 +24,8 @@ import {
   requestModes,
   onLiftClick,
 } from './lift-utils';
+import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 export interface LiftPanelProps {
   lifts: RmfModels.Lift[];
@@ -38,13 +40,21 @@ export interface LiftPanelProps {
   ): void;
 }
 
+interface LiftGridData extends LiftPanelProps {
+  columnCount: number;
+}
+
+interface LiftGridRendererProps extends GridChildComponentProps {
+  data: LiftGridData;
+}
+
 export interface LiftCellProps {
   lift: RmfModels.Lift;
   doorState?: number;
   motionState?: number;
-  destinationFloor?: string;
   currentFloor?: string;
   leafletMap?: LeafletContext;
+  destinationFloor?: string;
   onRequestSubmit?(
     event: React.FormEvent,
     lift: RmfModels.Lift,
@@ -81,6 +91,9 @@ const useStyles = makeStyles((theme) => ({
   },
   requestButton: {
     marginTop: theme.spacing(1),
+    padding: '0.5rem',
+    backgroundColor: theme.palette.info.light,
+    margin: '0.5rem',
   },
   itemIcon: {
     color: theme.palette.primary.contrastText,
@@ -112,6 +125,12 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.primary.contrastText,
     marginLeft: theme.spacing(2),
   },
+  nameField: {
+    fontWeight: 'bold',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 const LiftCell = React.memo(
@@ -119,15 +138,15 @@ const LiftCell = React.memo(
     lift,
     doorState,
     motionState,
-    destinationFloor,
     currentFloor,
     leafletMap,
+    destinationFloor,
     onRequestSubmit,
-  }: LiftCellProps): JSX.Element => {
+  }: LiftCellProps): JSX.Element | null => {
+    const labelId = `lift-cell-${lift.name}`;
     const classes = useStyles();
 
     const [showForms, setShowForms] = React.useState(false);
-
     const currMotion = motionStateToString(motionState);
     const getMotionArrowColor = (currMotion: string, arrowDirection: string) => {
       return currMotion === arrowDirection ? classes.iconMoving : classes.iconOtherStates;
@@ -150,8 +169,6 @@ const LiftCell = React.memo(
       [classes],
     );
 
-    const labelId = `lift-cell-${lift.name}`;
-
     return (
       <Paper
         className={classes.cellPaper}
@@ -163,12 +180,11 @@ const LiftCell = React.memo(
           <Grid item xs={9}>
             <Typography
               id={labelId}
-              noWrap
               align="center"
-              style={{ fontWeight: 'bold', width: '120px' }}
-              title={lift.name}
+              className={classes.nameField}
+              title={lift?.name}
             >
-              {lift.name}
+              {lift?.name}
             </Typography>
             <Box border={1} borderColor="divider" marginTop={1} marginBottom={1}>
               <Typography align="center">{destinationFloor || 'Unknown'}</Typography>
@@ -197,27 +213,57 @@ const LiftCell = React.memo(
         >
           Request Form
         </Button>
-        <LiftRequestFormDialog
-          lift={lift}
-          availableDoorModes={requestDoorModes}
-          availableRequestTypes={requestModes}
-          showFormDialog={showForms}
-          onRequestSubmit={onRequestSubmit}
-          onClose={() => setShowForms(false)}
-        />
+        {lift && (
+          <LiftRequestFormDialog
+            lift={lift}
+            availableDoorModes={requestDoorModes}
+            availableRequestTypes={requestModes}
+            showFormDialog={showForms}
+            onRequestSubmit={onRequestSubmit}
+            onClose={() => setShowForms(false)}
+          />
+        )}
       </Paper>
     );
   },
 );
 
-export function LiftPanel({
-  lifts,
-  liftStates,
-  leafletMap,
-  onRequestSubmit,
-}: LiftPanelProps): JSX.Element {
+const LiftGridRenderer = ({ data, columnIndex, rowIndex, style }: LiftGridRendererProps) => {
+  let lift: RmfModels.Lift | undefined;
+  let liftState: RmfModels.LiftState | undefined;
+  let doorState: number | undefined;
+  let motionState: number | undefined;
+  let destinationFloor: string | undefined;
+  let currentFloor: string | undefined;
+  const columnCount = data.columnCount;
+
+  if (rowIndex * columnCount + columnIndex <= data.lifts.length - 1) {
+    lift = data.lifts[rowIndex * columnCount + columnIndex];
+    liftState = data.liftStates[lift.name];
+    doorState = liftState?.door_state;
+    motionState = liftState?.motion_state;
+    destinationFloor = liftState?.destination_floor;
+    currentFloor = liftState?.current_floor;
+  }
+
+  return lift ? (
+    <div style={style}>
+      <LiftCell
+        lift={lift}
+        doorState={doorState}
+        motionState={motionState}
+        currentFloor={currentFloor}
+        destinationFloor={destinationFloor}
+        onRequestSubmit={data.onRequestSubmit}
+      />
+    </div>
+  ) : null;
+};
+
+export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps): JSX.Element {
   const classes = useStyles();
   const [isCellView, setIsCellView] = React.useState(true);
+  const columnWidth = 250;
 
   return (
     <Card variant="outlined" className={classes.container}>
@@ -241,22 +287,29 @@ export function LiftPanel({
       </Paper>
       <Grid className={classes.grid} container direction="row" spacing={2}>
         {isCellView ? (
-          lifts.map((lift, i) => {
-            const state: RmfModels.LiftState | undefined = liftStates[lift.name];
-            return (
-              <Grid item xs="auto" key={`${lift.name}_${i}`}>
-                <LiftCell
-                  lift={lift}
-                  doorState={state?.door_state}
-                  motionState={state?.motion_state}
-                  destinationFloor={state?.destination_floor}
-                  currentFloor={state?.current_floor}
-                  leafletMap={leafletMap}
-                  onRequestSubmit={onRequestSubmit}
-                />
-              </Grid>
-            );
-          })
+          <AutoSizer disableHeight>
+            {({ width }) => {
+              const columnCount = Math.floor(width / columnWidth);
+              return (
+                <FixedSizeGrid
+                  columnCount={columnCount}
+                  columnWidth={columnWidth}
+                  height={250}
+                  rowCount={Math.ceil(lifts.length / columnCount)}
+                  rowHeight={140}
+                  width={width}
+                  itemData={{
+                    columnCount,
+                    lifts,
+                    liftStates,
+                    onRequestSubmit,
+                  }}
+                >
+                  {LiftGridRenderer}
+                </FixedSizeGrid>
+              );
+            }}
+          </AutoSizer>
         ) : (
           <LiftTable
             leafletMap={leafletMap}

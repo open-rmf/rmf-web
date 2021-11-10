@@ -270,21 +270,18 @@ export default function ScheduleVisualizer({
         }),
       );
       await safeAsync(Promise.all(promises));
+      const newRobots = Object.values(fleetStates).flatMap((fleetState) =>
+        fleetState.robots
+          .filter(
+            (r) =>
+              r.location.level_name === currentLevel.name &&
+              `${fleetState.name}/${r.name}` in robotsStore,
+          )
+          .map((r) => robotsStore[`${fleetState.name}/${r.name}`]),
+      );
+      setRobots(newRobots);
     })();
-  }, [safeAsync, fleetStates, robotsStore, resourceManager]);
-
-  React.useEffect(() => {
-    const newRobots = Object.values(fleetStates).flatMap((fleetState) =>
-      fleetState.robots
-        .filter(
-          (r) =>
-            r.location.level_name === currentLevel.name &&
-            `${fleetState.name}/${r.name}` in robotsStore,
-        )
-        .map((r) => robotsStore[`${fleetState.name}/${r.name}`]),
-    );
-    setRobots(newRobots);
-  }, [safeAsync, fleetStates, robotsStore, currentLevel]);
+  }, [safeAsync, fleetStates, robotsStore, resourceManager, currentLevel]);
 
   React.useEffect(() => {
     (async () => {

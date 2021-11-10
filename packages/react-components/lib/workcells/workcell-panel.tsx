@@ -16,6 +16,8 @@ import { LeafletContext } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { WorkcellTable } from './workcell-table';
 import { onWorkcellClick, DispenserResource } from './utils';
+import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 export interface WorkcellPanelProps {
   dispensers: Dispenser[];
@@ -23,6 +25,18 @@ export interface WorkcellPanelProps {
   leafletMap?: LeafletContext;
   workCellStates: Record<string, RmfModels.DispenserState>;
   workcellContext: Record<string, DispenserResource>;
+}
+
+export interface WorkcellDataProps extends WorkcellPanelProps {
+  type: 'ingestors' | 'dispensers';
+}
+
+interface WorkcellGridData extends WorkcellDataProps {
+  columnCount: number;
+}
+
+interface WorkcellGridRendererProps extends GridChildComponentProps {
+  data: WorkcellGridData;
 }
 
 export interface WorkcellCellProps {
@@ -58,6 +72,8 @@ const useStyles = makeStyles((theme) => ({
       cursor: 'pointer',
       backgroundColor: theme.palette.action.hover,
     },
+    margin: '0.5rem',
+    height: '84px',
   },
   itemIcon: {
     color: theme.palette.primary.contrastText,
@@ -65,6 +81,16 @@ const useStyles = makeStyles((theme) => ({
   panelHeader: {
     color: theme.palette.primary.contrastText,
     marginLeft: theme.spacing(2),
+    color: theme.palette.getContrastText(theme.palette.primary.main),
+  },
+  tableDiv: {
+    margin: '0 1rem', //change to theme spacing
+  },
+  nameField: {
+    fontWeight: 'bold',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
 }));
 
@@ -77,7 +103,6 @@ const WorkcellCell = React.memo(
     secondsRemaining,
   }: WorkcellCellProps): JSX.Element => {
     const classes = useStyles();
-
     const labelId = `workcell-cell-${workcell.guid}`;
 
     return (
@@ -93,10 +118,10 @@ const WorkcellCell = React.memo(
               noWrap
               id={labelId}
               align="center"
-              style={{ fontWeight: 'bold', width: '120px' }}
-              title={workcell.guid}
+              className={classes.nameField}
+              title={workcell?.guid}
             >
-              {workcell.guid}
+              {workcell?.guid}
             </Typography>
             <Grid container direction="row">
               <Grid item xs={8}>
@@ -114,12 +139,37 @@ const WorkcellCell = React.memo(
             <Typography align="center">{`Remaining: ${secondsRemaining}s`}</Typography>
           </React.Fragment>
         ) : (
-          <Typography id={labelId} color="error">{`${workcell} not sending states`}</Typography>
+          <Typography
+            id={labelId}
+            color="error"
+          >{`${workcell.guid} not sending states`}</Typography>
         )}
       </Paper>
     );
   },
 );
+
+const WorkcellGridRenderer = ({ data, columnIndex, rowIndex }: WorkcellGridRendererProps) => {
+  let workcell: Dispenser | undefined;
+  let workcellState: RmfModels.DispenserState | undefined;
+  const columnCount = data.columnCount;
+  const getWorkCell = data.type === 'dispensers' ? data.dispensers : data.ingestors;
+
+  if (rowIndex * columnCount + columnIndex <= getWorkCell.length - 1) {
+    workcell = getWorkCell[rowIndex * columnCount + columnIndex];
+    workcellState = data.workCellStates[workcell.guid];
+  }
+
+  return workcell ? (
+    <div>
+      <WorkcellCell
+        workcell={workcell}
+        requestGuidQueue={workcellState?.request_guid_queue}
+        secondsRemaining={workcellState?.seconds_remaining}
+      />
+    </div>
+  ) : null;
+};
 
 export function WorkcellPanel({
   dispensers,
@@ -129,8 +179,8 @@ export function WorkcellPanel({
   workcellContext,
 }: WorkcellPanelProps): JSX.Element {
   const classes = useStyles();
-
   const [isCellView, setIsCellView] = React.useState(true);
+  const columnWidth = 250;
 
   return (
     <Card variant="outlined" className={classes.container}>
@@ -155,52 +205,62 @@ export function WorkcellPanel({
       {isCellView ? (
         <React.Fragment>
           <div className={classes.cellContainer}>
-            <Grid container direction="row">
-              <Grid item xs={12}>
-                <Typography variant="h6">Dispensers</Typography>
-              </Grid>
-              {dispensers.length > 0
-                ? dispensers.map((dispenser, i) => {
-                    const state: RmfModels.DispenserState | undefined =
-                      workCellStates[dispenser.guid];
-                    return (
-                      <Grid item xs="auto" key={`${dispenser.guid}_${i}`}>
-                        <WorkcellCell
-                          workcellResource={workcellContext[dispenser.guid]}
-                          leafletMap={leafletMap}
-                          workcell={dispenser}
-                          requestGuidQueue={state?.request_guid_queue}
-                          secondsRemaining={state?.seconds_remaining}
-                        />
-                      </Grid>
-                    );
-                  })
-                : null}
+            <Typography variant="h6">Dispenser Table</Typography>
+            <Grid container direction="row" spacing={1}>
+              <AutoSizer disableHeight>
+                {({ width }) => {
+                  const columnCount = Math.floor(width / columnWidth);
+                  return (
+                    <FixedSizeGrid
+                      columnCount={columnCount}
+                      columnWidth={columnWidth}
+                      height={250}
+                      rowCount={Math.ceil(dispensers.length / columnCount)}
+                      rowHeight={120}
+                      width={width}
+                      itemData={{
+                        columnCount,
+                        dispensers,
+                        ingestors,
+                        workCellStates,
+                        type: 'dispensers',
+                      }}
+                    >
+                      {WorkcellGridRenderer}
+                    </FixedSizeGrid>
+                  );
+                }}
+              </AutoSizer>
             </Grid>
           </div>
           <Divider />
           <div className={classes.cellContainer}>
-            <Grid container direction="row">
-              <Grid item xs={12}>
-                <Typography variant="h6">Ingestors</Typography>
-              </Grid>
-              {ingestors.length > 0
-                ? ingestors.map((ingestor, i) => {
-                    const state: RmfModels.IngestorState | undefined =
-                      workCellStates[ingestor.guid];
-                    return (
-                      <Grid item xs="auto" key={`${ingestor.guid}_${i}`}>
-                        <WorkcellCell
-                          workcellResource={workcellContext[ingestor.guid]}
-                          leafletMap={leafletMap}
-                          workcell={ingestor}
-                          requestGuidQueue={state?.request_guid_queue}
-                          secondsRemaining={state?.seconds_remaining}
-                        />
-                      </Grid>
-                    );
-                  })
-                : null}
+            <Typography variant="h6">Ingester Table</Typography>
+            <Grid container direction="row" spacing={1}>
+              <AutoSizer disableHeight>
+                {({ width }) => {
+                  const columnCount = Math.floor(width / columnWidth);
+                  return (
+                    <FixedSizeGrid
+                      columnCount={columnCount}
+                      columnWidth={columnWidth}
+                      height={250}
+                      rowCount={Math.ceil(ingestors.length / columnCount)}
+                      rowHeight={120}
+                      width={width}
+                      itemData={{
+                        columnCount,
+                        dispensers,
+                        ingestors,
+                        workCellStates,
+                        type: 'ingestors',
+                      }}
+                    >
+                      {WorkcellGridRenderer}
+                    </FixedSizeGrid>
+                  );
+                }}
+              </AutoSizer>
             </Grid>
           </div>
         </React.Fragment>

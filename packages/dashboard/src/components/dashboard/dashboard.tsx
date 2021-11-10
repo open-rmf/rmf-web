@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     flex: '1 0 auto',
   },
   itemPanels: {
-    width: 800,
+    width: '55%',
   },
 }));
 
