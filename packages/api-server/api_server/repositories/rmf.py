@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, cast
 
 from fastapi.exceptions import HTTPException
 from tortoise.queryset import MODEL, QuerySet
@@ -264,7 +264,10 @@ class RmfRepository:
             filter_params["username__istartswith"] = username
         if is_admin is not None:
             filter_params["is_admin"] = is_admin
-        return await self._add_pagination(
-            ttm.User.filter(**filter_params),
-            pagination,
-        ).values_list("username", flat=True)
+        return cast(
+            List[str],
+            await self._add_pagination(
+                ttm.User.filter(**filter_params),
+                pagination,
+            ).values_list("username", flat=True),
+        )
