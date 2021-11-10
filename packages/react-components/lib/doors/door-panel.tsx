@@ -30,13 +30,13 @@ export interface DoorInfoProps {
 const useStyles = makeStyles((theme) => ({
   container: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.background.default,
   },
   buttonBar: {
     display: 'flex',
     justifyContent: 'flex-end',
     borderRadius: 0,
-    backgroundColor: theme.palette.primary.light,
+    backgroundColor: theme.palette.primary.main,
   },
   grid: {
     padding: theme.spacing(1),
@@ -55,8 +55,8 @@ const useStyles = makeStyles((theme) => ({
   },
   cellPaper: {
     padding: theme.spacing(2),
-    backgroundColor: theme.palette.primary.light,
-    color: theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.background.paper,
+    margin: theme.spacing(1),
   },
   itemIcon: {
     color: theme.palette.primary.contrastText,
@@ -65,11 +65,6 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
     display: 'flex',
     justifyContent: 'center',
-  },
-  buttons: {
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.primary.contrastText,
-    boxShadow: theme.shadows[3],
   },
   panelHeader: {
     color: theme.palette.primary.contrastText,
@@ -124,7 +119,7 @@ const DoorCell = React.memo(
           {doorTypeToString(door.door.door_type)}
         </Typography>
         <div className={classes.buttonGroup}>
-          <ButtonGroup size="small" className={classes.buttons}>
+          <ButtonGroup variant="contained" size="small" color="primary">
             <Button
               onClick={(ev) =>
                 onDoorControlClick &&

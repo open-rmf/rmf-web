@@ -19,33 +19,34 @@ export interface WorkcellCellProps {
 }
 
 const useStyles = makeStyles((theme) => ({
+  container: {
+    margin: theme.spacing(1),
+  },
   buttonBar: {
     display: 'flex',
     justifyContent: 'flex-end',
     borderRadius: 0,
-    backgroundColor: theme.palette.primary.light,
+    backgroundColor: theme.palette.primary.main,
   },
   cellContainer: {
     padding: theme.spacing(2),
     paddingTop: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.getContrastText(theme.palette.primary.main),
+    backgroundColor: theme.palette.background.default,
   },
   cellPaper: {
     padding: theme.spacing(1),
-    backgroundColor: theme.palette.primary.light,
-    color: theme.palette.getContrastText(theme.palette.primary.light),
+    backgroundColor: theme.palette.background.paper,
   },
   itemIcon: {
-    color: theme.palette.getContrastText(theme.palette.primary.light),
+    color: theme.palette.primary.contrastText,
   },
   panelHeader: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
+    color: theme.palette.primary.contrastText,
     marginLeft: theme.spacing(2),
   },
   subPanelHeader: {
     marginLeft: theme.spacing(2),
-    color: theme.palette.getContrastText(theme.palette.primary.light),
+    color: theme.palette.primary.contrastText,
   },
 }));
 
@@ -95,7 +96,7 @@ export function WorkcellPanel({
   const [isCellView, setIsCellView] = React.useState(true);
 
   return (
-    <Card variant="outlined">
+    <Card variant="outlined" className={classes.container}>
       <Paper className={classes.buttonBar}>
         <Grid container direction="row" justify="space-between" alignItems="center">
           <Grid item xs={6}>

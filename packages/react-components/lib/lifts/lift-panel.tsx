@@ -52,28 +52,28 @@ export interface LiftCellProps {
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    backgroundColor: theme.palette.primary.main,
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.background.default,
   },
   buttonBar: {
     display: 'flex',
     justifyContent: 'flex-end',
     borderRadius: 0,
-    backgroundColor: theme.palette.primary.light,
+    backgroundColor: theme.palette.primary.main,
   },
   grid: {
     padding: theme.spacing(1),
   },
   cellPaper: {
     padding: theme.spacing(2),
-    backgroundColor: theme.palette.primary.light,
+    backgroundColor: theme.palette.background.paper,
     margin: theme.spacing(1),
-    color: theme.palette.getContrastText(theme.palette.primary.light),
   },
   requestButton: {
     marginTop: theme.spacing(1),
   },
   itemIcon: {
-    color: theme.palette.getContrastText(theme.palette.primary.light),
+    color: theme.palette.primary.contrastText,
   },
   iconMoving: {
     color: theme.palette.success.main,
@@ -83,18 +83,18 @@ const useStyles = makeStyles((theme) => ({
   },
   doorLabelOpen: {
     backgroundColor: theme.palette.success.main,
-    color: theme.palette.getContrastText(theme.palette.success.main),
+    color: theme.palette.success.contrastText,
   },
   doorLabelClosed: {
     backgroundColor: theme.palette.error.main,
-    color: theme.palette.getContrastText(theme.palette.error.main),
+    color: theme.palette.error.contrastText,
   },
   doorLabelMoving: {
     backgroundColor: theme.palette.warning.main,
-    color: theme.palette.getContrastText(theme.palette.warning.main),
+    color: theme.palette.warning.contrastText,
   },
   panelHeader: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
+    color: theme.palette.primary.contrastText,
     marginLeft: theme.spacing(2),
   },
 }));
