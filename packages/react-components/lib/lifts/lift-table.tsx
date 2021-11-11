@@ -182,7 +182,7 @@ const LiftRow = React.memo(
   },
 );
 
-const LiftListRenderer = ({ data }: LiftListRendererProps) => {
+const LiftListRenderer = ({ data, index }: LiftListRendererProps) => {
   const lift = data.lifts[index];
   const liftState = data.liftStates[lift.name];
   const leafletMap = data.leafletMap;
@@ -264,7 +264,6 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
                 itemData={{
                   lifts,
                   liftStates,
-                  width,
                   onRequestSubmit,
                 }}
               >

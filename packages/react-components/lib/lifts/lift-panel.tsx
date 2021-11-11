@@ -235,6 +235,7 @@ const LiftGridRenderer = ({ data, columnIndex, rowIndex, style }: LiftGridRender
   let motionState: number | undefined;
   let destinationFloor: string | undefined;
   let currentFloor: string | undefined;
+  let leafletMap: LeafletContext | undefined;
   const columnCount = data.columnCount;
 
   if (rowIndex * columnCount + columnIndex <= data.lifts.length - 1) {
@@ -244,6 +245,7 @@ const LiftGridRenderer = ({ data, columnIndex, rowIndex, style }: LiftGridRender
     motionState = liftState?.motion_state;
     destinationFloor = liftState?.destination_floor;
     currentFloor = liftState?.current_floor;
+    leafletMap = data.leafletMap;
   }
 
   return lift ? (
@@ -254,13 +256,19 @@ const LiftGridRenderer = ({ data, columnIndex, rowIndex, style }: LiftGridRender
         motionState={motionState}
         currentFloor={currentFloor}
         destinationFloor={destinationFloor}
+        leafletMap={leafletMap}
         onRequestSubmit={data.onRequestSubmit}
       />
     </div>
   ) : null;
 };
 
-export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps): JSX.Element {
+export function LiftPanel({
+  lifts,
+  liftStates,
+  leafletMap,
+  onRequestSubmit,
+}: LiftPanelProps): JSX.Element {
   const classes = useStyles();
   const [isCellView, setIsCellView] = React.useState(true);
   const columnWidth = 250;

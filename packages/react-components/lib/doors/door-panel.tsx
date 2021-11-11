@@ -208,11 +208,13 @@ const DoorCell = React.memo(
 const DoorGridRenderer = ({ data, columnIndex, rowIndex, style }: DoorGridRendererProps) => {
   let door: DoorData | undefined;
   let doorState: RmfModels.DoorState | undefined;
+  let leafletMap: LeafletContext | undefined;
   const columnCount = data.columnCount;
 
   if (rowIndex * columnCount + columnIndex <= data.doors.length - 1) {
     door = data.doors[rowIndex * columnCount + columnIndex];
     doorState = data.doorStates[door.door.name];
+    leafletMap = data.leafletMap;
   }
 
   return door ? (
@@ -221,7 +223,7 @@ const DoorGridRenderer = ({ data, columnIndex, rowIndex, style }: DoorGridRender
         door={door}
         doorMode={doorState?.current_mode.value}
         onDoorControlClick={data.onDoorControlClick}
-        leafletMap={data.leafletMap}
+        leafletMap={leafletMap}
       />
     </div>
   ) : null;

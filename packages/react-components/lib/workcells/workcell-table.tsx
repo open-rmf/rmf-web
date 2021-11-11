@@ -200,7 +200,11 @@ const WorkcellListRenderer = ({ data, index }: WorkcellListRendererProps) => {
   );
 };
 
-export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps): JSX.Element => {
+export const WorkcellTable = ({
+  workcells,
+  workcellStates,
+  workcellContext,
+}: WorkcellTableProps): JSX.Element => {
   const classes = useStyles();
   const { fixedTableCell } = useFixedTableCellStyles();
   return (
@@ -256,7 +260,7 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
                 itemData={{
                   workcells,
                   workcellStates,
-                  width,
+                  workcellContext,
                 }}
               >
                 {WorkcellListRenderer}

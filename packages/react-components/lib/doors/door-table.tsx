@@ -11,13 +11,8 @@ import {
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { LeafletContext } from 'react-leaflet';
-import {
-  DoorData,
-  doorModeToString,
-  doorTypeToString,
-  onDoorClick,
-  useFixedTableCellStyles,
-} from './utils';
+import { DoorData, doorModeToString, doorTypeToString, onDoorClick } from './utils';
+import { useFixedTableCellStyles } from '../utils/item-table';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import clsx from 'clsx';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -31,7 +26,6 @@ export interface DoorTableProps {
 
 interface DoorListRendererProps extends ListChildComponentProps {
   data: DoorTableProps;
-  index: number;
 }
 
 export interface DoorRowProps {

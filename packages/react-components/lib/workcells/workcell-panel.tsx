@@ -40,7 +40,7 @@ interface WorkcellGridRendererProps extends GridChildComponentProps {
 }
 
 export interface WorkcellCellProps {
-  workcellResource: DispenserResource;
+  workcellResource?: DispenserResource;
   leafletMap?: LeafletContext;
   workcell: Dispenser;
   requestGuidQueue?: string[];
@@ -81,7 +81,6 @@ const useStyles = makeStyles((theme) => ({
   panelHeader: {
     color: theme.palette.primary.contrastText,
     marginLeft: theme.spacing(2),
-    color: theme.palette.getContrastText(theme.palette.primary.main),
   },
   tableDiv: {
     margin: '0 1rem', //change to theme spacing
@@ -110,7 +109,7 @@ const WorkcellCell = React.memo(
         className={classes.cellPaper}
         role="region"
         aria-labelledby={labelId}
-        onClick={() => onWorkcellClick(workcellResource, leafletMap)}
+        onClick={() => workcellResource && onWorkcellClick(workcellResource, leafletMap)}
       >
         {requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
           <React.Fragment>
@@ -152,12 +151,15 @@ const WorkcellCell = React.memo(
 const WorkcellGridRenderer = ({ data, columnIndex, rowIndex }: WorkcellGridRendererProps) => {
   let workcell: Dispenser | undefined;
   let workcellState: RmfModels.DispenserState | undefined;
+  let workcellResource: DispenserResource | undefined;
+  let leafletMap: LeafletContext | undefined;
   const columnCount = data.columnCount;
   const getWorkCell = data.type === 'dispensers' ? data.dispensers : data.ingestors;
 
   if (rowIndex * columnCount + columnIndex <= getWorkCell.length - 1) {
     workcell = getWorkCell[rowIndex * columnCount + columnIndex];
     workcellState = data.workCellStates[workcell.guid];
+    workcellResource = data.workcellContext[workcell.guid];
   }
 
   return workcell ? (
@@ -166,6 +168,8 @@ const WorkcellGridRenderer = ({ data, columnIndex, rowIndex }: WorkcellGridRende
         workcell={workcell}
         requestGuidQueue={workcellState?.request_guid_queue}
         secondsRemaining={workcellState?.seconds_remaining}
+        workcellResource={workcellResource}
+        leafletMap={leafletMap}
       />
     </div>
   ) : null;
@@ -223,6 +227,7 @@ export function WorkcellPanel({
                         dispensers,
                         ingestors,
                         workCellStates,
+                        workcellContext,
                         type: 'dispensers',
                       }}
                     >
@@ -235,7 +240,7 @@ export function WorkcellPanel({
           </div>
           <Divider />
           <div className={classes.cellContainer}>
-            <Typography variant="h6">Ingester Table</Typography>
+            <Typography variant="h6">Ingestor Table</Typography>
             <Grid container direction="row" spacing={1}>
               <AutoSizer disableHeight>
                 {({ width }) => {
@@ -253,6 +258,7 @@ export function WorkcellPanel({
                         dispensers,
                         ingestors,
                         workCellStates,
+                        workcellContext,
                         type: 'ingestors',
                       }}
                     >
