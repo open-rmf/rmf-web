@@ -67,7 +67,6 @@ export interface LiftCellProps {
 const useStyles = makeStyles((theme) => ({
   container: {
     maxHeight: '40vh',
-    overflowY: 'scroll',
   },
   buttonBar: {
     display: 'flex',
@@ -80,6 +79,7 @@ const useStyles = makeStyles((theme) => ({
   },
   cellPaper: {
     padding: theme.spacing(2),
+    margin: theme.spacing(1),
     backgroundColor: theme.palette.background.paper,
     border: 1,
     borderStyle: 'solid',
@@ -91,9 +91,9 @@ const useStyles = makeStyles((theme) => ({
   },
   requestButton: {
     marginTop: theme.spacing(1),
-    padding: '0.5rem',
+    padding: theme.spacing(1),
     backgroundColor: theme.palette.info.light,
-    margin: '0.5rem',
+    margin: 'auto',
   },
   itemIcon: {
     color: theme.palette.primary.contrastText,
@@ -304,7 +304,7 @@ export function LiftPanel({
                   columnWidth={columnWidth}
                   height={250}
                   rowCount={Math.ceil(lifts.length / columnCount)}
-                  rowHeight={140}
+                  rowHeight={180}
                   width={width}
                   itemData={{
                     columnCount,

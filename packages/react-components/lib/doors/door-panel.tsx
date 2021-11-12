@@ -72,7 +72,8 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.warning.contrastText,
   },
   cellPaper: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(1),
+    margin: theme.spacing(1),
     backgroundColor: theme.palette.background.paper,
     border: 1,
     borderStyle: 'solid',
@@ -81,7 +82,6 @@ const useStyles = makeStyles((theme) => ({
       cursor: 'pointer',
       backgroundColor: theme.palette.action.hover,
     },
-    margin: theme.spacing(2),
   },
   itemIcon: {
     color: theme.palette.primary.contrastText,
@@ -150,7 +150,6 @@ const DoorCell = React.memo(
           id={labelId}
           variant="body1"
           align="center"
-          style={{ fontWeight: 'bold', width: '120px' }}
           className={classes.nameField}
           title={door.door.name}
         >
@@ -270,7 +269,7 @@ export function DoorPanel({
                   columnWidth={columnWidth}
                   height={250}
                   rowCount={Math.ceil(doors.length / columnCount)}
-                  rowHeight={120}
+                  rowHeight={150}
                   width={width}
                   itemData={{
                     columnCount,
