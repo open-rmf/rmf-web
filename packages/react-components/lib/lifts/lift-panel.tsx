@@ -67,6 +67,7 @@ export interface LiftCellProps {
 const useStyles = makeStyles((theme) => ({
   container: {
     maxHeight: '40vh',
+    margin: theme.spacing(1),
   },
   buttonBar: {
     display: 'flex',
