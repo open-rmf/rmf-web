@@ -97,6 +97,9 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   },
+  bottomTable: {
+    marginTop: theme.spacing(2),
+  },
 }));
 
 const WorkcellCell = React.memo(
@@ -293,7 +296,7 @@ export function WorkcellPanel({
             ) : null}
             <Divider />
             {ingestors.length > 0 ? (
-              <Box>
+              <Box className={classes.bottomTable}>
                 <Typography variant="h6">Ingestors</Typography>
                 <WorkcellTable
                   leafletMap={leafletMap}
