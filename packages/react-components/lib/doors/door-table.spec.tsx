@@ -14,7 +14,7 @@ describe('door table', () => {
     expect(root.getByText('coe_door')).toBeTruthy();
     expect(root.getByText('exit_door')).toBeTruthy();
     expect(root.getByText('extra_door')).toBeTruthy();
-    expect(root.getByText('door_with_a_really_long_name')).toBeTruthy();
+    expect(root.getByText('door_with_super_super_long_name')).toBeTruthy();
 
     // test if op mode is displayed correctly
     expect(root.getAllByText('Online').length).toEqual(3);
