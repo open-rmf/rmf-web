@@ -201,7 +201,12 @@ const LiftListRenderer = ({ data, index }: LiftListRendererProps) => {
   );
 };
 
-export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps): JSX.Element => {
+export const LiftTable = ({
+  lifts,
+  liftStates,
+  onRequestSubmit,
+  leafletMap,
+}: LiftTableProps): JSX.Element => {
   const classes = useStyles();
   const { fixedTableCell, fixedLastTableCell } = useFixedTableCellStyles();
   return (
@@ -265,6 +270,7 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
                   lifts,
                   liftStates,
                   onRequestSubmit,
+                  leafletMap,
                 }}
               >
                 {LiftListRenderer}

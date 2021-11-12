@@ -276,6 +276,7 @@ export function DoorPanel({
                     doors,
                     doorStates,
                     onDoorControlClick,
+                    leafletMap,
                   }}
                 >
                   {DoorGridRenderer}

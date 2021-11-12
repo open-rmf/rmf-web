@@ -204,6 +204,7 @@ export const WorkcellTable = ({
   workcells,
   workcellStates,
   workcellContext,
+  leafletMap,
 }: WorkcellTableProps): JSX.Element => {
   const classes = useStyles();
   const { fixedTableCell } = useFixedTableCellStyles();
@@ -261,6 +262,7 @@ export const WorkcellTable = ({
                   workcells,
                   workcellStates,
                   workcellContext,
+                  leafletMap,
                 }}
               >
                 {WorkcellListRenderer}

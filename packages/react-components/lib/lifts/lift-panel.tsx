@@ -312,6 +312,7 @@ export function LiftPanel({
                     lifts,
                     liftStates,
                     onRequestSubmit,
+                    leafletMap,
                   }}
                 >
                   {LiftGridRenderer}
