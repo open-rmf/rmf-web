@@ -183,20 +183,22 @@ const WorkcellRow = React.memo(
   },
 );
 
-const WorkcellListRenderer = ({ data, index }: WorkcellListRendererProps) => {
+const WorkcellListRenderer = ({ data, index, style }: WorkcellListRendererProps) => {
   const workcell = data.workcells[index];
   const workcellState: RmfModels.DispenserState | RmfModels.IngestorState | undefined =
     data.workcellStates[workcell.guid];
   const workcellContext = data.workcellContext;
 
   return (
-    <WorkcellRow
-      workcell={workcell}
-      mode={workcellState?.mode}
-      requestGuidQueue={workcellState?.request_guid_queue}
-      secondsRemaining={workcellState?.seconds_remaining}
-      workcellResource={workcellContext[workcell.guid]}
-    />
+    <div style={style}>
+      <WorkcellRow
+        workcell={workcell}
+        mode={workcellState?.mode}
+        requestGuidQueue={workcellState?.request_guid_queue}
+        secondsRemaining={workcellState?.seconds_remaining}
+        workcellResource={workcellContext[workcell.guid]}
+      />
+    </div>
   );
 };
 

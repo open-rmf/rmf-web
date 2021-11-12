@@ -156,19 +156,21 @@ const DoorRow = React.memo(({ door, doorMode, leafletMap, onDoorControlClick }: 
   );
 });
 
-const DoorListRenderer = ({ data, index }: DoorListRendererProps) => {
+const DoorListRenderer = ({ data, index, style }: DoorListRendererProps) => {
   const door = data.doors[index];
   const doorState = data.doorStates[door.door.name];
   const leafletMap = data.leafletMap;
 
   return (
-    <DoorRow
-      door={door}
-      doorMode={doorState?.current_mode.value}
-      onDoorControlClick={data.onDoorControlClick}
-      leafletMap={leafletMap}
-      key={door.door.name}
-    />
+    <div style={style}>
+      <DoorRow
+        door={door}
+        doorMode={doorState?.current_mode.value}
+        onDoorControlClick={data.onDoorControlClick}
+        leafletMap={leafletMap}
+        key={door.door.name}
+      />
+    </div>
   );
 };
 

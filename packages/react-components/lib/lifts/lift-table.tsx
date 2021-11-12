@@ -182,22 +182,24 @@ const LiftRow = React.memo(
   },
 );
 
-const LiftListRenderer = ({ data, index }: LiftListRendererProps) => {
+const LiftListRenderer = ({ data, index, style }: LiftListRendererProps) => {
   const lift = data.lifts[index];
   const liftState = data.liftStates[lift.name];
   const leafletMap = data.leafletMap;
 
   return (
-    <LiftRow
-      lift={lift}
-      doorState={liftState?.door_state}
-      currentMode={liftState?.current_mode}
-      currentFloor={liftState?.current_floor}
-      destinationFloor={liftState?.destination_floor}
-      onRequestSubmit={data.onRequestSubmit}
-      key={`${lift.name}`}
-      leafletMap={leafletMap}
-    />
+    <div style={style}>
+      <LiftRow
+        lift={lift}
+        doorState={liftState?.door_state}
+        currentMode={liftState?.current_mode}
+        currentFloor={liftState?.current_floor}
+        destinationFloor={liftState?.destination_floor}
+        onRequestSubmit={data.onRequestSubmit}
+        key={`${lift.name}`}
+        leafletMap={leafletMap}
+      />
+    </div>
   );
 };
 
