@@ -12,7 +12,7 @@ function makeFetchRobots(robots: VerboseRobot[]): RobotPanelProps['fetchVerboseR
   };
 }
 
-fdescribe('RobotPanel', () => {
+describe('RobotPanel', () => {
   it('shows empty information when robot is clicked when there are no assigned tasks', async () => {
     const robots = [makeRandomRobot('test_robot1', 'test_fleet', 2)];
     const root = render(

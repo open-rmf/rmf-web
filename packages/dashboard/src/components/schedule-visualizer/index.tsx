@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core';
 import { Dispenser, Ingestor } from 'api-client';
 import Debug from 'debug';
 import * as L from 'leaflet';
+import { MapProps, Map } from 'react-leaflet';
 import React from 'react';
 import {
   affineImageBounds,
@@ -23,7 +24,7 @@ import {
   WorkcellData,
   WorkcellsOverlay as WorkcellsOverlay_,
 } from 'react-components';
-import { AttributionControl, LayersControl, LeafletContext } from 'react-leaflet';
+import { AttributionControl, LayersControl } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import appConfig from '../../app-config';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
@@ -68,7 +69,7 @@ export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   onRobotClick?: (ev: React.MouseEvent, fleet: string, robot: string) => void;
   onDispenserClick?: (ev: React.MouseEvent, guid: string) => void;
   onIngestorClick?: (ev: React.MouseEvent, guid: string) => void;
-  setLeafletMap?: React.Dispatch<React.SetStateAction<LeafletContext>>;
+  setLeafletMap?: React.Dispatch<React.SetStateAction<L.Map | undefined>>;
 }
 
 interface ScheduleVisualizerSettings {
@@ -309,6 +310,11 @@ export default function ScheduleVisualizer({
   const [layersUnChecked, setLayersUnChecked] = React.useState<Record<string, boolean>>({});
   const waypointsLayersRef: React.Ref<LayersControl.Overlay> = React.useRef(null);
   const registeredLayersHandlers = React.useRef(false);
+  const mapHandler = React.useRef<Map<MapProps, L.Map> | null>();
+
+  React.useEffect(() => {
+    mapHandler.current && setLeafletMap && setLeafletMap(mapHandler.current.leafletElement);
+  }, [mapHandler.current]);
 
   return bounds ? (
     <LMap
@@ -321,6 +327,7 @@ export default function ScheduleVisualizer({
           setLayersUnChecked((prev) => ({ ...prev, [ev.name]: true })),
         );
         registeredLayersHandlers.current = true;
+        mapHandler.current = cur;
       }}
       id="schedule-visualizer"
       attributionControl={false}
@@ -331,7 +338,6 @@ export default function ScheduleVisualizer({
       bounds={bounds}
       className={classes.map}
       zoom={zoom}
-      setLeafletMap={setLeafletMap}
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
       <LayersControl

@@ -1,6 +1,5 @@
 import { Grid, makeStyles, Paper, TablePagination, Typography } from '@material-ui/core';
 import React from 'react';
-import { LeafletContext } from 'react-leaflet';
 import { RobotInfo } from './robot-info';
 import { RobotTable } from './robot-table';
 import { VerboseRobot } from './utils';
@@ -30,17 +29,17 @@ function NoSelectedRobot() {
 }
 
 export interface RobotPanelProps extends React.HTMLProps<HTMLDivElement> {
-  leafletMap?: LeafletContext;
   paginationOptions?: Omit<React.ComponentPropsWithoutRef<typeof TablePagination>, 'component'>;
   verboseRobots: VerboseRobot[];
   fetchVerboseRobots: () => Promise<VerboseRobot[]>;
+  onRobotZoom?: (robot: VerboseRobot) => void;
 }
 
 export function RobotPanel({
   paginationOptions,
   verboseRobots,
-  leafletMap,
   fetchVerboseRobots,
+  onRobotZoom,
   ...divProps
 }: RobotPanelProps): JSX.Element {
   const classes = useStyles();
@@ -63,10 +62,7 @@ export function RobotPanel({
   ) => {
     await handleRefresh(robot);
     setSelectedRobot(robot);
-    leafletMap &&
-      leafletMap.map?.setView([robot.state.location.y, robot.state.location.x], 5.5, {
-        animate: true,
-      });
+    onRobotZoom && onRobotZoom(robot);
   };
 
   return (

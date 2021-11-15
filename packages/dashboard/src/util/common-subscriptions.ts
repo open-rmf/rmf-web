@@ -3,7 +3,7 @@ import * as RmfModels from 'rmf-models';
 import { Fleet, SioClient, Ingestor, Dispenser } from 'api-client';
 import { RmfIngress } from '../components/rmf-app/rmf-ingress';
 
-export const GetFleets = (
+export const useFleets = (
   rmfIngress: RmfIngress | undefined,
   setFleets: React.Dispatch<React.SetStateAction<Fleet[]>>,
 ) => {
@@ -21,7 +21,7 @@ export const GetFleets = (
   }, [rmfIngress, setFleets]);
 };
 
-export const SubscribeFleet = (
+export const useFleetStateRef = (
   sioClient: SioClient | undefined,
   fleets: Fleet[],
   fleetStatesRef: React.MutableRefObject<Record<string, RmfModels.FleetState>>,
@@ -37,7 +37,7 @@ export const SubscribeFleet = (
   }, [sioClient, fleets, fleetStatesRef]);
 };
 
-export const SubscribeIngestor = (
+export const useIngestor = (
   sioClient: SioClient | undefined,
   ingestors: Ingestor[],
   ingestorStatesRef: React.MutableRefObject<Record<string, RmfModels.IngestorState>>,
@@ -56,7 +56,7 @@ export const SubscribeIngestor = (
   }, [sioClient, ingestors, ingestorStatesRef]);
 };
 
-export const SubscribeDispenser = (
+export const useDispenser = (
   sioClient: SioClient | undefined,
   dispensers: Dispenser[],
   dispenserStatesRef: React.MutableRefObject<Record<string, RmfModels.DispenserState>>,

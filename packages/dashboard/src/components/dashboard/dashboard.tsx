@@ -17,10 +17,10 @@ import {
 } from '../rmf-app';
 import ScheduleVisualizer from '../schedule-visualizer';
 import {
-  GetFleets,
-  SubscribeFleet,
-  SubscribeDispenser,
-  SubscribeIngestor,
+  useFleets,
+  useFleetStateRef,
+  useDispenser,
+  useIngestor,
 } from '../../util/common-subscriptions';
 
 const debug = Debug('Dashboard');
@@ -99,19 +99,19 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const dispensers = React.useContext(DispensersContext);
   const dispenserStatesRef = React.useRef<Record<string, RmfModels.DispenserState>>({});
-  SubscribeDispenser(sioClient, dispensers, dispenserStatesRef);
+  useDispenser(sioClient, dispensers, dispenserStatesRef);
 
   const ingestors = React.useContext(IngestorsContext);
   const ingestorStatesRef = React.useRef<Record<string, RmfModels.IngestorState>>({});
-  SubscribeIngestor(sioClient, ingestors, ingestorStatesRef);
+  useIngestor(sioClient, ingestors, ingestorStatesRef);
 
   const workcells = React.useMemo(() => [...dispensers, ...ingestors], [dispensers, ingestors]);
   const workcellStates = { ...dispenserStatesRef.current, ...ingestorStatesRef.current };
 
   const [fleets, setFleets] = React.useState<Fleet[]>([]);
-  GetFleets(rmfIngress, setFleets);
+  useFleets(rmfIngress, setFleets);
   const fleetStatesRef = React.useRef<Record<string, RmfModels.FleetState>>({});
-  SubscribeFleet(sioClient, fleets, fleetStatesRef);
+  useFleetStateRef(sioClient, fleets, fleetStatesRef);
   const fleetNames = React.useRef<string[]>([]);
   const newFleetNames = Object.keys(fleetStatesRef.current);
   if (newFleetNames.some((fleetName) => !fleetNames.current.includes(fleetName))) {

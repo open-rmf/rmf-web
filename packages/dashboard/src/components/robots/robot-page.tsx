@@ -5,7 +5,7 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { Fleet } from 'api-client';
 import { RobotPanel, VerboseRobot } from 'react-components';
-import { LeafletContext } from 'react-leaflet';
+import * as L from 'leaflet';
 import {
   BuildingMapContext,
   RmfIngressContext,
@@ -14,10 +14,10 @@ import {
 } from '../rmf-app';
 import ScheduleVisualizer from '../schedule-visualizer';
 import {
-  GetFleets,
-  SubscribeFleet,
-  SubscribeDispenser,
-  SubscribeIngestor,
+  useFleets,
+  useFleetStateRef,
+  useDispenser,
+  useIngestor,
 } from '../../util/common-subscriptions';
 
 const UpdateRate = 1000;
@@ -44,7 +44,7 @@ export function RobotPage() {
   const sioClient = React.useContext(RmfIngressContext)?.sioClient;
   const buildingMap = React.useContext(BuildingMapContext);
 
-  const [leafletMap, setLeafletMap] = React.useState<LeafletContext>({});
+  const [leafletMap, setLeafletMap] = React.useState<L.Map>();
   const [_triggerRender, setTriggerRender] = React.useState(0); // eslint-disable-line @typescript-eslint/no-unused-vars
   React.useEffect(() => {
     const interval = setInterval(() => setTriggerRender((prev) => prev + 1), UpdateRate);
@@ -54,17 +54,17 @@ export function RobotPage() {
   // get work cells to display on map
   const dispensers = React.useContext(DispensersContext);
   const dispenserStatesRef = React.useRef<Record<string, RmfModels.DispenserState>>({});
-  SubscribeDispenser(sioClient, dispensers, dispenserStatesRef);
+  useDispenser(sioClient, dispensers, dispenserStatesRef);
 
   const ingestors = React.useContext(IngestorsContext);
   const ingestorStatesRef = React.useRef<Record<string, RmfModels.IngestorState>>({});
-  SubscribeIngestor(sioClient, ingestors, ingestorStatesRef);
+  useIngestor(sioClient, ingestors, ingestorStatesRef);
 
   // schedule visualizer fleet
   const [fleets, setFleets] = React.useState<Fleet[]>([]);
-  GetFleets(rmfIngress, setFleets);
+  useFleets(rmfIngress, setFleets);
   const fleetStatesRef = React.useRef<Record<string, RmfModels.FleetState>>({});
-  SubscribeFleet(sioClient, fleets, fleetStatesRef);
+  useFleetStateRef(sioClient, fleets, fleetStatesRef);
 
   // robot panel stuff
   const [hasMore, setHasMore] = React.useState(true);
@@ -88,6 +88,13 @@ export function RobotPage() {
     setVerboseRobots(slicedRobots);
     return slicedRobots;
   }, [rmfIngress, page]);
+
+  const onRobotZoom = (robot: VerboseRobot) => {
+    leafletMap &&
+      leafletMap.setView([robot.state.location.y, robot.state.location.x], 5.5, {
+        animate: true,
+      });
+  };
 
   React.useEffect(() => {
     fetchVerboseRobots();
@@ -122,7 +129,7 @@ export function RobotPage() {
             onChangePage: (_ev, newPage) => setPage(newPage),
           }}
           verboseRobots={verboseRobots}
-          leafletMap={leafletMap}
+          onRobotZoom={onRobotZoom}
         />
       </Grid>
     </Grid>
