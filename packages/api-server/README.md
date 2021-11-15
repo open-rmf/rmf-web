@@ -29,6 +29,10 @@ e.g.
 ```bash
 RMF_API_SERVER_CONFIG='my_config.py' rmf_api_server
 ```
+To run the api-server with PostgreSQL, assuming it has been set up to listen on 127.0.0.1:5432 with user `postgres` and password `postgres`:
+```
+RMF_API_SERVER_CONFIG=api_server/psql_local_config.py rmf_api_server
+```
 
 ## Supported databases
 
