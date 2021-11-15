@@ -13,19 +13,6 @@ describe('Custom Lookup filter', () => {
     cleanup();
   });
 
-  it('does not trigger a new search on filter change', () => {
-    render(
-      <CustomLookupFilter
-        selectedFilter={['error']}
-        lookup={{ error: 'error', warn: 'warn' }}
-        onFilterChange={mockOnChange}
-      />,
-    );
-    userEvent.click(screen.getByText('error'));
-    userEvent.click(screen.getByText('warn'));
-    expect(mockOnChange).toHaveBeenCalledTimes(0);
-  });
-
   it('triggers a new search closing the filter selector', () => {
     render(
       <CustomLookupFilter
@@ -34,9 +21,11 @@ describe('Custom Lookup filter', () => {
         onFilterChange={mockOnChange}
       />,
     );
+
+    // click on existing selected filter "error" to open up input to expose "warn"
     userEvent.click(screen.getByText('error'));
     userEvent.click(screen.getByText('warn'));
     userEvent.type(screen.getByText('warn'), '{esc}');
-    expect(mockOnChange).toHaveBeenCalledTimes(1);
+    expect(mockOnChange).toHaveBeenCalled();
   });
 });

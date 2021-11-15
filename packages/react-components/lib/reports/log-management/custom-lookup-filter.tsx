@@ -35,9 +35,6 @@ export const CustomLookupFilter = (props: CustomLookupFilterProps): React.ReactE
       <Select
         multiple
         value={selectedFilter}
-        onClose={() => {
-          onFilterChange(selectedFilter);
-        }}
         onChange={(event) => {
           if (typeof event.target.value === 'string') {
             onFilterChange([...selectedFilter, event.target.value]);
