@@ -5,7 +5,7 @@
   "main": "dist/lib/index.js",
   "scripts": {
     "build": "tsc --build",
-    "build:storybook": "build-storybook -s test-data",
+    "build:storybook": "tsc --build && build-storybook -s test-data",
     "build:watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
     "lint": "eslint --ext ts,tsx, lib",
