@@ -1,13 +1,4 @@
-import {
-  IconButton,
-  Menu,
-  MenuItem,
-  Tab,
-  Toolbar,
-  Typography,
-  styled,
-  TabProps,
-} from '@mui/material';
+import { IconButton, Menu, MenuItem, Toolbar, Typography, styled } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import HelpIcon from '@mui/icons-material/Help';
 import React from 'react';
