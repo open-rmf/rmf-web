@@ -8,7 +8,7 @@ const classes = {
   detailPanelContainer: 'robot-panel-detail-container',
   robotTable: 'robot-panel-table',
 };
-const RobotPanelRoot = styled('div')(({ theme }) => ({
+const StyledRobotPanel = styled('div')(({ theme }) => ({
   [`& .${classes.detailPanelContainer}`]: {
     width: 350,
     padding: theme.spacing(2),
@@ -59,7 +59,7 @@ export function RobotPanel({
   };
 
   return (
-    <RobotPanelRoot {...divProps}>
+    <StyledRobotPanel {...divProps}>
       <Grid container wrap="nowrap" justifyContent="center" style={{ height: 'inherit' }}>
         <Grid style={{ flex: '1 1 auto' }}>
           <RobotTable
@@ -74,6 +74,6 @@ export function RobotPanel({
           {selectedRobot ? <RobotInfo robot={selectedRobot} /> : <NoSelectedRobot />}
         </Paper>
       </Grid>
-    </RobotPanelRoot>
+    </StyledRobotPanel>
   );
 }

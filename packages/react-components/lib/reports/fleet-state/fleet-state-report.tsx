@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   DefaultReportQueryPayload,
-  DefaultReportRoot,
+  StyledDefaultReport,
   defaultReportClasses,
 } from '../default-report-interface';
 import { DefaultDatesForm } from '../default-dates-form';
@@ -27,14 +27,14 @@ export const FleetStateReport = (props: FleetStateReportProps): React.ReactEleme
   };
 
   return (
-    <DefaultReportRoot>
+    <StyledDefaultReport>
       <DefaultDatesForm search={searchLogs} {...otherProps} />
       <div className={defaultReportClasses.table}>
         {logs.length !== 0 && (
           <FleetStateReportTable rows={logs} tableSize={500} addMoreRows={getMoreLogs} />
         )}
       </div>
-    </DefaultReportRoot>
+    </StyledDefaultReport>
   );
 };
 

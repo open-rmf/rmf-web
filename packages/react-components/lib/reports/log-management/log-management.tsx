@@ -7,7 +7,7 @@ const classes = {
   table: 'log-management-table',
   background: 'log-management-background',
 };
-const LogManagementRoot = styled('div')(({ theme }) => ({
+const StyledLogManagement = styled('div')(({ theme }) => ({
   [`&.${classes.background}`]: {
     backgroundColor: theme.palette.background.paper,
   },
@@ -54,11 +54,11 @@ export const LogManagement = (props: LogManagementProps): React.ReactElement => 
   };
 
   return (
-    <LogManagementRoot className={classes.background}>
+    <StyledLogManagement className={classes.background}>
       <SearchLogForm logLabelValues={logLabels} search={searchLogs}></SearchLogForm>
       <div className={classes.table}>
         {logs.length !== 0 && <LogTable rows={logs} addMoreRows={getMoreLogs} />}
       </div>
-    </LogManagementRoot>
+    </StyledLogManagement>
   );
 };

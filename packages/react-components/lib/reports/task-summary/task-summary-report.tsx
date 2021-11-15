@@ -2,7 +2,7 @@ import React from 'react';
 import {
   DefaultReportQueryPayload,
   defaultReportClasses,
-  DefaultReportRoot,
+  StyledDefaultReport,
 } from '../default-report-interface';
 import { DefaultDatesForm } from '../default-dates-form';
 import { TaskSummaryReportTable, TaskSummaryRowsType } from './task-summary-report-table';
@@ -27,14 +27,14 @@ export const TaskSummaryReport = (props: TaskSummaryReportProps): React.ReactEle
   };
 
   return (
-    <DefaultReportRoot>
+    <StyledDefaultReport>
       <DefaultDatesForm search={searchLogs} {...otherProps} />
       <div className={defaultReportClasses.table}>
         {logs.length !== 0 && (
           <TaskSummaryReportTable rows={logs} tableSize={500} addMoreRows={getMoreLogs} />
         )}
       </div>
-    </DefaultReportRoot>
+    </StyledDefaultReport>
   );
 };
 

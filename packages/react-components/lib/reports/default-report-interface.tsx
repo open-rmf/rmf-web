@@ -3,7 +3,7 @@ import { styled } from '@mui/material';
 export const defaultReportClasses = {
   table: 'default-report-table',
 };
-export const DefaultReportRoot = styled('div')(() => ({
+export const StyledDefaultReport = styled('div')(() => ({
   [`& .${defaultReportClasses.table}`]: {
     overflowY: 'scroll',
     paddingTop: '20px',

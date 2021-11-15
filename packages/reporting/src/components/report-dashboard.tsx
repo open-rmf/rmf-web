@@ -48,7 +48,7 @@ const classes = {
   toolbarTitle: `${prefix}-toolbar-title`,
 };
 
-const ReportDashboardRoot = styled('div')(({ theme }) => ({
+const StyledReportDashboard = styled('div')(({ theme }) => ({
   [`&.${classes.root}`]: {
     display: 'flex',
   },
@@ -207,7 +207,7 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
   }
 
   return (
-    <ReportDashboardRoot className={classes.root}>
+    <StyledReportDashboard className={classes.root}>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -294,6 +294,6 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
           onSelectToDate: handleToLogDateChange,
         })}
       </main>
-    </ReportDashboardRoot>
+    </StyledReportDashboard>
   );
 };

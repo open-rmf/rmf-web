@@ -2,7 +2,7 @@ import React from 'react';
 import {
   DefaultReportQueryPayload,
   defaultReportClasses,
-  DefaultReportRoot,
+  StyledDefaultReport,
 } from '../default-report-interface';
 import { DefaultDatesForm } from '../default-dates-form';
 import { UserLogoutReportTable, UserLogoutRowsType } from './user-logout-report-table';
@@ -27,14 +27,14 @@ export const UserLogoutReport = (props: UserLogoutReportProps): React.ReactEleme
   };
 
   return (
-    <DefaultReportRoot>
+    <StyledDefaultReport>
       <DefaultDatesForm search={searchLogs} {...otherProps} />
       <div className={defaultReportClasses.table}>
         {logs.length !== 0 && (
           <UserLogoutReportTable rows={logs} tableSize={500} addMoreRows={getMoreLogs} />
         )}
       </div>
-    </DefaultReportRoot>
+    </StyledDefaultReport>
   );
 };
 

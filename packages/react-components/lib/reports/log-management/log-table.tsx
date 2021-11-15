@@ -29,7 +29,7 @@ const classes = {
   info: 'log-table-info',
   cellContent: 'log-table-cell-content',
 };
-const LogTableRoot = styled('div')(({ theme }) => ({
+const StyledLogTable = styled('div')(({ theme }) => ({
   [`& .${classes.error}`]: {
     color: theme.palette.error.main,
   },
@@ -84,7 +84,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
   }, []);
 
   return (
-    <LogTableRoot style={{ height: '100%', width: '100%' }} id="log-table">
+    <StyledLogTable style={{ height: '100%', width: '100%' }} id="log-table">
       <DataGrid
         getRowId={(r) => r.container.id}
         autoHeight={true}
@@ -171,6 +171,6 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
         }}
         disableColumnMenu={true}
       />
-    </LogTableRoot>
+    </StyledLogTable>
   );
 };

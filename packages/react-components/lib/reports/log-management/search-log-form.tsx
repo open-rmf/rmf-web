@@ -19,7 +19,7 @@ const classes = {
   formControl: 'search-log-form-form-control',
   background: 'search-log-form-background',
 };
-const SearchLogRoot = styled('div')(({ theme }) => ({
+const StyledSearchLog = styled('div')(({ theme }) => ({
   [`&.${classes.background}`]: {
     backgroundColor: theme.palette.background.paper,
   },
@@ -82,7 +82,7 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
   );
 
   return (
-    <SearchLogRoot className={classes.background}>
+    <StyledSearchLog className={classes.background}>
       <div className={classes.searchForm}>
         <SearchFilter
           options={logLabelValues}
@@ -126,6 +126,6 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
       >
         Retrieve Logs
       </Button>
-    </SearchLogRoot>
+    </StyledSearchLog>
   );
 };

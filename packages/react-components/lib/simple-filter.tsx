@@ -16,7 +16,7 @@ const classes = {
   filterBar: 'simple-filter-filterbar',
   divider: 'simple-filter-divider',
 };
-const SimpleFilterRoot = styled('div')(({ theme }) => ({
+const StyledSimpleFilter = styled('div')(({ theme }) => ({
   [`&.${classes.simpleFilter}`]: {
     margin: '1rem',
     borderColor: theme.palette.success.main,
@@ -33,7 +33,7 @@ export const SimpleFilter = (props: SimpleFilterProps): JSX.Element => {
   const { onChange, value } = props;
 
   return (
-    <SimpleFilterRoot className={classes.simpleFilter}>
+    <StyledSimpleFilter className={classes.simpleFilter}>
       <TextField
         label="Filter"
         value={value}
@@ -44,6 +44,6 @@ export const SimpleFilter = (props: SimpleFilterProps): JSX.Element => {
         data-component="simple-filter"
       />
       <Divider className={classes.divider} />
-    </SimpleFilterRoot>
+    </StyledSimpleFilter>
   );
 };

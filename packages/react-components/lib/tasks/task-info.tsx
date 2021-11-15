@@ -9,7 +9,7 @@ import { TaskTimeline } from './task-timeline';
 const classes = {
   infoValue: 'task-info-info-value',
 };
-const TaskInfoRoot = styled('div')(() => ({
+const StyledTaskInfo = styled('div')(() => ({
   [`& .${classes.infoValue}`]: {
     float: 'right',
     textAlign: 'right',
@@ -126,7 +126,7 @@ export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
   })();
 
   return (
-    <TaskInfoRoot>
+    <StyledTaskInfo>
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
         {task.task_id}
       </Typography>
@@ -159,6 +159,6 @@ export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
       {detailInfo}
       <Typography variant="h6">Progress</Typography>
       <TaskTimeline taskSummary={task} />
-    </TaskInfoRoot>
+    </StyledTaskInfo>
   );
 }

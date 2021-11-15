@@ -6,7 +6,7 @@ const classes = {
   status: 'status-label-root',
   unknown: 'status-label-unknown',
 };
-const StatusLabelRoot = styled('div')(({ theme }) => ({
+const StyledStatusLabel = styled('div')(({ theme }) => ({
   [`&.${classes.status}`]: {
     borderColor: theme.palette.primary.main,
     borderRadius: theme.shape.borderRadius,
@@ -42,7 +42,7 @@ export interface StatusLabelProps {
 export const StatusLabel = (props: StatusLabelProps): JSX.Element => {
   const { text = '', className, variant = 'normal', ...otherProps } = props;
   return (
-    <StatusLabelRoot
+    <StyledStatusLabel
       className={clsx(
         classes.status,
         className,
@@ -53,6 +53,6 @@ export const StatusLabel = (props: StatusLabelProps): JSX.Element => {
       <Typography variant="button" role="status">
         {variant === 'unknown' ? 'N/A' : text}
       </Typography>
-    </StatusLabelRoot>
+    </StyledStatusLabel>
   );
 };

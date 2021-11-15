@@ -6,7 +6,7 @@ const prefix = 'login-page';
 const classes = {
   container: `prefix-container`,
 };
-const LoginPageRoot = styled('div')(({ theme }) => ({
+const StyledLoginPage = styled('div')(({ theme }) => ({
   [`&.${classes.container}`]: {
     width: '100vw',
     height: '100vh',
@@ -22,9 +22,9 @@ const LoginPageRoot = styled('div')(({ theme }) => ({
 
 export const LoginPage = (props: LoginCardProps): JSX.Element => {
   return (
-    <LoginPageRoot className={classes.container}>
+    <StyledLoginPage className={classes.container}>
       <LoginCard {...props} />
-    </LoginPageRoot>
+    </StyledLoginPage>
   );
 };
 

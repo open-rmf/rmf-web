@@ -10,7 +10,7 @@ const classes = {
   container: 'erroroverlay-container',
   disableSelect: 'erroroverlay-disable-select',
 };
-const ErrorOverlayRoot = styled('div')(({ theme }) => ({
+const StyledErrorOverlay = styled('div')(({ theme }) => ({
   [`& .${classes.errorIcon}`]: {
     color: theme.palette.error.main,
     fontSize: '2rem',
@@ -50,7 +50,7 @@ export const ErrorOverlay = React.memo(
     const { errorMsg, children, overrideErrorStyle } = props;
 
     return errorMsg ? (
-      <ErrorOverlayRoot className={classes.container}>
+      <StyledErrorOverlay className={classes.container}>
         <div className={classes.errorDisabled}>{children}</div>
         <div
           className={
@@ -78,7 +78,7 @@ export const ErrorOverlay = React.memo(
             </Typography>
           </div>
         </div>
-      </ErrorOverlayRoot>
+      </StyledErrorOverlay>
     ) : (
       <React.Fragment>{children}</React.Fragment>
     );

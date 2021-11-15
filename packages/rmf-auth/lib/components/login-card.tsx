@@ -7,7 +7,7 @@ const classes = {
   title: `${prefix}-title`,
   logo: `${prefix}-logo`,
 };
-const LoginCardRoot = styled('div')(({ theme }) => ({
+const StyledLoginCard = styled('div')(({ theme }) => ({
   [`&.${classes.container}`]: {
     display: 'flex',
     flexDirection: 'column',
@@ -42,7 +42,7 @@ export const LoginCard = React.forwardRef(
     ref: React.Ref<HTMLDivElement>,
   ): JSX.Element => {
     return (
-      <LoginCardRoot ref={ref} className={classes.container}>
+      <StyledLoginCard ref={ref} className={classes.container}>
         <Typography variant="h4" className={classes.title}>
           {title}
         </Typography>
@@ -51,7 +51,7 @@ export const LoginCard = React.forwardRef(
           Login
         </Button>
         {children}
-      </LoginCardRoot>
+      </StyledLoginCard>
     );
   },
 );
