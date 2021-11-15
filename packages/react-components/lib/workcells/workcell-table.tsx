@@ -1,17 +1,9 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableProps,
-  styled,
-} from '@mui/material';
+import { Table, TableBody, TableHead, TableRow, styled } from '@mui/material';
 import { Dispenser } from 'api-client';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { dispenserModeToString } from './utils';
-import { useFixedTableCellStyles } from '../utils';
+import { useFixedTableCellStylesClasses, StyledItemTableCell } from '../utils';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import clsx from 'clsx';
 import AutoSizer, { AutoSizerProps } from 'react-virtualized-auto-sizer';
@@ -64,7 +56,7 @@ export interface WorkcellRowProps {
 
 const WorkcellRow = React.memo(
   ({ workcell, mode, requestGuidQueue, secondsRemaining }: WorkcellRowProps) => {
-    const { fixedTableCell } = useFixedTableCellStyles;
+    const { fixedTableCell } = useFixedTableCellStylesClasses;
     const dispenserModeLabelClasses = React.useCallback(
       (mode: number): string => {
         switch (mode) {
@@ -85,81 +77,81 @@ const WorkcellRow = React.memo(
       <TableRow aria-label={`${workcell.guid}`} className={classes.tableRow} component="div">
         {mode !== undefined && requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
           <React.Fragment>
-            <TableCell
+            <StyledItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
               title={workcell.guid}
             >
               {workcell.guid}
-            </TableCell>
-            <TableCell
+            </StyledItemTableCell>
+            <StyledItemTableCell
               component="div"
               variant="head"
               className={clsx(dispenserModeLabelClasses(mode), classes.tableCell, fixedTableCell)}
             >
               {dispenserModeToString(mode)}
-            </TableCell>
-            <TableCell
+            </StyledItemTableCell>
+            <StyledItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {requestGuidQueue.length}
-            </TableCell>
-            <TableCell
+            </StyledItemTableCell>
+            <StyledItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {requestGuidQueue}
-            </TableCell>
-            <TableCell
+            </StyledItemTableCell>
+            <StyledItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {secondsRemaining}
-            </TableCell>
+            </StyledItemTableCell>
           </React.Fragment>
         ) : (
           <React.Fragment>
-            <TableCell
+            <StyledItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
               title={workcell.guid}
             >
               {workcell.guid}
-            </TableCell>
-            <TableCell
+            </StyledItemTableCell>
+            <StyledItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {'NA'}
-            </TableCell>
-            <TableCell
+            </StyledItemTableCell>
+            <StyledItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {'NA'}
-            </TableCell>
-            <TableCell
+            </StyledItemTableCell>
+            <StyledItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {'NA'}
-            </TableCell>
-            <TableCell
+            </StyledItemTableCell>
+            <StyledItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {'NA'}
-            </TableCell>
+            </StyledItemTableCell>
           </React.Fragment>
         )}
       </TableRow>
@@ -183,7 +175,7 @@ const WorkcellListRenderer = ({ data, index }: WorkcellListRendererProps) => {
 };
 
 export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps): JSX.Element => {
-  const { fixedTableCell } = useFixedTableCellStyles;
+  const { fixedTableCell } = useFixedTableCellStylesClasses;
   return (
     <StyledAutosizer disableHeight>
       {({ width }) => {
@@ -191,41 +183,41 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
           <Table component="div" stickyHeader size="small" aria-label="workcell-table">
             <TableHead component="div">
               <TableRow component="div" className={classes.tableRow}>
-                <TableCell
+                <StyledItemTableCell
                   component="div"
                   variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Dispenser Name
-                </TableCell>
-                <TableCell
+                </StyledItemTableCell>
+                <StyledItemTableCell
                   component="div"
                   variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Op. Mode
-                </TableCell>
-                <TableCell
+                </StyledItemTableCell>
+                <StyledItemTableCell
                   component="div"
                   variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   No. Queued Requests
-                </TableCell>
-                <TableCell
+                </StyledItemTableCell>
+                <StyledItemTableCell
                   component="div"
                   variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Request Queue ID
-                </TableCell>
-                <TableCell
+                </StyledItemTableCell>
+                <StyledItemTableCell
                   component="div"
                   variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Seconds Remaining
-                </TableCell>
+                </StyledItemTableCell>
               </TableRow>
             </TableHead>
             <TableBody component="div">

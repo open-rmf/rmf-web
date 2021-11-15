@@ -1,18 +1,9 @@
-import {
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableProps,
-  styled,
-} from '@mui/material';
+import { Button, Table, TableBody, TableHead, TableRow, styled } from '@mui/material';
 import React from 'react';
 import * as RmfModels from 'rmf-models';
 import LiftRequestFormDialog from './lift-request-form-dialog';
 import { doorStateToString, liftModeToString, requestDoorModes, requestModes } from './lift-utils';
-import { useFixedTableCellStyles } from '../utils';
+import { useFixedTableCellStylesClasses, StyledItemTableCell } from '../utils';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import clsx from 'clsx';
 import AutoSizer, { AutoSizerProps } from 'react-virtualized-auto-sizer';
@@ -88,7 +79,7 @@ const LiftRow = React.memo(
     onRequestSubmit,
   }: LiftRowProps) => {
     const [showForms, setShowForms] = React.useState(false);
-    const { fixedTableCell, fixedLastTableCell } = useFixedTableCellStyles;
+    const { fixedTableCell, fixedLastTableCell } = useFixedTableCellStylesClasses;
 
     const doorModeLabelClasses = React.useCallback(
       (doorState: number): string => {
@@ -108,43 +99,43 @@ const LiftRow = React.memo(
 
     return (
       <TableRow aria-label={`${lift.name}`} component="div" className={classes.tableRow}>
-        <TableCell
+        <StyledItemTableCell
           component="div"
           variant="body"
           className={clsx(classes.tableCell, fixedTableCell)}
           title={lift.name}
         >
           {lift.name}
-        </TableCell>
-        <TableCell
+        </StyledItemTableCell>
+        <StyledItemTableCell
           component="div"
           variant="body"
           className={clsx(classes.tableCell, fixedTableCell)}
         >
           {liftModeToString(currentMode)}
-        </TableCell>
-        <TableCell
+        </StyledItemTableCell>
+        <StyledItemTableCell
           component="div"
           variant="body"
           className={clsx(classes.tableCell, fixedTableCell)}
         >
           {currentFloor}
-        </TableCell>
-        <TableCell
+        </StyledItemTableCell>
+        <StyledItemTableCell
           component="div"
           variant="body"
           className={clsx(classes.tableCell, fixedTableCell)}
         >
           {destinationFloor}
-        </TableCell>
-        <TableCell
+        </StyledItemTableCell>
+        <StyledItemTableCell
           component="div"
           variant="body"
           className={clsx(doorModeLabelClasses(doorState), classes.tableCell, fixedTableCell)}
         >
           {doorStateToString(doorState)}
-        </TableCell>
-        <TableCell
+        </StyledItemTableCell>
+        <StyledItemTableCell
           component="div"
           variant="body"
           className={clsx(classes.tableCell, fixedLastTableCell)}
@@ -166,7 +157,7 @@ const LiftRow = React.memo(
             onRequestSubmit={onRequestSubmit}
             onClose={() => setShowForms(false)}
           />
-        </TableCell>
+        </StyledItemTableCell>
       </TableRow>
     );
   },
@@ -189,7 +180,7 @@ const LiftListRenderer = ({ data, index }: LiftListRendererProps) => {
 };
 
 export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps): JSX.Element => {
-  const { fixedTableCell, fixedLastTableCell } = useFixedTableCellStyles;
+  const { fixedTableCell, fixedLastTableCell } = useFixedTableCellStylesClasses;
   return (
     <StyledAutosizer disableHeight>
       {({ width }) => {
@@ -197,48 +188,48 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
           <Table component="div" stickyHeader size="small" aria-label="lift-table">
             <TableHead component="div">
               <TableRow component="div" className={classes.tableRow}>
-                <TableCell
+                <StyledItemTableCell
                   component="div"
                   variant="body"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Lift Name
-                </TableCell>
-                <TableCell
+                </StyledItemTableCell>
+                <StyledItemTableCell
                   component="div"
                   variant="body"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Op. Mode
-                </TableCell>
-                <TableCell
+                </StyledItemTableCell>
+                <StyledItemTableCell
                   component="div"
                   variant="body"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Current Floor
-                </TableCell>
-                <TableCell
+                </StyledItemTableCell>
+                <StyledItemTableCell
                   component="div"
                   variant="body"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Destination
-                </TableCell>
-                <TableCell
+                </StyledItemTableCell>
+                <StyledItemTableCell
                   component="div"
                   variant="body"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Doors State
-                </TableCell>
-                <TableCell
+                </StyledItemTableCell>
+                <StyledItemTableCell
                   component="div"
                   variant="body"
                   className={clsx(classes.tableCell, fixedLastTableCell)}
                 >
                   Request Form
-                </TableCell>
+                </StyledItemTableCell>
               </TableRow>
             </TableHead>
             <TableBody component="div">
