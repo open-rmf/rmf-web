@@ -12,6 +12,6 @@
     "lint": "python3 -m pipenv run pylint rest_server"
   },
   "devDependencies": {
-    "pipenv-install": "*"
+    "pipenv-install": "../../pipenv-install"
   }
 }

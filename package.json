@@ -1,6 +1,19 @@
 {
   "name": "root",
   "private": true,
+  "workspaces": [
+    "packages/api-client",
+    "packages/api-server",
+    "packages/dashboard",
+    "packages/dashboard-e2e",
+    "packages/react-components",
+    "packages/reporting",
+    "packages/reporting-e2e",
+    "packages/reporting-server",
+    "packages/rmf-auth",
+    "packages/rmf-models",
+    "packages/ros-translator"
+  ],
   "devDependencies": {
     "husky": "^4.3.0",
     "lerna": "^4.0.0",
