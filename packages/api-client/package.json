@@ -2,10 +2,11 @@
   "name": "api-client",
   "version": "0.0.1",
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/lib/index.js",
   "scripts": {
-    "prepare": "tsc --build",
-    "prepack": "npm run lint",
+    "build": "tsc --build",
+    "clean": "tsc --build --clean",
+    "prepack": "npm run clean && npm run build && npm run lint",
     "lint": "eslint --ext ts,tsx lib"
   },
   "author": "koonpeng@openrobotics.org",

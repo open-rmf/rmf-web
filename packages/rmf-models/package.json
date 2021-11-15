@@ -2,9 +2,9 @@
   "name": "rmf-models",
   "version": "0.0.1",
   "description": "RMF models generated from ROS messages",
-  "main": "dist/index.js",
+  "main": "dist/lib/index.js",
   "scripts": {
-    "prepare": "tsc --build"
+    "build": "tsc --build"
   },
   "repository": {
     "type": "git",

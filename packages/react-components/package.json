@@ -2,17 +2,17 @@
   "name": "react-components",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "dist/lib/index.js",
   "scripts": {
-    "start": "start-storybook -p 6006 -s test-data",
-    "prepare": "npm run build",
-    "build": "node scripts/build.js",
+    "build": "tsc --build",
     "build:storybook": "build-storybook -s test-data",
     "build:watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
+    "lint": "eslint --ext ts,tsx, lib",
+    "prepack": "npm run clean && npm run lint && npm run build && npm run test && cp package.json dist/",
+    "start": "start-storybook -p 6006 -s test-data",
     "test": "karma start karma.conf.js",
-    "test:coverage": "karma start karma.conf.js --coverage",
-    "lint": "eslint --ext ts,tsx, lib"
+    "test:coverage": "karma start karma.conf.js --coverage"
   },
   "author": "koonpeng@openrobotics.org",
   "license": "Apache-2.0",

@@ -4,7 +4,6 @@
   "description": "dummy package",
   "private": true,
   "scripts": {
-    "prepare": "",
     "prepack": "pipenv run python setup.py bdist_wheel",
     "start": "pipenv run python -m api_server",
     "test": "pipenv run python -m unittest",
