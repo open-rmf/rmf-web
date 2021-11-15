@@ -34,7 +34,7 @@ jobs:
       - name: bootstrap
         run: |
           . /rmf_demos_ws/install/setup.bash
-          npm ci -w=rmf-dashboard
+          npm ci -w=packages/dashboard
         working-directory: .
       - name: unit test
         run: . /rmf_demos_ws/install/setup.bash && npm run test:coverage

@@ -30,7 +30,7 @@ jobs:
       - name: bootstrap
         run: |
           . /rmf_demos_ws/install/setup.bash
-          npm ci -w=reporting-server
+          npm ci -w=packages/reporting-server
         working-directory: .
       - name: tests
         run: |
