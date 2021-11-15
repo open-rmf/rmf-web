@@ -32,7 +32,7 @@ jobs:
           pip3 install pipenv
           npm i -g npm@latest
           npm config set unsafe-perm
-          npm ci -w=packages/react-components
+          node scripts/workspace-args.js react-components | xargs npm ci
         working-directory: .
       - name: test build storybook
         run: npm run build:storybook

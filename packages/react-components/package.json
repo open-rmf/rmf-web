@@ -5,12 +5,12 @@
   "main": "dist/lib/index.js",
   "scripts": {
     "build": "tsc --build",
-    "build:storybook": "tsc --build && build-storybook -s test-data",
+    "build:storybook": "../../scripts/build-deps.sh react-components && build-storybook -s test-data",
     "build:watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
     "lint": "eslint --ext ts,tsx, lib",
     "prepack": "npm run clean && npm run lint && npm run build && npm run test && cp package.json dist/",
-    "start": "start-storybook -p 6006 -s test-data",
+    "start": "../../scripts/build-deps.sh react-components && start-storybook -p 6006 -s test-data",
     "test": "karma start karma.conf.js",
     "test:coverage": "karma start karma.conf.js --coverage"
   },

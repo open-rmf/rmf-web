@@ -19,7 +19,7 @@
     "eject": "react-scripts eject",
     "setup": "node ./scripts/setup/setup.js",
     "storybook": "start-storybook -p 9009 -s public -s src/stories/static",
-    "build:storybook": "tsc --build && build-storybook -s public -s src/stories/static"
+    "build:storybook": "../../scripts/build-deps.sh dashboard && build-storybook -s public -s src/stories/static"
   },
   "eslintConfig": {
     "extends": "react-app"
