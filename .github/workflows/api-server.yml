@@ -30,7 +30,7 @@ jobs:
       - name: bootstrap
         run: |
           . /rmf_demos_ws/install/setup.bash
-          lerna bootstrap --scope=api-server
+          npm ci -w=api-server
         working-directory: .
       - name: tests
         run: |

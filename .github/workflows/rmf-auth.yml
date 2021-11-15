@@ -25,9 +25,9 @@ jobs:
       - name: bootstrap
         run: |
           pip3 install pipenv
+          npm i -g npm@latest
           npm config set unsafe-perm
-          npm install -g lerna@4
-          lerna bootstrap --scope=rmf-auth
+          npm ci -w=rmf-auth
         working-directory: .
       - name: build
         run: npm run prepare
