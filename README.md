@@ -46,6 +46,34 @@ You may also choose to bootstrap only the dashboard
 lerna bootstrap --scope=rmf-dashboard
 ```
 
+### PostgreSQL
+If you would like to use PostgreSQL, you will also need to install and set it up. The defaults are for PostgreSQL to be listening on 127.0.0.1:5432.
+
+#### Docker
+We can use Docker to quickly bring up a PostgreSQL instance.
+
+Install docker: `https://docs.docker.com/engine/install/ubuntu/`
+Start a a database instance: `docker run -it --rm --name rmf-postgres --network=host -e POSTGRES_PASSWORD=postgres -d postgres`
+
+To stop the instance: `docker kill rmf-postgres`
+
+
+#### Bare Metal
+Alternatively, we can install PostgreSQL 'bare metal'.
+```
+apt install postgresql postgresql-contrib -y
+# Set a default password
+sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"
+
+sudo systemctl restart postgresql
+# interactive prompt
+sudo -i -u postgres
+```
+To manually reset the database:
+```
+sudo -u postgres bash -c "dropdb postgres; createdb postgres"
+```
+
 ## Launching
 
 Before running the commands, make sure that rmf is sourced.
