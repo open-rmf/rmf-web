@@ -5,14 +5,13 @@ import React from 'react';
 import * as RmfModels from 'rmf-models';
 import { Fleet } from 'api-client';
 import { RobotPanel, VerboseRobot } from 'react-components';
-import * as L from 'leaflet';
 import {
   BuildingMapContext,
   RmfIngressContext,
   DispensersContext,
   IngestorsContext,
 } from '../rmf-app';
-import ScheduleVisualizer from '../schedule-visualizer';
+import ScheduleVisualizer, { mapHandler } from '../schedule-visualizer';
 import {
   useFleets,
   useFleetStateRef,
@@ -43,8 +42,8 @@ export function RobotPage() {
   const rmfIngress = React.useContext(RmfIngressContext);
   const sioClient = React.useContext(RmfIngressContext)?.sioClient;
   const buildingMap = React.useContext(BuildingMapContext);
+  const leafletMap = mapHandler.current?.leafletElement;
 
-  const [leafletMap, setLeafletMap] = React.useState<L.Map>();
   const [_triggerRender, setTriggerRender] = React.useState(0); // eslint-disable-line @typescript-eslint/no-unused-vars
   React.useEffect(() => {
     const interval = setInterval(() => setTriggerRender((prev) => prev + 1), UpdateRate);
@@ -111,7 +110,6 @@ export function RobotPage() {
               ingestors={ingestors}
               fleetStates={Object.assign({}, fleetStatesRef.current)}
               mode="normal"
-              setLeafletMap={setLeafletMap}
               zoom={4.5}
             />
           )}

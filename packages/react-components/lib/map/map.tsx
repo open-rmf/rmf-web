@@ -3,13 +3,7 @@ import clsx from 'clsx';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import React from 'react';
-import {
-  Map as LMap_,
-  MapProps as LMapProps_,
-  Pane,
-  useLeaflet,
-  LeafletContext,
-} from 'react-leaflet';
+import { Map as LMap_, MapProps as LMapProps_, Pane, useLeaflet } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { EntityManager, EntityManagerContext } from './entity-manager';
 import { LabelsPortalContext } from './labels-overlay';
@@ -63,14 +57,10 @@ function EntityManagerProvider({ children }: React.PropsWithChildren<{}>) {
 
 export interface LMapProps extends Omit<LMapProps_, 'crs'> {
   ref?: React.Ref<LMap_>;
-  setLeafletMap?: React.Dispatch<React.SetStateAction<LeafletContext>>;
 }
 
 export const LMap = React.forwardRef(
-  (
-    { className, children, zoom, setLeafletMap, ...otherProps }: LMapProps,
-    ref: React.Ref<LMap_>,
-  ) => {
+  ({ className, children, zoom, ...otherProps }: LMapProps, ref: React.Ref<LMap_>) => {
     const classes = useStyles();
     const [labelsPortal, setLabelsPortal] = React.useState<SVGSVGElement | null>(null);
     const viewBox = otherProps.bounds ? viewBoxFromLeafletBounds(otherProps.bounds) : undefined;

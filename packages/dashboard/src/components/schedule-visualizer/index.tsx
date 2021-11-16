@@ -50,6 +50,7 @@ const TrajectoryUpdateInterval = 2000;
 // of the whole app when it changes.
 const SettingsKey = 'scheduleVisualizerSettings';
 const colorManager = new ColorManager();
+export let mapHandler: React.MutableRefObject<Map<MapProps, L.Map> | null | undefined>;
 
 export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   buildingMap: RmfModels.BuildingMap;
@@ -69,7 +70,6 @@ export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   onRobotClick?: (ev: React.MouseEvent, fleet: string, robot: string) => void;
   onDispenserClick?: (ev: React.MouseEvent, guid: string) => void;
   onIngestorClick?: (ev: React.MouseEvent, guid: string) => void;
-  setLeafletMap?: React.Dispatch<React.SetStateAction<L.Map | undefined>>;
 }
 
 interface ScheduleVisualizerSettings {
@@ -91,7 +91,6 @@ export default function ScheduleVisualizer({
   onRobotClick,
   onDispenserClick,
   onIngestorClick,
-  setLeafletMap,
   children,
 }: ScheduleVisualizerProps): JSX.Element | null {
   debug('render');
@@ -310,11 +309,7 @@ export default function ScheduleVisualizer({
   const [layersUnChecked, setLayersUnChecked] = React.useState<Record<string, boolean>>({});
   const waypointsLayersRef: React.Ref<LayersControl.Overlay> = React.useRef(null);
   const registeredLayersHandlers = React.useRef(false);
-  const mapHandler = React.useRef<Map<MapProps, L.Map> | null>();
-
-  React.useEffect(() => {
-    mapHandler.current && setLeafletMap && setLeafletMap(mapHandler.current.leafletElement);
-  }, [mapHandler.current]);
+  mapHandler = React.useRef<Map<MapProps, L.Map> | null>();
 
   return bounds ? (
     <LMap
