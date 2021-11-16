@@ -29,6 +29,7 @@ jobs:
           . /opt/ros/foxy/setup.bash
           apt update && apt install -y python3-pip
           pip3 install pipenv
+          npm i -g npm@latest
           npm config set unsafe-perm
           scripts/bootstrap.sh ros-translator
         working-directory: .
