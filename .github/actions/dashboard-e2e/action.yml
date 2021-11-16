@@ -5,7 +5,7 @@ runs:
   steps:
     - run: |
         . /rmf_demos_ws/install/setup.bash
-        npm ci -w=packages/dashboard-e2e
+        ../../scripts/bootstrap.sh rmf-dashboard-e2e
         npm test
       working-directory: packages/dashboard-e2e
       shell: bash

@@ -27,7 +27,7 @@ jobs:
           pip3 install pipenv
           npm i -g npm@latest
           npm config set unsafe-perm
-          npm ci -w=rmf-auth
+          scripts/bootstrap.sh rmf-auth
         working-directory: .
       - name: build
         run: npm run prepare

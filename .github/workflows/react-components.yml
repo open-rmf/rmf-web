@@ -32,7 +32,7 @@ jobs:
           pip3 install pipenv
           npm i -g npm@latest
           npm config set unsafe-perm
-          node scripts/bootstrap.sh react-components
+          scripts/bootstrap.sh react-components
         working-directory: .
       - name: test build storybook
         run: npm run build:storybook

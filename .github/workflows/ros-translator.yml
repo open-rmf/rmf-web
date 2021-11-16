@@ -30,7 +30,7 @@ jobs:
           apt update && apt install -y python3-pip
           pip3 install pipenv
           npm config set unsafe-perm
-          npm ci -w=packages/ros-translator
+          scripts/bootstrap.sh ros-translator
         working-directory: .
       - name: test
         run: . /opt/ros/foxy/setup.bash && npm test
