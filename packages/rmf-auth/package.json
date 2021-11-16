@@ -20,9 +20,6 @@
   ],
   "author": "matiasbavera@gmail.com",
   "license": "Apache-2.0",
-  "publishConfig": {
-    "directory": "dist"
-  },
   "dependencies": {
     "@fontsource/roboto": "^4.3.0",
     "@material-ui/icons": "^4.9.1",
