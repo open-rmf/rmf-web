@@ -1,7 +1,6 @@
 {
   "references": [
     { "path": "../api-client" },
-    { "path": "../rmf-auth" },
     { "path": "../rmf-models" }
   ],
   "compilerOptions": {
