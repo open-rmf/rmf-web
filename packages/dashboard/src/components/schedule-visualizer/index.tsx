@@ -332,7 +332,6 @@ export default function ScheduleVisualizer({
       zoomSnap={0.5}
       bounds={bounds}
       className={classes.map}
-      zoom={zoom}
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
       <LayersControl

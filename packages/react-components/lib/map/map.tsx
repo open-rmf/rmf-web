@@ -60,7 +60,7 @@ export interface LMapProps extends Omit<LMapProps_, 'crs'> {
 }
 
 export const LMap = React.forwardRef(
-  ({ className, children, zoom, ...otherProps }: LMapProps, ref: React.Ref<LMap_>) => {
+  ({ className, children, ...otherProps }: LMapProps, ref: React.Ref<LMap_>) => {
     const classes = useStyles();
     const [labelsPortal, setLabelsPortal] = React.useState<SVGSVGElement | null>(null);
     const viewBox = otherProps.bounds ? viewBoxFromLeafletBounds(otherProps.bounds) : undefined;
