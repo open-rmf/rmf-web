@@ -1,3 +1,3 @@
 #!/bin/bash
 
-node "$(dirname $0)/workspace-args.js" --only-direct "$@" | xargs npm run build
+eval npm --prefix "$(dirname $0)/.." run build $(node "$(dirname $0)/workspace-args.js" --only-direct "$@")
