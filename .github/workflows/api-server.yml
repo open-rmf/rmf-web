@@ -31,7 +31,7 @@ jobs:
         run: |
           . /rmf_demos_ws/install/setup.bash
           npm i -g npm@latest
-          scripts/bootstrap api-server
+          scripts/bootstrap.sh api-server
         working-directory: .
       - name: tests
         run: |
