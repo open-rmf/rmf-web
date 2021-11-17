@@ -10,7 +10,6 @@ export * from './robots-overlay';
 export * from './trajectories-overlay';
 export * from './trajectory';
 export * from './trajectory-marker';
-export * from './trajectory-time-control';
 export * from './utils';
 export * from './waypoint-marker';
 export * from './waypoints-overlay';

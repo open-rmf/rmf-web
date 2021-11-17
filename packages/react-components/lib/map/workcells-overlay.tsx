@@ -2,10 +2,10 @@ import React from 'react';
 import { almostShallowEqual } from '../utils';
 import { fromRmfCoords } from '../utils/geometry';
 import { useAutoScale } from './hooks';
-import { SVGOverlay, SVGOverlayProps } from './svg-overlay';
-import { viewBoxFromLeafletBounds } from './utils';
+import { SVGOverlay, SVGOverlayProps } from 'react-leaflet';
 import { withLabel } from './with-label';
 import { WorkcellMarker as WorkcellMarker_, WorkcellMarkerProps } from './workcell-marker';
+import { viewBoxFromLeafletBounds } from './utils';
 
 interface BoundedMarkerProps extends Omit<WorkcellMarkerProps, 'onClick'> {
   guid: string;
@@ -50,7 +50,7 @@ export const WorkcellsOverlay = ({
   const scale = useAutoScale(40);
 
   return (
-    <SVGOverlay viewBox={viewBox} {...otherProps}>
+    <SVGOverlay attributes={{ viewBox: viewBox }} {...otherProps}>
       {workcells.map((workcell) => {
         const [x, y] = fromRmfCoords(workcell.location);
         return (

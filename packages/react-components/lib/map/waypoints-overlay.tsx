@@ -2,7 +2,7 @@ import React from 'react';
 import { Place } from '../place';
 import { fromRmfCoords } from '../utils/geometry';
 import { useAutoScale } from './hooks';
-import { SVGOverlay, SVGOverlayProps } from './svg-overlay';
+import { SVGOverlay, SVGOverlayProps } from 'react-leaflet';
 import { viewBoxFromLeafletBounds } from './utils';
 import { WaypointMarker as WaypointMarker_ } from './waypoint-marker';
 import { withLabel } from './with-label';
@@ -26,7 +26,7 @@ export const WaypointsOverlay = ({
   const scale = useAutoScale(60);
 
   return (
-    <SVGOverlay viewBox={viewBox} {...otherProps}>
+    <SVGOverlay attributes={{ viewBox: viewBox }} {...otherProps}>
       {waypoints.map((waypoint, idx) => {
         const [x, y] = fromRmfCoords([waypoint.vertex.x, waypoint.vertex.y]);
         return (

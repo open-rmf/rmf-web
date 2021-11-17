@@ -4,7 +4,7 @@ import { almostShallowEqual, fromRmfCoords, fromRmfYaw, radiansToDegrees } from 
 import { DoorMarker as DoorMarker_ } from './door-marker';
 import { useAutoScale } from './hooks';
 import { LiftMarker as LiftMarker_, LiftMarkerProps, useLiftMarkerStyles } from './lift-marker';
-import { SVGOverlay, SVGOverlayProps } from './svg-overlay';
+import { SVGOverlay, SVGOverlayProps } from 'react-leaflet';
 import { viewBoxFromLeafletBounds } from './utils';
 import { withLabel } from './with-label';
 
@@ -79,7 +79,7 @@ export const LiftsOverlay = ({
   const scale = useAutoScale(40);
 
   return (
-    <SVGOverlay viewBox={viewBox} {...otherProps}>
+    <SVGOverlay attributes={{ viewBox: viewBox }} {...otherProps}>
       {lifts.map((lift) => {
         const state = liftStates && liftStates[lift.name];
         const pos = fromRmfCoords([lift.ref_x, lift.ref_y]);

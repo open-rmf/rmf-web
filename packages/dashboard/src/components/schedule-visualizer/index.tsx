@@ -17,7 +17,6 @@ import {
   RobotsOverlay as RobotsOverlay_,
   TrajectoriesOverlay as TrajectoriesOverlay_,
   TrajectoryData,
-  TrajectoryTimeControl,
   useAsync,
   WaypointsOverlay as WaypointsOverlay_,
   WorkcellData,
@@ -303,22 +302,30 @@ export default function ScheduleVisualizer({
     setLevelBounds(bounds);
   }, [images, levels]);
 
-  const [layersUnChecked, setLayersUnChecked] = React.useState<Record<string, boolean>>({});
-  const waypointsLayersRef: React.Ref<LayersControl.Overlay> = React.useRef(null);
+  const [layersUnChecked, setLayersUnChecked] = React.useState<Record<string, boolean>>({
+    Waypoints: true,
+    Dispensers: true,
+    Ingestors: true,
+    Robots: true,
+    Trajectories: true,
+    Lifts: true,
+    Doors: true,
+  });
   const registeredLayersHandlers = React.useRef(false);
 
   return bounds ? (
     <LMap
-      ref={(cur) => {
-        if (registeredLayersHandlers.current || !cur) return;
-        cur.leafletElement.on('overlayadd', (ev: L.LayersControlEvent) =>
-          setLayersUnChecked((prev) => ({ ...prev, [ev.name]: false })),
-        );
-        cur.leafletElement.on('overlayremove', (ev: L.LayersControlEvent) =>
-          setLayersUnChecked((prev) => ({ ...prev, [ev.name]: true })),
-        );
-        registeredLayersHandlers.current = true;
-      }}
+      // ref={(cur) => {
+      //   if (registeredLayersHandlers.current || !cur) return;
+      //   cur.leafletElement.on('overlayadd', (ev: L.LayersControlEvent) =>
+      //     setLayersUnChecked((prev) => ({ ...prev, [ev.name]: false })),
+      //   );
+      //   cur.leafletElement.on('overlayremove', (ev: L.LayersControlEvent) =>
+      //     setLayersUnChecked((prev) => ({ ...prev, [ev.name]: true })),
+      //   );
+      //   registeredLayersHandlers.current = true;
+      // }}
+
       id="schedule-visualizer"
       attributionControl={false}
       minZoom={0}
@@ -331,9 +338,12 @@ export default function ScheduleVisualizer({
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
       <LayersControl
         position="topleft"
-        onbaselayerchange={(ev) =>
-          setCurrentLevel(levels.find((l) => l.name === ev.name) || levels[0])
-        }
+        // onbaselayerchange={(ev) => {
+        //     console.log(ev.name);
+        //     setCurrentLevel(levels.find((l) => l.name === ev.name) || levels[0]);
+        //     console.log(currentLevel);
+        //   }
+        // }
       >
         {buildingMap.levels.map((level) => (
           <LayersControl.BaseLayer
@@ -345,11 +355,7 @@ export default function ScheduleVisualizer({
           </LayersControl.BaseLayer>
         ))}
 
-        <LayersControl.Overlay
-          ref={waypointsLayersRef}
-          name="Waypoints"
-          checked={!layersUnChecked['Waypoints']}
-        >
+        <LayersControl.Overlay name="Waypoints" checked>
           <WaypointsOverlay
             bounds={bounds}
             waypoints={waypoints}
@@ -357,7 +363,7 @@ export default function ScheduleVisualizer({
           />
         </LayersControl.Overlay>
 
-        <LayersControl.Overlay name="Dispensers" checked={!layersUnChecked['Dispensers']}>
+        <LayersControl.Overlay name="Dispensers" checked>
           <WorkcellsOverlay
             bounds={bounds}
             workcells={dispensersData}
@@ -366,7 +372,7 @@ export default function ScheduleVisualizer({
           />
         </LayersControl.Overlay>
 
-        <LayersControl.Overlay name="Ingestors" checked={!layersUnChecked['Ingestors']}>
+        <LayersControl.Overlay name="Ingestors" checked>
           <WorkcellsOverlay
             bounds={bounds}
             workcells={ingestorsData}
@@ -375,7 +381,7 @@ export default function ScheduleVisualizer({
           />
         </LayersControl.Overlay>
 
-        <LayersControl.Overlay name="Lifts" checked={!layersUnChecked['Lifts']}>
+        <LayersControl.Overlay name="Lifts" checked>
           <LiftsOverlay
             bounds={bounds}
             currentLevel={currentLevel.name}
@@ -386,7 +392,7 @@ export default function ScheduleVisualizer({
           />
         </LayersControl.Overlay>
 
-        <LayersControl.Overlay name="Doors" checked={!layersUnChecked['Doors']}>
+        <LayersControl.Overlay name="Doors" checked>
           <DoorsOverlay
             bounds={bounds}
             doors={currentLevel.doors}
@@ -400,7 +406,7 @@ export default function ScheduleVisualizer({
           <TrajectoriesOverlay bounds={bounds} trajectoriesData={renderedTrajectories} />
         </LayersControl.Overlay>
 
-        <LayersControl.Overlay name="Robots" checked={!layersUnChecked['Robots']}>
+        <LayersControl.Overlay name="Robots" checked>
           <RobotsOverlay
             bounds={bounds}
             robots={robots}
@@ -414,7 +420,7 @@ export default function ScheduleVisualizer({
         </LayersControl.Overlay>
       </LayersControl>
 
-      <TrajectoryTimeControl
+      {/* <TrajectoryTimeControl
         position="topleft"
         value={trajectoryTime}
         min={60000}
@@ -426,7 +432,7 @@ export default function ScheduleVisualizer({
             return newSettings;
           })
         }
-      />
+      /> */}
       {children}
     </LMap>
   ) : null;

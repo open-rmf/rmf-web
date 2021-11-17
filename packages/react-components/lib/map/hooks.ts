@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLeaflet } from 'react-leaflet';
+import { useMap } from 'react-leaflet';
 import { DefaultMarkerActualSizeMinZoom } from './constants';
 
 /**
@@ -9,19 +9,19 @@ import { DefaultMarkerActualSizeMinZoom } from './constants';
  * @returns
  */
 export function useAutoScale(factor: number, threshold = DefaultMarkerActualSizeMinZoom): number {
-  const leaflet = useLeaflet();
+  const leaflet = useMap();
 
   const getScale = React.useCallback(() => {
-    if (!leaflet.map || leaflet.map.getZoom() >= threshold) return 1;
-    return factor / 2 ** leaflet.map.getZoom();
-  }, [leaflet.map, threshold, factor]);
+    if (!leaflet || leaflet.getZoom() >= threshold) return 1;
+    return factor / 2 ** leaflet.getZoom();
+  }, [leaflet, threshold, factor]);
 
   const [scale, setScale] = React.useState(getScale);
 
   React.useEffect(() => {
-    if (!leaflet.map) return;
-    leaflet.map.on('zoom', () => setScale(getScale()));
-  }, [leaflet.map, getScale]);
+    if (!leaflet) return;
+    leaflet.on('zoom', () => setScale(getScale()));
+  }, [leaflet, getScale]);
 
   return scale;
 }

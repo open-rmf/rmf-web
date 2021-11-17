@@ -4,7 +4,8 @@ import { almostShallowEqual } from '../utils';
 import { fromRmfCoords, fromRmfYaw } from '../utils/geometry';
 import { useAutoScale } from './hooks';
 import { RobotMarker as RobotMarker_, RobotMarkerProps } from './robot-marker';
-import { SVGOverlay, SVGOverlayProps } from './svg-overlay';
+// import { SVGOverlay, SVGOverlayProps } from './svg-overlay';
+import { SVGOverlay, SVGOverlayProps } from 'react-leaflet';
 import { viewBoxFromLeafletBounds } from './utils';
 import { withLabel } from './with-label';
 
@@ -67,7 +68,7 @@ export const RobotsOverlay = ({
   const footprint = 0.5;
 
   return (
-    <SVGOverlay viewBox={viewBox} {...otherProps}>
+    <SVGOverlay attributes={{ viewBox: viewBox }} {...otherProps}>
       {robots.map((robot) => {
         const state = getRobotState(robot.fleet, robot.name);
         if (!state) return;

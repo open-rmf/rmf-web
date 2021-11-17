@@ -27,9 +27,8 @@
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@material-ui/pickers": "^3.2.10",
     "@types/crc": "^3.4.0",
-    "@types/leaflet": "^1.5.17",
+    "@types/leaflet": "^1.7.5",
     "@types/rbush": "^3.0.0",
-    "@types/react-leaflet": "^2.5.2",
     "@types/shallowequal": "^1.1.1",
     "api-client": "*",
     "clsx": "^1.1.1",
@@ -43,14 +42,16 @@
     "rbush": "^3.0.1",
     "react-customizable-progressbar": "^1.0.3",
     "react-virtualized-auto-sizer": "^1.0.6",
-    "react-leaflet": "^2.7.0",
     "react-window": "^1.8.6",
+    "react-leaflet": "3.1.0",
     "rmf-models": "*",
     "shallowequal": "^1.1.0"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.16.0",
     "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
     "@material-ui/core": "^4.11.0",
+    "@react-leaflet/core": "1.0.2",
     "@storybook/addon-actions": "^6.3.7",
     "@storybook/addon-essentials": "^6.3.7",
     "@storybook/addon-links": "^6.3.7",
@@ -84,7 +85,7 @@
     "puppeteer": "^10.2.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-leaflet": "^2.7.0",
+    "react-leaflet": "3.1.0",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "ts-loader": "^8.1.0",
@@ -98,5 +99,6 @@
     "react-dom": "^16.13.1",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0"
-  }
+  },
+  "plugins": ["@babel/plugin-proposal-nullish-coalescing-operator"]
 }

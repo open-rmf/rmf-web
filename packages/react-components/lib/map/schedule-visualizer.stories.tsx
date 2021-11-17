@@ -1,6 +1,6 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { LayersControl } from 'react-leaflet';
+import { LayersControl, Marker, Popup } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import ColorManager from '../color-manager';
 import { makeLift } from '../lifts/test-utils.spec';
@@ -73,6 +73,7 @@ export const ScheduleVisualizer: Story<LMapProps> = () => {
     {},
   );
   const bounds = React.useMemo(() => levelBounds[currentLevel.name], [levelBounds, currentLevel]);
+  console.log('bounds', bounds);
   const [robots, setRobots] = React.useState<RobotData[]>([]);
 
   React.useEffect(() => {
@@ -113,13 +114,7 @@ export const ScheduleVisualizer: Story<LMapProps> = () => {
   return bounds ? (
     <div style={{ width: '100vw', height: '100vh', padding: 0, margin: 0 }}>
       <LMap bounds={bounds} zoomDelta={0.5} zoomSnap={0.5}>
-        <LayersControl
-          position="topleft"
-          onbaselayerchange={(ev) => {
-            const newLevel = levels.find((l) => l.name === ev.name);
-            newLevel && setCurrentLevel(newLevel);
-          }}
-        >
+        <LayersControl position="topleft">
           {officeMap.levels.map((level) => (
             <LayersControl.BaseLayer
               key={level.name}

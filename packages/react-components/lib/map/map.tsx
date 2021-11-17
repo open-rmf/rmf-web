@@ -3,11 +3,11 @@ import clsx from 'clsx';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import React from 'react';
-import { Map as LMap_, MapProps as LMapProps_, Pane, useLeaflet } from 'react-leaflet';
+import { MapContainer, MapContainerProps, Pane, SVGOverlay, useMap } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import { EntityManager, EntityManagerContext } from './entity-manager';
 import { LabelsPortalContext } from './labels-overlay';
-import { SVGOverlay } from './svg-overlay';
+// import { SVGOverlay } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
 
 const useStyles = makeStyles(() => ({
@@ -37,53 +37,65 @@ export function calcMaxBounds(
 }
 
 function EntityManagerProvider({ children }: React.PropsWithChildren<{}>) {
-  const leaflet = useLeaflet();
+  const mapInstance = useMap();
   const { current: entityManager } = React.useRef(new EntityManager());
 
   React.useEffect(() => {
-    if (!leaflet.map) return;
+    if (!mapInstance) return;
     const listener = () => {
       // TODO: recalculate positions
     };
-    leaflet.map.on('zoom', listener);
+    mapInstance.on('zoom', listener);
     return () => {
-      leaflet.map && leaflet.map.off('zoom', listener);
+      mapInstance && mapInstance.off('zoom', listener);
     };
-  }, [leaflet.map]);
+  }, [mapInstance]);
 
   return entityManager ? (
     <EntityManagerContext.Provider value={entityManager}>{children}</EntityManagerContext.Provider>
   ) : null;
 }
 
-export interface LMapProps extends Omit<LMapProps_, 'crs'> {
-  ref?: React.Ref<LMap_>;
+export interface LMapProps extends Omit<MapContainerProps, 'crs'> {
+  ref?: React.Ref<typeof MapContainer>;
+}
+
+//to be removed
+function whenMapIsReady(): void {
+  alert('Map Ready');
 }
 
 export const LMap = React.forwardRef(
-  ({ className, children, ...otherProps }: LMapProps, ref: React.Ref<LMap_>) => {
+  ({ className, children, ...otherProps }: MapContainerProps) => {
     const classes = useStyles();
     const [labelsPortal, setLabelsPortal] = React.useState<SVGSVGElement | null>(null);
-    const viewBox = otherProps.bounds ? viewBoxFromLeafletBounds(otherProps.bounds) : undefined;
+    const viewBox = otherProps.bounds ? viewBoxFromLeafletBounds(otherProps.bounds) : '';
+
     return (
-      <LMap_ ref={ref} className={clsx(classes.map, className)} crs={L.CRS.Simple} {...otherProps}>
+      <MapContainer
+        className={clsx(classes.map, className)}
+        crs={L.CRS.Simple}
+        {...otherProps}
+        maxZoom={22}
+        whenReady={whenMapIsReady}
+      >
         <EntityManagerProvider>
           <LabelsPortalContext.Provider value={labelsPortal}>
             {children}
             {otherProps.bounds && (
               <Pane name="label" style={{ zIndex: 1000 }}>
                 <SVGOverlay
-                  ref={(current) => {
-                    setLabelsPortal(current?.container || null);
-                  }}
-                  viewBox={viewBox}
+                  attributes={{ viewBox: viewBox }}
                   bounds={otherProps.bounds}
+                  ref={() => {
+                    setLabelsPortal(null);
+                  }}
                 />
               </Pane>
             )}
           </LabelsPortalContext.Provider>
         </EntityManagerProvider>
-      </LMap_>
+      </MapContainer>
     );
   },
 );

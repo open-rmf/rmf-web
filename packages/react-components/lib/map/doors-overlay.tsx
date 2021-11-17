@@ -4,7 +4,7 @@ import { almostShallowEqual } from '../utils';
 import { fromRmfCoords } from '../utils/geometry';
 import { DoorMarker as DoorMarker_, DoorMarkerProps } from './door-marker';
 import { useAutoScale } from './hooks';
-import { SVGOverlay, SVGOverlayProps } from './svg-overlay';
+import { SVGOverlay, SVGOverlayProps } from 'react-leaflet';
 import { getDoorCenter, viewBoxFromLeafletBounds } from './utils';
 import { withLabel } from './with-label';
 
@@ -49,7 +49,7 @@ export const DoorsOverlay = ({
   const scale = useAutoScale(40);
 
   return (
-    <SVGOverlay viewBox={viewBox} {...otherProps}>
+    <SVGOverlay attributes={{ viewBox: viewBox }} {...otherProps}>
       {doors.map((door) => {
         const center = fromRmfCoords(getDoorCenter(door));
         const [x1, y1] = fromRmfCoords([door.v1_x, door.v1_y]);

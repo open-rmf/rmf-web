@@ -1,9 +1,16 @@
-import { makeStyles, ThemeProvider as ThemeProvider_, ThemeProviderProps } from '@material-ui/core';
+import {
+  createStyles,
+  makeStyles,
+  ThemeProvider as ThemeProvider_,
+  ThemeProviderProps,
+} from '@material-ui/core';
 import React from 'react';
 
-const useStyles = makeStyles((theme) => ({
-  '@global': theme['@global'] || {},
-}));
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    '@global': theme['overrides'] || {},
+  }),
+);
 
 const GlobalStyles: React.FC = () => {
   useStyles();

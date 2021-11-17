@@ -19,24 +19,28 @@ const base = createMuiTheme({
 
 export const rmfDark = createMuiTheme(
   {
-    '@global': {
-      '.leaflet-control-zoom a': {
-        color: base.palette.text.primary,
-        backgroundColor: base.palette.background.paper,
-      },
-      '.leaflet-control-layers': {
-        color: base.palette.text.primary,
-        backgroundColor: base.palette.background.paper,
-      },
-      '.leaflet-control-layers .MuiSlider-root': {
-        color: base.palette.text.primary,
-      },
-      '.leaflet-control-layers .MuiInputBase-input': {
-        color: base.palette.text.primary,
-      },
-      '.leaflet-pane img': {
-        filter:
-          'invert(90%) sepia(12%) saturate(5773%) hue-rotate(193deg) brightness(92%) contrast(92%)',
+    overrides: {
+      MuiCssBaseline: {
+        '@global': {
+          '.leaflet-control-zoom a': {
+            color: base.palette.text.primary,
+            backgroundColor: base.palette.background.paper,
+          },
+          '.leaflet-control-layers': {
+            color: base.palette.text.primary,
+            backgroundColor: base.palette.background.paper,
+          },
+          '.leaflet-control-layers .MuiSlider-root': {
+            color: base.palette.text.primary,
+          },
+          '.leaflet-control-layers .MuiInputBase-input': {
+            color: base.palette.text.primary,
+          },
+          '.leaflet-pane img': {
+            filter:
+              'invert(90%) sepia(12%) saturate(5773%) hue-rotate(193deg) brightness(92%) contrast(92%)',
+          },
+        },
       },
     },
   },
