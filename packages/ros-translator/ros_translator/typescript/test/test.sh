@@ -7,4 +7,4 @@ PIPENV_MAX_DEPTH=6 pipenv run python -m ros_translator -t=typescript -o=out ros_
 echo 'test build'
 npx tsc --noEmit
 echo 'ok'
-npx ts-node -T ../../../node_modules/.bin/jasmine "$@"
+npx ts-node -T $(npx which jasmine) "$@"
