@@ -13,7 +13,7 @@
     "test:e2e:dev": "cd e2e && npm run test:dev",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -s public -s src/stories/static",
-    "build:storybook": "../../scripts/build-deps.sh reporting && build-storybook -s public -s src/stories"
+    "build:storybook": "tsc --build && build-storybook -s public -s src/stories"
   },
   "keywords": [
     "reporting"

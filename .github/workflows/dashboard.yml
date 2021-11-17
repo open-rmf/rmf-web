@@ -35,7 +35,7 @@ jobs:
         run: |
           . /rmf_demos_ws/install/setup.bash
           npm i -g npm@latest
-          scripts/bootstrap.sh dashboard
+          scripts/bootstrap.sh rmf-dashboard
         working-directory: .
       - name: unit test
         run: . /rmf_demos_ws/install/setup.bash && npm run test:coverage
