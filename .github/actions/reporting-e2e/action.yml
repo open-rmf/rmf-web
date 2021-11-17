@@ -5,6 +5,7 @@ runs:
   steps:
     - run: |
         ../../scripts/bootstrap.sh reporting-e2e
+        npm i -g npm@latest
         npm test || npm test
       working-directory: packages/reporting-e2e
       shell: bash
