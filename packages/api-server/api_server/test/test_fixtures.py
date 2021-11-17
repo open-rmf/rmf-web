@@ -137,6 +137,8 @@ class AppFixture(unittest.TestCase):
     def tearDown(self):
         for client in self._sioClients:
             if client.connected:
+                # Explicitly close Session to remove ResourceWarnings in tests
+                client.eio.http.close()
                 client.disconnect()
 
     @classmethod
@@ -167,6 +169,8 @@ class AppFixture(unittest.TestCase):
             nonlocal count
             count += 1
             if count >= needed:
+                # Explicitly close Session to remove ResourceWarnings in tests
+                client.eio.http.close()
                 client.disconnect()
                 fut.set_result(data)
 
