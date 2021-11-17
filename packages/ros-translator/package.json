@@ -1,6 +1,6 @@
 {
   "name": "ros-translator",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "private": true,
   "description": "dummy package",
   "main": "index.js",

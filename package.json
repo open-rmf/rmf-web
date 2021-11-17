@@ -12,7 +12,8 @@
     "packages/reporting-server",
     "packages/rmf-auth",
     "packages/rmf-models",
-    "packages/ros-translator"
+    "packages/ros-translator",
+    "pipenv-install"
   ],
   "devDependencies": {
     "husky": "^4.3.0",
