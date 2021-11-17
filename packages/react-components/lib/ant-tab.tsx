@@ -1,4 +1,5 @@
 import { Box, createStyles, Tab, Tabs, Theme, withStyles } from '@material-ui/core';
+import { CSSProperties } from '@material-ui/styles';
 import React from 'react';
 
 interface StyledTabProps {
@@ -19,7 +20,8 @@ export const AntTab = withStyles((theme: Theme) =>
     root: {
       textTransform: 'none',
       minWidth: 72,
-      fontWeight: theme.typography.fontWeightRegular,
+      // FIXME: theme uses react css properties which uses `csstype 3`, but material uses `csstype 2`. Maybe fixed in mui v5.
+      fontWeight: theme.typography.fontWeightRegular as CSSProperties['fontWeight'],
       fontFamily: [
         '-apple-system',
         'BlinkMacSystemFont',
