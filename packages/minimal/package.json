@@ -1,0 +1,14 @@
+{
+  "name": "minimal",
+  "version": "1.0.0",
+  "description": "minimal package that provides a standalone function",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:rmf": "node scripts/start-rmf.js",
+    "start:rmf-server": "RMF_SERVER_USE_SIM_TIME=true npm --prefix ../api-server start",
+    "start:rmf-server:psql": "RMF_API_SERVER_CONFIG=../api-server/psql_local_config.py RMF_SERVER_USE_SIM_TIME=true npm --prefix ../api-server start"
+  },
+  "author": "chawin@openrobotics.org",
+  "license": "Apache-2.0"
+}
