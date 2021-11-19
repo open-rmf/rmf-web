@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Any, List, Optional, cast
 
 from fastapi import Depends, HTTPException, Path
 from fastapi.param_functions import Query
@@ -52,12 +52,19 @@ class TasksRouter(FastIORouter):
 
         @self.watch("/{task_id}/summary")
         async def watch_task_summary(req: WatchRequest, task_id: str):
-            await req.emit(await get_task_summary(RmfRepository(req.user), task_id))
+            try:
+                await req.emit(await get_task_summary(RmfRepository(req.user), task_id))
+            except HTTPException:
+                pass
             rx_watcher(
                 req,
                 app.rmf_events().task_summaries.pipe(
-                    rxops.filter(lambda x: x.task_id == task_id),
-                    rxops.map(lambda x: x.dict(exclude_none=True)),
+                    rxops.filter(lambda x: cast(TaskSummary, x).task_id == task_id),
+                    rxops.map(
+                        cast(
+                            Any, lambda x: cast(TaskSummary, x).dict(exclude_none=True)
+                        )
+                    ),
                 ),
             )
 

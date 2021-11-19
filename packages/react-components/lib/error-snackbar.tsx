@@ -10,7 +10,9 @@ export function ErrorSnackbar({ message, ...otherProps }: ErrorSnackbarProps): J
   return (
     <Snackbar autoHideDuration={2000} {...otherProps}>
       <Alert severity="error">
-        {message.split('\n').length > 0 ? message.split('\n').map((m) => <div>{m}</div>) : message}
+        {message.split('\n').length > 0
+          ? message.split('\n').map((m, i) => <div key={i}>{m}</div>)
+          : message}
       </Alert>
     </Snackbar>
   );

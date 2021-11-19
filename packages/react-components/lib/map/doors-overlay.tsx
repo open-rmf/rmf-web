@@ -1,5 +1,5 @@
+import type { Door, DoorState } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
 import { almostShallowEqual } from '../utils';
 import { fromRmfCoords } from '../utils/geometry';
 import { DoorMarker as DoorMarker_, DoorMarkerProps } from './door-marker';
@@ -9,7 +9,7 @@ import { getDoorCenter, viewBoxFromLeafletBounds } from './utils';
 import { withLabel } from './with-label';
 
 interface BoundedMarkerProps extends Omit<DoorMarkerProps, 'onClick'> {
-  door: RmfModels.Door;
+  door: Door;
   onClick?: (ev: React.MouseEvent, door: string) => void;
 }
 
@@ -32,8 +32,8 @@ const DoorMarker = React.memo(withLabel(bindMarker(DoorMarker_)), (prev, next) =
 );
 
 export interface DoorsOverlayProps extends Omit<SVGOverlayProps, 'viewBox'> {
-  doors: RmfModels.Door[];
-  doorStates?: Record<string, RmfModels.DoorState>;
+  doors: Door[];
+  doorStates?: Record<string, DoorState>;
   hideLabels?: boolean;
   onDoorClick?: (ev: React.MouseEvent, door: string) => void;
 }

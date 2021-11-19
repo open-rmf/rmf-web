@@ -1,21 +1,22 @@
 import { Card, Grid, IconButton, makeStyles, Paper, Typography } from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
-import { Dispenser } from 'api-client';
+import type { Dispenser, Ingestor } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
-import { WorkcellTable } from './workcell-table';
-import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
+import { Workcell, WorkcellState } from '.';
+import { WorkcellTable } from './workcell-table';
 
 export interface WorkcellPanelProps {
   dispensers: Dispenser[];
-  ingestors: Dispenser[];
-  workCellStates: Record<string, RmfModels.DispenserState>;
+  ingestors: Ingestor[];
+  workcellStates: Record<string, WorkcellState>;
 }
 
-export interface WorkcellDataProps extends WorkcellPanelProps {
-  type: 'ingestors' | 'dispensers';
+export interface WorkcellDataProps {
+  workcells: Workcell[];
+  workcellStates: Record<string, WorkcellState>;
 }
 
 interface WorkcellGridData extends WorkcellDataProps {
@@ -27,7 +28,7 @@ interface WorkcellGridRendererProps extends GridChildComponentProps {
 }
 
 export interface WorkcellCellProps {
-  workcell: Dispenser;
+  workcell: Workcell;
   requestGuidQueue?: string[];
   secondsRemaining?: number;
 }
@@ -117,14 +118,14 @@ const WorkcellCell = React.memo(
 );
 
 const WorkcellGridRenderer = ({ data, columnIndex, rowIndex }: WorkcellGridRendererProps) => {
-  let workcell: Dispenser | undefined;
-  let workcellState: RmfModels.DispenserState | undefined;
+  let workcell: Workcell | undefined;
+  let workcellState: WorkcellState | undefined;
   const columnCount = data.columnCount;
-  const getWorkCell = data.type === 'dispensers' ? data.dispensers : data.ingestors;
+  const { workcells, workcellStates } = data;
 
-  if (rowIndex * columnCount + columnIndex <= getWorkCell.length - 1) {
-    workcell = getWorkCell[rowIndex * columnCount + columnIndex];
-    workcellState = data.workCellStates[workcell.guid];
+  if (rowIndex * columnCount + columnIndex <= workcells.length - 1) {
+    workcell = workcells[rowIndex * columnCount + columnIndex];
+    workcellState = workcellStates[workcell.guid];
   }
 
   return workcell ? (
@@ -141,7 +142,7 @@ const WorkcellGridRenderer = ({ data, columnIndex, rowIndex }: WorkcellGridRende
 export function WorkcellPanel({
   dispensers,
   ingestors,
-  workCellStates,
+  workcellStates,
 }: WorkcellPanelProps): JSX.Element {
   const classes = useStyles();
   const [isCellView, setIsCellView] = React.useState(true);
@@ -185,9 +186,8 @@ export function WorkcellPanel({
                       width={width}
                       itemData={{
                         columnCount,
-                        dispensers,
-                        ingestors,
-                        workCellStates,
+                        workcells: dispensers,
+                        workcellStates,
                         type: 'dispensers',
                       }}
                     >
@@ -214,9 +214,8 @@ export function WorkcellPanel({
                       width={width}
                       itemData={{
                         columnCount,
-                        dispensers,
-                        ingestors,
-                        workCellStates,
+                        workcells: ingestors,
+                        workcellStates,
                         type: 'ingestors',
                       }}
                     >
@@ -233,13 +232,13 @@ export function WorkcellPanel({
           {dispensers.length > 0 ? (
             <div className={classes.tableDiv}>
               <Typography variant="h6">Dispenser Table</Typography>
-              <WorkcellTable workcells={dispensers} workcellStates={workCellStates} />
+              <WorkcellTable workcells={dispensers} workcellStates={workcellStates} />
             </div>
           ) : null}
           {ingestors.length > 0 ? (
             <div className={classes.tableDiv}>
               <Typography variant="h6">Ingestor Table</Typography>
-              <WorkcellTable workcells={ingestors} workcellStates={workCellStates} />
+              <WorkcellTable workcells={ingestors} workcellStates={workcellStates} />
             </div>
           ) : null}
         </React.Fragment>

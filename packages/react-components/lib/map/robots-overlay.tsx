@@ -1,5 +1,5 @@
+import type { RobotState } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
 import { almostShallowEqual } from '../utils';
 import { fromRmfCoords, fromRmfYaw } from '../utils/geometry';
 import { useAutoScale } from './hooks';
@@ -45,7 +45,7 @@ const RobotMarker = React.memo(withLabel(bindMarker(RobotMarker_)), (prev, next)
 
 export interface RobotsOverlayProps extends Omit<SVGOverlayProps, 'viewBox'> {
   robots: RobotData[];
-  getRobotState: (fleet: string, robot: string) => RmfModels.RobotState | null;
+  getRobotState: (fleet: string, robot: string) => RobotState | null;
   /**
    * The zoom level at which the markers should transition from actual size to fixed size.
    */

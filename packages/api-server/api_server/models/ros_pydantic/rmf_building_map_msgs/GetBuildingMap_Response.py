@@ -12,6 +12,11 @@ class GetBuildingMap_Response(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "building_map",
+            ],
+        }
 
 
 #

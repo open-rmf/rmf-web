@@ -11,6 +11,12 @@ class LiftClearance_Request(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "robot_name",
+                "lift_name",
+            ],
+        }
 
 
 #

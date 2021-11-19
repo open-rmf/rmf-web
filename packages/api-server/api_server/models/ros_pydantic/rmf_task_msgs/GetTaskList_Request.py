@@ -11,6 +11,12 @@ class GetTaskList_Request(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "requester",
+                "task_id",
+            ],
+        }
 
 
 # # Query list of submitted tasks | Get service call

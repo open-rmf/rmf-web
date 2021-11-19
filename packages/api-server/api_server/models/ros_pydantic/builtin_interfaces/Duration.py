@@ -11,6 +11,12 @@ class Duration(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "sec",
+                "nanosec",
+            ],
+        }
 
 
 # # Duration defines a period between two time points. It is comprised of a

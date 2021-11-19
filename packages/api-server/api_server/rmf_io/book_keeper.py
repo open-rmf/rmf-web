@@ -9,7 +9,6 @@ from rx.core.typing import Disposable
 from rx.subject.subject import Subject
 
 from api_server.models import (
-    BaseBasicHealth,
     BuildingMap,
     DispenserHealth,
     DispenserState,
@@ -25,6 +24,7 @@ from api_server.models import (
     TaskSummary,
 )
 from api_server.models import tortoise_models as ttm
+from api_server.models.health import BaseBasicHealth
 
 from .events import RmfEvents
 
@@ -61,7 +61,7 @@ class RmfBookKeeper:
     ):
         self.rmf = rmf_events
         self.bookkeeper_events = RmfBookKeeperEvents()
-        self._loop: asyncio.AbstractEventLoop = None
+        self._loop: asyncio.AbstractEventLoop
         self._main_logger = logger or logging.getLogger(self.__class__.__name__)
         self._pending_tasks = set()
 

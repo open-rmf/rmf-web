@@ -16,6 +16,15 @@ class ChargerRequest(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "charger_name",
+                "fleet_name",
+                "robot_name",
+                "start_timeout",
+                "request_id",
+            ],
+        }
 
 
 # # The name of the charger that should process this message

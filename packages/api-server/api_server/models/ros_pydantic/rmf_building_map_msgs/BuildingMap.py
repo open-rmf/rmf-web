@@ -15,6 +15,13 @@ class BuildingMap(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "name",
+                "levels",
+                "lifts",
+            ],
+        }
 
 
 # string name

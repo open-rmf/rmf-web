@@ -1,8 +1,9 @@
 import { makeStyles, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
+import type { TaskSummary, Time } from 'api-client';
 import clsx from 'clsx';
 import { formatDistanceToNow } from 'date-fns';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import { TaskSummary as RmfTaskSummary } from 'rmf-models';
 import { rosTimeToJs } from '../utils';
 import { taskStateToStr } from './utils';
 
@@ -60,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface TaskRowProps {
-  task: RmfModels.TaskSummary;
+  task: TaskSummary;
   onClick: React.MouseEventHandler<HTMLTableRowElement>;
 }
 
@@ -68,19 +69,19 @@ function TaskRow({ task, onClick }: TaskRowProps) {
   const classes = useStyles();
   const [hover, setHover] = React.useState(false);
 
-  const returnTaskStateCellClass = (task: RmfModels.TaskSummary) => {
+  const returnTaskStateCellClass = (task: TaskSummary) => {
     switch (task.state) {
-      case RmfModels.TaskSummary.STATE_ACTIVE:
+      case RmfTaskSummary.STATE_ACTIVE:
         return classes.taskActiveCell;
-      case RmfModels.TaskSummary.STATE_CANCELED:
+      case RmfTaskSummary.STATE_CANCELED:
         return classes.taskCancelledCell;
-      case RmfModels.TaskSummary.STATE_COMPLETED:
+      case RmfTaskSummary.STATE_COMPLETED:
         return classes.taskCompletedCell;
-      case RmfModels.TaskSummary.STATE_FAILED:
+      case RmfTaskSummary.STATE_FAILED:
         return classes.taskFailedCell;
-      case RmfModels.TaskSummary.STATE_PENDING:
+      case RmfTaskSummary.STATE_PENDING:
         return classes.taskPendingCell;
-      case RmfModels.TaskSummary.STATE_QUEUED:
+      case RmfTaskSummary.STATE_QUEUED:
         return classes.taskQueuedCell;
       default:
         return classes.taskUnknownCell;
@@ -107,7 +108,7 @@ function TaskRow({ task, onClick }: TaskRowProps) {
   );
 }
 
-const toRelativeDate = (rosTime: RmfModels.Time) => {
+const toRelativeDate = (rosTime: Time) => {
   return formatDistanceToNow(rosTimeToJs(rosTime), { addSuffix: true });
 };
 
@@ -116,8 +117,8 @@ export interface TaskTableProps {
    * The current list of tasks to display, when pagination is enabled, this should only
    * contain the tasks for the current page.
    */
-  tasks: RmfModels.TaskSummary[];
-  onTaskClick?(ev: React.MouseEvent<HTMLDivElement>, task: RmfModels.TaskSummary): void;
+  tasks: TaskSummary[];
+  onTaskClick?(ev: React.MouseEvent<HTMLDivElement>, task: TaskSummary): void;
 }
 
 export function TaskTable({ tasks, onTaskClick }: TaskTableProps): JSX.Element {
