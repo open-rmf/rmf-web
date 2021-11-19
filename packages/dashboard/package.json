@@ -80,6 +80,7 @@
     "reactour": "^1.18.0",
     "rmf-auth": "*",
     "rmf-models": "*",
+    "rmf-tools": "*",
     "source-map-explorer": "^2.5.2",
     "styled-components": "^4.4.1",
     "ts-node": "^9.1.1",

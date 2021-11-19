@@ -1,1 +1,1 @@
-require('../rmf-launcher').makeLauncher().launch();
+require('rmf-tools').makeLauncher().launch();
