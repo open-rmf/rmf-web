@@ -41,6 +41,13 @@ export const rmfDark = createMuiTheme(
           'invert(90%) sepia(20%) saturate(120%) hue-rotate(180deg) brightness(95%) contrast(80%)',
       },
     },
+    overrides: {
+      MuiTableCell: {
+        stickyHeader: {
+          backgroundColor: base.palette.primary.main,
+        },
+      },
+    },
   },
   base,
 );
