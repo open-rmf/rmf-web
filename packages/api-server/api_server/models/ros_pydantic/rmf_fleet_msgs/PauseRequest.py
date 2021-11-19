@@ -14,6 +14,15 @@ class PauseRequest(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "fleet_name",
+                "robot_name",
+                "mode_request_id",
+                "type",
+                "at_checkpoint",
+            ],
+        }
 
 
 # string fleet_name

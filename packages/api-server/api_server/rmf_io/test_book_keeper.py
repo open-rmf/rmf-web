@@ -1,5 +1,6 @@
 import logging
 import unittest
+from typing import cast
 
 from rmf_door_msgs.msg import DoorMode
 from tortoise import Tortoise
@@ -68,12 +69,13 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         )
 
         async def get():
-            return await DoorHealth.from_tortoise_orm(
+            return await DoorHealth.from_tortoise(
                 await ttm.DoorHealth.get(id_="test_door")
             )
 
         health = await async_try_until(get, lambda _: True, 1, 0.02)
         self.assertIsNotNone(health)
+        health = cast(DoorHealth, health)
         self.assertEqual(health.health_status, HealthStatus.HEALTHY)
 
         self.rmf.door_health.on_next(
@@ -118,7 +120,7 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         )
 
         async def get():
-            return await LiftHealth.from_tortoise_orm(
+            return await LiftHealth.from_tortoise(
                 await ttm.LiftHealth.get(id_="test_lift")
             )
 
@@ -170,7 +172,7 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         )
 
         async def get():
-            return await DispenserHealth.from_tortoise_orm(
+            return await DispenserHealth.from_tortoise(
                 await ttm.DispenserHealth.get(id_="test_dispenser")
             )
 
@@ -222,7 +224,7 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         )
 
         async def get():
-            return await IngestorHealth.from_tortoise_orm(
+            return await IngestorHealth.from_tortoise(
                 await ttm.IngestorHealth.get(id_="test_ingestor")
             )
 
@@ -270,7 +272,7 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         )
 
         async def get():
-            return await RobotHealth.from_tortoise_orm(
+            return await RobotHealth.from_tortoise(
                 await ttm.RobotHealth.get(id_="test_fleet/test_robot")
             )
 

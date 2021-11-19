@@ -5,7 +5,8 @@
     "husky": "^4.3.0",
     "lerna": "^4.0.0",
     "lint-staged": "^10.4.0",
-    "prettier": "^2.1.2"
+    "prettier": "^2.1.2",
+    "pyright": "1.1.181"
   },
   "husky": {
     "hooks": {
@@ -20,5 +21,6 @@
       "python3 -m pipenv run isort",
       "python3 -m pipenv run black"
     ]
-  }
+  },
+  "dependencies": {}
 }

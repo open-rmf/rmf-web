@@ -17,6 +17,15 @@ class DispenserRequest(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "time",
+                "request_guid",
+                "target_guid",
+                "transporter_type",
+                "items",
+            ],
+        }
 
 
 # builtin_interfaces/Time time

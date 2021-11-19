@@ -1,3 +1,5 @@
+from typing import Any, cast
+
 from fastapi import Depends
 from rx import operators as rxops
 
@@ -26,6 +28,6 @@ class BuildingMapRouter(FastIORouter):
                 req,
                 app.rmf_events().building_map.pipe(
                     rxops.filter(lambda x: x is not None),
-                    rxops.map(lambda x: x.dict()),
+                    rxops.map(cast(Any, lambda x: cast(BuildingMap, x).dict())),
                 ),
             )

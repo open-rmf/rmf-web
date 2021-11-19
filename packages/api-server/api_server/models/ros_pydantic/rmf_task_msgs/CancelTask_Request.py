@@ -11,6 +11,12 @@ class CancelTask_Request(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "requester",
+                "task_id",
+            ],
+        }
 
 
 # # Cancel Task | "Delete" service call

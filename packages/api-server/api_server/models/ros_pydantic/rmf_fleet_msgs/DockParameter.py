@@ -14,6 +14,13 @@ class DockParameter(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "start",
+                "finish",
+                "path",
+            ],
+        }
 
 
 # # The name of the waypoint where the docking begins

@@ -24,6 +24,17 @@ class TaskDescription(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "start_time",
+                "priority",
+                "task_type",
+                "station",
+                "loop",
+                "delivery",
+                "clean",
+            ],
+        }
 
 
 # # Desired start time of a task

@@ -16,6 +16,14 @@ class DoorRequest(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "request_time",
+                "requester_id",
+                "door_name",
+                "requested_mode",
+            ],
+        }
 
 
 # builtin_interfaces/Time request_time

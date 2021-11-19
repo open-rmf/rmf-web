@@ -11,6 +11,12 @@ class Time(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "sec",
+                "nanosec",
+            ],
+        }
 
 
 # # Time indicates a specific point in time, relative to a clock's 0 point.

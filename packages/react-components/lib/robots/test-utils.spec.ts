@@ -1,27 +1,28 @@
-import * as RmfModels from 'rmf-models';
+import type { Location, RobotMode, RobotState } from 'api-client';
+import { RobotMode as RmfRobotMode } from 'rmf-models';
 import { VerboseRobot } from '.';
 
-export function allRobotModes(): RmfModels.RobotMode[] {
+export function allRobotModes(): RobotMode[] {
   return [
-    { mode: RmfModels.RobotMode.MODE_ADAPTER_ERROR, mode_request_id: 0 },
-    { mode: RmfModels.RobotMode.MODE_CHARGING, mode_request_id: 0 },
-    { mode: RmfModels.RobotMode.MODE_DOCKING, mode_request_id: 0 },
-    { mode: RmfModels.RobotMode.MODE_EMERGENCY, mode_request_id: 0 },
-    { mode: RmfModels.RobotMode.MODE_GOING_HOME, mode_request_id: 0 },
-    { mode: RmfModels.RobotMode.MODE_IDLE, mode_request_id: 0 },
-    { mode: RmfModels.RobotMode.MODE_MOVING, mode_request_id: 0 },
-    { mode: RmfModels.RobotMode.MODE_PAUSED, mode_request_id: 0 },
-    { mode: RmfModels.RobotMode.MODE_WAITING, mode_request_id: 0 },
+    { mode: RmfRobotMode.MODE_ADAPTER_ERROR, mode_request_id: 0 },
+    { mode: RmfRobotMode.MODE_CHARGING, mode_request_id: 0 },
+    { mode: RmfRobotMode.MODE_DOCKING, mode_request_id: 0 },
+    { mode: RmfRobotMode.MODE_EMERGENCY, mode_request_id: 0 },
+    { mode: RmfRobotMode.MODE_GOING_HOME, mode_request_id: 0 },
+    { mode: RmfRobotMode.MODE_IDLE, mode_request_id: 0 },
+    { mode: RmfRobotMode.MODE_MOVING, mode_request_id: 0 },
+    { mode: RmfRobotMode.MODE_PAUSED, mode_request_id: 0 },
+    { mode: RmfRobotMode.MODE_WAITING, mode_request_id: 0 },
     { mode: -1, mode_request_id: 0 },
   ];
 }
 
-export function makeRobot(robotState?: Partial<RmfModels.RobotState>): RmfModels.RobotState {
+export function makeRobot(robotState?: Partial<RobotState>): RobotState {
   return {
     name: 'test',
     battery_percent: 1,
     location: { level_name: 'test_level', x: 0, y: 0, yaw: 0, t: { sec: 0, nanosec: 0 }, index: 0 },
-    mode: { mode: RmfModels.RobotMode.MODE_PAUSED, mode_request_id: 0 },
+    mode: { mode: RmfRobotMode.MODE_PAUSED, mode_request_id: 0 },
     model: 'test_model',
     task_id: 'test_task_id',
     path: [],
@@ -35,7 +36,7 @@ function randomNumber(decimal: number): number {
   return r;
 }
 
-export function createLocation(level_name: string): RmfModels.Location {
+export function createLocation(level_name: string): Location {
   return {
     t: { sec: 0, nanosec: 0 },
     x: randomNumber(10),

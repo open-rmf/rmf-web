@@ -11,6 +11,12 @@ class ModeParameter(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "name",
+                "value",
+            ],
+        }
 
 
 # string name

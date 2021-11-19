@@ -7,14 +7,15 @@ import {
   TableHead,
   TableRow,
 } from '@material-ui/core';
+import type { Lift, LiftState } from 'api-client';
+import clsx from 'clsx';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import { DoorMode as RmfDoorMode } from 'rmf-models';
+import { useFixedTableCellStyles } from '../utils';
 import LiftRequestFormDialog from './lift-request-form-dialog';
 import { doorStateToString, liftModeToString, requestDoorModes, requestModes } from './lift-utils';
-import { useFixedTableCellStyles } from '../utils';
-import { FixedSizeList, ListChildComponentProps } from 'react-window';
-import clsx from 'clsx';
-import AutoSizer from 'react-virtualized-auto-sizer';
 
 const useStyles = makeStyles((theme) => ({
   doorLabelOpen: {
@@ -38,11 +39,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export interface LiftTableProps {
-  lifts: RmfModels.Lift[];
-  liftStates: Record<string, RmfModels.LiftState>;
+  lifts: Lift[];
+  liftStates: Record<string, LiftState>;
   onRequestSubmit?(
     event: React.FormEvent,
-    lift: RmfModels.Lift,
+    lift: Lift,
     doorState: number,
     requestType: number,
     destination: string,
@@ -54,14 +55,14 @@ interface LiftListRendererProps extends ListChildComponentProps {
 }
 
 export interface LiftRowProps {
-  lift: RmfModels.Lift;
+  lift: Lift;
   doorState: number;
   currentMode: number;
   currentFloor: string;
   destinationFloor: string;
   onRequestSubmit?(
     event: React.FormEvent,
-    lift: RmfModels.Lift,
+    lift: Lift,
     doorState: number,
     requestType: number,
     destination: string,
@@ -84,11 +85,11 @@ const LiftRow = React.memo(
     const doorModeLabelClasses = React.useCallback(
       (doorState: number): string => {
         switch (doorState) {
-          case RmfModels.DoorMode.MODE_OPEN:
+          case RmfDoorMode.MODE_OPEN:
             return `${classes.doorLabelOpen}`;
-          case RmfModels.DoorMode.MODE_CLOSED:
+          case RmfDoorMode.MODE_CLOSED:
             return `${classes.doorLabelClosed}`;
-          case RmfModels.DoorMode.MODE_MOVING:
+          case RmfDoorMode.MODE_MOVING:
             return `${classes.doorLabelMoving}`;
           default:
             return '';

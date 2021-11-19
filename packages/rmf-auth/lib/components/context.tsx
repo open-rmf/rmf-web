@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { DefaultApi, Permission, User } from 'api-client';
+import { Configuration, DefaultApi, Permission, User } from 'api-client';
 import React from 'react';
 import Authenticator from '../authenticator';
 
@@ -36,14 +36,16 @@ export function UserProfileProvider({
   // });
   const apiClient = React.useMemo(
     () =>
-      new DefaultApi({
-        basePath,
-        baseOptions: {
-          headers: {
-            Authorization: token && `Bearer ${token}`,
+      new DefaultApi(
+        new Configuration({
+          basePath,
+          baseOptions: {
+            headers: {
+              Authorization: token && `Bearer ${token}`,
+            },
           },
-        },
-      }),
+        }),
+      ),
     [token, basePath],
   );
 

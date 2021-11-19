@@ -132,8 +132,8 @@ def admin_router(app: BaseApp):
         """
         user = await _get_db_user(username)
         await user.fetch_related("roles")
-        role = await _get_db_role(role)
-        await user.roles.remove(role)
+        db_role = await _get_db_role(role)
+        await user.roles.remove(db_role)
 
     @router.get("/roles", response_model=List[str])
     async def get_roles():

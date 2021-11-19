@@ -1,8 +1,7 @@
-import { Dispenser, Fleet, Ingestor } from 'api-client';
+import { BuildingMap, Dispenser, Fleet, Ingestor } from 'api-client';
 import React from 'react';
 import { getPlaces } from 'react-components';
 import { UserProfileProvider } from 'rmf-auth';
-import * as RmfModels from 'rmf-models';
 import appConfig from '../../app-config';
 import { AppConfigContext } from '../app-contexts';
 import {
@@ -29,7 +28,7 @@ function PlacesProvider({ children }: React.PropsWithChildren<unknown>): JSX.Ele
 
 function BuildingMapProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   const { sioClient } = React.useContext(RmfIngressContext) || {};
-  const [buildingMap, setBuildingMap] = React.useState<RmfModels.BuildingMap | null>(null);
+  const [buildingMap, setBuildingMap] = React.useState<BuildingMap | null>(null);
 
   React.useEffect(() => {
     if (!sioClient) {

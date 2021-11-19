@@ -5,7 +5,7 @@ import os.path
 import time
 import unittest
 from concurrent.futures import Future
-from typing import Awaitable, Callable, List, Optional, TypeVar, Union, cast
+from typing import Any, Awaitable, Callable, List, Optional, TypeVar, Union, cast
 from unittest.mock import Mock
 from uuid import uuid4
 
@@ -34,14 +34,21 @@ def try_until(
     Returns the last result.
     """
     end_time = time.time() + timeout
+
+    result = action()
+    success = predicate(result)
+    if success:
+        return result
+
+    time.sleep(interval)
     while time.time() < end_time:
         try:
             result = action()
             success = predicate(result)
+            if success:
+                return result
         except Exception:  # pylint: disable=broad-except
-            success = False
-        if success:
-            return result
+            pass
         time.sleep(interval)
     return result
 
@@ -51,7 +58,7 @@ async def async_try_until(
     predicate: Union[Callable[[T], Awaitable[bool]], Callable[[T], bool]],
     timeout=5,
     interval=0.5,
-) -> Awaitable[T]:
+) -> T:
     """
     Do action until an expected result is received.
     Returns the last result, or throws if the last result raises an exception.
@@ -117,7 +124,7 @@ class AppFixture(unittest.TestCase):
         cls.server.start()
 
         retry = Retry(total=5, backoff_factor=0.1)
-        adapter = requests.adapters.HTTPAdapter(max_retries=retry)
+        adapter = cast(Any, requests).adapters.HTTPAdapter(max_retries=retry)
         cls.session = cast(requests.Session, PrefixUrlSession(cls.server.base_url))
 
         cls.set_user("admin")

@@ -15,6 +15,14 @@ class PathRequest(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "fleet_name",
+                "robot_name",
+                "path",
+                "task_id",
+            ],
+        }
 
 
 # string fleet_name
