@@ -45,11 +45,11 @@ const useStyles = makeStyles((theme) => ({
   cellContainer: {
     padding: theme.spacing(2),
     paddingTop: theme.spacing(1),
-    backgroundColor: theme.palette.background.default,
   },
   cellPaper: {
     padding: theme.spacing(1),
-    backgroundColor: theme.palette.background.paper,
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.action.hover,
   },
   itemIcon: {
     color: theme.palette.primary.contrastText,

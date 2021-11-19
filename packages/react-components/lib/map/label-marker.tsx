@@ -266,7 +266,7 @@ export function NameLabel(props: NameLabelProps): JSX.Element {
           contentHeight={contentHeight}
           contentPadding={contentPadding}
           className={clsx(classes.container, className)}
-          stroke={theme.palette.info.light}
+          stroke={theme.palette.info.main}
           strokeWidth={1}
           {...otherProps}
         >

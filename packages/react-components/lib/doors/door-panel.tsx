@@ -40,7 +40,6 @@ export interface DoorcellProps {
 const useStyles = makeStyles((theme) => ({
   container: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.background.default,
   },
   buttonBar: {
     display: 'flex',
@@ -65,8 +64,8 @@ const useStyles = makeStyles((theme) => ({
   },
   cellPaper: {
     padding: theme.spacing(2),
-    backgroundColor: theme.palette.background.paper,
     margin: theme.spacing(1),
+    backgroundColor: theme.palette.action.hover,
   },
   itemIcon: {
     color: theme.palette.primary.contrastText,
