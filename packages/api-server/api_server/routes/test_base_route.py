@@ -1,6 +1,11 @@
 import asyncio
 
 from api_server.models import TaskSummary
+from api_server.models.ros_pydantic.rmf_task_msgs import (
+    Priority,
+    TaskDescription,
+    TaskProfile,
+)
 from api_server.test import AppFixture
 
 
@@ -11,7 +16,9 @@ class TestPaginationQuery(AppFixture):
         dataset = [
             TaskSummary(
                 task_id=f"task_{i}",
-                task_profile={"description": {"priority": {"value": i}}},
+                task_profile=TaskProfile(
+                    description=TaskDescription(priority=Priority(value=i))
+                ),
             )
             for i in range(200)
         ]

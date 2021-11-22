@@ -15,6 +15,14 @@ class GraphNode(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "x",
+                "y",
+                "name",
+                "params",
+            ],
+        }
 
 
 # float32 x

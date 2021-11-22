@@ -1,14 +1,14 @@
-import * as RmfModels from 'rmf-models';
 import { LeafletContext } from 'react-leaflet';
 import { getDoorCenter } from '../map/utils';
+import { Door as RmfDoor, DoorMode as RmfDoorMode } from 'rmf-models';
 
 export enum DoorType {
-  SingleSwing = RmfModels.Door.DOOR_TYPE_SINGLE_SWING,
-  SingleSliding = RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING,
-  SingleTelescope = RmfModels.Door.DOOR_TYPE_SINGLE_TELESCOPE,
-  DoubleSwing = RmfModels.Door.DOOR_TYPE_DOUBLE_SWING,
-  DoubleSliding = RmfModels.Door.DOOR_TYPE_DOUBLE_SLIDING,
-  DoubleTelescope = RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE,
+  SingleSwing = RmfDoor.DOOR_TYPE_SINGLE_SWING,
+  SingleSliding = RmfDoor.DOOR_TYPE_SINGLE_SLIDING,
+  SingleTelescope = RmfDoor.DOOR_TYPE_SINGLE_TELESCOPE,
+  DoubleSwing = RmfDoor.DOOR_TYPE_DOUBLE_SWING,
+  DoubleSliding = RmfDoor.DOOR_TYPE_DOUBLE_SLIDING,
+  DoubleTelescope = RmfDoor.DOOR_TYPE_DOUBLE_TELESCOPE,
 }
 
 export enum DoorMotion {
@@ -17,14 +17,14 @@ export enum DoorMotion {
 }
 
 export enum DoorMode {
-  Open = RmfModels.DoorMode.MODE_OPEN,
-  Closed = RmfModels.DoorMode.MODE_CLOSED,
-  Moving = RmfModels.DoorMode.MODE_MOVING,
+  Open = RmfDoorMode.MODE_OPEN,
+  Closed = RmfDoorMode.MODE_CLOSED,
+  Moving = RmfDoorMode.MODE_MOVING,
 }
 
 export interface DoorData {
   level: string;
-  door: RmfModels.Door;
+  door: RmfDoor;
 }
 
 export function doorModeToString(doorMode?: number): string {
@@ -32,11 +32,11 @@ export function doorModeToString(doorMode?: number): string {
     return 'N/A';
   }
   switch (doorMode) {
-    case RmfModels.DoorMode.MODE_OPEN:
+    case RmfDoorMode.MODE_OPEN:
       return 'OPEN';
-    case RmfModels.DoorMode.MODE_CLOSED:
+    case RmfDoorMode.MODE_CLOSED:
       return 'CLOSED';
-    case RmfModels.DoorMode.MODE_MOVING:
+    case RmfDoorMode.MODE_MOVING:
       return 'MOVING';
     default:
       return 'N/A';
@@ -45,24 +45,24 @@ export function doorModeToString(doorMode?: number): string {
 
 export function doorTypeToString(doorType: number): string {
   switch (doorType) {
-    case RmfModels.Door.DOOR_TYPE_DOUBLE_SLIDING:
+    case RmfDoor.DOOR_TYPE_DOUBLE_SLIDING:
       return 'Double Sliding';
-    case RmfModels.Door.DOOR_TYPE_DOUBLE_SWING:
+    case RmfDoor.DOOR_TYPE_DOUBLE_SWING:
       return 'Double Swing';
-    case RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE:
+    case RmfDoor.DOOR_TYPE_DOUBLE_TELESCOPE:
       return 'Double Telescope';
-    case RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING:
+    case RmfDoor.DOOR_TYPE_SINGLE_SLIDING:
       return 'Single Sliding';
-    case RmfModels.Door.DOOR_TYPE_SINGLE_SWING:
+    case RmfDoor.DOOR_TYPE_SINGLE_SWING:
       return 'Single Swing';
-    case RmfModels.Door.DOOR_TYPE_SINGLE_TELESCOPE:
+    case RmfDoor.DOOR_TYPE_SINGLE_TELESCOPE:
       return 'Single Telescope';
     default:
       return `Unknown (${doorType})`;
   }
 }
 
-export const onDoorClick = (door: RmfModels.Door, leafletMap?: LeafletContext) => {
+export const onDoorClick = (door: RmfDoor, leafletMap?: LeafletContext): void => {
   const center = getDoorCenter(door);
   leafletMap &&
     leafletMap.map?.setView([center[1], center[0]], 5.5, {

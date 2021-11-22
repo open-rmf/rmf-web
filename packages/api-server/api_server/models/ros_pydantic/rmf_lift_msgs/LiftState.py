@@ -21,6 +21,20 @@ class LiftState(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "lift_time",
+                "lift_name",
+                "available_floors",
+                "current_floor",
+                "destination_floor",
+                "door_state",
+                "motion_state",
+                "available_modes",
+                "current_mode",
+                "session_id",
+            ],
+        }
 
 
 # # lift_time records when the information in this message was generated

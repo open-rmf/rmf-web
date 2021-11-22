@@ -10,6 +10,11 @@ class Priority(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "value",
+            ],
+        }
 
 
 # uint64 value 0

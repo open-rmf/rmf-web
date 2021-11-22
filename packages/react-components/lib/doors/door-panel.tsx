@@ -10,20 +10,21 @@ import {
 } from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
+import type { Door, DoorState } from 'api-client';
 import React from 'react';
 import { LeafletContext } from 'react-leaflet';
-import * as RmfModels from 'rmf-models';
+import clsx from 'clsx';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
+import { DoorMode as RmfDoorMode } from 'rmf-models';
 import { DoorTable } from './door-table';
 import { DoorData, doorModeToString, doorTypeToString, onDoorClick } from './utils';
-import clsx from 'clsx';
-import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
 
 export interface DoorPanelProps {
   doors: DoorData[];
-  doorStates: Record<string, RmfModels.DoorState>;
+  doorStates: Record<string, DoorState>;
   leafletMap?: LeafletContext;
-  onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
+  onDoorControlClick?(event: React.MouseEvent, door: Door, mode: number): void;
 }
 
 interface DoorGridData extends DoorPanelProps {
@@ -38,7 +39,7 @@ export interface DoorcellProps {
   door: DoorData;
   doorMode?: number;
   leafletMap?: LeafletContext;
-  onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
+  onDoorControlClick?(event: React.MouseEvent, door: Door, mode: number): void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -87,6 +88,7 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.primary.contrastText,
   },
   buttonGroup: {
+    marginTop: theme.spacing(1),
     display: 'flex',
     justifyContent: 'center',
   },
@@ -123,11 +125,11 @@ const DoorCell = React.memo(
           return '';
         }
         switch (doorMode) {
-          case RmfModels.DoorMode.MODE_OPEN:
+          case RmfDoorMode.MODE_OPEN:
             return `${classes.doorLabelOpen}`;
-          case RmfModels.DoorMode.MODE_CLOSED:
+          case RmfDoorMode.MODE_CLOSED:
             return `${classes.doorLabelClosed}`;
-          case RmfModels.DoorMode.MODE_MOVING:
+          case RmfDoorMode.MODE_MOVING:
             return `${classes.doorLabelMoving}`;
           default:
             return '';
@@ -176,13 +178,11 @@ const DoorCell = React.memo(
           {door && doorTypeToString(door.door.door_type)}
         </Typography>
         <div className={classes.buttonGroup}>
-          <ButtonGroup size="small">
+          <ButtonGroup variant="contained" size="small" color="primary">
             <Button
               className={classes.openCloseButtons}
               onClick={(ev) =>
-                door &&
-                onDoorControlClick &&
-                onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_OPEN)
+                onDoorControlClick && onDoorControlClick(ev, door.door, RmfDoorMode.MODE_OPEN)
               }
             >
               Open
@@ -190,9 +190,7 @@ const DoorCell = React.memo(
             <Button
               className={classes.openCloseButtons}
               onClick={(ev) =>
-                door &&
-                onDoorControlClick &&
-                onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_CLOSED)
+                onDoorControlClick && onDoorControlClick(ev, door.door, RmfDoorMode.MODE_CLOSED)
               }
             >
               Close
@@ -206,8 +204,8 @@ const DoorCell = React.memo(
 
 const DoorGridRenderer = ({ data, columnIndex, rowIndex, style }: DoorGridRendererProps) => {
   let door: DoorData | undefined;
-  let doorState: RmfModels.DoorState | undefined;
   let leafletMap: LeafletContext | undefined;
+  let doorState: DoorState | undefined;
   const columnCount = data.columnCount;
 
   if (rowIndex * columnCount + columnIndex <= data.doors.length - 1) {

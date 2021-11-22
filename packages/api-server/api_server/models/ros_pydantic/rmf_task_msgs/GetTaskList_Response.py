@@ -14,6 +14,13 @@ class GetTaskList_Response(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "success",
+                "active_tasks",
+                "terminated_tasks",
+            ],
+        }
 
 
 #

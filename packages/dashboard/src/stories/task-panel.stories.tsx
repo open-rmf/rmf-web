@@ -1,9 +1,9 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { UserProfileContext } from 'rmf-auth';
-import * as RmfModels from 'rmf-models';
+import { TaskSummary as RmfTaskSummary } from 'rmf-models';
 import { TaskPanel } from '../components/tasks/task-panel';
-import { makeTask } from '../components/tasks/tests/make-tasks';
+import { makeTaskWithPhases } from '../components/tasks/tests/make-tasks';
 
 export default {
   title: 'Tasks/Task Panel',
@@ -23,18 +23,18 @@ export default {
   },
 } as Meta;
 
-const failedTask = makeTask('failed_task', 3, 3);
-failedTask.summary.state = RmfModels.TaskSummary.STATE_FAILED;
+const failedTask = makeTaskWithPhases('failed_task', 3, 3);
+failedTask.summary.state = RmfTaskSummary.STATE_FAILED;
 
 const completedtasks = Array.from(Array(100)).map((_, idx) => {
-  const task = makeTask(`completed_task_${idx}`, 3, 3);
-  task.summary.state = RmfModels.TaskSummary.STATE_COMPLETED;
+  const task = makeTaskWithPhases(`completed_task_${idx}`, 3, 3);
+  task.summary.state = RmfTaskSummary.STATE_COMPLETED;
   return task;
 });
 
 const tasks = [
-  makeTask('active_task', 3, 3),
-  makeTask('active_task_2', 4, 3),
+  makeTaskWithPhases('active_task', 3, 3),
+  makeTaskWithPhases('active_task_2', 4, 3),
   failedTask,
   ...completedtasks,
 ];

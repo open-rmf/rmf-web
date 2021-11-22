@@ -1,4 +1,5 @@
-from tortoise import Model, fields
+from tortoise.fields.data import CharField, JSONField
+from tortoise.models import Model
 
 from .json_mixin import JsonMixin
 
@@ -8,9 +9,9 @@ class FleetState(Model, JsonMixin):
 
 
 class RobotState(Model):
-    fleet_name = fields.CharField(255)
-    robot_name = fields.CharField(255)
-    data = fields.JSONField()
+    fleet_name = CharField(255)
+    robot_name = CharField(255)
+    data = JSONField()
 
     class Meta:
         unique_together = ("fleet_name", "robot_name")

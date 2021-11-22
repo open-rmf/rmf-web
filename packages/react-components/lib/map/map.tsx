@@ -1,4 +1,5 @@
 import { makeStyles } from '@material-ui/core';
+import type { Level } from 'api-client';
 import clsx from 'clsx';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -10,7 +11,6 @@ import {
   useLeaflet,
   LeafletContext,
 } from 'react-leaflet';
-import * as RmfModels from 'rmf-models';
 import { EntityManager, EntityManagerContext } from './entity-manager';
 import { LabelsPortalContext } from './labels-overlay';
 import { SVGOverlay } from './svg-overlay';
@@ -26,7 +26,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 export interface MapFloorLayer {
-  level: RmfModels.Level;
+  level: Level;
   imageUrl: string;
   bounds: L.LatLngBounds;
 }
@@ -61,7 +61,7 @@ function EntityManagerProvider({
     return () => {
       leaflet.map && leaflet.map.off('zoom', listener);
     };
-  }, [leaflet.map]);
+  }, [leaflet, leaflet.map, setLeafletMap]);
 
   return entityManager ? (
     <EntityManagerContext.Provider value={entityManager}>{children}</EntityManagerContext.Provider>

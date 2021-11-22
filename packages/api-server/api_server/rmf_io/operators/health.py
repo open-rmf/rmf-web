@@ -1,8 +1,8 @@
-from typing import Sequence
+from typing import Any, Sequence, cast
 
-import rx
 from rx import operators as ops
 from rx.core.operators.timestamp import Timestamp
+from rx.core.pipe import pipe
 
 from api_server.models import HealthStatus
 
@@ -45,4 +45,4 @@ def most_critical():
                     most_crit = health
         return most_crit.value
 
-    return rx.pipe(ops.map(get_most_critical))
+    return pipe(ops.map(cast(Any, get_most_critical)))

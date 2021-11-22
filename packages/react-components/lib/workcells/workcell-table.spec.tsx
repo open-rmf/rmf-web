@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
-import { WorkcellTable } from './workcell-table';
+import { DispenserState as RmfDispenserState } from 'rmf-models';
 import { makeDispenser, makeDispenserState } from './test-utils.spec';
+import { WorkcellTable } from './workcell-table';
 
 describe('Workcell table', () => {
   it('should render properly', () => {
@@ -14,8 +14,8 @@ describe('Workcell table', () => {
     ];
     const workcellStates = {
       test: makeDispenserState(),
-      test1: makeDispenserState({ mode: RmfModels.DispenserState.BUSY }),
-      test2: makeDispenserState({ mode: RmfModels.DispenserState.OFFLINE }),
+      test1: makeDispenserState({ mode: RmfDispenserState.BUSY }),
+      test2: makeDispenserState({ mode: RmfDispenserState.OFFLINE }),
       test3: makeDispenserState({ mode: -1 }),
     };
     const root = render(

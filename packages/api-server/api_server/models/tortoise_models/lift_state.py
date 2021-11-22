@@ -1,4 +1,4 @@
-from tortoise import Model
+from tortoise.models import Model
 
 from .json_mixin import JsonMixin
 

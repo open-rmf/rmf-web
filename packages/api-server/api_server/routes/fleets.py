@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, List, Optional, cast
 
 from fastapi import Depends, Query
 from rx import operators as rxops
@@ -70,8 +70,9 @@ class FleetsRouter(FastIORouter):
                 # tasks summaries.
                 if r is None:
                     logger.warn(
-                        f'task "{t.id_}" is assigned to an unknown fleet/robot ({t.fleet_name}/{t.robot_name}'
+                        f'task "{t.task_id}" is assigned to an unknown fleet/robot ({t.fleet_name}/{t.robot_name}'
                     )
+                    continue
                 r.tasks.append(
                     Task(
                         task_id=t.task_id,
@@ -98,12 +99,13 @@ class FleetsRouter(FastIORouter):
         @self.watch("/{name}/state")
         async def watch_fleet_state(req: WatchRequest, name: str):
             fleet_state = await get_fleet_state(name, RmfRepository(req.user))
-            await req.emit(fleet_state.dict())
+            if fleet_state is not None:
+                await req.emit(fleet_state.dict())
             rx_watcher(
                 req,
                 app.rmf_events().fleet_states.pipe(
-                    rxops.filter(lambda x: x.name == name),
-                    rxops.map(lambda x: x.dict()),
+                    rxops.filter(lambda x: cast(FleetState, x).name == name),
+                    rxops.map(cast(Any, lambda x: cast(FleetState, x).dict())),
                 ),
             )
 
@@ -119,11 +121,14 @@ class FleetsRouter(FastIORouter):
         @self.watch("/{fleet}/{robot}/health")
         async def watch_robot_health(req: WatchRequest, fleet: str, robot: str):
             health = await get_robot_health(fleet, robot, RmfRepository(req.user))
-            await req.emit(health.dict())
+            if health is not None:
+                await req.emit(health.dict())
             rx_watcher(
                 req,
                 app.rmf_events().robot_health.pipe(
-                    rxops.filter(lambda x: x.id_ == f"{fleet}/{robot}"),
-                    rxops.map(lambda x: x.dict()),
+                    rxops.filter(
+                        lambda x: cast(RobotHealth, x).id_ == f"{fleet}/{robot}"
+                    ),
+                    rxops.map(cast(Any, lambda x: cast(RobotHealth, x).dict())),
                 ),
             )

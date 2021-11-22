@@ -1,4 +1,4 @@
-import * as RmfModels from 'rmf-models';
+import { DispenserState as RmfDispenserState } from 'rmf-models';
 import { LeafletContext } from 'react-leaflet';
 
 interface Location {
@@ -19,18 +19,18 @@ export interface DispenserResource extends RawDispenserResource {
 
 export function dispenserModeToString(mode: number): string {
   switch (mode) {
-    case RmfModels.DispenserState.IDLE:
+    case RmfDispenserState.IDLE:
       return 'IDLE';
-    case RmfModels.DispenserState.BUSY:
+    case RmfDispenserState.BUSY:
       return 'ONLINE';
-    case RmfModels.DispenserState.OFFLINE:
+    case RmfDispenserState.OFFLINE:
       return 'OFFLINE';
     default:
       return 'N/A';
   }
 }
 
-export function onWorkcellClick(workcell: DispenserResource, leafletMap?: LeafletContext) {
+export function onWorkcellClick(workcell: DispenserResource, leafletMap?: LeafletContext): void {
   leafletMap &&
     leafletMap.map?.setView([workcell.location.y, workcell.location.x], 5.5, {
       animate: true,

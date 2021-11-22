@@ -1,5 +1,5 @@
 import { SubmitTask } from 'api-client';
-import * as RmfModels from 'rmf-models';
+import { TaskType as RmfTaskType } from 'rmf-models';
 
 const genericErrors = {
   checkArray: 'Expected an array of tasks',
@@ -40,11 +40,11 @@ export function parseTasksFile(contents: string): SubmitTask[] {
       errMsgs.push(checkField(t, 'description', 'object', i));
     const desc = t['description'];
     switch (t['task_type']) {
-      case RmfModels.TaskType.TYPE_CLEAN:
+      case RmfTaskType.TYPE_CLEAN:
         checkField(desc, 'cleaning_zone', 'string', i) &&
           errMsgs.push(checkField(desc, 'cleaning_zone', 'string', i));
         break;
-      case RmfModels.TaskType.TYPE_DELIVERY:
+      case RmfTaskType.TYPE_DELIVERY:
         checkField(desc, 'pickup_place_name', 'string', i) &&
           errMsgs.push(checkField(desc, 'pickup_place_name', 'string', i));
         checkField(desc, 'pickup_dispenser', 'string', i) &&
@@ -54,7 +54,7 @@ export function parseTasksFile(contents: string): SubmitTask[] {
         checkField(desc, 'dropoff_place_name', 'string', i) &&
           errMsgs.push(checkField(desc, 'dropoff_place_name', 'string', i));
         break;
-      case RmfModels.TaskType.TYPE_LOOP:
+      case RmfTaskType.TYPE_LOOP:
         checkField(desc, 'num_loops', 'number', i) &&
           errMsgs.push(checkField(desc, 'num_loops', 'number', i));
         checkField(desc, 'start_name', 'string', i) &&

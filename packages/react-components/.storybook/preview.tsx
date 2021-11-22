@@ -24,7 +24,7 @@ const getTheme = (themeName: string): Theme => {
 const useStyles = makeStyles((theme) => ({
   '@global': {
     body: {
-      backgroundColor: theme.palette.background.paper,
+      backgroundColor: theme.palette.background.default,
     },
   },
 }));

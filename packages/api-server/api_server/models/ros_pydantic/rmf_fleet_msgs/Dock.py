@@ -13,6 +13,12 @@ class Dock(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "fleet_name",
+                "params",
+            ],
+        }
 
 
 # string fleet_name

@@ -10,6 +10,9 @@ class User(BaseModel):
     is_admin: bool = False
     roles: List[str] = []
 
+    class Config:
+        schema_extra = {"required": ["username", "is_admin", "roles"]}
+
     @staticmethod
     async def load_from_db(username: str) -> "User":
         """

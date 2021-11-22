@@ -11,6 +11,12 @@ class ChargerCancel(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "charger_name",
+                "request_id",
+            ],
+        }
 
 
 # string charger_name  # the charger that should process this message

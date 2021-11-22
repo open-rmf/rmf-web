@@ -1,20 +1,21 @@
-import * as RmfModels from 'rmf-models';
 import { LeafletContext } from 'react-leaflet';
+import { Lift } from 'api-client';
+import { LiftRequest as RmfLiftRequest, LiftState as RmfLiftState } from 'rmf-models';
 
 export function liftModeToString(liftMode?: number): string {
   if (liftMode === undefined) {
     return `Unknown (${liftMode})`;
   }
   switch (liftMode) {
-    case RmfModels.LiftState.MODE_AGV:
+    case RmfLiftState.MODE_AGV:
       return 'AGV';
-    case RmfModels.LiftState.MODE_EMERGENCY:
+    case RmfLiftState.MODE_EMERGENCY:
       return 'Emergency';
-    case RmfModels.LiftState.MODE_FIRE:
+    case RmfLiftState.MODE_FIRE:
       return 'Fire';
-    case RmfModels.LiftState.MODE_HUMAN:
+    case RmfLiftState.MODE_HUMAN:
       return 'Human';
-    case RmfModels.LiftState.MODE_OFFLINE:
+    case RmfLiftState.MODE_OFFLINE:
       return 'Offline';
     default:
       return `Unknown (${liftMode})`;
@@ -25,11 +26,11 @@ export function doorStateToString(doorState?: number): string {
   if (doorState === undefined) return 'Unknown';
 
   switch (doorState) {
-    case RmfModels.LiftState.DOOR_OPEN:
+    case RmfLiftState.DOOR_OPEN:
       return 'Open';
-    case RmfModels.LiftState.DOOR_CLOSED:
+    case RmfLiftState.DOOR_CLOSED:
       return 'Closed';
-    case RmfModels.LiftState.DOOR_MOVING:
+    case RmfLiftState.DOOR_MOVING:
       return 'Moving';
     default:
       return `Unknown (${doorState})`;
@@ -40,11 +41,11 @@ export function motionStateToString(motionState?: number): string {
   if (motionState === undefined) return 'Unknown';
 
   switch (motionState) {
-    case RmfModels.LiftState.MOTION_DOWN:
+    case RmfLiftState.MOTION_DOWN:
       return 'Down';
-    case RmfModels.LiftState.MOTION_STOPPED:
+    case RmfLiftState.MOTION_STOPPED:
       return 'Stopped';
-    case RmfModels.LiftState.MOTION_UP:
+    case RmfLiftState.MOTION_UP:
       return 'Up';
     default:
       return `Unknown (${motionState})`;
@@ -52,36 +53,33 @@ export function motionStateToString(motionState?: number): string {
 }
 
 export const requestModes = [
-  RmfModels.LiftRequest.REQUEST_AGV_MODE,
-  RmfModels.LiftRequest.REQUEST_HUMAN_MODE,
-  RmfModels.LiftRequest.REQUEST_END_SESSION,
+  RmfLiftRequest.REQUEST_AGV_MODE,
+  RmfLiftRequest.REQUEST_HUMAN_MODE,
+  RmfLiftRequest.REQUEST_END_SESSION,
 ];
 
 export const requestModeStrings: Record<number, string> = {
-  [RmfModels.LiftRequest.REQUEST_END_SESSION]: 'End Session',
-  [RmfModels.LiftRequest.REQUEST_AGV_MODE]: 'AGV',
-  [RmfModels.LiftRequest.REQUEST_HUMAN_MODE]: 'Human',
+  [RmfLiftRequest.REQUEST_END_SESSION]: 'End Session',
+  [RmfLiftRequest.REQUEST_AGV_MODE]: 'AGV',
+  [RmfLiftRequest.REQUEST_HUMAN_MODE]: 'Human',
 };
 
 export function requestModeToString(requestMode: number): string {
   return requestModeStrings[requestMode] || `Unknown (${requestMode})`;
 }
 
-export const requestDoorModes = [
-  RmfModels.LiftRequest.DOOR_OPEN,
-  RmfModels.LiftRequest.DOOR_CLOSED,
-];
+export const requestDoorModes = [RmfLiftRequest.DOOR_OPEN, RmfLiftRequest.DOOR_CLOSED];
 
 export const requestDoorModeStrings: Record<number, string> = {
-  [RmfModels.LiftRequest.DOOR_OPEN]: 'Open',
-  [RmfModels.LiftRequest.DOOR_CLOSED]: 'Closed',
+  [RmfLiftRequest.DOOR_OPEN]: 'Open',
+  [RmfLiftRequest.DOOR_CLOSED]: 'Closed',
 };
 
 export function requestDoorModeToString(requestDoorMode: number): string {
   return requestDoorModeStrings[requestDoorMode] || 'Unknown';
 }
 
-export function onLiftClick(lift: RmfModels.Lift, leafletMap?: LeafletContext) {
+export function onLiftClick(lift: Lift, leafletMap?: LeafletContext): void {
   leafletMap &&
     leafletMap.map?.setView([lift.ref_y, lift.ref_x], 5.5, {
       animate: true,

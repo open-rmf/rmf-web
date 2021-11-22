@@ -12,6 +12,13 @@ class IngestorRequestItem(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "type_guid",
+                "quantity",
+                "compartment_name",
+            ],
+        }
 
 
 # string type_guid

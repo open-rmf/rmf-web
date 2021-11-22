@@ -32,7 +32,7 @@ export const WorkcellPanelStory: Story = (args) => {
     <WorkcellPanel
       dispensers={dispensers}
       ingestors={ingestors}
-      workCellStates={{
+      workcellStates={{
         test_dispenser: makeDispenserState({ guid: 'test_dispenser' }),
         test_dispenser1: makeDispenserState({ guid: 'test_dispenser1' }),
         test_dispenser3: makeDispenserState({ guid: 'test_dispenser3' }),
