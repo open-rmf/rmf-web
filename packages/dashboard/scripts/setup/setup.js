@@ -2,7 +2,7 @@ const chalk = require('chalk');
 const inquirer = require('inquirer');
 const { exec } = require('child_process');
 const fs = require('fs');
-const { getIcons } = require('./get-icons');
+const { getIcons } = require('rmf-tools');
 
 const ProjectDir = __dirname.slice(0, __dirname.length - '/scripts/setup'.length);
 const resourcesPath = process.env.RMF_DASHBOARD_RESOURCES_FILE || `${ProjectDir}/.resources.json`;
@@ -105,7 +105,7 @@ You have two options:
 
   const resourcesData = JSON.parse(fs.readFileSync(resourcesPath));
   try {
-    getIcons(resourcesData);
+    getIcons(resourcesData, 'dashboard');
   } catch (e) {
     console.error(e);
     process.exit(e.status);
