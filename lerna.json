@@ -12,6 +12,7 @@
     "packages/rmf-auth",
     "packages/rmf-models",
     "packages/ros-translator",
+    "packages/minimal",
     "pipenv-install"
   ],
   "command": {
