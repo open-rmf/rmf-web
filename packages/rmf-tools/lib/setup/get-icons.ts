@@ -118,6 +118,7 @@ class IconManager extends IconManagerBase {
     const gitMinorVersion = gitVersion.split('.')[1];
     return parseInt(gitMinorVersion);
   };
+  destinationDir = `${this.resourcesData.branch} ${packageRoot}/${this.project}/${resourcePath}`;
 
   cloneSpecificFolder = () => {
     // Safeguard in case the tmp is not deleted and already have a remote defined
@@ -134,7 +135,7 @@ class IconManager extends IconManagerBase {
 
   cloneRepo = () => {
     execSync(
-      `git clone "${this.resourcesData.repoUrl}" --depth=1 --single-branch --branch ${this.resourcesData.branch} ${ResourcesPath} -o repo`,
+      `git clone "${this.resourcesData.repoUrl}" --depth=1 --single-branch --branch ${this.destinationDir} -o repo`,
       {
         stdio: 'inherit', // we need this so node will print the command output
       },
@@ -155,7 +156,7 @@ class IconManager extends IconManagerBase {
   };
 
   moveFromTmpFolderToIconFolder = () => {
-    execSync(`cp -r "${TempDir}/${this.resourcesData.folder}"/* "${ResourcesPath}/"`, {
+    execSync(`cp -r "${TempDir}/${this.resourcesData.folder}"/* "${this.destinationDir}"`, {
       stdio: 'inherit',
       cwd: ProjectDir,
     });
@@ -174,16 +175,13 @@ class IconManager extends IconManagerBase {
   };
 
   copyFromLocalDirectory = () => {
-    this._copyDir(this.resourcesData?.path, `${packageRoot}/${this.project}/${resourcePath}`);
+    this._copyDir(this.resourcesData?.path, `${this.destinationDir}`);
   };
 
   copyFromRosPackage = () => {
     const ament = new Ament();
     const packageDir = ament.findPackage(this.resourcesData?.rosPackage);
-    this._copyDir(
-      `${packageDir}${this.resourcesData.path}`,
-      `${packageRoot}/${this.project}/${resourcePath}`,
-    );
+    this._copyDir(`${packageDir}${this.resourcesData.path}`, `${this.destinationDir}`);
   };
 }
 

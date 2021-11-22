@@ -6,7 +6,7 @@
     "rmf",
     "tools"
   ],
-  "author": "vallq <val@openrobotics.org>",
+  "author": "chawin@openrobotics.org",
   "homepage": "https://github.com/open-rmf/rmf-web#readme",
   "license": "ISC",
   "main": "dist/index.js",
@@ -17,18 +17,13 @@
   "scripts": {
     "prepare": "tsc --build",
     "prepack": "npm run lint && npm run test",
-    "test": "jest",
     "lint": "eslint --ext ts,tsx, lib"
   },
   "bugs": {
     "url": "https://github.com/open-rmf/rmf-web/issues"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.13",
-    "babel-jest": "^27.0.6",
     "eslint": "^7.26.0",
-    "jest": "^26.5.0",
-    "ts-jest": "^26.4.1",
     "ts-node": "^9.1.1",
     "typescript": "4.2.4"
   },
