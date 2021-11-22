@@ -118,7 +118,7 @@ class IconManager extends IconManagerBase {
     const gitMinorVersion = gitVersion.split('.')[1];
     return parseInt(gitMinorVersion);
   };
-  destinationDir = `${this.resourcesData.branch} ${packageRoot}/${this.project}/${resourcePath}`;
+  destinationDir = `${packageRoot}/${this.project}/${resourcePath}`;
 
   cloneSpecificFolder = () => {
     // Safeguard in case the tmp is not deleted and already have a remote defined
@@ -135,7 +135,7 @@ class IconManager extends IconManagerBase {
 
   cloneRepo = () => {
     execSync(
-      `git clone "${this.resourcesData.repoUrl}" --depth=1 --single-branch --branch ${this.destinationDir} -o repo`,
+      `git clone "${this.resourcesData.repoUrl}" --depth=1 --single-branch --branch ${this.resourcesData.branch} ${this.destinationDir} -o repo`,
       {
         stdio: 'inherit', // we need this so node will print the command output
       },

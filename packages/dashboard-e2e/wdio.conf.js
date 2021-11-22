@@ -1,4 +1,4 @@
-const launcher = require('../dashboard/rmf-launcher').makeLauncher();
+const launcher = require('rmf-tools').makeLauncher();
 const { writeMetadata, annonatePublicUrls } = require('./scripts/bstack');
 const { resolve } = require('path');
 
