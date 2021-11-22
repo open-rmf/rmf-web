@@ -37,7 +37,7 @@ exports.LocalLauncher = class {
     return this._instance;
   }
 
-  static _instance: any;
+  static _instance: typeof exports.LocalLauncher;
 
   async launch(timeout = 30000) {
     if (this._launched) {
