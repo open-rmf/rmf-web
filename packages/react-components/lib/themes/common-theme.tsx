@@ -1,33 +1,34 @@
 const commonTheme = {
   secondary: {
-    main: '#f13768',
-    light: '#e33371',
-    dark: '#9a0036',
+    // Smitten, Cyclamen, Pansy Purple
+    main: '#BC477B',
+    light: '#F178AA',
+    dark: '#880E4F',
   },
   success: {
-    // Light sea green
-    main: '#20A39E',
-    light: '#4CB5B1',
-    dark: '#16726E',
+    // Apple Green, Inchworm, Avocado
+    main: '#7FB800',
+    light: '#B3EB49',
+    dark: '#4C8800',
   },
   error: {
-    // fireOpal
-    main: '#e94843',
-    dark: '#D63F3C',
-    light: '#F0A0A1',
+    // Radical Red, Salmon Pink, Red NCS
+    main: '#EF5264',
+    light: '#FF8591',
+    dark: '#B7153A',
   },
   warning: {
-    // indian yellow
-    main: '#DEA54B',
-    dark: '#D4833C',
-    light: '#EBB163',
+    // Honey Yellow, Minion Yellow,  Harvest Gold
+    main: '#FFB400',
+    light: '#FFE64C',
+    dark: '#C68500',
   },
   info: {
-    // wisteria
-    // used in admin/information buttons/indicators
-    main: '#945be6',
-    dark: '#803be0',
-    light: '#bb86fc',
+    // Sky Blue Crayola, Electric Blue, Viridian Green
+    // used in admin/information/indicators
+    main: '#64D4EE',
+    light: '#64E9EE',
+    dark: '#009FAF',
   },
 };
 

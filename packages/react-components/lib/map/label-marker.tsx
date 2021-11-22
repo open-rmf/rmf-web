@@ -266,12 +266,12 @@ export function NameLabel(props: NameLabelProps): JSX.Element {
           contentHeight={contentHeight}
           contentPadding={contentPadding}
           className={clsx(classes.container, className)}
-          stroke={theme.palette.primary.main}
+          stroke={theme.palette.info.main}
           strokeWidth={1}
           {...otherProps}
         >
           <Text
-            fill={theme.palette.primary.main}
+            fill={theme.palette.info.main}
             transform={`translate(${contentWidth / 2},${contentHeight / 2})`}
           >
             {text}

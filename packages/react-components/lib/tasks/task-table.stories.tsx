@@ -8,6 +8,12 @@ import { makeTaskSummaryWithPhases } from './test-data.spec';
 const failedTask = makeTaskSummaryWithPhases('failed_task', 3, 3);
 failedTask.state = RmfTaskSummary.STATE_FAILED;
 
+const pendingTask = makeTaskSummaryWithPhases('pending_task', 3, 0);
+pendingTask.state = RmfTaskSummary.STATE_PENDING;
+
+const queuedTask = makeTaskSummaryWithPhases('pending_task', 3, 0);
+queuedTask.state = RmfTaskSummary.STATE_QUEUED;
+
 const completedtasks = Array.from(Array(100)).map((_, idx) => {
   const task = makeTaskSummaryWithPhases(`completed_task_${idx}`, 3, 3);
   task.state = RmfTaskSummary.STATE_COMPLETED;
@@ -18,6 +24,8 @@ const tasks = [
   makeTaskSummaryWithPhases('active_task', 3, 3),
   makeTaskSummaryWithPhases('active_task_2', 4, 3),
   failedTask,
+  pendingTask,
+  queuedTask,
   ...completedtasks,
 ];
 

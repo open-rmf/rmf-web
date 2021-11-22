@@ -53,36 +53,36 @@ const useStyles = makeStyles({
   },
 });
 
-export const useLiftMarkerStyles = makeStyles({
+export const useLiftMarkerStyles = makeStyles((theme) => ({
   onCurrentLevel: {
-    fill: 'green',
+    fill: theme.palette.success.light,
     opacity: '70%',
   },
   moving: {
-    fill: 'grey',
+    fill: theme.palette.secondary.light,
     opacity: '70%',
   },
   unknown: {
-    fill: '#3d3c3c',
+    fill: theme.palette.warning.light,
     opacity: '80%',
   },
   emergency: {
-    fill: 'red',
+    fill: theme.palette.error.light,
     opacity: '80%',
   },
   fire: {
-    fill: '#ff562a',
+    fill: theme.palette.error.main,
     opacity: '80%',
   },
   offLine: {
-    fill: 'yellow',
+    fill: theme.palette.grey[400],
     opacity: '80%',
   },
   human: {
-    fill: '#90dfef',
+    fill: theme.palette.info.main,
     opacity: '80%',
   },
-});
+}));
 
 export interface LiftMarkerProps extends React.PropsWithRef<React.SVGProps<SVGGElement>> {
   cx: number;

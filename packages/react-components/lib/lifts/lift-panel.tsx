@@ -68,42 +68,44 @@ const useStyles = makeStyles((theme) => ({
   buttonBar: {
     display: 'flex',
     justifyContent: 'flex-end',
-    borderRadius: '0px',
+    borderRadius: 0,
     backgroundColor: theme.palette.primary.main,
   },
   grid: {
-    padding: '1rem',
+    padding: theme.spacing(1),
   },
   cellPaper: {
-    padding: '0.5rem',
-    backgroundColor: theme.palette.info.light,
-    margin: '0.5rem',
+    padding: theme.spacing(2),
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.action.hover,
+  },
+  requestButton: {
+    marginTop: theme.spacing(1),
   },
   itemIcon: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
-  },
-  buttonGroup: {
-    display: 'flex',
-    justifyContent: 'center',
+    color: theme.palette.primary.contrastText,
   },
   iconMoving: {
-    color: theme.palette.success.dark,
+    color: theme.palette.success.main,
   },
   iconOtherStates: {
-    color: 'white',
+    color: theme.palette.primary.main,
   },
   doorLabelOpen: {
     backgroundColor: theme.palette.success.main,
+    color: theme.palette.success.contrastText,
   },
   doorLabelClosed: {
     backgroundColor: theme.palette.error.main,
+    color: theme.palette.error.contrastText,
   },
   doorLabelMoving: {
     backgroundColor: theme.palette.warning.main,
+    color: theme.palette.warning.contrastText,
   },
   panelHeader: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
-    marginLeft: '1rem',
+    color: theme.palette.primary.contrastText,
+    marginLeft: theme.spacing(2),
   },
   nameField: {
     fontWeight: 'bold',
@@ -160,7 +162,7 @@ const LiftCell = React.memo(
             >
               {lift?.name}
             </Typography>
-            <Box border={1} borderColor="divider" m={0.5}>
+            <Box border={1} borderColor="divider" marginTop={1} marginBottom={1}>
               <Typography align="center">{destinationFloor || 'Unknown'}</Typography>
             </Box>
             <Typography align="center" className={doorModeLabelClasses(doorState)}>
@@ -183,6 +185,7 @@ const LiftCell = React.memo(
           fullWidth
           size="small"
           onClick={() => setShowForms(true)}
+          className={classes.requestButton}
         >
           Request Form
         </Button>

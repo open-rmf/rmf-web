@@ -45,36 +45,40 @@ const useStyles = makeStyles((theme) => ({
   buttonBar: {
     display: 'flex',
     justifyContent: 'flex-end',
-    borderRadius: '0px',
+    borderRadius: 0,
     backgroundColor: theme.palette.primary.main,
   },
   grid: {
-    padding: '1rem',
+    padding: theme.spacing(1),
   },
   doorLabelOpen: {
     backgroundColor: theme.palette.success.main,
+    color: theme.palette.success.contrastText,
   },
   doorLabelClosed: {
     backgroundColor: theme.palette.error.main,
+    color: theme.palette.error.contrastText,
   },
   doorLabelMoving: {
     backgroundColor: theme.palette.warning.main,
+    color: theme.palette.warning.contrastText,
   },
   cellPaper: {
-    padding: '0.5rem',
-    backgroundColor: theme.palette.info.light,
-    margin: '0.5rem',
+    padding: theme.spacing(2),
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.action.hover,
   },
   itemIcon: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
+    color: theme.palette.primary.contrastText,
   },
   buttonGroup: {
+    marginTop: theme.spacing(1),
     display: 'flex',
     justifyContent: 'center',
   },
   panelHeader: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
-    marginLeft: '1rem',
+    color: theme.palette.primary.contrastText,
+    marginLeft: theme.spacing(2),
   },
   nameField: {
     fontWeight: 'bold',
@@ -135,7 +139,7 @@ const DoorCell = React.memo(
           {door && doorTypeToString(door.door.door_type)}
         </Typography>
         <div className={classes.buttonGroup}>
-          <ButtonGroup size="small">
+          <ButtonGroup variant="contained" size="small" color="primary">
             <Button
               onClick={(ev) =>
                 onDoorControlClick && onDoorControlClick(ev, door.door, RmfDoorMode.MODE_OPEN)
