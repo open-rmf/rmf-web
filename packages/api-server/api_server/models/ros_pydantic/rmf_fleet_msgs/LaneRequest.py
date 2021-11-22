@@ -12,6 +12,13 @@ class LaneRequest(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "fleet_name",
+                "open_lanes",
+                "close_lanes",
+            ],
+        }
 
 
 #

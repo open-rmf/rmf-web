@@ -1,18 +1,18 @@
-import * as RmfModels from 'rmf-models';
+import { TaskSummary as RmfTaskSummary, TaskType as RmfTaskType } from 'rmf-models';
 
 export function taskStateToStr(state: number): string {
   switch (state) {
-    case RmfModels.TaskSummary.STATE_ACTIVE:
+    case RmfTaskSummary.STATE_ACTIVE:
       return 'Active';
-    case RmfModels.TaskSummary.STATE_CANCELED:
+    case RmfTaskSummary.STATE_CANCELED:
       return 'Cancelled';
-    case RmfModels.TaskSummary.STATE_COMPLETED:
+    case RmfTaskSummary.STATE_COMPLETED:
       return 'Completed';
-    case RmfModels.TaskSummary.STATE_FAILED:
+    case RmfTaskSummary.STATE_FAILED:
       return 'Failed';
-    case RmfModels.TaskSummary.STATE_PENDING:
+    case RmfTaskSummary.STATE_PENDING:
       return 'Pending';
-    case RmfModels.TaskSummary.STATE_QUEUED:
+    case RmfTaskSummary.STATE_QUEUED:
       return 'Queued';
     default:
       return 'Unknown';
@@ -21,17 +21,17 @@ export function taskStateToStr(state: number): string {
 
 export function taskTypeToStr(taskType: number): string {
   switch (taskType) {
-    case RmfModels.TaskType.TYPE_CHARGE_BATTERY:
+    case RmfTaskType.TYPE_CHARGE_BATTERY:
       return 'Charge';
-    case RmfModels.TaskType.TYPE_CLEAN:
+    case RmfTaskType.TYPE_CLEAN:
       return 'Clean';
-    case RmfModels.TaskType.TYPE_DELIVERY:
+    case RmfTaskType.TYPE_DELIVERY:
       return 'Delivery';
-    case RmfModels.TaskType.TYPE_LOOP:
+    case RmfTaskType.TYPE_LOOP:
       return 'Loop';
-    case RmfModels.TaskType.TYPE_PATROL:
+    case RmfTaskType.TYPE_PATROL:
       return 'Patrol';
-    case RmfModels.TaskType.TYPE_STATION:
+    case RmfTaskType.TYPE_STATION:
       return 'Station';
     default:
       return 'Unknown';

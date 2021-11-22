@@ -64,7 +64,8 @@ class TestFleetsRoute(AppFixture):
 
         def wait():
             self.app.rmf_events().fleet_states.on_next(fleet_state)
-            return fut.result(0)
+            return fut.done()
 
-        result = try_until(wait, lambda _: True)
+        try_until(wait, lambda x: x)
+        result = fut.result(0)
         self.assertEqual(1, len(result["robots"]))

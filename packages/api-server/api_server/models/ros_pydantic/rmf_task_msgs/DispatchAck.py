@@ -15,6 +15,12 @@ class DispatchAck(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "dispatch_request",
+                "success",
+            ],
+        }
 
 
 # # This message is published by the fleet adapter in response to a

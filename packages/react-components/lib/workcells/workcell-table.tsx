@@ -1,12 +1,12 @@
 import { makeStyles, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
-import { Dispenser } from 'api-client';
-import React from 'react';
-import * as RmfModels from 'rmf-models';
-import { dispenserModeToString } from './utils';
-import { useFixedTableCellStyles } from '../utils';
-import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import clsx from 'clsx';
+import React from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import { DispenserState as RmfDispenserState } from 'rmf-models';
+import { Workcell, WorkcellState } from '.';
+import { useFixedTableCellStyles } from '../utils';
+import { dispenserModeToString } from './utils';
 
 const useStyles = makeStyles((theme) => ({
   dispenserLabelIdle: {
@@ -30,8 +30,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export interface WorkcellTableProps {
-  workcells: Dispenser[];
-  workcellStates: Record<string, RmfModels.DispenserState>;
+  workcells: Workcell[];
+  workcellStates: Record<string, WorkcellState>;
 }
 
 interface WorkcellListRendererProps extends ListChildComponentProps {
@@ -39,7 +39,7 @@ interface WorkcellListRendererProps extends ListChildComponentProps {
 }
 
 export interface WorkcellRowProps {
-  workcell: Dispenser;
+  workcell: Workcell;
   mode?: number;
   requestGuidQueue?: string[];
   secondsRemaining?: number;
@@ -52,11 +52,11 @@ const WorkcellRow = React.memo(
     const dispenserModeLabelClasses = React.useCallback(
       (mode: number): string => {
         switch (mode) {
-          case RmfModels.DispenserState.IDLE:
+          case RmfDispenserState.IDLE:
             return `${classes.dispenserLabelIdle}`;
-          case RmfModels.DispenserState.BUSY:
+          case RmfDispenserState.BUSY:
             return `${classes.dispenserLabelBusy}`;
-          case RmfModels.DispenserState.OFFLINE:
+          case RmfDispenserState.OFFLINE:
             return `${classes.offlineLabelOffline}`;
           default:
             return '';
@@ -153,8 +153,7 @@ const WorkcellRow = React.memo(
 
 const WorkcellListRenderer = ({ data, index }: WorkcellListRendererProps) => {
   const workcell = data.workcells[index];
-  const workcellState: RmfModels.DispenserState | RmfModels.IngestorState | undefined =
-    data.workcellStates[workcell.guid];
+  const workcellState: WorkcellState | undefined = data.workcellStates[workcell.guid];
 
   return (
     <WorkcellRow

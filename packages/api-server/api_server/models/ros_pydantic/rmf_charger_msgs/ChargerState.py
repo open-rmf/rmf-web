@@ -20,6 +20,18 @@ class ChargerState(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "charger_time",
+                "state",
+                "charger_name",
+                "error_message",
+                "request_id",
+                "robot_fleet",
+                "robot_name",
+                "time_to_fully_charged",
+            ],
+        }
 
 
 # # Time when this state message was created
@@ -28,6 +40,7 @@ class ChargerState(pydantic.BaseModel):
 # uint32 CHARGER_IDLE = 1      # Charger is not occupied
 # uint32 CHARGER_ASSIGNED = 2  # Charger has been assigned a robot
 # uint32 CHARGER_CHARGING = 3  # Charger is charging
+# uint32 CHARGER_RELEASED = 4  # Charger has been disconnected from a robot
 # uint32 CHARGER_ERROR = 200   # Error state, see error_message for info
 #
 # uint32 state  # One of the previously enumerated states

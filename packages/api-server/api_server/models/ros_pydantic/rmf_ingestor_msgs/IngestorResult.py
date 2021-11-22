@@ -15,6 +15,14 @@ class IngestorResult(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "time",
+                "request_guid",
+                "source_guid",
+                "status",
+            ],
+        }
 
 
 # builtin_interfaces/Time time

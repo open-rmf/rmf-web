@@ -1,3 +1,4 @@
+from typing import cast
 from unittest.mock import Mock
 
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
@@ -32,9 +33,10 @@ class TestLiftsRoute(AppFixture):
 
         def wait():
             self.app.rmf_events().lift_states.on_next(lift_state)
-            return fut.result(0)
+            return fut.done()
 
-        result = try_until(wait, lambda _: True)
+        try_until(wait, lambda x: x)
+        result = fut.result(0)
         self.assertEqual(1, result["lift_time"]["sec"])
 
     def test_request_lift(self):
@@ -47,8 +49,7 @@ class TestLiftsRoute(AppFixture):
             },
         )
         self.assertEqual(resp.status_code, 200)
-        mock = self.app.rmf_gateway().request_lift
-        mock: Mock
+        mock = cast(Mock, self.app.rmf_gateway().request_lift)
         self.assertEqual(mock.call_args.args[0], "test_lift")
         self.assertEqual(mock.call_args.args[1], "L1")
         self.assertEqual(mock.call_args.args[2], RmfLiftRequest.REQUEST_AGV_MODE)

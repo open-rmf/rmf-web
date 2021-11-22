@@ -1,6 +1,7 @@
-from tortoise import Model, fields
+from tortoise.fields.data import CharField, JSONField
+from tortoise.models import Model
 
 
 class BuildingMap(Model):
-    id_ = fields.CharField(255, pk=True, source_field="id")
-    data = fields.JSONField()
+    id_ = CharField(255, pk=True, source_field="id")
+    data = JSONField()

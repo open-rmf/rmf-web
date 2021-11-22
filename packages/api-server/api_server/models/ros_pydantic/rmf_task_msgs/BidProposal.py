@@ -18,6 +18,16 @@ class BidProposal(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "fleet_name",
+                "task_profile",
+                "prev_cost",
+                "new_cost",
+                "finish_time",
+                "robot_name",
+            ],
+        }
 
 
 # # This message is published by a Fleet Adapter in response to a BidNotice

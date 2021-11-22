@@ -1,43 +1,39 @@
-import * as RmfModels from 'rmf-models';
+import type { Lift, LiftState } from 'api-client';
+import { Door as RmfDoor, LiftState as RmfLiftState } from 'rmf-models';
 
 export function allLiftMotion(): number[] {
   return [
-    RmfModels.LiftState.MOTION_UP,
-    RmfModels.LiftState.MOTION_DOWN,
-    RmfModels.LiftState.MOTION_STOPPED,
-    RmfModels.LiftState.MOTION_UNKNOWN,
+    RmfLiftState.MOTION_UP,
+    RmfLiftState.MOTION_DOWN,
+    RmfLiftState.MOTION_STOPPED,
+    RmfLiftState.MOTION_UNKNOWN,
     -1,
   ];
 }
 
 export function allLiftModes(): number[] {
   return [
-    RmfModels.LiftState.MODE_AGV,
-    RmfModels.LiftState.MODE_EMERGENCY,
-    RmfModels.LiftState.MODE_FIRE,
-    RmfModels.LiftState.MODE_HUMAN,
-    RmfModels.LiftState.MODE_OFFLINE,
-    RmfModels.LiftState.MODE_UNKNOWN,
+    RmfLiftState.MODE_AGV,
+    RmfLiftState.MODE_EMERGENCY,
+    RmfLiftState.MODE_FIRE,
+    RmfLiftState.MODE_HUMAN,
+    RmfLiftState.MODE_OFFLINE,
+    RmfLiftState.MODE_UNKNOWN,
     -1,
   ];
 }
 
 export function allDoorStates(): number[] {
-  return [
-    RmfModels.LiftState.DOOR_CLOSED,
-    RmfModels.LiftState.DOOR_MOVING,
-    RmfModels.LiftState.DOOR_OPEN,
-    -1,
-  ];
+  return [RmfLiftState.DOOR_CLOSED, RmfLiftState.DOOR_MOVING, RmfLiftState.DOOR_OPEN, -1];
 }
 
-export function makeLift(lift?: Partial<RmfModels.Lift>): RmfModels.Lift {
+export function makeLift(lift?: Partial<Lift>): Lift {
   return {
     name: 'test',
     doors: [
       {
         name: 'door',
-        door_type: RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE,
+        door_type: RmfDoor.DOOR_TYPE_DOUBLE_TELESCOPE,
         motion_direction: 1,
         motion_range: Math.PI / 2,
         v1_x: -1,
@@ -57,17 +53,17 @@ export function makeLift(lift?: Partial<RmfModels.Lift>): RmfModels.Lift {
   };
 }
 
-export function makeLiftState(liftState?: Partial<RmfModels.LiftState>): RmfModels.LiftState {
+export function makeLiftState(liftState?: Partial<LiftState>): LiftState {
   return {
     lift_name: 'test',
     available_floors: ['L1', 'L2'],
-    available_modes: Uint8Array.from([]),
+    available_modes: [],
     current_floor: 'L1',
-    current_mode: RmfModels.LiftState.MODE_AGV,
+    current_mode: RmfLiftState.MODE_AGV,
     destination_floor: 'L1',
-    door_state: RmfModels.LiftState.DOOR_CLOSED,
+    door_state: RmfLiftState.DOOR_CLOSED,
     lift_time: { sec: 0, nanosec: 0 },
-    motion_state: RmfModels.LiftState.MOTION_STOPPED,
+    motion_state: RmfLiftState.MOTION_STOPPED,
     session_id: 'test_session',
     ...liftState,
   };
@@ -83,31 +79,31 @@ export const testLifts = [
   { ...defaultLift, name: 'test5' },
 ];
 const defaultState = makeLiftState();
-export const testLiftStates: Record<string, RmfModels.LiftState> = {
+export const testLiftStates: Record<string, LiftState> = {
   test: defaultState,
   test1: {
     ...defaultState,
-    door_state: RmfModels.LiftState.DOOR_MOVING,
-    motion_state: RmfModels.LiftState.MOTION_DOWN,
-    current_mode: RmfModels.LiftState.MODE_EMERGENCY,
+    door_state: RmfLiftState.DOOR_MOVING,
+    motion_state: RmfLiftState.MOTION_DOWN,
+    current_mode: RmfLiftState.MODE_EMERGENCY,
   },
   test2: {
     ...defaultState,
-    door_state: RmfModels.LiftState.DOOR_OPEN,
-    motion_state: RmfModels.LiftState.MOTION_UP,
-    current_mode: RmfModels.LiftState.MODE_FIRE,
+    door_state: RmfLiftState.DOOR_OPEN,
+    motion_state: RmfLiftState.MOTION_UP,
+    current_mode: RmfLiftState.MODE_FIRE,
   },
   test3: {
     ...defaultState,
     door_state: -1,
-    current_mode: RmfModels.LiftState.MODE_HUMAN,
+    current_mode: RmfLiftState.MODE_HUMAN,
   },
   test4: {
     ...defaultState,
-    current_mode: RmfModels.LiftState.MODE_OFFLINE,
+    current_mode: RmfLiftState.MODE_OFFLINE,
   },
   test5: {
     ...defaultState,
-    current_mode: RmfModels.LiftState.MODE_UNKNOWN,
+    current_mode: RmfLiftState.MODE_UNKNOWN,
   },
 };

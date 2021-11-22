@@ -13,6 +13,12 @@ class Behavior(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "name",
+                "parameters",
+            ],
+        }
 
 
 # string name

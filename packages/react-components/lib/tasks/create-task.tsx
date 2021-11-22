@@ -20,7 +20,7 @@ import type {
   SubmitTask,
 } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import { TaskType as RmfTaskType } from 'rmf-models';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
 
@@ -43,16 +43,16 @@ const useStyles = makeStyles((theme) => ({
 
 function getShortDescription(task: SubmitTask): string {
   switch (task.task_type) {
-    case RmfModels.TaskType.TYPE_CLEAN: {
-      const desc: CleanTaskDescription = task.description;
+    case RmfTaskType.TYPE_CLEAN: {
+      const desc = task.description as CleanTaskDescription;
       return `[Clean] zone [${desc.cleaning_zone}]`;
     }
-    case RmfModels.TaskType.TYPE_DELIVERY: {
-      const desc: DeliveryTaskDescription = task.description;
+    case RmfTaskType.TYPE_DELIVERY: {
+      const desc = task.description as DeliveryTaskDescription;
       return `[Delivery] from [${desc.pickup_place_name}] to [${desc.dropoff_place_name}]`;
     }
-    case RmfModels.TaskType.TYPE_LOOP: {
-      const desc: LoopTaskDescription = task.description;
+    case RmfTaskType.TYPE_LOOP: {
+      const desc = task.description as LoopTaskDescription;
       return `[Loop] from [${desc.start_name}] to [${desc.finish_name}]`;
     }
     default:
@@ -108,6 +108,7 @@ function DeliveryTaskForm({
             options={deliveryWaypoints}
             value={taskDesc.pickup_place_name}
             onChange={(_ev, newValue) =>
+              newValue !== null &&
               onChange({
                 ...taskDesc,
                 pickup_place_name: newValue,
@@ -135,6 +136,7 @@ function DeliveryTaskForm({
             options={dispensers}
             value={taskDesc.pickup_dispenser}
             onChange={(_ev, newValue) =>
+              newValue !== null &&
               onChange({
                 ...taskDesc,
                 pickup_dispenser: newValue,
@@ -156,6 +158,7 @@ function DeliveryTaskForm({
             options={deliveryWaypoints}
             value={taskDesc.dropoff_place_name}
             onChange={(_ev, newValue) =>
+              newValue !== null &&
               onChange({
                 ...taskDesc,
                 dropoff_place_name: newValue,
@@ -183,6 +186,7 @@ function DeliveryTaskForm({
             options={ingestors}
             value={taskDesc.dropoff_ingestor}
             onChange={(_ev, newValue) =>
+              newValue !== null &&
               onChange({
                 ...taskDesc,
                 dropoff_ingestor: newValue,
@@ -217,6 +221,7 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
         options={loopWaypoints}
         value={taskDesc.start_name}
         onChange={(_ev, newValue) =>
+          newValue !== null &&
           onChange({
             ...taskDesc,
             start_name: newValue,
@@ -236,6 +241,7 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
             options={loopWaypoints}
             value={taskDesc.finish_name}
             onChange={(_ev, newValue) =>
+              newValue !== null &&
               onChange({
                 ...taskDesc,
                 finish_name: newValue,
@@ -289,6 +295,7 @@ function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps
       options={cleaningZones}
       value={taskDesc.cleaning_zone}
       onChange={(_ev, newValue) =>
+        newValue !== null &&
         onChange({
           ...taskDesc,
           cleaning_zone: newValue,
@@ -327,11 +334,11 @@ function defaultDeliveryTask(): DeliveryTaskDescription {
 
 function defaultTaskDescription(taskType?: number): TaskDescription | undefined {
   switch (taskType) {
-    case RmfModels.TaskType.TYPE_CLEAN:
+    case RmfTaskType.TYPE_CLEAN:
       return defaultCleanTask();
-    case RmfModels.TaskType.TYPE_LOOP:
+    case RmfTaskType.TYPE_LOOP:
       return defaultLoopsTask();
-    case RmfModels.TaskType.TYPE_DELIVERY:
+    case RmfTaskType.TYPE_DELIVERY:
       return defaultDeliveryTask();
     default:
       return undefined;
@@ -405,30 +412,30 @@ export function CreateTaskForm({
       return null;
     }
     switch (task.task_type) {
-      case RmfModels.TaskType.TYPE_CLEAN:
+      case RmfTaskType.TYPE_CLEAN:
         return (
           <CleanTaskForm
             taskDesc={task.description as CleanTaskDescription}
             cleaningZones={cleaningZones}
-            onChange={(desc) => handleTaskDescriptionChange(RmfModels.TaskType.TYPE_CLEAN, desc)}
+            onChange={(desc) => handleTaskDescriptionChange(RmfTaskType.TYPE_CLEAN, desc)}
           />
         );
-      case RmfModels.TaskType.TYPE_LOOP:
+      case RmfTaskType.TYPE_LOOP:
         return (
           <LoopTaskForm
             taskDesc={task.description as LoopTaskDescription}
             loopWaypoints={loopWaypoints}
-            onChange={(desc) => handleTaskDescriptionChange(RmfModels.TaskType.TYPE_LOOP, desc)}
+            onChange={(desc) => handleTaskDescriptionChange(RmfTaskType.TYPE_LOOP, desc)}
           />
         );
-      case RmfModels.TaskType.TYPE_DELIVERY:
+      case RmfTaskType.TYPE_DELIVERY:
         return (
           <DeliveryTaskForm
             taskDesc={task.description as DeliveryTaskDescription}
             deliveryWaypoints={deliveryWaypoints}
             dispensers={dispensers}
             ingestors={ingestors}
-            onChange={(desc) => handleTaskDescriptionChange(RmfModels.TaskType.TYPE_DELIVERY, desc)}
+            onChange={(desc) => handleTaskDescriptionChange(RmfTaskType.TYPE_DELIVERY, desc)}
           />
         );
       default:
@@ -506,9 +513,9 @@ export function CreateTaskForm({
               value={task.task_type !== -1 ? task.task_type : ''}
               onChange={handleTaskTypeChange}
             >
-              <MenuItem value={RmfModels.TaskType.TYPE_CLEAN}>Clean</MenuItem>
-              <MenuItem value={RmfModels.TaskType.TYPE_LOOP}>Loop</MenuItem>
-              <MenuItem value={RmfModels.TaskType.TYPE_DELIVERY}>Delivery</MenuItem>
+              <MenuItem value={RmfTaskType.TYPE_CLEAN}>Clean</MenuItem>
+              <MenuItem value={RmfTaskType.TYPE_LOOP}>Loop</MenuItem>
+              <MenuItem value={RmfTaskType.TYPE_DELIVERY}>Delivery</MenuItem>
             </TextField>
             <Grid container wrap="nowrap">
               <Grid style={{ flexGrow: 1 }}>

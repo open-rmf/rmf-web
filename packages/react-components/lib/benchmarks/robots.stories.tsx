@@ -1,6 +1,6 @@
 import { Meta, Story } from '@storybook/react';
+import type { RobotState } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
 import { RobotMarker } from '../map';
 import { makeRobot } from '../robots/test-utils.spec';
 import { fromRmfCoords } from '../utils';
@@ -22,7 +22,7 @@ interface RobotMarkerArgs {
 }
 
 interface AnimationState {
-  robot: RmfModels.RobotState;
+  robot: RobotState;
   target: [number, number];
   heading: [number, number];
 }

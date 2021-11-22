@@ -11,6 +11,12 @@ class ReviveTask_Request(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "requester",
+                "task_id",
+            ],
+        }
 
 
 # # Revive a previously cancelled or failed task. This will reinitiate

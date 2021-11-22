@@ -15,6 +15,14 @@ class GraphEdge(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "v1_idx",
+                "v2_idx",
+                "params",
+                "edge_type",
+            ],
+        }
 
 
 # uint32 v1_idx

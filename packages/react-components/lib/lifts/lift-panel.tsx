@@ -12,8 +12,11 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
+import type { Lift, LiftState } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
+import { DoorMode as RmfDoorMode } from 'rmf-models';
 import LiftRequestFormDialog from './lift-request-form-dialog';
 import { LiftTable } from './lift-table';
 import {
@@ -22,15 +25,13 @@ import {
   requestDoorModes,
   requestModes,
 } from './lift-utils';
-import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
 
 export interface LiftPanelProps {
-  lifts: RmfModels.Lift[];
-  liftStates: Record<string, RmfModels.LiftState>;
+  lifts: Lift[];
+  liftStates: Record<string, LiftState>;
   onRequestSubmit?(
     event: React.FormEvent,
-    lift: RmfModels.Lift,
+    lift: Lift,
     doorState: number,
     requestType: number,
     destination: string,
@@ -46,14 +47,14 @@ interface LiftGridRendererProps extends GridChildComponentProps {
 }
 
 export interface LiftCellProps {
-  lift: RmfModels.Lift;
+  lift: Lift;
   doorState?: number;
   motionState?: number;
   currentFloor?: string;
   destinationFloor?: string;
   onRequestSubmit?(
     event: React.FormEvent,
-    lift: RmfModels.Lift,
+    lift: Lift,
     doorState: number,
     requestType: number,
     destination: string,
@@ -67,42 +68,44 @@ const useStyles = makeStyles((theme) => ({
   buttonBar: {
     display: 'flex',
     justifyContent: 'flex-end',
-    borderRadius: '0px',
+    borderRadius: 0,
     backgroundColor: theme.palette.primary.main,
   },
   grid: {
-    padding: '1rem',
+    padding: theme.spacing(1),
   },
   cellPaper: {
-    padding: '0.5rem',
-    backgroundColor: theme.palette.info.light,
-    margin: '0.5rem',
+    padding: theme.spacing(2),
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.action.hover,
+  },
+  requestButton: {
+    marginTop: theme.spacing(1),
   },
   itemIcon: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
-  },
-  buttonGroup: {
-    display: 'flex',
-    justifyContent: 'center',
+    color: theme.palette.primary.contrastText,
   },
   iconMoving: {
-    color: theme.palette.success.dark,
+    color: theme.palette.success.main,
   },
   iconOtherStates: {
-    color: 'white',
+    color: theme.palette.primary.main,
   },
   doorLabelOpen: {
     backgroundColor: theme.palette.success.main,
+    color: theme.palette.success.contrastText,
   },
   doorLabelClosed: {
     backgroundColor: theme.palette.error.main,
+    color: theme.palette.error.contrastText,
   },
   doorLabelMoving: {
     backgroundColor: theme.palette.warning.main,
+    color: theme.palette.warning.contrastText,
   },
   panelHeader: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
-    marginLeft: '1rem',
+    color: theme.palette.primary.contrastText,
+    marginLeft: theme.spacing(2),
   },
   nameField: {
     fontWeight: 'bold',
@@ -134,11 +137,11 @@ const LiftCell = React.memo(
     const doorModeLabelClasses = React.useCallback(
       (doorState?: number): string => {
         switch (doorState) {
-          case RmfModels.DoorMode.MODE_OPEN:
+          case RmfDoorMode.MODE_OPEN:
             return `${classes.doorLabelOpen}`;
-          case RmfModels.DoorMode.MODE_CLOSED:
+          case RmfDoorMode.MODE_CLOSED:
             return `${classes.doorLabelClosed}`;
-          case RmfModels.DoorMode.MODE_MOVING:
+          case RmfDoorMode.MODE_MOVING:
             return `${classes.doorLabelMoving}`;
           default:
             return '';
@@ -159,7 +162,7 @@ const LiftCell = React.memo(
             >
               {lift?.name}
             </Typography>
-            <Box border={1} borderColor="divider" m={0.5}>
+            <Box border={1} borderColor="divider" marginTop={1} marginBottom={1}>
               <Typography align="center">{destinationFloor || 'Unknown'}</Typography>
             </Box>
             <Typography align="center" className={doorModeLabelClasses(doorState)}>
@@ -182,6 +185,7 @@ const LiftCell = React.memo(
           fullWidth
           size="small"
           onClick={() => setShowForms(true)}
+          className={classes.requestButton}
         >
           Request Form
         </Button>
@@ -201,8 +205,8 @@ const LiftCell = React.memo(
 );
 
 const LiftGridRenderer = ({ data, columnIndex, rowIndex, style }: LiftGridRendererProps) => {
-  let lift: RmfModels.Lift | undefined;
-  let liftState: RmfModels.LiftState | undefined;
+  let lift: Lift | undefined;
+  let liftState: LiftState | undefined;
   let doorState: number | undefined;
   let motionState: number | undefined;
   let destinationFloor: string | undefined;

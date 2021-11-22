@@ -16,6 +16,17 @@ class Tow(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "task_id",
+                "object_type",
+                "is_object_id_known",
+                "object_id",
+                "pickup_place_name",
+                "is_dropoff_place_known",
+                "dropoff_place_name",
+            ],
+        }
 
 
 # # task_id is intended to be a pseudo-random string generated

@@ -96,7 +96,7 @@ class RmfGateway(rclpy.node.Node):
         self._finish_gc = self.create_guard_condition(
             lambda: self._finish_spin.set_result(None)
         )
-        self._loop: asyncio.AbstractEventLoop = None
+        self._loop: asyncio.AbstractEventLoop
 
     def spin_background(self):
         def spin():
@@ -109,7 +109,8 @@ class RmfGateway(rclpy.node.Node):
 
     def stop_spinning(self):
         self._finish_gc.trigger()
-        self._spin_thread.join()
+        if self._spin_thread is not None:
+            self._spin_thread.join()
 
     async def call_service(self, client: rclpy.client.Client, req, timeout=1):
         """

@@ -12,6 +12,11 @@ class DockSummary(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "docks",
+            ],
+        }
 
 
 # Dock[] docks
