@@ -1,23 +1,23 @@
 import React from 'react';
 import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid';
-import { Typography } from '@mui/material';
-import { DefaultLogTableProps } from '../default-report-interface';
+import type { TaskProfile, Time } from 'api-client';
 import { format } from 'date-fns';
-import { returnTaskDetails } from './utils';
+import { Typography } from '@mui/material';
 import { rosTimeToJs } from '../../utils';
-import * as RmfModels from 'rmf-models';
+import { DefaultLogTableProps } from '../default-report-interface';
+import { returnTaskDetails } from './utils';
 
 export type TaskSummaryRowsType = {
   created: string; //date
   fleet: { id: number; name: string };
   robot: { id: number; name: string; model?: string };
   task_id: string;
-  task_profile: RmfModels.TaskProfile;
+  task_profile: TaskProfile;
   state: string;
   status: string;
-  submission_time: RmfModels.Time;
-  start_time: RmfModels.Time;
-  end_time: RmfModels.Time;
+  submission_time: Time;
+  start_time: Time;
+  end_time: Time;
 }[];
 
 export interface TaskSummaryReportTable extends DefaultLogTableProps {

@@ -1,7 +1,7 @@
 import { styled } from '@mui/material';
 import clsx from 'clsx';
 import React, { SVGProps } from 'react';
-import * as RmfModels from 'rmf-models';
+import { Door as RmfDoor, DoorMode as RmfDoorMode } from 'rmf-models';
 
 const classes = {
   marker: 'door-marker-base-marker',
@@ -46,11 +46,11 @@ function useDoorStyle(doorMode?: number): string {
   }
 
   switch (doorMode) {
-    case RmfModels.DoorMode.MODE_OPEN:
+    case RmfDoorMode.MODE_OPEN:
       return classes.open;
-    case RmfModels.DoorMode.MODE_MOVING:
+    case RmfDoorMode.MODE_MOVING:
       return classes.moving;
-    case RmfModels.DoorMode.MODE_CLOSED:
+    case RmfDoorMode.MODE_CLOSED:
       return classes.close;
     default:
       return classes.unknown;
@@ -137,17 +137,17 @@ export const DoorMarker = React.forwardRef(
 
     const renderDoor = () => {
       switch (doorType) {
-        case RmfModels.Door.DOOR_TYPE_SINGLE_SWING:
+        case RmfDoor.DOOR_TYPE_SINGLE_SWING:
           return <SingleSwingDoor {...doorProps} />;
-        case RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING:
+        case RmfDoor.DOOR_TYPE_SINGLE_SLIDING:
           return <SingleSlidingDoor {...doorProps} />;
-        case RmfModels.Door.DOOR_TYPE_SINGLE_TELESCOPE:
+        case RmfDoor.DOOR_TYPE_SINGLE_TELESCOPE:
           return <SingleTelescopeDoor {...doorProps} />;
-        case RmfModels.Door.DOOR_TYPE_DOUBLE_SWING:
+        case RmfDoor.DOOR_TYPE_DOUBLE_SWING:
           return <DoubleSwingDoor {...doorProps} />;
-        case RmfModels.Door.DOOR_TYPE_DOUBLE_SLIDING:
+        case RmfDoor.DOOR_TYPE_DOUBLE_SLIDING:
           return <DoubleSlidingDoor {...doorProps} />;
-        case RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE:
+        case RmfDoor.DOOR_TYPE_DOUBLE_TELESCOPE:
           return <DoubleTelescopeDoor {...doorProps} />;
         default:
           return null;

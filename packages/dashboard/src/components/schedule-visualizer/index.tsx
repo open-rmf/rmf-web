@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { Dispenser, Ingestor } from 'api-client';
+import { BuildingMap, Dispenser, DoorState, FleetState, Ingestor, LiftState } from 'api-client';
 import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
@@ -25,7 +25,6 @@ import {
 } from 'react-components';
 import { styled } from '@mui/material';
 import { AttributionControl, LayersControl } from 'react-leaflet';
-import * as RmfModels from 'rmf-models';
 import appConfig from '../../app-config';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { ResourcesContext } from '../app-contexts';
@@ -56,13 +55,13 @@ const SettingsKey = 'scheduleVisualizerSettings';
 const colorManager = new ColorManager();
 
 export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
-  buildingMap: RmfModels.BuildingMap;
+  buildingMap: BuildingMap;
   negotiationTrajStore?: Record<string, NegotiationTrajectoryResponse>;
   dispensers?: Dispenser[];
   ingestors?: Ingestor[];
-  doorStates?: Record<string, RmfModels.DoorState>;
-  liftStates?: Record<string, RmfModels.LiftState>;
-  fleetStates?: Record<string, RmfModels.FleetState>;
+  doorStates?: Record<string, DoorState>;
+  liftStates?: Record<string, LiftState>;
+  fleetStates?: Record<string, FleetState>;
   /**
    * default: 'normal'
    */

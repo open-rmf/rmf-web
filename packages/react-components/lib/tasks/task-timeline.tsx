@@ -11,8 +11,9 @@ import {
   TimelineSeparator,
   TimelineProps,
 } from '@mui/lab';
+import type { TaskSummary } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import { TaskSummary as RmfTaskSummary } from 'rmf-models';
 import { rosTimeToJs } from '../utils';
 
 interface TimeLinePropsWithRef extends TimelineProps {
@@ -55,7 +56,7 @@ const StyledTimeLine = styled((props: TimeLinePropsWithRef) => <Timeline {...pro
 );
 
 export interface TaskTimelineProps {
-  taskSummary: RmfModels.TaskSummary;
+  taskSummary: TaskSummary;
 }
 
 export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
@@ -64,23 +65,19 @@ export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
   const timelineInfo = taskSummary.status.split('\n\n');
 
   const timelineDotProps = timelinePhases.map((_, idx) => {
-    if (
-      [RmfModels.TaskSummary.STATE_CANCELED, RmfModels.TaskSummary.STATE_FAILED].includes(
-        taskSummary.state,
-      )
-    ) {
+    if ([RmfTaskSummary.STATE_CANCELED, RmfTaskSummary.STATE_FAILED].includes(taskSummary.state)) {
       return {
         className: classes.failedPhase,
       };
     }
 
-    if (taskSummary.state === RmfModels.TaskSummary.STATE_COMPLETED) {
+    if (taskSummary.state === RmfTaskSummary.STATE_COMPLETED) {
       return {
         className: classes.completedPhase,
       };
     }
 
-    if (taskSummary.state === RmfModels.TaskSummary.STATE_ACTIVE && idx < currentDotIdx) {
+    if (taskSummary.state === RmfTaskSummary.STATE_ACTIVE && idx < currentDotIdx) {
       return {
         className: classes.completedPhase,
       };

@@ -10,6 +10,11 @@ class Clean(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "start_waypoint",
+            ],
+        }
 
 
 # # The name of the waypoint where the robot should begin its pre-configured

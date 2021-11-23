@@ -1,7 +1,7 @@
 import { Meta, Story } from '@storybook/react';
+import type { FleetState, Lift } from 'api-client';
 import React from 'react';
 import { LayersControl } from 'react-leaflet';
-import * as RmfModels from 'rmf-models';
 import ColorManager from '../color-manager';
 import { makeLift } from '../lifts/test-utils.spec';
 import { Place } from '../place';
@@ -27,7 +27,7 @@ export default {
 const colorManager = new ColorManager();
 const dispensers: WorkcellData[] = [{ guid: 'test_dispenser', location: [18, -9] }];
 const ingestors: WorkcellData[] = [{ guid: 'test_ingestor', location: [16, -9] }];
-const fleetState: RmfModels.FleetState = {
+const fleetState: FleetState = {
   name: 'test_fleet',
   robots: [
     makeRobot({
@@ -48,7 +48,7 @@ const waypoints: Place[] = [
     },
   },
 ];
-const lifts: RmfModels.Lift[] = [
+const lifts: Lift[] = [
   makeLift({
     name: 'test_lift',
     ref_x: 2,

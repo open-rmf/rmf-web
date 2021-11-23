@@ -1,7 +1,7 @@
 import { styled, Autocomplete } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import type { Lift } from 'api-client';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { requestDoorModeToString, requestModeToString } from './lift-utils';
 
@@ -53,13 +53,13 @@ const StyledConfirmationDialog = styled((props: ConfirmationDialogProps) => (
 }));
 
 export interface LiftRequestFormProps {
-  lift: RmfModels.Lift;
+  lift: Lift;
   showFormDialog: boolean;
   availableRequestTypes: number[];
   availableDoorModes: number[];
   onRequestSubmit?(
     event: React.FormEvent,
-    lift: RmfModels.Lift,
+    lift: Lift,
     doorState: number,
     requestType: number,
     destination: string,

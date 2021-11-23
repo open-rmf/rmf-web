@@ -14,6 +14,13 @@ class DispatchRequest(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "fleet_name",
+                "task_profile",
+                "method",
+            ],
+        }
 
 
 # # This message is published by Task Dispatcher Node to either award or cancel a

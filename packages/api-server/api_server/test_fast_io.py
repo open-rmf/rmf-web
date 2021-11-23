@@ -34,6 +34,8 @@ class TestFastIO(unittest.TestCase):
                 time.sleep(0.5)
 
     def tearDown(self):
+        # Explicitly close Session to remove ResourceWarnings in tests
+        self.client.eio.http.close()
         self.client.disconnect()
 
     def check_subscribe_success(self, prefix: str):

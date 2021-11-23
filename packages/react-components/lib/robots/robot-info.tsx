@@ -1,7 +1,7 @@
 import { Button, Divider, Grid, Typography, useTheme, styled } from '@mui/material';
-import { Task } from 'api-client';
+import type { Task, TaskSummary } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import { TaskSummary as RmfTaskSummary } from 'rmf-models';
 import { taskStateToStr, taskTypeToStr } from '../tasks/utils';
 import { rosTimeToJs } from '../utils';
 import { CircularProgressBar } from './circular-progress-bar';
@@ -29,7 +29,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   const [currentTask, setCurrentTask] = React.useState<Task | undefined>();
   const [hasConcreteEndTime, setHasConcreteEndTime] = React.useState<boolean>(false);
 
-  function returnTaskLocations(task: RmfModels.TaskSummary): string {
+  function returnTaskLocations(task: TaskSummary): string {
     switch (taskTypeToStr(task.task_profile.description.task_type.type)) {
       case 'Loop':
         return task.task_profile.description.loop.start_name;
@@ -40,7 +40,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
     }
   }
 
-  function returnTaskDestinations(task: RmfModels.TaskSummary): string {
+  function returnTaskDestinations(task: TaskSummary): string {
     switch (taskTypeToStr(task.task_profile.description.task_type.type)) {
       case 'Loop':
         return task.task_profile.description.loop.finish_name;
@@ -67,9 +67,9 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
 
   React.useEffect(() => {
     const concreteTasks = [
-      RmfModels.TaskSummary.STATE_CANCELED,
-      RmfModels.TaskSummary.STATE_COMPLETED,
-      RmfModels.TaskSummary.STATE_FAILED,
+      RmfTaskSummary.STATE_CANCELED,
+      RmfTaskSummary.STATE_COMPLETED,
+      RmfTaskSummary.STATE_FAILED,
     ];
 
     if (robot.tasks.length > 0) {

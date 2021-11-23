@@ -1,7 +1,8 @@
 import { Box, BoxProps, Grid, Theme, Tooltip, Typography, useTheme, styled } from '@mui/material';
+import type { TaskSummary } from 'api-client';
 import clsx from 'clsx';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import { TaskSummary as RmfTaskSummary } from 'rmf-models';
 
 const classes = {
   taskPhasesContainer: 'task-phase-container',
@@ -97,7 +98,7 @@ function PhaseSeparator({ leftColor, rightColor }: PhaseSeparatorProps) {
 }
 
 export interface TaskPhasesProps extends BoxProps {
-  taskSummary: RmfModels.TaskSummary;
+  taskSummary: TaskSummary;
 }
 
 export function TaskPhases({ taskSummary, ...boxProps }: TaskPhasesProps): JSX.Element {
@@ -109,25 +110,21 @@ export function TaskPhases({ taskSummary, ...boxProps }: TaskPhasesProps): JSX.E
   // probably don't need to memo for now because almost all renders will change its
   // dependencies.
   const phaseProps = phases.map((_, idx) => {
-    if (
-      [RmfModels.TaskSummary.STATE_CANCELED, RmfModels.TaskSummary.STATE_FAILED].includes(
-        taskSummary.state,
-      )
-    ) {
+    if ([RmfTaskSummary.STATE_CANCELED, RmfTaskSummary.STATE_FAILED].includes(taskSummary.state)) {
       return {
         className: classes.failedPhase,
         color: phaseColors.failed,
       };
     }
 
-    if (taskSummary.state === RmfModels.TaskSummary.STATE_COMPLETED) {
+    if (taskSummary.state === RmfTaskSummary.STATE_COMPLETED) {
       return {
         className: classes.completedPhase,
         color: phaseColors.completed,
       };
     }
 
-    if (taskSummary.state === RmfModels.TaskSummary.STATE_ACTIVE && idx < currentPhaseIdx) {
+    if (taskSummary.state === RmfTaskSummary.STATE_ACTIVE && idx < currentPhaseIdx) {
       return {
         className: classes.completedPhase,
         color: phaseColors.completed,

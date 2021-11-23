@@ -21,6 +21,17 @@ class Level(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "name",
+                "elevation",
+                "images",
+                "places",
+                "doors",
+                "nav_graphs",
+                "wall_graph",
+            ],
+        }
 
 
 # string name

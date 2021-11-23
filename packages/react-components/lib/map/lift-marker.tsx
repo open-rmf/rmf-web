@@ -1,33 +1,34 @@
 import { styled } from '@mui/material';
+import type { LiftState } from 'api-client';
 import clsx from 'clsx';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import { LiftState as RmfLiftState } from 'rmf-models';
 
 // Gets the text to insert to the lift, the text depend on the current mode, motion state and the
 // current and destination floor of the lift.
-function getLiftModeText(liftState: RmfModels.LiftState): string {
+function getLiftModeText(liftState: LiftState): string {
   if (!liftState.current_mode) {
     return 'UNKNOWN';
   }
   switch (liftState.current_mode) {
-    case RmfModels.LiftState.MODE_FIRE:
+    case RmfLiftState.MODE_FIRE:
       return 'FIRE!';
-    case RmfModels.LiftState.MODE_EMERGENCY:
+    case RmfLiftState.MODE_EMERGENCY:
       return 'EMERGENCY!';
-    case RmfModels.LiftState.MODE_OFFLINE:
+    case RmfLiftState.MODE_OFFLINE:
       return 'OFFLINE';
     default:
       return 'NORMAL';
   }
 }
 
-function getLiftMotionText(liftState: RmfModels.LiftState): string {
+function getLiftMotionText(liftState: LiftState): string {
   switch (liftState.motion_state) {
-    case RmfModels.LiftState.MOTION_UP:
+    case RmfLiftState.MOTION_UP:
       return '▲';
-    case RmfModels.LiftState.MOTION_DOWN:
+    case RmfLiftState.MOTION_DOWN:
       return '▼';
-    case RmfModels.LiftState.MOTION_STOPPED:
+    case RmfLiftState.MOTION_STOPPED:
       return '⯀';
     default:
       return '?';
@@ -47,7 +48,7 @@ export const liftMarkerClasses = {
   human: 'lift-marker-human',
 };
 
-const StyledLiftMarker = styled('g')(() => ({
+const StyledLiftMarker = styled('g')(({ theme }) => ({
   [`&.${liftMarkerClasses.marker}`]: {
     cursor: 'pointer',
     pointerEvents: 'auto',
@@ -64,31 +65,31 @@ const StyledLiftMarker = styled('g')(() => ({
     userSelect: 'none',
   },
   [`& .${liftMarkerClasses.onCurrentLevel}`]: {
-    fill: 'green',
+    fill: theme.palette.success.light,
     opacity: '70%',
   },
   [`& .${liftMarkerClasses.moving}`]: {
-    fill: 'grey',
+    fill: theme.palette.secondary.light,
     opacity: '70%',
   },
   [`& .${liftMarkerClasses.unknown}`]: {
-    fill: '#3d3c3c',
+    fill: theme.palette.warning.light,
     opacity: '80%',
   },
   [`& .${liftMarkerClasses.emergency}`]: {
-    fill: 'red',
+    fill: theme.palette.error.light,
     opacity: '80%',
   },
   [`& .${liftMarkerClasses.fire}`]: {
-    fill: '#ff562a',
+    fill: theme.palette.error.main,
     opacity: '80%',
   },
   [`& .${liftMarkerClasses.offLine}`]: {
-    fill: 'yellow',
+    fill: theme.palette.grey[400],
     opacity: '80%',
   },
   [`& .${liftMarkerClasses.human}`]: {
-    fill: '#90dfef',
+    fill: theme.palette.info.main,
     opacity: '80%',
   },
 }));
@@ -99,7 +100,7 @@ export interface LiftMarkerProps extends React.PropsWithRef<React.SVGProps<SVGGE
   width: number;
   height: number;
   yaw: number;
-  liftState?: RmfModels.LiftState;
+  liftState?: LiftState;
   variant?: keyof typeof liftMarkerClasses;
 }
 

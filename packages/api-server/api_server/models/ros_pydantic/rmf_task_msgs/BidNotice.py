@@ -14,6 +14,12 @@ class BidNotice(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "task_profile",
+                "time_window",
+            ],
+        }
 
 
 # # This message is published by the Task Dispatcher node to notify all

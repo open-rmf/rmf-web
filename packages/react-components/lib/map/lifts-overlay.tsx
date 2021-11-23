@@ -1,5 +1,6 @@
+import type { DoorMode, Lift, LiftState } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import { LiftState as RmfLiftState } from 'rmf-models';
 import { almostShallowEqual, fromRmfCoords, fromRmfYaw, radiansToDegrees } from '../utils';
 import { DoorMarker as DoorMarker_ } from './door-marker';
 import { useAutoScale } from './hooks';
@@ -8,14 +9,14 @@ import { SVGOverlay, SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
 import { withLabel } from './with-label';
 
-function toDoorMode(liftState: RmfModels.LiftState): RmfModels.DoorMode {
+function toDoorMode(liftState: LiftState): DoorMode {
   // LiftState uses its own enum definition of door state/mode which is separated from DoorMode.
   // But their definitions are equal so we can skip conversion.
   return { value: liftState.door_state };
 }
 
 interface BoundedMarkerProps extends Omit<LiftMarkerProps, 'onClick'> {
-  lift: RmfModels.Lift;
+  lift: Lift;
   onClick?: (ev: React.MouseEvent, lift: string) => void;
 }
 
@@ -44,25 +45,25 @@ export const getLiftModeVariant = (
   liftStateFloor?: string,
 ): keyof typeof liftMarkerClasses | undefined => {
   if (!liftStateMode && !liftStateFloor) return 'unknown';
-  if (liftStateMode === RmfModels.LiftState.MODE_FIRE) return 'fire';
-  if (liftStateMode === RmfModels.LiftState.MODE_EMERGENCY) return 'emergency';
-  if (liftStateMode === RmfModels.LiftState.MODE_OFFLINE) return 'offLine';
+  if (liftStateMode === RmfLiftState.MODE_FIRE) return 'fire';
+  if (liftStateMode === RmfLiftState.MODE_EMERGENCY) return 'emergency';
+  if (liftStateMode === RmfLiftState.MODE_OFFLINE) return 'offLine';
   if (liftStateFloor === currentLevel) {
-    if (liftStateMode === RmfModels.LiftState.MODE_HUMAN) return 'human';
-    if (liftStateMode === RmfModels.LiftState.MODE_AGV) return 'onCurrentLevel';
+    if (liftStateMode === RmfLiftState.MODE_HUMAN) return 'human';
+    if (liftStateMode === RmfLiftState.MODE_AGV) return 'onCurrentLevel';
   } else {
-    if (liftStateMode === RmfModels.LiftState.MODE_HUMAN) return 'moving';
-    if (liftStateMode === RmfModels.LiftState.MODE_AGV) return 'moving';
+    if (liftStateMode === RmfLiftState.MODE_HUMAN) return 'moving';
+    if (liftStateMode === RmfLiftState.MODE_AGV) return 'moving';
   }
-  if (liftStateMode === RmfModels.LiftState.MODE_UNKNOWN) return 'unknown';
+  if (liftStateMode === RmfLiftState.MODE_UNKNOWN) return 'unknown';
 
   return 'unknown';
 };
 
 export interface LiftsOverlayProps extends Omit<SVGOverlayProps, 'viewBox'> {
   currentLevel: string;
-  lifts: RmfModels.Lift[];
-  liftStates?: Record<string, RmfModels.LiftState>;
+  lifts: Lift[];
+  liftStates?: Record<string, LiftState>;
   hideLabels?: boolean;
   onLiftClick?: (ev: React.MouseEvent, lift: string) => void;
 }

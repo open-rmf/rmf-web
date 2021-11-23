@@ -25,7 +25,7 @@ from api_server.models import (
 
 
 def make_door(name: str = "test_door") -> Door:
-    return Door.construct(
+    return Door(
         name=name,
         door_type=RmfDoor.DOOR_TYPE_SINGLE_SLIDING,
         motion_direction=1,
@@ -33,7 +33,7 @@ def make_door(name: str = "test_door") -> Door:
 
 
 def make_lift(name: str = "test_lift") -> Lift:
-    return Lift.construct(
+    return Lift(
         name=name,
         levels=["L1", "L2"],
         doors=[
@@ -43,7 +43,7 @@ def make_lift(name: str = "test_lift") -> Lift:
 
 
 def make_building_map():
-    return BuildingMap.construct(
+    return BuildingMap(
         name="test_name",
         levels=[
             Level(
@@ -64,14 +64,14 @@ def make_building_map():
 
 
 def make_door_state(name: str, mode: int = RmfDoorMode.MODE_CLOSED) -> DoorState:
-    return DoorState.construct(
+    return DoorState(
         door_name=name,
         current_mode=DoorMode(value=mode),
     )
 
 
 def make_lift_state(name: str = "test_lift") -> LiftState:
-    return LiftState.construct(
+    return LiftState(
         lift_name=name or "test_lift",
         available_floors=["L1", "L2"],
         current_floor="L1",
@@ -85,21 +85,21 @@ def make_lift_state(name: str = "test_lift") -> LiftState:
 
 
 def make_dispenser_state(guid: str = "test_dispenser") -> DispenserState:
-    return DispenserState.construct(
+    return DispenserState(
         guid=guid,
         mode=RmfDispenserState.IDLE,
     )
 
 
 def make_ingestor_state(guid: str = "test_ingestor") -> IngestorState:
-    return IngestorState.construct(
+    return IngestorState(
         guid=guid,
         mode=RmfIngestorState.IDLE,
     )
 
 
 def make_robot_state(name: str = "test_robot") -> RobotState:
-    return RobotState.construct(
+    return RobotState(
         name=name,
         model="test_model",
         task_id="",
@@ -111,14 +111,14 @@ def make_robot_state(name: str = "test_robot") -> RobotState:
 
 
 def make_fleet_state(name: str = "test_fleet") -> FleetState:
-    return FleetState.construct(
+    return FleetState(
         name=name,
         robots=[make_robot_state()],
     )
 
 
 def make_task_summary(task_id: str = "test_task") -> TaskSummary:
-    return TaskSummary.construct(
+    return TaskSummary(
         task_id=task_id,
         state=RmfTaskSummary.STATE_ACTIVE,
     )

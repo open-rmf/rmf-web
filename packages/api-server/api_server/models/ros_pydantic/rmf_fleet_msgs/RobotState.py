@@ -20,6 +20,18 @@ class RobotState(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "name",
+                "model",
+                "task_id",
+                "seq",
+                "mode",
+                "battery_percent",
+                "location",
+                "path",
+            ],
+        }
 
 
 # string name

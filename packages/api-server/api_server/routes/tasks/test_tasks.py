@@ -8,6 +8,13 @@ from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 
 from api_server.models import CancelTask, CleanTaskDescription, SubmitTask, TaskSummary
+from api_server.models.ros_pydantic.builtin_interfaces import Time
+from api_server.models.ros_pydantic.rmf_task_msgs import (
+    Priority,
+    TaskDescription,
+    TaskProfile,
+    TaskType,
+)
 from api_server.permissions import RmfAction
 from api_server.test import AppFixture, make_task_summary, try_until
 
@@ -140,32 +147,32 @@ class TestTasksRouteQuery(TasksFixture):
             TaskSummary(
                 task_id="task_1",
                 fleet_name="fleet_1",
-                submission_time={"sec": 1000, "nanosec": 0},
-                start_time={"sec": 2000, "nanosec": 0},
-                end_time={"sec": 3000, "nanosec": 0},
+                submission_time=Time(sec=1000, nanosec=0),
+                start_time=Time(sec=2000, nanosec=0),
+                end_time=Time(sec=3000, nanosec=0),
                 robot_name="robot_1",
                 state=RmfTaskSummary.STATE_COMPLETED,
-                task_profile={
-                    "description": {
-                        "task_type": {"type": RmfTaskType.TYPE_LOOP},
-                        "priority": {"value": 0},
-                    }
-                },
+                task_profile=TaskProfile(
+                    description=TaskDescription(
+                        task_type=TaskType(type=RmfTaskType.TYPE_LOOP),
+                        priority=Priority(value=0),
+                    ),
+                ),
             ),
             TaskSummary(
                 task_id="task_2",
                 fleet_name="fleet_2",
-                submission_time={"sec": 4000, "nanosec": 0},
-                start_time={"sec": 5000, "nanosec": 0},
-                end_time={"sec": 6000, "nanosec": 0},
+                submission_time=Time(sec=4000, nanosec=0),
+                start_time=Time(sec=5000, nanosec=0),
+                end_time=Time(sec=6000, nanosec=0),
                 robot_name="robot_2",
                 state=RmfTaskSummary.STATE_ACTIVE,
-                task_profile={
-                    "description": {
-                        "task_type": {"type": RmfTaskType.TYPE_DELIVERY},
-                        "priority": {"value": 1},
-                    }
-                },
+                task_profile=TaskProfile(
+                    description=TaskDescription(
+                        task_type=TaskType(type=RmfTaskType.TYPE_DELIVERY),
+                        priority=Priority(value=1),
+                    ),
+                ),
             ),
         )
 
@@ -270,7 +277,8 @@ class TestTasksRoute(TasksFixture):
 
         def wait():
             self.app.rmf_events().task_summaries.on_next(task_summary)
-            return fut.result(0)
+            return fut.done()
 
-        result = try_until(wait, lambda _: True)
+        try_until(wait, lambda x: x)
+        result = fut.result(0)
         self.assertEqual(1, result["start_time"]["sec"])

@@ -11,17 +11,18 @@ import {
 } from '@mui/material';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import type { Door, DoorState } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
+import { DoorMode as RmfDoorMode } from 'rmf-models';
 import { DoorTable } from './door-table';
 import { DoorData, doorModeToString, doorTypeToString } from './utils';
-import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
 
 export interface DoorPanelProps {
   doors: DoorData[];
-  doorStates: Record<string, RmfModels.DoorState>;
-  onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
+  doorStates: Record<string, DoorState>;
+  onDoorControlClick?(event: React.MouseEvent, door: Door, mode: number): void;
 }
 
 interface DoorGridData extends DoorPanelProps {
@@ -35,7 +36,7 @@ interface DoorGridRendererProps extends GridChildComponentProps {
 export interface DoorcellProps {
   door: DoorData;
   doorMode?: number;
-  onDoorControlClick?(event: React.MouseEvent, door: RmfModels.Door, mode: number): void;
+  onDoorControlClick?(event: React.MouseEvent, door: Door, mode: number): void;
 }
 
 const classes = {
@@ -58,36 +59,40 @@ const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme })
   [`& .${classes.buttonBar}`]: {
     display: 'flex',
     justifyContent: 'flex-end',
-    borderRadius: '0px',
+    borderRadius: 0,
     backgroundColor: theme.palette.primary.main,
   },
   [`& .${classes.grid}`]: {
-    padding: '1rem',
+    padding: theme.spacing(1),
   },
   [`& .${classes.doorLabelOpen}`]: {
     backgroundColor: theme.palette.success.main,
+    color: theme.palette.success.contrastText,
   },
   [`& .${classes.doorLabelClosed}`]: {
     backgroundColor: theme.palette.error.main,
+    color: theme.palette.error.contrastText,
   },
   [`& .${classes.doorLabelMoving}`]: {
     backgroundColor: theme.palette.warning.main,
+    color: theme.palette.warning.contrastText,
   },
   [`& .${classes.cellPaper}`]: {
-    padding: '0.5rem',
-    backgroundColor: theme.palette.info.light,
-    margin: '0.5rem',
+    padding: theme.spacing(2),
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.action.hover,
   },
   [`& .${classes.itemIcon}`]: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
+    color: theme.palette.primary.contrastText,
   },
   [`& .${classes.buttonGroup}`]: {
+    marginTop: theme.spacing(1),
     display: 'flex',
     justifyContent: 'center',
   },
   [`& .${classes.panelHeader}`]: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
-    marginLeft: '1rem',
+    color: theme.palette.primary.contrastText,
+    marginLeft: theme.spacing(2),
   },
   [`& .${classes.nameField}`]: {
     fontWeight: 'bold',
@@ -105,11 +110,11 @@ const DoorCell = React.memo(
           return '';
         }
         switch (doorMode) {
-          case RmfModels.DoorMode.MODE_OPEN:
+          case RmfDoorMode.MODE_OPEN:
             return `${classes.doorLabelOpen}`;
-          case RmfModels.DoorMode.MODE_CLOSED:
+          case RmfDoorMode.MODE_CLOSED:
             return `${classes.doorLabelClosed}`;
-          case RmfModels.DoorMode.MODE_MOVING:
+          case RmfDoorMode.MODE_MOVING:
             return `${classes.doorLabelMoving}`;
           default:
             return '';
@@ -147,21 +152,17 @@ const DoorCell = React.memo(
           {door && doorTypeToString(door.door.door_type)}
         </Typography>
         <div className={classes.buttonGroup}>
-          <ButtonGroup size="small">
+          <ButtonGroup variant="contained" size="small" color="primary">
             <Button
               onClick={(ev) =>
-                door &&
-                onDoorControlClick &&
-                onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_OPEN)
+                onDoorControlClick && onDoorControlClick(ev, door.door, RmfDoorMode.MODE_OPEN)
               }
             >
               Open
             </Button>
             <Button
               onClick={(ev) =>
-                door &&
-                onDoorControlClick &&
-                onDoorControlClick(ev, door.door, RmfModels.DoorMode.MODE_CLOSED)
+                onDoorControlClick && onDoorControlClick(ev, door.door, RmfDoorMode.MODE_CLOSED)
               }
             >
               Close
@@ -175,7 +176,7 @@ const DoorCell = React.memo(
 
 const DoorGridRenderer = ({ data, columnIndex, rowIndex, style }: DoorGridRendererProps) => {
   let door: DoorData | undefined;
-  let doorState: RmfModels.DoorState | undefined;
+  let doorState: DoorState | undefined;
   const columnCount = data.columnCount;
 
   if (rowIndex * columnCount + columnIndex <= data.doors.length - 1) {

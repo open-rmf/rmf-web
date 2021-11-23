@@ -1,16 +1,16 @@
 import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import { TaskSummary as RmfTaskSummary, TaskType as RmfTaskType } from 'rmf-models';
 import { render } from '../../tests/test-utils';
 import { TaskPanel, TaskPanelProps } from '../task-panel';
-import { makeTask } from './make-tasks';
+import { makeTaskWithPhases } from './make-tasks';
 
 describe('TaskPanel', () => {
   describe('task detail', () => {
     const mount = async (cancelTask?: TaskPanelProps['cancelTask']) => {
-      const task = makeTask('test_task', 3, 3);
-      task.summary.task_profile.description.task_type.type = RmfModels.TaskType.TYPE_CLEAN;
+      const task = makeTaskWithPhases('test_task', 3, 3);
+      task.summary.task_profile.description.task_type.type = RmfTaskType.TYPE_CLEAN;
       task.summary.task_profile.description.clean.start_waypoint = 'test_waypoint';
       const root = render(<TaskPanel tasks={[task]} cancelTask={cancelTask} />);
       userEvent.click(await root.findByText('test_task'));
@@ -38,7 +38,9 @@ describe('TaskPanel', () => {
 
     it('clicking on cancel button triggers callback', async () => {
       const cancelTask = jest.fn();
-      const root = render(<TaskPanel tasks={[makeTask('task1', 1, 1)]} cancelTask={cancelTask} />);
+      const root = render(
+        <TaskPanel tasks={[makeTaskWithPhases('task1', 1, 1)]} cancelTask={cancelTask} />,
+      );
       userEvent.click(root.getByText('task1'));
       userEvent.click(root.getByLabelText('Cancel Task'));
       expect(cancelTask).toHaveBeenCalledTimes(1);
@@ -46,7 +48,7 @@ describe('TaskPanel', () => {
     });
 
     it('cancel task button is disabled for user without required permission', () => {
-      const root = render(<TaskPanel tasks={[makeTask('task1', 1, 1)]} />, {
+      const root = render(<TaskPanel tasks={[makeTaskWithPhases('task1', 1, 1)]} />, {
         profile: { user: { username: 'test2', is_admin: false, roles: [] }, permissions: [] },
       });
       userEvent.click(root.getByText('task1'));
@@ -55,8 +57,8 @@ describe('TaskPanel', () => {
     });
 
     it('cancel task button is disabled for completed task', () => {
-      const task = makeTask('task1', 1, 1);
-      task.summary.state = RmfModels.TaskSummary.STATE_COMPLETED;
+      const task = makeTaskWithPhases('task1', 1, 1);
+      task.summary.state = RmfTaskSummary.STATE_COMPLETED;
       const root = render(<TaskPanel tasks={[task]} />);
       userEvent.click(root.getByText('task1'));
       const button = root.getByLabelText('Cancel Task');
@@ -64,8 +66,8 @@ describe('TaskPanel', () => {
     });
 
     it('cancel task button is disabled for failed task', () => {
-      const task = makeTask('task1', 1, 1);
-      task.summary.state = RmfModels.TaskSummary.STATE_FAILED;
+      const task = makeTaskWithPhases('task1', 1, 1);
+      task.summary.state = RmfTaskSummary.STATE_FAILED;
       const root = render(<TaskPanel tasks={[task]} />);
       userEvent.click(root.getByText('task1'));
       const button = root.getByLabelText('Cancel Task');
@@ -73,8 +75,8 @@ describe('TaskPanel', () => {
     });
 
     it('cancel task button is disabled for cancelled task', () => {
-      const task = makeTask('task1', 1, 1);
-      task.summary.state = RmfModels.TaskSummary.STATE_CANCELED;
+      const task = makeTaskWithPhases('task1', 1, 1);
+      task.summary.state = RmfTaskSummary.STATE_CANCELED;
       const root = render(<TaskPanel tasks={[task]} />);
       userEvent.click(root.getByText('task1'));
       const button = root.getByLabelText('Cancel Task');
@@ -124,7 +126,7 @@ describe('TaskPanel', () => {
     const spy = jest.fn();
     const root = render(
       <TaskPanel
-        tasks={[makeTask('test', 1, 1)]}
+        tasks={[makeTaskWithPhases('test', 1, 1)]}
         paginationOptions={{
           count: 1,
           page: 0,

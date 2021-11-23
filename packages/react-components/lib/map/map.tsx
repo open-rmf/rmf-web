@@ -1,10 +1,10 @@
 import { styled } from '@mui/material';
+import type { Level } from 'api-client';
 import clsx from 'clsx';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import React from 'react';
 import { Map as LMap_, MapProps as LMapProps_, Pane, useLeaflet } from 'react-leaflet';
-import * as RmfModels from 'rmf-models';
 import { EntityManager, EntityManagerContext } from './entity-manager';
 import { LabelsPortalContext } from './labels-overlay';
 import { SVGOverlay } from './svg-overlay';
@@ -23,7 +23,7 @@ const StyledLMap_ = styled((props: LMapProps_) => <LMap_ {...props} />)(() => ({
 }));
 
 export interface MapFloorLayer {
-  level: RmfModels.Level;
+  level: Level;
   imageUrl: string;
   bounds: L.LatLngBounds;
 }

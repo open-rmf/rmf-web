@@ -39,7 +39,7 @@ export function RoleListPage(): JSX.Element | null {
         }}
         savePermission={async (role, permission) => {
           try {
-            await adminApi.addRolePermissionAdminRolesRolePermissionsPost(permission, role);
+            await adminApi.addRolePermissionAdminRolesRolePermissionsPost(role, permission);
           } catch (e) {
             throw new Error(getApiErrorMessage(e));
           }
@@ -47,8 +47,8 @@ export function RoleListPage(): JSX.Element | null {
         removePermission={async (role, permission) => {
           try {
             await adminApi.removeRolePermissionAdminRolesRolePermissionsRemovePost(
-              permission,
               role,
+              permission,
             );
           } catch (e) {
             throw new Error(getApiErrorMessage(e));

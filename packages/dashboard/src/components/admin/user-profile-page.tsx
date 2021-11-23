@@ -51,7 +51,7 @@ export function UserProfilePage(): JSX.Element | null {
               user={user}
               makeAdmin={async (admin) => {
                 try {
-                  await adminApi.makeAdminAdminUsersUsernameMakeAdminPost({ admin }, user.username);
+                  await adminApi.makeAdminAdminUsersUsernameMakeAdminPost(user.username, { admin });
                   refresh();
                 } catch (e) {
                   throw new Error(getApiErrorMessage(e));
@@ -71,10 +71,10 @@ export function UserProfilePage(): JSX.Element | null {
               saveRoles={async (roles) => {
                 try {
                   await adminApi.setUserRolesAdminUsersUsernameRolesPut(
+                    user.username,
                     roles.map((r) => ({
                       name: r,
                     })),
-                    user.username,
                   );
                   refresh();
                 } catch (e) {

@@ -1,11 +1,11 @@
-import * as RmfModels from 'rmf-models';
+import type { BuildingMap, GraphNode } from 'api-client';
 
 export interface Place {
   level: string;
-  vertex: RmfModels.GraphNode;
+  vertex: GraphNode;
 }
 
-export function getPlaces(buildingMap: RmfModels.BuildingMap): Place[] {
+export function getPlaces(buildingMap: BuildingMap): Place[] {
   const places: Place[] = [];
   for (const level of buildingMap.levels) {
     for (const graphs of level.nav_graphs) {

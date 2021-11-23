@@ -17,6 +17,16 @@ class Location(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "t",
+                "x",
+                "y",
+                "yaw",
+                "level_name",
+                "index",
+            ],
+        }
 
 
 # builtin_interfaces/Time t

@@ -1,6 +1,7 @@
 import React from 'react';
 import Debug from 'debug';
-import * as RmfModels from 'rmf-models';
+import type { TaskSummary } from 'api-client';
+import { TaskSummary as RmfTaskSummary } from 'rmf-models';
 import { IconButton, Typography, styled } from '@mui/material';
 import { MultiSelectTreeViewProps, SingleSelectTreeViewProps, TreeItem, TreeView } from '@mui/lab';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -13,7 +14,7 @@ import { formatStatus, getActorFromStatus, getStateLabel } from './task-summary-
 const debug = Debug('Tasks:TaskSummaryAccordion');
 
 interface TaskSummaryAccordionInfoProps {
-  task: RmfModels.TaskSummary;
+  task: TaskSummary;
 }
 interface TreeViewRootProps extends SingleSelectTreeViewProps {
   onNodeToggle?: MultiSelectTreeViewProps['onNodeSelect'];
@@ -116,7 +117,7 @@ export const TaskSummaryAccordionInfo = (props: TaskSummaryAccordionInfoProps): 
 };
 
 export interface TaskSummaryAccordionProps {
-  tasks: RmfModels.TaskSummary[];
+  tasks: TaskSummary[];
 }
 
 export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps) => {
@@ -135,13 +136,13 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
 
   const determineStyle = (state: number): string => {
     switch (state) {
-      case RmfModels.TaskSummary.STATE_QUEUED:
+      case RmfTaskSummary.STATE_QUEUED:
         return classes.queued;
-      case RmfModels.TaskSummary.STATE_ACTIVE:
+      case RmfTaskSummary.STATE_ACTIVE:
         return classes.active;
-      case RmfModels.TaskSummary.STATE_COMPLETED:
+      case RmfTaskSummary.STATE_COMPLETED:
         return classes.completed;
-      case RmfModels.TaskSummary.STATE_FAILED:
+      case RmfTaskSummary.STATE_FAILED:
         return classes.failed;
       default:
         return 'UNKNOWN';
@@ -158,7 +159,7 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
     );
   };
 
-  const renderTaskTreeItem = (task: RmfModels.TaskSummary) => {
+  const renderTaskTreeItem = (task: TaskSummary) => {
     return (
       <TreeItem
         role={'treeitem'}
@@ -172,13 +173,13 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
         label={
           <>
             <Typography variant="body1" noWrap>
-              {task.state === RmfModels.TaskSummary.STATE_ACTIVE && (
+              {task.state === RmfTaskSummary.STATE_ACTIVE && (
                 // TODO: add onClick with e.preventDefault() and with the pause plans logic.
                 <IconButton disabled>
                   <PlayCircleFilledWhiteIcon />
                 </IconButton>
               )}
-              {task.state === RmfModels.TaskSummary.STATE_QUEUED && (
+              {task.state === RmfTaskSummary.STATE_QUEUED && (
                 <IconButton disabled>
                   <PauseCircleFilledIcon />
                 </IconButton>
