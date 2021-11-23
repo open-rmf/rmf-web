@@ -1,0 +1,33 @@
+{
+  "name": "rmf-tools",
+  "version": "0.0.0",
+  "description": "utility package for rmf interfaces",
+  "keywords": [
+    "rmf",
+    "tools"
+  ],
+  "author": "chawin@openrobotics.org",
+  "homepage": "https://github.com/open-rmf/rmf-web#readme",
+  "license": "ISC",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/open-rmf/rmf-web.git"
+  },
+  "scripts": {
+    "prepare": "tsc --build",
+    "prepack": "npm run lint && npm run test",
+    "lint": "eslint --ext ts,tsx, lib"
+  },
+  "bugs": {
+    "url": "https://github.com/open-rmf/rmf-web/issues"
+  },
+  "devDependencies": {
+    "eslint": "^7.26.0",
+    "ts-node": "^9.1.1",
+    "typescript": "4.2.4"
+  },
+  "files": [
+    "dist/**"
+  ]
+}

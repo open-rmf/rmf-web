@@ -7,27 +7,29 @@ const chalk = require('chalk');
 const path = require('path');
 const fs = require('fs');
 
-const ProjectDir = __dirname.slice(0, __dirname.length - '/scripts/setup'.length);
-const ResourcesPath = `${ProjectDir}/src/assets/resources`;
+const ProjectDir = __dirname.slice(0, __dirname.length - '/setup'.length);
+const resourcePath = 'src/assets/resources';
+const ResourcesPath = `${ProjectDir}/${resourcePath}`;
 const TempDir = `${ProjectDir}/tmp`;
+const packageRoot = path.resolve(process.cwd() + '/..');
 
 class Ament {
-  findPackage(packageName) {
+  findPackage(packageName?: string) {
     this._isEmpty(packageName);
     return this._getPackageLocation(packageName);
   }
 
-  _isEmpty(packageName) {
+  _isEmpty(packageName?: string) {
     if (!packageName) {
       throw new Error('You must provide a package name');
     }
   }
 
-  _getPackageLocation(packageName) {
-    const paths = this._getAmentPrefixPath().split(':');
+  _getPackageLocation(packageName?: string) {
+    const paths = this._getAmentPrefixPath()?.split(':');
     // Is package inside?
     for (let p in paths) {
-      const path = paths[p];
+      const path = paths[parseInt(p)];
       const location = `${path}/share/${packageName}/`;
       const directoryExists = fs.existsSync(location);
       if (directoryExists) {
@@ -45,10 +47,21 @@ class Ament {
   }
 }
 
+interface ResourcesData {
+  path?: string;
+  repoUrl?: string;
+  branch?: string;
+  folder?: string;
+  rosPackage?: string;
+}
+
 class IconManagerBase {
-  constructor(resourcesData) {
+  constructor(resourcesData: ResourcesData, project: string) {
     this.resourcesData = resourcesData;
+    this.project = project;
   }
+  resourcesData: ResourcesData;
+  project: string;
 }
 
 /**
@@ -100,11 +113,12 @@ class SparseCheckoutGitV217 extends IconManagerBase {
 }
 
 class IconManager extends IconManagerBase {
-  getGitMinorVersion = (rawGitVersion) => {
+  getGitMinorVersion = (rawGitVersion: string) => {
     const gitVersion = rawGitVersion.split(' ')[2];
     const gitMinorVersion = gitVersion.split('.')[1];
     return parseInt(gitMinorVersion);
   };
+  destinationDir = `${packageRoot}/${this.project}/${resourcePath}`;
 
   cloneSpecificFolder = () => {
     // Safeguard in case the tmp is not deleted and already have a remote defined
@@ -114,14 +128,14 @@ class IconManager extends IconManagerBase {
     const cloneImplementation =
       this.getGitMinorVersion(stdout) < 25 ? SparseCheckoutGitV217 : SparseCheckoutGitV225;
 
-    new cloneImplementation(this.resourcesData).execute();
+    new cloneImplementation(this.resourcesData, this.project).execute();
     this.moveFromTmpFolderToIconFolder();
     this.removeTmpFolder();
   };
 
   cloneRepo = () => {
     execSync(
-      `git clone "${this.resourcesData.repoUrl}" --depth=1 --single-branch --branch ${this.resourcesData.branch} ${ResourcesPath} -o repo`,
+      `git clone "${this.resourcesData.repoUrl}" --depth=1 --single-branch --branch ${this.resourcesData.branch} ${this.destinationDir} -o repo`,
       {
         stdio: 'inherit', // we need this so node will print the command output
       },
@@ -142,14 +156,14 @@ class IconManager extends IconManagerBase {
   };
 
   moveFromTmpFolderToIconFolder = () => {
-    execSync(`cp -r "${TempDir}/${this.resourcesData.folder}"/* "${ResourcesPath}/"`, {
+    execSync(`cp -r "${TempDir}/${this.resourcesData.folder}"/* "${this.destinationDir}"`, {
       stdio: 'inherit',
       cwd: ProjectDir,
     });
   };
 
-  _copyDir = (from, to) => {
-    if (!from.endsWith('/')) from += '/';
+  _copyDir = (from: string | undefined, to: string) => {
+    if (!from?.endsWith('/')) from += '/';
     const stdout = execSync(`cp -r "${from}"* "${to}"`).toString();
     console.log(stdout);
     console.log(
@@ -161,24 +175,23 @@ class IconManager extends IconManagerBase {
   };
 
   copyFromLocalDirectory = () => {
-    this._copyDir(this.resourcesData.path, ResourcesPath);
+    this._copyDir(this.resourcesData?.path, `${this.destinationDir}`);
   };
 
   copyFromRosPackage = () => {
     const ament = new Ament();
-    const packageDir = ament.findPackage(this.resourcesData.rosPackage);
-
-    this._copyDir(`${packageDir}${this.resourcesData.path}`, ResourcesPath);
+    const packageDir = ament.findPackage(this.resourcesData?.rosPackage);
+    this._copyDir(`${packageDir}${this.resourcesData.path}`, `${this.destinationDir}`);
   };
 }
 
-const getIcons = (resourcesData) => {
-  const iconManager = new IconManager(resourcesData);
-
+export const getIcons = (resourcesData: ResourcesData, project: string) => {
+  const iconManager = new IconManager(resourcesData, project);
+  const to = `${packageRoot}/${project}/${resourcePath}`;
   try {
-    execSync(`[ -d "${ResourcesPath}" ] && rm -rf "${ResourcesPath}"`);
+    execSync(`[ -d "${to}" ] && rm -rf "${to}"`);
   } catch {}
-  execSync(`mkdir -p "${ResourcesPath}"`);
+  execSync(`mkdir -p "${to}"`);
 
   if (resourcesData.hasOwnProperty('repoUrl')) {
     // If we don't want to clone a specific folder of the repo, it'll clone the whole repo
@@ -192,8 +205,4 @@ const getIcons = (resourcesData) => {
   } else {
     iconManager.copyFromLocalDirectory();
   }
-};
-
-module.exports = {
-  getIcons,
 };

@@ -11,6 +11,7 @@
     "packages/reporting-server",
     "packages/rmf-auth",
     "packages/rmf-models",
+    "packages/rmf-tools",
     "packages/ros-translator",
     "packages/minimal",
     "pipenv-install"

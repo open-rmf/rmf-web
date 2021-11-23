@@ -37,7 +37,7 @@ exports.LocalLauncher = class {
     return this._instance;
   }
 
-  static _instance;
+  static _instance: typeof exports.LocalLauncher;
 
   async launch(timeout = 30000) {
     if (this._launched) {
@@ -71,9 +71,9 @@ exports.LocalLauncher = class {
   }
 
   _launched = false;
-  _rmfDemo;
+  _rmfDemo?: ManagedProcess;
 
-  async _rmfReady(timeout) {
+  async _rmfReady(timeout: number) {
     const ros2Echo = spawn('ros2', [
       'topic',
       'echo',
@@ -115,7 +115,7 @@ class ManagedProcess {
     return this._procAlive;
   }
 
-  constructor(command, args, options) {
+  constructor(command: string, args: string[], options: Object) {
     this._proc = spawn(command, args, {
       ...options,
       detached: true,
@@ -129,7 +129,7 @@ class ManagedProcess {
   /**
    * Kill the child process and all their childrens.
    */
-  async kill(signal) {
+  async kill(signal: string | number | undefined) {
     if (!this._procAlive) {
       return;
     }
@@ -163,7 +163,7 @@ exports.StubLauncher = class {
  *
  * If the value is `local`, a singleton instance is used and signal handlers are installed.
  */
-exports.makeLauncher = () => {
+export const makeLauncher = () => {
   let launchMode = LaunchMode.LocalSingleton;
 
   if (process.env.RMF_LAUNCH_MODE === 'none') {
