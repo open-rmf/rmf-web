@@ -5,6 +5,11 @@
 /.pnp
 .pnp.js
 
+# setup artifacts
+/.resources.json
+/tmp
+/src/assets/resources
+
 # testing
 /coverage
 
