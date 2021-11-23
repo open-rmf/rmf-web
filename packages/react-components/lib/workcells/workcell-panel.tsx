@@ -12,15 +12,17 @@ import { WorkcellTable } from './workcell-table';
 
 export interface WorkcellPanelProps {
   dispensers: Dispenser[];
+  ingestors: Ingestor[];
   leafletMap?: LeafletContext;
   workcellContext: Record<string, DispenserResource>;
-  ingestors: Ingestor[];
   workcellStates: Record<string, WorkcellState>;
 }
 
 export interface WorkcellDataProps {
   workcells: Workcell[];
   workcellStates: Record<string, WorkcellState>;
+  workcellContext: Record<string, DispenserResource>;
+  leafletMap: LeafletContext | undefined;
 }
 
 interface WorkcellGridData extends WorkcellDataProps {
@@ -32,14 +34,12 @@ interface WorkcellGridRendererProps extends GridChildComponentProps {
 }
 
 export interface WorkcellCellProps {
-  workcellResource?: DispenserResource;
-  leafletMap?: LeafletContext;
   workcell: Workcell;
   requestGuidQueue?: string[];
   secondsRemaining?: number;
-  onWorkcellClick?(workcellResource: DispenserResource, leafletMap: LeafletContext): void;
+  leafletMap?: LeafletContext;
+  workcellResource?: DispenserResource;
 }
-
 const useStyles = makeStyles((theme) => ({
   container: {
     margin: theme.spacing(1),
@@ -102,11 +102,11 @@ const useStyles = makeStyles((theme) => ({
 
 const WorkcellCell = React.memo(
   ({
-    workcellResource,
-    leafletMap,
     workcell,
     requestGuidQueue,
     secondsRemaining,
+    leafletMap,
+    workcellResource,
   }: WorkcellCellProps): JSX.Element => {
     const classes = useStyles();
     const labelId = `workcell-cell-${workcell.guid}`;
@@ -166,11 +166,13 @@ const WorkcellGridRenderer = ({
   let workcellResource: DispenserResource | undefined;
   let leafletMap: LeafletContext | undefined;
   const columnCount = data.columnCount;
-  const { workcells, workcellStates } = data;
+  const { workcells, workcellStates, workcellContext } = data;
 
   if (rowIndex * columnCount + columnIndex <= workcells.length - 1) {
     workcell = workcells[rowIndex * columnCount + columnIndex];
     workcellState = workcellStates[workcell.guid];
+    workcellResource = workcellContext[workcell.guid];
+    leafletMap = data.leafletMap;
   }
 
   return workcell ? (

@@ -187,6 +187,7 @@ const WorkcellListRenderer = ({ data, index, style }: WorkcellListRendererProps)
   const workcell = data.workcells[index];
   const workcellContext = data.workcellContext;
   const workcellState: WorkcellState | undefined = data.workcellStates[workcell.guid];
+  const leafletMap = data.leafletMap;
 
   return (
     <div style={style}>
@@ -196,6 +197,7 @@ const WorkcellListRenderer = ({ data, index, style }: WorkcellListRendererProps)
         requestGuidQueue={workcellState?.request_guid_queue}
         secondsRemaining={workcellState?.seconds_remaining}
         workcellResource={workcellContext[workcell.guid]}
+        leafletMap={leafletMap}
       />
     </div>
   );
