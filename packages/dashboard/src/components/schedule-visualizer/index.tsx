@@ -1,15 +1,7 @@
 /* istanbul ignore file */
 
 import { makeStyles } from '@material-ui/core';
-import {
-  BuildingMap,
-  Dispenser,
-  DoorState,
-  FleetState,
-  Ingestor,
-  LiftState,
-  Robot,
-} from 'api-client';
+import { BuildingMap, Dispenser, DoorState, FleetState, Ingestor, LiftState } from 'api-client';
 import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';

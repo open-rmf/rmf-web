@@ -167,25 +167,19 @@ export default function Dashboard(_props: {}): React.ReactElement {
 
   const handleOnDoorControlClick = React.useCallback(
     (_ev, door: Door, mode: number) =>
-      doorsApi?.postDoorRequestDoorsDoorNameRequestPost(
-        {
-          mode: mode,
-        },
-        door.name,
-      ),
+      doorsApi?.postDoorRequestDoorsDoorNameRequestPost(door.name, {
+        mode: mode,
+      }),
     [doorsApi],
   );
 
   const handleLiftRequestSubmit = React.useCallback<Required<LiftPanelProps>['onRequestSubmit']>(
     (_ev, lift, doorState, requestType, destination) =>
-      liftsApi?.postLiftRequestLiftsLiftNameRequestPost(
-        {
-          destination,
-          request_type: requestType,
-          door_mode: doorState,
-        },
-        lift.name,
-      ),
+      liftsApi?.postLiftRequestLiftsLiftNameRequestPost(lift.name, {
+        destination,
+        request_type: requestType,
+        door_mode: doorState,
+      }),
     [liftsApi],
   );
 
