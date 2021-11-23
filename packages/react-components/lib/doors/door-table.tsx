@@ -186,7 +186,7 @@ export const DoorTable = ({
     <AutoSizer disableHeight>
       {({ width }) => {
         return (
-          <Table stickyHeader size="small" aria-label="door-table" component="div">
+          <Table size="small" aria-label="door-table" component="div">
             <TableHead component="div">
               <TableRow component="div" className={classes.tableRow} style={{ width: width }}>
                 <TableCell

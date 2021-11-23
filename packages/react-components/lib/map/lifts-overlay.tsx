@@ -1,4 +1,4 @@
-import type { DoorMode, Lift, LiftState } from 'api-client';
+import type { DoorMode, Lift, LiftState, Door } from 'api-client';
 import React from 'react';
 import { LiftState as RmfLiftState } from 'rmf-models';
 import { almostShallowEqual, fromRmfCoords, fromRmfYaw, radiansToDegrees } from '../utils';
@@ -109,7 +109,7 @@ export const LiftsOverlay = ({
               labelArrowLength={Math.max((lift.width / 3) * scale, (lift.depth / 3) * scale)}
               hideLabel={hideLabels}
             />
-            {lift.doors.map((door, idx) => {
+            {lift.doors.map((door: Door, idx: number) => {
               const [x1, y1] = fromRmfCoords([door.v1_x, door.v1_y]);
               const [x2, y2] = fromRmfCoords([door.v2_x, door.v2_y]);
               return (

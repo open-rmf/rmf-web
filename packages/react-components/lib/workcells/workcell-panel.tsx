@@ -37,6 +37,7 @@ export interface WorkcellCellProps {
   workcell: Workcell;
   requestGuidQueue?: string[];
   secondsRemaining?: number;
+  onWorkcellClick?(workcellResource: DispenserResource, leafletMap: LeafletContext): void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -236,7 +237,6 @@ export function WorkcellPanel({
                         columnCount,
                         workcells: dispensers,
                         workcellStates,
-                        type: 'dispensers',
                         workcellContext,
                         leafletMap,
                       }}
@@ -267,7 +267,6 @@ export function WorkcellPanel({
                         columnCount,
                         workcells: ingestors,
                         workcellStates,
-                        type: 'ingestors',
                         workcellContext,
                         leafletMap,
                       }}
@@ -289,6 +288,7 @@ export function WorkcellPanel({
                 workcells={dispensers}
                 workcellStates={workcellStates}
                 workcellContext={workcellContext}
+                leafletMap={leafletMap}
               />
             </div>
           ) : null}
@@ -299,6 +299,7 @@ export function WorkcellPanel({
                 workcells={ingestors}
                 workcellStates={workcellStates}
                 workcellContext={workcellContext}
+                leafletMap={leafletMap}
               />
             </div>
           ) : null}

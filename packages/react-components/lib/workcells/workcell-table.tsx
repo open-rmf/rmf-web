@@ -103,7 +103,7 @@ const WorkcellRow = React.memo(
           <React.Fragment>
             <TableCell
               component="div"
-              variant="head"
+              variant="body"
               className={clsx(classes.tableCell, fixedTableCell)}
               title={workcell.guid}
             >
@@ -111,28 +111,28 @@ const WorkcellRow = React.memo(
             </TableCell>
             <TableCell
               component="div"
-              variant="head"
+              variant="body"
               className={clsx(dispenserModeLabelClasses(mode), classes.tableCell, fixedTableCell)}
             >
               {dispenserModeToString(mode)}
             </TableCell>
             <TableCell
               component="div"
-              variant="head"
+              variant="body"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {requestGuidQueue.length}
             </TableCell>
             <TableCell
               component="div"
-              variant="head"
+              variant="body"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {requestGuidQueue}
             </TableCell>
             <TableCell
               component="div"
-              variant="head"
+              variant="body"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {secondsRemaining}
@@ -142,7 +142,7 @@ const WorkcellRow = React.memo(
           <React.Fragment>
             <TableCell
               component="div"
-              variant="head"
+              variant="body"
               className={clsx(classes.tableCell, fixedTableCell)}
               title={workcell.guid}
             >
@@ -150,28 +150,28 @@ const WorkcellRow = React.memo(
             </TableCell>
             <TableCell
               component="div"
-              variant="head"
+              variant="body"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {'NA'}
             </TableCell>
             <TableCell
               component="div"
-              variant="head"
+              variant="body"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {'NA'}
             </TableCell>
             <TableCell
               component="div"
-              variant="head"
+              variant="body"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {'NA'}
             </TableCell>
             <TableCell
               component="div"
-              variant="head"
+              variant="body"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {'NA'}
@@ -208,14 +208,14 @@ export const WorkcellTable = ({
   leafletMap,
 }: WorkcellTableProps): JSX.Element => {
   const classes = useStyles();
-  const { fixedTableCell } = useFixedTableCellStyles();
+  const { fixedTableCell, fixedLastTableCell } = useFixedTableCellStyles();
   return (
     <AutoSizer disableHeight>
       {({ width }) => {
         return (
-          <Table component="div" stickyHeader size="small" aria-label="workcell-table">
+          <Table component="div" size="small" aria-label="workcell-table">
             <TableHead component="div">
-              <TableRow component="div" className={classes.tableRow}>
+              <TableRow component="div" className={classes.tableRow} style={{ width: width }}>
                 <TableCell
                   component="div"
                   variant="head"
@@ -247,7 +247,7 @@ export const WorkcellTable = ({
                 <TableCell
                   component="div"
                   variant="head"
-                  className={clsx(classes.tableCell, fixedTableCell)}
+                  className={clsx(classes.tableCell, fixedLastTableCell)}
                 >
                   Seconds Remaining
                 </TableCell>

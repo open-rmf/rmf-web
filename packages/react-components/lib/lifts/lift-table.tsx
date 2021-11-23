@@ -216,47 +216,47 @@ export const LiftTable = ({
     <AutoSizer disableHeight>
       {({ width }) => {
         return (
-          <Table component="div" stickyHeader size="small" aria-label="lift-table">
+          <Table component="div" size="small" aria-label="lift-table">
             <TableHead component="div">
               <TableRow component="div" className={classes.tableRow}>
                 <TableCell
                   component="div"
-                  variant="body"
+                  variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Lift Name
                 </TableCell>
                 <TableCell
                   component="div"
-                  variant="body"
+                  variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Op. Mode
                 </TableCell>
                 <TableCell
                   component="div"
-                  variant="body"
+                  variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Current Floor
                 </TableCell>
                 <TableCell
                   component="div"
-                  variant="body"
+                  variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Destination
                 </TableCell>
                 <TableCell
                   component="div"
-                  variant="body"
+                  variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Doors State
                 </TableCell>
                 <TableCell
                   component="div"
-                  variant="body"
+                  variant="head"
                   className={clsx(classes.tableCell, fixedLastTableCell)}
                 >
                   Request Form

@@ -56,10 +56,10 @@ export interface TaskTimelineProps {
 export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
   const classes = useStyles();
   const timelinePhases = taskSummary.status.split('\n\n');
-  const currentDotIdx = timelinePhases.findIndex((msg) => msg.startsWith('*'));
+  const currentDotIdx = timelinePhases.findIndex((msg: string) => msg.startsWith('*'));
   const timelineInfo = taskSummary.status.split('\n\n');
 
-  const timelineDotProps = timelinePhases.map((_, idx) => {
+  const timelineDotProps = timelinePhases.map((_: string, idx: number) => {
     if ([RmfTaskSummary.STATE_CANCELED, RmfTaskSummary.STATE_FAILED].includes(taskSummary.state)) {
       return {
         className: classes.failedPhase,
@@ -85,7 +85,7 @@ export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
 
   return (
     <Timeline align="left" className={classes.timelineRoot}>
-      {timelineInfo.map((dotInfo, idx) => {
+      {timelineInfo.map((dotInfo: string, idx: number) => {
         return (
           <TimelineItem key={idx}>
             <TimelineOppositeContent style={{ flex: 0.1, padding: '0px 12px 0px 0px' }}>

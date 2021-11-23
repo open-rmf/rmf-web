@@ -178,7 +178,7 @@ const DoorCell = React.memo(
           {door && doorTypeToString(door.door.door_type)}
         </Typography>
         <div className={classes.buttonGroup}>
-          <ButtonGroup variant="contained" size="small" color="primary">
+          <ButtonGroup variant="contained" size="small">
             <Button
               className={classes.openCloseButtons}
               onClick={(ev) =>
