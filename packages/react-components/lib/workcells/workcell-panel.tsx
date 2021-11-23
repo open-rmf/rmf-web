@@ -117,7 +117,12 @@ const WorkcellCell = React.memo(
   },
 );
 
-const WorkcellGridRenderer = ({ data, columnIndex, rowIndex }: WorkcellGridRendererProps) => {
+const WorkcellGridRenderer = ({
+  data,
+  columnIndex,
+  rowIndex,
+  style,
+}: WorkcellGridRendererProps) => {
   let workcell: Workcell | undefined;
   let workcellState: WorkcellState | undefined;
   const columnCount = data.columnCount;
@@ -129,7 +134,7 @@ const WorkcellGridRenderer = ({ data, columnIndex, rowIndex }: WorkcellGridRende
   }
 
   return workcell ? (
-    <div>
+    <div style={style}>
       <WorkcellCell
         workcell={workcell}
         requestGuidQueue={workcellState?.request_guid_queue}
