@@ -67,7 +67,6 @@ export function ConfirmationDialog({
         <DialogActions>
           <Button
             variant="outlined"
-            color="secondary"
             onClick={(ev) => onClose && onClose(ev, 'escapeKeyDown')}
             disabled={submitting}
             className={clsx(myClasses.actionBtn, classes?.button)}

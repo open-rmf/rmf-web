@@ -10,7 +10,7 @@ export default {
   component: DoorPanel,
 } as Meta;
 
-const detailedDoors: DoorData[] = doors.map((door) => ({ door, level: 'L1' }));
+const detailedDoors: DoorData[] = doors.map((door, i) => ({ door, level: 'L1', id: i }));
 
 export const DoorSidePanel: Story = (args) => {
   return <DoorPanel doors={detailedDoors} doorStates={doorStates} {...args} />;

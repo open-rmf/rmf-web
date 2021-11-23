@@ -4,7 +4,7 @@ import os
 import signal
 import sys
 import threading
-from typing import Awaitable, Callable, List, Union
+from typing import Any, Callable, Coroutine, List, Union
 
 import rclpy
 import rclpy.executors
@@ -13,6 +13,8 @@ from fastapi import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
+
+from api_server.types import is_coroutine
 
 from . import routes
 from .app_config import AppConfig, load_config
@@ -54,7 +56,7 @@ class App(FastIO, BaseApp):
             )
         )
 
-        self.loop: asyncio.AbstractEventLoop = None
+        self.loop: asyncio.AbstractEventLoop
         logger = logging.getLogger("app")
         handler = logging.StreamHandler(sys.stdout)
         handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
@@ -62,6 +64,8 @@ class App(FastIO, BaseApp):
         logger.setLevel(self.app_config.log_level)
 
         if self.app_config.jwt_public_key:
+            if self.app_config.iss is None:
+                raise ValueError("iss is required")
             authenticator = JwtAuthenticator(
                 self.app_config.jwt_public_key,
                 self.app_config.aud,
@@ -98,7 +102,7 @@ class App(FastIO, BaseApp):
         )
 
         # will be called in reverse order on app shutdown
-        shutdown_cbs: List[Callable[[], Union[None, Awaitable[None]]]] = []
+        shutdown_cbs: List[Union[Coroutine[Any, Any, Any], Callable[[], None]]] = []
 
         self._rmf_events = RmfEvents()
         self.rmf_repo = rmf_repo_dep(self.auth_dep)
@@ -107,7 +111,7 @@ class App(FastIO, BaseApp):
             self.app_config.static_directory,
             self.logger.getChild("static_files"),
         )
-        self._rmf_gateway: RmfGateway = None
+        self._rmf_gateway: RmfGateway
 
         self._rmf_bookkeeper = RmfBookKeeper(
             self._rmf_events, logger=self.logger.getChild("BookKeeper")
@@ -134,9 +138,9 @@ class App(FastIO, BaseApp):
                 task = self.loop.create_task(on_shutdown())
                 if not self.loop.is_running():
                     self.loop.run_until_complete(task)
-                if sig == signal.SIGINT and prev_sigint:
+                if sig == signal.SIGINT and callable(prev_sigint):
                     prev_sigint(sig, frame)
-                elif sig == signal.SIGTERM and prev_sigterm:
+                elif sig == signal.SIGTERM and callable(prev_sigterm):
                     prev_sigterm(sig, frame)
 
             if threading.currentThread() is threading.main_thread():
@@ -195,9 +199,9 @@ class App(FastIO, BaseApp):
         async def on_shutdown():
             while shutdown_cbs:
                 cb = shutdown_cbs.pop()
-                if asyncio.iscoroutine(cb):
+                if is_coroutine(cb):
                     await cb
-                else:
+                elif callable(cb):
                     cb()
 
             self.logger.info("shutdown app")

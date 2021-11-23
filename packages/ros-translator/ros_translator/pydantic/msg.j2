@@ -18,6 +18,13 @@ class {{ msg.spec.base_type.type }}(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+{% for field in msg.spec.fields %}
+                "{{ field.name }}",
+{% endfor %}
+            ],
+        }
 
 
 {{ msg.commented_raw }}

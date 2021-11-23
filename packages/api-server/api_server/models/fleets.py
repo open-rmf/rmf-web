@@ -12,20 +12,6 @@ RobotHealth = basic_health_model(ttm.RobotHealth)
 Location = rmf_fleet_msgs.Location
 
 
-class FleetState(rmf_fleet_msgs.FleetState):
-    @staticmethod
-    def from_tortoise(tortoise: ttm.FleetState) -> "FleetState":
-        return FleetState(**tortoise.data)
-
-    async def save(self) -> None:
-        await ttm.FleetState.update_or_create({"data": self.dict()}, id_=self.name)
-
-
-class Fleet(BaseModel):
-    name: str
-    state: FleetState
-
-
 class RobotState(rmf_fleet_msgs.RobotState):
     @staticmethod
     def from_tortoise(tortoise: ttm.RobotState) -> "RobotState":
@@ -42,3 +28,19 @@ class Robot(BaseModel):
     name: str
     state: RobotState
     tasks: List[Task] = []
+
+
+class FleetState(rmf_fleet_msgs.FleetState):
+    robots: List[RobotState]
+
+    @staticmethod
+    def from_tortoise(tortoise: ttm.FleetState) -> "FleetState":
+        return FleetState(**tortoise.data)
+
+    async def save(self) -> None:
+        await ttm.FleetState.update_or_create({"data": self.dict()}, id_=self.name)
+
+
+class Fleet(BaseModel):
+    name: str
+    state: FleetState

@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
 import { makeStyles } from '@material-ui/core';
-import { Dispenser, Ingestor } from 'api-client';
+import { BuildingMap, Dispenser, DoorState, FleetState, Ingestor, LiftState } from 'api-client';
 import Debug from 'debug';
 import * as L from 'leaflet';
 import { MapProps, Map } from 'react-leaflet';
@@ -25,7 +25,6 @@ import {
   WorkcellsOverlay as WorkcellsOverlay_,
 } from 'react-components';
 import { AttributionControl, LayersControl } from 'react-leaflet';
-import * as RmfModels from 'rmf-models';
 import appConfig from '../../app-config';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { ResourcesContext } from '../app-contexts';
@@ -53,13 +52,13 @@ const colorManager = new ColorManager();
 export let mapHandler: React.MutableRefObject<Map<MapProps, L.Map> | null | undefined>;
 
 export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
-  buildingMap: RmfModels.BuildingMap;
+  buildingMap: BuildingMap;
   negotiationTrajStore?: Record<string, NegotiationTrajectoryResponse>;
   dispensers?: Dispenser[];
   ingestors?: Ingestor[];
-  doorStates?: Record<string, RmfModels.DoorState>;
-  liftStates?: Record<string, RmfModels.LiftState>;
-  fleetStates?: Record<string, RmfModels.FleetState>;
+  doorStates?: Record<string, DoorState>;
+  liftStates?: Record<string, LiftState>;
+  fleetStates?: Record<string, FleetState>;
   /**
    * default: 'normal'
    */
@@ -268,21 +267,18 @@ export default function ScheduleVisualizer({
         }),
       );
       await safeAsync(Promise.all(promises));
+      const newRobots = Object.values(fleetStates).flatMap((fleetState) =>
+        fleetState.robots
+          .filter(
+            (r) =>
+              r.location.level_name === currentLevel.name &&
+              `${fleetState.name}/${r.name}` in robotsStore,
+          )
+          .map((r) => robotsStore[`${fleetState.name}/${r.name}`]),
+      );
+      setRobots(newRobots);
     })();
-  }, [safeAsync, fleetStates, robotsStore, resourceManager]);
-
-  React.useEffect(() => {
-    const newRobots = Object.values(fleetStates).flatMap((fleetState) =>
-      fleetState.robots
-        .filter(
-          (r) =>
-            r.location.level_name === currentLevel.name &&
-            `${fleetState.name}/${r.name}` in robotsStore,
-        )
-        .map((r) => robotsStore[`${fleetState.name}/${r.name}`]),
-    );
-    setRobots(newRobots);
-  }, [safeAsync, fleetStates, robotsStore, currentLevel]);
+  }, [safeAsync, fleetStates, robotsStore, resourceManager, currentLevel]);
 
   React.useEffect(() => {
     (async () => {

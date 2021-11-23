@@ -1,3 +1,4 @@
+from typing import cast
 from unittest.mock import Mock
 
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
@@ -33,9 +34,10 @@ class TestDoorsRoute(AppFixture):
 
         def wait():
             self.app.rmf_events().door_states.on_next(door_state)
-            return fut.result(0)
+            return fut.done()
 
-        result = try_until(wait, lambda _: True)
+        try_until(wait, lambda x: x)
+        result = fut.result(0)
         self.assertEqual(1, result["door_time"]["sec"])
 
     def test_post_door_request(self):
@@ -43,8 +45,7 @@ class TestDoorsRoute(AppFixture):
             "/doors/test_door/request", json={"mode": RmfDoorMode.MODE_OPEN}
         )
         self.assertEqual(resp.status_code, 200)
-        mock = self.app.rmf_gateway().request_door
-        mock: Mock
+        mock = cast(Mock, self.app.rmf_gateway().request_door)
         mock.assert_called()
         self.assertEqual("test_door", mock.call_args.args[0])
         self.assertEqual(RmfDoorMode.MODE_OPEN, mock.call_args.args[1])

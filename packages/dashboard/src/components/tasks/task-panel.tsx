@@ -18,14 +18,14 @@ import {
   Refresh as RefreshIcon,
 } from '@material-ui/icons';
 import { Alert, AlertProps } from '@material-ui/lab';
-import { SubmitTask, Task } from 'api-client';
+import { SubmitTask, Task, TaskSummary } from 'api-client';
 import React from 'react';
 import { CreateTaskForm, CreateTaskFormProps, TaskInfo, TaskTable } from 'react-components';
 import { UserProfileContext } from 'rmf-auth';
-import * as RmfModels from 'rmf-models';
+import { TaskSummary as RmfTaskSummary } from 'rmf-models';
+import { AppControllerContext } from '../app-contexts';
 import { Enforcer } from '../permissions';
 import { parseTasksFile } from './utils';
-import { AppControllerContext } from '../app-contexts';
 
 const useStyles = makeStyles((theme) => ({
   tableContainer: {
@@ -68,7 +68,7 @@ export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
   dispensers?: string[];
   ingestors?: string[];
   submitTasks?: CreateTaskFormProps['submitTasks'];
-  cancelTask?: (task: RmfModels.TaskSummary) => Promise<void>;
+  cancelTask?: (task: TaskSummary) => Promise<void>;
   onRefresh?: () => void;
   onAutoRefresh?: (enabled: boolean) => void;
 }
@@ -153,9 +153,9 @@ export function TaskPanel({
     selectedTask &&
     profile &&
     Enforcer.canCancelTask(profile, selectedTask) &&
-    (selectedTask.summary.state === RmfModels.TaskSummary.STATE_ACTIVE ||
-      selectedTask.summary.state === RmfModels.TaskSummary.STATE_PENDING ||
-      selectedTask.summary.state === RmfModels.TaskSummary.STATE_QUEUED);
+    (selectedTask.summary.state === RmfTaskSummary.STATE_ACTIVE ||
+      selectedTask.summary.state === RmfTaskSummary.STATE_PENDING ||
+      selectedTask.summary.state === RmfTaskSummary.STATE_QUEUED);
 
   return (
     <div {...divProps}>

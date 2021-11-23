@@ -1,5 +1,7 @@
-from tortoise.fields import (
-    CharField,
+from typing import cast
+
+from tortoise.fields.data import CharField
+from tortoise.fields.relational import (
     ForeignKeyField,
     ForeignKeyRelation,
     ReverseRelation,
@@ -17,15 +19,9 @@ class ResourcePermission(Model):
     # This has no foreign key because resources can be given any arbitrary group, sometimes even dynamically.
     authz_grp = CharField(255, index=True)
     # "sub" in casbin speak
-    role: ForeignKeyRelation[Role] = ForeignKeyField("models.Role")
+    role = cast(ForeignKeyRelation[Role], ForeignKeyField("models.Role"))
     action = CharField(255)
 
 
 class ProtectedResource:
     authz_grp = CharField(255, null=True, index=True)
-
-
-# Nest the type definitions in a container class to prevent tortoise from generating schemas for them.
-class Types:
-    class ProtectedResourceModel(Model, ProtectedResource):
-        pass

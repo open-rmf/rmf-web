@@ -25,7 +25,8 @@ class TestIngestorsRoute(AppFixture):
 
         def wait():
             self.app.rmf_events().ingestor_states.on_next(ingestor_state)
-            return fut.result(0)
+            return fut.done()
 
-        result = try_until(wait, lambda _: True)
+        try_until(wait, lambda x: x)
+        result = fut.result(0)
         self.assertEqual(1, result["time"]["sec"])

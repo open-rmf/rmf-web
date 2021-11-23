@@ -1,10 +1,11 @@
-import * as RmfModels from 'rmf-models';
+import type { Door, DoorMode, DoorState } from 'api-client';
+import { Door as RmfDoor, DoorMode as RmfDoorMode } from 'rmf-models';
 import { DoorData } from './utils';
 
-export function makeDoor(door?: Partial<RmfModels.Door>): RmfModels.Door {
+export function makeDoor(door?: Partial<Door>): Door {
   return {
     name: 'test',
-    door_type: RmfModels.Door.DOOR_TYPE_SINGLE_SWING,
+    door_type: RmfDoor.DOOR_TYPE_SINGLE_SWING,
     motion_direction: 1,
     motion_range: Math.PI / 2,
     v1_x: 0,
@@ -17,56 +18,57 @@ export function makeDoor(door?: Partial<RmfModels.Door>): RmfModels.Door {
 
 export function allDoorTypes(): number[] {
   return [
-    RmfModels.Door.DOOR_TYPE_DOUBLE_SLIDING,
-    RmfModels.Door.DOOR_TYPE_DOUBLE_SWING,
-    RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE,
-    RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING,
-    RmfModels.Door.DOOR_TYPE_SINGLE_SWING,
-    RmfModels.Door.DOOR_TYPE_SINGLE_TELESCOPE,
-    RmfModels.Door.DOOR_TYPE_UNDEFINED,
+    RmfDoor.DOOR_TYPE_DOUBLE_SLIDING,
+    RmfDoor.DOOR_TYPE_DOUBLE_SWING,
+    RmfDoor.DOOR_TYPE_DOUBLE_TELESCOPE,
+    RmfDoor.DOOR_TYPE_SINGLE_SLIDING,
+    RmfDoor.DOOR_TYPE_SINGLE_SWING,
+    RmfDoor.DOOR_TYPE_SINGLE_TELESCOPE,
+    RmfDoor.DOOR_TYPE_UNDEFINED,
     -1,
   ];
 }
 
-export function makeDoorState(state?: Partial<RmfModels.DoorState>): RmfModels.DoorState {
+export function makeDoorState(state?: Partial<DoorState>): DoorState {
   return {
     door_name: 'test',
-    current_mode: { value: RmfModels.DoorMode.MODE_CLOSED },
+    current_mode: { value: RmfDoorMode.MODE_CLOSED },
     door_time: { sec: 0, nanosec: 0 },
     ...state,
   };
 }
 
-export function allDoorModes(): RmfModels.DoorMode[] {
+export function allDoorModes(): DoorMode[] {
   return [
-    { value: RmfModels.DoorMode.MODE_CLOSED },
-    { value: RmfModels.DoorMode.MODE_OPEN },
-    { value: RmfModels.DoorMode.MODE_MOVING },
+    { value: RmfDoorMode.MODE_CLOSED },
+    { value: RmfDoorMode.MODE_OPEN },
+    { value: RmfDoorMode.MODE_MOVING },
     { value: -1 },
   ];
 }
 
-export const doors: RmfModels.Door[] = [
+export const doors: Door[] = [
   makeDoor({ name: 'main_door' }),
   makeDoor({ name: 'hardware_door' }),
   makeDoor({ name: 'coe_door' }),
   makeDoor({ name: 'exit_door' }),
   makeDoor({ name: 'extra_door' }),
+  makeDoor({ name: 'door_with_super_super_long_name' }),
 ];
 
-export const doorStates: Record<string, RmfModels.DoorState> = {
+export const doorStates: Record<string, DoorState> = {
   main_door: makeDoorState({ door_name: 'main_door', current_mode: { value: -1 } }),
   coe_door: makeDoorState({
     door_name: 'coe_door',
-    current_mode: { value: RmfModels.DoorMode.MODE_OPEN },
+    current_mode: { value: RmfDoorMode.MODE_OPEN },
   }),
   hardware_door: makeDoorState({
     door_name: 'hardware_door',
-    current_mode: { value: RmfModels.DoorMode.MODE_CLOSED },
+    current_mode: { value: RmfDoorMode.MODE_CLOSED },
   }),
   exit_door: makeDoorState({
     door_name: 'exit_door',
-    current_mode: { value: RmfModels.DoorMode.MODE_MOVING },
+    current_mode: { value: RmfDoorMode.MODE_MOVING },
   }),
 };
 

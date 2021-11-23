@@ -1,17 +1,17 @@
 import logging
-from typing import Any, Callable, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional, cast
 
-import rx
 from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
 from rmf_fleet_msgs.msg import RobotMode as RmfRobotMode
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
-from rx import Observable
 from rx import operators as ops
+from rx.core.observable.observable import Observable
+from rx.core.pipe import pipe
 from rx.core.typing import Disposable
 from rx.scheduler.scheduler import Scheduler
-from rx.subject import BehaviorSubject, Subject
+from rx.subject.behaviorsubject import BehaviorSubject
 
 from api_server.models import (
     BuildingMap,
@@ -58,25 +58,8 @@ class HealthWatchdog:
         await self._watch_ingestor_health()
         await self._watch_robot_health()
 
-    def _watch_heartbeat(
-        self,
-        key_mapper: Callable[[Any], str],
-    ) -> Observable:
-        """
-        :returns: Observable[Tuple[str, bool]]
-        """
-        return rx.pipe(
-            ops.group_by(key_mapper),
-            ops.flat_map(
-                lambda x: x.pipe(
-                    heartbeat(self.LIVELINESS),
-                    ops.map(lambda y: (x.key, y)),
-                )
-            ),
-        )
-
     @staticmethod
-    def _combine_most_critical(*obs: Sequence[rx.Observable]):
+    def _combine_most_critical(*obs: Observable):
         """
         Combines an observable sequence of an observable sequence of BasicHealthModel to an
         observable sequence of BasicHealthModel with the most critical health status. If there
@@ -85,14 +68,14 @@ class HealthWatchdog:
 
         :param obs: Sequence[rx.Observable[BasicHealthModel]]
         """
-        return rx.pipe(
+        return pipe(
             ops.timestamp(),
             ops.combine_latest(*[x.pipe(ops.timestamp()) for x in obs]),
             most_critical(),
         )
 
     @staticmethod
-    def door_mode_to_health(state: Optional[DoorState]):
+    def door_mode_to_health(state: Optional[DoorState]) -> Optional[DoorHealth]:
         if state is None:
             return None
 
@@ -129,11 +112,14 @@ class HealthWatchdog:
 
         def watch(id_: str, obs: Observable):
             door_mode_health = obs.pipe(
-                ops.map(self.door_mode_to_health), ops.distinct_until_changed()
+                ops.map(cast(Any, self.door_mode_to_health)),
+                ops.distinct_until_changed(),
             )
             obs.pipe(
                 heartbeat(self.LIVELINESS),
-                ops.map(lambda has_heartbeat: to_door_health(id_, has_heartbeat)),
+                ops.map(
+                    cast(Any, lambda has_heartbeat: to_door_health(id_, has_heartbeat))
+                ),
                 self._combine_most_critical(door_mode_health),
             ).subscribe(self.rmf.door_health.on_next, scheduler=self.scheduler)
 
@@ -147,7 +133,7 @@ class HealthWatchdog:
         door_states = {state.door_name: state for state in states_list}
         initial_states = {door.name: door_states.get(door.name, None) for door in doors}
 
-        subjects = {
+        subjects: Dict[str, BehaviorSubject] = {
             id_: BehaviorSubject(state) for id_, state in initial_states.items()
         }
         for id_, subject in subjects.items():
@@ -205,11 +191,14 @@ class HealthWatchdog:
 
         def watch(id_: str, obs: Observable):
             lift_mode_health = obs.pipe(
-                ops.map(self.lift_mode_to_health), ops.distinct_until_changed()
+                ops.map(cast(Any, self.lift_mode_to_health)),
+                ops.distinct_until_changed(),
             )
             obs.pipe(
                 heartbeat(self.LIVELINESS),
-                ops.map(lambda has_heartbeat: to_lift_health(id_, has_heartbeat)),
+                ops.map(
+                    cast(Any, lambda has_heartbeat: to_lift_health(id_, has_heartbeat))
+                ),
                 self._combine_most_critical(lift_mode_health),
             ).subscribe(self.rmf.lift_health.on_next, scheduler=self.scheduler)
 
@@ -223,7 +212,7 @@ class HealthWatchdog:
         lift_states = {state.lift_name: state for state in states_list}
         initial_states = {lift.name: lift_states.get(lift.name, None) for lift in lifts}
 
-        subjects = {
+        subjects: Dict[str, BehaviorSubject] = {
             id_: BehaviorSubject(state) for id_, state in initial_states.items()
         }
         for id_, subject in subjects.items():
@@ -274,11 +263,17 @@ class HealthWatchdog:
 
         def watch(id_: str, obs: Observable):
             dispenser_mode_health = obs.pipe(
-                ops.map(self.dispenser_mode_to_health), ops.distinct_until_changed()
+                ops.map(cast(Any, self.dispenser_mode_to_health)),
+                ops.distinct_until_changed(),
             )
             obs.pipe(
                 heartbeat(self.LIVELINESS),
-                ops.map(lambda has_heartbeat: to_dispenser_health(id_, has_heartbeat)),
+                ops.map(
+                    cast(
+                        Any,
+                        lambda has_heartbeat: to_dispenser_health(id_, has_heartbeat),
+                    )
+                ),
                 self._combine_most_critical(dispenser_mode_health),
             ).subscribe(self.rmf.dispenser_health.on_next, scheduler=self.scheduler)
 
@@ -292,7 +287,7 @@ class HealthWatchdog:
             for dispenser in dispensers
         }
 
-        subjects = {
+        subjects: Dict[str, BehaviorSubject] = {
             id_: BehaviorSubject(state) for id_, state in initial_states.items()
         }
         for id_, subject in subjects.items():
@@ -341,12 +336,17 @@ class HealthWatchdog:
 
         def watch(id_: str, obs: Observable):
             ingestor_mode_health = obs.pipe(
-                ops.map(self.ingestor_mode_to_health),
+                ops.map(cast(Any, self.ingestor_mode_to_health)),
                 ops.distinct_until_changed(),
             )
             obs.pipe(
                 heartbeat(self.LIVELINESS),
-                ops.map(lambda has_heartbeat: to_ingestor_health(id_, has_heartbeat)),
+                ops.map(
+                    cast(
+                        Any,
+                        lambda has_heartbeat: to_ingestor_health(id_, has_heartbeat),
+                    )
+                ),
                 self._combine_most_critical(ingestor_mode_health),
             ).subscribe(self.rmf.ingestor_health.on_next, scheduler=self.scheduler)
 
@@ -360,7 +360,7 @@ class HealthWatchdog:
             for ingestor in ingestors
         }
 
-        subjects = {
+        subjects: Dict[str, BehaviorSubject] = {
             id_: BehaviorSubject(state) for id_, state in initial_states.items()
         }
         for id_, subject in subjects.items():
@@ -429,19 +429,19 @@ class HealthWatchdog:
             :param obs: Observable[RobotState]
             """
             robot_mode_health = obs.pipe(
-                ops.map(lambda state: self.robot_mode_to_health(id_, state)),
+                ops.map(cast(Any, lambda state: self.robot_mode_to_health(id_, state))),
                 ops.distinct_until_changed(),
             )
             obs.pipe(
                 heartbeat(self.LIVELINESS),
-                ops.map(lambda x: to_robot_health(id_, x)),
+                ops.map(cast(Any, lambda x: to_robot_health(id_, x))),
                 self._combine_most_critical(robot_mode_health),
             ).subscribe(self.rmf.robot_health.on_next, scheduler=self.scheduler)
 
         fleet_states = [FleetState.from_tortoise(x) for x in await ttm.FleetState.all()]
         initial_states = {s.name: s for s in fleet_states}
 
-        subjects: Dict[str, Subject] = {}
+        subjects: Dict[str, BehaviorSubject] = {}
         for fleet_state in initial_states.values():
             fleet_state: FleetState
             for robot_state in fleet_state.robots:

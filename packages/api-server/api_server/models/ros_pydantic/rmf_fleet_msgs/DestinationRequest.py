@@ -15,6 +15,14 @@ class DestinationRequest(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "fleet_name",
+                "robot_name",
+                "destination",
+                "task_id",
+            ],
+        }
 
 
 # string fleet_name

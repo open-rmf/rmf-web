@@ -13,9 +13,10 @@ import {
   Toolbar,
   Typography,
 } from '@material-ui/core';
-import * as RmfModels from 'rmf-models';
 import { Refresh as RefreshIcon } from '@material-ui/icons';
+import type { RobotMode } from 'api-client';
 import React from 'react';
+import { RobotMode as RmfRobotMode } from 'rmf-models';
 import { taskTypeToStr } from '../tasks/utils';
 import { robotModeToString, VerboseRobot } from './utils';
 
@@ -91,19 +92,19 @@ const returnLocationCells = (robot: VerboseRobot) => {
 function RobotRow({ robot, onClick }: RobotRowProps) {
   const classes = useStyles();
 
-  const getRobotModeClass = (robotMode: RmfModels.RobotMode) => {
+  const getRobotModeClass = (robotMode: RobotMode) => {
     switch (robotMode.mode) {
-      case RmfModels.RobotMode.MODE_EMERGENCY:
+      case RmfRobotMode.MODE_EMERGENCY:
         return classes.robotErrorClass;
-      case RmfModels.RobotMode.MODE_CHARGING:
+      case RmfRobotMode.MODE_CHARGING:
         return classes.robotChargingClass;
-      case RmfModels.RobotMode.MODE_GOING_HOME:
-      case RmfModels.RobotMode.MODE_DOCKING:
-      case RmfModels.RobotMode.MODE_MOVING:
+      case RmfRobotMode.MODE_GOING_HOME:
+      case RmfRobotMode.MODE_DOCKING:
+      case RmfRobotMode.MODE_MOVING:
         return classes.robotInMotionClass;
-      case RmfModels.RobotMode.MODE_IDLE:
-      case RmfModels.RobotMode.MODE_PAUSED:
-      case RmfModels.RobotMode.MODE_WAITING:
+      case RmfRobotMode.MODE_IDLE:
+      case RmfRobotMode.MODE_PAUSED:
+      case RmfRobotMode.MODE_WAITING:
         return classes.robotStoppedClass;
       default:
         return '';

@@ -14,6 +14,15 @@ class Loop(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "task_id",
+                "robot_type",
+                "num_loops",
+                "start_name",
+                "finish_name",
+            ],
+        }
 
 
 # # task_id is intended to be a pseudo-random string generated

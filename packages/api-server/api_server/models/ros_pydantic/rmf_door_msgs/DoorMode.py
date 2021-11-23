@@ -10,6 +10,11 @@ class DoorMode(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "value",
+            ],
+        }
 
 
 # # The DoorMode message captures the "mode" of an automatic door controller.

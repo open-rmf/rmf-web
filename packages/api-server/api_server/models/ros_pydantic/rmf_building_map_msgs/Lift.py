@@ -21,6 +21,19 @@ class Lift(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "name",
+                "levels",
+                "doors",
+                "wall_graph",
+                "ref_x",
+                "ref_y",
+                "ref_yaw",
+                "width",
+                "depth",
+            ],
+        }
 
 
 # string name

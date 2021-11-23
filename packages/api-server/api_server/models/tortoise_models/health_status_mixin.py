@@ -1,6 +1,6 @@
-from tortoise import fields
+from tortoise.fields.data import CharField, TextField
 
 
 class HealthStatusMixin:
-    health_status = fields.CharField(max_length=255, null=True)
-    health_message = fields.TextField(null=True)
+    health_status = CharField(max_length=255, null=True)
+    health_message = TextField(null=True)

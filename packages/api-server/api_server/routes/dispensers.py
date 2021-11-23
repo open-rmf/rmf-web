@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, List, cast
 
 from fastapi import Depends
 from rx import operators as rxops
@@ -31,12 +31,13 @@ class DispensersRouter(FastIORouter):
         @self.watch("/{guid}/state")
         async def watch_dispenser_state(req: WatchRequest, guid: str):
             dispenser_state = await get_dispenser_state(guid, RmfRepository(req.user))
-            await req.emit(dispenser_state.dict())
+            if dispenser_state is not None:
+                await req.emit(dispenser_state.dict())
             rx_watcher(
                 req,
                 app.rmf_events().dispenser_states.pipe(
-                    rxops.filter(lambda x: x.guid == guid),
-                    rxops.map(lambda x: x.dict()),
+                    rxops.filter(lambda x: cast(DispenserState, x).guid == guid),
+                    rxops.map(cast(Any, lambda x: cast(DispenserState, x).dict())),
                 ),
             )
 
@@ -52,11 +53,12 @@ class DispensersRouter(FastIORouter):
         @self.watch("/{guid}/health")
         async def watch_dispenser_health(req: WatchRequest, guid: str):
             health = await get_dispenser_health(guid, RmfRepository(req.user))
-            await req.emit(health.dict())
+            if health is not None:
+                await req.emit(health.dict())
             rx_watcher(
                 req,
                 app.rmf_events().dispenser_health.pipe(
-                    rxops.filter(lambda x: x.id_ == guid),
-                    rxops.map(lambda x: x.dict()),
+                    rxops.filter(lambda x: cast(DispenserHealth, x).id_ == guid),
+                    rxops.map(cast(Any, lambda x: cast(DispenserHealth, x).dict())),
                 ),
             )

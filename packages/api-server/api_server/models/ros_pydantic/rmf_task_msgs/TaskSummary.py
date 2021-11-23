@@ -21,6 +21,19 @@ class TaskSummary(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "fleet_name",
+                "task_id",
+                "task_profile",
+                "state",
+                "status",
+                "submission_time",
+                "start_time",
+                "end_time",
+                "robot_name",
+            ],
+        }
 
 
 # # Publish by Fleet Adapter (aka DispatchStatus)
