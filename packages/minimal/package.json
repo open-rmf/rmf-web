@@ -6,7 +6,8 @@
     "@fontsource/roboto": "^4.3.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
-    "api-client": "^0.0.1",
+    "api-client": "*",
+    "api-server": "*",
     "eventemitter3": "^4.0.7",
     "keycloak-js": "^11.0.2"
   },

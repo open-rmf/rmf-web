@@ -1,6 +1,6 @@
 import React from 'react';
-import { Tab, makeStyles } from '@material-ui/core';
-import { HeaderBar, LogoButton, NavigationBar, useAsync } from 'react-components';
+import { makeStyles, Toolbar, Typography } from '@material-ui/core';
+import { HeaderBar, LogoButton, useAsync } from 'react-components';
 import { getLogo } from '../utils/simple-icon-manager';
 
 const useStyles = makeStyles((theme) => ({
@@ -9,6 +9,10 @@ const useStyles = makeStyles((theme) => ({
   },
   logoBtn: {
     width: 180,
+  },
+  toolbar: {
+    textAlign: 'right',
+    flexGrow: -1,
   },
 }));
 
@@ -26,9 +30,9 @@ export const AppBar = () => {
   return (
     <HeaderBar className={classes.appBar}>
       <LogoButton src={logo} alt="logo" className={classes.logoBtn} />
-      <NavigationBar>
-        <Tab label="action panel" value="action panel" aria-label="Action Panel" />
-      </NavigationBar>
+      <Toolbar variant="dense" className={classes.toolbar}>
+        <Typography>Minimal App</Typography>
+      </Toolbar>
     </HeaderBar>
   );
 };
