@@ -15,6 +15,16 @@ class Place(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "name",
+                "x",
+                "y",
+                "yaw",
+                "position_tolerance",
+                "yaw_tolerance",
+            ],
+        }
 
 
 # string name

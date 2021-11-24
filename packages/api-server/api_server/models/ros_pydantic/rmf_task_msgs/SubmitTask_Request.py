@@ -13,6 +13,12 @@ class SubmitTask_Request(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "requester",
+                "description",
+            ],
+        }
 
 
 # # Submit Task | POST service call

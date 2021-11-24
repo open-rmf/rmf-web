@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
 import { makeStyles } from '@material-ui/core';
-import { Dispenser, Ingestor } from 'api-client';
+import { BuildingMap, Dispenser, DoorState, FleetState, Ingestor, LiftState } from 'api-client';
 import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
@@ -22,8 +22,8 @@ import {
   WorkcellData,
   WorkcellsOverlay as WorkcellsOverlay_,
 } from 'react-components';
-import { AttributionControl, LayersControl, LayerGroup } from 'react-leaflet';
-import * as RmfModels from 'rmf-models';
+import { AttributionControl, LayersControl } from 'react-leaflet';
+import { Level, RobotState } from 'rmf-models';
 import appConfig from '../../app-config';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { ResourcesContext } from '../app-contexts';
@@ -50,13 +50,13 @@ const SettingsKey = 'scheduleVisualizerSettings';
 const colorManager = new ColorManager();
 
 export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
-  buildingMap: RmfModels.BuildingMap;
+  buildingMap: BuildingMap;
   negotiationTrajStore?: Record<string, NegotiationTrajectoryResponse>;
   dispensers?: Dispenser[];
   ingestors?: Ingestor[];
-  doorStates?: Record<string, RmfModels.DoorState>;
-  liftStates?: Record<string, RmfModels.LiftState>;
-  fleetStates?: Record<string, RmfModels.FleetState>;
+  doorStates?: Record<string, DoorState>;
+  liftStates?: Record<string, LiftState>;
+  fleetStates?: Record<string, FleetState>;
   /**
    * default: 'normal'
    */
@@ -252,7 +252,7 @@ export default function ScheduleVisualizer({
   React.useEffect(() => {
     (async () => {
       const promises = Object.values(fleetStates).flatMap((fleetState) =>
-        fleetState.robots.map(async (r) => {
+        fleetState.robots.map(async (r: RobotState) => {
           const robotId = `${fleetState.name}/${r.name}`;
           if (robotId in robotsStore) return;
           robotsStore[robotId] = {
@@ -270,11 +270,11 @@ export default function ScheduleVisualizer({
       const newRobots = Object.values(fleetStates).flatMap((fleetState) =>
         fleetState.robots
           .filter(
-            (r) =>
+            (r: RobotState) =>
               r.location.level_name === currentLevel.name &&
               `${fleetState.name}/${r.name}` in robotsStore,
           )
-          .map((r) => robotsStore[`${fleetState.name}/${r.name}`]),
+          .map((r: RobotState) => robotsStore[`${fleetState.name}/${r.name}`]),
       );
       setRobots(newRobots);
     })();
@@ -339,21 +339,19 @@ export default function ScheduleVisualizer({
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
       <LayersControl position="topleft">
-        <LayerGroup>
-          {buildingMap.levels.map((level) => (
-            <LayersControl.BaseLayer
-              key={level.name}
-              name={level.name}
-              checked={currentLevel === level}
-            >
-              <AffineImageOverlay
-                bounds={levelBounds[level.name]}
-                image={level.images[0]}
-                eventHandlers={baseLayerHandler(level.name)}
-              />
-            </LayersControl.BaseLayer>
-          ))}
-        </LayerGroup>
+        {buildingMap.levels.map((level: Level) => (
+          <LayersControl.BaseLayer
+            key={level.name}
+            name={level.name}
+            checked={currentLevel === level}
+          >
+            <AffineImageOverlay
+              bounds={levelBounds[level.name]}
+              image={level.images[0]}
+              eventHandlers={baseLayerHandler(level.name)}
+            />
+          </LayersControl.BaseLayer>
+        ))}
         <LayersControl.Overlay name="Waypoints" checked={layersUnChecked['Waypoints']}>
           <WaypointsOverlay
             bounds={bounds}
@@ -419,7 +417,7 @@ export default function ScheduleVisualizer({
             bounds={bounds}
             robots={robots}
             getRobotState={(fleet, robot) => {
-              const state = fleetStates[fleet].robots.find((r) => r.name === robot);
+              const state = fleetStates[fleet].robots.find((r: RobotState) => r.name === robot);
               return state || null;
             }}
             hideLabels={layersUnChecked['Robots']}

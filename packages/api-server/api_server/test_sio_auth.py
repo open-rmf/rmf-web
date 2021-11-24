@@ -27,6 +27,7 @@ class TestSioAuth(unittest.TestCase):
 
     def try_connect(self, token: Optional[str] = None) -> bool:
         client = socketio.Client(reconnection=False)
+
         if token:
             auth = {"token": token}
         else:
@@ -51,6 +52,8 @@ class TestSioAuth(unittest.TestCase):
                         return False
             return False
         finally:
+            # Explicitly close Session to remove ResourceWarnings in tests
+            client.eio.http.close()
             client.disconnect()
 
     def test_fail_with_no_token(self):

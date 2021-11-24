@@ -15,6 +15,13 @@ class TaskProfile(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "task_id",
+                "submission_time",
+                "description",
+            ],
+        }
 
 
 # # Unique ID assigned to this task

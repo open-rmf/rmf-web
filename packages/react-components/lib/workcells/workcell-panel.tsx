@@ -1,21 +1,22 @@
 import { Card, Grid, IconButton, makeStyles, Paper, Typography } from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
-import { Dispenser } from 'api-client';
+import type { Dispenser, Ingestor } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
-import { WorkcellTable } from './workcell-table';
-import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
+import { Workcell, WorkcellState } from '.';
+import { WorkcellTable } from './workcell-table';
 
 export interface WorkcellPanelProps {
   dispensers: Dispenser[];
-  ingestors: Dispenser[];
-  workCellStates: Record<string, RmfModels.DispenserState>;
+  ingestors: Ingestor[];
+  workcellStates: Record<string, WorkcellState>;
 }
 
-export interface WorkcellDataProps extends WorkcellPanelProps {
-  type: 'ingestors' | 'dispensers';
+export interface WorkcellDataProps {
+  workcells: Workcell[];
+  workcellStates: Record<string, WorkcellState>;
 }
 
 interface WorkcellGridData extends WorkcellDataProps {
@@ -27,7 +28,7 @@ interface WorkcellGridRendererProps extends GridChildComponentProps {
 }
 
 export interface WorkcellCellProps {
-  workcell: Dispenser;
+  workcell: Workcell;
   requestGuidQueue?: string[];
   secondsRemaining?: number;
 }
@@ -39,26 +40,28 @@ const useStyles = makeStyles((theme) => ({
   buttonBar: {
     display: 'flex',
     justifyContent: 'flex-end',
-    borderRadius: '0px',
+    borderRadius: 0,
     backgroundColor: theme.palette.primary.main,
   },
   cellContainer: {
-    paddingLeft: '1rem',
-    paddingRight: '1rem',
-    paddingBottom: '1rem',
+    padding: theme.spacing(2),
+    paddingTop: theme.spacing(1),
   },
   cellPaper: {
-    padding: '0.5rem',
-    backgroundColor: theme.palette.info.light,
-    margin: '0.5rem',
-    height: '84px',
+    padding: theme.spacing(1),
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.action.hover,
   },
   itemIcon: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
+    color: theme.palette.primary.contrastText,
   },
   panelHeader: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
-    marginLeft: '1rem',
+    color: theme.palette.primary.contrastText,
+    marginLeft: theme.spacing(2),
+  },
+  subPanelHeader: {
+    marginLeft: theme.spacing(2),
+    color: theme.palette.primary.contrastText,
   },
   tableDiv: {
     margin: '0 1rem',
@@ -115,14 +118,14 @@ const WorkcellCell = React.memo(
 );
 
 const WorkcellGridRenderer = ({ data, columnIndex, rowIndex }: WorkcellGridRendererProps) => {
-  let workcell: Dispenser | undefined;
-  let workcellState: RmfModels.DispenserState | undefined;
+  let workcell: Workcell | undefined;
+  let workcellState: WorkcellState | undefined;
   const columnCount = data.columnCount;
-  const getWorkCell = data.type === 'dispensers' ? data.dispensers : data.ingestors;
+  const { workcells, workcellStates } = data;
 
-  if (rowIndex * columnCount + columnIndex <= getWorkCell.length - 1) {
-    workcell = getWorkCell[rowIndex * columnCount + columnIndex];
-    workcellState = data.workCellStates[workcell.guid];
+  if (rowIndex * columnCount + columnIndex <= workcells.length - 1) {
+    workcell = workcells[rowIndex * columnCount + columnIndex];
+    workcellState = workcellStates[workcell.guid];
   }
 
   return workcell ? (
@@ -139,7 +142,7 @@ const WorkcellGridRenderer = ({ data, columnIndex, rowIndex }: WorkcellGridRende
 export function WorkcellPanel({
   dispensers,
   ingestors,
-  workCellStates,
+  workcellStates,
 }: WorkcellPanelProps): JSX.Element {
   const classes = useStyles();
   const [isCellView, setIsCellView] = React.useState(true);
@@ -168,7 +171,7 @@ export function WorkcellPanel({
       {isCellView ? (
         <React.Fragment>
           <div className={classes.cellContainer}>
-            <Typography variant="h6">Dispenser Table</Typography>
+            <Typography variant="h6">Dispensers</Typography>
             <Grid container direction="row" spacing={1}>
               <AutoSizer disableHeight>
                 {({ width }) => {
@@ -183,9 +186,8 @@ export function WorkcellPanel({
                       width={width}
                       itemData={{
                         columnCount,
-                        dispensers,
-                        ingestors,
-                        workCellStates,
+                        workcells: dispensers,
+                        workcellStates,
                         type: 'dispensers',
                       }}
                     >
@@ -197,7 +199,7 @@ export function WorkcellPanel({
             </Grid>
           </div>
           <div className={classes.cellContainer}>
-            <Typography variant="h6">Ingester Table</Typography>
+            <Typography variant="h6">Ingestors</Typography>
             <Grid container direction="row" spacing={1}>
               <AutoSizer disableHeight>
                 {({ width }) => {
@@ -212,9 +214,8 @@ export function WorkcellPanel({
                       width={width}
                       itemData={{
                         columnCount,
-                        dispensers,
-                        ingestors,
-                        workCellStates,
+                        workcells: ingestors,
+                        workcellStates,
                         type: 'ingestors',
                       }}
                     >
@@ -231,13 +232,13 @@ export function WorkcellPanel({
           {dispensers.length > 0 ? (
             <div className={classes.tableDiv}>
               <Typography variant="h6">Dispenser Table</Typography>
-              <WorkcellTable workcells={dispensers} workcellStates={workCellStates} />
+              <WorkcellTable workcells={dispensers} workcellStates={workcellStates} />
             </div>
           ) : null}
           {ingestors.length > 0 ? (
             <div className={classes.tableDiv}>
               <Typography variant="h6">Ingestor Table</Typography>
-              <WorkcellTable workcells={ingestors} workcellStates={workCellStates} />
+              <WorkcellTable workcells={ingestors} workcellStates={workcellStates} />
             </div>
           ) : null}
         </React.Fragment>

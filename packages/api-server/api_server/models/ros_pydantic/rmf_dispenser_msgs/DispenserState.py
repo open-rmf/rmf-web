@@ -16,6 +16,15 @@ class DispenserState(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "time",
+                "guid",
+                "mode",
+                "request_guid_queue",
+                "seconds_remaining",
+            ],
+        }
 
 
 # builtin_interfaces/Time time

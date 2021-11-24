@@ -11,6 +11,12 @@ class ClosedLanes(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "fleet_name",
+                "closed_lanes",
+            ],
+        }
 
 
 #

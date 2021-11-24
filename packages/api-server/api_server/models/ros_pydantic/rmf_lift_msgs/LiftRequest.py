@@ -17,6 +17,16 @@ class LiftRequest(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "lift_name",
+                "request_time",
+                "session_id",
+                "request_type",
+                "destination_floor",
+                "door_state",
+            ],
+        }
 
 
 # string lift_name

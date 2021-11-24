@@ -66,10 +66,10 @@ export class RmfIngress {
       req.headers['Authorization'] = `Bearer ${token}`;
       return req;
     });
-    const apiConfig: Configuration = {
+    const apiConfig = new Configuration({
       accessToken: authenticator.token,
       basePath: appConfig.rmfServerUrl,
-    };
+    });
 
     this.defaultApi = new DefaultApi(apiConfig, undefined, axiosInst);
     this.doorsApi = new DoorsApi(apiConfig, undefined, axiosInst);

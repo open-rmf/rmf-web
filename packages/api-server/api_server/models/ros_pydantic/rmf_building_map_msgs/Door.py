@@ -17,6 +17,18 @@ class Door(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "name",
+                "v1_x",
+                "v1_y",
+                "v2_x",
+                "v2_y",
+                "door_type",
+                "motion_range",
+                "motion_direction",
+            ],
+        }
 
 
 # string name

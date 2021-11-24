@@ -1,13 +1,12 @@
 import { makeStyles } from '@material-ui/core';
+import type { Level } from 'api-client';
 import clsx from 'clsx';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import React from 'react';
 import { MapContainer, MapContainerProps, Pane, SVGOverlay, useMap } from 'react-leaflet';
-import * as RmfModels from 'rmf-models';
 import { EntityManager, EntityManagerContext } from './entity-manager';
 import { LabelsPortalContext } from './labels-overlay';
-// import { SVGOverlay } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
 
 const useStyles = makeStyles(() => ({
@@ -20,7 +19,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 export interface MapFloorLayer {
-  level: RmfModels.Level;
+  level: Level;
   imageUrl: string;
   bounds: L.LatLngBounds;
 }

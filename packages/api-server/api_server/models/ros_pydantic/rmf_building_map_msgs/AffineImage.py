@@ -16,6 +16,17 @@ class AffineImage(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "name",
+                "x_offset",
+                "y_offset",
+                "yaw",
+                "scale",
+                "encoding",
+                "data",
+            ],
+        }
 
 
 # string name

@@ -113,11 +113,7 @@ export function UserListCard({
                 searchTimer.current = window.setTimeout(() => setSearch(newInput), 300);
               }}
             />
-            <IconButton
-              color="primary"
-              onClick={() => setOpenCreateDialog(true)}
-              aria-label="create user"
-            >
+            <IconButton onClick={() => setOpenCreateDialog(true)} aria-label="create user">
               <AddIcon fontSize="large" />
             </IconButton>
           </>

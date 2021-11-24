@@ -7,7 +7,7 @@ import type {
   SubmitTask,
 } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import { TaskType as RmfTaskType } from 'rmf-models';
 import { CreateTaskForm } from './create-task';
 import { makeSubmitTask } from './test-data.spec';
 
@@ -99,14 +99,14 @@ describe('CreateTaskForm', () => {
     const mount = () => {
       const task1 = makeSubmitTask();
       task1.description = { cleaning_zone: 'clean' } as CleanTaskDescription;
-      task1.task_type = RmfModels.TaskType.TYPE_CLEAN;
+      task1.task_type = RmfTaskType.TYPE_CLEAN;
       const task2 = makeSubmitTask();
       task2.description = {
         start_name: 'start',
         finish_name: 'finish',
         num_loops: 2,
       } as LoopTaskDescription;
-      task2.task_type = RmfModels.TaskType.TYPE_LOOP;
+      task2.task_type = RmfTaskType.TYPE_LOOP;
       const tasksFromFile = () => Promise.resolve([task1, task2]);
       const root = render(<CreateTaskForm open tasksFromFile={tasksFromFile} />);
       userEvent.click(root.getByLabelText('Select File'));

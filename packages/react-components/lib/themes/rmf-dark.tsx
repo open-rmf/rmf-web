@@ -6,40 +6,45 @@ const base = createMuiTheme({
     type: 'dark',
     ...commonTheme,
     primary: {
-      main: '#84693d',
-      dark: '#533b11',
-      light: '#bea582',
+      //Charcoal, Rich Black Fogra 29, Cadet
+      main: '#37474F',
+      dark: '#102027',
+      light: '#62727B',
     },
     background: {
-      default: '#103375',
-      paper: '#2e4d83',
+      //Rich Black Fogra 29, Cadet
+      default: '#102027',
+      paper: '#62727B',
     },
   },
 });
 
 export const rmfDark = createMuiTheme(
   {
+    '@global': {
+      '.leaflet-control-zoom a': {
+        color: base.palette.text.primary,
+        backgroundColor: base.palette.background.paper,
+      },
+      '.leaflet-control-layers': {
+        color: base.palette.text.primary,
+        backgroundColor: base.palette.background.paper,
+      },
+      '.leaflet-control-layers .MuiSlider-root': {
+        color: base.palette.text.primary,
+      },
+      '.leaflet-control-layers .MuiInputBase-input': {
+        color: base.palette.text.primary,
+      },
+      '.leaflet-pane img': {
+        filter:
+          'invert(90%) sepia(20%) saturate(120%) hue-rotate(180deg) brightness(95%) contrast(80%)',
+      },
+    },
     overrides: {
-      MuiCssBaseline: {
-        '@global': {
-          '.leaflet-control-zoom a': {
-            color: base.palette.text.primary,
-            backgroundColor: base.palette.background.paper,
-          },
-          '.leaflet-control-layers': {
-            color: base.palette.text.primary,
-            backgroundColor: base.palette.background.paper,
-          },
-          '.leaflet-control-layers .MuiSlider-root': {
-            color: base.palette.text.primary,
-          },
-          '.leaflet-control-layers .MuiInputBase-input': {
-            color: base.palette.text.primary,
-          },
-          '.leaflet-pane img': {
-            filter:
-              'invert(90%) sepia(12%) saturate(5773%) hue-rotate(193deg) brightness(92%) contrast(92%)',
-          },
+      MuiTableCell: {
+        stickyHeader: {
+          backgroundColor: base.palette.primary.main,
         },
       },
     },

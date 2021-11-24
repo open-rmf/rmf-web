@@ -12,7 +12,7 @@ function renderWorkcellPanel() {
     <WorkcellPanel
       dispensers={dispensers}
       ingestors={ingestors}
-      workCellStates={{
+      workcellStates={{
         test_dispenser: makeDispenserState({ guid: 'test_dispenser' }),
         test_ingestor: makeDispenserState({ guid: 'test_ingestor' }),
       }}
@@ -30,7 +30,7 @@ describe('Workcell Panel', () => {
       <WorkcellPanel
         dispensers={dispensers}
         ingestors={ingestors}
-        workCellStates={{
+        workcellStates={{
           test_dispenser: makeDispenserState({ guid: 'test_dispenser' }),
           test_ingestor: makeDispenserState({ guid: 'test_ingestor' }),
         }}

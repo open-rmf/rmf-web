@@ -88,7 +88,7 @@ export function PermissionsCard({
           Permissions
         </Typography>
         <IconButton onClick={() => setOpenDialog(true)} aria-label="add permission">
-          <AddIcon fontSize="large" color="primary" />
+          <AddIcon fontSize="large" />
         </IconButton>
       </Toolbar>
       <Loading loading={loading}>

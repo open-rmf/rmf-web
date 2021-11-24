@@ -20,28 +20,28 @@ export function RoleListPage(): JSX.Element | null {
         createRole={async (role) => {
           try {
             await adminApi.createRoleAdminRolesPost({ name: role });
-          } catch (e) {
+          } catch (e: any) {
             throw new Error(getApiErrorMessage(e));
           }
         }}
         deleteRole={async (role) => {
           try {
             await adminApi.deleteRoleAdminRolesRoleDelete(role);
-          } catch (e) {
+          } catch (e: any) {
             throw new Error(getApiErrorMessage(e));
           }
         }}
         getPermissions={async (role) => {
           try {
             return (await adminApi.getRolePermissionsAdminRolesRolePermissionsGet(role)).data;
-          } catch (e) {
+          } catch (e: any) {
             throw new Error(getApiErrorMessage(e));
           }
         }}
         savePermission={async (role, permission) => {
           try {
             await adminApi.addRolePermissionAdminRolesRolePermissionsPost(permission, role);
-          } catch (e) {
+          } catch (e: any) {
             throw new Error(getApiErrorMessage(e));
           }
         }}
@@ -51,7 +51,7 @@ export function RoleListPage(): JSX.Element | null {
               permission,
               role,
             );
-          } catch (e) {
+          } catch (e: any) {
             throw new Error(getApiErrorMessage(e));
           }
         }}
