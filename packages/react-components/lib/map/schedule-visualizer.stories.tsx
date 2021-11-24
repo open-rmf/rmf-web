@@ -1,6 +1,6 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { LayersControl, Marker, Popup } from 'react-leaflet';
+import { LayersControl } from 'react-leaflet';
 import * as RmfModels from 'rmf-models';
 import ColorManager from '../color-manager';
 import { makeLift } from '../lifts/test-utils.spec';
@@ -73,7 +73,6 @@ export const ScheduleVisualizer: Story<LMapProps> = () => {
     {},
   );
   const bounds = React.useMemo(() => levelBounds[currentLevel.name], [levelBounds, currentLevel]);
-  console.log('bounds', bounds);
   const [robots, setRobots] = React.useState<RobotData[]>([]);
 
   React.useEffect(() => {
@@ -111,6 +110,13 @@ export const ScheduleVisualizer: Story<LMapProps> = () => {
     setLevelBounds(bounds);
   }, [images, levels]);
 
+  const baseLayerHandler = (levelName: string): L.LeafletEventHandlerFnMap | undefined => {
+    return {
+      add: () => setCurrentLevel(levels.find((l) => l.name === levelName) || levels[0]),
+      remove: () => setCurrentLevel(levels.find((l) => l.name === levelName) || levels[0]),
+    };
+  };
+
   return bounds ? (
     <div style={{ width: '100vw', height: '100vh', padding: 0, margin: 0 }}>
       <LMap bounds={bounds} zoomDelta={0.5} zoomSnap={0.5}>
@@ -121,7 +127,11 @@ export const ScheduleVisualizer: Story<LMapProps> = () => {
               name={level.name}
               checked={currentLevel === level}
             >
-              <AffineImageOverlay bounds={levelBounds[level.name]} image={level.images[0]} />
+              <AffineImageOverlay
+                bounds={levelBounds[level.name]}
+                image={level.images[0]}
+                eventHandlers={baseLayerHandler(level.name)}
+              />
             </LayersControl.BaseLayer>
           ))}
           <LayersControl.Overlay name="Waypoints" checked>
