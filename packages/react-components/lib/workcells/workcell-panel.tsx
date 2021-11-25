@@ -1,8 +1,10 @@
-import { Card, Grid, IconButton, makeStyles, Paper, Typography } from '@material-ui/core';
+import { Card, Divider, Grid, IconButton, makeStyles, Paper, Typography } from '@material-ui/core';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import type { Dispenser, Ingestor } from 'api-client';
 import React from 'react';
+import { LeafletContext } from 'react-leaflet';
+import { onWorkcellClick, DispenserResource } from './utils';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
 import { Workcell, WorkcellState } from '.';
@@ -11,12 +13,16 @@ import { WorkcellTable } from './workcell-table';
 export interface WorkcellPanelProps {
   dispensers: Dispenser[];
   ingestors: Ingestor[];
+  leafletMap?: LeafletContext;
+  workcellContext: Record<string, DispenserResource>;
   workcellStates: Record<string, WorkcellState>;
 }
 
 export interface WorkcellDataProps {
   workcells: Workcell[];
   workcellStates: Record<string, WorkcellState>;
+  workcellContext: Record<string, DispenserResource>;
+  leafletMap: LeafletContext | undefined;
 }
 
 interface WorkcellGridData extends WorkcellDataProps {
@@ -31,8 +37,9 @@ export interface WorkcellCellProps {
   workcell: Workcell;
   requestGuidQueue?: string[];
   secondsRemaining?: number;
+  leafletMap?: LeafletContext;
+  workcellResource?: DispenserResource;
 }
-
 const useStyles = makeStyles((theme) => ({
   container: {
     margin: theme.spacing(1),
@@ -44,13 +51,28 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.primary.main,
   },
   cellContainer: {
-    padding: theme.spacing(2),
-    paddingTop: theme.spacing(1),
+    padding: theme.spacing(1),
+    maxHeight: '25vh',
+    margin: theme.spacing(1),
+    overflowY: 'auto',
+    overflowX: 'hidden',
   },
   cellPaper: {
     padding: theme.spacing(1),
+    backgroundColor: theme.palette.background.paper,
+    border: 1,
+    borderStyle: 'solid',
+    borderColor: theme.palette.primary.main,
+    '&:hover': {
+      cursor: 'pointer',
+      backgroundColor: theme.palette.action.hover,
+    },
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.action.hover,
+    height: '60%',
+  },
+  grid: {
+    padding: theme.spacing(2),
+    paddingTop: theme.spacing(1),
   },
   itemIcon: {
     color: theme.palette.primary.contrastText,
@@ -64,7 +86,8 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.primary.contrastText,
   },
   tableDiv: {
-    margin: '0 1rem',
+    margin: theme.spacing(1),
+    padding: theme.spacing(1),
   },
   nameField: {
     fontWeight: 'bold',
@@ -72,18 +95,33 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   },
+  bottomTable: {
+    marginTop: theme.spacing(2),
+  },
 }));
 
 const WorkcellCell = React.memo(
-  ({ workcell, requestGuidQueue, secondsRemaining }: WorkcellCellProps): JSX.Element | null => {
-    const labelId = `workcell-cell-${workcell.guid}`;
+  ({
+    workcell,
+    requestGuidQueue,
+    secondsRemaining,
+    leafletMap,
+    workcellResource,
+  }: WorkcellCellProps): JSX.Element => {
     const classes = useStyles();
+    const labelId = `workcell-cell-${workcell.guid}`;
 
     return (
-      <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
+      <Paper
+        className={classes.cellPaper}
+        role="region"
+        aria-labelledby={labelId}
+        onClick={() => workcellResource && onWorkcellClick(workcellResource, leafletMap)}
+      >
         {requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
           <React.Fragment>
             <Typography
+              noWrap
               id={labelId}
               align="center"
               className={classes.nameField}
@@ -92,13 +130,13 @@ const WorkcellCell = React.memo(
               {workcell?.guid}
             </Typography>
             <Grid container direction="row">
-              <Grid item xs={6}>
+              <Grid item xs={8}>
                 <Typography
                   align="center"
                   variant="body2"
                 >{`Queue: ${requestGuidQueue.length}`}</Typography>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={4}>
                 <Typography align="center" variant="body2">
                   {requestGuidQueue.length}
                 </Typography>
@@ -117,23 +155,34 @@ const WorkcellCell = React.memo(
   },
 );
 
-const WorkcellGridRenderer = ({ data, columnIndex, rowIndex }: WorkcellGridRendererProps) => {
+const WorkcellGridRenderer = ({
+  data,
+  columnIndex,
+  rowIndex,
+  style,
+}: WorkcellGridRendererProps) => {
   let workcell: Workcell | undefined;
   let workcellState: WorkcellState | undefined;
+  let workcellResource: DispenserResource | undefined;
+  let leafletMap: LeafletContext | undefined;
   const columnCount = data.columnCount;
-  const { workcells, workcellStates } = data;
+  const { workcells, workcellStates, workcellContext } = data;
 
   if (rowIndex * columnCount + columnIndex <= workcells.length - 1) {
     workcell = workcells[rowIndex * columnCount + columnIndex];
     workcellState = workcellStates[workcell.guid];
+    workcellResource = workcellContext[workcell.guid];
+    leafletMap = data.leafletMap;
   }
 
   return workcell ? (
-    <div>
+    <div style={style}>
       <WorkcellCell
         workcell={workcell}
         requestGuidQueue={workcellState?.request_guid_queue}
         secondsRemaining={workcellState?.seconds_remaining}
+        workcellResource={workcellResource}
+        leafletMap={leafletMap}
       />
     </div>
   ) : null;
@@ -141,7 +190,9 @@ const WorkcellGridRenderer = ({ data, columnIndex, rowIndex }: WorkcellGridRende
 
 export function WorkcellPanel({
   dispensers,
+  leafletMap,
   ingestors,
+  workcellContext,
   workcellStates,
 }: WorkcellPanelProps): JSX.Element {
   const classes = useStyles();
@@ -188,7 +239,8 @@ export function WorkcellPanel({
                         columnCount,
                         workcells: dispensers,
                         workcellStates,
-                        type: 'dispensers',
+                        workcellContext,
+                        leafletMap,
                       }}
                     >
                       {WorkcellGridRenderer}
@@ -198,6 +250,7 @@ export function WorkcellPanel({
               </AutoSizer>
             </Grid>
           </div>
+          <Divider />
           <div className={classes.cellContainer}>
             <Typography variant="h6">Ingestors</Typography>
             <Grid container direction="row" spacing={1}>
@@ -216,7 +269,8 @@ export function WorkcellPanel({
                         columnCount,
                         workcells: ingestors,
                         workcellStates,
-                        type: 'ingestors',
+                        workcellContext,
+                        leafletMap,
                       }}
                     >
                       {WorkcellGridRenderer}
@@ -232,13 +286,23 @@ export function WorkcellPanel({
           {dispensers.length > 0 ? (
             <div className={classes.tableDiv}>
               <Typography variant="h6">Dispenser Table</Typography>
-              <WorkcellTable workcells={dispensers} workcellStates={workcellStates} />
+              <WorkcellTable
+                workcells={dispensers}
+                workcellStates={workcellStates}
+                workcellContext={workcellContext}
+                leafletMap={leafletMap}
+              />
             </div>
           ) : null}
           {ingestors.length > 0 ? (
             <div className={classes.tableDiv}>
               <Typography variant="h6">Ingestor Table</Typography>
-              <WorkcellTable workcells={ingestors} workcellStates={workcellStates} />
+              <WorkcellTable
+                workcells={ingestors}
+                workcellStates={workcellStates}
+                workcellContext={workcellContext}
+                leafletMap={leafletMap}
+              />
             </div>
           ) : null}
         </React.Fragment>

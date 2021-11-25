@@ -7,15 +7,22 @@ import {
   TableHead,
   TableRow,
 } from '@material-ui/core';
-import type { Lift, LiftState } from 'api-client';
 import clsx from 'clsx';
 import React from 'react';
-import AutoSizer from 'react-virtualized-auto-sizer';
+import { LeafletContext } from 'react-leaflet';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 import { DoorMode as RmfDoorMode } from 'rmf-models';
 import { useFixedTableCellStyles } from '../utils';
 import LiftRequestFormDialog from './lift-request-form-dialog';
-import { doorStateToString, liftModeToString, requestDoorModes, requestModes } from './lift-utils';
+import {
+  doorStateToString,
+  liftModeToString,
+  requestDoorModes,
+  requestModes,
+  onLiftClick,
+} from './lift-utils';
+import { Lift, LiftState } from 'api-client';
 
 const useStyles = makeStyles((theme) => ({
   doorLabelOpen: {
@@ -28,6 +35,10 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.warning.main,
   },
   tableRow: {
+    '&:hover': {
+      cursor: 'pointer',
+      backgroundColor: theme.palette.action.hover,
+    },
     display: 'flex',
     flexDirection: 'row',
   },
@@ -41,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
 export interface LiftTableProps {
   lifts: Lift[];
   liftStates: Record<string, LiftState>;
+  leafletMap?: LeafletContext;
   onRequestSubmit?(
     event: React.FormEvent,
     lift: Lift,
@@ -57,9 +69,10 @@ interface LiftListRendererProps extends ListChildComponentProps {
 export interface LiftRowProps {
   lift: Lift;
   doorState: number;
-  currentMode: number;
-  currentFloor: string;
-  destinationFloor: string;
+  destinationFloor?: string;
+  currentFloor?: string;
+  currentMode?: number;
+  leafletMap?: LeafletContext;
   onRequestSubmit?(
     event: React.FormEvent,
     lift: Lift,
@@ -76,6 +89,7 @@ const LiftRow = React.memo(
     destinationFloor,
     currentFloor,
     currentMode,
+    leafletMap,
     onRequestSubmit,
   }: LiftRowProps) => {
     const classes = useStyles();
@@ -99,7 +113,12 @@ const LiftRow = React.memo(
     );
 
     return (
-      <TableRow aria-label={`${lift.name}`} component="div" className={classes.tableRow}>
+      <TableRow
+        aria-label={`${lift.name}`}
+        component="div"
+        className={classes.tableRow}
+        onClick={() => onLiftClick(lift, leafletMap)}
+      >
         <TableCell
           component="div"
           variant="body"
@@ -164,70 +183,80 @@ const LiftRow = React.memo(
   },
 );
 
-const LiftListRenderer = ({ data, index }: LiftListRendererProps) => {
+const LiftListRenderer = ({ data, index, style }: LiftListRendererProps) => {
   const lift = data.lifts[index];
   const liftState = data.liftStates[lift.name];
+  const leafletMap = data.leafletMap;
 
   return (
-    <LiftRow
-      lift={lift}
-      doorState={liftState?.door_state}
-      currentMode={liftState?.current_mode}
-      currentFloor={liftState?.current_floor}
-      destinationFloor={liftState?.destination_floor}
-      onRequestSubmit={data.onRequestSubmit}
-    />
+    <div style={style}>
+      <LiftRow
+        lift={lift}
+        doorState={liftState?.door_state}
+        currentMode={liftState?.current_mode}
+        currentFloor={liftState?.current_floor}
+        destinationFloor={liftState?.destination_floor}
+        onRequestSubmit={data.onRequestSubmit}
+        key={`${lift.name}`}
+        leafletMap={leafletMap}
+      />
+    </div>
   );
 };
 
-export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps): JSX.Element => {
+export const LiftTable = ({
+  lifts,
+  liftStates,
+  onRequestSubmit,
+  leafletMap,
+}: LiftTableProps): JSX.Element => {
   const classes = useStyles();
   const { fixedTableCell, fixedLastTableCell } = useFixedTableCellStyles();
   return (
     <AutoSizer disableHeight>
       {({ width }) => {
         return (
-          <Table component="div" stickyHeader size="small" aria-label="lift-table">
+          <Table component="div" size="small" aria-label="lift-table">
             <TableHead component="div">
               <TableRow component="div" className={classes.tableRow}>
                 <TableCell
                   component="div"
-                  variant="body"
+                  variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Lift Name
                 </TableCell>
                 <TableCell
                   component="div"
-                  variant="body"
+                  variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Op. Mode
                 </TableCell>
                 <TableCell
                   component="div"
-                  variant="body"
+                  variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Current Floor
                 </TableCell>
                 <TableCell
                   component="div"
-                  variant="body"
+                  variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Destination
                 </TableCell>
                 <TableCell
                   component="div"
-                  variant="body"
+                  variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Doors State
                 </TableCell>
                 <TableCell
                   component="div"
-                  variant="body"
+                  variant="head"
                   className={clsx(classes.tableCell, fixedLastTableCell)}
                 >
                   Request Form
@@ -243,8 +272,8 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
                 itemData={{
                   lifts,
                   liftStates,
-                  width,
                   onRequestSubmit,
+                  leafletMap,
                 }}
               >
                 {LiftListRenderer}

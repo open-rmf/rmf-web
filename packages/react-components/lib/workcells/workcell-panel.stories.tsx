@@ -40,6 +40,7 @@ export const WorkcellPanelStory: Story = (args) => {
         test_ingestor2: makeDispenserState({ guid: 'test_ingestor2' }),
         test_ingestor4: makeDispenserState({ guid: 'test_ingestor4' }),
       }}
+      workcellContext={{}}
       {...args}
     />
   );

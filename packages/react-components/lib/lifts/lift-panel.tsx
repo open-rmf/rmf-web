@@ -14,6 +14,7 @@ import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import type { Lift, LiftState } from 'api-client';
 import React from 'react';
+import { LeafletContext } from 'react-leaflet';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
 import { DoorMode as RmfDoorMode } from 'rmf-models';
@@ -24,11 +25,13 @@ import {
   motionStateToString,
   requestDoorModes,
   requestModes,
+  onLiftClick,
 } from './lift-utils';
 
 export interface LiftPanelProps {
   lifts: Lift[];
   liftStates: Record<string, LiftState>;
+  leafletMap?: LeafletContext;
   onRequestSubmit?(
     event: React.FormEvent,
     lift: Lift,
@@ -51,6 +54,7 @@ export interface LiftCellProps {
   doorState?: number;
   motionState?: number;
   currentFloor?: string;
+  leafletMap?: LeafletContext;
   destinationFloor?: string;
   onRequestSubmit?(
     event: React.FormEvent,
@@ -63,6 +67,7 @@ export interface LiftCellProps {
 
 const useStyles = makeStyles((theme) => ({
   container: {
+    maxHeight: '40vh',
     margin: theme.spacing(1),
   },
   buttonBar: {
@@ -72,18 +77,33 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.primary.main,
   },
   grid: {
-    padding: theme.spacing(1),
+    padding: theme.spacing(2),
   },
   cellPaper: {
     padding: theme.spacing(2),
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.action.hover,
+    backgroundColor: theme.palette.background.paper,
+    border: 1,
+    borderStyle: 'solid',
+    borderColor: theme.palette.primary.main,
+    '&:hover': {
+      cursor: 'pointer',
+      backgroundColor: theme.palette.action.hover,
+    },
   },
   requestButton: {
     marginTop: theme.spacing(1),
+    padding: theme.spacing(1),
+    backgroundColor: theme.palette.info.light,
+    margin: 'auto',
   },
   itemIcon: {
     color: theme.palette.primary.contrastText,
+  },
+  buttonGroup: {
+    marginTop: theme.spacing(1),
+    display: 'flex',
+    justifyContent: 'center',
   },
   iconMoving: {
     color: theme.palette.success.main,
@@ -121,6 +141,7 @@ const LiftCell = React.memo(
     doorState,
     motionState,
     currentFloor,
+    leafletMap,
     destinationFloor,
     onRequestSubmit,
   }: LiftCellProps): JSX.Element | null => {
@@ -151,7 +172,12 @@ const LiftCell = React.memo(
     );
 
     return (
-      <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
+      <Paper
+        className={classes.cellPaper}
+        role="region"
+        aria-labelledby={labelId}
+        onClick={() => onLiftClick(lift, leafletMap)}
+      >
         <Grid container direction="row">
           <Grid item xs={9}>
             <Typography
@@ -165,7 +191,7 @@ const LiftCell = React.memo(
             <Box border={1} borderColor="divider" marginTop={1} marginBottom={1}>
               <Typography align="center">{destinationFloor || 'Unknown'}</Typography>
             </Box>
-            <Typography align="center" className={doorModeLabelClasses(doorState)}>
+            <Typography variant="body2" align="center" className={doorModeLabelClasses(doorState)}>
               {currDoorMotion}
             </Typography>
           </Grid>
@@ -211,6 +237,7 @@ const LiftGridRenderer = ({ data, columnIndex, rowIndex, style }: LiftGridRender
   let motionState: number | undefined;
   let destinationFloor: string | undefined;
   let currentFloor: string | undefined;
+  let leafletMap: LeafletContext | undefined;
   const columnCount = data.columnCount;
 
   if (rowIndex * columnCount + columnIndex <= data.lifts.length - 1) {
@@ -220,6 +247,7 @@ const LiftGridRenderer = ({ data, columnIndex, rowIndex, style }: LiftGridRender
     motionState = liftState?.motion_state;
     destinationFloor = liftState?.destination_floor;
     currentFloor = liftState?.current_floor;
+    leafletMap = data.leafletMap;
   }
 
   return lift ? (
@@ -230,13 +258,19 @@ const LiftGridRenderer = ({ data, columnIndex, rowIndex, style }: LiftGridRender
         motionState={motionState}
         currentFloor={currentFloor}
         destinationFloor={destinationFloor}
+        leafletMap={leafletMap}
         onRequestSubmit={data.onRequestSubmit}
       />
     </div>
   ) : null;
 };
 
-export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps): JSX.Element {
+export function LiftPanel({
+  lifts,
+  liftStates,
+  leafletMap,
+  onRequestSubmit,
+}: LiftPanelProps): JSX.Element {
   const classes = useStyles();
   const [isCellView, setIsCellView] = React.useState(true);
   const columnWidth = 250;
@@ -261,7 +295,7 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
           </Grid>
         </Grid>
       </Paper>
-      <Grid className={classes.grid} container direction="row" spacing={1}>
+      <Grid className={classes.grid} container direction="row" spacing={2}>
         {isCellView ? (
           <AutoSizer disableHeight>
             {({ width }) => {
@@ -272,13 +306,14 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
                   columnWidth={columnWidth}
                   height={250}
                   rowCount={Math.ceil(lifts.length / columnCount)}
-                  rowHeight={140}
+                  rowHeight={180}
                   width={width}
                   itemData={{
                     columnCount,
                     lifts,
                     liftStates,
                     onRequestSubmit,
+                    leafletMap,
                   }}
                 >
                   {LiftGridRenderer}
@@ -287,7 +322,12 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
             }}
           </AutoSizer>
         ) : (
-          <LiftTable lifts={lifts} liftStates={liftStates} onRequestSubmit={onRequestSubmit} />
+          <LiftTable
+            leafletMap={leafletMap}
+            lifts={lifts}
+            liftStates={liftStates}
+            onRequestSubmit={onRequestSubmit}
+          />
         )}
       </Grid>
     </Card>

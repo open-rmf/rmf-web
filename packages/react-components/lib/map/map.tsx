@@ -59,11 +59,6 @@ export interface LMapProps extends Omit<MapContainerProps, 'crs'> {
   ref?: React.Ref<typeof MapContainer>;
 }
 
-//to be removed
-function whenMapIsReady(): void {
-  alert('Map Ready');
-}
-
 export const LMap = React.forwardRef(
   ({ className, children, ...otherProps }: MapContainerProps) => {
     const classes = useStyles();
@@ -76,7 +71,6 @@ export const LMap = React.forwardRef(
         crs={L.CRS.Simple}
         {...otherProps}
         maxZoom={22}
-        whenReady={whenMapIsReady}
       >
         <EntityManagerProvider>
           <LabelsPortalContext.Provider value={labelsPortal}>

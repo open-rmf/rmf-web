@@ -12,15 +12,18 @@ import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import type { Door, DoorState } from 'api-client';
 import React from 'react';
+import { LeafletContext } from 'react-leaflet';
+import clsx from 'clsx';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
 import { DoorMode as RmfDoorMode } from 'rmf-models';
 import { DoorTable } from './door-table';
-import { DoorData, doorModeToString, doorTypeToString } from './utils';
+import { DoorData, doorModeToString, doorTypeToString, onDoorClick } from './utils';
 
 export interface DoorPanelProps {
   doors: DoorData[];
   doorStates: Record<string, DoorState>;
+  leafletMap?: LeafletContext;
   onDoorControlClick?(event: React.MouseEvent, door: Door, mode: number): void;
 }
 
@@ -35,6 +38,7 @@ interface DoorGridRendererProps extends GridChildComponentProps {
 export interface DoorcellProps {
   door: DoorData;
   doorMode?: number;
+  leafletMap?: LeafletContext;
   onDoorControlClick?(event: React.MouseEvent, door: Door, mode: number): void;
 }
 
@@ -49,7 +53,12 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.primary.main,
   },
   grid: {
-    padding: theme.spacing(1),
+    padding: theme.spacing(2),
+    maxHeight: '40vh',
+    overflowY: 'auto',
+  },
+  doorLabelDefault: {
+    padding: theme.spacing(0, 0.2),
   },
   doorLabelOpen: {
     backgroundColor: theme.palette.success.main,
@@ -64,9 +73,16 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.warning.contrastText,
   },
   cellPaper: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(1),
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.action.hover,
+    backgroundColor: theme.palette.background.paper,
+    border: 1,
+    borderStyle: 'solid',
+    borderColor: theme.palette.primary.main,
+    '&:hover': {
+      cursor: 'pointer',
+      backgroundColor: theme.palette.action.hover,
+    },
   },
   itemIcon: {
     color: theme.palette.primary.contrastText,
@@ -75,6 +91,18 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
     display: 'flex',
     justifyContent: 'center',
+  },
+  openCloseButtons: {
+    border: 1,
+    borderStyle: 'solid',
+    borderColor: theme.palette.common.white,
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: theme.palette.primary.light,
+    boxShadow: theme.shadows[3],
+    color: theme.palette.primary.contrastText,
+    '&:hover': {
+      color: theme.palette.primary.main,
+    },
   },
   panelHeader: {
     color: theme.palette.primary.contrastText,
@@ -89,7 +117,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DoorCell = React.memo(
-  ({ door, doorMode, onDoorControlClick }: DoorcellProps): JSX.Element => {
+  ({ door, doorMode, leafletMap, onDoorControlClick }: DoorcellProps): JSX.Element => {
     const classes = useStyles();
     const doorModeLabelClasses = React.useCallback(
       (doorMode?: number): string => {
@@ -113,8 +141,14 @@ const DoorCell = React.memo(
     const labelId = `door-cell-${door.door.name}`;
 
     return (
-      <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
+      <Paper
+        className={classes.cellPaper}
+        role="region"
+        aria-labelledby={labelId}
+        onClick={() => onDoorClick(door.door, leafletMap)}
+      >
         <Typography
+          noWrap
           id={labelId}
           variant="body1"
           align="center"
@@ -124,13 +158,18 @@ const DoorCell = React.memo(
           {door.door.name}
         </Typography>
         <Grid container direction="row" spacing={1}>
-          <Grid item xs={6}>
+          <Grid item xs={4}>
             <Typography variant="body2" align="center">
               {door.level}
             </Typography>
           </Grid>
-          <Grid item xs={6}>
-            <Typography className={doorStatusClass} variant="body2" align="center" role="status">
+          <Grid item xs={8}>
+            <Typography
+              className={clsx(doorStatusClass, classes.doorLabelDefault)}
+              variant="body2"
+              align="center"
+              role="status"
+            >
               {doorModeToString(doorMode)}
             </Typography>
           </Grid>
@@ -139,8 +178,9 @@ const DoorCell = React.memo(
           {door && doorTypeToString(door.door.door_type)}
         </Typography>
         <div className={classes.buttonGroup}>
-          <ButtonGroup variant="contained" size="small" color="primary">
+          <ButtonGroup variant="contained" size="small">
             <Button
+              className={classes.openCloseButtons}
               onClick={(ev) =>
                 onDoorControlClick && onDoorControlClick(ev, door.door, RmfDoorMode.MODE_OPEN)
               }
@@ -148,6 +188,7 @@ const DoorCell = React.memo(
               Open
             </Button>
             <Button
+              className={classes.openCloseButtons}
               onClick={(ev) =>
                 onDoorControlClick && onDoorControlClick(ev, door.door, RmfDoorMode.MODE_CLOSED)
               }
@@ -163,12 +204,14 @@ const DoorCell = React.memo(
 
 const DoorGridRenderer = ({ data, columnIndex, rowIndex, style }: DoorGridRendererProps) => {
   let door: DoorData | undefined;
+  let leafletMap: LeafletContext | undefined;
   let doorState: DoorState | undefined;
   const columnCount = data.columnCount;
 
   if (rowIndex * columnCount + columnIndex <= data.doors.length - 1) {
     door = data.doors[rowIndex * columnCount + columnIndex];
     doorState = data.doorStates[door.door.name];
+    leafletMap = data.leafletMap;
   }
 
   return door ? (
@@ -177,12 +220,18 @@ const DoorGridRenderer = ({ data, columnIndex, rowIndex, style }: DoorGridRender
         door={door}
         doorMode={doorState?.current_mode.value}
         onDoorControlClick={data.onDoorControlClick}
+        leafletMap={leafletMap}
       />
     </div>
   ) : null;
 };
 
-export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelProps): JSX.Element {
+export function DoorPanel({
+  doors,
+  doorStates,
+  leafletMap,
+  onDoorControlClick,
+}: DoorPanelProps): JSX.Element {
   const classes = useStyles();
   const [isCellView, setIsCellView] = React.useState(true);
   const columnWidth = 250;
@@ -207,7 +256,7 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
           </Grid>
         </Grid>
       </Paper>
-      <Grid className={classes.grid} container direction="row" spacing={1}>
+      <Grid className={classes.grid} container direction="row" spacing={2}>
         {isCellView ? (
           <AutoSizer disableHeight>
             {({ width }) => {
@@ -218,13 +267,14 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
                   columnWidth={columnWidth}
                   height={250}
                   rowCount={Math.ceil(doors.length / columnCount)}
-                  rowHeight={120}
+                  rowHeight={150}
                   width={width}
                   itemData={{
                     columnCount,
                     doors,
                     doorStates,
                     onDoorControlClick,
+                    leafletMap,
                   }}
                 >
                   {DoorGridRenderer}
@@ -237,6 +287,7 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
             doors={doors}
             doorStates={doorStates}
             onDoorControlClick={onDoorControlClick}
+            leafletMap={leafletMap}
           />
         )}
       </Grid>
