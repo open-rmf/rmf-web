@@ -14,7 +14,7 @@ import {
 import MuiAlert from '@material-ui/lab/Alert';
 import { TaskType as RmfTaskType } from 'rmf-models';
 import type { SubmitTask, LoopTaskDescription } from 'api-client';
-import { currentLocation } from '../app-config';
+import { currentLocation, taskApi } from '../app-config';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,6 +26,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+class AlertType {
+  static readonly SUCCESS = 'success';
+  static readonly ERROR = 'error';
+}
+
 interface TaskFormProps {
   placeNames: string[];
 }
@@ -34,7 +39,8 @@ export const TaskForm = (props: TaskFormProps) => {
   const classes = useStyles();
   const { placeNames } = props;
   const [place, setPlace] = React.useState('');
-  const [showError, setShowError] = React.useState(false);
+  const [showSnackBar, setShowSnackBar] = React.useState(false);
+  const [alertType, setAlertType] = React.useState(AlertType.SUCCESS);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPlace(event.target.value);
@@ -52,8 +58,15 @@ export const TaskForm = (props: TaskFormProps) => {
         start_time: new Date().getTime() / 1000,
         description: loopTaskDesc,
       };
+      taskApi.submitTaskTasksSubmitTaskPost(task).then((res) => {
+        if (res.data.task_id) {
+          setAlertType(AlertType.SUCCESS);
+          setShowSnackBar(true);
+        }
+      });
     } else {
-      setShowError(true);
+      setAlertType(AlertType.ERROR);
+      setShowSnackBar(true);
     }
   };
 
@@ -65,6 +78,7 @@ export const TaskForm = (props: TaskFormProps) => {
         <RadioGroup onChange={handleChange} row>
           {placeNames.map((p) => (
             <FormControlLabel
+              key={p}
               value={p}
               disabled={p === currentLocation}
               control={<Radio />}
@@ -77,8 +91,12 @@ export const TaskForm = (props: TaskFormProps) => {
       <Button variant="contained" color="primary" size="large" onClick={() => submitTask()}>
         Submit
       </Button>
-      <Snackbar open={showError} onClose={() => setShowError(false)}>
-        <MuiAlert severity="error">You must select a destination</MuiAlert>
+      <Snackbar autoHideDuration={5000} open={showSnackBar} onClose={() => setShowSnackBar(false)}>
+        {alertType === AlertType.ERROR ? (
+          <MuiAlert severity="error">You must select a destination</MuiAlert>
+        ) : (
+          <MuiAlert severity="success">Task Submitted Successfully</MuiAlert>
+        )}
       </Snackbar>
     </Paper>
   );
