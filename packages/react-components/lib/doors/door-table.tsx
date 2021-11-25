@@ -11,17 +11,17 @@ import {
 import type { Door, DoorState } from 'api-client';
 import clsx from 'clsx';
 import React from 'react';
-import { LeafletContext } from 'react-leaflet';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import { DoorMode as RmfDoorMode } from 'rmf-models';
 import { useFixedTableCellStyles } from '../utils';
 import { DoorData, doorModeToString, doorTypeToString, onDoorClick } from './utils';
+import { LeafletContextInterface } from '@react-leaflet/core';
 
 export interface DoorTableProps {
   doors: DoorData[];
   doorStates: Record<string, DoorState>;
-  leafletMap?: LeafletContext;
+  leafletMap?: LeafletContextInterface;
   onDoorControlClick?(event: React.MouseEvent, door: Door, mode: number): void;
 }
 
@@ -32,7 +32,7 @@ interface DoorListRendererProps extends ListChildComponentProps {
 export interface DoorRowProps {
   door: DoorData;
   doorMode: number;
-  leafletMap?: LeafletContext;
+  leafletMap?: LeafletContextInterface;
   onDoorControlClick?(event: React.MouseEvent, door: Door, mode: number): void;
 }
 

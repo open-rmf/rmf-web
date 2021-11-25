@@ -1,6 +1,5 @@
 import { makeStyles, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import React from 'react';
-import { LeafletContext } from 'react-leaflet';
 import { dispenserModeToString, onWorkcellClick, DispenserResource } from './utils';
 import clsx from 'clsx';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -8,6 +7,7 @@ import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import { DispenserState as RmfDispenserState } from 'rmf-models';
 import { Workcell, WorkcellState } from '.';
 import { useFixedTableCellStyles } from '../utils';
+import { LeafletContextInterface } from '@react-leaflet/core';
 
 const useStyles = makeStyles((theme) => ({
   dispenserLabelIdle: {
@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export interface WorkcellTableProps {
-  leafletMap?: LeafletContext;
+  leafletMap?: LeafletContextInterface;
   workcellContext: Record<string, DispenserResource>;
   workcells: Workcell[];
   workcellStates: Record<string, WorkcellState>;
@@ -57,7 +57,7 @@ interface WorkcellListRendererProps extends ListChildComponentProps {
 }
 
 export interface WorkcellRowProps {
-  leafletMap?: LeafletContext;
+  leafletMap?: LeafletContextInterface;
   workcellResource: DispenserResource;
   workcell: Workcell;
   mode?: number;

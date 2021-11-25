@@ -9,7 +9,6 @@ import {
 } from '@material-ui/core';
 import clsx from 'clsx';
 import React from 'react';
-import { LeafletContext } from 'react-leaflet';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { DoorMode as RmfDoorMode } from 'rmf-models';
@@ -23,6 +22,7 @@ import {
   onLiftClick,
 } from './lift-utils';
 import { Lift, LiftState } from 'api-client';
+import { LeafletContextInterface } from '@react-leaflet/core';
 
 const useStyles = makeStyles((theme) => ({
   doorLabelOpen: {
@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 export interface LiftTableProps {
   lifts: Lift[];
   liftStates: Record<string, LiftState>;
-  leafletMap?: LeafletContext;
+  leafletMap?: LeafletContextInterface;
   onRequestSubmit?(
     event: React.FormEvent,
     lift: Lift,
@@ -72,7 +72,7 @@ export interface LiftRowProps {
   destinationFloor?: string;
   currentFloor?: string;
   currentMode?: number;
-  leafletMap?: LeafletContext;
+  leafletMap?: LeafletContextInterface;
   onRequestSubmit?(
     event: React.FormEvent,
     lift: Lift,

@@ -14,7 +14,6 @@ import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import type { Lift, LiftState } from 'api-client';
 import React from 'react';
-import { LeafletContext } from 'react-leaflet';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
 import { DoorMode as RmfDoorMode } from 'rmf-models';
@@ -27,11 +26,12 @@ import {
   requestModes,
   onLiftClick,
 } from './lift-utils';
+import { LeafletContextInterface } from '@react-leaflet/core';
 
 export interface LiftPanelProps {
   lifts: Lift[];
   liftStates: Record<string, LiftState>;
-  leafletMap?: LeafletContext;
+  leafletMap?: LeafletContextInterface;
   onRequestSubmit?(
     event: React.FormEvent,
     lift: Lift,

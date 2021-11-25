@@ -12,18 +12,18 @@ import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import type { Door, DoorState } from 'api-client';
 import React from 'react';
-import { LeafletContext } from 'react-leaflet';
 import clsx from 'clsx';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
 import { DoorMode as RmfDoorMode } from 'rmf-models';
 import { DoorTable } from './door-table';
 import { DoorData, doorModeToString, doorTypeToString, onDoorClick } from './utils';
+import { LeafletContextInterface } from '@react-leaflet/core';
 
 export interface DoorPanelProps {
   doors: DoorData[];
   doorStates: Record<string, DoorState>;
-  leafletMap?: LeafletContext;
+  leafletMap?: LeafletContextInterface;
   onDoorControlClick?(event: React.MouseEvent, door: Door, mode: number): void;
 }
 
@@ -38,7 +38,7 @@ interface DoorGridRendererProps extends GridChildComponentProps {
 export interface DoorcellProps {
   door: DoorData;
   doorMode?: number;
-  leafletMap?: LeafletContext;
+  leafletMap?: LeafletContextInterface;
   onDoorControlClick?(event: React.MouseEvent, door: Door, mode: number): void;
 }
 
@@ -204,7 +204,7 @@ const DoorCell = React.memo(
 
 const DoorGridRenderer = ({ data, columnIndex, rowIndex, style }: DoorGridRendererProps) => {
   let door: DoorData | undefined;
-  let leafletMap: LeafletContext | undefined;
+  let leafletMap: Map | undefined;
   let doorState: DoorState | undefined;
   const columnCount = data.columnCount;
 

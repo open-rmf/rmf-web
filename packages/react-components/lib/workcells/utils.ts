@@ -1,5 +1,5 @@
 import { DispenserState as RmfDispenserState } from 'rmf-models';
-import { LeafletContext } from 'react-leaflet';
+import { LeafletContextInterface } from 'react-leaflet';
 
 interface Location {
   x: number;
@@ -30,7 +30,10 @@ export function dispenserModeToString(mode: number): string {
   }
 }
 
-export function onWorkcellClick(workcell: DispenserResource, leafletMap?: LeafletContext): void {
+export function onWorkcellClick(
+  workcell: DispenserResource,
+  leafletMap?: LeafletContextInterface,
+): void {
   leafletMap &&
     leafletMap.map?.setView([workcell.location.y, workcell.location.x], 5.5, {
       animate: true,

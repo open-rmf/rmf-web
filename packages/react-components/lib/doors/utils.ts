@@ -1,6 +1,6 @@
-import { LeafletContext } from 'react-leaflet';
 import { getDoorCenter } from '../map/utils';
 import { Door as RmfDoor, DoorMode as RmfDoorMode } from 'rmf-models';
+import { LeafletContextInterface } from '@react-leaflet/core';
 
 export enum DoorType {
   SingleSwing = RmfDoor.DOOR_TYPE_SINGLE_SWING,
@@ -62,10 +62,10 @@ export function doorTypeToString(doorType: number): string {
   }
 }
 
-export const onDoorClick = (door: RmfDoor, leafletMap?: LeafletContext): void => {
+export const onDoorClick = (door: RmfDoor, leafletMap?: LeafletContextInterface): void => {
   const center = getDoorCenter(door);
   leafletMap &&
-    leafletMap.map?.setView([center[1], center[0]], 5.5, {
+    leafletMap.map.setView([center[1], center[0]], 5.5, {
       animate: true,
     });
 };

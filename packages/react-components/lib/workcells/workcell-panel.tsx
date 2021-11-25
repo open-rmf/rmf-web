@@ -3,17 +3,17 @@ import ViewListIcon from '@material-ui/icons/ViewList';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import type { Dispenser, Ingestor } from 'api-client';
 import React from 'react';
-import { LeafletContext } from 'react-leaflet';
 import { onWorkcellClick, DispenserResource } from './utils';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
 import { Workcell, WorkcellState } from '.';
 import { WorkcellTable } from './workcell-table';
+import { LeafletContextInterface } from '@react-leaflet/core';
 
 export interface WorkcellPanelProps {
   dispensers: Dispenser[];
   ingestors: Ingestor[];
-  leafletMap?: LeafletContext;
+  leafletMap?: LeafletContextInterface;
   workcellContext: Record<string, DispenserResource>;
   workcellStates: Record<string, WorkcellState>;
 }
@@ -22,7 +22,7 @@ export interface WorkcellDataProps {
   workcells: Workcell[];
   workcellStates: Record<string, WorkcellState>;
   workcellContext: Record<string, DispenserResource>;
-  leafletMap: LeafletContext | undefined;
+  leafletMap: LeafletContextInterface | undefined;
 }
 
 interface WorkcellGridData extends WorkcellDataProps {
@@ -37,7 +37,7 @@ export interface WorkcellCellProps {
   workcell: Workcell;
   requestGuidQueue?: string[];
   secondsRemaining?: number;
-  leafletMap?: LeafletContext;
+  leafletMap?: LeafletContextInterface;
   workcellResource?: DispenserResource;
 }
 const useStyles = makeStyles((theme) => ({
@@ -164,7 +164,7 @@ const WorkcellGridRenderer = ({
   let workcell: Workcell | undefined;
   let workcellState: WorkcellState | undefined;
   let workcellResource: DispenserResource | undefined;
-  let leafletMap: LeafletContext | undefined;
+  let leafletMap: LeafletContextInterface | undefined;
   const columnCount = data.columnCount;
   const { workcells, workcellStates, workcellContext } = data;
 
