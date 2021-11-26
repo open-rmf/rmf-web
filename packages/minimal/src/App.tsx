@@ -1,10 +1,11 @@
 import React from 'react';
 import { makeStyles, Grid } from '@material-ui/core';
-import { BuildingMap } from 'api-client';
+import { BuildingMap, Task, TaskSummary } from 'api-client';
 import { getPlaces } from 'react-components';
 import { AppBar } from './components/appbar';
 import { TaskForm } from './components/task-form';
-import { sioClient } from './app-config';
+import { TaskDisplay } from './components/task-display';
+import { sioClient, taskApi } from './app-config';
 import './App.css';
 
 const useStyles = makeStyles((theme) => ({
@@ -17,6 +18,35 @@ function App() {
   const classes = useStyles();
   const [buildingMap, setBuildingMap] = React.useState<BuildingMap | null>(null);
   const [placeNames, setPlaceNames] = React.useState<string[]>([]);
+  const [fetchedTasks, setFetchedTasks] = React.useState<Task[]>([]);
+  const [updatedSummaries, setUpdatedSummaries] = React.useState<Record<string, TaskSummary>>({});
+  const tasks = React.useMemo(
+    () => fetchedTasks.map((t) => ({ ...t, summary: updatedSummaries[t.task_id] || t.summary })),
+    [fetchedTasks, updatedSummaries],
+  );
+
+  const fetchTasks = React.useCallback(async () => {
+    if (!taskApi) {
+      return [];
+    }
+    const resp = await taskApi.getTasksTasksGet(
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      '-priority,-start_time',
+    );
+    const results = resp.data as Task[];
+    setFetchedTasks(results);
+  }, [taskApi]);
+
   React.useEffect(() => {
     if (!sioClient) {
       return;
@@ -26,6 +56,21 @@ function App() {
       sioClient.unsubscribe(sub);
     };
   }, []);
+
+  React.useEffect(() => {
+    if (!sioClient) return;
+    const subs = fetchedTasks.map((t) =>
+      sioClient.subscribeTaskSummary(t.task_id, (newSummary) =>
+        setUpdatedSummaries((prev) => ({
+          ...prev,
+          [newSummary.task_id]: newSummary,
+        })),
+      ),
+    );
+    return () => {
+      subs.forEach((s) => sioClient.unsubscribe(s));
+    };
+  }, [sioClient, fetchedTasks]);
 
   React.useEffect(() => {
     if (!buildingMap) {
@@ -39,11 +84,13 @@ function App() {
   return (
     <div>
       <AppBar />
-      <Grid container>
-        <Grid item xs={6} className={classes.root}>
-          <TaskForm placeNames={placeNames} />
+      <Grid direction="row" container className={classes.root} spacing={3}>
+        <Grid item xs={4}>
+          <TaskForm placeNames={placeNames} onFetchTask={fetchTasks} />
         </Grid>
-        <Grid item>display</Grid>
+        <Grid item xs={8}>
+          <TaskDisplay tasks={tasks.map((t) => t.summary)} />
+        </Grid>
       </Grid>
     </div>
   );

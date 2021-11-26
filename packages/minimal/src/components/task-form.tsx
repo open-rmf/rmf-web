@@ -21,8 +21,9 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(4),
     height: '100vh',
   },
-  formLabel: {
-    marginRight: 'auto',
+  form: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
   },
 }));
 
@@ -33,11 +34,12 @@ class AlertType {
 
 interface TaskFormProps {
   placeNames: string[];
+  onFetchTask?: () => void;
 }
 
 export const TaskForm = (props: TaskFormProps) => {
   const classes = useStyles();
-  const { placeNames } = props;
+  const { placeNames, onFetchTask } = props;
   const [place, setPlace] = React.useState('');
   const [showSnackBar, setShowSnackBar] = React.useState(false);
   const [alertType, setAlertType] = React.useState(AlertType.SUCCESS);
@@ -62,6 +64,7 @@ export const TaskForm = (props: TaskFormProps) => {
         if (res.data.task_id) {
           setAlertType(AlertType.SUCCESS);
           setShowSnackBar(true);
+          onFetchTask && onFetchTask();
         }
       });
     } else {
@@ -71,9 +74,9 @@ export const TaskForm = (props: TaskFormProps) => {
   };
 
   return (
-    <Paper className={classes.root}>
+    <Paper variant="outlined" className={classes.root}>
       <Typography variant="h5">Loading Bay</Typography>
-      <FormControl component="fieldset">
+      <FormControl component="fieldset" className={classes.form}>
         <FormLabel component="legend">Destination</FormLabel>
         <RadioGroup onChange={handleChange} row>
           {placeNames.map((p) => (
@@ -87,7 +90,6 @@ export const TaskForm = (props: TaskFormProps) => {
           ))}
         </RadioGroup>
       </FormControl>
-      <Typography variant="h6">Current Location - {currentLocation}</Typography>
       <Button variant="contained" color="primary" size="large" onClick={() => submitTask()}>
         Submit
       </Button>
