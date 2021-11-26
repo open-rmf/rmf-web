@@ -17,7 +17,7 @@ export const TaskDisplay = (props: TaskDisplayProps) => {
   const classes = useStyles();
   const { tasks } = props;
   return (
-    <Paper className={classes.root} variant="outlined">
+    <Paper className={classes.root} variant="outlined" aria-label="task-display">
       <TableContainer>
         <TaskTable tasks={tasks} />
       </TableContainer>

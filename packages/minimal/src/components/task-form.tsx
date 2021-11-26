@@ -74,7 +74,7 @@ export const TaskForm = (props: TaskFormProps) => {
   };
 
   return (
-    <Paper variant="outlined" className={classes.root}>
+    <Paper variant="outlined" className={classes.root} aria-label="task-form">
       <Typography variant="h5">Loading Bay</Typography>
       <FormControl component="fieldset" className={classes.form}>
         <FormLabel component="legend">Destination</FormLabel>

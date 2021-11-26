@@ -45,7 +45,7 @@ function App() {
     );
     const results = resp.data as Task[];
     setFetchedTasks(results);
-  }, [taskApi]);
+  }, []);
 
   React.useEffect(() => {
     if (!sioClient) {
@@ -70,7 +70,7 @@ function App() {
     return () => {
       subs.forEach((s) => sioClient.unsubscribe(s));
     };
-  }, [sioClient, fetchedTasks]);
+  }, [fetchedTasks]);
 
   React.useEffect(() => {
     if (!buildingMap) {
