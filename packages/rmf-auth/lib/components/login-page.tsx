@@ -4,9 +4,9 @@ import { LoginCard, LoginCardProps } from './login-card';
 
 const prefix = 'login-page';
 const classes = {
-  container: `prefix-container`,
+  container: `${prefix}-container`,
 };
-const StyledLoginPage = styled('div')(({ theme }) => ({
+const StyledDiv = styled('div')(({ theme }) => ({
   [`&.${classes.container}`]: {
     width: '100vw',
     height: '100vh',
@@ -22,9 +22,9 @@ const StyledLoginPage = styled('div')(({ theme }) => ({
 
 export const LoginPage = (props: LoginCardProps): JSX.Element => {
   return (
-    <StyledLoginPage className={classes.container}>
+    <StyledDiv className={classes.container}>
       <LoginCard {...props} />
-    </StyledLoginPage>
+    </StyledDiv>
   );
 };
 
