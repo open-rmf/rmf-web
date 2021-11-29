@@ -61,24 +61,21 @@ const getOpMode = (doorMode?: number) => {
 
 const DoorRow = React.memo(({ door, doorMode, onDoorControlClick }: DoorRowProps) => {
   const { fixedTableCell, fixedLastTableCell } = useFixedTableCellStylesClasses;
-  const doorModeLabelClasses = React.useCallback(
-    (doorMode?: number): string => {
-      if (doorMode === undefined) {
+  const doorModeLabelClasses = React.useCallback((doorMode?: number): string => {
+    if (doorMode === undefined) {
+      return '';
+    }
+    switch (doorMode) {
+      case RmfDoorMode.MODE_OPEN:
+        return `${classes.doorLabelOpen}`;
+      case RmfDoorMode.MODE_CLOSED:
+        return `${classes.doorLabelClosed}`;
+      case RmfDoorMode.MODE_MOVING:
+        return `${classes.doorLabelMoving}`;
+      default:
         return '';
-      }
-      switch (doorMode) {
-        case RmfDoorMode.MODE_OPEN:
-          return `${classes.doorLabelOpen}`;
-        case RmfDoorMode.MODE_CLOSED:
-          return `${classes.doorLabelClosed}`;
-        case RmfDoorMode.MODE_MOVING:
-          return `${classes.doorLabelMoving}`;
-        default:
-          return '';
-      }
-    },
-    [classes],
-  );
+    }
+  }, []);
   const doorStatusClass = doorModeLabelClasses(doorMode);
 
   return (

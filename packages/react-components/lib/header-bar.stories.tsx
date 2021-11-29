@@ -1,4 +1,4 @@
-import { IconButton, Tabs, Toolbar, Typography, styled } from '@mui/material';
+import { IconButton, Toolbar, Typography, styled } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import TabContext from '@mui/lab/TabContext';
 import TabPanel from '@mui/lab/TabPanel';

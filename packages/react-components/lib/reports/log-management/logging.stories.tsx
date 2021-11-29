@@ -3,7 +3,6 @@ import React from 'react';
 import { LogManagement } from './log-management';
 import { LogTable } from './log-table';
 import { SearchLogForm } from './search-log-form';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 
 export default {
   title: 'Logging',

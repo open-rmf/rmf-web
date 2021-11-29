@@ -82,21 +82,18 @@ const LiftRow = React.memo(
     const [showForms, setShowForms] = React.useState(false);
     const { fixedTableCell, fixedLastTableCell } = useFixedTableCellStylesClasses;
 
-    const doorModeLabelClasses = React.useCallback(
-      (doorState: number): string => {
-        switch (doorState) {
-          case RmfDoorMode.MODE_OPEN:
-            return `${classes.doorLabelOpen}`;
-          case RmfDoorMode.MODE_CLOSED:
-            return `${classes.doorLabelClosed}`;
-          case RmfDoorMode.MODE_MOVING:
-            return `${classes.doorLabelMoving}`;
-          default:
-            return '';
-        }
-      },
-      [classes],
-    );
+    const doorModeLabelClasses = React.useCallback((doorState: number): string => {
+      switch (doorState) {
+        case RmfDoorMode.MODE_OPEN:
+          return `${classes.doorLabelOpen}`;
+        case RmfDoorMode.MODE_CLOSED:
+          return `${classes.doorLabelClosed}`;
+        case RmfDoorMode.MODE_MOVING:
+          return `${classes.doorLabelMoving}`;
+        default:
+          return '';
+      }
+    }, []);
 
     return (
       <TableRow aria-label={`${lift.name}`} component="div" className={classes.tableRow}>

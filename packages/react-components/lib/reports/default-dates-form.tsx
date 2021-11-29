@@ -9,8 +9,8 @@ interface DefaultDatesFormProps {
   search?: (payload: LogQueryPayload) => void;
   fromLogDate?: Date;
   toLogDate?: Date;
-  onSelectFromDate?: (date: any) => void;
-  onSelectToDate?: (date: any) => void;
+  onSelectFromDate?: (date: unknown) => void;
+  onSelectToDate?: (date: unknown) => void;
 }
 
 const classes = {

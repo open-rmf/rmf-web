@@ -150,21 +150,18 @@ const LiftCell = React.memo(
     };
 
     const currDoorMotion = doorStateToString(doorState);
-    const doorModeLabelClasses = React.useCallback(
-      (doorState?: number): string => {
-        switch (doorState) {
-          case RmfDoorMode.MODE_OPEN:
-            return `${classes.doorLabelOpen}`;
-          case RmfDoorMode.MODE_CLOSED:
-            return `${classes.doorLabelClosed}`;
-          case RmfDoorMode.MODE_MOVING:
-            return `${classes.doorLabelMoving}`;
-          default:
-            return '';
-        }
-      },
-      [classes],
-    );
+    const doorModeLabelClasses = React.useCallback((doorState?: number): string => {
+      switch (doorState) {
+        case RmfDoorMode.MODE_OPEN:
+          return `${classes.doorLabelOpen}`;
+        case RmfDoorMode.MODE_CLOSED:
+          return `${classes.doorLabelClosed}`;
+        case RmfDoorMode.MODE_MOVING:
+          return `${classes.doorLabelMoving}`;
+        default:
+          return '';
+      }
+    }, []);
 
     return (
       <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>

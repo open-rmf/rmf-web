@@ -1,12 +1,12 @@
-import { Table, TableBody, TableHead, TableRow, styled } from '@mui/material';
-import React from 'react';
-import { DispenserState as RmfDispenserState } from 'rmf-models';
-import { dispenserModeToString } from './utils';
-import { Workcell, WorkcellState } from '.';
-import { useFixedTableCellStylesClasses, ItemTableCell } from '../utils';
-import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import { styled, Table, TableBody, TableHead, TableRow } from '@mui/material';
 import clsx from 'clsx';
+import React from 'react';
 import AutoSizer, { AutoSizerProps } from 'react-virtualized-auto-sizer';
+import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import { DispenserState as RmfDispenserState } from 'rmf-models';
+import { Workcell, WorkcellState } from '.';
+import { ItemTableCell, useFixedTableCellStylesClasses } from '../utils';
+import { dispenserModeToString } from './utils';
 
 const classes = {
   dispenserLabelIdle: 'workcell-dispenser-label-idle',
@@ -57,21 +57,18 @@ export interface WorkcellRowProps {
 const WorkcellRow = React.memo(
   ({ workcell, mode, requestGuidQueue, secondsRemaining }: WorkcellRowProps) => {
     const { fixedTableCell } = useFixedTableCellStylesClasses;
-    const dispenserModeLabelClasses = React.useCallback(
-      (mode: number): string => {
-        switch (mode) {
-          case RmfDispenserState.IDLE:
-            return `${classes.dispenserLabelIdle}`;
-          case RmfDispenserState.BUSY:
-            return `${classes.dispenserLabelBusy}`;
-          case RmfDispenserState.OFFLINE:
-            return `${classes.dispenserLabelOffline}`;
-          default:
-            return '';
-        }
-      },
-      [classes],
-    );
+    const dispenserModeLabelClasses = React.useCallback((mode: number): string => {
+      switch (mode) {
+        case RmfDispenserState.IDLE:
+          return `${classes.dispenserLabelIdle}`;
+        case RmfDispenserState.BUSY:
+          return `${classes.dispenserLabelBusy}`;
+        case RmfDispenserState.OFFLINE:
+          return `${classes.dispenserLabelOffline}`;
+        default:
+          return '';
+      }
+    }, []);
 
     return (
       <TableRow aria-label={`${workcell.guid}`} className={classes.tableRow} component="div">
