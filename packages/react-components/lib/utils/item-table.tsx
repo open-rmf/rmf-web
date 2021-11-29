@@ -11,15 +11,13 @@ export const useFixedTableCellStylesClasses = {
   fixedTableCell: `${prefix}-fix-cell`,
   fixedLastTableCell: `${prefix}-last-fix-cell`,
 };
-export const StyledItemTableCell = styled((props: TableCellProps) => <TableCell {...props} />)(
-  ({ theme }) => ({
-    [`&.${useFixedTableCellStylesClasses.fixedTableCell}`]: {
-      flex: '1 0 0',
-      ...commonStyles,
-    },
-    [`&.${useFixedTableCellStylesClasses.fixedLastTableCell}`]: {
-      flex: '1.5 0 0',
-      ...commonStyles,
-    },
-  }),
-);
+export const ItemTableCell = styled((props: TableCellProps) => <TableCell {...props} />)(() => ({
+  [`&.${useFixedTableCellStylesClasses.fixedTableCell}`]: {
+    flex: '1 0 0',
+    ...commonStyles,
+  },
+  [`&.${useFixedTableCellStylesClasses.fixedLastTableCell}`]: {
+    flex: '1.5 0 0',
+    ...commonStyles,
+  },
+}));

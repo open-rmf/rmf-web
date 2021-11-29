@@ -3,7 +3,7 @@ import React from 'react';
 import { DispenserState as RmfDispenserState } from 'rmf-models';
 import { dispenserModeToString } from './utils';
 import { Workcell, WorkcellState } from '.';
-import { useFixedTableCellStylesClasses, StyledItemTableCell } from '../utils';
+import { useFixedTableCellStylesClasses, ItemTableCell } from '../utils';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import clsx from 'clsx';
 import AutoSizer, { AutoSizerProps } from 'react-virtualized-auto-sizer';
@@ -77,81 +77,81 @@ const WorkcellRow = React.memo(
       <TableRow aria-label={`${workcell.guid}`} className={classes.tableRow} component="div">
         {mode !== undefined && requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
           <React.Fragment>
-            <StyledItemTableCell
+            <ItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
               title={workcell.guid}
             >
               {workcell.guid}
-            </StyledItemTableCell>
-            <StyledItemTableCell
+            </ItemTableCell>
+            <ItemTableCell
               component="div"
               variant="head"
               className={clsx(dispenserModeLabelClasses(mode), classes.tableCell, fixedTableCell)}
             >
               {dispenserModeToString(mode)}
-            </StyledItemTableCell>
-            <StyledItemTableCell
+            </ItemTableCell>
+            <ItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {requestGuidQueue.length}
-            </StyledItemTableCell>
-            <StyledItemTableCell
+            </ItemTableCell>
+            <ItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {requestGuidQueue}
-            </StyledItemTableCell>
-            <StyledItemTableCell
+            </ItemTableCell>
+            <ItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {secondsRemaining}
-            </StyledItemTableCell>
+            </ItemTableCell>
           </React.Fragment>
         ) : (
           <React.Fragment>
-            <StyledItemTableCell
+            <ItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
               title={workcell.guid}
             >
               {workcell.guid}
-            </StyledItemTableCell>
-            <StyledItemTableCell
+            </ItemTableCell>
+            <ItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {'NA'}
-            </StyledItemTableCell>
-            <StyledItemTableCell
+            </ItemTableCell>
+            <ItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {'NA'}
-            </StyledItemTableCell>
-            <StyledItemTableCell
+            </ItemTableCell>
+            <ItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {'NA'}
-            </StyledItemTableCell>
-            <StyledItemTableCell
+            </ItemTableCell>
+            <ItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {'NA'}
-            </StyledItemTableCell>
+            </ItemTableCell>
           </React.Fragment>
         )}
       </TableRow>
@@ -182,41 +182,41 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
           <Table component="div" stickyHeader size="small" aria-label="workcell-table">
             <TableHead component="div">
               <TableRow component="div" className={classes.tableRow}>
-                <StyledItemTableCell
+                <ItemTableCell
                   component="div"
                   variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Dispenser Name
-                </StyledItemTableCell>
-                <StyledItemTableCell
+                </ItemTableCell>
+                <ItemTableCell
                   component="div"
                   variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Op. Mode
-                </StyledItemTableCell>
-                <StyledItemTableCell
+                </ItemTableCell>
+                <ItemTableCell
                   component="div"
                   variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   No. Queued Requests
-                </StyledItemTableCell>
-                <StyledItemTableCell
+                </ItemTableCell>
+                <ItemTableCell
                   component="div"
                   variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Request Queue ID
-                </StyledItemTableCell>
-                <StyledItemTableCell
+                </ItemTableCell>
+                <ItemTableCell
                   component="div"
                   variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Seconds Remaining
-                </StyledItemTableCell>
+                </ItemTableCell>
               </TableRow>
             </TableHead>
             <TableBody component="div">
