@@ -36,7 +36,7 @@ const classes = {
   enabledToggleButton: `${prefix}-enable-toggle-button`,
 };
 
-const StyledTaskPanel = styled('div')(({ theme }) => ({
+const StyledDiv = styled('div')(({ theme }) => ({
   [`& .${classes.tableContainer}`]: {
     display: 'flex',
     flexDirection: 'column',
@@ -167,7 +167,7 @@ export function TaskPanel({
       selectedTask.summary.state === RmfTaskSummary.STATE_QUEUED);
 
   return (
-    <StyledTaskPanel {...divProps}>
+    <StyledDiv {...divProps}>
       <Grid container wrap="nowrap" justifyContent="center" style={{ height: 'inherit' }}>
         <Paper className={classes.tableContainer}>
           <Toolbar>
@@ -258,6 +258,6 @@ export function TaskPanel({
       <Snackbar open={openSnackbar} onClose={() => setOpenSnackbar(false)} autoHideDuration={2000}>
         <Alert severity={snackbarSeverity}>{snackbarMessage}</Alert>
       </Snackbar>
-    </StyledTaskPanel>
+    </StyledDiv>
   );
 }

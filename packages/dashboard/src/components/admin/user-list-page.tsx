@@ -3,7 +3,7 @@
 import React from 'react';
 import { RmfIngressContext } from '../rmf-app';
 import { getApiErrorMessage } from '../utils';
-import { adminPageClasses, StyledAdminPages } from './page-css';
+import { adminPageClasses, AdminPageContainer } from './page-css';
 import { UserListCard } from './user-list-card';
 
 export function UserListPage(): JSX.Element | null {
@@ -13,7 +13,7 @@ export function UserListPage(): JSX.Element | null {
   if (!adminApi) return null;
 
   return (
-    <StyledAdminPages className={adminPageClasses.pageRoot}>
+    <AdminPageContainer className={adminPageClasses.pageRoot}>
       <UserListCard
         searchUsers={async (search, limit, offset) => {
           try {
@@ -37,6 +37,6 @@ export function UserListPage(): JSX.Element | null {
           }
         }}
       />
-    </StyledAdminPages>
+    </AdminPageContainer>
   );
 }

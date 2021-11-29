@@ -5,7 +5,7 @@ export const adminPageClasses = {
   notFound: 'user-profile-page-notfound',
   manageRoles: 'user-profile-page-manageroles',
 };
-export const StyledAdminPages = styled('div')(({ theme }) => ({
+export const AdminPageContainer = styled('div')(({ theme }) => ({
   [`&.${adminPageClasses.pageRoot}`]: {
     width: '84%',
     height: '100%',

@@ -13,7 +13,7 @@ const classes = {
   root: `${prefix}-root`,
   caption: `${prefix}-caption`,
 };
-const StyledLoadingScreen = styled('div')(({ theme }) => ({
+const StyledDiv = styled('div')(({ theme }) => ({
   [`& .${classes.root}`]: {
     display: 'flex',
     flexFlow: 'column',
@@ -32,7 +32,7 @@ export default function LoadingScreen(props: LoadingScreenProps): JSX.Element {
   const { caption, children } = props;
   const theme = useTheme();
   return (
-    <StyledLoadingScreen>
+    <StyledDiv>
       <Backdrop className={classes.root} open={!!caption}>
         {(props.variant === undefined || props.variant === 'loading') && (
           <CircularProgress size="8rem" />
@@ -50,6 +50,6 @@ export default function LoadingScreen(props: LoadingScreenProps): JSX.Element {
         </Typography>
       </Backdrop>
       {children}
-    </StyledLoadingScreen>
+    </StyledDiv>
   );
 }

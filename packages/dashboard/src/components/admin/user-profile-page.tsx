@@ -9,7 +9,7 @@ import { useRouteMatch } from 'react-router';
 import { RmfIngressContext } from '../rmf-app';
 import { getApiErrorMessage } from '../utils';
 import { ManageRolesCard } from './manage-roles-dialog';
-import { adminPageClasses, StyledAdminPages } from './page-css';
+import { adminPageClasses, AdminPageContainer } from './page-css';
 import { UserProfileCard } from './user-profile';
 
 export function UserProfilePage(): JSX.Element | null {
@@ -39,7 +39,7 @@ export function UserProfilePage(): JSX.Element | null {
   }, [refresh]);
 
   return adminApi ? (
-    <StyledAdminPages className={adminPageClasses.pageRoot}>
+    <AdminPageContainer className={adminPageClasses.pageRoot}>
       {notFound ? (
         <Typography variant="h6" className={adminPageClasses.notFound}>
           404 Not Found
@@ -85,6 +85,6 @@ export function UserProfilePage(): JSX.Element | null {
           </>
         )
       )}
-    </StyledAdminPages>
+    </AdminPageContainer>
   ) : null;
 }

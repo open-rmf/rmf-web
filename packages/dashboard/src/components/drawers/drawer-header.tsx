@@ -14,7 +14,7 @@ const classes = {
   heading: `${prefix}-heading`,
   button: `${prefix}-button`,
 };
-const StyledDrawerHeader = styled('div')(() => ({
+const StyledDiv = styled('div')(() => ({
   [`& .${classes.heading}`]: {
     margin: '0 auto 0 calc(50% - 3rem)',
   },
@@ -27,7 +27,7 @@ const DrawerHeader = (props: DrawerHeaderProps) => {
   const { handleBackButton, handleCloseButton, title } = props;
 
   return (
-    <StyledDrawerHeader>
+    <StyledDiv>
       {handleBackButton && (
         <Grid item>
           <IconButton
@@ -59,7 +59,7 @@ const DrawerHeader = (props: DrawerHeaderProps) => {
         )}
       </Grid>
       <Divider />
-    </StyledDrawerHeader>
+    </StyledDiv>
   );
 };
 

@@ -36,7 +36,7 @@ const classes = {
   mapPanel: `${prefix}-map-panel`,
   itemPanels: `${prefix}-item-panels`,
 };
-const StyledDashboard = styled('div')(({ theme }) => ({
+const StyledDiv = styled('div')(({ theme }) => ({
   [`&.${classes.root}`]: {
     height: '100%',
     backgroundColor: theme.palette.background.default,
@@ -192,7 +192,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   );
 
   return (
-    <StyledDashboard className={classes.root}>
+    <StyledDiv className={classes.root}>
       <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
         {buildingMap && (
           <Grid container className={classes.buildingPanel} wrap="nowrap">
@@ -233,6 +233,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
           </Grid>
         )}
       </GlobalHotKeys>
-    </StyledDashboard>
+    </StyledDiv>
   );
 }

@@ -3,7 +3,7 @@
 import React from 'react';
 import { RmfIngressContext } from '../rmf-app';
 import { getApiErrorMessage } from '../utils';
-import { adminPageClasses, StyledAdminPages } from './page-css';
+import { adminPageClasses, AdminPageContainer } from './page-css';
 import { RoleListCard } from './role-list-card';
 
 export function RoleListPage(): JSX.Element | null {
@@ -13,7 +13,7 @@ export function RoleListPage(): JSX.Element | null {
   if (!adminApi) return null;
 
   return (
-    <StyledAdminPages className={adminPageClasses.pageRoot}>
+    <AdminPageContainer className={adminPageClasses.pageRoot}>
       <RoleListCard
         getRoles={async () => (await adminApi.getRolesAdminRolesGet()).data}
         createRole={async (role) => {
@@ -55,6 +55,6 @@ export function RoleListPage(): JSX.Element | null {
           }
         }}
       />
-    </StyledAdminPages>
+    </AdminPageContainer>
   );
 }
