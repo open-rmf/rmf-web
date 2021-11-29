@@ -42,7 +42,7 @@ const classes = {
   disabled: 'simpleinfo-disabled',
 };
 
-const StyledSimpleInfo = styled('div')(({ theme }) => ({
+const StyledDiv = styled('div')(({ theme }) => ({
   [`& .${classes.container}`]: {
     display: 'table',
     borderCollapse: 'collapse',
@@ -173,7 +173,7 @@ export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
   };
 
   return (
-    <StyledSimpleInfo {...otherProps}>
+    <StyledDiv {...otherProps}>
       <div
         className={overrideStyle?.container ? overrideStyle?.container : classes.container}
         role="table"
@@ -190,7 +190,7 @@ export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
           </React.Fragment>
         ))}
       </div>
-    </StyledSimpleInfo>
+    </StyledDiv>
   );
 };
 

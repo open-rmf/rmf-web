@@ -11,7 +11,7 @@ import { VerboseRobot } from './utils';
 const classes = {
   button: 'robot-info-button',
 };
-const StyledRobotInfo = styled('div')(() => ({
+const StyledDiv = styled('div')(() => ({
   [`& .${classes.button}`]: {
     '&:hover': {
       background: 'none',
@@ -93,7 +93,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   }, [currentTask, robot]);
 
   return (
-    <StyledRobotInfo>
+    <StyledDiv>
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
         {robot.name}
       </Typography>
@@ -202,6 +202,6 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
           </Button>
         </Grid>
       </Grid>
-    </StyledRobotInfo>
+    </StyledDiv>
   );
 }

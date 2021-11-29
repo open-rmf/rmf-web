@@ -11,7 +11,7 @@ export interface TooltipProps {
 const classes = {
   tooltipWidth: 'tooltip-width',
 };
-const StyledToolTip = styled('div')(() => ({
+const StyledDiv = styled('div')(() => ({
   [`& .${classes.tooltipWidth}`]: {
     maxWidth: 200,
   },
@@ -20,7 +20,7 @@ const StyledToolTip = styled('div')(() => ({
 export const Tooltip = (props: TooltipProps): JSX.Element => {
   const { title, id, enabled } = props;
   return (
-    <StyledToolTip>
+    <StyledDiv>
       {enabled && (
         <MuiTooltip
           title={title}
@@ -33,7 +33,7 @@ export const Tooltip = (props: TooltipProps): JSX.Element => {
         </MuiTooltip>
       )}
       {!enabled && props.children}
-    </StyledToolTip>
+    </StyledDiv>
   );
 };
 

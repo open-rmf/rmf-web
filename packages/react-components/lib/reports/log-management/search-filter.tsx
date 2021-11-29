@@ -11,7 +11,7 @@ import {
 const classes = {
   formControl: 'search-filter-formcontrol',
 };
-const StyledSearchFilter = styled('div')(({ theme }) => ({
+const StyledDiv = styled('div')(({ theme }) => ({
   [`& .${classes.formControl}`]: {
     margin: theme.spacing(1),
     minWidth: '230px',
@@ -30,7 +30,7 @@ export const SearchFilter = (props: SearchFilterProps): React.ReactElement => {
   const { handleOnChange, options, name, label, currentValue } = props;
 
   return (
-    <StyledSearchFilter>
+    <StyledDiv>
       <div>
         <FormControl variant="outlined" className={classes.formControl}>
           <InputLabel id={`${name}-select-outlined-label`}>{label}</InputLabel>
@@ -52,6 +52,6 @@ export const SearchFilter = (props: SearchFilterProps): React.ReactElement => {
           </Select>
         </FormControl>
       </div>
-    </StyledSearchFilter>
+    </StyledDiv>
   );
 };

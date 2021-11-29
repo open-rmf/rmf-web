@@ -17,7 +17,7 @@ const classes = {
   searchForm: 'traj-time-control-root',
   searchButton: 'traj-time-control-container',
 };
-const StyledDefaultDatesForm = styled('div')(() => ({
+const StyledDiv = styled('div')(() => ({
   [`& .${classes.searchForm}`]: {
     display: 'flex',
     justifyContent: 'space-evenly',
@@ -34,7 +34,7 @@ export const DefaultDatesForm = (props: DefaultDatesFormProps): JSX.Element | nu
   };
 
   return onSelectFromDate && onSelectToDate ? (
-    <StyledDefaultDatesForm>
+    <StyledDiv>
       <div className={classes.searchForm}>
         <DateAndTimePickers
           maxDate={new Date()}
@@ -61,6 +61,6 @@ export const DefaultDatesForm = (props: DefaultDatesFormProps): JSX.Element | nu
       >
         Retrieve Logs
       </Button>
-    </StyledDefaultDatesForm>
+    </StyledDiv>
   ) : null;
 };

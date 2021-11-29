@@ -12,7 +12,7 @@ const classes = {
   slider: 'traj-time-control-slider',
   textField: 'traj-time-control-textfield',
 };
-const StyledTrajectoryTimeControl = styled('div')(() => ({
+const StyledDiv = styled('div')(() => ({
   [`&.${classes.root}`]: {
     width: '100%',
     height: '100%',
@@ -53,7 +53,7 @@ function Component({ value, min, max, onChange }: TrajectoryTimeControlProps) {
   const getValueFormat = (value: number) => `${value / 60000}`;
 
   return (
-    <StyledTrajectoryTimeControl
+    <StyledDiv
       className={classes.root}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
@@ -91,7 +91,7 @@ function Component({ value, min, max, onChange }: TrajectoryTimeControlProps) {
         style={{ verticalAlign: 'middle', display: open ? 'none' : 'block' }}
         fontSize="large"
       />
-    </StyledTrajectoryTimeControl>
+    </StyledDiv>
   );
 }
 

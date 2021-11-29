@@ -2,7 +2,7 @@ import React from 'react';
 import {
   DefaultReportQueryPayload,
   defaultReportClasses,
-  StyledDefaultReport,
+  DefaultReportContainer,
 } from '../default-report-interface';
 import { DefaultDatesForm } from '../default-dates-form';
 import { IngestorStateReportTable, IngestorStateRowsType } from './ingestor-state-report-table';
@@ -27,14 +27,14 @@ export const IngestorStateReport = (props: IngestorStateReportProps): React.Reac
   };
 
   return (
-    <StyledDefaultReport>
+    <DefaultReportContainer>
       <DefaultDatesForm search={searchLogs} {...otherProps} />
       <div className={defaultReportClasses.table}>
         {logs.length !== 0 && (
           <IngestorStateReportTable rows={logs} tableSize={500} addMoreRows={getMoreLogs} />
         )}
       </div>
-    </StyledDefaultReport>
+    </DefaultReportContainer>
   );
 };
 

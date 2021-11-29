@@ -10,7 +10,7 @@ const debug = Debug('Map:RobotMarker');
 const classes = {
   clickable: 'robot-marker-clickable',
 };
-const StyledRobotMarker = styled('g')(() => ({
+const StyledG = styled('g')(() => ({
   [`& .${classes.clickable}`]: {
     pointerEvents: 'auto',
     cursor: 'pointer',
@@ -38,7 +38,7 @@ export const RobotMarker = React.forwardRef(
     const imageErrorHandler = React.useCallback(() => setImageHasError(true), []);
 
     return (
-      <StyledRobotMarker ref={ref} {...otherProps}>
+      <StyledG ref={ref} {...otherProps}>
         <g className={clsx(otherProps.onClick && classes.clickable)}>
           {useImageMarker ? (
             <ImageMarker
@@ -54,7 +54,7 @@ export const RobotMarker = React.forwardRef(
             <DefaultMarker cx={cx} cy={cy} r={r} color={color} inConflict={inConflict} />
           )}
         </g>
-      </StyledRobotMarker>
+      </StyledG>
     );
   },
 );

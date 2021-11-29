@@ -7,7 +7,7 @@ const classes = {
   loadingProgress: 'loading-progress',
   loadingOverlay: 'loading-overlay',
 };
-const StyledLoading = styled('div')(() => ({
+const StyledDiv = styled('div')(() => ({
   [`&.${classes.root}`]: {
     position: 'relative',
     height: '100%',
@@ -54,7 +54,7 @@ export function Loading({
   ...otherProps
 }: LoadingProps): JSX.Element {
   return loading ? (
-    <StyledLoading className={classes.root}>
+    <StyledDiv className={classes.root}>
       <div
         className={`${classes.loadingOverlay} ${loadingClassName}`}
         style={{ visibility: hideChildren ? 'hidden' : 'visible' }}
@@ -69,7 +69,7 @@ export function Loading({
           {...otherProps}
         />
       </div>
-    </StyledLoading>
+    </StyledDiv>
   ) : (
     <>{children}</>
   );
