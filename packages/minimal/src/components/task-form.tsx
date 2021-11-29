@@ -20,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(4),
     height: '100vh',
+    boxSizing: 'border-box',
   },
   form: {
     marginTop: theme.spacing(2),
