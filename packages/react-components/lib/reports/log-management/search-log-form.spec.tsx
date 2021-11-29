@@ -17,9 +17,9 @@ describe('Search log form tests', () => {
     const root = render(<SearchLogForm logLabelValues={logLabel}></SearchLogForm>);
     expect(root.getByText('ALL')).toBeTruthy();
     const currentDate = format(new Date(), 'MM/dd/yyyy HH:mm');
-    const fromLogDate = root.container.querySelector('#fromLogDate-datetime-local');
-    expect(fromLogDate?.getAttribute('value')).toBe(currentDate);
-    const toLogDate = root.container.querySelector('#toLogDate-datetime-local');
-    expect(toLogDate?.getAttribute('value')).toBe(currentDate);
+    const fromDateInput = root.container.querySelector('#From');
+    const toDateInput = root.container.querySelector('#To');
+    expect(fromDateInput?.getAttribute('value')).toBe(currentDate);
+    expect(toDateInput?.getAttribute('value')).toBe(currentDate);
   });
 });

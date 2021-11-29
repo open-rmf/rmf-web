@@ -1,10 +1,10 @@
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createTheme } from '@mui/material/styles';
 import commonTheme from './common-theme';
 
-const base = createMuiTheme({
+export const base = createTheme({
   //Light Grey, Cultured, Silver Sand
   palette: {
-    type: 'light',
+    mode: 'light',
     ...commonTheme,
     primary: {
       main: '#CFD8DC ',
@@ -19,11 +19,13 @@ const base = createMuiTheme({
   },
 });
 
-export const rmfLight = createMuiTheme({
-  overrides: {
+export const rmfLight = createTheme({
+  components: {
     MuiTableCell: {
-      stickyHeader: {
-        backgroundColor: base.palette.primary.main,
+      styleOverrides: {
+        stickyHeader: {
+          backgroundColor: base.palette.primary.main,
+        },
       },
     },
   },

@@ -1,23 +1,25 @@
 /* istanbul ignore file */
 
-import { makeStyles } from '@material-ui/core';
+import { styled } from '@mui/material';
 import type { Task, TaskSummary } from 'api-client';
 import type { AxiosError } from 'axios';
 import React from 'react';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
 import { TaskPanel, TaskPanelProps } from './task-panel';
 
-const useStyles = makeStyles((theme) => ({
-  taskPanel: {
-    padding: `${theme.spacing(4)}px`,
+const classes = {
+  taskPanel: 'task-page-taskpanel',
+};
+const StyledTaskPage = styled((props: TaskPanelProps) => <TaskPanel {...props} />)(({ theme }) => ({
+  [`&.${classes.taskPanel}`]: {
+    padding: `${theme.spacing(4)}`,
+    maxWidth: 1600,
     height: '100%',
     backgroundColor: theme.palette.background.default,
-    maxWidth: 1600,
   },
 }));
 
 export function TaskPage() {
-  const classes = useStyles();
   const { tasksApi, sioClient } = React.useContext(RmfIngressContext) || {};
   const [fetchedTasks, setFetchedTasks] = React.useState<Task[]>([]);
   const [updatedSummaries, setUpdatedSummaries] = React.useState<Record<string, TaskSummary>>({});
@@ -112,7 +114,7 @@ export function TaskPage() {
   );
   //extra task panel will be removed
   return (
-    <TaskPanel
+    <StyledTaskPage
       className={classes.taskPanel}
       tasks={tasks}
       paginationOptions={{
@@ -120,7 +122,7 @@ export function TaskPage() {
         count: hasMore ? -1 : page * 10 + tasks.length,
         rowsPerPage: 10,
         rowsPerPageOptions: [10],
-        onChangePage: (_ev, newPage) => setPage(newPage),
+        onPageChange: (_ev, newPage) => setPage(newPage),
       }}
       cleaningZones={placeNames}
       loopWaypoints={placeNames}
