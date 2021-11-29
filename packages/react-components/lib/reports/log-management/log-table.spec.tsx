@@ -52,30 +52,35 @@ describe('Table footer Pagination', () => {
   afterEach(cleanup);
 
   it('show the correct number of rows per page', () => {
-    expect(screen.getByText('1-100 of 110')).toBeTruthy();
+    // NOTE: mui v5 is using the unicode char '–', different from '-'!!
+    expect(screen.getByText('1–100 of 110')).toBeTruthy();
   });
 
   it('can change the rows per page', async () => {
     userEvent.click(screen.getByText('100'));
     userEvent.click(screen.getByText('50'));
 
-    expect(await screen.getByText('1-50 of 110')).toBeTruthy();
+    // NOTE: mui v5 is using the unicode char '–', different from '-'!!
+    expect(await screen.getByText('1–50 of 110')).toBeTruthy();
   });
 
   it('advance page when the `Next Page` button is clicked ', async () => {
     const nextPageButton = screen.queryByLabelText('Go to next page');
     nextPageButton && userEvent.click(nextPageButton);
-    expect(screen.getByText('101-110 of 110')).toBeTruthy();
+    // NOTE: mui v5 is using the unicode char '–', different from '-'!!
+    expect(screen.getByText('101–110 of 110')).toBeTruthy();
   });
 
   it('goes to previous page when the `Previous page` button is clicked ', () => {
     const nextPageButton = screen.queryByLabelText('Go to next page');
     nextPageButton && userEvent.click(nextPageButton);
-    expect(screen.getByText('101-110 of 110')).toBeTruthy();
+    // NOTE: mui v5 is using the unicode char '–', different from '-'!!
+    expect(screen.getByText('101–110 of 110')).toBeTruthy();
 
     const previousPageButton = screen.queryByLabelText('Go to previous page');
     previousPageButton && userEvent.click(previousPageButton);
-    expect(screen.getByText('1-100 of 110')).toBeTruthy();
+    // NOTE: mui v5 is using the unicode char '–', different from '-'!!
+    expect(screen.getByText('1–100 of 110')).toBeTruthy();
   });
 });
 

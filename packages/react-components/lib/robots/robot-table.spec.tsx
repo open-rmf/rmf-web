@@ -53,11 +53,13 @@ describe('RobotTable', () => {
         }}
       />,
     );
-    expect(root.getByText('1-1 of 1')).toBeTruthy();
+    // NOTE: mui v5 is using the unicode char '–', different from '-'!!
+    expect(root.getByText('1–1 of 1')).toBeTruthy();
   });
 
   it('pagination is not shown when no pagination option is provided', () => {
     const root = render(<RobotTable robots={[makeRandomRobot('test_robot1', 'test_fleet', 2)]} />);
-    expect(root.queryByText('1-1 of 1')).toBeNull();
+    // NOTE: mui v5 is using the unicode char '–', different from '-'!!
+    expect(root.queryByText('1–1 of 1')).toBeNull();
   });
 });
