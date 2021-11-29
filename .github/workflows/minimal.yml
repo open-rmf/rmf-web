@@ -1,0 +1,44 @@
+name: minimal
+on:
+  pull_request:
+    paths:
+      - 'packages/minimal/**'
+      - 'packages/react-components/**'
+      - 'packages/rmf-models/**'
+      - 'packages/api-client/**'
+  push:
+    branches:
+      - main
+env:
+  CI: true
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository }}/e2e
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/minimal
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          cache: 'npm'
+      - name: bootstrap
+        run: |
+          . /rmf_demos_ws/install/setup.bash
+          lerna bootstrap --scope=minimal
+        working-directory: .
+      - name: unit test
+        run: . /rmf_demos_ws/install/setup.bash && npm run test:coverage
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: minimal
