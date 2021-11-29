@@ -1,3 +1,5 @@
+import { DateTimePicker, LocalizationProvider } from '@mui/lab';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import {
   Autocomplete,
   Button,
@@ -7,12 +9,10 @@ import {
   ListItem,
   ListItemText,
   MenuItem,
+  styled,
   TextField,
   useTheme,
-  styled,
 } from '@mui/material';
-import { DateTimePicker, LocalizationProvider, LocalizationProviderProps } from '@mui/lab';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import type {
   CleanTaskDescription,
   DeliveryTaskDescription,
@@ -31,8 +31,8 @@ const classes = {
   taskList: 'create-task-task-list',
   selectedTask: 'create-task-selected-task',
 };
-const StyledLocalizationProvider = styled((props: LocalizationProviderProps) => (
-  <LocalizationProvider {...props} />
+const StyledConfirmationDialog = styled((props: ConfirmationDialogProps) => (
+  <ConfirmationDialog {...props} />
 ))(({ theme }) => ({
   [`& .${classes.selectFileBtn}`]: {
     marginBottom: theme.spacing(1),
@@ -494,8 +494,8 @@ export function CreateTaskForm({
   const submitText = tasks.length > 1 ? 'Submit All' : 'Submit';
 
   return (
-    <StyledLocalizationProvider dateAdapter={AdapterDateFns}>
-      <ConfirmationDialog
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <StyledConfirmationDialog
         title="Create Task"
         submitting={submitting}
         confirmText={submitText}
@@ -583,7 +583,7 @@ export function CreateTaskForm({
             </>
           )}
         </Grid>
-      </ConfirmationDialog>
-    </StyledLocalizationProvider>
+      </StyledConfirmationDialog>
+    </LocalizationProvider>
   );
 }
