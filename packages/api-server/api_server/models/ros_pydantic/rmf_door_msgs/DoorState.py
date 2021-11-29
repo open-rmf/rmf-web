@@ -15,6 +15,13 @@ class DoorState(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "door_time",
+                "door_name",
+                "current_mode",
+            ],
+        }
 
 
 # builtin_interfaces/Time door_time

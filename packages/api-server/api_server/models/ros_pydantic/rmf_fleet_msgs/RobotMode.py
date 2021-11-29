@@ -11,6 +11,12 @@ class RobotMode(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "mode",
+                "mode_request_id",
+            ],
+        }
 
 
 # uint32 mode
@@ -26,5 +32,7 @@ class RobotMode(pydantic.BaseModel):
 # # Use this when a command received from the fleet adapter
 # # has a problem and needs to be recomputed.
 # uint32 MODE_ADAPTER_ERROR=8
+#
+# uint32 MODE_CLEANING=9
 #
 # uint64 mode_request_id

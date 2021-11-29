@@ -40,7 +40,7 @@ export class Level {
       try {
         AffineImage.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "images":\n  ` + e.message);
+        throw new Error(`in index ${i} of "images":\n  ` + (e as Error).message);
       }
     }
     if (!Array.isArray(obj['places'])) {
@@ -50,7 +50,7 @@ export class Level {
       try {
         Place.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "places":\n  ` + e.message);
+        throw new Error(`in index ${i} of "places":\n  ` + (e as Error).message);
       }
     }
     if (!Array.isArray(obj['doors'])) {
@@ -60,7 +60,7 @@ export class Level {
       try {
         Door.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "doors":\n  ` + e.message);
+        throw new Error(`in index ${i} of "doors":\n  ` + (e as Error).message);
       }
     }
     if (!Array.isArray(obj['nav_graphs'])) {
@@ -70,13 +70,13 @@ export class Level {
       try {
         Graph.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "nav_graphs":\n  ` + e.message);
+        throw new Error(`in index ${i} of "nav_graphs":\n  ` + (e as Error).message);
       }
     }
     try {
       Graph.validate(obj['wall_graph'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "wall_graph":\n  ' + e.message);
+      throw new Error('in "wall_graph":\n  ' + (e as Error).message);
     }
   }
 }

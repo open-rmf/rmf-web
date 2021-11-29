@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, List, cast
 
 from fastapi import Depends
 from rx import operators as rxops
@@ -31,12 +31,13 @@ class IngestorsRouter(FastIORouter):
         @self.watch("/{guid}/state")
         async def watch_ingestor_state(req: WatchRequest, guid: str):
             ingestor_state = await get_ingestor_state(guid, RmfRepository(req.user))
-            await req.emit(ingestor_state.dict())
+            if ingestor_state is not None:
+                await req.emit(ingestor_state.dict())
             rx_watcher(
                 req,
                 app.rmf_events().ingestor_states.pipe(
-                    rxops.filter(lambda x: x.guid == guid),
-                    rxops.map(lambda x: x.dict()),
+                    rxops.filter(lambda x: cast(IngestorState, x).guid == guid),
+                    rxops.map(cast(Any, lambda x: cast(IngestorState, x).dict())),
                 ),
             )
 
@@ -52,11 +53,12 @@ class IngestorsRouter(FastIORouter):
         @self.watch("/{guid}/health")
         async def watch_ingestor_health(req: WatchRequest, guid: str):
             health = await get_ingestor_health(guid, RmfRepository(req.user))
-            await req.emit(health.dict())
+            if health is not None:
+                await req.emit(health.dict())
             rx_watcher(
                 req,
                 app.rmf_events().ingestor_health.pipe(
-                    rxops.filter(lambda x: x.id_ == guid),
-                    rxops.map(lambda x: x.dict()),
+                    rxops.filter(lambda x: cast(IngestorHealth, x).id_ == guid),
+                    rxops.map(cast(Any, lambda x: cast(IngestorHealth, x).dict())),
                 ),
             )

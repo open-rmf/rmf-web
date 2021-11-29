@@ -1,7 +1,6 @@
-import { Button, TextField } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Button, TextField, Autocomplete } from '@mui/material';
 import React, { ChangeEvent } from 'react';
-import { useFormStyles } from './form-styles';
+import { StyledForm, commandFormsClasses } from './form-styles';
 
 export type DoLoopRequest = (
   fleetName: string,
@@ -19,7 +18,6 @@ export interface LoopRequestFormProps {
 export const LoopRequestForm = React.forwardRef(
   (props: LoopRequestFormProps, ref: React.Ref<HTMLFormElement>): JSX.Element => {
     const { fleetNames, availablePlaces, doLoopRequest } = props;
-    const classes = useFormStyles();
 
     const [targetFleetName, setTargetFleetName] = React.useState(
       fleetNames.length >= 1 ? fleetNames[0] : '',
@@ -122,8 +120,8 @@ export const LoopRequestForm = React.forwardRef(
     };
 
     return (
-      <form ref={ref} className={classes.form} onSubmit={handleSubmit}>
-        <div className={classes.divForm}>
+      <StyledForm ref={ref} className={commandFormsClasses.form} onSubmit={handleSubmit}>
+        <div className={commandFormsClasses.divForm}>
           <Autocomplete
             getOptionLabel={(option) => option}
             onChange={handleTargetFleetNameChange}
@@ -141,7 +139,7 @@ export const LoopRequestForm = React.forwardRef(
             value={targetFleetName ? targetFleetName : null}
           />
         </div>
-        <div className={classes.divForm}>
+        <div className={commandFormsClasses.divForm}>
           <TextField
             onChange={(e) => {
               setNumLoops(e.target.value ? parseInt(e.target.value) : 0);
@@ -149,7 +147,7 @@ export const LoopRequestForm = React.forwardRef(
             placeholder="Number of loops"
             type="number"
             value={numLoops || ''}
-            className={classes.input}
+            className={commandFormsClasses.input}
             label="Number of loops"
             variant="outlined"
             error={!!numLoopsError}
@@ -157,7 +155,7 @@ export const LoopRequestForm = React.forwardRef(
           />
         </div>
 
-        <div className={classes.divForm}>
+        <div className={commandFormsClasses.divForm}>
           <Autocomplete
             getOptionLabel={(option) => option}
             onChange={(_, value) => setStartLocation(value || '')}
@@ -176,7 +174,7 @@ export const LoopRequestForm = React.forwardRef(
           />
         </div>
 
-        <div className={classes.divForm}>
+        <div className={commandFormsClasses.divForm}>
           <Autocomplete
             getOptionLabel={(option) => option}
             onChange={(_, value) => setFinishLocation(value || '')}
@@ -195,12 +193,17 @@ export const LoopRequestForm = React.forwardRef(
           />
         </div>
 
-        <div className={classes.buttonContainer}>
-          <Button variant="contained" color="primary" type="submit" className={classes.button}>
+        <div className={commandFormsClasses.buttonContainer}>
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            className={commandFormsClasses.button}
+          >
             Request
           </Button>
         </div>
-      </form>
+      </StyledForm>
     );
   },
 );

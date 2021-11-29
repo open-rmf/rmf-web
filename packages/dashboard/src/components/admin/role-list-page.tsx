@@ -3,18 +3,17 @@
 import React from 'react';
 import { RmfIngressContext } from '../rmf-app';
 import { getApiErrorMessage } from '../utils';
-import { usePageStyles } from './page-css';
+import { adminPageClasses, AdminPageContainer } from './page-css';
 import { RoleListCard } from './role-list-card';
 
 export function RoleListPage(): JSX.Element | null {
-  const classes = usePageStyles();
   const rmfIngress = React.useContext(RmfIngressContext);
   const adminApi = rmfIngress?.adminApi;
 
   if (!adminApi) return null;
 
   return (
-    <div className={classes.pageRoot}>
+    <AdminPageContainer className={adminPageClasses.pageRoot}>
       <RoleListCard
         getRoles={async () => (await adminApi.getRolesAdminRolesGet()).data}
         createRole={async (role) => {
@@ -40,7 +39,7 @@ export function RoleListPage(): JSX.Element | null {
         }}
         savePermission={async (role, permission) => {
           try {
-            await adminApi.addRolePermissionAdminRolesRolePermissionsPost(permission, role);
+            await adminApi.addRolePermissionAdminRolesRolePermissionsPost(role, permission);
           } catch (e) {
             throw new Error(getApiErrorMessage(e));
           }
@@ -48,14 +47,14 @@ export function RoleListPage(): JSX.Element | null {
         removePermission={async (role, permission) => {
           try {
             await adminApi.removeRolePermissionAdminRolesRolePermissionsRemovePost(
-              permission,
               role,
+              permission,
             );
           } catch (e) {
             throw new Error(getApiErrorMessage(e));
           }
         }}
       />
-    </div>
+    </AdminPageContainer>
   );
 }

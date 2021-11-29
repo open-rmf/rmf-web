@@ -1,20 +1,25 @@
 /* istanbul ignore file */
 
-import { makeStyles } from '@material-ui/core';
+import { styled } from '@mui/material';
 import React from 'react';
-import { RobotPanel, VerboseRobot } from 'react-components';
+import { RobotPanel, RobotPanelProps, VerboseRobot } from 'react-components';
 import { RmfIngressContext } from '../rmf-app';
 
-const useStyles = makeStyles((theme) => ({
-  robotPanel: {
-    padding: `${theme.spacing(4)}px`,
-    height: '100%',
-    backgroundColor: theme.palette.background.default,
-  },
-}));
+const classes = {
+  robotPanel: 'robot-page-container',
+};
+const StyledRobotPanel = styled((props: RobotPanelProps) => <RobotPanel {...props} />)(
+  ({ theme }) => ({
+    [`&.${classes.robotPanel}`]: {
+      padding: `${theme.spacing(4)}`,
+      height: '100%',
+      maxWidth: 1600,
+      backgroundColor: theme.palette.background.default,
+    },
+  }),
+);
 
 export function RobotPage() {
-  const classes = useStyles();
   const { fleetsApi } = React.useContext(RmfIngressContext) || {};
 
   const [hasMore, setHasMore] = React.useState(true);
@@ -44,7 +49,7 @@ export function RobotPage() {
   }, [fetchVerboseRobots]);
 
   return (
-    <RobotPanel
+    <StyledRobotPanel
       className={classes.robotPanel}
       fetchVerboseRobots={fetchVerboseRobots}
       paginationOptions={{

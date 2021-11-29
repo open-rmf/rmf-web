@@ -1,8 +1,9 @@
 import {
+  Alert,
+  AlertProps,
   Button,
   Grid,
   IconButton,
-  makeStyles,
   Paper,
   Snackbar,
   TableContainer,
@@ -11,37 +12,45 @@ import {
   Tooltip,
   Typography,
   useTheme,
-} from '@material-ui/core';
+  styled,
+} from '@mui/material';
 import {
   AddOutlined as AddOutlinedIcon,
   Autorenew as AutorenewIcon,
   Refresh as RefreshIcon,
-} from '@material-ui/icons';
-import { Alert, AlertProps } from '@material-ui/lab';
-import { SubmitTask, Task } from 'api-client';
+} from '@mui/icons-material';
+import { SubmitTask, Task, TaskSummary } from 'api-client';
 import React from 'react';
 import { CreateTaskForm, CreateTaskFormProps, TaskInfo, TaskTable } from 'react-components';
 import { UserProfileContext } from 'rmf-auth';
-import * as RmfModels from 'rmf-models';
+import { TaskSummary as RmfTaskSummary } from 'rmf-models';
+import { AppControllerContext } from '../app-contexts';
 import { Enforcer } from '../permissions';
 import { parseTasksFile } from './utils';
-import { AppControllerContext } from '../app-contexts';
 
-const useStyles = makeStyles((theme) => ({
-  tableContainer: {
+const prefix = 'task-panel';
+const classes = {
+  tableContainer: `${prefix}-table-container`,
+  tableTitle: `${prefix}-table-title`,
+  detailPanelContainer: `${prefix}-detail-panel-container`,
+  enabledToggleButton: `${prefix}-enable-toggle-button`,
+};
+
+const StyledDiv = styled('div')(({ theme }) => ({
+  [`& .${classes.tableContainer}`]: {
     display: 'flex',
     flexDirection: 'column',
   },
-  tableTitle: {
+  [`& .${classes.tableTitle}`]: {
     flex: '1 1 100%',
   },
-  detailPanelContainer: {
+  [`& .${classes.detailPanelContainer}`]: {
     width: 350,
     padding: theme.spacing(2),
     marginLeft: theme.spacing(2),
     flex: '0 0 auto',
   },
-  enabledToggleButton: {
+  [`& .${classes.enabledToggleButton}`]: {
     background: theme.palette.action.selected,
   },
 }));
@@ -56,7 +65,8 @@ function NoSelectedTask() {
   );
 }
 
-export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
+export interface TaskPanelProps
+  extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
   /**
    * Should only contain the tasks of the current page.
    */
@@ -68,7 +78,7 @@ export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
   dispensers?: string[];
   ingestors?: string[];
   submitTasks?: CreateTaskFormProps['submitTasks'];
-  cancelTask?: (task: RmfModels.TaskSummary) => Promise<void>;
+  cancelTask?: (task: TaskSummary) => Promise<void>;
   onRefresh?: () => void;
   onAutoRefresh?: (enabled: boolean) => void;
 }
@@ -87,7 +97,6 @@ export function TaskPanel({
   onAutoRefresh,
   ...divProps
 }: TaskPanelProps): JSX.Element {
-  const classes = useStyles();
   const theme = useTheme();
   const [selectedTask, setSelectedTask] = React.useState<Task | undefined>(undefined);
   const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
@@ -110,7 +119,7 @@ export function TaskPanel({
       setOpenSnackbar(true);
       setSelectedTask(undefined);
     } catch (e) {
-      setSnackbarMessage(`Failed to cancel task: ${e.message}`);
+      setSnackbarMessage(`Failed to cancel task: ${(e as Error).message}`);
       setSnackbarSeverity('error');
       setOpenSnackbar(true);
     }
@@ -132,7 +141,7 @@ export function TaskPanel({
           try {
             taskFiles = parseTasksFile(await fileInputEl.files[0].text());
           } catch (err) {
-            showErrorAlert(err.message, 5000);
+            showErrorAlert((err as Error).message, 5000);
             return res([]);
           }
           // only submit tasks when all tasks are error free
@@ -153,13 +162,13 @@ export function TaskPanel({
     selectedTask &&
     profile &&
     Enforcer.canCancelTask(profile, selectedTask) &&
-    (selectedTask.summary.state === RmfModels.TaskSummary.STATE_ACTIVE ||
-      selectedTask.summary.state === RmfModels.TaskSummary.STATE_PENDING ||
-      selectedTask.summary.state === RmfModels.TaskSummary.STATE_QUEUED);
+    (selectedTask.summary.state === RmfTaskSummary.STATE_ACTIVE ||
+      selectedTask.summary.state === RmfTaskSummary.STATE_PENDING ||
+      selectedTask.summary.state === RmfTaskSummary.STATE_QUEUED);
 
   return (
-    <div {...divProps}>
-      <Grid container wrap="nowrap" justify="center" style={{ height: 'inherit' }}>
+    <StyledDiv {...divProps}>
+      <Grid container wrap="nowrap" justifyContent="center" style={{ height: 'inherit' }}>
         <Paper className={classes.tableContainer}>
           <Toolbar>
             <Typography className={classes.tableTitle} variant="h6">
@@ -249,6 +258,6 @@ export function TaskPanel({
       <Snackbar open={openSnackbar} onClose={() => setOpenSnackbar(false)} autoHideDuration={2000}>
         <Alert severity={snackbarSeverity}>{snackbarMessage}</Alert>
       </Snackbar>
-    </div>
+    </StyledDiv>
   );
 }

@@ -1,48 +1,56 @@
-import { makeStyles } from '@material-ui/core';
+import { styled } from '@mui/material';
 import clsx from 'clsx';
 import React, { SVGProps } from 'react';
-import * as RmfModels from 'rmf-models';
+import { Door as RmfDoor, DoorMode as RmfDoorMode } from 'rmf-models';
 
-const useDoorStyles = makeStyles({
-  marker: {
+const classes = {
+  marker: 'door-marker-base-marker',
+  base: 'door-marker-base-door',
+  open: 'door-marker-open',
+  close: 'door-marker-close',
+  moving: 'door-marker-moving',
+  unknown: 'door-marker-unknown',
+  transparent: 'door-marker-transparent',
+};
+const StyledG = styled('g')(() => ({
+  [`& .${classes.marker}`]: {
     cursor: 'pointer',
     pointerEvents: 'auto',
   },
-  base: {
+  [`& .${classes.base}`]: {
     strokeWidth: 0.2,
   },
-  open: {
+  [`& .${classes.open}`]: {
+    width: 200,
     stroke: '#AFDDAE',
     strokeDasharray: 0.1,
   },
-  close: {
+  [`& .${classes.close}`]: {
     stroke: '#BC4812',
   },
-  moving: {
+  [`& .${classes.moving}`]: {
     stroke: '#E9CE9F',
     strokeDasharray: 0.3,
   },
-  unknown: {
+  [`& .${classes.unknown}`]: {
     stroke: 'grey',
   },
-  transparent: {
+  [`& .${classes.transparent}`]: {
     stroke: 'transparent',
   },
-});
+}));
 
 function useDoorStyle(doorMode?: number): string {
-  const classes = useDoorStyles();
-
   if (doorMode === undefined) {
     return classes.unknown;
   }
 
   switch (doorMode) {
-    case RmfModels.DoorMode.MODE_OPEN:
+    case RmfDoorMode.MODE_OPEN:
       return classes.open;
-    case RmfModels.DoorMode.MODE_MOVING:
+    case RmfDoorMode.MODE_MOVING:
       return classes.moving;
-    case RmfModels.DoorMode.MODE_CLOSED:
+    case RmfDoorMode.MODE_CLOSED:
       return classes.close;
     default:
       return classes.unknown;
@@ -50,7 +58,6 @@ function useDoorStyle(doorMode?: number): string {
 }
 
 const BaseDoor = ({ className, ...otherProps }: SVGProps<SVGLineElement>) => {
-  const classes = useDoorStyles();
   return <line className={clsx(classes.base, className)} {...otherProps} />;
 };
 
@@ -61,7 +68,6 @@ const BaseDoor = ({ className, ...otherProps }: SVGProps<SVGLineElement>) => {
  * full door to be clickable.
  */
 const DummyDoor = ({ className, ...otherProps }: React.SVGProps<SVGLineElement>) => {
-  const classes = useDoorStyles();
   return <line className={clsx(classes.base, classes.transparent, className)} {...otherProps} />;
 };
 
@@ -127,22 +133,21 @@ export const DoorMarker = React.forwardRef(
     { x1, y1, x2, y2, doorType, doorMode, ...otherProps }: DoorMarkerProps,
     ref: React.Ref<SVGGElement>,
   ) => {
-    const classes = useDoorStyles();
     const doorProps = { x1, y1, x2, y2, doorType, doorMode };
 
     const renderDoor = () => {
       switch (doorType) {
-        case RmfModels.Door.DOOR_TYPE_SINGLE_SWING:
+        case RmfDoor.DOOR_TYPE_SINGLE_SWING:
           return <SingleSwingDoor {...doorProps} />;
-        case RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING:
+        case RmfDoor.DOOR_TYPE_SINGLE_SLIDING:
           return <SingleSlidingDoor {...doorProps} />;
-        case RmfModels.Door.DOOR_TYPE_SINGLE_TELESCOPE:
+        case RmfDoor.DOOR_TYPE_SINGLE_TELESCOPE:
           return <SingleTelescopeDoor {...doorProps} />;
-        case RmfModels.Door.DOOR_TYPE_DOUBLE_SWING:
+        case RmfDoor.DOOR_TYPE_DOUBLE_SWING:
           return <DoubleSwingDoor {...doorProps} />;
-        case RmfModels.Door.DOOR_TYPE_DOUBLE_SLIDING:
+        case RmfDoor.DOOR_TYPE_DOUBLE_SLIDING:
           return <DoubleSlidingDoor {...doorProps} />;
-        case RmfModels.Door.DOOR_TYPE_DOUBLE_TELESCOPE:
+        case RmfDoor.DOOR_TYPE_DOUBLE_TELESCOPE:
           return <DoubleTelescopeDoor {...doorProps} />;
         default:
           return null;
@@ -151,9 +156,9 @@ export const DoorMarker = React.forwardRef(
 
     try {
       return (
-        <g ref={ref} {...otherProps}>
+        <StyledG ref={ref} {...otherProps}>
           <g className={otherProps.onClick ? classes.marker : undefined}>{renderDoor()}</g>
-        </g>
+        </StyledG>
       );
     } catch (e) {
       console.error((e as Error).message);

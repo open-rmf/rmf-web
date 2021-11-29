@@ -1,4 +1,4 @@
-import { TextField } from '@material-ui/core';
+import { TextField } from '@mui/material';
 import React from 'react';
 import { ConfirmationDialog, useAsync } from 'react-components';
 import { AppControllerContext } from '../app-contexts';
@@ -42,7 +42,7 @@ export function CreateRoleDialog({
       setOpen && setOpen(false);
     } catch (e) {
       setCreating(false);
-      showErrorAlert(`Failed to create role: ${e.message}`);
+      showErrorAlert(`Failed to create role: ${(e as Error).message}`);
     }
   };
 
@@ -61,6 +61,7 @@ export function CreateRoleDialog({
         fullWidth
         autoFocus
         label="Role"
+        margin="normal"
         value={role}
         onChange={(ev) => setRole(ev.target.value)}
         error={roleError}

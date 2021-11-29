@@ -34,7 +34,7 @@ export class LiftRequest {
     try {
       Time.validate(obj['request_time'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "request_time":\n  ' + e.message);
+      throw new Error('in "request_time":\n  ' + (e as Error).message);
     }
     if (typeof obj['session_id'] !== 'string') {
       throw new Error('expected "session_id" to be "string"');

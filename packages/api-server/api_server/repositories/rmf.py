@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import Dict, List, Optional, TypeVar
+from typing import Dict, List, Optional, cast
 
 from fastapi.exceptions import HTTPException
-from tortoise.queryset import QuerySet
+from tortoise.queryset import MODEL, QuerySet
 
 from api_server.models import (
     BuildingMap,
@@ -30,8 +30,6 @@ from api_server.models import tortoise_models as ttm
 from api_server.models.fleets import Fleet, Robot
 from api_server.permissions import Enforcer, RmfAction
 
-T = TypeVar("T")
-
 
 class RmfRepository:
     def __init__(self, user: User):
@@ -47,10 +45,10 @@ class RmfRepository:
 
     @staticmethod
     def _add_pagination(
-        query: QuerySet[T],
+        query: QuerySet[MODEL],
         pagination: Pagination,
         field_mappings: Dict[str, str] = None,
-    ) -> QuerySet[T]:
+    ) -> QuerySet[MODEL]:
         """
         :param field_mapping: A dict mapping the order fields to the fields used to build the
             query. e.g. a url of `?order_by=order_field` and a field mapping of `{"order_field": "db_field"}`
@@ -89,7 +87,10 @@ class RmfRepository:
         return DoorState(**door_state.data)
 
     async def get_door_health(self, door_name: str) -> Optional[DoorHealth]:
-        return await ttm.DoorHealth.get_or_none(id_=door_name)
+        door_health = await ttm.DoorHealth.get_or_none(id_=door_name)
+        if door_health is None:
+            return None
+        return await DoorHealth.from_tortoise(door_health)
 
     async def get_lifts(self) -> List[Lift]:
         building_map = await self.get_bulding_map()
@@ -104,7 +105,10 @@ class RmfRepository:
         return LiftState(**lift_state.data)
 
     async def get_lift_health(self, lift_name: str) -> Optional[LiftHealth]:
-        return await ttm.LiftHealth.get_or_none(id_=lift_name)
+        lift_health = await ttm.LiftHealth.get_or_none(id_=lift_name)
+        if lift_health is None:
+            return None
+        return await LiftHealth.from_tortoise(lift_health)
 
     async def get_dispensers(self) -> List[Dispenser]:
         states = await ttm.DispenserState.all()
@@ -117,7 +121,10 @@ class RmfRepository:
         return DispenserState(**dispenser_state.data)
 
     async def get_dispenser_health(self, guid: str) -> Optional[DispenserHealth]:
-        return await ttm.DispenserHealth.get_or_none(id_=guid)
+        dispenser_health = await ttm.DispenserHealth.get_or_none(id_=guid)
+        if dispenser_health is None:
+            return None
+        return await DispenserHealth.from_tortoise(dispenser_health)
 
     async def get_ingestors(self) -> List[Ingestor]:
         states = await ttm.IngestorState.all()
@@ -130,7 +137,10 @@ class RmfRepository:
         return IngestorState(**ingestor_state.data)
 
     async def get_ingestor_health(self, guid: str) -> Optional[IngestorHealth]:
-        return await ttm.IngestorHealth.get_or_none(id_=guid)
+        ingestor_health = await ttm.IngestorHealth.get_or_none(id_=guid)
+        if ingestor_health is None:
+            return None
+        return await IngestorHealth.from_tortoise(ingestor_health)
 
     async def query_fleets(
         self, pagination: Pagination, *, fleet_name: Optional[str] = None
@@ -173,13 +183,18 @@ class RmfRepository:
     async def get_robot_health(
         self, fleet_name: str, robot_name: str
     ) -> Optional[RobotHealth]:
-        return await ttm.RobotHealth.get_or_none(id_=f"{fleet_name}/{robot_name}")
+        robot_health = await ttm.RobotHealth.get_or_none(
+            id_=f"{fleet_name}/{robot_name}"
+        )
+        if robot_health is None:
+            return None
+        return await RobotHealth.from_tortoise(robot_health)
 
     async def get_task_summary(self, task_id: str) -> TaskSummary:
         # FIXME: This would fail if task_id contains "_/"
         task_id = task_id.replace("__", "/")
         ts = await Enforcer.query(
-            self.user, ttm.TaskSummary, RmfAction.TaskRead
+            self.user, ttm.TaskSummary.all(), RmfAction.TaskRead
         ).get_or_none(id_=task_id)
 
         if ts is None:
@@ -249,7 +264,10 @@ class RmfRepository:
             filter_params["username__istartswith"] = username
         if is_admin is not None:
             filter_params["is_admin"] = is_admin
-        return await self._add_pagination(
-            ttm.User.filter(**filter_params),
-            pagination,
-        ).values_list("username", flat=True)
+        return cast(
+            List[str],
+            await self._add_pagination(
+                ttm.User.filter(**filter_params),
+                pagination,
+            ).values_list("username", flat=True),
+        )

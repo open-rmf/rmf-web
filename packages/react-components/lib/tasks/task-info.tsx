@@ -1,16 +1,21 @@
-import { Divider, makeStyles, Typography, useTheme } from '@material-ui/core';
+import { Divider, Typography, useTheme } from '@mui/material';
+import { styled } from '@mui/material';
+import type { TaskSummary } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import { TaskSummary as RmfTaskSummary, TaskType as RmfTaskType } from 'rmf-models';
 import { rosTimeToJs } from '../utils';
-import { taskStateToStr, taskTypeToStr } from './utils';
 import { TaskTimeline } from './task-timeline';
+import { taskStateToStr, taskTypeToStr } from './utils';
 
-const useStyles = makeStyles({
-  infoValue: {
+const classes = {
+  infoValue: 'task-info-info-value',
+};
+const StyledDiv = styled('div')(() => ({
+  [`& .${classes.infoValue}`]: {
     float: 'right',
     textAlign: 'right',
   },
-});
+}));
 
 function InfoLine({ children }: React.PropsWithChildren<unknown>) {
   return (
@@ -21,12 +26,11 @@ function InfoLine({ children }: React.PropsWithChildren<unknown>) {
 }
 
 function InfoValue({ children }: React.PropsWithChildren<unknown>) {
-  const classes = useStyles();
   return <span className={classes.infoValue}>{children}</span>;
 }
 
 interface CleanTaskInfoProps {
-  task: RmfModels.TaskSummary;
+  task: TaskSummary;
 }
 
 function CleanTaskInfo({ task }: CleanTaskInfoProps) {
@@ -39,7 +43,7 @@ function CleanTaskInfo({ task }: CleanTaskInfoProps) {
 }
 
 interface LoopTaskInfoProps {
-  task: RmfModels.TaskSummary;
+  task: TaskSummary;
 }
 
 function LoopTaskInfo({ task }: LoopTaskInfoProps) {
@@ -62,7 +66,7 @@ function LoopTaskInfo({ task }: LoopTaskInfoProps) {
 }
 
 interface DeliveryTaskInfoProps {
-  task: RmfModels.TaskSummary;
+  task: TaskSummary;
 }
 
 function DeliveryTaskInfoProps({ task }: DeliveryTaskInfoProps) {
@@ -97,25 +101,25 @@ function DeliveryTaskInfoProps({ task }: DeliveryTaskInfoProps) {
 }
 
 export interface TaskInfoProps {
-  task: RmfModels.TaskSummary;
+  task: TaskSummary;
 }
 
 export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
   const theme = useTheme();
   const taskType = task.task_profile.description.task_type.type;
   const hasConcreteEndTime = [
-    RmfModels.TaskSummary.STATE_CANCELED,
-    RmfModels.TaskSummary.STATE_COMPLETED,
-    RmfModels.TaskSummary.STATE_FAILED,
+    RmfTaskSummary.STATE_CANCELED,
+    RmfTaskSummary.STATE_COMPLETED,
+    RmfTaskSummary.STATE_FAILED,
   ].includes(task.state);
 
   const detailInfo = (() => {
     switch (taskType) {
-      case RmfModels.TaskType.TYPE_CLEAN:
+      case RmfTaskType.TYPE_CLEAN:
         return <CleanTaskInfo task={task} />;
-      case RmfModels.TaskType.TYPE_LOOP:
+      case RmfTaskType.TYPE_LOOP:
         return <LoopTaskInfo task={task} />;
-      case RmfModels.TaskType.TYPE_DELIVERY:
+      case RmfTaskType.TYPE_DELIVERY:
         return <DeliveryTaskInfoProps task={task} />;
       default:
         return null;
@@ -123,7 +127,7 @@ export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
   })();
 
   return (
-    <div>
+    <StyledDiv>
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
         {task.task_id}
       </Typography>
@@ -156,6 +160,6 @@ export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
       {detailInfo}
       <Typography variant="h6">Progress</Typography>
       <TaskTimeline taskSummary={task} />
-    </div>
+    </StyledDiv>
   );
 }

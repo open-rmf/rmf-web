@@ -1,4 +1,5 @@
-from rx.subject import BehaviorSubject, Subject
+from rx.subject.behaviorsubject import BehaviorSubject
+from rx.subject.subject import Subject
 
 
 class RmfEvents:

@@ -1,10 +1,10 @@
-import * as RmfModels from 'rmf-models';
+import type { BuildingMap, GraphNode } from 'api-client';
 import { Place } from '../place';
 import { RobotData } from './robots-overlay';
 import { TrajectoryData } from './trajectories-overlay';
 import { RawKnot, RawVelocity, Trajectory } from './trajectory';
 
-export const officeMap: RmfModels.BuildingMap = {
+export const officeMap: BuildingMap = {
   name: 'building',
   levels: [
     {
@@ -647,7 +647,7 @@ export const createRandomTrajectories = (numberOfTraj: number): Trajectory[] => 
   return trajHolder;
 };
 
-export function makeVertex(vertex: Partial<RmfModels.GraphNode> = {}): RmfModels.GraphNode {
+export function makeVertex(vertex: Partial<GraphNode> = {}): GraphNode {
   return {
     x: 0,
     y: 0,

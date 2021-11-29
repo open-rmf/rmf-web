@@ -18,8 +18,8 @@
   "devDependencies": {
     "husky": "^4.3.0",
     "lint-staged": "^10.4.0",
-    "prettier": "2.4.1",
-    "typescript": "4.2.4"
+    "prettier": "^2.1.2",
+    "pyright": "^1.1.181"
   },
   "husky": {
     "hooks": {
@@ -34,5 +34,6 @@
       "python3 -m pipenv run isort",
       "python3 -m pipenv run black"
     ]
-  }
+  },
+  "dependencies": {}
 }

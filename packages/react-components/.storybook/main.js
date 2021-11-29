@@ -4,8 +4,20 @@ module.exports = {
   },
   stories: ['../lib/**/*.stories.mdx', '../lib/**/*.stories.@(js|jsx|ts|tsx)'],
   addons: ['@storybook/addon-links', '@storybook/addon-essentials'],
-  webpackFinal: (config) => {
-    config.resolve.extensions = ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.cjs'];
-    return config;
+  webpackFinal: async (config) => {
+    return {
+      ...config,
+      resolve: {
+        ...config.resolve,
+        extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.cjs'],
+        alias: {
+          ...config.resolve.alias,
+          // FIXME - need to let storybook use the latest version of emotion so that
+          // the theme gets picked up correctly
+          '@emotion/core': require.resolve('@emotion/react'),
+          'emotion-theming': require.resolve('@emotion/react'),
+        },
+      },
+    };
   },
 };

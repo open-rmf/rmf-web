@@ -1,3 +1,5 @@
+from typing import cast
+
 from builtin_interfaces.msg import Time as RosTime
 from fastapi import HTTPException
 from rmf_task_msgs.msg import Delivery as RmfDelivery
@@ -33,28 +35,25 @@ def convert_task_request(task_request: SubmitTask, now: RosTime):
         req_msg.description.priority.value = task_request.priority
 
     if task_request.task_type == TaskTypeEnum.CLEAN:
-        desc = task_request.description
-        desc: CleanTaskDescription
+        clean_desc = cast(CleanTaskDescription, task_request.description)
         req_msg.description.task_type.type = RmfTaskType.TYPE_CLEAN
-        req_msg.description.clean.start_waypoint = desc.cleaning_zone
+        req_msg.description.clean.start_waypoint = clean_desc.cleaning_zone
     elif task_request.task_type == TaskTypeEnum.LOOP:
-        desc = task_request.description
-        desc: LoopTaskDescription
+        loop_desc = cast(LoopTaskDescription, task_request.description)
         req_msg.description.task_type.type = RmfTaskType.TYPE_LOOP
         loop = RmfLoop()
-        loop.num_loops = desc.num_loops
-        loop.start_name = desc.start_name
-        loop.finish_name = desc.finish_name
+        loop.num_loops = loop_desc.num_loops
+        loop.start_name = loop_desc.start_name
+        loop.finish_name = loop_desc.finish_name
         req_msg.description.loop = loop
     elif task_request.task_type == TaskTypeEnum.DELIVERY:
-        desc = task_request.description
-        desc: DeliveryTaskDescription
+        delivery_desc = cast(DeliveryTaskDescription, task_request.description)
         req_msg.description.task_type.type = RmfTaskType.TYPE_DELIVERY
         delivery = RmfDelivery()
-        delivery.pickup_place_name = desc.pickup_place_name
-        delivery.pickup_dispenser = desc.pickup_dispenser
-        delivery.dropoff_ingestor = desc.dropoff_ingestor
-        delivery.dropoff_place_name = desc.dropoff_place_name
+        delivery.pickup_place_name = delivery_desc.pickup_place_name
+        delivery.pickup_dispenser = delivery_desc.pickup_dispenser
+        delivery.dropoff_ingestor = delivery_desc.dropoff_ingestor
+        delivery.dropoff_place_name = delivery_desc.dropoff_place_name
         req_msg.description.delivery = delivery
     else:
         return None, "Invalid TaskType"

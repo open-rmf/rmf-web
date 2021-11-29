@@ -1,12 +1,21 @@
 /* istanbul ignore file */
 
-import { Card, Grid, makeStyles } from '@material-ui/core';
-import { Fleet, Level } from 'api-client';
+import { Card, Grid, styled } from '@mui/material';
+import {
+  DispenserState,
+  Door,
+  DoorState,
+  Fleet,
+  IngestorState,
+  Level,
+  Lift,
+  LiftState,
+  FleetState,
+} from 'api-client';
 import Debug from 'debug';
 import React from 'react';
 import { DoorData, DoorPanel, LiftPanel, LiftPanelProps, WorkcellPanel } from 'react-components';
 import { GlobalHotKeys } from 'react-hotkeys';
-import * as RmfModels from 'rmf-models';
 import { buildHotKeys } from '../../hotkeys';
 import { AppControllerContext } from '../app-contexts';
 import {
@@ -20,22 +29,26 @@ import ScheduleVisualizer from '../schedule-visualizer';
 const debug = Debug('Dashboard');
 const UpdateRate = 1000;
 
-const useStyles = makeStyles((theme) => ({
-  root: {
+const prefix = 'dashboard';
+const classes = {
+  root: `${prefix}-root`,
+  buildingPanel: `${prefix}-building-panel`,
+  mapPanel: `${prefix}-map-panel`,
+  itemPanels: `${prefix}-item-panels`,
+};
+const StyledDiv = styled('div')(({ theme }) => ({
+  [`&.${classes.root}`]: {
     height: '100%',
     backgroundColor: theme.palette.background.default,
   },
-  toolBarTitle: {
-    flexGrow: 1,
+  [`& .${classes.buildingPanel}`]: {
+    height: '100vh',
   },
-  buildingPanel: {
-    height: '100%',
-  },
-  mapPanel: {
+  [`& .${classes.mapPanel}`]: {
     margin: theme.spacing(1),
     flex: '1 0 auto',
   },
-  itemPanels: {
+  [`& .${classes.itemPanels}`]: {
     width: '55%',
   },
 }));
@@ -43,7 +56,6 @@ const useStyles = makeStyles((theme) => ({
 export default function Dashboard(_props: {}): React.ReactElement {
   debug('render');
 
-  const classes = useStyles();
   const appController = React.useContext(AppControllerContext);
   const rmfIngress = React.useContext(RmfIngressContext);
   const sioClient = rmfIngress?.sioClient;
@@ -55,11 +67,11 @@ export default function Dashboard(_props: {}): React.ReactElement {
     return () => clearInterval(interval);
   }, []);
 
-  const doorStatesRef = React.useRef<Record<string, RmfModels.DoorState>>({});
+  const doorStatesRef = React.useRef<Record<string, DoorState>>({});
   const doors: DoorData[] = React.useMemo(() => {
     return buildingMap
       ? (buildingMap.levels as Level[]).flatMap((x) =>
-          (x.doors as RmfModels.Door[]).map((door) => ({ door, level: x.name })),
+          (x.doors as Door[]).map((door) => ({ door, level: x.name })),
         )
       : [];
   }, [buildingMap]);
@@ -77,10 +89,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
     };
   }, [sioClient, doors]);
 
-  const liftStatesRef = React.useRef<Record<string, RmfModels.LiftState>>({});
-  const lifts: RmfModels.Lift[] = React.useMemo(() => (buildingMap ? buildingMap.lifts : []), [
-    buildingMap,
-  ]);
+  const liftStatesRef = React.useRef<Record<string, LiftState>>({});
+  const lifts: Lift[] = React.useMemo(() => (buildingMap ? buildingMap.lifts : []), [buildingMap]);
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = lifts.map((l) =>
@@ -92,7 +102,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }, [sioClient, lifts]);
 
   const dispensers = React.useContext(DispensersContext);
-  const dispenserStatesRef = React.useRef<Record<string, RmfModels.DispenserState>>({});
+  const dispenserStatesRef = React.useRef<Record<string, DispenserState>>({});
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = dispensers.map((d) =>
@@ -107,7 +117,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }, [sioClient, dispensers]);
 
   const ingestors = React.useContext(IngestorsContext);
-  const ingestorStatesRef = React.useRef<Record<string, RmfModels.IngestorState>>({});
+  const ingestorStatesRef = React.useRef<Record<string, IngestorState>>({});
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = ingestors.map((d) =>
@@ -137,7 +147,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
       cancel = true;
     };
   }, [rmfIngress]);
-  const fleetStatesRef = React.useRef<Record<string, RmfModels.FleetState>>({});
+  const fleetStatesRef = React.useRef<Record<string, FleetState>>({});
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = fleets.map((f) =>
@@ -156,26 +166,20 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const { doorsApi, liftsApi } = React.useContext(RmfIngressContext) || {};
 
   const handleOnDoorControlClick = React.useCallback(
-    (_ev, door: RmfModels.Door, mode: number) =>
-      doorsApi?.postDoorRequestDoorsDoorNameRequestPost(
-        {
-          mode: mode,
-        },
-        door.name,
-      ),
+    (_ev, door: Door, mode: number) =>
+      doorsApi?.postDoorRequestDoorsDoorNameRequestPost(door.name, {
+        mode: mode,
+      }),
     [doorsApi],
   );
 
   const handleLiftRequestSubmit = React.useCallback<Required<LiftPanelProps>['onRequestSubmit']>(
     (_ev, lift, doorState, requestType, destination) =>
-      liftsApi?.postLiftRequestLiftsLiftNameRequestPost(
-        {
-          destination,
-          request_type: requestType,
-          door_mode: doorState,
-        },
-        lift.name,
-      ),
+      liftsApi?.postLiftRequestLiftsLiftNameRequestPost(lift.name, {
+        destination,
+        request_type: requestType,
+        door_mode: doorState,
+      }),
     [liftsApi],
   );
 
@@ -188,7 +192,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   );
 
   return (
-    <div className={classes.root}>
+    <StyledDiv className={classes.root}>
       <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
         {buildingMap && (
           <Grid container className={classes.buildingPanel} wrap="nowrap">
@@ -222,13 +226,13 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 <WorkcellPanel
                   dispensers={dispensers}
                   ingestors={ingestors}
-                  workCellStates={workcellStates}
+                  workcellStates={workcellStates}
                 />
               ) : null}
             </Grid>
           </Grid>
         )}
       </GlobalHotKeys>
-    </div>
+    </StyledDiv>
   );
 }

@@ -1,37 +1,46 @@
-import { makeStyles, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
-import { Dispenser } from 'api-client';
-import React from 'react';
-import * as RmfModels from 'rmf-models';
-import { dispenserModeToString } from './utils';
-import { useFixedTableCellStyles } from '../utils';
-import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import { styled, Table, TableBody, TableHead, TableRow } from '@mui/material';
 import clsx from 'clsx';
-import AutoSizer from 'react-virtualized-auto-sizer';
+import React from 'react';
+import AutoSizer, { AutoSizerProps } from 'react-virtualized-auto-sizer';
+import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import { DispenserState as RmfDispenserState } from 'rmf-models';
+import { Workcell, WorkcellState } from '.';
+import { ItemTableCell, useFixedTableCellStylesClasses } from '../utils';
+import { dispenserModeToString } from './utils';
 
-const useStyles = makeStyles((theme) => ({
-  dispenserLabelIdle: {
-    color: theme.palette.success.main,
-  },
-  dispenserLabelBusy: {
-    color: theme.palette.error.main,
-  },
-  offlineLabelOffline: {
-    color: theme.palette.warning.main,
-  },
-  tableRow: {
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  tableCell: {
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-}));
+const classes = {
+  dispenserLabelIdle: 'workcell-dispenser-label-idle',
+  dispenserLabelBusy: 'workcell-dispenser-label-busy',
+  dispenserLabelOffline: 'workcell-offline-label',
+  tableRow: 'workcell-table-row',
+  tableCell: 'workcell-table-cell',
+};
+const StyledAutosizer = styled((props: AutoSizerProps) => <AutoSizer {...props} />)(
+  ({ theme }) => ({
+    [`& .${classes.dispenserLabelIdle}`]: {
+      color: theme.palette.success.main,
+    },
+    [`& .${classes.dispenserLabelBusy}`]: {
+      color: theme.palette.error.main,
+    },
+    [`& .${classes.dispenserLabelOffline}`]: {
+      color: theme.palette.warning.main,
+    },
+    [`& .${classes.tableRow}`]: {
+      display: 'flex',
+      flexDirection: 'row',
+    },
+    [`& .${classes.tableCell}`]: {
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+    },
+  }),
+);
 
 export interface WorkcellTableProps {
-  workcells: Dispenser[];
-  workcellStates: Record<string, RmfModels.DispenserState>;
+  workcells: Workcell[];
+  workcellStates: Record<string, WorkcellState>;
 }
 
 interface WorkcellListRendererProps extends ListChildComponentProps {
@@ -39,7 +48,7 @@ interface WorkcellListRendererProps extends ListChildComponentProps {
 }
 
 export interface WorkcellRowProps {
-  workcell: Dispenser;
+  workcell: Workcell;
   mode?: number;
   requestGuidQueue?: string[];
   secondsRemaining?: number;
@@ -47,103 +56,99 @@ export interface WorkcellRowProps {
 
 const WorkcellRow = React.memo(
   ({ workcell, mode, requestGuidQueue, secondsRemaining }: WorkcellRowProps) => {
-    const classes = useStyles();
-    const { fixedTableCell } = useFixedTableCellStyles();
-    const dispenserModeLabelClasses = React.useCallback(
-      (mode: number): string => {
-        switch (mode) {
-          case RmfModels.DispenserState.IDLE:
-            return `${classes.dispenserLabelIdle}`;
-          case RmfModels.DispenserState.BUSY:
-            return `${classes.dispenserLabelBusy}`;
-          case RmfModels.DispenserState.OFFLINE:
-            return `${classes.offlineLabelOffline}`;
-          default:
-            return '';
-        }
-      },
-      [classes],
-    );
+    const { fixedTableCell } = useFixedTableCellStylesClasses;
+    const dispenserModeLabelClasses = React.useCallback((mode: number): string => {
+      switch (mode) {
+        case RmfDispenserState.IDLE:
+          return `${classes.dispenserLabelIdle}`;
+        case RmfDispenserState.BUSY:
+          return `${classes.dispenserLabelBusy}`;
+        case RmfDispenserState.OFFLINE:
+          return `${classes.dispenserLabelOffline}`;
+        default:
+          return '';
+      }
+    }, []);
 
     return (
       <TableRow aria-label={`${workcell.guid}`} className={classes.tableRow} component="div">
         {mode !== undefined && requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
           <React.Fragment>
-            <TableCell
+            <ItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
               title={workcell.guid}
             >
               {workcell.guid}
-            </TableCell>
-            <TableCell
+            </ItemTableCell>
+            <ItemTableCell
               component="div"
               variant="head"
               className={clsx(dispenserModeLabelClasses(mode), classes.tableCell, fixedTableCell)}
             >
               {dispenserModeToString(mode)}
-            </TableCell>
-            <TableCell
+            </ItemTableCell>
+            <ItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {requestGuidQueue.length}
-            </TableCell>
-            <TableCell
+            </ItemTableCell>
+            <ItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {requestGuidQueue}
-            </TableCell>
-            <TableCell
+            </ItemTableCell>
+            <ItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {secondsRemaining}
-            </TableCell>
+            </ItemTableCell>
           </React.Fragment>
         ) : (
           <React.Fragment>
-            <TableCell
+            <ItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
               title={workcell.guid}
             >
               {workcell.guid}
-            </TableCell>
-            <TableCell
+            </ItemTableCell>
+            <ItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {'NA'}
-            </TableCell>
-            <TableCell
+            </ItemTableCell>
+            <ItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {'NA'}
-            </TableCell>
-            <TableCell
+            </ItemTableCell>
+            <ItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {'NA'}
-            </TableCell>
-            <TableCell
+            </ItemTableCell>
+            <ItemTableCell
               component="div"
               variant="head"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {'NA'}
-            </TableCell>
+            </ItemTableCell>
           </React.Fragment>
         )}
       </TableRow>
@@ -153,8 +158,7 @@ const WorkcellRow = React.memo(
 
 const WorkcellListRenderer = ({ data, index }: WorkcellListRendererProps) => {
   const workcell = data.workcells[index];
-  const workcellState: RmfModels.DispenserState | RmfModels.IngestorState | undefined =
-    data.workcellStates[workcell.guid];
+  const workcellState: WorkcellState | undefined = data.workcellStates[workcell.guid];
 
   return (
     <WorkcellRow
@@ -167,50 +171,49 @@ const WorkcellListRenderer = ({ data, index }: WorkcellListRendererProps) => {
 };
 
 export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps): JSX.Element => {
-  const classes = useStyles();
-  const { fixedTableCell } = useFixedTableCellStyles();
+  const { fixedTableCell } = useFixedTableCellStylesClasses;
   return (
-    <AutoSizer disableHeight>
+    <StyledAutosizer disableHeight>
       {({ width }) => {
         return (
           <Table component="div" stickyHeader size="small" aria-label="workcell-table">
             <TableHead component="div">
               <TableRow component="div" className={classes.tableRow}>
-                <TableCell
+                <ItemTableCell
                   component="div"
                   variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Dispenser Name
-                </TableCell>
-                <TableCell
+                </ItemTableCell>
+                <ItemTableCell
                   component="div"
                   variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Op. Mode
-                </TableCell>
-                <TableCell
+                </ItemTableCell>
+                <ItemTableCell
                   component="div"
                   variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   No. Queued Requests
-                </TableCell>
-                <TableCell
+                </ItemTableCell>
+                <ItemTableCell
                   component="div"
                   variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Request Queue ID
-                </TableCell>
-                <TableCell
+                </ItemTableCell>
+                <ItemTableCell
                   component="div"
                   variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Seconds Remaining
-                </TableCell>
+                </ItemTableCell>
               </TableRow>
             </TableHead>
             <TableBody component="div">
@@ -231,6 +234,6 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
           </Table>
         );
       }}
-    </AutoSizer>
+    </StyledAutosizer>
   );
 };

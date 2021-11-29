@@ -2,9 +2,9 @@ import {
   Button,
   Card,
   CardHeader,
+  CardProps,
   IconButton,
   InputAdornment,
-  makeStyles,
   Table,
   TableBody,
   TableCell,
@@ -14,11 +14,12 @@ import {
   TableRow,
   TextField,
   Typography,
-} from '@material-ui/core';
-import AccountIcon from '@material-ui/icons/AccountCircle';
-import AddIcon from '@material-ui/icons/AddCircle';
-import DeleteIcon from '@material-ui/icons/Delete';
-import SearchIcon from '@material-ui/icons/Search';
+  styled,
+} from '@mui/material';
+import AccountIcon from '@mui/icons-material/AccountCircle';
+import AddIcon from '@mui/icons-material/AddCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SearchIcon from '@mui/icons-material/Search';
 import React from 'react';
 import { ConfirmationDialog, Loading, useAsync } from 'react-components';
 import { useHistory, useRouteMatch } from 'react-router';
@@ -27,11 +28,16 @@ import { CreateUserDialog, CreateUserDialogProps } from './create-user-dialog';
 
 const ItemsPerPage = 20;
 
-const useStyles = makeStyles((theme) => ({
-  controlsButton: {
+const prefix = 'user-list-card';
+const classes = {
+  controlsButton: `${prefix}-controls-button`,
+  tableRow: `${prefix}-table-row`,
+};
+const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
+  [`& .${classes.controlsButton}`]: {
     float: 'right',
   },
-  tableRow: {
+  [`& .${classes.tableRow}`]: {
     cursor: 'pointer',
     '&:hover': {
       backgroundColor: theme.palette.action.hover,
@@ -49,7 +55,6 @@ export function UserListCard({
   deleteUser,
   createUser,
 }: UserListCardProps): JSX.Element {
-  const classes = useStyles();
   const safeAsync = useAsync();
   const history = useHistory();
   const match = useRouteMatch();
@@ -75,7 +80,7 @@ export function UserListCard({
         setHasMore(results.length > ItemsPerPage);
         setUsers(results.slice(0, ItemsPerPage));
       } catch (e) {
-        showErrorAlert(`Failed to get users: ${e.message}`);
+        showErrorAlert(`Failed to get users: ${(e as Error).message}`);
       } finally {
         setSearching(false);
       }
@@ -87,7 +92,7 @@ export function UserListCard({
   }, [refresh]);
 
   return (
-    <Card variant="outlined">
+    <StyledCard variant="outlined">
       <CardHeader
         title="Users"
         titleTypographyProps={{ variant: 'h5' }}
@@ -113,11 +118,7 @@ export function UserListCard({
                 searchTimer.current = window.setTimeout(() => setSearch(newInput), 300);
               }}
             />
-            <IconButton
-              color="primary"
-              onClick={() => setOpenCreateDialog(true)}
-              aria-label="create user"
-            >
+            <IconButton onClick={() => setOpenCreateDialog(true)} aria-label="create user">
               <AddIcon fontSize="large" />
             </IconButton>
           </>
@@ -185,7 +186,7 @@ export function UserListCard({
               refresh();
             } catch (e) {
               setDeleting(false);
-              showErrorAlert(`Failed to delete user: ${e.message}`);
+              showErrorAlert(`Failed to delete user: ${(e as Error).message}`);
             }
           }}
         >
@@ -205,6 +206,6 @@ export function UserListCard({
           }
         />
       )}
-    </Card>
+    </StyledCard>
   );
 }

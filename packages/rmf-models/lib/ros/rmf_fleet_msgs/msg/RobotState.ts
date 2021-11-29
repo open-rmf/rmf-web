@@ -42,7 +42,7 @@ export class RobotState {
     try {
       RobotMode.validate(obj['mode'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "mode":\n  ' + e.message);
+      throw new Error('in "mode":\n  ' + (e as Error).message);
     }
     if (typeof obj['battery_percent'] !== 'number') {
       throw new Error('expected "battery_percent" to be "number"');
@@ -50,7 +50,7 @@ export class RobotState {
     try {
       Location.validate(obj['location'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "location":\n  ' + e.message);
+      throw new Error('in "location":\n  ' + (e as Error).message);
     }
     if (!Array.isArray(obj['path'])) {
       throw new Error('expected "path" to be an array');
@@ -59,7 +59,7 @@ export class RobotState {
       try {
         Location.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "path":\n  ` + e.message);
+        throw new Error(`in index ${i} of "path":\n  ` + (e as Error).message);
       }
     }
   }

@@ -1,5 +1,9 @@
 import React from 'react';
-import { DefaultReportQueryPayload, defaultReportStyles } from '../default-report-interface';
+import {
+  DefaultReportQueryPayload,
+  DefaultReportContainer,
+  defaultReportClasses,
+} from '../default-report-interface';
 import { DefaultDatesForm } from '../default-dates-form';
 import { FleetStateReportTable, FleetStateRowsType } from './fleet-state-report-table';
 import { ReportConfigProps } from '../utils';
@@ -13,8 +17,6 @@ export const FleetStateReport = (props: FleetStateReportProps): React.ReactEleme
   const [logs, setLogs] = React.useState<FleetStateRowsType>([]);
   const [lastSearchParams, setLastSearchParams] = React.useState<DefaultReportQueryPayload>({});
 
-  const classes = defaultReportStyles();
-
   const searchLogs = async (payload: DefaultReportQueryPayload) => {
     setLastSearchParams(payload);
     setLogs(await getLogs(payload));
@@ -25,14 +27,14 @@ export const FleetStateReport = (props: FleetStateReportProps): React.ReactEleme
   };
 
   return (
-    <>
+    <DefaultReportContainer>
       <DefaultDatesForm search={searchLogs} {...otherProps} />
-      <div className={classes.table}>
+      <div className={defaultReportClasses.table}>
         {logs.length !== 0 && (
-          <FleetStateReportTable rows={logs} tableSize={'48vh'} addMoreRows={getMoreLogs} />
+          <FleetStateReportTable rows={logs} tableSize={500} addMoreRows={getMoreLogs} />
         )}
       </div>
-    </>
+    </DefaultReportContainer>
   );
 };
 

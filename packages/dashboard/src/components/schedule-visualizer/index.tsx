@@ -1,7 +1,6 @@
 /* istanbul ignore file */
 
-import { makeStyles } from '@material-ui/core';
-import { Dispenser, Ingestor } from 'api-client';
+import { BuildingMap, Dispenser, DoorState, FleetState, Ingestor, LiftState } from 'api-client';
 import Debug from 'debug';
 import * as L from 'leaflet';
 import React from 'react';
@@ -12,6 +11,7 @@ import {
   DoorsOverlay as DoorsOverlay_,
   LiftsOverlay as LiftsOverlay_,
   LMap,
+  LMapProps,
   loadAffineImage,
   RobotData,
   RobotsOverlay as RobotsOverlay_,
@@ -23,12 +23,22 @@ import {
   WorkcellData,
   WorkcellsOverlay as WorkcellsOverlay_,
 } from 'react-components';
+import { styled } from '@mui/material';
 import { AttributionControl, LayersControl } from 'react-leaflet';
-import * as RmfModels from 'rmf-models';
 import appConfig from '../../app-config';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { ResourcesContext } from '../app-contexts';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
+
+const classes = {
+  map: 'schedule-visualizer-map',
+};
+
+const StyledLMap = styled((props: LMapProps) => <LMap {...props} />)(({ theme }) => ({
+  [`&.${classes.map}`]: {
+    backgroundColor: theme.palette.background.default,
+  },
+}));
 
 const DoorsOverlay = React.memo(DoorsOverlay_);
 const LiftsOverlay = React.memo(LiftsOverlay_);
@@ -36,12 +46,6 @@ const RobotsOverlay = React.memo(RobotsOverlay_);
 const TrajectoriesOverlay = React.memo(TrajectoriesOverlay_);
 const WaypointsOverlay = React.memo(WaypointsOverlay_);
 const WorkcellsOverlay = React.memo(WorkcellsOverlay_);
-
-const scheduleVisualizerStyle = makeStyles((theme) => ({
-  map: {
-    backgroundColor: theme.palette.background.default,
-  },
-}));
 
 const debug = Debug('ScheduleVisualizer');
 const TrajectoryUpdateInterval = 2000;
@@ -51,13 +55,13 @@ const SettingsKey = 'scheduleVisualizerSettings';
 const colorManager = new ColorManager();
 
 export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
-  buildingMap: RmfModels.BuildingMap;
+  buildingMap: BuildingMap;
   negotiationTrajStore?: Record<string, NegotiationTrajectoryResponse>;
   dispensers?: Dispenser[];
   ingestors?: Ingestor[];
-  doorStates?: Record<string, RmfModels.DoorState>;
-  liftStates?: Record<string, RmfModels.LiftState>;
-  fleetStates?: Record<string, RmfModels.FleetState>;
+  doorStates?: Record<string, DoorState>;
+  liftStates?: Record<string, LiftState>;
+  fleetStates?: Record<string, FleetState>;
   /**
    * default: 'normal'
    */
@@ -91,7 +95,6 @@ export default function ScheduleVisualizer({
 }: ScheduleVisualizerProps): JSX.Element | null {
   debug('render');
   const safeAsync = useAsync();
-  const classes = scheduleVisualizerStyle();
   const levels = React.useMemo(
     () => [...buildingMap.levels].sort((a, b) => a.name.localeCompare(b.name)),
     [buildingMap],
@@ -112,13 +115,11 @@ export default function ScheduleVisualizer({
   const [trajectories, setTrajectories] = React.useState<TrajectoryData[]>([]);
   const { trajectoryManager: trajManager } = React.useContext(RmfIngressContext) || {};
 
-  const [
-    scheduleVisualizerSettings,
-    setScheduleVisualizerSettings,
-  ] = React.useState<ScheduleVisualizerSettings>(() => {
-    const settings = window.localStorage.getItem(SettingsKey);
-    return settings ? JSON.parse(settings) : { trajectoryTime: 60000 /* 1 min */ };
-  });
+  const [scheduleVisualizerSettings, setScheduleVisualizerSettings] =
+    React.useState<ScheduleVisualizerSettings>(() => {
+      const settings = window.localStorage.getItem(SettingsKey);
+      return settings ? JSON.parse(settings) : { trajectoryTime: 60000 /* 1 min */ };
+    });
   const trajectoryTime = scheduleVisualizerSettings.trajectoryTime;
   const trajectoryAnimScale = trajectoryTime / (0.9 * TrajectoryUpdateInterval);
 
@@ -308,7 +309,7 @@ export default function ScheduleVisualizer({
   const registeredLayersHandlers = React.useRef(false);
 
   return bounds ? (
-    <LMap
+    <StyledLMap
       ref={(cur) => {
         if (registeredLayersHandlers.current || !cur) return;
         cur.leafletElement.on('overlayadd', (ev: L.LayersControlEvent) =>
@@ -428,6 +429,6 @@ export default function ScheduleVisualizer({
         }
       />
       {children}
-    </LMap>
+    </StyledLMap>
   ) : null;
 }

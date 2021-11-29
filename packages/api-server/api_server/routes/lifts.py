@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, List, cast
 
 from fastapi import Depends
 from rx import operators as rxops
@@ -36,8 +36,8 @@ class LiftsRouter(FastIORouter):
             rx_watcher(
                 req,
                 app.rmf_events().lift_states.pipe(
-                    rxops.filter(lambda x: x.lift_name == lift_name),
-                    rxops.map(lambda x: x.dict()),
+                    rxops.filter(lambda x: cast(LiftState, x).lift_name == lift_name),
+                    rxops.map(cast(Any, lambda x: cast(LiftState, x).dict())),
                 ),
             )
 
@@ -53,12 +53,13 @@ class LiftsRouter(FastIORouter):
         @self.watch("/{lift_name}/health")
         async def watch_lift_health(req: WatchRequest, lift_name: str):
             health = await get_lift_health(lift_name, RmfRepository(req.user))
-            await req.emit(health.dict())
+            if health is not None:
+                await req.emit(health.dict())
             rx_watcher(
                 req,
                 app.rmf_events().lift_health.pipe(
-                    rxops.filter(lambda x: x.id_ == lift_name),
-                    rxops.map(lambda x: x.dict()),
+                    rxops.filter(lambda x: cast(LiftHealth, x).id_ == lift_name),
+                    rxops.map(cast(Any, lambda x: cast(LiftHealth, x).dict())),
                 ),
             )
 

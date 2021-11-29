@@ -1,21 +1,10 @@
-import argparse
-import sys
-from copy import copy
-from dataclasses import dataclass
 from os import makedirs
-from os.path import basename, dirname, exists
+from os.path import dirname
 from os.path import join as joinp
-from typing import List, Sequence
+from typing import Sequence
 
-import jinja2
 from jinja2 import Environment, FileSystemLoader
-from ros_translator.library import (
-    Message,
-    PackageIndex,
-    PostProcessors,
-    RosLibrary,
-    Service,
-)
+from ros_translator.library import Message, PackageIndex, PostProcessors, RosLibrary
 
 template_loader = FileSystemLoader(searchpath=dirname(__file__))
 template_env = Environment(loader=template_loader)
@@ -133,13 +122,13 @@ def generate_modules(pkgs: Sequence[str], outdir: str):
     roslib = RosLibrary(post_processors=PostProcessors(message=augment_message))
     all_pkg_index = roslib.get_all_interfaces(*pkgs)
 
-    with open(joinp(outdir, "__init__.py"), "w"):
+    with open(joinp(outdir, "__init__.py"), "w", encoding="utf-8"):
         pass
     for pkg_name, pkg_index in all_pkg_index.items():
         pkg_index: PackageIndex
         pkg_outdir = joinp(outdir, pkg_name)
         makedirs(pkg_outdir, exist_ok=True)
-        with open(joinp(pkg_outdir, "__init__.py"), "w") as f:
+        with open(joinp(pkg_outdir, "__init__.py"), "w", encoding="utf-8") as f:
             for msg in (
                 roslib.get_message(msg_type) for msg_type in pkg_index.messages
             ):

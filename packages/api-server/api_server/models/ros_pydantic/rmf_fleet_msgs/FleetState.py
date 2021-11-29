@@ -13,6 +13,12 @@ class FleetState(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "name",
+                "robots",
+            ],
+        }
 
 
 # string name

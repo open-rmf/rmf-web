@@ -18,7 +18,7 @@ class TaskSummary(rmf_task_msgs.TaskSummary):
     def from_tortoise(tortoise: ttm.TaskSummary) -> "TaskSummary":
         return TaskSummary(authz_grp=tortoise.authz_grp, **tortoise.data)
 
-    async def save(self, authz_grp: Optional[str] = None) -> None:
+    async def save(self, authz_grp: Optional[str] = None):
         dic = self.dict()
         del dic["authz_grp"]
 
@@ -35,8 +35,7 @@ class TaskSummary(rmf_task_msgs.TaskSummary):
         }
         if authz_grp is not None:
             defaults["authz_grp"] = authz_grp
-        result = await ttm.TaskSummary.update_or_create(defaults, id_=self.task_id)
-        return result[0]
+        await ttm.TaskSummary.update_or_create(defaults, id_=self.task_id)
 
 
 class TaskStateEnum(IntEnum):

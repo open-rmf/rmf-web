@@ -1,5 +1,4 @@
-import { Snackbar, SnackbarProps } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import { Snackbar, SnackbarProps, Alert } from '@mui/material';
 import React from 'react';
 
 export interface ErrorSnackbarProps extends SnackbarProps {
@@ -10,7 +9,9 @@ export function ErrorSnackbar({ message, ...otherProps }: ErrorSnackbarProps): J
   return (
     <Snackbar autoHideDuration={2000} {...otherProps}>
       <Alert severity="error">
-        {message.split('\n').length > 0 ? message.split('\n').map((m) => <div>{m}</div>) : message}
+        {message.split('\n').length > 0
+          ? message.split('\n').map((m, i) => <div key={i}>{m}</div>)
+          : message}
       </Alert>
     </Snackbar>
   );

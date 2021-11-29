@@ -17,6 +17,15 @@ class ModeRequest(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "fleet_name",
+                "robot_name",
+                "mode",
+                "task_id",
+                "parameters",
+            ],
+        }
 
 
 # string fleet_name

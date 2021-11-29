@@ -1,7 +1,7 @@
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import { styled } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import clsx from 'clsx';
 import React from 'react';
 
@@ -32,17 +32,27 @@ export interface SimpleInfoData<T extends DataValueType = DataValueType> {
   wrap?: boolean;
 }
 
-const useStyles = makeStyles((theme) => ({
-  container: {
+const classes = {
+  container: 'simpleinfo-container',
+  tableRow: 'simpleinfo-table-row',
+  displayName: 'simpleinfo-display-name',
+  value: 'simpleinfo-value',
+  arrayListItem: 'simpleinfo-array-list-item',
+  arrayItemValue: 'simpleinfo-array-item-value',
+  disabled: 'simpleinfo-disabled',
+};
+
+const StyledDiv = styled('div')(({ theme }) => ({
+  [`& .${classes.container}`]: {
     display: 'table',
     borderCollapse: 'collapse',
     width: '100%',
     overflowX: 'auto',
   },
-  tableRow: {
+  [`& .${classes.tableRow}`]: {
     display: 'table-row',
   },
-  displayName: {
+  [`& .${classes.displayName}`]: {
     display: 'table-cell',
     borderBottom: '1px solid',
     borderBottomColor: theme.palette.divider,
@@ -52,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(0.25, 2),
     width: '30%',
   },
-  value: {
+  [`& .${classes.value}`]: {
     display: 'table-cell',
     textAlign: 'end',
     borderBottom: '1px solid',
@@ -61,18 +71,19 @@ const useStyles = makeStyles((theme) => ({
     borderTopColor: theme.palette.divider,
     padding: theme.spacing(0.25, 2),
   },
-  arrayListItem: {
+  [`& .${classes.arrayListItem}`]: {
     justifyContent: 'flex-end',
   },
-  arrayItemValue: {
+  [`& .${classes.arrayItemValue}`]: {
     textAlign: 'end',
   },
-  disabled: {
+  [`& .${classes.disabled}`]: {
     color: theme.palette.action.disabled,
   },
 }));
 
-export interface SimpleInfoProps extends React.HTMLProps<HTMLDivElement> {
+export interface SimpleInfoProps
+  extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
   infoData: SimpleInfoData[];
   overrideStyle?: {
     container?: string;
@@ -82,7 +93,6 @@ export interface SimpleInfoProps extends React.HTMLProps<HTMLDivElement> {
 
 export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
   const { infoData, overrideStyle, ...otherProps } = props;
-  const classes = useStyles();
 
   const renderPrimitive = ({
     name,
@@ -163,7 +173,7 @@ export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
   };
 
   return (
-    <div {...otherProps}>
+    <StyledDiv {...otherProps}>
       <div
         className={overrideStyle?.container ? overrideStyle?.container : classes.container}
         role="table"
@@ -180,7 +190,7 @@ export const SimpleInfo = (props: SimpleInfoProps): JSX.Element => {
           </React.Fragment>
         ))}
       </div>
-    </div>
+    </StyledDiv>
   );
 };
 

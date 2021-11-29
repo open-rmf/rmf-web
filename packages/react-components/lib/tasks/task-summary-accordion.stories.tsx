@@ -1,19 +1,18 @@
 import { Meta, Story } from '@storybook/react';
+import type { TaskSummary } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
 import { TaskSummaryAccordion } from './task-summary-accordion';
+import { makeTaskSummary } from './test-data.spec';
 
-const tasks: RmfModels.TaskSummary[] = [
-  new RmfModels.TaskSummary({
-    end_time: { sec: 0, nanosec: 0 },
-    start_time: { sec: 0, nanosec: 0 },
+const tasks: TaskSummary[] = [
+  makeTaskSummary({
     state: 1,
     status:
       'Moving [tinyRobot/tinyRobot1]: ( 9.81228 -6.98942 -3.12904) -> ( 6.26403 -3.51569  1.16864) | Remaining phases: 1 | Remaining phases: 6',
     submission_time: { sec: 0, nanosec: 500 },
     task_id: '8b49e999-d246-4395-80f7-ebc5ca85e639',
   }),
-  new RmfModels.TaskSummary({
+  makeTaskSummary({
     end_time: { sec: 0, nanosec: 0 },
     start_time: { sec: 0, nanosec: 0 },
     state: 1,

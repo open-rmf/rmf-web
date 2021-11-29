@@ -1,21 +1,22 @@
+import type { DoorMode, Lift, LiftState } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import { LiftState as RmfLiftState } from 'rmf-models';
 import { almostShallowEqual, fromRmfCoords, fromRmfYaw, radiansToDegrees } from '../utils';
 import { DoorMarker as DoorMarker_ } from './door-marker';
 import { useAutoScale } from './hooks';
-import { LiftMarker as LiftMarker_, LiftMarkerProps, useLiftMarkerStyles } from './lift-marker';
+import { LiftMarker as LiftMarker_, LiftMarkerProps, liftMarkerClasses } from './lift-marker';
 import { SVGOverlay, SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
 import { withLabel } from './with-label';
 
-function toDoorMode(liftState: RmfModels.LiftState): RmfModels.DoorMode {
+function toDoorMode(liftState: LiftState): DoorMode {
   // LiftState uses its own enum definition of door state/mode which is separated from DoorMode.
   // But their definitions are equal so we can skip conversion.
   return { value: liftState.door_state };
 }
 
 interface BoundedMarkerProps extends Omit<LiftMarkerProps, 'onClick'> {
-  lift: RmfModels.Lift;
+  lift: Lift;
   onClick?: (ev: React.MouseEvent, lift: string) => void;
 }
 
@@ -25,10 +26,10 @@ interface BoundedMarkerProps extends Omit<LiftMarkerProps, 'onClick'> {
  */
 function bindMarker(MarkerComponent: React.ComponentType<LiftMarkerProps>) {
   return ({ lift, onClick, ...otherProps }: BoundedMarkerProps) => {
-    const handleClick = React.useCallback((ev) => onClick && onClick(ev, lift.name), [
-      onClick,
-      lift.name,
-    ]);
+    const handleClick = React.useCallback(
+      (ev) => onClick && onClick(ev, lift.name),
+      [onClick, lift.name],
+    );
     return <MarkerComponent onClick={onClick && handleClick} {...otherProps} />;
   };
 }
@@ -42,27 +43,27 @@ export const getLiftModeVariant = (
   currentLevel: string,
   liftStateMode?: number,
   liftStateFloor?: string,
-): keyof ReturnType<typeof useLiftMarkerStyles> | undefined => {
+): keyof typeof liftMarkerClasses | undefined => {
   if (!liftStateMode && !liftStateFloor) return 'unknown';
-  if (liftStateMode === RmfModels.LiftState.MODE_FIRE) return 'fire';
-  if (liftStateMode === RmfModels.LiftState.MODE_EMERGENCY) return 'emergency';
-  if (liftStateMode === RmfModels.LiftState.MODE_OFFLINE) return 'offLine';
+  if (liftStateMode === RmfLiftState.MODE_FIRE) return 'fire';
+  if (liftStateMode === RmfLiftState.MODE_EMERGENCY) return 'emergency';
+  if (liftStateMode === RmfLiftState.MODE_OFFLINE) return 'offLine';
   if (liftStateFloor === currentLevel) {
-    if (liftStateMode === RmfModels.LiftState.MODE_HUMAN) return 'human';
-    if (liftStateMode === RmfModels.LiftState.MODE_AGV) return 'onCurrentLevel';
+    if (liftStateMode === RmfLiftState.MODE_HUMAN) return 'human';
+    if (liftStateMode === RmfLiftState.MODE_AGV) return 'onCurrentLevel';
   } else {
-    if (liftStateMode === RmfModels.LiftState.MODE_HUMAN) return 'moving';
-    if (liftStateMode === RmfModels.LiftState.MODE_AGV) return 'moving';
+    if (liftStateMode === RmfLiftState.MODE_HUMAN) return 'moving';
+    if (liftStateMode === RmfLiftState.MODE_AGV) return 'moving';
   }
-  if (liftStateMode === RmfModels.LiftState.MODE_UNKNOWN) return 'unknown';
+  if (liftStateMode === RmfLiftState.MODE_UNKNOWN) return 'unknown';
 
   return 'unknown';
 };
 
 export interface LiftsOverlayProps extends Omit<SVGOverlayProps, 'viewBox'> {
   currentLevel: string;
-  lifts: RmfModels.Lift[];
-  liftStates?: Record<string, RmfModels.LiftState>;
+  lifts: Lift[];
+  liftStates?: Record<string, LiftState>;
   hideLabels?: boolean;
   onLiftClick?: (ev: React.MouseEvent, lift: string) => void;
 }

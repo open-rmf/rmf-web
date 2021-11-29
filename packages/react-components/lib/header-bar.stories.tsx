@@ -1,13 +1,13 @@
-import { createStyles, IconButton, makeStyles, Toolbar, Typography } from '@material-ui/core';
-import Tab from '@material-ui/core/Tab';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import TabContext from '@material-ui/lab/TabContext';
-import TabPanel from '@material-ui/lab/TabPanel';
+import { IconButton, Toolbar, Typography, styled } from '@mui/material';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import TabContext from '@mui/lab/TabContext';
+import TabPanel from '@mui/lab/TabPanel';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { HeaderBar } from '../lib/header-bar';
 import { LogoButton } from './logo-button';
 import { NavigationBar } from './navigation-bar';
+import { AppBarTab } from './appbar-tab';
 
 export default {
   title: 'Header Bar',
@@ -26,13 +26,18 @@ export const NavBar: Story = () => {
       <TabContext value={value}>
         <HeaderBar>
           <NavigationBar onTabChange={onTabChange} value={value}>
-            <Tab
+            <AppBarTab
               key={'building-tab'}
               label={'Building'}
               value={'building'}
               aria-label={`building-tab`}
             />
-            <Tab key={'robots'} label={'Robots'} value={'robots'} aria-label={`building-tab`} />
+            <AppBarTab
+              key={'robots'}
+              label={'Robots'}
+              value={'robots'}
+              aria-label={`building-tab`}
+            />
           </NavigationBar>
         </HeaderBar>
         <TabPanel key={'building-panel'} value={'building'}>
@@ -47,38 +52,51 @@ export const NavBar: Story = () => {
 };
 
 export const FullHeaderBar: Story = () => {
-  const useStyles = makeStyles((theme) =>
-    createStyles({
-      toolbar: {
-        textAlign: 'right',
-        flexGrow: -1,
-      },
-      avatar: {
-        flexGrow: 1,
-        minWidth: theme.spacing(16),
-        overflow: 'auto',
-      },
-      logo: {
-        maxWidth: 120,
-        opacity: 1,
-      },
-    }),
-  );
+  const classes = {
+    toolbar: 'headerbar-story-toolbar',
+    avatar: 'headerbar-story-avatar',
+    logo: 'headerbar-story-logo',
+  };
+  const FullHeaderBarStory = styled('div')(({ theme }) => ({
+    [`& .${classes.toolbar}`]: {
+      textAlign: 'right',
+      flexGrow: -1,
+    },
+    [`& .${classes.avatar}`]: {
+      flexGrow: 1,
+      minWidth: theme.spacing(16),
+      overflow: 'auto',
+    },
+    [`& .${classes.logo}`]: {
+      maxWidth: 120,
+      opacity: 1,
+    },
+  }));
+
   const [value, setValue] = React.useState('building');
-  const classes = useStyles();
 
   const onTabChange = (event: React.ChangeEvent<unknown>, newValue: string) => {
     setValue(newValue);
   };
 
   return (
-    <>
+    <FullHeaderBarStory>
       <TabContext value={value}>
         <HeaderBar>
           <LogoButton src="/assets/roshealth-logo-white.png" />
           <NavigationBar onTabChange={onTabChange} value={value}>
-            <Tab key="building-tab" label="Building" value="building" aria-label="building-tab" />
-            <Tab key={'robots'} label={'Robots'} value={'robots'} aria-label={`building-tab`} />
+            <AppBarTab
+              key="building-tab"
+              label="Building"
+              value="building"
+              aria-label="building-tab"
+            />
+            <AppBarTab
+              key={'robots'}
+              label={'Robots'}
+              value={'robots'}
+              aria-label={`building-tab`}
+            />
           </NavigationBar>
           <Toolbar variant="dense" className={classes.toolbar}>
             <Typography variant="caption">Powered by OpenRMF</Typography>
@@ -94,6 +112,6 @@ export const FullHeaderBar: Story = () => {
           <Typography variant="caption">other tab panel data</Typography>
         </TabPanel>
       </TabContext>
-    </>
+    </FullHeaderBarStory>
   );
 };

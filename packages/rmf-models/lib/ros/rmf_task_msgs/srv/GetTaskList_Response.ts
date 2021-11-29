@@ -26,7 +26,7 @@ export class GetTaskList_Response {
       try {
         TaskSummary.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "active_tasks":\n  ` + e.message);
+        throw new Error(`in index ${i} of "active_tasks":\n  ` + (e as Error).message);
       }
     }
     if (!Array.isArray(obj['terminated_tasks'])) {
@@ -36,7 +36,7 @@ export class GetTaskList_Response {
       try {
         TaskSummary.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "terminated_tasks":\n  ` + e.message);
+        throw new Error(`in index ${i} of "terminated_tasks":\n  ` + (e as Error).message);
       }
     }
   }

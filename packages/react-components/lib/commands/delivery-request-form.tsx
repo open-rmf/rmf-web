@@ -1,16 +1,15 @@
-import { Button, TextField } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Button, TextField, Autocomplete } from '@mui/material';
 import React, { ChangeEvent } from 'react';
-import * as RmfModels from 'rmf-models';
-import { useFormStyles } from './form-styles';
+import type { Behavior } from 'api-client';
+import { StyledForm, commandFormsClasses } from './form-styles';
 
 export type DoDeliveryRequest = (
   pickupPlaceName: string,
   pickupDispenser: string,
   dropOffPlaceName: string,
   dropOffDispenser: string,
-  pickupBehaviour?: RmfModels.Behavior,
-  dropOffBehavior?: RmfModels.Behavior,
+  pickupBehaviour?: Behavior,
+  dropOffBehavior?: Behavior,
 ) => void;
 
 export interface DeliveryRequestFormProps {
@@ -23,7 +22,6 @@ export interface DeliveryRequestFormProps {
 export const DeliveryRequestForm = React.forwardRef(
   (props: DeliveryRequestFormProps, ref: React.Ref<HTMLFormElement>): JSX.Element => {
     const { fleetNames, availableDispensers, availablePlaces, doDeliveryRequest } = props;
-    const classes = useFormStyles();
 
     const [targetFleetName, setTargetFleetName] = React.useState(
       fleetNames.length >= 1 ? fleetNames[0] : '',
@@ -171,8 +169,8 @@ export const DeliveryRequestForm = React.forwardRef(
     };
 
     return (
-      <form ref={ref} className={classes.form} onSubmit={handleSubmit}>
-        <div className={classes.divForm}>
+      <StyledForm ref={ref} className={commandFormsClasses.form} onSubmit={handleSubmit}>
+        <div className={commandFormsClasses.divForm}>
           <Autocomplete
             getOptionLabel={(option) => option}
             onChange={handleTargetFleetNameChange}
@@ -191,7 +189,7 @@ export const DeliveryRequestForm = React.forwardRef(
           />
         </div>
 
-        <div className={classes.divForm}>
+        <div className={commandFormsClasses.divForm}>
           <Autocomplete
             getOptionLabel={(option) => option}
             onChange={handlePickupPlaceNameChange}
@@ -210,7 +208,7 @@ export const DeliveryRequestForm = React.forwardRef(
           />
         </div>
 
-        <div className={classes.divForm}>
+        <div className={commandFormsClasses.divForm}>
           <Autocomplete
             getOptionLabel={(option) => option}
             onChange={(_, value) => setPickupDispenser(value || '')}
@@ -229,7 +227,7 @@ export const DeliveryRequestForm = React.forwardRef(
           />
         </div>
 
-        <div className={classes.divForm}>
+        <div className={commandFormsClasses.divForm}>
           <Autocomplete
             getOptionLabel={(option) => option}
             onChange={handleDropOoffPlaceNameChange}
@@ -248,7 +246,7 @@ export const DeliveryRequestForm = React.forwardRef(
           />
         </div>
 
-        <div className={classes.divForm}>
+        <div className={commandFormsClasses.divForm}>
           <Autocomplete
             getOptionLabel={(option) => option}
             onChange={(_, value) => setDropOffDispenser(value || '')}
@@ -267,12 +265,17 @@ export const DeliveryRequestForm = React.forwardRef(
           />
         </div>
 
-        <div className={classes.buttonContainer}>
-          <Button variant="contained" color="primary" type="submit" className={classes.button}>
+        <div className={commandFormsClasses.buttonContainer}>
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            className={commandFormsClasses.button}
+          >
             Request
           </Button>
         </div>
-      </form>
+      </StyledForm>
     );
   },
 );

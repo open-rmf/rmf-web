@@ -27,7 +27,7 @@ export class BuildingMap {
       try {
         Level.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "levels":\n  ` + e.message);
+        throw new Error(`in index ${i} of "levels":\n  ` + (e as Error).message);
       }
     }
     if (!Array.isArray(obj['lifts'])) {
@@ -37,7 +37,7 @@ export class BuildingMap {
       try {
         Lift.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "lifts":\n  ` + e.message);
+        throw new Error(`in index ${i} of "lifts":\n  ` + (e as Error).message);
       }
     }
   }

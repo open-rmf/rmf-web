@@ -20,6 +20,18 @@ class Delivery(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "required": [
+                "task_id",
+                "items",
+                "pickup_place_name",
+                "pickup_dispenser",
+                "pickup_behavior",
+                "dropoff_place_name",
+                "dropoff_ingestor",
+                "dropoff_behavior",
+            ],
+        }
 
 
 # # task_id is intended to be a pseudo-random string generated

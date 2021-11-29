@@ -1,5 +1,5 @@
-import { IconButton, Tab, Toolbar, Typography } from '@material-ui/core';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import { IconButton, Tab, Toolbar, Typography } from '@mui/material';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { cleanup, render, screen } from '@testing-library/react';
 import React from 'react';
 import { NavigationBar } from '../lib/navigation-bar';

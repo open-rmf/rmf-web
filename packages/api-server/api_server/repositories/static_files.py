@@ -1,6 +1,5 @@
 import logging
 import os
-from typing import Tuple
 
 
 class StaticFilesRepository:
@@ -20,7 +19,7 @@ class StaticFilesRepository:
         self.directory = directory
         self.logger = logger or logging.getLogger(self.__class__.__name__)
 
-    def add_file(self, data: bytes, path: str) -> Tuple[str, str]:
+    def add_file(self, data: bytes, path: str) -> str:
         """
         Parameters:
             data:

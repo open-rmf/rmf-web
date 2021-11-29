@@ -1,4 +1,4 @@
-import * as RmfModels from 'rmf-models';
+import type { Time } from 'api-client';
 import shallowEqual from 'shallowequal';
 
 /**
@@ -22,7 +22,7 @@ export function defaultDict<T>(factory: (key: any) => T): Record<any, T> {
  * The timezone is assumed to be UTC.
  * The precision will be reduced to milliseconds.
  */
-export function rosTimeToJs(rosTime: RmfModels.Time): Date {
+export function rosTimeToJs(rosTime: Time): Date {
   return new Date(rosTime.sec * 1000 + Math.floor(rosTime.nanosec / 1000000));
 }
 

@@ -1,58 +1,65 @@
-import DateFnsUtils from '@date-io/date-fns';
+import { DateTimePicker, LocalizationProvider } from '@mui/lab';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import {
+  Autocomplete,
   Button,
   Divider,
   Grid,
   List,
   ListItem,
   ListItemText,
-  makeStyles,
   MenuItem,
+  styled,
   TextField,
   useTheme,
-} from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
-import { KeyboardDateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import type {
+} from '@mui/material';
+import {
   CleanTaskDescription,
   DeliveryTaskDescription,
   LoopTaskDescription,
   SubmitTask,
 } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import { TaskType as RmfTaskType } from 'rmf-models';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
 
 type TaskDescription = CleanTaskDescription | LoopTaskDescription | DeliveryTaskDescription;
 
-const useStyles = makeStyles((theme) => ({
-  selectFileBtn: {
+const classes = {
+  selectFileBtn: 'create-task-selected-file-btn',
+  taskList: 'create-task-task-list',
+  selectedTask: 'create-task-selected-task',
+};
+const StyledConfirmationDialog = styled((props: ConfirmationDialogProps) => (
+  <ConfirmationDialog {...props} />
+))(({ theme }) => ({
+  [`& .${classes.selectFileBtn}`]: {
     marginBottom: theme.spacing(1),
   },
-  taskList: {
+  [`& .${classes.taskList}`]: {
     flex: '1 1 auto',
     minHeight: 400,
     maxHeight: '50vh',
     overflow: 'auto',
   },
-  selectedTask: {
+  [`& .${classes.selectedTask}`]: {
     background: theme.palette.action.focus,
   },
 }));
 
 function getShortDescription(task: SubmitTask): string {
   switch (task.task_type) {
-    case RmfModels.TaskType.TYPE_CLEAN: {
-      const desc: CleanTaskDescription = task.description;
+    case RmfTaskType.TYPE_CLEAN: {
+      const desc = task.description as CleanTaskDescription;
       return `[Clean] zone [${desc.cleaning_zone}]`;
     }
-    case RmfModels.TaskType.TYPE_DELIVERY: {
-      const desc: DeliveryTaskDescription = task.description;
+    case RmfTaskType.TYPE_DELIVERY: {
+      const desc = task.description as DeliveryTaskDescription;
       return `[Delivery] from [${desc.pickup_place_name}] to [${desc.dropoff_place_name}]`;
     }
-    case RmfModels.TaskType.TYPE_LOOP: {
-      const desc: LoopTaskDescription = task.description;
+    case RmfTaskType.TYPE_LOOP: {
+      const desc = task.description as LoopTaskDescription;
       return `[Loop] from [${desc.start_name}] to [${desc.finish_name}]`;
     }
     default:
@@ -65,8 +72,6 @@ interface FormToolbarProps {
 }
 
 function FormToolbar({ onSelectFileClick }: FormToolbarProps) {
-  const classes = useStyles();
-
   return (
     <Button
       aria-label="Select File"
@@ -108,6 +113,7 @@ function DeliveryTaskForm({
             options={deliveryWaypoints}
             value={taskDesc.pickup_place_name}
             onChange={(_ev, newValue) =>
+              newValue !== null &&
               onChange({
                 ...taskDesc,
                 pickup_place_name: newValue,
@@ -135,6 +141,7 @@ function DeliveryTaskForm({
             options={dispensers}
             value={taskDesc.pickup_dispenser}
             onChange={(_ev, newValue) =>
+              newValue !== null &&
               onChange({
                 ...taskDesc,
                 pickup_dispenser: newValue,
@@ -156,6 +163,7 @@ function DeliveryTaskForm({
             options={deliveryWaypoints}
             value={taskDesc.dropoff_place_name}
             onChange={(_ev, newValue) =>
+              newValue !== null &&
               onChange({
                 ...taskDesc,
                 dropoff_place_name: newValue,
@@ -183,6 +191,7 @@ function DeliveryTaskForm({
             options={ingestors}
             value={taskDesc.dropoff_ingestor}
             onChange={(_ev, newValue) =>
+              newValue !== null &&
               onChange({
                 ...taskDesc,
                 dropoff_ingestor: newValue,
@@ -217,6 +226,7 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
         options={loopWaypoints}
         value={taskDesc.start_name}
         onChange={(_ev, newValue) =>
+          newValue !== null &&
           onChange({
             ...taskDesc,
             start_name: newValue,
@@ -236,6 +246,7 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
             options={loopWaypoints}
             value={taskDesc.finish_name}
             onChange={(_ev, newValue) =>
+              newValue !== null &&
               onChange({
                 ...taskDesc,
                 finish_name: newValue,
@@ -289,6 +300,7 @@ function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps
       options={cleaningZones}
       value={taskDesc.cleaning_zone}
       onChange={(_ev, newValue) =>
+        newValue !== null &&
         onChange({
           ...taskDesc,
           cleaning_zone: newValue,
@@ -327,11 +339,11 @@ function defaultDeliveryTask(): DeliveryTaskDescription {
 
 function defaultTaskDescription(taskType?: number): TaskDescription | undefined {
   switch (taskType) {
-    case RmfModels.TaskType.TYPE_CLEAN:
+    case RmfTaskType.TYPE_CLEAN:
       return defaultCleanTask();
-    case RmfModels.TaskType.TYPE_LOOP:
+    case RmfTaskType.TYPE_LOOP:
       return defaultLoopsTask();
-    case RmfModels.TaskType.TYPE_DELIVERY:
+    case RmfTaskType.TYPE_DELIVERY:
       return defaultDeliveryTask();
     default:
       return undefined;
@@ -377,7 +389,6 @@ export function CreateTaskForm({
   ...otherProps
 }: CreateTaskFormProps): JSX.Element {
   const theme = useTheme();
-  const classes = useStyles();
   const [tasks, setTasks] = React.useState<SubmitTask[]>(() => [defaultTask()]);
   const [selectedTaskIdx, setSelectedTaskIdx] = React.useState(0);
   const taskTitles = React.useMemo(
@@ -401,34 +412,34 @@ export function CreateTaskForm({
   };
 
   const renderTaskDescriptionForm = () => {
-    if (task.task_type === -1) {
+    if ((task.task_type as number) === -1) {
       return null;
     }
     switch (task.task_type) {
-      case RmfModels.TaskType.TYPE_CLEAN:
+      case RmfTaskType.TYPE_CLEAN:
         return (
           <CleanTaskForm
             taskDesc={task.description as CleanTaskDescription}
             cleaningZones={cleaningZones}
-            onChange={(desc) => handleTaskDescriptionChange(RmfModels.TaskType.TYPE_CLEAN, desc)}
+            onChange={(desc) => handleTaskDescriptionChange(RmfTaskType.TYPE_CLEAN, desc)}
           />
         );
-      case RmfModels.TaskType.TYPE_LOOP:
+      case RmfTaskType.TYPE_LOOP:
         return (
           <LoopTaskForm
             taskDesc={task.description as LoopTaskDescription}
             loopWaypoints={loopWaypoints}
-            onChange={(desc) => handleTaskDescriptionChange(RmfModels.TaskType.TYPE_LOOP, desc)}
+            onChange={(desc) => handleTaskDescriptionChange(RmfTaskType.TYPE_LOOP, desc)}
           />
         );
-      case RmfModels.TaskType.TYPE_DELIVERY:
+      case RmfTaskType.TYPE_DELIVERY:
         return (
           <DeliveryTaskForm
             taskDesc={task.description as DeliveryTaskDescription}
             deliveryWaypoints={deliveryWaypoints}
             dispensers={dispensers}
             ingestors={ingestors}
-            onChange={(desc) => handleTaskDescriptionChange(RmfModels.TaskType.TYPE_DELIVERY, desc)}
+            onChange={(desc) => handleTaskDescriptionChange(RmfTaskType.TYPE_DELIVERY, desc)}
           />
         );
       default:
@@ -462,7 +473,7 @@ export function CreateTaskForm({
       onSuccess && onSuccess(tasks);
     } catch (e) {
       setSubmitting(false);
-      onFail && onFail(e, tasks);
+      onFail && onFail(e as Error, tasks);
     }
   };
 
@@ -483,8 +494,8 @@ export function CreateTaskForm({
   const submitText = tasks.length > 1 ? 'Submit All' : 'Submit';
 
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <ConfirmationDialog
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <StyledConfirmationDialog
         title="Create Task"
         submitting={submitting}
         confirmText={submitText}
@@ -492,6 +503,7 @@ export function CreateTaskForm({
         fullWidth={tasks.length > 1}
         toolbar={<FormToolbar onSelectFileClick={handleSelectFileClick} />}
         onSubmit={handleSubmit}
+        disableEnforceFocus
         {...otherProps}
       >
         <Grid container direction="row" wrap="nowrap">
@@ -503,29 +515,28 @@ export function CreateTaskForm({
               variant="outlined"
               fullWidth
               margin="normal"
-              value={task.task_type !== -1 ? task.task_type : ''}
+              value={(task.task_type as number) !== -1 ? task.task_type : ''}
               onChange={handleTaskTypeChange}
             >
-              <MenuItem value={RmfModels.TaskType.TYPE_CLEAN}>Clean</MenuItem>
-              <MenuItem value={RmfModels.TaskType.TYPE_LOOP}>Loop</MenuItem>
-              <MenuItem value={RmfModels.TaskType.TYPE_DELIVERY}>Delivery</MenuItem>
+              <MenuItem value={RmfTaskType.TYPE_CLEAN}>Clean</MenuItem>
+              <MenuItem value={RmfTaskType.TYPE_LOOP}>Loop</MenuItem>
+              <MenuItem value={RmfTaskType.TYPE_DELIVERY}>Delivery</MenuItem>
             </TextField>
             <Grid container wrap="nowrap">
               <Grid style={{ flexGrow: 1 }}>
-                <KeyboardDateTimePicker
-                  id="start-time"
+                <DateTimePicker
+                  inputFormat={'MM/dd/yyyy HH:mm'}
                   value={new Date(task.start_time * 1000)}
                   onChange={(date) => {
                     if (!date) {
                       return;
                     }
                     // FIXME: needed because dateio typings default to moment
-                    task.start_time = Math.floor(((date as unknown) as Date).getTime() / 1000);
+                    task.start_time = Math.floor((date as unknown as Date).getTime() / 1000);
                     updateTasks();
                   }}
                   label="Start Time"
-                  margin="normal"
-                  fullWidth
+                  renderInput={(props) => <TextField {...props} />}
                 />
               </Grid>
               <Grid
@@ -572,7 +583,7 @@ export function CreateTaskForm({
             </>
           )}
         </Grid>
-      </ConfirmationDialog>
-    </MuiPickersUtilsProvider>
+      </StyledConfirmationDialog>
+    </LocalizationProvider>
   );
 }

@@ -1,8 +1,6 @@
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
-
 export interface ReportConfigProps {
-  fromLogDate?: MaterialUiPickersDate;
-  toLogDate?: MaterialUiPickersDate;
-  onSelectFromDate?: (date: MaterialUiPickersDate) => void;
-  onSelectToDate?: (date: MaterialUiPickersDate) => void;
+  fromLogDate?: Date;
+  toLogDate?: Date;
+  onSelectFromDate?: (date: unknown) => void;
+  onSelectToDate?: (date: unknown) => void;
 }

@@ -1,12 +1,13 @@
-import * as RmfModels from 'rmf-models';
+import { Door, FleetState, Lift, RobotState } from 'api-client';
+import { RobotMode as RmfRobotMode } from 'rmf-models';
 
-function superFleet(): RmfModels.FleetState {
-  const robots: RmfModels.RobotState[] = [];
+function superFleet(): FleetState {
+  const robots: RobotState[] = [];
   for (let i = 1; i <= 20; i++) {
     robots.push({
       name: `Geth${i}`,
       model: 'TeRmInAtOr',
-      mode: { mode: RmfModels.RobotMode.MODE_MOVING, mode_request_id: 0 },
+      mode: { mode: RmfRobotMode.MODE_MOVING, mode_request_id: 0 },
       location: {
         level_name: 'L1',
         x: i,
@@ -28,7 +29,7 @@ function superFleet(): RmfModels.FleetState {
   };
 }
 
-export function fakeFleets(): RmfModels.FleetState[] {
+export function fakeFleets(): FleetState[] {
   return [
     {
       name: 'Fleet1',
@@ -36,7 +37,7 @@ export function fakeFleets(): RmfModels.FleetState[] {
         {
           name: 'Robot1',
           model: 'Model1',
-          mode: { mode: RmfModels.RobotMode.MODE_EMERGENCY, mode_request_id: 0 },
+          mode: { mode: RmfRobotMode.MODE_EMERGENCY, mode_request_id: 0 },
           location: {
             level_name: 'L1',
             x: 4,
@@ -58,7 +59,7 @@ export function fakeFleets(): RmfModels.FleetState[] {
         {
           name: 'Robot2',
           model: 'Model2',
-          mode: { mode: RmfModels.RobotMode.MODE_EMERGENCY, mode_request_id: 0 },
+          mode: { mode: RmfRobotMode.MODE_EMERGENCY, mode_request_id: 0 },
           location: {
             level_name: 'L2',
             x: 4,
@@ -80,7 +81,7 @@ export function fakeFleets(): RmfModels.FleetState[] {
         {
           name: 'tinyRobot1',
           model: 'tinyRobot',
-          mode: { mode: RmfModels.RobotMode.MODE_MOVING, mode_request_id: 0 },
+          mode: { mode: RmfRobotMode.MODE_MOVING, mode_request_id: 0 },
           location: {
             level_name: 'L1',
             x: 2,
@@ -97,7 +98,7 @@ export function fakeFleets(): RmfModels.FleetState[] {
         {
           name: 'tinyRobot2',
           model: 'tinyRobot',
-          mode: { mode: RmfModels.RobotMode.MODE_MOVING, mode_request_id: 0 },
+          mode: { mode: RmfRobotMode.MODE_MOVING, mode_request_id: 0 },
           location: {
             level_name: 'L1',
             x: 12,
@@ -119,7 +120,7 @@ export function fakeFleets(): RmfModels.FleetState[] {
         {
           name: 'RobotA',
           model: 'ModelA',
-          mode: { mode: RmfModels.RobotMode.MODE_MOVING, mode_request_id: 0 },
+          mode: { mode: RmfRobotMode.MODE_MOVING, mode_request_id: 0 },
           location: {
             level_name: 'L2',
             x: 2,
@@ -141,7 +142,7 @@ export function fakeFleets(): RmfModels.FleetState[] {
         {
           name: 'RobotC',
           model: 'ModelC',
-          mode: { mode: RmfModels.RobotMode.MODE_EMERGENCY, mode_request_id: 0 },
+          mode: { mode: RmfRobotMode.MODE_EMERGENCY, mode_request_id: 0 },
           location: {
             level_name: 'L2',
             x: 4,
@@ -161,7 +162,7 @@ export function fakeFleets(): RmfModels.FleetState[] {
   ];
 }
 
-export const door: RmfModels.Door = {
+export const door: Door = {
   name: 'door',
   v1_x: 8.2,
   v1_y: -5.5,
@@ -172,7 +173,7 @@ export const door: RmfModels.Door = {
   motion_direction: 1,
 };
 
-export const lift: RmfModels.Lift = {
+export const lift: Lift = {
   name: 'lift',
   doors: [door],
   levels: ['L1', 'L2', 'L3'],

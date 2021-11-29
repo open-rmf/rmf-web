@@ -1,10 +1,10 @@
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
+import type { TaskDescription } from 'api-client';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
 
 export const returnTaskDetails = (
   taskId: string,
-  taskDescription: RmfModels.TaskDescription,
+  taskDescription: TaskDescription,
 ): React.ReactNode => {
   let taskTypeDetails;
   if (taskId.includes('Loop')) {

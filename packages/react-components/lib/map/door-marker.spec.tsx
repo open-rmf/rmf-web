@@ -1,7 +1,7 @@
 import { cleanup, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import { Door as RmfDoor } from 'rmf-models';
 import { allDoorModes, allDoorTypes } from '../doors/test-utils.spec';
 import { DoorMarker } from './door-marker';
 
@@ -15,7 +15,7 @@ describe('DoorMarker', () => {
             y1={0}
             x2={1}
             y2={1}
-            doorType={RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING}
+            doorType={RmfDoor.DOOR_TYPE_SINGLE_SLIDING}
             doorMode={mode.value}
           />
         </svg>,
@@ -45,7 +45,7 @@ describe('DoorMarker', () => {
           y1={0}
           x2={1}
           y2={1}
-          doorType={RmfModels.Door.DOOR_TYPE_SINGLE_SLIDING}
+          doorType={RmfDoor.DOOR_TYPE_SINGLE_SLIDING}
           onClick={mockOnClick}
           data-testid="marker"
         />

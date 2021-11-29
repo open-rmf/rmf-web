@@ -1,48 +1,62 @@
-import { makeStyles } from '@material-ui/core';
+import { styled } from '@mui/material';
+import type { LiftState } from 'api-client';
 import clsx from 'clsx';
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import { LiftState as RmfLiftState } from 'rmf-models';
 
 // Gets the text to insert to the lift, the text depend on the current mode, motion state and the
 // current and destination floor of the lift.
-function getLiftModeText(liftState: RmfModels.LiftState): string {
+function getLiftModeText(liftState: LiftState): string {
   if (!liftState.current_mode) {
     return 'UNKNOWN';
   }
   switch (liftState.current_mode) {
-    case RmfModels.LiftState.MODE_FIRE:
+    case RmfLiftState.MODE_FIRE:
       return 'FIRE!';
-    case RmfModels.LiftState.MODE_EMERGENCY:
+    case RmfLiftState.MODE_EMERGENCY:
       return 'EMERGENCY!';
-    case RmfModels.LiftState.MODE_OFFLINE:
+    case RmfLiftState.MODE_OFFLINE:
       return 'OFFLINE';
     default:
       return 'NORMAL';
   }
 }
 
-function getLiftMotionText(liftState: RmfModels.LiftState): string {
+function getLiftMotionText(liftState: LiftState): string {
   switch (liftState.motion_state) {
-    case RmfModels.LiftState.MOTION_UP:
+    case RmfLiftState.MOTION_UP:
       return '▲';
-    case RmfModels.LiftState.MOTION_DOWN:
+    case RmfLiftState.MOTION_DOWN:
       return '▼';
-    case RmfModels.LiftState.MOTION_STOPPED:
+    case RmfLiftState.MOTION_STOPPED:
       return '⯀';
     default:
       return '?';
   }
 }
 
-const useStyles = makeStyles({
-  marker: {
+export const liftMarkerClasses = {
+  marker: 'lift-marker-root',
+  lift: 'lift-marker-lift',
+  text: 'lift-marker-text',
+  onCurrentLevel: 'lift-marker-oncurrentlevel',
+  moving: 'lift-marker-moving',
+  unknown: 'lift-marker-unknown',
+  emergency: 'lift-marker-emergency',
+  fire: 'lift-marker-fire',
+  offLine: 'lift-marker-offline',
+  human: 'lift-marker-human',
+};
+
+const StyledG = styled('g')(({ theme }) => ({
+  [`&.${liftMarkerClasses.marker}`]: {
     cursor: 'pointer',
     pointerEvents: 'auto',
   },
-  lift: {
+  [`& .${liftMarkerClasses.lift}`]: {
     strokeWidth: '0.2',
   },
-  text: {
+  [`& .${liftMarkerClasses.text}`]: {
     dominantBaseline: 'central',
     textAnchor: 'middle',
     fontSize: '0.16px',
@@ -50,38 +64,35 @@ const useStyles = makeStyles({
     cursor: 'inherit',
     userSelect: 'none',
   },
-});
-
-export const useLiftMarkerStyles = makeStyles({
-  onCurrentLevel: {
-    fill: 'green',
+  [`& .${liftMarkerClasses.onCurrentLevel}`]: {
+    fill: theme.palette.success.light,
     opacity: '70%',
   },
-  moving: {
-    fill: 'grey',
+  [`& .${liftMarkerClasses.moving}`]: {
+    fill: theme.palette.secondary.light,
     opacity: '70%',
   },
-  unknown: {
-    fill: '#3d3c3c',
+  [`& .${liftMarkerClasses.unknown}`]: {
+    fill: theme.palette.warning.light,
     opacity: '80%',
   },
-  emergency: {
-    fill: 'red',
+  [`& .${liftMarkerClasses.emergency}`]: {
+    fill: theme.palette.error.light,
     opacity: '80%',
   },
-  fire: {
-    fill: '#ff562a',
+  [`& .${liftMarkerClasses.fire}`]: {
+    fill: theme.palette.error.main,
     opacity: '80%',
   },
-  offLine: {
-    fill: 'yellow',
+  [`& .${liftMarkerClasses.offLine}`]: {
+    fill: theme.palette.grey[400],
     opacity: '80%',
   },
-  human: {
-    fill: '#90dfef',
+  [`& .${liftMarkerClasses.human}`]: {
+    fill: theme.palette.info.main,
     opacity: '80%',
   },
-});
+}));
 
 export interface LiftMarkerProps extends React.PropsWithRef<React.SVGProps<SVGGElement>> {
   cx: number;
@@ -89,17 +100,15 @@ export interface LiftMarkerProps extends React.PropsWithRef<React.SVGProps<SVGGE
   width: number;
   height: number;
   yaw: number;
-  liftState?: RmfModels.LiftState;
-  variant?: keyof ReturnType<typeof useLiftMarkerStyles>;
+  liftState?: LiftState;
+  variant?: keyof typeof liftMarkerClasses;
 }
 
 export const LiftMarker = React.forwardRef(function (
   { cx, cy, width, height, yaw, liftState, variant, ...otherProps }: LiftMarkerProps,
   ref: React.Ref<SVGGElement>,
 ): JSX.Element {
-  const classes = useStyles();
-  const markerClasses = useLiftMarkerStyles();
-  const markerClass = variant ? markerClasses[variant] : markerClasses.onCurrentLevel;
+  const markerClass = variant ? liftMarkerClasses[variant] : liftMarkerClasses.onCurrentLevel;
   const x = cx - width / 2;
   const y = cy - height / 2;
   const r = Math.max(width, height) * 0.04;
@@ -112,7 +121,10 @@ export const LiftMarker = React.forwardRef(function (
     // QN: do we need to take into account rotation?
     const textScale = Math.min(width, height); // keep aspect ratio
     return liftState ? (
-      <text className={classes.text} transform={`translate(${cx} ${cy}) scale(${textScale})`}>
+      <text
+        className={liftMarkerClasses.text}
+        transform={`translate(${cx} ${cy}) scale(${textScale})`}
+      >
         <tspan x="0" dy="-1.8em">
           {liftState.current_floor}
         </tspan>
@@ -124,7 +136,10 @@ export const LiftMarker = React.forwardRef(function (
         </tspan>
       </text>
     ) : (
-      <text className={classes.text} transform={`translate(${cx} ${cy}) scale(${textScale})`}>
+      <text
+        className={liftMarkerClasses.text}
+        transform={`translate(${cx} ${cy}) scale(${textScale})`}
+      >
         <tspan x="0" dy="-0.5em">
           Unknown
         </tspan>
@@ -136,13 +151,16 @@ export const LiftMarker = React.forwardRef(function (
   };
 
   return (
-    <g
+    <StyledG
       ref={ref}
-      className={clsx(otherProps.onClick ? classes.marker : undefined, otherProps.className)}
+      className={clsx(
+        otherProps.onClick ? liftMarkerClasses.marker : undefined,
+        otherProps.className,
+      )}
       {...otherProps}
     >
       <rect
-        className={`${classes.lift} ${markerClass}`}
+        className={`${liftMarkerClasses.lift} ${markerClass}`}
         x={x}
         y={y}
         width={width}
@@ -152,7 +170,7 @@ export const LiftMarker = React.forwardRef(function (
         style={{ transform: `rotate(${yaw}deg)`, transformOrigin: `${cx}px ${cy}px` }}
       />
       {renderStatusText()}
-    </g>
+    </StyledG>
   );
 });
 
