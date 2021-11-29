@@ -17,7 +17,7 @@ const classes = {
   author: `${prefix}-author`,
 };
 
-const StyledPageNotFound = styled('div')(() => ({
+const StyledDiv = styled('div')(() => ({
   [`&.${classes.div}`]: {
     width: '100%',
     height: '100%',
@@ -47,7 +47,7 @@ export const NotFoundPage = (props: NotFoundPageProps): React.ReactElement => {
   const { linkComponent: routeLinkComponent } = props;
   console.warn('Photo by Aron Visuals on Unsplash');
   return (
-    <StyledPageNotFound className={classes.div}>
+    <StyledDiv className={classes.div}>
       <img
         className={classes.img}
         src={'assets/aron-visuals-3jBU9TbKW7o-unsplash.jpg'}
@@ -57,7 +57,7 @@ export const NotFoundPage = (props: NotFoundPageProps): React.ReactElement => {
         Are you lost? {routeLinkComponent}
       </Typography>
       <Typography className={classes.author}>Photo by Aron Visuals on Unsplash</Typography>
-    </StyledPageNotFound>
+    </StyledDiv>
   );
 };
 
