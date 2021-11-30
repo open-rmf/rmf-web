@@ -11,7 +11,6 @@ import {
   DoorsOverlay as DoorsOverlay_,
   LiftsOverlay as LiftsOverlay_,
   LMap,
-  LMapProps,
   loadAffineImage,
   RobotData,
   RobotsOverlay as RobotsOverlay_,
@@ -23,22 +22,11 @@ import {
   WorkcellData,
   WorkcellsOverlay as WorkcellsOverlay_,
 } from 'react-components';
-import { styled } from '@mui/material';
 import { AttributionControl, LayersControl } from 'react-leaflet';
 import appConfig from '../../app-config';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { ResourcesContext } from '../app-contexts';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
-
-const classes = {
-  map: 'schedule-visualizer-map',
-};
-
-const StyledLMap = styled((props: LMapProps) => <LMap {...props} />)(({ theme }) => ({
-  [`&.${classes.map}`]: {
-    backgroundColor: theme.palette.background.default,
-  },
-}));
 
 const DoorsOverlay = React.memo(DoorsOverlay_);
 const LiftsOverlay = React.memo(LiftsOverlay_);
@@ -311,7 +299,7 @@ export default React.forwardRef(function ScheduleVisualizer(
   const registeredLayersHandlers = React.useRef(false);
 
   return bounds ? (
-    <StyledLMap
+    <LMap
       ref={(cur) => {
         if (registeredLayersHandlers.current || !cur) return;
         cur.leafletElement.on('overlayadd', (ev: L.LayersControlEvent) =>
@@ -330,7 +318,6 @@ export default React.forwardRef(function ScheduleVisualizer(
       zoomDelta={0.5}
       zoomSnap={0.5}
       bounds={bounds}
-      className={classes.map}
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
       <LayersControl
@@ -432,6 +419,6 @@ export default React.forwardRef(function ScheduleVisualizer(
         }
       />
       {children}
-    </StyledLMap>
+    </LMap>
   ) : null;
 });
