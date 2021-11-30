@@ -1,13 +1,21 @@
-import { makeStyles } from '@material-ui/core';
-import { Theme } from '@material-ui/core/styles';
-import defaultTheme from '@material-ui/core/styles/defaultTheme';
+import { Theme } from '@mui/material/styles';
+import defaultTheme from '@mui/material/styles/defaultTheme';
 import { DecoratorFn } from '@storybook/react';
 import React from 'react';
 import { rmfDark, rmfLight } from '../lib';
 import { ThemeProvider } from '../lib/themes';
+import { StyledEngineProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
+  controls: {
+    matchers: {
+      color: /(background|color)$/i,
+      date: /Date$/,
+    },
+  },
+  s: { argTypesRegex: '^on[A-Z].*' },
 };
 
 const getTheme = (themeName: string): Theme => {
@@ -21,27 +29,15 @@ const getTheme = (themeName: string): Theme => {
   }
 };
 
-const useStyles = makeStyles((theme) => ({
-  '@global': {
-    body: {
-      backgroundColor: theme.palette.background.default,
-    },
-  },
-}));
-
-function StorybookBodyStyles() {
-  useStyles();
-  return null;
-}
-
 const withThemeProvider: DecoratorFn = (Story, context) => {
   const theme = getTheme(context.globals.theme);
-  useStyles();
   return (
-    <ThemeProvider theme={theme}>
-      <StorybookBodyStyles />
-      <Story {...context} />
-    </ThemeProvider>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Story {...context} />
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
 };
 export const decorators = [withThemeProvider];

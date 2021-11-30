@@ -1,11 +1,10 @@
 /* istanbul ignore file */
 
-import { makeStyles, Grid, Card } from '@material-ui/core';
+import { styled, GridProps, Grid, Card } from '@mui/material';
 import React from 'react';
 import { Fleet } from 'api-client';
-import { RobotPanel, VerboseRobot } from 'react-components';
 import { MapProps, Map } from 'react-leaflet';
-import * as L from 'leaflet';
+import { RobotPanel, VerboseRobot } from 'react-components';
 import {
   BuildingMapContext,
   RmfIngressContext,
@@ -21,17 +20,22 @@ import {
 } from '../../util/common-subscriptions';
 
 const UpdateRate = 1000;
-
-const useStyles = makeStyles((theme) => ({
-  robotPanel: {
-    height: '100%',
-  },
-  container: {
-    padding: `${theme.spacing(4)}px`,
+const prefix = 'robot-page';
+const classes = {
+  container: `${prefix}-container`,
+  robotPanel: `${prefix}-robot-panel`,
+  mapPanel: `${prefix}-map-panel`,
+};
+const StyledGrid = styled((props: GridProps) => <Grid {...props} />)(({ theme }) => ({
+  [`&.${classes.container}`]: {
+    padding: `${theme.spacing(4)}`,
     height: '100%',
     backgroundColor: theme.palette.background.default,
   },
-  mapPanel: {
+  [`& .${classes.robotPanel}`]: {
+    height: '100%',
+  },
+  [`& .${classes.mapPanel}`]: {
     height: '100%',
     marginRight: theme.spacing(2),
     flex: '1 0 auto',
@@ -39,7 +43,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export function RobotPage() {
-  const classes = useStyles();
   const rmfIngress = React.useContext(RmfIngressContext);
   const sioClient = React.useContext(RmfIngressContext)?.sioClient;
   const buildingMap = React.useContext(BuildingMapContext);
@@ -98,7 +101,7 @@ export function RobotPage() {
   }, [fetchVerboseRobots]);
 
   return (
-    <Grid container className={classes.container}>
+    <StyledGrid container className={classes.container}>
       <Grid item xs={4}>
         <Card variant="outlined" className={classes.mapPanel}>
           {buildingMap && (
@@ -109,7 +112,7 @@ export function RobotPage() {
               fleetStates={Object.assign({}, fleetStatesRef.current)}
               mode="normal"
               zoom={4.5}
-              ref={setLeafletMap}
+              ref={(map: Map<MapProps, L.Map>) => setLeafletMap(map)}
             />
           )}
         </Card>
@@ -123,12 +126,12 @@ export function RobotPage() {
             rowsPerPage: 10,
             rowsPerPageOptions: [10],
             page,
-            onChangePage: (_ev, newPage) => setPage(newPage),
+            onPageChange: (_ev, newPage) => setPage(newPage),
           }}
           verboseRobots={verboseRobots}
           onRobotZoom={onRobotZoom}
         />
       </Grid>
-    </Grid>
+    </StyledGrid>
   );
 }

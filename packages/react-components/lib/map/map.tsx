@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core';
+import { styled } from '@mui/material';
 import type { Level } from 'api-client';
 import clsx from 'clsx';
 import * as L from 'leaflet';
@@ -10,8 +10,11 @@ import { LabelsPortalContext } from './labels-overlay';
 import { SVGOverlay } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
 
-const useStyles = makeStyles(() => ({
-  map: {
+const classes = {
+  map: 'map-root',
+};
+const StyledLMap_ = styled((props: LMapProps_) => <LMap_ {...props} />)(() => ({
+  [`&.${classes.map}`]: {
     height: '100%',
     width: '100%',
     margin: 0,
@@ -61,11 +64,15 @@ export interface LMapProps extends Omit<LMapProps_, 'crs'> {
 
 export const LMap = React.forwardRef(
   ({ className, children, ...otherProps }: LMapProps, ref: React.Ref<LMap_>) => {
-    const classes = useStyles();
     const [labelsPortal, setLabelsPortal] = React.useState<SVGSVGElement | null>(null);
     const viewBox = otherProps.bounds ? viewBoxFromLeafletBounds(otherProps.bounds) : undefined;
     return (
-      <LMap_ ref={ref} className={clsx(classes.map, className)} crs={L.CRS.Simple} {...otherProps}>
+      <StyledLMap_
+        ref={ref}
+        className={clsx(classes.map, className)}
+        crs={L.CRS.Simple}
+        {...otherProps}
+      >
         <EntityManagerProvider>
           <LabelsPortalContext.Provider value={labelsPortal}>
             {children}
@@ -82,7 +89,7 @@ export const LMap = React.forwardRef(
             )}
           </LabelsPortalContext.Provider>
         </EntityManagerProvider>
-      </LMap_>
+      </StyledLMap_>
     );
   },
 );

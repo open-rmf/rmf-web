@@ -1,17 +1,21 @@
-import { Grid, makeStyles, Paper, TablePagination, Typography } from '@material-ui/core';
+import { Grid, Paper, TablePagination, Typography, styled } from '@mui/material';
 import React from 'react';
 import { RobotInfo } from './robot-info';
 import { RobotTable } from './robot-table';
 import { VerboseRobot } from './utils';
 
-const useStyles = makeStyles((theme) => ({
-  detailPanelContainer: {
+const classes = {
+  detailPanelContainer: 'robot-panel-detail-container',
+  robotTable: 'robot-panel-table',
+};
+const StyledDiv = styled('div')(({ theme }) => ({
+  [`& .${classes.detailPanelContainer}`]: {
     width: 350,
     padding: theme.spacing(2),
     marginLeft: theme.spacing(2),
     flex: '0 0 auto',
   },
-  robotTable: {
+  [`& .${classes.robotTable}`]: {
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
@@ -28,7 +32,8 @@ function NoSelectedRobot() {
   );
 }
 
-export interface RobotPanelProps extends React.HTMLProps<HTMLDivElement> {
+export interface RobotPanelProps
+  extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
   paginationOptions?: Omit<React.ComponentPropsWithoutRef<typeof TablePagination>, 'component'>;
   verboseRobots: VerboseRobot[];
   fetchVerboseRobots: () => Promise<VerboseRobot[]>;
@@ -44,7 +49,6 @@ export function RobotPanel({
   onRobotZoom,
   ...divProps
 }: RobotPanelProps): JSX.Element {
-  const classes = useStyles();
   const [selectedRobot, setSelectedRobot] = React.useState<VerboseRobot | undefined>(undefined);
 
   const handleRefresh = async (selectedRobot?: VerboseRobot) => {
@@ -68,8 +72,8 @@ export function RobotPanel({
   };
 
   return (
-    <div {...divProps}>
-      <Grid container wrap="nowrap" justify="center" style={{ height: 'inherit' }}>
+    <StyledDiv {...divProps}>
+      <Grid container wrap="nowrap" justifyContent="center" style={{ height: 'inherit' }}>
         <Grid style={{ flex: '1 1 auto' }}>
           <RobotTable
             className={classes.robotTable}
@@ -83,6 +87,6 @@ export function RobotPanel({
           {selectedRobot ? <RobotInfo robot={selectedRobot} /> : <NoSelectedRobot />}
         </Paper>
       </Grid>
-    </div>
+    </StyledDiv>
   );
 }

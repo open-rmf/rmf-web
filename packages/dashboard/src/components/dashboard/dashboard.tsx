@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { Card, Grid, makeStyles } from '@material-ui/core';
+import { Card, Grid, styled } from '@mui/material';
 import { Door, DoorState, Fleet, Level, Lift, LiftState } from 'api-client';
 import Debug from 'debug';
 import React from 'react';
@@ -25,22 +25,26 @@ import {
 const debug = Debug('Dashboard');
 const UpdateRate = 1000;
 
-const useStyles = makeStyles((theme) => ({
-  root: {
+const prefix = 'dashboard';
+const classes = {
+  root: `${prefix}-root`,
+  buildingPanel: `${prefix}-building-panel`,
+  mapPanel: `${prefix}-map-panel`,
+  itemPanels: `${prefix}-item-panels`,
+};
+const StyledDiv = styled('div')(({ theme }) => ({
+  [`&.${classes.root}`]: {
     height: '100%',
     backgroundColor: theme.palette.background.default,
   },
-  toolBarTitle: {
-    flexGrow: 1,
+  [`& .${classes.buildingPanel}`]: {
+    height: '100vh',
   },
-  buildingPanel: {
-    height: '100%',
-  },
-  mapPanel: {
+  [`& .${classes.mapPanel}`]: {
     margin: theme.spacing(1),
     flex: '1 0 auto',
   },
-  itemPanels: {
+  [`& .${classes.itemPanels}`]: {
     width: '55%',
   },
 }));
@@ -48,7 +52,6 @@ const useStyles = makeStyles((theme) => ({
 export default function Dashboard(_props: {}): React.ReactElement {
   debug('render');
 
-  const classes = useStyles();
   const appController = React.useContext(AppControllerContext);
   const rmfIngress = React.useContext(RmfIngressContext);
   const sioClient = rmfIngress?.sioClient;
@@ -142,7 +145,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   );
 
   return (
-    <div className={classes.root}>
+    <StyledDiv className={classes.root}>
       <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
         {buildingMap && (
           <Grid container className={classes.buildingPanel} wrap="nowrap">
@@ -183,6 +186,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
           </Grid>
         )}
       </GlobalHotKeys>
-    </div>
+    </StyledDiv>
   );
 }

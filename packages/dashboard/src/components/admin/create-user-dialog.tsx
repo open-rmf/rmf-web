@@ -1,4 +1,4 @@
-import { TextField } from '@material-ui/core';
+import { TextField } from '@mui/material';
 import React from 'react';
 import { ConfirmationDialog, useAsync } from 'react-components';
 import { AppControllerContext } from '../app-contexts';
@@ -60,6 +60,7 @@ export function CreateUserDialog({
         variant="outlined"
         fullWidth
         autoFocus
+        margin="normal"
         label="Username"
         value={username}
         onChange={(ev) => setUsername(ev.target.value)}
