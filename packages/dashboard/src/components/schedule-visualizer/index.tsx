@@ -4,7 +4,6 @@ import { makeStyles } from '@material-ui/core';
 import { BuildingMap, Dispenser, DoorState, FleetState, Ingestor, LiftState } from 'api-client';
 import Debug from 'debug';
 import * as L from 'leaflet';
-import { MapProps, Map } from 'react-leaflet';
 import React from 'react';
 import {
   affineImageBounds,
@@ -49,7 +48,6 @@ const TrajectoryUpdateInterval = 2000;
 // of the whole app when it changes.
 const SettingsKey = 'scheduleVisualizerSettings';
 const colorManager = new ColorManager();
-export let mapHandler: React.MutableRefObject<Map<MapProps, L.Map> | null | undefined>;
 
 export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   buildingMap: BuildingMap;
@@ -75,23 +73,25 @@ interface ScheduleVisualizerSettings {
   trajectoryTime: number;
 }
 
-export default function ScheduleVisualizer({
-  buildingMap,
-  negotiationTrajStore = {},
-  dispensers = [],
-  ingestors = [],
-  doorStates = {},
-  liftStates = {},
-  fleetStates = {},
-  zoom,
-  mode = 'normal',
-  onDoorClick,
-  onLiftClick,
-  onRobotClick,
-  onDispenserClick,
-  onIngestorClick,
-  children,
-}: ScheduleVisualizerProps): JSX.Element | null {
+export default React.forwardRef(function ScheduleVisualizer(
+  {
+    buildingMap,
+    negotiationTrajStore = {},
+    dispensers = [],
+    ingestors = [],
+    doorStates = {},
+    liftStates = {},
+    fleetStates = {},
+    mode = 'normal',
+    onDoorClick,
+    onLiftClick,
+    onRobotClick,
+    onDispenserClick,
+    onIngestorClick,
+    children,
+  }: ScheduleVisualizerProps,
+  ref,
+): JSX.Element | null {
   debug('render');
   const safeAsync = useAsync();
   const classes = scheduleVisualizerStyle();
@@ -305,7 +305,6 @@ export default function ScheduleVisualizer({
   const [layersUnChecked, setLayersUnChecked] = React.useState<Record<string, boolean>>({});
   const waypointsLayersRef: React.Ref<LayersControl.Overlay> = React.useRef(null);
   const registeredLayersHandlers = React.useRef(false);
-  mapHandler = React.useRef<Map<MapProps, L.Map> | null>();
 
   return bounds ? (
     <LMap
@@ -318,7 +317,7 @@ export default function ScheduleVisualizer({
           setLayersUnChecked((prev) => ({ ...prev, [ev.name]: true })),
         );
         registeredLayersHandlers.current = true;
-        mapHandler.current = cur;
+        if (typeof ref === 'function') ref(cur);
       }}
       id="schedule-visualizer"
       attributionControl={false}
@@ -431,4 +430,4 @@ export default function ScheduleVisualizer({
       {children}
     </LMap>
   ) : null;
-}
+});

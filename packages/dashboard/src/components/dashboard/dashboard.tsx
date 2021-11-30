@@ -1,7 +1,6 @@
 /* istanbul ignore file */
 
 import { Card, Grid, makeStyles } from '@material-ui/core';
-import * as RmfModels from 'rmf-models';
 import { Door, DoorState, Fleet, Level, Lift, LiftState } from 'api-client';
 import Debug from 'debug';
 import React from 'react';
@@ -19,8 +18,8 @@ import ScheduleVisualizer from '../schedule-visualizer';
 import {
   useFleets,
   useFleetStateRef,
-  useDispenser,
-  useIngestor,
+  useDispenserStatesRef,
+  useIngestorStatesRef,
 } from '../../util/common-subscriptions';
 
 const debug = Debug('Dashboard');
@@ -96,20 +95,18 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }, [sioClient, lifts]);
 
   const dispensers = React.useContext(DispensersContext);
-  const dispenserStatesRef = React.useRef<Record<string, RmfModels.DispenserState>>({});
-  useDispenser(sioClient, dispensers, dispenserStatesRef);
+  const dispenserStatesRef = useDispenserStatesRef(sioClient, dispensers);
 
   const ingestors = React.useContext(IngestorsContext);
-  const ingestorStatesRef = React.useRef<Record<string, RmfModels.IngestorState>>({});
-  useIngestor(sioClient, ingestors, ingestorStatesRef);
+  const ingestorStatesRef = useIngestorStatesRef(sioClient, ingestors);
 
   const workcells = React.useMemo(() => [...dispensers, ...ingestors], [dispensers, ingestors]);
   const workcellStates = { ...dispenserStatesRef.current, ...ingestorStatesRef.current };
 
   const [fleets, setFleets] = React.useState<Fleet[]>([]);
   useFleets(rmfIngress, setFleets);
-  const fleetStatesRef = React.useRef<Record<string, RmfModels.FleetState>>({});
-  useFleetStateRef(sioClient, fleets, fleetStatesRef);
+  const fleetStatesRef = useFleetStateRef(sioClient, fleets);
+
   const fleetNames = React.useRef<string[]>([]);
   const newFleetNames = Object.keys(fleetStatesRef.current);
   if (newFleetNames.some((fleetName) => !fleetNames.current.includes(fleetName))) {

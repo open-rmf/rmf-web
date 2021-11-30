@@ -35,6 +35,8 @@ export interface RobotPanelProps extends React.HTMLProps<HTMLDivElement> {
   onRobotZoom?: (robot: VerboseRobot) => void;
 }
 
+// FIXME - change fetchVerboseRobots props to onRefresh
+// and shift handleRefresh logic to the parent component
 export function RobotPanel({
   paginationOptions,
   verboseRobots,

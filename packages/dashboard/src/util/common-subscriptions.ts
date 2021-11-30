@@ -21,11 +21,8 @@ export const useFleets = (
   }, [rmfIngress, setFleets]);
 };
 
-export const useFleetStateRef = (
-  sioClient: SioClient | undefined,
-  fleets: Fleet[],
-  fleetStatesRef: React.MutableRefObject<Record<string, RmfModels.FleetState>>,
-) => {
+export const useFleetStateRef = (sioClient: SioClient | undefined, fleets: Fleet[]) => {
+  const fleetStatesRef = React.useRef<Record<string, RmfModels.FleetState>>({});
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = fleets.map((f) =>
@@ -34,14 +31,12 @@ export const useFleetStateRef = (
     return () => {
       subs.forEach((s) => sioClient.unsubscribe(s));
     };
-  }, [sioClient, fleets, fleetStatesRef]);
+  }, [sioClient, fleets]);
+  return fleetStatesRef;
 };
 
-export const useIngestor = (
-  sioClient: SioClient | undefined,
-  ingestors: Ingestor[],
-  ingestorStatesRef: React.MutableRefObject<Record<string, RmfModels.IngestorState>>,
-) => {
+export const useIngestorStatesRef = (sioClient: SioClient | undefined, ingestors: Ingestor[]) => {
+  const ingestorStatesRef = React.useRef<Record<string, RmfModels.IngestorState>>({});
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = ingestors.map((d) =>
@@ -54,13 +49,14 @@ export const useIngestor = (
       subs.forEach((s) => sioClient.unsubscribe(s));
     };
   }, [sioClient, ingestors, ingestorStatesRef]);
+  return ingestorStatesRef;
 };
 
-export const useDispenser = (
+export const useDispenserStatesRef = (
   sioClient: SioClient | undefined,
   dispensers: Dispenser[],
-  dispenserStatesRef: React.MutableRefObject<Record<string, RmfModels.DispenserState>>,
 ) => {
+  const dispenserStatesRef = React.useRef<Record<string, RmfModels.DispenserState>>({});
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = dispensers.map((d) =>
@@ -73,4 +69,5 @@ export const useDispenser = (
       subs.forEach((s) => sioClient.unsubscribe(s));
     };
   }, [sioClient, dispensers, dispenserStatesRef]);
+  return dispenserStatesRef;
 };
