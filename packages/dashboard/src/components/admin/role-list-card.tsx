@@ -5,16 +5,17 @@ import {
   Button,
   Card,
   CardHeader,
+  CardProps,
   Divider,
   Grid,
   IconButton,
   Typography,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import AddIcon from '@material-ui/icons/AddCircle';
-import DeleteIcon from '@material-ui/icons/Delete';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import SecurityIcon from '@material-ui/icons/Security';
+  styled,
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/AddCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import SecurityIcon from '@mui/icons-material/Security';
 import { Permission } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog, Loading, useAsync } from 'react-components';
@@ -22,14 +23,19 @@ import { AppControllerContext } from '../app-contexts';
 import { CreateRoleDialog, CreateRoleDialogProps } from './create-role-dialog';
 import { PermissionsCard, PermissionsCardProps } from './permissions-card';
 
-const useRoleAccordionStyles = makeStyles({
-  permissionsCard: {
+const prefix = 'role-list-card';
+const classes = {
+  permissionsCard: `${prefix}-permissionscard`,
+  deleteRoleButton: `${prefix}-deleterolebutton`,
+};
+const StyledCard = styled((props: CardProps) => <Card {...props} />)(() => ({
+  [`& .${classes.permissionsCard}`]: {
     width: '100%',
   },
-  deleteRoleButton: {
+  [`& .${classes.deleteRoleButton}`]: {
     float: 'right',
   },
-});
+}));
 
 interface RoleAccordionProps
   extends Pick<PermissionsCardProps, 'getPermissions' | 'savePermission' | 'removePermission'> {
@@ -44,7 +50,6 @@ function RoleAccordion({
   savePermission,
   removePermission,
 }: RoleAccordionProps) {
-  const classes = useRoleAccordionStyles();
   return (
     <Accordion TransitionProps={{ unmountOnExit: true }}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -63,12 +68,14 @@ function RoleAccordion({
               Delete Role
             </Button>
           </Grid>
-          <PermissionsCard
-            className={classes.permissionsCard}
-            getPermissions={getPermissions}
-            savePermission={savePermission}
-            removePermission={removePermission}
-          />
+          <Grid item>
+            <PermissionsCard
+              className={classes.permissionsCard}
+              getPermissions={getPermissions}
+              savePermission={savePermission}
+              removePermission={removePermission}
+            />
+          </Grid>
         </Grid>
       </AccordionDetails>
     </Accordion>
@@ -141,7 +148,7 @@ export function RoleListCard({
   );
 
   return (
-    <Card variant="outlined">
+    <StyledCard variant="outlined">
       <CardHeader
         title="Roles"
         titleTypographyProps={{ variant: 'h5' }}
@@ -200,6 +207,6 @@ export function RoleListCard({
           <Typography>{`Are you sure you want to delete "${selectedDeleteRole}"?`}</Typography>
         </ConfirmationDialog>
       )}
-    </Card>
+    </StyledCard>
   );
 }

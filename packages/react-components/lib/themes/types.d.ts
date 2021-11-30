@@ -1,6 +1,6 @@
 import React from 'react';
 
-export declare module '@material-ui/core/styles/createMuiTheme' {
+export declare module '@mui/material/styles/createTheme' {
   interface Theme {
     '@global'?: Record<string, React.CSSProperties>;
   }

@@ -1,33 +1,40 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
-import ErrorIcon from '@material-ui/icons/Error';
-import { Typography, Grid } from '@material-ui/core';
+import ErrorIcon from '@mui/icons-material/Error';
+import { Typography, Grid, styled } from '@mui/material';
 
-const useStyles = makeStyles((theme) => ({
-  errorIcon: {
+const classes = {
+  errorIcon: 'erroroverlay-error-icon',
+  errorMsg: 'erroroverlay-error-msg',
+  errorDisabled: 'erroroverlay-error-disabled',
+  overlay: 'erroroverlay-overlay',
+  container: 'erroroverlay-container',
+  disableSelect: 'erroroverlay-disable-select',
+};
+const StyledDiv = styled('div')(({ theme }) => ({
+  [`& .${classes.errorIcon}`]: {
     color: theme.palette.error.main,
     fontSize: '2rem',
   },
-  errorMsg: {
+  [`& .${classes.errorMsg}`]: {
     margin: '0.5rem',
   },
-  errorDisabled: {
+  [`& .${classes.errorDisabled}`]: {
     pointerEvents: 'none',
     filter: 'blur(.25rem)',
     gridArea: '1 / 1',
     opacity: 0.6,
   },
-  overlay: {
+  [`& .${classes.overlay}`]: {
     gridArea: '1 / 1',
     backdropFilter: 'blur(.5rem)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  container: {
+  [`&.${classes.container}`]: {
     display: 'grid',
   },
-  disableSelect: {
+  [`& .${classes.disableSelect}`]: {
     userSelect: 'none',
   },
 }));
@@ -40,11 +47,10 @@ export interface ErrorOverlayProps {
 
 export const ErrorOverlay = React.memo(
   (props: ErrorOverlayProps): JSX.Element => {
-    const classes = useStyles();
     const { errorMsg, children, overrideErrorStyle } = props;
 
     return errorMsg ? (
-      <div className={classes.container}>
+      <StyledDiv className={classes.container}>
         <div className={classes.errorDisabled}>{children}</div>
         <div
           className={
@@ -52,7 +58,7 @@ export const ErrorOverlay = React.memo(
           }
         >
           <div>
-            <Grid container direction="row" justify="center" alignItems="center">
+            <Grid container direction="row" justifyContent="center" alignItems="center" spacing={2}>
               <Grid item>
                 <ErrorIcon className={classes.errorIcon} />
               </Grid>
@@ -72,7 +78,7 @@ export const ErrorOverlay = React.memo(
             </Typography>
           </div>
         </div>
-      </div>
+      </StyledDiv>
     ) : (
       <React.Fragment>{children}</React.Fragment>
     );

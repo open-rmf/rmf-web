@@ -1,4 +1,4 @@
-import { Paper, TableContainer, TablePagination } from '@material-ui/core';
+import { Paper, TableContainer, TablePagination } from '@mui/material';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { TaskSummary as RmfTaskSummary } from 'rmf-models';
@@ -61,7 +61,7 @@ export const Table: Story<TaskTableProps> = (args) => {
         rowsPerPage={10}
         rowsPerPageOptions={[10]}
         page={page}
-        onChangePage={(_ev, newPage) => setPage(newPage)}
+        onPageChange={(_ev, newPage) => setPage(newPage)}
       />
     </Paper>
   );

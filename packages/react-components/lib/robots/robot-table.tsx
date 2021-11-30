@@ -1,6 +1,5 @@
 import {
   IconButton,
-  makeStyles,
   Paper,
   PaperProps,
   Table,
@@ -12,37 +11,49 @@ import {
   TableRow,
   Toolbar,
   Typography,
-} from '@material-ui/core';
-import { Refresh as RefreshIcon } from '@material-ui/icons';
+  styled,
+} from '@mui/material';
 import type { RobotMode } from 'api-client';
+import { Refresh as RefreshIcon } from '@mui/icons-material';
 import React from 'react';
 import { RobotMode as RmfRobotMode } from 'rmf-models';
 import { taskTypeToStr } from '../tasks/utils';
 import { robotModeToString, VerboseRobot } from './utils';
 
-const useStyles = makeStyles((theme) => ({
-  table: {
+const classes = {
+  table: 'robot-table',
+  title: 'robot-table-title',
+  infoRow: 'robot-table-info-row',
+  taskRowHover: 'robot-table-row-hover',
+  phasesCell: 'robot-table-phases-cell',
+  robotErrorClass: 'robot-table-error',
+  robotStoppedClass: 'robot-table-stopped',
+  robotInMotionClass: 'robot-table-in-motion',
+  robotChargingClass: 'robot-table-charging',
+};
+const StyledPaper = styled((props: PaperProps) => <Paper {...props} />)(({ theme }) => ({
+  [`& .${classes.table}`]: {
     minWidth: 650,
   },
-  title: {
+  [`& .${classes.title}`]: {
     flex: '1 1 100%',
   },
-  taskRowHover: {
+  [`& .${classes.taskRowHover}`]: {
     background: theme.palette.action.hover,
   },
-  phasesCell: {
+  [`& .${classes.phasesCell}`]: {
     padding: `0 ${theme.spacing(1)}px`,
   },
-  robotErrorClass: {
+  [`& .${classes.robotErrorClass}`]: {
     backgroundColor: theme.palette.error.main,
   },
-  robotStoppedClass: {
+  [`& .${classes.robotStoppedClass}`]: {
     backgroundColor: theme.palette.warning.main,
   },
-  robotInMotionClass: {
+  [`& .${classes.robotInMotionClass}`]: {
     backgroundColor: theme.palette.success.main,
   },
-  robotChargingClass: {
+  [`& .${classes.robotChargingClass}`]: {
     backgroundColor: theme.palette.info.main,
   },
 }));
@@ -87,8 +98,6 @@ const returnLocationCells = (robot: VerboseRobot) => {
 };
 
 function RobotRow({ robot, onClick }: RobotRowProps) {
-  const classes = useStyles();
-
   const getRobotModeClass = (robotMode: RobotMode) => {
     switch (robotMode.mode) {
       case RmfRobotMode.MODE_EMERGENCY:
@@ -166,10 +175,8 @@ export function RobotTable({
   onRobotClick,
   ...paperProps
 }: RobotTableProps): JSX.Element {
-  const classes = useStyles();
-
   return (
-    <Paper {...paperProps}>
+    <StyledPaper {...paperProps}>
       <Toolbar>
         <Typography className={classes.title} variant="h6">
           Robots
@@ -205,6 +212,6 @@ export function RobotTable({
       {paginationOptions && (
         <TablePagination component="div" {...paginationOptions} style={{ flex: '0 0 auto' }} />
       )}
-    </Paper>
+    </StyledPaper>
   );
 }

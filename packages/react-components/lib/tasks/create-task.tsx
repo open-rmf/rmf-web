@@ -1,18 +1,18 @@
-import DateFnsUtils from '@date-io/date-fns';
+import { DateTimePicker, LocalizationProvider } from '@mui/lab';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import {
+  Autocomplete,
   Button,
   Divider,
   Grid,
   List,
   ListItem,
   ListItemText,
-  makeStyles,
   MenuItem,
+  styled,
   TextField,
   useTheme,
-} from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
-import { KeyboardDateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+} from '@mui/material';
 import type {
   CleanTaskDescription,
   DeliveryTaskDescription,
@@ -26,17 +26,24 @@ import { PositiveIntField } from '../form-inputs';
 
 type TaskDescription = CleanTaskDescription | LoopTaskDescription | DeliveryTaskDescription;
 
-const useStyles = makeStyles((theme) => ({
-  selectFileBtn: {
+const classes = {
+  selectFileBtn: 'create-task-selected-file-btn',
+  taskList: 'create-task-task-list',
+  selectedTask: 'create-task-selected-task',
+};
+const StyledConfirmationDialog = styled((props: ConfirmationDialogProps) => (
+  <ConfirmationDialog {...props} />
+))(({ theme }) => ({
+  [`& .${classes.selectFileBtn}`]: {
     marginBottom: theme.spacing(1),
   },
-  taskList: {
+  [`& .${classes.taskList}`]: {
     flex: '1 1 auto',
     minHeight: 400,
     maxHeight: '50vh',
     overflow: 'auto',
   },
-  selectedTask: {
+  [`& .${classes.selectedTask}`]: {
     background: theme.palette.action.focus,
   },
 }));
@@ -65,8 +72,6 @@ interface FormToolbarProps {
 }
 
 function FormToolbar({ onSelectFileClick }: FormToolbarProps) {
-  const classes = useStyles();
-
   return (
     <Button
       aria-label="Select File"
@@ -384,7 +389,6 @@ export function CreateTaskForm({
   ...otherProps
 }: CreateTaskFormProps): JSX.Element {
   const theme = useTheme();
-  const classes = useStyles();
   const [tasks, setTasks] = React.useState<SubmitTask[]>(() => [defaultTask()]);
   const [selectedTaskIdx, setSelectedTaskIdx] = React.useState(0);
   const taskTitles = React.useMemo(
@@ -490,8 +494,8 @@ export function CreateTaskForm({
   const submitText = tasks.length > 1 ? 'Submit All' : 'Submit';
 
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <ConfirmationDialog
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <StyledConfirmationDialog
         title="Create Task"
         submitting={submitting}
         confirmText={submitText}
@@ -499,6 +503,7 @@ export function CreateTaskForm({
         fullWidth={tasks.length > 1}
         toolbar={<FormToolbar onSelectFileClick={handleSelectFileClick} />}
         onSubmit={handleSubmit}
+        disableEnforceFocus
         {...otherProps}
       >
         <Grid container direction="row" wrap="nowrap">
@@ -519,8 +524,8 @@ export function CreateTaskForm({
             </TextField>
             <Grid container wrap="nowrap">
               <Grid style={{ flexGrow: 1 }}>
-                <KeyboardDateTimePicker
-                  id="start-time"
+                <DateTimePicker
+                  inputFormat={'MM/dd/yyyy HH:mm'}
                   value={new Date(task.start_time * 1000)}
                   onChange={(date) => {
                     if (!date) {
@@ -531,8 +536,7 @@ export function CreateTaskForm({
                     updateTasks();
                   }}
                   label="Start Time"
-                  margin="normal"
-                  fullWidth
+                  renderInput={(props) => <TextField {...props} />}
                 />
               </Grid>
               <Grid
@@ -579,7 +583,7 @@ export function CreateTaskForm({
             </>
           )}
         </Grid>
-      </ConfirmationDialog>
-    </MuiPickersUtilsProvider>
+      </StyledConfirmationDialog>
+    </LocalizationProvider>
   );
 }

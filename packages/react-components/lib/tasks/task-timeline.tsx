@@ -1,6 +1,6 @@
-import Paper from '@material-ui/core/Paper';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { styled } from '@mui/material';
 import {
   Timeline,
   TimelineConnector,
@@ -9,52 +9,57 @@ import {
   TimelineItem,
   TimelineOppositeContent,
   TimelineSeparator,
-} from '@material-ui/lab';
+  TimelineProps,
+} from '@mui/lab';
 import type { TaskSummary } from 'api-client';
 import React from 'react';
 import { TaskSummary as RmfTaskSummary } from 'rmf-models';
 import { rosTimeToJs } from '../utils';
 
-const getPhaseColors = (theme: Theme) => ({
-  pending: theme.palette.info.light,
-  completed: theme.palette.success.light,
-  failed: theme.palette.error.light,
-});
+interface TimeLinePropsWithRef extends TimelineProps {
+  ref?: React.RefObject<HTMLUListElement>;
+}
 
-const useStyles = makeStyles((theme) => {
-  const phaseColors = getPhaseColors(theme);
-  return {
-    paper: {
+const classes = {
+  paper: 'timeline-paper',
+  secondaryTail: 'timeline-secondary-tail',
+  pendingPhase: 'timeline-pending-phase',
+  completedPhase: 'timeline-completed-phase',
+  failedPhase: 'timeline-failed-phase',
+  timelineRoot: 'timeline-root',
+};
+const StyledTimeLine = styled((props: TimeLinePropsWithRef) => <Timeline {...props} />)(
+  ({ theme }) => ({
+    [`& .${classes.paper}`]: {
       padding: '6px 16px',
       width: '200px',
       maxHeight: '100px',
       overflow: 'auto',
       display: 'inline-block',
     },
-    secondaryTail: {
+    [`& .${classes.secondaryTail}`]: {
       backgroundColor: theme.palette.secondary.main,
     },
-    pendingPhase: {
-      background: phaseColors.pending,
+    [`& .${classes.pendingPhase}`]: {
+      background: theme.palette.info.light,
     },
-    completedPhase: {
-      background: phaseColors.completed,
+    [`& .${classes.completedPhase}`]: {
+      background: theme.palette.success.light,
     },
-    failedPhase: {
-      background: phaseColors.failed,
+    [`& .${classes.failedPhase}`]: {
+      background: theme.palette.error.light,
     },
-    timelineRoot: {
+    [`&.${classes.timelineRoot}`]: {
       padding: '6px 0px',
     },
-  };
-});
+  }),
+);
 
 export interface TaskTimelineProps {
   taskSummary: TaskSummary;
 }
 
 export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
-  const classes = useStyles();
   const timelinePhases = taskSummary.status.split('\n\n');
   const currentDotIdx = timelinePhases.findIndex((msg) => msg.startsWith('*'));
   const timelineInfo = taskSummary.status.split('\n\n');
@@ -84,7 +89,7 @@ export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
   });
 
   return (
-    <Timeline align="left" className={classes.timelineRoot}>
+    <StyledTimeLine position="left" className={classes.timelineRoot}>
       {timelineInfo.map((dotInfo, idx) => {
         return (
           <TimelineItem key={idx}>
@@ -108,6 +113,6 @@ export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
           </TimelineItem>
         );
       })}
-    </Timeline>
+    </StyledTimeLine>
   );
 }

@@ -1,15 +1,16 @@
 import {
   Button,
   Dialog,
+  DialogProps,
   DialogActions,
   DialogContent,
   DialogTitle,
   Divider,
   IconButton,
-  makeStyles,
   Typography,
-} from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+  styled,
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import React from 'react';
 import { getApplicationKeyMap } from 'react-hotkeys';
 
@@ -18,12 +19,46 @@ export interface HotKeysDialogProps {
   open: boolean;
 }
 
+const prefix = 'hotkey-dialog';
+const classes = {
+  closeButton: `${prefix}-close-button`,
+  dialogContent: `${prefix}-content`,
+  dialogActions: `${prefix}-actions`,
+  detailLine: `${prefix}-detail-line`,
+  detail: `${prefix}-detail`,
+};
+const StyledDialog = styled((props: DialogProps) => <Dialog {...props} />)(({ theme }) => ({
+  [`& .${classes.closeButton}`]: {
+    position: 'absolute',
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500],
+  },
+  [`& .${classes.dialogContent}`]: {
+    padding: theme.spacing(2),
+  },
+  [`& .${classes.dialogActions}`]: {
+    margin: 0,
+    padding: theme.spacing(1),
+  },
+  [`& .${classes.detailLine}`]: {
+    display: 'inline-flex',
+    justifyContent: 'space-between',
+    padding: theme.spacing(0.5),
+    width: '100%',
+  },
+  [`& .${classes.detail}`]: {
+    display: 'flex',
+    flexFlow: 'column',
+    padding: '1rem',
+  },
+}));
+
 export default function HotKeysDialog(props: HotKeysDialogProps): React.ReactElement {
   const { open, handleClose } = props;
-  const classes = useStyles();
   const keyMap = getApplicationKeyMap();
   return (
-    <Dialog
+    <StyledDialog
       onClose={handleClose}
       aria-labelledby="customized-dialog-title"
       open={open}
@@ -64,33 +99,6 @@ export default function HotKeysDialog(props: HotKeysDialogProps): React.ReactEle
           OK
         </Button>
       </DialogActions>
-    </Dialog>
+    </StyledDialog>
   );
 }
-
-const useStyles = makeStyles((theme) => ({
-  closeButton: {
-    position: 'absolute',
-    right: theme.spacing(1),
-    top: theme.spacing(1),
-    color: theme.palette.grey[500],
-  },
-  dialogContent: {
-    padding: theme.spacing(2),
-  },
-  dialogActions: {
-    margin: 0,
-    padding: theme.spacing(1),
-  },
-  detailLine: {
-    display: 'inline-flex',
-    justifyContent: 'space-between',
-    padding: theme.spacing(0.5),
-    width: '100%',
-  },
-  detail: {
-    display: 'flex',
-    flexFlow: 'column',
-    padding: '1rem',
-  },
-}));

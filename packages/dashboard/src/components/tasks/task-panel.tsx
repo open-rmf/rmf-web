@@ -1,8 +1,9 @@
 import {
+  Alert,
+  AlertProps,
   Button,
   Grid,
   IconButton,
-  makeStyles,
   Paper,
   Snackbar,
   TableContainer,
@@ -11,13 +12,13 @@ import {
   Tooltip,
   Typography,
   useTheme,
-} from '@material-ui/core';
+  styled,
+} from '@mui/material';
 import {
   AddOutlined as AddOutlinedIcon,
   Autorenew as AutorenewIcon,
   Refresh as RefreshIcon,
-} from '@material-ui/icons';
-import { Alert, AlertProps } from '@material-ui/lab';
+} from '@mui/icons-material';
 import { SubmitTask, Task, TaskSummary } from 'api-client';
 import React from 'react';
 import { CreateTaskForm, CreateTaskFormProps, TaskInfo, TaskTable } from 'react-components';
@@ -27,21 +28,29 @@ import { AppControllerContext } from '../app-contexts';
 import { Enforcer } from '../permissions';
 import { parseTasksFile } from './utils';
 
-const useStyles = makeStyles((theme) => ({
-  tableContainer: {
+const prefix = 'task-panel';
+const classes = {
+  tableContainer: `${prefix}-table-container`,
+  tableTitle: `${prefix}-table-title`,
+  detailPanelContainer: `${prefix}-detail-panel-container`,
+  enabledToggleButton: `${prefix}-enable-toggle-button`,
+};
+
+const StyledDiv = styled('div')(({ theme }) => ({
+  [`& .${classes.tableContainer}`]: {
     display: 'flex',
     flexDirection: 'column',
   },
-  tableTitle: {
+  [`& .${classes.tableTitle}`]: {
     flex: '1 1 100%',
   },
-  detailPanelContainer: {
+  [`& .${classes.detailPanelContainer}`]: {
     width: 350,
     padding: theme.spacing(2),
     marginLeft: theme.spacing(2),
     flex: '0 0 auto',
   },
-  enabledToggleButton: {
+  [`& .${classes.enabledToggleButton}`]: {
     background: theme.palette.action.selected,
   },
 }));
@@ -56,7 +65,8 @@ function NoSelectedTask() {
   );
 }
 
-export interface TaskPanelProps extends React.HTMLProps<HTMLDivElement> {
+export interface TaskPanelProps
+  extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
   /**
    * Should only contain the tasks of the current page.
    */
@@ -87,7 +97,6 @@ export function TaskPanel({
   onAutoRefresh,
   ...divProps
 }: TaskPanelProps): JSX.Element {
-  const classes = useStyles();
   const theme = useTheme();
   const [selectedTask, setSelectedTask] = React.useState<Task | undefined>(undefined);
   const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
@@ -158,8 +167,8 @@ export function TaskPanel({
       selectedTask.summary.state === RmfTaskSummary.STATE_QUEUED);
 
   return (
-    <div {...divProps}>
-      <Grid container wrap="nowrap" justify="center" style={{ height: 'inherit' }}>
+    <StyledDiv {...divProps}>
+      <Grid container wrap="nowrap" justifyContent="center" style={{ height: 'inherit' }}>
         <Paper className={classes.tableContainer}>
           <Toolbar>
             <Typography className={classes.tableTitle} variant="h6">
@@ -249,6 +258,6 @@ export function TaskPanel({
       <Snackbar open={openSnackbar} onClose={() => setOpenSnackbar(false)} autoHideDuration={2000}>
         <Alert severity={snackbarSeverity}>{snackbarMessage}</Alert>
       </Snackbar>
-    </div>
+    </StyledDiv>
   );
 }

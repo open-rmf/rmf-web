@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core';
+import { styled } from '@mui/material';
 import clsx from 'clsx';
 import Debug from 'debug';
 import React from 'react';
@@ -7,8 +7,11 @@ import { ImageMarker } from './image-marker';
 
 const debug = Debug('Map:RobotMarker');
 
-const useStyles = makeStyles(() => ({
-  clickable: {
+const classes = {
+  clickable: 'robot-marker-clickable',
+};
+const StyledG = styled('g')(() => ({
+  [`& .${classes.clickable}`]: {
     pointerEvents: 'auto',
     cursor: 'pointer',
   },
@@ -31,12 +34,11 @@ export const RobotMarker = React.forwardRef(
   ) => {
     debug('render');
     const [imageHasError, setImageHasError] = React.useState(false);
-    const classes = useStyles();
     const useImageMarker = !!iconPath && !imageHasError;
     const imageErrorHandler = React.useCallback(() => setImageHasError(true), []);
 
     return (
-      <g ref={ref} {...otherProps}>
+      <StyledG ref={ref} {...otherProps}>
         <g className={clsx(otherProps.onClick && classes.clickable)}>
           {useImageMarker ? (
             <ImageMarker
@@ -52,7 +54,7 @@ export const RobotMarker = React.forwardRef(
             <DefaultMarker cx={cx} cy={cy} r={r} color={color} inConflict={inConflict} />
           )}
         </g>
-      </g>
+      </StyledG>
     );
   },
 );

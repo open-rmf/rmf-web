@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Collapse from '@material-ui/core/Collapse';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
+import { styled, ListProps } from '@mui/material';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Collapse from '@mui/material/Collapse';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 
-const useStyles = makeStyles((theme) => ({
-  textAndIcon: {
+const classes = {
+  textAndIcon: 'mlm-text-and-icon',
+};
+
+const StyledList = styled((props: ListProps) => <List {...props} />)(({ theme }) => ({
+  [`& .${classes.textAndIcon}`]: {
     color: theme.palette.text.primary,
   },
 }));
@@ -40,7 +44,6 @@ interface MenuItemProps {
 
 const MenuItem = React.memo(
   (props: MenuItemProps): JSX.Element => {
-    const classes = useStyles();
     return (
       <ListItem className={classes.textAndIcon} button onClick={props.onClick}>
         <ListItemBody icon={props.icon} title={props.title} />
@@ -59,7 +62,6 @@ export interface ExpandableMultilevelMenuProps {
 const ExpandableMenuItem = (props: ExpandableMultilevelMenuProps): JSX.Element => {
   const { items, icon, title } = props;
   const [open, setOpen] = useState(false);
-  const classes = useStyles();
   const handleClick = () => {
     setOpen(!open);
   };
@@ -110,6 +112,6 @@ export const MultiLevelMenu = React.memo(
       return menu.concat();
     };
 
-    return <List>{createList(props.menuStructure)}</List>;
+    return <StyledList>{createList(props.menuStructure)}</StyledList>;
   },
 );

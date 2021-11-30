@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core';
+import { styled } from '@mui/material';
 import type { LiftState } from 'api-client';
 import clsx from 'clsx';
 import React from 'react';
@@ -35,15 +35,28 @@ function getLiftMotionText(liftState: LiftState): string {
   }
 }
 
-const useStyles = makeStyles({
-  marker: {
+export const liftMarkerClasses = {
+  marker: 'lift-marker-root',
+  lift: 'lift-marker-lift',
+  text: 'lift-marker-text',
+  onCurrentLevel: 'lift-marker-oncurrentlevel',
+  moving: 'lift-marker-moving',
+  unknown: 'lift-marker-unknown',
+  emergency: 'lift-marker-emergency',
+  fire: 'lift-marker-fire',
+  offLine: 'lift-marker-offline',
+  human: 'lift-marker-human',
+};
+
+const StyledG = styled('g')(({ theme }) => ({
+  [`&.${liftMarkerClasses.marker}`]: {
     cursor: 'pointer',
     pointerEvents: 'auto',
   },
-  lift: {
+  [`& .${liftMarkerClasses.lift}`]: {
     strokeWidth: '0.2',
   },
-  text: {
+  [`& .${liftMarkerClasses.text}`]: {
     dominantBaseline: 'central',
     textAnchor: 'middle',
     fontSize: '0.16px',
@@ -51,34 +64,31 @@ const useStyles = makeStyles({
     cursor: 'inherit',
     userSelect: 'none',
   },
-});
-
-export const useLiftMarkerStyles = makeStyles((theme) => ({
-  onCurrentLevel: {
+  [`& .${liftMarkerClasses.onCurrentLevel}`]: {
     fill: theme.palette.success.light,
     opacity: '70%',
   },
-  moving: {
+  [`& .${liftMarkerClasses.moving}`]: {
     fill: theme.palette.secondary.light,
     opacity: '70%',
   },
-  unknown: {
+  [`& .${liftMarkerClasses.unknown}`]: {
     fill: theme.palette.warning.light,
     opacity: '80%',
   },
-  emergency: {
+  [`& .${liftMarkerClasses.emergency}`]: {
     fill: theme.palette.error.light,
     opacity: '80%',
   },
-  fire: {
+  [`& .${liftMarkerClasses.fire}`]: {
     fill: theme.palette.error.main,
     opacity: '80%',
   },
-  offLine: {
+  [`& .${liftMarkerClasses.offLine}`]: {
     fill: theme.palette.grey[400],
     opacity: '80%',
   },
-  human: {
+  [`& .${liftMarkerClasses.human}`]: {
     fill: theme.palette.info.main,
     opacity: '80%',
   },
@@ -91,16 +101,14 @@ export interface LiftMarkerProps extends React.PropsWithRef<React.SVGProps<SVGGE
   height: number;
   yaw: number;
   liftState?: LiftState;
-  variant?: keyof ReturnType<typeof useLiftMarkerStyles>;
+  variant?: keyof typeof liftMarkerClasses;
 }
 
 export const LiftMarker = React.forwardRef(function (
   { cx, cy, width, height, yaw, liftState, variant, ...otherProps }: LiftMarkerProps,
   ref: React.Ref<SVGGElement>,
 ): JSX.Element {
-  const classes = useStyles();
-  const markerClasses = useLiftMarkerStyles();
-  const markerClass = variant ? markerClasses[variant] : markerClasses.onCurrentLevel;
+  const markerClass = variant ? liftMarkerClasses[variant] : liftMarkerClasses.onCurrentLevel;
   const x = cx - width / 2;
   const y = cy - height / 2;
   const r = Math.max(width, height) * 0.04;
@@ -113,7 +121,10 @@ export const LiftMarker = React.forwardRef(function (
     // QN: do we need to take into account rotation?
     const textScale = Math.min(width, height); // keep aspect ratio
     return liftState ? (
-      <text className={classes.text} transform={`translate(${cx} ${cy}) scale(${textScale})`}>
+      <text
+        className={liftMarkerClasses.text}
+        transform={`translate(${cx} ${cy}) scale(${textScale})`}
+      >
         <tspan x="0" dy="-1.8em">
           {liftState.current_floor}
         </tspan>
@@ -125,7 +136,10 @@ export const LiftMarker = React.forwardRef(function (
         </tspan>
       </text>
     ) : (
-      <text className={classes.text} transform={`translate(${cx} ${cy}) scale(${textScale})`}>
+      <text
+        className={liftMarkerClasses.text}
+        transform={`translate(${cx} ${cy}) scale(${textScale})`}
+      >
         <tspan x="0" dy="-0.5em">
           Unknown
         </tspan>
@@ -137,13 +151,16 @@ export const LiftMarker = React.forwardRef(function (
   };
 
   return (
-    <g
+    <StyledG
       ref={ref}
-      className={clsx(otherProps.onClick ? classes.marker : undefined, otherProps.className)}
+      className={clsx(
+        otherProps.onClick ? liftMarkerClasses.marker : undefined,
+        otherProps.className,
+      )}
       {...otherProps}
     >
       <rect
-        className={`${classes.lift} ${markerClass}`}
+        className={`${liftMarkerClasses.lift} ${markerClass}`}
         x={x}
         y={y}
         width={width}
@@ -153,7 +170,7 @@ export const LiftMarker = React.forwardRef(function (
         style={{ transform: `rotate(${yaw}deg)`, transformOrigin: `${cx}px ${cy}px` }}
       />
       {renderStatusText()}
-    </g>
+    </StyledG>
   );
 });
 

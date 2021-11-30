@@ -24,9 +24,9 @@ describe('Lift table test', () => {
   });
 
   it('shows the correct number of rows', () => {
-    const allRows = root.container.querySelectorAll('tr').length;
+    const allRows = root.container.querySelectorAll('.MuiDataGrid-row').length;
     // -3. from the tr of the table header, filter and pagination table
-    expect(allRows - 3).toBe(100);
+    expect(allRows).toBe(100);
   });
 
   it('shows titles correctly', () => {
@@ -40,7 +40,7 @@ describe('Lift table test', () => {
   });
 
   it('executes the addMoreRows', () => {
-    const nextPageButton = screen.queryByTitle('Next Page')?.children[0];
+    const nextPageButton = screen.queryByTitle('Go to next page');
     nextPageButton && userEvent.click(nextPageButton);
     expect(mockAddMoreRows).toHaveBeenCalled();
   });
