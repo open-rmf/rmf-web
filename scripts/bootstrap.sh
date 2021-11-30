@@ -31,4 +31,4 @@ else
   cmd='ci'
 fi
 
-eval npm --prefix "$(dirname $0)/.." $cmd $(node "$(dirname $0)/workspace-args.js" $targets)
+eval npm --prefix "$(dirname $0)/.." $cmd --include-workspace-root $(node "$(dirname $0)/workspace-args.js" $targets)
