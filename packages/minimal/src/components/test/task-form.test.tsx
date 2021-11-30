@@ -5,16 +5,16 @@ import { TaskForm } from '../task-form';
 const mockPlaceNames = ['place1', 'place2', 'place3'];
 
 describe('task form', () => {
-  it('should show success snack bar message when destination has been selected on submit', () => {
+  it('should show success snack bar message when loading bay has been selected on submit', () => {
     render(<TaskForm placeNames={mockPlaceNames} onFetchTask={jest.fn()} />);
     userEvent.click(screen.getByText('place2'));
     userEvent.click(screen.getByText('Submit'));
     expect(waitFor(() => screen.getByText('Task Submitted Successfully'))).toBeTruthy();
   });
 
-  it('should show error snack bar message if destination is not selected on submit', () => {
+  it('should show error snack bar message if loading bay is not selected on submit', () => {
     render(<TaskForm placeNames={mockPlaceNames} onFetchTask={jest.fn()} />);
     userEvent.click(screen.getByText('Submit'));
-    expect(waitFor(() => screen.getByText('You must select a destination'))).toBeTruthy();
+    expect(waitFor(() => screen.getByText('You must select a Loading Bay'))).toBeTruthy();
   });
 });
