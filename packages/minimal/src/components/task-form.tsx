@@ -53,8 +53,8 @@ export const TaskForm = (props: TaskFormProps) => {
     if (currentLocation && place) {
       const loopTaskDesc: LoopTaskDescription = {
         num_loops: 1,
-        start_name: currentLocation,
-        finish_name: place,
+        start_name: place,
+        finish_name: currentLocation,
       };
       const task: SubmitTask = {
         task_type: RmfTaskType.TYPE_LOOP,
@@ -78,7 +78,7 @@ export const TaskForm = (props: TaskFormProps) => {
     <Paper variant="outlined" className={classes.root} aria-label="task-form">
       <Typography variant="h5">Loading Bay</Typography>
       <FormControl component="fieldset" className={classes.form}>
-        <FormLabel component="legend">Destination</FormLabel>
+        <FormLabel component="legend">Destination - {currentLocation}</FormLabel>
         <RadioGroup onChange={handleChange} row>
           {placeNames.map((p) => (
             <FormControlLabel
@@ -96,7 +96,7 @@ export const TaskForm = (props: TaskFormProps) => {
       </Button>
       <Snackbar autoHideDuration={5000} open={showSnackBar} onClose={() => setShowSnackBar(false)}>
         {alertType === AlertType.ERROR ? (
-          <MuiAlert severity="error">You must select a destination</MuiAlert>
+          <MuiAlert severity="error">You must select a Loading Bay</MuiAlert>
         ) : (
           <MuiAlert severity="success">Task Submitted Successfully</MuiAlert>
         )}
