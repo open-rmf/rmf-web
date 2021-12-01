@@ -1,4 +1,4 @@
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { Tooltip } from './tooltip';

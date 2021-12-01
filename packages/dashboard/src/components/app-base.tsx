@@ -1,4 +1,4 @@
-import { createMuiTheme, Grid, makeStyles } from '@material-ui/core';
+import { createTheme, Grid } from '@mui/material';
 import React from 'react';
 import { ErrorSnackbar, rmfDark, ThemeProvider } from 'react-components';
 import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
@@ -14,14 +14,7 @@ import HelpDrawer from './drawers/help-drawer';
 import HotKeysDialog from './drawers/hotkeys-dialog';
 import SettingsDrawer from './drawers/settings-drawer';
 
-const defaultTheme = createMuiTheme();
-
-const useStyles = makeStyles({
-  appBase: {
-    width: '100%',
-    height: '100%',
-  },
-});
+const defaultTheme = createTheme();
 
 /**
  * Contains various components that are essential to the app and provides contexts to control them.
@@ -36,8 +29,6 @@ const useStyles = makeStyles({
  * Also provides `AppControllerContext` to allow children components to control them.
  */
 export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element | null {
-  const classes = useStyles();
-
   const [settings, setSettings] = React.useState(() => loadSettings());
   const [showSettings, setShowSettings] = React.useState(false);
   const [showHelp, setShowHelp] = React.useState(false);
@@ -88,7 +79,12 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
       <SettingsContext.Provider value={settings}>
         <TooltipsContext.Provider value={tooltips}>
           <AppControllerContext.Provider value={appController}>
-            <Grid container direction="column" className={classes.appBase} wrap="nowrap">
+            <Grid
+              container
+              direction="column"
+              style={{ width: '100%', height: '100%' }}
+              wrap="nowrap"
+            >
               <AppBar />
               {children}
               <SettingsDrawer

@@ -1,17 +1,16 @@
-import {
-  createStyles,
-  IconButton,
-  makeStyles,
-  Menu,
-  MenuItem,
-  Tab,
-  Toolbar,
-  Typography,
-} from '@material-ui/core';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import HelpIcon from '@material-ui/icons/Help';
+import { IconButton, Menu, MenuItem, Toolbar, Typography, styled } from '@mui/material';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import HelpIcon from '@mui/icons-material/Help';
 import React from 'react';
-import { HeaderBar, LogoButton, NavigationBar, Tooltip, useAsync } from 'react-components';
+import {
+  AppBarTab,
+  HeaderBar,
+  HeaderBarProps,
+  LogoButton,
+  NavigationBar,
+  Tooltip,
+  useAsync,
+} from 'react-components';
 import { useHistory, useLocation } from 'react-router-dom';
 import { UserProfileContext } from 'rmf-auth';
 import { AdminRoute, DashboardRoute, RobotsRoute, TasksRoute } from '../util/url';
@@ -22,16 +21,24 @@ import {
   SettingsContext,
   TooltipsContext,
 } from './app-contexts';
+import { logoSize } from '../managers/resource-manager';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    appBar: {
+const prefix = 'app-bar';
+const classes = {
+  appBar: `${prefix}-root`,
+  logoBtn: `${prefix}-logo-button`,
+  toolbar: `${prefix}-toolbar`,
+};
+
+const StyledHeaderBar = styled((props: HeaderBarProps) => <HeaderBar {...props} />)(
+  ({ theme }) => ({
+    [`&.${classes.appBar}`]: {
       zIndex: theme.zIndex.drawer + 1,
     },
-    logoBtn: {
-      width: 180,
+    [`& .${classes.logoBtn}`]: {
+      width: logoSize,
     },
-    toolbar: {
+    [`& .${classes.toolbar}`]: {
       textAlign: 'right',
       flexGrow: -1,
     },
@@ -65,7 +72,6 @@ export const AppBar = React.memo(
     const tabValue = React.useMemo(() => locationToTabValue(location.pathname), [location]);
     const logoResourcesContext = React.useContext(ResourcesContext)?.logos;
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-    const classes = useStyles();
     const { authenticator } = React.useContext(AppConfigContext);
     const profile = React.useContext(UserProfileContext);
     const { showTooltips } = React.useContext(TooltipsContext);
@@ -90,33 +96,33 @@ export const AppBar = React.memo(
     }, [logoResourcesContext, safeAsync, curTheme]);
 
     return (
-      <HeaderBar className={classes.appBar}>
+      <StyledHeaderBar className={classes.appBar}>
         <LogoButton src={brandingIconPath} alt="logo" className={classes.logoBtn} />
         <NavigationBar value={tabValue}>
-          <Tab
+          <AppBarTab
             label="Infrastructure"
             value="infrastructure"
             aria-label="Infrastructure"
             onClick={() => history.push(DashboardRoute)}
           />
-          <Tab
+          <AppBarTab
             label="Robots"
             value="robots"
             aria-label="Robots"
-            onClick={() => history.push(RobotsRoute)}
+            onTabClick={() => history.push(RobotsRoute)}
           />
-          <Tab
+          <AppBarTab
             label="Tasks"
             value="tasks"
             aria-label="Tasks"
-            onClick={() => history.push(TasksRoute)}
+            onTabClick={() => history.push(TasksRoute)}
           />
           {profile?.user.is_admin && (
-            <Tab
+            <AppBarTab
               label="Admin"
               value="admin"
               aria-label="Admin"
-              onClick={() => history.push(AdminRoute)}
+              onTabClick={() => history.push(AdminRoute)}
             />
           )}
         </NavigationBar>
@@ -143,7 +149,6 @@ export const AppBar = React.memo(
               </IconButton>
               <Menu
                 anchorEl={anchorEl}
-                getContentAnchorEl={null}
                 anchorOrigin={{
                   vertical: 'bottom',
                   horizontal: 'right',
@@ -172,7 +177,7 @@ export const AppBar = React.memo(
             </IconButton>
           </Tooltip>
         </Toolbar>
-      </HeaderBar>
+      </StyledHeaderBar>
     );
   },
 );

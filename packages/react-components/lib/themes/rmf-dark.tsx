@@ -1,9 +1,9 @@
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createTheme } from '@mui/material/styles';
 import commonTheme from './common-theme';
 
-const base = createMuiTheme({
+const base = createTheme({
   palette: {
-    type: 'dark',
+    mode: 'dark',
     ...commonTheme,
     primary: {
       //Charcoal, Rich Black Fogra 29, Cadet
@@ -19,7 +19,7 @@ const base = createMuiTheme({
   },
 });
 
-export const rmfDark = createMuiTheme(
+export const rmfDark = createTheme(
   {
     '@global': {
       '.leaflet-control-zoom a': {
@@ -41,10 +41,12 @@ export const rmfDark = createMuiTheme(
           'invert(90%) sepia(20%) saturate(120%) hue-rotate(180deg) brightness(95%) contrast(80%)',
       },
     },
-    overrides: {
+    components: {
       MuiTableCell: {
-        stickyHeader: {
-          backgroundColor: base.palette.primary.main,
+        styleOverrides: {
+          stickyHeader: {
+            backgroundColor: base.palette.primary.main,
+          },
         },
       },
     },

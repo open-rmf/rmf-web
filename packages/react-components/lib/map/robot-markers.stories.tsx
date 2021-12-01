@@ -1,4 +1,4 @@
-import { Grid, Paper, Typography } from '@material-ui/core';
+import { Grid, Paper, Typography } from '@mui/material';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { RobotMarker, RobotMarkerProps } from './robot-marker';

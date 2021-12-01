@@ -1,6 +1,5 @@
 /* istanbul ignore file */
 
-import { makeStyles } from '@material-ui/core';
 import { BuildingMap, Dispenser, DoorState, FleetState, Ingestor, LiftState } from 'api-client';
 import Debug from 'debug';
 import * as L from 'leaflet';
@@ -12,6 +11,7 @@ import {
   DoorsOverlay as DoorsOverlay_,
   LiftsOverlay as LiftsOverlay_,
   LMap,
+  LMapProps,
   loadAffineImage,
   RobotData,
   RobotsOverlay as RobotsOverlay_,
@@ -23,11 +23,22 @@ import {
   WorkcellData,
   WorkcellsOverlay as WorkcellsOverlay_,
 } from 'react-components';
+import { styled } from '@mui/material';
 import { AttributionControl, LayersControl, LeafletContext } from 'react-leaflet';
 import appConfig from '../../app-config';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { ResourcesContext } from '../app-contexts';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
+
+const classes = {
+  map: 'schedule-visualizer-map',
+};
+
+const StyledLMap = styled((props: LMapProps) => <LMap {...props} />)(({ theme }) => ({
+  [`&.${classes.map}`]: {
+    backgroundColor: theme.palette.background.default,
+  },
+}));
 
 const DoorsOverlay = React.memo(DoorsOverlay_);
 const LiftsOverlay = React.memo(LiftsOverlay_);
@@ -35,12 +46,6 @@ const RobotsOverlay = React.memo(RobotsOverlay_);
 const TrajectoriesOverlay = React.memo(TrajectoriesOverlay_);
 const WaypointsOverlay = React.memo(WaypointsOverlay_);
 const WorkcellsOverlay = React.memo(WorkcellsOverlay_);
-
-const scheduleVisualizerStyle = makeStyles((theme) => ({
-  map: {
-    backgroundColor: theme.palette.background.default,
-  },
-}));
 
 const debug = Debug('ScheduleVisualizer');
 const TrajectoryUpdateInterval = 2000;
@@ -92,7 +97,6 @@ export default function ScheduleVisualizer({
 }: ScheduleVisualizerProps): JSX.Element | null {
   debug('render');
   const safeAsync = useAsync();
-  const classes = scheduleVisualizerStyle();
   const levels = React.useMemo(
     () => [...buildingMap.levels].sort((a, b) => a.name.localeCompare(b.name)),
     [buildingMap],
@@ -309,7 +313,7 @@ export default function ScheduleVisualizer({
   const registeredLayersHandlers = React.useRef(false);
 
   return bounds ? (
-    <LMap
+    <StyledLMap
       ref={(cur) => {
         if (registeredLayersHandlers.current || !cur) return;
         cur.leafletElement.on('overlayadd', (ev: L.LayersControlEvent) =>
@@ -430,6 +434,6 @@ export default function ScheduleVisualizer({
         }
       />
       {children}
-    </LMap>
+    </StyledLMap>
   ) : null;
 }

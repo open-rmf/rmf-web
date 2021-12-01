@@ -53,7 +53,7 @@ describe('Renders correctly', () => {
     const actor = getActorFromStatus(task.status);
     if (!actor) throw new Error('An actor is required to run this test');
     const classes = root.getByText(actor[0]).className;
-    expect(classes).toContain('makeStyles-taskActor');
+    expect(classes).toContain('task-summary-accordion-task-actor');
   });
 
   it('Does not show description below the id if the task has no actor', () => {
@@ -72,25 +72,33 @@ describe('Components gets the correct style on specifics states', () => {
   it('Active style is applied ', () => {
     task.state = RmfTaskSummary.STATE_ACTIVE;
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
-    expect(root.getByText(task.task_id).parentElement?.className).toContain('makeStyles-active');
+    expect(root.getByText(task.task_id).parentElement?.className).toContain(
+      'task-summary-accordion-active',
+    );
   });
 
   it('Queue style is applied', () => {
     task.state = RmfTaskSummary.STATE_QUEUED;
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
-    expect(root.getByText(task.task_id).parentElement?.className).toContain('makeStyles-queued');
+    expect(root.getByText(task.task_id).parentElement?.className).toContain(
+      'task-summary-accordion-queued',
+    );
   });
 
   it('Completed style is applied', () => {
     task.state = RmfTaskSummary.STATE_COMPLETED;
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
-    expect(root.getByText(task.task_id).parentElement?.className).toContain('makeStyles-completed');
+    expect(root.getByText(task.task_id).parentElement?.className).toContain(
+      'task-summary-accordion-completed',
+    );
   });
 
   it('Failed style is applied', () => {
     task.state = RmfTaskSummary.STATE_FAILED;
     const root = render(<TaskSummaryAccordion tasks={[task]} />);
-    expect(root.getByText(task.task_id).parentElement?.className).toContain('makeStyles-failed');
+    expect(root.getByText(task.task_id).parentElement?.className).toContain(
+      'task-summary-accordion-failed',
+    );
   });
 });
 

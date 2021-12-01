@@ -43,7 +43,7 @@ export const Table: Story<RobotTableProps> = (args) => {
     rowsPerPage: 10,
     rowsPerPageOptions: [10],
     page,
-    onChangePage: (_ev, newPage) => setPage(newPage),
+    onPageChange: (_ev, newPage) => setPage(newPage),
   };
 
   return (

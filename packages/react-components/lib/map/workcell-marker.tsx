@@ -1,4 +1,4 @@
-import { makeStyles, useTheme } from '@material-ui/core';
+import { useTheme, styled } from '@mui/material';
 import Debug from 'debug';
 import React from 'react';
 
@@ -34,8 +34,12 @@ const DefaultIcon = ({ cx, cy, size }: WorkcellMarkerProps): JSX.Element => {
   );
 };
 
-const useStyles = makeStyles(() => ({
-  text: {
+const classes = {
+  text: 'workcell-marker-text',
+  clickable: 'workcell-marker-clickable',
+};
+const StyledG = styled('g')(() => ({
+  [`& .${classes.text}`]: {
     dominantBaseline: 'central',
     textAnchor: 'middle',
     fontSize: '0.18px',
@@ -46,8 +50,7 @@ const useStyles = makeStyles(() => ({
     pointerEvents: 'none',
     userSelect: 'none',
   },
-
-  clickable: {
+  [`& .${classes.clickable}`]: {
     pointerEvents: 'auto',
     cursor: 'pointer',
   },
@@ -60,12 +63,11 @@ export const WorkcellMarker = React.forwardRef(function (
 ): React.ReactElement {
   debug('render');
   const { cx, cy, size, iconPath, ...otherProps } = props;
-  const classes = useStyles();
   const [imageHasError, setImageHasError] = React.useState(false);
   const useImageIcon = !!iconPath && !imageHasError;
 
   return (
-    <g ref={ref} {...otherProps}>
+    <StyledG ref={ref} {...otherProps}>
       <g className={otherProps.onClick && classes.clickable}>
         {useImageIcon ? (
           <image
@@ -88,7 +90,7 @@ export const WorkcellMarker = React.forwardRef(function (
           fill="transparent"
         ></rect>
       </g>
-    </g>
+    </StyledG>
   );
 });
 

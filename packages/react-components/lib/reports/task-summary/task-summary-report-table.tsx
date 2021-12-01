@@ -1,9 +1,8 @@
-import { Typography } from '@material-ui/core';
+import React from 'react';
+import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid';
 import type { TaskProfile, Time } from 'api-client';
 import { format } from 'date-fns';
-import MaterialTable from 'material-table';
-import React from 'react';
-import { materialTableIcons } from '../../material-table-icons';
+import { Typography } from '@mui/material';
 import { rosTimeToJs } from '../../utils';
 import { DefaultLogTableProps } from '../default-report-interface';
 import { returnTaskDetails } from './utils';
@@ -26,104 +25,102 @@ export interface TaskSummaryReportTable extends DefaultLogTableProps {
 }
 
 export const TaskSummaryReportTable = (props: TaskSummaryReportTable): React.ReactElement => {
-  const { rows, tableSize, addMoreRows } = props;
+  const { rows, addMoreRows } = props;
 
   return (
-    <MaterialTable
-      title="Task Summary"
-      icons={materialTableIcons}
-      columns={[
-        {
-          title: <Typography>Task ID</Typography>,
-          field: 'task_id',
-          type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.task_id}</Typography>;
+    <div style={{ height: '100%', width: '100%' }}>
+      <DataGrid
+        autoHeight={true}
+        getRowId={(r) => r.task_id}
+        columns={[
+          {
+            headerName: 'Task ID',
+            field: 'task_id',
+            type: 'string',
+            renderCell: (rowData: GridRenderCellParams) => {
+              return <Typography>{rowData.row.task_id}</Typography>;
+            },
           },
-        },
-        {
-          title: <Typography>Fleet</Typography>,
-          field: 'fleet_name',
-          type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.fleet.name}</Typography>;
+          {
+            headerName: 'Fleet',
+            field: 'fleet_name',
+            type: 'string',
+            renderCell: (rowData: GridRenderCellParams) => {
+              return <Typography>{rowData.row.fleet.name}</Typography>;
+            },
           },
-        },
-        {
-          title: <Typography>Robot</Typography>,
-          field: 'robot_name',
-          type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.robot.name}</Typography>;
+          {
+            headerName: 'Robot',
+            field: 'robot_name',
+            type: 'string',
+            renderCell: (rowData: GridRenderCellParams) => {
+              return <Typography>{rowData.row.robot.name}</Typography>;
+            },
           },
-        },
-        {
-          title: <Typography>Task Description</Typography>,
-          field: 'description',
-          type: 'string',
-          render: (rowData) => {
-            const taskTypeDetails = returnTaskDetails(
-              rowData.task_id,
-              rowData.task_profile.description,
-            );
-            return taskTypeDetails;
+          {
+            headerName: 'Task Description',
+            field: 'description',
+            type: 'string',
+            renderCell: (rowData: GridRenderCellParams) => {
+              const taskTypeDetails = returnTaskDetails(
+                rowData.row.task_id,
+                rowData.row.task_profile.description,
+              );
+              return taskTypeDetails;
+            },
           },
-        },
-        {
-          title: <Typography>State</Typography>,
-          field: 'state',
-          type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.state}</Typography>;
+          {
+            headerName: 'State',
+            field: 'state',
+            type: 'string',
+            renderCell: (rowData: GridRenderCellParams) => {
+              return <Typography>{rowData.row.state}</Typography>;
+            },
           },
-        },
-        {
-          title: <Typography>Time</Typography>,
-          field: 'time_information',
-          type: 'string',
-          render: (rowData) => {
-            const submissionTime = rosTimeToJs(
-              rowData.task_profile.submission_time,
-            ).toLocaleTimeString();
-            const startTime = rosTimeToJs(rowData.start_time).toLocaleTimeString();
-            const endTime = rosTimeToJs(rowData.end_time).toLocaleTimeString();
-            return (
-              <>
-                <Typography>Submitted: {submissionTime}</Typography>
-                <Typography>Start: {startTime}</Typography>
-                <Typography>End: {endTime}</Typography>
-              </>
-            );
+          {
+            headerName: 'Time',
+            field: 'time_information',
+            type: 'string',
+            renderCell: (rowData: GridRenderCellParams) => {
+              const submissionTime = rosTimeToJs(
+                rowData.row.task_profile.submission_time,
+              ).toLocaleTimeString();
+              const startTime = rosTimeToJs(rowData.row.start_time).toLocaleTimeString();
+              const endTime = rosTimeToJs(rowData.row.end_time).toLocaleTimeString();
+              return (
+                <>
+                  <Typography>Submitted: {submissionTime}</Typography>
+                  <Typography>Start: {startTime}</Typography>
+                  <Typography>End: {endTime}</Typography>
+                </>
+              );
+            },
           },
-        },
-        {
-          title: <Typography>Timestamp</Typography>,
-          field: 'timestamp',
-          type: 'datetime',
-          filtering: false,
-          align: 'center',
-          render: (rowData) => {
-            return (
-              <Typography data-testid={'task-table-date'}>
-                {format(new Date(rowData.created), 'MMM dd yyyy hh:mm aaa')}
-              </Typography>
-            );
+          {
+            headerName: 'Timestamp',
+            field: 'created',
+            type: 'datetime',
+            filterable: false,
+            align: 'center',
+            renderCell: (rowData: GridRenderCellParams) => {
+              return (
+                <Typography data-testid={'task-table-date'}>
+                  {format(new Date(rowData.value as number), 'MMM dd yyyy hh:mm aaa')}
+                </Typography>
+              );
+            },
           },
-        },
-      ]}
-      data={rows}
-      options={{
-        filtering: true,
-        search: false,
-        pageSize: 100,
-        pageSizeOptions: [50, 100, 200],
-        maxBodyHeight: tableSize ? tableSize : '80vh',
-      }}
-      onChangePage={(page, pageSize) => {
-        if (addMoreRows) {
-          rows.length / pageSize - 1 === page && addMoreRows();
-        }
-      }}
-    />
+        ]}
+        rows={rows}
+        pageSize={100}
+        rowsPerPageOptions={[50, 100]}
+        onPageChange={() => {
+          if (addMoreRows) {
+            addMoreRows();
+          }
+        }}
+        disableColumnMenu={true}
+      />
+    </div>
   );
 };
