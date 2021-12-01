@@ -1,5 +1,7 @@
 import React from 'react';
 import {
+  styled,
+  Alert as MuiAlert,
   Button,
   Radio,
   RadioGroup,
@@ -8,21 +10,25 @@ import {
   FormLabel,
   Typography,
   Paper,
-  makeStyles,
+  PaperProps,
   Snackbar,
-} from '@material-ui/core';
-import MuiAlert from '@material-ui/lab/Alert';
+} from '@mui/material';
 import { TaskType as RmfTaskType } from 'rmf-models';
 import type { SubmitTask, LoopTaskDescription } from 'api-client';
 import { currentLocation, taskApi } from '../app-config';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
+const prefix = 'task-form';
+const classes = {
+  root: prefix,
+  form: `${prefix}-form-control`,
+};
+const StyledPaper = styled((props: PaperProps) => <Paper {...props} />)(({ theme }) => ({
+  [`&.${classes.root}`]: {
     padding: theme.spacing(4),
     height: '100vh',
     boxSizing: 'border-box',
   },
-  form: {
+  [`& .${classes.form}`]: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
   },
@@ -39,7 +45,6 @@ interface TaskFormProps {
 }
 
 export const TaskForm = (props: TaskFormProps) => {
-  const classes = useStyles();
   const { placeNames, onFetchTask } = props;
   const [place, setPlace] = React.useState('');
   const [showSnackBar, setShowSnackBar] = React.useState(false);
@@ -75,7 +80,7 @@ export const TaskForm = (props: TaskFormProps) => {
   };
 
   return (
-    <Paper variant="outlined" className={classes.root} aria-label="task-form">
+    <StyledPaper variant="outlined" className={classes.root} aria-label="task-form">
       <Typography variant="h5">Loading Bay</Typography>
       <FormControl component="fieldset" className={classes.form}>
         <FormLabel component="legend">Destination - {currentLocation}</FormLabel>
@@ -94,13 +99,18 @@ export const TaskForm = (props: TaskFormProps) => {
       <Button variant="contained" color="primary" size="large" onClick={() => submitTask()}>
         Submit
       </Button>
-      <Snackbar autoHideDuration={5000} open={showSnackBar} onClose={() => setShowSnackBar(false)}>
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        autoHideDuration={5000}
+        open={showSnackBar}
+        onClose={() => setShowSnackBar(false)}
+      >
         {alertType === AlertType.ERROR ? (
           <MuiAlert severity="error">You must select a Loading Bay</MuiAlert>
         ) : (
           <MuiAlert severity="success">Task Submitted Successfully</MuiAlert>
         )}
       </Snackbar>
-    </Paper>
+    </StyledPaper>
   );
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles, Grid } from '@material-ui/core';
+import { Grid, styled } from '@mui/material';
 import { BuildingMap, Task, TaskSummary } from 'api-client';
 import { getPlaces } from 'react-components';
 import { AppBar } from './components/appbar';
@@ -8,14 +8,17 @@ import { TaskDisplay } from './components/task-display';
 import { sioClient, taskApi } from './app-config';
 import './App.css';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
+const classes = {
+  root: 'minimal-app',
+};
+
+const StyledDiv = styled('div')(({ theme }) => ({
+  [`& .${classes.root}`]: {
     padding: theme.spacing(4),
   },
 }));
 
 function App() {
-  const classes = useStyles();
   const [buildingMap, setBuildingMap] = React.useState<BuildingMap | null>(null);
   const [placeNames, setPlaceNames] = React.useState<string[]>([]);
   const [fetchedTasks, setFetchedTasks] = React.useState<Task[]>([]);
@@ -46,6 +49,12 @@ function App() {
     const results = resp.data as Task[];
     setFetchedTasks(results);
   }, []);
+
+  React.useEffect(() => {
+    (async () => {
+      await fetchTasks();
+    })();
+  });
 
   React.useEffect(() => {
     if (!sioClient) {
@@ -82,7 +91,7 @@ function App() {
   }, [buildingMap]);
 
   return (
-    <div>
+    <StyledDiv>
       <AppBar />
       <Grid direction="row" container className={classes.root} spacing={3}>
         <Grid item xs={4}>
@@ -92,7 +101,7 @@ function App() {
           <TaskDisplay tasks={tasks.map((t) => t.summary)} />
         </Grid>
       </Grid>
-    </div>
+    </StyledDiv>
   );
 }
 
