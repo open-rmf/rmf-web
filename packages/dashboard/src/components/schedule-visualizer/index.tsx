@@ -23,12 +23,12 @@ import {
   WorkcellsOverlay as WorkcellsOverlay_,
 } from 'react-components';
 import { AttributionControl, LayersControl } from 'react-leaflet';
-import { LeafletContextInterface } from '@react-leaflet/core';
 import { Level, RobotState } from 'rmf-models';
 import appConfig from '../../app-config';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { ResourcesContext } from '../app-contexts';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
+import { LeafletContextInterface } from '@react-leaflet/core';
 
 const DoorsOverlay = React.memo(DoorsOverlay_);
 const LiftsOverlay = React.memo(LiftsOverlay_);
@@ -339,6 +339,7 @@ export default function ScheduleVisualizer({
       zoomSnap={0.5}
       bounds={bounds}
       className={classes.map}
+      setLeafletMap={setLeafletMap}
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
       <LayersControl position="topleft">

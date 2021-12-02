@@ -189,7 +189,8 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [appController],
   );
 
-  const [leafletMap, setLeafletMap] = React.useState<LeafletContextInterface>({});
+  const leafletContext: LeafletContextInterface = Object.create({});
+  const [leafletMap, setLeafletMap] = React.useState<LeafletContextInterface>(leafletContext);
 
   return (
     <div className={classes.root}>
