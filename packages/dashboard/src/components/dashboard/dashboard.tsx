@@ -16,7 +16,6 @@ import Debug from 'debug';
 import React from 'react';
 import { DoorData, DoorPanel, LiftPanel, LiftPanelProps, WorkcellPanel } from 'react-components';
 import { GlobalHotKeys } from 'react-hotkeys';
-import { LeafletContext } from 'react-leaflet';
 import { buildHotKeys } from '../../hotkeys';
 import { AppControllerContext } from '../app-contexts';
 import {
@@ -26,7 +25,6 @@ import {
   RmfIngressContext,
 } from '../rmf-app';
 import ScheduleVisualizer from '../schedule-visualizer';
-import { ResourcesContext } from '../app-contexts';
 
 const debug = Debug('Dashboard');
 const UpdateRate = 1000;
@@ -62,7 +60,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const rmfIngress = React.useContext(RmfIngressContext);
   const sioClient = rmfIngress?.sioClient;
   const buildingMap = React.useContext(BuildingMapContext);
-  const workcellContext = React.useContext(ResourcesContext)?.dispensers?.dispensers;
 
   const [_triggerRender, setTriggerRender] = React.useState(0); // eslint-disable-line @typescript-eslint/no-unused-vars
   React.useEffect(() => {
@@ -194,8 +191,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
     [appController],
   );
 
-  const [leafletMap, setLeafletMap] = React.useState<LeafletContext>({});
-
   return (
     <StyledDiv className={classes.root}>
       <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
@@ -210,7 +205,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 liftStates={Object.assign({}, liftStatesRef.current)}
                 fleetStates={Object.assign({}, fleetStatesRef.current)}
                 mode="normal"
-                setLeafletMap={setLeafletMap}
               ></ScheduleVisualizer>
             </Card>
             <Grid item className={classes.itemPanels}>
@@ -219,7 +213,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   doors={doors}
                   doorStates={doorStatesRef.current}
                   onDoorControlClick={handleOnDoorControlClick}
-                  leafletMap={leafletMap}
                 />
               ) : null}
               {lifts.length > 0 ? (
@@ -227,15 +220,12 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   lifts={lifts}
                   liftStates={liftStatesRef.current}
                   onRequestSubmit={handleLiftRequestSubmit}
-                  leafletMap={leafletMap}
                 />
               ) : null}
-              {workcells.length > 0 && workcellContext ? (
+              {workcells.length > 0 ? (
                 <WorkcellPanel
-                  leafletMap={leafletMap}
                   dispensers={dispensers}
                   ingestors={ingestors}
-                  workcellContext={workcellContext}
                   workcellStates={workcellStates}
                 />
               ) : null}

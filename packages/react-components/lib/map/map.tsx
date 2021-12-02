@@ -4,13 +4,7 @@ import clsx from 'clsx';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import React from 'react';
-import {
-  Map as LMap_,
-  MapProps as LMapProps_,
-  Pane,
-  useLeaflet,
-  LeafletContext,
-} from 'react-leaflet';
+import { Map as LMap_, MapProps as LMapProps_, Pane, useLeaflet } from 'react-leaflet';
 import { EntityManager, EntityManagerContext } from './entity-manager';
 import { LabelsPortalContext } from './labels-overlay';
 import { SVGOverlay } from './svg-overlay';
@@ -45,18 +39,12 @@ export function calcMaxBounds(
   return bounds.pad(0.2);
 }
 
-function EntityManagerProvider({
-  setLeafletMap,
-  children,
-}: React.PropsWithChildren<{
-  setLeafletMap?: React.Dispatch<React.SetStateAction<LeafletContext>>;
-}>) {
+function EntityManagerProvider({ children }: React.PropsWithChildren<{}>) {
   const leaflet = useLeaflet();
   const { current: entityManager } = React.useRef(new EntityManager());
 
   React.useEffect(() => {
     if (!leaflet.map) return;
-    if (setLeafletMap) setLeafletMap(leaflet);
     const listener = () => {
       // TODO: recalculate positions
     };
@@ -64,7 +52,7 @@ function EntityManagerProvider({
     return () => {
       leaflet.map && leaflet.map.off('zoom', listener);
     };
-  }, [leaflet, leaflet.map, setLeafletMap]);
+  }, [leaflet, leaflet.map]);
 
   return entityManager ? (
     <EntityManagerContext.Provider value={entityManager}>{children}</EntityManagerContext.Provider>
@@ -73,11 +61,10 @@ function EntityManagerProvider({
 
 export interface LMapProps extends Omit<LMapProps_, 'crs'> {
   ref?: React.Ref<LMap_>;
-  setLeafletMap?: React.Dispatch<React.SetStateAction<LeafletContext>>;
 }
 
 export const LMap = React.forwardRef(
-  ({ className, children, setLeafletMap, ...otherProps }: LMapProps, ref: React.Ref<LMap_>) => {
+  ({ className, children, ...otherProps }: LMapProps, ref: React.Ref<LMap_>) => {
     const [labelsPortal, setLabelsPortal] = React.useState<SVGSVGElement | null>(null);
     const viewBox = otherProps.bounds ? viewBoxFromLeafletBounds(otherProps.bounds) : undefined;
     return (

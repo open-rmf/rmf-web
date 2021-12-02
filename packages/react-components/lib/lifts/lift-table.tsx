@@ -2,18 +2,11 @@ import { Button, Table, TableBody, TableHead, TableRow, styled } from '@mui/mate
 import type { Lift, LiftState } from 'api-client';
 import clsx from 'clsx';
 import React from 'react';
-import { LeafletContext } from 'react-leaflet';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import { DoorMode as RmfDoorMode } from 'rmf-models';
 import { useFixedTableCellStylesClasses, ItemTableCell } from '../utils';
 import LiftRequestFormDialog from './lift-request-form-dialog';
-import {
-  doorStateToString,
-  liftModeToString,
-  requestDoorModes,
-  requestModes,
-  onLiftClick,
-} from './lift-utils';
+import { doorStateToString, liftModeToString, requestDoorModes, requestModes } from './lift-utils';
 import AutoSizer, { AutoSizerProps } from 'react-virtualized-auto-sizer';
 
 const classes = {
@@ -53,7 +46,6 @@ const StyledAutosizer = styled((props: AutoSizerProps) => <AutoSizer {...props} 
 export interface LiftTableProps {
   lifts: Lift[];
   liftStates: Record<string, LiftState>;
-  leafletMap?: LeafletContext;
   onRequestSubmit?(
     event: React.FormEvent,
     lift: Lift,
@@ -73,7 +65,6 @@ export interface LiftRowProps {
   destinationFloor?: string;
   currentFloor?: string;
   currentMode?: number;
-  leafletMap?: LeafletContext;
   onRequestSubmit?(
     event: React.FormEvent,
     lift: Lift,
@@ -90,7 +81,6 @@ const LiftRow = React.memo(
     destinationFloor,
     currentFloor,
     currentMode,
-    leafletMap,
     onRequestSubmit,
   }: LiftRowProps) => {
     const [showForms, setShowForms] = React.useState(false);
@@ -110,12 +100,7 @@ const LiftRow = React.memo(
     }, []);
 
     return (
-      <TableRow
-        aria-label={`${lift.name}`}
-        component="div"
-        className={classes.tableRow}
-        onClick={() => onLiftClick(lift, leafletMap)}
-      >
+      <TableRow aria-label={`${lift.name}`} component="div" className={classes.tableRow}>
         <ItemTableCell
           component="div"
           variant="body"
@@ -183,7 +168,6 @@ const LiftRow = React.memo(
 const LiftListRenderer = ({ data, index, style }: LiftListRendererProps) => {
   const lift = data.lifts[index];
   const liftState = data.liftStates[lift.name];
-  const leafletMap = data.leafletMap;
 
   return (
     <div style={style}>
@@ -195,18 +179,12 @@ const LiftListRenderer = ({ data, index, style }: LiftListRendererProps) => {
         destinationFloor={liftState?.destination_floor}
         onRequestSubmit={data.onRequestSubmit}
         key={`${lift.name}`}
-        leafletMap={leafletMap}
       />
     </div>
   );
 };
 
-export const LiftTable = ({
-  lifts,
-  liftStates,
-  onRequestSubmit,
-  leafletMap,
-}: LiftTableProps): JSX.Element => {
+export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps): JSX.Element => {
   const { fixedTableCell, fixedLastTableCell } = useFixedTableCellStylesClasses;
   return (
     <StyledAutosizer disableHeight>
@@ -269,7 +247,6 @@ export const LiftTable = ({
                   lifts,
                   liftStates,
                   onRequestSubmit,
-                  leafletMap,
                 }}
               >
                 {LiftListRenderer}

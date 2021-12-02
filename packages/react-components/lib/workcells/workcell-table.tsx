@@ -1,5 +1,4 @@
 import { styled, Table, TableBody, TableHead, TableRow } from '@mui/material';
-import { LeafletContext } from 'react-leaflet';
 import clsx from 'clsx';
 import React from 'react';
 import AutoSizer, { AutoSizerProps } from 'react-virtualized-auto-sizer';
@@ -7,7 +6,7 @@ import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import { DispenserState as RmfDispenserState } from 'rmf-models';
 import { Workcell, WorkcellState } from '.';
 import { ItemTableCell, useFixedTableCellStylesClasses } from '../utils';
-import { dispenserModeToString, DispenserResource, onWorkcellClick } from './utils';
+import { dispenserModeToString } from './utils';
 
 const classes = {
   dispenserLabelIdle: 'workcell-dispenser-label-idle',
@@ -56,8 +55,6 @@ const StyledAutosizer = styled((props: AutoSizerProps) => <AutoSizer {...props} 
 );
 
 export interface WorkcellTableProps {
-  leafletMap?: LeafletContext;
-  workcellContext: Record<string, DispenserResource>;
   workcells: Workcell[];
   workcellStates: Record<string, WorkcellState>;
 }
@@ -68,8 +65,6 @@ interface WorkcellListRendererProps extends ListChildComponentProps {
 }
 
 export interface WorkcellRowProps {
-  leafletMap?: LeafletContext;
-  workcellResource: DispenserResource;
   workcell: Workcell;
   mode?: number;
   requestGuidQueue?: string[];
@@ -77,14 +72,7 @@ export interface WorkcellRowProps {
 }
 
 const WorkcellRow = React.memo(
-  ({
-    leafletMap,
-    workcellResource,
-    workcell,
-    mode,
-    requestGuidQueue,
-    secondsRemaining,
-  }: WorkcellRowProps) => {
+  ({ workcell, mode, requestGuidQueue, secondsRemaining }: WorkcellRowProps) => {
     const { fixedTableCell } = useFixedTableCellStylesClasses;
     const dispenserModeLabelClasses = React.useCallback((mode: number): string => {
       switch (mode) {
@@ -100,12 +88,7 @@ const WorkcellRow = React.memo(
     }, []);
 
     return (
-      <TableRow
-        aria-label={`${workcell.guid}`}
-        className={classes.tableRow}
-        onClick={() => onWorkcellClick(workcellResource, leafletMap)}
-        component="div"
-      >
+      <TableRow aria-label={`${workcell.guid}`} className={classes.tableRow} component="div">
         {mode !== undefined && requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
           <React.Fragment>
             <ItemTableCell
@@ -192,9 +175,7 @@ const WorkcellRow = React.memo(
 
 const WorkcellListRenderer = ({ data, index, style }: WorkcellListRendererProps) => {
   const workcell = data.workcells[index];
-  const workcellContext = data.workcellContext;
   const workcellState: WorkcellState | undefined = data.workcellStates[workcell.guid];
-  const leafletMap = data.leafletMap;
 
   return (
     <div style={style}>
@@ -203,19 +184,12 @@ const WorkcellListRenderer = ({ data, index, style }: WorkcellListRendererProps)
         mode={workcellState?.mode}
         requestGuidQueue={workcellState?.request_guid_queue}
         secondsRemaining={workcellState?.seconds_remaining}
-        workcellResource={workcellContext[workcell.guid]}
-        leafletMap={leafletMap}
       />
     </div>
   );
 };
 
-export const WorkcellTable = ({
-  workcells,
-  workcellStates,
-  workcellContext,
-  leafletMap,
-}: WorkcellTableProps): JSX.Element => {
+export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps): JSX.Element => {
   const { fixedTableCell } = useFixedTableCellStylesClasses;
   return (
     <StyledAutosizer disableHeight>
@@ -270,8 +244,6 @@ export const WorkcellTable = ({
                 itemData={{
                   workcells,
                   workcellStates,
-                  workcellContext,
-                  leafletMap,
                 }}
               >
                 {WorkcellListRenderer}

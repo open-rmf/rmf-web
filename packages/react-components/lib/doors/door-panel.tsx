@@ -13,18 +13,16 @@ import ViewListIcon from '@mui/icons-material/ViewList';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import type { Door, DoorState } from 'api-client';
 import React from 'react';
-import { LeafletContext } from 'react-leaflet';
 import clsx from 'clsx';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
 import { DoorMode as RmfDoorMode } from 'rmf-models';
 import { DoorTable } from './door-table';
-import { DoorData, doorModeToString, doorTypeToString, onDoorClick } from './utils';
+import { DoorData, doorModeToString, doorTypeToString } from './utils';
 
 export interface DoorPanelProps {
   doors: DoorData[];
   doorStates: Record<string, DoorState>;
-  leafletMap?: LeafletContext;
   onDoorControlClick?(event: React.MouseEvent, door: Door, mode: number): void;
 }
 
@@ -39,7 +37,6 @@ interface DoorGridRendererProps extends GridChildComponentProps {
 export interface DoorcellProps {
   door: DoorData;
   doorMode?: number;
-  leafletMap?: LeafletContext;
   onDoorControlClick?(event: React.MouseEvent, door: Door, mode: number): void;
 }
 
@@ -133,7 +130,7 @@ const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme })
 }));
 
 const DoorCell = React.memo(
-  ({ door, doorMode, leafletMap, onDoorControlClick }: DoorcellProps): JSX.Element => {
+  ({ door, doorMode, onDoorControlClick }: DoorcellProps): JSX.Element => {
     const doorModeLabelClasses = React.useCallback((doorMode?: number): string => {
       if (doorMode === undefined) {
         return '';
@@ -153,12 +150,7 @@ const DoorCell = React.memo(
     const labelId = `door-cell-${door.door.name}`;
 
     return (
-      <Paper
-        className={classes.cellPaper}
-        role="region"
-        aria-labelledby={labelId}
-        onClick={() => onDoorClick(door.door, leafletMap)}
-      >
+      <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
         <Typography
           noWrap
           id={labelId}
@@ -216,14 +208,12 @@ const DoorCell = React.memo(
 
 const DoorGridRenderer = ({ data, columnIndex, rowIndex, style }: DoorGridRendererProps) => {
   let door: DoorData | undefined;
-  let leafletMap: LeafletContext | undefined;
   let doorState: DoorState | undefined;
   const columnCount = data.columnCount;
 
   if (rowIndex * columnCount + columnIndex <= data.doors.length - 1) {
     door = data.doors[rowIndex * columnCount + columnIndex];
     doorState = data.doorStates[door.door.name];
-    leafletMap = data.leafletMap;
   }
 
   return door ? (
@@ -232,18 +222,12 @@ const DoorGridRenderer = ({ data, columnIndex, rowIndex, style }: DoorGridRender
         door={door}
         doorMode={doorState?.current_mode.value}
         onDoorControlClick={data.onDoorControlClick}
-        leafletMap={leafletMap}
       />
     </div>
   ) : null;
 };
 
-export function DoorPanel({
-  doors,
-  doorStates,
-  leafletMap,
-  onDoorControlClick,
-}: DoorPanelProps): JSX.Element {
+export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelProps): JSX.Element {
   const [isCellView, setIsCellView] = React.useState(true);
   const columnWidth = 250;
 
@@ -285,7 +269,6 @@ export function DoorPanel({
                     doors,
                     doorStates,
                     onDoorControlClick,
-                    leafletMap,
                   }}
                 >
                   {DoorGridRenderer}
@@ -298,7 +281,6 @@ export function DoorPanel({
             doors={doors}
             doorStates={doorStates}
             onDoorControlClick={onDoorControlClick}
-            leafletMap={leafletMap}
           />
         )}
       </Grid>

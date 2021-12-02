@@ -12,8 +12,6 @@ import ViewListIcon from '@mui/icons-material/ViewList';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import type { Dispenser, Ingestor } from 'api-client';
 import React from 'react';
-import { LeafletContext } from 'react-leaflet';
-import { onWorkcellClick, DispenserResource } from './utils';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
 import { Workcell, WorkcellState } from '.';
@@ -22,16 +20,12 @@ import { WorkcellTable } from './workcell-table';
 export interface WorkcellPanelProps {
   dispensers: Dispenser[];
   ingestors: Ingestor[];
-  leafletMap?: LeafletContext;
-  workcellContext: Record<string, DispenserResource>;
   workcellStates: Record<string, WorkcellState>;
 }
 
 export interface WorkcellDataProps {
   workcells: Workcell[];
   workcellStates: Record<string, WorkcellState>;
-  workcellContext: Record<string, DispenserResource>;
-  leafletMap: LeafletContext | undefined;
 }
 
 interface WorkcellGridData extends WorkcellDataProps {
@@ -46,8 +40,6 @@ export interface WorkcellCellProps {
   workcell: Workcell;
   requestGuidQueue?: string[];
   secondsRemaining?: number;
-  leafletMap?: LeafletContext;
-  workcellResource?: DispenserResource;
 }
 
 const classes = {
@@ -123,21 +115,10 @@ const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme })
 }));
 
 const WorkcellCell = React.memo(
-  ({
-    workcell,
-    requestGuidQueue,
-    secondsRemaining,
-    leafletMap,
-    workcellResource,
-  }: WorkcellCellProps): JSX.Element | null => {
+  ({ workcell, requestGuidQueue, secondsRemaining }: WorkcellCellProps): JSX.Element | null => {
     const labelId = `workcell-cell-${workcell.guid}`;
     return (
-      <Paper
-        className={classes.cellPaper}
-        role="region"
-        aria-labelledby={labelId}
-        onClick={() => workcellResource && onWorkcellClick(workcellResource, leafletMap)}
-      >
+      <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
         {requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
           <React.Fragment>
             <Typography
@@ -183,16 +164,12 @@ const WorkcellGridRenderer = ({
 }: WorkcellGridRendererProps) => {
   let workcell: Workcell | undefined;
   let workcellState: WorkcellState | undefined;
-  let workcellResource: DispenserResource | undefined;
-  let leafletMap: LeafletContext | undefined;
   const columnCount = data.columnCount;
-  const { workcells, workcellStates, workcellContext } = data;
+  const { workcells, workcellStates } = data;
 
   if (rowIndex * columnCount + columnIndex <= workcells.length - 1) {
     workcell = workcells[rowIndex * columnCount + columnIndex];
     workcellState = workcellStates[workcell.guid];
-    workcellResource = workcellContext[workcell.guid];
-    leafletMap = data.leafletMap;
   }
 
   return workcell ? (
@@ -201,8 +178,6 @@ const WorkcellGridRenderer = ({
         workcell={workcell}
         requestGuidQueue={workcellState?.request_guid_queue}
         secondsRemaining={workcellState?.seconds_remaining}
-        workcellResource={workcellResource}
-        leafletMap={leafletMap}
       />
     </div>
   ) : null;
@@ -210,9 +185,7 @@ const WorkcellGridRenderer = ({
 
 export function WorkcellPanel({
   dispensers,
-  leafletMap,
   ingestors,
-  workcellContext,
   workcellStates,
 }: WorkcellPanelProps): JSX.Element {
   const [isCellView, setIsCellView] = React.useState(true);
@@ -258,8 +231,6 @@ export function WorkcellPanel({
                         columnCount,
                         workcells: dispensers,
                         workcellStates,
-                        workcellContext,
-                        leafletMap,
                       }}
                     >
                       {WorkcellGridRenderer}
@@ -288,8 +259,6 @@ export function WorkcellPanel({
                         columnCount,
                         workcells: ingestors,
                         workcellStates,
-                        workcellContext,
-                        leafletMap,
                       }}
                     >
                       {WorkcellGridRenderer}
@@ -305,23 +274,13 @@ export function WorkcellPanel({
           {dispensers.length > 0 ? (
             <div className={classes.tableDiv}>
               <Typography variant="h6">Dispenser Table</Typography>
-              <WorkcellTable
-                workcells={dispensers}
-                workcellStates={workcellStates}
-                workcellContext={workcellContext}
-                leafletMap={leafletMap}
-              />
+              <WorkcellTable workcells={dispensers} workcellStates={workcellStates} />
             </div>
           ) : null}
           {ingestors.length > 0 ? (
             <div className={classes.tableDiv}>
               <Typography variant="h6">Ingestor Table</Typography>
-              <WorkcellTable
-                workcells={ingestors}
-                workcellStates={workcellStates}
-                workcellContext={workcellContext}
-                leafletMap={leafletMap}
-              />
+              <WorkcellTable workcells={ingestors} workcellStates={workcellStates} />
             </div>
           ) : null}
         </React.Fragment>

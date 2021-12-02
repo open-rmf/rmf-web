@@ -15,7 +15,6 @@ import ViewListIcon from '@mui/icons-material/ViewList';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import type { Lift, LiftState } from 'api-client';
 import React from 'react';
-import { LeafletContext } from 'react-leaflet';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
 import { DoorMode as RmfDoorMode } from 'rmf-models';
@@ -26,13 +25,11 @@ import {
   motionStateToString,
   requestDoorModes,
   requestModes,
-  onLiftClick,
 } from './lift-utils';
 
 export interface LiftPanelProps {
   lifts: Lift[];
   liftStates: Record<string, LiftState>;
-  leafletMap?: LeafletContext;
   onRequestSubmit?(
     event: React.FormEvent,
     lift: Lift,
@@ -55,7 +52,6 @@ export interface LiftCellProps {
   doorState?: number;
   motionState?: number;
   currentFloor?: string;
-  leafletMap?: LeafletContext;
   destinationFloor?: string;
   onRequestSubmit?(
     event: React.FormEvent,
@@ -151,7 +147,6 @@ const LiftCell = React.memo(
     doorState,
     motionState,
     currentFloor,
-    leafletMap,
     destinationFloor,
     onRequestSubmit,
   }: LiftCellProps): JSX.Element | null => {
@@ -178,12 +173,7 @@ const LiftCell = React.memo(
     }, []);
 
     return (
-      <Paper
-        className={classes.cellPaper}
-        role="region"
-        aria-labelledby={labelId}
-        onClick={() => onLiftClick(lift, leafletMap)}
-      >
+      <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
         <Grid container direction="row">
           <Grid item xs={9}>
             <Typography
@@ -243,7 +233,6 @@ const LiftGridRenderer = ({ data, columnIndex, rowIndex, style }: LiftGridRender
   let motionState: number | undefined;
   let destinationFloor: string | undefined;
   let currentFloor: string | undefined;
-  let leafletMap: LeafletContext | undefined;
   const columnCount = data.columnCount;
 
   if (rowIndex * columnCount + columnIndex <= data.lifts.length - 1) {
@@ -253,7 +242,6 @@ const LiftGridRenderer = ({ data, columnIndex, rowIndex, style }: LiftGridRender
     motionState = liftState?.motion_state;
     destinationFloor = liftState?.destination_floor;
     currentFloor = liftState?.current_floor;
-    leafletMap = data.leafletMap;
   }
 
   return lift ? (
@@ -264,19 +252,13 @@ const LiftGridRenderer = ({ data, columnIndex, rowIndex, style }: LiftGridRender
         motionState={motionState}
         currentFloor={currentFloor}
         destinationFloor={destinationFloor}
-        leafletMap={leafletMap}
         onRequestSubmit={data.onRequestSubmit}
       />
     </div>
   ) : null;
 };
 
-export function LiftPanel({
-  lifts,
-  liftStates,
-  leafletMap,
-  onRequestSubmit,
-}: LiftPanelProps): JSX.Element {
+export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps): JSX.Element {
   const [isCellView, setIsCellView] = React.useState(true);
   const columnWidth = 250;
 
@@ -318,7 +300,6 @@ export function LiftPanel({
                     lifts,
                     liftStates,
                     onRequestSubmit,
-                    leafletMap,
                   }}
                 >
                   {LiftGridRenderer}
@@ -327,12 +308,7 @@ export function LiftPanel({
             }}
           </AutoSizer>
         ) : (
-          <LiftTable
-            leafletMap={leafletMap}
-            lifts={lifts}
-            liftStates={liftStates}
-            onRequestSubmit={onRequestSubmit}
-          />
+          <LiftTable lifts={lifts} liftStates={liftStates} onRequestSubmit={onRequestSubmit} />
         )}
       </Grid>
     </StyledCard>

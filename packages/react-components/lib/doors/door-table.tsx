@@ -2,17 +2,15 @@ import { Button, ButtonGroup, styled, Table, TableBody, TableHead, TableRow } fr
 import type { Door, DoorState } from 'api-client';
 import clsx from 'clsx';
 import React from 'react';
-import { LeafletContext } from 'react-leaflet';
 import AutoSizer, { AutoSizerProps } from 'react-virtualized-auto-sizer';
 import { DoorMode as RmfDoorMode } from 'rmf-models';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
-import { DoorData, doorModeToString, doorTypeToString, onDoorClick } from './utils';
+import { DoorData, doorModeToString, doorTypeToString } from './utils';
 import { useFixedTableCellStylesClasses, ItemTableCell } from '../utils';
 
 export interface DoorTableProps {
   doors: DoorData[];
   doorStates: Record<string, DoorState>;
-  leafletMap?: LeafletContext;
   onDoorControlClick?(event: React.MouseEvent, door: Door, mode: number): void;
 }
 
@@ -23,7 +21,6 @@ interface DoorListRendererProps extends ListChildComponentProps {
 export interface DoorRowProps {
   door: DoorData;
   doorMode: number;
-  leafletMap?: LeafletContext;
   onDoorControlClick?(event: React.MouseEvent, door: Door, mode: number): void;
 }
 
@@ -66,7 +63,7 @@ const getOpMode = (doorMode?: number) => {
   return getState === 'N/A' ? 'Offline' : 'Online';
 };
 
-const DoorRow = React.memo(({ door, doorMode, leafletMap, onDoorControlClick }: DoorRowProps) => {
+const DoorRow = React.memo(({ door, doorMode, onDoorControlClick }: DoorRowProps) => {
   const { fixedTableCell, fixedLastTableCell } = useFixedTableCellStylesClasses;
   const doorModeLabelClasses = React.useCallback((doorMode?: number): string => {
     if (doorMode === undefined) {
@@ -86,12 +83,7 @@ const DoorRow = React.memo(({ door, doorMode, leafletMap, onDoorControlClick }: 
   const doorStatusClass = doorModeLabelClasses(doorMode);
 
   return (
-    <TableRow
-      arial-label={`${door.door.name}`}
-      component="div"
-      className={classes.tableRow}
-      onClick={() => onDoorClick(door.door, leafletMap)}
-    >
+    <TableRow arial-label={`${door.door.name}`} component="div" className={classes.tableRow}>
       <ItemTableCell
         component="div"
         variant="body"
@@ -163,7 +155,6 @@ const DoorRow = React.memo(({ door, doorMode, leafletMap, onDoorControlClick }: 
 const DoorListRenderer = ({ data, index, style }: DoorListRendererProps) => {
   const door = data.doors[index];
   const doorState = data.doorStates[door.door.name];
-  const leafletMap = data.leafletMap;
 
   return (
     <div style={style}>
@@ -171,7 +162,6 @@ const DoorListRenderer = ({ data, index, style }: DoorListRendererProps) => {
         door={door}
         doorMode={doorState?.current_mode.value}
         onDoorControlClick={data.onDoorControlClick}
-        leafletMap={leafletMap}
         key={door.door.name}
       />
     </div>
@@ -181,7 +171,6 @@ const DoorListRenderer = ({ data, index, style }: DoorListRendererProps) => {
 export const DoorTable = ({
   doors,
   doorStates,
-  leafletMap,
   onDoorControlClick,
 }: DoorTableProps): JSX.Element => {
   const { fixedTableCell, fixedLastTableCell } = useFixedTableCellStylesClasses;
@@ -247,7 +236,6 @@ export const DoorTable = ({
                   doorStates,
                   width,
                   onDoorControlClick,
-                  leafletMap,
                 }}
               >
                 {DoorListRenderer}
