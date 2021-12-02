@@ -1,5 +1,5 @@
 import { DispenserState as RmfDispenserState } from 'rmf-models';
-import { LeafletContextInterface } from 'react-leaflet';
+import { LeafletContextInterface } from '@react-leaflet/core';
 
 interface Location {
   x: number;

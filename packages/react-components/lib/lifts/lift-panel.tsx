@@ -54,7 +54,7 @@ export interface LiftCellProps {
   doorState?: number;
   motionState?: number;
   currentFloor?: string;
-  leafletMap?: LeafletContext;
+  leafletMap?: LeafletContextInterface;
   destinationFloor?: string;
   onRequestSubmit?(
     event: React.FormEvent,
@@ -237,7 +237,7 @@ const LiftGridRenderer = ({ data, columnIndex, rowIndex, style }: LiftGridRender
   let motionState: number | undefined;
   let destinationFloor: string | undefined;
   let currentFloor: string | undefined;
-  let leafletMap: LeafletContext | undefined;
+  let leafletMap: LeafletContextInterface | undefined;
   const columnCount = data.columnCount;
 
   if (rowIndex * columnCount + columnIndex <= data.lifts.length - 1) {

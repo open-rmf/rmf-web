@@ -1,6 +1,6 @@
-import { LeafletContext } from 'react-leaflet';
 import { Lift } from 'api-client';
 import { LiftRequest as RmfLiftRequest, LiftState as RmfLiftState } from 'rmf-models';
+import { LeafletContextInterface } from '@react-leaflet/core';
 
 export function liftModeToString(liftMode?: number): string {
   if (liftMode === undefined) {
@@ -79,7 +79,7 @@ export function requestDoorModeToString(requestDoorMode: number): string {
   return requestDoorModeStrings[requestDoorMode] || 'Unknown';
 }
 
-export function onLiftClick(lift: Lift, leafletMap?: LeafletContext): void {
+export function onLiftClick(lift: Lift, leafletMap?: LeafletContextInterface): void {
   leafletMap &&
     leafletMap.map?.setView([lift.ref_y, lift.ref_x], 5.5, {
       animate: true,

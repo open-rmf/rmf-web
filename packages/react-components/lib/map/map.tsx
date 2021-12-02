@@ -1,4 +1,5 @@
 import { makeStyles } from '@material-ui/core';
+import { LeafletContextInterface, CONTEXT_VERSION } from '@react-leaflet/core';
 import type { Level } from 'api-client';
 import clsx from 'clsx';
 import * as L from 'leaflet';
@@ -35,12 +36,18 @@ export function calcMaxBounds(
   return bounds.pad(0.2);
 }
 
-function EntityManagerProvider({ children }: React.PropsWithChildren<{}>) {
+function EntityManagerProvider({
+  setLeafletMap,
+  children,
+}: React.PropsWithChildren<{
+  setLeafletMap?: React.Dispatch<React.SetStateAction<LeafletContextInterface>>;
+}>) {
   const mapInstance = useMap();
   const { current: entityManager } = React.useRef(new EntityManager());
 
   React.useEffect(() => {
     if (!mapInstance) return;
+    if (setLeafletMap) setLeafletMap({ __version: CONTEXT_VERSION, map: mapInstance });
     const listener = () => {
       // TODO: recalculate positions
     };
@@ -48,7 +55,7 @@ function EntityManagerProvider({ children }: React.PropsWithChildren<{}>) {
     return () => {
       mapInstance && mapInstance.off('zoom', listener);
     };
-  }, [mapInstance]);
+  }, [mapInstance, setLeafletMap]);
 
   return entityManager ? (
     <EntityManagerContext.Provider value={entityManager}>{children}</EntityManagerContext.Provider>
@@ -57,10 +64,11 @@ function EntityManagerProvider({ children }: React.PropsWithChildren<{}>) {
 
 export interface LMapProps extends Omit<MapContainerProps, 'crs'> {
   ref?: React.Ref<typeof MapContainer>;
+  setLeafletMap: React.Dispatch<React.SetStateAction<LeafletContextInterface>>;
 }
 
 export const LMap = React.forwardRef(
-  ({ className, children, ...otherProps }: MapContainerProps) => {
+  ({ className, children, setLeafletMap, ...otherProps }: LMapProps) => {
     const classes = useStyles();
     const [labelsPortal, setLabelsPortal] = React.useState<SVGSVGElement | null>(null);
     const viewBox = otherProps.bounds ? viewBoxFromLeafletBounds(otherProps.bounds) : '';
@@ -71,6 +79,7 @@ export const LMap = React.forwardRef(
         crs={L.CRS.Simple}
         {...otherProps}
         maxZoom={22}
+        {...otherProps}
       >
         <EntityManagerProvider>
           <LabelsPortalContext.Provider value={labelsPortal}>

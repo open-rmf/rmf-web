@@ -204,7 +204,7 @@ const DoorCell = React.memo(
 
 const DoorGridRenderer = ({ data, columnIndex, rowIndex, style }: DoorGridRendererProps) => {
   let door: DoorData | undefined;
-  let leafletMap: Map | undefined;
+  let leafletMap: LeafletContextInterface | undefined;
   let doorState: DoorState | undefined;
   const columnCount = data.columnCount;
 
