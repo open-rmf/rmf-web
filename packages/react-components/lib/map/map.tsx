@@ -64,17 +64,21 @@ function EntityManagerProvider({
 
 export interface LMapProps extends Omit<MapContainerProps, 'crs'> {
   ref?: React.Ref<typeof MapContainer>;
-  setLeafletMap: React.Dispatch<React.SetStateAction<LeafletContextInterface>>;
+  setLeafletMap?: React.Dispatch<React.SetStateAction<LeafletContextInterface>>;
 }
 
 export const LMap = React.forwardRef(
-  ({ className, children, setLeafletMap, ...otherProps }: LMapProps) => {
+  (
+    { className, children, setLeafletMap, ...otherProps }: LMapProps,
+    ref: React.Ref<typeof MapContainer>,
+  ) => {
     const classes = useStyles();
     const [labelsPortal, setLabelsPortal] = React.useState<SVGSVGElement | null>(null);
     const viewBox = otherProps.bounds ? viewBoxFromLeafletBounds(otherProps.bounds) : '';
 
     return (
       <MapContainer
+        ref={ref}
         className={clsx(classes.map, className)}
         crs={L.CRS.Simple}
         {...otherProps}
