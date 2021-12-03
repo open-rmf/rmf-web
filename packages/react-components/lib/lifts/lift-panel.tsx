@@ -69,7 +69,6 @@ const classes = {
   cellPaper: 'lift-panel-cell-paper',
   requestButton: 'lift-panel-request-button',
   itemIcon: 'lift-panel-item-icon',
-  buttonGroup: 'lift-panel-button-group',
   iconMoving: 'lift-panel-icon-moving',
   iconOtherStates: 'lift-panel-other-states',
   doorLabelOpen: 'lift-panel-door-label-open',
@@ -89,15 +88,25 @@ const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme })
     backgroundColor: theme.palette.primary.main,
   },
   [`& .${classes.grid}`]: {
-    padding: theme.spacing(1),
+    padding: theme.spacing(2),
   },
   [`& .${classes.cellPaper}`]: {
     padding: theme.spacing(2),
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.action.hover,
+    backgroundColor: theme.palette.background.paper,
+    border: 1,
+    borderStyle: 'solid',
+    borderColor: theme.palette.primary.main,
+    '&:hover': {
+      cursor: 'pointer',
+      backgroundColor: theme.palette.action.hover,
+    },
   },
   [`& .${classes.requestButton}`]: {
     marginTop: theme.spacing(1),
+    padding: theme.spacing(1),
+    backgroundColor: theme.palette.info.light,
+    margin: 'auto',
   },
   [`& .${classes.itemIcon}`]: {
     color: theme.palette.primary.contrastText,
@@ -178,7 +187,7 @@ const LiftCell = React.memo(
             <Box border={1} borderColor="divider" marginTop={1} marginBottom={1}>
               <Typography align="center">{destinationFloor || 'Unknown'}</Typography>
             </Box>
-            <Typography align="center" className={doorModeLabelClasses(doorState)}>
+            <Typography variant="body2" align="center" className={doorModeLabelClasses(doorState)}>
               {currDoorMotion}
             </Typography>
           </Grid>
@@ -273,7 +282,7 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
           </Grid>
         </Grid>
       </Paper>
-      <Grid className={classes.grid} container direction="row" spacing={1}>
+      <Grid className={classes.grid} container direction="row" spacing={2}>
         {isCellView ? (
           <AutoSizer disableHeight>
             {({ width }) => {
@@ -284,7 +293,7 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
                   columnWidth={columnWidth}
                   height={250}
                   rowCount={Math.ceil(lifts.length / columnCount)}
-                  rowHeight={140}
+                  rowHeight={180}
                   width={width}
                   itemData={{
                     columnCount,

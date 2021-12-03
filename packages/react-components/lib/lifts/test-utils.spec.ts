@@ -77,6 +77,7 @@ export const testLifts = [
   { ...defaultLift, name: 'test3' },
   { ...defaultLift, name: 'test4' },
   { ...defaultLift, name: 'test5' },
+  { ...defaultLift, name: 'test_lift_with_a_really_long_name' },
 ];
 const defaultState = makeLiftState();
 export const testLiftStates: Record<string, LiftState> = {

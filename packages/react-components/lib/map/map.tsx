@@ -38,7 +38,7 @@ function EntityManagerProvider({ children }: React.PropsWithChildren<{}>) {
     return () => {
       leaflet.map && leaflet.map.off('zoom', listener);
     };
-  }, [leaflet.map]);
+  }, [leaflet, leaflet.map]);
 
   return entityManager ? (
     <EntityManagerContext.Provider value={entityManager}>{children}</EntityManagerContext.Provider>

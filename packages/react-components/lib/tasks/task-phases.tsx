@@ -106,10 +106,10 @@ export function TaskPhases({ taskSummary, ...boxProps }: TaskPhasesProps): JSX.E
   const phaseColors = getPhaseColors(theme);
 
   const phases = taskSummary.status.split('\n\n');
-  const currentPhaseIdx = phases.findIndex((msg) => msg.startsWith('*'));
+  const currentPhaseIdx = phases.findIndex((msg: string) => msg.startsWith('*'));
   // probably don't need to memo for now because almost all renders will change its
   // dependencies.
-  const phaseProps = phases.map((_, idx) => {
+  const phaseProps = phases.map((_: string, idx: number) => {
     if ([RmfTaskSummary.STATE_CANCELED, RmfTaskSummary.STATE_FAILED].includes(taskSummary.state)) {
       return {
         className: classes.failedPhase,
@@ -140,7 +140,7 @@ export function TaskPhases({ taskSummary, ...boxProps }: TaskPhasesProps): JSX.E
   return (
     <StyledBox {...boxProps}>
       <Grid container={true} wrap="nowrap" className={classes.taskPhasesContainer}>
-        {phases.map((phase, idx) => (
+        {phases.map((phase: string, idx: number) => (
           <React.Fragment key={idx}>
             <Phase status={phase} className={clsx(classes.taskPhase, phaseProps[idx].className)} />
             {idx != phases.length - 1 && (

@@ -67,7 +67,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const doors: DoorData[] = React.useMemo(() => {
     return buildingMap
       ? (buildingMap.levels as Level[]).flatMap((x) =>
-          (x.doors as Door[]).map((door) => ({ door, level: x.name })),
+          (x.doors as Door[]).map((door) => ({ level: x.name, door } as DoorData)),
         )
       : [];
   }, [buildingMap]);

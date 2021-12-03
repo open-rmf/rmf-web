@@ -12,6 +12,8 @@ const classes = {
   dispenserLabelIdle: 'workcell-dispenser-label-idle',
   dispenserLabelBusy: 'workcell-dispenser-label-busy',
   dispenserLabelOffline: 'workcell-offline-label',
+  tableContainer: 'workcell-table-container',
+  firstCell: 'workcell-table-first-cell',
   tableRow: 'workcell-table-row',
   tableCell: 'workcell-table-cell',
 };
@@ -26,9 +28,23 @@ const StyledAutosizer = styled((props: AutoSizerProps) => <AutoSizer {...props} 
     [`& .${classes.dispenserLabelOffline}`]: {
       color: theme.palette.warning.main,
     },
+    [`& .${classes.tableContainer}`]: {
+      maxHeight: '25vh',
+    },
+    [`& .${classes.firstCell}`]: {
+      width: theme.spacing(16),
+      maxWidth: theme.spacing(16),
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+    },
     [`& .${classes.tableRow}`]: {
       display: 'flex',
       flexDirection: 'row',
+      '&:hover': {
+        cursor: 'pointer',
+        backgroundColor: theme.palette.action.hover,
+      },
     },
     [`& .${classes.tableCell}`]: {
       whiteSpace: 'nowrap',
@@ -45,6 +61,7 @@ export interface WorkcellTableProps {
 
 interface WorkcellListRendererProps extends ListChildComponentProps {
   data: WorkcellTableProps;
+  index: number;
 }
 
 export interface WorkcellRowProps {
@@ -76,7 +93,7 @@ const WorkcellRow = React.memo(
           <React.Fragment>
             <ItemTableCell
               component="div"
-              variant="head"
+              variant="body"
               className={clsx(classes.tableCell, fixedTableCell)}
               title={workcell.guid}
             >
@@ -84,28 +101,28 @@ const WorkcellRow = React.memo(
             </ItemTableCell>
             <ItemTableCell
               component="div"
-              variant="head"
+              variant="body"
               className={clsx(dispenserModeLabelClasses(mode), classes.tableCell, fixedTableCell)}
             >
               {dispenserModeToString(mode)}
             </ItemTableCell>
             <ItemTableCell
               component="div"
-              variant="head"
+              variant="body"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {requestGuidQueue.length}
             </ItemTableCell>
             <ItemTableCell
               component="div"
-              variant="head"
+              variant="body"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {requestGuidQueue}
             </ItemTableCell>
             <ItemTableCell
               component="div"
-              variant="head"
+              variant="body"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {secondsRemaining}
@@ -115,7 +132,7 @@ const WorkcellRow = React.memo(
           <React.Fragment>
             <ItemTableCell
               component="div"
-              variant="head"
+              variant="body"
               className={clsx(classes.tableCell, fixedTableCell)}
               title={workcell.guid}
             >
@@ -123,28 +140,28 @@ const WorkcellRow = React.memo(
             </ItemTableCell>
             <ItemTableCell
               component="div"
-              variant="head"
+              variant="body"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {'NA'}
             </ItemTableCell>
             <ItemTableCell
               component="div"
-              variant="head"
+              variant="body"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {'NA'}
             </ItemTableCell>
             <ItemTableCell
               component="div"
-              variant="head"
+              variant="body"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {'NA'}
             </ItemTableCell>
             <ItemTableCell
               component="div"
-              variant="head"
+              variant="body"
               className={clsx(classes.tableCell, fixedTableCell)}
             >
               {'NA'}
@@ -156,17 +173,19 @@ const WorkcellRow = React.memo(
   },
 );
 
-const WorkcellListRenderer = ({ data, index }: WorkcellListRendererProps) => {
+const WorkcellListRenderer = ({ data, index, style }: WorkcellListRendererProps) => {
   const workcell = data.workcells[index];
   const workcellState: WorkcellState | undefined = data.workcellStates[workcell.guid];
 
   return (
-    <WorkcellRow
-      workcell={workcell}
-      mode={workcellState?.mode}
-      requestGuidQueue={workcellState?.request_guid_queue}
-      secondsRemaining={workcellState?.seconds_remaining}
-    />
+    <div style={style}>
+      <WorkcellRow
+        workcell={workcell}
+        mode={workcellState?.mode}
+        requestGuidQueue={workcellState?.request_guid_queue}
+        secondsRemaining={workcellState?.seconds_remaining}
+      />
+    </div>
   );
 };
 
@@ -176,7 +195,7 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
     <StyledAutosizer disableHeight>
       {({ width }) => {
         return (
-          <Table component="div" stickyHeader size="small" aria-label="workcell-table">
+          <Table component="div" size="small" aria-label="workcell-table">
             <TableHead component="div">
               <TableRow component="div" className={classes.tableRow}>
                 <ItemTableCell
@@ -225,7 +244,6 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
                 itemData={{
                   workcells,
                   workcellStates,
-                  width,
                 }}
               >
                 {WorkcellListRenderer}
