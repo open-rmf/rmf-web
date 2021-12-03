@@ -11,7 +11,6 @@ import {
   DoorsOverlay as DoorsOverlay_,
   LiftsOverlay as LiftsOverlay_,
   LMap,
-  LMapProps,
   loadAffineImage,
   RobotData,
   RobotsOverlay as RobotsOverlay_,
@@ -23,22 +22,11 @@ import {
   WorkcellData,
   WorkcellsOverlay as WorkcellsOverlay_,
 } from 'react-components';
-import { styled } from '@mui/material';
 import { AttributionControl, LayersControl } from 'react-leaflet';
 import appConfig from '../../app-config';
 import { NegotiationTrajectoryResponse } from '../../managers/negotiation-status-manager';
 import { ResourcesContext } from '../app-contexts';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
-
-const classes = {
-  map: 'schedule-visualizer-map',
-};
-
-const StyledLMap = styled((props: LMapProps) => <LMap {...props} />)(({ theme }) => ({
-  [`&.${classes.map}`]: {
-    backgroundColor: theme.palette.background.default,
-  },
-}));
 
 const DoorsOverlay = React.memo(DoorsOverlay_);
 const LiftsOverlay = React.memo(LiftsOverlay_);
@@ -66,6 +54,7 @@ export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
    * default: 'normal'
    */
   mode?: 'normal' | 'negotiation';
+  zoom?: number | undefined;
   onDoorClick?: (ev: React.MouseEvent, door: string) => void;
   onLiftClick?: (ev: React.MouseEvent, lift: string) => void;
   onRobotClick?: (ev: React.MouseEvent, fleet: string, robot: string) => void;
@@ -77,22 +66,25 @@ interface ScheduleVisualizerSettings {
   trajectoryTime: number;
 }
 
-export default function ScheduleVisualizer({
-  buildingMap,
-  negotiationTrajStore = {},
-  dispensers = [],
-  ingestors = [],
-  doorStates = {},
-  liftStates = {},
-  fleetStates = {},
-  mode = 'normal',
-  onDoorClick,
-  onLiftClick,
-  onRobotClick,
-  onDispenserClick,
-  onIngestorClick,
-  children,
-}: ScheduleVisualizerProps): JSX.Element | null {
+export default React.forwardRef(function ScheduleVisualizer(
+  {
+    buildingMap,
+    negotiationTrajStore = {},
+    dispensers = [],
+    ingestors = [],
+    doorStates = {},
+    liftStates = {},
+    fleetStates = {},
+    mode = 'normal',
+    onDoorClick,
+    onLiftClick,
+    onRobotClick,
+    onDispenserClick,
+    onIngestorClick,
+    children,
+  }: ScheduleVisualizerProps,
+  ref,
+): JSX.Element | null {
   debug('render');
   const safeAsync = useAsync();
   const levels = React.useMemo(
@@ -105,16 +97,12 @@ export default function ScheduleVisualizer({
     {},
   );
   const bounds = React.useMemo(() => levelBounds[currentLevel.name], [levelBounds, currentLevel]);
-
   const [robots, setRobots] = React.useState<RobotData[]>([]);
   const { current: robotsStore } = React.useRef<Record<string, RobotData>>({});
-
   // FIXME: trajectory manager should handle the tokens
   const authenticator = appConfig.authenticator;
-
   const [trajectories, setTrajectories] = React.useState<TrajectoryData[]>([]);
   const { trajectoryManager: trajManager } = React.useContext(RmfIngressContext) || {};
-
   const [
     scheduleVisualizerSettings,
     setScheduleVisualizerSettings,
@@ -311,7 +299,7 @@ export default function ScheduleVisualizer({
   const registeredLayersHandlers = React.useRef(false);
 
   return bounds ? (
-    <StyledLMap
+    <LMap
       ref={(cur) => {
         if (registeredLayersHandlers.current || !cur) return;
         cur.leafletElement.on('overlayadd', (ev: L.LayersControlEvent) =>
@@ -321,6 +309,10 @@ export default function ScheduleVisualizer({
           setLayersUnChecked((prev) => ({ ...prev, [ev.name]: true })),
         );
         registeredLayersHandlers.current = true;
+        if (typeof ref === 'function') ref(cur);
+        else if (ref) {
+          ref.current = cur;
+        }
       }}
       id="schedule-visualizer"
       attributionControl={false}
@@ -329,7 +321,6 @@ export default function ScheduleVisualizer({
       zoomDelta={0.5}
       zoomSnap={0.5}
       bounds={bounds}
-      className={classes.map}
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
       <LayersControl
@@ -431,6 +422,6 @@ export default function ScheduleVisualizer({
         }
       />
       {children}
-    </StyledLMap>
+    </LMap>
   ) : null;
-}
+});

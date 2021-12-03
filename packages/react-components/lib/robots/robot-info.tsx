@@ -102,11 +102,15 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
       <Grid container>
         <Grid container item xs={12} justifyContent="center">
           <Typography variant="h6" gutterBottom>
-            Battery
+            {`Task Progress - ${
+              currentTask ? taskStateToStr(currentTask.summary.state) : 'No Task'
+            }`}
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          <LinearProgressBar value={robot.state.battery_percent} />
+          {currentTask && (
+            <LinearProgressBar value={parseInt(currentTask.progress.status.slice(0, -1)) || 0} />
+          )}
         </Grid>
         <Grid container item xs={12} justifyContent="center">
           <Typography variant="h6" gutterBottom>
@@ -158,7 +162,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
         </Grid>
         <Grid item xs={6}>
           <Typography variant="h6" align="left">
-            Task Progress
+            Battery
           </Typography>
         </Grid>
         <Grid item xs={6}>
@@ -167,28 +171,9 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
           </Typography>
         </Grid>
         <Grid item xs={6}>
-          {currentTask && (
-            <CircularProgressBar
-              progress={parseInt(currentTask.progress.status) || 0}
-              strokeColor="#20a39e"
-            >
-              <Typography variant="h6">{currentTask.progress.status}</Typography>
-              <Typography variant="h6">
-                {currentTask ? taskStateToStr(currentTask.summary.state) : '-'}
-              </Typography>
-            </CircularProgressBar>
-          )}
-          {!currentTask && (
-            <Button
-              size="small"
-              disableElevation
-              variant="outlined"
-              className={classes.button}
-              disableRipple={true}
-            >
-              -
-            </Button>
-          )}
+          <CircularProgressBar progress={robot.state.battery_percent} strokeColor="#20a39e">
+            <Typography variant="h6">{`${robot.state.battery_percent}%`}</Typography>
+          </CircularProgressBar>
         </Grid>
         <Grid item xs={6}>
           <Button

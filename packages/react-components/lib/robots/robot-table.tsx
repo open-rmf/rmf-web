@@ -24,12 +24,12 @@ const classes = {
   table: 'robot-table',
   title: 'robot-table-title',
   infoRow: 'robot-table-info-row',
-  taskRowHover: 'robot-table-row-hover',
   phasesCell: 'robot-table-phases-cell',
   robotErrorClass: 'robot-table-error',
   robotStoppedClass: 'robot-table-stopped',
   robotInMotionClass: 'robot-table-in-motion',
   robotChargingClass: 'robot-table-charging',
+  tableRow: 'robot-table-row-hover',
 };
 const StyledPaper = styled((props: PaperProps) => <Paper {...props} />)(({ theme }) => ({
   [`& .${classes.table}`]: {
@@ -37,9 +37,6 @@ const StyledPaper = styled((props: PaperProps) => <Paper {...props} />)(({ theme
   },
   [`& .${classes.title}`]: {
     flex: '1 1 100%',
-  },
-  [`& .${classes.taskRowHover}`]: {
-    background: theme.palette.action.hover,
   },
   [`& .${classes.phasesCell}`]: {
     padding: `0 ${theme.spacing(1)}px`,
@@ -55,6 +52,12 @@ const StyledPaper = styled((props: PaperProps) => <Paper {...props} />)(({ theme
   },
   [`& .${classes.robotChargingClass}`]: {
     backgroundColor: theme.palette.info.main,
+  },
+  [`& .${classes.tableRow}`]: {
+    '&:hover': {
+      cursor: 'pointer',
+      backgroundColor: theme.palette.action.hover,
+    },
   },
 }));
 
@@ -123,7 +126,7 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
   if (robot.tasks.length === 0) {
     return (
       <>
-        <TableRow onClick={onClick}>
+        <TableRow onClick={onClick} className={classes.tableRow}>
           <TableCell>{robot.name}</TableCell>
           <TableCell>{'-'}</TableCell>
           <TableCell>{'-'}</TableCell>
@@ -136,7 +139,7 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
   } else {
     return (
       <>
-        <TableRow onClick={onClick}>
+        <TableRow onClick={onClick} className={classes.tableRow}>
           <TableCell>{robot.name}</TableCell>
           {returnLocationCells(robot)}
           <TableCell>
@@ -186,7 +189,7 @@ export function RobotTable({
         </IconButton>
       </Toolbar>
       <TableContainer style={{ flex: '1 1 auto' }} id="robot-table">
-        <Table className={classes.table} stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
+        <Table stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
           <TableHead>
             <TableRow>
               <TableCell>Robot Name</TableCell>
