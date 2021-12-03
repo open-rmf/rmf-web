@@ -310,6 +310,9 @@ export default React.forwardRef(function ScheduleVisualizer(
         );
         registeredLayersHandlers.current = true;
         if (typeof ref === 'function') ref(cur);
+        else if (ref) {
+          ref.current = cur;
+        }
       }}
       id="schedule-visualizer"
       attributionControl={false}
