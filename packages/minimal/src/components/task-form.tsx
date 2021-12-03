@@ -85,15 +85,11 @@ export const TaskForm = (props: TaskFormProps) => {
       <FormControl component="fieldset" className={classes.form}>
         <FormLabel component="legend">Destination - {currentLocation}</FormLabel>
         <RadioGroup onChange={handleChange} row>
-          {placeNames.map((p) => (
-            <FormControlLabel
-              key={p}
-              value={p}
-              disabled={p === currentLocation}
-              control={<Radio />}
-              label={p}
-            />
-          ))}
+          {placeNames.map((p) => {
+            return p !== currentLocation ? (
+              <FormControlLabel key={p} value={p} control={<Radio />} label={p} />
+            ) : null;
+          })}
         </RadioGroup>
       </FormControl>
       <Button variant="contained" color="primary" size="large" onClick={() => submitTask()}>
