@@ -76,7 +76,7 @@ export function PermissionsCard({
       });
       setPermissions(newPermissions);
     } catch (e) {
-      showErrorAlert(`Failed to get permissions: ${e.message}`);
+      showErrorAlert(`Failed to get permissions: ${(e as Error).message}`);
     } finally {
       setLoading(false);
     }
@@ -124,7 +124,7 @@ export function PermissionsCard({
                             await removePermission(p);
                             refresh();
                           } catch (e) {
-                            showErrorAlert(`Failed to remove permission: ${e.message}`);
+                            showErrorAlert(`Failed to remove permission: ${(e as Error).message}`);
                           }
                         })
                       }

@@ -9,6 +9,8 @@ export class Location {
   x: number;
   y: number;
   yaw: number;
+  obey_approach_speed_limit: boolean;
+  approach_speed_limit: number;
   level_name: string;
   index: number;
 
@@ -17,6 +19,8 @@ export class Location {
     this.x = fields.x || 0;
     this.y = fields.y || 0;
     this.yaw = fields.yaw || 0;
+    this.obey_approach_speed_limit = fields.obey_approach_speed_limit || false;
+    this.approach_speed_limit = fields.approach_speed_limit || 0;
     this.level_name = fields.level_name || '';
     this.index = fields.index || 0;
   }
@@ -25,7 +29,7 @@ export class Location {
     try {
       Time.validate(obj['t'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "t":\n  ' + e.message);
+      throw new Error('in "t":\n  ' + (e as Error).message);
     }
     if (typeof obj['x'] !== 'number') {
       throw new Error('expected "x" to be "number"');
@@ -35,6 +39,12 @@ export class Location {
     }
     if (typeof obj['yaw'] !== 'number') {
       throw new Error('expected "yaw" to be "number"');
+    }
+    if (typeof obj['obey_approach_speed_limit'] !== 'boolean') {
+      throw new Error('expected "obey_approach_speed_limit" to be "boolean"');
+    }
+    if (typeof obj['approach_speed_limit'] !== 'number') {
+      throw new Error('expected "approach_speed_limit" to be "number"');
     }
     if (typeof obj['level_name'] !== 'string') {
       throw new Error('expected "level_name" to be "string"');
@@ -50,6 +60,11 @@ builtin_interfaces/Time t
 float32 x
 float32 y
 float32 yaw
+
+bool obey_approach_speed_limit false
+# Speed limit of the lane leading to this waypoint in m/s
+float32 approach_speed_limit
+
 string level_name
 uint64 index
 

@@ -27,7 +27,7 @@ export class DestinationRequest {
     try {
       Location.validate(obj['destination'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "destination":\n  ' + e.message);
+      throw new Error('in "destination":\n  ' + (e as Error).message);
     }
     if (typeof obj['task_id'] !== 'string') {
       throw new Error('expected "task_id" to be "string"');

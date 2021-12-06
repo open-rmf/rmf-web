@@ -19,7 +19,7 @@ export class DockSummary {
       try {
         Dock.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "docks":\n  ` + e.message);
+        throw new Error(`in index ${i} of "docks":\n  ` + (e as Error).message);
       }
     }
   }

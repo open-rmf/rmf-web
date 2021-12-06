@@ -24,7 +24,7 @@ export class DoorSessions {
       try {
         Session.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "sessions":\n  ` + e.message);
+        throw new Error(`in index ${i} of "sessions":\n  ` + (e as Error).message);
       }
     }
   }

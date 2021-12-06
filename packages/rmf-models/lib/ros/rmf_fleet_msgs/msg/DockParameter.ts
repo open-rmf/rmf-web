@@ -29,7 +29,7 @@ export class DockParameter {
       try {
         Location.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "path":\n  ` + e.message);
+        throw new Error(`in index ${i} of "path":\n  ` + (e as Error).message);
       }
     }
   }

@@ -57,7 +57,7 @@ export function UserProfileCard({ user, makeAdmin }: UserProfileCardProps): JSX.
             try {
               makeAdmin && (await safeAsync(makeAdmin(!user.is_admin)));
             } catch (e) {
-              showErrorAlert(`Failed to change admin status: ${e.message}`);
+              showErrorAlert(`Failed to change admin status: ${(e as Error).message}`);
             } finally {
               setDisableAdminCheckbox(false);
             }

@@ -17,7 +17,7 @@ export class DispatchAck {
     try {
       DispatchRequest.validate(obj['dispatch_request'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "dispatch_request":\n  ' + e.message);
+      throw new Error('in "dispatch_request":\n  ' + (e as Error).message);
     }
     if (typeof obj['success'] !== 'boolean') {
       throw new Error('expected "success" to be "boolean"');

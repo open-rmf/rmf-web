@@ -36,14 +36,16 @@ export const DefaultMarker = ({
 
   const componentId = React.useMemo(uniqueId, []);
   const shadowId = React.useMemo(() => `RobotDefaultIcon-${componentId}-shadow`, [componentId]);
-  const conflictShadowId = React.useMemo(() => `RobotDefaultIcon-${componentId}-shadow-conflict`, [
-    componentId,
-  ]);
+  const conflictShadowId = React.useMemo(
+    () => `RobotDefaultIcon-${componentId}-shadow-conflict`,
+    [componentId],
+  );
 
   const Shadow = React.useMemo(() => makeGradientShadow('#000000'), []);
-  const ShadowConflict = React.useMemo(() => makeGradientShadow(colorManager.conflictHighlight), [
-    colorManager.conflictHighlight,
-  ]);
+  const ShadowConflict = React.useMemo(
+    () => makeGradientShadow(colorManager.conflictHighlight),
+    [colorManager.conflictHighlight],
+  );
 
   return (
     <g>

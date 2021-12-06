@@ -42,7 +42,7 @@ export function CreateRoleDialog({
       setOpen && setOpen(false);
     } catch (e) {
       setCreating(false);
-      showErrorAlert(`Failed to create role: ${e.message}`);
+      showErrorAlert(`Failed to create role: ${(e as Error).message}`);
     }
   };
 

@@ -113,7 +113,7 @@ export function RoleListCard({
       const newRoles = await safeAsync(getRoles());
       setRoles(newRoles.sort());
     } catch (e) {
-      showErrorAlert(`Failed to get roles: ${e.message}`);
+      showErrorAlert(`Failed to get roles: ${(e as Error).message}`);
     } finally {
       setLoading(false);
     }
@@ -198,7 +198,7 @@ export function RoleListCard({
               deleteRole && (await safeAsync(deleteRole(selectedDeleteRole)));
               refresh();
             } catch (e) {
-              showErrorAlert(`Failed to delete user: ${e.message}`);
+              showErrorAlert(`Failed to delete user: ${(e as Error).message}`);
             } finally {
               setSelectedDeleteRole(null);
             }

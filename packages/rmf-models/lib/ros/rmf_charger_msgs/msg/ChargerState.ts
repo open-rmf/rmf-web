@@ -9,6 +9,7 @@ export class ChargerState {
   static readonly CHARGER_IDLE = 1;
   static readonly CHARGER_ASSIGNED = 2;
   static readonly CHARGER_CHARGING = 3;
+  static readonly CHARGER_RELEASED = 4;
   static readonly CHARGER_ERROR = 200;
 
   charger_time: Time;
@@ -35,7 +36,7 @@ export class ChargerState {
     try {
       Time.validate(obj['charger_time'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "charger_time":\n  ' + e.message);
+      throw new Error('in "charger_time":\n  ' + (e as Error).message);
     }
     if (typeof obj['state'] !== 'number') {
       throw new Error('expected "state" to be "number"');
@@ -58,7 +59,7 @@ export class ChargerState {
     try {
       Duration.validate(obj['time_to_fully_charged'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "time_to_fully_charged":\n  ' + e.message);
+      throw new Error('in "time_to_fully_charged":\n  ' + (e as Error).message);
     }
   }
 }
@@ -70,6 +71,7 @@ builtin_interfaces/Time charger_time
 uint32 CHARGER_IDLE = 1      # Charger is not occupied
 uint32 CHARGER_ASSIGNED = 2  # Charger has been assigned a robot
 uint32 CHARGER_CHARGING = 3  # Charger is charging
+uint32 CHARGER_RELEASED = 4  # Charger has been disconnected from a robot
 uint32 CHARGER_ERROR = 200   # Error state, see error_message for info
 
 uint32 state  # One of the previously enumerated states

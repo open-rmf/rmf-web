@@ -1,12 +1,25 @@
 {
   "name": "root",
   "private": true,
+  "workspaces": [
+    "packages/api-client",
+    "packages/api-server",
+    "packages/dashboard",
+    "packages/dashboard-e2e",
+    "packages/react-components",
+    "packages/reporting",
+    "packages/reporting-e2e",
+    "packages/reporting-server",
+    "packages/rmf-auth",
+    "packages/rmf-models",
+    "packages/ros-translator",
+    "pipenv-install"
+  ],
   "devDependencies": {
     "husky": "^4.3.0",
-    "lerna": "^4.0.0",
     "lint-staged": "^10.4.0",
     "prettier": "^2.1.2",
-    "pyright": "1.1.181"
+    "pyright": "^1.1.181"
   },
   "husky": {
     "hooks": {

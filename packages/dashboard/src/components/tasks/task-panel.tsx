@@ -119,7 +119,7 @@ export function TaskPanel({
       setOpenSnackbar(true);
       setSelectedTask(undefined);
     } catch (e) {
-      setSnackbarMessage(`Failed to cancel task: ${e.message}`);
+      setSnackbarMessage(`Failed to cancel task: ${(e as Error).message}`);
       setSnackbarSeverity('error');
       setOpenSnackbar(true);
     }
@@ -141,7 +141,7 @@ export function TaskPanel({
           try {
             taskFiles = parseTasksFile(await fileInputEl.files[0].text());
           } catch (err) {
-            showErrorAlert(err.message, 5000);
+            showErrorAlert((err as Error).message, 5000);
             return res([]);
           }
           // only submit tasks when all tasks are error free

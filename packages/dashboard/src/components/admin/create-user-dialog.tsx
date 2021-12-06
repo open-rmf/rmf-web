@@ -42,7 +42,7 @@ export function CreateUserDialog({
       setOpen && setOpen(false);
     } catch (e) {
       setCreating(false);
-      showErrorAlert(`Failed to create user: ${e.message}`);
+      showErrorAlert(`Failed to create user: ${(e as Error).message}`);
     }
   };
 

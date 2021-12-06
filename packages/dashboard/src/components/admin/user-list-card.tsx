@@ -80,7 +80,7 @@ export function UserListCard({
         setHasMore(results.length > ItemsPerPage);
         setUsers(results.slice(0, ItemsPerPage));
       } catch (e) {
-        showErrorAlert(`Failed to get users: ${e.message}`);
+        showErrorAlert(`Failed to get users: ${(e as Error).message}`);
       } finally {
         setSearching(false);
       }
@@ -186,7 +186,7 @@ export function UserListCard({
               refresh();
             } catch (e) {
               setDeleting(false);
-              showErrorAlert(`Failed to delete user: ${e.message}`);
+              showErrorAlert(`Failed to delete user: ${(e as Error).message}`);
             }
           }}
         >

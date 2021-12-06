@@ -202,7 +202,7 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
     try {
       await authenticator.logout();
     } catch (e) {
-      console.error(`error logging out: ${e.message}`);
+      console.error(`error logging out: ${(e as Error).message}`);
     }
   }
 

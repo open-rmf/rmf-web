@@ -26,10 +26,10 @@ interface BoundedMarkerProps extends Omit<LiftMarkerProps, 'onClick'> {
  */
 function bindMarker(MarkerComponent: React.ComponentType<LiftMarkerProps>) {
   return ({ lift, onClick, ...otherProps }: BoundedMarkerProps) => {
-    const handleClick = React.useCallback((ev) => onClick && onClick(ev, lift.name), [
-      onClick,
-      lift.name,
-    ]);
+    const handleClick = React.useCallback(
+      (ev) => onClick && onClick(ev, lift.name),
+      [onClick, lift.name],
+    );
     return <MarkerComponent onClick={onClick && handleClick} {...otherProps} />;
   };
 }

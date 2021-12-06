@@ -1,6 +1,6 @@
 {
   "name": "reporting-server",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "dummy package",
   "private": true,
   "scripts": {
@@ -12,6 +12,6 @@
     "lint": "python3 -m pipenv run pylint rest_server"
   },
   "devDependencies": {
-    "pipenv-install": "*"
+    "pipenv-install": "file:../../pipenv-install"
   }
 }

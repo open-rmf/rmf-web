@@ -52,7 +52,7 @@ export function AddPermissionDialog({
       setOpen && setOpen(false);
     } catch (e) {
       setSaving(false);
-      showErrorAlert(`Failed to save permission: ${e.message}`);
+      showErrorAlert(`Failed to save permission: ${(e as Error).message}`);
     }
   };
 

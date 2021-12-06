@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { Settings } from '../../../settings';
+import { Settings, ThemeMode } from '../../../settings';
 import { SettingsContext } from '../../app-contexts';
 import SettingsDrawer from '../../drawers/settings-drawer';
 
@@ -11,7 +11,7 @@ describe('Settings Drawer', () => {
   let handleCloseButton: jest.Mock;
 
   beforeEach(() => {
-    settings = { themeMode: 0 };
+    settings = { themeMode: ThemeMode.Light };
     onSettingsChange = jest.fn();
     handleCloseButton = jest.fn();
   });

@@ -33,7 +33,8 @@ jobs:
       - name: bootstrap
         run: |
           . /rmf_demos_ws/install/setup.bash
-          lerna bootstrap --scope=reporting
+          npm i -g npm@latest
+          scripts/bootstrap.sh reporting
         working-directory: .
       - name: build
         run: npm run build:storybook && npm run build
@@ -42,5 +43,4 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           flags: reporting

@@ -12,6 +12,7 @@ export class RobotMode {
   static readonly MODE_GOING_HOME = 6;
   static readonly MODE_DOCKING = 7;
   static readonly MODE_ADAPTER_ERROR = 8;
+  static readonly MODE_CLEANING = 9;
 
   mode: number;
   mode_request_id: number;
@@ -45,6 +46,8 @@ uint32 MODE_DOCKING=7
 # Use this when a command received from the fleet adapter
 # has a problem and needs to be recomputed.
 uint32 MODE_ADAPTER_ERROR=8
+
+uint32 MODE_CLEANING=9
 
 uint64 mode_request_id
 

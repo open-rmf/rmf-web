@@ -103,13 +103,11 @@ export default React.forwardRef(function ScheduleVisualizer(
   const authenticator = appConfig.authenticator;
   const [trajectories, setTrajectories] = React.useState<TrajectoryData[]>([]);
   const { trajectoryManager: trajManager } = React.useContext(RmfIngressContext) || {};
-  const [
-    scheduleVisualizerSettings,
-    setScheduleVisualizerSettings,
-  ] = React.useState<ScheduleVisualizerSettings>(() => {
-    const settings = window.localStorage.getItem(SettingsKey);
-    return settings ? JSON.parse(settings) : { trajectoryTime: 60000 /* 1 min */ };
-  });
+  const [scheduleVisualizerSettings, setScheduleVisualizerSettings] =
+    React.useState<ScheduleVisualizerSettings>(() => {
+      const settings = window.localStorage.getItem(SettingsKey);
+      return settings ? JSON.parse(settings) : { trajectoryTime: 60000 /* 1 min */ };
+    });
   const trajectoryTime = scheduleVisualizerSettings.trajectoryTime;
   const trajectoryAnimScale = trajectoryTime / (0.9 * TrajectoryUpdateInterval);
 

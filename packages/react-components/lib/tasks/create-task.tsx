@@ -13,7 +13,7 @@ import {
   TextField,
   useTheme,
 } from '@mui/material';
-import type {
+import {
   CleanTaskDescription,
   DeliveryTaskDescription,
   LoopTaskDescription,
@@ -412,7 +412,7 @@ export function CreateTaskForm({
   };
 
   const renderTaskDescriptionForm = () => {
-    if (task.task_type === -1) {
+    if ((task.task_type as number) === -1) {
       return null;
     }
     switch (task.task_type) {
@@ -473,7 +473,7 @@ export function CreateTaskForm({
       onSuccess && onSuccess(tasks);
     } catch (e) {
       setSubmitting(false);
-      onFail && onFail(e, tasks);
+      onFail && onFail(e as Error, tasks);
     }
   };
 
@@ -515,7 +515,7 @@ export function CreateTaskForm({
               variant="outlined"
               fullWidth
               margin="normal"
-              value={task.task_type !== -1 ? task.task_type : ''}
+              value={(task.task_type as number) !== -1 ? task.task_type : ''}
               onChange={handleTaskTypeChange}
             >
               <MenuItem value={RmfTaskType.TYPE_CLEAN}>Clean</MenuItem>
@@ -532,7 +532,7 @@ export function CreateTaskForm({
                       return;
                     }
                     // FIXME: needed because dateio typings default to moment
-                    task.start_time = Math.floor(((date as unknown) as Date).getTime() / 1000);
+                    task.start_time = Math.floor((date as unknown as Date).getTime() / 1000);
                     updateTasks();
                   }}
                   label="Start Time"

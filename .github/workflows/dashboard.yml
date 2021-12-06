@@ -34,12 +34,12 @@ jobs:
       - name: bootstrap
         run: |
           . /rmf_demos_ws/install/setup.bash
-          lerna bootstrap --scope=rmf-dashboard
+          npm i -g npm@latest
+          scripts/bootstrap.sh rmf-dashboard
         working-directory: .
       - name: unit test
         run: . /rmf_demos_ws/install/setup.bash && npm run test:coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           flags: dashboard

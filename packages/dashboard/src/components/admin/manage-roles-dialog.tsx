@@ -73,7 +73,7 @@ export function ManageRolesDialog({
         setAvailableRoles(allRoles.filter((r) => defaultAssignedRoles.indexOf(r) === -1).sort());
         setAssignedRoles(defaultAssignedRoles.sort());
       } catch (e) {
-        showErrorAlert(`Failed to get roles: ${e.message}`);
+        showErrorAlert(`Failed to get roles: ${(e as Error).message}`);
       } finally {
         setLoading(false);
       }
@@ -89,7 +89,7 @@ export function ManageRolesDialog({
         setOpen && setOpen(false);
       } catch (e) {
         setSaving(false);
-        showErrorAlert(`Failed to save roles: ${e.message}`);
+        showErrorAlert(`Failed to save roles: ${(e as Error).message}`);
       }
     })();
   };

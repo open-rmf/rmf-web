@@ -4,15 +4,14 @@
   "description": "dummy package",
   "private": true,
   "scripts": {
-    "prepare": "",
     "prepack": "pipenv run python setup.py bdist_wheel",
     "start": "pipenv run python -m api_server",
     "test": "pipenv run python -m unittest",
     "test:cov": "pipenv run python -m coverage run -m unittest",
     "test:report": "pipenv run python -m coverage html && xdg-open htmlcov/index.html",
-    "lint": "pipenv run node ../../node_modules/.bin/pyright && pipenv run pylint api_server --ignore=ros_pydantic"
+    "lint": "pipenv run pyright && pipenv run pylint api_server --ignore=ros_pydantic"
   },
   "devDependencies": {
-    "pipenv-install": "*"
+    "pipenv-install": "file:../../pipenv-install"
   }
 }

@@ -30,11 +30,10 @@ interface BoundedMarkerProps extends Omit<RobotMarkerProps, 'onClick'> {
  */
 function bindMarker(MarkerComponent: React.ComponentType<RobotMarkerProps>) {
   return ({ fleet, name, onClick, ...otherProps }: BoundedMarkerProps) => {
-    const handleClick = React.useCallback((ev) => onClick && onClick(ev, fleet, name), [
-      onClick,
-      fleet,
-      name,
-    ]);
+    const handleClick = React.useCallback(
+      (ev) => onClick && onClick(ev, fleet, name),
+      [onClick, fleet, name],
+    );
     return <MarkerComponent onClick={onClick && handleClick} {...otherProps} />;
   };
 }

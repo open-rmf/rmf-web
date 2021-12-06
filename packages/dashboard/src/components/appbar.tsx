@@ -62,74 +62,71 @@ export interface AppBarProps {
   alarmState?: boolean | null;
 }
 
-export const AppBar = React.memo(
-  (): React.ReactElement => {
-    const { showHelp: setShowHelp /* , setShowSettings */ } = React.useContext(
-      AppControllerContext,
-    );
-    const history = useHistory();
-    const location = useLocation();
-    const tabValue = React.useMemo(() => locationToTabValue(location.pathname), [location]);
-    const logoResourcesContext = React.useContext(ResourcesContext)?.logos;
-    const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-    const { authenticator } = React.useContext(AppConfigContext);
-    const profile = React.useContext(UserProfileContext);
-    const { showTooltips } = React.useContext(TooltipsContext);
-    const safeAsync = useAsync();
-    const [brandingIconPath, setBrandingIconPath] = React.useState<string>('');
+export const AppBar = React.memo((): React.ReactElement => {
+  const { showHelp: setShowHelp /* , setShowSettings */ } = React.useContext(AppControllerContext);
+  const history = useHistory();
+  const location = useLocation();
+  const tabValue = React.useMemo(() => locationToTabValue(location.pathname), [location]);
+  const logoResourcesContext = React.useContext(ResourcesContext)?.logos;
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+  const { authenticator } = React.useContext(AppConfigContext);
+  const profile = React.useContext(UserProfileContext);
+  const { showTooltips } = React.useContext(TooltipsContext);
+  const safeAsync = useAsync();
+  const [brandingIconPath, setBrandingIconPath] = React.useState<string>('');
 
-    const curTheme = React.useContext(SettingsContext).themeMode;
+  const curTheme = React.useContext(SettingsContext).themeMode;
 
-    async function handleLogout(): Promise<void> {
-      try {
-        await authenticator.logout();
-      } catch (e) {
-        console.error(`error logging out: ${e.message}`);
-      }
+  async function handleLogout(): Promise<void> {
+    try {
+      await authenticator.logout();
+    } catch (e) {
+      console.error(`error logging out: ${(e as Error).message}`);
     }
+  }
 
-    React.useEffect(() => {
-      if (!logoResourcesContext) return;
-      (async () => {
-        setBrandingIconPath(await safeAsync(logoResourcesContext.getHeaderLogoPath(curTheme)));
-      })();
-    }, [logoResourcesContext, safeAsync, curTheme]);
+  React.useEffect(() => {
+    if (!logoResourcesContext) return;
+    (async () => {
+      setBrandingIconPath(await safeAsync(logoResourcesContext.getHeaderLogoPath(curTheme)));
+    })();
+  }, [logoResourcesContext, safeAsync, curTheme]);
 
-    return (
-      <StyledHeaderBar className={classes.appBar}>
-        <LogoButton src={brandingIconPath} alt="logo" className={classes.logoBtn} />
-        <NavigationBar value={tabValue}>
+  return (
+    <StyledHeaderBar className={classes.appBar}>
+      <LogoButton src={brandingIconPath} alt="logo" className={classes.logoBtn} />
+      <NavigationBar value={tabValue}>
+        <AppBarTab
+          label="Infrastructure"
+          value="infrastructure"
+          aria-label="Infrastructure"
+          onTabClick={() => history.push(DashboardRoute)}
+        />
+        <AppBarTab
+          label="Robots"
+          value="robots"
+          aria-label="Robots"
+          onTabClick={() => history.push(RobotsRoute)}
+        />
+        <AppBarTab
+          label="Tasks"
+          value="tasks"
+          aria-label="Tasks"
+          onTabClick={() => history.push(TasksRoute)}
+        />
+        {profile?.user.is_admin && (
           <AppBarTab
-            label="Infrastructure"
-            value="infrastructure"
-            aria-label="Infrastructure"
-            onClick={() => history.push(DashboardRoute)}
+            label="Admin"
+            value="admin"
+            aria-label="Admin"
+            onTabClick={() => history.push(AdminRoute)}
           />
-          <AppBarTab
-            label="Robots"
-            value="robots"
-            aria-label="Robots"
-            onTabClick={() => history.push(RobotsRoute)}
-          />
-          <AppBarTab
-            label="Tasks"
-            value="tasks"
-            aria-label="Tasks"
-            onTabClick={() => history.push(TasksRoute)}
-          />
-          {profile?.user.is_admin && (
-            <AppBarTab
-              label="Admin"
-              value="admin"
-              aria-label="Admin"
-              onTabClick={() => history.push(AdminRoute)}
-            />
-          )}
-        </NavigationBar>
-        <Toolbar variant="dense" className={classes.toolbar}>
-          <Typography variant="caption">Powered by OpenRMF</Typography>
-          {/* TODO: Hiding until we have a better theme */}
-          {/* <IconButton
+        )}
+      </NavigationBar>
+      <Toolbar variant="dense" className={classes.toolbar}>
+        <Typography variant="caption">Powered by OpenRMF</Typography>
+        {/* TODO: Hiding until we have a better theme */}
+        {/* <IconButton
             id="show-settings-btn"
             aria-label="settings"
             color="inherit"
@@ -137,49 +134,48 @@ export const AppBar = React.memo(
           >
             <SettingsIcon />
           </IconButton> */}
-          {profile && (
-            <>
-              <IconButton
-                id="user-btn"
-                aria-label={'user-btn'}
-                color="inherit"
-                onClick={(event) => setAnchorEl(event.currentTarget)}
-              >
-                <AccountCircleIcon />
-              </IconButton>
-              <Menu
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={!!anchorEl}
-                onClose={() => setAnchorEl(null)}
-              >
-                <MenuItem id="logout-btn" onClick={handleLogout}>
-                  Logout
-                </MenuItem>
-              </Menu>
-            </>
-          )}
-          <Tooltip title="Help tools and resources" id="help-tooltip" enabled={showTooltips}>
+        {profile && (
+          <>
             <IconButton
-              id="show-help-btn"
-              aria-label="help"
+              id="user-btn"
+              aria-label={'user-btn'}
               color="inherit"
-              onClick={() => setShowHelp(true)}
+              onClick={(event) => setAnchorEl(event.currentTarget)}
             >
-              <HelpIcon />
+              <AccountCircleIcon />
             </IconButton>
-          </Tooltip>
-        </Toolbar>
-      </StyledHeaderBar>
-    );
-  },
-);
+            <Menu
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={!!anchorEl}
+              onClose={() => setAnchorEl(null)}
+            >
+              <MenuItem id="logout-btn" onClick={handleLogout}>
+                Logout
+              </MenuItem>
+            </Menu>
+          </>
+        )}
+        <Tooltip title="Help tools and resources" id="help-tooltip" enabled={showTooltips}>
+          <IconButton
+            id="show-help-btn"
+            aria-label="help"
+            color="inherit"
+            onClick={() => setShowHelp(true)}
+          >
+            <HelpIcon />
+          </IconButton>
+        </Tooltip>
+      </Toolbar>
+    </StyledHeaderBar>
+  );
+});
 
 export default AppBar;

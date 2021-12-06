@@ -308,7 +308,7 @@ export function withAutoScaling<PropsType extends ScalableLabelProps>(
     // collision detection to think the bbox is different size than what it actually is on screen.
     return (
       <LabelComponent
-        {...((otherProps as unknown) as PropsType)}
+        {...(otherProps as unknown as PropsType)}
         sourceX={sourceX / scale}
         sourceY={sourceY / scale}
         sourceRadius={sourceRadius / scale}
