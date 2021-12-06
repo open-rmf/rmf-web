@@ -1,56 +1,56 @@
 #!/bin/bash
 set -e
 
+RMF_BUILDING_MAP_MSGS_VER=c5e0352e2dfd3d11e4d292a1c2901cad867c1441
+RMF_INTERNAL_MSGS_VER=0c237e1758872917661879975d7dc0acf5fa518c
+RMF_API_MSGS_VER=960b286d9849fc716a3043b8e1f5fb341bdf5778
+
 cd "$(dirname $0)"
-source ../../scripts/version.sh
 source ../../scripts/rmf-helpers.sh
 
-usage() {
-  echo "Usage: generate-models.sh"
-  echo "Options:"
-  echo "  --rmf-tag <tag-or-branch>"
-  echo "  --ros-translator-version <version> If not provided, use the git sha of the current commit"
+check_rmf_not_sourced
+
+function fetch_sources {
+  url=$1
+  commit=$2
+  outdir=$3
+  if [[ ! -d $outdir ]]; then
+    git init "$outdir"
+  fi
+  pushd "$outdir"
+  git fetch --depth=1 "$url" "$commit"
+  git checkout "$commit"
+  popd
 }
 
-options=$(getopt -o '' -l rmf-tag:,rmf-server-ver: -- "$@")
-eval set -- "$options"
-while true; do
-  case "$1" in
-    --rmf-tag)
-      shift
-      rmf_tag=$1
-      ;;
-    --ros-translator)
-      shift
-      ros_translator_ver=$1
-      ;;
-    --)
-      shift
-      break
-      ;;
-  esac
-  shift
-done
+fetch_sources https://github.com/open-rmf/rmf_building_map_msgs.git $RMF_BUILDING_MAP_MSGS_VER build/colcon_ws/src/rmf_building_map_msgs
+fetch_sources https://github.com/open-rmf/rmf_internal_msgs.git $RMF_INTERNAL_MSGS_VER build/colcon_ws/src/rmf_internal_msgs
+fetch_sources https://github.com/open-rmf/rmf_api_msgs.git $RMF_API_MSGS_VER build/rmf_api_msgs
 
-if [[ -z $rmf_tag ]]; then
-  rmf_tag='main'
-fi
-if [[ -z $ros_translator_ver ]]; then
-  ros_translator_ver=$(getVersion .)
-fi
+# build and source colcon workspace
+pushd "build/colcon_ws"
+colcon build --merge-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+. install/setup.bash
+popd
 
-build_and_source_rmf_msgs "$rmf_tag"
+# generate rmf data models from ros messages
+rmf_msgs=(
+  'rmf_building_map_msgs'
+  'rmf_charger_msgs'
+  'rmf_door_msgs'
+  'rmf_lift_msgs'
+  'rmf_dispenser_msgs'
+  'rmf_ingestor_msgs'
+  'rmf_fleet_msgs'
+  'rmf_task_msgs'
+)
 pipenv run ros_translator -t=pydantic -o=api_server/models/ros_pydantic "${rmf_msgs[@]}"
-
-rmf_internal_msgs_ver=$(getVersion "build/rmf/src/rmf_internal_msgs")
-rmf_building_map_msgs_ver=$(getVersion "build/rmf/src/rmf_building_map_msgs")
 
 cat << EOF > api_server/models/ros_pydantic/version.py
 # THIS FILE IS GENERATED
 version = {
-  "rmf_internal_msgs": "$rmf_internal_msgs_ver",
-  "rmf_building_map_msgs": "$rmf_building_map_msgs_ver",
-  "ros_translator": "$ros_translator_ver",
+  "rmf_internal_msgs": "$RMF_INTERNAL_MSGS_VER",
+  "rmf_building_map_msgs": "$RMF_BUILDING_MAP_MSGS_VER",
 }
 
 EOF
@@ -60,8 +60,7 @@ pipenv run black api_server/models/ros_pydantic
 
 echo ''
 echo 'versions:'
-echo "  rmf_internal_msgs: $rmf_internal_msgs_ver"
-echo "  rmf_building_map_msgs: $rmf_building_map_msgs_ver"
-echo "  ros_translator: $ros_translator"
+echo "  rmf_internal_msgs: $RMF_INTERNAL_MSGS_VER"
+echo "  rmf_building_map_msgs: $RMF_BUILDING_MAP_MSGS_VER"
 echo ''
 echo 'Successfully generated ros_pydantic models'

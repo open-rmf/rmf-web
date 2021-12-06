@@ -14,6 +14,7 @@ coverage = "~=5.5"
 api-server = {editable = true, path = "./packages/api-server"}
 requests = "~=2.25"
 asyncpg = "~=0.24.0"
+datamodel-code-generator = "~=0.11.15"
 # reporting-server
 reporting-server = {editable = true, path = "./packages/reporting-server"}
 # ros-translator
