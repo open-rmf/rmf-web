@@ -37,12 +37,16 @@ export interface RobotPanelProps
   paginationOptions?: Omit<React.ComponentPropsWithoutRef<typeof TablePagination>, 'component'>;
   verboseRobots: VerboseRobot[];
   fetchVerboseRobots: () => Promise<VerboseRobot[]>;
+  onRobotZoom?: (robot: VerboseRobot) => void;
 }
 
+// FIXME - change fetchVerboseRobots props to onRefresh
+// and shift handleRefresh logic to the parent component
 export function RobotPanel({
   paginationOptions,
   verboseRobots,
   fetchVerboseRobots,
+  onRobotZoom,
   ...divProps
 }: RobotPanelProps): JSX.Element {
   const [selectedRobot, setSelectedRobot] = React.useState<VerboseRobot | undefined>(undefined);
@@ -58,6 +62,15 @@ export function RobotPanel({
     })();
   };
 
+  const handleRobotClick = async (
+    _ev: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    robot: VerboseRobot,
+  ) => {
+    await handleRefresh(robot);
+    setSelectedRobot(robot);
+    onRobotZoom && onRobotZoom(robot);
+  };
+
   return (
     <StyledDiv {...divProps}>
       <Grid container wrap="nowrap" justifyContent="center" style={{ height: 'inherit' }}>
@@ -66,7 +79,7 @@ export function RobotPanel({
             className={classes.robotTable}
             robots={verboseRobots}
             paginationOptions={paginationOptions}
-            onRobotClick={(_ev, robot) => setSelectedRobot(robot)}
+            onRobotClick={handleRobotClick}
             onRefreshClick={() => handleRefresh(selectedRobot)}
           />
         </Grid>

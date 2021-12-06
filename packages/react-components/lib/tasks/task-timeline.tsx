@@ -61,10 +61,10 @@ export interface TaskTimelineProps {
 
 export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
   const timelinePhases = taskSummary.status.split('\n\n');
-  const currentDotIdx = timelinePhases.findIndex((msg) => msg.startsWith('*'));
+  const currentDotIdx = timelinePhases.findIndex((msg: string) => msg.startsWith('*'));
   const timelineInfo = taskSummary.status.split('\n\n');
 
-  const timelineDotProps = timelinePhases.map((_, idx) => {
+  const timelineDotProps = timelinePhases.map((_: string, idx: number) => {
     if ([RmfTaskSummary.STATE_CANCELED, RmfTaskSummary.STATE_FAILED].includes(taskSummary.state)) {
       return {
         className: classes.failedPhase,

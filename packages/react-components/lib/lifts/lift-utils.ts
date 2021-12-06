@@ -1,3 +1,4 @@
+import { Lift } from 'api-client';
 import { LiftRequest as RmfLiftRequest, LiftState as RmfLiftState } from 'rmf-models';
 
 export function liftModeToString(liftMode?: number): string {

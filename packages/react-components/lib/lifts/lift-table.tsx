@@ -28,6 +28,10 @@ const StyledAutosizer = styled((props: AutoSizerProps) => <AutoSizer {...props} 
       color: theme.palette.warning.main,
     },
     [`& .${classes.tableRow}`]: {
+      '&:hover': {
+        cursor: 'pointer',
+        backgroundColor: theme.palette.action.hover,
+      },
       display: 'flex',
       flexDirection: 'row',
     },
@@ -58,9 +62,9 @@ interface LiftListRendererProps extends ListChildComponentProps {
 export interface LiftRowProps {
   lift: Lift;
   doorState: number;
-  currentMode: number;
-  currentFloor: string;
-  destinationFloor: string;
+  destinationFloor?: string;
+  currentFloor?: string;
+  currentMode?: number;
   onRequestSubmit?(
     event: React.FormEvent,
     lift: Lift,
@@ -161,19 +165,22 @@ const LiftRow = React.memo(
   },
 );
 
-const LiftListRenderer = ({ data, index }: LiftListRendererProps) => {
+const LiftListRenderer = ({ data, index, style }: LiftListRendererProps) => {
   const lift = data.lifts[index];
   const liftState = data.liftStates[lift.name];
 
   return (
-    <LiftRow
-      lift={lift}
-      doorState={liftState?.door_state}
-      currentMode={liftState?.current_mode}
-      currentFloor={liftState?.current_floor}
-      destinationFloor={liftState?.destination_floor}
-      onRequestSubmit={data.onRequestSubmit}
-    />
+    <div style={style}>
+      <LiftRow
+        lift={lift}
+        doorState={liftState?.door_state}
+        currentMode={liftState?.current_mode}
+        currentFloor={liftState?.current_floor}
+        destinationFloor={liftState?.destination_floor}
+        onRequestSubmit={data.onRequestSubmit}
+        key={`${lift.name}`}
+      />
+    </div>
   );
 };
 
@@ -183,47 +190,47 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
     <StyledAutosizer disableHeight>
       {({ width }) => {
         return (
-          <Table component="div" stickyHeader size="small" aria-label="lift-table">
+          <Table component="div" size="small" aria-label="lift-table">
             <TableHead component="div">
               <TableRow component="div" className={classes.tableRow}>
                 <ItemTableCell
                   component="div"
-                  variant="body"
+                  variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Lift Name
                 </ItemTableCell>
                 <ItemTableCell
                   component="div"
-                  variant="body"
+                  variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Op. Mode
                 </ItemTableCell>
                 <ItemTableCell
                   component="div"
-                  variant="body"
+                  variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Current Floor
                 </ItemTableCell>
                 <ItemTableCell
                   component="div"
-                  variant="body"
+                  variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Destination
                 </ItemTableCell>
                 <ItemTableCell
                   component="div"
-                  variant="body"
+                  variant="head"
                   className={clsx(classes.tableCell, fixedTableCell)}
                 >
                   Doors State
                 </ItemTableCell>
                 <ItemTableCell
                   component="div"
-                  variant="body"
+                  variant="head"
                   className={clsx(classes.tableCell, fixedLastTableCell)}
                 >
                   Request Form
@@ -239,7 +246,6 @@ export const LiftTable = ({ lifts, liftStates, onRequestSubmit }: LiftTableProps
                 itemData={{
                   lifts,
                   liftStates,
-                  width,
                   onRequestSubmit,
                 }}
               >

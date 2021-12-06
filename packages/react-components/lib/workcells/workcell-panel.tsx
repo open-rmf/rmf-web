@@ -1,4 +1,13 @@
-import { Card, CardProps, Grid, IconButton, Paper, Typography, styled } from '@mui/material';
+import {
+  Card,
+  CardProps,
+  Divider,
+  Grid,
+  IconButton,
+  Paper,
+  Typography,
+  styled,
+} from '@mui/material';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import type { Dispenser, Ingestor } from 'api-client';
@@ -43,6 +52,7 @@ const classes = {
   subPanelHeader: 'workcell-sub-panel-header',
   tableDiv: 'workcell-table-div',
   nameField: 'workcell-name-field',
+  grid: 'workcell-grid',
 };
 const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
   [`&.${classes.container}`]: {
@@ -55,13 +65,28 @@ const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme })
     backgroundColor: theme.palette.primary.main,
   },
   [`& .${classes.cellContainer}`]: {
-    padding: theme.spacing(2),
-    paddingTop: theme.spacing(1),
+    padding: theme.spacing(1),
+    maxHeight: '25vh',
+    margin: theme.spacing(1),
+    overflowY: 'auto',
+    overflowX: 'hidden',
   },
   [`& .${classes.cellPaper}`]: {
     padding: theme.spacing(1),
+    backgroundColor: theme.palette.background.paper,
+    border: 1,
+    borderStyle: 'solid',
+    borderColor: theme.palette.primary.main,
+    '&:hover': {
+      cursor: 'pointer',
+      backgroundColor: theme.palette.action.hover,
+    },
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.action.hover,
+    height: '60%',
+  },
+  [`& .${classes.grid}`]: {
+    padding: theme.spacing(2),
+    paddingTop: theme.spacing(1),
   },
   [`& .${classes.itemIcon}`]: {
     color: theme.palette.primary.contrastText,
@@ -75,13 +100,17 @@ const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme })
     color: theme.palette.primary.contrastText,
   },
   [`& .${classes.tableDiv}`]: {
-    margin: '0 1rem',
+    margin: theme.spacing(1),
+    padding: theme.spacing(1),
   },
   [`& .${classes.nameField}`]: {
     fontWeight: 'bold',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+  },
+  bottomTable: {
+    marginTop: theme.spacing(2),
   },
 }));
 
@@ -93,6 +122,7 @@ const WorkcellCell = React.memo(
         {requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
           <React.Fragment>
             <Typography
+              noWrap
               id={labelId}
               align="center"
               className={classes.nameField}
@@ -101,13 +131,13 @@ const WorkcellCell = React.memo(
               {workcell?.guid}
             </Typography>
             <Grid container direction="row">
-              <Grid item xs={6}>
+              <Grid item xs={8}>
                 <Typography
                   align="center"
                   variant="body2"
                 >{`Queue: ${requestGuidQueue.length}`}</Typography>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={4}>
                 <Typography align="center" variant="body2">
                   {requestGuidQueue.length}
                 </Typography>
@@ -201,7 +231,6 @@ export function WorkcellPanel({
                         columnCount,
                         workcells: dispensers,
                         workcellStates,
-                        type: 'dispensers',
                       }}
                     >
                       {WorkcellGridRenderer}
@@ -211,6 +240,7 @@ export function WorkcellPanel({
               </AutoSizer>
             </Grid>
           </div>
+          <Divider />
           <div className={classes.cellContainer}>
             <Typography variant="h6">Ingestors</Typography>
             <Grid container direction="row" spacing={1}>
@@ -229,7 +259,6 @@ export function WorkcellPanel({
                         columnCount,
                         workcells: ingestors,
                         workcellStates,
-                        type: 'ingestors',
                       }}
                     >
                       {WorkcellGridRenderer}

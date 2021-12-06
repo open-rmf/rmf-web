@@ -43,6 +43,10 @@ const StyledAutoSizer = styled((props: AutoSizerProps) => <AutoSizer {...props} 
       color: theme.palette.warning.main,
     },
     [`& .${classes.tableRow}`]: {
+      '&:hover': {
+        cursor: 'pointer',
+        backgroundColor: theme.palette.action.hover,
+      },
       display: 'flex',
       flexDirection: 'row',
     },
@@ -148,16 +152,19 @@ const DoorRow = React.memo(({ door, doorMode, onDoorControlClick }: DoorRowProps
   );
 });
 
-const DoorListRenderer = ({ data, index }: DoorListRendererProps) => {
+const DoorListRenderer = ({ data, index, style }: DoorListRendererProps) => {
   const door = data.doors[index];
   const doorState = data.doorStates[door.door.name];
 
   return (
-    <DoorRow
-      door={door}
-      doorMode={doorState?.current_mode.value}
-      onDoorControlClick={data.onDoorControlClick}
-    />
+    <div style={style}>
+      <DoorRow
+        door={door}
+        doorMode={doorState?.current_mode.value}
+        onDoorControlClick={data.onDoorControlClick}
+        key={door.door.name}
+      />
+    </div>
   );
 };
 
@@ -171,7 +178,7 @@ export const DoorTable = ({
     <StyledAutoSizer disableHeight>
       {({ width }) => {
         return (
-          <Table stickyHeader size="small" aria-label="door-table" component="div">
+          <Table size="small" aria-label="door-table" component="div">
             <TableHead component="div">
               <TableRow component="div" className={classes.tableRow} style={{ width: width }}>
                 <ItemTableCell

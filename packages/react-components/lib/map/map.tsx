@@ -1,6 +1,5 @@
-import { styled } from '@mui/material';
+import { useTheme } from '@mui/material';
 import type { Level } from 'api-client';
-import clsx from 'clsx';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import React from 'react';
@@ -9,18 +8,6 @@ import { EntityManager, EntityManagerContext } from './entity-manager';
 import { LabelsPortalContext } from './labels-overlay';
 import { SVGOverlay } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
-
-const classes = {
-  map: 'map-root',
-};
-const StyledLMap_ = styled((props: LMapProps_) => <LMap_ {...props} />)(() => ({
-  [`&.${classes.map}`]: {
-    height: '100%',
-    width: '100%',
-    margin: 0,
-    padding: 0,
-  },
-}));
 
 export interface MapFloorLayer {
   level: Level;
@@ -42,7 +29,6 @@ export function calcMaxBounds(
 function EntityManagerProvider({ children }: React.PropsWithChildren<{}>) {
   const leaflet = useLeaflet();
   const { current: entityManager } = React.useRef(new EntityManager());
-
   React.useEffect(() => {
     if (!leaflet.map) return;
     const listener = () => {
@@ -52,7 +38,7 @@ function EntityManagerProvider({ children }: React.PropsWithChildren<{}>) {
     return () => {
       leaflet.map && leaflet.map.off('zoom', listener);
     };
-  }, [leaflet.map]);
+  }, [leaflet, leaflet.map]);
 
   return entityManager ? (
     <EntityManagerContext.Provider value={entityManager}>{children}</EntityManagerContext.Provider>
@@ -67,10 +53,17 @@ export const LMap = React.forwardRef(
   ({ className, children, ...otherProps }: LMapProps, ref: React.Ref<LMap_>) => {
     const [labelsPortal, setLabelsPortal] = React.useState<SVGSVGElement | null>(null);
     const viewBox = otherProps.bounds ? viewBoxFromLeafletBounds(otherProps.bounds) : undefined;
+    const theme = useTheme();
     return (
-      <StyledLMap_
+      <LMap_
         ref={ref}
-        className={clsx(classes.map, className)}
+        style={{
+          height: '100%',
+          width: '100%',
+          margin: 0,
+          padding: 0,
+          backgroundColor: theme.palette.background.default,
+        }}
         crs={L.CRS.Simple}
         {...otherProps}
       >
@@ -90,7 +83,7 @@ export const LMap = React.forwardRef(
             )}
           </LabelsPortalContext.Provider>
         </EntityManagerProvider>
-      </StyledLMap_>
+      </LMap_>
     );
   },
 );
