@@ -1,6 +1,6 @@
 # THIS FILE IS GENERATED
 version = {
-    "rmf_internal_msgs": "db9b1fdd6836b9b34a793e22c6ccf8df089fff52",
+    "rmf_internal_msgs": "0c237e1758872917661879975d7dc0acf5fa518c",
     "rmf_building_map_msgs": "1.2.0",
-    "ros_translator": "0945645a789225999aa4736a9276b630a722846a",
+    "ros_translator": "e8f1bf61ba81bb9677a3ddd2e40deeea6502d87f",
 }
