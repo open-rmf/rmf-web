@@ -58,6 +58,14 @@ EOF
 pipenv run isort api_server/models/ros_pydantic
 pipenv run black api_server/models/ros_pydantic
 
+# generate rmf api models from json schemas
+output='api_server/models/rmf_api'
+rm -rf "$output"
+mkdir -p "$output"
+datamodel-codegen --input-file-type jsonschema --input build/rmf_api_msgs/rmf_api_msgs/schemas --output "$output"
+pipenv run isort api_server/models/rmf_api
+pipenv run black api_server/models/rmf_api
+
 echo ''
 echo 'versions:'
 echo "  rmf_internal_msgs: $RMF_INTERNAL_MSGS_VER"
