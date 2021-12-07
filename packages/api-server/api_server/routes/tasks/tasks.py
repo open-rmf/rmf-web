@@ -5,7 +5,7 @@ from fastapi import Body, Depends, HTTPException, Path, Query
 from rx import operators as rxops
 
 from api_server.base_app import BaseApp
-from api_server.dependencies import pagination_query, task_repo
+from api_server.dependencies import pagination_query, task_repo_dep
 from api_server.fast_io import FastIORouter, WatchRequest
 from api_server.models import (
     CancelTaskRequest,
@@ -30,7 +30,7 @@ class TasksRouter(FastIORouter):
 
         @self.get("", response_model=List[TaskState])
         async def query_task_states(
-            task_repo: TaskRepository = Depends(task_repo(app)),
+            task_repo: TaskRepository = Depends(task_repo_dep(app)),
             task_id: Optional[str] = Query(
                 None, description="comma separated list of task ids"
             ),
@@ -57,7 +57,7 @@ class TasksRouter(FastIORouter):
 
         @self.get("/{task_id}/state", response_model=TaskState)
         async def get_task_state(
-            task_repo: TaskRepository = Depends(task_repo(app)),
+            task_repo: TaskRepository = Depends(task_repo_dep(app)),
             task_id: str = Path(..., description="task_id"),
         ):
             """

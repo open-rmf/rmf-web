@@ -24,7 +24,6 @@ from rmf_fleet_msgs.msg import FleetState as RmfFleetState
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
-from rmf_task_msgs.msg import Tasks as RmfTasks
 from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import GetTaskList as RmfGetTaskList
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask

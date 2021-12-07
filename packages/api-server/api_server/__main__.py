@@ -32,15 +32,15 @@ def main():
         )
     )
 
-    def stop_servers(signum, frame):
+    def stop_servers(_signum, _frame):
         public_server.should_exit = True
         rmf_gateway_server.should_exit = True
 
     signal.signal(signal.SIGINT, stop_servers)
     signal.signal(signal.SIGTERM, stop_servers)
 
-    Thread(target=lambda: public_server.run()).start()
-    Thread(target=lambda: rmf_gateway_server.run()).start()
+    Thread(target=public_server.run).start()
+    Thread(target=rmf_gateway_server.run).start()
 
 
 if __name__ == "__main__":

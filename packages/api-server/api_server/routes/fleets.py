@@ -15,7 +15,6 @@ from .utils import rx_watcher
 class FleetsRouter(FastIORouter):
     def __init__(self, app: BaseApp):
         super().__init__(tags=["Fleets"])
-        logger = app.logger
 
         @self.get("", response_model=List[Fleet])
         async def get_fleets(

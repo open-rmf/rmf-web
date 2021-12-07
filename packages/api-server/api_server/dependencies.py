@@ -27,7 +27,7 @@ def rmf_repo(user_dep: Callable[..., User]) -> Callable[..., RmfRepository]:
     return dep
 
 
-def task_repo(app: BaseApp) -> Callable[..., TaskRepository]:
+def task_repo_dep(app: BaseApp) -> Callable[..., TaskRepository]:
     def dep(user: User = Depends(app.auth_dep)):
         return TaskRepository(user)
 

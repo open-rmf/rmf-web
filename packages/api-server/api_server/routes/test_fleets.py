@@ -1,5 +1,3 @@
-from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
-
 from api_server.models import FleetState, RobotState
 from api_server.test import AppFixture, try_until
 from api_server.test.test_data import make_fleet_state

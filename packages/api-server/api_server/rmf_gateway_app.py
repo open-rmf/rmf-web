@@ -17,7 +17,7 @@ async def rmf_gateway(websocket: WebSocket):
     while True:
         data: Dict[str, Any] = await websocket.receive_json()
         payload_type: str = data["type"]
-        if type(payload_type) is not str:
+        if not isinstance(payload_type, str):
             print("'type' must be a string", file=sys.stderr)
 
         if payload_type == "task_state_update":

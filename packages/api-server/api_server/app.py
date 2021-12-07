@@ -9,7 +9,6 @@ from typing import Any, Callable, Coroutine, List, Union
 import rclpy
 import rclpy.executors
 import socketio
-from fastapi import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
