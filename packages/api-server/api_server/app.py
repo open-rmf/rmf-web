@@ -104,7 +104,7 @@ class App(FastIO, BaseApp):
         # will be called in reverse order on app shutdown
         shutdown_cbs: List[Union[Coroutine[Any, Any, Any], Callable[[], None]]] = []
 
-        self._rmf_events = RmfEvents()
+        self._rmf_events = RmfEvents.singleton()
         self.rmf_repo = rmf_repo_dep(self.auth_dep)
         self.static_files_repo = StaticFilesRepository(
             f"{self.app_config.public_url.geturl()}/static",
