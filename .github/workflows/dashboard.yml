@@ -34,7 +34,6 @@ jobs:
       - name: bootstrap
         run: |
           . /rmf_demos_ws/install/setup.bash
-          npm i -g npm@latest
           scripts/bootstrap.sh rmf-dashboard
         working-directory: .
       - name: unit test
