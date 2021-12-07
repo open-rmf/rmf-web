@@ -62,7 +62,14 @@ pipenv run black api_server/models/ros_pydantic
 output='api_server/models/rmf_api'
 rm -rf "$output"
 mkdir -p "$output"
-datamodel-codegen --input-file-type jsonschema --input build/rmf_api_msgs/rmf_api_msgs/schemas --output "$output"
+pipenv run datamodel-codegen --disable-timestamp --input-file-type jsonschema --input build/rmf_api_msgs/rmf_api_msgs/schemas --output "$output"
+cat << EOF > "$output/version.py"
+# THIS FILE IS GENERATED
+version = {
+  "rmf_api_msgs": "$RMF_API_MSGS_VER",
+}
+
+EOF
 pipenv run isort api_server/models/rmf_api
 pipenv run black api_server/models/rmf_api
 
@@ -70,5 +77,6 @@ echo ''
 echo 'versions:'
 echo "  rmf_internal_msgs: $RMF_INTERNAL_MSGS_VER"
 echo "  rmf_building_map_msgs: $RMF_BUILDING_MAP_MSGS_VER"
+echo "  rmf_api_msgs: $RMF_API_MSGS_VER"
 echo ''
 echo 'Successfully generated ros_pydantic models'
