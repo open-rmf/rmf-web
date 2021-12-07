@@ -68,6 +68,7 @@ export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
   onDispenserClick?: (ev: React.MouseEvent, guid: string) => void;
   onIngestorClick?: (ev: React.MouseEvent, guid: string) => void;
   setLeafletMap?: React.Dispatch<React.SetStateAction<LeafletContextInterface>>;
+  leafletMap?: LeafletContextInterface;
 }
 
 interface ScheduleVisualizerSettings {
@@ -89,6 +90,7 @@ export default function ScheduleVisualizer({
   onDispenserClick,
   onIngestorClick,
   setLeafletMap,
+  leafletMap,
   children,
 }: ScheduleVisualizerProps): JSX.Element | null {
   debug('render');
@@ -340,6 +342,7 @@ export default function ScheduleVisualizer({
       bounds={bounds}
       className={classes.map}
       setLeafletMap={setLeafletMap}
+      leafletMap={leafletMap}
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
       <LayersControl position="topleft">

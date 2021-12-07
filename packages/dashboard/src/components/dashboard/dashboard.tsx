@@ -207,6 +207,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 fleetStates={Object.assign({}, fleetStatesRef.current)}
                 mode="normal"
                 setLeafletMap={setLeafletMap}
+                leafletMap={leafletMap}
               ></ScheduleVisualizer>
             </Card>
             <Grid item className={classes.itemPanels}>

@@ -1,5 +1,10 @@
 import { makeStyles } from '@material-ui/core';
-import { LeafletContextInterface, CONTEXT_VERSION } from '@react-leaflet/core';
+import {
+  LeafletContextInterface,
+  CONTEXT_VERSION,
+  LeafletContext,
+  useLeafletContext,
+} from '@react-leaflet/core';
 import type { Level } from 'api-client';
 import clsx from 'clsx';
 import * as L from 'leaflet';
@@ -43,6 +48,7 @@ function EntityManagerProvider({
   setLeafletMap?: React.Dispatch<React.SetStateAction<LeafletContextInterface>>;
 }>) {
   const mapInstance = useMap();
+  const leafletContext = useLeafletContext();
   const { current: entityManager } = React.useRef(new EntityManager());
 
   React.useEffect(() => {
@@ -55,7 +61,7 @@ function EntityManagerProvider({
     return () => {
       mapInstance && mapInstance.off('zoom', listener);
     };
-  }, [mapInstance, setLeafletMap]);
+  }, [mapInstance, setLeafletMap, leafletContext]);
 
   return entityManager ? (
     <EntityManagerContext.Provider value={entityManager}>{children}</EntityManagerContext.Provider>
@@ -63,29 +69,25 @@ function EntityManagerProvider({
 }
 
 export interface LMapProps extends Omit<MapContainerProps, 'crs'> {
-  ref?: React.Ref<typeof MapContainer>;
   setLeafletMap?: React.Dispatch<React.SetStateAction<LeafletContextInterface>>;
+  leafletMap?: LeafletContextInterface;
 }
 
 export const LMap = React.forwardRef(
-  (
-    { className, children, setLeafletMap, ...otherProps }: LMapProps,
-    ref: React.Ref<typeof MapContainer>,
-  ) => {
+  ({ className, children, setLeafletMap, ...otherProps }: LMapProps) => {
     const classes = useStyles();
     const [labelsPortal, setLabelsPortal] = React.useState<SVGSVGElement | null>(null);
     const viewBox = otherProps.bounds ? viewBoxFromLeafletBounds(otherProps.bounds) : '';
 
     return (
       <MapContainer
-        ref={ref}
         className={clsx(classes.map, className)}
         crs={L.CRS.Simple}
         {...otherProps}
         maxZoom={22}
         {...otherProps}
       >
-        <EntityManagerProvider>
+        <EntityManagerProvider setLeafletMap={setLeafletMap}>
           <LabelsPortalContext.Provider value={labelsPortal}>
             {children}
             {otherProps.bounds && (
