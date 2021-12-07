@@ -1,15 +1,25 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Any, List, Optional, cast
 
-from fastapi import Depends, HTTPException, Path, Query
+from fastapi import Body, Depends, HTTPException, Path, Query
+from rx import operators as rxops
 
 from api_server.base_app import BaseApp
 from api_server.dependencies import pagination_query, task_repo
 from api_server.fast_io import FastIORouter, WatchRequest
-from api_server.models import Pagination, TaskState, User
+from api_server.models import (
+    CancelTaskRequest,
+    Pagination,
+    TaskCancelResponse,
+    TaskRequest,
+    TaskState,
+    User,
+)
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.query import add_pagination
 from api_server.repositories import TaskRepository
+
+from ..utils import rx_watcher
 
 
 class TasksRouter(FastIORouter):
@@ -60,16 +70,34 @@ class TasksRouter(FastIORouter):
 
         @self.watch("/{task_id}/state")
         async def watch_task_state(req: WatchRequest, task_id: str):
-            raise HTTPException(status_code=501)
+            task_repo = TaskRepository(req.user)
+            try:
+                current_state = await get_task_state(task_repo, task_id)
+                await req.emit(current_state.json())
+            except HTTPException as e:
+                if e.status_code != 404:
+                    raise e
 
-        @self.post("/submit_task")
-        async def submit_task(
+            rx_watcher(
+                req,
+                app.rmf_events().task_states.pipe(
+                    rxops.filter(lambda x: cast(TaskState, x).booking.id == task_id),
+                    rxops.map(cast(Any, lambda x: cast(TaskState, x).json())),
+                ),
+            )
+
+        @self.post("/task_request")
+        async def task_request(
             user: User = Depends(user_dep),
+            task_request: TaskRequest = Body(...),
         ):
+            # TODO: forward to the internal app
             raise HTTPException(status_code=501)
 
-        @self.post("/cancel_task")
+        @self.post("/cancel_task", response_model=TaskCancelResponse)
         async def cancel_task(
             user: User = Depends(user_dep),
+            cancel_request: CancelTaskRequest = Body(...),
         ):
+            # TODO: forward to the internal app
             raise HTTPException(status_code=501)
