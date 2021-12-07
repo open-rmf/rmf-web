@@ -2,8 +2,11 @@ from typing import Callable, Optional
 
 from fastapi import Depends, Query
 
+from api_server.base_app import BaseApp
+from api_server.repositories import TaskRepository
+
 from .models import Pagination, User
-from .repositories.rmf import RmfRepository
+from .repositories import RmfRepository
 
 
 def pagination_query(
@@ -20,5 +23,12 @@ def pagination_query(
 def rmf_repo(user_dep: Callable[..., User]) -> Callable[..., RmfRepository]:
     def dep(user: User = Depends(user_dep)):
         return RmfRepository(user)
+
+    return dep
+
+
+def task_repo(app: BaseApp) -> Callable[..., TaskRepository]:
+    def dep(user: User = Depends(app.auth_dep)):
+        return TaskRepository(user)
 
     return dep

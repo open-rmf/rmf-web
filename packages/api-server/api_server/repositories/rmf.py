@@ -1,8 +1,4 @@
-from datetime import datetime
-from typing import Dict, List, Optional, cast
-
-from fastapi.exceptions import HTTPException
-from tortoise.queryset import MODEL, QuerySet
+from typing import List, Optional, cast
 
 from api_server.models import (
     BuildingMap,
@@ -21,14 +17,11 @@ from api_server.models import (
     LiftState,
     Pagination,
     RobotHealth,
-    TaskStateEnum,
-    TaskSummary,
-    TaskTypeEnum,
     User,
 )
 from api_server.models import tortoise_models as ttm
 from api_server.models.fleets import Fleet, Robot
-from api_server.permissions import Enforcer, RmfAction
+from api_server.query import add_pagination
 
 
 class RmfRepository:
@@ -42,31 +35,6 @@ class RmfRepository:
             if v is not None:
                 filter_params[k] = v
         return filter_params
-
-    @staticmethod
-    def _add_pagination(
-        query: QuerySet[MODEL],
-        pagination: Pagination,
-        field_mappings: Dict[str, str] = None,
-    ) -> QuerySet[MODEL]:
-        """
-        :param field_mapping: A dict mapping the order fields to the fields used to build the
-            query. e.g. a url of `?order_by=order_field` and a field mapping of `{"order_field": "db_field"}`
-            will order the query result according to `db_field`.
-        """
-        field_mappings = field_mappings or {}
-        query = query.limit(pagination.limit).offset(pagination.offset)
-        if pagination.order_by is not None:
-            order_fields = []
-            order_values = pagination.order_by.split(",")
-            for v in order_values:
-                if v[0] in ["-", "+"]:
-                    stripped = v[1:]
-                    order_fields.append(v[0] + field_mappings.get(stripped, stripped))
-                else:
-                    order_fields.append(field_mappings.get(v, v))
-            query = query.order_by(*order_fields)
-        return query
 
     async def get_bulding_map(self) -> Optional[BuildingMap]:
         building_map = await ttm.BuildingMap.first()
@@ -148,7 +116,7 @@ class RmfRepository:
         filter_params = {}
         if fleet_name is not None:
             filter_params["id___in"] = fleet_name.split(",")
-        states = await self._add_pagination(
+        states = await add_pagination(
             ttm.FleetState.filter(**filter_params), pagination, {"fleet_name": "id_"}
         )
         return [Fleet(name=s.id_, state=FleetState.from_tortoise(s)) for s in states]
@@ -172,7 +140,7 @@ class RmfRepository:
         if robot_name is not None:
             filter_params["robot_name__in"] = robot_name.split(",")
 
-        robot_states = await self._add_pagination(
+        robot_states = await add_pagination(
             ttm.RobotState.filter(**filter_params), pagination
         )
         return [
@@ -190,68 +158,6 @@ class RmfRepository:
             return None
         return await RobotHealth.from_tortoise(robot_health)
 
-    async def get_task_summary(self, task_id: str) -> TaskSummary:
-        # FIXME: This would fail if task_id contains "_/"
-        task_id = task_id.replace("__", "/")
-        ts = await Enforcer.query(
-            self.user, ttm.TaskSummary.all(), RmfAction.TaskRead
-        ).get_or_none(id_=task_id)
-
-        if ts is None:
-            raise HTTPException(404)
-        return TaskSummary.from_tortoise(ts)
-
-    async def query_task_summaries(
-        self,
-        pagination: Pagination,
-        *,
-        task_id: Optional[str] = None,
-        fleet_name: Optional[str] = None,
-        submission_time_since: Optional[datetime] = None,
-        start_time_since: Optional[datetime] = None,
-        end_time_since: Optional[datetime] = None,
-        robot_name: Optional[str] = None,
-        state: Optional[str] = None,
-        task_type: Optional[str] = None,
-        priority: Optional[int] = None,
-    ) -> List[TaskSummary]:
-        filter_params = {}
-        if task_id is not None:
-            filter_params["id___in"] = task_id.split(",")
-        if fleet_name is not None:
-            filter_params["fleet_name__in"] = fleet_name.split(",")
-        if submission_time_since is not None:
-            filter_params["submission_time__gte"] = submission_time_since
-        if start_time_since is not None:
-            filter_params["start_time__gte"] = start_time_since
-        if end_time_since is not None:
-            filter_params["end_time__gte"] = end_time_since
-        if robot_name is not None:
-            filter_params["robot_name__in"] = robot_name.split(",")
-        if state is not None:
-            try:
-                filter_params["state__in"] = [
-                    TaskStateEnum[s.upper()].value for s in state.split(",")
-                ]
-            except KeyError as e:
-                raise HTTPException(422, "unknown state") from e
-        if task_type is not None:
-            try:
-                filter_params["task_type__in"] = [
-                    TaskTypeEnum[t.upper()].value for t in task_type.split(",")
-                ]
-            except KeyError as e:
-                raise HTTPException(422, "unknown task type") from e
-        if priority is not None:
-            filter_params["priority"] = priority
-
-        q = self._add_pagination(
-            ttm.TaskSummary.filter(**filter_params), pagination, {"task_id": "id_"}
-        )
-
-        tasks = await Enforcer.query(self.user, q, RmfAction.TaskRead)
-        return [TaskSummary.from_tortoise(t) for t in tasks]
-
     async def query_users(
         self,
         pagination: Pagination,
@@ -266,7 +172,7 @@ class RmfRepository:
             filter_params["is_admin"] = is_admin
         return cast(
             List[str],
-            await self._add_pagination(
+            await add_pagination(
                 ttm.User.filter(**filter_params),
                 pagination,
             ).values_list("username", flat=True),

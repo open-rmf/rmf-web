@@ -7,5 +7,5 @@ from .health import *
 from .ingestors import *
 from .lifts import *
 from .pagination import *
-from .tasks import *
+from .tasks import TaskState
 from .user import *

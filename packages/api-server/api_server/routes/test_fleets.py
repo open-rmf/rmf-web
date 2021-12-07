@@ -1,6 +1,6 @@
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 
-from api_server.models import FleetState, RobotState, TaskSummary
+from api_server.models import FleetState, RobotState
 from api_server.test import AppFixture, try_until
 from api_server.test.test_data import make_fleet_state
 
@@ -19,25 +19,9 @@ class TestFleetsRoute(AppFixture):
                 robots=[RobotState(name="robot_3")],
             ),
         ]
-        tasks = [
-            TaskSummary(
-                task_id="task_1",
-                fleet_name="fleet_1",
-                robot_name="robot_1",
-                state=RmfTaskSummary.STATE_ACTIVE,
-            ),
-            TaskSummary(
-                task_id="task_2",
-                fleet_name="fleet_1",
-                robot_name="robot_1",
-                state=RmfTaskSummary.STATE_PENDING,
-            ),
-        ]
 
         for f in fleet_states:
             cls.app.rmf_events().fleet_states.on_next(f)
-        for t in tasks:
-            cls.app.rmf_events().task_summaries.on_next(t)
 
     def test_get_fleets(self):
         resp = self.session.get("/fleets?fleet_name=fleet_1")

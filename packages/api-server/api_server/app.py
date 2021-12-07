@@ -275,21 +275,6 @@ class App(FastIO, BaseApp):
             self._rmf_events.robot_health.on_next(health)
         self.logger.info(f"loaded {len(robot_health)} robot health")
 
-        self.logger.info("updating tasks from RMF")
-        try:
-            # Sometimes the node has not finished discovery so we need to call
-            # `wait_for_service` here.
-            # As of rclpy 3.0, `wait_for_service` uses a blocking sleep in a loop so
-            # using it is not recommended after the app has finish startup.
-            ready = self._rmf_gateway.get_tasks_srv.wait_for_service(1)
-            if not ready:
-                raise HTTPException(503, "ros service not ready")
-            tasks = await self._rmf_gateway.get_tasks()
-            for t in tasks:
-                await t.save()
-        except HTTPException as e:
-            self.logger.error(f"failed to update tasks from RMF ({e.detail})")
-
         self.logger.info("successfully loaded all states")
 
     def rmf_events(self) -> RmfEvents:

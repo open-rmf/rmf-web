@@ -21,7 +21,6 @@ from api_server.models import (
     LiftHealth,
     LiftState,
     RobotHealth,
-    TaskSummary,
 )
 from api_server.models import tortoise_models as ttm
 from api_server.models.health import BaseBasicHealth
@@ -107,7 +106,6 @@ class RmfBookKeeper:
         self._record_ingestor_health()
         self._record_fleet_state()
         self._record_robot_health()
-        self._record_task_summary()
 
     async def stop(self):
         for sub in self._subscriptions:
@@ -242,14 +240,4 @@ class RmfBookKeeper:
 
         self._subscriptions.append(
             self.rmf.robot_health.subscribe(lambda x: self._create_task(update(x)))
-        )
-
-    def _record_task_summary(self):
-        async def update(summary: TaskSummary):
-            await summary.save()
-            self._loggers.task_summary.info(summary.json())
-            self.bookkeeper_events.task_summary_written.on_next(summary)
-
-        self._subscriptions.append(
-            self.rmf.task_summaries.subscribe(lambda x: self._create_task(update(x)))
         )

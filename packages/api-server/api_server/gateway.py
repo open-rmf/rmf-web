@@ -37,7 +37,6 @@ from .models import (
     FleetState,
     IngestorState,
     LiftState,
-    TaskSummary,
 )
 from .repositories import StaticFilesRepository
 from .rmf_io import RmfEvents
@@ -173,17 +172,6 @@ class RmfGateway(rclpy.node.Node):
         )
         self._subscriptions.append(fleet_states_sub)
 
-        task_summaries_sub = self.create_subscription(
-            RmfTasks,
-            "dispatcher_ongoing_tasks",
-            lambda msg: [
-                self.rmf_events.task_summaries.on_next(TaskSummary.from_orm(task))
-                for task in msg.tasks
-            ],
-            10,
-        )
-        self._subscriptions.append(task_summaries_sub)
-
         map_sub = self.create_subscription(
             RmfBuildingMap,
             "map",
@@ -211,22 +199,6 @@ class RmfGateway(rclpy.node.Node):
         Returns the current sim time, or `None` if not using sim time
         """
         return self.get_clock().now().to_msg()
-
-    async def get_tasks(self) -> List[TaskSummary]:
-        """
-        Gets the list of tasks from RMF.
-        """
-        resp: RmfGetTaskList.Response = await self.call_service(
-            self.get_tasks_srv, RmfGetTaskList.Request()
-        )
-        if not resp.success:
-            raise HTTPException(500, "service call succeeded but RMF returned an error")
-        tasks: List[TaskSummary] = []
-        for t in resp.active_tasks:
-            tasks.append(TaskSummary.from_orm(t))
-        for t in resp.terminated_tasks:
-            tasks.append(TaskSummary.from_orm(t))
-        return tasks
 
     def request_door(self, door_name: str, mode: int) -> None:
         msg = RmfDoorRequest(

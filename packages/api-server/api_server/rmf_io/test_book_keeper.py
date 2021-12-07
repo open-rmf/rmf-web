@@ -17,7 +17,6 @@ from api_server.models import (
     LiftHealth,
     LiftState,
     RobotHealth,
-    TaskSummary,
 )
 from api_server.models import tortoise_models as ttm
 from api_server.test import async_try_until, init_db, test_data
@@ -291,24 +290,3 @@ class TestRmfBookKeeper(unittest.IsolatedAsyncioTestCase):
         )
         self.assertIsNotNone(health)
         self.assertEqual(health.health_status, HealthStatus.UNHEALTHY)
-
-    async def test_write_task_summary(self):
-        task = TaskSummary(task_id="test_task")
-        task.status = "test_status"
-        self.rmf.task_summaries.on_next(task)
-
-        async def get():
-            return TaskSummary.from_tortoise(await ttm.TaskSummary.get(id_="test_task"))
-
-        result = await async_try_until(get, lambda _: True, 1, 0.02)
-        self.assertIsNotNone(result)
-        self.assertEqual(result.status, "test_status")
-
-        task = TaskSummary(task_id="test_task")
-        task.status = "test_status_2"
-        self.rmf.task_summaries.on_next(task)
-        result = await async_try_until(
-            get, lambda x: x.status == "test_status_2", 1, 0.02
-        )
-        self.assertIsNotNone(result)
-        self.assertEqual(result.status, "test_status_2")

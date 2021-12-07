@@ -1,9 +1,10 @@
 #!/bin/bash
 set -e
+shopt -s globstar
 
 RMF_BUILDING_MAP_MSGS_VER=c5e0352e2dfd3d11e4d292a1c2901cad867c1441
 RMF_INTERNAL_MSGS_VER=0c237e1758872917661879975d7dc0acf5fa518c
-RMF_API_MSGS_VER=5f0e12ca1594aa4cd801004b7512193ce47f9cd9
+RMF_API_MSGS_VER=911008f515632edc4152d1c0f8089b7bdad69b73
 
 cd "$(dirname $0)"
 source ../../scripts/rmf-helpers.sh
@@ -58,7 +59,7 @@ EOF
 pipenv run isort api_server/models/ros_pydantic
 pipenv run black api_server/models/ros_pydantic
 
-# generate rmf api models from json schemas
+# # generate rmf api models from json schemas
 output='api_server/models/rmf_api'
 rm -rf "$output"
 mkdir -p "$output"

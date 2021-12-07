@@ -5,7 +5,6 @@ from pydantic import BaseModel
 from . import tortoise_models as ttm
 from .health import basic_health_model
 from .ros_pydantic import rmf_fleet_msgs
-from .tasks import Task
 
 RobotMode = rmf_fleet_msgs.RobotMode
 RobotHealth = basic_health_model(ttm.RobotHealth)
@@ -27,7 +26,6 @@ class Robot(BaseModel):
     fleet: str
     name: str
     state: RobotState
-    tasks: List[Task] = []
 
 
 class FleetState(rmf_fleet_msgs.FleetState):

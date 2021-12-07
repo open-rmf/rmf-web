@@ -6,10 +6,9 @@ from rx import operators as rxops
 from api_server.base_app import BaseApp
 from api_server.dependencies import pagination_query
 from api_server.fast_io import FastIORouter, WatchRequest
-from api_server.models import Fleet, FleetState, Pagination, Robot, RobotHealth, Task
+from api_server.models import Fleet, FleetState, Pagination, Robot, RobotHealth
 from api_server.repositories import RmfRepository
 
-from .tasks.utils import get_task_progress
 from .utils import rx_watcher
 
 
@@ -47,43 +46,6 @@ class FleetsRouter(FastIORouter):
                     robot_name=robot_name,
                 )
             }
-
-            filter_states = [
-                "active",
-                "pending",
-                "queued",
-            ]
-
-            tasks_pagination = Pagination(limit=100, offset=0, order_by="start_time")
-            tasks = await rmf_repo.query_task_summaries(
-                tasks_pagination,
-                fleet_name=fleet_name,
-                robot_name=robot_name,
-                state=",".join(filter_states),
-            )
-
-            for t in tasks:
-                r = robots.get(f"{t.fleet_name}/{t.robot_name}", None)
-                # This should only happen under very rare scenarios, when there are
-                # multiple fleets with the same robot name and there are active tasks
-                # assigned to those robots and the robot states are not synced to the
-                # tasks summaries.
-                if r is None:
-                    logger.warn(
-                        f'task "{t.task_id}" is assigned to an unknown fleet/robot ({t.fleet_name}/{t.robot_name}'
-                    )
-                    continue
-                r.tasks.append(
-                    Task(
-                        task_id=t.task_id,
-                        authz_grp=t.authz_grp,
-                        summary=t,
-                        progress=get_task_progress(
-                            t,
-                            app.rmf_gateway().now(),
-                        ),
-                    )
-                )
 
             return list(robots.values())
 
