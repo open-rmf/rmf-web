@@ -1,4 +1,4 @@
 {
   "include": ["api_server"],
-  "exclude": ["api_server/models/ros_pydantic"]
+  "exclude": ["api_server/models/ros_pydantic", "api_server/models/rmf_api"]
 }
