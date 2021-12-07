@@ -4,7 +4,7 @@ import { LiftState as RmfLiftState } from 'rmf-models';
 import { almostShallowEqual, fromRmfCoords, fromRmfYaw, radiansToDegrees } from '../utils';
 import { DoorMarker as DoorMarker_ } from './door-marker';
 import { useAutoScale } from './hooks';
-import { LiftMarker as LiftMarker_, LiftMarkerProps, useLiftMarkerStyles } from './lift-marker';
+import { LiftMarker as LiftMarker_, LiftMarkerProps, liftMarkerClasses } from './lift-marker';
 import { SVGOverlay, SVGOverlayProps } from 'react-leaflet';
 import { viewBoxFromLeafletBounds } from './utils';
 import { withLabel } from './with-label';
@@ -43,7 +43,7 @@ export const getLiftModeVariant = (
   currentLevel: string,
   liftStateMode?: number,
   liftStateFloor?: string,
-): keyof ReturnType<typeof useLiftMarkerStyles> | undefined => {
+): keyof typeof liftMarkerClasses | undefined => {
   if (!liftStateMode && !liftStateFloor) return 'unknown';
   if (liftStateMode === RmfLiftState.MODE_FIRE) return 'fire';
   if (liftStateMode === RmfLiftState.MODE_EMERGENCY) return 'emergency';

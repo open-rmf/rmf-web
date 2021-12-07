@@ -24,7 +24,7 @@ export class DispenserRequest {
     try {
       Time.validate(obj['time'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "time":\n  ' + e.message);
+      throw new Error('in "time":\n  ' + (e as Error).message);
     }
     if (typeof obj['request_guid'] !== 'string') {
       throw new Error('expected "request_guid" to be "string"');
@@ -42,7 +42,7 @@ export class DispenserRequest {
       try {
         DispenserRequestItem.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "items":\n  ` + e.message);
+        throw new Error(`in index ${i} of "items":\n  ` + (e as Error).message);
       }
     }
   }

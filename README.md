@@ -28,7 +28,7 @@ Refer to the following documentation:
 
 Refer to the following documentations:
 
-* [nodejs](https://nodejs.org/en/download/package-manager/) >= 12
+* [nodejs](https://nodejs.org/en/download/package-manager/) >= 14, npm >= 7
 * [rmf_demos](https://github.com/open-rmf/rmf_demos)
 
 ## Bootstrap
@@ -37,13 +37,15 @@ Before running the commands, make sure that rmf is sourced. We recommend using a
 ```bash
 git clone https://github.com/open-rmf/rmf-web
 cd rmf-web
-npm install -g lerna@4
-lerna bootstrap
+npm install -g npm@latest
+scripts/bootstrap.sh
 ```
 
-You may also choose to bootstrap only the dashboard
+NOTE: npm >= 7 is required because this repo uses the new workspaces feature.
+
+You may also choose to bootstrap a subset of the packages, e.g.
 ```bash
-lerna bootstrap --scope=rmf-dashboard
+scripts/bootstrap.sh rmf-dashboard
 ```
 
 ### PostgreSQL
@@ -97,15 +99,3 @@ Refer to [rmf_demos](https://github.com/open-rmf/rmf_demos) for instructions to 
 ## Deploying
 
 See [example deployment](example-deployment/README.md)
-
-## Developing
-
-### About lerna
-
-This repo uses [lerna](https://github.com/lerna/lerna) to manage the packages. As such, you would not run npm commands with some side effects
-
-  * commands that manipulates the packages, e.g., `install`, `ci`, `uninstall`, `link`, `dedupe`.
-  * commands that manages the versioning, e.g., `version`.
-  * commands that publish a package, e.g. `publish`.
-
-In general, always use lerna commands if there is a equivalent available, see the lerna docs for information about the commands it supports.

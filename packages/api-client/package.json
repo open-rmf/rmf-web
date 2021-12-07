@@ -2,10 +2,11 @@
   "name": "api-client",
   "version": "0.0.1",
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/lib/index.js",
   "scripts": {
-    "prepare": "tsc --build",
-    "prepack": "npm run lint",
+    "build": "tsc --build",
+    "clean": "tsc --build --clean",
+    "prepack": "npm run clean && npm run build && npm run lint",
     "lint": "eslint --ext ts,tsx lib"
   },
   "author": "koonpeng@openrobotics.org",
@@ -21,7 +22,7 @@
     "@typescript-eslint/parser": "^4.22.1",
     "axios": "^0.21.1",
     "eslint": "^7.26.0",
-    "typescript": "4.2.4"
+    "typescript": "^4.2.4"
   },
   "peerDependencies": {
     "axios": "^0.21.1"

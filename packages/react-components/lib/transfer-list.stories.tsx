@@ -1,6 +1,6 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { Paper } from '@material-ui/core';
+import { Paper } from '@mui/material';
 import { TransferList, TransferListProps } from './transfer-list';
 
 export default {

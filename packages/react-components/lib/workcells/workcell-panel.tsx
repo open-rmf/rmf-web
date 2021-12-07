@@ -1,6 +1,15 @@
-import { Card, Divider, Grid, IconButton, makeStyles, Paper, Typography } from '@material-ui/core';
-import ViewListIcon from '@material-ui/icons/ViewList';
-import ViewModuleIcon from '@material-ui/icons/ViewModule';
+import {
+  Card,
+  CardProps,
+  Divider,
+  Grid,
+  IconButton,
+  Paper,
+  Typography,
+  styled,
+} from '@mui/material';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import type { Dispenser, Ingestor } from 'api-client';
 import React from 'react';
 import { onWorkcellClick, DispenserResource } from './utils';
@@ -40,24 +49,37 @@ export interface WorkcellCellProps {
   leafletMap?: LeafletContextInterface;
   workcellResource?: DispenserResource;
 }
-const useStyles = makeStyles((theme) => ({
-  container: {
+
+const classes = {
+  container: 'workcell-panel-container',
+  buttonBar: 'workcell-buttonbar',
+  cellContainer: 'workcell-cell-container',
+  cellPaper: 'workcell-cell-paper',
+  itemIcon: 'workcell-item-icon',
+  panelHeader: 'workcell-panel-header',
+  subPanelHeader: 'workcell-sub-panel-header',
+  tableDiv: 'workcell-table-div',
+  nameField: 'workcell-name-field',
+  grid: 'workcell-grid',
+};
+const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
+  [`&.${classes.container}`]: {
     margin: theme.spacing(1),
   },
-  buttonBar: {
+  [`& .${classes.buttonBar}`]: {
     display: 'flex',
     justifyContent: 'flex-end',
     borderRadius: 0,
     backgroundColor: theme.palette.primary.main,
   },
-  cellContainer: {
+  [`& .${classes.cellContainer}`]: {
     padding: theme.spacing(1),
     maxHeight: '25vh',
     margin: theme.spacing(1),
     overflowY: 'auto',
     overflowX: 'hidden',
   },
-  cellPaper: {
+  [`& .${classes.cellPaper}`]: {
     padding: theme.spacing(1),
     backgroundColor: theme.palette.background.paper,
     border: 1,
@@ -70,26 +92,26 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     height: '60%',
   },
-  grid: {
+  [`& .${classes.grid}`]: {
     padding: theme.spacing(2),
     paddingTop: theme.spacing(1),
   },
-  itemIcon: {
+  [`& .${classes.itemIcon}`]: {
     color: theme.palette.primary.contrastText,
   },
-  panelHeader: {
+  [`& .${classes.panelHeader}`]: {
     color: theme.palette.primary.contrastText,
     marginLeft: theme.spacing(2),
   },
-  subPanelHeader: {
+  [`& .${classes.subPanelHeader}`]: {
     marginLeft: theme.spacing(2),
     color: theme.palette.primary.contrastText,
   },
-  tableDiv: {
+  [`& .${classes.tableDiv}`]: {
     margin: theme.spacing(1),
     padding: theme.spacing(1),
   },
-  nameField: {
+  [`& .${classes.nameField}`]: {
     fontWeight: 'bold',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
@@ -107,10 +129,8 @@ const WorkcellCell = React.memo(
     secondsRemaining,
     leafletMap,
     workcellResource,
-  }: WorkcellCellProps): JSX.Element => {
-    const classes = useStyles();
+  }: WorkcellCellProps): JSX.Element | null => {
     const labelId = `workcell-cell-${workcell.guid}`;
-
     return (
       <Paper
         className={classes.cellPaper}
@@ -195,14 +215,13 @@ export function WorkcellPanel({
   workcellContext,
   workcellStates,
 }: WorkcellPanelProps): JSX.Element {
-  const classes = useStyles();
   const [isCellView, setIsCellView] = React.useState(true);
   const columnWidth = 250;
 
   return (
-    <Card variant="outlined" className={classes.container}>
+    <StyledCard variant="outlined" className={classes.container}>
       <Paper className={classes.buttonBar}>
-        <Grid container direction="row" justify="space-between" alignItems="center">
+        <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Grid item xs={6}>
             <Typography variant="h5" className={classes.panelHeader}>
               Workcells
@@ -307,6 +326,6 @@ export function WorkcellPanel({
           ) : null}
         </React.Fragment>
       )}
-    </Card>
+    </StyledCard>
   );
 }

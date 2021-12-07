@@ -977,6 +977,18 @@ export interface Location {
   yaw: number;
   /**
    *
+   * @type {boolean}
+   * @memberof Location
+   */
+  obey_approach_speed_limit: boolean;
+  /**
+   *
+   * @type {number}
+   * @memberof Location
+   */
+  approach_speed_limit: number;
+  /**
+   *
    * @type {string}
    * @memberof Location
    */

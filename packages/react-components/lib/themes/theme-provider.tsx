@@ -1,19 +1,10 @@
-import {
-  createStyles,
-  makeStyles,
-  ThemeProvider as ThemeProvider_,
-  ThemeProviderProps,
-} from '@material-ui/core';
+import { ThemeProvider as ThemeProvider_, createTheme } from '@mui/material';
+import { ThemeProviderProps } from '@mui/styles';
+import { ThemeProvider as EmotionThemeProvider } from 'emotion-theming';
 import React from 'react';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    '@global': theme['overrides'] || {},
-  }),
-);
-
 const GlobalStyles: React.FC = () => {
-  useStyles();
+  createTheme();
   return null;
 };
 
@@ -22,9 +13,11 @@ const GlobalStyles: React.FC = () => {
  */
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, ...otherProps }) => {
   return (
-    <ThemeProvider_ {...otherProps}>
-      <GlobalStyles />
-      {children}
-    </ThemeProvider_>
+    <EmotionThemeProvider theme={otherProps.theme}>
+      <ThemeProvider_ {...otherProps}>
+        <GlobalStyles />
+        {children}
+      </ThemeProvider_>
+    </EmotionThemeProvider>
   );
 };

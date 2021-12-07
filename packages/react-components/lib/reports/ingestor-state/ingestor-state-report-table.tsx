@@ -1,7 +1,6 @@
 import React from 'react';
-import MaterialTable from 'material-table';
-import { Typography } from '@material-ui/core';
-import { materialTableIcons } from '../../material-table-icons';
+import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid';
+import { Typography } from '@mui/material';
 import { DefaultLogTableProps } from '../default-report-interface';
 import { format } from 'date-fns';
 
@@ -16,57 +15,55 @@ export interface IngestorStateReportTable extends DefaultLogTableProps {
 }
 
 export const IngestorStateReportTable = (props: IngestorStateReportTable): React.ReactElement => {
-  const { rows, tableSize, addMoreRows } = props;
+  const { rows, addMoreRows } = props;
 
   return (
-    <MaterialTable
-      title="Ingestor State"
-      icons={materialTableIcons}
-      columns={[
-        {
-          title: <Typography>Guid</Typography>,
-          field: 'level',
-          type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.guid}</Typography>;
+    <div style={{ height: '100%', width: '100%' }}>
+      <DataGrid
+        autoHeight={true}
+        getRowId={(r) => r.guid}
+        columns={[
+          {
+            headerName: 'Guid',
+            field: 'guid',
+            type: 'string',
+            renderCell: (rowData: GridRenderCellParams) => {
+              return <Typography>{rowData.row.guid}</Typography>;
+            },
           },
-        },
-        {
-          title: <Typography>State</Typography>,
-          field: 'message',
-          type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.state}</Typography>;
+          {
+            headerName: 'State',
+            field: 'state',
+            type: 'string',
+            renderCell: (rowData: GridRenderCellParams) => {
+              return <Typography>{rowData.row.state}</Typography>;
+            },
           },
-        },
-        {
-          title: <Typography>Timestamp</Typography>,
-          field: 'timestamp',
-          type: 'datetime',
-          filtering: false,
-          align: 'center',
-          render: (rowData) => {
-            return (
-              <Typography data-testid={'ingestor-table-date'}>
-                {format(new Date(rowData.created), 'MMM dd yyyy hh:mm aaa')}
-              </Typography>
-            );
+          {
+            headerName: 'Timestamp',
+            field: 'created',
+            type: 'datetime',
+            filterable: false,
+            align: 'center',
+            renderCell: (rowData: GridRenderCellParams) => {
+              return (
+                <Typography data-testid={'ingestor-table-date'}>
+                  {format(new Date(rowData.value as number), 'MMM dd yyyy hh:mm aaa')}
+                </Typography>
+              );
+            },
           },
-        },
-      ]}
-      data={rows}
-      options={{
-        filtering: true,
-        search: false,
-        pageSize: 100,
-        pageSizeOptions: [50, 100, 200],
-        maxBodyHeight: tableSize ? tableSize : '80vh',
-      }}
-      onChangePage={(page, pageSize) => {
-        if (addMoreRows) {
-          rows.length / pageSize - 1 === page && addMoreRows();
-        }
-      }}
-    />
+        ]}
+        rows={rows}
+        pageSize={100}
+        rowsPerPageOptions={[50, 100]}
+        onPageChange={() => {
+          if (addMoreRows) {
+            addMoreRows();
+          }
+        }}
+        disableColumnMenu={true}
+      />
+    </div>
   );
 };

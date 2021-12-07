@@ -24,7 +24,7 @@ export class Dock {
       try {
         DockParameter.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "params":\n  ` + e.message);
+        throw new Error(`in index ${i} of "params":\n  ` + (e as Error).message);
       }
     }
   }

@@ -1,9 +1,9 @@
-import { Paper } from '@material-ui/core';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { TaskType as RmfTaskType } from 'rmf-models';
 import { TaskInfo, TaskInfoProps } from './task-info';
 import { makeTaskSummaryWithPhases } from './test-data.spec';
+import { Paper } from '@mui/material';
 
 export default {
   title: 'Tasks/Task Infos',

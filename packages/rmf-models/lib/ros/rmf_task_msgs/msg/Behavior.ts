@@ -24,7 +24,7 @@ export class Behavior {
       try {
         BehaviorParameter.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "parameters":\n  ` + e.message);
+        throw new Error(`in index ${i} of "parameters":\n  ` + (e as Error).message);
       }
     }
   }

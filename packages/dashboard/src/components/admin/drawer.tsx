@@ -1,15 +1,16 @@
 import {
   Drawer,
+  DrawerProps,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  makeStyles,
   Toolbar,
-} from '@material-ui/core';
-import { SvgIconComponent } from '@material-ui/icons';
-import AccountIcon from '@material-ui/icons/AccountCircle';
-import SecurityIcon from '@material-ui/icons/Security';
+  styled,
+} from '@mui/material';
+import { SvgIconComponent } from '@mui/icons-material';
+import AccountIcon from '@mui/icons-material/AccountCircle';
+import SecurityIcon from '@mui/icons-material/Security';
 import React from 'react';
 import { matchPath, RouteProps, useHistory, useLocation, useRouteMatch } from 'react-router';
 
@@ -20,26 +21,32 @@ const drawerValuesRoutesMap: Record<AdminDrawerValues, RouteProps> = {
   Roles: { path: '/roles', exact: true },
 };
 
-const useStyles = makeStyles((theme) => ({
-  drawerPaper: {
+const prefix = 'drawer';
+const classes = {
+  drawerPaper: `${prefix}-paper`,
+  drawerContainer: `${prefix}-container`,
+  itemIcon: `${prefix}-itemicon`,
+  activeItem: `${prefix}-active-item`,
+};
+const StyledDrawer = styled((props: DrawerProps) => <Drawer {...props} />)(({ theme }) => ({
+  [`& .${classes.drawerPaper}`]: {
     backgroundColor: theme.palette.primary.dark,
     color: theme.palette.getContrastText(theme.palette.primary.dark),
     minWidth: 240,
     width: '16%',
   },
-  drawerContainer: {
+  [`& .${classes.drawerContainer}`]: {
     overflow: 'auto',
   },
-  itemIcon: {
+  [`& .${classes.itemIcon}`]: {
     color: theme.palette.getContrastText(theme.palette.primary.dark),
   },
-  activeItem: {
+  [`& .${classes.activeItem}`]: {
     backgroundColor: `${theme.palette.primary.light} !important`,
   },
 }));
 
 export function AdminDrawer(): JSX.Element {
-  const classes = useStyles();
   const location = useLocation();
   const history = useHistory();
   const match = useRouteMatch();
@@ -65,11 +72,11 @@ export function AdminDrawer(): JSX.Element {
         </ListItem>
       );
     },
-    [activeItem, classes.activeItem, classes.itemIcon, history],
+    [activeItem, history],
   );
 
   return (
-    <Drawer variant="permanent" classes={{ paper: classes.drawerPaper }}>
+    <StyledDrawer variant="permanent" classes={{ paper: classes.drawerPaper }}>
       <Toolbar />
       <div className={classes.drawerContainer}>
         <List>
@@ -77,6 +84,6 @@ export function AdminDrawer(): JSX.Element {
           <DrawerItem text="Roles" route={`${match.path}/roles`} Icon={SecurityIcon} />
         </List>
       </div>
-    </Drawer>
+    </StyledDrawer>
   );
 }

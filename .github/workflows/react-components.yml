@@ -30,9 +30,9 @@ jobs:
       - name: bootstrap
         run: |
           pip3 install pipenv
+          npm i -g npm@latest
           npm config set unsafe-perm
-          npm install -g lerna@4
-          lerna bootstrap --scope=react-components
+          scripts/bootstrap.sh react-components
         working-directory: .
       - name: test build storybook
         run: npm run build:storybook
@@ -41,5 +41,4 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           flags: react-components

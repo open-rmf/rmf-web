@@ -25,7 +25,7 @@ export class DispatchRequest {
     try {
       TaskProfile.validate(obj['task_profile'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "task_profile":\n  ' + e.message);
+      throw new Error('in "task_profile":\n  ' + (e as Error).message);
     }
     if (typeof obj['method'] !== 'number') {
       throw new Error('expected "method" to be "number"');

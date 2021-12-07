@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { makeStyles, Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 import { User } from 'api-client';
 import { AxiosError } from 'axios';
 import React from 'react';
@@ -9,22 +9,10 @@ import { useRouteMatch } from 'react-router';
 import { RmfIngressContext } from '../rmf-app';
 import { getApiErrorMessage } from '../utils';
 import { ManageRolesCard } from './manage-roles-dialog';
-import { usePageStyles } from './page-css';
+import { adminPageClasses, AdminPageContainer } from './page-css';
 import { UserProfileCard } from './user-profile';
 
-const useStyles = makeStyles((theme) => ({
-  notFound: {
-    marginTop: '50%',
-    textAlign: 'center',
-  },
-  manageRoles: {
-    marginTop: theme.spacing(4),
-  },
-}));
-
 export function UserProfilePage(): JSX.Element | null {
-  const pageClasses = usePageStyles();
-  const classes = useStyles();
   const match = useRouteMatch<{ user: string }>();
   const userId: string | undefined = match.params.user;
   const safeAsync = useAsync();
@@ -51,9 +39,9 @@ export function UserProfilePage(): JSX.Element | null {
   }, [refresh]);
 
   return adminApi ? (
-    <div className={pageClasses.pageRoot}>
+    <AdminPageContainer className={adminPageClasses.pageRoot}>
       {notFound ? (
-        <Typography variant="h6" className={classes.notFound}>
+        <Typography variant="h6" className={adminPageClasses.notFound}>
           404 Not Found
         </Typography>
       ) : (
@@ -71,7 +59,7 @@ export function UserProfilePage(): JSX.Element | null {
               }}
             />
             <ManageRolesCard
-              className={classes.manageRoles}
+              className={adminPageClasses.manageRoles}
               assignedRoles={user.roles}
               getAllRoles={async () => {
                 try {
@@ -95,6 +83,6 @@ export function UserProfilePage(): JSX.Element | null {
           </>
         )
       )}
-    </div>
+    </AdminPageContainer>
   ) : null;
 }

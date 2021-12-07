@@ -1,17 +1,48 @@
-import {
-  Box,
-  BoxProps,
-  Grid,
-  makeStyles,
-  Theme,
-  Tooltip,
-  Typography,
-  useTheme,
-} from '@material-ui/core';
+import { Box, BoxProps, Grid, Theme, Tooltip, Typography, useTheme, styled } from '@mui/material';
 import type { TaskSummary } from 'api-client';
 import clsx from 'clsx';
 import React from 'react';
 import { TaskSummary as RmfTaskSummary } from 'rmf-models';
+
+const classes = {
+  taskPhasesContainer: 'task-phase-container',
+  taskPhase: 'task-phase-phase-component',
+  pendingPhase: 'task-phase-pending-phase',
+  completedPhase: 'task-phase-completed-phase',
+  failedPhase: 'task-phase-failed-phase',
+  phaseSeparator: 'task-phase-phase-separator',
+  phaseStatus: 'task-phase-phase-status',
+};
+const StyledBox = styled((props: BoxProps) => <Box {...props} />)(({ theme }) => ({
+  [`& .${classes.taskPhasesContainer}`]: {
+    overflowX: 'auto',
+  },
+  [`& .${classes.taskPhase}`]: {
+    padding: theme.spacing(1),
+    borderRadius: theme.shape.borderRadius,
+    flex: '1 1 0',
+    minWidth: 100,
+  },
+  [`& .${classes.pendingPhase}`]: {
+    background: theme.palette.info.light,
+  },
+  [`& .${classes.completedPhase}`]: {
+    background: theme.palette.success.light,
+  },
+  [`& .${classes.failedPhase}`]: {
+    background: theme.palette.error.light,
+  },
+  [`& .${classes.phaseSeparator}`]: {
+    position: 'relative',
+    left: theme.spacing(-1),
+    margin: `0 ${theme.spacing(-2)}px 0 0`,
+  },
+  [`& .${classes.phaseStatus}`]: {
+    textOverflow: 'ellipsis',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+  },
+}));
 
 const getPhaseColors = (theme: Theme) => ({
   pending: theme.palette.info.light,
@@ -19,46 +50,11 @@ const getPhaseColors = (theme: Theme) => ({
   failed: theme.palette.error.light,
 });
 
-const useStyles = makeStyles((theme) => {
-  const phaseColors = getPhaseColors(theme);
-  return {
-    taskPhasesContainer: {
-      overflowX: 'auto',
-    },
-    taskPhase: {
-      padding: theme.spacing(1),
-      borderRadius: theme.shape.borderRadius,
-      flex: '1 1 0',
-      minWidth: 100,
-    },
-    pendingPhase: {
-      background: phaseColors.pending,
-    },
-    completedPhase: {
-      background: phaseColors.completed,
-    },
-    failedPhase: {
-      background: phaseColors.failed,
-    },
-    phaseSeparator: {
-      position: 'relative',
-      left: theme.spacing(-1),
-      margin: `0 ${theme.spacing(-2)}px 0 0`,
-    },
-    phaseStatus: {
-      textOverflow: 'ellipsis',
-      overflow: 'hidden',
-      whiteSpace: 'nowrap',
-    },
-  };
-});
-
 interface PhaseProps extends React.HTMLProps<HTMLDivElement> {
   status: string;
 }
 
 function Phase({ status, ...divProps }: PhaseProps) {
-  const classes = useStyles();
   const lines = status.split('\n');
   return (
     <div {...divProps}>
@@ -79,7 +75,6 @@ interface PhaseSeparatorProps {
 }
 
 function PhaseSeparator({ leftColor, rightColor }: PhaseSeparatorProps) {
-  const classes = useStyles();
   return (
     <div className={classes.phaseSeparator}>
       <svg viewBox="-0.05 -0.05 1.1 1.1" width="50px" height="100%" preserveAspectRatio="none">
@@ -107,7 +102,6 @@ export interface TaskPhasesProps extends BoxProps {
 }
 
 export function TaskPhases({ taskSummary, ...boxProps }: TaskPhasesProps): JSX.Element {
-  const classes = useStyles();
   const theme = useTheme();
   const phaseColors = getPhaseColors(theme);
 
@@ -144,7 +138,7 @@ export function TaskPhases({ taskSummary, ...boxProps }: TaskPhasesProps): JSX.E
   });
 
   return (
-    <Box {...boxProps}>
+    <StyledBox {...boxProps}>
       <Grid container={true} wrap="nowrap" className={classes.taskPhasesContainer}>
         {phases.map((phase: string, idx: number) => (
           <React.Fragment key={idx}>
@@ -158,6 +152,6 @@ export function TaskPhases({ taskSummary, ...boxProps }: TaskPhasesProps): JSX.E
           </React.Fragment>
         ))}
       </Grid>
-    </Box>
+    </StyledBox>
   );
 }

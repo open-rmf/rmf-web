@@ -20,7 +20,7 @@ export class SubmitTask_Request {
     try {
       TaskDescription.validate(obj['description'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "description":\n  ' + e.message);
+      throw new Error('in "description":\n  ' + (e as Error).message);
     }
   }
 }

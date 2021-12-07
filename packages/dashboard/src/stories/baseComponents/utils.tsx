@@ -207,6 +207,8 @@ const robotState: RobotState = {
     y: -4,
     yaw: 0,
     index: 0,
+    approach_speed_limit: 0,
+    obey_approach_speed_limit: false,
   },
   mode: { mode: RmfRobotMode.MODE_IDLE, mode_request_id: 0 },
   model: '40_hours',

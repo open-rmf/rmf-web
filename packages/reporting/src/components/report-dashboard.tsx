@@ -1,22 +1,21 @@
 import React from 'react';
 import { ReportConfigProps } from 'react-components';
 import clsx from 'clsx';
-import { makeStyles, useTheme, Theme } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
+import { styled, useTheme } from '@mui/material/styles';
+import Drawer from '@mui/material/Drawer';
+import CssBaseline from '@mui/material/CssBaseline';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { ExpandableMultilevelMenuProps, MultiLevelMenu } from 'react-components';
-import { Menu, MenuItem } from '@material-ui/core';
+import { Menu, MenuItem } from '@mui/material';
 import { AuthenticatorContext } from './auth-contexts';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 import { Reports } from './report-list';
 import { BuildMenuType } from './reporter-side-bar-structure';
@@ -34,17 +33,32 @@ import UserLogoutReportConfig from './reports/user-logout-report';
 
 const drawerWidth = 240;
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
+const prefix = 'report-dashboard';
+const classes = {
+  root: `${prefix}-root`,
+  appBar: `${prefix}-appbar`,
+  appBarShift: `${prefix}-appbar-shift`,
+  menuButton: `${prefix}-menu-button`,
+  hide: `${prefix}-hide`,
+  drawer: `${prefix}-drawer`,
+  drawerPaper: `${prefix}-drawer-paper`,
+  drawerHeader: `${prefix}-drawer-header`,
+  content: `${prefix}-content`,
+  contentShift: `${prefix}-content-shift`,
+  toolbarTitle: `${prefix}-toolbar-title`,
+};
+
+const StyledDiv = styled('div')(({ theme }) => ({
+  [`&.${classes.root}`]: {
     display: 'flex',
   },
-  appBar: {
+  [`& .${classes.appBar}`]: {
     transition: theme.transitions.create(['margin', 'width'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
   },
-  appBarShift: {
+  [`& .${classes.appBarShift}`]: {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: drawerWidth,
     transition: theme.transitions.create(['margin', 'width'], {
@@ -52,20 +66,20 @@ const useStyles = makeStyles((theme: Theme) => ({
       duration: theme.transitions.duration.enteringScreen,
     }),
   },
-  menuButton: {
+  [`& .${classes.menuButton}`]: {
     marginRight: theme.spacing(2),
   },
-  hide: {
+  [`& .${classes.hide}`]: {
     display: 'none',
   },
-  drawer: {
+  [`& .${classes.drawer}`]: {
     width: drawerWidth,
     flexShrink: 0,
   },
-  drawerPaper: {
+  [`& .${classes.drawerPaper}`]: {
     width: drawerWidth,
   },
-  drawerHeader: {
+  [`& .${classes.drawerHeader}`]: {
     display: 'flex',
     alignItems: 'center',
     padding: theme.spacing(0, 1),
@@ -73,7 +87,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     ...theme.mixins.toolbar,
     justifyContent: 'flex-end',
   },
-  content: {
+  [`& .${classes.content}`]: {
     flexGrow: 1,
     padding: theme.spacing(3),
     transition: theme.transitions.create('margin', {
@@ -82,14 +96,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     }),
     marginLeft: -drawerWidth,
   },
-  contentShift: {
+  [`& .${classes.contentShift}`]: {
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
     marginLeft: 0,
   },
-  toolbarTitle: {
+  [`& .${classes.toolbarTitle}`]: {
     flexGrow: 1,
   },
 }));
@@ -100,20 +114,19 @@ export interface ReportDashboardProps {
 
 export const ReportDashboard = (props: ReportDashboardProps) => {
   const { buildMenuReportStructure } = props;
-  const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
   const [currentReport, setCurrentReport] = React.useState(Reports.queryAllLogs);
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
 
-  const [fromLogDate, setFromLogDate] = React.useState<MaterialUiPickersDate>(new Date());
-  const [toLogDate, setToLogDate] = React.useState<MaterialUiPickersDate>(new Date());
+  const [fromLogDate, setFromLogDate] = React.useState<Date>(new Date());
+  const [toLogDate, setToLogDate] = React.useState<Date>(new Date());
 
-  const handleFromLogDateChange = React.useCallback((date: MaterialUiPickersDate) => {
+  const handleFromLogDateChange = React.useCallback((date: any) => {
     setFromLogDate(date);
   }, []);
 
-  const handleToLogDateChange = React.useCallback((date: MaterialUiPickersDate) => {
+  const handleToLogDateChange = React.useCallback((date: any) => {
     setToLogDate(date);
   }, []);
 
@@ -189,12 +202,12 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
     try {
       await authenticator.logout();
     } catch (e) {
-      console.error(`error logging out: ${e.message}`);
+      console.error(`error logging out: ${(e as Error).message}`);
     }
   }
 
   return (
-    <div className={classes.root}>
+    <StyledDiv className={classes.root}>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -227,7 +240,6 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
               </IconButton>
               <Menu
                 anchorEl={anchorEl}
-                getContentAnchorEl={null}
                 anchorOrigin={{
                   vertical: 'bottom',
                   horizontal: 'right',
@@ -282,6 +294,6 @@ export const ReportDashboard = (props: ReportDashboardProps) => {
           onSelectToDate: handleToLogDateChange,
         })}
       </main>
-    </div>
+    </StyledDiv>
   );
 };

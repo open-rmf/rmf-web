@@ -2,14 +2,15 @@ import {
   Button,
   ButtonGroup,
   Card,
+  CardProps,
   Grid,
   IconButton,
-  makeStyles,
   Paper,
   Typography,
-} from '@material-ui/core';
-import ViewListIcon from '@material-ui/icons/ViewList';
-import ViewModuleIcon from '@material-ui/icons/ViewModule';
+  styled,
+} from '@mui/material';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import type { Door, DoorState } from 'api-client';
 import React from 'react';
 import clsx from 'clsx';
@@ -42,37 +43,52 @@ export interface DoorcellProps {
   onDoorControlClick?(event: React.MouseEvent, door: Door, mode: number): void;
 }
 
-const useStyles = makeStyles((theme) => ({
-  container: {
+const classes = {
+  container: 'door-panel-container',
+  buttonBar: 'door-panel-button-bar',
+  grid: 'door-panel-grid',
+  doorLabelOpen: 'door-panel-door-label-open-panel',
+  doorLabelClosed: 'door-panel-door-label-closed-panel',
+  doorLabelMoving: 'door-panel-door-label-moving-panel',
+  doorLabelDefault: 'door-panel-door-label-default',
+  cellPaper: 'door-panel-door-panel-cell-paper',
+  itemIcon: 'door-panel-item-icon',
+  buttonGroup: 'door-panel-button-group',
+  panelHeader: 'door-panel-panel-header',
+  nameField: 'door-panel-name-field',
+  openCloseButtons: 'door-panel-open-close-btns',
+};
+const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
+  [`&.${classes.container}`]: {
     margin: theme.spacing(1),
   },
-  buttonBar: {
+  [`& .${classes.buttonBar}`]: {
     display: 'flex',
     justifyContent: 'flex-end',
     borderRadius: 0,
     backgroundColor: theme.palette.primary.main,
   },
-  grid: {
+  [`& .${classes.grid}`]: {
     padding: theme.spacing(2),
     maxHeight: '40vh',
     overflowY: 'auto',
   },
-  doorLabelDefault: {
+  [`& .${classes.doorLabelDefault}`]: {
     padding: theme.spacing(0, 0.2),
   },
-  doorLabelOpen: {
+  [`& .${classes.doorLabelOpen}`]: {
     backgroundColor: theme.palette.success.main,
     color: theme.palette.success.contrastText,
   },
-  doorLabelClosed: {
+  [`& .${classes.doorLabelClosed}`]: {
     backgroundColor: theme.palette.error.main,
     color: theme.palette.error.contrastText,
   },
-  doorLabelMoving: {
+  [`& .${classes.doorLabelMoving}`]: {
     backgroundColor: theme.palette.warning.main,
     color: theme.palette.warning.contrastText,
   },
-  cellPaper: {
+  [`& .${classes.cellPaper}`]: {
     padding: theme.spacing(1),
     margin: theme.spacing(1),
     backgroundColor: theme.palette.background.paper,
@@ -84,15 +100,15 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: theme.palette.action.hover,
     },
   },
-  itemIcon: {
+  [`& .${classes.itemIcon}`]: {
     color: theme.palette.primary.contrastText,
   },
-  buttonGroup: {
+  [`& .${classes.buttonGroup}`]: {
     marginTop: theme.spacing(1),
     display: 'flex',
     justifyContent: 'center',
   },
-  openCloseButtons: {
+  [`& .${classes.openCloseButtons}`]: {
     border: 1,
     borderStyle: 'solid',
     borderColor: theme.palette.common.white,
@@ -104,11 +120,11 @@ const useStyles = makeStyles((theme) => ({
       color: theme.palette.primary.main,
     },
   },
-  panelHeader: {
+  [`& .${classes.panelHeader}`]: {
     color: theme.palette.primary.contrastText,
     marginLeft: theme.spacing(2),
   },
-  nameField: {
+  [`& .${classes.nameField}`]: {
     fontWeight: 'bold',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
@@ -117,26 +133,22 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DoorCell = React.memo(
-  ({ door, doorMode, leafletMap, onDoorControlClick }: DoorcellProps): JSX.Element => {
-    const classes = useStyles();
-    const doorModeLabelClasses = React.useCallback(
-      (doorMode?: number): string => {
-        if (doorMode === undefined) {
+  ({ door, doorMode, onDoorControlClick, leafletMap }: DoorcellProps): JSX.Element => {
+    const doorModeLabelClasses = React.useCallback((doorMode?: number): string => {
+      if (doorMode === undefined) {
+        return '';
+      }
+      switch (doorMode) {
+        case RmfDoorMode.MODE_OPEN:
+          return `${classes.doorLabelOpen}`;
+        case RmfDoorMode.MODE_CLOSED:
+          return `${classes.doorLabelClosed}`;
+        case RmfDoorMode.MODE_MOVING:
+          return `${classes.doorLabelMoving}`;
+        default:
           return '';
-        }
-        switch (doorMode) {
-          case RmfDoorMode.MODE_OPEN:
-            return `${classes.doorLabelOpen}`;
-          case RmfDoorMode.MODE_CLOSED:
-            return `${classes.doorLabelClosed}`;
-          case RmfDoorMode.MODE_MOVING:
-            return `${classes.doorLabelMoving}`;
-          default:
-            return '';
-        }
-      },
-      [classes],
-    );
+      }
+    }, []);
     const doorStatusClass = doorModeLabelClasses(doorMode);
     const labelId = `door-cell-${door.door.name}`;
 
@@ -229,17 +241,16 @@ const DoorGridRenderer = ({ data, columnIndex, rowIndex, style }: DoorGridRender
 export function DoorPanel({
   doors,
   doorStates,
-  leafletMap,
   onDoorControlClick,
+  leafletMap,
 }: DoorPanelProps): JSX.Element {
-  const classes = useStyles();
   const [isCellView, setIsCellView] = React.useState(true);
   const columnWidth = 250;
 
   return (
-    <Card variant="outlined" className={classes.container}>
+    <StyledCard variant="outlined" className={classes.container}>
       <Paper className={classes.buttonBar}>
-        <Grid container direction="row" justify="space-between" alignItems="center">
+        <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Grid item xs={6}>
             <Typography variant="h5" className={classes.panelHeader}>
               Doors
@@ -291,6 +302,6 @@ export function DoorPanel({
           />
         )}
       </Grid>
-    </Card>
+    </StyledCard>
   );
 }
