@@ -1,5 +1,3 @@
-from typing import Any, cast
-
 from fastapi import Depends
 from rx import operators as rxops
 
@@ -20,7 +18,7 @@ class BuildingMapRouter(FastIORouter):
             """
             return await rmf_repo.get_bulding_map()
 
-        @self.sub("")
+        @self.sub("", response_model=BuildingMap)
         def sub_building_map(req: SubscriptionRequest):
             return app.rmf_events().building_map.pipe(
                 rxops.filter(lambda x: x is not None)

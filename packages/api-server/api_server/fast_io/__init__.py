@@ -193,9 +193,10 @@ The message must be of the form:
 
         if isinstance(router, FastIORouter):
             for r in router.sub_routes:
+                full_path = prefix + router.prefix + r.path
                 self._sub_routes.append(
                     SubRoute(
-                        prefix + router.prefix + r.path,
+                        full_path,
                         r.endpoint,
                         response_model=r.response_model,
                     )
@@ -210,7 +211,7 @@ The message must be of the form:
                     response_schema = ""
                 docstring = r.endpoint.__doc__ or ""
                 room_descriptions += f"""
-### {r.path}
+### {full_path}
 {docstring.strip()}
 {response_schema}
 """
