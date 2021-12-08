@@ -58,7 +58,7 @@ class TestFleetsRoute(AppFixture):
         state = resp.json()
         self.assertEqual("fleet_1", state["name"])
 
-    def test_watch_fleet_state(self):
+    def test_sub_fleet_state(self):
         fleet_state = make_fleet_state()
         fut = self.subscribe_sio("/fleets/test_fleet/state")
 

@@ -9,7 +9,7 @@ from api_server.models import Permission, User
 
 def main_router(app: BaseApp):
     router = APIRouter()
-    user_dep = app.auth_dep
+    user_dep = app.user_dep
 
     @router.get("/user", response_model=User)
     async def get_user(user: User = Depends(user_dep)):

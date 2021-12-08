@@ -26,7 +26,7 @@ class TestLiftsRoute(AppFixture):
         state = resp.json()
         self.assertEqual("test_lift", state["lift_name"])
 
-    def test_watch_lift_state(self):
+    def test_sub_lift_state(self):
         lift_state = make_lift_state()
         lift_state.lift_time.sec = 1
         fut = self.subscribe_sio("/lifts/test_lift/state")
