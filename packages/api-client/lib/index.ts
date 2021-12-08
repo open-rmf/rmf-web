@@ -29,21 +29,21 @@ export class SioClient {
     this.sio = io(...args);
   }
 
-  subscribe<T>(path: string, listener: Listener<T>): Listener<T> {
-    this.sio.emit('subscribe', { path });
-    this.sio.on(path, listener);
-    this._subscriptions.set(listener, path);
-    debug(`subscribed to ${path}`);
+  subscribe<T>(room: string, listener: Listener<T>): Listener<T> {
+    this.sio.emit('subscribe', { room });
+    this.sio.on(room, listener);
+    this._subscriptions.set(listener, room);
+    debug(`subscribed to ${room}`);
     return listener;
   }
 
   unsubscribe(listener: Listener): void {
-    const path = this._subscriptions.get(listener);
-    if (path) {
-      this.sio.emit('unsubscribe', { path });
-      this.sio.off(path, listener);
+    const room = this._subscriptions.get(listener);
+    if (room) {
+      this.sio.emit('unsubscribe', { room });
+      this.sio.off(room, listener);
       this._subscriptions.delete(listener);
-      debug(`unsubscribed to ${path}`);
+      debug(`unsubscribed to ${room}`);
     } else {
       debug('fail to unsubscribe, listener not found in list of subscriptions');
     }

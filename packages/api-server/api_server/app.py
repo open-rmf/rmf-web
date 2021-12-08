@@ -85,9 +85,6 @@ class App(FastIO, BaseApp):
 
         async def on_connect(sid: str, _environ: dict, auth: Optional[dict] = None):
             session = await self.sio.get_session(sid)
-            if not self.authenticator:
-                session["user"] = User(username="stub", is_admin=True)
-                return True
             token = None
             if auth:
                 token = auth["token"]
@@ -97,7 +94,7 @@ class App(FastIO, BaseApp):
                 session["user"] = user
                 return True
             except AuthenticationError as e:
-                self.logger.error(f"authentication failed: {e}")
+                self.logger.info(f"authentication failed: {e}")
                 return False
 
         sio.on("connect", on_connect)

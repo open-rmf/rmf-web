@@ -1,5 +1,6 @@
 import asyncio
 from dataclasses import dataclass
+from logging import Logger
 from re import Match
 from typing import (
     Any,
@@ -21,12 +22,14 @@ import pydantic
 import socketio
 from fastapi import APIRouter, FastAPI
 from fastapi.exceptions import HTTPException
+from fastapi.logger import logger
 from fastapi.routing import APIRoute
 from rx.core.observable.observable import Observable
 from starlette.routing import compile_path
 
 from .errors import *
 
+logger: Logger
 SioServer = TypeVar("SioServer", bound=socketio.AsyncServer)
 
 
@@ -238,6 +241,7 @@ The message must be of the form:
             sub_data = self._parse_sub_data(data)
         except SubscribeError as e:
             await self.sio.emit("subscribe", {"success": False, "error": str(e)})
+            logger.info(f"{sid}: str(e)")
             return
 
         try:
