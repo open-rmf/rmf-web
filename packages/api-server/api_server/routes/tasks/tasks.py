@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 from rx import operators as rxops
 
 from api_server.base_app import BaseApp
-from api_server.dependencies import pagination_query
+from api_server.dependencies import pagination_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import (
     CancelTask,
@@ -51,7 +51,7 @@ class TasksRouter(FastIORouter):
 
         @self.sub("/{task_id}/summary", response_model=TaskSummary)
         async def sub_task_summary(req: SubscriptionRequest, task_id: str):
-            user = req.session["user"]
+            user = sio_user(req)
             try:
                 await req.sio.emit(
                     req.room,

@@ -4,6 +4,7 @@ from fastapi import Depends
 from rx import operators as rxops
 
 from api_server.base_app import BaseApp
+from api_server.dependencies import sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import Ingestor, IngestorHealth, IngestorState
 from api_server.repositories import RmfRepository
@@ -28,7 +29,7 @@ class IngestorsRouter(FastIORouter):
 
         @self.sub("/{guid}/state", response_model=IngestorState)
         async def sub_ingestor_state(req: SubscriptionRequest, guid: str):
-            user = req.session["user"]
+            user = sio_user(req)
             ingestor_state = await get_ingestor_state(guid, RmfRepository(user))
             if ingestor_state is not None:
                 await req.sio.emit(req.room, ingestor_state.dict(), req.sid)
@@ -47,7 +48,7 @@ class IngestorsRouter(FastIORouter):
 
         @self.sub("/{guid}/health", response_model=IngestorHealth)
         async def sub_ingestor_health(req: SubscriptionRequest, guid: str):
-            user = req.session["user"]
+            user = sio_user(req)
             health = await get_ingestor_health(guid, RmfRepository(user))
             if health is not None:
                 await req.sio.emit(req.room, health.dict(), req.sid)

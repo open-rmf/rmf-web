@@ -4,6 +4,7 @@ from fastapi import Depends
 from rx import operators as rxops
 
 from api_server.base_app import BaseApp
+from api_server.dependencies import sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import Door, DoorHealth, DoorRequest, DoorState
 from api_server.repositories import RmfRepository
@@ -28,7 +29,7 @@ class DoorsRouter(FastIORouter):
 
         @self.sub("/{door_name}/state", response_model=DoorState)
         async def sub_door_state(req: SubscriptionRequest, door_name: str):
-            user = req.session["user"]
+            user = sio_user(req)
             door_state = await get_door_state(door_name, RmfRepository(user))
             if door_state:
                 await req.sio.emit(req.room, door_state.dict(), req.sid)
@@ -47,7 +48,7 @@ class DoorsRouter(FastIORouter):
 
         @self.sub("/{door_name}/health", response_model=DoorHealth)
         async def sub_door_health(req: SubscriptionRequest, door_name: str):
-            user = req.session["user"]
+            user = sio_user(req)
             health = await get_door_health(door_name, RmfRepository(user))
             if health is not None:
                 await req.sio.emit(req.room, health.dict(), req.sid)

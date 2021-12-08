@@ -2,6 +2,7 @@ from typing import Any, Callable, Coroutine, Optional, Union
 
 from fastapi import Depends, Query
 
+from .fast_io import SubscriptionRequest
 from .models import Pagination, User
 from .repositories.rmf import RmfRepository
 
@@ -24,3 +25,8 @@ def rmf_repo(
         return RmfRepository(user)
 
     return dep
+
+
+# hacky way to get the sio user
+def sio_user(req: SubscriptionRequest) -> User:
+    return req.session["user"]
