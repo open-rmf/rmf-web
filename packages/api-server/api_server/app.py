@@ -15,9 +15,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
 
-from api_server.models.user import User
-from api_server.types import is_coroutine
-
 from . import routes
 from .app_config import AppConfig, load_config
 from .authenticator import AuthenticationError, JwtAuthenticator, StubAuthenticator
@@ -40,6 +37,7 @@ from .models import (
 from .models import tortoise_models as ttm
 from .repositories import StaticFilesRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, RmfEvents
+from .types import is_coroutine
 
 
 class App(FastIO, BaseApp):
