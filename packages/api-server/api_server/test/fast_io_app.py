@@ -1,14 +1,12 @@
 from typing import cast
 
 import pydantic
-import socketio
 from rx import operators as rxops
 from rx.subject.subject import Subject
 
 from api_server.fast_io import FastIO, FastIORouter, SubscriptionRequest
 
-sio = socketio.AsyncServer(async_mode="asgi")
-app = FastIO(sio)
+app = FastIO()
 router = FastIORouter()
 router_with_prefix = FastIORouter(prefix="/router_with_prefix")
 router_include_with_prefix = FastIORouter()

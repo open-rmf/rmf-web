@@ -7,12 +7,10 @@ from typing import (
     Callable,
     Coroutine,
     Dict,
-    Generic,
     List,
     Optional,
     Tuple,
     Type,
-    TypeVar,
     Union,
     cast,
 )
@@ -20,6 +18,7 @@ from urllib.parse import unquote as url_unquote
 
 import pydantic
 import socketio
+import socketio.packet
 from fastapi import APIRouter, FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.logger import logger
@@ -30,13 +29,12 @@ from starlette.routing import compile_path
 from .errors import *
 
 logger: Logger
-SioServer = TypeVar("SioServer", bound=socketio.AsyncServer)
 
 
 @dataclass
-class SubscriptionRequest(Generic[SioServer]):
+class SubscriptionRequest:
     sid: str
-    sio: SioServer
+    sio: socketio.AsyncServer
     room: str
     session: Dict[Any, Any]
 
@@ -132,16 +130,32 @@ class FastIORouter(APIRouter):
         return decorator
 
 
-class FastIO(FastAPI, Generic[SioServer]):
+class FastIOPacket(socketio.packet.Packet):
+    class PacketData(pydantic.BaseModel):
+        __root__: Tuple[str, pydantic.BaseModel]
+
+    def encode(self):
+        if (
+            isinstance(self.data, list)
+            and len(self.data) == 2
+            and isinstance(self.data[1], pydantic.BaseModel)
+        ):
+            pkt_data = FastIOPacket.PacketData.construct(__root__=self.data)
+            return str(self.packet_type) + pkt_data.json()
+        return super().encode()
+
+
+class FastIO(FastAPI):
     def __init__(
         self,
-        sio: SioServer,
         *args,
         socketio_path: str = "/socket.io",
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
-        self.sio = sio
+        self.sio = socketio.AsyncServer(
+            async_mode="asgi", cors_allowed_origins="*", serializer=FastIOPacket
+        )
         self.sio.on("subscribe", self._on_subscribe)
         self.sio.on("unsubscribe", self._on_unsubscribe)
         self._sub_routes: List[SubRoute] = []
@@ -267,9 +281,6 @@ The message must be of the form:
             loop = asyncio.get_event_loop()
 
             def on_next(data):
-                if isinstance(data, pydantic.BaseModel):
-                    data = data.dict()
-
                 async def emit():
                     await self.sio.emit(sub_data.room, data, to=sid)
 

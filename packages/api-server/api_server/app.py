@@ -8,7 +8,6 @@ from typing import Any, Callable, Coroutine, List, Optional, Union
 
 import rclpy
 import rclpy.executors
-import socketio
 from fastapi import HTTPException
 from fastapi.logger import logger
 from fastapi.middleware.cors import CORSMiddleware
@@ -49,6 +48,8 @@ class App(FastIO, BaseApp):
             [RmfEvents, StaticFilesRepository], RmfGateway
         ] = RmfGateway,
     ):
+        super().__init__(title="RMF API Server")
+
         self.app_config = app_config or load_config(
             os.environ.get(
                 "RMF_API_SERVER_CONFIG",
@@ -77,10 +78,6 @@ class App(FastIO, BaseApp):
             self.logger.warning("authentication is disabled")
         self.user_dep = self.authenticator.fastapi_dep()
 
-        sio = socketio.AsyncServer(
-            async_mode="asgi", cors_allowed_origins="*", logger=self.logger
-        )
-
         async def on_connect(sid: str, _environ: dict, auth: Optional[dict] = None):
             session = await self.sio.get_session(sid)
             token = None
@@ -95,12 +92,7 @@ class App(FastIO, BaseApp):
                 self.logger.info(f"authentication failed: {e}")
                 return False
 
-        sio.on("connect", on_connect)
-
-        super().__init__(
-            sio,
-            title="RMF API Server",
-        )
+        self.sio.on("connect", on_connect)
 
         self.add_middleware(
             CORSMiddleware,
