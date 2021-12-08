@@ -1,16 +1,15 @@
-from typing import Any, List, Optional, cast
+from typing import List, Optional, cast
 
 from fastapi import Depends, Query
 from rx import operators as rxops
 
 from api_server.base_app import BaseApp
 from api_server.dependencies import pagination_query
-from api_server.fast_io import FastIORouter, WatchRequest
+from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import Fleet, FleetState, Pagination, Robot, RobotHealth, Task
 from api_server.repositories import RmfRepository
 
 from .tasks.utils import get_task_progress
-from .utils import rx_watcher
 
 
 class FleetsRouter(FastIORouter):
@@ -96,17 +95,14 @@ class FleetsRouter(FastIORouter):
             """
             return await rmf_repo.get_fleet_state(name)
 
-        @self.watch("/{name}/state")
-        async def watch_fleet_state(req: WatchRequest, name: str):
-            fleet_state = await get_fleet_state(name, RmfRepository(req.user))
+        @self.sub("/{name}/state", response_model=FleetState)
+        async def sub_fleet_state(req: SubscriptionRequest, name: str):
+            user = req.session["user"]
+            fleet_state = await get_fleet_state(name, RmfRepository(user))
             if fleet_state is not None:
-                await req.emit(fleet_state.dict())
-            rx_watcher(
-                req,
-                app.rmf_events().fleet_states.pipe(
-                    rxops.filter(lambda x: cast(FleetState, x).name == name),
-                    rxops.map(cast(Any, lambda x: cast(FleetState, x).dict())),
-                ),
+                await req.sio.emit(req.room, fleet_state.dict(), req.sid)
+            return app.rmf_events().fleet_states.pipe(
+                rxops.filter(lambda x: cast(FleetState, x).name == name)
             )
 
         @self.get("/{fleet}/{robot}/health", response_model=RobotHealth)
@@ -118,17 +114,12 @@ class FleetsRouter(FastIORouter):
             """
             return await rmf_repo.get_robot_health(fleet, robot)
 
-        @self.watch("/{fleet}/{robot}/health")
-        async def watch_robot_health(req: WatchRequest, fleet: str, robot: str):
-            health = await get_robot_health(fleet, robot, RmfRepository(req.user))
+        @self.sub("/{fleet}/{robot}/health", response_model=RobotHealth)
+        async def sub_robot_health(req: SubscriptionRequest, fleet: str, robot: str):
+            user = req.session["user"]
+            health = await get_robot_health(fleet, robot, RmfRepository(user))
             if health is not None:
-                await req.emit(health.dict())
-            rx_watcher(
-                req,
-                app.rmf_events().robot_health.pipe(
-                    rxops.filter(
-                        lambda x: cast(RobotHealth, x).id_ == f"{fleet}/{robot}"
-                    ),
-                    rxops.map(cast(Any, lambda x: cast(RobotHealth, x).dict())),
-                ),
+                await req.sio.emit(req.room, health.dict(), req.sid)
+            return app.rmf_events().robot_health.pipe(
+                rxops.filter(lambda x: cast(RobotHealth, x).id_ == f"{fleet}/{robot}")
             )

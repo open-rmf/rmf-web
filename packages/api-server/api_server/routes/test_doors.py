@@ -27,7 +27,7 @@ class TestDoorsRoute(AppFixture):
         state = resp.json()
         self.assertEqual("test_door", state["door_name"])
 
-    def test_watch_door_state(self):
+    def test_sub_door_state(self):
         door_state = make_door_state("test_door")
         door_state.door_time.sec = 1
         fut = self.subscribe_sio("/doors/test_door/state")

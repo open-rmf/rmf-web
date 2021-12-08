@@ -3,11 +3,9 @@ from typing import Dict, cast
 import pydantic
 import socketio
 from rx import operators as rxops
-from rx.core.observable.observable import Observable
 from rx.subject.subject import Subject
 
-from api_server.fast_io import FastIO, FastIORouter, WatchRequest
-from api_server.routes.utils import rx_watcher
+from api_server.fast_io import FastIO, FastIORouter, SubscriptionRequest
 
 sio = socketio.AsyncServer(async_mode="asgi")
 app = FastIO(sio)
@@ -25,53 +23,60 @@ class ReturnVideo(pydantic.BaseModel):
     film_title: str
 
 
-def handler(req: WatchRequest, film_title: str, target_obs: Observable):
-    rx_watcher(
-        req,
-        target_obs.pipe(rxops.filter(lambda x: cast(Dict, x)["film"] == film_title)),
+@router.sub("/video_rental/{film_title}/available", response_model=ReturnVideo)
+def router_sub_availability(_req: SubscriptionRequest, film_title: str):
+    return target.pipe(
+        rxops.filter(lambda x: cast(ReturnVideo, x).film_title == film_title)
     )
-
-
-@router.watch("/video_rental/{film_title}/available")
-def router_watch_availability(req: WatchRequest, film_title: str):
-    handler(req, film_title, target)
 
 
 @router.post("/video_rental/return_video")
 def router_post_return_video(return_video: ReturnVideo):
-    target.on_next({"film": return_video.film_title, "available": True})
+    target.on_next(return_video)
 
 
-@router_with_prefix.watch("/video_rental/{film_title}/available")
-def router_with_prefix_watch_availability(req: WatchRequest, film_title: str):
-    handler(req, film_title, target_with_prefix)
+@router_with_prefix.sub(
+    "/video_rental/{film_title}/available", response_model=ReturnVideo
+)
+def router_with_prefix_sub_availability(_req: SubscriptionRequest, film_title: str):
+    return target_with_prefix.pipe(
+        rxops.filter(lambda x: cast(ReturnVideo, x).film_title == film_title)
+    )
 
 
 @router_with_prefix.post("/video_rental/return_video")
 def router_with_prefix_post_return_video(return_video: ReturnVideo):
-    target_with_prefix.on_next({"film": return_video.film_title, "available": True})
+    target_with_prefix.on_next(return_video)
 
 
-@router_include_with_prefix.watch("/video_rental/{film_title}/available")
-def router_include_with_prefix_watch_availability(req: WatchRequest, film_title: str):
-    handler(req, film_title, target_include_with_prefix)
+@router_include_with_prefix.sub(
+    "/video_rental/{film_title}/available", response_model=ReturnVideo
+)
+def router_include_with_prefix_sub_availability(
+    _req: SubscriptionRequest, film_title: str
+):
+    return target_include_with_prefix.pipe(
+        rxops.filter(lambda x: cast(ReturnVideo, x).film_title == film_title)
+    )
 
 
 @router_include_with_prefix.post("/video_rental/return_video")
 def router_include_with_prefix_post_return_video(return_video: ReturnVideo):
-    target_include_with_prefix.on_next(
-        {"film": return_video.film_title, "available": True}
+    target_include_with_prefix.on_next(return_video)
+
+
+@router_both_prefix.sub(
+    "/video_rental/{film_title}/available", response_model=ReturnVideo
+)
+def router_both_prefix_sub_availability(_req: SubscriptionRequest, film_title: str):
+    return target_both_prefix.pipe(
+        rxops.filter(lambda x: cast(ReturnVideo, x).film_title == film_title)
     )
-
-
-@router_both_prefix.watch("/video_rental/{film_title}/available")
-def router_both_prefix_watch_availability(req: WatchRequest, film_title: str):
-    handler(req, film_title, target_both_prefix)
 
 
 @router_both_prefix.post("/video_rental/return_video")
 def router_both_prefix_post_return_video(return_video: ReturnVideo):
-    target_both_prefix.on_next({"film": return_video.film_title, "available": True})
+    target_both_prefix.on_next(return_video)
 
 
 app.include_router(router)

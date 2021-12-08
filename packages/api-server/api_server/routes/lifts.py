@@ -1,14 +1,12 @@
-from typing import Any, List, cast
+from typing import List, cast
 
 from fastapi import Depends
 from rx import operators as rxops
 
 from api_server.base_app import BaseApp
-from api_server.fast_io import FastIORouter, WatchRequest
+from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import Lift, LiftHealth, LiftRequest, LiftState
 from api_server.repositories import RmfRepository
-
-from .utils import rx_watcher
 
 
 class LiftsRouter(FastIORouter):
@@ -28,17 +26,14 @@ class LiftsRouter(FastIORouter):
             """
             return await rmf_repo.get_lift_state(lift_name)
 
-        @self.watch("/{lift_name}/state")
-        async def watch_lift_state(req: WatchRequest, lift_name: str):
-            lift_state = await get_lift_state(lift_name, RmfRepository(req.user))
+        @self.sub("/{lift_name}/state", response_model=LiftState)
+        async def sub_lift_state(req: SubscriptionRequest, lift_name: str):
+            user = req.session["user"]
+            lift_state = await get_lift_state(lift_name, RmfRepository(user))
             if lift_state is not None:
-                await req.emit(lift_state.dict())
-            rx_watcher(
-                req,
-                app.rmf_events().lift_states.pipe(
-                    rxops.filter(lambda x: cast(LiftState, x).lift_name == lift_name),
-                    rxops.map(cast(Any, lambda x: cast(LiftState, x).dict())),
-                ),
+                await req.sio.emit(req.room, lift_state.dict(), req.sid)
+            return app.rmf_events().lift_states.pipe(
+                rxops.filter(lambda x: cast(LiftState, x).lift_name == lift_name)
             )
 
         @self.get("/{lift_name}/health", response_model=LiftHealth)
@@ -50,17 +45,14 @@ class LiftsRouter(FastIORouter):
             """
             return await rmf_repo.get_lift_health(lift_name)
 
-        @self.watch("/{lift_name}/health")
-        async def watch_lift_health(req: WatchRequest, lift_name: str):
-            health = await get_lift_health(lift_name, RmfRepository(req.user))
+        @self.sub("/{lift_name}/health", response_model=LiftHealth)
+        async def sub_lift_health(req: SubscriptionRequest, lift_name: str):
+            user = req.session["user"]
+            health = await get_lift_health(lift_name, RmfRepository(user))
             if health is not None:
-                await req.emit(health.dict())
-            rx_watcher(
-                req,
-                app.rmf_events().lift_health.pipe(
-                    rxops.filter(lambda x: cast(LiftHealth, x).id_ == lift_name),
-                    rxops.map(cast(Any, lambda x: cast(LiftHealth, x).dict())),
-                ),
+                await req.sio.emit(req.room, health.dict(), req.sid)
+            return app.rmf_events().lift_health.pipe(
+                rxops.filter(lambda x: cast(LiftHealth, x).id_ == lift_name),
             )
 
         @self.post("/{lift_name}/request")

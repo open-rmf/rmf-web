@@ -18,7 +18,7 @@ class TestDispensersRoute(AppFixture):
         state = resp.json()
         self.assertEqual("test_dispenser", state["guid"])
 
-    def test_watch_dispenser_state(self):
+    def test_sub_dispenser_state(self):
         dispenser_state = make_dispenser_state()
         dispenser_state.time.sec = 1
         fut = self.subscribe_sio("/dispensers/test_dispenser/state")

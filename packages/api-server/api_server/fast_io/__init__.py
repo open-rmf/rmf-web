@@ -1,135 +1,97 @@
 import asyncio
-import inspect
-import logging
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from re import Pattern
+from re import Match
 from typing import (
     Any,
-    AsyncContextManager,
     Callable,
+    Coroutine,
     Dict,
     Generic,
     List,
-    Match,
     Optional,
-    Protocol,
-    Sequence,
     Tuple,
-    TypedDict,
+    Type,
     TypeVar,
     Union,
     cast,
 )
 from urllib.parse import unquote as url_unquote
 
+import pydantic
 import socketio
-from fastapi import APIRouter, Depends, FastAPI
+from fastapi import APIRouter, FastAPI
 from fastapi.exceptions import HTTPException
-from fastapi.types import DecoratedCallable
-from socketio.asyncio_server import AsyncServer
+from fastapi.routing import APIRoute
+from rx.core.observable.observable import Observable
 from starlette.routing import compile_path
-
-from api_server.authenticator import (
-    AuthenticationError,
-    JwtAuthenticator,
-    StubAuthenticator,
-)
-from api_server.models import User
 
 from .errors import *
 
-T = TypeVar("T")
+SioServer = TypeVar("SioServer", bound=socketio.AsyncServer)
 
 
-class DataStore(ABC, Generic[T]):
-    @abstractmethod
-    async def get(
-        self, key: str, path_params: Dict[str, str], user: User
-    ) -> Union[T, None]:
-        pass
-
-    @abstractmethod
-    async def set(self, key: str, path_params: Dict[str, str], data: T) -> None:
-        pass
+@dataclass
+class SubscriptionRequest(Generic[SioServer]):
+    sid: str
+    sio: SioServer
+    room: str
+    session: Dict[Any, Any]
 
 
 @dataclass
 class SubscriptionData:
-    path: str
+    room: str
 
 
-@dataclass
-class WatchRequest:
-    sid: str
-    sio: socketio.AsyncServer
-    path: str
-    user: User
-    _on_unsubscribe: Optional[Callable[[], None]] = None
-    _subscribe_task: Optional[asyncio.Task] = None
+class SubRoute:
+    def __init__(
+        self,
+        path: str,
+        endpoint: Callable[
+            [SubscriptionRequest], Union[Observable, Coroutine[Any, Any, Observable]]
+        ],
+        *,
+        response_model: Optional[Type[pydantic.BaseModel]] = None,
+    ):
+        self.path = path
+        self.endpoint = endpoint
+        self.path_regex, self.path_format, self.param_convertors = compile_path(path)
+        self.response_model = response_model
 
-    def on_unsubscribe(self, cb: Callable[[], None]) -> None:
-        self._on_unsubscribe = cb
-
-    async def emit(self, data, to: Optional[str] = None) -> None:
-        to = to or self.sid
-        await self.sio.emit(self.path, data, to=to)
-
-
-OnSubscribe = Callable[..., Any]
-
-
-@dataclass
-class Watch:
-    func: OnSubscribe
-    prefix: str
-    path: str
+    def matches(self, path: str) -> Optional[Match]:
+        return self.path_regex.match(path)
 
 
-@dataclass
-class SioRoute:
-    pattern: Pattern
-    func: OnSubscribe
-
-
-class Session(TypedDict, total=False):
-    user: User
-    subscriptions: Dict[str, WatchRequest]
-
-
-# For typing purposes
-class _CustomSio(ABC, socketio.AsyncServer):
-    @abstractmethod
-    def session(self, sid, namespace=None) -> AsyncContextManager[Session]:
-        pass
+OnSubscribe = Callable[..., Union[Observable, Coroutine[Any, Any, Observable]]]
 
 
 class FastIORouter(APIRouter):
     """
-    This is a router that extends on the default fastapi router. It adds a new virtual
-    method "watch" which registers a socket.io endpoint.
+    This is a router that extends on the default fastapi router. It adds a new
+    method "sub" which registers a socket.io endpoint.
 
     .. code-block::
-        import rx.subject
         import uvicorn
+        from rx import operators as rxops
+        from rx.subject.subject import Subject
 
-        from api_server.fast_io import FastIORouter
+        from api_server.fast_io import FastIORouter, SubscriptionRequest
 
         app = FastIO()
         router = FastIORouter()
-        watches = {}
+        obs = Subject()
 
 
-        @router.watch("/film_rental/{film}/available")
-        def router_watch_availability(req: WatchRequest, film: str):
-            watches[film] = req
+        @router.sub("/video_rental/{film}/available")
+        def router_sub_availability(req: SubscriptionRequest, film: str):
+            return obs.pipe(
+                rxops.filter(lambda x: x["film"] == film)
+            )
 
 
-        @router.post("/film_rental/{film}/return")
+        @router.post("/video_rental/{film}/return")
         def router_post_return_video(film: str):
-            watch_req = watches.get(film, None)
-            if watch_req:
-                watch_req.emit({ "available": True }, to=film)
+            obs.on_next({"film": film})
 
 
         app.include_router(router)
@@ -137,104 +99,137 @@ class FastIORouter(APIRouter):
         uvicorn.run(app)
     """
 
-    def __init__(self, *args, user_dep: Optional[Callable[..., User]] = None, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.user_dep = user_dep or (lambda: User(username="stub", is_admin=True))
-        self.watches = cast(List[Watch], [])
-        self._loop: Optional[asyncio.AbstractEventLoop] = None
+        self.sub_routes: List[SubRoute] = []
 
     def include_router(self, router: "FastIORouter", **kwargs):
         super().include_router(router, **kwargs)
         prefix = kwargs.get("prefix", "")
 
-        for watch in router.watches:
-            self.watches.append(
-                Watch(
-                    func=watch.func,
-                    prefix=prefix + watch.prefix,
-                    path=prefix + watch.path,
+        for r in router.sub_routes:
+            self.sub_routes.append(
+                SubRoute(
+                    prefix + router.prefix + r.path,
+                    r.endpoint,
                 )
             )
 
-    def watch(self, path: str):
+    def sub(
+        self, path: str, *, response_model: Optional[Type[pydantic.BaseModel]] = None
+    ):
         """
-        Registers a socket.io endpoint.
+        Registers a socket.io endpoint which handles subscriptions.
         """
 
         def decorator(func: OnSubscribe) -> OnSubscribe:
-            self.watches.append(
-                Watch(func=func, prefix=self.prefix, path=self.prefix + path)
-            )
+            self.sub_routes.append(SubRoute(path, func, response_model=response_model))
             return func
 
         return decorator
 
 
-class FastIO(socketio.ASGIApp):
+class FastIO(FastAPI, Generic[SioServer]):
     def __init__(
         self,
-        sio: AsyncServer,
-        *,
-        authenticator: Optional[JwtAuthenticator] = None,
-        logger: logging.Logger = None,
-        dependencies: Optional[Sequence[Any]] = None,
-        **fast_api_args,
+        sio: SioServer,
+        *args,
+        socketio_path: str = "/socket.io",
+        **kwargs,
     ):
-        """
-        :param authenticator: Authenticator used to verify socket.io connections, for
-            FastAPI endpoints, a dependency must be provided.
-        """
-        self.logger = logger or logging.getLogger(self.__class__.__name__)
-        self.sio = cast(_CustomSio, sio)
-        self.authenticator = authenticator or StubAuthenticator()
-        self.auth_dep = self.authenticator.fastapi_dep()
-        dependencies = list(dependencies or [])
-        dependencies.append(Depends(self.auth_dep))
-        self.fapi = FastAPI(dependencies=dependencies, **fast_api_args)
-        super().__init__(self.sio, other_asgi_app=self.fapi)
-        self._sio_routes: List[SioRoute] = []
-
-        async def on_connect(sid: str, _environ: dict, auth: Optional[dict] = None):
-            async with self.sio.session(sid) as session:
-                session["subscriptions"] = {}
-                if not self.authenticator:
-                    session["user"] = User(username="stub", is_admin=True)
-                    return True
-                token = None
-                if auth:
-                    token = auth["token"]
-
-                try:
-                    user = await self.authenticator.verify_token(token)
-                    session["user"] = user
-                    return True
-                except AuthenticationError as e:
-                    self.logger.error(f"authentication failed: {e}")
-                    return False
-
-        sio.on("connect", on_connect)
-
+        super().__init__(*args, **kwargs)
+        self.sio = sio
         self.sio.on("subscribe", self._on_subscribe)
         self.sio.on("unsubscribe", self._on_unsubscribe)
+        self._sub_routes: List[SubRoute] = []
 
-    def include_router(self, router: FastIORouter, prefix: str = "", **kwargs):
-        self.fapi.include_router(router, prefix=prefix, **kwargs)
-        for watch in router.watches:
-            pattern, _, _ = compile_path(prefix + watch.path)
-            self._sio_routes.append(SioRoute(pattern, watch.func))
+        self._sio_route = APIRoute(
+            socketio_path,
+            lambda: None,
+            summary="Socket.io endpoint",
+            description="""
+# NOTE: This endpoint is here for documentation purposes only, this is _not_ a REST endpoint.
+
+## About
+This exposes a minimal pubsub system built on top of socket.io.
+It works similar to a normal socket.io endpoint, except that are 2 special
+rooms which control subscriptions.
+
+## Rooms
+### subscribe
+Clients must send a message to this room to start receiving messages on other rooms.
+The message must be of the form:
+
+```
+{
+    "room": "<room_name>"
+}
+```
+
+### unsubscribe
+Clients can send a message to this room to stop receiving messages on other rooms.
+The message must be of the form:
+
+```
+{
+    "room": "<room_name>"
+}
+```
+            """,
+        )
+        self.routes.append(self._sio_route)
+
+        self._sio_app = socketio.ASGIApp(
+            self.sio, super().__call__, socketio_path=socketio_path
+        )
+
+    async def __call__(self, scope, receive, send):
+        # Make the sio the "primary" app because fastapi does not support mounting a single path.
+        return await self._sio_app(scope, receive, send)
+
+    def include_router(self, router: APIRouter, prefix="", **kwargs):
+        super().include_router(router, prefix=prefix, **kwargs)
+        room_descriptions = ""
+
+        if isinstance(router, FastIORouter):
+            for r in router.sub_routes:
+                self._sub_routes.append(
+                    SubRoute(
+                        prefix + router.prefix + r.path,
+                        r.endpoint,
+                        response_model=r.response_model,
+                    )
+                )
+                if r.response_model:
+                    response_schema = f"""
+```
+{r.response_model.schema_json(indent=2)}
+```
+"""
+                else:
+                    response_schema = ""
+                docstring = r.endpoint.__doc__ or ""
+                room_descriptions += f"""
+### {r.path}
+{docstring.strip()}
+{response_schema}
+"""
+            self._sio_route.description += room_descriptions
 
     @staticmethod
     def _parse_sub_data(data: dict) -> SubscriptionData:
-        if "path" not in data:
-            raise SubscribeError("missing 'path'")
-        path = url_unquote(data["path"])
-        return SubscriptionData(path=path)
+        if "room" not in data:
+            raise SubscribeError("missing 'room'")
+        room = url_unquote(data["room"])
+        return SubscriptionData(room=room)
 
-    def _match_path(self, path: str) -> Optional[Tuple[Match, SioRoute]]:
-        for route in self._sio_routes:
-            match = route.pattern.match(path)
+    def _match_routes(
+        self, sub_data: SubscriptionData
+    ) -> Optional[Tuple[Match, SubRoute]]:
+        for r in self._sub_routes:
+            match = r.matches(sub_data.room)
             if match:
-                return match, route
+                return match, r
         return None
 
     async def _on_subscribe(self, sid: str, data: dict):
@@ -245,23 +240,39 @@ class FastIO(socketio.ASGIApp):
             return
 
         try:
-            result = self._match_path(sub_data.path)
+            result = self._match_routes(sub_data)
             if result is None:
                 await self.sio.emit(
                     "subscribe", {"success": False, "error": "no events in path"}
                 )
                 return
-            match, sio_route = result
+            match, route = result
 
-            # pylint: disable=protected-access
-            async with self.sio.session(sid) as session:
-                user = session["user"]
-                req = WatchRequest(sid=sid, sio=self.sio, path=sub_data.path, user=user)
-                session["subscriptions"][sub_data.path] = req
-                maybe_coro = sio_route.func(req, **match.groupdict())
-                if asyncio.iscoroutine(maybe_coro):
-                    req._subscribe_task = asyncio.create_task(maybe_coro)
-                self.sio.enter_room(sid, sub_data.path)
+            session: Dict[Any, Any] = await self.sio.get_session(sid)
+            req = SubscriptionRequest(
+                sid=sid, sio=self.sio, room=sub_data.room, session=session
+            )
+            maybe_coro = route.endpoint(req, **match.groupdict())
+            if asyncio.iscoroutine(maybe_coro):
+                obs = await maybe_coro
+            else:
+                obs = maybe_coro
+            obs = cast(Observable, obs)
+
+            loop = asyncio.get_event_loop()
+
+            def on_next(data):
+                if isinstance(data, pydantic.BaseModel):
+                    data = data.dict()
+
+                async def emit():
+                    await self.sio.emit(sub_data.room, data, to=sid)
+
+                loop.create_task(emit())
+
+            sub = obs.subscribe(on_next)
+            session.setdefault("_subscriptions", {})[sub_data.room] = sub
+
         except HTTPException as e:
             await self.sio.emit(
                 "subscribe", {"success": False, "error": f"{e.status_code} {e.detail}"}
@@ -272,18 +283,12 @@ class FastIO(socketio.ASGIApp):
     async def _on_unsubscribe(self, sid: str, data: dict):
         try:
             sub_data = self._parse_sub_data(data)
-            # pylint: disable=protected-access
             async with self.sio.session(sid) as session:
-                req = session["subscriptions"].get(sub_data.path)
-                if req is None:
+                session: Dict[Any, Any]
+                sub = session["_subscriptions"].get(sub_data.room)
+                if sub is None:
                     raise SubscribeError("not subscribed to topic")
-                if req._subscribe_task and not req._subscribe_task.done():
-                    await asyncio.wait([req._subscribe_task])
-                if req._on_unsubscribe:
-                    maybe_coro = req._on_unsubscribe()
-                    if inspect.isawaitable(maybe_coro):
-                        await maybe_coro
-                self.sio.leave_room(sid, sub_data.path)
+                sub.dispose()
                 await self.sio.emit("unsubscribe", {"success": True})
         except SubscribeError as e:
             await self.sio.emit("unsubscribe", {"success": False, "error": str(e)})

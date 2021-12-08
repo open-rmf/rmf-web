@@ -1,4 +1,4 @@
-from typing import Awaitable, Callable, Optional, Union
+from typing import Any, Awaitable, Callable, Coroutine, Optional, Union
 
 import jwt
 from fastapi import Depends, HTTPException
@@ -48,7 +48,7 @@ class JwtAuthenticator:
         except jwt.InvalidTokenError as e:
             raise AuthenticationError(str(e)) from e
 
-    def fastapi_dep(self) -> Callable[..., Union[Awaitable[User], User]]:
+    def fastapi_dep(self) -> Callable[..., Union[Coroutine[Any, Any, User], User]]:
         async def dep(
             auth_header: str = Depends(OpenIdConnect(openIdConnectUrl=self.oidc_url)),
         ):
@@ -70,5 +70,5 @@ class StubAuthenticator(JwtAuthenticator):
     async def verify_token(self, token: Optional[str]) -> User:
         return self._user
 
-    def fastapi_dep(self) -> Callable[..., Union[Awaitable[User], User]]:
+    def fastapi_dep(self) -> Callable[..., Union[Coroutine[Any, Any, User], User]]:
         return lambda: self._user

@@ -4,21 +4,23 @@ import os
 import signal
 import sys
 import threading
-from typing import Any, Callable, Coroutine, List, Union
+from typing import Any, Callable, Coroutine, List, Optional, Union
 
 import rclpy
 import rclpy.executors
 import socketio
 from fastapi import HTTPException
+from fastapi.logger import logger
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
 
+from api_server.models.user import User
 from api_server.types import is_coroutine
 
 from . import routes
 from .app_config import AppConfig, load_config
-from .authenticator import JwtAuthenticator, StubAuthenticator
+from .authenticator import AuthenticationError, JwtAuthenticator, StubAuthenticator
 from .base_app import BaseApp
 from .dependencies import rmf_repo as rmf_repo_dep
 from .fast_io import FastIO
@@ -57,37 +59,55 @@ class App(FastIO, BaseApp):
         )
 
         self.loop: asyncio.AbstractEventLoop
-        logger = logging.getLogger("app")
+        self.logger = logger
         handler = logging.StreamHandler(sys.stdout)
         handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
-        logger.addHandler(handler)
-        logger.setLevel(self.app_config.log_level)
+        self.logger.addHandler(handler)
+        self.logger.setLevel(self.app_config.log_level)
 
         if self.app_config.jwt_public_key:
             if self.app_config.iss is None:
                 raise ValueError("iss is required")
-            authenticator = JwtAuthenticator(
+            self.authenticator = JwtAuthenticator(
                 self.app_config.jwt_public_key,
                 self.app_config.aud,
                 self.app_config.iss,
                 oidc_url=self.app_config.oidc_url or "",
             )
         else:
-            authenticator = StubAuthenticator()
-            logger.warning("authentication is disabled")
+            self.authenticator = StubAuthenticator()
+            self.logger.warning("authentication is disabled")
+        self.user_dep = self.authenticator.fastapi_dep()
 
         sio = socketio.AsyncServer(
-            async_mode="asgi", cors_allowed_origins="*", logger=logger
+            async_mode="asgi", cors_allowed_origins="*", logger=self.logger
         )
+
+        async def on_connect(sid: str, _environ: dict, auth: Optional[dict] = None):
+            session = await self.sio.get_session(sid)
+            if not self.authenticator:
+                session["user"] = User(username="stub", is_admin=True)
+                return True
+            token = None
+            if auth:
+                token = auth["token"]
+
+            try:
+                user = await self.authenticator.verify_token(token)
+                session["user"] = user
+                return True
+            except AuthenticationError as e:
+                self.logger.error(f"authentication failed: {e}")
+                return False
+
+        sio.on("connect", on_connect)
 
         super().__init__(
             sio,
-            authenticator=authenticator,
-            logger=logger,
             title="RMF API Server",
         )
 
-        self.fapi.add_middleware(
+        self.add_middleware(
             CORSMiddleware,
             allow_origins=["*"],
             allow_credentials=False,
@@ -95,7 +115,7 @@ class App(FastIO, BaseApp):
             allow_headers=["*"],
         )
         os.makedirs(self.app_config.static_directory, exist_ok=True)
-        self.fapi.mount(
+        self.mount(
             "/static",
             StaticFiles(directory=self.app_config.static_directory),
             name="static",
@@ -105,7 +125,7 @@ class App(FastIO, BaseApp):
         shutdown_cbs: List[Union[Coroutine[Any, Any, Any], Callable[[], None]]] = []
 
         self._rmf_events = RmfEvents()
-        self.rmf_repo = rmf_repo_dep(self.auth_dep)
+        self.rmf_repo = rmf_repo_dep(self.user_dep)
         self.static_files_repo = StaticFilesRepository(
             f"{self.app_config.public_url.geturl()}/static",
             self.app_config.static_directory,
@@ -117,7 +137,7 @@ class App(FastIO, BaseApp):
             self._rmf_events, logger=self.logger.getChild("BookKeeper")
         )
 
-        self.fapi.include_router(routes.main_router(self))
+        self.include_router(routes.main_router(self))
         self.include_router(routes.BuildingMapRouter(self), prefix="/building_map")
         self.include_router(routes.DoorsRouter(self), prefix="/doors")
         self.include_router(routes.LiftsRouter(self), prefix="/lifts")
@@ -125,9 +145,9 @@ class App(FastIO, BaseApp):
         self.include_router(routes.DispensersRouter(self), prefix="/dispensers")
         self.include_router(routes.IngestorsRouter(self), prefix="/ingestors")
         self.include_router(routes.FleetsRouter(self), prefix="/fleets")
-        self.fapi.include_router(routes.admin_router(self), prefix="/admin")
+        self.include_router(routes.admin_router(self), prefix="/admin")
 
-        @self.fapi.on_event("startup")
+        @self.on_event("startup")
         async def on_startup():
             self.loop = asyncio.get_event_loop()
 
@@ -195,7 +215,7 @@ class App(FastIO, BaseApp):
 
             self.logger.info("started app")
 
-        @self.fapi.on_event("shutdown")
+        @self.on_event("shutdown")
         async def on_shutdown():
             while shutdown_cbs:
                 cb = shutdown_cbs.pop()

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, List, Optional, cast
+from typing import List, Optional, cast
 
 from fastapi import Depends, HTTPException, Path
 from fastapi.param_functions import Query
@@ -8,7 +8,7 @@ from rx import operators as rxops
 
 from api_server.base_app import BaseApp
 from api_server.dependencies import pagination_query
-from api_server.fast_io import FastIORouter, WatchRequest
+from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import (
     CancelTask,
     SubmitTask,
@@ -19,7 +19,6 @@ from api_server.models import (
 )
 from api_server.models.pagination import Pagination
 from api_server.repositories import RmfRepository
-from api_server.routes.utils import rx_watcher
 from api_server.services.tasks import convert_task_request
 
 from .dispatcher import DispatcherClient
@@ -28,9 +27,9 @@ from .utils import get_task_progress
 
 class TasksRouter(FastIORouter):
     def __init__(self, app: BaseApp):
-        user_dep = app.auth_dep
+        user_dep = app.user_dep
 
-        super().__init__(tags=["Tasks"], user_dep=user_dep)
+        super().__init__(tags=["Tasks"])
         _dispatcher_client: Optional[DispatcherClient] = None
 
         def dispatcher_client_dep():
@@ -50,22 +49,19 @@ class TasksRouter(FastIORouter):
             ts = await rmf_repo.get_task_summary(task_id)
             return ts.dict(exclude_none=True)
 
-        @self.watch("/{task_id}/summary")
-        async def watch_task_summary(req: WatchRequest, task_id: str):
+        @self.sub("/{task_id}/summary", response_model=TaskSummary)
+        async def sub_task_summary(req: SubscriptionRequest, task_id: str):
+            user = req.session["user"]
             try:
-                await req.emit(await get_task_summary(RmfRepository(req.user), task_id))
+                await req.sio.emit(
+                    req.room,
+                    await get_task_summary(RmfRepository(user), task_id),
+                    req.sid,
+                )
             except HTTPException:
                 pass
-            rx_watcher(
-                req,
-                app.rmf_events().task_summaries.pipe(
-                    rxops.filter(lambda x: cast(TaskSummary, x).task_id == task_id),
-                    rxops.map(
-                        cast(
-                            Any, lambda x: cast(TaskSummary, x).dict(exclude_none=True)
-                        )
-                    ),
-                ),
+            return app.rmf_events().task_summaries.pipe(
+                rxops.filter(lambda x: cast(TaskSummary, x).task_id == task_id)
             )
 
         def to_task(task_summary: TaskSummary):

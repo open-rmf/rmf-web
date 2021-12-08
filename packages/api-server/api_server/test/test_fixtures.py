@@ -119,7 +119,7 @@ class AppFixture(unittest.TestCase):
             rmf_gateway_fc=rmf_gateway_fc,
         )
         ready = Future()
-        cls.app.fapi.on_event("startup")(lambda: ready.set_result(True))
+        cls.app.on_event("startup")(lambda: ready.set_result(True))
         cls.server = BackgroundServer(cls.app)
         cls.server.start()
 
@@ -144,9 +144,10 @@ class AppFixture(unittest.TestCase):
     def tearDown(self):
         for client in self._sioClients:
             if client.connected:
-                # Explicitly close Session to remove ResourceWarnings in tests
-                client.eio.http.close()
                 client.disconnect()
+                # Explicitly close Session to remove ResourceWarnings in tests
+                if client.eio.http:
+                    client.eio.http.close()
 
     @classmethod
     def run_in_app_loop(cls, work: Awaitable, timeout: Optional[float] = None):
@@ -163,7 +164,7 @@ class AppFixture(unittest.TestCase):
         token = generate_token(username)
         cls.session.headers["Authorization"] = f"bearer {token}"
 
-    def subscribe_sio(self, path: str, skip_first=True):
+    def subscribe_sio(self, room: str, skip_first=True):
         client = self.connect_sio()
         fut = Future()
         count = 0
@@ -176,13 +177,14 @@ class AppFixture(unittest.TestCase):
             nonlocal count
             count += 1
             if count >= needed:
-                # Explicitly close Session to remove ResourceWarnings in tests
-                client.eio.http.close()
                 client.disconnect()
+                # Explicitly close Session to remove ResourceWarnings in tests
+                if client.eio.http:
+                    client.eio.http.close()
                 fut.set_result(data)
 
-        client.on(path, on_event)
-        client.emit("subscribe", {"path": path})
+        client.on(room, on_event)
+        client.emit("subscribe", {"room": room})
 
         return fut
 

@@ -270,7 +270,7 @@ class TestTasksRoute(TasksFixture):
         summary = resp.json()
         self.assertEqual("test_task", summary["task_id"])
 
-    def test_watch_task_summary(self):
+    def test_sub_task_summary(self):
         task_summary = make_task_summary()
         task_summary.start_time.sec = 1
         fut = self.subscribe_sio("/tasks/test_task/summary")

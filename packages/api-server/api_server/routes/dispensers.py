@@ -1,14 +1,12 @@
-from typing import Any, List, cast
+from typing import List, cast
 
 from fastapi import Depends
 from rx import operators as rxops
 
 from api_server.base_app import BaseApp
-from api_server.fast_io import FastIORouter, WatchRequest
+from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import Dispenser, DispenserHealth, DispenserState
 from api_server.repositories import RmfRepository
-
-from .utils import rx_watcher
 
 
 class DispensersRouter(FastIORouter):
@@ -28,17 +26,14 @@ class DispensersRouter(FastIORouter):
             """
             return await rmf_repo.get_dispenser_state(guid)
 
-        @self.watch("/{guid}/state")
-        async def watch_dispenser_state(req: WatchRequest, guid: str):
-            dispenser_state = await get_dispenser_state(guid, RmfRepository(req.user))
+        @self.sub("/{guid}/state", response_model=DispenserState)
+        async def sub_dispenser_state(req: SubscriptionRequest, guid: str):
+            user = req.session["user"]
+            dispenser_state = await get_dispenser_state(guid, RmfRepository(user))
             if dispenser_state is not None:
-                await req.emit(dispenser_state.dict())
-            rx_watcher(
-                req,
-                app.rmf_events().dispenser_states.pipe(
-                    rxops.filter(lambda x: cast(DispenserState, x).guid == guid),
-                    rxops.map(cast(Any, lambda x: cast(DispenserState, x).dict())),
-                ),
+                await req.sio.emit(req.room, dispenser_state.dict(), req.sid)
+            return app.rmf_events().dispenser_states.pipe(
+                rxops.filter(lambda x: cast(DispenserState, x).guid == guid)
             )
 
         @self.get("/{guid}/health", response_model=DispenserHealth)
@@ -50,15 +45,12 @@ class DispensersRouter(FastIORouter):
             """
             return await rmf_repo.get_dispenser_health(guid)
 
-        @self.watch("/{guid}/health")
-        async def watch_dispenser_health(req: WatchRequest, guid: str):
-            health = await get_dispenser_health(guid, RmfRepository(req.user))
+        @self.sub("/{guid}/health", response_model=DispenserHealth)
+        async def sub_dispenser_health(req: SubscriptionRequest, guid: str):
+            user = req.session["user"]
+            health = await get_dispenser_health(guid, RmfRepository(user))
             if health is not None:
-                await req.emit(health.dict())
-            rx_watcher(
-                req,
-                app.rmf_events().dispenser_health.pipe(
-                    rxops.filter(lambda x: cast(DispenserHealth, x).id_ == guid),
-                    rxops.map(cast(Any, lambda x: cast(DispenserHealth, x).dict())),
-                ),
+                await req.sio.emit(req.room, health.dict(), req.sid)
+            return app.rmf_events().dispenser_health.pipe(
+                rxops.filter(lambda x: cast(DispenserHealth, x).id_ == guid)
             )
