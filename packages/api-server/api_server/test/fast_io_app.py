@@ -1,4 +1,4 @@
-from typing import Dict, cast
+from typing import cast
 
 import pydantic
 import socketio

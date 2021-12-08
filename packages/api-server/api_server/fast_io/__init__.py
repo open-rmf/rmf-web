@@ -187,8 +187,8 @@ The message must be of the form:
         # Make the sio the "primary" app because fastapi does not support mounting a single path.
         return await self._sio_app(scope, receive, send)
 
-    def include_router(self, router: APIRouter, prefix="", **kwargs):
-        super().include_router(router, prefix=prefix, **kwargs)
+    def include_router(self, router: APIRouter, *args, prefix: str = "", **kwargs):
+        super().include_router(router, *args, prefix=prefix, **kwargs)
         room_descriptions = ""
 
         if isinstance(router, FastIORouter):

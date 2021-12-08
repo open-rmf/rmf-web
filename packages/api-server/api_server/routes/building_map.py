@@ -19,7 +19,7 @@ class BuildingMapRouter(FastIORouter):
             return await rmf_repo.get_bulding_map()
 
         @self.sub("", response_model=BuildingMap)
-        def sub_building_map(req: SubscriptionRequest):
+        def sub_building_map(_req: SubscriptionRequest):
             return app.rmf_events().building_map.pipe(
                 rxops.filter(lambda x: x is not None)
             )

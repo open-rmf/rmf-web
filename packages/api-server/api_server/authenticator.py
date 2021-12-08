@@ -1,4 +1,4 @@
-from typing import Any, Awaitable, Callable, Coroutine, Optional, Union
+from typing import Any, Callable, Coroutine, Optional, Union
 
 import jwt
 from fastapi import Depends, HTTPException
