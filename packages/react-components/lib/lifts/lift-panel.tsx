@@ -111,7 +111,6 @@ const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme })
     marginTop: theme.spacing(1),
     padding: theme.spacing(1),
     backgroundColor: theme.palette.info.light,
-    margin: 'auto',
   },
   [`& .${classes.itemIcon}`]: {
     color: theme.palette.primary.contrastText,

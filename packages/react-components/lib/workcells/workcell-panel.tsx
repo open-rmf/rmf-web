@@ -90,7 +90,6 @@ const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme })
       backgroundColor: theme.palette.action.hover,
     },
     margin: theme.spacing(1),
-    height: '60%',
   },
   [`& .${classes.grid}`]: {
     padding: theme.spacing(2),
