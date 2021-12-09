@@ -22,5 +22,5 @@
     "composite": true
   },
   "include": ["lib/"],
-  "exclude": ["**/*.spec.*", "**/*.stories.*"]
+  "exclude": ["**/*.spec.*", "**/*.stories.*", "**/trajectory-time-control.tsx"]
 }
