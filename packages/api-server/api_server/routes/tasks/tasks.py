@@ -1,12 +1,12 @@
 from datetime import datetime
-from typing import Any, List, Optional, cast
+from typing import List, Optional, cast
 
 from fastapi import Body, Depends, HTTPException, Path, Query
 from rx import operators as rxops
 
 from api_server.base_app import BaseApp
-from api_server.dependencies import pagination_query, task_repo_dep
-from api_server.fast_io import FastIORouter, WatchRequest
+from api_server.dependencies import pagination_query, sio_user, task_repo_dep
+from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import (
     CancelTaskRequest,
     Pagination,
@@ -18,15 +18,14 @@ from api_server.models import (
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.query import add_pagination
 from api_server.repositories import TaskRepository
-
-from ..utils import rx_watcher
+from api_server.rmf_io.events import RmfEvents
 
 
 class TasksRouter(FastIORouter):
     def __init__(self, app: BaseApp):
-        user_dep = app.auth_dep
+        user_dep = app.user_dep
 
-        super().__init__(tags=["Tasks"], user_dep=user_dep)
+        super().__init__(tags=["Tasks"])
 
         @self.get("", response_model=List[TaskState])
         async def query_task_states(
@@ -68,22 +67,19 @@ class TasksRouter(FastIORouter):
                 raise HTTPException(status_code=404)
             return results[0]
 
-        @self.watch("/{task_id}/state")
-        async def watch_task_state(req: WatchRequest, task_id: str):
-            task_repo = TaskRepository(req.user)
+        @self.sub("/{task_id}/state")
+        async def sub_task_state(req: SubscriptionRequest, task_id: str):
+            user = sio_user(req)
+            task_repo = TaskRepository(user)
             try:
                 current_state = await get_task_state(task_repo, task_id)
-                await req.emit(current_state.json())
+                await req.sio.emit(req.room, current_state, req.sid)
             except HTTPException as e:
                 if e.status_code != 404:
                     raise e
 
-            rx_watcher(
-                req,
-                app.rmf_events().task_states.pipe(
-                    rxops.filter(lambda x: cast(TaskState, x).booking.id == task_id),
-                    rxops.map(cast(Any, lambda x: cast(TaskState, x).json())),
-                ),
+            return RmfEvents.singleton().task_states.pipe(
+                rxops.filter(lambda x: cast(TaskState, x).booking.id == task_id)
             )
 
         @self.post("/task_request")

@@ -5,6 +5,7 @@ from concurrent.futures import Future
 
 import requests
 import socketio
+import socketio.exceptions
 
 from .test.fast_io_app import app
 from .test.server import BackgroundServer
@@ -34,15 +35,16 @@ class TestFastIO(unittest.TestCase):
                 time.sleep(0.5)
 
     def tearDown(self):
-        # Explicitly close Session to remove ResourceWarnings in tests
-        self.client.eio.http.close()
         self.client.disconnect()
+        # Explicitly close Session to remove ResourceWarnings in tests
+        if self.client.eio.http:
+            self.client.eio.http.close()
 
     def check_subscribe_success(self, prefix: str):
         resp_fut = Future()
         self.client.on("subscribe", resp_fut.set_result)
         self.client.emit(
-            "subscribe", {"path": prefix + "/video_rental/aegis rim/available"}
+            "subscribe", {"room": prefix + "/video_rental/aegis rim/available"}
         )
         resp = resp_fut.result(1)
         self.assertTrue(resp["success"])
@@ -60,8 +62,7 @@ class TestFastIO(unittest.TestCase):
         )
         self.assertEqual(200, resp.status_code)
         event = event_fut.result(1)
-        self.assertEqual(event["film"], "aegis rim")
-        self.assertTrue(event["available"])
+        self.assertEqual(event["film_title"], "aegis rim")
 
     def test_receive_events(self):
         self.check_events("")
@@ -76,17 +77,17 @@ class TestFastIO(unittest.TestCase):
         self.check_events("/include_prefix/router_both_prefix")
 
     def test_unsubscribe(self):
-        path = "/video_rental/aegis rim/available"
+        room = "/video_rental/aegis rim/available"
 
         fut = Future()
         self.client.on("subscribe", fut.set_result)
-        self.client.emit("subscribe", {"path": path})
+        self.client.emit("subscribe", {"room": room})
         resp = fut.result(1)
         self.assertTrue(resp["success"])
 
         fut = Future()
         self.client.on("unsubscribe", fut.set_result)
-        self.client.emit("unsubscribe", {"path": path})
+        self.client.emit("unsubscribe", {"room": room})
         resp = fut.result(1)
         self.assertTrue(resp["success"])
 
