@@ -58,13 +58,24 @@ export interface LMapProps extends Omit<MapContainerProps, 'crs'> {
 }
 
 export const LMap = React.forwardRef(
-  ({ className, children, setLeafletMap, ...otherProps }: LMapProps) => {
-    const classes = useTheme();
+  ({ children, setLeafletMap, ...otherProps }: LMapProps): React.ReactElement => {
+    const theme = useTheme();
     const [labelsPortal, setLabelsPortal] = React.useState<SVGSVGElement | null>(null);
     const viewBox = otherProps.bounds ? viewBoxFromLeafletBounds(otherProps.bounds) : '';
 
     return (
-      <MapContainer crs={L.CRS.Simple} {...otherProps} maxZoom={22} {...otherProps}>
+      <MapContainer
+        crs={L.CRS.Simple}
+        maxZoom={22}
+        style={{
+          height: '100%',
+          width: '100%',
+          margin: 0,
+          padding: 0,
+          backgroundColor: theme.palette.background.default,
+        }}
+        {...otherProps}
+      >
         <EntityManagerProvider setLeafletMap={setLeafletMap}>
           <LabelsPortalContext.Provider value={labelsPortal}>
             {children}

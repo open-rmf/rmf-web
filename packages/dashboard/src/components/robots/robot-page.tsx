@@ -3,7 +3,7 @@
 import { styled, GridProps, Grid, Card } from '@mui/material';
 import React from 'react';
 import { Fleet } from 'api-client';
-import { MapProps, Map } from 'react-leaflet';
+import { LeafletContextInterface } from '@react-leaflet/core';
 import { RobotPanel, VerboseRobot } from 'react-components';
 import {
   BuildingMapContext,
@@ -46,7 +46,8 @@ export function RobotPage() {
   const rmfIngress = React.useContext(RmfIngressContext);
   const sioClient = React.useContext(RmfIngressContext)?.sioClient;
   const buildingMap = React.useContext(BuildingMapContext);
-  const [leafletMap, setLeafletMap] = React.useState<Map<MapProps, L.Map>>();
+  const leafletContext: LeafletContextInterface = Object.create({});
+  const [leafletMap, setLeafletMap] = React.useState<LeafletContextInterface>(leafletContext);
 
   const [_triggerRender, setTriggerRender] = React.useState(0); // eslint-disable-line @typescript-eslint/no-unused-vars
   React.useEffect(() => {
@@ -91,7 +92,7 @@ export function RobotPage() {
 
   const onRobotZoom = (robot: VerboseRobot) => {
     leafletMap &&
-      leafletMap.leafletElement.setView([robot.state.location.y, robot.state.location.x], 5.5, {
+      leafletMap.map.setView([robot.state.location.y, robot.state.location.x], 5.5, {
         animate: true,
       });
   };
@@ -112,7 +113,8 @@ export function RobotPage() {
               fleetStates={Object.assign({}, fleetStatesRef.current)}
               mode="normal"
               zoom={4.5}
-              ref={(map: Map<MapProps, L.Map>) => setLeafletMap(map)}
+              leafletMap={leafletMap}
+              setLeafletMap={setLeafletMap}
             />
           )}
         </Card>
