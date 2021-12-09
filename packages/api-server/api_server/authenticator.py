@@ -4,6 +4,8 @@ import jwt
 from fastapi import Depends, HTTPException
 from fastapi.security import OpenIdConnect
 
+from .app_config import app_config
+from .logger import logger
 from .models import User
 
 
@@ -72,3 +74,19 @@ class StubAuthenticator(JwtAuthenticator):
 
     def fastapi_dep(self) -> Callable[..., Union[Coroutine[Any, Any, User], User]]:
         return lambda: self._user
+
+
+if app_config.jwt_public_key:
+    if app_config.iss is None:
+        raise ValueError("iss is required")
+    authenticator = JwtAuthenticator(
+        app_config.jwt_public_key,
+        app_config.aud,
+        app_config.iss,
+        oidc_url=app_config.oidc_url or "",
+    )
+else:
+    authenticator = StubAuthenticator()
+    logger.warning("authentication is disabled")
+
+user_dep = authenticator.fastapi_dep()

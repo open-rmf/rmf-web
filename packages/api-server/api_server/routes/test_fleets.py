@@ -1,52 +1,60 @@
+from uuid import uuid4
+
 from api_server.models import FleetState, RobotState
 from api_server.test import AppFixture, try_until
-from api_server.test.test_data import make_fleet_state
 
 
 class TestFleetsRoute(AppFixture):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        fleet_states = [
+        cls.fleet_states = [
             FleetState(
-                name="fleet_1",
+                name=f"test_{uuid4()}",
                 robots=[RobotState(name="robot_1"), RobotState(name="robot_2")],
             ),
             FleetState(
-                name="fleet_2",
+                name=f"test_{uuid4()}",
                 robots=[RobotState(name="robot_3")],
             ),
         ]
 
-        for f in fleet_states:
-            cls.app.rmf_events().fleet_states.on_next(f)
+        async def prepare_db():
+            for x in cls.fleet_states:
+                await x.save()
+                for y in x.robots:
+                    await y.save(x.name)
+
+        cls.run_in_app_loop(prepare_db())
 
     def test_get_fleets(self):
-        resp = self.session.get("/fleets?fleet_name=fleet_1")
+        resp = self.session.get(f"/fleets?fleet_name={self.fleet_states[0].name}")
         self.assertEqual(200, resp.status_code)
         resp_json = resp.json()
         self.assertEqual(len(resp_json), 1)
+        self.assertEqual(self.fleet_states[0].name, resp_json[0]["name"])
 
     def test_get_robots(self):
-        resp = self.session.get("/fleets/robots?fleet_name=fleet_1&robot_name=robot_1")
+        resp = self.session.get(
+            f"/fleets/robots?fleet_name={self.fleet_states[0].name}&robot_name=robot_1"
+        )
         self.assertEqual(200, resp.status_code)
         resp_json = resp.json()
         self.assertEqual(len(resp_json), 1)
+        self.assertEqual(self.fleet_states[0].name, resp_json[0]["fleet"])
 
     def test_get_fleet_state(self):
-        resp = self.session.get("/fleets/fleet_1/state")
+        resp = self.session.get(f"/fleets/{self.fleet_states[0].name}/state")
         self.assertEqual(200, resp.status_code)
         state = resp.json()
-        self.assertEqual("fleet_1", state["name"])
+        self.assertEqual(self.fleet_states[0].name, state["name"])
 
     def test_sub_fleet_state(self):
-        fleet_state = make_fleet_state()
-        fut = self.subscribe_sio("/fleets/test_fleet/state")
+        fut = self.subscribe_sio(f"/fleets/{self.fleet_states[0].name}/state")
 
         def wait():
-            self.app.rmf_events().fleet_states.on_next(fleet_state)
             return fut.done()
 
         try_until(wait, lambda x: x)
         result = fut.result(0)
-        self.assertEqual(1, len(result["robots"]))
+        self.assertEqual(self.fleet_states[0].name, result["name"])

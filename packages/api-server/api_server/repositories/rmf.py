@@ -1,5 +1,8 @@
 from typing import List, Optional, cast
 
+from fastapi import Depends
+
+from api_server.authenticator import user_dep
 from api_server.models import (
     BuildingMap,
     Dispenser,
@@ -177,3 +180,7 @@ class RmfRepository:
                 pagination,
             ).values_list("username", flat=True),
         )
+
+
+def rmf_repo_dep(user: User = Depends(user_dep)):
+    return RmfRepository(user)

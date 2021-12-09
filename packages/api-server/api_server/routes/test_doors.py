@@ -1,5 +1,4 @@
-from typing import cast
-from unittest.mock import Mock
+from uuid import uuid4
 
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
 
@@ -11,9 +10,17 @@ class TestDoorsRoute(AppFixture):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.building_map = make_building_map()
+        cls.door_states = [make_door_state(f"test_{uuid4()}")]
+
+        async def prepare_db():
+            await cls.building_map.save()
+            for x in cls.door_states:
+                await x.save()
+
+        cls.run_in_app_loop(prepare_db())
 
     def test_get_doors(self):
-        self.app.rmf_events().building_map.on_next(make_building_map())
         resp = self.session.get("/doors")
         self.assertEqual(200, resp.status_code)
         doors = resp.json()
@@ -21,31 +28,23 @@ class TestDoorsRoute(AppFixture):
         self.assertEqual("test_door", doors[0]["name"])
 
     def test_get_door_state(self):
-        self.app.rmf_events().door_states.on_next(make_door_state("test_door"))
-        resp = self.session.get("/doors/test_door/state")
+        resp = self.session.get(f"/doors/{self.door_states[0].door_name}/state")
         self.assertEqual(200, resp.status_code)
         state = resp.json()
-        self.assertEqual("test_door", state["door_name"])
+        self.assertEqual(self.door_states[0].door_name, state["door_name"])
 
     def test_sub_door_state(self):
-        door_state = make_door_state("test_door")
-        door_state.door_time.sec = 1
-        fut = self.subscribe_sio("/doors/test_door/state")
+        fut = self.subscribe_sio(f"/doors/{self.door_states[0].door_name}/state")
 
         def wait():
-            self.app.rmf_events().door_states.on_next(door_state)
             return fut.done()
 
         try_until(wait, lambda x: x)
         result = fut.result(0)
-        self.assertEqual(1, result["door_time"]["sec"])
+        self.assertEqual(self.door_states[0].door_name, result["door_name"])
 
     def test_post_door_request(self):
         resp = self.session.post(
             "/doors/test_door/request", json={"mode": RmfDoorMode.MODE_OPEN}
         )
         self.assertEqual(resp.status_code, 200)
-        mock = cast(Mock, self.app.rmf_gateway().request_door)
-        mock.assert_called()
-        self.assertEqual("test_door", mock.call_args.args[0])
-        self.assertEqual(RmfDoorMode.MODE_OPEN, mock.call_args.args[1])

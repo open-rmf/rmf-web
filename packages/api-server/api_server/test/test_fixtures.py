@@ -6,7 +6,6 @@ import time
 import unittest
 from concurrent.futures import Future
 from typing import Any, Awaitable, Callable, List, Optional, TypeVar, Union, cast
-from unittest.mock import Mock
 from uuid import uuid4
 
 import jwt
@@ -14,11 +13,7 @@ import requests
 import socketio
 from urllib3.util.retry import Retry
 
-from api_server.app import App
-from api_server.app_config import load_config
-from api_server.gateway import RmfGateway
-
-from .server import BackgroundServer
+from .setup import server
 
 T = TypeVar("T")
 
@@ -95,13 +90,6 @@ def generate_token(username: str):
     )
 
 
-def rmf_gateway_fc(rmf_events, static_files_repo):
-    orig = RmfGateway(rmf_events, static_files_repo)
-    rmf_gateway = Mock(orig)
-    rmf_gateway.now = orig.now
-    return rmf_gateway
-
-
 class PrefixUrlSession(requests.Session):
     def __init__(self, prefix_url: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -114,14 +102,7 @@ class PrefixUrlSession(requests.Session):
 class AppFixture(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.app = App(
-            app_config=load_config(f"{os.path.dirname(__file__)}/test_config.py"),
-            rmf_gateway_fc=rmf_gateway_fc,
-        )
-        ready = Future()
-        cls.app.on_event("startup")(lambda: ready.set_result(True))
-        cls.server = BackgroundServer(cls.app)
-        cls.server.start()
+        cls.server = server
 
         retry = Retry(total=5, backoff_factor=0.1)
         adapter = cast(Any, requests).adapters.HTTPAdapter(max_retries=retry)
@@ -131,12 +112,9 @@ class AppFixture(unittest.TestCase):
         cls.session.headers["Content-Type"] = "application/json"
         cls.session.mount("http://", adapter)
 
-        ready.result()
-
     @classmethod
     def tearDownClass(cls):
         cls.session.close()
-        cls.server.stop()
 
     def setUp(self):
         self._sioClients: List[socketio.Client] = []
@@ -156,7 +134,7 @@ class AppFixture(unittest.TestCase):
         async def task():
             fut.set_result(await work)
 
-        cls.server.app.loop.create_task(task())
+        cls.server.loop.create_task(task())
         return fut.result(timeout)
 
     @classmethod
@@ -164,7 +142,7 @@ class AppFixture(unittest.TestCase):
         token = generate_token(username)
         cls.session.headers["Authorization"] = f"bearer {token}"
 
-    def subscribe_sio(self, room: str, skip_first=True):
+    def subscribe_sio(self, room: str, skip_first=False):
         client = self.connect_sio()
         fut = Future()
         count = 0

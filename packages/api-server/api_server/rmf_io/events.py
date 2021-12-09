@@ -15,12 +15,15 @@ class RmfEvents:
         self.ingestor_health = Subject()  # IngestorHealth
         self.fleet_states = Subject()  # FleetState
         self.robot_health = Subject()  # RobotHealth
-        self.task_states = Subject()  # TaskState
         self.building_map = BehaviorSubject(None)  # Optional[BuildingMap]
 
-    @staticmethod
-    def singleton() -> "RmfEvents":
-        return singleton
+
+rmf_events = RmfEvents()
 
 
-singleton = RmfEvents()
+class TaskEvents:
+    def __init__(self):
+        self.task_states = Subject()  # TaskState
+
+
+task_events = TaskEvents()

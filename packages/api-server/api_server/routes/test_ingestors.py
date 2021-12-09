@@ -1,32 +1,43 @@
-from api_server.models import Ingestor
+from typing import List
+from uuid import uuid4
+
 from api_server.test import AppFixture, make_ingestor_state, try_until
 
 
 class TestIngestorsRoute(AppFixture):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.ingestor_states = [make_ingestor_state(f"test_{uuid4()}")]
+
+        async def prepare_db():
+            for x in cls.ingestor_states:
+                await x.save()
+
+        cls.run_in_app_loop(prepare_db())
+
     def test_get_ingestors(self):
-        self.app.rmf_events().ingestor_states.on_next(make_ingestor_state())
         resp = self.session.get("/ingestors")
         self.assertEqual(resp.status_code, 200)
-        ingestors = [Ingestor(**d) for d in resp.json()]
-        self.assertEqual(1, len(ingestors))
-        self.assertEqual("test_ingestor", ingestors[0].guid)
+        results: List = resp.json()
+        self.assertIsNotNone(
+            next(
+                (x for x in results if x["guid"] == self.ingestor_states[0].guid), None
+            )
+        )
 
     def test_get_ingestor_state(self):
-        self.app.rmf_events().ingestor_states.on_next(make_ingestor_state())
-        resp = self.session.get("/ingestors/test_ingestor/state")
+        resp = self.session.get(f"/ingestors/{self.ingestor_states[0].guid}/state")
         self.assertEqual(200, resp.status_code)
         state = resp.json()
-        self.assertEqual("test_ingestor", state["guid"])
+        self.assertEqual(self.ingestor_states[0].guid, state["guid"])
 
     def test_sub_ingestor_state(self):
-        ingestor_state = make_ingestor_state()
-        ingestor_state.time.sec = 1
-        fut = self.subscribe_sio("/ingestors/test_ingestor/state")
+        fut = self.subscribe_sio(f"/ingestors/{self.ingestor_states[0].guid}/state")
 
         def wait():
-            self.app.rmf_events().ingestor_states.on_next(ingestor_state)
             return fut.done()
 
         try_until(wait, lambda x: x)
         result = fut.result(0)
-        self.assertEqual(1, result["time"]["sec"])
+        self.assertEqual(self.ingestor_states[0].guid, result["guid"])

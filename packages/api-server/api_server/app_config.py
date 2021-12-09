@@ -37,3 +37,11 @@ def load_config(config_file: str) -> AppConfig:
     if "RMF_API_SERVER_LOG_LEVEL" in os.environ:
         config.log_level = os.environ["RMF_API_SERVER_LOG_LEVEL"]
     return config
+
+
+app_config = load_config(
+    os.environ.get(
+        "RMF_API_SERVER_CONFIG",
+        f"{os.path.dirname(__file__)}/default_config.py",
+    )
+)

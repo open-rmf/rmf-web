@@ -14,7 +14,7 @@ from .test.server import BackgroundServer
 class TestFastIO(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.server = BackgroundServer(app)
+        cls.server = BackgroundServer(app, port_offset=1)
         cls.server.start()
         cls.base_url = cls.server.base_url
 

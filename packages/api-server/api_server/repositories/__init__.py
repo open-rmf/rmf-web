@@ -1,3 +1,3 @@
-from .rmf import RmfRepository
-from .static_files import StaticFilesRepository
-from .tasks import TaskRepository
+from .rmf import RmfRepository, rmf_repo_dep
+from .static_files import StaticFilesRepository, static_files_repo
+from .tasks import TaskRepository, task_repo_dep

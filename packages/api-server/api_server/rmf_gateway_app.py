@@ -5,10 +5,9 @@ from typing import Any, Dict
 from fastapi import FastAPI, WebSocket
 
 from .models import TaskState
-from .rmf_io import RmfEvents
+from .rmf_io import task_events
 
 app = FastAPI()
-rmf_events = RmfEvents.singleton()
 
 
 @app.websocket("/")
@@ -22,4 +21,4 @@ async def rmf_gateway(websocket: WebSocket):
 
         if payload_type == "task_state_update":
             task_state = TaskState.construct(**data)
-            rmf_events.task_states.on_next(task_state)
+            task_events.task_states.on_next(task_state)

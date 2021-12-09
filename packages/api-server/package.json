@@ -6,8 +6,8 @@
   "scripts": {
     "prepack": "pipenv run python setup.py bdist_wheel",
     "start": "pipenv run python -m api_server",
-    "test": "pipenv run python -m unittest",
-    "test:cov": "pipenv run python -m coverage run -m unittest",
+    "test": "RMF_API_SERVER_CONFIG=api_server/test/test_config.py pipenv run python scripts/test.py",
+    "test:cov": "RMF_API_SERVER_CONFIG=api_server/test/test_config.py pipenv run python -m coverage run scripts/test.py",
     "test:report": "pipenv run python -m coverage html && xdg-open htmlcov/index.html",
     "lint": "pipenv run pyright && pipenv run pylint api_server --ignore=ros_pydantic,rmf_api"
   },
