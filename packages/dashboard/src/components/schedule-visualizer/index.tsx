@@ -107,6 +107,7 @@ export default React.forwardRef(function ScheduleVisualizer({
   const { trajectoryManager: trajManager } = React.useContext(RmfIngressContext) || {};
   const [
     scheduleVisualizerSettings,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     setScheduleVisualizerSettings,
   ] = React.useState<ScheduleVisualizerSettings>(() => {
     const settings = window.localStorage.getItem(SettingsKey);
@@ -421,6 +422,7 @@ export default React.forwardRef(function ScheduleVisualizer({
           />
         </LayersControl.Overlay>
       </LayersControl>
+      {/*todo: Fix Trajectory Time Control component in react-components with react-leaflet v3.1.0*/}
       {/* <TrajectoryTimeControl
         position="topleft"
         value={trajectoryTime}
