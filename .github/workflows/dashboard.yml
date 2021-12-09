@@ -33,6 +33,7 @@ jobs:
           cache: 'npm'
       - name: bootstrap
         run: |
+          npm install -g npm@latest
           . /rmf_demos_ws/install/setup.bash
           scripts/bootstrap.sh rmf-dashboard
         working-directory: .

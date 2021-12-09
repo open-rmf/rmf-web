@@ -29,6 +29,7 @@ jobs:
           cache: 'npm'
       - name: bootstrap
         run: |
+          npm install -g npm@latest
           . /rmf_demos_ws/install/setup.bash
           scripts/bootstrap.sh api-server
         working-directory: .
