@@ -2,7 +2,7 @@
 
 import { styled, GridProps, Grid, Card } from '@mui/material';
 import React from 'react';
-import { Fleet } from 'api-client';
+import { Door, Fleet, Lift } from 'api-client';
 import { LeafletContextInterface } from '@react-leaflet/core';
 import { RobotPanel, VerboseRobot } from 'react-components';
 import {
@@ -17,6 +17,10 @@ import {
   useFleetStateRef,
   useDispenserStatesRef,
   useIngestorStatesRef,
+  useDoors,
+  useDoorStatesRef,
+  useLifts,
+  useLiftStatesRef,
 } from '../../util/common-subscriptions';
 
 const UpdateRate = 1000;
@@ -61,6 +65,14 @@ export function RobotPage() {
 
   const ingestors = React.useContext(IngestorsContext);
   useIngestorStatesRef(sioClient, ingestors);
+
+  const [doors, setDoors] = React.useState<Door[]>([]);
+  useDoors(rmfIngress, setDoors);
+  const doorStatesRef = useDoorStatesRef(sioClient, doors);
+
+  const [lifts, setLifts] = React.useState<Lift[]>([]);
+  useLifts(rmfIngress, setLifts);
+  const liftStatesRef = useLiftStatesRef(sioClient, lifts);
 
   // schedule visualizer fleet
   const [fleets, setFleets] = React.useState<Fleet[]>([]);
@@ -110,6 +122,8 @@ export function RobotPage() {
               buildingMap={buildingMap}
               dispensers={dispensers}
               ingestors={ingestors}
+              doorStates={Object.assign({}, doorStatesRef.current)}
+              liftStates={Object.assign({}, liftStatesRef.current)}
               fleetStates={Object.assign({}, fleetStatesRef.current)}
               mode="normal"
               zoom={4.5}

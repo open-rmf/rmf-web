@@ -1,6 +1,6 @@
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { Fleet, SioClient, Ingestor, Dispenser } from 'api-client';
+import { Dispenser, Door, Fleet, Ingestor, Lift, LiftState, SioClient } from 'api-client';
 import { RmfIngress } from '../components/rmf-app/rmf-ingress';
 
 export const useFleets = (
@@ -70,4 +70,72 @@ export const useDispenserStatesRef = (
     };
   }, [sioClient, dispensers, dispenserStatesRef]);
   return dispenserStatesRef;
+};
+
+export const useDoors = (
+  rmfIngress: RmfIngress | undefined,
+  setDoors: React.Dispatch<React.SetStateAction<Door[]>>,
+) => {
+  React.useEffect(() => {
+    if (!rmfIngress) return;
+    let cancel = false;
+    (async () => {
+      const result = await rmfIngress.doorsApi.getDoorsDoorsGet();
+      if (cancel || result.status !== 200) return;
+      setDoors(result.data);
+    })();
+    return () => {
+      cancel = true;
+    };
+  }, [rmfIngress, setDoors]);
+};
+
+export const useDoorStatesRef = (sioClient: SioClient | undefined, doors: Door[]) => {
+  const doorStatesRef = React.useRef<Record<string, RmfModels.DoorState>>({});
+
+  React.useEffect(() => {
+    if (!sioClient) return;
+    const subs = doors.map((d) =>
+      sioClient.subscribeDoorState(d.name, (state) => (doorStatesRef.current[d.name] = state)),
+    );
+    return () => {
+      subs.forEach((s) => sioClient.unsubscribe(s));
+    };
+  }, [sioClient, doors]);
+
+  return doorStatesRef;
+};
+
+export const useLifts = (
+  rmfIngress: RmfIngress | undefined,
+  setLifts: React.Dispatch<React.SetStateAction<Lift[]>>,
+) => {
+  React.useEffect(() => {
+    if (!rmfIngress) return;
+    let cancel = false;
+    (async () => {
+      const result = await rmfIngress.liftsApi.getLiftsLiftsGet();
+      if (cancel || result.status !== 200) return;
+      setLifts(result.data);
+    })();
+    return () => {
+      cancel = true;
+    };
+  }, [rmfIngress, setLifts]);
+};
+
+export const useLiftStatesRef = (sioClient: SioClient | undefined, lifts: Lift[]) => {
+  const liftStatesRef = React.useRef<Record<string, LiftState>>({});
+
+  React.useEffect(() => {
+    if (!sioClient) return;
+    const subs = lifts.map((l) =>
+      sioClient.subscribeLiftState(l.name, (state) => (liftStatesRef.current[l.name] = state)),
+    );
+    return () => {
+      subs.forEach((s) => sioClient.unsubscribe(s));
+    };
+  }, [sioClient, lifts]);
+
+  return liftStatesRef;
 };
