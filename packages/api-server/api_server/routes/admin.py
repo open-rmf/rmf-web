@@ -40,7 +40,7 @@ async def _get_db_user(username: str) -> ttm.User:
 
 
 def admin_router(app: BaseApp):
-    user_dep = app.auth_dep
+    user_dep = app.user_dep
 
     def admin_dep(user: User = Depends(user_dep)):
         if not user.is_admin:

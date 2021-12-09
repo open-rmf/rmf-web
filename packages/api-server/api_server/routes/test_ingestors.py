@@ -18,7 +18,7 @@ class TestIngestorsRoute(AppFixture):
         state = resp.json()
         self.assertEqual("test_ingestor", state["guid"])
 
-    def test_watch_ingestor_state(self):
+    def test_sub_ingestor_state(self):
         ingestor_state = make_ingestor_state()
         ingestor_state.time.sec = 1
         fut = self.subscribe_sio("/ingestors/test_ingestor/state")
