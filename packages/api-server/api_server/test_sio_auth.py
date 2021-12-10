@@ -1,20 +1,13 @@
 import time
-import unittest
 from typing import Optional
 
 import socketio
 import socketio.exceptions
 
-from api_server.test.setup import server
-
-from .test.test_fixtures import generate_token
+from .test.test_fixtures import AppFixture, generate_token
 
 
-class TestSioAuth(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.server = server
-
+class TestSioAuth(AppFixture):
     def try_connect(self, token: Optional[str] = None) -> bool:
         client = socketio.Client(reconnection=False)
 
@@ -27,7 +20,7 @@ class TestSioAuth(unittest.TestCase):
             while not client.connected:
                 try:
                     tries += 1
-                    client.connect(self.server.base_url, auth=auth)
+                    client.connect(self.base_url, auth=auth)
                     return True
                 except socketio.exceptions.ConnectionError as e:
                     # We will attempt to retry unless socketio fails

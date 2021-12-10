@@ -5,7 +5,6 @@ import threading
 import rclpy
 import rclpy.node
 
-_refcount = 0
 _spin_thread: threading.Thread = None  # type: ignore
 
 use_sim_time_env = os.environ.get("RMF_SERVER_USE_SIM_TIME", None)
@@ -22,22 +21,13 @@ ros_node = rclpy.node.Node("rmf_api_server")
 
 
 def ros_spin():
-    global _refcount
-    _refcount += 1
-    if _refcount != 1:
-        return
-
     global _spin_thread
     _spin_thread = threading.Thread(target=lambda: rclpy.spin(ros_node))
     _spin_thread.start()
 
 
 def ros_shutdown():
-    global _refcount
-    if _refcount <= 1:
-        rclpy.shutdown()
-        global _spin_thread
-        _spin_thread.join()
-        del _spin_thread
-        _refcount = 0
-    _refcount -= 1
+    rclpy.shutdown()
+    global _spin_thread
+    _spin_thread.join()
+    del _spin_thread

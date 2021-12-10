@@ -13,7 +13,9 @@ import requests
 import socketio
 from urllib3.util.retry import Retry
 
-from .setup import server
+from api_server.app_config import app_config
+
+from .test_server import test_server
 
 T = TypeVar("T")
 
@@ -102,11 +104,12 @@ class PrefixUrlSession(requests.Session):
 class AppFixture(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.server = server
+        cls.server = test_server
+        cls.base_url = f"http://{app_config.host}:{app_config.base_port}"
 
         retry = Retry(total=5, backoff_factor=0.1)
         adapter = cast(Any, requests).adapters.HTTPAdapter(max_retries=retry)
-        cls.session = cast(requests.Session, PrefixUrlSession(cls.server.base_url))
+        cls.session = cast(requests.Session, PrefixUrlSession(cls.base_url))
 
         cls.set_user("admin")
         cls.session.headers["Content-Type"] = "application/json"
@@ -167,10 +170,10 @@ class AppFixture(unittest.TestCase):
         return fut
 
     def connect_sio(self, user="admin"):
-        sioClient = socketio.Client()
-        sioClient.connect(self.server.base_url, auth={"token": generate_token(user)})
-        self._sioClients.append(sioClient)
-        return sioClient
+        sio_client = socketio.Client()
+        sio_client.connect(self.base_url, auth={"token": generate_token(user)})
+        self._sioClients.append(sio_client)
+        return sio_client
 
     def create_user(self, admin: bool = False):
         username = f"user_{uuid4().hex}"

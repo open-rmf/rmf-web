@@ -6,7 +6,6 @@ from typing import Any, Callable, Coroutine, List, Optional, Union
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from tortoise import Tortoise
 
 from . import routes
 from .app_config import app_config
@@ -29,7 +28,6 @@ from .models import (
 from .models import tortoise_models as ttm
 from .repositories import StaticFilesRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, rmf_events
-from .ros import ros_shutdown, ros_spin
 from .types import is_coroutine
 
 app = FastIO(title="RMF API Server")
@@ -107,19 +105,9 @@ async def on_startup():
         prev_sigint = signal.signal(signal.SIGINT, on_signal)
         prev_sigterm = signal.signal(signal.SIGTERM, on_signal)
 
-    await Tortoise.init(
-        db_url=app_config.db_url,
-        modules={"models": ["api_server.models.tortoise_models"]},
-    )
-    await Tortoise.generate_schemas()
-    shutdown_cbs.append(Tortoise.close_connections())
-
     await ttm.User.update_or_create(
         {"is_admin": True}, username=app_config.builtin_admin
     )
-
-    ros_spin()
-    shutdown_cbs.append(ros_shutdown)
 
     # Order is important here
     # 1. load states from db, this populate the sio/fast_io rooms with the latest data
