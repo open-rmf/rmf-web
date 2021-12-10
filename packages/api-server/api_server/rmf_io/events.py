@@ -24,6 +24,7 @@ rmf_events = RmfEvents()
 class TaskEvents:
     def __init__(self):
         self.task_states = Subject()  # TaskState
+        self.task_event_logs = Subject()  # TaskEventLog
 
 
 task_events = TaskEvents()
@@ -32,6 +33,7 @@ task_events = TaskEvents()
 class FleetEvents:
     def __init__(self):
         self.fleet_states = Subject()  # FleetState
+        self.fleet_logs = Subject()  # FleetLog
 
 
 fleet_events = FleetEvents()

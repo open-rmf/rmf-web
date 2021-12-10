@@ -1,19 +1,20 @@
 from uuid import uuid4
 
-from api_server.test import AppFixture, make_fleet_state, try_until
+from api_server.test import AppFixture, make_fleet_log, make_fleet_state, try_until
 
 
 class TestFleetsRoute(AppFixture):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.fleet_states = [
-            make_fleet_state(f"test_{uuid4()}"),
-            make_fleet_state(f"test_{uuid4()}"),
-        ]
+        names = [uuid4() for _ in range(2)]
+        cls.fleet_states = [make_fleet_state(f"test_{x}") for x in names]
+        cls.fleet_logs = [make_fleet_log(f"test_{x}") for x in names]
 
         async def prepare_db():
             for x in cls.fleet_states:
+                await x.save()
+            for x in cls.fleet_logs:
                 await x.save()
 
         cls.run_in_app_loop(prepare_db())
@@ -40,3 +41,19 @@ class TestFleetsRoute(AppFixture):
         try_until(wait, lambda x: x)
         result = fut.result(0)
         self.assertEqual(self.fleet_states[0].name, result["name"])
+
+    def test_get_fleet_log(self):
+        resp = self.session.get(f"/fleets/{self.fleet_states[0].name}/log")
+        self.assertEqual(200, resp.status_code)
+        state = resp.json()
+        self.assertEqual(self.fleet_logs[0].name, state["name"])
+
+    def test_sub_fleet_log(self):
+        fut = self.subscribe_sio(f"/fleets/{self.fleet_states[0].name}/log")
+
+        def wait():
+            return fut.done()
+
+        try_until(wait, lambda x: x)
+        result = fut.result(0)
+        self.assertEqual(self.fleet_logs[0].name, result["name"])

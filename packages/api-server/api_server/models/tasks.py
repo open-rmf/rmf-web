@@ -1,6 +1,8 @@
 from datetime import datetime
 
+from .rmf_api.task_log import TaskEventLog as BaseTaskEventLog
 from .rmf_api.task_state import TaskState as BaseTaskState
+from .tortoise_models import TaskEventLog as DbTaskEventLog
 from .tortoise_models import TaskState as DbTaskState
 
 
@@ -20,4 +22,16 @@ class TaskState(BaseTaskState):
                 and datetime.fromtimestamp(self.unix_millis_finish_time / 1000),
             },
             id_=self.booking.id,
+        )
+
+
+class TaskEventLog(BaseTaskEventLog):
+    @staticmethod
+    def from_db(task_log: DbTaskEventLog) -> "TaskEventLog":
+        return TaskEventLog(**task_log.data)
+
+    async def save(self) -> None:
+        await DbTaskEventLog.update_or_create(
+            {"data": self.json()},
+            task_id=self.task_id,
         )

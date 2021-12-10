@@ -15,6 +15,7 @@ from api_server.models import (
     TaskState,
     User,
 )
+from api_server.models.tasks import TaskEventLog
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.repositories import TaskRepository, task_repo_dep
 from api_server.rmf_io import task_events
@@ -62,19 +63,39 @@ async def get_task_state(
     return result
 
 
-@router.sub("/{task_id}/state")
+@router.sub("/{task_id}/state", response_model=TaskState)
 async def sub_task_state(req: SubscriptionRequest, task_id: str):
     user = sio_user(req)
     task_repo = TaskRepository(user)
-    try:
-        current_state = await get_task_state(task_repo, task_id)
-        await req.sio.emit(req.room, current_state, req.sid)
-    except HTTPException as e:
-        if e.status_code != 404:
-            raise e
-
+    current_state = await get_task_state(task_repo, task_id)
+    await req.sio.emit(req.room, current_state, req.sid)
     return task_events.task_states.pipe(
         rxops.filter(lambda x: cast(TaskState, x).booking.id == task_id)
+    )
+
+
+@router.get("/{task_id}/log", response_model=TaskEventLog)
+async def get_task_log(
+    task_repo: TaskRepository = Depends(task_repo_dep),
+    task_id: str = Path(..., description="task_id"),
+):
+    """
+    Available in socket.io
+    """
+    result = await task_repo.get_task_log(task_id)
+    if result is None:
+        raise HTTPException(status_code=404)
+    return result
+
+
+@router.sub("/{task_id}/log", response_model=TaskEventLog)
+async def sub_task_log(req: SubscriptionRequest, task_id: str):
+    user = sio_user(req)
+    task_repo = TaskRepository(user)
+    current = await get_task_log(task_repo, task_id)
+    await req.sio.emit(req.room, current, req.sid)
+    return task_events.task_event_logs.pipe(
+        rxops.filter(lambda x: cast(TaskEventLog, x).task_id == task_id)
     )
 
 

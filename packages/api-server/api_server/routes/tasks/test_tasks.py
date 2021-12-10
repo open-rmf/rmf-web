@@ -1,16 +1,20 @@
 from uuid import uuid4
 
-from api_server.test import AppFixture, make_task_state, try_until
+from api_server.test import AppFixture, make_task_log, make_task_state, try_until
 
 
 class TestTasksRoute(AppFixture):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.task_states = [make_task_state(task_id=f"test_{uuid4()}")]
+        task_ids = [uuid4()]
+        cls.task_states = [make_task_state(task_id=f"test_{x}") for x in task_ids]
+        cls.task_logs = [make_task_log(task_id=f"test_{x}") for x in task_ids]
 
         async def prepare_db():
             for t in cls.task_states:
+                await t.save()
+            for t in cls.task_logs:
                 await t.save()
 
         cls.run_in_app_loop(prepare_db())
@@ -36,3 +40,18 @@ class TestTasksRoute(AppFixture):
         try_until(wait, lambda x: x)
         result = fut.result(0)
         self.assertEqual(self.task_states[0].booking.id, result["booking"]["id"])
+
+    def test_get_task_log(self):
+        resp = self.session.get(f"/tasks/{self.task_logs[0].task_id}/log")
+        self.assertEqual(200, resp.status_code)
+        self.assertEqual(self.task_logs[0].task_id, resp.json()["task_id"])
+
+    def test_sub_task_log(self):
+        fut = self.subscribe_sio(f"/tasks/{self.task_logs[0].task_id}/log")
+
+        def wait():
+            return fut.done()
+
+        try_until(wait, lambda x: x)
+        result = fut.result(0)
+        self.assertEqual(self.task_logs[0].task_id, result["task_id"])

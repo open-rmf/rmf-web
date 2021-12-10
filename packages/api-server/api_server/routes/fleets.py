@@ -5,10 +5,10 @@ from rx import operators as rxops
 
 from api_server.dependencies import pagination_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.models import FleetState, Pagination
+from api_server.models import FleetLog, FleetState, Pagination
 from api_server.models.tortoise_models import FleetState as DbFleetState
 from api_server.repositories import FleetRepository, fleet_repo_dep
-from api_server.rmf_io import rmf_events
+from api_server.rmf_io import fleet_events
 
 router = FastIORouter(tags=["Fleets"])
 
@@ -43,6 +43,27 @@ async def sub_fleet_state(req: SubscriptionRequest, name: str):
     user = sio_user(req)
     fleet_state = await get_fleet_state(name, FleetRepository(user))
     await req.sio.emit(req.room, fleet_state, req.sid)
-    return rmf_events.fleet_states.pipe(
+    return fleet_events.fleet_states.pipe(
         rxops.filter(lambda x: cast(FleetState, x).name == name)
+    )
+
+
+@router.get("/{name}/log", response_model=FleetLog)
+async def get_fleet_log(name: str, repo: FleetRepository = Depends(fleet_repo_dep)):
+    """
+    Available in socket.io
+    """
+    fleet_log = await repo.get_fleet_log(name)
+    if fleet_log is None:
+        raise HTTPException(status_code=404)
+    return fleet_log
+
+
+@router.sub("/{name}/log", response_model=FleetLog)
+async def sub_fleet_log(req: SubscriptionRequest, name: str):
+    user = sio_user(req)
+    fleet_log = await get_fleet_log(name, FleetRepository(user))
+    await req.sio.emit(req.room, fleet_log, req.sid)
+    return fleet_events.fleet_logs.pipe(
+        rxops.filter(lambda x: cast(FleetLog, x).name == name)
     )

@@ -4,7 +4,8 @@ from fastapi import Depends
 from tortoise.queryset import QuerySet
 
 from api_server.authenticator import user_dep
-from api_server.models import FleetState, Pagination, User
+from api_server.models import FleetLog, FleetState, Pagination, User
+from api_server.models.tortoise_models import FleetLog as DbFleetLog
 from api_server.models.tortoise_models import FleetState as DbFleetState
 from api_server.query import add_pagination
 
@@ -28,6 +29,12 @@ class FleetRepository:
         if result is None:
             return None
         return FleetState(**result.data)
+
+    async def get_fleet_log(self, name: str) -> Optional[FleetLog]:
+        result = await DbFleetLog.get_or_none(name=name)
+        if result is None:
+            return None
+        return FleetLog(**result.data)
 
 
 def fleet_repo_dep(user: User = Depends(user_dep)):

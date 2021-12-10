@@ -4,7 +4,8 @@ from fastapi import Depends
 from tortoise.queryset import QuerySet
 
 from api_server.authenticator import user_dep
-from api_server.models import Pagination, TaskState, User
+from api_server.models import Pagination, TaskEventLog, TaskState, User
+from api_server.models.tortoise_models import TaskEventLog as DbTaskEventLog
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.query import add_pagination
 
@@ -28,6 +29,12 @@ class TaskRepository:
         if result is None:
             return None
         return TaskState(**result.data)
+
+    async def get_task_log(self, task_id: str) -> Optional[TaskEventLog]:
+        result = await DbTaskEventLog.get_or_none(task_id=task_id)
+        if result is None:
+            return None
+        return TaskEventLog(**result.data)
 
 
 def task_repo_dep(user: User = Depends(user_dep)):

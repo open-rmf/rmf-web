@@ -8,3 +8,8 @@ class TaskState(Model):
     category = CharField(255, null=True, index=True)
     unix_millis_start_time = DatetimeField(null=True, index=True)
     unix_millis_finish_time = DatetimeField(null=True, index=True)
+
+
+class TaskEventLog(Model):
+    task_id = CharField(255, pk=True)
+    data = JSONField()
