@@ -11,7 +11,6 @@ from api_server.models import (
     Door,
     DoorHealth,
     DoorState,
-    FleetState,
     Ingestor,
     IngestorHealth,
     IngestorState,

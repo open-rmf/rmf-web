@@ -4,7 +4,6 @@ import logging
 from collections import namedtuple
 from typing import Coroutine, List
 
-import tortoise.transactions
 from rx.core.typing import Disposable
 from rx.subject.subject import Subject
 
@@ -14,14 +13,12 @@ from api_server.models import (
     DispenserState,
     DoorHealth,
     DoorState,
-    FleetState,
     HealthStatus,
     IngestorHealth,
     IngestorState,
     LiftHealth,
     LiftState,
 )
-from api_server.models import tortoise_models as ttm
 from api_server.models.health import BaseBasicHealth
 
 from .events import RmfEvents

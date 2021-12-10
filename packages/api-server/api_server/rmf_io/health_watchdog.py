@@ -3,7 +3,6 @@ from typing import Any, Dict, List, Optional, cast
 
 from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
-from rmf_fleet_msgs.msg import RobotMode as RmfRobotMode
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
 from rx import operators as ops
@@ -20,14 +19,12 @@ from api_server.models import (
     DispenserState,
     DoorHealth,
     DoorState,
-    FleetState,
     HealthStatus,
     Ingestor,
     IngestorHealth,
     IngestorState,
     LiftHealth,
     LiftState,
-    RobotState,
 )
 from api_server.models import tortoise_models as ttm
 

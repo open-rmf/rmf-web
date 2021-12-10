@@ -18,7 +18,6 @@ from .models import (
     DispenserState,
     DoorHealth,
     DoorState,
-    FleetState,
     IngestorHealth,
     IngestorState,
     LiftHealth,

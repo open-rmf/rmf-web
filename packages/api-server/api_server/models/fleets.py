@@ -1,5 +1,4 @@
 from .rmf_api.fleet_state import FleetState as BaseFleetState
-from .rmf_api.robot_state import RobotState
 from .ros_pydantic import rmf_fleet_msgs
 from .tortoise_models import FleetState as DbFleetState
 

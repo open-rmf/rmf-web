@@ -19,7 +19,6 @@ from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
 from rmf_door_msgs.msg import DoorRequest as RmfDoorRequest
 from rmf_door_msgs.msg import DoorState as RmfDoorState
-from rmf_fleet_msgs.msg import FleetState as RmfFleetState
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
@@ -28,14 +27,7 @@ from rmf_task_msgs.srv import GetTaskList as RmfGetTaskList
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 from rosidl_runtime_py.convert import message_to_ordereddict
 
-from .models import (
-    BuildingMap,
-    DispenserState,
-    DoorState,
-    FleetState,
-    IngestorState,
-    LiftState,
-)
+from .models import BuildingMap, DispenserState, DoorState, IngestorState, LiftState
 from .repositories import StaticFilesRepository, static_files_repo
 from .rmf_io import rmf_events
 from .ros import ros_node
@@ -139,14 +131,6 @@ class RmfGateway:
         )
         self._subscriptions.append(ingestor_states_sub)
 
-        fleet_states_sub = ros_node.create_subscription(
-            RmfFleetState,
-            "fleet_states",
-            lambda msg: rmf_events.fleet_states.on_next(FleetState.from_orm(msg)),
-            10,
-        )
-        self._subscriptions.append(fleet_states_sub)
-
         map_sub = ros_node.create_subscription(
             RmfBuildingMap,
             "map",
@@ -200,16 +184,6 @@ class RmfGateway:
             door_state=door_mode,
         )
         self._lift_req.publish(msg)
-
-    async def submit_task(
-        self, req_msg: RmfSubmitTask.Request
-    ) -> RmfSubmitTask.Response:
-        return await self.call_service(self._submit_task_srv, req_msg)
-
-    async def cancel_task(
-        self, req_msg: RmfCancelTask.Request
-    ) -> RmfCancelTask.Response:
-        return await self.call_service(self._cancel_task_srv, req_msg)
 
 
 rmf_gateway = RmfGateway(static_files_repo)
