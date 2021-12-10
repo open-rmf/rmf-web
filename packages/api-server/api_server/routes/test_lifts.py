@@ -34,11 +34,7 @@ class TestLiftsRoute(AppFixture):
 
     def test_sub_lift_state(self):
         fut = self.subscribe_sio(f"/lifts/{self.lift_states[0].lift_name}/state")
-
-        def wait():
-            return fut.done()
-
-        try_until(wait, lambda x: x)
+        try_until(fut.done, lambda x: x)
         result = fut.result(0)
         self.assertEqual(self.lift_states[0].lift_name, result["lift_name"])
 

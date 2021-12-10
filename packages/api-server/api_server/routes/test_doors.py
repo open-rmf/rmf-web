@@ -35,11 +35,7 @@ class TestDoorsRoute(AppFixture):
 
     def test_sub_door_state(self):
         fut = self.subscribe_sio(f"/doors/{self.door_states[0].door_name}/state")
-
-        def wait():
-            return fut.done()
-
-        try_until(wait, lambda x: x)
+        try_until(fut.done, lambda x: x)
         result = fut.result(0)
         self.assertEqual(self.door_states[0].door_name, result["door_name"])
 

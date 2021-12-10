@@ -34,10 +34,6 @@ class TestIngestorsRoute(AppFixture):
 
     def test_sub_ingestor_state(self):
         fut = self.subscribe_sio(f"/ingestors/{self.ingestor_states[0].guid}/state")
-
-        def wait():
-            return fut.done()
-
-        try_until(wait, lambda x: x)
+        try_until(fut.done, lambda x: x)
         result = fut.result(0)
         self.assertEqual(self.ingestor_states[0].guid, result["guid"])

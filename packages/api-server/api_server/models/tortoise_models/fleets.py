@@ -1,4 +1,4 @@
-from tortoise.fields import CharField, JSONField, data
+from tortoise.fields import CharField, JSONField
 from tortoise.models import Model
 
 

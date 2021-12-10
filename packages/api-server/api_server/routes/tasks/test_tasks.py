@@ -33,11 +33,7 @@ class TestTasksRoute(AppFixture):
 
     def test_sub_task_state(self):
         fut = self.subscribe_sio(f"/tasks/{self.task_states[0].booking.id}/state")
-
-        def wait():
-            return fut.done()
-
-        try_until(wait, lambda x: x)
+        try_until(fut.done, lambda x: x)
         result = fut.result(0)
         self.assertEqual(self.task_states[0].booking.id, result["booking"]["id"])
 
@@ -48,10 +44,6 @@ class TestTasksRoute(AppFixture):
 
     def test_sub_task_log(self):
         fut = self.subscribe_sio(f"/tasks/{self.task_logs[0].task_id}/log")
-
-        def wait():
-            return fut.done()
-
-        try_until(wait, lambda x: x)
+        try_until(fut.done, lambda x: x)
         result = fut.result(0)
         self.assertEqual(self.task_logs[0].task_id, result["task_id"])

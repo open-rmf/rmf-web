@@ -34,11 +34,7 @@ class TestFleetsRoute(AppFixture):
 
     def test_sub_fleet_state(self):
         fut = self.subscribe_sio(f"/fleets/{self.fleet_states[0].name}/state")
-
-        def wait():
-            return fut.done()
-
-        try_until(wait, lambda x: x)
+        try_until(fut.done, lambda x: x)
         result = fut.result(0)
         self.assertEqual(self.fleet_states[0].name, result["name"])
 
@@ -50,10 +46,6 @@ class TestFleetsRoute(AppFixture):
 
     def test_sub_fleet_log(self):
         fut = self.subscribe_sio(f"/fleets/{self.fleet_states[0].name}/log")
-
-        def wait():
-            return fut.done()
-
-        try_until(wait, lambda x: x)
+        try_until(fut.done, lambda x: x)
         result = fut.result(0)
         self.assertEqual(self.fleet_logs[0].name, result["name"])

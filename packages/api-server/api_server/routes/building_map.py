@@ -1,4 +1,4 @@
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from rx import operators as rxops
 
 from api_server.fast_io import FastIORouter, SubscriptionRequest
@@ -14,7 +14,10 @@ async def get_building_map(rmf_repo: RmfRepository = Depends(rmf_repo_dep)):
     """
     Available in socket.io
     """
-    return await rmf_repo.get_bulding_map()
+    building_map = await rmf_repo.get_bulding_map()
+    if building_map is None:
+        raise HTTPException(status_code=404)
+    return building_map
 
 
 @router.sub("", response_model=BuildingMap)

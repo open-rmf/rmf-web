@@ -76,7 +76,7 @@ async def async_try_until(
 
 
 here = os.path.dirname(__file__)
-with open(f"{here}/test.key", "br") as f:
+with open(f"{here}/../../scripts/test.key", "br") as f:
     jwt_key = f.read()
 
 
