@@ -20,7 +20,6 @@ from api_server.models import (
     IngestorState,
     LiftHealth,
     LiftState,
-    RobotHealth,
 )
 from api_server.models import tortoise_models as ttm
 from api_server.models.health import BaseBasicHealth
@@ -104,8 +103,6 @@ class RmfBookKeeper:
         self._record_dispenser_health()
         self._record_ingestor_state()
         self._record_ingestor_health()
-        self._record_fleet_state()
-        self._record_robot_health()
 
     async def stop(self):
         for sub in self._subscriptions:
@@ -210,34 +207,4 @@ class RmfBookKeeper:
 
         self._subscriptions.append(
             self.rmf.ingestor_health.subscribe(lambda x: self._create_task(update(x)))
-        )
-
-    def _record_fleet_state(self):
-        async def update(fleet_state: FleetState):
-            tasks = [
-                ttm.RobotState.update_or_create(
-                    {
-                        "data": r.dict(),
-                    },
-                    fleet_name=fleet_state.name,
-                    robot_name=r.name,
-                )
-                for r in fleet_state.robots
-            ]
-            async with tortoise.transactions.in_transaction():
-                await asyncio.gather(fleet_state.save(), *tasks)
-
-            self._loggers.fleet_state.info(fleet_state.json())
-
-        self._subscriptions.append(
-            self.rmf.fleet_states.subscribe(lambda x: self._create_task(update(x)))
-        )
-
-    def _record_robot_health(self):
-        async def update(health: RobotHealth):
-            await health.save()
-            self._report_health(health, self._loggers.robot_health)
-
-        self._subscriptions.append(
-            self.rmf.robot_health.subscribe(lambda x: self._create_task(update(x)))
         )

@@ -27,3 +27,11 @@ class TaskEvents:
 
 
 task_events = TaskEvents()
+
+
+class FleetEvents:
+    def __init__(self):
+        self.fleet_states = Subject()  # FleetState
+
+
+fleet_events = FleetEvents()

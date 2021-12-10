@@ -16,7 +16,6 @@ from api_server.models import (
     User,
 )
 from api_server.models.tortoise_models import TaskState as DbTaskState
-from api_server.query import add_pagination
 from api_server.repositories import TaskRepository, task_repo_dep
 from api_server.rmf_io import task_events
 
@@ -46,9 +45,7 @@ async def query_task_states(
     if finish_time is not None:
         filters["unix_millis_finish_time__gte"] = finish_time
 
-    return await task_repo.get_task_states(
-        add_pagination(DbTaskState.filter(**filters), pagination)
-    )
+    return await task_repo.query_task_states(DbTaskState.filter(**filters), pagination)
 
 
 @router.get("/{task_id}/state", response_model=TaskState)
@@ -59,10 +56,10 @@ async def get_task_state(
     """
     Available in socket.io
     """
-    results = await task_repo.get_task_states(DbTaskState.filter(id_=task_id))
-    if not results:
+    result = await task_repo.get_task_state(task_id)
+    if result is None:
         raise HTTPException(status_code=404)
-    return results[0]
+    return result
 
 
 @router.sub("/{task_id}/state")

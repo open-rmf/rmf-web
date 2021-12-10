@@ -2,7 +2,7 @@ from .authorization import *
 from .building_map import BuildingMap
 from .dispenser_state import DispenserState
 from .door_state import DoorState
-from .fleet_state import FleetState, RobotState
+from .fleets import FleetState
 from .health import (
     BasicHealthModel,
     DispenserHealth,

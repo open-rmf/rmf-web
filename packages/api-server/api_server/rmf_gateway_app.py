@@ -4,8 +4,8 @@ from typing import Any, Dict
 
 from fastapi import FastAPI, WebSocket
 
-from .models import TaskState
-from .rmf_io import task_events
+from . import models as mdl
+from .rmf_io import fleet_events, task_events
 
 app = FastAPI()
 
@@ -20,5 +20,10 @@ async def rmf_gateway(websocket: WebSocket):
             print("'type' must be a string", file=sys.stderr)
 
         if payload_type == "task_state_update":
-            task_state = TaskState.construct(**data)
+            task_state = mdl.TaskState.construct(**data)
+            await task_state.save()
             task_events.task_states.on_next(task_state)
+        elif payload_type == "fleet_state_update":
+            fleet_state = mdl.FleetState.construct(**data)
+            await fleet_state.save()
+            fleet_events.fleet_states.on_next(fleet_state)

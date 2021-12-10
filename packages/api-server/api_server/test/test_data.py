@@ -112,10 +112,7 @@ def make_robot_state(name: str = "test_robot") -> RobotState:
 
 
 def make_fleet_state(name: str = "test_fleet") -> FleetState:
-    return FleetState(
-        name=name,
-        robots=[make_robot_state()],
-    )
+    return FleetState(name=name, robots=[])
 
 
 def make_task_state(task_id: str = "test_task") -> TaskState:

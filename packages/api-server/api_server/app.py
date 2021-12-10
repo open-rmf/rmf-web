@@ -23,7 +23,6 @@ from .models import (
     IngestorState,
     LiftHealth,
     LiftState,
-    RobotHealth,
 )
 from .models import tortoise_models as ttm
 from .repositories import StaticFilesRepository
@@ -197,17 +196,3 @@ async def _load_states():
     for health in ingestor_health:
         rmf_events.ingestor_health.on_next(health)
     logger.info(f"loaded {len(ingestor_health)} ingestor health")
-
-    fleet_states = [FleetState.from_tortoise(x) for x in await ttm.FleetState.all()]
-    for state in fleet_states:
-        rmf_events.fleet_states.on_next(state)
-    logger.info(f"loaded {len(fleet_states)} fleet states")
-
-    robot_health = [
-        await RobotHealth.from_tortoise(x) for x in await ttm.RobotHealth.all()
-    ]
-    for health in robot_health:
-        rmf_events.robot_health.on_next(health)
-    logger.info(f"loaded {len(robot_health)} robot health")
-
-    logger.info("successfully loaded all states")

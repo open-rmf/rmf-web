@@ -19,11 +19,9 @@ from api_server.models import (
     LiftHealth,
     LiftState,
     Pagination,
-    RobotHealth,
     User,
 )
 from api_server.models import tortoise_models as ttm
-from api_server.models.fleets import Fleet, Robot
 from api_server.query import add_pagination
 
 
@@ -112,54 +110,6 @@ class RmfRepository:
         if ingestor_health is None:
             return None
         return await IngestorHealth.from_tortoise(ingestor_health)
-
-    async def query_fleets(
-        self, pagination: Pagination, *, fleet_name: Optional[str] = None
-    ) -> List[Fleet]:
-        filter_params = {}
-        if fleet_name is not None:
-            filter_params["id___in"] = fleet_name.split(",")
-        states = await add_pagination(
-            ttm.FleetState.filter(**filter_params), pagination, {"fleet_name": "id_"}
-        )
-        return [Fleet(name=s.id_, state=FleetState.from_tortoise(s)) for s in states]
-
-    async def get_fleet_state(self, fleet_name: str) -> Optional[FleetState]:
-        fleet_state = await ttm.FleetState.get_or_none(id_=fleet_name)
-        if fleet_state is None:
-            return None
-        return FleetState(**fleet_state.data)
-
-    async def query_robots(
-        self,
-        pagination: Pagination,
-        *,
-        fleet_name: Optional[str] = None,
-        robot_name: Optional[str] = None,
-    ) -> List[Robot]:
-        filter_params = {}
-        if fleet_name is not None:
-            filter_params["fleet_name__in"] = fleet_name.split(",")
-        if robot_name is not None:
-            filter_params["robot_name__in"] = robot_name.split(",")
-
-        robot_states = await add_pagination(
-            ttm.RobotState.filter(**filter_params), pagination
-        )
-        return [
-            Robot(fleet=r.fleet_name, name=r.robot_name, state=r.data)
-            for r in robot_states
-        ]
-
-    async def get_robot_health(
-        self, fleet_name: str, robot_name: str
-    ) -> Optional[RobotHealth]:
-        robot_health = await ttm.RobotHealth.get_or_none(
-            id_=f"{fleet_name}/{robot_name}"
-        )
-        if robot_health is None:
-            return None
-        return await RobotHealth.from_tortoise(robot_health)
 
     async def query_users(
         self,
