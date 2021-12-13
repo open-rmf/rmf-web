@@ -62,7 +62,7 @@
     "reporting-server": "file:../reporting-server",
     "rmf-auth": "file:../rmf-auth",
     "ts-node": "^9.1.1",
-    "typescript": "^4.2.4"
+    "typescript": "~4.4.4"
   },
   "jest": {
     "collectCoverageFrom": [
