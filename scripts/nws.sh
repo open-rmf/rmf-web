@@ -9,6 +9,13 @@ usage() {
   echo 'for some workflow like build packages, we need to run depdentant scripts in the correct order in order for the target workspace to build correctly.'
 }
 
+# detects if we are already running from another nws script, if so, exit immediately so we don't
+# run the same scripts multiple times
+if [[ -n $nws_context ]]; then
+  exit
+fi
+export nws_context=1
+
 here=$(dirname "$0")
 
 options=$(getopt -l'help' -o'h' -l'dependencies-only' -o'd' -- "$@")
