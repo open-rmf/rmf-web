@@ -1,7 +1,4 @@
 {
-  "references": [
-    { "path": "../api-client" }
-  ],
   "compilerOptions": {
     "target": "es5",
     "outDir": "dist",

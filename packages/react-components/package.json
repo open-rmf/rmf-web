@@ -4,9 +4,9 @@
   "description": "",
   "main": "dist/lib/index.js",
   "scripts": {
-    "build": "tsc --build",
+    "build": "../../scripts/nws.sh build -d && tsc --build",
     "build:storybook": "npm run build && build-storybook -s test-data",
-    "build:watch": "tsc --build --watch",
+    "build:watch": "npm run build -- --watch",
     "clean": "tsc --build --clean",
     "lint": "eslint --ext ts,tsx, lib",
     "prepack": "npm run clean && npm run lint && npm run build && npm run test && cp package.json dist/",
