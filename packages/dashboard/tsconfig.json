@@ -1,10 +1,4 @@
 {
-  "references": [
-    { "path": "../api-client" },
-    { "path": "../react-components" },
-    { "path": "../rmf-auth" },
-    { "path": "../rmf-models" }
-  ],
   "compilerOptions": {
     "target": "es5",
     "lib": [
