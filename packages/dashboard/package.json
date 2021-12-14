@@ -97,8 +97,7 @@
       "!src/managers/**",
       "!src/components/rmf-app/**",
       "!**/stories/**",
-      "!**/tests/**",
-      "!src/components/__trash/**"
+      "!**/tests/**"
     ]
   }
 }
