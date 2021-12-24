@@ -21,7 +21,7 @@ class TaskState(BaseTaskState):
                 "unix_millis_finish_time": self.unix_millis_finish_time
                 and datetime.fromtimestamp(self.unix_millis_finish_time / 1000),
             },
-            id_=self.booking.id,
+            id_=self.booking["id"],
         )
 
 
