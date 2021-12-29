@@ -12,7 +12,7 @@ class ActivityDescription(BaseModel):
     category: str = Field(..., description="The category of this phase's activity.")
 
 
-class Phase1(BaseModel):
+class Phase(BaseModel):
     activity: ActivityDescription
     on_cancel: Optional[List[ActivityDescription]] = Field(
         None,
@@ -24,7 +24,7 @@ class ComposeTaskDescription(BaseModel):
     category: str = Field(
         ..., description="Indicate that this is a composed task description"
     )
-    phases: List[Phase1] = Field(
+    phases: List[Phase] = Field(
         ...,
         description="List the phases of the task in the order that they should be performed.",
     )
