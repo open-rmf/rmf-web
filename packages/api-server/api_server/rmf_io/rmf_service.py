@@ -32,7 +32,7 @@ class RmfService:
             ApiRequest,
             self.API_REQUEST_TOPIC,
             rclpy.qos.QoSProfile(
-                depth=1,
+                depth=10,
                 history=rclpy.qos.HistoryPolicy.KEEP_LAST,
                 reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
                 durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
