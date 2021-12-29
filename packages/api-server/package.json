@@ -4,10 +4,10 @@
   "description": "dummy package",
   "private": true,
   "scripts": {
-    "prepack": "pipenv run python setup.py bdist_wheel",
-    "start": "pipenv run python -m api_server",
-    "test": "pipenv run python scripts/test.py",
-    "test:cov": "pipenv run python -m coverage run scripts/test.py",
+    "prepack": "../../scripts/nws.sh build -d && pipenv run python setup.py bdist_wheel",
+    "start": "../../scripts/nws.sh build -d && pipenv run python -m api_server",
+    "test": "../../scripts/nws.sh build -d && pipenv run python scripts/test.py",
+    "test:cov": "../../scripts/nws.sh build -d && pipenv run python -m coverage run scripts/test.py",
     "test:report": "pipenv run python -m coverage html && xdg-open htmlcov/index.html",
     "lint": "pipenv run pyright && pipenv run pylint api_server --ignore=ros_pydantic,rmf_api"
   },

@@ -4,22 +4,22 @@
   "private": true,
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "concurrently npm:start:rmf-server npm:start:rmf npm:start:react",
+    "start": "../../scripts/nws.sh build -d && concurrently npm:start:rmf-server npm:start:rmf npm:start:react",
     "start:clinic": "RMF_DASHBOARD_DEMO_MAP=clinic.launch.xml npm start",
     "start:airport": "RMF_DASHBOARD_DEMO_MAP=airport_terminal.launch.xml npm start",
     "start:react": "react-scripts start",
     "start:rmf": "node scripts/start-rmf.js",
     "start:rmf-server": "RMF_SERVER_USE_SIM_TIME=true npm --prefix ../api-server start",
     "start:rmf-server:psql": "RMF_API_SERVER_CONFIG=../api-server/psql_local_config.py RMF_SERVER_USE_SIM_TIME=true npm --prefix ../api-server start",
-    "build": "tsc --build && react-scripts build",
-    "test": "tsc --build && react-scripts test",
+    "build": "../../scripts/nws.sh build -d && react-scripts build",
+    "test": "../../scripts/nws.sh build -d && react-scripts test",
     "test:coverage": "npm run test -- --coverage --watchAll=false",
     "test:e2e": "cd e2e && npm test",
     "test:e2e:dev": "cd e2e && npm run test:dev",
     "eject": "react-scripts eject",
     "setup": "node ./scripts/setup/setup.js",
     "storybook": "start-storybook -p 9009 -s public -s src/stories/static",
-    "build:storybook": "tsc --build && build-storybook -s public -s src/stories/static"
+    "build:storybook": "../../scripts/nws.sh build -d && build-storybook -s public -s src/stories/static"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -86,7 +86,7 @@
     "source-map-explorer": "^2.5.2",
     "styled-components": "^4.4.1",
     "ts-node": "^9.1.1",
-    "typescript": "^4.2.4"
+    "typescript": "~4.4.4"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -97,8 +97,7 @@
       "!src/managers/**",
       "!src/components/rmf-app/**",
       "!**/stories/**",
-      "!**/tests/**",
-      "!src/components/__trash/**"
+      "!**/tests/**"
     ]
   }
 }

@@ -30,5 +30,18 @@ jobs:
         with:
           node-version: '14'
           cache: 'npm'
+      - name: bootstrap
+        run: |
+          npm install -g npm@latest
+          scripts/bootstrap.sh rmf-dashboard-e2e
+        working-directory: .
       - name: test
-        uses: ./.github/actions/dashboard-e2e
+        run: |
+          . /rmf_demos_ws/install/setup.bash
+          npm test
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: artifacts
+          path: packages/dashboard-e2e/artifacts

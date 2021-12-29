@@ -35,8 +35,19 @@ jobs:
       BROWSERSTACK_BUILD: ${{ github.head_ref }}:${{ github.event.number }}
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          cache: 'npm'
+      - name: bootstrap
+        run: |
+          npm install -g npm@latest
+          scripts/bootstrap.sh rmf-dashboard-e2e
+        working-directory: .
       - name: test
-        uses: ./.github/actions/dashboard-e2e
+        run: |
+          . /rmf_demos_ws/install/setup.bash
+          npm test
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: always()
@@ -63,8 +74,13 @@ jobs:
         with:
           node-version: '14'
           cache: 'npm'
+      - name: bootstrap
+        run: |
+          npm install -g npm@latest
+          scripts/bootstrap.sh reporting-e2e
+        working-directory: .
       - name: test
-        uses: ./.github/actions/reporting-e2e
+        run: npm test
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: always()

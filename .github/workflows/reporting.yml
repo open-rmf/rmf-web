@@ -33,7 +33,7 @@ jobs:
       - name: bootstrap
         run: |
           . /rmf_demos_ws/install/setup.bash
-          npm i -g npm@latest
+          npm install -g npm@latest
           scripts/bootstrap.sh reporting
         working-directory: .
       - name: build

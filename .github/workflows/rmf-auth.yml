@@ -25,8 +25,8 @@ jobs:
       - name: bootstrap
         run: |
           pip3 install pipenv
-          npm i -g npm@latest
           npm config set unsafe-perm
+          npm install -g npm@latest
           scripts/bootstrap.sh rmf-auth
         working-directory: .
       - name: build

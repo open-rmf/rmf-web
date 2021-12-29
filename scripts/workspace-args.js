@@ -17,11 +17,6 @@ function getDirectDeps(pkg) {
 }
 
 function getAllDeps(pkgs, acc = new Set()) {
-  pkgs.forEach((d) => {
-    // move this to the end of the set
-    acc.delete(d);
-    acc.add(d);
-  });
   const directDeps = pkgs.flatMap((pkg) => getDirectDeps(pkg));
   if (directDeps.length === 0) {
     return acc;
@@ -38,11 +33,12 @@ const args = process.argv.slice(2);
 const flags = args.filter((arg) => arg.startsWith('-'));
 const targets = args.filter((arg) => !arg.startsWith('-'));
 const allDeps = (() => {
-  if (flags.indexOf('--only-direct') !== -1) {
-    return [...targets, ...targets.flatMap((t) => getDirectDeps(t))];
-  } else {
-    return Array.from(getAllDeps(targets));
+  const deps = [];
+  if (flags.indexOf('--dependencies-only') === -1) {
+    deps.push(...targets);
   }
+  deps.push(...Array.from(getAllDeps(targets)));
+  return deps;
 })();
 
 const workspaceArgs = [];

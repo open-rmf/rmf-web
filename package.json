@@ -15,11 +15,19 @@
     "packages/ros-translator",
     "pipenv-install"
   ],
+  "engines": {
+    "node": ">=14",
+    "npm": ">=8"
+  },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
+    "eslint": "^7.26.0",
     "husky": "^4.3.0",
     "lint-staged": "^10.4.0",
     "prettier": "^2.1.2",
-    "pyright": "^1.1.181"
+    "pyright": "^1.1.181",
+    "typescript": "~4.4.4"
   },
   "husky": {
     "hooks": {

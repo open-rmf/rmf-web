@@ -9,5 +9,4 @@ RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add
     google-chrome-stable \
     jq && \
   pip3 install pipenv && \
-  npm i -g npm@latest && \
   npm config set unsafe-perm

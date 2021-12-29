@@ -31,4 +31,7 @@ else
   cmd='ci'
 fi
 
+# workaround https://github.com/npm/cli/issues/3208
+mkdir -p "$(dirname "$0")"/../node_modules
+
 eval npm --prefix "$(dirname $0)/.." $cmd --include-workspace-root $(node "$(dirname $0)/workspace-args.js" $targets)

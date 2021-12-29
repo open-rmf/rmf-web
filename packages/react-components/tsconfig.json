@@ -1,8 +1,4 @@
 {
-  "references": [
-    { "path": "../api-client" },
-    { "path": "../rmf-models" }
-  ],
   "compilerOptions": {
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],

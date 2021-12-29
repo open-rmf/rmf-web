@@ -1,8 +1,4 @@
 {
-  "references": [
-    { "path": "../react-components" },
-    { "path": "../rmf-auth" }
-  ],
   "compilerOptions": {
     "target": "es5",
     "lib": [

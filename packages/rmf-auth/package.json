@@ -4,13 +4,13 @@
   "description": "Auth layer to be used on web UI services",
   "main": "dist/lib/index.js",
   "scripts": {
-    "build": "tsc --build",
-    "build:storybook": "npm run build && build-storybook -s test-data",
-    "build:watch": "tsc --build --watch",
+    "build": "../../scripts/nws.sh build -d && tsc --build",
+    "build:storybook": "../../scripts/nws.sh build -d && build-storybook -s test-data",
+    "build:watch": "npm run build -- --watch",
     "clean": "tsc --build --clean",
     "lint": "eslint --ext ts,tsx, lib",
     "prepack": "npm run clean && npm run lint && npm run build && npm run test && cp package.json dist/",
-    "start": "start-storybook -p 6006 -s test-data",
+    "start": "../../scripts/nws.sh build -d && start-storybook -p 6006 -s test-data",
     "test": "jest --watch",
     "test:coverage": "jest --coverage"
   },
@@ -57,7 +57,7 @@
     "react-router-dom": "^5.2.0",
     "ts-jest": "^26.4.1",
     "ts-node": "^9.1.1",
-    "typescript": "^4.2.4"
+    "typescript": "~4.4.4"
   },
   "peerDependencies": {
     "@emotion/react": "^11.4.1",
