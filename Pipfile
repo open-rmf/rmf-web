@@ -14,7 +14,10 @@ coverage = "~=5.5"
 api-server = {editable = true, path = "./packages/api-server"}
 requests = "~=2.25"
 asyncpg = "~=0.24.0"
-datamodel-code-generator = "~=0.11.15"
+# TODO: install datamodel-code-generator in it's own venv.
+# Because this breaks dependencies because pipenv cannot find a suitable version of black
+# even though it is available (it's is known "feature" of pipenv).
+# datamodel-code-generator = "~=0.11.15"
 websocket-client = "~=1.2.3"
 # reporting-server
 reporting-server = {editable = true, path = "./packages/reporting-server"}
