@@ -30,7 +30,7 @@ from rmf_task_msgs.srv import GetTaskList as RmfGetTaskList
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 from rosidl_runtime_py.convert import message_to_ordereddict
 
-from .logger import logger
+from .logger import logger as base_logger
 from .models import (
     BuildingMap,
     DispenserState,
@@ -85,7 +85,7 @@ class RmfGateway:
         self._cancel_task_srv = ros_node.create_client(RmfCancelTask, "cancel_task")
 
         self.static_files = static_files
-        self.logger = logger or logging.getLogger(self.__class__.__name__)
+        self.logger = logger or base_logger.getChild(self.__class__.__name__)
         self._subscriptions: List[Subscription] = []
         self._spin_thread: Optional[threading.Thread] = None
         self._finish_spin = rclpy.executors.Future()
@@ -200,7 +200,8 @@ class RmfGateway:
             sub.destroy()
         self._subscriptions = []
 
-    def now(self) -> Optional[RosTime]:
+    @staticmethod
+    def now() -> Optional[RosTime]:
         """
         Returns the current sim time, or `None` if not using sim time
         """

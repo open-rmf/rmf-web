@@ -1,9 +1,14 @@
 from datetime import datetime
 from typing import List, Optional, cast
 
+from fastapi import Depends, HTTPException, Path
+from fastapi.param_functions import Query
+from fastapi.responses import JSONResponse
+from rx import operators as rxops
+
 from api_server.authenticator import user_dep
 from api_server.dependencies import pagination_query, sio_user
-from api_server.fast_io import FastIO, FastIORouter, SubscriptionRequest
+from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import rmf_gateway
 from api_server.models import (
     CancelTask,
@@ -17,10 +22,6 @@ from api_server.models.pagination import Pagination
 from api_server.repositories import RmfRepository, rmf_repo_dep
 from api_server.rmf_io import rmf_events
 from api_server.services.tasks import convert_task_request
-from fastapi import Depends, HTTPException, Path
-from fastapi.param_functions import Query
-from fastapi.responses import JSONResponse
-from rx import operators as rxops
 
 from .dispatcher import DispatcherClient
 from .utils import get_task_progress

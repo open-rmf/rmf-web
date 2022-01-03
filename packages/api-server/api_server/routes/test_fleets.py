@@ -1,10 +1,10 @@
 from uuid import uuid4
 
+from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
+
 from api_server.models import FleetState, RobotState, TaskSummary
 from api_server.rmf_io import rmf_events
 from api_server.test import AppFixture, try_until
-from api_server.test.test_data import make_fleet_state
-from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 
 
 class TestFleetsRoute(AppFixture):

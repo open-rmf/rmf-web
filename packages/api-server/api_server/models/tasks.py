@@ -1,10 +1,11 @@
 from enum import IntEnum
 from typing import Optional, Union
 
-from api_server.ros_time import ros_to_py_datetime
 from pydantic import BaseModel, validator
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 from rmf_task_msgs.msg import TaskType as RmfTaskType
+
+from api_server.ros_time import ros_to_py_datetime
 
 from . import tortoise_models as ttm
 from .ros_pydantic import rmf_task_msgs

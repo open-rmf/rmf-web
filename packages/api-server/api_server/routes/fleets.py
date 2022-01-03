@@ -1,5 +1,8 @@
 from typing import List, Optional, cast
 
+from fastapi import Depends, Query
+from rx import operators as rxops
+
 from api_server.dependencies import pagination_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import rmf_gateway
@@ -7,8 +10,6 @@ from api_server.logger import logger
 from api_server.models import Fleet, FleetState, Pagination, Robot, RobotHealth, Task
 from api_server.repositories import RmfRepository, rmf_repo_dep
 from api_server.rmf_io import rmf_events
-from fastapi import Depends, Query
-from rx import operators as rxops
 
 from .tasks.utils import get_task_progress
 
@@ -67,7 +68,7 @@ async def get_robots(
         # assigned to those robots and the robot states are not synced to the
         # tasks summaries.
         if r is None:
-            logger.warn(
+            logger.warning(
                 f'task "{t.task_id}" is assigned to an unknown fleet/robot ({t.fleet_name}/{t.robot_name}'
             )
             continue

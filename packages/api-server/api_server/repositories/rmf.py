@@ -1,6 +1,10 @@
 from datetime import datetime
 from typing import Dict, List, Optional, cast
 
+from fastapi import Depends
+from fastapi.exceptions import HTTPException
+from tortoise.queryset import MODEL, QuerySet
+
 from api_server.authenticator import user_dep
 from api_server.models import (
     BuildingMap,
@@ -19,6 +23,7 @@ from api_server.models import (
     LiftState,
     Pagination,
     RobotHealth,
+    RobotState,
     TaskStateEnum,
     TaskSummary,
     TaskTypeEnum,
@@ -27,9 +32,6 @@ from api_server.models import (
 from api_server.models import tortoise_models as ttm
 from api_server.models.fleets import Fleet, Robot
 from api_server.permissions import Enforcer, RmfAction
-from fastapi import Depends
-from fastapi.exceptions import HTTPException
-from tortoise.queryset import MODEL, QuerySet
 
 
 class RmfRepository:
@@ -177,7 +179,7 @@ class RmfRepository:
             ttm.RobotState.filter(**filter_params), pagination
         )
         return [
-            Robot(fleet=r.fleet_name, name=r.robot_name, state=r.data)
+            Robot(fleet=r.fleet_name, name=r.robot_name, state=cast(RobotState, r.data))
             for r in robot_states
         ]
 

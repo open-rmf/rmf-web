@@ -82,6 +82,7 @@ class HealthWatchdog:
             return DoorHealth(
                 id_=state.door_name,
                 health_status=HealthStatus.HEALTHY,
+                health_message="",
             )
         if state.current_mode.value == RmfDoorMode.MODE_OFFLINE:
             return DoorHealth(
@@ -98,7 +99,9 @@ class HealthWatchdog:
     async def _watch_door_health(self):
         def to_door_health(id_: str, has_heartbeat: bool):
             if has_heartbeat:
-                return DoorHealth(id_=id_, health_status=HealthStatus.HEALTHY)
+                return DoorHealth(
+                    id_=id_, health_status=HealthStatus.HEALTHY, health_message=""
+                )
             return DoorHealth(
                 id_=id_,
                 health_status=HealthStatus.DEAD,
@@ -155,6 +158,7 @@ class HealthWatchdog:
             return LiftHealth(
                 id_=state.lift_name,
                 health_status=HealthStatus.HEALTHY,
+                health_message="",
             )
         if state.current_mode == RmfLiftState.MODE_FIRE:
             return LiftHealth(
@@ -177,7 +181,9 @@ class HealthWatchdog:
     async def _watch_lift_health(self):
         def to_lift_health(id_: str, has_heartbeat: bool):
             if has_heartbeat:
-                return LiftHealth(id_=id_, health_status=HealthStatus.HEALTHY)
+                return LiftHealth(
+                    id_=id_, health_status=HealthStatus.HEALTHY, health_message=""
+                )
             return LiftHealth(
                 id_=id_,
                 health_status=HealthStatus.DEAD,
@@ -233,6 +239,7 @@ class HealthWatchdog:
             return DispenserHealth(
                 id_=state.guid,
                 health_status=HealthStatus.HEALTHY,
+                health_message="",
             )
         if state.mode == RmfDispenserState.OFFLINE:
             return DispenserHealth(
@@ -249,7 +256,9 @@ class HealthWatchdog:
     async def _watch_dispenser_health(self):
         def to_dispenser_health(id_: str, has_heartbeat: bool):
             if has_heartbeat:
-                return DispenserHealth(id_=id_, health_status=HealthStatus.HEALTHY)
+                return DispenserHealth(
+                    id_=id_, health_status=HealthStatus.HEALTHY, health_message=""
+                )
             return DispenserHealth(
                 id_=id_,
                 health_status=HealthStatus.DEAD,
@@ -304,8 +313,7 @@ class HealthWatchdog:
             RmfIngestorState.BUSY,
         ):
             return IngestorHealth(
-                id_=state.guid,
-                health_status=HealthStatus.HEALTHY,
+                id_=state.guid, health_status=HealthStatus.HEALTHY, health_message=""
             )
         if state.mode == RmfIngestorState.OFFLINE:
             return IngestorHealth(
@@ -322,7 +330,9 @@ class HealthWatchdog:
     async def _watch_ingestor_health(self):
         def to_ingestor_health(id_: str, has_heartbeat: bool):
             if has_heartbeat:
-                return IngestorHealth(id_=id_, health_status=HealthStatus.HEALTHY)
+                return IngestorHealth(
+                    id_=id_, health_status=HealthStatus.HEALTHY, health_message=""
+                )
             return IngestorHealth(
                 id_=id_,
                 health_status=HealthStatus.DEAD,
