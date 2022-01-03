@@ -15,25 +15,8 @@ class RmfEvents:
         self.ingestor_health = Subject()  # IngestorHealth
         self.fleet_states = Subject()  # FleetState
         self.robot_health = Subject()  # RobotHealth
+        self.task_summaries = Subject()  # TaskSummary
         self.building_map = BehaviorSubject(None)  # Optional[BuildingMap]
 
 
 rmf_events = RmfEvents()
-
-
-class TaskEvents:
-    def __init__(self):
-        self.task_states = Subject()  # TaskState
-        self.task_event_logs = Subject()  # TaskEventLog
-
-
-task_events = TaskEvents()
-
-
-class FleetEvents:
-    def __init__(self):
-        self.fleet_states = Subject()  # FleetState
-        self.fleet_logs = Subject()  # FleetLog
-
-
-fleet_events = FleetEvents()

@@ -4,11 +4,12 @@ import asyncio
 import base64
 import hashlib
 import logging
-from typing import Any, List, Optional
+import threading
+from typing import List, Optional
 
 import rclpy
-import rclpy.client
-import rclpy.qos
+import rclpy.executors
+import rclpy.node
 from builtin_interfaces.msg import Time as RosTime
 from fastapi import HTTPException
 from rclpy.subscription import Subscription
@@ -19,15 +20,26 @@ from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
 from rmf_door_msgs.msg import DoorRequest as RmfDoorRequest
 from rmf_door_msgs.msg import DoorState as RmfDoorState
+from rmf_fleet_msgs.msg import FleetState as RmfFleetState
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
+from rmf_task_msgs.msg import Tasks as RmfTasks
 from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import GetTaskList as RmfGetTaskList
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 from rosidl_runtime_py.convert import message_to_ordereddict
 
-from .models import BuildingMap, DispenserState, DoorState, IngestorState, LiftState
+from .logger import logger
+from .models import (
+    BuildingMap,
+    DispenserState,
+    DoorState,
+    FleetState,
+    IngestorState,
+    LiftState,
+    TaskSummary,
+)
 from .repositories import StaticFilesRepository, static_files_repo
 from .rmf_io import rmf_events
 from .ros import ros_node
@@ -60,10 +72,7 @@ def process_building_map(
 
 class RmfGateway:
     def __init__(
-        self,
-        static_files: StaticFilesRepository,
-        *,
-        logger: logging.Logger = None,
+        self, static_files: StaticFilesRepository, *, logger: logging.Logger = None
     ):
         self._door_req = ros_node.create_publisher(
             RmfDoorRequest, "adapter_door_requests", 10
@@ -78,9 +87,28 @@ class RmfGateway:
         self.static_files = static_files
         self.logger = logger or logging.getLogger(self.__class__.__name__)
         self._subscriptions: List[Subscription] = []
+        self._spin_thread: Optional[threading.Thread] = None
+        self._finish_spin = rclpy.executors.Future()
+        self._finish_gc = ros_node.create_guard_condition(
+            lambda: self._finish_spin.set_result(None)
+        )
         self._loop: asyncio.AbstractEventLoop
 
-    async def call_service(self, client: rclpy.client.Client, req, timeout=1) -> Any:
+    def spin_background(self):
+        def spin():
+            self.logger.info("start spinning rclpy node")
+            rclpy.spin_until_future_complete(self, self._finish_spin)
+            self.logger.info("finished spinning rclpy node")
+
+        self._spin_thread = threading.Thread(target=spin)
+        self._spin_thread.start()
+
+    def stop_spinning(self):
+        self._finish_gc.trigger()
+        if self._spin_thread is not None:
+            self._spin_thread.join()
+
+    async def call_service(self, client: rclpy.client.Client, req, timeout=1):
         """
         Utility to wrap a ros service call in an awaitable,
         raises HTTPException if service call fails.
@@ -131,6 +159,25 @@ class RmfGateway:
         )
         self._subscriptions.append(ingestor_states_sub)
 
+        fleet_states_sub = ros_node.create_subscription(
+            RmfFleetState,
+            "fleet_states",
+            lambda msg: rmf_events.fleet_states.on_next(FleetState.from_orm(msg)),
+            10,
+        )
+        self._subscriptions.append(fleet_states_sub)
+
+        task_summaries_sub = ros_node.create_subscription(
+            RmfTasks,
+            "dispatcher_ongoing_tasks",
+            lambda msg: [
+                rmf_events.task_summaries.on_next(TaskSummary.from_orm(task))
+                for task in msg.tasks
+            ],
+            10,
+        )
+        self._subscriptions.append(task_summaries_sub)
+
         map_sub = ros_node.create_subscription(
             RmfBuildingMap,
             "map",
@@ -146,20 +193,34 @@ class RmfGateway:
         )
         self._subscriptions.append(map_sub)
 
-        if ros_node.executor:
-            ros_node.executor.wake()
+        ros_node.executor.wake()
 
     def unsubscribe_all(self) -> None:
         for sub in self._subscriptions:
             sub.destroy()
         self._subscriptions = []
 
-    @staticmethod
-    def now() -> Optional[RosTime]:
+    def now(self) -> Optional[RosTime]:
         """
         Returns the current sim time, or `None` if not using sim time
         """
         return ros_node.get_clock().now().to_msg()
+
+    async def get_tasks(self) -> List[TaskSummary]:
+        """
+        Gets the list of tasks from RMF.
+        """
+        resp: RmfGetTaskList.Response = await self.call_service(
+            self.get_tasks_srv, RmfGetTaskList.Request()
+        )
+        if not resp.success:
+            raise HTTPException(500, "service call succeeded but RMF returned an error")
+        tasks: List[TaskSummary] = []
+        for t in resp.active_tasks:
+            tasks.append(TaskSummary.from_orm(t))
+        for t in resp.terminated_tasks:
+            tasks.append(TaskSummary.from_orm(t))
+        return tasks
 
     def request_door(self, door_name: str, mode: int) -> None:
         msg = RmfDoorRequest(
@@ -184,6 +245,16 @@ class RmfGateway:
             door_state=door_mode,
         )
         self._lift_req.publish(msg)
+
+    async def submit_task(
+        self, req_msg: RmfSubmitTask.Request
+    ) -> RmfSubmitTask.Response:
+        return await self.call_service(self._submit_task_srv, req_msg)
+
+    async def cancel_task(
+        self, req_msg: RmfCancelTask.Request
+    ) -> RmfCancelTask.Response:
+        return await self.call_service(self._cancel_task_srv, req_msg)
 
 
 rmf_gateway = RmfGateway(static_files_repo)

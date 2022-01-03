@@ -1,34 +1,46 @@
-from .rmf_api.fleet_log import FleetState as BaseFleetLog
-from .rmf_api.fleet_state import FleetState as BaseFleetState
+from typing import List
+
+from pydantic import BaseModel
+
+from . import tortoise_models as ttm
+from .health import basic_health_model
 from .ros_pydantic import rmf_fleet_msgs
-from .tortoise_models import FleetLog as DbFleetLog
-from .tortoise_models import FleetState as DbFleetState
+from .tasks import Task
 
 RobotMode = rmf_fleet_msgs.RobotMode
+RobotHealth = basic_health_model(ttm.RobotHealth)
 Location = rmf_fleet_msgs.Location
 
 
-class FleetState(BaseFleetState):
+class RobotState(rmf_fleet_msgs.RobotState):
     @staticmethod
-    def from_db(fleet_state: DbFleetState) -> "FleetState":
-        return FleetState(**fleet_state.data)
+    def from_tortoise(tortoise: ttm.RobotState) -> "RobotState":
+        return RobotState(**tortoise.data)
 
-    async def save(self) -> None:
-        await DbFleetState.update_or_create(
-            {
-                "data": self.json(),
-            },
-            name=self.name,
+    async def save(self, fleet_name: str) -> None:
+        await ttm.RobotState.update_or_create(
+            {"data": self.dict()}, fleet_name=fleet_name, robot_name=self.name
         )
 
 
-class FleetLog(BaseFleetLog):
+class Robot(BaseModel):
+    fleet: str
+    name: str
+    state: RobotState
+    tasks: List[Task] = []
+
+
+class FleetState(rmf_fleet_msgs.FleetState):
+    robots: List[RobotState]
+
     @staticmethod
-    def from_db(fleet_log: DbFleetLog) -> "FleetLog":
-        return FleetLog(**fleet_log.data)
+    def from_tortoise(tortoise: ttm.FleetState) -> "FleetState":
+        return FleetState(**tortoise.data)
 
     async def save(self) -> None:
-        await DbFleetLog.update_or_create(
-            {"data": self.json()},
-            name=self.name,
-        )
+        await ttm.FleetState.update_or_create({"data": self.dict()}, id_=self.name)
+
+
+class Fleet(BaseModel):
+    name: str
+    state: FleetState
