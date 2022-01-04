@@ -83,40 +83,33 @@ export interface AffineImage {
 /**
  *
  * @export
- * @interface Behavior
+ * @interface Booking
  */
-export interface Behavior {
+export interface Booking {
   /**
-   *
+   * The unique identifier for this task
    * @type {string}
-   * @memberof Behavior
+   * @memberof Booking
    */
-  name: string;
+  id: string;
   /**
    *
-   * @type {Array<BehaviorParameter>}
-   * @memberof Behavior
+   * @type {number}
+   * @memberof Booking
    */
-  parameters: Array<BehaviorParameter>;
-}
-/**
- *
- * @export
- * @interface BehaviorParameter
- */
-export interface BehaviorParameter {
+  unix_millis_earliest_start_time?: number;
   /**
-   *
-   * @type {string}
-   * @memberof BehaviorParameter
+   * Priority information about this task
+   * @type {object | string}
+   * @memberof Booking
    */
-  name: string;
+  priority?: object | string;
   /**
-   *
-   * @type {string}
-   * @memberof BehaviorParameter
+   * Information about how and why this task was booked
+   * @type {Array<string>}
+   * @memberof Booking
    */
-  value: string;
+  labels?: Array<string>;
 }
 /**
  *
@@ -146,128 +139,66 @@ export interface BuildingMap {
 /**
  *
  * @export
- * @interface CancelTask
+ * @interface CancelTaskRequest
  */
-export interface CancelTask {
+export interface CancelTaskRequest {
   /**
-   *
+   * Indicate that this is a task cancellation request
    * @type {string}
-   * @memberof CancelTask
+   * @memberof CancelTaskRequest
    */
-  task_id: string;
-}
-/**
- *
- * @export
- * @interface Clean
- */
-export interface Clean {
+  type: string;
   /**
-   *
+   * Specify the task ID to cancel
    * @type {string}
-   * @memberof Clean
-   */
-  start_waypoint: string;
-}
-/**
- *
- * @export
- * @interface CleanTaskDescription
- */
-export interface CleanTaskDescription {
-  /**
-   *
-   * @type {string}
-   * @memberof CleanTaskDescription
-   */
-  cleaning_zone: string;
-}
-/**
- *
- * @export
- * @interface Delivery
- */
-export interface Delivery {
-  /**
-   *
-   * @type {string}
-   * @memberof Delivery
+   * @memberof CancelTaskRequest
    */
   task_id: string;
   /**
-   *
-   * @type {Array<DispenserRequestItem>}
-   * @memberof Delivery
+   * Labels to describe the purpose of the cancellation
+   * @type {Array<string>}
+   * @memberof CancelTaskRequest
    */
-  items: Array<DispenserRequestItem>;
-  /**
-   *
-   * @type {string}
-   * @memberof Delivery
-   */
-  pickup_place_name: string;
-  /**
-   *
-   * @type {string}
-   * @memberof Delivery
-   */
-  pickup_dispenser: string;
-  /**
-   *
-   * @type {Behavior}
-   * @memberof Delivery
-   */
-  pickup_behavior: Behavior;
-  /**
-   *
-   * @type {string}
-   * @memberof Delivery
-   */
-  dropoff_place_name: string;
-  /**
-   *
-   * @type {string}
-   * @memberof Delivery
-   */
-  dropoff_ingestor: string;
-  /**
-   *
-   * @type {Behavior}
-   * @memberof Delivery
-   */
-  dropoff_behavior: Behavior;
+  labels?: Array<string>;
 }
 /**
  *
  * @export
- * @interface DeliveryTaskDescription
+ * @interface Cancellation
  */
-export interface DeliveryTaskDescription {
+export interface Cancellation {
   /**
-   *
-   * @type {string}
-   * @memberof DeliveryTaskDescription
+   * The time that the cancellation request arrived
+   * @type {number}
+   * @memberof Cancellation
    */
-  pickup_place_name: string;
+  unix_millis_request_time: number;
   /**
-   *
-   * @type {string}
-   * @memberof DeliveryTaskDescription
+   * Labels to describe the cancel request
+   * @type {Array<string>}
+   * @memberof Cancellation
    */
-  pickup_dispenser: string;
-  /**
-   *
-   * @type {string}
-   * @memberof DeliveryTaskDescription
-   */
-  dropoff_ingestor: string;
-  /**
-   *
-   * @type {string}
-   * @memberof DeliveryTaskDescription
-   */
-  dropoff_place_name: string;
+  labels: Array<string>;
 }
+/**
+ *
+ * @export
+ * @interface Description
+ */
+export interface Description {
+  /**
+   *
+   * @type {string}
+   * @memberof Description
+   */
+  category: string;
+}
+/**
+ * Detailed information about a task, phase, or event
+ * @export
+ * @interface Detail
+ */
+export interface Detail {}
 /**
  *
  * @export
@@ -305,31 +236,6 @@ export interface DispenserHealth {
    * @memberof DispenserHealth
    */
   id_: string;
-}
-/**
- *
- * @export
- * @interface DispenserRequestItem
- */
-export interface DispenserRequestItem {
-  /**
-   *
-   * @type {string}
-   * @memberof DispenserRequestItem
-   */
-  type_guid: string;
-  /**
-   *
-   * @type {number}
-   * @memberof DispenserRequestItem
-   */
-  quantity: number;
-  /**
-   *
-   * @type {string}
-   * @memberof DispenserRequestItem
-   */
-  compartment_name: string;
 }
 /**
  *
@@ -502,21 +408,64 @@ export interface DoorState {
 /**
  *
  * @export
- * @interface Fleet
+ * @interface EventState
  */
-export interface Fleet {
+export interface EventState {
+  /**
+   *
+   * @type {number}
+   * @memberof EventState
+   */
+  id: number;
+  /**
+   * A simple token representing how the task is proceeding
+   * @type {Status1}
+   * @memberof EventState
+   */
+  status?: Status1;
+  /**
+   * The brief name of the event
+   * @type {string}
+   * @memberof EventState
+   */
+  name?: string;
+  /**
+   * Detailed information about the event
+   * @type {Detail}
+   * @memberof EventState
+   */
+  detail?: Detail;
+  /**
+   * This event may depend on other events. This array contains the IDs of those other event dependencies.
+   * @type {Array<number>}
+   * @memberof EventState
+   */
+  deps?: Array<number>;
+}
+/**
+ *
+ * @export
+ * @interface FleetLog
+ */
+export interface FleetLog {
   /**
    *
    * @type {string}
-   * @memberof Fleet
+   * @memberof FleetLog
    */
-  name: string;
+  name?: string;
   /**
-   *
-   * @type {FleetState}
-   * @memberof Fleet
+   * Log for the overall fleet
+   * @type {Array<LogEntry>}
+   * @memberof FleetLog
    */
-  state: FleetState;
+  log?: Array<LogEntry>;
+  /**
+   * Dictionary of logs for the individual robots. The keys (property names) are the robot names.
+   * @type {{ [key: string]: Array<LogEntry>; }}
+   * @memberof FleetLog
+   */
+  robots?: { [key: string]: Array<LogEntry> };
 }
 /**
  *
@@ -529,13 +478,13 @@ export interface FleetState {
    * @type {string}
    * @memberof FleetState
    */
-  name: string;
+  name?: string;
   /**
-   *
-   * @type {Array<RobotState>}
+   * A dictionary of the states of the robots that belong to this fleet
+   * @type {{ [key: string]: RobotState; }}
    * @memberof FleetState
    */
-  robots: Array<RobotState>;
+  robots?: { [key: string]: RobotState };
 }
 /**
  *
@@ -717,6 +666,69 @@ export interface IngestorState {
    * @memberof IngestorState
    */
   seconds_remaining: number;
+}
+/**
+ *
+ * @export
+ * @interface Interruption
+ */
+export interface Interruption {
+  /**
+   * The time that the interruption request arrived
+   * @type {number}
+   * @memberof Interruption
+   */
+  unix_millis_request_time: number;
+  /**
+   * Labels to describe the purpose of the interruption
+   * @type {Array<string>}
+   * @memberof Interruption
+   */
+  labels: Array<string>;
+  /**
+   * Information about the resume request that ended this interruption. This field will be missing if the interruption is still active.
+   * @type {ResumedBy}
+   * @memberof Interruption
+   */
+  resumed_by?: ResumedBy;
+}
+/**
+ *
+ * @export
+ * @interface Issue
+ */
+export interface Issue {
+  /**
+   * Category of the robot\'s issue
+   * @type {string}
+   * @memberof Issue
+   */
+  category?: string;
+  /**
+   * Detailed information about the issue
+   * @type {object | Array<any> | string}
+   * @memberof Issue
+   */
+  detail?: object | Array<any> | string;
+}
+/**
+ *
+ * @export
+ * @interface Killed
+ */
+export interface Killed {
+  /**
+   * The time that the cancellation request arrived
+   * @type {number}
+   * @memberof Killed
+   */
+  unix_millis_request_time: number;
+  /**
+   * Labels to describe the kill request
+   * @type {Array<string>}
+   * @memberof Killed
+   */
+  labels: Array<string>;
 }
 /**
  *
@@ -948,119 +960,89 @@ export interface LiftState {
 /**
  *
  * @export
- * @interface Location
+ * @interface Location2D
  */
-export interface Location {
+export interface Location2D {
   /**
    *
-   * @type {Time}
-   * @memberof Location
+   * @type {string}
+   * @memberof Location2D
    */
-  t: Time;
+  map: string;
   /**
    *
    * @type {number}
-   * @memberof Location
+   * @memberof Location2D
    */
   x: number;
   /**
    *
    * @type {number}
-   * @memberof Location
+   * @memberof Location2D
    */
   y: number;
   /**
    *
    * @type {number}
-   * @memberof Location
+   * @memberof Location2D
    */
   yaw: number;
-  /**
-   *
-   * @type {boolean}
-   * @memberof Location
-   */
-  obey_approach_speed_limit: boolean;
-  /**
-   *
-   * @type {number}
-   * @memberof Location
-   */
-  approach_speed_limit: number;
-  /**
-   *
-   * @type {string}
-   * @memberof Location
-   */
-  level_name: string;
-  /**
-   *
-   * @type {number}
-   * @memberof Location
-   */
-  index: number;
 }
 /**
  *
  * @export
- * @interface Loop
+ * @interface LogEntry
  */
-export interface Loop {
+export interface LogEntry {
   /**
-   *
-   * @type {string}
-   * @memberof Loop
+   * Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.
+   * @type {number}
+   * @memberof LogEntry
    */
-  task_id: string;
+  seq: number;
   /**
-   *
-   * @type {string}
-   * @memberof Loop
+   * The importance level of the log entry
+   * @type {Tier}
+   * @memberof LogEntry
    */
-  robot_type: string;
+  tier: Tier;
   /**
    *
    * @type {number}
-   * @memberof Loop
+   * @memberof LogEntry
    */
-  num_loops: number;
+  unix_millis_time: number;
   /**
-   *
+   * The text of the log entry
    * @type {string}
-   * @memberof Loop
+   * @memberof LogEntry
    */
-  start_name: string;
-  /**
-   *
-   * @type {string}
-   * @memberof Loop
-   */
-  finish_name: string;
+  text: string;
 }
 /**
  *
  * @export
- * @interface LoopTaskDescription
+ * @interface ModelError
  */
-export interface LoopTaskDescription {
+export interface ModelError {
   /**
-   *
+   * A standard code for the kind of error that has occurred
    * @type {number}
-   * @memberof LoopTaskDescription
+   * @memberof ModelError
    */
-  num_loops: number;
+  code?: number;
   /**
-   *
+   * The category of the error
    * @type {string}
-   * @memberof LoopTaskDescription
+   * @memberof ModelError
    */
-  start_name: string;
+  category?: string;
   /**
-   *
+   * Details about the error
    * @type {string}
-   * @memberof LoopTaskDescription
+   * @memberof ModelError
    */
-  finish_name: string;
+  detail?: string;
 }
 /**
  *
@@ -1123,6 +1105,55 @@ export interface Permission {
    * @memberof Permission
    */
   action: string;
+}
+/**
+ *
+ * @export
+ * @interface Phase
+ */
+export interface Phase {
+  /**
+   *
+   * @type {number}
+   * @memberof Phase
+   */
+  id: number;
+  /**
+   * The category of this task or phase
+   * @type {string}
+   * @memberof Phase
+   */
+  category?: string;
+  /**
+   *
+   * @type {Detail}
+   * @memberof Phase
+   */
+  detail?: Detail;
+  /**
+   * An estimate, in milliseconds, of how long the subject will take to complete
+   * @type {number}
+   * @memberof Phase
+   */
+  estimate_millis?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof Phase
+   */
+  final_event_id?: number;
+  /**
+   * A dictionary of events for this phase. The keys (property names) are the event IDs, which are integers.
+   * @type {{ [key: string]: EventState; }}
+   * @memberof Phase
+   */
+  events?: { [key: string]: EventState };
+  /**
+   * Information about any skip requests that have been received
+   * @type {{ [key: string]: SkipPhaseRequest; }}
+   * @memberof Phase
+   */
+  skip_requests?: { [key: string]: SkipPhaseRequest };
 }
 /**
  *
@@ -1215,90 +1246,21 @@ export interface PostUsers {
 /**
  *
  * @export
- * @interface Priority
+ * @interface ResumedBy
  */
-export interface Priority {
+export interface ResumedBy {
   /**
-   *
+   * The time that the resume request arrived
    * @type {number}
-   * @memberof Priority
+   * @memberof ResumedBy
    */
-  value: number;
-}
-/**
- *
- * @export
- * @interface Robot
- */
-export interface Robot {
+  unix_millis_request_time?: number;
   /**
-   *
-   * @type {string}
-   * @memberof Robot
+   * Labels to describe the resume request
+   * @type {Array<string>}
+   * @memberof ResumedBy
    */
-  fleet: string;
-  /**
-   *
-   * @type {string}
-   * @memberof Robot
-   */
-  name: string;
-  /**
-   *
-   * @type {RobotState}
-   * @memberof Robot
-   */
-  state: RobotState;
-  /**
-   *
-   * @type {Array<Task>}
-   * @memberof Robot
-   */
-  tasks?: Array<Task>;
-}
-/**
- *
- * @export
- * @interface RobotHealth
- */
-export interface RobotHealth {
-  /**
-   *
-   * @type {string}
-   * @memberof RobotHealth
-   */
-  health_status: string | null;
-  /**
-   *
-   * @type {string}
-   * @memberof RobotHealth
-   */
-  health_message?: string | null;
-  /**
-   *
-   * @type {string}
-   * @memberof RobotHealth
-   */
-  id_: string;
-}
-/**
- *
- * @export
- * @interface RobotMode
- */
-export interface RobotMode {
-  /**
-   *
-   * @type {number}
-   * @memberof RobotMode
-   */
-  mode: number;
-  /**
-   *
-   * @type {number}
-   * @memberof RobotMode
-   */
-  mode_request_id: number;
+  labels: Array<string>;
 }
 /**
  *
@@ -1311,316 +1273,119 @@ export interface RobotState {
    * @type {string}
    * @memberof RobotState
    */
-  name: string;
+  name?: string;
   /**
-   *
+   * A simple token representing the status of the robot
+   * @type {Status}
+   * @memberof RobotState
+   */
+  status?: Status;
+  /**
+   * The ID of the task this robot is currently working on. Empty string if the robot is not working on a task.
    * @type {string}
    * @memberof RobotState
    */
-  model: string;
-  /**
-   *
-   * @type {string}
-   * @memberof RobotState
-   */
-  task_id: string;
+  task_id?: string;
   /**
    *
    * @type {number}
    * @memberof RobotState
    */
-  seq: number;
+  unix_millis_time?: number;
   /**
    *
-   * @type {RobotMode}
+   * @type {Location2D}
    * @memberof RobotState
    */
-  mode: RobotMode;
+  location?: Location2D;
   /**
-   *
+   * State of charge of the battery. Values range from 0.0 (depleted) to 1.0 (fully charged)
    * @type {number}
    * @memberof RobotState
    */
-  battery_percent: number;
+  battery?: number;
   /**
-   *
-   * @type {Location}
+   * A list of issues with the robot that operators need to address
+   * @type {Array<Issue>}
    * @memberof RobotState
    */
-  location: Location;
+  issues?: Array<Issue>;
+}
+/**
+ * Template for defining a response message that only indicates success and describes any errors
+ * @export
+ * @interface SimpleResponse
+ */
+export interface SimpleResponse {
   /**
-   *
-   * @type {Array<Location>}
-   * @memberof RobotState
+   * The request failed
+   * @type {boolean}
+   * @memberof SimpleResponse
    */
-  path: Array<Location>;
+  success: boolean;
+  /**
+   * If the request failed, these error messages will explain why
+   * @type {Array<Error>}
+   * @memberof SimpleResponse
+   */
+  errors: Array<Error>;
 }
 /**
  *
  * @export
- * @interface Station
+ * @interface SimpleResponseItem
  */
-export interface Station {
+export interface SimpleResponseItem {
   /**
-   *
-   * @type {string}
-   * @memberof Station
+   * The request was successful
+   * @type {boolean}
+   * @memberof SimpleResponseItem
    */
-  task_id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof Station
-   */
-  robot_type: string;
-  /**
-   *
-   * @type {string}
-   * @memberof Station
-   */
-  place_name: string;
+  success: boolean;
 }
 /**
  *
  * @export
- * @interface SubmitTask
+ * @interface SimpleResponseItem1
  */
-export interface SubmitTask {
+export interface SimpleResponseItem1 {
   /**
-   *
-   * @type {TaskTypeEnum}
-   * @memberof SubmitTask
+   * The request failed
+   * @type {boolean}
+   * @memberof SimpleResponseItem1
    */
-  task_type: TaskTypeEnum;
+  success: boolean;
   /**
-   *
+   * If the request failed, these error messages will explain why
+   * @type {Array<Error>}
+   * @memberof SimpleResponseItem1
+   */
+  errors: Array<Error>;
+}
+/**
+ *
+ * @export
+ * @interface SkipPhaseRequest
+ */
+export interface SkipPhaseRequest {
+  /**
+   * The time that the skip request arrived
    * @type {number}
-   * @memberof SubmitTask
+   * @memberof SkipPhaseRequest
    */
-  start_time: number;
+  unix_millis_request_time: number;
   /**
-   *
-   * @type {number}
-   * @memberof SubmitTask
+   * Labels to describe the purpose of the skip request
+   * @type {Array<string>}
+   * @memberof SkipPhaseRequest
    */
-  priority?: number;
+  labels: Array<string>;
   /**
-   *
-   * @type {CleanTaskDescription | LoopTaskDescription | DeliveryTaskDescription}
-   * @memberof SubmitTask
+   * Information about an undo skip request that applied to this request
+   * @type {Undo}
+   * @memberof SkipPhaseRequest
    */
-  description: CleanTaskDescription | LoopTaskDescription | DeliveryTaskDescription;
-}
-/**
- *
- * @export
- * @interface SubmitTaskResponse
- */
-export interface SubmitTaskResponse {
-  /**
-   *
-   * @type {string}
-   * @memberof SubmitTaskResponse
-   */
-  task_id: string;
-}
-/**
- *
- * @export
- * @interface Task
- */
-export interface Task {
-  /**
-   *
-   * @type {string}
-   * @memberof Task
-   */
-  task_id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof Task
-   */
-  authz_grp?: string;
-  /**
-   *
-   * @type {TaskSummary}
-   * @memberof Task
-   */
-  summary: TaskSummary;
-  /**
-   *
-   * @type {TaskProgress}
-   * @memberof Task
-   */
-  progress: TaskProgress;
-}
-/**
- *
- * @export
- * @interface TaskDescription
- */
-export interface TaskDescription {
-  /**
-   *
-   * @type {Time}
-   * @memberof TaskDescription
-   */
-  start_time: Time;
-  /**
-   *
-   * @type {Priority}
-   * @memberof TaskDescription
-   */
-  priority: Priority;
-  /**
-   *
-   * @type {TaskType}
-   * @memberof TaskDescription
-   */
-  task_type: TaskType;
-  /**
-   *
-   * @type {Station}
-   * @memberof TaskDescription
-   */
-  station: Station;
-  /**
-   *
-   * @type {Loop}
-   * @memberof TaskDescription
-   */
-  loop: Loop;
-  /**
-   *
-   * @type {Delivery}
-   * @memberof TaskDescription
-   */
-  delivery: Delivery;
-  /**
-   *
-   * @type {Clean}
-   * @memberof TaskDescription
-   */
-  clean: Clean;
-}
-/**
- *
- * @export
- * @interface TaskProfile
- */
-export interface TaskProfile {
-  /**
-   *
-   * @type {string}
-   * @memberof TaskProfile
-   */
-  task_id: string;
-  /**
-   *
-   * @type {Time}
-   * @memberof TaskProfile
-   */
-  submission_time: Time;
-  /**
-   *
-   * @type {TaskDescription}
-   * @memberof TaskProfile
-   */
-  description: TaskDescription;
-}
-/**
- *
- * @export
- * @interface TaskProgress
- */
-export interface TaskProgress {
-  /**
-   *
-   * @type {string}
-   * @memberof TaskProgress
-   */
-  status: string;
-}
-/**
- *
- * @export
- * @interface TaskSummary
- */
-export interface TaskSummary {
-  /**
-   *
-   * @type {string}
-   * @memberof TaskSummary
-   */
-  fleet_name: string;
-  /**
-   *
-   * @type {string}
-   * @memberof TaskSummary
-   */
-  task_id: string;
-  /**
-   *
-   * @type {TaskProfile}
-   * @memberof TaskSummary
-   */
-  task_profile: TaskProfile;
-  /**
-   *
-   * @type {number}
-   * @memberof TaskSummary
-   */
-  state: number;
-  /**
-   *
-   * @type {string}
-   * @memberof TaskSummary
-   */
-  status: string;
-  /**
-   *
-   * @type {Time}
-   * @memberof TaskSummary
-   */
-  submission_time: Time;
-  /**
-   *
-   * @type {Time}
-   * @memberof TaskSummary
-   */
-  start_time: Time;
-  /**
-   *
-   * @type {Time}
-   * @memberof TaskSummary
-   */
-  end_time: Time;
-  /**
-   *
-   * @type {string}
-   * @memberof TaskSummary
-   */
-  robot_name: string;
-  /**
-   *
-   * @type {string}
-   * @memberof TaskSummary
-   */
-  authz_grp?: string;
-}
-/**
- *
- * @export
- * @interface TaskType
- */
-export interface TaskType {
-  /**
-   *
-   * @type {number}
-   * @memberof TaskType
-   */
-  type: number;
+  undo?: Undo;
 }
 /**
  * An enumeration.
@@ -1628,10 +1393,201 @@ export interface TaskType {
  * @enum {string}
  */
 
-export enum TaskTypeEnum {
-  NUMBER_4 = 4,
-  NUMBER_1 = 1,
-  NUMBER_2 = 2,
+export enum Status {
+  Uninitialized = 'uninitialized',
+  Offline = 'offline',
+  Shutdown = 'shutdown',
+  Idle = 'idle',
+  Charging = 'charging',
+  Working = 'working',
+  Error = 'error',
+}
+
+/**
+ * An enumeration.
+ * @export
+ * @enum {string}
+ */
+
+export enum Status1 {
+  Uninitialized = 'uninitialized',
+  Blocked = 'blocked',
+  Error = 'error',
+  Failed = 'failed',
+  Standby = 'standby',
+  Underway = 'underway',
+  Delayed = 'delayed',
+  Skipped = 'skipped',
+  Canceled = 'canceled',
+  Killed = 'killed',
+  Completed = 'completed',
+}
+
+/**
+ * Response to a request to cancel a task
+ * @export
+ * @interface TaskCancelResponse
+ */
+export interface TaskCancelResponse {
+  /**
+   * The request failed
+   * @type {boolean}
+   * @memberof TaskCancelResponse
+   */
+  success: boolean;
+  /**
+   * If the request failed, these error messages will explain why
+   * @type {Array<Error>}
+   * @memberof TaskCancelResponse
+   */
+  errors: Array<Error>;
+}
+/**
+ *
+ * @export
+ * @interface TaskEventLog
+ */
+export interface TaskEventLog {
+  /**
+   *
+   * @type {string}
+   * @memberof TaskEventLog
+   */
+  task_id: string;
+  /**
+   * Log entries related to the overall task
+   * @type {Array<LogEntry>}
+   * @memberof TaskEventLog
+   */
+  log?: Array<LogEntry>;
+  /**
+   * A dictionary whose keys (property names) are the indices of a phase
+   * @type {{ [key: string]: object; }}
+   * @memberof TaskEventLog
+   */
+  phases?: { [key: string]: object };
+}
+/**
+ *
+ * @export
+ * @interface TaskRequest
+ */
+export interface TaskRequest {
+  /**
+   * (Optional) The earliest time that this task may start
+   * @type {number}
+   * @memberof TaskRequest
+   */
+  unix_millis_earliest_start_time?: number;
+  /**
+   * (Optional) The priority of this task. This must match a priority schema supported by a fleet.
+   * @type {object}
+   * @memberof TaskRequest
+   */
+  priority?: object;
+  /**
+   * A description of the task. This must match a schema supported by a fleet.
+   * @type {Description}
+   * @memberof TaskRequest
+   */
+  description: Description;
+}
+/**
+ *
+ * @export
+ * @interface TaskState
+ */
+export interface TaskState {
+  /**
+   *
+   * @type {Booking}
+   * @memberof TaskState
+   */
+  booking: Booking;
+  /**
+   * The category of this task or phase
+   * @type {string}
+   * @memberof TaskState
+   */
+  category?: string;
+  /**
+   *
+   * @type {Detail}
+   * @memberof TaskState
+   */
+  detail?: Detail;
+  /**
+   *
+   * @type {number}
+   * @memberof TaskState
+   */
+  unix_millis_start_time?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof TaskState
+   */
+  unix_millis_finish_time?: number;
+  /**
+   * An estimate, in milliseconds, of how long the subject will take to complete
+   * @type {number}
+   * @memberof TaskState
+   */
+  estimate_millis?: number;
+  /**
+   * A dictionary of the states of the phases of the task. The keys (property names) are phase IDs, which are integers.
+   * @type {{ [key: string]: Phase; }}
+   * @memberof TaskState
+   */
+  phases?: { [key: string]: Phase };
+  /**
+   * An array of the IDs of completed phases of this task
+   * @type {Array<number>}
+   * @memberof TaskState
+   */
+  completed?: Array<number>;
+  /**
+   * The ID of the active phase for this task
+   * @type {number}
+   * @memberof TaskState
+   */
+  active?: number;
+  /**
+   * An array of the pending phases of this task
+   * @type {Array<number>}
+   * @memberof TaskState
+   */
+  pending?: Array<number>;
+  /**
+   * A dictionary of interruptions that have been applied to this task. The keys (property names) are the unique token of the interruption request.
+   * @type {{ [key: string]: Interruption; }}
+   * @memberof TaskState
+   */
+  interruptions?: { [key: string]: Interruption };
+  /**
+   * If the task was cancelled, this will describe information about the request.
+   * @type {Cancellation}
+   * @memberof TaskState
+   */
+  cancellation?: Cancellation;
+  /**
+   * If the task was killed, this will describe information about the request.
+   * @type {Killed}
+   * @memberof TaskState
+   */
+  killed?: Killed;
+}
+/**
+ * An enumeration.
+ * @export
+ * @enum {string}
+ */
+
+export enum Tier {
+  Uninitialized = 'uninitialized',
+  Info = 'info',
+  Warning = 'warning',
+  Error = 'error',
 }
 
 /**
@@ -1652,6 +1608,25 @@ export interface Time {
    * @memberof Time
    */
   nanosec: number;
+}
+/**
+ *
+ * @export
+ * @interface Undo
+ */
+export interface Undo {
+  /**
+   * The time that the undo skip request arrived
+   * @type {number}
+   * @memberof Undo
+   */
+  unix_millis_request_time: number;
+  /**
+   * Labels to describe the undo skip request
+   * @type {Array<string>}
+   * @memberof Undo
+   */
+  labels: Array<string>;
 }
 /**
  *
@@ -3299,6 +3274,38 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         options: localVarRequestOptions,
       };
     },
+    /**
+     *  # NOTE: This endpoint is here for documentation purposes only, this is _not_ a REST endpoint.  ## About This exposes a minimal pubsub system built on top of socket.io. It works similar to a normal socket.io endpoint, except that are 2 special rooms which control subscriptions.  ## Rooms ### subscribe Clients must send a message to this room to start receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ```  ### unsubscribe Clients can send a message to this room to stop receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ```              ### /building_map   ``` {   \"title\": \"BuildingMap\",   \"type\": \"object\",   \"properties\": {     \"name\": {       \"title\": \"Name\",       \"default\": \"\",       \"type\": \"string\"     },     \"levels\": {       \"title\": \"Levels\",       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/Level\"       }     },     \"lifts\": {       \"title\": \"Lifts\",       \"default\": [],       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/Lift\"       }     }   },   \"required\": [     \"name\",     \"levels\",     \"lifts\"   ],   \"definitions\": {     \"AffineImage\": {       \"title\": \"AffineImage\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"x_offset\": {           \"title\": \"X Offset\",           \"default\": 0,           \"type\": \"number\"         },         \"y_offset\": {           \"title\": \"Y Offset\",           \"default\": 0,           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"default\": 0,           \"type\": \"number\"         },         \"scale\": {           \"title\": \"Scale\",           \"default\": 0,           \"type\": \"number\"         },         \"encoding\": {           \"title\": \"Encoding\",           \"default\": \"\",           \"type\": \"string\"         },         \"data\": {           \"title\": \"Data\",           \"type\": \"string\"         }       },       \"required\": [         \"name\",         \"x_offset\",         \"y_offset\",         \"yaw\",         \"scale\",         \"encoding\",         \"data\"       ]     },     \"Place\": {       \"title\": \"Place\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"default\": 0,           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"default\": 0,           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"default\": 0,           \"type\": \"number\"         },         \"position_tolerance\": {           \"title\": \"Position Tolerance\",           \"default\": 0,           \"type\": \"number\"         },         \"yaw_tolerance\": {           \"title\": \"Yaw Tolerance\",           \"default\": 0,           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"x\",         \"y\",         \"yaw\",         \"position_tolerance\",         \"yaw_tolerance\"       ]     },     \"Door\": {       \"title\": \"Door\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"v1_x\": {           \"title\": \"V1 X\",           \"default\": 0,           \"type\": \"number\"         },         \"v1_y\": {           \"title\": \"V1 Y\",           \"default\": 0,           \"type\": \"number\"         },         \"v2_x\": {           \"title\": \"V2 X\",           \"default\": 0,           \"type\": \"number\"         },         \"v2_y\": {           \"title\": \"V2 Y\",           \"default\": 0,           \"type\": \"number\"         },         \"door_type\": {           \"title\": \"Door Type\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 255,           \"type\": \"integer\"         },         \"motion_range\": {           \"title\": \"Motion Range\",           \"default\": 0,           \"type\": \"number\"         },         \"motion_direction\": {           \"title\": \"Motion Direction\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         }       },       \"required\": [         \"name\",         \"v1_x\",         \"v1_y\",         \"v2_x\",         \"v2_y\",         \"door_type\",         \"motion_range\",         \"motion_direction\"       ]     },     \"Param\": {       \"title\": \"Param\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"type\": {           \"title\": \"Type\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         },         \"value_int\": {           \"title\": \"Value Int\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         },         \"value_float\": {           \"title\": \"Value Float\",           \"default\": 0,           \"type\": \"number\"         },         \"value_string\": {           \"title\": \"Value String\",           \"default\": \"\",           \"type\": \"string\"         },         \"value_bool\": {           \"title\": \"Value Bool\",           \"default\": false,           \"type\": \"boolean\"         }       },       \"required\": [         \"name\",         \"type\",         \"value_int\",         \"value_float\",         \"value_string\",         \"value_bool\"       ]     },     \"GraphNode\": {       \"title\": \"GraphNode\",       \"type\": \"object\",       \"properties\": {         \"x\": {           \"title\": \"X\",           \"default\": 0,           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"default\": 0,           \"type\": \"number\"         },         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"params\": {           \"title\": \"Params\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Param\"           }         }       },       \"required\": [         \"x\",         \"y\",         \"name\",         \"params\"       ]     },     \"GraphEdge\": {       \"title\": \"GraphEdge\",       \"type\": \"object\",       \"properties\": {         \"v1_idx\": {           \"title\": \"V1 Idx\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         },         \"v2_idx\": {           \"title\": \"V2 Idx\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         },         \"params\": {           \"title\": \"Params\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Param\"           }         },         \"edge_type\": {           \"title\": \"Edge Type\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 255,           \"type\": \"integer\"         }       },       \"required\": [         \"v1_idx\",         \"v2_idx\",         \"params\",         \"edge_type\"       ]     },     \"Graph\": {       \"title\": \"Graph\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"vertices\": {           \"title\": \"Vertices\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/GraphNode\"           }         },         \"edges\": {           \"title\": \"Edges\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/GraphEdge\"           }         },         \"params\": {           \"title\": \"Params\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Param\"           }         }       },       \"required\": [         \"name\",         \"vertices\",         \"edges\",         \"params\"       ]     },     \"Level\": {       \"title\": \"Level\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"elevation\": {           \"title\": \"Elevation\",           \"default\": 0,           \"type\": \"number\"         },         \"images\": {           \"title\": \"Images\",           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/AffineImage\"           }         },         \"places\": {           \"title\": \"Places\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Place\"           }         },         \"doors\": {           \"title\": \"Doors\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Door\"           }         },         \"nav_graphs\": {           \"title\": \"Nav Graphs\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Graph\"           }         },         \"wall_graph\": {           \"title\": \"Wall Graph\",           \"default\": {             \"name\": \"\",             \"vertices\": [],             \"edges\": [],             \"params\": []           },           \"allOf\": [             {               \"$ref\": \"#/definitions/Graph\"             }           ]         }       },       \"required\": [         \"name\",         \"elevation\",         \"images\",         \"places\",         \"doors\",         \"nav_graphs\",         \"wall_graph\"       ]     },     \"Lift\": {       \"title\": \"Lift\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"levels\": {           \"title\": \"Levels\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         },         \"doors\": {           \"title\": \"Doors\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Door\"           }         },         \"wall_graph\": {           \"title\": \"Wall Graph\",           \"default\": {             \"name\": \"\",             \"vertices\": [],             \"edges\": [],             \"params\": []           },           \"allOf\": [             {               \"$ref\": \"#/definitions/Graph\"             }           ]         },         \"ref_x\": {           \"title\": \"Ref X\",           \"default\": 0,           \"type\": \"number\"         },         \"ref_y\": {           \"title\": \"Ref Y\",           \"default\": 0,           \"type\": \"number\"         },         \"ref_yaw\": {           \"title\": \"Ref Yaw\",           \"default\": 0,           \"type\": \"number\"         },         \"width\": {           \"title\": \"Width\",           \"default\": 0,           \"type\": \"number\"         },         \"depth\": {           \"title\": \"Depth\",           \"default\": 0,           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"levels\",         \"doors\",         \"wall_graph\",         \"ref_x\",         \"ref_y\",         \"ref_yaw\",         \"width\",         \"depth\"       ]     }   } } ```   ### /doors/{door_name}/state   ``` {   \"title\": \"DoorState\",   \"type\": \"object\",   \"properties\": {     \"door_time\": {       \"title\": \"Door Time\",       \"default\": {         \"sec\": 0,         \"nanosec\": 0       },       \"allOf\": [         {           \"$ref\": \"#/definitions/Time\"         }       ]     },     \"door_name\": {       \"title\": \"Door Name\",       \"default\": \"\",       \"type\": \"string\"     },     \"current_mode\": {       \"title\": \"Current Mode\",       \"default\": {         \"value\": 0       },       \"allOf\": [         {           \"$ref\": \"#/definitions/DoorMode\"         }       ]     }   },   \"required\": [     \"door_time\",     \"door_name\",     \"current_mode\"   ],   \"definitions\": {     \"Time\": {       \"title\": \"Time\",       \"type\": \"object\",       \"properties\": {         \"sec\": {           \"title\": \"Sec\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         },         \"nanosec\": {           \"title\": \"Nanosec\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ]     },     \"DoorMode\": {       \"title\": \"DoorMode\",       \"type\": \"object\",       \"properties\": {         \"value\": {           \"title\": \"Value\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         }       },       \"required\": [         \"value\"       ]     }   } } ```   ### /doors/{door_name}/health   ``` {   \"title\": \"DoorHealth\",   \"type\": \"object\",   \"properties\": {     \"health_status\": {       \"title\": \"Health Status\",       \"maxLength\": 255,       \"nullable\": true,       \"type\": \"string\"     },     \"health_message\": {       \"title\": \"Health Message\",       \"nullable\": true,       \"type\": \"string\"     },     \"id_\": {       \"title\": \"Id \",       \"maxLength\": 255,       \"type\": \"string\"     }   },   \"required\": [     \"health_status\",     \"id_\"   ],   \"additionalProperties\": false } ```   ### /lifts/{lift_name}/state   ``` {   \"title\": \"LiftState\",   \"type\": \"object\",   \"properties\": {     \"lift_time\": {       \"title\": \"Lift Time\",       \"default\": {         \"sec\": 0,         \"nanosec\": 0       },       \"allOf\": [         {           \"$ref\": \"#/definitions/Time\"         }       ]     },     \"lift_name\": {       \"title\": \"Lift Name\",       \"default\": \"\",       \"type\": \"string\"     },     \"available_floors\": {       \"title\": \"Available Floors\",       \"default\": [],       \"type\": \"array\",       \"items\": {         \"type\": \"string\"       }     },     \"current_floor\": {       \"title\": \"Current Floor\",       \"default\": \"\",       \"type\": \"string\"     },     \"destination_floor\": {       \"title\": \"Destination Floor\",       \"default\": \"\",       \"type\": \"string\"     },     \"door_state\": {       \"title\": \"Door State\",       \"default\": 0,       \"minimum\": 0,       \"maximum\": 255,       \"type\": \"integer\"     },     \"motion_state\": {       \"title\": \"Motion State\",       \"default\": 0,       \"minimum\": 0,       \"maximum\": 255,       \"type\": \"integer\"     },     \"available_modes\": {       \"title\": \"Available Modes\",       \"type\": \"array\",       \"items\": {         \"type\": \"integer\"       }     },     \"current_mode\": {       \"title\": \"Current Mode\",       \"default\": 0,       \"minimum\": 0,       \"maximum\": 255,       \"type\": \"integer\"     },     \"session_id\": {       \"title\": \"Session Id\",       \"default\": \"\",       \"type\": \"string\"     }   },   \"required\": [     \"lift_time\",     \"lift_name\",     \"available_floors\",     \"current_floor\",     \"destination_floor\",     \"door_state\",     \"motion_state\",     \"available_modes\",     \"current_mode\",     \"session_id\"   ],   \"definitions\": {     \"Time\": {       \"title\": \"Time\",       \"type\": \"object\",       \"properties\": {         \"sec\": {           \"title\": \"Sec\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         },         \"nanosec\": {           \"title\": \"Nanosec\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ]     }   } } ```   ### /lifts/{lift_name}/health   ``` {   \"title\": \"LiftHealth\",   \"type\": \"object\",   \"properties\": {     \"health_status\": {       \"title\": \"Health Status\",       \"maxLength\": 255,       \"nullable\": true,       \"type\": \"string\"     },     \"health_message\": {       \"title\": \"Health Message\",       \"nullable\": true,       \"type\": \"string\"     },     \"id_\": {       \"title\": \"Id \",       \"maxLength\": 255,       \"type\": \"string\"     }   },   \"required\": [     \"health_status\",     \"id_\"   ],   \"additionalProperties\": false } ```   ### /tasks/{task_id}/state   ``` {   \"title\": \"TaskState\",   \"type\": \"object\",   \"properties\": {     \"booking\": {       \"$ref\": \"#/definitions/Booking\"     },     \"category\": {       \"$ref\": \"#/definitions/Category\"     },     \"detail\": {       \"$ref\": \"#/definitions/Detail\"     },     \"unix_millis_start_time\": {       \"title\": \"Unix Millis Start Time\",       \"type\": \"integer\"     },     \"unix_millis_finish_time\": {       \"title\": \"Unix Millis Finish Time\",       \"type\": \"integer\"     },     \"estimate_millis\": {       \"$ref\": \"#/definitions/EstimateMillis\"     },     \"phases\": {       \"title\": \"Phases\",       \"description\": \"A dictionary of the states of the phases of the task. The keys (property names) are phase IDs, which are integers.\",       \"type\": \"object\",       \"additionalProperties\": {         \"$ref\": \"#/definitions/Phase\"       }     },     \"completed\": {       \"title\": \"Completed\",       \"description\": \"An array of the IDs of completed phases of this task\",       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/Id\"       }     },     \"active\": {       \"title\": \"Active\",       \"description\": \"The ID of the active phase for this task\",       \"allOf\": [         {           \"$ref\": \"#/definitions/Id\"         }       ]     },     \"pending\": {       \"title\": \"Pending\",       \"description\": \"An array of the pending phases of this task\",       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/Id\"       }     },     \"interruptions\": {       \"title\": \"Interruptions\",       \"description\": \"A dictionary of interruptions that have been applied to this task. The keys (property names) are the unique token of the interruption request.\",       \"type\": \"object\",       \"additionalProperties\": {         \"$ref\": \"#/definitions/Interruption\"       }     },     \"cancellation\": {       \"title\": \"Cancellation\",       \"description\": \"If the task was cancelled, this will describe information about the request.\",       \"allOf\": [         {           \"$ref\": \"#/definitions/Cancellation\"         }       ]     },     \"killed\": {       \"title\": \"Killed\",       \"description\": \"If the task was killed, this will describe information about the request.\",       \"allOf\": [         {           \"$ref\": \"#/definitions/Killed\"         }       ]     }   },   \"required\": [     \"booking\"   ],   \"definitions\": {     \"Booking\": {       \"title\": \"Booking\",       \"type\": \"object\",       \"properties\": {         \"id\": {           \"title\": \"Id\",           \"description\": \"The unique identifier for this task\",           \"type\": \"string\"         },         \"unix_millis_earliest_start_time\": {           \"title\": \"Unix Millis Earliest Start Time\",           \"type\": \"integer\"         },         \"priority\": {           \"title\": \"Priority\",           \"description\": \"Priority information about this task\",           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"type\": \"string\"             }           ]         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Information about how and why this task was booked\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         }       },       \"required\": [         \"id\"       ]     },     \"Category\": {       \"title\": \"Category\",       \"description\": \"The category of this task or phase\",       \"type\": \"string\"     },     \"Detail\": {       \"title\": \"Detail\",       \"description\": \"Detailed information about a task, phase, or event\",       \"anyOf\": [         {           \"type\": \"object\"         },         {           \"type\": \"array\",           \"items\": {}         },         {           \"type\": \"string\"         }       ]     },     \"EstimateMillis\": {       \"title\": \"EstimateMillis\",       \"description\": \"An estimate, in milliseconds, of how long the subject will take to complete\",       \"minimum\": 0,       \"type\": \"integer\"     },     \"Id\": {       \"title\": \"Id\",       \"minimum\": 0,       \"type\": \"integer\"     },     \"Status1\": {       \"title\": \"Status1\",       \"description\": \"An enumeration.\",       \"enum\": [         \"uninitialized\",         \"blocked\",         \"error\",         \"failed\",         \"standby\",         \"underway\",         \"delayed\",         \"skipped\",         \"canceled\",         \"killed\",         \"completed\"       ]     },     \"EventState\": {       \"title\": \"EventState\",       \"type\": \"object\",       \"properties\": {         \"id\": {           \"$ref\": \"#/definitions/Id\"         },         \"status\": {           \"description\": \"A simple token representing how the task is proceeding\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Status1\"             }           ]         },         \"name\": {           \"title\": \"Name\",           \"description\": \"The brief name of the event\",           \"type\": \"string\"         },         \"detail\": {           \"title\": \"Detail\",           \"description\": \"Detailed information about the event\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Detail\"             }           ]         },         \"deps\": {           \"title\": \"Deps\",           \"description\": \"This event may depend on other events. This array contains the IDs of those other event dependencies.\",           \"type\": \"array\",           \"items\": {             \"type\": \"integer\",             \"minimum\": 0           }         }       },       \"required\": [         \"id\"       ]     },     \"Undo\": {       \"title\": \"Undo\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the undo skip request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the undo skip request\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ]     },     \"SkipPhaseRequest\": {       \"title\": \"SkipPhaseRequest\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the skip request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the purpose of the skip request\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         },         \"undo\": {           \"title\": \"Undo\",           \"description\": \"Information about an undo skip request that applied to this request\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Undo\"             }           ]         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ]     },     \"Phase\": {       \"title\": \"Phase\",       \"type\": \"object\",       \"properties\": {         \"id\": {           \"$ref\": \"#/definitions/Id\"         },         \"category\": {           \"$ref\": \"#/definitions/Category\"         },         \"detail\": {           \"$ref\": \"#/definitions/Detail\"         },         \"estimate_millis\": {           \"$ref\": \"#/definitions/EstimateMillis\"         },         \"final_event_id\": {           \"$ref\": \"#/definitions/Id\"         },         \"events\": {           \"title\": \"Events\",           \"description\": \"A dictionary of events for this phase. The keys (property names) are the event IDs, which are integers.\",           \"type\": \"object\",           \"additionalProperties\": {             \"$ref\": \"#/definitions/EventState\"           }         },         \"skip_requests\": {           \"title\": \"Skip Requests\",           \"description\": \"Information about any skip requests that have been received\",           \"type\": \"object\",           \"additionalProperties\": {             \"$ref\": \"#/definitions/SkipPhaseRequest\"           }         }       },       \"required\": [         \"id\"       ]     },     \"ResumedBy\": {       \"title\": \"ResumedBy\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the resume request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the resume request\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         }       },       \"required\": [         \"labels\"       ]     },     \"Interruption\": {       \"title\": \"Interruption\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the interruption request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the purpose of the interruption\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         },         \"resumed_by\": {           \"title\": \"Resumed By\",           \"description\": \"Information about the resume request that ended this interruption. This field will be missing if the interruption is still active.\",           \"allOf\": [             {               \"$ref\": \"#/definitions/ResumedBy\"             }           ]         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ]     },     \"Cancellation\": {       \"title\": \"Cancellation\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the cancellation request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the cancel request\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ]     },     \"Killed\": {       \"title\": \"Killed\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the cancellation request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the kill request\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ]     }   } } ```   ### /tasks/{task_id}/log   ``` {   \"title\": \"TaskEventLog\",   \"type\": \"object\",   \"properties\": {     \"task_id\": {       \"title\": \"Task Id\",       \"type\": \"string\"     },     \"log\": {       \"title\": \"Log\",       \"description\": \"Log entries related to the overall task\",       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/LogEntry\"       }     },     \"phases\": {       \"title\": \"Phases\",       \"description\": \"A dictionary whose keys (property names) are the indices of a phase\",       \"type\": \"object\",       \"additionalProperties\": {         \"type\": \"object\"       }     }   },   \"required\": [     \"task_id\"   ],   \"definitions\": {     \"Tier\": {       \"title\": \"Tier\",       \"description\": \"An enumeration.\",       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ]     },     \"LogEntry\": {       \"title\": \"LogEntry\",       \"type\": \"object\",       \"properties\": {         \"seq\": {           \"title\": \"Seq\",           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"type\": \"integer\"         },         \"tier\": {           \"description\": \"The importance level of the log entry\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Tier\"             }           ]         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"title\": \"Text\",           \"description\": \"The text of the log entry\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ]     }   } } ```   ### /dispensers/{guid}/state   ``` {   \"title\": \"DispenserState\",   \"type\": \"object\",   \"properties\": {     \"time\": {       \"title\": \"Time\",       \"default\": {         \"sec\": 0,         \"nanosec\": 0       },       \"allOf\": [         {           \"$ref\": \"#/definitions/Time\"         }       ]     },     \"guid\": {       \"title\": \"Guid\",       \"default\": \"\",       \"type\": \"string\"     },     \"mode\": {       \"title\": \"Mode\",       \"default\": 0,       \"minimum\": -2147483648,       \"maximum\": 2147483647,       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"title\": \"Request Guid Queue\",       \"default\": [],       \"type\": \"array\",       \"items\": {         \"type\": \"string\"       }     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"default\": 0,       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"definitions\": {     \"Time\": {       \"title\": \"Time\",       \"type\": \"object\",       \"properties\": {         \"sec\": {           \"title\": \"Sec\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         },         \"nanosec\": {           \"title\": \"Nanosec\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ]     }   } } ```   ### /dispensers/{guid}/health   ``` {   \"title\": \"DispenserHealth\",   \"type\": \"object\",   \"properties\": {     \"health_status\": {       \"title\": \"Health Status\",       \"maxLength\": 255,       \"nullable\": true,       \"type\": \"string\"     },     \"health_message\": {       \"title\": \"Health Message\",       \"nullable\": true,       \"type\": \"string\"     },     \"id_\": {       \"title\": \"Id \",       \"maxLength\": 255,       \"type\": \"string\"     }   },   \"required\": [     \"health_status\",     \"id_\"   ],   \"additionalProperties\": false } ```   ### /ingestors/{guid}/state   ``` {   \"title\": \"IngestorState\",   \"type\": \"object\",   \"properties\": {     \"time\": {       \"title\": \"Time\",       \"default\": {         \"sec\": 0,         \"nanosec\": 0       },       \"allOf\": [         {           \"$ref\": \"#/definitions/Time\"         }       ]     },     \"guid\": {       \"title\": \"Guid\",       \"default\": \"\",       \"type\": \"string\"     },     \"mode\": {       \"title\": \"Mode\",       \"default\": 0,       \"minimum\": -2147483648,       \"maximum\": 2147483647,       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"title\": \"Request Guid Queue\",       \"default\": [],       \"type\": \"array\",       \"items\": {         \"type\": \"string\"       }     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"default\": 0,       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"definitions\": {     \"Time\": {       \"title\": \"Time\",       \"type\": \"object\",       \"properties\": {         \"sec\": {           \"title\": \"Sec\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         },         \"nanosec\": {           \"title\": \"Nanosec\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ]     }   } } ```   ### /ingestors/{guid}/health   ``` {   \"title\": \"IngestorHealth\",   \"type\": \"object\",   \"properties\": {     \"health_status\": {       \"title\": \"Health Status\",       \"maxLength\": 255,       \"nullable\": true,       \"type\": \"string\"     },     \"health_message\": {       \"title\": \"Health Message\",       \"nullable\": true,       \"type\": \"string\"     },     \"id_\": {       \"title\": \"Id \",       \"maxLength\": 255,       \"type\": \"string\"     }   },   \"required\": [     \"health_status\",     \"id_\"   ],   \"additionalProperties\": false } ```   ### /fleets/{name}/state   ``` {   \"title\": \"FleetState\",   \"type\": \"object\",   \"properties\": {     \"name\": {       \"title\": \"Name\",       \"type\": \"string\"     },     \"robots\": {       \"title\": \"Robots\",       \"description\": \"A dictionary of the states of the robots that belong to this fleet\",       \"type\": \"object\",       \"additionalProperties\": {         \"$ref\": \"#/definitions/RobotState\"       }     }   },   \"definitions\": {     \"Status\": {       \"title\": \"Status\",       \"description\": \"An enumeration.\",       \"enum\": [         \"uninitialized\",         \"offline\",         \"shutdown\",         \"idle\",         \"charging\",         \"working\",         \"error\"       ]     },     \"Location2D\": {       \"title\": \"Location2D\",       \"type\": \"object\",       \"properties\": {         \"map\": {           \"title\": \"Map\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         }       },       \"required\": [         \"map\",         \"x\",         \"y\",         \"yaw\"       ]     },     \"Issue\": {       \"title\": \"Issue\",       \"type\": \"object\",       \"properties\": {         \"category\": {           \"title\": \"Category\",           \"description\": \"Category of the robot\'s issue\",           \"type\": \"string\"         },         \"detail\": {           \"title\": \"Detail\",           \"description\": \"Detailed information about the issue\",           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"type\": \"array\",               \"items\": {}             },             {               \"type\": \"string\"             }           ]         }       }     },     \"RobotState\": {       \"title\": \"RobotState\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"status\": {           \"description\": \"A simple token representing the status of the robot\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Status\"             }           ]         },         \"task_id\": {           \"title\": \"Task Id\",           \"description\": \"The ID of the task this robot is currently working on. Empty string if the robot is not working on a task.\",           \"type\": \"string\"         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"location\": {           \"$ref\": \"#/definitions/Location2D\"         },         \"battery\": {           \"title\": \"Battery\",           \"description\": \"State of charge of the battery. Values range from 0.0 (depleted) to 1.0 (fully charged)\",           \"minimum\": 0.0,           \"maximum\": 1.0,           \"type\": \"number\"         },         \"issues\": {           \"title\": \"Issues\",           \"description\": \"A list of issues with the robot that operators need to address\",           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Issue\"           }         }       }     }   } } ```   ### /fleets/{name}/log   ``` {   \"title\": \"FleetLog\",   \"type\": \"object\",   \"properties\": {     \"name\": {       \"title\": \"Name\",       \"type\": \"string\"     },     \"log\": {       \"title\": \"Log\",       \"description\": \"Log for the overall fleet\",       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/LogEntry\"       }     },     \"robots\": {       \"title\": \"Robots\",       \"description\": \"Dictionary of logs for the individual robots. The keys (property names) are the robot names.\",       \"type\": \"object\",       \"additionalProperties\": {         \"type\": \"array\",         \"items\": {           \"$ref\": \"#/definitions/LogEntry\"         }       }     }   },   \"definitions\": {     \"Tier\": {       \"title\": \"Tier\",       \"description\": \"An enumeration.\",       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ]     },     \"LogEntry\": {       \"title\": \"LogEntry\",       \"type\": \"object\",       \"properties\": {         \"seq\": {           \"title\": \"Seq\",           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"type\": \"integer\"         },         \"tier\": {           \"description\": \"The importance level of the log entry\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Tier\"             }           ]         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"title\": \"Text\",           \"description\": \"The text of the log entry\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ]     }   } } ```
+     * @summary Socket.io endpoint
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    lambdaSocketIoGet: async (options: any = {}): Promise<RequestArgs> => {
+      const localVarPath = `/socket.io`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
   };
 };
 
@@ -3332,6 +3339,18 @@ export const DefaultApiFp = function (configuration?: Configuration) {
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getUserUserGet(options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *  # NOTE: This endpoint is here for documentation purposes only, this is _not_ a REST endpoint.  ## About This exposes a minimal pubsub system built on top of socket.io. It works similar to a normal socket.io endpoint, except that are 2 special rooms which control subscriptions.  ## Rooms ### subscribe Clients must send a message to this room to start receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ```  ### unsubscribe Clients can send a message to this room to stop receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ```              ### /building_map   ``` {   \"title\": \"BuildingMap\",   \"type\": \"object\",   \"properties\": {     \"name\": {       \"title\": \"Name\",       \"default\": \"\",       \"type\": \"string\"     },     \"levels\": {       \"title\": \"Levels\",       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/Level\"       }     },     \"lifts\": {       \"title\": \"Lifts\",       \"default\": [],       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/Lift\"       }     }   },   \"required\": [     \"name\",     \"levels\",     \"lifts\"   ],   \"definitions\": {     \"AffineImage\": {       \"title\": \"AffineImage\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"x_offset\": {           \"title\": \"X Offset\",           \"default\": 0,           \"type\": \"number\"         },         \"y_offset\": {           \"title\": \"Y Offset\",           \"default\": 0,           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"default\": 0,           \"type\": \"number\"         },         \"scale\": {           \"title\": \"Scale\",           \"default\": 0,           \"type\": \"number\"         },         \"encoding\": {           \"title\": \"Encoding\",           \"default\": \"\",           \"type\": \"string\"         },         \"data\": {           \"title\": \"Data\",           \"type\": \"string\"         }       },       \"required\": [         \"name\",         \"x_offset\",         \"y_offset\",         \"yaw\",         \"scale\",         \"encoding\",         \"data\"       ]     },     \"Place\": {       \"title\": \"Place\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"default\": 0,           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"default\": 0,           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"default\": 0,           \"type\": \"number\"         },         \"position_tolerance\": {           \"title\": \"Position Tolerance\",           \"default\": 0,           \"type\": \"number\"         },         \"yaw_tolerance\": {           \"title\": \"Yaw Tolerance\",           \"default\": 0,           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"x\",         \"y\",         \"yaw\",         \"position_tolerance\",         \"yaw_tolerance\"       ]     },     \"Door\": {       \"title\": \"Door\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"v1_x\": {           \"title\": \"V1 X\",           \"default\": 0,           \"type\": \"number\"         },         \"v1_y\": {           \"title\": \"V1 Y\",           \"default\": 0,           \"type\": \"number\"         },         \"v2_x\": {           \"title\": \"V2 X\",           \"default\": 0,           \"type\": \"number\"         },         \"v2_y\": {           \"title\": \"V2 Y\",           \"default\": 0,           \"type\": \"number\"         },         \"door_type\": {           \"title\": \"Door Type\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 255,           \"type\": \"integer\"         },         \"motion_range\": {           \"title\": \"Motion Range\",           \"default\": 0,           \"type\": \"number\"         },         \"motion_direction\": {           \"title\": \"Motion Direction\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         }       },       \"required\": [         \"name\",         \"v1_x\",         \"v1_y\",         \"v2_x\",         \"v2_y\",         \"door_type\",         \"motion_range\",         \"motion_direction\"       ]     },     \"Param\": {       \"title\": \"Param\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"type\": {           \"title\": \"Type\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         },         \"value_int\": {           \"title\": \"Value Int\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         },         \"value_float\": {           \"title\": \"Value Float\",           \"default\": 0,           \"type\": \"number\"         },         \"value_string\": {           \"title\": \"Value String\",           \"default\": \"\",           \"type\": \"string\"         },         \"value_bool\": {           \"title\": \"Value Bool\",           \"default\": false,           \"type\": \"boolean\"         }       },       \"required\": [         \"name\",         \"type\",         \"value_int\",         \"value_float\",         \"value_string\",         \"value_bool\"       ]     },     \"GraphNode\": {       \"title\": \"GraphNode\",       \"type\": \"object\",       \"properties\": {         \"x\": {           \"title\": \"X\",           \"default\": 0,           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"default\": 0,           \"type\": \"number\"         },         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"params\": {           \"title\": \"Params\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Param\"           }         }       },       \"required\": [         \"x\",         \"y\",         \"name\",         \"params\"       ]     },     \"GraphEdge\": {       \"title\": \"GraphEdge\",       \"type\": \"object\",       \"properties\": {         \"v1_idx\": {           \"title\": \"V1 Idx\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         },         \"v2_idx\": {           \"title\": \"V2 Idx\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         },         \"params\": {           \"title\": \"Params\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Param\"           }         },         \"edge_type\": {           \"title\": \"Edge Type\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 255,           \"type\": \"integer\"         }       },       \"required\": [         \"v1_idx\",         \"v2_idx\",         \"params\",         \"edge_type\"       ]     },     \"Graph\": {       \"title\": \"Graph\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"vertices\": {           \"title\": \"Vertices\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/GraphNode\"           }         },         \"edges\": {           \"title\": \"Edges\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/GraphEdge\"           }         },         \"params\": {           \"title\": \"Params\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Param\"           }         }       },       \"required\": [         \"name\",         \"vertices\",         \"edges\",         \"params\"       ]     },     \"Level\": {       \"title\": \"Level\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"elevation\": {           \"title\": \"Elevation\",           \"default\": 0,           \"type\": \"number\"         },         \"images\": {           \"title\": \"Images\",           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/AffineImage\"           }         },         \"places\": {           \"title\": \"Places\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Place\"           }         },         \"doors\": {           \"title\": \"Doors\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Door\"           }         },         \"nav_graphs\": {           \"title\": \"Nav Graphs\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Graph\"           }         },         \"wall_graph\": {           \"title\": \"Wall Graph\",           \"default\": {             \"name\": \"\",             \"vertices\": [],             \"edges\": [],             \"params\": []           },           \"allOf\": [             {               \"$ref\": \"#/definitions/Graph\"             }           ]         }       },       \"required\": [         \"name\",         \"elevation\",         \"images\",         \"places\",         \"doors\",         \"nav_graphs\",         \"wall_graph\"       ]     },     \"Lift\": {       \"title\": \"Lift\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"levels\": {           \"title\": \"Levels\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         },         \"doors\": {           \"title\": \"Doors\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Door\"           }         },         \"wall_graph\": {           \"title\": \"Wall Graph\",           \"default\": {             \"name\": \"\",             \"vertices\": [],             \"edges\": [],             \"params\": []           },           \"allOf\": [             {               \"$ref\": \"#/definitions/Graph\"             }           ]         },         \"ref_x\": {           \"title\": \"Ref X\",           \"default\": 0,           \"type\": \"number\"         },         \"ref_y\": {           \"title\": \"Ref Y\",           \"default\": 0,           \"type\": \"number\"         },         \"ref_yaw\": {           \"title\": \"Ref Yaw\",           \"default\": 0,           \"type\": \"number\"         },         \"width\": {           \"title\": \"Width\",           \"default\": 0,           \"type\": \"number\"         },         \"depth\": {           \"title\": \"Depth\",           \"default\": 0,           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"levels\",         \"doors\",         \"wall_graph\",         \"ref_x\",         \"ref_y\",         \"ref_yaw\",         \"width\",         \"depth\"       ]     }   } } ```   ### /doors/{door_name}/state   ``` {   \"title\": \"DoorState\",   \"type\": \"object\",   \"properties\": {     \"door_time\": {       \"title\": \"Door Time\",       \"default\": {         \"sec\": 0,         \"nanosec\": 0       },       \"allOf\": [         {           \"$ref\": \"#/definitions/Time\"         }       ]     },     \"door_name\": {       \"title\": \"Door Name\",       \"default\": \"\",       \"type\": \"string\"     },     \"current_mode\": {       \"title\": \"Current Mode\",       \"default\": {         \"value\": 0       },       \"allOf\": [         {           \"$ref\": \"#/definitions/DoorMode\"         }       ]     }   },   \"required\": [     \"door_time\",     \"door_name\",     \"current_mode\"   ],   \"definitions\": {     \"Time\": {       \"title\": \"Time\",       \"type\": \"object\",       \"properties\": {         \"sec\": {           \"title\": \"Sec\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         },         \"nanosec\": {           \"title\": \"Nanosec\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ]     },     \"DoorMode\": {       \"title\": \"DoorMode\",       \"type\": \"object\",       \"properties\": {         \"value\": {           \"title\": \"Value\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         }       },       \"required\": [         \"value\"       ]     }   } } ```   ### /doors/{door_name}/health   ``` {   \"title\": \"DoorHealth\",   \"type\": \"object\",   \"properties\": {     \"health_status\": {       \"title\": \"Health Status\",       \"maxLength\": 255,       \"nullable\": true,       \"type\": \"string\"     },     \"health_message\": {       \"title\": \"Health Message\",       \"nullable\": true,       \"type\": \"string\"     },     \"id_\": {       \"title\": \"Id \",       \"maxLength\": 255,       \"type\": \"string\"     }   },   \"required\": [     \"health_status\",     \"id_\"   ],   \"additionalProperties\": false } ```   ### /lifts/{lift_name}/state   ``` {   \"title\": \"LiftState\",   \"type\": \"object\",   \"properties\": {     \"lift_time\": {       \"title\": \"Lift Time\",       \"default\": {         \"sec\": 0,         \"nanosec\": 0       },       \"allOf\": [         {           \"$ref\": \"#/definitions/Time\"         }       ]     },     \"lift_name\": {       \"title\": \"Lift Name\",       \"default\": \"\",       \"type\": \"string\"     },     \"available_floors\": {       \"title\": \"Available Floors\",       \"default\": [],       \"type\": \"array\",       \"items\": {         \"type\": \"string\"       }     },     \"current_floor\": {       \"title\": \"Current Floor\",       \"default\": \"\",       \"type\": \"string\"     },     \"destination_floor\": {       \"title\": \"Destination Floor\",       \"default\": \"\",       \"type\": \"string\"     },     \"door_state\": {       \"title\": \"Door State\",       \"default\": 0,       \"minimum\": 0,       \"maximum\": 255,       \"type\": \"integer\"     },     \"motion_state\": {       \"title\": \"Motion State\",       \"default\": 0,       \"minimum\": 0,       \"maximum\": 255,       \"type\": \"integer\"     },     \"available_modes\": {       \"title\": \"Available Modes\",       \"type\": \"array\",       \"items\": {         \"type\": \"integer\"       }     },     \"current_mode\": {       \"title\": \"Current Mode\",       \"default\": 0,       \"minimum\": 0,       \"maximum\": 255,       \"type\": \"integer\"     },     \"session_id\": {       \"title\": \"Session Id\",       \"default\": \"\",       \"type\": \"string\"     }   },   \"required\": [     \"lift_time\",     \"lift_name\",     \"available_floors\",     \"current_floor\",     \"destination_floor\",     \"door_state\",     \"motion_state\",     \"available_modes\",     \"current_mode\",     \"session_id\"   ],   \"definitions\": {     \"Time\": {       \"title\": \"Time\",       \"type\": \"object\",       \"properties\": {         \"sec\": {           \"title\": \"Sec\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         },         \"nanosec\": {           \"title\": \"Nanosec\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ]     }   } } ```   ### /lifts/{lift_name}/health   ``` {   \"title\": \"LiftHealth\",   \"type\": \"object\",   \"properties\": {     \"health_status\": {       \"title\": \"Health Status\",       \"maxLength\": 255,       \"nullable\": true,       \"type\": \"string\"     },     \"health_message\": {       \"title\": \"Health Message\",       \"nullable\": true,       \"type\": \"string\"     },     \"id_\": {       \"title\": \"Id \",       \"maxLength\": 255,       \"type\": \"string\"     }   },   \"required\": [     \"health_status\",     \"id_\"   ],   \"additionalProperties\": false } ```   ### /tasks/{task_id}/state   ``` {   \"title\": \"TaskState\",   \"type\": \"object\",   \"properties\": {     \"booking\": {       \"$ref\": \"#/definitions/Booking\"     },     \"category\": {       \"$ref\": \"#/definitions/Category\"     },     \"detail\": {       \"$ref\": \"#/definitions/Detail\"     },     \"unix_millis_start_time\": {       \"title\": \"Unix Millis Start Time\",       \"type\": \"integer\"     },     \"unix_millis_finish_time\": {       \"title\": \"Unix Millis Finish Time\",       \"type\": \"integer\"     },     \"estimate_millis\": {       \"$ref\": \"#/definitions/EstimateMillis\"     },     \"phases\": {       \"title\": \"Phases\",       \"description\": \"A dictionary of the states of the phases of the task. The keys (property names) are phase IDs, which are integers.\",       \"type\": \"object\",       \"additionalProperties\": {         \"$ref\": \"#/definitions/Phase\"       }     },     \"completed\": {       \"title\": \"Completed\",       \"description\": \"An array of the IDs of completed phases of this task\",       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/Id\"       }     },     \"active\": {       \"title\": \"Active\",       \"description\": \"The ID of the active phase for this task\",       \"allOf\": [         {           \"$ref\": \"#/definitions/Id\"         }       ]     },     \"pending\": {       \"title\": \"Pending\",       \"description\": \"An array of the pending phases of this task\",       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/Id\"       }     },     \"interruptions\": {       \"title\": \"Interruptions\",       \"description\": \"A dictionary of interruptions that have been applied to this task. The keys (property names) are the unique token of the interruption request.\",       \"type\": \"object\",       \"additionalProperties\": {         \"$ref\": \"#/definitions/Interruption\"       }     },     \"cancellation\": {       \"title\": \"Cancellation\",       \"description\": \"If the task was cancelled, this will describe information about the request.\",       \"allOf\": [         {           \"$ref\": \"#/definitions/Cancellation\"         }       ]     },     \"killed\": {       \"title\": \"Killed\",       \"description\": \"If the task was killed, this will describe information about the request.\",       \"allOf\": [         {           \"$ref\": \"#/definitions/Killed\"         }       ]     }   },   \"required\": [     \"booking\"   ],   \"definitions\": {     \"Booking\": {       \"title\": \"Booking\",       \"type\": \"object\",       \"properties\": {         \"id\": {           \"title\": \"Id\",           \"description\": \"The unique identifier for this task\",           \"type\": \"string\"         },         \"unix_millis_earliest_start_time\": {           \"title\": \"Unix Millis Earliest Start Time\",           \"type\": \"integer\"         },         \"priority\": {           \"title\": \"Priority\",           \"description\": \"Priority information about this task\",           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"type\": \"string\"             }           ]         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Information about how and why this task was booked\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         }       },       \"required\": [         \"id\"       ]     },     \"Category\": {       \"title\": \"Category\",       \"description\": \"The category of this task or phase\",       \"type\": \"string\"     },     \"Detail\": {       \"title\": \"Detail\",       \"description\": \"Detailed information about a task, phase, or event\",       \"anyOf\": [         {           \"type\": \"object\"         },         {           \"type\": \"array\",           \"items\": {}         },         {           \"type\": \"string\"         }       ]     },     \"EstimateMillis\": {       \"title\": \"EstimateMillis\",       \"description\": \"An estimate, in milliseconds, of how long the subject will take to complete\",       \"minimum\": 0,       \"type\": \"integer\"     },     \"Id\": {       \"title\": \"Id\",       \"minimum\": 0,       \"type\": \"integer\"     },     \"Status1\": {       \"title\": \"Status1\",       \"description\": \"An enumeration.\",       \"enum\": [         \"uninitialized\",         \"blocked\",         \"error\",         \"failed\",         \"standby\",         \"underway\",         \"delayed\",         \"skipped\",         \"canceled\",         \"killed\",         \"completed\"       ]     },     \"EventState\": {       \"title\": \"EventState\",       \"type\": \"object\",       \"properties\": {         \"id\": {           \"$ref\": \"#/definitions/Id\"         },         \"status\": {           \"description\": \"A simple token representing how the task is proceeding\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Status1\"             }           ]         },         \"name\": {           \"title\": \"Name\",           \"description\": \"The brief name of the event\",           \"type\": \"string\"         },         \"detail\": {           \"title\": \"Detail\",           \"description\": \"Detailed information about the event\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Detail\"             }           ]         },         \"deps\": {           \"title\": \"Deps\",           \"description\": \"This event may depend on other events. This array contains the IDs of those other event dependencies.\",           \"type\": \"array\",           \"items\": {             \"type\": \"integer\",             \"minimum\": 0           }         }       },       \"required\": [         \"id\"       ]     },     \"Undo\": {       \"title\": \"Undo\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the undo skip request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the undo skip request\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ]     },     \"SkipPhaseRequest\": {       \"title\": \"SkipPhaseRequest\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the skip request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the purpose of the skip request\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         },         \"undo\": {           \"title\": \"Undo\",           \"description\": \"Information about an undo skip request that applied to this request\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Undo\"             }           ]         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ]     },     \"Phase\": {       \"title\": \"Phase\",       \"type\": \"object\",       \"properties\": {         \"id\": {           \"$ref\": \"#/definitions/Id\"         },         \"category\": {           \"$ref\": \"#/definitions/Category\"         },         \"detail\": {           \"$ref\": \"#/definitions/Detail\"         },         \"estimate_millis\": {           \"$ref\": \"#/definitions/EstimateMillis\"         },         \"final_event_id\": {           \"$ref\": \"#/definitions/Id\"         },         \"events\": {           \"title\": \"Events\",           \"description\": \"A dictionary of events for this phase. The keys (property names) are the event IDs, which are integers.\",           \"type\": \"object\",           \"additionalProperties\": {             \"$ref\": \"#/definitions/EventState\"           }         },         \"skip_requests\": {           \"title\": \"Skip Requests\",           \"description\": \"Information about any skip requests that have been received\",           \"type\": \"object\",           \"additionalProperties\": {             \"$ref\": \"#/definitions/SkipPhaseRequest\"           }         }       },       \"required\": [         \"id\"       ]     },     \"ResumedBy\": {       \"title\": \"ResumedBy\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the resume request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the resume request\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         }       },       \"required\": [         \"labels\"       ]     },     \"Interruption\": {       \"title\": \"Interruption\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the interruption request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the purpose of the interruption\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         },         \"resumed_by\": {           \"title\": \"Resumed By\",           \"description\": \"Information about the resume request that ended this interruption. This field will be missing if the interruption is still active.\",           \"allOf\": [             {               \"$ref\": \"#/definitions/ResumedBy\"             }           ]         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ]     },     \"Cancellation\": {       \"title\": \"Cancellation\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the cancellation request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the cancel request\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ]     },     \"Killed\": {       \"title\": \"Killed\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the cancellation request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the kill request\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ]     }   } } ```   ### /tasks/{task_id}/log   ``` {   \"title\": \"TaskEventLog\",   \"type\": \"object\",   \"properties\": {     \"task_id\": {       \"title\": \"Task Id\",       \"type\": \"string\"     },     \"log\": {       \"title\": \"Log\",       \"description\": \"Log entries related to the overall task\",       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/LogEntry\"       }     },     \"phases\": {       \"title\": \"Phases\",       \"description\": \"A dictionary whose keys (property names) are the indices of a phase\",       \"type\": \"object\",       \"additionalProperties\": {         \"type\": \"object\"       }     }   },   \"required\": [     \"task_id\"   ],   \"definitions\": {     \"Tier\": {       \"title\": \"Tier\",       \"description\": \"An enumeration.\",       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ]     },     \"LogEntry\": {       \"title\": \"LogEntry\",       \"type\": \"object\",       \"properties\": {         \"seq\": {           \"title\": \"Seq\",           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"type\": \"integer\"         },         \"tier\": {           \"description\": \"The importance level of the log entry\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Tier\"             }           ]         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"title\": \"Text\",           \"description\": \"The text of the log entry\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ]     }   } } ```   ### /dispensers/{guid}/state   ``` {   \"title\": \"DispenserState\",   \"type\": \"object\",   \"properties\": {     \"time\": {       \"title\": \"Time\",       \"default\": {         \"sec\": 0,         \"nanosec\": 0       },       \"allOf\": [         {           \"$ref\": \"#/definitions/Time\"         }       ]     },     \"guid\": {       \"title\": \"Guid\",       \"default\": \"\",       \"type\": \"string\"     },     \"mode\": {       \"title\": \"Mode\",       \"default\": 0,       \"minimum\": -2147483648,       \"maximum\": 2147483647,       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"title\": \"Request Guid Queue\",       \"default\": [],       \"type\": \"array\",       \"items\": {         \"type\": \"string\"       }     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"default\": 0,       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"definitions\": {     \"Time\": {       \"title\": \"Time\",       \"type\": \"object\",       \"properties\": {         \"sec\": {           \"title\": \"Sec\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         },         \"nanosec\": {           \"title\": \"Nanosec\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ]     }   } } ```   ### /dispensers/{guid}/health   ``` {   \"title\": \"DispenserHealth\",   \"type\": \"object\",   \"properties\": {     \"health_status\": {       \"title\": \"Health Status\",       \"maxLength\": 255,       \"nullable\": true,       \"type\": \"string\"     },     \"health_message\": {       \"title\": \"Health Message\",       \"nullable\": true,       \"type\": \"string\"     },     \"id_\": {       \"title\": \"Id \",       \"maxLength\": 255,       \"type\": \"string\"     }   },   \"required\": [     \"health_status\",     \"id_\"   ],   \"additionalProperties\": false } ```   ### /ingestors/{guid}/state   ``` {   \"title\": \"IngestorState\",   \"type\": \"object\",   \"properties\": {     \"time\": {       \"title\": \"Time\",       \"default\": {         \"sec\": 0,         \"nanosec\": 0       },       \"allOf\": [         {           \"$ref\": \"#/definitions/Time\"         }       ]     },     \"guid\": {       \"title\": \"Guid\",       \"default\": \"\",       \"type\": \"string\"     },     \"mode\": {       \"title\": \"Mode\",       \"default\": 0,       \"minimum\": -2147483648,       \"maximum\": 2147483647,       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"title\": \"Request Guid Queue\",       \"default\": [],       \"type\": \"array\",       \"items\": {         \"type\": \"string\"       }     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"default\": 0,       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"definitions\": {     \"Time\": {       \"title\": \"Time\",       \"type\": \"object\",       \"properties\": {         \"sec\": {           \"title\": \"Sec\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         },         \"nanosec\": {           \"title\": \"Nanosec\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ]     }   } } ```   ### /ingestors/{guid}/health   ``` {   \"title\": \"IngestorHealth\",   \"type\": \"object\",   \"properties\": {     \"health_status\": {       \"title\": \"Health Status\",       \"maxLength\": 255,       \"nullable\": true,       \"type\": \"string\"     },     \"health_message\": {       \"title\": \"Health Message\",       \"nullable\": true,       \"type\": \"string\"     },     \"id_\": {       \"title\": \"Id \",       \"maxLength\": 255,       \"type\": \"string\"     }   },   \"required\": [     \"health_status\",     \"id_\"   ],   \"additionalProperties\": false } ```   ### /fleets/{name}/state   ``` {   \"title\": \"FleetState\",   \"type\": \"object\",   \"properties\": {     \"name\": {       \"title\": \"Name\",       \"type\": \"string\"     },     \"robots\": {       \"title\": \"Robots\",       \"description\": \"A dictionary of the states of the robots that belong to this fleet\",       \"type\": \"object\",       \"additionalProperties\": {         \"$ref\": \"#/definitions/RobotState\"       }     }   },   \"definitions\": {     \"Status\": {       \"title\": \"Status\",       \"description\": \"An enumeration.\",       \"enum\": [         \"uninitialized\",         \"offline\",         \"shutdown\",         \"idle\",         \"charging\",         \"working\",         \"error\"       ]     },     \"Location2D\": {       \"title\": \"Location2D\",       \"type\": \"object\",       \"properties\": {         \"map\": {           \"title\": \"Map\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         }       },       \"required\": [         \"map\",         \"x\",         \"y\",         \"yaw\"       ]     },     \"Issue\": {       \"title\": \"Issue\",       \"type\": \"object\",       \"properties\": {         \"category\": {           \"title\": \"Category\",           \"description\": \"Category of the robot\'s issue\",           \"type\": \"string\"         },         \"detail\": {           \"title\": \"Detail\",           \"description\": \"Detailed information about the issue\",           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"type\": \"array\",               \"items\": {}             },             {               \"type\": \"string\"             }           ]         }       }     },     \"RobotState\": {       \"title\": \"RobotState\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"status\": {           \"description\": \"A simple token representing the status of the robot\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Status\"             }           ]         },         \"task_id\": {           \"title\": \"Task Id\",           \"description\": \"The ID of the task this robot is currently working on. Empty string if the robot is not working on a task.\",           \"type\": \"string\"         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"location\": {           \"$ref\": \"#/definitions/Location2D\"         },         \"battery\": {           \"title\": \"Battery\",           \"description\": \"State of charge of the battery. Values range from 0.0 (depleted) to 1.0 (fully charged)\",           \"minimum\": 0.0,           \"maximum\": 1.0,           \"type\": \"number\"         },         \"issues\": {           \"title\": \"Issues\",           \"description\": \"A list of issues with the robot that operators need to address\",           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Issue\"           }         }       }     }   } } ```   ### /fleets/{name}/log   ``` {   \"title\": \"FleetLog\",   \"type\": \"object\",   \"properties\": {     \"name\": {       \"title\": \"Name\",       \"type\": \"string\"     },     \"log\": {       \"title\": \"Log\",       \"description\": \"Log for the overall fleet\",       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/LogEntry\"       }     },     \"robots\": {       \"title\": \"Robots\",       \"description\": \"Dictionary of logs for the individual robots. The keys (property names) are the robot names.\",       \"type\": \"object\",       \"additionalProperties\": {         \"type\": \"array\",         \"items\": {           \"$ref\": \"#/definitions/LogEntry\"         }       }     }   },   \"definitions\": {     \"Tier\": {       \"title\": \"Tier\",       \"description\": \"An enumeration.\",       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ]     },     \"LogEntry\": {       \"title\": \"LogEntry\",       \"type\": \"object\",       \"properties\": {         \"seq\": {           \"title\": \"Seq\",           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"type\": \"integer\"         },         \"tier\": {           \"description\": \"The importance level of the log entry\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Tier\"             }           ]         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"title\": \"Text\",           \"description\": \"The text of the log entry\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ]     }   } } ```
+     * @summary Socket.io endpoint
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async lambdaSocketIoGet(
+      options?: any,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.lambdaSocketIoGet(options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
   };
@@ -3368,6 +3387,15 @@ export const DefaultApiFactory = function (
     getUserUserGet(options?: any): AxiosPromise<User> {
       return localVarFp.getUserUserGet(options).then((request) => request(axios, basePath));
     },
+    /**
+     *  # NOTE: This endpoint is here for documentation purposes only, this is _not_ a REST endpoint.  ## About This exposes a minimal pubsub system built on top of socket.io. It works similar to a normal socket.io endpoint, except that are 2 special rooms which control subscriptions.  ## Rooms ### subscribe Clients must send a message to this room to start receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ```  ### unsubscribe Clients can send a message to this room to stop receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ```              ### /building_map   ``` {   \"title\": \"BuildingMap\",   \"type\": \"object\",   \"properties\": {     \"name\": {       \"title\": \"Name\",       \"default\": \"\",       \"type\": \"string\"     },     \"levels\": {       \"title\": \"Levels\",       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/Level\"       }     },     \"lifts\": {       \"title\": \"Lifts\",       \"default\": [],       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/Lift\"       }     }   },   \"required\": [     \"name\",     \"levels\",     \"lifts\"   ],   \"definitions\": {     \"AffineImage\": {       \"title\": \"AffineImage\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"x_offset\": {           \"title\": \"X Offset\",           \"default\": 0,           \"type\": \"number\"         },         \"y_offset\": {           \"title\": \"Y Offset\",           \"default\": 0,           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"default\": 0,           \"type\": \"number\"         },         \"scale\": {           \"title\": \"Scale\",           \"default\": 0,           \"type\": \"number\"         },         \"encoding\": {           \"title\": \"Encoding\",           \"default\": \"\",           \"type\": \"string\"         },         \"data\": {           \"title\": \"Data\",           \"type\": \"string\"         }       },       \"required\": [         \"name\",         \"x_offset\",         \"y_offset\",         \"yaw\",         \"scale\",         \"encoding\",         \"data\"       ]     },     \"Place\": {       \"title\": \"Place\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"default\": 0,           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"default\": 0,           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"default\": 0,           \"type\": \"number\"         },         \"position_tolerance\": {           \"title\": \"Position Tolerance\",           \"default\": 0,           \"type\": \"number\"         },         \"yaw_tolerance\": {           \"title\": \"Yaw Tolerance\",           \"default\": 0,           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"x\",         \"y\",         \"yaw\",         \"position_tolerance\",         \"yaw_tolerance\"       ]     },     \"Door\": {       \"title\": \"Door\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"v1_x\": {           \"title\": \"V1 X\",           \"default\": 0,           \"type\": \"number\"         },         \"v1_y\": {           \"title\": \"V1 Y\",           \"default\": 0,           \"type\": \"number\"         },         \"v2_x\": {           \"title\": \"V2 X\",           \"default\": 0,           \"type\": \"number\"         },         \"v2_y\": {           \"title\": \"V2 Y\",           \"default\": 0,           \"type\": \"number\"         },         \"door_type\": {           \"title\": \"Door Type\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 255,           \"type\": \"integer\"         },         \"motion_range\": {           \"title\": \"Motion Range\",           \"default\": 0,           \"type\": \"number\"         },         \"motion_direction\": {           \"title\": \"Motion Direction\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         }       },       \"required\": [         \"name\",         \"v1_x\",         \"v1_y\",         \"v2_x\",         \"v2_y\",         \"door_type\",         \"motion_range\",         \"motion_direction\"       ]     },     \"Param\": {       \"title\": \"Param\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"type\": {           \"title\": \"Type\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         },         \"value_int\": {           \"title\": \"Value Int\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         },         \"value_float\": {           \"title\": \"Value Float\",           \"default\": 0,           \"type\": \"number\"         },         \"value_string\": {           \"title\": \"Value String\",           \"default\": \"\",           \"type\": \"string\"         },         \"value_bool\": {           \"title\": \"Value Bool\",           \"default\": false,           \"type\": \"boolean\"         }       },       \"required\": [         \"name\",         \"type\",         \"value_int\",         \"value_float\",         \"value_string\",         \"value_bool\"       ]     },     \"GraphNode\": {       \"title\": \"GraphNode\",       \"type\": \"object\",       \"properties\": {         \"x\": {           \"title\": \"X\",           \"default\": 0,           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"default\": 0,           \"type\": \"number\"         },         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"params\": {           \"title\": \"Params\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Param\"           }         }       },       \"required\": [         \"x\",         \"y\",         \"name\",         \"params\"       ]     },     \"GraphEdge\": {       \"title\": \"GraphEdge\",       \"type\": \"object\",       \"properties\": {         \"v1_idx\": {           \"title\": \"V1 Idx\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         },         \"v2_idx\": {           \"title\": \"V2 Idx\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         },         \"params\": {           \"title\": \"Params\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Param\"           }         },         \"edge_type\": {           \"title\": \"Edge Type\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 255,           \"type\": \"integer\"         }       },       \"required\": [         \"v1_idx\",         \"v2_idx\",         \"params\",         \"edge_type\"       ]     },     \"Graph\": {       \"title\": \"Graph\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"vertices\": {           \"title\": \"Vertices\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/GraphNode\"           }         },         \"edges\": {           \"title\": \"Edges\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/GraphEdge\"           }         },         \"params\": {           \"title\": \"Params\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Param\"           }         }       },       \"required\": [         \"name\",         \"vertices\",         \"edges\",         \"params\"       ]     },     \"Level\": {       \"title\": \"Level\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"elevation\": {           \"title\": \"Elevation\",           \"default\": 0,           \"type\": \"number\"         },         \"images\": {           \"title\": \"Images\",           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/AffineImage\"           }         },         \"places\": {           \"title\": \"Places\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Place\"           }         },         \"doors\": {           \"title\": \"Doors\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Door\"           }         },         \"nav_graphs\": {           \"title\": \"Nav Graphs\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Graph\"           }         },         \"wall_graph\": {           \"title\": \"Wall Graph\",           \"default\": {             \"name\": \"\",             \"vertices\": [],             \"edges\": [],             \"params\": []           },           \"allOf\": [             {               \"$ref\": \"#/definitions/Graph\"             }           ]         }       },       \"required\": [         \"name\",         \"elevation\",         \"images\",         \"places\",         \"doors\",         \"nav_graphs\",         \"wall_graph\"       ]     },     \"Lift\": {       \"title\": \"Lift\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"levels\": {           \"title\": \"Levels\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         },         \"doors\": {           \"title\": \"Doors\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Door\"           }         },         \"wall_graph\": {           \"title\": \"Wall Graph\",           \"default\": {             \"name\": \"\",             \"vertices\": [],             \"edges\": [],             \"params\": []           },           \"allOf\": [             {               \"$ref\": \"#/definitions/Graph\"             }           ]         },         \"ref_x\": {           \"title\": \"Ref X\",           \"default\": 0,           \"type\": \"number\"         },         \"ref_y\": {           \"title\": \"Ref Y\",           \"default\": 0,           \"type\": \"number\"         },         \"ref_yaw\": {           \"title\": \"Ref Yaw\",           \"default\": 0,           \"type\": \"number\"         },         \"width\": {           \"title\": \"Width\",           \"default\": 0,           \"type\": \"number\"         },         \"depth\": {           \"title\": \"Depth\",           \"default\": 0,           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"levels\",         \"doors\",         \"wall_graph\",         \"ref_x\",         \"ref_y\",         \"ref_yaw\",         \"width\",         \"depth\"       ]     }   } } ```   ### /doors/{door_name}/state   ``` {   \"title\": \"DoorState\",   \"type\": \"object\",   \"properties\": {     \"door_time\": {       \"title\": \"Door Time\",       \"default\": {         \"sec\": 0,         \"nanosec\": 0       },       \"allOf\": [         {           \"$ref\": \"#/definitions/Time\"         }       ]     },     \"door_name\": {       \"title\": \"Door Name\",       \"default\": \"\",       \"type\": \"string\"     },     \"current_mode\": {       \"title\": \"Current Mode\",       \"default\": {         \"value\": 0       },       \"allOf\": [         {           \"$ref\": \"#/definitions/DoorMode\"         }       ]     }   },   \"required\": [     \"door_time\",     \"door_name\",     \"current_mode\"   ],   \"definitions\": {     \"Time\": {       \"title\": \"Time\",       \"type\": \"object\",       \"properties\": {         \"sec\": {           \"title\": \"Sec\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         },         \"nanosec\": {           \"title\": \"Nanosec\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ]     },     \"DoorMode\": {       \"title\": \"DoorMode\",       \"type\": \"object\",       \"properties\": {         \"value\": {           \"title\": \"Value\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         }       },       \"required\": [         \"value\"       ]     }   } } ```   ### /doors/{door_name}/health   ``` {   \"title\": \"DoorHealth\",   \"type\": \"object\",   \"properties\": {     \"health_status\": {       \"title\": \"Health Status\",       \"maxLength\": 255,       \"nullable\": true,       \"type\": \"string\"     },     \"health_message\": {       \"title\": \"Health Message\",       \"nullable\": true,       \"type\": \"string\"     },     \"id_\": {       \"title\": \"Id \",       \"maxLength\": 255,       \"type\": \"string\"     }   },   \"required\": [     \"health_status\",     \"id_\"   ],   \"additionalProperties\": false } ```   ### /lifts/{lift_name}/state   ``` {   \"title\": \"LiftState\",   \"type\": \"object\",   \"properties\": {     \"lift_time\": {       \"title\": \"Lift Time\",       \"default\": {         \"sec\": 0,         \"nanosec\": 0       },       \"allOf\": [         {           \"$ref\": \"#/definitions/Time\"         }       ]     },     \"lift_name\": {       \"title\": \"Lift Name\",       \"default\": \"\",       \"type\": \"string\"     },     \"available_floors\": {       \"title\": \"Available Floors\",       \"default\": [],       \"type\": \"array\",       \"items\": {         \"type\": \"string\"       }     },     \"current_floor\": {       \"title\": \"Current Floor\",       \"default\": \"\",       \"type\": \"string\"     },     \"destination_floor\": {       \"title\": \"Destination Floor\",       \"default\": \"\",       \"type\": \"string\"     },     \"door_state\": {       \"title\": \"Door State\",       \"default\": 0,       \"minimum\": 0,       \"maximum\": 255,       \"type\": \"integer\"     },     \"motion_state\": {       \"title\": \"Motion State\",       \"default\": 0,       \"minimum\": 0,       \"maximum\": 255,       \"type\": \"integer\"     },     \"available_modes\": {       \"title\": \"Available Modes\",       \"type\": \"array\",       \"items\": {         \"type\": \"integer\"       }     },     \"current_mode\": {       \"title\": \"Current Mode\",       \"default\": 0,       \"minimum\": 0,       \"maximum\": 255,       \"type\": \"integer\"     },     \"session_id\": {       \"title\": \"Session Id\",       \"default\": \"\",       \"type\": \"string\"     }   },   \"required\": [     \"lift_time\",     \"lift_name\",     \"available_floors\",     \"current_floor\",     \"destination_floor\",     \"door_state\",     \"motion_state\",     \"available_modes\",     \"current_mode\",     \"session_id\"   ],   \"definitions\": {     \"Time\": {       \"title\": \"Time\",       \"type\": \"object\",       \"properties\": {         \"sec\": {           \"title\": \"Sec\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         },         \"nanosec\": {           \"title\": \"Nanosec\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ]     }   } } ```   ### /lifts/{lift_name}/health   ``` {   \"title\": \"LiftHealth\",   \"type\": \"object\",   \"properties\": {     \"health_status\": {       \"title\": \"Health Status\",       \"maxLength\": 255,       \"nullable\": true,       \"type\": \"string\"     },     \"health_message\": {       \"title\": \"Health Message\",       \"nullable\": true,       \"type\": \"string\"     },     \"id_\": {       \"title\": \"Id \",       \"maxLength\": 255,       \"type\": \"string\"     }   },   \"required\": [     \"health_status\",     \"id_\"   ],   \"additionalProperties\": false } ```   ### /tasks/{task_id}/state   ``` {   \"title\": \"TaskState\",   \"type\": \"object\",   \"properties\": {     \"booking\": {       \"$ref\": \"#/definitions/Booking\"     },     \"category\": {       \"$ref\": \"#/definitions/Category\"     },     \"detail\": {       \"$ref\": \"#/definitions/Detail\"     },     \"unix_millis_start_time\": {       \"title\": \"Unix Millis Start Time\",       \"type\": \"integer\"     },     \"unix_millis_finish_time\": {       \"title\": \"Unix Millis Finish Time\",       \"type\": \"integer\"     },     \"estimate_millis\": {       \"$ref\": \"#/definitions/EstimateMillis\"     },     \"phases\": {       \"title\": \"Phases\",       \"description\": \"A dictionary of the states of the phases of the task. The keys (property names) are phase IDs, which are integers.\",       \"type\": \"object\",       \"additionalProperties\": {         \"$ref\": \"#/definitions/Phase\"       }     },     \"completed\": {       \"title\": \"Completed\",       \"description\": \"An array of the IDs of completed phases of this task\",       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/Id\"       }     },     \"active\": {       \"title\": \"Active\",       \"description\": \"The ID of the active phase for this task\",       \"allOf\": [         {           \"$ref\": \"#/definitions/Id\"         }       ]     },     \"pending\": {       \"title\": \"Pending\",       \"description\": \"An array of the pending phases of this task\",       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/Id\"       }     },     \"interruptions\": {       \"title\": \"Interruptions\",       \"description\": \"A dictionary of interruptions that have been applied to this task. The keys (property names) are the unique token of the interruption request.\",       \"type\": \"object\",       \"additionalProperties\": {         \"$ref\": \"#/definitions/Interruption\"       }     },     \"cancellation\": {       \"title\": \"Cancellation\",       \"description\": \"If the task was cancelled, this will describe information about the request.\",       \"allOf\": [         {           \"$ref\": \"#/definitions/Cancellation\"         }       ]     },     \"killed\": {       \"title\": \"Killed\",       \"description\": \"If the task was killed, this will describe information about the request.\",       \"allOf\": [         {           \"$ref\": \"#/definitions/Killed\"         }       ]     }   },   \"required\": [     \"booking\"   ],   \"definitions\": {     \"Booking\": {       \"title\": \"Booking\",       \"type\": \"object\",       \"properties\": {         \"id\": {           \"title\": \"Id\",           \"description\": \"The unique identifier for this task\",           \"type\": \"string\"         },         \"unix_millis_earliest_start_time\": {           \"title\": \"Unix Millis Earliest Start Time\",           \"type\": \"integer\"         },         \"priority\": {           \"title\": \"Priority\",           \"description\": \"Priority information about this task\",           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"type\": \"string\"             }           ]         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Information about how and why this task was booked\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         }       },       \"required\": [         \"id\"       ]     },     \"Category\": {       \"title\": \"Category\",       \"description\": \"The category of this task or phase\",       \"type\": \"string\"     },     \"Detail\": {       \"title\": \"Detail\",       \"description\": \"Detailed information about a task, phase, or event\",       \"anyOf\": [         {           \"type\": \"object\"         },         {           \"type\": \"array\",           \"items\": {}         },         {           \"type\": \"string\"         }       ]     },     \"EstimateMillis\": {       \"title\": \"EstimateMillis\",       \"description\": \"An estimate, in milliseconds, of how long the subject will take to complete\",       \"minimum\": 0,       \"type\": \"integer\"     },     \"Id\": {       \"title\": \"Id\",       \"minimum\": 0,       \"type\": \"integer\"     },     \"Status1\": {       \"title\": \"Status1\",       \"description\": \"An enumeration.\",       \"enum\": [         \"uninitialized\",         \"blocked\",         \"error\",         \"failed\",         \"standby\",         \"underway\",         \"delayed\",         \"skipped\",         \"canceled\",         \"killed\",         \"completed\"       ]     },     \"EventState\": {       \"title\": \"EventState\",       \"type\": \"object\",       \"properties\": {         \"id\": {           \"$ref\": \"#/definitions/Id\"         },         \"status\": {           \"description\": \"A simple token representing how the task is proceeding\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Status1\"             }           ]         },         \"name\": {           \"title\": \"Name\",           \"description\": \"The brief name of the event\",           \"type\": \"string\"         },         \"detail\": {           \"title\": \"Detail\",           \"description\": \"Detailed information about the event\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Detail\"             }           ]         },         \"deps\": {           \"title\": \"Deps\",           \"description\": \"This event may depend on other events. This array contains the IDs of those other event dependencies.\",           \"type\": \"array\",           \"items\": {             \"type\": \"integer\",             \"minimum\": 0           }         }       },       \"required\": [         \"id\"       ]     },     \"Undo\": {       \"title\": \"Undo\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the undo skip request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the undo skip request\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ]     },     \"SkipPhaseRequest\": {       \"title\": \"SkipPhaseRequest\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the skip request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the purpose of the skip request\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         },         \"undo\": {           \"title\": \"Undo\",           \"description\": \"Information about an undo skip request that applied to this request\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Undo\"             }           ]         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ]     },     \"Phase\": {       \"title\": \"Phase\",       \"type\": \"object\",       \"properties\": {         \"id\": {           \"$ref\": \"#/definitions/Id\"         },         \"category\": {           \"$ref\": \"#/definitions/Category\"         },         \"detail\": {           \"$ref\": \"#/definitions/Detail\"         },         \"estimate_millis\": {           \"$ref\": \"#/definitions/EstimateMillis\"         },         \"final_event_id\": {           \"$ref\": \"#/definitions/Id\"         },         \"events\": {           \"title\": \"Events\",           \"description\": \"A dictionary of events for this phase. The keys (property names) are the event IDs, which are integers.\",           \"type\": \"object\",           \"additionalProperties\": {             \"$ref\": \"#/definitions/EventState\"           }         },         \"skip_requests\": {           \"title\": \"Skip Requests\",           \"description\": \"Information about any skip requests that have been received\",           \"type\": \"object\",           \"additionalProperties\": {             \"$ref\": \"#/definitions/SkipPhaseRequest\"           }         }       },       \"required\": [         \"id\"       ]     },     \"ResumedBy\": {       \"title\": \"ResumedBy\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the resume request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the resume request\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         }       },       \"required\": [         \"labels\"       ]     },     \"Interruption\": {       \"title\": \"Interruption\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the interruption request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the purpose of the interruption\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         },         \"resumed_by\": {           \"title\": \"Resumed By\",           \"description\": \"Information about the resume request that ended this interruption. This field will be missing if the interruption is still active.\",           \"allOf\": [             {               \"$ref\": \"#/definitions/ResumedBy\"             }           ]         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ]     },     \"Cancellation\": {       \"title\": \"Cancellation\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the cancellation request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the cancel request\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ]     },     \"Killed\": {       \"title\": \"Killed\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the cancellation request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the kill request\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ]     }   } } ```   ### /tasks/{task_id}/log   ``` {   \"title\": \"TaskEventLog\",   \"type\": \"object\",   \"properties\": {     \"task_id\": {       \"title\": \"Task Id\",       \"type\": \"string\"     },     \"log\": {       \"title\": \"Log\",       \"description\": \"Log entries related to the overall task\",       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/LogEntry\"       }     },     \"phases\": {       \"title\": \"Phases\",       \"description\": \"A dictionary whose keys (property names) are the indices of a phase\",       \"type\": \"object\",       \"additionalProperties\": {         \"type\": \"object\"       }     }   },   \"required\": [     \"task_id\"   ],   \"definitions\": {     \"Tier\": {       \"title\": \"Tier\",       \"description\": \"An enumeration.\",       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ]     },     \"LogEntry\": {       \"title\": \"LogEntry\",       \"type\": \"object\",       \"properties\": {         \"seq\": {           \"title\": \"Seq\",           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"type\": \"integer\"         },         \"tier\": {           \"description\": \"The importance level of the log entry\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Tier\"             }           ]         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"title\": \"Text\",           \"description\": \"The text of the log entry\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ]     }   } } ```   ### /dispensers/{guid}/state   ``` {   \"title\": \"DispenserState\",   \"type\": \"object\",   \"properties\": {     \"time\": {       \"title\": \"Time\",       \"default\": {         \"sec\": 0,         \"nanosec\": 0       },       \"allOf\": [         {           \"$ref\": \"#/definitions/Time\"         }       ]     },     \"guid\": {       \"title\": \"Guid\",       \"default\": \"\",       \"type\": \"string\"     },     \"mode\": {       \"title\": \"Mode\",       \"default\": 0,       \"minimum\": -2147483648,       \"maximum\": 2147483647,       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"title\": \"Request Guid Queue\",       \"default\": [],       \"type\": \"array\",       \"items\": {         \"type\": \"string\"       }     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"default\": 0,       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"definitions\": {     \"Time\": {       \"title\": \"Time\",       \"type\": \"object\",       \"properties\": {         \"sec\": {           \"title\": \"Sec\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         },         \"nanosec\": {           \"title\": \"Nanosec\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ]     }   } } ```   ### /dispensers/{guid}/health   ``` {   \"title\": \"DispenserHealth\",   \"type\": \"object\",   \"properties\": {     \"health_status\": {       \"title\": \"Health Status\",       \"maxLength\": 255,       \"nullable\": true,       \"type\": \"string\"     },     \"health_message\": {       \"title\": \"Health Message\",       \"nullable\": true,       \"type\": \"string\"     },     \"id_\": {       \"title\": \"Id \",       \"maxLength\": 255,       \"type\": \"string\"     }   },   \"required\": [     \"health_status\",     \"id_\"   ],   \"additionalProperties\": false } ```   ### /ingestors/{guid}/state   ``` {   \"title\": \"IngestorState\",   \"type\": \"object\",   \"properties\": {     \"time\": {       \"title\": \"Time\",       \"default\": {         \"sec\": 0,         \"nanosec\": 0       },       \"allOf\": [         {           \"$ref\": \"#/definitions/Time\"         }       ]     },     \"guid\": {       \"title\": \"Guid\",       \"default\": \"\",       \"type\": \"string\"     },     \"mode\": {       \"title\": \"Mode\",       \"default\": 0,       \"minimum\": -2147483648,       \"maximum\": 2147483647,       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"title\": \"Request Guid Queue\",       \"default\": [],       \"type\": \"array\",       \"items\": {         \"type\": \"string\"       }     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"default\": 0,       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"definitions\": {     \"Time\": {       \"title\": \"Time\",       \"type\": \"object\",       \"properties\": {         \"sec\": {           \"title\": \"Sec\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         },         \"nanosec\": {           \"title\": \"Nanosec\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ]     }   } } ```   ### /ingestors/{guid}/health   ``` {   \"title\": \"IngestorHealth\",   \"type\": \"object\",   \"properties\": {     \"health_status\": {       \"title\": \"Health Status\",       \"maxLength\": 255,       \"nullable\": true,       \"type\": \"string\"     },     \"health_message\": {       \"title\": \"Health Message\",       \"nullable\": true,       \"type\": \"string\"     },     \"id_\": {       \"title\": \"Id \",       \"maxLength\": 255,       \"type\": \"string\"     }   },   \"required\": [     \"health_status\",     \"id_\"   ],   \"additionalProperties\": false } ```   ### /fleets/{name}/state   ``` {   \"title\": \"FleetState\",   \"type\": \"object\",   \"properties\": {     \"name\": {       \"title\": \"Name\",       \"type\": \"string\"     },     \"robots\": {       \"title\": \"Robots\",       \"description\": \"A dictionary of the states of the robots that belong to this fleet\",       \"type\": \"object\",       \"additionalProperties\": {         \"$ref\": \"#/definitions/RobotState\"       }     }   },   \"definitions\": {     \"Status\": {       \"title\": \"Status\",       \"description\": \"An enumeration.\",       \"enum\": [         \"uninitialized\",         \"offline\",         \"shutdown\",         \"idle\",         \"charging\",         \"working\",         \"error\"       ]     },     \"Location2D\": {       \"title\": \"Location2D\",       \"type\": \"object\",       \"properties\": {         \"map\": {           \"title\": \"Map\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         }       },       \"required\": [         \"map\",         \"x\",         \"y\",         \"yaw\"       ]     },     \"Issue\": {       \"title\": \"Issue\",       \"type\": \"object\",       \"properties\": {         \"category\": {           \"title\": \"Category\",           \"description\": \"Category of the robot\'s issue\",           \"type\": \"string\"         },         \"detail\": {           \"title\": \"Detail\",           \"description\": \"Detailed information about the issue\",           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"type\": \"array\",               \"items\": {}             },             {               \"type\": \"string\"             }           ]         }       }     },     \"RobotState\": {       \"title\": \"RobotState\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"status\": {           \"description\": \"A simple token representing the status of the robot\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Status\"             }           ]         },         \"task_id\": {           \"title\": \"Task Id\",           \"description\": \"The ID of the task this robot is currently working on. Empty string if the robot is not working on a task.\",           \"type\": \"string\"         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"location\": {           \"$ref\": \"#/definitions/Location2D\"         },         \"battery\": {           \"title\": \"Battery\",           \"description\": \"State of charge of the battery. Values range from 0.0 (depleted) to 1.0 (fully charged)\",           \"minimum\": 0.0,           \"maximum\": 1.0,           \"type\": \"number\"         },         \"issues\": {           \"title\": \"Issues\",           \"description\": \"A list of issues with the robot that operators need to address\",           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Issue\"           }         }       }     }   } } ```   ### /fleets/{name}/log   ``` {   \"title\": \"FleetLog\",   \"type\": \"object\",   \"properties\": {     \"name\": {       \"title\": \"Name\",       \"type\": \"string\"     },     \"log\": {       \"title\": \"Log\",       \"description\": \"Log for the overall fleet\",       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/LogEntry\"       }     },     \"robots\": {       \"title\": \"Robots\",       \"description\": \"Dictionary of logs for the individual robots. The keys (property names) are the robot names.\",       \"type\": \"object\",       \"additionalProperties\": {         \"type\": \"array\",         \"items\": {           \"$ref\": \"#/definitions/LogEntry\"         }       }     }   },   \"definitions\": {     \"Tier\": {       \"title\": \"Tier\",       \"description\": \"An enumeration.\",       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ]     },     \"LogEntry\": {       \"title\": \"LogEntry\",       \"type\": \"object\",       \"properties\": {         \"seq\": {           \"title\": \"Seq\",           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"type\": \"integer\"         },         \"tier\": {           \"description\": \"The importance level of the log entry\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Tier\"             }           ]         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"title\": \"Text\",           \"description\": \"The text of the log entry\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ]     }   } } ```
+     * @summary Socket.io endpoint
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    lambdaSocketIoGet(options?: any): AxiosPromise<any> {
+      return localVarFp.lambdaSocketIoGet(options).then((request) => request(axios, basePath));
+    },
   };
 };
 
@@ -3401,6 +3429,19 @@ export class DefaultApi extends BaseAPI {
   public getUserUserGet(options?: any) {
     return DefaultApiFp(this.configuration)
       .getUserUserGet(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  # NOTE: This endpoint is here for documentation purposes only, this is _not_ a REST endpoint.  ## About This exposes a minimal pubsub system built on top of socket.io. It works similar to a normal socket.io endpoint, except that are 2 special rooms which control subscriptions.  ## Rooms ### subscribe Clients must send a message to this room to start receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ```  ### unsubscribe Clients can send a message to this room to stop receiving messages on other rooms. The message must be of the form:  ``` {     \"room\": \"<room_name>\" } ```              ### /building_map   ``` {   \"title\": \"BuildingMap\",   \"type\": \"object\",   \"properties\": {     \"name\": {       \"title\": \"Name\",       \"default\": \"\",       \"type\": \"string\"     },     \"levels\": {       \"title\": \"Levels\",       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/Level\"       }     },     \"lifts\": {       \"title\": \"Lifts\",       \"default\": [],       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/Lift\"       }     }   },   \"required\": [     \"name\",     \"levels\",     \"lifts\"   ],   \"definitions\": {     \"AffineImage\": {       \"title\": \"AffineImage\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"x_offset\": {           \"title\": \"X Offset\",           \"default\": 0,           \"type\": \"number\"         },         \"y_offset\": {           \"title\": \"Y Offset\",           \"default\": 0,           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"default\": 0,           \"type\": \"number\"         },         \"scale\": {           \"title\": \"Scale\",           \"default\": 0,           \"type\": \"number\"         },         \"encoding\": {           \"title\": \"Encoding\",           \"default\": \"\",           \"type\": \"string\"         },         \"data\": {           \"title\": \"Data\",           \"type\": \"string\"         }       },       \"required\": [         \"name\",         \"x_offset\",         \"y_offset\",         \"yaw\",         \"scale\",         \"encoding\",         \"data\"       ]     },     \"Place\": {       \"title\": \"Place\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"default\": 0,           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"default\": 0,           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"default\": 0,           \"type\": \"number\"         },         \"position_tolerance\": {           \"title\": \"Position Tolerance\",           \"default\": 0,           \"type\": \"number\"         },         \"yaw_tolerance\": {           \"title\": \"Yaw Tolerance\",           \"default\": 0,           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"x\",         \"y\",         \"yaw\",         \"position_tolerance\",         \"yaw_tolerance\"       ]     },     \"Door\": {       \"title\": \"Door\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"v1_x\": {           \"title\": \"V1 X\",           \"default\": 0,           \"type\": \"number\"         },         \"v1_y\": {           \"title\": \"V1 Y\",           \"default\": 0,           \"type\": \"number\"         },         \"v2_x\": {           \"title\": \"V2 X\",           \"default\": 0,           \"type\": \"number\"         },         \"v2_y\": {           \"title\": \"V2 Y\",           \"default\": 0,           \"type\": \"number\"         },         \"door_type\": {           \"title\": \"Door Type\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 255,           \"type\": \"integer\"         },         \"motion_range\": {           \"title\": \"Motion Range\",           \"default\": 0,           \"type\": \"number\"         },         \"motion_direction\": {           \"title\": \"Motion Direction\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         }       },       \"required\": [         \"name\",         \"v1_x\",         \"v1_y\",         \"v2_x\",         \"v2_y\",         \"door_type\",         \"motion_range\",         \"motion_direction\"       ]     },     \"Param\": {       \"title\": \"Param\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"type\": {           \"title\": \"Type\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         },         \"value_int\": {           \"title\": \"Value Int\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         },         \"value_float\": {           \"title\": \"Value Float\",           \"default\": 0,           \"type\": \"number\"         },         \"value_string\": {           \"title\": \"Value String\",           \"default\": \"\",           \"type\": \"string\"         },         \"value_bool\": {           \"title\": \"Value Bool\",           \"default\": false,           \"type\": \"boolean\"         }       },       \"required\": [         \"name\",         \"type\",         \"value_int\",         \"value_float\",         \"value_string\",         \"value_bool\"       ]     },     \"GraphNode\": {       \"title\": \"GraphNode\",       \"type\": \"object\",       \"properties\": {         \"x\": {           \"title\": \"X\",           \"default\": 0,           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"default\": 0,           \"type\": \"number\"         },         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"params\": {           \"title\": \"Params\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Param\"           }         }       },       \"required\": [         \"x\",         \"y\",         \"name\",         \"params\"       ]     },     \"GraphEdge\": {       \"title\": \"GraphEdge\",       \"type\": \"object\",       \"properties\": {         \"v1_idx\": {           \"title\": \"V1 Idx\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         },         \"v2_idx\": {           \"title\": \"V2 Idx\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         },         \"params\": {           \"title\": \"Params\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Param\"           }         },         \"edge_type\": {           \"title\": \"Edge Type\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 255,           \"type\": \"integer\"         }       },       \"required\": [         \"v1_idx\",         \"v2_idx\",         \"params\",         \"edge_type\"       ]     },     \"Graph\": {       \"title\": \"Graph\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"vertices\": {           \"title\": \"Vertices\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/GraphNode\"           }         },         \"edges\": {           \"title\": \"Edges\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/GraphEdge\"           }         },         \"params\": {           \"title\": \"Params\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Param\"           }         }       },       \"required\": [         \"name\",         \"vertices\",         \"edges\",         \"params\"       ]     },     \"Level\": {       \"title\": \"Level\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"elevation\": {           \"title\": \"Elevation\",           \"default\": 0,           \"type\": \"number\"         },         \"images\": {           \"title\": \"Images\",           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/AffineImage\"           }         },         \"places\": {           \"title\": \"Places\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Place\"           }         },         \"doors\": {           \"title\": \"Doors\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Door\"           }         },         \"nav_graphs\": {           \"title\": \"Nav Graphs\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Graph\"           }         },         \"wall_graph\": {           \"title\": \"Wall Graph\",           \"default\": {             \"name\": \"\",             \"vertices\": [],             \"edges\": [],             \"params\": []           },           \"allOf\": [             {               \"$ref\": \"#/definitions/Graph\"             }           ]         }       },       \"required\": [         \"name\",         \"elevation\",         \"images\",         \"places\",         \"doors\",         \"nav_graphs\",         \"wall_graph\"       ]     },     \"Lift\": {       \"title\": \"Lift\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"default\": \"\",           \"type\": \"string\"         },         \"levels\": {           \"title\": \"Levels\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         },         \"doors\": {           \"title\": \"Doors\",           \"default\": [],           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Door\"           }         },         \"wall_graph\": {           \"title\": \"Wall Graph\",           \"default\": {             \"name\": \"\",             \"vertices\": [],             \"edges\": [],             \"params\": []           },           \"allOf\": [             {               \"$ref\": \"#/definitions/Graph\"             }           ]         },         \"ref_x\": {           \"title\": \"Ref X\",           \"default\": 0,           \"type\": \"number\"         },         \"ref_y\": {           \"title\": \"Ref Y\",           \"default\": 0,           \"type\": \"number\"         },         \"ref_yaw\": {           \"title\": \"Ref Yaw\",           \"default\": 0,           \"type\": \"number\"         },         \"width\": {           \"title\": \"Width\",           \"default\": 0,           \"type\": \"number\"         },         \"depth\": {           \"title\": \"Depth\",           \"default\": 0,           \"type\": \"number\"         }       },       \"required\": [         \"name\",         \"levels\",         \"doors\",         \"wall_graph\",         \"ref_x\",         \"ref_y\",         \"ref_yaw\",         \"width\",         \"depth\"       ]     }   } } ```   ### /doors/{door_name}/state   ``` {   \"title\": \"DoorState\",   \"type\": \"object\",   \"properties\": {     \"door_time\": {       \"title\": \"Door Time\",       \"default\": {         \"sec\": 0,         \"nanosec\": 0       },       \"allOf\": [         {           \"$ref\": \"#/definitions/Time\"         }       ]     },     \"door_name\": {       \"title\": \"Door Name\",       \"default\": \"\",       \"type\": \"string\"     },     \"current_mode\": {       \"title\": \"Current Mode\",       \"default\": {         \"value\": 0       },       \"allOf\": [         {           \"$ref\": \"#/definitions/DoorMode\"         }       ]     }   },   \"required\": [     \"door_time\",     \"door_name\",     \"current_mode\"   ],   \"definitions\": {     \"Time\": {       \"title\": \"Time\",       \"type\": \"object\",       \"properties\": {         \"sec\": {           \"title\": \"Sec\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         },         \"nanosec\": {           \"title\": \"Nanosec\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ]     },     \"DoorMode\": {       \"title\": \"DoorMode\",       \"type\": \"object\",       \"properties\": {         \"value\": {           \"title\": \"Value\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         }       },       \"required\": [         \"value\"       ]     }   } } ```   ### /doors/{door_name}/health   ``` {   \"title\": \"DoorHealth\",   \"type\": \"object\",   \"properties\": {     \"health_status\": {       \"title\": \"Health Status\",       \"maxLength\": 255,       \"nullable\": true,       \"type\": \"string\"     },     \"health_message\": {       \"title\": \"Health Message\",       \"nullable\": true,       \"type\": \"string\"     },     \"id_\": {       \"title\": \"Id \",       \"maxLength\": 255,       \"type\": \"string\"     }   },   \"required\": [     \"health_status\",     \"id_\"   ],   \"additionalProperties\": false } ```   ### /lifts/{lift_name}/state   ``` {   \"title\": \"LiftState\",   \"type\": \"object\",   \"properties\": {     \"lift_time\": {       \"title\": \"Lift Time\",       \"default\": {         \"sec\": 0,         \"nanosec\": 0       },       \"allOf\": [         {           \"$ref\": \"#/definitions/Time\"         }       ]     },     \"lift_name\": {       \"title\": \"Lift Name\",       \"default\": \"\",       \"type\": \"string\"     },     \"available_floors\": {       \"title\": \"Available Floors\",       \"default\": [],       \"type\": \"array\",       \"items\": {         \"type\": \"string\"       }     },     \"current_floor\": {       \"title\": \"Current Floor\",       \"default\": \"\",       \"type\": \"string\"     },     \"destination_floor\": {       \"title\": \"Destination Floor\",       \"default\": \"\",       \"type\": \"string\"     },     \"door_state\": {       \"title\": \"Door State\",       \"default\": 0,       \"minimum\": 0,       \"maximum\": 255,       \"type\": \"integer\"     },     \"motion_state\": {       \"title\": \"Motion State\",       \"default\": 0,       \"minimum\": 0,       \"maximum\": 255,       \"type\": \"integer\"     },     \"available_modes\": {       \"title\": \"Available Modes\",       \"type\": \"array\",       \"items\": {         \"type\": \"integer\"       }     },     \"current_mode\": {       \"title\": \"Current Mode\",       \"default\": 0,       \"minimum\": 0,       \"maximum\": 255,       \"type\": \"integer\"     },     \"session_id\": {       \"title\": \"Session Id\",       \"default\": \"\",       \"type\": \"string\"     }   },   \"required\": [     \"lift_time\",     \"lift_name\",     \"available_floors\",     \"current_floor\",     \"destination_floor\",     \"door_state\",     \"motion_state\",     \"available_modes\",     \"current_mode\",     \"session_id\"   ],   \"definitions\": {     \"Time\": {       \"title\": \"Time\",       \"type\": \"object\",       \"properties\": {         \"sec\": {           \"title\": \"Sec\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         },         \"nanosec\": {           \"title\": \"Nanosec\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ]     }   } } ```   ### /lifts/{lift_name}/health   ``` {   \"title\": \"LiftHealth\",   \"type\": \"object\",   \"properties\": {     \"health_status\": {       \"title\": \"Health Status\",       \"maxLength\": 255,       \"nullable\": true,       \"type\": \"string\"     },     \"health_message\": {       \"title\": \"Health Message\",       \"nullable\": true,       \"type\": \"string\"     },     \"id_\": {       \"title\": \"Id \",       \"maxLength\": 255,       \"type\": \"string\"     }   },   \"required\": [     \"health_status\",     \"id_\"   ],   \"additionalProperties\": false } ```   ### /tasks/{task_id}/state   ``` {   \"title\": \"TaskState\",   \"type\": \"object\",   \"properties\": {     \"booking\": {       \"$ref\": \"#/definitions/Booking\"     },     \"category\": {       \"$ref\": \"#/definitions/Category\"     },     \"detail\": {       \"$ref\": \"#/definitions/Detail\"     },     \"unix_millis_start_time\": {       \"title\": \"Unix Millis Start Time\",       \"type\": \"integer\"     },     \"unix_millis_finish_time\": {       \"title\": \"Unix Millis Finish Time\",       \"type\": \"integer\"     },     \"estimate_millis\": {       \"$ref\": \"#/definitions/EstimateMillis\"     },     \"phases\": {       \"title\": \"Phases\",       \"description\": \"A dictionary of the states of the phases of the task. The keys (property names) are phase IDs, which are integers.\",       \"type\": \"object\",       \"additionalProperties\": {         \"$ref\": \"#/definitions/Phase\"       }     },     \"completed\": {       \"title\": \"Completed\",       \"description\": \"An array of the IDs of completed phases of this task\",       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/Id\"       }     },     \"active\": {       \"title\": \"Active\",       \"description\": \"The ID of the active phase for this task\",       \"allOf\": [         {           \"$ref\": \"#/definitions/Id\"         }       ]     },     \"pending\": {       \"title\": \"Pending\",       \"description\": \"An array of the pending phases of this task\",       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/Id\"       }     },     \"interruptions\": {       \"title\": \"Interruptions\",       \"description\": \"A dictionary of interruptions that have been applied to this task. The keys (property names) are the unique token of the interruption request.\",       \"type\": \"object\",       \"additionalProperties\": {         \"$ref\": \"#/definitions/Interruption\"       }     },     \"cancellation\": {       \"title\": \"Cancellation\",       \"description\": \"If the task was cancelled, this will describe information about the request.\",       \"allOf\": [         {           \"$ref\": \"#/definitions/Cancellation\"         }       ]     },     \"killed\": {       \"title\": \"Killed\",       \"description\": \"If the task was killed, this will describe information about the request.\",       \"allOf\": [         {           \"$ref\": \"#/definitions/Killed\"         }       ]     }   },   \"required\": [     \"booking\"   ],   \"definitions\": {     \"Booking\": {       \"title\": \"Booking\",       \"type\": \"object\",       \"properties\": {         \"id\": {           \"title\": \"Id\",           \"description\": \"The unique identifier for this task\",           \"type\": \"string\"         },         \"unix_millis_earliest_start_time\": {           \"title\": \"Unix Millis Earliest Start Time\",           \"type\": \"integer\"         },         \"priority\": {           \"title\": \"Priority\",           \"description\": \"Priority information about this task\",           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"type\": \"string\"             }           ]         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Information about how and why this task was booked\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         }       },       \"required\": [         \"id\"       ]     },     \"Category\": {       \"title\": \"Category\",       \"description\": \"The category of this task or phase\",       \"type\": \"string\"     },     \"Detail\": {       \"title\": \"Detail\",       \"description\": \"Detailed information about a task, phase, or event\",       \"anyOf\": [         {           \"type\": \"object\"         },         {           \"type\": \"array\",           \"items\": {}         },         {           \"type\": \"string\"         }       ]     },     \"EstimateMillis\": {       \"title\": \"EstimateMillis\",       \"description\": \"An estimate, in milliseconds, of how long the subject will take to complete\",       \"minimum\": 0,       \"type\": \"integer\"     },     \"Id\": {       \"title\": \"Id\",       \"minimum\": 0,       \"type\": \"integer\"     },     \"Status1\": {       \"title\": \"Status1\",       \"description\": \"An enumeration.\",       \"enum\": [         \"uninitialized\",         \"blocked\",         \"error\",         \"failed\",         \"standby\",         \"underway\",         \"delayed\",         \"skipped\",         \"canceled\",         \"killed\",         \"completed\"       ]     },     \"EventState\": {       \"title\": \"EventState\",       \"type\": \"object\",       \"properties\": {         \"id\": {           \"$ref\": \"#/definitions/Id\"         },         \"status\": {           \"description\": \"A simple token representing how the task is proceeding\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Status1\"             }           ]         },         \"name\": {           \"title\": \"Name\",           \"description\": \"The brief name of the event\",           \"type\": \"string\"         },         \"detail\": {           \"title\": \"Detail\",           \"description\": \"Detailed information about the event\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Detail\"             }           ]         },         \"deps\": {           \"title\": \"Deps\",           \"description\": \"This event may depend on other events. This array contains the IDs of those other event dependencies.\",           \"type\": \"array\",           \"items\": {             \"type\": \"integer\",             \"minimum\": 0           }         }       },       \"required\": [         \"id\"       ]     },     \"Undo\": {       \"title\": \"Undo\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the undo skip request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the undo skip request\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ]     },     \"SkipPhaseRequest\": {       \"title\": \"SkipPhaseRequest\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the skip request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the purpose of the skip request\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         },         \"undo\": {           \"title\": \"Undo\",           \"description\": \"Information about an undo skip request that applied to this request\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Undo\"             }           ]         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ]     },     \"Phase\": {       \"title\": \"Phase\",       \"type\": \"object\",       \"properties\": {         \"id\": {           \"$ref\": \"#/definitions/Id\"         },         \"category\": {           \"$ref\": \"#/definitions/Category\"         },         \"detail\": {           \"$ref\": \"#/definitions/Detail\"         },         \"estimate_millis\": {           \"$ref\": \"#/definitions/EstimateMillis\"         },         \"final_event_id\": {           \"$ref\": \"#/definitions/Id\"         },         \"events\": {           \"title\": \"Events\",           \"description\": \"A dictionary of events for this phase. The keys (property names) are the event IDs, which are integers.\",           \"type\": \"object\",           \"additionalProperties\": {             \"$ref\": \"#/definitions/EventState\"           }         },         \"skip_requests\": {           \"title\": \"Skip Requests\",           \"description\": \"Information about any skip requests that have been received\",           \"type\": \"object\",           \"additionalProperties\": {             \"$ref\": \"#/definitions/SkipPhaseRequest\"           }         }       },       \"required\": [         \"id\"       ]     },     \"ResumedBy\": {       \"title\": \"ResumedBy\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the resume request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the resume request\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         }       },       \"required\": [         \"labels\"       ]     },     \"Interruption\": {       \"title\": \"Interruption\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the interruption request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the purpose of the interruption\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         },         \"resumed_by\": {           \"title\": \"Resumed By\",           \"description\": \"Information about the resume request that ended this interruption. This field will be missing if the interruption is still active.\",           \"allOf\": [             {               \"$ref\": \"#/definitions/ResumedBy\"             }           ]         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ]     },     \"Cancellation\": {       \"title\": \"Cancellation\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the cancellation request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the cancel request\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ]     },     \"Killed\": {       \"title\": \"Killed\",       \"type\": \"object\",       \"properties\": {         \"unix_millis_request_time\": {           \"title\": \"Unix Millis Request Time\",           \"description\": \"The time that the cancellation request arrived\",           \"type\": \"integer\"         },         \"labels\": {           \"title\": \"Labels\",           \"description\": \"Labels to describe the kill request\",           \"type\": \"array\",           \"items\": {             \"type\": \"string\"           }         }       },       \"required\": [         \"unix_millis_request_time\",         \"labels\"       ]     }   } } ```   ### /tasks/{task_id}/log   ``` {   \"title\": \"TaskEventLog\",   \"type\": \"object\",   \"properties\": {     \"task_id\": {       \"title\": \"Task Id\",       \"type\": \"string\"     },     \"log\": {       \"title\": \"Log\",       \"description\": \"Log entries related to the overall task\",       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/LogEntry\"       }     },     \"phases\": {       \"title\": \"Phases\",       \"description\": \"A dictionary whose keys (property names) are the indices of a phase\",       \"type\": \"object\",       \"additionalProperties\": {         \"type\": \"object\"       }     }   },   \"required\": [     \"task_id\"   ],   \"definitions\": {     \"Tier\": {       \"title\": \"Tier\",       \"description\": \"An enumeration.\",       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ]     },     \"LogEntry\": {       \"title\": \"LogEntry\",       \"type\": \"object\",       \"properties\": {         \"seq\": {           \"title\": \"Seq\",           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"type\": \"integer\"         },         \"tier\": {           \"description\": \"The importance level of the log entry\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Tier\"             }           ]         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"title\": \"Text\",           \"description\": \"The text of the log entry\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ]     }   } } ```   ### /dispensers/{guid}/state   ``` {   \"title\": \"DispenserState\",   \"type\": \"object\",   \"properties\": {     \"time\": {       \"title\": \"Time\",       \"default\": {         \"sec\": 0,         \"nanosec\": 0       },       \"allOf\": [         {           \"$ref\": \"#/definitions/Time\"         }       ]     },     \"guid\": {       \"title\": \"Guid\",       \"default\": \"\",       \"type\": \"string\"     },     \"mode\": {       \"title\": \"Mode\",       \"default\": 0,       \"minimum\": -2147483648,       \"maximum\": 2147483647,       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"title\": \"Request Guid Queue\",       \"default\": [],       \"type\": \"array\",       \"items\": {         \"type\": \"string\"       }     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"default\": 0,       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"definitions\": {     \"Time\": {       \"title\": \"Time\",       \"type\": \"object\",       \"properties\": {         \"sec\": {           \"title\": \"Sec\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         },         \"nanosec\": {           \"title\": \"Nanosec\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ]     }   } } ```   ### /dispensers/{guid}/health   ``` {   \"title\": \"DispenserHealth\",   \"type\": \"object\",   \"properties\": {     \"health_status\": {       \"title\": \"Health Status\",       \"maxLength\": 255,       \"nullable\": true,       \"type\": \"string\"     },     \"health_message\": {       \"title\": \"Health Message\",       \"nullable\": true,       \"type\": \"string\"     },     \"id_\": {       \"title\": \"Id \",       \"maxLength\": 255,       \"type\": \"string\"     }   },   \"required\": [     \"health_status\",     \"id_\"   ],   \"additionalProperties\": false } ```   ### /ingestors/{guid}/state   ``` {   \"title\": \"IngestorState\",   \"type\": \"object\",   \"properties\": {     \"time\": {       \"title\": \"Time\",       \"default\": {         \"sec\": 0,         \"nanosec\": 0       },       \"allOf\": [         {           \"$ref\": \"#/definitions/Time\"         }       ]     },     \"guid\": {       \"title\": \"Guid\",       \"default\": \"\",       \"type\": \"string\"     },     \"mode\": {       \"title\": \"Mode\",       \"default\": 0,       \"minimum\": -2147483648,       \"maximum\": 2147483647,       \"type\": \"integer\"     },     \"request_guid_queue\": {       \"title\": \"Request Guid Queue\",       \"default\": [],       \"type\": \"array\",       \"items\": {         \"type\": \"string\"       }     },     \"seconds_remaining\": {       \"title\": \"Seconds Remaining\",       \"default\": 0,       \"type\": \"number\"     }   },   \"required\": [     \"time\",     \"guid\",     \"mode\",     \"request_guid_queue\",     \"seconds_remaining\"   ],   \"definitions\": {     \"Time\": {       \"title\": \"Time\",       \"type\": \"object\",       \"properties\": {         \"sec\": {           \"title\": \"Sec\",           \"default\": 0,           \"minimum\": -2147483648,           \"maximum\": 2147483647,           \"type\": \"integer\"         },         \"nanosec\": {           \"title\": \"Nanosec\",           \"default\": 0,           \"minimum\": 0,           \"maximum\": 4294967295,           \"type\": \"integer\"         }       },       \"required\": [         \"sec\",         \"nanosec\"       ]     }   } } ```   ### /ingestors/{guid}/health   ``` {   \"title\": \"IngestorHealth\",   \"type\": \"object\",   \"properties\": {     \"health_status\": {       \"title\": \"Health Status\",       \"maxLength\": 255,       \"nullable\": true,       \"type\": \"string\"     },     \"health_message\": {       \"title\": \"Health Message\",       \"nullable\": true,       \"type\": \"string\"     },     \"id_\": {       \"title\": \"Id \",       \"maxLength\": 255,       \"type\": \"string\"     }   },   \"required\": [     \"health_status\",     \"id_\"   ],   \"additionalProperties\": false } ```   ### /fleets/{name}/state   ``` {   \"title\": \"FleetState\",   \"type\": \"object\",   \"properties\": {     \"name\": {       \"title\": \"Name\",       \"type\": \"string\"     },     \"robots\": {       \"title\": \"Robots\",       \"description\": \"A dictionary of the states of the robots that belong to this fleet\",       \"type\": \"object\",       \"additionalProperties\": {         \"$ref\": \"#/definitions/RobotState\"       }     }   },   \"definitions\": {     \"Status\": {       \"title\": \"Status\",       \"description\": \"An enumeration.\",       \"enum\": [         \"uninitialized\",         \"offline\",         \"shutdown\",         \"idle\",         \"charging\",         \"working\",         \"error\"       ]     },     \"Location2D\": {       \"title\": \"Location2D\",       \"type\": \"object\",       \"properties\": {         \"map\": {           \"title\": \"Map\",           \"type\": \"string\"         },         \"x\": {           \"title\": \"X\",           \"type\": \"number\"         },         \"y\": {           \"title\": \"Y\",           \"type\": \"number\"         },         \"yaw\": {           \"title\": \"Yaw\",           \"type\": \"number\"         }       },       \"required\": [         \"map\",         \"x\",         \"y\",         \"yaw\"       ]     },     \"Issue\": {       \"title\": \"Issue\",       \"type\": \"object\",       \"properties\": {         \"category\": {           \"title\": \"Category\",           \"description\": \"Category of the robot\'s issue\",           \"type\": \"string\"         },         \"detail\": {           \"title\": \"Detail\",           \"description\": \"Detailed information about the issue\",           \"anyOf\": [             {               \"type\": \"object\"             },             {               \"type\": \"array\",               \"items\": {}             },             {               \"type\": \"string\"             }           ]         }       }     },     \"RobotState\": {       \"title\": \"RobotState\",       \"type\": \"object\",       \"properties\": {         \"name\": {           \"title\": \"Name\",           \"type\": \"string\"         },         \"status\": {           \"description\": \"A simple token representing the status of the robot\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Status\"             }           ]         },         \"task_id\": {           \"title\": \"Task Id\",           \"description\": \"The ID of the task this robot is currently working on. Empty string if the robot is not working on a task.\",           \"type\": \"string\"         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"location\": {           \"$ref\": \"#/definitions/Location2D\"         },         \"battery\": {           \"title\": \"Battery\",           \"description\": \"State of charge of the battery. Values range from 0.0 (depleted) to 1.0 (fully charged)\",           \"minimum\": 0.0,           \"maximum\": 1.0,           \"type\": \"number\"         },         \"issues\": {           \"title\": \"Issues\",           \"description\": \"A list of issues with the robot that operators need to address\",           \"type\": \"array\",           \"items\": {             \"$ref\": \"#/definitions/Issue\"           }         }       }     }   } } ```   ### /fleets/{name}/log   ``` {   \"title\": \"FleetLog\",   \"type\": \"object\",   \"properties\": {     \"name\": {       \"title\": \"Name\",       \"type\": \"string\"     },     \"log\": {       \"title\": \"Log\",       \"description\": \"Log for the overall fleet\",       \"type\": \"array\",       \"items\": {         \"$ref\": \"#/definitions/LogEntry\"       }     },     \"robots\": {       \"title\": \"Robots\",       \"description\": \"Dictionary of logs for the individual robots. The keys (property names) are the robot names.\",       \"type\": \"object\",       \"additionalProperties\": {         \"type\": \"array\",         \"items\": {           \"$ref\": \"#/definitions/LogEntry\"         }       }     }   },   \"definitions\": {     \"Tier\": {       \"title\": \"Tier\",       \"description\": \"An enumeration.\",       \"enum\": [         \"uninitialized\",         \"info\",         \"warning\",         \"error\"       ]     },     \"LogEntry\": {       \"title\": \"LogEntry\",       \"type\": \"object\",       \"properties\": {         \"seq\": {           \"title\": \"Seq\",           \"description\": \"Sequence number for this entry. Each entry has a unique sequence number which monotonically increase, until integer overflow causes a wrap around.\",           \"exclusiveMaximum\": 4294967296,           \"minimum\": 0,           \"type\": \"integer\"         },         \"tier\": {           \"description\": \"The importance level of the log entry\",           \"allOf\": [             {               \"$ref\": \"#/definitions/Tier\"             }           ]         },         \"unix_millis_time\": {           \"title\": \"Unix Millis Time\",           \"type\": \"integer\"         },         \"text\": {           \"title\": \"Text\",           \"description\": \"The text of the log entry\",           \"type\": \"string\"         }       },       \"required\": [         \"seq\",         \"tier\",         \"unix_millis_time\",         \"text\"       ]     }   } } ```
+   * @summary Socket.io endpoint
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DefaultApi
+   */
+  public lambdaSocketIoGet(options?: any) {
+    return DefaultApiFp(this.configuration)
+      .lambdaSocketIoGet(options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -4076,6 +4117,44 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
   return {
     /**
      * Available in socket.io
+     * @summary Get Fleet Log
+     * @param {string} name
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getFleetLogFleetsNameLogGet: async (name: string, options: any = {}): Promise<RequestArgs> => {
+      // verify required parameter 'name' is not null or undefined
+      assertParamExists('getFleetLogFleetsNameLogGet', 'name', name);
+      const localVarPath = `/fleets/{name}/log`.replace(
+        `{${'name'}}`,
+        encodeURIComponent(String(name)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Available in socket.io
      * @summary Get Fleet State
      * @param {string} name
      * @param {*} [options] Override http request option.
@@ -4117,7 +4196,7 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
     },
     /**
      *
-     * @summary Get Fleets
+     * @summary Query Fleets
      * @param {string} [fleetName] comma separated list of fleet names
      * @param {number} [limit]
      * @param {number} [offset]
@@ -4125,7 +4204,7 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getFleetsFleetsGet: async (
+    queryFleetsFleetsGet: async (
       fleetName?: string,
       limit?: number,
       offset?: number,
@@ -4173,114 +4252,6 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
         options: localVarRequestOptions,
       };
     },
-    /**
-     * Available in socket.io
-     * @summary Get Robot Health
-     * @param {string} fleet
-     * @param {string} robot
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getRobotHealthFleetsFleetRobotHealthGet: async (
-      fleet: string,
-      robot: string,
-      options: any = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'fleet' is not null or undefined
-      assertParamExists('getRobotHealthFleetsFleetRobotHealthGet', 'fleet', fleet);
-      // verify required parameter 'robot' is not null or undefined
-      assertParamExists('getRobotHealthFleetsFleetRobotHealthGet', 'robot', robot);
-      const localVarPath = `/fleets/{fleet}/{robot}/health`
-        .replace(`{${'fleet'}}`, encodeURIComponent(String(fleet)))
-        .replace(`{${'robot'}}`, encodeURIComponent(String(robot)));
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
-     *
-     * @summary Get Robots
-     * @param {string} [fleetName] comma separated list of fleet names
-     * @param {string} [robotName] comma separated list of robot names
-     * @param {number} [limit]
-     * @param {number} [offset]
-     * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getRobotsFleetsRobotsGet: async (
-      fleetName?: string,
-      robotName?: string,
-      limit?: number,
-      offset?: number,
-      orderBy?: string,
-      options: any = {},
-    ): Promise<RequestArgs> => {
-      const localVarPath = `/fleets/robots`;
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      if (fleetName !== undefined) {
-        localVarQueryParameter['fleet_name'] = fleetName;
-      }
-
-      if (robotName !== undefined) {
-        localVarQueryParameter['robot_name'] = robotName;
-      }
-
-      if (limit !== undefined) {
-        localVarQueryParameter['limit'] = limit;
-      }
-
-      if (offset !== undefined) {
-        localVarQueryParameter['offset'] = offset;
-      }
-
-      if (orderBy !== undefined) {
-        localVarQueryParameter['order_by'] = orderBy;
-      }
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
   };
 };
 
@@ -4291,6 +4262,23 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
 export const FleetsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = FleetsApiAxiosParamCreator(configuration);
   return {
+    /**
+     * Available in socket.io
+     * @summary Get Fleet Log
+     * @param {string} name
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getFleetLogFleetsNameLogGet(
+      name: string,
+      options?: any,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FleetLog>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getFleetLogFleetsNameLogGet(
+        name,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
     /**
      * Available in socket.io
      * @summary Get Fleet State
@@ -4310,7 +4298,7 @@ export const FleetsApiFp = function (configuration?: Configuration) {
     },
     /**
      *
-     * @summary Get Fleets
+     * @summary Query Fleets
      * @param {string} [fleetName] comma separated list of fleet names
      * @param {number} [limit]
      * @param {number} [offset]
@@ -4318,65 +4306,15 @@ export const FleetsApiFp = function (configuration?: Configuration) {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async getFleetsFleetsGet(
+    async queryFleetsFleetsGet(
       fleetName?: string,
       limit?: number,
       offset?: number,
       orderBy?: string,
       options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Fleet>>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getFleetsFleetsGet(
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FleetState>>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.queryFleetsFleetsGet(
         fleetName,
-        limit,
-        offset,
-        orderBy,
-        options,
-      );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-    },
-    /**
-     * Available in socket.io
-     * @summary Get Robot Health
-     * @param {string} fleet
-     * @param {string} robot
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async getRobotHealthFleetsFleetRobotHealthGet(
-      fleet: string,
-      robot: string,
-      options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RobotHealth>> {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getRobotHealthFleetsFleetRobotHealthGet(
-          fleet,
-          robot,
-          options,
-        );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-    },
-    /**
-     *
-     * @summary Get Robots
-     * @param {string} [fleetName] comma separated list of fleet names
-     * @param {string} [robotName] comma separated list of robot names
-     * @param {number} [limit]
-     * @param {number} [offset]
-     * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async getRobotsFleetsRobotsGet(
-      fleetName?: string,
-      robotName?: string,
-      limit?: number,
-      offset?: number,
-      orderBy?: string,
-      options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Robot>>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getRobotsFleetsRobotsGet(
-        fleetName,
-        robotName,
         limit,
         offset,
         orderBy,
@@ -4400,6 +4338,18 @@ export const FleetsApiFactory = function (
   return {
     /**
      * Available in socket.io
+     * @summary Get Fleet Log
+     * @param {string} name
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getFleetLogFleetsNameLogGet(name: string, options?: any): AxiosPromise<FleetLog> {
+      return localVarFp
+        .getFleetLogFleetsNameLogGet(name, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Available in socket.io
      * @summary Get Fleet State
      * @param {string} name
      * @param {*} [options] Override http request option.
@@ -4412,7 +4362,7 @@ export const FleetsApiFactory = function (
     },
     /**
      *
-     * @summary Get Fleets
+     * @summary Query Fleets
      * @param {string} [fleetName] comma separated list of fleet names
      * @param {number} [limit]
      * @param {number} [offset]
@@ -4420,55 +4370,15 @@ export const FleetsApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getFleetsFleetsGet(
+    queryFleetsFleetsGet(
       fleetName?: string,
       limit?: number,
       offset?: number,
       orderBy?: string,
       options?: any,
-    ): AxiosPromise<Array<Fleet>> {
+    ): AxiosPromise<Array<FleetState>> {
       return localVarFp
-        .getFleetsFleetsGet(fleetName, limit, offset, orderBy, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
-     * Available in socket.io
-     * @summary Get Robot Health
-     * @param {string} fleet
-     * @param {string} robot
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getRobotHealthFleetsFleetRobotHealthGet(
-      fleet: string,
-      robot: string,
-      options?: any,
-    ): AxiosPromise<RobotHealth> {
-      return localVarFp
-        .getRobotHealthFleetsFleetRobotHealthGet(fleet, robot, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
-     *
-     * @summary Get Robots
-     * @param {string} [fleetName] comma separated list of fleet names
-     * @param {string} [robotName] comma separated list of robot names
-     * @param {number} [limit]
-     * @param {number} [offset]
-     * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getRobotsFleetsRobotsGet(
-      fleetName?: string,
-      robotName?: string,
-      limit?: number,
-      offset?: number,
-      orderBy?: string,
-      options?: any,
-    ): AxiosPromise<Array<Robot>> {
-      return localVarFp
-        .getRobotsFleetsRobotsGet(fleetName, robotName, limit, offset, orderBy, options)
+        .queryFleetsFleetsGet(fleetName, limit, offset, orderBy, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -4481,6 +4391,20 @@ export const FleetsApiFactory = function (
  * @extends {BaseAPI}
  */
 export class FleetsApi extends BaseAPI {
+  /**
+   * Available in socket.io
+   * @summary Get Fleet Log
+   * @param {string} name
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof FleetsApi
+   */
+  public getFleetLogFleetsNameLogGet(name: string, options?: any) {
+    return FleetsApiFp(this.configuration)
+      .getFleetLogFleetsNameLogGet(name, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
   /**
    * Available in socket.io
    * @summary Get Fleet State
@@ -4497,7 +4421,7 @@ export class FleetsApi extends BaseAPI {
 
   /**
    *
-   * @summary Get Fleets
+   * @summary Query Fleets
    * @param {string} [fleetName] comma separated list of fleet names
    * @param {number} [limit]
    * @param {number} [offset]
@@ -4506,7 +4430,7 @@ export class FleetsApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof FleetsApi
    */
-  public getFleetsFleetsGet(
+  public queryFleetsFleetsGet(
     fleetName?: string,
     limit?: number,
     offset?: number,
@@ -4514,47 +4438,7 @@ export class FleetsApi extends BaseAPI {
     options?: any,
   ) {
     return FleetsApiFp(this.configuration)
-      .getFleetsFleetsGet(fleetName, limit, offset, orderBy, options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
-   * Available in socket.io
-   * @summary Get Robot Health
-   * @param {string} fleet
-   * @param {string} robot
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof FleetsApi
-   */
-  public getRobotHealthFleetsFleetRobotHealthGet(fleet: string, robot: string, options?: any) {
-    return FleetsApiFp(this.configuration)
-      .getRobotHealthFleetsFleetRobotHealthGet(fleet, robot, options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
-   *
-   * @summary Get Robots
-   * @param {string} [fleetName] comma separated list of fleet names
-   * @param {string} [robotName] comma separated list of robot names
-   * @param {number} [limit]
-   * @param {number} [offset]
-   * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof FleetsApi
-   */
-  public getRobotsFleetsRobotsGet(
-    fleetName?: string,
-    robotName?: string,
-    limit?: number,
-    offset?: number,
-    orderBy?: string,
-    options?: any,
-  ) {
-    return FleetsApiFp(this.configuration)
-      .getRobotsFleetsRobotsGet(fleetName, robotName, limit, offset, orderBy, options)
+      .queryFleetsFleetsGet(fleetName, limit, offset, orderBy, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -5229,19 +5113,22 @@ export class LiftsApi extends BaseAPI {
 export const TasksApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     *
-     * @summary Cancel Task
-     * @param {CancelTask} cancelTask
+     * Available in socket.io
+     * @summary Get Task Log
+     * @param {string} taskId task_id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    cancelTaskTasksCancelTaskPost: async (
-      cancelTask: CancelTask,
+    getTaskLogTasksTaskIdLogGet: async (
+      taskId: string,
       options: any = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'cancelTask' is not null or undefined
-      assertParamExists('cancelTaskTasksCancelTaskPost', 'cancelTask', cancelTask);
-      const localVarPath = `/tasks/cancel_task`;
+      // verify required parameter 'taskId' is not null or undefined
+      assertParamExists('getTaskLogTasksTaskIdLogGet', 'taskId', taskId);
+      const localVarPath = `/tasks/{task_id}/log`.replace(
+        `{${'task_id'}}`,
+        encodeURIComponent(String(taskId)),
+      );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -5249,11 +5136,9 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
         baseOptions = configuration.baseOptions;
       }
 
-      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
-
-      localVarHeaderParameter['Content-Type'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -5262,11 +5147,6 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
         ...headersFromBaseOptions,
         ...options.headers,
       };
-      localVarRequestOptions.data = serializeDataIfNeeded(
-        cancelTask,
-        localVarRequestOptions,
-        configuration,
-      );
 
       return {
         url: toPathString(localVarUrlObj),
@@ -5275,18 +5155,18 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     },
     /**
      * Available in socket.io
-     * @summary Get Task Summary
-     * @param {string} taskId task_id with \&#39;/\&#39; replaced with \&#39;__\&#39;
+     * @summary Get Task State
+     * @param {string} taskId task_id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getTaskSummaryTasksTaskIdSummaryGet: async (
+    getTaskStateTasksTaskIdStateGet: async (
       taskId: string,
       options: any = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskId' is not null or undefined
-      assertParamExists('getTaskSummaryTasksTaskIdSummaryGet', 'taskId', taskId);
-      const localVarPath = `/tasks/{task_id}/summary`.replace(
+      assertParamExists('getTaskStateTasksTaskIdStateGet', 'taskId', taskId);
+      const localVarPath = `/tasks/{task_id}/state`.replace(
         `{${'task_id'}}`,
         encodeURIComponent(String(taskId)),
       );
@@ -5316,32 +5196,116 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     },
     /**
      *
-     * @summary Get Tasks
+     * @summary Post Cancel Task
+     * @param {CancelTaskRequest} cancelTaskRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postCancelTaskTasksCancelTaskPost: async (
+      cancelTaskRequest: CancelTaskRequest,
+      options: any = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'cancelTaskRequest' is not null or undefined
+      assertParamExists(
+        'postCancelTaskTasksCancelTaskPost',
+        'cancelTaskRequest',
+        cancelTaskRequest,
+      );
+      const localVarPath = `/tasks/cancel_task`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        cancelTaskRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Post Task Request
+     * @param {TaskRequest} taskRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postTaskRequestTasksTaskRequestPost: async (
+      taskRequest: TaskRequest,
+      options: any = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'taskRequest' is not null or undefined
+      assertParamExists('postTaskRequestTasksTaskRequestPost', 'taskRequest', taskRequest);
+      const localVarPath = `/tasks/task_request`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        taskRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Query Task States
      * @param {string} [taskId] comma separated list of task ids
-     * @param {string} [fleetName] comma separated list of fleet names
-     * @param {string} [submissionTimeSince]
-     * @param {string} [startTimeSince]
-     * @param {string} [endTimeSince]
-     * @param {string} [robotName] comma separated list of robot names
-     * @param {string} [state] comma separated list of states
-     * @param {string} [taskType] comma separated list of task types
-     * @param {number} [priority]
+     * @param {string} [category] comma separated list of task categories
+     * @param {string} [startTime]
+     * @param {string} [finishTime]
      * @param {number} [limit]
      * @param {number} [offset]
      * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getTasksTasksGet: async (
+    queryTaskStatesTasksGet: async (
       taskId?: string,
-      fleetName?: string,
-      submissionTimeSince?: string,
-      startTimeSince?: string,
-      endTimeSince?: string,
-      robotName?: string,
-      state?: string,
-      taskType?: string,
-      priority?: number,
+      category?: string,
+      startTime?: string,
+      finishTime?: string,
       limit?: number,
       offset?: number,
       orderBy?: string,
@@ -5363,45 +5327,18 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
         localVarQueryParameter['task_id'] = taskId;
       }
 
-      if (fleetName !== undefined) {
-        localVarQueryParameter['fleet_name'] = fleetName;
+      if (category !== undefined) {
+        localVarQueryParameter['category'] = category;
       }
 
-      if (submissionTimeSince !== undefined) {
-        localVarQueryParameter['submission_time_since'] =
-          (submissionTimeSince as any) instanceof Date
-            ? (submissionTimeSince as any).toISOString()
-            : submissionTimeSince;
+      if (startTime !== undefined) {
+        localVarQueryParameter['start_time'] =
+          (startTime as any) instanceof Date ? (startTime as any).toISOString() : startTime;
       }
 
-      if (startTimeSince !== undefined) {
-        localVarQueryParameter['start_time_since'] =
-          (startTimeSince as any) instanceof Date
-            ? (startTimeSince as any).toISOString()
-            : startTimeSince;
-      }
-
-      if (endTimeSince !== undefined) {
-        localVarQueryParameter['end_time_since'] =
-          (endTimeSince as any) instanceof Date
-            ? (endTimeSince as any).toISOString()
-            : endTimeSince;
-      }
-
-      if (robotName !== undefined) {
-        localVarQueryParameter['robot_name'] = robotName;
-      }
-
-      if (state !== undefined) {
-        localVarQueryParameter['state'] = state;
-      }
-
-      if (taskType !== undefined) {
-        localVarQueryParameter['task_type'] = taskType;
-      }
-
-      if (priority !== undefined) {
-        localVarQueryParameter['priority'] = priority;
+      if (finishTime !== undefined) {
+        localVarQueryParameter['finish_time'] =
+          (finishTime as any) instanceof Date ? (finishTime as any).toISOString() : finishTime;
       }
 
       if (limit !== undefined) {
@@ -5429,51 +5366,6 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
         options: localVarRequestOptions,
       };
     },
-    /**
-     *
-     * @summary Submit Task
-     * @param {SubmitTask} submitTask
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    submitTaskTasksSubmitTaskPost: async (
-      submitTask: SubmitTask,
-      options: any = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'submitTask' is not null or undefined
-      assertParamExists('submitTaskTasksSubmitTaskPost', 'submitTask', submitTask);
-      const localVarPath = `/tasks/submit_task`;
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      localVarHeaderParameter['Content-Type'] = 'application/json';
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-      localVarRequestOptions.data = serializeDataIfNeeded(
-        submitTask,
-        localVarRequestOptions,
-        configuration,
-      );
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
   };
 };
 
@@ -5485,34 +5377,34 @@ export const TasksApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = TasksApiAxiosParamCreator(configuration);
   return {
     /**
-     *
-     * @summary Cancel Task
-     * @param {CancelTask} cancelTask
+     * Available in socket.io
+     * @summary Get Task Log
+     * @param {string} taskId task_id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async cancelTaskTasksCancelTaskPost(
-      cancelTask: CancelTask,
+    async getTaskLogTasksTaskIdLogGet(
+      taskId: string,
       options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.cancelTaskTasksCancelTaskPost(
-        cancelTask,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskEventLog>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getTaskLogTasksTaskIdLogGet(
+        taskId,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
      * Available in socket.io
-     * @summary Get Task Summary
-     * @param {string} taskId task_id with \&#39;/\&#39; replaced with \&#39;__\&#39;
+     * @summary Get Task State
+     * @param {string} taskId task_id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async getTaskSummaryTasksTaskIdSummaryGet(
+    async getTaskStateTasksTaskIdStateGet(
       taskId: string,
       options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskSummary>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getTaskSummaryTasksTaskIdSummaryGet(
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskState>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getTaskStateTasksTaskIdStateGet(
         taskId,
         options,
       );
@@ -5520,67 +5412,69 @@ export const TasksApiFp = function (configuration?: Configuration) {
     },
     /**
      *
-     * @summary Get Tasks
+     * @summary Post Cancel Task
+     * @param {CancelTaskRequest} cancelTaskRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async postCancelTaskTasksCancelTaskPost(
+      cancelTaskRequest: CancelTaskRequest,
+      options?: any,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskCancelResponse>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.postCancelTaskTasksCancelTaskPost(
+        cancelTaskRequest,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Post Task Request
+     * @param {TaskRequest} taskRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async postTaskRequestTasksTaskRequestPost(
+      taskRequest: TaskRequest,
+      options?: any,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.postTaskRequestTasksTaskRequestPost(
+        taskRequest,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Query Task States
      * @param {string} [taskId] comma separated list of task ids
-     * @param {string} [fleetName] comma separated list of fleet names
-     * @param {string} [submissionTimeSince]
-     * @param {string} [startTimeSince]
-     * @param {string} [endTimeSince]
-     * @param {string} [robotName] comma separated list of robot names
-     * @param {string} [state] comma separated list of states
-     * @param {string} [taskType] comma separated list of task types
-     * @param {number} [priority]
+     * @param {string} [category] comma separated list of task categories
+     * @param {string} [startTime]
+     * @param {string} [finishTime]
      * @param {number} [limit]
      * @param {number} [offset]
      * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async getTasksTasksGet(
+    async queryTaskStatesTasksGet(
       taskId?: string,
-      fleetName?: string,
-      submissionTimeSince?: string,
-      startTimeSince?: string,
-      endTimeSince?: string,
-      robotName?: string,
-      state?: string,
-      taskType?: string,
-      priority?: number,
+      category?: string,
+      startTime?: string,
+      finishTime?: string,
       limit?: number,
       offset?: number,
       orderBy?: string,
       options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Task>>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getTasksTasksGet(
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskState>>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.queryTaskStatesTasksGet(
         taskId,
-        fleetName,
-        submissionTimeSince,
-        startTimeSince,
-        endTimeSince,
-        robotName,
-        state,
-        taskType,
-        priority,
+        category,
+        startTime,
+        finishTime,
         limit,
         offset,
         orderBy,
-        options,
-      );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-    },
-    /**
-     *
-     * @summary Submit Task
-     * @param {SubmitTask} submitTask
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async submitTaskTasksSubmitTaskPost(
-      submitTask: SubmitTask,
-      options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SubmitTaskResponse>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.submitTaskTasksSubmitTaskPost(
-        submitTask,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -5600,93 +5494,93 @@ export const TasksApiFactory = function (
   const localVarFp = TasksApiFp(configuration);
   return {
     /**
-     *
-     * @summary Cancel Task
-     * @param {CancelTask} cancelTask
+     * Available in socket.io
+     * @summary Get Task Log
+     * @param {string} taskId task_id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    cancelTaskTasksCancelTaskPost(cancelTask: CancelTask, options?: any): AxiosPromise<any> {
+    getTaskLogTasksTaskIdLogGet(taskId: string, options?: any): AxiosPromise<TaskEventLog> {
       return localVarFp
-        .cancelTaskTasksCancelTaskPost(cancelTask, options)
+        .getTaskLogTasksTaskIdLogGet(taskId, options)
         .then((request) => request(axios, basePath));
     },
     /**
      * Available in socket.io
-     * @summary Get Task Summary
-     * @param {string} taskId task_id with \&#39;/\&#39; replaced with \&#39;__\&#39;
+     * @summary Get Task State
+     * @param {string} taskId task_id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getTaskSummaryTasksTaskIdSummaryGet(taskId: string, options?: any): AxiosPromise<TaskSummary> {
+    getTaskStateTasksTaskIdStateGet(taskId: string, options?: any): AxiosPromise<TaskState> {
       return localVarFp
-        .getTaskSummaryTasksTaskIdSummaryGet(taskId, options)
+        .getTaskStateTasksTaskIdStateGet(taskId, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
-     * @summary Get Tasks
+     * @summary Post Cancel Task
+     * @param {CancelTaskRequest} cancelTaskRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postCancelTaskTasksCancelTaskPost(
+      cancelTaskRequest: CancelTaskRequest,
+      options?: any,
+    ): AxiosPromise<TaskCancelResponse> {
+      return localVarFp
+        .postCancelTaskTasksCancelTaskPost(cancelTaskRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Post Task Request
+     * @param {TaskRequest} taskRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postTaskRequestTasksTaskRequestPost(
+      taskRequest: TaskRequest,
+      options?: any,
+    ): AxiosPromise<any> {
+      return localVarFp
+        .postTaskRequestTasksTaskRequestPost(taskRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Query Task States
      * @param {string} [taskId] comma separated list of task ids
-     * @param {string} [fleetName] comma separated list of fleet names
-     * @param {string} [submissionTimeSince]
-     * @param {string} [startTimeSince]
-     * @param {string} [endTimeSince]
-     * @param {string} [robotName] comma separated list of robot names
-     * @param {string} [state] comma separated list of states
-     * @param {string} [taskType] comma separated list of task types
-     * @param {number} [priority]
+     * @param {string} [category] comma separated list of task categories
+     * @param {string} [startTime]
+     * @param {string} [finishTime]
      * @param {number} [limit]
      * @param {number} [offset]
      * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getTasksTasksGet(
+    queryTaskStatesTasksGet(
       taskId?: string,
-      fleetName?: string,
-      submissionTimeSince?: string,
-      startTimeSince?: string,
-      endTimeSince?: string,
-      robotName?: string,
-      state?: string,
-      taskType?: string,
-      priority?: number,
+      category?: string,
+      startTime?: string,
+      finishTime?: string,
       limit?: number,
       offset?: number,
       orderBy?: string,
       options?: any,
-    ): AxiosPromise<Array<Task>> {
+    ): AxiosPromise<Array<TaskState>> {
       return localVarFp
-        .getTasksTasksGet(
+        .queryTaskStatesTasksGet(
           taskId,
-          fleetName,
-          submissionTimeSince,
-          startTimeSince,
-          endTimeSince,
-          robotName,
-          state,
-          taskType,
-          priority,
+          category,
+          startTime,
+          finishTime,
           limit,
           offset,
           orderBy,
           options,
         )
-        .then((request) => request(axios, basePath));
-    },
-    /**
-     *
-     * @summary Submit Task
-     * @param {SubmitTask} submitTask
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    submitTaskTasksSubmitTaskPost(
-      submitTask: SubmitTask,
-      options?: any,
-    ): AxiosPromise<SubmitTaskResponse> {
-      return localVarFp
-        .submitTaskTasksSubmitTaskPost(submitTask, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -5700,45 +5594,68 @@ export const TasksApiFactory = function (
  */
 export class TasksApi extends BaseAPI {
   /**
-   *
-   * @summary Cancel Task
-   * @param {CancelTask} cancelTask
+   * Available in socket.io
+   * @summary Get Task Log
+   * @param {string} taskId task_id
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
-  public cancelTaskTasksCancelTaskPost(cancelTask: CancelTask, options?: any) {
+  public getTaskLogTasksTaskIdLogGet(taskId: string, options?: any) {
     return TasksApiFp(this.configuration)
-      .cancelTaskTasksCancelTaskPost(cancelTask, options)
+      .getTaskLogTasksTaskIdLogGet(taskId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    * Available in socket.io
-   * @summary Get Task Summary
-   * @param {string} taskId task_id with \&#39;/\&#39; replaced with \&#39;__\&#39;
+   * @summary Get Task State
+   * @param {string} taskId task_id
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
-  public getTaskSummaryTasksTaskIdSummaryGet(taskId: string, options?: any) {
+  public getTaskStateTasksTaskIdStateGet(taskId: string, options?: any) {
     return TasksApiFp(this.configuration)
-      .getTaskSummaryTasksTaskIdSummaryGet(taskId, options)
+      .getTaskStateTasksTaskIdStateGet(taskId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *
-   * @summary Get Tasks
+   * @summary Post Cancel Task
+   * @param {CancelTaskRequest} cancelTaskRequest
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public postCancelTaskTasksCancelTaskPost(cancelTaskRequest: CancelTaskRequest, options?: any) {
+    return TasksApiFp(this.configuration)
+      .postCancelTaskTasksCancelTaskPost(cancelTaskRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Post Task Request
+   * @param {TaskRequest} taskRequest
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public postTaskRequestTasksTaskRequestPost(taskRequest: TaskRequest, options?: any) {
+    return TasksApiFp(this.configuration)
+      .postTaskRequestTasksTaskRequestPost(taskRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Query Task States
    * @param {string} [taskId] comma separated list of task ids
-   * @param {string} [fleetName] comma separated list of fleet names
-   * @param {string} [submissionTimeSince]
-   * @param {string} [startTimeSince]
-   * @param {string} [endTimeSince]
-   * @param {string} [robotName] comma separated list of robot names
-   * @param {string} [state] comma separated list of states
-   * @param {string} [taskType] comma separated list of task types
-   * @param {number} [priority]
+   * @param {string} [category] comma separated list of task categories
+   * @param {string} [startTime]
+   * @param {string} [finishTime]
    * @param {number} [limit]
    * @param {number} [offset]
    * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -5746,51 +5663,27 @@ export class TasksApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof TasksApi
    */
-  public getTasksTasksGet(
+  public queryTaskStatesTasksGet(
     taskId?: string,
-    fleetName?: string,
-    submissionTimeSince?: string,
-    startTimeSince?: string,
-    endTimeSince?: string,
-    robotName?: string,
-    state?: string,
-    taskType?: string,
-    priority?: number,
+    category?: string,
+    startTime?: string,
+    finishTime?: string,
     limit?: number,
     offset?: number,
     orderBy?: string,
     options?: any,
   ) {
     return TasksApiFp(this.configuration)
-      .getTasksTasksGet(
+      .queryTaskStatesTasksGet(
         taskId,
-        fleetName,
-        submissionTimeSince,
-        startTimeSince,
-        endTimeSince,
-        robotName,
-        state,
-        taskType,
-        priority,
+        category,
+        startTime,
+        finishTime,
         limit,
         offset,
         orderBy,
         options,
       )
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
-   *
-   * @summary Submit Task
-   * @param {SubmitTask} submitTask
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof TasksApi
-   */
-  public submitTaskTasksSubmitTaskPost(submitTask: SubmitTask, options?: any) {
-    return TasksApiFp(this.configuration)
-      .submitTaskTasksSubmitTaskPost(submitTask, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
