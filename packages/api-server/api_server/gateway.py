@@ -87,26 +87,7 @@ class RmfGateway:
         self.static_files = static_files
         self.logger = logger or base_logger.getChild(self.__class__.__name__)
         self._subscriptions: List[Subscription] = []
-        self._spin_thread: Optional[threading.Thread] = None
-        self._finish_spin = rclpy.executors.Future()
-        self._finish_gc = ros_node.create_guard_condition(
-            lambda: self._finish_spin.set_result(None)
-        )
         self._loop: asyncio.AbstractEventLoop
-
-    def spin_background(self):
-        def spin():
-            self.logger.info("start spinning rclpy node")
-            rclpy.spin_until_future_complete(self, self._finish_spin)
-            self.logger.info("finished spinning rclpy node")
-
-        self._spin_thread = threading.Thread(target=spin)
-        self._spin_thread.start()
-
-    def stop_spinning(self):
-        self._finish_gc.trigger()
-        if self._spin_thread is not None:
-            self._spin_thread.join()
 
     async def call_service(self, client: rclpy.client.Client, req, timeout=1):
         """
