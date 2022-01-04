@@ -1,5 +1,11 @@
 import json
 
+from rmf_building_map_msgs.msg import Door as RmfDoor
+from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
+from rmf_door_msgs.msg import DoorMode as RmfDoorMode
+from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
+from rmf_lift_msgs.msg import LiftState as RmfLiftState
+
 from api_server.models import (
     AffineImage,
     BuildingMap,
@@ -16,11 +22,6 @@ from api_server.models import (
     TaskEventLog,
     TaskState,
 )
-from rmf_building_map_msgs.msg import Door as RmfDoor
-from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
-from rmf_door_msgs.msg import DoorMode as RmfDoorMode
-from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
-from rmf_lift_msgs.msg import LiftState as RmfLiftState
 
 
 def make_door(name: str = "test_door") -> Door:
@@ -98,11 +99,11 @@ def make_ingestor_state(guid: str = "test_ingestor") -> IngestorState:
 
 
 def make_fleet_state(name: str = "test_fleet") -> FleetState:
-    return FleetState(name=name, robots=[])
+    return FleetState(name=name, robots={})
 
 
 def make_fleet_log(name: str = "test_fleet") -> FleetLog:
-    return FleetLog(name=name)
+    return FleetLog(name=name, log=[], robots={})
 
 
 def make_task_state(task_id: str = "test_task") -> TaskState:

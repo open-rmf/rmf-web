@@ -1,5 +1,7 @@
 from typing import List, Optional, cast
 
+from fastapi import Depends
+
 from api_server.authenticator import user_dep
 from api_server.models import (
     BuildingMap,
@@ -20,7 +22,6 @@ from api_server.models import (
 )
 from api_server.models import tortoise_models as ttm
 from api_server.query import add_pagination
-from fastapi import Depends
 
 
 class RmfRepository:

@@ -1,13 +1,14 @@
 from typing import List, Optional, cast
 
+from fastapi import Depends, HTTPException, Query
+from rx import operators as rxops
+
 from api_server.dependencies import pagination_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import FleetLog, FleetState, Pagination
 from api_server.models.tortoise_models import FleetState as DbFleetState
 from api_server.repositories import FleetRepository, fleet_repo_dep
 from api_server.rmf_io import fleet_events
-from fastapi import Depends, HTTPException, Query
-from rx import operators as rxops
 
 router = FastIORouter(tags=["Fleets"])
 

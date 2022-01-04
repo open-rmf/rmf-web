@@ -4,6 +4,9 @@ import logging
 from collections import namedtuple
 from typing import Coroutine, List
 
+from rx.core.typing import Disposable
+from rx.subject.subject import Subject
+
 from api_server.models import (
     BuildingMap,
     DispenserHealth,
@@ -17,8 +20,6 @@ from api_server.models import (
     LiftState,
 )
 from api_server.models.health import BaseBasicHealth
-from rx.core.typing import Disposable
-from rx.subject.subject import Subject
 
 from .events import RmfEvents
 

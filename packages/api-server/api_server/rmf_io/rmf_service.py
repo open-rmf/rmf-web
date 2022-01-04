@@ -5,8 +5,9 @@ from typing import Dict
 import rclpy
 import rclpy.node
 import rclpy.qos
-from api_server.logger import logger
 from rmf_task_msgs.msg import ApiRequest, ApiResponse
+
+from api_server.logger import logger
 
 
 class RmfService:

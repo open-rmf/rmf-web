@@ -1,12 +1,13 @@
 from typing import List, Optional
 
+from fastapi import Depends
+from tortoise.queryset import QuerySet
+
 from api_server.authenticator import user_dep
 from api_server.models import FleetLog, FleetState, Pagination, User
 from api_server.models.tortoise_models import FleetLog as DbFleetLog
 from api_server.models.tortoise_models import FleetState as DbFleetState
 from api_server.query import add_pagination
-from fastapi import Depends
-from tortoise.queryset import QuerySet
 
 
 class FleetRepository:

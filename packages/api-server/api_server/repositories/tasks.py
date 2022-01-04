@@ -1,12 +1,13 @@
 from typing import List, Optional
 
+from fastapi import Depends
+from tortoise.queryset import QuerySet
+
 from api_server.authenticator import user_dep
 from api_server.models import Pagination, TaskEventLog, TaskState, User
 from api_server.models.tortoise_models import TaskEventLog as DbTaskEventLog
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.query import add_pagination
-from fastapi import Depends
-from tortoise.queryset import QuerySet
 
 
 class TaskRepository:
