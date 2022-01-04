@@ -4,7 +4,6 @@ import asyncio
 import base64
 import hashlib
 import logging
-import threading
 from typing import List, Optional
 
 import rclpy
