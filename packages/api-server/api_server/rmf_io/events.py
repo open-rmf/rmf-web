@@ -17,3 +17,6 @@ class RmfEvents:
         self.robot_health = Subject()  # RobotHealth
         self.task_summaries = Subject()  # TaskSummary
         self.building_map = BehaviorSubject(None)  # Optional[BuildingMap]
+
+
+rmf_events = RmfEvents()

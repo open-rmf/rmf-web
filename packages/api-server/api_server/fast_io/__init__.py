@@ -1,6 +1,5 @@
 import asyncio
 from dataclasses import dataclass
-from logging import Logger
 from re import Match
 from typing import (
     Any,
@@ -21,14 +20,13 @@ import socketio
 import socketio.packet
 from fastapi import APIRouter, FastAPI
 from fastapi.exceptions import HTTPException
-from fastapi.logger import logger
 from fastapi.routing import APIRoute
 from rx.core.observable.observable import Observable
 from starlette.routing import compile_path
 
-from .errors import *
+from api_server.logger import logger
 
-logger: Logger
+from .errors import *
 
 
 @dataclass

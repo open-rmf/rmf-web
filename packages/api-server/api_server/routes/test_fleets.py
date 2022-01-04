@@ -1,71 +1,79 @@
+from uuid import uuid4
+
 from rmf_task_msgs.msg import TaskSummary as RmfTaskSummary
 
 from api_server.models import FleetState, RobotState, TaskSummary
+from api_server.rmf_io import rmf_events
 from api_server.test import AppFixture, try_until
-from api_server.test.test_data import make_fleet_state
 
 
 class TestFleetsRoute(AppFixture):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.fleets = [f"fleet_{uuid4()}", f"fleet_{uuid4()}"]
         fleet_states = [
             FleetState(
-                name="fleet_1",
+                name=cls.fleets[0],
                 robots=[RobotState(name="robot_1"), RobotState(name="robot_2")],
             ),
             FleetState(
-                name="fleet_2",
+                name=cls.fleets[1],
                 robots=[RobotState(name="robot_3")],
             ),
         ]
         tasks = [
             TaskSummary(
-                task_id="task_1",
-                fleet_name="fleet_1",
+                task_id=f"task_{uuid4()}",
+                fleet_name=cls.fleets[0],
                 robot_name="robot_1",
                 state=RmfTaskSummary.STATE_ACTIVE,
             ),
             TaskSummary(
-                task_id="task_2",
-                fleet_name="fleet_1",
+                task_id=f"task_{uuid4()}",
+                fleet_name=cls.fleets[0],
                 robot_name="robot_1",
                 state=RmfTaskSummary.STATE_PENDING,
             ),
         ]
 
         for f in fleet_states:
-            cls.app.rmf_events().fleet_states.on_next(f)
+            rmf_events.fleet_states.on_next(f)
         for t in tasks:
-            cls.app.rmf_events().task_summaries.on_next(t)
+            rmf_events.task_summaries.on_next(t)
 
     def test_get_fleets(self):
-        resp = self.session.get("/fleets?fleet_name=fleet_1")
+        resp = try_until(
+            lambda: self.session.get(f"/fleets?fleet_name={self.fleets[0]}"),
+            lambda x: x.status_code == 200 and len(x.json()) == 1,
+        )
         self.assertEqual(200, resp.status_code)
         resp_json = resp.json()
         self.assertEqual(len(resp_json), 1)
 
     def test_get_robots(self):
-        resp = self.session.get("/fleets/robots?fleet_name=fleet_1&robot_name=robot_1")
+        resp = try_until(
+            lambda: self.session.get(
+                f"/fleets/robots?fleet_name={self.fleets[0]}&robot_name=robot_1"
+            ),
+            lambda x: x.status_code == 200 and len(x.json()) == 1,
+        )
         self.assertEqual(200, resp.status_code)
         resp_json = resp.json()
         self.assertEqual(len(resp_json), 1)
         self.assertEqual(len(resp_json[0]["tasks"]), 2)
 
     def test_get_fleet_state(self):
-        resp = self.session.get("/fleets/fleet_1/state")
+        resp = try_until(
+            lambda: self.session.get(f"/fleets/{self.fleets[0]}/state"),
+            lambda x: x.status_code == 200,
+        )
         self.assertEqual(200, resp.status_code)
         state = resp.json()
-        self.assertEqual("fleet_1", state["name"])
+        self.assertEqual(self.fleets[0], state["name"])
 
     def test_sub_fleet_state(self):
-        fleet_state = make_fleet_state()
-        fut = self.subscribe_sio("/fleets/test_fleet/state")
-
-        def wait():
-            self.app.rmf_events().fleet_states.on_next(fleet_state)
-            return fut.done()
-
-        try_until(wait, lambda x: x)
+        fut = self.subscribe_sio(f"/fleets/{self.fleets[0]}/state")
+        try_until(fut.done, lambda x: x)
         result = fut.result(0)
-        self.assertEqual(1, len(result["robots"]))
+        self.assertEqual(self.fleets[0], result["name"])

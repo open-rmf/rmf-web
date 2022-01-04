@@ -1,6 +1,9 @@
 import logging
 import os
 
+from api_server.app_config import app_config
+from api_server.logger import logger as _logger
+
 
 class StaticFilesRepository:
     def __init__(
@@ -34,3 +37,10 @@ class StaticFilesRepository:
         self.logger.info(f'saved new file "{filepath}"')
         urlpath = f"{self.base_url}/{path}"
         return urlpath
+
+
+static_files_repo = StaticFilesRepository(
+    f"{app_config.public_url.geturl()}/static",
+    app_config.static_directory,
+    _logger.getChild("static_files"),
+)

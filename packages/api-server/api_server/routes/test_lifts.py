@@ -1,5 +1,4 @@
-from typing import cast
-from unittest.mock import Mock
+from uuid import uuid4
 
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 
@@ -10,7 +9,15 @@ class TestLiftsRoute(AppFixture):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.app.rmf_events().building_map.on_next(make_building_map())
+        cls.building_map = make_building_map()
+        cls.lift_states = [make_lift_state(f"test_{uuid4()}")]
+
+        async def prepare_db():
+            await cls.building_map.save()
+            for x in cls.lift_states:
+                await x.save()
+
+        cls.run_in_app_loop(prepare_db())
 
     def test_get_lifts(self):
         resp = self.session.get("/lifts")
@@ -20,24 +27,16 @@ class TestLiftsRoute(AppFixture):
         self.assertEqual("test_lift", lifts[0]["name"])
 
     def test_get_lift_state(self):
-        self.app.rmf_events().lift_states.on_next(make_lift_state())
-        resp = self.session.get("/lifts/test_lift/state")
+        resp = self.session.get(f"/lifts/{self.lift_states[0].lift_name}/state")
         self.assertEqual(200, resp.status_code)
         state = resp.json()
-        self.assertEqual("test_lift", state["lift_name"])
+        self.assertEqual(self.lift_states[0].lift_name, state["lift_name"])
 
     def test_sub_lift_state(self):
-        lift_state = make_lift_state()
-        lift_state.lift_time.sec = 1
-        fut = self.subscribe_sio("/lifts/test_lift/state")
-
-        def wait():
-            self.app.rmf_events().lift_states.on_next(lift_state)
-            return fut.done()
-
-        try_until(wait, lambda x: x)
+        fut = self.subscribe_sio(f"/lifts/{self.lift_states[0].lift_name}/state")
+        try_until(fut.done, lambda x: x)
         result = fut.result(0)
-        self.assertEqual(1, result["lift_time"]["sec"])
+        self.assertEqual(self.lift_states[0].lift_name, result["lift_name"])
 
     def test_request_lift(self):
         resp = self.session.post(
@@ -49,8 +48,3 @@ class TestLiftsRoute(AppFixture):
             },
         )
         self.assertEqual(resp.status_code, 200)
-        mock = cast(Mock, self.app.rmf_gateway().request_lift)
-        self.assertEqual(mock.call_args.args[0], "test_lift")
-        self.assertEqual(mock.call_args.args[1], "L1")
-        self.assertEqual(mock.call_args.args[2], RmfLiftRequest.REQUEST_AGV_MODE)
-        self.assertEqual(mock.call_args.args[3], RmfLiftRequest.DOOR_OPEN)
