@@ -1,7 +1,7 @@
 from typing import List
 from uuid import uuid4
 
-from api_server.test import AppFixture, make_dispenser_state, try_until
+from api_server.test import AppFixture, make_dispenser_state
 
 
 class TestDispensersRoute(AppFixture):

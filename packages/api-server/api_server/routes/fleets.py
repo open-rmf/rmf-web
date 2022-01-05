@@ -1,7 +1,6 @@
-from typing import List, Optional, cast
+from typing import List, Optional
 
 from fastapi import Depends, HTTPException, Query
-from rx import operators as rxops
 from rx.subject.replaysubject import ReplaySubject
 
 from api_server.dependencies import pagination_query, sio_user

@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from api_server.test import AppFixture, make_fleet_log, make_fleet_state, try_until
+from api_server.test import AppFixture, make_fleet_log, make_fleet_state
 
 
 class TestFleetsRoute(AppFixture):
@@ -34,8 +34,7 @@ class TestFleetsRoute(AppFixture):
 
     def test_sub_fleet_state(self):
         fut = self.subscribe_sio(f"/fleets/{self.fleet_states[0].name}/state")
-        try_until(fut.done, lambda x: x)
-        result = fut.result(0)
+        result = fut.result(1)
         self.assertEqual(self.fleet_states[0].name, result["name"])
 
     def test_get_fleet_log(self):
@@ -46,6 +45,5 @@ class TestFleetsRoute(AppFixture):
 
     def test_sub_fleet_log(self):
         fut = self.subscribe_sio(f"/fleets/{self.fleet_states[0].name}/log")
-        try_until(fut.done, lambda x: x)
-        result = fut.result(0)
+        result = fut.result(1)
         self.assertEqual(self.fleet_logs[0].name, result["name"])

@@ -3,7 +3,6 @@ from uuid import uuid4
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
 
 from api_server.test import AppFixture, make_building_map, make_door_state
-from api_server.test.test_fixtures import try_until
 
 
 class TestDoorsRoute(AppFixture):
@@ -35,8 +34,7 @@ class TestDoorsRoute(AppFixture):
 
     def test_sub_door_state(self):
         fut = self.subscribe_sio(f"/doors/{self.door_states[0].door_name}/state")
-        try_until(fut.done, lambda x: x)
-        result = fut.result(0)
+        result = fut.result(1)
         self.assertEqual(self.door_states[0].door_name, result["door_name"])
 
     def test_post_door_request(self):

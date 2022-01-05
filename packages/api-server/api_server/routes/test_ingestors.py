@@ -1,7 +1,7 @@
 from typing import List
 from uuid import uuid4
 
-from api_server.test import AppFixture, make_ingestor_state, try_until
+from api_server.test import AppFixture, make_ingestor_state
 
 
 class TestIngestorsRoute(AppFixture):
@@ -34,6 +34,5 @@ class TestIngestorsRoute(AppFixture):
 
     def test_sub_ingestor_state(self):
         fut = self.subscribe_sio(f"/ingestors/{self.ingestor_states[0].guid}/state")
-        try_until(fut.done, lambda x: x)
-        result = fut.result(0)
+        result = fut.result(1)
         self.assertEqual(self.ingestor_states[0].guid, result["guid"])
