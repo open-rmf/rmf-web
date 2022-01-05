@@ -43,12 +43,17 @@ class TaskEventLogPhasesLog(Model, LogMixin):
     phase: ForeignKeyRelation[TaskEventLogPhases] = ForeignKeyField("models.TaskEventLogPhases", related_name="log")  # type: ignore
 
     class Meta:
-        unique_together = ("phase", "seq")
+        unique_together = ("id", "seq")
 
 
-class TaskEventLogPhasesEvents(Model, LogMixin):
+class TaskEventLogPhasesEvents(Model):
     phase: ForeignKeyRelation[TaskEventLogPhases] = ForeignKeyField("models.TaskEventLogPhases", related_name="events")  # type: ignore
     event = CharField(255)
+    log: ReverseRelation["TaskEventLogPhasesEventsLog"]
+
+
+class TaskEventLogPhasesEventsLog(Model, LogMixin):
+    event: ForeignKeyRelation[TaskEventLogPhasesEvents] = ForeignKeyField("models.TaskEventLogPhasesEvents", related_name="log")  # type: ignore
 
     class Meta:
-        unique_together = ("phase", "event", "seq")
+        unique_together = ("id", "seq")

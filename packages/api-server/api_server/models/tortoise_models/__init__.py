@@ -19,6 +19,7 @@ from .tasks import (
     TaskEventLogLog,
     TaskEventLogPhases,
     TaskEventLogPhasesEvents,
+    TaskEventLogPhasesEventsLog,
     TaskEventLogPhasesLog,
     TaskState,
 )

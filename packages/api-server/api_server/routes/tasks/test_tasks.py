@@ -81,8 +81,8 @@ class TestTasksRoute(AppFixture):
         self.assertIn("events", phase1)
         phase1_events = phase1["events"]
         self.assertEqual(
-            3, len(phase1_events)
-        )  # check only events with logs in the period are returned
+            7, len(phase1_events)
+        )  # check all events are returned, including those with no logs
 
         # check event log
         self.assertIn("1", phase1_events)

@@ -38,10 +38,13 @@ class TaskEventLog(BaseTaskEventLog):
         events: Dict[str, Sequence[Dict[str, Any]]],
     ):
         for event_id, logs in events.items():
-            for log in logs:
+            db_event = (
                 await ttm.TaskEventLogPhasesEvents.get_or_create(
-                    phase=db_phase, event=event_id, **log
+                    phase=db_phase, event=event_id
                 )
+            )[0]
+            for log in logs:
+                await ttm.TaskEventLogPhasesEventsLog.create(event=db_event, **log)
 
     async def _savePhaseLogs(
         self, db_task_log: ttm.TaskEventLog, phases: Dict[str, Dict[str, Dict]]

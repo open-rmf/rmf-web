@@ -1,4 +1,3 @@
-# NOTE: This will eventually replace `gateway.py``
 from concurrent.futures import Future
 from uuid import uuid4
 
@@ -32,7 +31,7 @@ class TestRmfGatewayApp(AppFixture):
         task_log = make_task_log(task_id)
         task_log_update = TaskEventLogUpdate(type="task_log_update", data=task_log)
         fut = Future()
-        task_events.task_event_logs.subscribe(fut.set_result)
+        task_events.task_event_logs.pipe(rxops.take(1)).subscribe(fut.set_result)
         self.ws.send(task_log_update.json())
 
         result: TaskEventLog = fut.result(1)

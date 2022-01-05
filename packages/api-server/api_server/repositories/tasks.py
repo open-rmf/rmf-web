@@ -52,8 +52,8 @@ class TaskRepository:
                     "phases__log", ttm.TaskEventLogPhasesLog.filter(**between_filters)
                 ),
                 Prefetch(
-                    "phases__events",
-                    ttm.TaskEventLogPhasesEvents.filter(**between_filters),
+                    "phases__events__log",
+                    ttm.TaskEventLogPhasesEventsLog.filter(**between_filters),
                 ),
             ),
         )
@@ -65,13 +65,14 @@ class TaskRepository:
             phase["log"] = [LogEntry.from_tortoise(x) for x in db_phase.log]
             events = {}
             for db_event in db_phase.events:
-                event: List = events.setdefault(db_event.event, [])
-                event.append(LogEntry.from_tortoise(db_event))
+                events[db_event.event] = [
+                    LogEntry.from_tortoise(x) for x in db_event.log
+                ]
             phase["events"] = events
             phases[db_phase.phase] = phase
         return TaskEventLog.construct(
             task_id=result.task_id,
-            log=[LogEntry.from_tortoise(x) for x in list(result.log)],
+            log=[LogEntry.from_tortoise(x) for x in result.log],
             phases=phases,
         )
 
