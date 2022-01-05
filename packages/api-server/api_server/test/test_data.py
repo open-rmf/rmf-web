@@ -409,7 +409,7 @@ def make_task_state(task_id: str = "test_task") -> TaskState:
 
 
 def make_task_log(task_id: str) -> TaskEventLog:
-    sample = TaskEventLog.construct(
+    sample = TaskEventLog(
         **json.loads(
             """
 {
@@ -617,7 +617,7 @@ def make_task_log(task_id: str) -> TaskEventLog:
             "text": "Finished generating plan to get from [place:kitchen_03] to [place:room_203]"
           },
           {
-            "seq": 0,
+            "seq": 2,
             "tier": "info",
             "unix_millis_time": 1636388450000,
             "text": "Finished: Move to [place:kitchen_door_interior]"

@@ -1,5 +1,6 @@
 from uuid import uuid4
 
+from api_server.models import TaskEventLog
 from api_server.test import AppFixture, make_task_log, make_task_state, try_until
 
 
@@ -38,9 +39,68 @@ class TestTasksRoute(AppFixture):
         self.assertEqual(self.task_states[0].booking.id, result["booking"]["id"])
 
     def test_get_task_log(self):
-        resp = self.session.get(f"/tasks/{self.task_logs[0].task_id}/log")
+        resp = self.session.get(
+            f"/tasks/{self.task_logs[0].task_id}/log?between=0,1636388414500"
+        )
         self.assertEqual(200, resp.status_code)
-        self.assertEqual(self.task_logs[0].task_id, resp.json()["task_id"])
+        logs = TaskEventLog(**resp.json())
+        self.assertEqual(self.task_logs[0].task_id, logs.task_id)
+
+        # check task log
+        if logs.log is None:
+            self.assertIsNotNone(logs.log)
+            return
+        self.assertEqual(1, len(logs.log))
+        log = logs.log[0]
+        self.assertEqual(0, log.seq)
+        self.assertEqual("info", log.tier.name)
+        self.assertEqual(1636388410000, log.unix_millis_time)
+        self.assertEqual("Beginning task", log.text)
+
+        # check number of phases
+        if logs.phases is None:
+            self.assertIsNotNone(logs.phases)
+            return
+        self.assertEqual(2, len(logs.phases))
+        self.assertIn("1", logs.phases)
+        self.assertIn("2", logs.phases)
+
+        # check correct log
+        phase1 = logs.phases["1"]
+        self.assertIn("log", phase1)
+        phase1_log = phase1["log"]
+        self.assertEqual(1, len(phase1_log))
+        log = phase1_log[0]
+        self.assertEqual(0, log["seq"])
+        self.assertEqual("info", log["tier"])
+        self.assertEqual(1636388410000, log["unix_millis_time"])
+        self.assertEqual("Beginning phase", log["text"])
+
+        # check number of events
+        self.assertIn("events", phase1)
+        phase1_events = phase1["events"]
+        self.assertEqual(
+            3, len(phase1_events)
+        )  # check only events with logs in the period are returned
+
+        # check event log
+        self.assertIn("1", phase1_events)
+        self.assertEqual(
+            3, len(phase1_events["1"])
+        )  # check only logs in the period is returned
+        log = phase1_events["1"][0]
+        self.assertEqual(0, log["seq"])
+        self.assertEqual("info", log["tier"])
+        self.assertEqual(1636388409995, log["unix_millis_time"])
+        self.assertEqual(
+            "Generating plan to get from [place:parking_03] to [place:kitchen]",
+            log["text"],
+        )
+
+        # TODO: check relative time is working, this requires the use of
+        # dependencies overrides, which requires change in the server architecture.
+        # Better to do this after this gets merged into main so we don't make
+        # more architecture changes.
 
     def test_sub_task_log(self):
         fut = self.subscribe_sio(f"/tasks/{self.task_logs[0].task_id}/log")

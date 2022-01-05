@@ -19,6 +19,7 @@ from api_server.models.tasks import TaskEventLog
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.repositories import TaskRepository, task_repo_dep
 from api_server.rmf_io import task_events
+from api_server.time import now
 
 router = FastIORouter(tags=["Tasks"])
 
@@ -78,11 +79,29 @@ async def sub_task_state(req: SubscriptionRequest, task_id: str):
 async def get_task_log(
     task_repo: TaskRepository = Depends(task_repo_dep),
     task_id: str = Path(..., description="task_id"),
+    between: str = Query(
+        "-60000",
+        description="""
+        The period of time to fetch, in unix millis.
+
+        This can be either a comma separated string or a string prefixed with '-' to fetch the last X millis.
+
+        Example:
+            "1000,2000" - Fetches logs between unix millis 1000 and 2000.
+            "-60000" - Fetches logs in the last minute.
+        """,
+    ),
+    now: int = Depends(now),
 ):
     """
     Available in socket.io
     """
-    result = await task_repo.get_task_log(task_id)
+    if between.startswith("-"):
+        period = (now - int(between[1:]), now)
+    else:
+        parts = between.split(",")
+        period = (int(parts[0]), int(parts[1]))
+    result = await task_repo.get_task_log(task_id, period)
     if result is None:
         raise HTTPException(status_code=404)
     return result

@@ -6,6 +6,7 @@ from .fleets import *
 from .health import *
 from .ingestors import *
 from .lifts import *
+from .log import LogEntry
 from .pagination import *
 from .rmf_api.cancel_task_request import CancelTaskRequest
 from .rmf_api.cancel_task_response import TaskCancelResponse

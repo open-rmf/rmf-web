@@ -13,5 +13,13 @@ from .health import (
 )
 from .ingestor_state import IngestorState
 from .lift_state import LiftState
-from .tasks import TaskEventLog, TaskState
+from .log import LogEntryTier, LogMixin
+from .tasks import (
+    TaskEventLog,
+    TaskEventLogLog,
+    TaskEventLogPhases,
+    TaskEventLogPhasesEvents,
+    TaskEventLogPhasesLog,
+    TaskState,
+)
 from .user import *

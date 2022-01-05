@@ -1,18 +1,21 @@
 from datetime import datetime
+from typing import Any, Dict, Sequence
 
+from tortoise.transactions import in_transaction
+
+from . import tortoise_models as ttm
+from .rmf_api.log_entry import LogEntry
 from .rmf_api.task_log import TaskEventLog as BaseTaskEventLog
 from .rmf_api.task_state import TaskState as BaseTaskState
-from .tortoise_models import TaskEventLog as DbTaskEventLog
-from .tortoise_models import TaskState as DbTaskState
 
 
 class TaskState(BaseTaskState):
     @staticmethod
-    def from_db(task_state: DbTaskState) -> "TaskState":
+    def from_db(task_state: ttm.TaskState) -> "TaskState":
         return TaskState(**task_state.data)
 
     async def save(self) -> None:
-        await DbTaskState.update_or_create(
+        await ttm.TaskState.update_or_create(
             {
                 "data": self.json(),
                 "category": self.category,
@@ -26,12 +29,52 @@ class TaskState(BaseTaskState):
 
 
 class TaskEventLog(BaseTaskEventLog):
-    @staticmethod
-    def from_db(task_log: DbTaskEventLog) -> "TaskEventLog":
-        return TaskEventLog(**task_log.data)
+    async def _saveEventLogs(
+        self,
+        db_phase: ttm.TaskEventLogPhases,
+        events: Dict[str, Sequence[Dict[str, Any]]],
+    ):
+        for event_id, logs in events.items():
+            for log in logs:
+                await ttm.TaskEventLogPhasesEvents.get_or_create(
+                    phase=db_phase, event=event_id, **log
+                )
+
+    async def _savePhaseLogs(
+        self, db_task_log: ttm.TaskEventLog, phases: Dict[str, Dict[str, Dict]]
+    ):
+        for phase_id, phase in phases.items():
+            db_phase = (
+                await ttm.TaskEventLogPhases.get_or_create(
+                    task=db_task_log, phase=phase_id
+                )
+            )[0]
+            for log in phase["log"]:
+                await ttm.TaskEventLogPhasesLog.create(
+                    phase=db_phase,
+                    **log,
+                )
+            if "events" in phase:
+                await self._saveEventLogs(db_phase, phase["events"])
+
+    async def _saveTaskLogs(
+        self, db_task_log: ttm.TaskEventLog, logs: Sequence[LogEntry]
+    ):
+        for log in logs:
+            await ttm.TaskEventLogLog.create(
+                task=db_task_log,
+                seq=log.seq,
+                unix_millis_time=log.unix_millis_time,
+                tier=log.tier.name,
+                text=log.text,
+            )
 
     async def save(self) -> None:
-        await DbTaskEventLog.update_or_create(
-            {"data": self.json()},
-            task_id=self.task_id,
-        )
+        async with in_transaction():
+            db_task_log = (await ttm.TaskEventLog.get_or_create(task_id=self.task_id))[
+                0
+            ]
+            if self.log:
+                await self._saveTaskLogs(db_task_log, self.log)
+            if self.phases:
+                await self._savePhaseLogs(db_task_log, self.phases)

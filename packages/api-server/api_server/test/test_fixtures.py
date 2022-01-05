@@ -5,7 +5,17 @@ import os.path
 import time
 import unittest
 from concurrent.futures import Future
-from typing import Any, Awaitable, Callable, List, Optional, TypeVar, Union, cast
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    List,
+    Optional,
+    Sequence,
+    TypeVar,
+    Union,
+    cast,
+)
 from uuid import uuid4
 
 import jwt
@@ -102,6 +112,9 @@ class PrefixUrlSession(requests.Session):
 
 
 class AppFixture(unittest.TestCase):
+    def __init__(self):
+        self.test_time = 0
+
     @classmethod
     def setUpClass(cls):
         cls.server = test_server
@@ -200,3 +213,9 @@ class AppFixture(unittest.TestCase):
     def assign_role(self, username: str, role: str):
         resp = self.session.post(f"/admin/users/{username}/roles", json={"name": role})
         self.assertEqual(200, resp.status_code)
+
+    def now(self) -> int:
+        """
+        Returns the current time in the testing clock in unix millis.
+        """
+        return self.test_time
