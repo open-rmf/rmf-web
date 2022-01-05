@@ -112,9 +112,6 @@ class PrefixUrlSession(requests.Session):
 
 
 class AppFixture(unittest.TestCase):
-    def __init__(self):
-        self.test_time = 0
-
     @classmethod
     def setUpClass(cls):
         cls.server = test_server
@@ -133,6 +130,7 @@ class AppFixture(unittest.TestCase):
         cls.session.close()
 
     def setUp(self):
+        self.test_time = 0
         self._sioClients: List[socketio.Client] = []
 
     def tearDown(self):
@@ -178,7 +176,10 @@ class AppFixture(unittest.TestCase):
                 fut.set_result(data)
 
         client.on(room, on_event)
+        subscribe_fut = Future()
+        client.on("subscribe", subscribe_fut.set_result)
         client.emit("subscribe", {"room": room})
+        subscribe_fut.result(1)
 
         return fut
 

@@ -108,11 +108,7 @@ async def get_task_log(
 
 
 @router.sub("/{task_id}/log", response_model=TaskEventLog)
-async def sub_task_log(req: SubscriptionRequest, task_id: str):
-    user = sio_user(req)
-    task_repo = TaskRepository(user)
-    current = await get_task_log(task_repo, task_id)
-    await req.sio.emit(req.room, current, req.sid)
+async def sub_task_log(_req: SubscriptionRequest, task_id: str):
     return task_events.task_event_logs.pipe(
         rxops.filter(lambda x: cast(TaskEventLog, x).task_id == task_id)
     )

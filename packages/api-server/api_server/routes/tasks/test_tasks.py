@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 from api_server.models import TaskEventLog
+from api_server.rmf_io import task_events
 from api_server.test import AppFixture, make_task_log, make_task_state, try_until
 
 
@@ -103,7 +104,9 @@ class TestTasksRoute(AppFixture):
         # more architecture changes.
 
     def test_sub_task_log(self):
-        fut = self.subscribe_sio(f"/tasks/{self.task_logs[0].task_id}/log")
-        try_until(fut.done, lambda x: x)
-        result = fut.result(0)
-        self.assertEqual(self.task_logs[0].task_id, result["task_id"])
+        task_id = f"task_{uuid4()}"
+        fut = self.subscribe_sio(f"/tasks/{task_id}/log")
+        task_logs = make_task_log(task_id)
+        task_events.task_event_logs.on_next(task_logs)
+        result = fut.result(1)
+        self.assertEqual(task_id, result["task_id"])
