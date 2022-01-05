@@ -34,6 +34,5 @@ class TestDispensersRoute(AppFixture):
 
     def test_sub_dispenser_state(self):
         fut = self.subscribe_sio(f"/dispensers/{self.dispenser_states[0].guid}/state")
-        try_until(fut.done, lambda x: x)
-        result = fut.result(0)
+        result = fut.result(1)
         self.assertEqual(self.dispenser_states[0].guid, result["guid"])

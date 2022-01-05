@@ -2,6 +2,7 @@ from typing import List, Optional, cast
 
 from fastapi import Depends, HTTPException, Query
 from rx import operators as rxops
+from rx.subject.replaysubject import ReplaySubject
 
 from api_server.dependencies import pagination_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
@@ -44,10 +45,11 @@ async def get_fleet_state(name: str, repo: FleetRepository = Depends(fleet_repo_
 async def sub_fleet_state(req: SubscriptionRequest, name: str):
     user = sio_user(req)
     fleet_state = await get_fleet_state(name, FleetRepository(user))
-    await req.sio.emit(req.room, fleet_state, req.sid)
-    return fleet_events.fleet_states.pipe(
-        rxops.filter(lambda x: cast(FleetState, x).name == name)
-    )
+    sub = ReplaySubject(1)
+    if fleet_state:
+        sub.on_next(fleet_state)
+    fleet_events.fleet_states.subscribe(sub)
+    return sub
 
 
 @router.get("/{name}/log", response_model=FleetLog)
@@ -65,7 +67,8 @@ async def get_fleet_log(name: str, repo: FleetRepository = Depends(fleet_repo_de
 async def sub_fleet_log(req: SubscriptionRequest, name: str):
     user = sio_user(req)
     fleet_log = await get_fleet_log(name, FleetRepository(user))
-    await req.sio.emit(req.room, fleet_log, req.sid)
-    return fleet_events.fleet_logs.pipe(
-        rxops.filter(lambda x: cast(FleetLog, x).name == name)
-    )
+    sub = ReplaySubject(1)
+    if fleet_log:
+        sub.on_next(fleet_log)
+    fleet_events.fleet_logs.subscribe(sub)
+    return sub
