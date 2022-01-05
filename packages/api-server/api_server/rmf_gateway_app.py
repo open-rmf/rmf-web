@@ -23,32 +23,8 @@ async def process_msg(msg: Dict[str, Any]) -> None:
         await task_state.save()
         task_events.task_states.on_next(task_state)
     elif payload_type == "task_log_update":
-        task_log = mdl.TaskEventLog.construct(**msg["data"])
-        current_log = mdl.TaskEventLog.from_db(
-            (
-                await dbmdl.TaskEventLog.get_or_create(
-                    {"data": task_log.json()}, task_id=task_log.task_id
-                )
-            )[0]
-        )
-        if task_log.log:
-            if current_log.log is None:
-                current_log.log = []
-            current_log.log.extend(task_log.log)
-        if task_log.phases:
-            if current_log.phases is None:
-                current_log.phases = {}
-            for phase_name, phase in task_log.phases.items():
-                current_phase = current_log.phases.setdefault(phase_name, {})
-                if "log" in phase:
-                    current_phase_logs = current_phase.setdefault("log", [])
-                    current_phase_logs.extend(phase["log"])
-                if "events" in phase:
-                    current_events = current_phase.setdefault("events", {})
-                    for event_name, event in phase["events"].items():
-                        current_event = current_events.setdefault(event_name, [])
-                        current_event.extend(event)
-        await current_log.save()
+        task_log = mdl.TaskEventLog(**msg["data"])
+        await task_log.save()
         task_events.task_event_logs.on_next(task_log)
     elif payload_type == "fleet_state_update":
         fleet_state = mdl.FleetState.construct(**msg["data"])

@@ -1,7 +1,10 @@
 from datetime import datetime
 from typing import Any, Dict, Sequence
 
+from tortoise.exceptions import IntegrityError
 from tortoise.transactions import in_transaction
+
+from api_server.logger import logger
 
 from . import tortoise_models as ttm
 from .rmf_api.log_entry import LogEntry
@@ -74,7 +77,10 @@ class TaskEventLog(BaseTaskEventLog):
             db_task_log = (await ttm.TaskEventLog.get_or_create(task_id=self.task_id))[
                 0
             ]
-            if self.log:
-                await self._saveTaskLogs(db_task_log, self.log)
-            if self.phases:
-                await self._savePhaseLogs(db_task_log, self.phases)
+            try:
+                if self.log:
+                    await self._saveTaskLogs(db_task_log, self.log)
+                if self.phases:
+                    await self._savePhaseLogs(db_task_log, self.phases)
+            except IntegrityError as e:
+                logger.error(f"{type(e).__name__}:{e}")
