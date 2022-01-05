@@ -3,6 +3,7 @@ from typing import List, Optional, cast
 
 from fastapi import Body, Depends, HTTPException, Path, Query
 from rx import operators as rxops
+from rx.subject.replaysubject import ReplaySubject
 
 from api_server.authenticator import user_dep
 from api_server.dependencies import pagination_query, sio_user
@@ -69,10 +70,11 @@ async def sub_task_state(req: SubscriptionRequest, task_id: str):
     user = sio_user(req)
     task_repo = TaskRepository(user)
     current_state = await get_task_state(task_repo, task_id)
-    await req.sio.emit(req.room, current_state, req.sid)
-    return task_events.task_states.pipe(
-        rxops.filter(lambda x: cast(TaskState, x).booking.id == task_id)
-    )
+    sub = ReplaySubject(1)
+    if current_state:
+        sub.on_next(current_state)
+    task_events.task_states.subscribe(sub)
+    return sub
 
 
 @router.get("/{task_id}/log", response_model=TaskEventLog)

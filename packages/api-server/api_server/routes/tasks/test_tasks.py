@@ -35,8 +35,7 @@ class TestTasksRoute(AppFixture):
 
     def test_sub_task_state(self):
         fut = self.subscribe_sio(f"/tasks/{self.task_states[0].booking.id}/state")
-        try_until(fut.done, lambda x: x)
-        result = fut.result(0)
+        result = fut.result(1)
         self.assertEqual(self.task_states[0].booking.id, result["booking"]["id"])
 
     def test_get_task_log(self):
