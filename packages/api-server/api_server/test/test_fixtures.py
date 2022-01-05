@@ -5,17 +5,7 @@ import os.path
 import time
 import unittest
 from concurrent.futures import Future
-from typing import (
-    Any,
-    Awaitable,
-    Callable,
-    List,
-    Optional,
-    Sequence,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import Any, Awaitable, Callable, List, Optional, TypeVar, Union, cast
 from uuid import uuid4
 
 import jwt

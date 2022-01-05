@@ -5,6 +5,7 @@ from fastapi import Body, Depends, HTTPException, Path, Query
 from rx import operators as rxops
 from rx.subject.replaysubject import ReplaySubject
 
+from api_server import clock
 from api_server.authenticator import user_dep
 from api_server.dependencies import pagination_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
@@ -20,7 +21,6 @@ from api_server.models.tasks import TaskEventLog
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.repositories import TaskRepository, task_repo_dep
 from api_server.rmf_io import task_events
-from api_server.time import now
 
 router = FastIORouter(tags=["Tasks"])
 
@@ -93,7 +93,7 @@ async def get_task_log(
             "-60000" - Fetches logs in the last minute.
         """,
     ),
-    now: int = Depends(now),
+    now: int = Depends(clock.now),
 ):
     """
     Available in socket.io

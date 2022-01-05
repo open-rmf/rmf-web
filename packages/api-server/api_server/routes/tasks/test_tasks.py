@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from api_server.models import TaskEventLog
 from api_server.rmf_io import task_events
-from api_server.test import AppFixture, make_task_log, make_task_state, try_until
+from api_server.test import AppFixture, make_task_log, make_task_state
 
 
 class TestTasksRoute(AppFixture):
