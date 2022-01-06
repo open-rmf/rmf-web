@@ -48,7 +48,9 @@ async def sub_fleet_state(req: SubscriptionRequest, name: str):
     sub = ReplaySubject(1)
     if fleet_state:
         sub.on_next(fleet_state)
-    fleet_events.fleet_states.subscribe(sub)
+    fleet_events.fleet_states.pipe(
+        rxops.filter(lambda x: cast(FleetState, x).name == name)
+    ).subscribe(sub)
     return sub
 
 

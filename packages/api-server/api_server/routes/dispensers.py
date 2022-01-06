@@ -38,7 +38,9 @@ async def sub_dispenser_state(req: SubscriptionRequest, guid: str):
     sub = ReplaySubject(1)
     if dispenser_state:
         sub.on_next(dispenser_state)
-    rmf_events.dispenser_states.subscribe(sub)
+    rmf_events.dispenser_states.pipe(
+        rxops.filter(lambda x: cast(DispenserState, x).guid == guid)
+    ).subscribe(sub)
     return sub
 
 

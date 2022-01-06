@@ -39,7 +39,9 @@ async def sub_door_state(req: SubscriptionRequest, door_name: str):
     sub = ReplaySubject(1)
     if door_name:
         sub.on_next(door_state)
-    rmf_events.door_states.subscribe(sub)
+    rmf_events.door_states.pipe(
+        rxops.filter(lambda x: cast(DoorState, x).door_name == door_name)
+    ).subscribe(sub)
     return sub
 
 

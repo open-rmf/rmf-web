@@ -72,7 +72,9 @@ async def sub_task_state(req: SubscriptionRequest, task_id: str):
     sub = ReplaySubject(1)
     if current_state:
         sub.on_next(current_state)
-    task_events.task_states.subscribe(sub)
+    task_events.task_states.pipe(
+        rxops.filter(lambda x: cast(TaskState, x).booking.id == task_id)
+    ).subscribe(sub)
     return sub
 
 

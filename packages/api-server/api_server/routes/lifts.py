@@ -39,7 +39,9 @@ async def sub_lift_state(req: SubscriptionRequest, lift_name: str):
     sub = ReplaySubject(1)
     if lift_state:
         sub.on_next(lift_state)
-    rmf_events.lift_states.subscribe(sub)
+    rmf_events.lift_states.pipe(
+        rxops.filter(lambda x: cast(LiftState, x).lift_name == lift_name)
+    ).subscribe(sub)
     return sub
 
 

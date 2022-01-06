@@ -38,7 +38,9 @@ async def sub_ingestor_state(req: SubscriptionRequest, guid: str):
     sub = ReplaySubject(1)
     if ingestor_state:
         sub.on_next(ingestor_state)
-    rmf_events.dispenser_states.subscribe(sub)
+    rmf_events.ingestor_states.pipe(
+        rxops.filter(lambda x: cast(IngestorState, x).guid == guid)
+    ).subscribe(sub)
     return sub
 
 
