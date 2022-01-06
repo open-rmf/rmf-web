@@ -10,8 +10,6 @@ from .rmf_io import fleet_events, task_events
 app = FastAPI()
 
 
-# FIXME: Log updates are very inefficient because we are re-writing the entire logs
-# on every update. More efficient solutions will require proper relational schemas.
 async def process_msg(msg: Dict[str, Any]) -> None:
     payload_type: str = msg["type"]
     if not isinstance(payload_type, str):
@@ -22,7 +20,7 @@ async def process_msg(msg: Dict[str, Any]) -> None:
         await task_state.save()
         task_events.task_states.on_next(task_state)
     elif payload_type == "task_log_update":
-        task_log = mdl.TaskEventLog(**msg["data"])
+        task_log = mdl.TaskEventLog.construct(**msg["data"])
         await task_log.save()
         task_events.task_event_logs.on_next(task_log)
     elif payload_type == "fleet_state_update":
