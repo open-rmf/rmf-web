@@ -1,8 +1,12 @@
+from typing import Sequence
+
+from tortoise.transactions import in_transaction
+
+from . import tortoise_models as ttm
 from .rmf_api.fleet_log import FleetState as BaseFleetLog
 from .rmf_api.fleet_state import FleetState as BaseFleetState
+from .rmf_api.log_entry import LogEntry
 from .ros_pydantic import rmf_fleet_msgs
-from .tortoise_models import FleetLog as DbFleetLog
-from .tortoise_models import FleetState as DbFleetState
 
 RobotMode = rmf_fleet_msgs.RobotMode
 Location = rmf_fleet_msgs.Location
@@ -10,11 +14,11 @@ Location = rmf_fleet_msgs.Location
 
 class FleetState(BaseFleetState):
     @staticmethod
-    def from_db(fleet_state: DbFleetState) -> "FleetState":
+    def from_db(fleet_state: ttm.FleetState) -> "FleetState":
         return FleetState(**fleet_state.data)
 
     async def save(self) -> None:
-        await DbFleetState.update_or_create(
+        await ttm.FleetState.update_or_create(
             {
                 "data": self.json(),
             },
@@ -23,12 +27,20 @@ class FleetState(BaseFleetState):
 
 
 class FleetLog(BaseFleetLog):
-    @staticmethod
-    def from_db(fleet_log: DbFleetLog) -> "FleetLog":
-        return FleetLog(**fleet_log.data)
+    async def _saveFleetLogs(
+        self, db_fleet_log: ttm.FleetLog, logs: Sequence[LogEntry]
+    ):
+        for log in logs:
+            await ttm.FleetLogLog.create(
+                fleet=db_fleet_log,
+                seq=log.seq,
+                unix_millis_time=log.unix_millis_time,
+                tier=log.tier.name,
+                text=log.text,
+            )
 
     async def save(self) -> None:
-        await DbFleetLog.update_or_create(
-            {"data": self.json()},
-            name=self.name,
-        )
+        async with in_transaction():
+            db_fleet_log = (await ttm.FleetLog.get_or_create(name=self.name))[0]
+            if self.log:
+                await self._saveFleetLogs(db_fleet_log, self.log)

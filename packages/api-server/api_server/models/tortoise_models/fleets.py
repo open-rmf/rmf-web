@@ -1,5 +1,13 @@
-from tortoise.fields import CharField, JSONField
+from tortoise.fields import (
+    CharField,
+    ForeignKeyField,
+    ForeignKeyRelation,
+    JSONField,
+    ReverseRelation,
+)
 from tortoise.models import Model
+
+from .log import LogMixin
 
 
 class FleetState(Model):
@@ -9,4 +17,25 @@ class FleetState(Model):
 
 class FleetLog(Model):
     name = CharField(255, pk=True)
-    data = JSONField()
+    log: ReverseRelation["FleetLogLog"]
+    robots: ReverseRelation["FleetLogRobots"]
+
+
+class FleetLogLog(Model, LogMixin):
+    fleet: ForeignKeyRelation[FleetLog] = ForeignKeyField("models.FleetLog", related_name="log")  # type: ignore
+
+    class Meta:
+        unique_together = ("fleet", "seq")
+
+
+class FleetLogRobots(Model):
+    fleet: ForeignKeyRelation[FleetLog] = ForeignKeyField("models.FleetLog", related_name="robots")  # type: ignore
+    robot = CharField(255)
+    log: ReverseRelation["FleetLogRobotsLog"]
+
+
+class FleetLogRobotsLog(Model, LogMixin):
+    robot: ForeignKeyRelation[FleetLogRobots] = ForeignKeyField("models.FleetLogRobots", related_name="log")  # type: ignore
+
+    class Meta:
+        unique_together = ("id", "seq")

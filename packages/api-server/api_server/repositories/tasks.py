@@ -62,17 +62,15 @@ class TaskRepository:
         phases = {}
         for db_phase in result.phases:
             phase = {}
-            phase["log"] = [LogEntry.from_tortoise(x) for x in db_phase.log]
+            phase["log"] = [LogEntry(**dict(x)) for x in db_phase.log]
             events = {}
             for db_event in db_phase.events:
-                events[db_event.event] = [
-                    LogEntry.from_tortoise(x) for x in db_event.log
-                ]
+                events[db_event.event] = [LogEntry(**dict(x)) for x in db_event.log]
             phase["events"] = events
             phases[db_phase.phase] = phase
         return TaskEventLog.construct(
             task_id=result.task_id,
-            log=[LogEntry.from_tortoise(x) for x in result.log],
+            log=[LogEntry(**dict(x)) for x in result.log],
             phases=phases,
         )
 
