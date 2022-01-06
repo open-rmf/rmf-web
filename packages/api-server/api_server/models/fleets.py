@@ -1,6 +1,9 @@
 from typing import Sequence
 
+from tortoise.exceptions import IntegrityError
 from tortoise.transactions import in_transaction
+
+from api_server.logger import format_exception, logger
 
 from . import tortoise_models as ttm
 from .rmf_api.fleet_log import FleetState as BaseFleetLog
@@ -42,5 +45,8 @@ class FleetLog(BaseFleetLog):
     async def save(self) -> None:
         async with in_transaction():
             db_fleet_log = (await ttm.FleetLog.get_or_create(name=self.name))[0]
-            if self.log:
-                await self._saveFleetLogs(db_fleet_log, self.log)
+            try:
+                if self.log:
+                    await self._saveFleetLogs(db_fleet_log, self.log)
+            except IntegrityError as e:
+                logger.error(format_exception(e))

@@ -12,3 +12,7 @@ handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
 logger.addHandler(handler)
 logger.setLevel(app_config.log_level)
 logger.name = "app"
+
+
+def format_exception(exception: Exception):
+    return logger.error(f"{type(exception).__name__}:{exception}")

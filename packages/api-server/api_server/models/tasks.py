@@ -4,7 +4,7 @@ from typing import Any, Dict, Sequence
 from tortoise.exceptions import IntegrityError
 from tortoise.transactions import in_transaction
 
-from api_server.logger import logger
+from api_server.logger import format_exception, logger
 
 from . import tortoise_models as ttm
 from .rmf_api.log_entry import LogEntry
@@ -86,4 +86,4 @@ class TaskEventLog(BaseTaskEventLog):
                 if self.phases:
                     await self._savePhaseLogs(db_task_log, self.phases)
             except IntegrityError as e:
-                logger.error(f"{type(e).__name__}:{e}")
+                logger.error(format_exception(e))

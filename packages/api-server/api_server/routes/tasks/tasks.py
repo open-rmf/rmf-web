@@ -1,13 +1,12 @@
 from datetime import datetime
-from typing import List, Optional, cast
+from typing import List, Optional, Tuple, cast
 
 from fastapi import Body, Depends, HTTPException, Path, Query
 from rx import operators as rxops
 from rx.subject.replaysubject import ReplaySubject
 
-from api_server import clock
 from api_server.authenticator import user_dep
-from api_server.dependencies import pagination_query, sio_user
+from api_server.dependencies import between_query, pagination_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import (
     CancelTaskRequest,
@@ -81,29 +80,13 @@ async def sub_task_state(req: SubscriptionRequest, task_id: str):
 async def get_task_log(
     task_repo: TaskRepository = Depends(task_repo_dep),
     task_id: str = Path(..., description="task_id"),
-    between: str = Query(
-        "-60000",
-        description="""
-        The period of time to fetch, in unix millis.
-
-        This can be either a comma separated string or a string prefixed with '-' to fetch the last X millis.
-
-        Example:
-            "1000,2000" - Fetches logs between unix millis 1000 and 2000.
-            "-60000" - Fetches logs in the last minute.
-        """,
-    ),
-    now: int = Depends(clock.now),
+    between: Tuple[int, int] = Depends(between_query),
 ):
     """
     Available in socket.io
     """
-    if between.startswith("-"):
-        period = (now - int(between[1:]), now)
-    else:
-        parts = between.split(",")
-        period = (int(parts[0]), int(parts[1]))
-    result = await task_repo.get_task_log(task_id, period)
+
+    result = await task_repo.get_task_log(task_id, between)
     if result is None:
         raise HTTPException(status_code=404)
     return result

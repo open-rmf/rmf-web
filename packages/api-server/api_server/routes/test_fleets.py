@@ -1,5 +1,6 @@
 from uuid import uuid4
 
+from api_server.rmf_io import fleet_events
 from api_server.test import AppFixture, make_fleet_log, make_fleet_state
 
 
@@ -38,12 +39,15 @@ class TestFleetsRoute(AppFixture):
         self.assertEqual(self.fleet_states[0].name, result["name"])
 
     def test_get_fleet_log(self):
-        resp = self.session.get(f"/fleets/{self.fleet_states[0].name}/log")
+        # Since there are no sample fleet logs, we cannot check the log contents
+        resp = self.session.get(f"/fleets/{self.fleet_logs[0].name}/log")
         self.assertEqual(200, resp.status_code)
-        state = resp.json()
-        self.assertEqual(self.fleet_logs[0].name, state["name"])
+        self.assertEqual(self.fleet_logs[0].name, resp.json()["name"])
 
     def test_sub_fleet_log(self):
-        fut = self.subscribe_sio(f"/fleets/{self.fleet_states[0].name}/log")
+        fleet = f"fleet_{uuid4()}"
+        fut = self.subscribe_sio(f"/fleets/{fleet}/log")
+        fleet_logs = make_fleet_log(fleet)
+        fleet_events.fleet_logs.on_next(fleet_logs)
         result = fut.result(1)
-        self.assertEqual(self.fleet_logs[0].name, result["name"])
+        self.assertEqual(fleet, result["name"])

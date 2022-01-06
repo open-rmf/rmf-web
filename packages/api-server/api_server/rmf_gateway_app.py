@@ -5,7 +5,6 @@ from typing import Any, Dict
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 from . import models as mdl
-from .models import tortoise_models as dbmdl
 from .rmf_io import fleet_events, task_events
 
 app = FastAPI()
@@ -32,24 +31,7 @@ async def process_msg(msg: Dict[str, Any]) -> None:
         fleet_events.fleet_states.on_next(fleet_state)
     elif payload_type == "fleet_log_update":
         fleet_log = mdl.FleetLog.construct(**msg["data"])
-        current_log = mdl.FleetLog.from_db(
-            (
-                await dbmdl.FleetLog.get_or_create(
-                    {"data": fleet_log.json()}, name=fleet_log.name
-                )
-            )[0]
-        )
-        if fleet_log.log:
-            if current_log.log is None:
-                current_log.log = []
-            current_log.log.extend(fleet_log.log)
-        if fleet_log.robots:
-            if current_log.robots is None:
-                current_log.robots = {}
-            for robot_name, robot in fleet_log.robots.items():
-                current_robot = current_log.robots.setdefault(robot_name, [])
-                current_robot.extend(robot)
-        await current_log.save()
+        await fleet_log.save()
         fleet_events.fleet_logs.on_next(fleet_log)
 
 

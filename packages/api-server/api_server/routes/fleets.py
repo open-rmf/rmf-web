@@ -1,9 +1,10 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple, cast
 
 from fastapi import Depends, HTTPException, Query
+from rx import operators as rxops
 from rx.subject.replaysubject import ReplaySubject
 
-from api_server.dependencies import pagination_query, sio_user
+from api_server.dependencies import between_query, pagination_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import FleetLog, FleetState, Pagination
 from api_server.models.tortoise_models import FleetState as DbFleetState
@@ -52,22 +53,22 @@ async def sub_fleet_state(req: SubscriptionRequest, name: str):
 
 
 @router.get("/{name}/log", response_model=FleetLog)
-async def get_fleet_log(name: str, repo: FleetRepository = Depends(fleet_repo_dep)):
+async def get_fleet_log(
+    name: str,
+    repo: FleetRepository = Depends(fleet_repo_dep),
+    between: Tuple[int, int] = Depends(between_query),
+):
     """
     Available in socket.io
     """
-    fleet_log = await repo.get_fleet_log(name)
+    fleet_log = await repo.get_fleet_log(name, between)
     if fleet_log is None:
         raise HTTPException(status_code=404)
     return fleet_log
 
 
 @router.sub("/{name}/log", response_model=FleetLog)
-async def sub_fleet_log(req: SubscriptionRequest, name: str):
-    user = sio_user(req)
-    fleet_log = await get_fleet_log(name, FleetRepository(user))
-    sub = ReplaySubject(1)
-    if fleet_log:
-        sub.on_next(fleet_log)
-    fleet_events.fleet_logs.subscribe(sub)
-    return sub
+async def sub_fleet_log(_req: SubscriptionRequest, name: str):
+    return fleet_events.fleet_logs.pipe(
+        rxops.filter(lambda x: cast(FleetLog, x).name == name)
+    )

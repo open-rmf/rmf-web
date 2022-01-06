@@ -1,5 +1,3 @@
-from enum import Enum
-
 from tortoise.fields import CharEnumField, IntField, TextField
 
 from api_server.models.rmf_api import log_entry

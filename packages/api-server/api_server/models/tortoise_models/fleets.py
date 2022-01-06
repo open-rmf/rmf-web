@@ -30,7 +30,7 @@ class FleetLogLog(Model, LogMixin):
 
 class FleetLogRobots(Model):
     fleet: ForeignKeyRelation[FleetLog] = ForeignKeyField("models.FleetLog", related_name="robots")  # type: ignore
-    robot = CharField(255)
+    name = CharField(255)
     log: ReverseRelation["FleetLogRobotsLog"]
 
 
