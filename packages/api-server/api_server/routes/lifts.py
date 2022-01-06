@@ -62,10 +62,13 @@ async def get_lift_health(
 async def sub_lift_health(req: SubscriptionRequest, lift_name: str):
     user = sio_user(req)
     health = await get_lift_health(lift_name, RmfRepository(user))
-    await req.sio.emit(req.room, health, req.sid)
-    return rmf_events.lift_health.pipe(
-        rxops.filter(lambda x: cast(LiftHealth, x).id_ == lift_name),
-    )
+    sub = ReplaySubject(1)
+    if health:
+        sub.on_next(health)
+    rmf_events.lift_health.pipe(
+        rxops.filter(lambda x: cast(LiftHealth, x).id_ == lift_name)
+    ).subscribe(sub)
+    return sub
 
 
 @router.post("/{lift_name}/request")

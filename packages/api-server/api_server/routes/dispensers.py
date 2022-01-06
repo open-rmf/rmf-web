@@ -61,7 +61,10 @@ async def get_dispenser_health(
 async def sub_dispenser_health(req: SubscriptionRequest, guid: str):
     user = sio_user(req)
     health = await get_dispenser_health(guid, RmfRepository(user))
-    await req.sio.emit(req.room, health, req.sid)
-    return rmf_events.dispenser_health.pipe(
+    sub = ReplaySubject(1)
+    if health:
+        sub.on_next(health)
+    rmf_events.dispenser_health.pipe(
         rxops.filter(lambda x: cast(DispenserHealth, x).id_ == guid)
-    )
+    ).subscribe(sub)
+    return sub

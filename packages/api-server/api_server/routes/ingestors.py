@@ -61,7 +61,10 @@ async def get_ingestor_health(
 async def sub_ingestor_health(req: SubscriptionRequest, guid: str):
     user = sio_user(req)
     health = await get_ingestor_health(guid, RmfRepository(user))
-    await req.sio.emit(req.room, health, req.sid)
-    return rmf_events.ingestor_health.pipe(
+    sub = ReplaySubject(1)
+    if health:
+        sub.on_next(health)
+    rmf_events.ingestor_health.pipe(
         rxops.filter(lambda x: cast(IngestorHealth, x).id_ == guid)
-    )
+    ).subscribe(sub)
+    return sub

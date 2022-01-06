@@ -62,10 +62,13 @@ async def get_door_health(
 async def sub_door_health(req: SubscriptionRequest, door_name: str):
     user = sio_user(req)
     health = await get_door_health(door_name, RmfRepository(user))
-    await req.sio.emit(req.room, health, req.sid)
-    return rmf_events.door_health.pipe(
+    sub = ReplaySubject(1)
+    if health:
+        sub.on_next(health)
+    rmf_events.door_health.pipe(
         rxops.filter(lambda x: cast(DoorHealth, x).id_ == door_name)
-    )
+    ).subscribe(sub)
+    return sub
 
 
 @router.post("/{door_name}/request")
