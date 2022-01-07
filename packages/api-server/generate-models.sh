@@ -45,6 +45,7 @@ rmf_msgs=(
   'rmf_fleet_msgs'
   'rmf_task_msgs'
 )
+rm -rf api_server/models/ros_pydantic
 pipenv run ros_translator -t=pydantic -o=api_server/models/ros_pydantic "${rmf_msgs[@]}"
 
 cat << EOF > api_server/models/ros_pydantic/version.py
@@ -67,6 +68,7 @@ if [[ ! -d .venv_local/lib ]]; then
   python3 -m venv .venv_local
   . .venv_local/bin/activate && pip3 install wheel && pip3 install 'datamodel-code-generator~=0.11.15'
 fi
+rm -rf api_server/models/rmf_api
 . .venv_local/bin/activate && datamodel-codegen --disable-timestamp --input-file-type jsonschema --input build/rmf_api_msgs/rmf_api_msgs/schemas --output "$output"
 cat << EOF > "$output/version.py"
 # THIS FILE IS GENERATED
