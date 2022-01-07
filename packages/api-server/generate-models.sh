@@ -66,10 +66,10 @@ rm -rf "$output"
 mkdir -p "$output"
 if [[ ! -d .venv_local/lib ]]; then
   python3 -m venv .venv_local
-  . .venv_local/bin/activate && pip3 install wheel && pip3 install 'datamodel-code-generator~=0.11.15'
+  bash -c ". .venv_local/bin/activate && pip3 install wheel && pip3 install 'datamodel-code-generator~=0.11.15'"
 fi
 rm -rf api_server/models/rmf_api
-. .venv_local/bin/activate && datamodel-codegen --disable-timestamp --input-file-type jsonschema --input build/rmf_api_msgs/rmf_api_msgs/schemas --output "$output"
+bash -c ". .venv_local/bin/activate && datamodel-codegen --disable-timestamp --input-file-type jsonschema --input build/rmf_api_msgs/rmf_api_msgs/schemas --output \"$output\""
 cat << EOF > "$output/version.py"
 # THIS FILE IS GENERATED
 version = {
