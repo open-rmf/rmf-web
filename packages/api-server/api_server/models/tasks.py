@@ -27,7 +27,7 @@ class TaskState(BaseTaskState):
                 "unix_millis_finish_time": self.unix_millis_finish_time
                 and datetime.fromtimestamp(self.unix_millis_finish_time / 1000),
             },
-            id_=self.booking.id,
+            id_=self.booking["id"],
         )
 
 
@@ -37,14 +37,15 @@ class TaskEventLog(BaseTaskEventLog):
         db_phase: ttm.TaskEventLogPhases,
         events: Dict[str, Sequence[Dict[str, Any]]],
     ):
-        for event_id, logs in events.items():
-            db_event = (
-                await ttm.TaskEventLogPhasesEvents.get_or_create(
-                    phase=db_phase, event=event_id
-                )
-            )[0]
-            for log in logs:
-                await ttm.TaskEventLogPhasesEventsLog.create(event=db_event, **log)
+        if events:
+            for event_id, logs in events.items():
+                db_event = (
+                    await ttm.TaskEventLogPhasesEvents.get_or_create(
+                        phase=db_phase, event=event_id
+                    )
+                )[0]
+                for log in logs:
+                    await ttm.TaskEventLogPhasesEventsLog.create(event=db_event, **log)
 
     async def _savePhaseLogs(
         self, db_task_log: ttm.TaskEventLog, phases: Dict[str, Dict[str, Dict]]
@@ -55,11 +56,12 @@ class TaskEventLog(BaseTaskEventLog):
                     task=db_task_log, phase=phase_id
                 )
             )[0]
-            for log in phase["log"]:
-                await ttm.TaskEventLogPhasesLog.create(
-                    phase=db_phase,
-                    **log,
-                )
+            if "log" in phase:
+                for log in phase["log"]:
+                    await ttm.TaskEventLogPhasesLog.create(
+                        phase=db_phase,
+                        **log,
+                    )
             if "events" in phase:
                 await self._saveEventLogs(db_phase, phase["events"])
 
