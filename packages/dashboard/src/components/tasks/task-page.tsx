@@ -17,12 +17,11 @@ const StyledTaskPage = styled((props: TaskPanelProps) => <TaskPanel {...props} /
     backgroundColor: theme.palette.background.default,
   },
 }));
-// const mockTaskRequest: TaskRequest = { description: { category: '' } }
 export function TaskPage() {
   const { tasksApi, sioClient } = React.useContext(RmfIngressContext) || {};
   const [fetchedTasks, setFetchedTasks] = React.useState<TaskState[]>([]);
-  const [updatedSummaries, setUpdatedSummaries] = React.useState<Record<string, TaskState>>({});
-  // const [autoRefreshEnabled, setAutoRefreshEnabled] = React.useState(true);
+  const [updatedSummaries, setUpdatedStates] = React.useState<Record<string, TaskState>>({});
+  const [autoRefreshEnabled, setAutoRefreshEnabled] = React.useState(true);
   const [page, setPage] = React.useState(0);
   const [hasMore, setHasMore] = React.useState(true);
   const places = React.useContext(PlacesContext);
@@ -42,9 +41,9 @@ export function TaskPage() {
         undefined,
         undefined,
         undefined,
-        undefined,
-        undefined,
-        undefined,
+        11,
+        page * 10,
+        '-start_time',
         undefined,
       );
       const results = resp.data as TaskState[];
@@ -54,20 +53,20 @@ export function TaskPage() {
     [tasksApi],
   );
 
-  // React.useEffect(() => {
-  //   if (!autoRefreshEnabled || !sioClient) return;
-  //   const subs = fetchedTasks.map((t) =>
-  //     sioClient.su(t.booking.id, (newSummary) =>
-  //       setUpdatedSummaries((prev) => ({
-  //         ...prev,
-  //         [newSummary.task_id]: newSummary,
-  //       })),
-  //     ),
-  //   );
-  //   return () => {
-  //     subs.forEach((s) => sioClient.unsubscribe(s));
-  //   };
-  // }, [autoRefreshEnabled, sioClient, fetchedTasks]);
+  React.useEffect(() => {
+    if (!autoRefreshEnabled || !sioClient) return;
+    const subs = fetchedTasks.map((t) =>
+      sioClient.subscribeTaskState(t.booking.id, (newState) =>
+        setUpdatedStates((prev) => ({
+          ...prev,
+          [newState.booking.id]: newState,
+        })),
+      ),
+    );
+    return () => {
+      subs.forEach((s) => sioClient.unsubscribe(s));
+    };
+  }, [autoRefreshEnabled, sioClient, fetchedTasks]);
 
   const handleRefresh = React.useCallback<Required<TaskPanelProps>['onRefresh']>(async () => {
     fetchTasks(page);
@@ -126,7 +125,7 @@ export function TaskPage() {
       submitTasks={submitTasks}
       cancelTask={cancelTask}
       onRefresh={handleRefresh}
-      // onAutoRefresh={setAutoRefreshEnabled}
+      onAutoRefresh={setAutoRefreshEnabled}
     />
   );
 }

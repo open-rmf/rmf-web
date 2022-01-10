@@ -11,6 +11,7 @@ import {
   IngestorState,
   LiftHealth,
   LiftState,
+  TaskState,
 } from './openapi';
 
 const debug = Debug('rmf-client');
@@ -94,6 +95,10 @@ export class SioClient {
 
   subscribeFleetState(name: string, listener: Listener<FleetState>): Listener<FleetState> {
     return this.subscribe<FleetState>(`/fleets/${name}/state`, listener);
+  }
+
+  subscribeTaskState(taskId: string, listener: Listener<TaskState>): Listener<TaskState> {
+    return this.subscribe<TaskState>(`/tasks/${taskId}/state`, listener);
   }
 }
 
