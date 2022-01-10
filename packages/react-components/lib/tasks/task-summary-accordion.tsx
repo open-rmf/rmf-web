@@ -1,6 +1,6 @@
 import React from 'react';
 import Debug from 'debug';
-import type { TaskSummary } from 'api-client';
+// import type { TaskSummary } from 'api-client';
 import { TaskSummary as RmfTaskSummary } from 'rmf-models';
 import { IconButton, Typography, styled } from '@mui/material';
 import { MultiSelectTreeViewProps, SingleSelectTreeViewProps, TreeItem, TreeView } from '@mui/lab';
@@ -14,7 +14,7 @@ import { formatStatus, getActorFromStatus, getStateLabel } from './task-summary-
 const debug = Debug('Tasks:TaskSummaryAccordion');
 
 interface TaskSummaryAccordionInfoProps {
-  task: TaskSummary;
+  task: any;
 }
 interface TreeViewRootProps extends SingleSelectTreeViewProps {
   onNodeToggle?: MultiSelectTreeViewProps['onNodeSelect'];
@@ -117,7 +117,7 @@ export const TaskSummaryAccordionInfo = (props: TaskSummaryAccordionInfoProps): 
 };
 
 export interface TaskSummaryAccordionProps {
-  tasks: TaskSummary[];
+  tasks: any[];
 }
 
 export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps) => {
@@ -159,7 +159,7 @@ export const TaskSummaryAccordion = React.memo((props: TaskSummaryAccordionProps
     );
   };
 
-  const renderTaskTreeItem = (task: TaskSummary) => {
+  const renderTaskTreeItem = (task: any) => {
     return (
       <TreeItem
         role={'treeitem'}

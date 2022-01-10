@@ -1,6 +1,6 @@
 import React from 'react';
 import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid';
-import type { TaskProfile, Time } from 'api-client';
+import type { Time } from 'api-client';
 import { format } from 'date-fns';
 import { Typography } from '@mui/material';
 import { rosTimeToJs } from '../../utils';
@@ -12,7 +12,7 @@ export type TaskSummaryRowsType = {
   fleet: { id: number; name: string };
   robot: { id: number; name: string; model?: string };
   task_id: string;
-  task_profile: TaskProfile;
+  task_profile: any;
   state: string;
   status: string;
   submission_time: Time;

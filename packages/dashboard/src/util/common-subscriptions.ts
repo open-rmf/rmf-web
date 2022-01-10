@@ -1,17 +1,17 @@
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { Fleet, SioClient, Ingestor, Dispenser } from 'api-client';
+import { FleetState, SioClient, Ingestor, Dispenser } from 'api-client';
 import { RmfIngress } from '../components/rmf-app/rmf-ingress';
 
 export const useFleets = (
   rmfIngress: RmfIngress | undefined,
-  setFleets: React.Dispatch<React.SetStateAction<Fleet[]>>,
+  setFleets: React.Dispatch<React.SetStateAction<FleetState[]>>,
 ) => {
   React.useEffect(() => {
     if (!rmfIngress) return;
     let cancel = false;
     (async () => {
-      const result = await rmfIngress.fleetsApi.getFleetsFleetsGet();
+      const result = await rmfIngress.fleetsApi.queryFleetsFleetsGet();
       if (cancel || result.status !== 200) return;
       setFleets(result.data);
     })();
@@ -21,12 +21,16 @@ export const useFleets = (
   }, [rmfIngress, setFleets]);
 };
 
-export const useFleetStateRef = (sioClient: SioClient | undefined, fleets: Fleet[]) => {
-  const fleetStatesRef = React.useRef<Record<string, RmfModels.FleetState>>({});
+export const useFleetStateRef = (sioClient: SioClient | undefined, fleets: FleetState[]) => {
+  const fleetStatesRef = React.useRef<Record<string, FleetState>>({});
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = fleets.map((f) =>
-      sioClient.subscribeFleetState(f.name, (state) => (fleetStatesRef.current[f.name] = state)),
+      f.name
+        ? sioClient.subscribeFleetState(f.name, (state) => {
+            if (f.name) fleetStatesRef.current[f.name] = state;
+          })
+        : () => null,
     );
     return () => {
       subs.forEach((s) => sioClient.unsubscribe(s));

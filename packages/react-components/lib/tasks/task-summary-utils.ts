@@ -1,4 +1,4 @@
-import type { TaskSummary } from 'api-client';
+// import type { TaskSummary } from 'api-client';
 import { TaskSummary as RmfTaskSummary } from 'rmf-models';
 
 // TODO: this is a hacky solution to get the actor from the task status,
@@ -30,7 +30,7 @@ export const getStateLabel = (state: number): string => {
   }
 };
 
-export const sortTasksBySubmissionTime = (tasks: TaskSummary[]): TaskSummary[] => {
+export const sortTasksBySubmissionTime = (tasks: any[]): any[] => {
   if (tasks.length === 0) return [];
   return tasks.sort((a, b) => (a.submission_time.nanosec < b.submission_time.nanosec ? 1 : -1));
 };
@@ -39,10 +39,10 @@ export const sortTasksBySubmissionTime = (tasks: TaskSummary[]): TaskSummary[] =
  * Classifies and stores each task by its state.
  */
 export const separateTasksByState = (
-  tasks: Record<string, TaskSummary>,
+  tasks: Record<string, any>,
   states: string[],
-): Record<string, TaskSummary[]> => {
-  const stateTasks: Record<string, TaskSummary[]> = {};
+): Record<string, any[]> => {
+  const stateTasks: Record<string, any[]> = {};
   states.forEach((state) => {
     stateTasks[state] = [];
   });
@@ -72,11 +72,11 @@ export const separateTasksByState = (
 /**
  * Sort tasks by state and by submission time, so what is active is always at the top of the list.
  */
-export const sortTasks = (tasks: Record<string, TaskSummary>): TaskSummary[] => {
+export const sortTasks = (tasks: Record<string, any>): any[] => {
   const states = ['active', 'queued', 'failed', 'completed', 'unknown'];
 
   const stateTasks = separateTasksByState(tasks, states);
-  const sortedTasks: TaskSummary[] = [];
+  const sortedTasks: any[] = [];
 
   states.forEach((state) => {
     sortedTasks.push(...sortTasksBySubmissionTime(stateTasks[state]));

@@ -1,5 +1,9 @@
-import { SubmitTask } from 'api-client';
+// import { SubmitTask } from 'api-client';
 import { TaskType as RmfTaskType } from 'rmf-models';
+
+/**
+ * TODO - handle submit task type changes once the backend connection is available
+ */
 
 const genericErrors = {
   checkArray: 'Expected an array of tasks',
@@ -20,7 +24,7 @@ function checkField(
 
 // TODO: See if we c>an generate validators from the schema.
 /* istanbul ignore next */
-export function parseTasksFile(contents: string): SubmitTask[] {
+export function parseTasksFile(contents: string): any[] {
   const errMsgs: (string | void)[] = [];
   const tasks = JSON.parse(contents);
   if (!Array.isArray(tasks)) {

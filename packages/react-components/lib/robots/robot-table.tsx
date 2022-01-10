@@ -13,12 +13,9 @@ import {
   Typography,
   styled,
 } from '@mui/material';
-import type { RobotMode } from 'api-client';
+import type { RobotState } from 'api-client';
 import { Refresh as RefreshIcon } from '@mui/icons-material';
 import React from 'react';
-import { RobotMode as RmfRobotMode } from 'rmf-models';
-import { taskTypeToStr } from '../tasks/utils';
-import { robotModeToString, VerboseRobot } from './utils';
 
 const classes = {
   table: 'robot-table',
@@ -62,68 +59,65 @@ const StyledPaper = styled((props: PaperProps) => <Paper {...props} />)(({ theme
 }));
 
 interface RobotRowProps {
-  robot: VerboseRobot;
+  robot: RobotState;
   onClick: React.MouseEventHandler<HTMLTableRowElement>;
 }
 
-const returnLocationCells = (robot: VerboseRobot) => {
-  const taskDescription = robot.tasks[0].summary.task_profile.description;
-  switch (taskTypeToStr(taskDescription.task_type.type)) {
-    case 'Loop':
-      return (
-        <>
-          <TableCell>{taskDescription.loop.start_name}</TableCell>
-          <TableCell>{taskDescription.loop.finish_name}</TableCell>
-        </>
-      );
-    case 'Delivery':
-      return (
-        <>
-          <TableCell>{taskDescription.delivery.pickup_place_name}</TableCell>
-          <TableCell>{taskDescription.delivery.dropoff_place_name}</TableCell>
-        </>
-      );
-    case 'Clean':
-      return (
-        <>
-          <TableCell>-</TableCell>
-          <TableCell>{taskDescription.clean.start_waypoint}</TableCell>
-        </>
-      );
-    default:
-      return (
-        <>
-          <TableCell>-</TableCell>
-          <TableCell>-</TableCell>
-        </>
-      );
-  }
+const returnLocationCells = (robot: RobotState) => {
+  // const taskDescription = robot.tasks[0].summary.task_profile.description;
+  // switch (taskTypeToStr(taskDescription.task_type.type)) {
+  //   case 'Loop':
+  //     return (
+  //       <>
+  //         <TableCell>{taskDescription.loop.start_name}</TableCell>
+  //         <TableCell>{taskDescription.loop.finish_name}</TableCell>
+  //       </>
+  //     );
+  //   case 'Delivery':
+  //     return (
+  //       <>
+  //         <TableCell>{taskDescription.delivery.pickup_place_name}</TableCell>
+  //         <TableCell>{taskDescription.delivery.dropoff_place_name}</TableCell>
+  //       </>
+  //     );
+  //   case 'Clean':
+  //     return (
+  //       <>
+  //         <TableCell>-</TableCell>
+  //         <TableCell>{taskDescription.clean.start_waypoint}</TableCell>
+  //       </>
+  //     );
+  //   default:
+  return (
+    <>
+      <TableCell>-</TableCell>
+      <TableCell>-</TableCell>
+    </>
+  );
+  // }
 };
 
 function RobotRow({ robot, onClick }: RobotRowProps) {
-  const getRobotModeClass = (robotMode: RobotMode) => {
-    switch (robotMode.mode) {
-      case RmfRobotMode.MODE_EMERGENCY:
+  const getRobotModeClass = (robotMode: string) => {
+    switch (robotMode) {
+      case 'emergency':
         return classes.robotErrorClass;
-      case RmfRobotMode.MODE_CHARGING:
+      case 'charging':
         return classes.robotChargingClass;
-      case RmfRobotMode.MODE_GOING_HOME:
-      case RmfRobotMode.MODE_DOCKING:
-      case RmfRobotMode.MODE_MOVING:
+      case 'working':
         return classes.robotInMotionClass;
-      case RmfRobotMode.MODE_IDLE:
-      case RmfRobotMode.MODE_PAUSED:
-      case RmfRobotMode.MODE_WAITING:
+      case 'idle':
+      case 'paused':
+      case 'waiting':
         return classes.robotStoppedClass;
       default:
         return '';
     }
   };
+  let robotModeClass = '';
+  if (robot.status) robotModeClass = getRobotModeClass(robot.status);
 
-  const robotMode = robotModeToString(robot.state.mode);
-  const robotModeClass = getRobotModeClass(robot.state.mode);
-
-  if (robot.tasks.length === 0) {
+  if (robot.task_id) {
     return (
       <>
         <TableRow onClick={onClick} className={classes.tableRow}>
@@ -131,8 +125,8 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
           <TableCell>{'-'}</TableCell>
           <TableCell>{'-'}</TableCell>
           <TableCell>{'-'}</TableCell>
-          <TableCell>{robot.state.battery_percent.toFixed(2)}%</TableCell>
-          <TableCell className={robotModeClass}>{robotMode}</TableCell>
+          <TableCell>{robot.battery ? robot.battery * 100 : 0}%</TableCell>
+          <TableCell className={robotModeClass}>{robot.status}</TableCell>
         </TableRow>
       </>
     );
@@ -143,12 +137,13 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
           <TableCell>{robot.name}</TableCell>
           {returnLocationCells(robot)}
           <TableCell>
-            {robot.tasks
+            end time
+            {/* {robot.tasks
               ? robot.tasks[0].summary.end_time.sec - robot.tasks[0].summary.start_time.sec
-              : '-'}
+              : '-'} */}
           </TableCell>
-          <TableCell>{robot.state.battery_percent.toFixed(2)}%</TableCell>
-          <TableCell className={robotModeClass}>{robotMode}</TableCell>
+          <TableCell>{robot.battery ? robot.battery * 100 : 0}%</TableCell>
+          <TableCell className={robotModeClass}>{robot.status}</TableCell>
         </TableRow>
       </>
     );
@@ -165,10 +160,10 @@ export interface RobotTableProps extends PaperProps {
    * The current list of robots to display, when pagination is enabled, this should only
    * contain the robots for the current page.
    */
-  robots: VerboseRobot[];
+  robots: RobotState[];
   paginationOptions?: PaginationOptions;
   onRefreshClick?: React.MouseEventHandler<HTMLButtonElement>;
-  onRobotClick?(ev: React.MouseEvent<HTMLDivElement>, robot: VerboseRobot): void;
+  onRobotClick?(ev: React.MouseEvent<HTMLDivElement>, robot: RobotState): void;
 }
 
 export function RobotTable({

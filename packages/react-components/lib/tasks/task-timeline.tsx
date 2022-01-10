@@ -10,11 +10,15 @@ import {
   TimelineOppositeContent,
   TimelineSeparator,
   TimelineProps,
+  TreeView,
+  TreeItem,
 } from '@mui/lab';
-import type { TaskSummary } from 'api-client';
+import { TaskState } from 'api-client';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import React from 'react';
-import { TaskSummary as RmfTaskSummary } from 'rmf-models';
-import { rosTimeToJs } from '../utils';
+import { getTreeViewHeader } from './utils';
+import { format } from 'date-fns';
 
 interface TimeLinePropsWithRef extends TimelineProps {
   ref?: React.RefObject<HTMLUListElement>;
@@ -31,7 +35,8 @@ const classes = {
 const StyledTimeLine = styled((props: TimeLinePropsWithRef) => <Timeline {...props} />)(
   ({ theme }) => ({
     [`& .${classes.paper}`]: {
-      padding: '6px 16px',
+      padding: theme.spacing(1),
+      marginTop: theme.spacing(1),
       width: '200px',
       maxHeight: '100px',
       overflow: 'auto',
@@ -55,64 +60,102 @@ const StyledTimeLine = styled((props: TimeLinePropsWithRef) => <Timeline {...pro
   }),
 );
 
-export interface TaskTimelineProps {
-  taskSummary: TaskSummary;
+interface TaskTreeProps {
+  task: TaskState;
 }
 
-export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
-  const timelinePhases = taskSummary.status.split('\n\n');
-  const currentDotIdx = timelinePhases.findIndex((msg: string) => msg.startsWith('*'));
-  const timelineInfo = taskSummary.status.split('\n\n');
-
-  const timelineDotProps = timelinePhases.map((_: string, idx: number) => {
-    if ([RmfTaskSummary.STATE_CANCELED, RmfTaskSummary.STATE_FAILED].includes(taskSummary.state)) {
-      return {
-        className: classes.failedPhase,
-      };
+function LoopTaskTree({ task }: TaskTreeProps) {
+  const timelinePhases = task.phases;
+  // TODO - remove if a timeline for estimated fisnishing time is not needed
+  // let totalTimeTaken = 0;
+  // timelinePhases &&
+  //   Object.keys(timelinePhases).forEach((p) => {
+  //     const estimateMillis = timelinePhases[p].estimate_millis;
+  //     if (estimateMillis) totalTimeTaken += estimateMillis * 1000;
+  //   });
+  function getTimeLineDotProps(taskState: TaskState) {
+    if (taskState.active) return { className: classes.completedPhase };
+    else {
+      return { className: classes.failedPhase };
     }
+  }
+  return timelinePhases ? (
+    <TimelineItem key={'Loop'}>
+      <TimelineOppositeContent style={{ flex: 1, padding: '2px 2px' }}>
+        <Typography variant="overline" color="textSecondary" style={{ textAlign: 'justify' }}>
+          {format(new Date(), "hh:mm aaaaa'm'")}
+        </Typography>
+      </TimelineOppositeContent>
+      <TimelineSeparator>
+        <TimelineDot {...getTimeLineDotProps(task)} />
+        <TimelineConnector />
+      </TimelineSeparator>
+      <TimelineContent>
+        <TreeView defaultCollapseIcon={<ExpandMoreIcon />} defaultExpandIcon={<ChevronRightIcon />}>
+          <TreeItem nodeId="node1" label={getTreeViewHeader(task.category)}>
+            <TreeItem
+              nodeId="node2"
+              label={Object.keys(timelinePhases).map((phase, idx) => {
+                return (
+                  <Paper className={classes.paper} key={idx}>
+                    <Typography variant="caption">{timelinePhases[phase].detail}</Typography>
+                  </Paper>
+                );
+              })}
+            />
+          </TreeItem>
+        </TreeView>
+      </TimelineContent>
+    </TimelineItem>
+  ) : null;
+}
 
-    if (taskSummary.state === RmfTaskSummary.STATE_COMPLETED) {
-      return {
-        className: classes.completedPhase,
-      };
-    }
+function DeliveryTaskTree({ task }: TaskTreeProps) {
+  // TODO - get timeline dot props, get ingestor and dispenser information?
+  return (
+    <TimelineItem key={'Delivery'}>
+      <TimelineOppositeContent style={{ flex: 1, padding: '2px 2px' }}>
+        <Typography variant="overline" color="textSecondary" style={{ textAlign: 'justify' }}>
+          {format(new Date(), "hh:mm aaaaa'm'")}
+        </Typography>
+      </TimelineOppositeContent>
+      <TimelineSeparator>
+        <TimelineDot />
+        <TimelineConnector />
+      </TimelineSeparator>
+      <TimelineContent>
+        <TreeView defaultCollapseIcon={<ExpandMoreIcon />} defaultExpandIcon={<ChevronRightIcon />}>
+          <TreeItem nodeId="node1" label={getTreeViewHeader(task.category)}>
+            <TreeItem nodeId="node2" label={task.category} />
+          </TreeItem>
+        </TreeView>
+      </TimelineContent>
+    </TimelineItem>
+  );
+}
 
-    if (taskSummary.state === RmfTaskSummary.STATE_ACTIVE && idx < currentDotIdx) {
-      return {
-        className: classes.completedPhase,
-      };
-    }
+export interface TaskTimelineProps {
+  taskState: TaskState;
+}
 
-    return {
-      className: classes.pendingPhase,
-    };
-  });
+export function TaskTimeline({ taskState }: TaskTimelineProps): JSX.Element {
+  // TODO - leaving here for reference for other treeviews
+  // function getTimeLineDotProps(taskState: TaskState, taskPhase: Phase) {
+  //   if (taskState.completed?.includes(taskPhase.id)) return { className: classes.completedPhase };
+  //   if (taskPhase.id === taskState.active) return { className: classes.completedPhase };
+  //   if (taskState.pending?.includes(taskPhase.id)) return { className: classes.completedPhase };
+  //   else {
+  //     return { className: classes.failedPhase };
+  //   }
+  // }
+  function GetTreeView(category: string) {
+    if (category.includes('Loop')) return <LoopTaskTree task={taskState} />;
+    if (category.includes('Delivery')) return <DeliveryTaskTree task={taskState} />;
+  }
 
   return (
-    <StyledTimeLine position="left" className={classes.timelineRoot}>
-      {timelineInfo.map((dotInfo, idx) => {
-        return (
-          <TimelineItem key={idx}>
-            <TimelineOppositeContent style={{ flex: 0.1, padding: '0px 12px 0px 0px' }}>
-              <Typography variant="overline" color="textSecondary" style={{ textAlign: 'justify' }}>
-                {idx === 0 && rosTimeToJs(taskSummary.start_time).toLocaleTimeString()}
-                {idx > 0 &&
-                  idx === timelineInfo.length - 1 &&
-                  rosTimeToJs(taskSummary.end_time).toLocaleTimeString()}
-              </Typography>
-            </TimelineOppositeContent>
-            <TimelineSeparator>
-              <TimelineDot {...timelineDotProps[idx]} />
-              {idx < timelineInfo.length - 1 && <TimelineConnector />}
-            </TimelineSeparator>
-            <TimelineContent>
-              <Paper className={classes.paper}>
-                <Typography variant="caption">{dotInfo}</Typography>
-              </Paper>
-            </TimelineContent>
-          </TimelineItem>
-        );
-      })}
+    <StyledTimeLine className={classes.timelineRoot}>
+      {taskState.category ? GetTreeView(taskState.category) : null}
     </StyledTimeLine>
   );
 }

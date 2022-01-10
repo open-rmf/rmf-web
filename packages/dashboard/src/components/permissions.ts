@@ -1,4 +1,4 @@
-import { Task } from 'api-client';
+// import { Task } from 'api-client';
 import { UserProfile } from 'rmf-auth';
 
 export enum RmfAction {
@@ -12,15 +12,15 @@ export function getActionText(action: string): string {
 }
 
 export class Enforcer {
-  static canCancelTask(profile: UserProfile, task: Task): boolean {
+  static canCancelTask(profile: UserProfile): boolean {
     if (profile.user.is_admin) {
       return true;
     }
-    for (const p of profile.permissions) {
-      if (p.authz_grp === task.authz_grp && p.action === RmfAction.TaskCancel) {
-        return true;
-      }
-    }
+    // for (const p of profile.permissions) {
+    //   if (p.authz_grp === task.authz_grp && p.action === RmfAction.TaskCancel) {
+    //     return true;
+    //   }
+    // }
     return false;
   }
 }

@@ -1,4 +1,5 @@
 import { Grid, Paper, TablePagination, Typography, styled } from '@mui/material';
+import { RobotState, TaskState } from 'api-client';
 import React from 'react';
 import { RobotInfo } from './robot-info';
 import { RobotTable } from './robot-table';
@@ -35,8 +36,9 @@ function NoSelectedRobot() {
 export interface RobotPanelProps
   extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
   paginationOptions?: Omit<React.ComponentPropsWithoutRef<typeof TablePagination>, 'component'>;
-  verboseRobots: VerboseRobot[];
-  fetchVerboseRobots: () => Promise<VerboseRobot[]>;
+  verboseRobots: RobotState[];
+  fetchVerboseRobots: () => Promise<RobotState[]>;
+  fetchSelectedTask?: (taskId: string) => Promise<TaskState | undefined>;
   onRobotZoom?: (robot: VerboseRobot) => void;
 }
 
@@ -46,12 +48,13 @@ export function RobotPanel({
   paginationOptions,
   verboseRobots,
   fetchVerboseRobots,
+  fetchSelectedTask,
   onRobotZoom,
   ...divProps
 }: RobotPanelProps): JSX.Element {
-  const [selectedRobot, setSelectedRobot] = React.useState<VerboseRobot | undefined>(undefined);
+  const [selectedRobot, setSelectedRobot] = React.useState<RobotState | undefined>(undefined);
 
-  const handleRefresh = async (selectedRobot?: VerboseRobot) => {
+  const handleRefresh = async (selectedRobot?: RobotState) => {
     (async () => {
       const result = await fetchVerboseRobots();
       result.forEach((robot) => {
@@ -84,7 +87,11 @@ export function RobotPanel({
           />
         </Grid>
         <Paper className={classes.detailPanelContainer}>
-          {selectedRobot ? <RobotInfo robot={selectedRobot} /> : <NoSelectedRobot />}
+          {selectedRobot ? (
+            <RobotInfo robot={selectedRobot} fetchSelectedTask={fetchSelectedTask} />
+          ) : (
+            <NoSelectedRobot />
+          )}
         </Paper>
       </Grid>
     </StyledDiv>

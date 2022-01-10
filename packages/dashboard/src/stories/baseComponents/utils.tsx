@@ -198,69 +198,69 @@ const liftStates: { [key: string]: LiftState } = {
 /***
  * Start of Robot utils
  */
-const robotState: RobotState = {
-  battery_percent: 100,
-  location: {
-    level_name: 'L1',
-    t: { sec: 0, nanosec: 0 },
-    x: 8,
-    y: -4,
-    yaw: 0,
-    index: 0,
-    approach_speed_limit: 0,
-    obey_approach_speed_limit: false,
-  },
-  mode: { mode: RmfRobotMode.MODE_IDLE, mode_request_id: 0 },
-  model: '40_hours',
-  name: 'main_robot',
-  path: [],
-  task_id: 'taskA',
-  seq: 0,
-};
+// const robotState: RobotState = {
+//   battery_percent: 100,
+//   location: {
+//     level_name: 'L1',
+//     t: { sec: 0, nanosec: 0 },
+//     x: 8,
+//     y: -4,
+//     yaw: 0,
+//     index: 0,
+//     approach_speed_limit: 0,
+//     obey_approach_speed_limit: false,
+//   },
+//   mode: { mode: RmfRobotMode.MODE_IDLE, mode_request_id: 0 },
+//   model: '40_hours',
+//   name: 'main_robot',
+//   path: [],
+//   task_id: 'taskA',
+//   seq: 0,
+// };
 
-const robotStates: FleetState[] = [
-  {
-    name: 'main_fleet',
-    robots: [
-      { ...robotState },
-      {
-        ...robotState,
-        name: 'second_robot',
-        mode: { mode: RmfRobotMode.MODE_CHARGING, mode_request_id: 0 },
-      },
-      {
-        ...robotState,
-        name: 'third_robot',
-        mode: { mode: RmfRobotMode.MODE_DOCKING, mode_request_id: 0 },
-      },
-      {
-        ...robotState,
-        name: 'fourth_robot',
-        mode: { mode: RmfRobotMode.MODE_EMERGENCY, mode_request_id: 0 },
-      },
-      {
-        ...robotState,
-        name: 'fifth_robot',
-        mode: { mode: RmfRobotMode.MODE_GOING_HOME, mode_request_id: 0 },
-      },
-      {
-        ...robotState,
-        name: 'sixth_robot',
-        mode: { mode: RmfRobotMode.MODE_MOVING, mode_request_id: 0 },
-      },
-      {
-        ...robotState,
-        name: 'seventh_robot',
-        mode: { mode: RmfRobotMode.MODE_PAUSED, mode_request_id: 0 },
-      },
-      {
-        ...robotState,
-        name: 'eigth_robot',
-        mode: { mode: RmfRobotMode.MODE_WAITING, mode_request_id: 0 },
-      },
-    ],
-  },
-];
+// const robotStates: FleetState[] = [
+//   {
+//     name: 'main_fleet',
+//     robots: [
+//       { ...robotState },
+//       {
+//         ...robotState,
+//         name: 'second_robot',
+//         mode: { mode: RmfRobotMode.MODE_CHARGING, mode_request_id: 0 },
+//       },
+//       {
+//         ...robotState,
+//         name: 'third_robot',
+//         mode: { mode: RmfRobotMode.MODE_DOCKING, mode_request_id: 0 },
+//       },
+//       {
+//         ...robotState,
+//         name: 'fourth_robot',
+//         mode: { mode: RmfRobotMode.MODE_EMERGENCY, mode_request_id: 0 },
+//       },
+//       {
+//         ...robotState,
+//         name: 'fifth_robot',
+//         mode: { mode: RmfRobotMode.MODE_GOING_HOME, mode_request_id: 0 },
+//       },
+//       {
+//         ...robotState,
+//         name: 'sixth_robot',
+//         mode: { mode: RmfRobotMode.MODE_MOVING, mode_request_id: 0 },
+//       },
+//       {
+//         ...robotState,
+//         name: 'seventh_robot',
+//         mode: { mode: RmfRobotMode.MODE_PAUSED, mode_request_id: 0 },
+//       },
+//       {
+//         ...robotState,
+//         name: 'eigth_robot',
+//         mode: { mode: RmfRobotMode.MODE_WAITING, mode_request_id: 0 },
+//       },
+//     ],
+//   },
+// ];
 
 // end of Robot utils
 
@@ -316,6 +316,6 @@ export {
   lift,
   lifts,
   liftStates,
-  robotState,
-  robotStates,
+  // robotState,
+  // robotStates,
 };

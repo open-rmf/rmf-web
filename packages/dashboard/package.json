@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "../../scripts/nws.sh build -d && concurrently npm:start:rmf-server npm:start:rmf npm:start:react",
+    "start": "concurrently npm:start:rmf-server npm:start:react",
     "start:clinic": "RMF_DASHBOARD_DEMO_MAP=clinic.launch.xml npm start",
     "start:airport": "RMF_DASHBOARD_DEMO_MAP=airport_terminal.launch.xml npm start",
     "start:react": "react-scripts start",

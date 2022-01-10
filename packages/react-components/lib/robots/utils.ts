@@ -1,4 +1,4 @@
-import type { RobotMode, Task } from 'api-client';
+import type { TaskState } from 'api-client';
 import { RobotMode as RmfRobotMode, RobotState as RmfRobotState } from 'rmf-models';
 
 /**
@@ -8,7 +8,7 @@ export function robotHash(name: string, fleet: string): string {
   return `${name}__${fleet}`;
 }
 
-export function robotModeToString(robotMode: RobotMode): string {
+export function robotModeToString(robotMode: RmfRobotMode): string {
   switch (robotMode.mode) {
     case RmfRobotMode.MODE_CHARGING:
       return 'Charging';
@@ -35,5 +35,5 @@ export interface VerboseRobot {
   fleet: string;
   name: string;
   state: RmfRobotState;
-  tasks: Task[];
+  tasks: TaskState[];
 }

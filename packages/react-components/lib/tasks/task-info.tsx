@@ -1,11 +1,9 @@
-import { Divider, Typography, useTheme } from '@mui/material';
+import { Button, Divider, Typography, useTheme } from '@mui/material';
 import { styled } from '@mui/material';
-import type { TaskSummary } from 'api-client';
+import type { TaskState } from 'api-client';
 import React from 'react';
-import { TaskSummary as RmfTaskSummary, TaskType as RmfTaskType } from 'rmf-models';
-import { rosTimeToJs } from '../utils';
 import { TaskTimeline } from './task-timeline';
-import { taskStateToStr, taskTypeToStr } from './utils';
+import { parseTaskDetail, getState } from './utils';
 
 const classes = {
   infoValue: 'task-info-info-value',
@@ -30,20 +28,20 @@ function InfoValue({ children }: React.PropsWithChildren<unknown>) {
 }
 
 interface CleanTaskInfoProps {
-  task: TaskSummary;
+  task: TaskState;
 }
 
 function CleanTaskInfo({ task }: CleanTaskInfoProps) {
   return (
     <InfoLine>
       <span>Start Waypoint:</span>
-      <span style={{ float: 'right' }}>{task.task_profile.description.clean.start_waypoint}</span>
+      <span style={{ float: 'right' }}>{parseTaskDetail(task, task?.category).to}</span>
     </InfoLine>
   );
 }
 
 interface LoopTaskInfoProps {
-  task: TaskSummary;
+  task: TaskState;
 }
 
 function LoopTaskInfo({ task }: LoopTaskInfoProps) {
@@ -51,75 +49,64 @@ function LoopTaskInfo({ task }: LoopTaskInfoProps) {
     <>
       <InfoLine>
         <span>Start Waypoint:</span>
-        <InfoValue>{task.task_profile.description.loop.start_name}</InfoValue>
+        <InfoValue>{parseTaskDetail(task, task?.category).from}</InfoValue>
       </InfoLine>
       <InfoLine>
         <span>Finish Waypoint:</span>
-        <InfoValue>{task.task_profile.description.loop.finish_name}</InfoValue>
+        <InfoValue>{parseTaskDetail(task, task?.category).to}</InfoValue>
       </InfoLine>
       <InfoLine>
         <span>Num of Loops:</span>
-        <InfoValue>{task.task_profile.description.loop.num_loops}</InfoValue>
+        <InfoValue>{task.phases ? Object.keys(task.phases).length / 2 : null}</InfoValue>
       </InfoLine>
     </>
   );
 }
 
 interface DeliveryTaskInfoProps {
-  task: TaskSummary;
+  task: TaskState;
 }
 
 function DeliveryTaskInfoProps({ task }: DeliveryTaskInfoProps) {
+  // TODO - replace all temp values
   return (
     <>
       <InfoLine>
         <span>Pickup Location:</span>
-        <span style={{ float: 'right' }}>
-          {task.task_profile.description.delivery.pickup_place_name}
-        </span>
+        <span style={{ float: 'right' }}>{'temp'}</span>
       </InfoLine>
       <InfoLine>
         <span>Pickup Dispenser:</span>
-        <span style={{ float: 'right' }}>
-          {task.task_profile.description.delivery.pickup_dispenser}
-        </span>
+        <span style={{ float: 'right' }}>{'temp'}</span>
       </InfoLine>
       <InfoLine>
         <span>Dropoff Location:</span>
-        <span style={{ float: 'right' }}>
-          {task.task_profile.description.delivery.dropoff_place_name}
-        </span>
+        <span style={{ float: 'right' }}>{parseTaskDetail(task, task?.category).from}</span>
       </InfoLine>
       <InfoLine>
         <span>Dropoff Ingestor:</span>
-        <span style={{ float: 'right' }}>
-          {task.task_profile.description.delivery.dropoff_ingestor}
-        </span>
+        <span style={{ float: 'right' }}>{parseTaskDetail(task, task?.category).to}</span>
       </InfoLine>
     </>
   );
 }
 
 export interface TaskInfoProps {
-  task: TaskSummary;
+  task: TaskState;
+  showLogs: boolean;
+  onShowLogs?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
+export function TaskInfo({ task, showLogs, onShowLogs }: TaskInfoProps): JSX.Element {
   const theme = useTheme();
-  const taskType = task.task_profile.description.task_type.type;
-  const hasConcreteEndTime = [
-    RmfTaskSummary.STATE_CANCELED,
-    RmfTaskSummary.STATE_COMPLETED,
-    RmfTaskSummary.STATE_FAILED,
-  ].includes(task.state);
-
+  const taskType = task.category;
   const detailInfo = (() => {
     switch (taskType) {
-      case RmfTaskType.TYPE_CLEAN:
+      case 'Clean':
         return <CleanTaskInfo task={task} />;
-      case RmfTaskType.TYPE_LOOP:
+      case 'Loop':
         return <LoopTaskInfo task={task} />;
-      case RmfTaskType.TYPE_DELIVERY:
+      case 'Delivery':
         return <DeliveryTaskInfoProps task={task} />;
       default:
         return null;
@@ -129,37 +116,24 @@ export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
   return (
     <StyledDiv>
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
-        {task.task_id}
+        {task.booking.id}
       </Typography>
       <Divider />
       <div style={{ marginBottom: theme.spacing(1) }}></div>
       <InfoLine>
-        <span>Task Type:</span>
-        <InfoValue>{taskTypeToStr(taskType)}</InfoValue>
-      </InfoLine>
-      <InfoLine>
-        <span>Priority:</span>
-        <InfoValue>{task.task_profile.description.priority.value}</InfoValue>
-      </InfoLine>
-      <InfoLine>
-        <span>Assigned Robot:</span>
-        <InfoValue>{task.robot_name}</InfoValue>
-      </InfoLine>
-      <InfoLine>
-        <span>Start Time:</span>
-        <InfoValue>{rosTimeToJs(task.start_time).toLocaleString()}</InfoValue>
-      </InfoLine>
-      <InfoLine>
-        <span>{!hasConcreteEndTime && 'Est. '}End Time:</span>
-        <InfoValue>{rosTimeToJs(task.end_time).toLocaleString()}</InfoValue>
-      </InfoLine>
-      <InfoLine>
         <span>State:</span>
-        <InfoValue>{taskStateToStr(task.state)}</InfoValue>
+        <InfoValue>{getState(task)}</InfoValue>
       </InfoLine>
       {detailInfo}
-      <Typography variant="h6">Progress</Typography>
-      <TaskTimeline taskSummary={task} />
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Typography variant="h6">Progress</Typography>
+        <Button variant="contained" onClick={() => onShowLogs && onShowLogs(!showLogs)}>
+          {showLogs ? 'CLOSE LOGS' : 'SHOW LOGS'}
+        </Button>
+      </div>
+      <div style={{ padding: '4px' }}>
+        <TaskTimeline taskState={task} />
+      </div>
     </StyledDiv>
   );
 }

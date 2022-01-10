@@ -13,18 +13,18 @@ import {
   TextField,
   useTheme,
 } from '@mui/material';
-import {
-  CleanTaskDescription,
-  DeliveryTaskDescription,
-  LoopTaskDescription,
-  SubmitTask,
-} from 'api-client';
+// import {
+//   CleanTaskDescription,
+//   DeliveryTaskDescription,
+//   LoopTaskDescription,
+//   SubmitTask,
+// } from 'api-client';
 import React from 'react';
 import { TaskType as RmfTaskType } from 'rmf-models';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
 
-type TaskDescription = CleanTaskDescription | LoopTaskDescription | DeliveryTaskDescription;
+type TaskDescription = any;
 
 const classes = {
   selectFileBtn: 'create-task-selected-file-btn',
@@ -48,18 +48,18 @@ const StyledConfirmationDialog = styled((props: ConfirmationDialogProps) => (
   },
 }));
 
-function getShortDescription(task: SubmitTask): string {
+function getShortDescription(task: any): string {
   switch (task.task_type) {
     case RmfTaskType.TYPE_CLEAN: {
-      const desc = task.description as CleanTaskDescription;
+      const desc = task.description as any;
       return `[Clean] zone [${desc.cleaning_zone}]`;
     }
     case RmfTaskType.TYPE_DELIVERY: {
-      const desc = task.description as DeliveryTaskDescription;
+      const desc = task.description as any;
       return `[Delivery] from [${desc.pickup_place_name}] to [${desc.dropoff_place_name}]`;
     }
     case RmfTaskType.TYPE_LOOP: {
-      const desc = task.description as LoopTaskDescription;
+      const desc = task.description as any;
       return `[Loop] from [${desc.start_name}] to [${desc.finish_name}]`;
     }
     default:
@@ -86,11 +86,11 @@ function FormToolbar({ onSelectFileClick }: FormToolbarProps) {
 }
 
 interface DeliveryTaskFormProps {
-  taskDesc: DeliveryTaskDescription;
+  taskDesc: any;
   deliveryWaypoints: string[];
   dispensers: string[];
   ingestors: string[];
-  onChange(deliveryTaskDescription: DeliveryTaskDescription): void;
+  onChange(deliveryTaskDescription: any): void;
 }
 
 function DeliveryTaskForm({
@@ -209,9 +209,9 @@ function DeliveryTaskForm({
 }
 
 interface LoopTaskFormProps {
-  taskDesc: LoopTaskDescription;
+  taskDesc: any;
   loopWaypoints: string[];
-  onChange(loopTaskDescription: LoopTaskDescription): void;
+  onChange(loopTaskDescription: any): void;
 }
 
 function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) {
@@ -286,9 +286,9 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
 }
 
 interface CleanTaskFormProps {
-  taskDesc: CleanTaskDescription;
+  taskDesc: any;
   cleaningZones: string[];
-  onChange(cleanTaskDescription: CleanTaskDescription): void;
+  onChange(cleanTaskDescription: any): void;
 }
 
 function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps) {
@@ -314,13 +314,13 @@ function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps
   );
 }
 
-function defaultCleanTask(): CleanTaskDescription {
+function defaultCleanTask(): any {
   return {
     cleaning_zone: '',
   };
 }
 
-function defaultLoopsTask(): LoopTaskDescription {
+function defaultLoopsTask(): any {
   return {
     start_name: '',
     finish_name: '',
@@ -328,7 +328,7 @@ function defaultLoopsTask(): LoopTaskDescription {
   };
 }
 
-function defaultDeliveryTask(): DeliveryTaskDescription {
+function defaultDeliveryTask(): any {
   return {
     pickup_place_name: '',
     pickup_dispenser: '',
@@ -350,7 +350,7 @@ function defaultTaskDescription(taskType?: number): TaskDescription | undefined 
   }
 }
 
-function defaultTask(): SubmitTask {
+function defaultTask(): any {
   return {
     description: defaultCleanTask(),
     start_time: Math.floor(Date.now() / 1000),
@@ -370,10 +370,10 @@ export interface CreateTaskFormProps
   deliveryWaypoints?: string[];
   dispensers?: string[];
   ingestors?: string[];
-  submitTasks?(tasks: SubmitTask[]): Promise<void>;
-  tasksFromFile?(): Promise<SubmitTask[]> | SubmitTask[];
-  onSuccess?(tasks: SubmitTask[]): void;
-  onFail?(error: Error, tasks: SubmitTask[]): void;
+  submitTasks?(tasks: any[]): Promise<void>;
+  tasksFromFile?(): Promise<any[]> | any[];
+  onSuccess?(tasks: any[]): void;
+  onFail?(error: Error, tasks: any[]): void;
 }
 
 export function CreateTaskForm({
@@ -389,7 +389,7 @@ export function CreateTaskForm({
   ...otherProps
 }: CreateTaskFormProps): JSX.Element {
   const theme = useTheme();
-  const [tasks, setTasks] = React.useState<SubmitTask[]>(() => [defaultTask()]);
+  const [tasks, setTasks] = React.useState<any[]>(() => [defaultTask()]);
   const [selectedTaskIdx, setSelectedTaskIdx] = React.useState(0);
   const taskTitles = React.useMemo(
     () => tasks && tasks.map((t, i) => `${i + 1}: ${getShortDescription(t)}`),
@@ -419,7 +419,7 @@ export function CreateTaskForm({
       case RmfTaskType.TYPE_CLEAN:
         return (
           <CleanTaskForm
-            taskDesc={task.description as CleanTaskDescription}
+            taskDesc={task.description as any}
             cleaningZones={cleaningZones}
             onChange={(desc) => handleTaskDescriptionChange(RmfTaskType.TYPE_CLEAN, desc)}
           />
@@ -427,7 +427,7 @@ export function CreateTaskForm({
       case RmfTaskType.TYPE_LOOP:
         return (
           <LoopTaskForm
-            taskDesc={task.description as LoopTaskDescription}
+            taskDesc={task.description as any}
             loopWaypoints={loopWaypoints}
             onChange={(desc) => handleTaskDescriptionChange(RmfTaskType.TYPE_LOOP, desc)}
           />
@@ -435,7 +435,7 @@ export function CreateTaskForm({
       case RmfTaskType.TYPE_DELIVERY:
         return (
           <DeliveryTaskForm
-            taskDesc={task.description as DeliveryTaskDescription}
+            taskDesc={task.description as any}
             deliveryWaypoints={deliveryWaypoints}
             dispensers={dispensers}
             ingestors={ingestors}

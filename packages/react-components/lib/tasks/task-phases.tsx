@@ -1,5 +1,4 @@
 import { Box, BoxProps, Grid, Theme, Tooltip, Typography, useTheme, styled } from '@mui/material';
-import type { TaskSummary } from 'api-client';
 import clsx from 'clsx';
 import React from 'react';
 import { TaskSummary as RmfTaskSummary } from 'rmf-models';
@@ -98,7 +97,7 @@ function PhaseSeparator({ leftColor, rightColor }: PhaseSeparatorProps) {
 }
 
 export interface TaskPhasesProps extends BoxProps {
-  taskSummary: TaskSummary;
+  taskSummary: any;
 }
 
 export function TaskPhases({ taskSummary, ...boxProps }: TaskPhasesProps): JSX.Element {

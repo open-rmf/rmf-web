@@ -1,21 +1,13 @@
 import { TaskSummary as RmfTaskSummary, TaskType as RmfTaskType } from 'rmf-models';
+import type { TaskState } from 'api-client';
 
-export function taskStateToStr(state: number): string {
-  switch (state) {
-    case RmfTaskSummary.STATE_ACTIVE:
-      return 'Active';
-    case RmfTaskSummary.STATE_CANCELED:
-      return 'Cancelled';
-    case RmfTaskSummary.STATE_COMPLETED:
-      return 'Completed';
-    case RmfTaskSummary.STATE_FAILED:
-      return 'Failed';
-    case RmfTaskSummary.STATE_PENDING:
-      return 'Pending';
-    case RmfTaskSummary.STATE_QUEUED:
-      return 'Queued';
-    default:
-      return 'Unknown';
+export function taskStateToStr(taskState: TaskState): string {
+  if (taskState.active) return 'active';
+  if (taskState.cancellation) return 'cancelled';
+  if (taskState.killed) return 'killed';
+  if (taskState.pending?.length === 0) return 'completed';
+  else {
+    return 'unknown';
   }
 }
 
@@ -35,5 +27,51 @@ export function taskTypeToStr(taskType: number): string {
       return 'Station';
     default:
       return 'Unknown';
+  }
+}
+
+function parsePhaseDetail(phases: TaskState['phases'], category?: string) {
+  if (phases) {
+    if (category === 'Loop') {
+      const startPhase = phases['1'];
+      const endPhase = phases['2'];
+      const from = startPhase.category?.split('[place:')[1].split(']')[0];
+      const to = endPhase.category?.split('[place:')[1].split(']')[0];
+      return { to, from };
+    }
+  }
+  return {};
+}
+
+export function parseTaskDetail(task: TaskState, category?: string) {
+  if (category?.includes('Loop')) return parsePhaseDetail(task.phases, category);
+  if (category?.includes('Delivery')) {
+    const from = category?.split('[place:')[1].split(']')[0];
+    const to = category?.split('[place:')[2].split(']')[0];
+    return { to, from };
+  } else {
+    return {};
+  }
+}
+
+export function getState(task: TaskState) {
+  // TODO - handle killed and cancelled states
+  if (task.phases && task.completed?.length === Object.keys(task.phases).length) return 'Completed';
+  if (task.active) return 'Underway';
+  return '';
+}
+
+export function getTreeViewHeader(category: TaskState['category']) {
+  switch (category) {
+    case 'Loop':
+      return 'Loop Sequence';
+    case 'Clean':
+      return 'Clean Sequence';
+    case 'Delivery':
+    // TODO - not sure about return structure,
+    // once able to receive delivery task
+    // come back again.
+    default:
+      return '';
   }
 }

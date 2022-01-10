@@ -1,4 +1,4 @@
-import type { AffineImage, Door, Location } from 'api-client';
+import type { AffineImage, Door, Location2D } from 'api-client';
 import L from 'leaflet';
 import { Door as RmfDoor } from 'rmf-models';
 import { fromRmfCoords, fromRmfYaw } from '../utils';
@@ -39,7 +39,7 @@ export function loadAffineImage(image: AffineImage): Promise<HTMLImageElement> {
   });
 }
 
-export function getRmfTransform(location: Location): string {
+export function getRmfTransform(location: Location2D): string {
   const pos = fromRmfCoords([location.x, location.y]);
   const yaw = (fromRmfYaw(location.yaw) / Math.PI) * 180;
   return `translate(${pos[0]} ${pos[1]}) rotate(${yaw})`;

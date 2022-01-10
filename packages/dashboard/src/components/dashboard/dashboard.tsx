@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
 import { Card, Grid, styled } from '@mui/material';
-import { Door, DoorState, Fleet, Level, Lift, LiftState } from 'api-client';
+import { Door, DoorState, FleetState, Level, Lift, LiftState } from 'api-client';
 import Debug from 'debug';
 import React from 'react';
 import { DoorData, DoorPanel, LiftPanel, LiftPanelProps, WorkcellPanel } from 'react-components';
@@ -106,7 +106,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const workcells = React.useMemo(() => [...dispensers, ...ingestors], [dispensers, ingestors]);
   const workcellStates = { ...dispenserStatesRef.current, ...ingestorStatesRef.current };
 
-  const [fleets, setFleets] = React.useState<Fleet[]>([]);
+  const [fleets, setFleets] = React.useState<FleetState[]>([]);
   useFleets(rmfIngress, setFleets);
   const fleetStatesRef = useFleetStateRef(sioClient, fleets);
 
