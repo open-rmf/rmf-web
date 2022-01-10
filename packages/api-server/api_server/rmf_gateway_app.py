@@ -16,19 +16,19 @@ async def process_msg(msg: Dict[str, Any]) -> None:
         print("'type' must be a string", file=sys.stderr)
 
     if payload_type == "task_state_update":
-        task_state = mdl.TaskState.construct(**msg["data"])
+        task_state = mdl.TaskState(**msg["data"])
         await task_state.save()
         task_events.task_states.on_next(task_state)
     elif payload_type == "task_log_update":
-        task_log = mdl.TaskEventLog.construct(**msg["data"])
+        task_log = mdl.TaskEventLog(**msg["data"])
         await task_log.save()
         task_events.task_event_logs.on_next(task_log)
     elif payload_type == "fleet_state_update":
-        fleet_state = mdl.FleetState.construct(**msg["data"])
+        fleet_state = mdl.FleetState(**msg["data"])
         await fleet_state.save()
         fleet_events.fleet_states.on_next(fleet_state)
     elif payload_type == "fleet_log_update":
-        fleet_log = mdl.FleetLog.construct(**msg["data"])
+        fleet_log = mdl.FleetLog(**msg["data"])
         await fleet_log.save()
         fleet_events.fleet_logs.on_next(fleet_log)
 

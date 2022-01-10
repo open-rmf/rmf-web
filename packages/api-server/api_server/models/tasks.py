@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, Sequence
+from typing import Dict, List, Sequence
 
 from tortoise.exceptions import IntegrityError
 from tortoise.transactions import in_transaction
@@ -7,8 +7,8 @@ from tortoise.transactions import in_transaction
 from api_server.logger import format_exception, logger
 
 from . import tortoise_models as ttm
+from .rmf_api import task_log
 from .rmf_api.log_entry import LogEntry
-from .rmf_api.task_log import TaskEventLog as BaseTaskEventLog
 from .rmf_api.task_state import TaskState as BaseTaskState
 
 
@@ -31,11 +31,11 @@ class TaskState(BaseTaskState):
         )
 
 
-class TaskEventLog(BaseTaskEventLog):
+class TaskEventLog(task_log.TaskEventLog):
     async def _saveEventLogs(
         self,
         db_phase: ttm.TaskEventLogPhases,
-        events: Dict[str, Sequence[Dict[str, Any]]],
+        events: Dict[str, List[LogEntry]],
     ):
         for event_id, logs in events.items():
             db_event = (
@@ -44,10 +44,12 @@ class TaskEventLog(BaseTaskEventLog):
                 )
             )[0]
             for log in logs:
-                await ttm.TaskEventLogPhasesEventsLog.create(event=db_event, **log)
+                await ttm.TaskEventLogPhasesEventsLog.create(
+                    event=db_event, **log.dict()
+                )
 
     async def _savePhaseLogs(
-        self, db_task_log: ttm.TaskEventLog, phases: Dict[str, Dict[str, Dict]]
+        self, db_task_log: ttm.TaskEventLog, phases: Dict[str, task_log.Phases]
     ):
         for phase_id, phase in phases.items():
             db_phase = (
@@ -55,13 +57,14 @@ class TaskEventLog(BaseTaskEventLog):
                     task=db_task_log, phase=phase_id
                 )
             )[0]
-            for log in phase["log"]:
-                await ttm.TaskEventLogPhasesLog.create(
-                    phase=db_phase,
-                    **log,
-                )
-            if "events" in phase:
-                await self._saveEventLogs(db_phase, phase["events"])
+            if phase.log:
+                for log in phase.log:
+                    await ttm.TaskEventLogPhasesLog.create(
+                        phase=db_phase,
+                        **log.dict(),
+                    )
+            if phase.events:
+                await self._saveEventLogs(db_phase, phase.events)
 
     async def _saveTaskLogs(
         self, db_task_log: ttm.TaskEventLog, logs: Sequence[LogEntry]
