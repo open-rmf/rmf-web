@@ -1,19 +1,21 @@
 # NOTE: This will eventually replace `gateway.py``
-import sys
 from typing import Any, Dict
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 from . import models as mdl
+from .logger import logger as base_logger
 from .rmf_io import fleet_events, task_events
 
 app = FastAPI()
+logger = base_logger.getChild("RmfGatewayApp")
 
 
 async def process_msg(msg: Dict[str, Any]) -> None:
     payload_type: str = msg["type"]
     if not isinstance(payload_type, str):
-        print("'type' must be a string", file=sys.stderr)
+        logger.error("'type' must be a string")
+    logger.info(f"received message of type '{payload_type}'")
 
     if payload_type == "task_state_update":
         task_state = mdl.TaskState(**msg["data"])

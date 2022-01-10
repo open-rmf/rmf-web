@@ -26,7 +26,7 @@ class TaskRepository:
             results = await query.values_list("data", flat=True)
             return [TaskState(**r) for r in results]
         except FieldError as e:
-            raise HTTPException(422, str(e))
+            raise HTTPException(422, str(e)) from e
 
     async def get_task_state(self, task_id: str) -> Optional[TaskState]:
         # TODO: enforce with authz

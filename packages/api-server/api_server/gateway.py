@@ -23,7 +23,6 @@ from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
 from rmf_task_msgs.srv import CancelTask as RmfCancelTask
-from rmf_task_msgs.srv import GetTaskList as RmfGetTaskList
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 from rosidl_runtime_py.convert import message_to_ordereddict
 
@@ -73,7 +72,6 @@ class RmfGateway:
             RmfLiftRequest, "adapter_lift_requests", 10
         )
         self._submit_task_srv = ros_node.create_client(RmfSubmitTask, "submit_task")
-        self.get_tasks_srv = ros_node.create_client(RmfGetTaskList, "get_tasks")
         self._cancel_task_srv = ros_node.create_client(RmfCancelTask, "cancel_task")
 
         self.static_files = static_files
