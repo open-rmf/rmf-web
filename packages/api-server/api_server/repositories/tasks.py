@@ -1,6 +1,7 @@
 from typing import List, Optional, Tuple, cast
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException
+from tortoise.exceptions import FieldError
 from tortoise.query_utils import Prefetch
 from tortoise.queryset import QuerySet
 
@@ -18,11 +19,14 @@ class TaskRepository:
     async def query_task_states(
         self, query: QuerySet[DbTaskState], pagination: Optional[Pagination] = None
     ) -> List[TaskState]:
-        if pagination:
-            query = add_pagination(query, pagination)
-        # TODO: enforce with authz
-        results = await query.values_list("data", flat=True)
-        return [TaskState(**r) for r in results]
+        try:
+            if pagination:
+                query = add_pagination(query, pagination)
+            # TODO: enforce with authz
+            results = await query.values_list("data", flat=True)
+            return [TaskState(**r) for r in results]
+        except FieldError as e:
+            raise HTTPException(422, str(e))
 
     async def get_task_state(self, task_id: str) -> Optional[TaskState]:
         # TODO: enforce with authz
