@@ -1,4 +1,4 @@
 # THIS FILE IS GENERATED
 version = {
-    "rmf_api_msgs": "2f20985a25279141fcb226402d67abfeb6db6944",
+    "rmf_api_msgs": "0f2d5082934acc56f8c352810f0f5db07103d788",
 }

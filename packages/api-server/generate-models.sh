@@ -4,7 +4,7 @@ shopt -s globstar
 
 RMF_BUILDING_MAP_MSGS_VER=c5e0352e2dfd3d11e4d292a1c2901cad867c1441
 RMF_INTERNAL_MSGS_VER=0c237e1758872917661879975d7dc0acf5fa518c
-RMF_API_MSGS_VER=2f20985a25279141fcb226402d67abfeb6db6944
+RMF_API_MSGS_VER=0f2d5082934acc56f8c352810f0f5db07103d788
 
 cd "$(dirname $0)"
 source ../../scripts/rmf-helpers.sh
@@ -45,6 +45,7 @@ rmf_msgs=(
   'rmf_fleet_msgs'
   'rmf_task_msgs'
 )
+rm -rf api_server/models/ros_pydantic
 pipenv run ros_translator -t=pydantic -o=api_server/models/ros_pydantic "${rmf_msgs[@]}"
 
 cat << EOF > api_server/models/ros_pydantic/version.py
@@ -65,9 +66,10 @@ rm -rf "$output"
 mkdir -p "$output"
 if [[ ! -d .venv_local/lib ]]; then
   python3 -m venv .venv_local
-  . .venv_local/bin/activate && pip3 install wheel && pip3 install 'datamodel-code-generator~=0.11.15'
+  bash -c ". .venv_local/bin/activate && pip3 install wheel && pip3 install 'datamodel-code-generator~=0.11.15'"
 fi
-. .venv_local/bin/activate && datamodel-codegen --disable-timestamp --input-file-type jsonschema --input build/rmf_api_msgs/rmf_api_msgs/schemas --output "$output"
+rm -rf api_server/models/rmf_api
+bash -c ". .venv_local/bin/activate && datamodel-codegen --disable-timestamp --input-file-type jsonschema --input build/rmf_api_msgs/rmf_api_msgs/schemas --output \"$output\""
 cat << EOF > "$output/version.py"
 # THIS FILE IS GENERATED
 version = {

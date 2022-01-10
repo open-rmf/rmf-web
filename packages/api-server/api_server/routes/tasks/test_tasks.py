@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from api_server.models import TaskEventLog
+from api_server.models import TaskEventLog, Tier
 from api_server.rmf_io import task_events
 from api_server.test import AppFixture, make_task_log, make_task_state
 
@@ -53,7 +53,7 @@ class TestTasksRoute(AppFixture):
         self.assertEqual(1, len(logs.log))
         log = logs.log[0]
         self.assertEqual(0, log.seq)
-        self.assertEqual("info", log.tier.name)
+        self.assertEqual(Tier.info, log.tier)
         self.assertEqual(1636388410000, log.unix_millis_time)
         self.assertEqual("Beginning task", log.text)
 
@@ -67,18 +67,22 @@ class TestTasksRoute(AppFixture):
 
         # check correct log
         phase1 = logs.phases["1"]
-        self.assertIn("log", phase1)
-        phase1_log = phase1["log"]
+        phase1_log = phase1.log
+        if phase1_log is None:
+            self.assertIsNotNone(phase1_log)
+            return
         self.assertEqual(1, len(phase1_log))
         log = phase1_log[0]
-        self.assertEqual(0, log["seq"])
-        self.assertEqual("info", log["tier"])
-        self.assertEqual(1636388410000, log["unix_millis_time"])
-        self.assertEqual("Beginning phase", log["text"])
+        self.assertEqual(0, log.seq)
+        self.assertEqual(Tier.info, log.tier)
+        self.assertEqual(1636388410000, log.unix_millis_time)
+        self.assertEqual("Beginning phase", log.text)
 
         # check number of events
-        self.assertIn("events", phase1)
-        phase1_events = phase1["events"]
+        phase1_events = phase1.events
+        if phase1_events is None:
+            self.assertIsNotNone(phase1_events)
+            return
         self.assertEqual(
             7, len(phase1_events)
         )  # check all events are returned, including those with no logs
@@ -89,12 +93,12 @@ class TestTasksRoute(AppFixture):
             3, len(phase1_events["1"])
         )  # check only logs in the period is returned
         log = phase1_events["1"][0]
-        self.assertEqual(0, log["seq"])
-        self.assertEqual("info", log["tier"])
-        self.assertEqual(1636388409995, log["unix_millis_time"])
+        self.assertEqual(0, log.seq)
+        self.assertEqual(Tier.info, log.tier)
+        self.assertEqual(1636388409995, log.unix_millis_time)
         self.assertEqual(
             "Generating plan to get from [place:parking_03] to [place:kitchen]",
-            log["text"],
+            log.text,
         )
 
         # TODO: check relative time is working, this requires the use of

@@ -8,6 +8,13 @@ from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field, conint
 
+from . import error
+
+
+class AssignedTo(BaseModel):
+    group: str
+    name: str
+
 
 class Cancellation(BaseModel):
     unix_millis_request_time: int = Field(
@@ -44,6 +51,19 @@ class Detail(BaseModel):
     )
 
 
+class Status1(Enum):
+    queued = "queued"
+    selected = "selected"
+    dispatched = "dispatched"
+    failed_to_assign = "failed_to_assign"
+    canceled_in_flight = "canceled_in_flight"
+
+
+class Assignment(BaseModel):
+    fleet_name: Optional[str] = None
+    expected_robot_name: Optional[str] = None
+
+
 class EstimateMillis(BaseModel):
     __root__: conint(ge=0) = Field(
         ...,
@@ -75,11 +95,12 @@ class Interruption(BaseModel):
     )
 
 
-class Status1(Enum):
+class Status(Enum):
     uninitialized = "uninitialized"
     blocked = "blocked"
     error = "error"
     failed = "failed"
+    queued = "queued"
     standby = "standby"
     underway = "underway"
     delayed = "delayed"
@@ -91,9 +112,7 @@ class Status1(Enum):
 
 class EventState(BaseModel):
     id: Id
-    status: Optional[Status1] = Field(
-        None, description="A simple token representing how the task is proceeding"
-    )
+    status: Optional[Status] = None
     name: Optional[str] = Field(None, description="The brief name of the event")
     detail: Optional[Detail] = Field(
         None, description="Detailed information about the event"
@@ -126,10 +145,19 @@ class SkipPhaseRequest(BaseModel):
     )
 
 
+class Dispatch(BaseModel):
+    status: Status1
+    assignment: Optional[Assignment] = None
+    errors: Optional[List[error.Error]] = None
+
+
 class Phase(BaseModel):
     id: Id
     category: Optional[Category] = None
     detail: Optional[Detail] = None
+    unix_millis_start_time: Optional[int] = None
+    unix_millis_finish_time: Optional[int] = None
+    original_estimate_millis: Optional[EstimateMillis] = None
     estimate_millis: Optional[EstimateMillis] = None
     final_event_id: Optional[Id] = None
     events: Optional[Dict[str, EventState]] = Field(
@@ -147,7 +175,13 @@ class TaskState(BaseModel):
     detail: Optional[Detail] = None
     unix_millis_start_time: Optional[int] = None
     unix_millis_finish_time: Optional[int] = None
+    original_estimate_millis: Optional[EstimateMillis] = None
     estimate_millis: Optional[EstimateMillis] = None
+    assigned_to: Optional[AssignedTo] = Field(
+        None, description="Which agent (robot) is the task assigned to"
+    )
+    status: Optional[Status] = None
+    dispatch: Optional[Dispatch] = None
     phases: Optional[Dict[str, Phase]] = Field(
         None,
         description="A dictionary of the states of the phases of the task. The keys (property names) are phase IDs, which are integers.",
