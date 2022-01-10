@@ -1,7 +1,7 @@
-import React from 'react';
 import { Divider, Grid, Paper, PaperProps, styled, Typography, useTheme } from '@mui/material';
+import { TaskEventLog } from 'api-client';
 import { format } from 'date-fns';
-import { TaskEventLog, TaskState } from 'api-client';
+import React from 'react';
 
 const prefix = 'task-logs';
 const classes = {
