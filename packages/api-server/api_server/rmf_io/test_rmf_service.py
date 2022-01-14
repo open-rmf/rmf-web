@@ -48,7 +48,7 @@ class TestRmfService(unittest.TestCase):
         def server():
             pub = cls.server_node.create_publisher(
                 ApiResponse,
-                RmfService.API_RESPONSE_TOPIC,
+                "test_response",
                 rclpy.qos.QoSProfile(
                     depth=10,
                     history=rclpy.qos.HistoryPolicy.KEEP_LAST,
@@ -64,7 +64,7 @@ class TestRmfService(unittest.TestCase):
 
             cls.server_node.create_subscription(
                 ApiRequest,
-                RmfService.API_REQUEST_TOPIC,
+                "test_request",
                 handle_resp,
                 rclpy.qos.QoSProfile(
                     depth=10,
@@ -88,7 +88,7 @@ class TestRmfService(unittest.TestCase):
         while cls.client_node.get_name() not in cls.server_node.get_node_names():
             time.sleep(0.1)
 
-        cls.rmf_service = RmfService(cls.client_node)
+        cls.rmf_service = RmfService(cls.client_node, "test_request", "test_response")
 
     @classmethod
     def tearDownClass(cls) -> None:

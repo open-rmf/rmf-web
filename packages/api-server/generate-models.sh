@@ -60,7 +60,7 @@ EOF
 pipenv run isort api_server/models/ros_pydantic
 pipenv run black api_server/models/ros_pydantic
 
-# # generate rmf api models from json schemas
+# generate rmf api models from json schemas
 output='api_server/models/rmf_api'
 rm -rf "$output"
 mkdir -p "$output"
@@ -69,7 +69,7 @@ if [[ ! -d .venv_local/lib ]]; then
   bash -c ". .venv_local/bin/activate && pip3 install wheel && pip3 install 'datamodel-code-generator~=0.11.15'"
 fi
 rm -rf api_server/models/rmf_api
-bash -c ". .venv_local/bin/activate && datamodel-codegen --disable-timestamp --input-file-type jsonschema --input build/rmf_api_msgs/rmf_api_msgs/schemas --output \"$output\""
+bash -c ". .venv_local/bin/activate && datamodel-codegen --disable-timestamp --input-file-type jsonschema --enum-field-as-literal one --input build/rmf_api_msgs/rmf_api_msgs/schemas --output \"$output\""
 cat << EOF > "$output/version.py"
 # THIS FILE IS GENERATED
 version = {

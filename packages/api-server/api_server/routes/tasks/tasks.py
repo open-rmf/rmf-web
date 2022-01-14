@@ -5,26 +5,18 @@ from fastapi import Body, Depends, HTTPException, Path, Query
 from rx import operators as rxops
 from rx.subject.replaysubject import ReplaySubject
 
-from api_server.authenticator import user_dep
+from api_server import models as mdl
 from api_server.dependencies import between_query, pagination_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.models import (
-    CancelTaskRequest,
-    Pagination,
-    TaskCancelResponse,
-    TaskRequest,
-    TaskState,
-    User,
-)
-from api_server.models.tasks import TaskEventLog
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.repositories import TaskRepository, task_repo_dep
-from api_server.rmf_io import task_events
+from api_server.response import RawJSONResponse
+from api_server.rmf_io import task_events, tasks_service
 
 router = FastIORouter(tags=["Tasks"])
 
 
-@router.get("", response_model=List[TaskState])
+@router.get("", response_model=List[mdl.TaskState])
 async def query_task_states(
     task_repo: TaskRepository = Depends(task_repo_dep),
     task_id: Optional[str] = Query(
@@ -35,7 +27,7 @@ async def query_task_states(
     ),
     start_time: Optional[datetime] = None,
     finish_time: Optional[datetime] = None,
-    pagination: Pagination = Depends(pagination_query),
+    pagination: mdl.Pagination = Depends(pagination_query),
 ):
     filters = {}
     if task_id is not None:
@@ -50,7 +42,7 @@ async def query_task_states(
     return await task_repo.query_task_states(DbTaskState.filter(**filters), pagination)
 
 
-@router.get("/{task_id}/state", response_model=TaskState)
+@router.get("/{task_id}/state", response_model=mdl.TaskState)
 async def get_task_state(
     task_repo: TaskRepository = Depends(task_repo_dep),
     task_id: str = Path(..., description="task_id"),
@@ -64,7 +56,7 @@ async def get_task_state(
     return result
 
 
-@router.sub("/{task_id}/state", response_model=TaskState)
+@router.sub("/{task_id}/state", response_model=mdl.TaskState)
 async def sub_task_state(req: SubscriptionRequest, task_id: str):
     user = sio_user(req)
     task_repo = TaskRepository(user)
@@ -73,12 +65,12 @@ async def sub_task_state(req: SubscriptionRequest, task_id: str):
     if current_state:
         sub.on_next(current_state)
     task_events.task_states.pipe(
-        rxops.filter(lambda x: cast(TaskState, x).booking.id == task_id)
+        rxops.filter(lambda x: cast(mdl.TaskState, x).booking.id == task_id)
     ).subscribe(sub)
     return sub
 
 
-@router.get("/{task_id}/log", response_model=TaskEventLog)
+@router.get("/{task_id}/log", response_model=mdl.TaskEventLog)
 async def get_task_log(
     task_repo: TaskRepository = Depends(task_repo_dep),
     task_id: str = Path(..., description="task_id"),
@@ -94,26 +86,78 @@ async def get_task_log(
     return result
 
 
-@router.sub("/{task_id}/log", response_model=TaskEventLog)
+@router.sub("/{task_id}/log", response_model=mdl.TaskEventLog)
 async def sub_task_log(_req: SubscriptionRequest, task_id: str):
     return task_events.task_event_logs.pipe(
-        rxops.filter(lambda x: cast(TaskEventLog, x).task_id == task_id)
+        rxops.filter(lambda x: cast(mdl.TaskEventLog, x).task_id == task_id)
     )
 
 
-@router.post("/task_request")
-async def post_task_request(
-    user: User = Depends(user_dep),
-    task_request: TaskRequest = Body(...),
+@router.post("/activity_discovery", response_model=mdl.ActivityDiscovery)
+async def post_activity_discovery(
+    request: mdl.ActivityDiscoveryRequest = Body(...),
 ):
-    # TODO: forward to the internal app
-    raise HTTPException(status_code=501)
+    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
 
 
-@router.post("/cancel_task", response_model=TaskCancelResponse)
+@router.post("/cancel_task", response_model=mdl.TaskCancelResponse)
 async def post_cancel_task(
-    user: User = Depends(user_dep),
-    cancel_request: CancelTaskRequest = Body(...),
+    request: mdl.CancelTaskRequest = Body(...),
 ):
-    # TODO: forward to the internal app
-    raise HTTPException(status_code=501)
+    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+
+
+@router.post("/dispatch_task", response_model=mdl.TaskDispatchResponse)
+async def post_task_request(
+    request: mdl.DispatchTaskRequest = Body(...),
+):
+    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+
+
+@router.post("/interrupt_task", response_model=mdl.TaskInterruptionResponse)
+async def post_interrupt_task(
+    request: mdl.TaskInterruptionRequest = Body(...),
+):
+    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+
+
+@router.post("/kill_task", response_model=mdl.TaskKillResponse)
+async def post_kill_task(
+    request: mdl.TaskKillRequest = Body(...),
+):
+    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+
+
+@router.post("/resume_task", response_model=mdl.TaskResumeResponse)
+async def post_resume_task(
+    request: mdl.TaskResumeRequest = Body(...),
+):
+    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+
+
+@router.post("/rewind_task", response_model=mdl.TaskRewindResponse)
+async def post_rewind_task(
+    request: mdl.TaskRewindRequest = Body(...),
+):
+    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+
+
+@router.post("/skip_phase", response_model=mdl.SkipPhaseResponse)
+async def post_skip_phase(
+    request: mdl.TaskPhaseSkipRequest = Body(...),
+):
+    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+
+
+@router.post("/task_discovery", response_model=mdl.TaskDiscovery)
+async def post_task_discovery(
+    request: mdl.TaskDiscoveryRequest = Body(...),
+):
+    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+
+
+@router.post("/undo_skip_phase", response_model=mdl.UndoPhaseSkipResponse)
+async def post_undo_skip_phase(
+    request: mdl.UndoPhaseSkipRequest = Body(...),
+):
+    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
