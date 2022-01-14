@@ -23,8 +23,7 @@ async def _websocket_sub_only(room: str, websocket: WebSocket):
             pass
         except WebSocketDisconnect:
             await websocket_rooms[room].disconnect(websocket)
-            # TODO(BH): Print out identifying information of websocket
-            print("Disconnected.")
+            print(f"{_get_websocket_id(websocket)} disconnected.")
             break
         except Exception as e:
             print("error:", e)
@@ -32,6 +31,10 @@ async def _websocket_sub_only(room: str, websocket: WebSocket):
 
 def _get_websocket_room_path(url_path: str):
     return f"{WEBSOCKET_PREFIX}{url_path}"
+
+
+def _get_websocket_id(websocket: WebSocket):
+    return f"{websocket.client.host}:{websocket.client.port}"
 
 
 @app.post("/teleop/{robot_id}/video/join_room", tags=["Teleoperation - Video"])
@@ -155,13 +158,12 @@ async def cmd_vel(robot_id: str, websocket: WebSocket):
             data = ast.literal_eval(ws_string)
             resp = copy.deepcopy(TeleoperationMessages.TELEOPERATION_CMD_VEL_DEFINITION)
             for key in resp.keys():
-                resp[key] = data[key]
-                # TODO(BH): Sanitization using Pydantic
+                resp[key] = type(resp[key])(data[key])
             await websocket_rooms[room].broadcast(json.dumps(resp))
         except WebSocketDisconnect:
             await websocket_rooms[room].disconnect(websocket)
             # TODO(BH): Print out identifying information of websocket
-            print("Disconnected.")
+            print(f"{_get_websocket_id(websocket)} disconnected.")
             break
         except KeyError as e:
             print(f"Missing JSON field: {e}")
