@@ -7,9 +7,12 @@ from teleop_server.models import FloatModel, StringModel
 from teleop_server.msgs import TeleoperationMessages
 from teleop_server.room import WebSocketRoom
 
+from .app_config import app_config
+
 app = FastAPI()
 websocket_rooms = {}
 WEBSOCKET_PREFIX = "/ws"
+print(f"Teleoperation Server Configuration: {app_config}")
 
 
 async def _websocket_sub_only(room: str, websocket: WebSocket):
