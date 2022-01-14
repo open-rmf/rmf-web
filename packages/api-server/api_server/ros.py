@@ -16,7 +16,7 @@ if use_sim_time_env:
 else:
     use_sim_time = False
 if use_sim_time:
-    rclpy.init(args=["--ros-args", "-p", "use_sim_time:=true"] + app_config.ros_args)
+    rclpy.init(args=["--ros-args"] + app_config.ros_args + ["-p", "use_sim_time:=true"])
 else:
     rclpy.init(args=["--ros-args"] + app_config.ros_args)
 
