@@ -14,8 +14,10 @@ logger = base_logger.getChild("RmfGatewayApp")
 async def process_msg(msg: Dict[str, Any]) -> None:
     payload_type: str = msg["type"]
     if not isinstance(payload_type, str):
-        logger.error("'type' must be a string")
+        logger.error("error processing message, 'type' must be a string")
+        return
     logger.info(f"received message of type '{payload_type}'")
+    logger.debug(msg)
 
     if payload_type == "task_state_update":
         task_state = mdl.TaskState(**msg["data"])
