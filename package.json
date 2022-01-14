@@ -4,6 +4,7 @@
   "workspaces": [
     "packages/api-client",
     "packages/api-server",
+    "packages/teleop-server",
     "packages/dashboard",
     "packages/dashboard-e2e",
     "packages/react-components",

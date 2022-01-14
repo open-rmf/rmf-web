@@ -2,16 +2,16 @@ import ast
 import copy
 import json
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from teleop_server.models import FloatModel, StringModel
 from teleop_server.msgs import TeleoperationMessages
 from teleop_server.room import WebSocketRoom
 
 app = FastAPI()
 websocket_rooms = {}
+WEBSOCKET_PREFIX = "/ws"
 
 
-# TODO(BH): Figure way to copy app.post paths into room specs for ws
 async def _websocket_sub_only(room: str, websocket: WebSocket):
     if room not in websocket_rooms.keys():
         websocket_rooms[room] = WebSocketRoom()
@@ -30,9 +30,14 @@ async def _websocket_sub_only(room: str, websocket: WebSocket):
             print("error:", e)
 
 
+def _get_websocket_room_path(url_path: str):
+    return f"{WEBSOCKET_PREFIX}{url_path}"
+
+
 @app.post("/teleop/{robot_id}/video/join_room", tags=["Teleoperation - Video"])
-async def join_video_room(robot_id: str, room_id: StringModel):
-    room = f"/ws/teleop/{robot_id}/video/join_room"
+async def join_video_room(robot_id: str, room_id: StringModel, request: Request):
+    room = _get_websocket_room_path(request.url.path)
+    print(room)
     try:
         if room in websocket_rooms.keys():
             resp = copy.deepcopy(
@@ -52,13 +57,12 @@ async def join_video_room(robot_id: str, room_id: StringModel):
 
 @app.websocket("/ws/teleop/{robot_id}/video/join_room")
 async def join_video_room_ws(robot_id: str, websocket: WebSocket):
-    room = f"/ws/teleop/{robot_id}/video/join_room"
-    await _websocket_sub_only(room, websocket)
+    await _websocket_sub_only(websocket.url.path, websocket)
 
 
 @app.post("/teleop/{robot_id}/video/leave_room", tags=["Teleoperation - Video"])
-async def leave_video_room(robot_id: str, room_id: StringModel):
-    room = f"/ws/teleop/{robot_id}/video/leave_room"
+async def leave_video_room(robot_id: str, room_id: StringModel, request: Request):
+    room = _get_websocket_room_path(request.url.path)
     try:
         if room in websocket_rooms.keys():
             resp = copy.deepcopy(
@@ -78,15 +82,14 @@ async def leave_video_room(robot_id: str, room_id: StringModel):
 
 @app.websocket("/ws/teleop/{robot_id}/video/leave_room")
 async def leave_video_room_ws(robot_id: str, websocket: WebSocket):
-    room = f"/ws/teleop/{robot_id}/leave_room"
-    await _websocket_sub_only(room, websocket)
+    await _websocket_sub_only(websocket.url.path, websocket)
 
 
 @app.post("/teleop/{robot_id}/drive", tags=["Teleoperation - Discrete"])
 async def drive_robot_in_meters_forward(
-    robot_id: str, x_m: FloatModel, x_vel_m_s: FloatModel
+    robot_id: str, x_m: FloatModel, x_vel_m_s: FloatModel, request: Request
 ):
-    room = f"/ws/teleop/{robot_id}/drive"
+    room = _get_websocket_room_path(request.url.path)
     try:
         if room in websocket_rooms.keys():
             resp = copy.deepcopy(
@@ -107,16 +110,15 @@ async def drive_robot_in_meters_forward(
 
 @app.websocket("/ws/teleop/{robot_id}/drive")
 async def drive(robot_id: str, websocket: WebSocket):
-    room = f"/ws/teleop/{robot_id}/drive"
-    await _websocket_sub_only(room, websocket)
+    await _websocket_sub_only(websocket.url.path, websocket)
 
 
 @app.post("/teleop/{robot_id}/rotate", tags=["Teleoperation - Discrete"])
 async def rotate_robot_in_radians_clockwise(
-    robot_id: str, theta_rad: FloatModel, theta_vel_rad_s: FloatModel
+    robot_id: str, theta_rad: FloatModel, theta_vel_rad_s: FloatModel, request: Request
 ):
 
-    room = f"/ws/teleop/{robot_id}/rotate"
+    room = _get_websocket_room_path(request.url.path)
     try:
         if room in websocket_rooms.keys():
             resp = copy.deepcopy(
@@ -137,13 +139,12 @@ async def rotate_robot_in_radians_clockwise(
 
 @app.websocket("/ws/teleop/{robot_id}/rotate")
 async def rotate(robot_id: str, websocket: WebSocket):
-    room = f"/ws/teleop/{robot_id}/rotate"
-    await _websocket_sub_only(room, websocket)
+    await _websocket_sub_only(websocket.url.path, websocket)
 
 
 @app.websocket("/ws/teleop/{robot_id}/cmd_vel")
 async def cmd_vel(robot_id: str, websocket: WebSocket):
-    room = f"/ws/teleop/{robot_id}/cmd_vel"
+    room = websocket.url.path
     if room not in websocket_rooms.keys():
         websocket_rooms[room] = WebSocketRoom()
 

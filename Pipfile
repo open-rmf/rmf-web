@@ -22,7 +22,8 @@ websocket-client = "~=1.2.3"
 # reporting-server
 reporting-server = {editable = true, path = "./packages/reporting-server"}
 # ros-translator
-ros-translator = {editable = true, path = "./packages/ros-translator"}
+# teleop-server 
+teleop-server = {editable = true, path = "./packages/teleop-server"}
 
 [requires]
 python_version = "3.8"
