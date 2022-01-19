@@ -1,18 +1,15 @@
 import {
+  styled,
   Table,
   TableBody,
   TableCell,
   TableHead,
-  TableRow,
   TableProps,
-  styled,
+  TableRow,
 } from '@mui/material';
-import type { TaskState, Time } from 'api-client';
+import { Status, TaskState } from 'api-client';
 import clsx from 'clsx';
-import { formatDistanceToNow, format } from 'date-fns';
 import React from 'react';
-import { rosTimeToJs } from '../utils';
-import { getState } from './utils';
 
 const classes = {
   taskRowHover: 'task-table-taskrow-hover',
@@ -63,10 +60,6 @@ const StyledTable = styled((props: TableProps) => <Table {...props} />)(({ theme
     backgroundColor: theme.palette.error.main,
     color: theme.palette.getContrastText(theme.palette.error.main),
   },
-  [`& .${classes.taskPendingCell}`]: {
-    backgroundColor: theme.palette.info.dark,
-    color: theme.palette.getContrastText(theme.palette.info.light),
-  },
   [`& .${classes.taskQueuedCell}`]: {
     backgroundColor: theme.palette.info.dark,
     color: theme.palette.getContrastText(theme.palette.info.light),
@@ -86,14 +79,24 @@ function TaskRow({ task, onClick }: TaskRowProps) {
   // replace all temp info
   const [hover, setHover] = React.useState(false);
 
-  const returnTaskStateCellClass = (task: TaskState) => {
-    if (getState(task) === 'Underway') return classes.taskActiveCell;
-    if (getState(task) === 'Completed') return classes.taskCompletedCell;
-    return classes.taskUnknownCell;
+  const getTaskStateCellClass = (task: TaskState) => {
+    switch (task.status) {
+      case Status.Underway:
+        return classes.taskActiveCell;
+      case Status.Completed:
+        return classes.taskCompletedCell;
+      case Status.Canceled:
+        return classes.taskCancelledCell;
+      case Status.Failed:
+        return classes.taskFailedCell;
+      case Status.Queued:
+        return classes.taskQueuedCell;
+      default:
+        return classes.taskUnknownCell;
+    }
   };
 
-  const taskStateCellClass = returnTaskStateCellClass(task);
-  // TODO - replace robot name with something else
+  const taskStateCellClass = getTaskStateCellClass(task);
   return (
     <>
       <TableRow
@@ -102,27 +105,28 @@ function TaskRow({ task, onClick }: TaskRowProps) {
         onMouseOver={() => setHover(true)}
         onMouseOut={() => setHover(false)}
       >
-        <TableCell>{task.booking.id}</TableCell>
-        <TableCell>{'robotname'}</TableCell>
         <TableCell>
           {task.unix_millis_start_time
-            ? format(new Date(task.unix_millis_start_time * 1000), 'dd - mm - yyyy')
+            ? new Date(task.unix_millis_start_time).toLocaleDateString()
+            : 'unknown'}
+        </TableCell>
+        <TableCell>{task.booking.id}</TableCell>
+        <TableCell>{task.assigned_to || 'unknown'}</TableCell>
+        <TableCell>
+          {task.unix_millis_start_time
+            ? new Date(task.unix_millis_start_time).toLocaleTimeString()
             : '-'}
         </TableCell>
         <TableCell>
           {task.unix_millis_finish_time
-            ? format(new Date(task.unix_millis_finish_time * 1000), 'dd - mm - yyyy')
+            ? new Date(task.unix_millis_finish_time).toLocaleTimeString()
             : '-'}
         </TableCell>
-        <TableCell className={taskStateCellClass}>{task ? getState(task) : ''}</TableCell>
+        <TableCell className={taskStateCellClass}>{task.status || 'unknown'}</TableCell>
       </TableRow>
     </>
   );
 }
-
-const toRelativeDate = (rosTime: Time) => {
-  return formatDistanceToNow(rosTimeToJs(rosTime), { addSuffix: true });
-};
 
 export interface TaskTableProps {
   /**
@@ -138,6 +142,7 @@ export function TaskTable({ tasks, onTaskClick }: TaskTableProps): JSX.Element {
     <StyledTable stickyHeader size="small">
       <TableHead>
         <TableRow>
+          <TableCell>Date</TableCell>
           <TableCell>Task Id</TableCell>
           <TableCell>Assignee</TableCell>
           <TableCell>Start Time</TableCell>
