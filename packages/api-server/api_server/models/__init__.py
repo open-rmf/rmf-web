@@ -28,10 +28,11 @@ from .rmf_api.skip_phase_request import TaskPhaseSkipRequest
 from .rmf_api.skip_phase_response import SkipPhaseResponse
 from .rmf_api.task_discovery_request import TaskDiscoveryRequest
 from .rmf_api.task_discovery_response import TaskDiscovery
+from .rmf_api.task_log import Phases, TaskEventLog
 from .rmf_api.task_log_request import TaskLogRequest
 from .rmf_api.task_log_response import TaskLogResponse
 from .rmf_api.task_request import TaskRequest
+from .rmf_api.task_state import TaskState
 from .rmf_api.undo_skip_phase_request import UndoPhaseSkipRequest
 from .rmf_api.undo_skip_phase_response import UndoPhaseSkipResponse
-from .tasks import TaskEventLog, TaskState
 from .user import *

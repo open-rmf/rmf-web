@@ -1,12 +1,22 @@
-from typing import List, Optional, Tuple, cast
+from datetime import datetime
+from typing import Dict, List, Optional, Sequence, Tuple, cast
 
 from fastapi import Depends, HTTPException
-from tortoise.exceptions import FieldError
+from tortoise.exceptions import FieldError, IntegrityError
 from tortoise.query_utils import Prefetch
 from tortoise.queryset import QuerySet
+from tortoise.transactions import in_transaction
 
 from api_server.authenticator import user_dep
-from api_server.models import LogEntry, Pagination, TaskEventLog, TaskState, User
+from api_server.logger import format_exception, logger
+from api_server.models import (
+    LogEntry,
+    Pagination,
+    Phases,
+    TaskEventLog,
+    TaskState,
+    User,
+)
 from api_server.models import tortoise_models as ttm
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.query import add_pagination
@@ -15,6 +25,19 @@ from api_server.query import add_pagination
 class TaskRepository:
     def __init__(self, user: User):
         self.user = user
+
+    async def save_task_state(self, task_state: TaskState) -> None:
+        await ttm.TaskState.update_or_create(
+            {
+                "data": task_state.json(),
+                "category": task_state.category,
+                "unix_millis_start_time": task_state.unix_millis_start_time
+                and datetime.fromtimestamp(task_state.unix_millis_start_time / 1000),
+                "unix_millis_finish_time": task_state.unix_millis_finish_time
+                and datetime.fromtimestamp(task_state.unix_millis_finish_time / 1000),
+            },
+            id_=task_state.booking.id,
+        )
 
     async def query_task_states(
         self, query: QuerySet[DbTaskState], pagination: Optional[Pagination] = None
@@ -77,6 +100,65 @@ class TaskRepository:
             log=[LogEntry(**dict(x)) for x in result.log],
             phases=phases,
         )
+
+    async def _saveEventLogs(
+        self,
+        db_phase: ttm.TaskEventLogPhases,
+        events: Dict[str, List[LogEntry]],
+    ):
+        for event_id, logs in events.items():
+            db_event = (
+                await ttm.TaskEventLogPhasesEvents.get_or_create(
+                    phase=db_phase, event=event_id
+                )
+            )[0]
+            for log in logs:
+                await ttm.TaskEventLogPhasesEventsLog.create(
+                    event=db_event, **log.dict()
+                )
+
+    async def _savePhaseLogs(
+        self, db_task_log: ttm.TaskEventLog, phases: Dict[str, Phases]
+    ):
+        for phase_id, phase in phases.items():
+            db_phase = (
+                await ttm.TaskEventLogPhases.get_or_create(
+                    task=db_task_log, phase=phase_id
+                )
+            )[0]
+            if phase.log:
+                for log in phase.log:
+                    await ttm.TaskEventLogPhasesLog.create(
+                        phase=db_phase,
+                        **log.dict(),
+                    )
+            if phase.events:
+                await self._saveEventLogs(db_phase, phase.events)
+
+    async def _saveTaskLogs(
+        self, db_task_log: ttm.TaskEventLog, logs: Sequence[LogEntry]
+    ):
+        for log in logs:
+            await ttm.TaskEventLogLog.create(
+                task=db_task_log,
+                seq=log.seq,
+                unix_millis_time=log.unix_millis_time,
+                tier=log.tier.name,
+                text=log.text,
+            )
+
+    async def save_task_log(self, task_log: TaskEventLog) -> None:
+        async with in_transaction():
+            db_task_log = (
+                await ttm.TaskEventLog.get_or_create(task_id=task_log.task_id)
+            )[0]
+            try:
+                if task_log.log:
+                    await self._saveTaskLogs(db_task_log, task_log.log)
+                if task_log.phases:
+                    await self._savePhaseLogs(db_task_log, task_log.phases)
+            except IntegrityError as e:
+                logger.error(format_exception(e))
 
 
 def task_repo_dep(user: User = Depends(user_dep)):

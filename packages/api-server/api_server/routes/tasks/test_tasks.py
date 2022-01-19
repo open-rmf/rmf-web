@@ -2,8 +2,9 @@ from unittest.mock import patch
 from uuid import uuid4
 
 from api_server import models as mdl
+from api_server.repositories import TaskRepository
 from api_server.rmf_io import task_events, tasks_service
-from api_server.test import AppFixture, make_task_log, make_task_state
+from api_server.test import AppFixture, make_task_log, make_task_state, test_user
 
 
 class TestTasksRoute(AppFixture):
@@ -13,12 +14,13 @@ class TestTasksRoute(AppFixture):
         task_ids = [uuid4()]
         cls.task_states = [make_task_state(task_id=f"test_{x}") for x in task_ids]
         cls.task_logs = [make_task_log(task_id=f"test_{x}") for x in task_ids]
+        repo = TaskRepository(test_user)
 
         async def prepare_db():
             for t in cls.task_states:
-                await t.save()
+                await repo.save_task_state(t)
             for t in cls.task_logs:
-                await t.save()
+                await repo.save_task_log(t)
 
         cls.run_in_app_loop(prepare_db())
 
