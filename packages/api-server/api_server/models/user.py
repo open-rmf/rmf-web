@@ -19,6 +19,8 @@ class User(BaseModel):
         Loads an user from db, creates the user if it does not exist.
         NOTE: This should only be called after verifying the username comes from a trusted source (e.g. after verifying the jwt).
         """
+        if username.startswith("_"):
+            raise ValueError("username cannot start with '_'")
         ttm_user, _ = await ttm.User.get_or_create(
             {"is_admin": False}, username=username
         )
