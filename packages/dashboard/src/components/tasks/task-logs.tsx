@@ -2,7 +2,6 @@ import { Divider, Grid, Paper, PaperProps, styled, Typography, useTheme } from '
 import { TaskEventLog } from 'api-client';
 import { format } from 'date-fns';
 import React from 'react';
-
 const prefix = 'task-logs';
 const classes = {
   root: `${prefix}-root`,
@@ -40,7 +39,11 @@ export function TaskLogs(props: TaskLogProps) {
           const events = getEventObj ? getEventObj['events'] : {};
           const eventIds = events ? Object.keys(events) : [];
           return (
-            <Paper sx={{ padding: theme.spacing(1) }} variant="outlined" key={`Phase - ${id}`}>
+            <Paper
+              sx={{ padding: theme.spacing(1), height: 'inherit' }}
+              variant="outlined"
+              key={`Phase - ${id}`}
+            >
               <Typography variant="h6" fontWeight="bold">
                 {`Phase - ${id}`}
               </Typography>

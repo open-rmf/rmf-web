@@ -43,7 +43,7 @@ export function TaskPage() {
         undefined,
         11,
         page * 10,
-        '-start_time',
+        undefined,
         undefined,
       );
       const results = resp.data as TaskState[];

@@ -27,6 +27,7 @@ import { AppControllerContext } from '../app-contexts';
 import { Enforcer } from '../permissions';
 import { parseTasksFile } from './utils';
 import { TaskLogs } from './task-logs';
+import { TaskProgress } from './task-progress';
 import { RmfIngressContext } from '../rmf-app';
 
 const prefix = 'task-panel';
@@ -100,6 +101,9 @@ export function TaskPanel({
 }: TaskPanelProps): JSX.Element {
   const theme = useTheme();
   const [selectedTask, setSelectedTask] = React.useState<TaskState | undefined>(undefined);
+  const [selectedTaskState, setSelectedTaskState] = React.useState<TaskState | undefined>(
+    undefined,
+  );
   const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
   const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
@@ -165,8 +169,11 @@ export function TaskPanel({
       return [];
     }
     if (selectedTask) {
-      const logs = await tasksApi.getTaskLogTasksTaskIdLogGet(selectedTask.booking.id);
+      console.log('called once');
+      const logs = await tasksApi.getTaskLogTasksTaskIdLogGet(selectedTask.booking.id, '0,999999');
+      const state = await tasksApi.getTaskStateTasksTaskIdStateGet(selectedTask.booking.id);
       setSelectedTaskLog(logs.data);
+      setSelectedTaskState(state.data);
     }
   }, [tasksApi, selectedTask]);
 
@@ -230,6 +237,9 @@ export function TaskPanel({
           {selectedTask ? (
             <>
               <TaskInfo task={selectedTask} showLogs={showLogs} onShowLogs={setShowLogs} />
+              {showLogs && selectedTaskLog && selectedTaskState ? (
+                <TaskProgress taskLog={selectedTaskLog} taskState={selectedTaskState} />
+              ) : null}
               <Button
                 style={{ marginTop: theme.spacing(1) }}
                 fullWidth
