@@ -1,6 +1,5 @@
-import { makeStyles } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 import type { Level } from 'api-client';
-import clsx from 'clsx';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import React from 'react';
@@ -9,15 +8,6 @@ import { EntityManager, EntityManagerContext } from './entity-manager';
 import { LabelsPortalContext } from './labels-overlay';
 import { SVGOverlay } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
-
-const useStyles = makeStyles(() => ({
-  map: {
-    height: '100%',
-    width: '100%',
-    margin: 0,
-    padding: 0,
-  },
-}));
 
 export interface MapFloorLayer {
   level: Level;
@@ -39,7 +29,6 @@ export function calcMaxBounds(
 function EntityManagerProvider({ children }: React.PropsWithChildren<{}>) {
   const leaflet = useLeaflet();
   const { current: entityManager } = React.useRef(new EntityManager());
-
   React.useEffect(() => {
     if (!leaflet.map) return;
     const listener = () => {
@@ -49,7 +38,7 @@ function EntityManagerProvider({ children }: React.PropsWithChildren<{}>) {
     return () => {
       leaflet.map && leaflet.map.off('zoom', listener);
     };
-  }, [leaflet.map]);
+  }, [leaflet, leaflet.map]);
 
   return entityManager ? (
     <EntityManagerContext.Provider value={entityManager}>{children}</EntityManagerContext.Provider>
@@ -61,12 +50,23 @@ export interface LMapProps extends Omit<LMapProps_, 'crs'> {
 }
 
 export const LMap = React.forwardRef(
-  ({ className, children, ...otherProps }: LMapProps, ref: React.Ref<LMap_>) => {
-    const classes = useStyles();
+  ({ children, ...otherProps }: LMapProps, ref: React.Ref<LMap_>) => {
     const [labelsPortal, setLabelsPortal] = React.useState<SVGSVGElement | null>(null);
     const viewBox = otherProps.bounds ? viewBoxFromLeafletBounds(otherProps.bounds) : undefined;
+    const theme = useTheme();
     return (
-      <LMap_ ref={ref} className={clsx(classes.map, className)} crs={L.CRS.Simple} {...otherProps}>
+      <LMap_
+        ref={ref}
+        style={{
+          height: '100%',
+          width: '100%',
+          margin: 0,
+          padding: 0,
+          backgroundColor: theme.palette.background.default,
+        }}
+        crs={L.CRS.Simple}
+        {...otherProps}
+      >
         <EntityManagerProvider>
           <LabelsPortalContext.Provider value={labelsPortal}>
             {children}

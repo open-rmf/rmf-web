@@ -1,6 +1,6 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { OnChangeEvent, SimpleFilter } from './simple-filter';
+import { OnFilterChangeEvent, SimpleFilter } from './simple-filter';
 
 export default {
   title: 'Simple Filter',
@@ -10,7 +10,7 @@ export default {
 function SimpleFilterHandler(): JSX.Element {
   const [filter, setFilter] = React.useState('');
 
-  const onChange = (e: React.ChangeEvent<OnChangeEvent>) => {
+  const onChange = (e: React.ChangeEvent<OnFilterChangeEvent>) => {
     setFilter(e.target.value);
   };
 

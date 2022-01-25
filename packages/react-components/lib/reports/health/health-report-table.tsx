@@ -1,7 +1,6 @@
 import React from 'react';
-import MaterialTable from 'material-table';
-import { Typography } from '@material-ui/core';
-import { materialTableIcons } from '../../material-table-icons';
+import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid';
+import { Typography } from '@mui/material';
 import { DefaultLogTableProps } from '../default-report-interface';
 import { format } from 'date-fns';
 
@@ -17,73 +16,71 @@ export interface HealthReportTable extends DefaultLogTableProps {
 }
 
 export const HealthReportTable = (props: HealthReportTable): React.ReactElement => {
-  const { rows, tableSize, addMoreRows } = props;
+  const { rows, addMoreRows } = props;
 
   return (
-    <MaterialTable
-      title="Health"
-      icons={materialTableIcons}
-      columns={[
-        {
-          title: <Typography>Device</Typography>,
-          field: 'device',
-          type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.device.type}</Typography>;
+    <div style={{ height: '100%', width: '100%' }}>
+      <DataGrid
+        autoHeight={true}
+        getRowId={(r) => r.device.id}
+        columns={[
+          {
+            headerName: 'Device',
+            field: 'device',
+            type: 'string',
+            renderCell: (rowData: GridRenderCellParams) => {
+              return <Typography>{rowData.row.device.type}</Typography>;
+            },
           },
-        },
-        {
-          title: <Typography>Actor</Typography>,
-          field: 'actor_id',
-          type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.device.actor}</Typography>;
+          {
+            headerName: 'Actor',
+            field: 'actor_id',
+            type: 'string',
+            renderCell: (rowData: GridRenderCellParams) => {
+              return <Typography>{rowData.row.device.actor}</Typography>;
+            },
           },
-        },
-        {
-          title: <Typography>Health Status</Typography>,
-          field: 'health_status',
-          type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.health_status}</Typography>;
+          {
+            headerName: 'Health Status',
+            field: 'health_status',
+            type: 'string',
+            renderCell: (rowData: GridRenderCellParams) => {
+              return <Typography>{rowData.row.health_status}</Typography>;
+            },
           },
-        },
-        {
-          title: <Typography>Health Message</Typography>,
-          field: 'health_message',
-          type: 'string',
-          render: (rowData) => {
-            return <Typography>{rowData.health_message}</Typography>;
+          {
+            headerName: 'Health Message',
+            field: 'health_message',
+            type: 'string',
+            renderCell: (rowData: GridRenderCellParams) => {
+              return <Typography>{rowData.row.health_message}</Typography>;
+            },
           },
-        },
-        {
-          title: <Typography>Timestamp</Typography>,
-          field: 'created',
-          type: 'datetime',
-          filtering: false,
-          align: 'center',
-          render: (rowData) => {
-            return (
-              <Typography data-testid={'health-table-date'}>
-                {format(new Date(rowData.created), 'MMM dd yyyy hh:mm aaa')}
-              </Typography>
-            );
+          {
+            headerName: 'Timestamp',
+            field: 'created',
+            type: 'datetime',
+            filterable: false,
+            align: 'center',
+            renderCell: (rowData: GridRenderCellParams) => {
+              return (
+                <Typography data-testid={'health-table-date'}>
+                  {format(new Date(rowData.value as number), 'MMM dd yyyy hh:mm aaa')}
+                </Typography>
+              );
+            },
           },
-        },
-      ]}
-      data={rows}
-      options={{
-        filtering: true,
-        search: false,
-        pageSize: 100,
-        pageSizeOptions: [50, 100, 200],
-        maxBodyHeight: tableSize ? tableSize : '80vh',
-      }}
-      onChangePage={(page, pageSize) => {
-        if (addMoreRows) {
-          rows.length / pageSize - 1 === page && addMoreRows();
-        }
-      }}
-    />
+        ]}
+        rows={rows}
+        pageSize={100}
+        rowsPerPageOptions={[50, 100]}
+        onPageChange={() => {
+          if (addMoreRows) {
+            addMoreRows();
+          }
+        }}
+        disableColumnMenu={true}
+      />
+    </div>
   );
 };

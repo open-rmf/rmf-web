@@ -8,7 +8,7 @@ describe('CreateUserDialog', () => {
     const createUser = jest.fn();
     const root = render(<CreateUserDialog open={true} createUser={createUser} />);
     userEvent.type(root.getByLabelText('Username'), 'user');
-    root.getByRole('form').dispatchEvent(new Event('submit'));
+    userEvent.click(root.getByText('Create'));
     expect(createUser).toHaveBeenCalled();
     expect(createUser.mock.calls[0][0]).toBe('user');
     await expect(

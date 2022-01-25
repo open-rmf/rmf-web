@@ -1,10 +1,10 @@
-import type { DoorMode, Lift, LiftState } from 'api-client';
+import type { DoorMode, Lift, LiftState, Door } from 'api-client';
 import React from 'react';
 import { LiftState as RmfLiftState } from 'rmf-models';
 import { almostShallowEqual, fromRmfCoords, fromRmfYaw, radiansToDegrees } from '../utils';
 import { DoorMarker as DoorMarker_ } from './door-marker';
 import { useAutoScale } from './hooks';
-import { LiftMarker as LiftMarker_, LiftMarkerProps, useLiftMarkerStyles } from './lift-marker';
+import { LiftMarker as LiftMarker_, LiftMarkerProps, liftMarkerClasses } from './lift-marker';
 import { SVGOverlay, SVGOverlayProps } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
 import { withLabel } from './with-label';
@@ -26,10 +26,10 @@ interface BoundedMarkerProps extends Omit<LiftMarkerProps, 'onClick'> {
  */
 function bindMarker(MarkerComponent: React.ComponentType<LiftMarkerProps>) {
   return ({ lift, onClick, ...otherProps }: BoundedMarkerProps) => {
-    const handleClick = React.useCallback((ev) => onClick && onClick(ev, lift.name), [
-      onClick,
-      lift.name,
-    ]);
+    const handleClick = React.useCallback(
+      (ev) => onClick && onClick(ev, lift.name),
+      [onClick, lift.name],
+    );
     return <MarkerComponent onClick={onClick && handleClick} {...otherProps} />;
   };
 }
@@ -43,7 +43,7 @@ export const getLiftModeVariant = (
   currentLevel: string,
   liftStateMode?: number,
   liftStateFloor?: string,
-): keyof ReturnType<typeof useLiftMarkerStyles> | undefined => {
+): keyof typeof liftMarkerClasses | undefined => {
   if (!liftStateMode && !liftStateFloor) return 'unknown';
   if (liftStateMode === RmfLiftState.MODE_FIRE) return 'fire';
   if (liftStateMode === RmfLiftState.MODE_EMERGENCY) return 'emergency';
@@ -109,7 +109,7 @@ export const LiftsOverlay = ({
               labelArrowLength={Math.max((lift.width / 3) * scale, (lift.depth / 3) * scale)}
               hideLabel={hideLabels}
             />
-            {lift.doors.map((door, idx) => {
+            {lift.doors.map((door: Door, idx: number) => {
               const [x1, y1] = fromRmfCoords([door.v1_x, door.v1_y]);
               const [x2, y2] = fromRmfCoords([door.v2_x, door.v2_y]);
               return (

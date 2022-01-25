@@ -29,7 +29,7 @@ export class BidProposal {
     try {
       TaskProfile.validate(obj['task_profile'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "task_profile":\n  ' + e.message);
+      throw new Error('in "task_profile":\n  ' + (e as Error).message);
     }
     if (typeof obj['prev_cost'] !== 'number') {
       throw new Error('expected "prev_cost" to be "number"');
@@ -40,7 +40,7 @@ export class BidProposal {
     try {
       Time.validate(obj['finish_time'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "finish_time":\n  ' + e.message);
+      throw new Error('in "finish_time":\n  ' + (e as Error).message);
     }
     if (typeof obj['robot_name'] !== 'string') {
       throw new Error('expected "robot_name" to be "string"');

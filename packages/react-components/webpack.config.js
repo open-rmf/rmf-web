@@ -46,7 +46,6 @@ module.exports = (options) => {
             transpileOnly: true,
             compilerOptions: {
               sourceMap: true,
-              declaration: false,
             },
           },
         },

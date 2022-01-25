@@ -34,7 +34,7 @@ export class GraphEdge {
       try {
         Param.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "params":\n  ` + e.message);
+        throw new Error(`in index ${i} of "params":\n  ` + (e as Error).message);
       }
     }
     if (typeof obj['edge_type'] !== 'number') {

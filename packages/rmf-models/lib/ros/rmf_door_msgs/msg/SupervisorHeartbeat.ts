@@ -19,7 +19,7 @@ export class SupervisorHeartbeat {
       try {
         DoorSessions.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "all_sessions":\n  ` + e.message);
+        throw new Error(`in index ${i} of "all_sessions":\n  ` + (e as Error).message);
       }
     }
   }

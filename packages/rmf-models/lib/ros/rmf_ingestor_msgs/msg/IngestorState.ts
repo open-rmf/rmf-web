@@ -27,7 +27,7 @@ export class IngestorState {
     try {
       Time.validate(obj['time'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "time":\n  ' + e.message);
+      throw new Error('in "time":\n  ' + (e as Error).message);
     }
     if (typeof obj['guid'] !== 'string') {
       throw new Error('expected "guid" to be "string"');

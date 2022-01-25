@@ -1,4 +1,4 @@
-import { Tab } from '@material-ui/core';
+import { Tab } from '@mui/material';
 import { cleanup, render, screen } from '@testing-library/react';
 import React from 'react';
 import { NavigationBar } from './navigation-bar';

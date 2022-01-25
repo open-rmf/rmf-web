@@ -36,7 +36,7 @@ export class ColorManager {
         }
       } catch (e) {
         console.warn(
-          `unable to get color from image, falling back to color from id (${e.message})`,
+          `unable to get color from image, falling back to color from id (${(e as Error).message})`,
         );
       }
       return this.robotPrimaryColor(fleet, name, model);

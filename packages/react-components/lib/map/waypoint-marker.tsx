@@ -1,23 +1,17 @@
-import { makeStyles } from '@material-ui/core';
+import { styled } from '@mui/material';
 import Debug from 'debug';
 import React from 'react';
 import { uniqueId } from '../utils';
 
 const debug = Debug('Map:WaypointMarker');
 
-const useStyles = makeStyles(() => ({
-  marker: {
+const classes = {
+  marker: 'waypoint-marker-marker',
+  text: 'waypoint-marker-text',
+};
+const StyledG = styled('g')(() => ({
+  [`& .${classes.marker}`]: {
     pointerEvents: 'none',
-  },
-  text: {
-    dominantBaseline: 'central',
-    textAnchor: 'middle',
-    fontSize: '0.25px',
-    fontWeight: 'bold',
-    fill: 'white',
-    /* 1 pixel black shadow to left, top, right and bottom */
-    textShadow: '-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black',
-    userSelect: 'none',
   },
 }));
 
@@ -30,10 +24,9 @@ export interface WaypointMarkerProps extends React.PropsWithRef<React.SVGProps<S
 export const WaypointMarker = React.forwardRef(
   ({ cx, cy, size, ...otherProps }: WaypointMarkerProps, ref: React.Ref<SVGGElement>) => {
     debug('render');
-    const classes = useStyles();
     const waypointId = React.useMemo(uniqueId, []);
     return (
-      <g ref={ref} {...otherProps}>
+      <StyledG ref={ref} {...otherProps}>
         <defs>
           <filter
             id={`waypoint-${waypointId}-shadow`}
@@ -60,7 +53,7 @@ export const WaypointMarker = React.forwardRef(
           fill={'#FFBF00'}
           filter={`url(#waypoint-${waypointId}-shadow)`}
         />
-      </g>
+      </StyledG>
     );
   },
 );

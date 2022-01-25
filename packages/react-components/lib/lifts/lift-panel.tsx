@@ -2,16 +2,17 @@ import {
   Box,
   Button,
   Card,
+  CardProps,
   Grid,
   IconButton,
-  makeStyles,
   Paper,
   Typography,
-} from '@material-ui/core';
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
-import ViewListIcon from '@material-ui/icons/ViewList';
-import ViewModuleIcon from '@material-ui/icons/ViewModule';
+  styled,
+} from '@mui/material';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import type { Lift, LiftState } from 'api-client';
 import React from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -61,51 +62,78 @@ export interface LiftCellProps {
   ): void;
 }
 
-const useStyles = makeStyles((theme) => ({
-  container: {
+const classes = {
+  container: 'lift-panel-container',
+  buttonBar: 'lift-panel-button-bar',
+  grid: 'lift-panel-grid',
+  cellPaper: 'lift-panel-cell-paper',
+  requestButton: 'lift-panel-request-button',
+  itemIcon: 'lift-panel-item-icon',
+  iconMoving: 'lift-panel-icon-moving',
+  iconOtherStates: 'lift-panel-other-states',
+  doorLabelOpen: 'lift-panel-door-label-open',
+  doorLabelClosed: 'lift-panel-door-label-closed',
+  doorLabelMoving: 'lift-panel-door-label-moving',
+  panelHeader: 'lift-panel-panel-header',
+  nameField: 'lift-panel-name-field',
+};
+const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
+  [`&.${classes.container}`]: {
     margin: theme.spacing(1),
   },
-  buttonBar: {
+  [`& .${classes.buttonBar}`]: {
     display: 'flex',
     justifyContent: 'flex-end',
-    borderRadius: '0px',
+    borderRadius: 0,
     backgroundColor: theme.palette.primary.main,
   },
-  grid: {
-    padding: '1rem',
+  [`& .${classes.grid}`]: {
+    padding: theme.spacing(2),
   },
-  cellPaper: {
-    padding: '0.5rem',
+  [`& .${classes.cellPaper}`]: {
+    padding: theme.spacing(2),
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.background.paper,
+    border: 1,
+    borderStyle: 'solid',
+    borderColor: theme.palette.primary.main,
+    '&:hover': {
+      cursor: 'pointer',
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
+  [`& .${classes.requestButton}`]: {
+    marginTop: theme.spacing(1),
+    padding: theme.spacing(1),
     backgroundColor: theme.palette.info.light,
-    margin: '0.5rem',
+    margin: 'auto',
   },
-  itemIcon: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
+  [`& .${classes.itemIcon}`]: {
+    color: theme.palette.primary.contrastText,
   },
-  buttonGroup: {
-    display: 'flex',
-    justifyContent: 'center',
+  [`& .${classes.iconMoving}`]: {
+    color: theme.palette.success.main,
   },
-  iconMoving: {
-    color: theme.palette.success.dark,
+  [`& .${classes.iconOtherStates}`]: {
+    color: theme.palette.primary.main,
   },
-  iconOtherStates: {
-    color: 'white',
-  },
-  doorLabelOpen: {
+  [`& .${classes.doorLabelOpen}`]: {
     backgroundColor: theme.palette.success.main,
+    color: theme.palette.success.contrastText,
   },
-  doorLabelClosed: {
+  [`& .${classes.doorLabelClosed}`]: {
     backgroundColor: theme.palette.error.main,
+    color: theme.palette.error.contrastText,
   },
-  doorLabelMoving: {
+  [`& .${classes.doorLabelMoving}`]: {
     backgroundColor: theme.palette.warning.main,
+    color: theme.palette.warning.contrastText,
   },
-  panelHeader: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
-    marginLeft: '1rem',
+  [`& .${classes.panelHeader}`]: {
+    color: theme.palette.primary.contrastText,
+    marginLeft: theme.spacing(2),
   },
-  nameField: {
+  [`& .${classes.nameField}`]: {
     fontWeight: 'bold',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
@@ -123,7 +151,6 @@ const LiftCell = React.memo(
     onRequestSubmit,
   }: LiftCellProps): JSX.Element | null => {
     const labelId = `lift-cell-${lift.name}`;
-    const classes = useStyles();
 
     const [showForms, setShowForms] = React.useState(false);
     const currMotion = motionStateToString(motionState);
@@ -132,21 +159,18 @@ const LiftCell = React.memo(
     };
 
     const currDoorMotion = doorStateToString(doorState);
-    const doorModeLabelClasses = React.useCallback(
-      (doorState?: number): string => {
-        switch (doorState) {
-          case RmfDoorMode.MODE_OPEN:
-            return `${classes.doorLabelOpen}`;
-          case RmfDoorMode.MODE_CLOSED:
-            return `${classes.doorLabelClosed}`;
-          case RmfDoorMode.MODE_MOVING:
-            return `${classes.doorLabelMoving}`;
-          default:
-            return '';
-        }
-      },
-      [classes],
-    );
+    const doorModeLabelClasses = React.useCallback((doorState?: number): string => {
+      switch (doorState) {
+        case RmfDoorMode.MODE_OPEN:
+          return `${classes.doorLabelOpen}`;
+        case RmfDoorMode.MODE_CLOSED:
+          return `${classes.doorLabelClosed}`;
+        case RmfDoorMode.MODE_MOVING:
+          return `${classes.doorLabelMoving}`;
+        default:
+          return '';
+      }
+    }, []);
 
     return (
       <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
@@ -160,10 +184,10 @@ const LiftCell = React.memo(
             >
               {lift?.name}
             </Typography>
-            <Box border={1} borderColor="divider" m={0.5}>
+            <Box border={1} borderColor="divider" marginTop={1} marginBottom={1}>
               <Typography align="center">{destinationFloor || 'Unknown'}</Typography>
             </Box>
-            <Typography align="center" className={doorModeLabelClasses(doorState)}>
+            <Typography variant="body2" align="center" className={doorModeLabelClasses(doorState)}>
               {currDoorMotion}
             </Typography>
           </Grid>
@@ -183,6 +207,7 @@ const LiftCell = React.memo(
           fullWidth
           size="small"
           onClick={() => setShowForms(true)}
+          className={classes.requestButton}
         >
           Request Form
         </Button>
@@ -234,14 +259,13 @@ const LiftGridRenderer = ({ data, columnIndex, rowIndex, style }: LiftGridRender
 };
 
 export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps): JSX.Element {
-  const classes = useStyles();
   const [isCellView, setIsCellView] = React.useState(true);
   const columnWidth = 250;
 
   return (
-    <Card variant="outlined" className={classes.container}>
+    <StyledCard variant="outlined" className={classes.container}>
       <Paper className={classes.buttonBar}>
-        <Grid container direction="row" justify="space-between" alignItems="center">
+        <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Grid item xs={6}>
             <Typography variant="h5" className={classes.panelHeader}>
               Lifts
@@ -258,7 +282,7 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
           </Grid>
         </Grid>
       </Paper>
-      <Grid className={classes.grid} container direction="row" spacing={1}>
+      <Grid className={classes.grid} container direction="row" spacing={2}>
         {isCellView ? (
           <AutoSizer disableHeight>
             {({ width }) => {
@@ -269,7 +293,7 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
                   columnWidth={columnWidth}
                   height={250}
                   rowCount={Math.ceil(lifts.length / columnCount)}
-                  rowHeight={140}
+                  rowHeight={180}
                   width={width}
                   itemData={{
                     columnCount,
@@ -287,6 +311,6 @@ export function LiftPanel({ lifts, liftStates, onRequestSubmit }: LiftPanelProps
           <LiftTable lifts={lifts} liftStates={liftStates} onRequestSubmit={onRequestSubmit} />
         )}
       </Grid>
-    </Card>
+    </StyledCard>
   );
 }

@@ -1,42 +1,53 @@
-import { makeStyles } from '@material-ui/core';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import type { Lift } from 'api-client';
+import { styled, Autocomplete } from '@mui/material';
+import TextField from '@mui/material/TextField';
 import React from 'react';
-import { ConfirmationDialog } from '../confirmation-dialog';
+import type { Lift } from 'api-client';
+import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { requestDoorModeToString, requestModeToString } from './lift-utils';
 
-const useStyles = makeStyles((theme) => ({
-  closeButton: {
+const classes = {
+  closeButton: 'lift-request-close-button',
+  form: 'lift-request-form',
+  divForm: 'lift-request-divform',
+  error: 'lift-request-error',
+  input: 'lift-request-input',
+  button: 'lift-request-button',
+  buttonContainer: 'lift-request-button-container',
+  dialogContent: 'lift-request-dialog-content',
+};
+const StyledConfirmationDialog = styled((props: ConfirmationDialogProps) => (
+  <ConfirmationDialog {...props} />
+))(({ theme }) => ({
+  [`& .${classes.closeButton}`]: {
     position: 'absolute',
     right: theme.spacing(1),
     top: theme.spacing(1),
     color: theme.palette.error.main,
   },
-  form: {
+  [`& .${classes.form}`]: {
     display: 'flex',
     alignItems: 'center',
     flexDirection: 'column',
     padding: '0.5rem',
   },
-  divForm: {
+  [`& .${classes.divForm}`]: {
     padding: '0.5rem',
     width: '100%',
   },
-  error: {
+  [`& .${classes.error}`]: {
     color: theme.palette.error.main,
   },
-  input: {
+  [`& .${classes.input}`]: {
     width: '100%',
   },
-  button: {
+  [`& .${classes.button}`]: {
     width: '100%',
   },
-  buttonContainer: {
+  [`& .${classes.buttonContainer}`]: {
     paddingTop: '0.5rem',
     width: '100%',
   },
-  dialogContent: {
+  [`& .${classes.dialogContent}`]: {
     padding: theme.spacing(5),
   },
 }));
@@ -64,8 +75,6 @@ export const LiftRequestFormDialog = ({
   onRequestSubmit,
   onClose,
 }: LiftRequestFormProps): JSX.Element => {
-  const classes = useStyles();
-
   const [doorState, setDoorState] = React.useState(availableDoorModes[0]);
   const [requestType, setRequestType] = React.useState(availableRequestTypes[0]);
   const [destination, setDestination] = React.useState(lift.levels[0]);
@@ -109,7 +118,7 @@ export const LiftRequestFormDialog = ({
   };
 
   return (
-    <ConfirmationDialog
+    <StyledConfirmationDialog
       open={showFormDialog}
       onClose={() => onClose()}
       fullWidth={true}
@@ -175,7 +184,7 @@ export const LiftRequestFormDialog = ({
           value={requestType}
         />
       </div>
-    </ConfirmationDialog>
+    </StyledConfirmationDialog>
   );
 };
 

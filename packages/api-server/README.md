@@ -1,15 +1,8 @@
 # Setup
 
-Install pipenv and lerna
-
-```bash
-pip3 install pipenv
-npm install -g lerna@4
-```
-
 If not already done so, [bootstrap](../../README.md#bootstrap) the project, you can use
 ```bash
-lerna bootstrap --scope=api-server
+scripts/bootstrap.sh api-server
 ```
 to bootstrap only this package.
 

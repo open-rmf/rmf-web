@@ -20,7 +20,7 @@ export class DoorState {
     try {
       Time.validate(obj['door_time'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "door_time":\n  ' + e.message);
+      throw new Error('in "door_time":\n  ' + (e as Error).message);
     }
     if (typeof obj['door_name'] !== 'string') {
       throw new Error('expected "door_name" to be "string"');
@@ -28,7 +28,7 @@ export class DoorState {
     try {
       DoorMode.validate(obj['current_mode'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "current_mode":\n  ' + e.message);
+      throw new Error('in "current_mode":\n  ' + (e as Error).message);
     }
   }
 }

@@ -1,20 +1,23 @@
-import { makeStyles } from '@material-ui/core';
+import { styled } from '@mui/material';
 
-export const defaultReportStyles = makeStyles(() => ({
-  table: {
+export const defaultReportClasses = {
+  table: 'default-report-table',
+};
+export const DefaultReportContainer = styled('div')(() => ({
+  [`& .${defaultReportClasses.table}`]: {
     overflowY: 'scroll',
     paddingTop: '20px',
   },
 }));
 
 export interface DefaultReportQueryPayload {
-  toLogDate?: Date | null;
-  fromLogDate?: Date | null;
+  toLogDate?: unknown | null;
+  fromLogDate?: unknown | null;
   offset?: number | null;
   limit?: number | null;
 }
 
 export interface DefaultLogTableProps {
-  tableSize?: string; // units vh or rem
+  tableSize?: number;
   addMoreRows?(): void;
 }

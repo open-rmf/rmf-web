@@ -1,4 +1,4 @@
-import { Button, Paper, Typography } from '@material-ui/core';
+import { Button, Paper, Typography } from '@mui/material';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { ConfirmationDialog, ConfirmationDialogProps } from './confirmation-dialog';

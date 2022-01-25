@@ -1,17 +1,23 @@
-import { ButtonBase, ButtonBaseProps, makeStyles } from '@material-ui/core';
+import { ButtonBase, ButtonBaseProps, styled } from '@mui/material';
 import clsx from 'clsx';
 import React from 'react';
 
-const useStyles = makeStyles((theme) => ({
-  logoBtn: {
-    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
-    boxSizing: 'border-box',
-  },
-  logoImg: {
-    width: '100%',
-    height: '100%',
-  },
-}));
+const classes = {
+  logoBtn: 'logo-button-root',
+  logoImg: 'logo-button-image',
+};
+const StyledButtonBase = styled((props: ButtonBaseProps) => <ButtonBase {...props} />)(
+  ({ theme }) => ({
+    [`&.${classes.logoBtn}`]: {
+      padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
+      boxSizing: 'border-box',
+    },
+    [`& .${classes.logoImg}`]: {
+      width: '100%',
+      height: '100%',
+    },
+  }),
+);
 
 export interface LogoButtonProps extends ButtonBaseProps {
   src: string;
@@ -24,10 +30,9 @@ export const LogoButton = ({
   className,
   ...otherProps
 }: LogoButtonProps): JSX.Element => {
-  const classes = useStyles();
   return (
-    <ButtonBase className={clsx(classes.logoBtn, className)} disableRipple {...otherProps}>
+    <StyledButtonBase className={clsx(classes.logoBtn, className)} disableRipple {...otherProps}>
       <img src={src} alt={alt} className={classes.logoImg} />
-    </ButtonBase>
+    </StyledButtonBase>
   );
 };

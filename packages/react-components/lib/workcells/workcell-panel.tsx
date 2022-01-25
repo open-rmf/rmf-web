@@ -1,6 +1,15 @@
-import { Card, Grid, IconButton, makeStyles, Paper, Typography } from '@material-ui/core';
-import ViewListIcon from '@material-ui/icons/ViewList';
-import ViewModuleIcon from '@material-ui/icons/ViewModule';
+import {
+  Card,
+  CardProps,
+  Divider,
+  Grid,
+  IconButton,
+  Paper,
+  Typography,
+  styled,
+} from '@mui/material';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import type { Dispenser, Ingestor } from 'api-client';
 import React from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -33,55 +42,87 @@ export interface WorkcellCellProps {
   secondsRemaining?: number;
 }
 
-const useStyles = makeStyles((theme) => ({
-  container: {
+const classes = {
+  container: 'workcell-panel-container',
+  buttonBar: 'workcell-buttonbar',
+  cellContainer: 'workcell-cell-container',
+  cellPaper: 'workcell-cell-paper',
+  itemIcon: 'workcell-item-icon',
+  panelHeader: 'workcell-panel-header',
+  subPanelHeader: 'workcell-sub-panel-header',
+  tableDiv: 'workcell-table-div',
+  nameField: 'workcell-name-field',
+  grid: 'workcell-grid',
+};
+const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
+  [`&.${classes.container}`]: {
     margin: theme.spacing(1),
   },
-  buttonBar: {
+  [`& .${classes.buttonBar}`]: {
     display: 'flex',
     justifyContent: 'flex-end',
-    borderRadius: '0px',
+    borderRadius: 0,
     backgroundColor: theme.palette.primary.main,
   },
-  cellContainer: {
-    paddingLeft: '1rem',
-    paddingRight: '1rem',
-    paddingBottom: '1rem',
+  [`& .${classes.cellContainer}`]: {
+    padding: theme.spacing(1),
+    maxHeight: '25vh',
+    margin: theme.spacing(1),
+    overflowY: 'auto',
+    overflowX: 'hidden',
   },
-  cellPaper: {
-    padding: '0.5rem',
-    backgroundColor: theme.palette.info.light,
-    margin: '0.5rem',
-    height: '84px',
+  [`& .${classes.cellPaper}`]: {
+    padding: theme.spacing(1),
+    backgroundColor: theme.palette.background.paper,
+    border: 1,
+    borderStyle: 'solid',
+    borderColor: theme.palette.primary.main,
+    '&:hover': {
+      cursor: 'pointer',
+      backgroundColor: theme.palette.action.hover,
+    },
+    margin: theme.spacing(1),
+    height: '60%',
   },
-  itemIcon: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
+  [`& .${classes.grid}`]: {
+    padding: theme.spacing(2),
+    paddingTop: theme.spacing(1),
   },
-  panelHeader: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
-    marginLeft: '1rem',
+  [`& .${classes.itemIcon}`]: {
+    color: theme.palette.primary.contrastText,
   },
-  tableDiv: {
-    margin: '0 1rem',
+  [`& .${classes.panelHeader}`]: {
+    color: theme.palette.primary.contrastText,
+    marginLeft: theme.spacing(2),
   },
-  nameField: {
+  [`& .${classes.subPanelHeader}`]: {
+    marginLeft: theme.spacing(2),
+    color: theme.palette.primary.contrastText,
+  },
+  [`& .${classes.tableDiv}`]: {
+    margin: theme.spacing(1),
+    padding: theme.spacing(1),
+  },
+  [`& .${classes.nameField}`]: {
     fontWeight: 'bold',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+  },
+  bottomTable: {
+    marginTop: theme.spacing(2),
   },
 }));
 
 const WorkcellCell = React.memo(
   ({ workcell, requestGuidQueue, secondsRemaining }: WorkcellCellProps): JSX.Element | null => {
     const labelId = `workcell-cell-${workcell.guid}`;
-    const classes = useStyles();
-
     return (
       <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
         {requestGuidQueue !== undefined && secondsRemaining !== undefined ? (
           <React.Fragment>
             <Typography
+              noWrap
               id={labelId}
               align="center"
               className={classes.nameField}
@@ -90,13 +131,13 @@ const WorkcellCell = React.memo(
               {workcell?.guid}
             </Typography>
             <Grid container direction="row">
-              <Grid item xs={6}>
+              <Grid item xs={8}>
                 <Typography
                   align="center"
                   variant="body2"
                 >{`Queue: ${requestGuidQueue.length}`}</Typography>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={4}>
                 <Typography align="center" variant="body2">
                   {requestGuidQueue.length}
                 </Typography>
@@ -115,7 +156,12 @@ const WorkcellCell = React.memo(
   },
 );
 
-const WorkcellGridRenderer = ({ data, columnIndex, rowIndex }: WorkcellGridRendererProps) => {
+const WorkcellGridRenderer = ({
+  data,
+  columnIndex,
+  rowIndex,
+  style,
+}: WorkcellGridRendererProps) => {
   let workcell: Workcell | undefined;
   let workcellState: WorkcellState | undefined;
   const columnCount = data.columnCount;
@@ -127,7 +173,7 @@ const WorkcellGridRenderer = ({ data, columnIndex, rowIndex }: WorkcellGridRende
   }
 
   return workcell ? (
-    <div>
+    <div style={style}>
       <WorkcellCell
         workcell={workcell}
         requestGuidQueue={workcellState?.request_guid_queue}
@@ -142,14 +188,13 @@ export function WorkcellPanel({
   ingestors,
   workcellStates,
 }: WorkcellPanelProps): JSX.Element {
-  const classes = useStyles();
   const [isCellView, setIsCellView] = React.useState(true);
   const columnWidth = 250;
 
   return (
-    <Card variant="outlined" className={classes.container}>
+    <StyledCard variant="outlined" className={classes.container}>
       <Paper className={classes.buttonBar}>
-        <Grid container direction="row" justify="space-between" alignItems="center">
+        <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Grid item xs={6}>
             <Typography variant="h5" className={classes.panelHeader}>
               Workcells
@@ -169,7 +214,7 @@ export function WorkcellPanel({
       {isCellView ? (
         <React.Fragment>
           <div className={classes.cellContainer}>
-            <Typography variant="h6">Dispenser Table</Typography>
+            <Typography variant="h6">Dispensers</Typography>
             <Grid container direction="row" spacing={1}>
               <AutoSizer disableHeight>
                 {({ width }) => {
@@ -186,7 +231,6 @@ export function WorkcellPanel({
                         columnCount,
                         workcells: dispensers,
                         workcellStates,
-                        type: 'dispensers',
                       }}
                     >
                       {WorkcellGridRenderer}
@@ -196,8 +240,9 @@ export function WorkcellPanel({
               </AutoSizer>
             </Grid>
           </div>
+          <Divider />
           <div className={classes.cellContainer}>
-            <Typography variant="h6">Ingester Table</Typography>
+            <Typography variant="h6">Ingestors</Typography>
             <Grid container direction="row" spacing={1}>
               <AutoSizer disableHeight>
                 {({ width }) => {
@@ -214,7 +259,6 @@ export function WorkcellPanel({
                         columnCount,
                         workcells: ingestors,
                         workcellStates,
-                        type: 'ingestors',
                       }}
                     >
                       {WorkcellGridRenderer}
@@ -241,6 +285,6 @@ export function WorkcellPanel({
           ) : null}
         </React.Fragment>
       )}
-    </Card>
+    </StyledCard>
   );
 }

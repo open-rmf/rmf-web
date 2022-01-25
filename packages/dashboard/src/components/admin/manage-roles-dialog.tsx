@@ -12,25 +12,32 @@ import {
   List,
   ListItem,
   ListItemText,
-  makeStyles,
-} from '@material-ui/core';
-import SecurityIcon from '@material-ui/icons/Security';
+  styled,
+} from '@mui/material';
+import SecurityIcon from '@mui/icons-material/Security';
 import React from 'react';
 import { Loading, TransferList, useAsync } from 'react-components';
 import { AppControllerContext } from '../app-contexts';
 
-const useStyles = makeStyles((theme) => ({
-  action: {
+const prefix = 'manage-roles-dialog';
+const classes = {
+  action: `${prefix}-action`,
+  list: `${prefix}-list`,
+  dialogContent: `${prefix}-content`,
+  dialogButton: `${prefix}-button`,
+};
+const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
+  [`& .${classes.action}`]: {
     margin: 0,
   },
-  list: {
+  [`& .${classes.list}`]: {
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1),
   },
-  dialogContent: {
+  [`& .${classes.dialogContent}`]: {
     height: '50vh',
   },
-  dialogButton: {
+  [`& .${classes.dialogButton}`]: {
     width: 100,
   },
 }));
@@ -50,7 +57,6 @@ export function ManageRolesDialog({
   open,
   ...dialogProps
 }: ManageRolesDialogProps): JSX.Element {
-  const classes = useStyles();
   const safeAsync = useAsync();
   const [availableRoles, setAvailableRoles] = React.useState<string[]>([]);
   const [assignedRoles, setAssignedRoles] = React.useState<string[]>([]);
@@ -67,7 +73,7 @@ export function ManageRolesDialog({
         setAvailableRoles(allRoles.filter((r) => defaultAssignedRoles.indexOf(r) === -1).sort());
         setAssignedRoles(defaultAssignedRoles.sort());
       } catch (e) {
-        showErrorAlert(`Failed to get roles: ${e.message}`);
+        showErrorAlert(`Failed to get roles: ${(e as Error).message}`);
       } finally {
         setLoading(false);
       }
@@ -83,7 +89,7 @@ export function ManageRolesDialog({
         setOpen && setOpen(false);
       } catch (e) {
         setSaving(false);
-        showErrorAlert(`Failed to save roles: ${e.message}`);
+        showErrorAlert(`Failed to save roles: ${(e as Error).message}`);
       }
     })();
   };
@@ -154,11 +160,10 @@ export function ManageRolesCard({
   saveRoles,
   ...otherProps
 }: ManageRolesCardProps): JSX.Element {
-  const classes = useStyles();
   const [openDialog, setOpenDialog] = React.useState(false);
 
   return (
-    <Card variant="outlined" {...otherProps}>
+    <StyledCard variant="outlined" {...otherProps}>
       <CardHeader
         title="Roles"
         titleTypographyProps={{ variant: 'h5' }}
@@ -192,6 +197,6 @@ export function ManageRolesCard({
         getAllRoles={getAllRoles}
         saveRoles={saveRoles}
       />
-    </Card>
+    </StyledCard>
   );
 }

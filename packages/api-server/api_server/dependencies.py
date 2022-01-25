@@ -1,9 +1,9 @@
-from typing import Callable, Optional
+from typing import Optional
 
-from fastapi import Depends, Query
+from fastapi import Query
 
+from .fast_io import SubscriptionRequest
 from .models import Pagination, User
-from .repositories.rmf import RmfRepository
 
 
 def pagination_query(
@@ -17,8 +17,6 @@ def pagination_query(
     return Pagination(limit=limit, offset=offset, order_by=order_by)
 
 
-def rmf_repo(user_dep: Callable[..., User]) -> Callable[..., RmfRepository]:
-    def dep(user: User = Depends(user_dep)):
-        return RmfRepository(user)
-
-    return dep
+# hacky way to get the sio user
+def sio_user(req: SubscriptionRequest) -> User:
+    return req.session["user"]

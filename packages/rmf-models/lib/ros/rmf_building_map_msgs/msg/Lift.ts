@@ -47,13 +47,13 @@ export class Lift {
       try {
         Door.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "doors":\n  ` + e.message);
+        throw new Error(`in index ${i} of "doors":\n  ` + (e as Error).message);
       }
     }
     try {
       Graph.validate(obj['wall_graph'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "wall_graph":\n  ' + e.message);
+      throw new Error('in "wall_graph":\n  ' + (e as Error).message);
     }
     if (typeof obj['ref_x'] !== 'number') {
       throw new Error('expected "ref_x" to be "number"');

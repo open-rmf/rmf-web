@@ -1,4 +1,4 @@
-import { makeStyles, Paper, Typography } from '@material-ui/core';
+import { styled, Paper, Typography } from '@mui/material';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 
@@ -11,67 +11,80 @@ interface ColorCardProps {
   colorName: string;
 }
 
+const prefix = 'theme-story';
+const classes = {
+  paperSize: `${prefix}-paper-size`,
+  colorDescription: `${prefix}-color-description`,
+  main: `${prefix}-main`,
+  themedefault: `${prefix}-theme-default`,
+  themePaper: `${prefix}-theme-paper`,
+  themeFont: `${prefix}-theme-font`,
+  success: `${prefix}-success`,
+  error: `${prefix}-error`,
+  warning: `${prefix}-warning`,
+  info: `${prefix}-info`,
+  divider: `${prefix}-divider`,
+  header: `${prefix}-header`,
+};
+
+const ColorCardRoot = styled('div')(() => ({
+  [`& .${classes.paperSize}`]: {
+    width: '100px',
+    height: '100px',
+  },
+  [`& .${classes.colorDescription}`]: {
+    width: '100px',
+  },
+}));
+
+const ThemeDisplayRoot = styled('div')(({ theme }) => ({
+  [`& .${classes.main}`]: {
+    backgroundColor: theme.palette.primary.main,
+  },
+  [`& .${classes.themedefault}`]: {
+    backgroundColor: theme.palette.background.default,
+  },
+  [`& .${classes.themePaper}`]: {
+    backgroundColor: theme.palette.background.paper,
+  },
+  [`& .${classes.themeFont}`]: {
+    backgroundColor: theme.palette.text.primary,
+  },
+  [`& .${classes.success}`]: {
+    backgroundColor: theme.palette.success.main,
+  },
+  [`& .${classes.error}`]: {
+    backgroundColor: theme.palette.error.main,
+  },
+  [`& .${classes.warning}`]: {
+    backgroundColor: theme.palette.warning.main,
+  },
+  [`& .${classes.info}`]: {
+    backgroundColor: theme.palette.info.main,
+  },
+  [`& .${classes.divider}`]: {
+    backgroundColor: theme.palette.divider,
+  },
+  [`& .${classes.header}`]: {
+    marginLeft: '1rem',
+  },
+}));
+
 const ColorCard = (props: ColorCardProps): JSX.Element => {
   const { color, colorName } = props;
-  const useStyles = makeStyles(() => ({
-    paperSize: {
-      width: '100px',
-      height: '100px',
-    },
-    colorDescription: {
-      width: '100px',
-    },
-  }));
-  const classes = useStyles();
-
   return (
-    <div style={{ margin: '0 1rem' }}>
+    <ColorCardRoot style={{ margin: '0 1rem' }}>
       <Paper className={`${color} ${classes.paperSize}`} />
       <Typography variant="body1" align="center" className={classes.colorDescription}>
         {colorName}
       </Typography>
-    </div>
+    </ColorCardRoot>
   );
 };
 
 const ThemeDisplay = (): JSX.Element => {
-  const useStyles = makeStyles((theme) => ({
-    main: {
-      backgroundColor: theme.palette.primary.main,
-    },
-    themedefault: {
-      backgroundColor: theme.palette.background.default,
-    },
-    themePaper: {
-      backgroundColor: theme.palette.background.paper,
-    },
-    themeFont: {
-      backgroundColor: theme.palette.text.primary,
-    },
-    success: {
-      backgroundColor: theme.palette.success.main,
-    },
-    error: {
-      backgroundColor: theme.palette.error.main,
-    },
-    warning: {
-      backgroundColor: theme.palette.warning.main,
-    },
-    info: {
-      backgroundColor: theme.palette.info.main,
-    },
-    divider: {
-      backgroundColor: theme.palette.divider,
-    },
-    // non theme related styles
-    header: {
-      marginLeft: '1rem',
-    },
-  }));
-  const classes = useStyles();
-
   return (
-    <div>
+    <ThemeDisplayRoot>
       <Typography variant="h5" className={classes.header}>
         Theme Colors
       </Typography>
@@ -86,7 +99,7 @@ const ThemeDisplay = (): JSX.Element => {
         <ColorCard color={classes.info} colorName={'Info'} />
         <ColorCard color={classes.divider} colorName={'Divider'} />
       </div>
-    </div>
+    </ThemeDisplayRoot>
   );
 };
 

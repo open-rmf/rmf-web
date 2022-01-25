@@ -1,6 +1,6 @@
-import { Divider, makeStyles, Grid, Typography, IconButton } from '@material-ui/core';
-import { KeyboardBackspace as BackIcon } from '@material-ui/icons';
-import CloseIcon from '@material-ui/icons/Close';
+import { Divider, Grid, Typography, IconButton, styled } from '@mui/material';
+import { KeyboardBackspace as BackIcon } from '@mui/icons-material';
+import CloseIcon from '@mui/icons-material/Close';
 import React from 'react';
 
 interface DrawerHeaderProps {
@@ -9,12 +9,25 @@ interface DrawerHeaderProps {
   title: string;
 }
 
+const prefix = 'drawer-header';
+const classes = {
+  heading: `${prefix}-heading`,
+  button: `${prefix}-button`,
+};
+const StyledDiv = styled('div')(() => ({
+  [`& .${classes.heading}`]: {
+    margin: '0 auto 0 calc(50% - 3rem)',
+  },
+  [`& .${classes.button}`]: {
+    width: '3rem',
+  },
+}));
+
 const DrawerHeader = (props: DrawerHeaderProps) => {
   const { handleBackButton, handleCloseButton, title } = props;
-  const classes = useStyles();
 
   return (
-    <>
+    <StyledDiv>
       {handleBackButton && (
         <Grid item>
           <IconButton
@@ -46,17 +59,8 @@ const DrawerHeader = (props: DrawerHeaderProps) => {
         )}
       </Grid>
       <Divider />
-    </>
+    </StyledDiv>
   );
 };
 
 export default DrawerHeader;
-
-const useStyles = makeStyles((theme) => ({
-  heading: {
-    margin: '0 auto 0 calc(50% - 3rem)',
-  },
-  button: {
-    width: '3rem',
-  },
-}));

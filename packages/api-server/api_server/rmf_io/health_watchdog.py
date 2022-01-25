@@ -3,7 +3,6 @@ from typing import Any, Dict, List, Optional, cast
 
 from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
-from rmf_fleet_msgs.msg import RobotMode as RmfRobotMode
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
 from rx import operators as ops
@@ -20,15 +19,12 @@ from api_server.models import (
     DispenserState,
     DoorHealth,
     DoorState,
-    FleetState,
     HealthStatus,
     Ingestor,
     IngestorHealth,
     IngestorState,
     LiftHealth,
     LiftState,
-    RobotHealth,
-    RobotState,
 )
 from api_server.models import tortoise_models as ttm
 
@@ -56,7 +52,6 @@ class HealthWatchdog:
         await self._watch_lift_health()
         await self._watch_dispenser_health()
         await self._watch_ingestor_health()
-        await self._watch_robot_health()
 
     @staticmethod
     def _combine_most_critical(*obs: Observable):
@@ -87,6 +82,7 @@ class HealthWatchdog:
             return DoorHealth(
                 id_=state.door_name,
                 health_status=HealthStatus.HEALTHY,
+                health_message="",
             )
         if state.current_mode.value == RmfDoorMode.MODE_OFFLINE:
             return DoorHealth(
@@ -103,7 +99,9 @@ class HealthWatchdog:
     async def _watch_door_health(self):
         def to_door_health(id_: str, has_heartbeat: bool):
             if has_heartbeat:
-                return DoorHealth(id_=id_, health_status=HealthStatus.HEALTHY)
+                return DoorHealth(
+                    id_=id_, health_status=HealthStatus.HEALTHY, health_message=""
+                )
             return DoorHealth(
                 id_=id_,
                 health_status=HealthStatus.DEAD,
@@ -160,6 +158,7 @@ class HealthWatchdog:
             return LiftHealth(
                 id_=state.lift_name,
                 health_status=HealthStatus.HEALTHY,
+                health_message="",
             )
         if state.current_mode == RmfLiftState.MODE_FIRE:
             return LiftHealth(
@@ -182,7 +181,9 @@ class HealthWatchdog:
     async def _watch_lift_health(self):
         def to_lift_health(id_: str, has_heartbeat: bool):
             if has_heartbeat:
-                return LiftHealth(id_=id_, health_status=HealthStatus.HEALTHY)
+                return LiftHealth(
+                    id_=id_, health_status=HealthStatus.HEALTHY, health_message=""
+                )
             return LiftHealth(
                 id_=id_,
                 health_status=HealthStatus.DEAD,
@@ -238,6 +239,7 @@ class HealthWatchdog:
             return DispenserHealth(
                 id_=state.guid,
                 health_status=HealthStatus.HEALTHY,
+                health_message="",
             )
         if state.mode == RmfDispenserState.OFFLINE:
             return DispenserHealth(
@@ -254,7 +256,9 @@ class HealthWatchdog:
     async def _watch_dispenser_health(self):
         def to_dispenser_health(id_: str, has_heartbeat: bool):
             if has_heartbeat:
-                return DispenserHealth(id_=id_, health_status=HealthStatus.HEALTHY)
+                return DispenserHealth(
+                    id_=id_, health_status=HealthStatus.HEALTHY, health_message=""
+                )
             return DispenserHealth(
                 id_=id_,
                 health_status=HealthStatus.DEAD,
@@ -309,8 +313,7 @@ class HealthWatchdog:
             RmfIngestorState.BUSY,
         ):
             return IngestorHealth(
-                id_=state.guid,
-                health_status=HealthStatus.HEALTHY,
+                id_=state.guid, health_status=HealthStatus.HEALTHY, health_message=""
             )
         if state.mode == RmfIngestorState.OFFLINE:
             return IngestorHealth(
@@ -327,7 +330,9 @@ class HealthWatchdog:
     async def _watch_ingestor_health(self):
         def to_ingestor_health(id_: str, has_heartbeat: bool):
             if has_heartbeat:
-                return IngestorHealth(id_=id_, health_status=HealthStatus.HEALTHY)
+                return IngestorHealth(
+                    id_=id_, health_status=HealthStatus.HEALTHY, health_message=""
+                )
             return IngestorHealth(
                 id_=id_,
                 health_status=HealthStatus.DEAD,
@@ -374,93 +379,3 @@ class HealthWatchdog:
                 subjects[state.guid].on_next(state)
 
         self.rmf.ingestor_states.subscribe(on_state)
-
-    @staticmethod
-    def robot_mode_to_health(id_: Optional[str], state: Optional[RobotState]):
-        if id_ is None or state is None:
-            return None
-
-        if state.mode.mode in (
-            RmfRobotMode.MODE_IDLE,
-            RmfRobotMode.MODE_CHARGING,
-            RmfRobotMode.MODE_MOVING,
-            RmfRobotMode.MODE_PAUSED,
-            RmfRobotMode.MODE_WAITING,
-            RmfRobotMode.MODE_GOING_HOME,
-            RmfRobotMode.MODE_DOCKING,
-        ):
-            return RobotHealth(
-                id_=id_,
-                health_status=HealthStatus.HEALTHY,
-            )
-        if state.mode.mode == RmfRobotMode.MODE_EMERGENCY:
-            return RobotHealth(
-                id_=id_,
-                health_status=HealthStatus.UNHEALTHY,
-                health_message="robot is in EMERGENCY mode",
-            )
-        if state.mode.mode == RmfRobotMode.MODE_ADAPTER_ERROR:
-            return RobotHealth(
-                id_=id_,
-                health_status=HealthStatus.UNHEALTHY,
-                health_message="error in fleet adapter",
-            )
-        return RobotHealth(
-            id_=id_,
-            health_status=HealthStatus.UNHEALTHY,
-            health_message="robot is in an unknown mode",
-        )
-
-    async def _watch_robot_health(self):
-        def to_robot_health(id_: str, has_heartbeat: bool):
-            if has_heartbeat:
-                return RobotHealth(
-                    id_=id_,
-                    health_status=HealthStatus.HEALTHY,
-                )
-            return RobotHealth(
-                id_=id_,
-                health_status=HealthStatus.DEAD,
-                health_message="heartbeat failed",
-            )
-
-        def watch(id_: str, obs: Observable):
-            """
-            :param obs: Observable[RobotState]
-            """
-            robot_mode_health = obs.pipe(
-                ops.map(cast(Any, lambda state: self.robot_mode_to_health(id_, state))),
-                ops.distinct_until_changed(),
-            )
-            obs.pipe(
-                heartbeat(self.LIVELINESS),
-                ops.map(cast(Any, lambda x: to_robot_health(id_, x))),
-                self._combine_most_critical(robot_mode_health),
-            ).subscribe(self.rmf.robot_health.on_next, scheduler=self.scheduler)
-
-        fleet_states = [FleetState.from_tortoise(x) for x in await ttm.FleetState.all()]
-        initial_states = {s.name: s for s in fleet_states}
-
-        subjects: Dict[str, BehaviorSubject] = {}
-        for fleet_state in initial_states.values():
-            fleet_state: FleetState
-            for robot_state in fleet_state.robots:
-                robot_state: RobotState
-                robot_id = f"{fleet_state.name}/{robot_state.name}"
-                subjects[robot_id] = BehaviorSubject(None)
-
-        for id_, subject in subjects.items():
-            watch(id_, subject)
-
-        def on_state(fleet_state: FleetState):
-            for robot_state in fleet_state.robots:
-                robot_state: RobotState
-                robot_id = f"{fleet_state.name}/{robot_state.name}"
-
-                if robot_id not in subjects:
-                    subjects[robot_id] = BehaviorSubject(robot_state)
-                    watch(robot_id, subjects[robot_id])
-                else:
-                    subjects[robot_id].on_next(robot_state)
-
-        self.rmf.fleet_states.subscribe(on_state)

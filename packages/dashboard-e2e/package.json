@@ -6,9 +6,9 @@
     "test": "tests"
   },
   "scripts": {
-    "start": "node scripts/start.js",
+    "start": "../../scripts/nws.sh build -d && node scripts/start.js",
     "start:rmf-server": "npm --prefix ../api-server start",
-    "test": "node scripts/test-e2e.js",
+    "test": "../../scripts/nws.sh build -d && node scripts/test-e2e.js",
     "test:dev": "E2E_DASHBOARD_URL=http://localhost:3000 RMF_LAUNCH_MODE=none wdio"
   },
   "devDependencies": {
@@ -19,9 +19,9 @@
     "@wdio/mocha-framework": "7.11.1",
     "@wdio/spec-reporter": "7.10.1",
     "concurrently": "^5.3.0",
-    "rmf-dashboard": "*",
+    "rmf-dashboard": "file:../dashboard",
     "serve": "^11.3.2",
     "ts-node": "^9.1.1",
-    "typescript": "4.2.4"
+    "typescript": "~4.4.4"
   }
 }

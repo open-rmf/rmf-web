@@ -1,9 +1,26 @@
 import React from 'react';
-import { FormControl, InputLabel, makeStyles, MenuItem, Select } from '@material-ui/core';
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  styled,
+} from '@mui/material';
+
+const classes = {
+  formControl: 'search-filter-formcontrol',
+};
+const StyledDiv = styled('div')(({ theme }) => ({
+  [`& .${classes.formControl}`]: {
+    margin: theme.spacing(1),
+    minWidth: '230px',
+  },
+}));
 
 interface SearchFilterProps {
   options: { label: string; value: string }[];
-  handleOnChange: (event: React.ChangeEvent<{ name?: string; value: unknown }>) => void;
+  handleOnChange: (event: SelectChangeEvent<React.ReactText>, child: React.ReactNode) => void;
   label: string;
   name: string;
   currentValue: string | number;
@@ -11,10 +28,9 @@ interface SearchFilterProps {
 
 export const SearchFilter = (props: SearchFilterProps): React.ReactElement => {
   const { handleOnChange, options, name, label, currentValue } = props;
-  const classes = useStyles();
 
   return (
-    <>
+    <StyledDiv>
       <div>
         <FormControl variant="outlined" className={classes.formControl}>
           <InputLabel id={`${name}-select-outlined-label`}>{label}</InputLabel>
@@ -36,13 +52,6 @@ export const SearchFilter = (props: SearchFilterProps): React.ReactElement => {
           </Select>
         </FormControl>
       </div>
-    </>
+    </StyledDiv>
   );
 };
-
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: '230px',
-  },
-}));

@@ -42,3 +42,6 @@ export default class ResourceManager {
     }
   }
 }
+
+export const logoSize = 180;
+export const appDrawerWidth = 240;

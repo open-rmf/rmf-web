@@ -239,6 +239,6 @@ export function makeDefinedTask(
     task_id: id,
     authz_grp: 'test_group',
     summary: taskSummary,
-    progress: { status: progress },
+    progress: { status: `${progress}%` },
   };
 }

@@ -1,4 +1,4 @@
-import { LinearProgressProps } from '@material-ui/core';
+import { LinearProgressProps } from '@mui/material';
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { LinearProgressBar as LinearProgressBar_ } from './linear-progress-bar';

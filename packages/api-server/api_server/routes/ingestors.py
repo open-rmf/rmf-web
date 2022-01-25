@@ -1,64 +1,63 @@
-from typing import Any, List, cast
+from typing import List, cast
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from rx import operators as rxops
 
-from api_server.base_app import BaseApp
-from api_server.fast_io import FastIORouter, WatchRequest
+from api_server.dependencies import sio_user
+from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import Ingestor, IngestorHealth, IngestorState
-from api_server.repositories import RmfRepository
+from api_server.repositories import RmfRepository, rmf_repo_dep
+from api_server.rmf_io import rmf_events
 
-from .utils import rx_watcher
+router = FastIORouter(tags=["Ingestors"])
 
 
-class IngestorsRouter(FastIORouter):
-    def __init__(self, app: BaseApp):
-        super().__init__(tags=["Ingestors"])
+@router.get("", response_model=List[Ingestor])
+async def get_ingestors(rmf_repo: RmfRepository = Depends(rmf_repo_dep)):
+    return await rmf_repo.get_ingestors()
 
-        @self.get("", response_model=List[Ingestor])
-        async def get_ingestors(rmf_repo: RmfRepository = Depends(app.rmf_repo)):
-            return await rmf_repo.get_ingestors()
 
-        @self.get("/{guid}/state", response_model=IngestorState)
-        async def get_ingestor_state(
-            guid: str, rmf_repo: RmfRepository = Depends(app.rmf_repo)
-        ):
-            """
-            Available in socket.io
-            """
-            return await rmf_repo.get_ingestor_state(guid)
+@router.get("/{guid}/state", response_model=IngestorState)
+async def get_ingestor_state(
+    guid: str, rmf_repo: RmfRepository = Depends(rmf_repo_dep)
+):
+    """
+    Available in socket.io
+    """
+    ingestor_state = await rmf_repo.get_ingestor_state(guid)
+    if ingestor_state is None:
+        raise HTTPException(status_code=404)
+    return ingestor_state
 
-        @self.watch("/{guid}/state")
-        async def watch_ingestor_state(req: WatchRequest, guid: str):
-            ingestor_state = await get_ingestor_state(guid, RmfRepository(req.user))
-            if ingestor_state is not None:
-                await req.emit(ingestor_state.dict())
-            rx_watcher(
-                req,
-                app.rmf_events().ingestor_states.pipe(
-                    rxops.filter(lambda x: cast(IngestorState, x).guid == guid),
-                    rxops.map(cast(Any, lambda x: cast(IngestorState, x).dict())),
-                ),
-            )
 
-        @self.get("/{guid}/health", response_model=IngestorHealth)
-        async def get_ingestor_health(
-            guid: str, rmf_repo: RmfRepository = Depends(app.rmf_repo)
-        ):
-            """
-            Available in socket.io
-            """
-            return await rmf_repo.get_ingestor_health(guid)
+@router.sub("/{guid}/state", response_model=IngestorState)
+async def sub_ingestor_state(req: SubscriptionRequest, guid: str):
+    user = sio_user(req)
+    ingestor_state = await get_ingestor_state(guid, RmfRepository(user))
+    await req.sio.emit(req.room, ingestor_state, req.sid)
+    return rmf_events.ingestor_states.pipe(
+        rxops.filter(lambda x: cast(IngestorState, x).guid == guid)
+    )
 
-        @self.watch("/{guid}/health")
-        async def watch_ingestor_health(req: WatchRequest, guid: str):
-            health = await get_ingestor_health(guid, RmfRepository(req.user))
-            if health is not None:
-                await req.emit(health.dict())
-            rx_watcher(
-                req,
-                app.rmf_events().ingestor_health.pipe(
-                    rxops.filter(lambda x: cast(IngestorHealth, x).id_ == guid),
-                    rxops.map(cast(Any, lambda x: cast(IngestorHealth, x).dict())),
-                ),
-            )
+
+@router.get("/{guid}/health", response_model=IngestorHealth)
+async def get_ingestor_health(
+    guid: str, rmf_repo: RmfRepository = Depends(rmf_repo_dep)
+):
+    """
+    Available in socket.io
+    """
+    ingestor_health = await rmf_repo.get_ingestor_health(guid)
+    if ingestor_health is None:
+        raise HTTPException(status_code=404)
+    return ingestor_health
+
+
+@router.sub("/{guid}/health", response_model=IngestorHealth)
+async def sub_ingestor_health(req: SubscriptionRequest, guid: str):
+    user = sio_user(req)
+    health = await get_ingestor_health(guid, RmfRepository(user))
+    await req.sio.emit(req.room, health, req.sid)
+    return rmf_events.ingestor_health.pipe(
+        rxops.filter(lambda x: cast(IngestorHealth, x).id_ == guid)
+    )

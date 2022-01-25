@@ -1,17 +1,42 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
+import { TextField, SelectChangeEvent, styled } from '@mui/material';
+import Button from '@mui/material/Button';
 import { SearchFilter } from './search-filter';
 import DateAndTimePickers from '../../date-time-picker';
+import { DateTimePickerProps } from '@mui/lab';
 import { LogLevel } from './log-level';
 
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { LogQueryPayload } from '.';
 
 interface SearchLogFormProps {
   logLabelValues: { label: string; value: string }[];
   search?: (payload: LogQueryPayload) => void;
 }
+
+const classes = {
+  searchForm: 'search-log-search-from',
+  searchButton: 'search-log-search-button',
+  formControl: 'search-log-form-form-control',
+  background: 'search-log-form-background',
+};
+const StyledDiv = styled('div')(({ theme }) => ({
+  [`&.${classes.background}`]: {
+    backgroundColor: theme.palette.background.paper,
+  },
+  [`& .${classes.searchForm}`]: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr 1fr 1fr',
+    alignItems: 'center',
+    justifyItems: 'center',
+  },
+  [`& .${classes.searchButton}`]: {
+    width: '100%',
+  },
+  [`& .${classes.formControl}`]: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+}));
 
 const logLevelValues = [
   { label: 'ALL', value: LogLevel.All },
@@ -27,39 +52,37 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
   // The log contains information from different services, the label help us differentiate the service
   const [logLabel, setLogLabel] = React.useState('');
   const [logLevel, setLogLevel] = React.useState(LogLevel.All);
-  const [fromLogDate, setFromLogDate] = React.useState<MaterialUiPickersDate>(new Date());
-  const [toLogDate, setToLogDate] = React.useState<MaterialUiPickersDate>(new Date());
-
-  const classes = useStyles();
+  const [fromLogDate, setFromLogDate] = React.useState<unknown>(new Date());
+  const [toLogDate, setToLogDate] = React.useState<unknown>(new Date());
 
   const searchQuery = () => {
     search && search({ toLogDate, fromLogDate, logLabel, logLevel });
   };
 
-  const handleLogLabelChange = React.useCallback(
-    (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-      setLogLabel(event.target.value as string);
+  const handleLogLabelChange = React.useCallback((event: SelectChangeEvent<React.ReactText>) => {
+    setLogLabel(event.target.value as string);
+  }, []);
+
+  const handleLogLevelChange = React.useCallback((event: SelectChangeEvent<React.ReactText>) => {
+    setLogLevel(event.target.value as LogLevel);
+  }, []);
+
+  const handleFromLogDateChange: Required<DateTimePickerProps>['onChange'] = React.useCallback(
+    (date) => {
+      setFromLogDate(date);
     },
     [],
   );
 
-  const handleLogLevelChange = React.useCallback(
-    (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-      setLogLevel(event.target.value as LogLevel);
+  const handleToLogDateChange: Required<DateTimePickerProps>['onChange'] = React.useCallback(
+    (date) => {
+      setToLogDate(date);
     },
     [],
   );
-
-  const handleFromLogDateChange = React.useCallback((date: MaterialUiPickersDate) => {
-    setFromLogDate(date);
-  }, []);
-
-  const handleToLogDateChange = React.useCallback((date: MaterialUiPickersDate) => {
-    setToLogDate(date);
-  }, []);
 
   return (
-    <div className={classes.background}>
+    <StyledDiv className={classes.background}>
       <div className={classes.searchForm}>
         <SearchFilter
           options={logLabelValues}
@@ -79,18 +102,18 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
         />
 
         <DateAndTimePickers
-          name="fromLogDate"
           maxDate={new Date()}
           label="From"
           value={fromLogDate}
           onChange={handleFromLogDateChange}
+          renderInput={(props) => <TextField id={'From'} {...props} />}
         />
         <DateAndTimePickers
-          name="toLogDate"
           maxDate={new Date()}
           label="To"
           value={toLogDate}
           onChange={handleToLogDateChange}
+          renderInput={(props) => <TextField id={'To'} {...props} />}
         />
       </div>
 
@@ -103,25 +126,6 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
       >
         Retrieve Logs
       </Button>
-    </div>
+    </StyledDiv>
   );
 };
-
-const useStyles = makeStyles((theme) => ({
-  searchForm: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr 1fr 1fr',
-    alignItems: 'center',
-    justifyItems: 'center',
-  },
-  searchButton: {
-    width: '100%',
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  background: {
-    backgroundColor: theme.palette.background.paper,
-  },
-}));

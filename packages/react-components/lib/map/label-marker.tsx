@@ -1,4 +1,4 @@
-import { makeStyles, useTheme } from '@material-ui/core';
+import { styled, useTheme } from '@mui/material';
 import clsx from 'clsx';
 import React from 'react';
 import { BBox, EntityManagerContext } from './entity-manager';
@@ -43,9 +43,11 @@ export function LabelContainer(props: LabelContainerProps): JSX.Element | null {
     sourceRadius,
     contentWidth,
     contentHeight,
-    contentPadding = theme.spacing(1),
-    contentBorderRadius = theme.shape.borderRadius / 2,
-    arrowLength: preferredArrowLength = theme.spacing(1),
+    // theme.spacing default value = 8
+    contentPadding = 8,
+    // theme.shape.borderRadius default = 4
+    contentBorderRadius = 2,
+    arrowLength: preferredArrowLength = 8,
     angle = -30,
     repositionThreshold = DefaultRepositionThreshold,
     children,
@@ -191,6 +193,20 @@ export function LabelContainer(props: LabelContainerProps): JSX.Element | null {
   );
 }
 
+const classes = {
+  container: 'name-label-container',
+};
+
+const StyledLabelContainer = styled((props: LabelContainerProps) => <LabelContainer {...props} />)(
+  ({ theme }) => ({
+    [`&.${classes.container}`]: {
+      fontSize: theme.typography.fontSize,
+      fontFamily: theme.typography.fontFamily,
+      userSelect: 'none',
+    },
+  }),
+);
+
 const Text: React.FC<React.PropsWithRef<React.SVGProps<SVGTextElement>>> = React.forwardRef(
   ({ children, ...otherProps }: React.SVGProps<SVGTextElement>, ref: React.Ref<SVGTextElement>) => {
     return (
@@ -209,17 +225,6 @@ const Text: React.FC<React.PropsWithRef<React.SVGProps<SVGTextElement>>> = React
   },
 );
 
-const useNameLabelStyles = makeStyles((theme) => ({
-  container: {
-    fontSize: theme.typography.fontSize,
-    fontFamily: theme.typography.fontFamily,
-    userSelect: 'none',
-  },
-  hide: {
-    visibility: 'hidden',
-  },
-}));
-
 export interface NameLabelProps
   extends Omit<LabelContainerProps, 'contentWidth' | 'contentHeight'> {
   text: string;
@@ -227,8 +232,7 @@ export interface NameLabelProps
 
 export function NameLabel(props: NameLabelProps): JSX.Element {
   const theme = useTheme();
-  const { text, contentPadding = theme.spacing(0.5), className, ...otherProps } = props;
-  const classes = useNameLabelStyles();
+  const { text, contentPadding = 4, className, ...otherProps } = props;
   const [contentWidth, setContentWidth] = React.useState(0);
   const [contentHeight, setContentHeight] = React.useState(0);
   const [show, setShow] = React.useState(false);
@@ -244,7 +248,7 @@ export function NameLabel(props: NameLabelProps): JSX.Element {
           updateContentSize();
         });
       } else {
-        setContentWidth(bbox.width + theme.spacing(2));
+        setContentWidth(bbox.width + 16);
         setContentHeight(bbox.height);
         setShow(true);
       }
@@ -256,27 +260,27 @@ export function NameLabel(props: NameLabelProps): JSX.Element {
     <>
       {/* Dummy to compute text length */}
       {!show && (
-        <Text ref={textRef} className={classes.hide}>
+        <Text ref={textRef} style={{ visibility: 'hidden' }}>
           {text}
         </Text>
       )}
       {show && (
-        <LabelContainer
+        <StyledLabelContainer
           contentWidth={contentWidth}
           contentHeight={contentHeight}
           contentPadding={contentPadding}
           className={clsx(classes.container, className)}
-          stroke={theme.palette.primary.main}
+          stroke={theme.palette.info.main}
           strokeWidth={1}
           {...otherProps}
         >
           <Text
-            fill={theme.palette.primary.main}
+            fill={theme.palette.info.main}
             transform={`translate(${contentWidth / 2},${contentHeight / 2})`}
           >
             {text}
           </Text>
-        </LabelContainer>
+        </StyledLabelContainer>
       )}
     </>
   );
@@ -304,7 +308,7 @@ export function withAutoScaling<PropsType extends ScalableLabelProps>(
     // collision detection to think the bbox is different size than what it actually is on screen.
     return (
       <LabelComponent
-        {...((otherProps as unknown) as PropsType)}
+        {...(otherProps as unknown as PropsType)}
         sourceX={sourceX / scale}
         sourceY={sourceY / scale}
         sourceRadius={sourceRadius / scale}

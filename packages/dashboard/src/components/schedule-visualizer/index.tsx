@@ -1,6 +1,5 @@
 /* istanbul ignore file */
 
-import { makeStyles } from '@material-ui/core';
 import { BuildingMap, Dispenser, DoorState, FleetState, Ingestor, LiftState } from 'api-client';
 import Debug from 'debug';
 import * as L from 'leaflet';
@@ -36,12 +35,6 @@ const TrajectoriesOverlay = React.memo(TrajectoriesOverlay_);
 const WaypointsOverlay = React.memo(WaypointsOverlay_);
 const WorkcellsOverlay = React.memo(WorkcellsOverlay_);
 
-const scheduleVisualizerStyle = makeStyles((theme) => ({
-  map: {
-    backgroundColor: theme.palette.background.default,
-  },
-}));
-
 const debug = Debug('ScheduleVisualizer');
 const TrajectoryUpdateInterval = 2000;
 // schedule visualizer manages it's own settings so that it doesn't cause a re-render
@@ -61,6 +54,7 @@ export interface ScheduleVisualizerProps extends React.PropsWithChildren<{}> {
    * default: 'normal'
    */
   mode?: 'normal' | 'negotiation';
+  zoom?: number | undefined;
   onDoorClick?: (ev: React.MouseEvent, door: string) => void;
   onLiftClick?: (ev: React.MouseEvent, lift: string) => void;
   onRobotClick?: (ev: React.MouseEvent, fleet: string, robot: string) => void;
@@ -72,25 +66,27 @@ interface ScheduleVisualizerSettings {
   trajectoryTime: number;
 }
 
-export default function ScheduleVisualizer({
-  buildingMap,
-  negotiationTrajStore = {},
-  dispensers = [],
-  ingestors = [],
-  doorStates = {},
-  liftStates = {},
-  fleetStates = {},
-  mode = 'normal',
-  onDoorClick,
-  onLiftClick,
-  onRobotClick,
-  onDispenserClick,
-  onIngestorClick,
-  children,
-}: ScheduleVisualizerProps): JSX.Element | null {
+export default React.forwardRef(function ScheduleVisualizer(
+  {
+    buildingMap,
+    negotiationTrajStore = {},
+    dispensers = [],
+    ingestors = [],
+    doorStates = {},
+    liftStates = {},
+    fleetStates = {},
+    mode = 'normal',
+    onDoorClick,
+    onLiftClick,
+    onRobotClick,
+    onDispenserClick,
+    onIngestorClick,
+    children,
+  }: ScheduleVisualizerProps,
+  ref,
+): JSX.Element | null {
   debug('render');
   const safeAsync = useAsync();
-  const classes = scheduleVisualizerStyle();
   const levels = React.useMemo(
     () => [...buildingMap.levels].sort((a, b) => a.name.localeCompare(b.name)),
     [buildingMap],
@@ -101,23 +97,17 @@ export default function ScheduleVisualizer({
     {},
   );
   const bounds = React.useMemo(() => levelBounds[currentLevel.name], [levelBounds, currentLevel]);
-
   const [robots, setRobots] = React.useState<RobotData[]>([]);
   const { current: robotsStore } = React.useRef<Record<string, RobotData>>({});
-
   // FIXME: trajectory manager should handle the tokens
   const authenticator = appConfig.authenticator;
-
   const [trajectories, setTrajectories] = React.useState<TrajectoryData[]>([]);
   const { trajectoryManager: trajManager } = React.useContext(RmfIngressContext) || {};
-
-  const [
-    scheduleVisualizerSettings,
-    setScheduleVisualizerSettings,
-  ] = React.useState<ScheduleVisualizerSettings>(() => {
-    const settings = window.localStorage.getItem(SettingsKey);
-    return settings ? JSON.parse(settings) : { trajectoryTime: 60000 /* 1 min */ };
-  });
+  const [scheduleVisualizerSettings, setScheduleVisualizerSettings] =
+    React.useState<ScheduleVisualizerSettings>(() => {
+      const settings = window.localStorage.getItem(SettingsKey);
+      return settings ? JSON.parse(settings) : { trajectoryTime: 60000 /* 1 min */ };
+    });
   const trajectoryTime = scheduleVisualizerSettings.trajectoryTime;
   const trajectoryAnimScale = trajectoryTime / (0.9 * TrajectoryUpdateInterval);
 
@@ -317,6 +307,10 @@ export default function ScheduleVisualizer({
           setLayersUnChecked((prev) => ({ ...prev, [ev.name]: true })),
         );
         registeredLayersHandlers.current = true;
+        if (typeof ref === 'function') ref(cur);
+        else if (ref) {
+          ref.current = cur;
+        }
       }}
       id="schedule-visualizer"
       attributionControl={false}
@@ -325,7 +319,6 @@ export default function ScheduleVisualizer({
       zoomDelta={0.5}
       zoomSnap={0.5}
       bounds={bounds}
-      className={classes.map}
     >
       <AttributionControl position="bottomright" prefix="OSRC-SG" />
       <LayersControl
@@ -429,4 +422,4 @@ export default function ScheduleVisualizer({
       {children}
     </LMap>
   ) : null;
-}
+});

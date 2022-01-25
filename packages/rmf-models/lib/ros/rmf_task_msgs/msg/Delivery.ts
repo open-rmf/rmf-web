@@ -37,7 +37,7 @@ export class Delivery {
       try {
         DispenserRequestItem.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "items":\n  ` + e.message);
+        throw new Error(`in index ${i} of "items":\n  ` + (e as Error).message);
       }
     }
     if (typeof obj['pickup_place_name'] !== 'string') {
@@ -49,7 +49,7 @@ export class Delivery {
     try {
       Behavior.validate(obj['pickup_behavior'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "pickup_behavior":\n  ' + e.message);
+      throw new Error('in "pickup_behavior":\n  ' + (e as Error).message);
     }
     if (typeof obj['dropoff_place_name'] !== 'string') {
       throw new Error('expected "dropoff_place_name" to be "string"');
@@ -60,7 +60,7 @@ export class Delivery {
     try {
       Behavior.validate(obj['dropoff_behavior'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "dropoff_behavior":\n  ' + e.message);
+      throw new Error('in "dropoff_behavior":\n  ' + (e as Error).message);
     }
   }
 }

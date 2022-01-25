@@ -1,23 +1,25 @@
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createTheme } from '@mui/material/styles';
 import commonTheme from './common-theme';
 
-const base = createMuiTheme({
+const base = createTheme({
   palette: {
-    type: 'dark',
+    mode: 'dark',
     ...commonTheme,
     primary: {
-      main: '#84693d',
-      dark: '#533b11',
-      light: '#bea582',
+      //Charcoal, Rich Black Fogra 29, Cadet
+      main: '#37474F',
+      dark: '#102027',
+      light: '#62727B',
     },
     background: {
-      default: '#103375',
-      paper: '#2e4d83',
+      //Rich Black Fogra 29, Cadet
+      default: '#102027',
+      paper: '#62727B',
     },
   },
 });
 
-export const rmfDark = createMuiTheme(
+export const rmfDark = createTheme(
   {
     '@global': {
       '.leaflet-control-zoom a': {
@@ -36,7 +38,16 @@ export const rmfDark = createMuiTheme(
       },
       '.leaflet-pane img': {
         filter:
-          'invert(90%) sepia(12%) saturate(5773%) hue-rotate(193deg) brightness(92%) contrast(92%)',
+          'invert(90%) sepia(20%) saturate(120%) hue-rotate(180deg) brightness(95%) contrast(80%)',
+      },
+    },
+    components: {
+      MuiTableCell: {
+        styleOverrides: {
+          stickyHeader: {
+            backgroundColor: base.palette.primary.main,
+          },
+        },
       },
     },
   },

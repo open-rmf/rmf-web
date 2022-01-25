@@ -30,7 +30,7 @@ export class Graph {
       try {
         GraphNode.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "vertices":\n  ` + e.message);
+        throw new Error(`in index ${i} of "vertices":\n  ` + (e as Error).message);
       }
     }
     if (!Array.isArray(obj['edges'])) {
@@ -40,7 +40,7 @@ export class Graph {
       try {
         GraphEdge.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "edges":\n  ` + e.message);
+        throw new Error(`in index ${i} of "edges":\n  ` + (e as Error).message);
       }
     }
     if (!Array.isArray(obj['params'])) {
@@ -50,7 +50,7 @@ export class Graph {
       try {
         Param.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "params":\n  ` + e.message);
+        throw new Error(`in index ${i} of "params":\n  ` + (e as Error).message);
       }
     }
   }

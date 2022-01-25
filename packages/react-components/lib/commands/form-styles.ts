@@ -1,24 +1,34 @@
-import { makeStyles } from '@material-ui/core';
+import { styled } from '@mui/material';
 
-export const useFormStyles = makeStyles((theme) => ({
-  form: {
+// TODO - refactor classes base on the function of the class
+// instead of component name, for eg, command-form-input would
+// be full-width as it specify width of component to be 100%
+export const commandFormsClasses = {
+  form: 'command-form-root',
+  divForm: 'command-form-div-wrapper',
+  input: 'command-form-input',
+  button: 'command-form-button',
+  buttonContainer: 'command-form-button-container',
+};
+export const StyledForm = styled('form')(({ theme }) => ({
+  [`&.${commandFormsClasses.form}`]: {
     display: 'flex',
     flexDirection: 'column',
     width: '100%',
     backgroundColor: theme.palette.background.paper,
   },
-  divForm: {
+  [`& .${commandFormsClasses.divForm}`]: {
     padding: '0.46rem',
     paddingRight: '0.5rem',
     width: '100%',
   },
-  input: {
+  [`& .${commandFormsClasses.input}`]: {
     width: '100%',
   },
-  button: {
+  [`& .${commandFormsClasses.button}`]: {
     width: '100%',
   },
-  buttonContainer: {
+  [`& .${commandFormsClasses.buttonContainer}`]: {
     paddingTop: '0.5rem',
     paddingLeft: '0.5rem',
     width: '100%',

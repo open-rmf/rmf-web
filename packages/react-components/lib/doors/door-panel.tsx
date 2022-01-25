@@ -2,16 +2,18 @@ import {
   Button,
   ButtonGroup,
   Card,
+  CardProps,
   Grid,
   IconButton,
-  makeStyles,
   Paper,
   Typography,
-} from '@material-ui/core';
-import ViewListIcon from '@material-ui/icons/ViewList';
-import ViewModuleIcon from '@material-ui/icons/ViewModule';
+  styled,
+} from '@mui/material';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import type { Door, DoorState } from 'api-client';
 import React from 'react';
+import clsx from 'clsx';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
 import { DoorMode as RmfDoorMode } from 'rmf-models';
@@ -38,45 +40,88 @@ export interface DoorcellProps {
   onDoorControlClick?(event: React.MouseEvent, door: Door, mode: number): void;
 }
 
-const useStyles = makeStyles((theme) => ({
-  container: {
+const classes = {
+  container: 'door-panel-container',
+  buttonBar: 'door-panel-button-bar',
+  grid: 'door-panel-grid',
+  doorLabelOpen: 'door-panel-door-label-open-panel',
+  doorLabelClosed: 'door-panel-door-label-closed-panel',
+  doorLabelMoving: 'door-panel-door-label-moving-panel',
+  doorLabelDefault: 'door-panel-door-label-default',
+  cellPaper: 'door-panel-door-panel-cell-paper',
+  itemIcon: 'door-panel-item-icon',
+  buttonGroup: 'door-panel-button-group',
+  panelHeader: 'door-panel-panel-header',
+  nameField: 'door-panel-name-field',
+  openCloseButtons: 'door-panel-open-close-btns',
+};
+const StyledCard = styled((props: CardProps) => <Card {...props} />)(({ theme }) => ({
+  [`&.${classes.container}`]: {
     margin: theme.spacing(1),
   },
-  buttonBar: {
+  [`& .${classes.buttonBar}`]: {
     display: 'flex',
     justifyContent: 'flex-end',
-    borderRadius: '0px',
+    borderRadius: 0,
     backgroundColor: theme.palette.primary.main,
   },
-  grid: {
-    padding: '1rem',
+  [`& .${classes.grid}`]: {
+    padding: theme.spacing(2),
+    maxHeight: '40vh',
+    overflowY: 'auto',
   },
-  doorLabelOpen: {
+  [`& .${classes.doorLabelDefault}`]: {
+    padding: theme.spacing(0, 0.2),
+  },
+  [`& .${classes.doorLabelOpen}`]: {
     backgroundColor: theme.palette.success.main,
+    color: theme.palette.success.contrastText,
   },
-  doorLabelClosed: {
+  [`& .${classes.doorLabelClosed}`]: {
     backgroundColor: theme.palette.error.main,
+    color: theme.palette.error.contrastText,
   },
-  doorLabelMoving: {
+  [`& .${classes.doorLabelMoving}`]: {
     backgroundColor: theme.palette.warning.main,
+    color: theme.palette.warning.contrastText,
   },
-  cellPaper: {
-    padding: '0.5rem',
-    backgroundColor: theme.palette.info.light,
-    margin: '0.5rem',
+  [`& .${classes.cellPaper}`]: {
+    padding: theme.spacing(1),
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.background.paper,
+    border: 1,
+    borderStyle: 'solid',
+    borderColor: theme.palette.primary.main,
+    '&:hover': {
+      cursor: 'pointer',
+      backgroundColor: theme.palette.action.hover,
+    },
   },
-  itemIcon: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
+  [`& .${classes.itemIcon}`]: {
+    color: theme.palette.primary.contrastText,
   },
-  buttonGroup: {
+  [`& .${classes.buttonGroup}`]: {
+    marginTop: theme.spacing(1),
     display: 'flex',
     justifyContent: 'center',
   },
-  panelHeader: {
-    color: theme.palette.getContrastText(theme.palette.primary.main),
-    marginLeft: '1rem',
+  [`& .${classes.openCloseButtons}`]: {
+    border: 1,
+    borderStyle: 'solid',
+    borderColor: theme.palette.common.white,
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: theme.palette.primary.light,
+    boxShadow: theme.shadows[3],
+    color: theme.palette.primary.contrastText,
+    '&:hover': {
+      color: theme.palette.primary.main,
+    },
   },
-  nameField: {
+  [`& .${classes.panelHeader}`]: {
+    color: theme.palette.primary.contrastText,
+    marginLeft: theme.spacing(2),
+  },
+  [`& .${classes.nameField}`]: {
     fontWeight: 'bold',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
@@ -86,31 +131,28 @@ const useStyles = makeStyles((theme) => ({
 
 const DoorCell = React.memo(
   ({ door, doorMode, onDoorControlClick }: DoorcellProps): JSX.Element => {
-    const classes = useStyles();
-    const doorModeLabelClasses = React.useCallback(
-      (doorMode?: number): string => {
-        if (doorMode === undefined) {
+    const doorModeLabelClasses = React.useCallback((doorMode?: number): string => {
+      if (doorMode === undefined) {
+        return '';
+      }
+      switch (doorMode) {
+        case RmfDoorMode.MODE_OPEN:
+          return `${classes.doorLabelOpen}`;
+        case RmfDoorMode.MODE_CLOSED:
+          return `${classes.doorLabelClosed}`;
+        case RmfDoorMode.MODE_MOVING:
+          return `${classes.doorLabelMoving}`;
+        default:
           return '';
-        }
-        switch (doorMode) {
-          case RmfDoorMode.MODE_OPEN:
-            return `${classes.doorLabelOpen}`;
-          case RmfDoorMode.MODE_CLOSED:
-            return `${classes.doorLabelClosed}`;
-          case RmfDoorMode.MODE_MOVING:
-            return `${classes.doorLabelMoving}`;
-          default:
-            return '';
-        }
-      },
-      [classes],
-    );
+      }
+    }, []);
     const doorStatusClass = doorModeLabelClasses(doorMode);
     const labelId = `door-cell-${door.door.name}`;
 
     return (
       <Paper className={classes.cellPaper} role="region" aria-labelledby={labelId}>
         <Typography
+          noWrap
           id={labelId}
           variant="body1"
           align="center"
@@ -120,13 +162,18 @@ const DoorCell = React.memo(
           {door.door.name}
         </Typography>
         <Grid container direction="row" spacing={1}>
-          <Grid item xs={6}>
+          <Grid item xs={4}>
             <Typography variant="body2" align="center">
               {door.level}
             </Typography>
           </Grid>
-          <Grid item xs={6}>
-            <Typography className={doorStatusClass} variant="body2" align="center" role="status">
+          <Grid item xs={8}>
+            <Typography
+              className={clsx(doorStatusClass, classes.doorLabelDefault)}
+              variant="body2"
+              align="center"
+              role="status"
+            >
               {doorModeToString(doorMode)}
             </Typography>
           </Grid>
@@ -135,8 +182,9 @@ const DoorCell = React.memo(
           {door && doorTypeToString(door.door.door_type)}
         </Typography>
         <div className={classes.buttonGroup}>
-          <ButtonGroup size="small">
+          <ButtonGroup variant="contained" size="small">
             <Button
+              className={classes.openCloseButtons}
               onClick={(ev) =>
                 onDoorControlClick && onDoorControlClick(ev, door.door, RmfDoorMode.MODE_OPEN)
               }
@@ -144,6 +192,7 @@ const DoorCell = React.memo(
               Open
             </Button>
             <Button
+              className={classes.openCloseButtons}
               onClick={(ev) =>
                 onDoorControlClick && onDoorControlClick(ev, door.door, RmfDoorMode.MODE_CLOSED)
               }
@@ -179,14 +228,13 @@ const DoorGridRenderer = ({ data, columnIndex, rowIndex, style }: DoorGridRender
 };
 
 export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelProps): JSX.Element {
-  const classes = useStyles();
   const [isCellView, setIsCellView] = React.useState(true);
   const columnWidth = 250;
 
   return (
-    <Card variant="outlined" className={classes.container}>
+    <StyledCard variant="outlined" className={classes.container}>
       <Paper className={classes.buttonBar}>
-        <Grid container direction="row" justify="space-between" alignItems="center">
+        <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Grid item xs={6}>
             <Typography variant="h5" className={classes.panelHeader}>
               Doors
@@ -203,7 +251,7 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
           </Grid>
         </Grid>
       </Paper>
-      <Grid className={classes.grid} container direction="row" spacing={1}>
+      <Grid className={classes.grid} container direction="row" spacing={2}>
         {isCellView ? (
           <AutoSizer disableHeight>
             {({ width }) => {
@@ -214,7 +262,7 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
                   columnWidth={columnWidth}
                   height={250}
                   rowCount={Math.ceil(doors.length / columnCount)}
-                  rowHeight={120}
+                  rowHeight={150}
                   width={width}
                   itemData={{
                     columnCount,
@@ -236,6 +284,6 @@ export function DoorPanel({ doors, doorStates, onDoorControlClick }: DoorPanelPr
           />
         )}
       </Grid>
-    </Card>
+    </StyledCard>
   );
 }

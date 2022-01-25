@@ -30,7 +30,7 @@ export class ModeRequest {
     try {
       RobotMode.validate(obj['mode'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "mode":\n  ' + e.message);
+      throw new Error('in "mode":\n  ' + (e as Error).message);
     }
     if (typeof obj['task_id'] !== 'string') {
       throw new Error('expected "task_id" to be "string"');
@@ -42,7 +42,7 @@ export class ModeRequest {
       try {
         ModeParameter.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "parameters":\n  ` + e.message);
+        throw new Error(`in index ${i} of "parameters":\n  ` + (e as Error).message);
       }
     }
   }

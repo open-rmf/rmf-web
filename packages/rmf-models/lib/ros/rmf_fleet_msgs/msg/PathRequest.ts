@@ -31,7 +31,7 @@ export class PathRequest {
       try {
         Location.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "path":\n  ` + e.message);
+        throw new Error(`in index ${i} of "path":\n  ` + (e as Error).message);
       }
     }
     if (typeof obj['task_id'] !== 'string') {

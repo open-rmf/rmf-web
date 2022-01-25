@@ -1,4 +1,4 @@
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 import type { TaskDescription } from 'api-client';
 import React from 'react';
 

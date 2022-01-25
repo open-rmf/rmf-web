@@ -9,7 +9,7 @@ describe('PrivateRoute', () => {
 
   beforeEach(() => {
     history = createMemoryHistory();
-    history.location.pathname = '/private';
+    history.push('/private');
   });
 
   test('renders unauthorizedComponent when unauthenticated', () => {

@@ -1,5 +1,9 @@
 import React from 'react';
-import { DefaultReportQueryPayload, defaultReportStyles } from '../default-report-interface';
+import {
+  DefaultReportQueryPayload,
+  DefaultReportContainer,
+  defaultReportClasses,
+} from '../default-report-interface';
 import { DefaultDatesForm } from '../default-dates-form';
 import {
   UserLoginFailureReportTable,
@@ -16,8 +20,6 @@ export const UserLoginFailureReport = (props: UserLoginFailureReportProps): Reac
   const [logs, setLogs] = React.useState<UserLoginFailureRowsType>([]);
   const [lastSearchParams, setLastSearchParams] = React.useState<DefaultReportQueryPayload>({});
 
-  const classes = defaultReportStyles();
-
   const searchLogs = async (payload: DefaultReportQueryPayload) => {
     setLastSearchParams(payload);
     setLogs(await getLogs(payload));
@@ -28,14 +30,14 @@ export const UserLoginFailureReport = (props: UserLoginFailureReportProps): Reac
   };
 
   return (
-    <>
+    <DefaultReportContainer>
       <DefaultDatesForm search={searchLogs} {...otherProps} />
-      <div className={classes.table}>
+      <div className={defaultReportClasses.table}>
         {logs.length !== 0 && (
-          <UserLoginFailureReportTable rows={logs} tableSize={'48vh'} addMoreRows={getMoreLogs} />
+          <UserLoginFailureReportTable rows={logs} tableSize={500} addMoreRows={getMoreLogs} />
         )}
       </div>
-    </>
+    </DefaultReportContainer>
   );
 };
 

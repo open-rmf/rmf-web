@@ -19,10 +19,10 @@ interface BoundedMarkerProps extends Omit<DoorMarkerProps, 'onClick'> {
  */
 function bindMarker(MarkerComponent: React.ComponentType<DoorMarkerProps>) {
   return ({ door, onClick, ...otherProps }: BoundedMarkerProps) => {
-    const handleClick = React.useCallback((ev) => onClick && onClick(ev, door.name), [
-      onClick,
-      door.name,
-    ]);
+    const handleClick = React.useCallback(
+      (ev) => onClick && onClick(ev, door.name),
+      [onClick, door.name],
+    );
     return <MarkerComponent onClick={onClick && handleClick} {...otherProps} />;
   };
 }

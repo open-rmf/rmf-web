@@ -1,38 +1,46 @@
-import { makeStyles } from '@material-ui/core';
+import { styled } from '@mui/material';
 import clsx from 'clsx';
 import React, { SVGProps } from 'react';
 import { Door as RmfDoor, DoorMode as RmfDoorMode } from 'rmf-models';
 
-const useDoorStyles = makeStyles({
-  marker: {
+const classes = {
+  marker: 'door-marker-base-marker',
+  base: 'door-marker-base-door',
+  open: 'door-marker-open',
+  close: 'door-marker-close',
+  moving: 'door-marker-moving',
+  unknown: 'door-marker-unknown',
+  transparent: 'door-marker-transparent',
+};
+const StyledG = styled('g')(() => ({
+  [`& .${classes.marker}`]: {
     cursor: 'pointer',
     pointerEvents: 'auto',
   },
-  base: {
+  [`& .${classes.base}`]: {
     strokeWidth: 0.2,
   },
-  open: {
+  [`& .${classes.open}`]: {
+    width: 200,
     stroke: '#AFDDAE',
     strokeDasharray: 0.1,
   },
-  close: {
+  [`& .${classes.close}`]: {
     stroke: '#BC4812',
   },
-  moving: {
+  [`& .${classes.moving}`]: {
     stroke: '#E9CE9F',
     strokeDasharray: 0.3,
   },
-  unknown: {
+  [`& .${classes.unknown}`]: {
     stroke: 'grey',
   },
-  transparent: {
+  [`& .${classes.transparent}`]: {
     stroke: 'transparent',
   },
-});
+}));
 
 function useDoorStyle(doorMode?: number): string {
-  const classes = useDoorStyles();
-
   if (doorMode === undefined) {
     return classes.unknown;
   }
@@ -50,7 +58,6 @@ function useDoorStyle(doorMode?: number): string {
 }
 
 const BaseDoor = ({ className, ...otherProps }: SVGProps<SVGLineElement>) => {
-  const classes = useDoorStyles();
   return <line className={clsx(classes.base, className)} {...otherProps} />;
 };
 
@@ -61,7 +68,6 @@ const BaseDoor = ({ className, ...otherProps }: SVGProps<SVGLineElement>) => {
  * full door to be clickable.
  */
 const DummyDoor = ({ className, ...otherProps }: React.SVGProps<SVGLineElement>) => {
-  const classes = useDoorStyles();
   return <line className={clsx(classes.base, classes.transparent, className)} {...otherProps} />;
 };
 
@@ -127,7 +133,6 @@ export const DoorMarker = React.forwardRef(
     { x1, y1, x2, y2, doorType, doorMode, ...otherProps }: DoorMarkerProps,
     ref: React.Ref<SVGGElement>,
   ) => {
-    const classes = useDoorStyles();
     const doorProps = { x1, y1, x2, y2, doorType, doorMode };
 
     const renderDoor = () => {
@@ -151,9 +156,9 @@ export const DoorMarker = React.forwardRef(
 
     try {
       return (
-        <g ref={ref} {...otherProps}>
+        <StyledG ref={ref} {...otherProps}>
           <g className={otherProps.onClick ? classes.marker : undefined}>{renderDoor()}</g>
-        </g>
+        </StyledG>
       );
     } catch (e) {
       console.error((e as Error).message);

@@ -33,37 +33,37 @@ export class TaskDescription {
     try {
       Time.validate(obj['start_time'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "start_time":\n  ' + e.message);
+      throw new Error('in "start_time":\n  ' + (e as Error).message);
     }
     try {
       Priority.validate(obj['priority'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "priority":\n  ' + e.message);
+      throw new Error('in "priority":\n  ' + (e as Error).message);
     }
     try {
       TaskType.validate(obj['task_type'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "task_type":\n  ' + e.message);
+      throw new Error('in "task_type":\n  ' + (e as Error).message);
     }
     try {
       Station.validate(obj['station'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "station":\n  ' + e.message);
+      throw new Error('in "station":\n  ' + (e as Error).message);
     }
     try {
       Loop.validate(obj['loop'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "loop":\n  ' + e.message);
+      throw new Error('in "loop":\n  ' + (e as Error).message);
     }
     try {
       Delivery.validate(obj['delivery'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "delivery":\n  ' + e.message);
+      throw new Error('in "delivery":\n  ' + (e as Error).message);
     }
     try {
       Clean.validate(obj['clean'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "clean":\n  ' + e.message);
+      throw new Error('in "clean":\n  ' + (e as Error).message);
     }
   }
 }

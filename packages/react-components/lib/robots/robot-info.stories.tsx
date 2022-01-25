@@ -3,7 +3,7 @@ import React from 'react';
 import { makeDefinedTask } from '../tasks/test-data.spec';
 import { RobotInfo, RobotInfoProps } from './robot-info';
 import { makeRobot } from './test-utils.spec';
-import { Paper } from '@material-ui/core';
+import { Paper } from '@mui/material';
 
 export default {
   title: 'Robots/Info',

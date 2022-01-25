@@ -70,6 +70,10 @@ export const doorStates: Record<string, DoorState> = {
     door_name: 'exit_door',
     current_mode: { value: RmfDoorMode.MODE_MOVING },
   }),
+  door_with_a_really_long_name: makeDoorState({
+    door_name: 'door_with_a_really_long_name',
+    current_mode: { value: RmfDoorMode.MODE_UNKNOWN },
+  }),
 };
 
 export const makeDoorsData = (): DoorData[] => {

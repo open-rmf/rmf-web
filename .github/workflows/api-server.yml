@@ -29,8 +29,9 @@ jobs:
           cache: 'npm'
       - name: bootstrap
         run: |
+          npm install -g npm@latest
           . /rmf_demos_ws/install/setup.bash
-          lerna bootstrap --scope=api-server
+          scripts/bootstrap.sh api-server
         working-directory: .
       - name: tests
         run: |
@@ -41,5 +42,4 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           flags: api-server

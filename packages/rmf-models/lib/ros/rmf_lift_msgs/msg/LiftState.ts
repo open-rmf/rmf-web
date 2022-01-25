@@ -47,7 +47,7 @@ export class LiftState {
     try {
       Time.validate(obj['lift_time'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "lift_time":\n  ' + e.message);
+      throw new Error('in "lift_time":\n  ' + (e as Error).message);
     }
     if (typeof obj['lift_name'] !== 'string') {
       throw new Error('expected "lift_name" to be "string"');

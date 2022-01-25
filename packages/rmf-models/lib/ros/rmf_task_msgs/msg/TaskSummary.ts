@@ -45,7 +45,7 @@ export class TaskSummary {
     try {
       TaskProfile.validate(obj['task_profile'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "task_profile":\n  ' + e.message);
+      throw new Error('in "task_profile":\n  ' + (e as Error).message);
     }
     if (typeof obj['state'] !== 'number') {
       throw new Error('expected "state" to be "number"');
@@ -56,17 +56,17 @@ export class TaskSummary {
     try {
       Time.validate(obj['submission_time'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "submission_time":\n  ' + e.message);
+      throw new Error('in "submission_time":\n  ' + (e as Error).message);
     }
     try {
       Time.validate(obj['start_time'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "start_time":\n  ' + e.message);
+      throw new Error('in "start_time":\n  ' + (e as Error).message);
     }
     try {
       Time.validate(obj['end_time'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "end_time":\n  ' + e.message);
+      throw new Error('in "end_time":\n  ' + (e as Error).message);
     }
     if (typeof obj['robot_name'] !== 'string') {
       throw new Error('expected "robot_name" to be "string"');

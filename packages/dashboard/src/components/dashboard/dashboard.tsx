@@ -1,17 +1,7 @@
 /* istanbul ignore file */
 
-import { Card, Grid, makeStyles } from '@material-ui/core';
-import {
-  DispenserState,
-  Door,
-  DoorState,
-  Fleet,
-  IngestorState,
-  Level,
-  Lift,
-  LiftState,
-  FleetState,
-} from 'api-client';
+import { Card, Grid, styled } from '@mui/material';
+import { Door, DoorState, Fleet, Level, Lift, LiftState } from 'api-client';
 import Debug from 'debug';
 import React from 'react';
 import { DoorData, DoorPanel, LiftPanel, LiftPanelProps, WorkcellPanel } from 'react-components';
@@ -25,34 +15,45 @@ import {
   RmfIngressContext,
 } from '../rmf-app';
 import ScheduleVisualizer from '../schedule-visualizer';
+import {
+  useFleets,
+  useFleetStateRef,
+  useDispenserStatesRef,
+  useIngestorStatesRef,
+} from '../../util/common-subscriptions';
 
 const debug = Debug('Dashboard');
 const UpdateRate = 1000;
 
-const useStyles = makeStyles((theme) => ({
-  root: {
+const prefix = 'dashboard';
+const classes = {
+  root: `${prefix}-root`,
+  buildingPanel: `${prefix}-building-panel`,
+  mapPanel: `${prefix}-map-panel`,
+  itemPanels: `${prefix}-item-panels`,
+};
+const StyledDiv = styled('div')(({ theme }) => ({
+  [`&.${classes.root}`]: {
     height: '100%',
     backgroundColor: theme.palette.background.default,
   },
-  toolBarTitle: {
-    flexGrow: 1,
+  [`& .${classes.buildingPanel}`]: {
+    height: '100vh',
   },
-  buildingPanel: {
-    height: '100%',
-  },
-  mapPanel: {
+  [`& .${classes.mapPanel}`]: {
     margin: theme.spacing(1),
     flex: '1 0 auto',
   },
+
   itemPanels: {
     width: '25%',
+
   },
 }));
 
 export default function Dashboard(_props: {}): React.ReactElement {
   debug('render');
 
-  const classes = useStyles();
   const appController = React.useContext(AppControllerContext);
   const rmfIngress = React.useContext(RmfIngressContext);
   const sioClient = rmfIngress?.sioClient;
@@ -68,7 +69,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   const doors: DoorData[] = React.useMemo(() => {
     return buildingMap
       ? (buildingMap.levels as Level[]).flatMap((x) =>
-          (x.doors as Door[]).map((door) => ({ door, level: x.name })),
+          (x.doors as Door[]).map((door) => ({ level: x.name, door } as DoorData)),
         )
       : [];
   }, [buildingMap]);
@@ -99,61 +100,18 @@ export default function Dashboard(_props: {}): React.ReactElement {
   }, [sioClient, lifts]);
 
   const dispensers = React.useContext(DispensersContext);
-  const dispenserStatesRef = React.useRef<Record<string, DispenserState>>({});
-  React.useEffect(() => {
-    if (!sioClient) return;
-    const subs = dispensers.map((d) =>
-      sioClient.subscribeDispenserState(
-        d.guid,
-        (state) => (dispenserStatesRef.current[d.guid] = state),
-      ),
-    );
-    return () => {
-      subs.forEach((s) => sioClient.unsubscribe(s));
-    };
-  }, [sioClient, dispensers]);
+  const dispenserStatesRef = useDispenserStatesRef(sioClient, dispensers);
 
   const ingestors = React.useContext(IngestorsContext);
-  const ingestorStatesRef = React.useRef<Record<string, IngestorState>>({});
-  React.useEffect(() => {
-    if (!sioClient) return;
-    const subs = ingestors.map((d) =>
-      sioClient.subscribeIngestorState(
-        d.guid,
-        (state) => (ingestorStatesRef.current[d.guid] = state),
-      ),
-    );
-    return () => {
-      subs.forEach((s) => sioClient.unsubscribe(s));
-    };
-  }, [sioClient, ingestors]);
+  const ingestorStatesRef = useIngestorStatesRef(sioClient, ingestors);
 
   const workcells = React.useMemo(() => [...dispensers, ...ingestors], [dispensers, ingestors]);
   const workcellStates = { ...dispenserStatesRef.current, ...ingestorStatesRef.current };
 
   const [fleets, setFleets] = React.useState<Fleet[]>([]);
-  React.useEffect(() => {
-    if (!rmfIngress) return;
-    let cancel = false;
-    (async () => {
-      const result = await rmfIngress.fleetsApi.getFleetsFleetsGet();
-      if (cancel || result.status !== 200) return;
-      setFleets(result.data);
-    })();
-    return () => {
-      cancel = true;
-    };
-  }, [rmfIngress]);
-  const fleetStatesRef = React.useRef<Record<string, FleetState>>({});
-  React.useEffect(() => {
-    if (!sioClient) return;
-    const subs = fleets.map((f) =>
-      sioClient.subscribeFleetState(f.name, (state) => (fleetStatesRef.current[f.name] = state)),
-    );
-    return () => {
-      subs.forEach((s) => sioClient.unsubscribe(s));
-    };
-  }, [sioClient, fleets]);
+  useFleets(rmfIngress, setFleets);
+  const fleetStatesRef = useFleetStateRef(sioClient, fleets);
+
   const fleetNames = React.useRef<string[]>([]);
   const newFleetNames = Object.keys(fleetStatesRef.current);
   if (newFleetNames.some((fleetName) => !fleetNames.current.includes(fleetName))) {
@@ -189,7 +147,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
   );
 
   return (
-    <div className={classes.root}>
+    <StyledDiv className={classes.root}>
       <GlobalHotKeys keyMap={hotKeysValue.keyMap} handlers={hotKeysValue.handlers}>
         {buildingMap && (
           <Grid container className={classes.buildingPanel} wrap="nowrap">
@@ -230,6 +188,6 @@ export default function Dashboard(_props: {}): React.ReactElement {
           </Grid>
         )}
       </GlobalHotKeys>
-    </div>
+    </StyledDiv>
   );
 }

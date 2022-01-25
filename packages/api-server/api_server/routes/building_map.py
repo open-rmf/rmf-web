@@ -1,33 +1,25 @@
-from typing import Any, cast
-
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from rx import operators as rxops
 
-from api_server.base_app import BaseApp
-from api_server.fast_io import FastIORouter, WatchRequest
+from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import BuildingMap
-from api_server.repositories.rmf import RmfRepository
+from api_server.repositories import RmfRepository, rmf_repo_dep
+from api_server.rmf_io import rmf_events
 
-from .utils import rx_watcher
+router = FastIORouter(tags=["Building"])
 
 
-class BuildingMapRouter(FastIORouter):
-    def __init__(self, app: BaseApp):
-        super().__init__(tags=["Building"])
+@router.get("", response_model=BuildingMap)
+async def get_building_map(rmf_repo: RmfRepository = Depends(rmf_repo_dep)):
+    """
+    Available in socket.io
+    """
+    building_map = await rmf_repo.get_bulding_map()
+    if building_map is None:
+        raise HTTPException(status_code=404)
+    return building_map
 
-        @self.get("", response_model=BuildingMap)
-        async def get_building_map(rmf_repo: RmfRepository = Depends(app.rmf_repo)):
-            """
-            Available in socket.io
-            """
-            return await rmf_repo.get_bulding_map()
 
-        @self.watch("")
-        async def watch_building_map(req: WatchRequest):
-            rx_watcher(
-                req,
-                app.rmf_events().building_map.pipe(
-                    rxops.filter(lambda x: x is not None),
-                    rxops.map(cast(Any, lambda x: cast(BuildingMap, x).dict())),
-                ),
-            )
+@router.sub("", response_model=BuildingMap)
+def sub_building_map(_req: SubscriptionRequest):
+    return rmf_events.building_map.pipe(rxops.filter(lambda x: x is not None))

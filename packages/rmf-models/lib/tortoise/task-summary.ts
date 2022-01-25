@@ -6,12 +6,28 @@
  */
 
 export type Id = string;
+export type AuthzGrp = string;
+export type FleetName = string;
+export type SubmissionTime = string;
+export type StartTime = string;
+export type EndTime = string;
+export type RobotName = string;
 export type State = number;
+export type TaskType = number;
+export type Priority = number;
 
 export interface TaskSummary {
   id_: Id;
   data?: Data;
-  state: State;
+  authz_grp?: AuthzGrp;
+  fleet_name?: FleetName;
+  submission_time?: SubmissionTime;
+  start_time?: StartTime;
+  end_time?: EndTime;
+  robot_name?: RobotName;
+  state?: State;
+  task_type?: TaskType;
+  priority?: Priority;
 }
 export interface Data {
   [k: string]: unknown;

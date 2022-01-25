@@ -25,7 +25,7 @@ export class IngestorResult {
     try {
       Time.validate(obj['time'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "time":\n  ' + e.message);
+      throw new Error('in "time":\n  ' + (e as Error).message);
     }
     if (typeof obj['request_guid'] !== 'string') {
       throw new Error('expected "request_guid" to be "string"');

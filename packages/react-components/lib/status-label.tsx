@@ -1,19 +1,23 @@
-import { makeStyles, Typography } from '@material-ui/core';
+import { Typography, styled } from '@mui/material';
 import clsx from 'clsx';
 import React from 'react';
 
-const useStyles = makeStyles((theme) => ({
-  status: {
+const classes = {
+  status: 'status-label-root',
+  unknown: 'status-label-unknown',
+};
+const StyledDiv = styled('div')(({ theme }) => ({
+  [`&.${classes.status}`]: {
     borderColor: theme.palette.primary.main,
     borderRadius: theme.shape.borderRadius,
     borderStyle: 'solid',
-    border: 2,
-    padding: 5,
+    borderWidth: '2px',
+    padding: '5px',
     width: '4rem',
     textAlign: 'center',
     flexShrink: 0,
   },
-  unknown: {
+  [`&.${classes.unknown}`]: {
     borderColor: theme.palette.grey[500],
   },
 }));
@@ -37,9 +41,8 @@ export interface StatusLabelProps {
 
 export const StatusLabel = (props: StatusLabelProps): JSX.Element => {
   const { text = '', className, variant = 'normal', ...otherProps } = props;
-  const classes = useStyles();
   return (
-    <div
+    <StyledDiv
       className={clsx(
         classes.status,
         className,
@@ -50,6 +53,6 @@ export const StatusLabel = (props: StatusLabelProps): JSX.Element => {
       <Typography variant="button" role="status">
         {variant === 'unknown' ? 'N/A' : text}
       </Typography>
-    </div>
+    </StyledDiv>
   );
 };

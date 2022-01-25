@@ -32,7 +32,7 @@ export class ChargerRequest {
     try {
       Duration.validate(obj['start_timeout'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "start_timeout":\n  ' + e.message);
+      throw new Error('in "start_timeout":\n  ' + (e as Error).message);
     }
     if (typeof obj['request_id'] !== 'string') {
       throw new Error('expected "request_id" to be "string"');

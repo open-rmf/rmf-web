@@ -1,9 +1,9 @@
 import React from 'react';
-import MaterialTable, { Column } from 'material-table';
-import { CustomLookupFilterParser, LogLevel } from '.';
-import { makeStyles, Typography } from '@material-ui/core';
-import { materialTableIcons } from '../../material-table-icons';
+import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid';
+import { LogLevel } from '.';
+import { Typography, styled } from '@mui/material';
 import { format } from 'date-fns';
+import { CustomLookupFilter } from './custom-lookup-filter';
 
 export type ContainerType = {
   id: number;
@@ -19,24 +19,30 @@ export type LogRowsType = {
 
 export interface LogTableProps {
   rows: LogRowsType | [];
-  tableSize?: string; // units vh or rem
   addMoreRows?(): void;
 }
 
-const useStyles = makeStyles((theme) => ({
-  error: {
+const classes = {
+  error: 'log-table-error',
+  debug: 'log-table-debug',
+  warn: 'log-table-warn',
+  info: 'log-table-info',
+  cellContent: 'log-table-cell-content',
+};
+const StyledDiv = styled('div')(({ theme }) => ({
+  [`& .${classes.error}`]: {
     color: theme.palette.error.main,
   },
-  debug: {
+  [`& .${classes.debug}`]: {
     color: theme.palette.secondary.dark,
   },
-  warn: {
+  [`& .${classes.warn}`]: {
     color: theme.palette.warning.light,
   },
-  info: {
+  [`& .${classes.info}`]: {
     color: theme.palette.info.main,
   },
-  cellContent: {
+  [`& .${classes.cellContent}`]: {
     display: 'block',
     marginBlockStart: '1em',
     marginBlockEnd: '1em',
@@ -46,8 +52,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const LogTable = (props: LogTableProps): React.ReactElement => {
-  const { rows, tableSize, addMoreRows } = props;
-  const classes = useStyles();
+  const { rows, addMoreRows } = props;
+  const [pageSize, setPageSize] = React.useState(100);
   const getLogLevelStyle = (level: string): string | undefined => {
     level = level.toLowerCase();
     switch (level) {
@@ -66,6 +72,7 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
     }
   };
 
+  const [selectedFilter, setSelectedFilter] = React.useState<string[]>([]);
   // FIXME: we cannot copy the LogLevel Enum directly and remove the all attribute because it has a protected attribute.
   const logLevels = React.useMemo(() => {
     const logLevelCopy: Record<string, string> = {};
@@ -77,108 +84,93 @@ export const LogTable = (props: LogTableProps): React.ReactElement => {
   }, []);
 
   return (
-    <div id="log-table">
-      <MaterialTable
-        title="Log Result"
-        icons={materialTableIcons}
+    <StyledDiv style={{ height: '100%', width: '100%' }} id="log-table">
+      <DataGrid
+        getRowId={(r) => r.container.id}
+        autoHeight={true}
         columns={[
           {
-            title: <Typography>Level</Typography>,
+            headerName: 'Level',
             field: 'level',
             type: 'string',
             align: 'center',
-            cellStyle: { padding: '0px', width: '2rem', maxWidth: '2rem' },
-            headerStyle: {
-              width: '2rem',
-              maxWidth: '2rem',
-            },
-            filterCellStyle: {
-              maxHeight: '2px',
-            },
-            lookup: logLevels as Column<{
-              level: string;
-              message: string;
-              created: string;
-            }>['lookup'],
-            filterComponent: (props) => <CustomLookupFilterParser {...props} />,
-            render: (rowData) => {
+            width: 100,
+            sortable: false,
+            renderCell: (rowData: GridRenderCellParams) => {
               return (
-                <Typography className={`${getLogLevelStyle(rowData.level)} ${classes.cellContent}`}>
-                  {rowData.level}
+                <Typography
+                  className={`${getLogLevelStyle(rowData.value as string)} ${classes.cellContent}`}
+                >
+                  {rowData.row.level}
                 </Typography>
               );
             },
           },
           {
-            title: <Typography>Container</Typography>,
-            field: 'container',
+            headerName: 'Container',
+            field: 'name',
             type: 'string',
             align: 'center',
-            cellStyle: { padding: '0px', width: '2rem', maxWidth: '2rem' },
-            headerStyle: {
-              width: '2rem',
-              maxWidth: '2rem',
-            },
-            filterCellStyle: {
-              maxHeight: '2px',
-            },
-
-            render: (rowData) => {
+            width: 120,
+            sortable: false,
+            renderCell: (rowData: GridRenderCellParams) => {
               return (
                 <Typography className={classes.cellContent}>
-                  {rowData.container ? rowData.container.name : 'Unknown'}
+                  {rowData.row.container.name ? rowData.row.container.name : 'Unknown'}
                 </Typography>
               );
             },
           },
           {
-            title: <Typography>Message</Typography>,
+            headerName: 'Message',
             field: 'message',
             type: 'string',
-            cellStyle: {
-              padding: '0px',
-              width: '75rem',
-              minWidth: '75rem',
-              whiteSpace: 'pre-wrap',
-            },
-            headerStyle: {
-              width: '75rem',
-              minWidth: '75rem',
-            },
-            render: (rowData) => {
-              return <Typography className={classes.cellContent}>{rowData.message}</Typography>;
+            width: 1200,
+            sortable: false,
+            renderCell: (rowData: GridRenderCellParams) => {
+              return <Typography className={classes.cellContent}>{rowData.value}</Typography>;
             },
           },
           {
-            title: <Typography>Timestamp</Typography>,
+            headerName: 'Timestamp',
             field: 'created',
             type: 'datetime',
-            filtering: false,
+            filterable: false,
+            sortable: false,
             align: 'center',
-            cellStyle: { padding: '0px' },
-            render: (rowData) => {
+            renderCell: (rowData: GridRenderCellParams) => {
               return (
                 <Typography className={classes.cellContent} data-testid={'log-table-date'}>
-                  {format(new Date(rowData.created), 'MMM dd yyyy hh:mm aaa')}
+                  {format(new Date(rowData.value as number), 'MMM dd yyyy hh:mm aaa')}
                 </Typography>
               );
             },
           },
         ]}
-        data={rows}
-        options={{
-          filtering: true,
-          search: false,
-          pageSize: 100,
-          pageSizeOptions: [50, 100, 200],
-          maxBodyHeight: tableSize ? tableSize : '80vh',
+        components={{
+          Toolbar: () => (
+            <CustomLookupFilter
+              lookup={logLevels}
+              selectedFilter={selectedFilter}
+              onFilterChange={setSelectedFilter}
+            />
+          ),
         }}
-        onChangePage={(page, pageSize) => {
+        rows={rows.filter((row) => {
+          if (!selectedFilter.includes(row.level)) return row;
+        })}
+        pageSize={pageSize}
+        rowsPerPageOptions={[50, 100]}
+        onPageChange={() => {
           if (addMoreRows) {
-            rows.length / pageSize - 1 === page && addMoreRows();
+            addMoreRows();
           }
         }}
+        onPageSizeChange={(pageSize) => {
+          setPageSize(pageSize);
+        }}
+        disableColumnMenu={true}
       />
-    </div>
+    </StyledDiv>
   );
 };

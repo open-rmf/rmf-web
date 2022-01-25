@@ -23,12 +23,12 @@ export class TaskProfile {
     try {
       Time.validate(obj['submission_time'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "submission_time":\n  ' + e.message);
+      throw new Error('in "submission_time":\n  ' + (e as Error).message);
     }
     try {
       TaskDescription.validate(obj['description'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "description":\n  ' + e.message);
+      throw new Error('in "description":\n  ' + (e as Error).message);
     }
   }
 }

@@ -1,13 +1,13 @@
 import React from 'react';
-import SearchIcon from '@material-ui/icons/Search';
-import AndroidIcon from '@material-ui/icons/Android';
-import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
-import KitchenIcon from '@material-ui/icons/Kitchen';
-import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck';
+import SearchIcon from '@mui/icons-material/Search';
+import AndroidIcon from '@mui/icons-material/Android';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import KitchenIcon from '@mui/icons-material/Kitchen';
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 
 import { Reports } from './report-list';
 import { ExpandableMultilevelMenuProps } from 'react-components';

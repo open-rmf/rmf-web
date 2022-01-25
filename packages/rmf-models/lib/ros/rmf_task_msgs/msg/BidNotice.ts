@@ -18,12 +18,12 @@ export class BidNotice {
     try {
       TaskProfile.validate(obj['task_profile'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "task_profile":\n  ' + e.message);
+      throw new Error('in "task_profile":\n  ' + (e as Error).message);
     }
     try {
       Duration.validate(obj['time_window'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "time_window":\n  ' + e.message);
+      throw new Error('in "time_window":\n  ' + (e as Error).message);
     }
   }
 }

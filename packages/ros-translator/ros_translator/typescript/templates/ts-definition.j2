@@ -70,7 +70,7 @@ export class {{ base_type.type }} {
       try {
         {{ field.type.type }}.validate(v)
       } catch (e) {
-        throw new Error(`in index ${i} of "{{ field.name }}":\n  ` + e.message);
+        throw new Error(`in index ${i} of "{{ field.name }}":\n  ` + (e as Error).message);
       }
     }
 {% endif %}
@@ -84,7 +84,7 @@ export class {{ base_type.type }} {
     try {
       {{ field.type.type }}.validate(obj['{{ field.name }}'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "{{ field.name }}":\n  ' + e.message);
+      throw new Error('in "{{ field.name }}":\n  ' + (e as Error).message);
     }
 {% endif %}
 {% endif %}

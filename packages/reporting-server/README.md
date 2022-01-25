@@ -17,7 +17,7 @@ pip3 install pipenv
 If not already done so, [bootstrap](../../README.md#bootstrap) the project, you can use
 
 ```bash
-lerna bootstrap --scope=reporting-server
+scripts/bootstrap.sh reporting-server
 ```
 
 to bootstrap only this package.

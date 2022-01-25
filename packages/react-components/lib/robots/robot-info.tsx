@@ -1,4 +1,4 @@
-import { Button, Divider, Grid, makeStyles, Typography, useTheme } from '@material-ui/core';
+import { Button, Divider, Grid, Typography, useTheme, styled } from '@mui/material';
 import type { Task, TaskSummary } from 'api-client';
 import React from 'react';
 import { TaskSummary as RmfTaskSummary } from 'rmf-models';
@@ -8,8 +8,11 @@ import { CircularProgressBar } from './circular-progress-bar';
 import { LinearProgressBar } from './linear-progress-bar';
 import { VerboseRobot } from './utils';
 
-const useStyles = makeStyles(() => ({
-  button: {
+const classes = {
+  button: 'robot-info-button',
+};
+const StyledDiv = styled('div')(() => ({
+  [`& .${classes.button}`]: {
     '&:hover': {
       background: 'none',
       cursor: 'default',
@@ -25,7 +28,6 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   const theme = useTheme();
   const [currentTask, setCurrentTask] = React.useState<Task | undefined>();
   const [hasConcreteEndTime, setHasConcreteEndTime] = React.useState<boolean>(false);
-  const classes = useStyles();
 
   function returnTaskLocations(task: TaskSummary): string {
     switch (taskTypeToStr(task.task_profile.description.task_type.type)) {
@@ -91,27 +93,31 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   }, [currentTask, robot]);
 
   return (
-    <div>
+    <StyledDiv>
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
         {robot.name}
       </Typography>
       <Divider />
       <div style={{ marginBottom: theme.spacing(1) }}></div>
       <Grid container>
-        <Grid container item xs={12} justify="center">
+        <Grid container item xs={12} justifyContent="center">
           <Typography variant="h6" gutterBottom>
-            Battery
+            {`Task Progress - ${
+              currentTask ? taskStateToStr(currentTask.summary.state) : 'No Task'
+            }`}
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          <LinearProgressBar value={robot.state.battery_percent} />
+          {currentTask && (
+            <LinearProgressBar value={parseInt(currentTask.progress.status.slice(0, -1)) || 0} />
+          )}
         </Grid>
-        <Grid container item xs={12} justify="center">
+        <Grid container item xs={12} justifyContent="center">
           <Typography variant="h6" gutterBottom>
             Assigned Tasks
           </Typography>
         </Grid>
-        <Grid container item xs={12} justify="center">
+        <Grid container item xs={12} justifyContent="center">
           <Button
             disableElevation
             variant="outlined"
@@ -156,7 +162,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
         </Grid>
         <Grid item xs={6}>
           <Typography variant="h6" align="left">
-            Task Progress
+            Battery
           </Typography>
         </Grid>
         <Grid item xs={6}>
@@ -165,28 +171,9 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
           </Typography>
         </Grid>
         <Grid item xs={6}>
-          {currentTask && (
-            <CircularProgressBar
-              progress={parseInt(currentTask.progress.status) || 0}
-              strokeColor="#20a39e"
-            >
-              <Typography variant="h6">{currentTask.progress.status}</Typography>
-              <Typography variant="h6">
-                {currentTask ? taskStateToStr(currentTask.summary.state) : '-'}
-              </Typography>
-            </CircularProgressBar>
-          )}
-          {!currentTask && (
-            <Button
-              size="small"
-              disableElevation
-              variant="outlined"
-              className={classes.button}
-              disableRipple={true}
-            >
-              -
-            </Button>
-          )}
+          <CircularProgressBar progress={robot.state.battery_percent} strokeColor="#20a39e">
+            <Typography variant="h6">{`${robot.state.battery_percent}%`}</Typography>
+          </CircularProgressBar>
         </Grid>
         <Grid item xs={6}>
           <Button
@@ -200,6 +187,6 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
           </Button>
         </Grid>
       </Grid>
-    </div>
+    </StyledDiv>
   );
 }

@@ -23,13 +23,9 @@ class TestHealth(BaseBasicHealth):
 class TestMostCritical(unittest.TestCase):
     def test_returns_dead_over_unhealthy(self):
         healths = [
+            TestHealth(id_="test", health_status=HealthStatus.DEAD, health_message=""),
             TestHealth(
-                id_="test",
-                health_status=HealthStatus.DEAD,
-            ),
-            TestHealth(
-                id_="test",
-                health_status=HealthStatus.UNHEALTHY,
+                id_="test", health_status=HealthStatus.UNHEALTHY, health_message=""
             ),
         ]
         obs_a = rx.of(healths[0]).pipe(
@@ -85,8 +81,7 @@ class TestMostCritical(unittest.TestCase):
     def test_ignore_none_values(self):
         healths = [
             TestHealth(
-                id_="test",
-                health_status=HealthStatus.HEALTHY,
+                id_="test", health_status=HealthStatus.HEALTHY, health_message=""
             ),
             None,
         ]

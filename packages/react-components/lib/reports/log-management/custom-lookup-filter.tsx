@@ -6,10 +6,8 @@ import {
   ListItemText,
   MenuItem,
   Select,
-} from '@material-ui/core';
-import { Column, EditCellColumnDef } from 'material-table';
+} from '@mui/material';
 import React from 'react';
-import { ContainerType } from './log-table';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -22,72 +20,29 @@ const MenuProps = {
   },
 };
 
-export interface CustomLookupFilterParserProps {
-  // Prop RowData from material-table is not exported so unknown
-  columnDef: Column<{ level: string; message: string; created: string; container: ContainerType }>;
-  onFilterChanged: (rowId: string, value: string | number | unknown) => void;
-}
-
-/**
- * Component created to override the default lookup filter.
- */
-
-export const CustomLookupFilterParser = (
-  props: CustomLookupFilterParserProps,
-): React.ReactElement => {
-  const { columnDef: columnDefRaw, onFilterChanged } = props;
-  /**
-   * The column type in the material-table library it's not working correctly. So as a workaround I'm assigning the types to the properties need it in this component.
-   */
-  const columnDef = columnDefRaw as {
-    tableData: EditCellColumnDef['tableData'];
-    filterOnItemSelect: unknown;
-    lookup: Record<string, string>;
-  };
-
-  return (
-    <CustomLookupFilter
-      tableId={columnDef.tableData.id}
-      filterValue={columnDef.tableData.filterValue}
-      filterOnItemSelect={columnDef.filterOnItemSelect}
-      onFilterChanged={onFilterChanged}
-      lookup={columnDef.lookup}
-    />
-  );
-};
-
 export interface CustomLookupFilterProps {
-  tableId: number;
-  filterValue: EditCellColumnDef['tableData']['filterValue'];
-  filterOnItemSelect: unknown;
-  onFilterChanged: (rowId: string, value: string | number | unknown) => void;
   lookup: Record<string, string>;
+  selectedFilter: string[];
+  onFilterChange: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export const CustomLookupFilter = (props: CustomLookupFilterProps): React.ReactElement => {
-  const { tableId, filterValue, filterOnItemSelect, onFilterChanged, lookup } = props;
-  const [selectedFilter, setSelectedFilter] = React.useState(filterValue || []);
-  React.useEffect(() => {
-    setSelectedFilter(filterValue || []);
-  }, [filterValue]);
-
+  // FIXME - select closes every time a filter param is selected, which is bad for ux
+  const { lookup, selectedFilter, onFilterChange } = props;
   return (
-    <FormControl style={{ width: '100%' }}>
-      <InputLabel
-        htmlFor={'select-multiple-checkbox' + tableId}
-        style={{ marginTop: -16 }}
-      ></InputLabel>
+    <FormControl style={{ width: '100%', padding: '1rem' }}>
+      <InputLabel htmlFor={'select-multiple-checkbox'}>Level Filter</InputLabel>
       <Select
         multiple
         value={selectedFilter}
-        onClose={() => {
-          if (filterOnItemSelect !== true) onFilterChanged(tableId.toString(), selectedFilter);
-        }}
         onChange={(event) => {
-          setSelectedFilter(event.target.value);
-          if (filterOnItemSelect === true) onFilterChanged(tableId.toString(), event.target.value);
+          if (typeof event.target.value === 'string') {
+            onFilterChange([...selectedFilter, event.target.value]);
+          } else {
+            onFilterChange(event.target.value);
+          }
         }}
-        input={<Input id={'select-multiple-checkbox' + tableId} />}
+        input={<Input id={'select-multiple-checkbox'} />}
         renderValue={(selecteds) =>
           (selecteds as string[]).map((selected: string) => lookup[selected]).join(', ')
         }

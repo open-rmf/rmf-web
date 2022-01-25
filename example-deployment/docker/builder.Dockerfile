@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y curl && \
 RUN pip3 install pipenv
 
 COPY . /root/rmf-web
-RUN cd /root/rmf-web && npm config set unsafe-perm && \
-  CI=1 npm install -g lerna@4 && \
-  lerna bootstrap --ignore-scripts && \
-  lerna run install
+RUN cd /root/rmf-web && \
+  npm install -g npm@latest && \
+  npm config set unsafe-perm && \
+  npm ci

@@ -132,11 +132,12 @@ describe('TaskPanel', () => {
           page: 0,
           rowsPerPage: 10,
           rowsPerPageOptions: [10],
-          onChangePage: spy,
+          onPageChange: spy,
         }}
       />,
     );
-    root.getByText('1-1 of 1');
+    // NOTE: mui v5 is using the unicode char '–', different from '-'!!
+    root.getByText('1–1 of 1');
   });
 
   it('clicking on auto refresh button toggles auto refresh', () => {

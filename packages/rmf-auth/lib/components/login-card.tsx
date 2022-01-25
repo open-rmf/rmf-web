@@ -1,8 +1,14 @@
-import { Button, makeStyles, Typography } from '@material-ui/core';
+import { Button, Typography, styled } from '@mui/material';
 import React from 'react';
 
-const useStyles = makeStyles((theme) => ({
-  container: {
+const prefix = 'login-card';
+const classes = {
+  container: `${prefix}-container`,
+  title: `${prefix}-title`,
+  logo: `${prefix}-logo`,
+};
+const StyledDiv = styled('div')(({ theme }) => ({
+  [`&.${classes.container}`]: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -15,10 +21,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: 'snow',
     boxShadow: theme.shadows[12],
   },
-  title: {
+  [`& .${classes.title}`]: {
     color: '#44497a',
   },
-  logo: {
+  [`& .${classes.logo}`]: {
     width: 100,
     margin: '25px 0px 50px 0px',
   },
@@ -35,10 +41,8 @@ export const LoginCard = React.forwardRef(
     { title, logo, onLoginClick, children }: LoginCardProps,
     ref: React.Ref<HTMLDivElement>,
   ): JSX.Element => {
-    const classes = useStyles();
-
     return (
-      <div ref={ref} className={classes.container}>
+      <StyledDiv ref={ref} className={classes.container}>
         <Typography variant="h4" className={classes.title}>
           {title}
         </Typography>
@@ -47,7 +51,7 @@ export const LoginCard = React.forwardRef(
           Login
         </Button>
         {children}
-      </div>
+      </StyledDiv>
     );
   },
 );

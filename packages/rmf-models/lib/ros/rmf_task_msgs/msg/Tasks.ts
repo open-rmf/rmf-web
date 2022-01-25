@@ -19,7 +19,7 @@ export class Tasks {
       try {
         TaskSummary.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "tasks":\n  ` + e.message);
+        throw new Error(`in index ${i} of "tasks":\n  ` + (e as Error).message);
       }
     }
   }

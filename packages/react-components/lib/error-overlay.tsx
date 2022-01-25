@@ -1,33 +1,40 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
-import ErrorIcon from '@material-ui/icons/Error';
-import { Typography, Grid } from '@material-ui/core';
+import ErrorIcon from '@mui/icons-material/Error';
+import { Typography, Grid, styled } from '@mui/material';
 
-const useStyles = makeStyles((theme) => ({
-  errorIcon: {
+const classes = {
+  errorIcon: 'erroroverlay-error-icon',
+  errorMsg: 'erroroverlay-error-msg',
+  errorDisabled: 'erroroverlay-error-disabled',
+  overlay: 'erroroverlay-overlay',
+  container: 'erroroverlay-container',
+  disableSelect: 'erroroverlay-disable-select',
+};
+const StyledDiv = styled('div')(({ theme }) => ({
+  [`& .${classes.errorIcon}`]: {
     color: theme.palette.error.main,
     fontSize: '2rem',
   },
-  errorMsg: {
+  [`& .${classes.errorMsg}`]: {
     margin: '0.5rem',
   },
-  errorDisabled: {
+  [`& .${classes.errorDisabled}`]: {
     pointerEvents: 'none',
     filter: 'blur(.25rem)',
     gridArea: '1 / 1',
     opacity: 0.6,
   },
-  overlay: {
+  [`& .${classes.overlay}`]: {
     gridArea: '1 / 1',
     backdropFilter: 'blur(.5rem)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  container: {
+  [`&.${classes.container}`]: {
     display: 'grid',
   },
-  disableSelect: {
+  [`& .${classes.disableSelect}`]: {
     userSelect: 'none',
   },
 }));
@@ -38,43 +45,38 @@ export interface ErrorOverlayProps {
   overrideErrorStyle?: string;
 }
 
-export const ErrorOverlay = React.memo(
-  (props: ErrorOverlayProps): JSX.Element => {
-    const classes = useStyles();
-    const { errorMsg, children, overrideErrorStyle } = props;
+export const ErrorOverlay = React.memo((props: ErrorOverlayProps): JSX.Element => {
+  const { errorMsg, children, overrideErrorStyle } = props;
 
-    return errorMsg ? (
-      <div className={classes.container}>
-        <div className={classes.errorDisabled}>{children}</div>
-        <div
-          className={
-            children ? `${classes.overlay} ${classes.disableSelect}` : classes.disableSelect
-          }
-        >
-          <div>
-            <Grid container direction="row" justify="center" alignItems="center">
-              <Grid item>
-                <ErrorIcon className={classes.errorIcon} />
-              </Grid>
-              <Grid item>
-                <Typography color="error" variant="h4" align="center">
-                  Error
-                </Typography>
-              </Grid>
+  return errorMsg ? (
+    <StyledDiv className={classes.container}>
+      <div className={classes.errorDisabled}>{children}</div>
+      <div
+        className={children ? `${classes.overlay} ${classes.disableSelect}` : classes.disableSelect}
+      >
+        <div>
+          <Grid container direction="row" justifyContent="center" alignItems="center" spacing={2}>
+            <Grid item>
+              <ErrorIcon className={classes.errorIcon} />
             </Grid>
-            <Typography
-              className={overrideErrorStyle ? overrideErrorStyle : classes.errorMsg}
-              color="error"
-              variant="h6"
-              align="center"
-            >
-              {errorMsg}
-            </Typography>
-          </div>
+            <Grid item>
+              <Typography color="error" variant="h4" align="center">
+                Error
+              </Typography>
+            </Grid>
+          </Grid>
+          <Typography
+            className={overrideErrorStyle ? overrideErrorStyle : classes.errorMsg}
+            color="error"
+            variant="h6"
+            align="center"
+          >
+            {errorMsg}
+          </Typography>
         </div>
       </div>
-    ) : (
-      <React.Fragment>{children}</React.Fragment>
-    );
-  },
-);
+    </StyledDiv>
+  ) : (
+    <React.Fragment>{children}</React.Fragment>
+  );
+});

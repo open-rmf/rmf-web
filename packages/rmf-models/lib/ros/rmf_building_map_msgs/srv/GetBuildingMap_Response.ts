@@ -15,7 +15,7 @@ export class GetBuildingMap_Response {
     try {
       BuildingMap.validate(obj['building_map'] as Record<string, unknown>);
     } catch (e) {
-      throw new Error('in "building_map":\n  ' + e.message);
+      throw new Error('in "building_map":\n  ' + (e as Error).message);
     }
   }
 }

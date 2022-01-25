@@ -977,6 +977,18 @@ export interface Location {
   yaw: number;
   /**
    *
+   * @type {boolean}
+   * @memberof Location
+   */
+  obey_approach_speed_limit: boolean;
+  /**
+   *
+   * @type {number}
+   * @memberof Location
+   */
+  approach_speed_limit: number;
+  /**
+   *
    * @type {string}
    * @memberof Location
    */
@@ -2379,11 +2391,12 @@ export const AdminApiFp = function (configuration?: Configuration) {
       permission: Permission,
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.addRolePermissionAdminRolesRolePermissionsPost(
-        role,
-        permission,
-        options,
-      );
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.addRolePermissionAdminRolesRolePermissionsPost(
+          role,
+          permission,
+          options,
+        );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -2399,11 +2412,12 @@ export const AdminApiFp = function (configuration?: Configuration) {
       postRoles: PostRoles,
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.addUserRoleAdminUsersUsernameRolesPost(
-        username,
-        postRoles,
-        options,
-      );
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.addUserRoleAdminUsersUsernameRolesPost(
+          username,
+          postRoles,
+          options,
+        );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -2487,11 +2501,12 @@ export const AdminApiFp = function (configuration?: Configuration) {
       role: string,
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.deleteUserRoleAdminUsersUsernameRolesRoleDelete(
-        username,
-        role,
-        options,
-      );
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.deleteUserRoleAdminUsersUsernameRolesRoleDelete(
+          username,
+          role,
+          options,
+        );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -2505,10 +2520,11 @@ export const AdminApiFp = function (configuration?: Configuration) {
       role: string,
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Permission>>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getRolePermissionsAdminRolesRolePermissionsGet(
-        role,
-        options,
-      );
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.getRolePermissionsAdminRolesRolePermissionsGet(
+          role,
+          options,
+        );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -2582,11 +2598,12 @@ export const AdminApiFp = function (configuration?: Configuration) {
       postMakeAdmin: PostMakeAdmin,
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.makeAdminAdminUsersUsernameMakeAdminPost(
-        username,
-        postMakeAdmin,
-        options,
-      );
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.makeAdminAdminUsersUsernameMakeAdminPost(
+          username,
+          postMakeAdmin,
+          options,
+        );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -2602,11 +2619,12 @@ export const AdminApiFp = function (configuration?: Configuration) {
       permission: Permission,
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.removeRolePermissionAdminRolesRolePermissionsRemovePost(
-        role,
-        permission,
-        options,
-      );
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.removeRolePermissionAdminRolesRolePermissionsRemovePost(
+          role,
+          permission,
+          options,
+        );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -2622,11 +2640,12 @@ export const AdminApiFp = function (configuration?: Configuration) {
       postRoles: Array<PostRoles>,
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.setUserRolesAdminUsersUsernameRolesPut(
-        username,
-        postRoles,
-        options,
-      );
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.setUserRolesAdminUsersUsernameRolesPut(
+          username,
+          postRoles,
+          options,
+        );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
   };
@@ -3299,9 +3318,8 @@ export const DefaultApiFp = function (configuration?: Configuration) {
     async getEffectivePermissionsPermissionsGet(
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Permission>>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getEffectivePermissionsPermissionsGet(
-        options,
-      );
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.getEffectivePermissionsPermissionsGet(options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -3528,10 +3546,8 @@ export const DispensersApiFp = function (configuration?: Configuration) {
       guid: string,
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DispenserHealth>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getDispenserHealthDispensersGuidHealthGet(
-        guid,
-        options,
-      );
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.getDispenserHealthDispensersGuidHealthGet(guid, options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -3545,10 +3561,8 @@ export const DispensersApiFp = function (configuration?: Configuration) {
       guid: string,
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DispenserState>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getDispenserStateDispensersGuidStateGet(
-        guid,
-        options,
-      );
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.getDispenserStateDispensersGuidStateGet(guid, options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -3911,11 +3925,12 @@ export const DoorsApiFp = function (configuration?: Configuration) {
       doorRequest: DoorRequest,
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.postDoorRequestDoorsDoorNameRequestPost(
-        doorName,
-        doorRequest,
-        options,
-      );
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.postDoorRequestDoorsDoorNameRequestPost(
+          doorName,
+          doorRequest,
+          options,
+        );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
   };
@@ -4332,11 +4347,12 @@ export const FleetsApiFp = function (configuration?: Configuration) {
       robot: string,
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RobotHealth>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getRobotHealthFleetsFleetRobotHealthGet(
-        fleet,
-        robot,
-        options,
-      );
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.getRobotHealthFleetsFleetRobotHealthGet(
+          fleet,
+          robot,
+          options,
+        );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -4684,10 +4700,8 @@ export const IngestorsApiFp = function (configuration?: Configuration) {
       guid: string,
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IngestorHealth>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getIngestorHealthIngestorsGuidHealthGet(
-        guid,
-        options,
-      );
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.getIngestorHealthIngestorsGuidHealthGet(guid, options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -4701,10 +4715,8 @@ export const IngestorsApiFp = function (configuration?: Configuration) {
       guid: string,
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IngestorState>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getIngestorStateIngestorsGuidStateGet(
-        guid,
-        options,
-      );
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.getIngestorStateIngestorsGuidStateGet(guid, options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -5067,11 +5079,12 @@ export const LiftsApiFp = function (configuration?: Configuration) {
       liftRequest: LiftRequest,
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.postLiftRequestLiftsLiftNameRequestPost(
-        liftName,
-        liftRequest,
-        options,
-      );
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.postLiftRequestLiftsLiftNameRequestPost(
+          liftName,
+          liftRequest,
+          options,
+        );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
   };

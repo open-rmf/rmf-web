@@ -24,7 +24,7 @@ export class FleetState {
       try {
         RobotState.validate(v);
       } catch (e) {
-        throw new Error(`in index ${i} of "robots":\n  ` + e.message);
+        throw new Error(`in index ${i} of "robots":\n  ` + (e as Error).message);
       }
     }
   }

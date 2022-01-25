@@ -1,9 +1,13 @@
-import { makeStyles } from '@material-ui/core';
+import { styled } from '@mui/material';
 import React from 'react';
 import { LoginCard, LoginCardProps } from './login-card';
 
-const useStyles = makeStyles((theme) => ({
-  container: {
+const prefix = 'login-page';
+const classes = {
+  container: `${prefix}-container`,
+};
+const StyledDiv = styled('div')(({ theme }) => ({
+  [`&.${classes.container}`]: {
     width: '100vw',
     height: '100vh',
     position: 'absolute',
@@ -17,11 +21,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const LoginPage = (props: LoginCardProps): JSX.Element => {
-  const classes = useStyles();
   return (
-    <div className={classes.container}>
+    <StyledDiv className={classes.container}>
       <LoginCard {...props} />
-    </div>
+    </StyledDiv>
   );
 };
 
