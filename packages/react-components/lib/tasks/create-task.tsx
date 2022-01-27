@@ -253,16 +253,19 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
         freeSolo
         fullWidth
         options={loopWaypoints}
-        value={taskDesc.start_name}
+        value={taskDesc.places[0]}
         onChange={(_ev, newValue) =>
           newValue !== null &&
           onChange({
             ...taskDesc,
-            start_name: newValue,
+            places: [newValue, taskDesc.places[1]],
           })
         }
         onBlur={(ev) =>
-          onChange({ ...taskDesc, start_name: (ev.target as HTMLInputElement).value })
+          onChange({
+            ...taskDesc,
+            places: [(ev.target as HTMLInputElement).value, taskDesc.places[1]],
+          })
         }
         renderInput={(params) => <TextField {...params} label="Start Location" margin="normal" />}
       />
@@ -273,16 +276,19 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
             freeSolo
             fullWidth
             options={loopWaypoints}
-            value={taskDesc.finish_name}
+            value={taskDesc.places[1]}
             onChange={(_ev, newValue) =>
               newValue !== null &&
               onChange({
                 ...taskDesc,
-                finish_name: newValue,
+                places: [taskDesc.places[0], newValue],
               })
             }
             onBlur={(ev) =>
-              onChange({ ...taskDesc, finish_name: (ev.target as HTMLInputElement).value })
+              onChange({
+                ...taskDesc,
+                places: [taskDesc.places[0], (ev.target as HTMLInputElement).value],
+              })
             }
             renderInput={(params) => (
               <TextField {...params} label="Finish Location" margin="normal" />
