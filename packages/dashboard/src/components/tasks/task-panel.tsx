@@ -255,7 +255,9 @@ export function TaskPanel({
             <NoSelectedTask />
           )}
         </Paper>
-        {showLogs && selectedTaskLog ? <TaskLogs taskLog={selectedTaskLog} /> : null}
+        {showLogs && selectedTaskLog && selectedTaskState ? (
+          <TaskLogs taskLog={selectedTaskLog} taskState={selectedTaskState} />
+        ) : null}
       </Grid>
       {openCreateTaskForm && (
         <CreateTaskForm

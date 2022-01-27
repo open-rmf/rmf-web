@@ -1,5 +1,5 @@
 import { Divider, Grid, Paper, PaperProps, styled, Typography, useTheme } from '@mui/material';
-import { TaskEventLog } from 'api-client';
+import { TaskEventLog, TaskState } from 'api-client';
 import { format } from 'date-fns';
 import React from 'react';
 const prefix = 'task-logs';
@@ -9,6 +9,7 @@ const classes = {
 
 interface TaskLogProps {
   taskLog: TaskEventLog;
+  taskState: TaskState;
   fetchTaskLogs?: () => Promise<never[] | undefined>;
 }
 
@@ -19,14 +20,13 @@ const StyledPaper = styled((props: PaperProps) => <Paper variant="outlined" {...
       width: 500,
       marginLeft: theme.spacing(2),
       flex: '0 0 auto',
-      maxHeight: '100%',
-      overflow: 'scroll',
     },
   }),
 );
 
 export function TaskLogs(props: TaskLogProps) {
   const { taskLog } = props;
+  const { taskState } = props;
   const theme = useTheme();
   const phaseIds = taskLog.phases ? Object.keys(taskLog.phases) : [];
   return (
@@ -40,6 +40,9 @@ export function TaskLogs(props: TaskLogProps) {
           const getEventObj: any = taskLog.phases ? taskLog.phases[id] : null;
           const events = getEventObj ? getEventObj['events'] : {};
           const eventIds = events ? Object.keys(events) : [];
+          const phaseStateObj: any = taskState.phases ? taskState.phases[id] : null;
+          const eventsStates = phaseStateObj ? phaseStateObj.events : {};
+
           return (
             <Paper
               sx={{ padding: theme.spacing(1), height: 'inherit' }}
@@ -47,7 +50,7 @@ export function TaskLogs(props: TaskLogProps) {
               key={`Phase - ${id}`}
             >
               <Typography variant="h6" fontWeight="bold">
-                {`Phase - ${id}`}
+                {phaseStateObj.category}
               </Typography>
               <Divider />
               {eventIds.length > 0 ? (
@@ -59,10 +62,13 @@ export function TaskLogs(props: TaskLogProps) {
                         marginTop: theme.spacing(1),
                         backgroundColor: theme.palette.success.light,
                         padding: theme.spacing(1),
+                        borderRadius: '6px',
                       }}
                       key={`event - ${idx}`}
                     >
-                      <Typography variant="body1" fontWeight="bold">{`Event - ${idx}`}</Typography>
+                      <Typography variant="body1" fontWeight="bold">
+                        {eventsStates[0].name}
+                      </Typography>
                       {event.map((e: any, i: any) => {
                         return (
                           <Grid
@@ -70,7 +76,11 @@ export function TaskLogs(props: TaskLogProps) {
                             key={`info-${i}`}
                             direction="row"
                             justifyItems="center"
-                            sx={{ backgroundColor: 'white', marginTop: theme.spacing(1) }}
+                            sx={{
+                              backgroundColor: 'white',
+                              marginTop: theme.spacing(1),
+                              borderRadius: '8px',
+                            }}
                           >
                             <Grid
                               item
