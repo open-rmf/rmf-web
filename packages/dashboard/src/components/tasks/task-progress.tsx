@@ -1,4 +1,4 @@
-import { styled, Typography, useTheme } from '@mui/material';
+import { Paper, styled, Typography, useTheme } from '@mui/material';
 import { TaskEventLog, TaskState, EventState } from 'api-client';
 import Timeline from '@mui/lab/Timeline';
 import TimelineItem from '@mui/lab/TimelineItem';
@@ -13,10 +13,6 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TreeItem from '@mui/lab/TreeItem';
 import { format } from 'date-fns';
-const prefix = 'task-logs';
-const classes = {
-  root: `${prefix}-root`,
-};
 
 interface TaskLogProps {
   taskLog: TaskEventLog;
@@ -24,18 +20,25 @@ interface TaskLogProps {
   fetchTaskLogs?: () => Promise<never[] | undefined>;
 }
 
+const Item = styled(Paper)(({ theme }) => ({
+  ...theme.typography.body2,
+  color: theme.palette.text.secondary,
+}));
+
 function nestedEvents(eventsStates: EventState[], child: number) {
   const deps = eventsStates[child] ? eventsStates[child].deps : [];
   return (
-    <TreeItem nodeId={`parent-${child}`} label={eventsStates[child].name}>
-      {deps?.map((id) => {
-        if (eventsStates[id].deps?.length) {
-          nestedEvents(eventsStates, id);
-        } else {
-          return <TreeItem nodeId={`child-${id}`} label={eventsStates[id].name}></TreeItem>;
-        }
-      })}
-    </TreeItem>
+    <Item key={`event-${child}`} elevation={3}>
+      <TreeItem nodeId={`parent-${child}`} label={eventsStates[child].name}>
+        {deps?.map((id) => {
+          if (eventsStates[id].deps?.length) {
+            nestedEvents(eventsStates, id);
+          } else {
+            return <TreeItem nodeId={`child-${id}`} label={eventsStates[id].name}></TreeItem>;
+          }
+        })}
+      </TreeItem>
+    </Item>
   );
 }
 
@@ -67,7 +70,6 @@ export function TaskProgress(props: TaskLogProps) {
         {phaseIds.length > 0 ? (
           phaseIds.map((id: string) => {
             const getEventObj: any = taskLog.phases ? taskLog.phases[id] : null;
-            const eventsLogs = getEventObj ? getEventObj['events'] : {};
             const phaseStateObj: any = taskState.phases ? taskState.phases[id] : null;
             const eventsStates = phaseStateObj ? phaseStateObj.events : {};
             const eventIds = eventsStates ? Object.keys(eventsStates) : [];
