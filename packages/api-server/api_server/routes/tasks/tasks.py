@@ -115,7 +115,7 @@ async def post_task_request(
     resp = await tasks_service.call(request.json(exclude_none=True))
     result = mdl.TaskState.parse_raw(resp)
     await task_repo.save_task_state(result)
-    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+    return RawJSONResponse(resp)
 
 
 @router.post("/interrupt_task", response_model=mdl.TaskInterruptionResponse)
