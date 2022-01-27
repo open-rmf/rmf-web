@@ -394,7 +394,7 @@ function defaultTask(): TaskRequest {
     category: 'patrol',
     description: defaultLoopsTask(),
     unix_millis_earliest_start_time: Date.now(),
-    priority: { value: 0 },
+    priority: { type: 'binary', value: 0 },
   };
 }
 
@@ -591,7 +591,7 @@ export function CreateTaskForm({
                   margin="normal"
                   value={(taskRequest.priority as Record<string, any>)?.value || 0}
                   onChange={(_ev, val) => {
-                    taskRequest.priority = { value: val };
+                    taskRequest.priority = { type: 'binary', value: val };
                     updateTasks();
                   }}
                 />
