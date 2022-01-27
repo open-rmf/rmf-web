@@ -19,6 +19,8 @@ const StyledPaper = styled((props: PaperProps) => <Paper variant="outlined" {...
       width: 500,
       marginLeft: theme.spacing(2),
       flex: '0 0 auto',
+      maxHeight: '100%',
+      overflow: 'scroll',
     },
   }),
 );

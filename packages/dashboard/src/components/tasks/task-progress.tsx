@@ -1,4 +1,4 @@
-import { Paper, styled, Typography, useTheme } from '@mui/material';
+import { Paper, Grid, styled, Typography, useTheme } from '@mui/material';
 import { TaskEventLog, TaskState, EventState } from 'api-client';
 import Timeline from '@mui/lab/Timeline';
 import TimelineItem from '@mui/lab/TimelineItem';
@@ -23,6 +23,7 @@ interface TaskLogProps {
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   color: theme.palette.text.secondary,
+  width: 290,
 }));
 
 function nestedEvents(eventsStates: EventState[], child: number) {
@@ -55,7 +56,7 @@ function colorDot(eventsStates: EventState[]) {
   }
   if (standby) return 'info' as const;
 
-  return 'warning' as const;
+  return 'primary' as const;
 }
 
 export function TaskProgress(props: TaskLogProps) {
@@ -66,14 +67,13 @@ export function TaskProgress(props: TaskLogProps) {
 
   return (
     <>
-      <Timeline position="right">
+      <Timeline key={`task-${taskLog.task_id}`} position="right">
         {phaseIds.length > 0 ? (
           phaseIds.map((id: string) => {
             const getEventObj: any = taskLog.phases ? taskLog.phases[id] : null;
             const phaseStateObj: any = taskState.phases ? taskState.phases[id] : null;
             const eventsStates = phaseStateObj ? phaseStateObj.events : {};
             const eventIds = eventsStates ? Object.keys(eventsStates) : [];
-
             return (
               <>
                 {eventIds.length > 0 ? (

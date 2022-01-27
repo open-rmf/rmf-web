@@ -47,7 +47,7 @@ const StyledDiv = styled('div')(({ theme }) => ({
     flex: '1 1 100%',
   },
   [`& .${classes.detailPanelContainer}`]: {
-    width: 350,
+    width: 400,
     padding: theme.spacing(2),
     marginLeft: theme.spacing(2),
     flex: '0 0 auto',
@@ -169,7 +169,6 @@ export function TaskPanel({
       return [];
     }
     if (selectedTask) {
-      console.log('called once');
       const logs = await tasksApi.getTaskLogTasksTaskIdLogGet(selectedTask.booking.id, '0,999999');
       const state = await tasksApi.getTaskStateTasksTaskIdStateGet(selectedTask.booking.id);
       setSelectedTaskLog(logs.data);
