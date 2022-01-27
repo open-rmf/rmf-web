@@ -96,11 +96,15 @@ export function RobotPage() {
     [taskApi],
   );
 
-  const onRobotZoom = (robot: VerboseRobot) => {
+  const onRobotZoom = (robot: RobotState) => {
     leafletMap &&
-      leafletMap.leafletElement.setView([robot.state.location.y, robot.state.location.x], 5.5, {
-        animate: true,
-      });
+      leafletMap.leafletElement.setView(
+        [robot.location ? robot.location.y : 0.0, robot.location ? robot.location.x : 0.0],
+        5.5,
+        {
+          animate: true,
+        },
+      );
   };
 
   React.useEffect(() => {
