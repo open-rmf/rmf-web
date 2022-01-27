@@ -40,16 +40,19 @@ function nestedEvents(eventsStates: EventState[], child: number) {
 }
 
 function colorDot(eventsStates: EventState[]) {
+  let standby: Boolean = true;
   for (const id in eventsStates) {
     const event: EventState = eventsStates[id];
     if (event.status === 'underway') {
-      return 'info';
+      return 'success' as const;
     }
-    if (event.status === 'standby') {
-      return 'warning';
+    if (event.status != 'standby') {
+      standby = false;
     }
   }
-  return 'success' as const;
+  if (standby) return 'info' as const;
+
+  return 'warning' as const;
 }
 
 export function TaskProgress(props: TaskLogProps) {
