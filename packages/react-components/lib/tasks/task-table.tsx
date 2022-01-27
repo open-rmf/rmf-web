@@ -111,7 +111,7 @@ function TaskRow({ task, onClick }: TaskRowProps) {
             : 'unknown'}
         </TableCell>
         <TableCell>{task.booking.id}</TableCell>
-        <TableCell>{task.assigned_to || 'unknown'}</TableCell>
+        <TableCell>{task.assigned_to ? task.assigned_to.name : 'unknown'}</TableCell>
         <TableCell>
           {task.unix_millis_start_time
             ? new Date(task.unix_millis_start_time).toLocaleTimeString()
