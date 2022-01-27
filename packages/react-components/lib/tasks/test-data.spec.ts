@@ -1,4 +1,4 @@
-import type { TaskEventLog, TaskState } from 'api-client';
+import type { TaskEventLog, TaskState, TaskRequest } from 'api-client';
 
 export function makeTaskState(taskId: string): TaskState {
   const state = JSON.parse(`{
@@ -545,4 +545,13 @@ export function makeTaskLog(taskId: string): TaskEventLog {
   `);
   log.task_id = taskId;
   return log;
+}
+
+export function makeTaskRequest(): TaskRequest {
+  return {
+    category: 'patrol',
+    priority: { value: 0 },
+    unix_millis_earliest_start_time: Date.now(),
+    description: { places: ['a', 'b'], rounds: 10 },
+  };
 }

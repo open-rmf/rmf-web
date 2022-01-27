@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from typing import List, Optional, Tuple, cast
 
@@ -110,7 +111,12 @@ async def post_cancel_task(
 @router.post("/dispatch_task", response_model=mdl.TaskDispatchResponse)
 async def post_task_request(
     request: mdl.DispatchTaskRequest = Body(...),
+    task_repo: TaskRepository = Depends(task_repo_dep),
 ):
+    result = mdl.TaskState.parse_raw(
+        await tasks_service.call(request.json(exclude_none=True))
+    )
+    await task_repo.save_task_state(result)
     return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
 
 

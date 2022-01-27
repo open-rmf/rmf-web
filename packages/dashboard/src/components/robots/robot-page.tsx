@@ -75,12 +75,7 @@ export function RobotPage() {
       setHasMore(false);
       return [];
     }
-    const resp = await rmfIngress.fleetsApi.queryFleetsFleetsGet(
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-    );
+    const resp = await rmfIngress.fleetsApi.getFleetsFleetsGet();
     let robotState: RobotState[] = [];
     resp.data?.forEach((fleet) => {
       const robotKey = fleet.robots && Object.keys(fleet.robots);

@@ -43,7 +43,7 @@ export function TaskPage() {
         undefined,
         11,
         page * 10,
-        '-start_time',
+        '-unix_millis_start_time',
         undefined,
       );
       const results = resp.data as TaskState[];
@@ -77,11 +77,18 @@ export function TaskPage() {
   }, [handleRefresh]);
 
   const submitTasks = React.useCallback<Required<TaskPanelProps>['submitTasks']>(
-    async (tasks) => {
+    async (taskRequests) => {
       if (!tasksApi) {
         throw new Error('tasks api not available');
       }
-      await Promise.all(tasks.map((t) => tasksApi.postTaskRequestTasksTaskRequestPost(t)));
+      await Promise.all(
+        taskRequests.map((taskReq) =>
+          tasksApi.postTaskRequestTasksDispatchTaskPost({
+            type: 'dispatch_task_request',
+            request: taskReq,
+          }),
+        ),
+      );
       handleRefresh();
     },
     [tasksApi, handleRefresh],
