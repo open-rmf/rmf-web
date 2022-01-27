@@ -1,5 +1,5 @@
-import { Divider, Grid, Paper, PaperProps, styled, Typography, useTheme } from '@mui/material';
-import { Phases, TaskEventLog, TaskState, Phase, EventState } from 'api-client';
+import { styled, Typography, useTheme } from '@mui/material';
+import { TaskEventLog, TaskState, EventState } from 'api-client';
 import Timeline from '@mui/lab/Timeline';
 import TimelineItem from '@mui/lab/TimelineItem';
 import TimelineSeparator from '@mui/lab/TimelineSeparator';
@@ -7,12 +7,11 @@ import TimelineConnector from '@mui/lab/TimelineConnector';
 import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineDot from '@mui/lab/TimelineDot';
 import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
-import { TaskTree } from './task-tree';
+
 import TreeView from '@mui/lab/TreeView';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TreeItem from '@mui/lab/TreeItem';
-import React, { DOMElement } from 'react';
 import { format } from 'date-fns';
 const prefix = 'task-logs';
 const classes = {
@@ -40,6 +39,19 @@ function nestedEvents(eventsStates: EventState[], child: number) {
   );
 }
 
+function colorDot(eventsStates: EventState[]) {
+  for (const id in eventsStates) {
+    const event: EventState = eventsStates[id];
+    if (event.status === 'underway') {
+      return 'info';
+    }
+    if (event.status === 'standby') {
+      return 'warning';
+    }
+  }
+  return 'success' as const;
+}
+
 export function TaskProgress(props: TaskLogProps) {
   const { taskLog } = props;
   const { taskState } = props;
@@ -53,11 +65,8 @@ export function TaskProgress(props: TaskLogProps) {
           phaseIds.map((id: string) => {
             const getEventObj: any = taskLog.phases ? taskLog.phases[id] : null;
             const eventsLogs = getEventObj ? getEventObj['events'] : {};
-
             const phaseStateObj: any = taskState.phases ? taskState.phases[id] : null;
             const eventsStates = phaseStateObj ? phaseStateObj.events : {};
-            console.log(eventsStates);
-            console.log(eventsLogs);
             const eventIds = eventsStates ? Object.keys(eventsStates) : [];
 
             return (
@@ -71,7 +80,7 @@ export function TaskProgress(props: TaskLogProps) {
                       )}
                     </TimelineOppositeContent>
                     <TimelineSeparator>
-                      <TimelineDot />
+                      <TimelineDot color={colorDot(eventsStates)} />
                       <TimelineConnector />
                     </TimelineSeparator>
                     <TimelineContent>
