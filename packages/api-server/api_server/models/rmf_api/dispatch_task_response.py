@@ -6,20 +6,21 @@ from __future__ import annotations
 from typing import List, Optional, Union
 
 from pydantic import BaseModel, Field
+from typing_extensions import Literal
 
 from . import error, task_state
 
 
 class TaskDispatchResponseItem1(BaseModel):
-    success: Optional[bool] = None
+    success: Optional[Literal[0]] = None
     errors: Optional[List[error.Error]] = Field(
         None, description="Any error messages explaining why the request failed"
     )
 
 
 class TaskDispatchResponseItem(BaseModel):
-    success: bool
-    state: Optional[task_state.TaskState] = None
+    success: Literal[1]
+    state: task_state.TaskState
 
 
 class TaskDispatchResponse(BaseModel):

@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+from enum import Enum
 from typing import List, Union
 
 from pydantic import BaseModel, Field
@@ -10,12 +11,12 @@ from pydantic import BaseModel, Field
 from . import error, task_log
 
 
-class Failure(BaseModel):
-    __root__: bool = Field(..., description="The request failed")
+class Failure(Enum):
+    boolean_False = False
 
 
-class Success(BaseModel):
-    __root__: bool = Field(..., description="The request was successful")
+class Success(Enum):
+    boolean_True = True
 
 
 class TaskLogResponseItem(BaseModel):

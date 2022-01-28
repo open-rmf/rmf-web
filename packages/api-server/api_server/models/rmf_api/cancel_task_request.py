@@ -6,10 +6,11 @@ from __future__ import annotations
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
+from typing_extensions import Literal
 
 
 class CancelTaskRequest(BaseModel):
-    type: str = Field(
+    type: Literal["cancel_task_request"] = Field(
         ..., description="Indicate that this is a task cancellation request"
     )
     task_id: str = Field(..., description="Specify the task ID to cancel")

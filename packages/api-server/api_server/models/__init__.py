@@ -12,7 +12,7 @@ from .rmf_api.activity_discovery_response import ActivityDiscovery
 from .rmf_api.cancel_task_request import CancelTaskRequest
 from .rmf_api.cancel_task_response import TaskCancelResponse
 from .rmf_api.dispatch_task_request import DispatchTaskRequest
-from .rmf_api.dispatch_task_response import TaskDispatchResponse
+from .rmf_api.dispatch_task_response import *
 from .rmf_api.fleet_log_request import FleetLogRequest
 from .rmf_api.fleet_log_response import FleetLogResponse
 from .rmf_api.interrupt_task_request import TaskInterruptionRequest

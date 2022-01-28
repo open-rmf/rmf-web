@@ -6,10 +6,13 @@ from __future__ import annotations
 from typing import List, Optional
 
 from pydantic import BaseModel, Field, conint
+from typing_extensions import Literal
 
 
 class TaskPhaseSkipRequest(BaseModel):
-    type: str = Field(..., description="Indicate that this is a phase skip request")
+    type: Literal["skip_phase_request"] = Field(
+        ..., description="Indicate that this is a phase skip request"
+    )
     task_id: str = Field(
         ..., description="Specify the task ID whose phase should be skipped"
     )

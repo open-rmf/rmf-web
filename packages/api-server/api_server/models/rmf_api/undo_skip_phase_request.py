@@ -6,10 +6,11 @@ from __future__ import annotations
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
+from typing_extensions import Literal
 
 
 class UndoPhaseSkipRequest(BaseModel):
-    type: Optional[str] = Field(
+    type: Optional[Literal["undo_phase_skip_request"]] = Field(
         None, description="Indicate that this is a request to undo a phase skip request"
     )
     for_task: Optional[str] = Field(None, description="Specify the relevant task ID")

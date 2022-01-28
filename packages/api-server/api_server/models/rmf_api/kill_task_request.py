@@ -6,10 +6,13 @@ from __future__ import annotations
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
+from typing_extensions import Literal
 
 
 class TaskKillRequest(BaseModel):
-    type: str = Field(..., description="Indicate that this is a task kill request")
+    type: Literal["kill_task_request"] = Field(
+        ..., description="Indicate that this is a task kill request"
+    )
     task_id: str = Field(..., description="Specify the task ID to kill")
     labels: Optional[List[str]] = Field(
         None, description="Labels to describe the purpose of the kill"
