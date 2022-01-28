@@ -64,6 +64,8 @@ class RmfService:
         fut = Future()
         self._requests[req_id] = fut
         self._api_pub.publish(msg)
+        self._logger.info(f"sent request '{req_id}'")
+        self._logger.debug(msg)
         try:
             return await asyncio.wait_for(fut, timeout)
         except asyncio.TimeoutError as e:
@@ -72,6 +74,8 @@ class RmfService:
             del self._requests[req_id]
 
     def _handle_response(self, msg: ApiResponse):
+        self._logger.info(f"got response '{msg.request_id}'")
+        self._logger.debug(msg)
         fut = self._requests.get(msg.request_id)
         if fut is None:
             self._logger.warning(
