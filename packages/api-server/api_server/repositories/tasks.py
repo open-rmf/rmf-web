@@ -30,7 +30,9 @@ class TaskRepository:
         await ttm.TaskState.update_or_create(
             {
                 "data": task_state.json(),
-                "category": task_state.category,
+                "category": task_state.category.__root__
+                if task_state.category
+                else None,
                 "unix_millis_start_time": task_state.unix_millis_start_time
                 and datetime.fromtimestamp(task_state.unix_millis_start_time / 1000),
                 "unix_millis_finish_time": task_state.unix_millis_finish_time
