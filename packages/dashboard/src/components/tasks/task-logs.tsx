@@ -1,5 +1,5 @@
 import { Divider, Grid, Paper, PaperProps, styled, Typography, useTheme } from '@mui/material';
-import { TaskEventLog, TaskState } from 'api-client';
+import { TaskEventLog, TaskState, LogEntry } from 'api-client';
 import { format } from 'date-fns';
 import React from 'react';
 import TimelineDot from '@mui/lab/TimelineDot';
@@ -31,6 +31,19 @@ export function TaskLogs(props: TaskLogProps) {
   const { taskState } = props;
   const theme = useTheme();
   const phaseIds = taskLog.phases ? Object.keys(taskLog.phases) : [];
+
+  function MapEventColor(event: LogEntry) {
+    switch (event.tier) {
+      case 'warning':
+        return theme.palette.warning.main;
+
+      case 'error':
+        return theme.palette.error.main;
+
+      default:
+        return theme.palette.info.main;
+    }
+  }
   return (
     <StyledPaper className={classes.root}>
       <Typography variant="h5" style={{ textAlign: 'center' }} gutterBottom>
@@ -58,14 +71,14 @@ export function TaskLogs(props: TaskLogProps) {
                     <div
                       style={{
                         marginTop: theme.spacing(1),
-                        backgroundColor: theme.palette.success.light,
+                        backgroundColor: MapEventColor(event),
                         padding: theme.spacing(1),
                         borderRadius: '6px',
                       }}
                       key={`event - ${idx}`}
                     >
                       <Typography variant="body1" fontWeight="bold">
-                        {eventsStates[0].name}
+                        {eventsStates && eventsStates.length > 0 ? eventsStates[0].name : null}
                       </Typography>
                       {event.map((e: any, i: any) => {
                         return (
