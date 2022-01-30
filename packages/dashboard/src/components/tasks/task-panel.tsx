@@ -35,6 +35,7 @@ const classes = {
   tableContainer: `${prefix}-table-container`,
   tableTitle: `${prefix}-table-title`,
   detailPanelContainer: `${prefix}-detail-panel-container`,
+  progressPanelContainer: `${prefix}-progress-container`,
   enabledToggleButton: `${prefix}-enable-toggle-button`,
   logsPanelContainer: `${prefix}-task-logs-container`,
 };
@@ -50,10 +51,14 @@ const StyledDiv = styled('div')(({ theme }) => ({
   [`& .${classes.detailPanelContainer}`]: {
     width: 400,
     padding: theme.spacing(2),
-    marginLeft: theme.spacing(2),
+    flex: '1 1 100%',
+    maxHeight: '100%',
+  },
+  [`& .${classes.progressPanelContainer}`]: {
+    width: '100%',
     flex: '1 1 100%',
     flexDirection: 'column',
-    maxHeight: '85%',
+    maxHeight: '75%',
     overflow: 'auto',
   },
   [`& .${classes.enabledToggleButton}`]: {
@@ -250,9 +255,11 @@ export function TaskPanel({
           {selectedTask ? (
             <>
               <TaskInfo task={selectedTask} showLogs={showLogs} onShowLogs={setShowLogs} />
-              {showLogs && selectedTaskLog && selectedTaskState ? (
-                <TaskProgress taskLog={selectedTaskLog} taskState={selectedTaskState} />
-              ) : null}
+              <Paper className={classes.progressPanelContainer}>
+                {showLogs && selectedTaskLog && selectedTaskState ? (
+                  <TaskProgress taskLog={selectedTaskLog} taskState={selectedTaskState} />
+                ) : null}
+              </Paper>
               <Button
                 style={{ marginTop: theme.spacing(1) }}
                 fullWidth

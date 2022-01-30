@@ -17,11 +17,10 @@ interface TaskLogProps {
 const StyledPaper = styled((props: PaperProps) => <Paper variant="outlined" {...props} />)(
   ({ theme }) => ({
     [`&.${classes.root}`]: {
-      padding: theme.spacing(2),
-      width: 500,
-      marginLeft: theme.spacing(2),
+      padding: theme.spacing(1),
+      width: '95%',
       flex: '0 0 auto',
-      maxHeight: '80%',
+      maxHeight: '95%',
       overflow: 'auto',
     },
   }),

@@ -32,15 +32,6 @@ const Item = styled(Paper)(({ theme }) => ({
   width: 290,
 }));
 
-const StyledTimeline = styled(() => <Timeline position="right" />)(({ theme }) => ({
-  [`&.${classes.root}`]: {
-    padding: theme.spacing(2),
-    marginLeft: theme.spacing(2),
-    width: 400,
-    flex: '1 1 100%',
-  },
-}));
-
 function nestedEvents(eventsStates: EventState[], child: number) {
   const deps = eventsStates[child] ? eventsStates[child].deps : [];
   return (
