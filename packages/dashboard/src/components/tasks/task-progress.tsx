@@ -1,4 +1,4 @@
-import { Paper, Grid, styled, Typography, useTheme } from '@mui/material';
+import { Paper, styled, Typography, useTheme, PaperProps } from '@mui/material';
 import { TaskEventLog, TaskState, EventState } from 'api-client';
 import Timeline from '@mui/lab/Timeline';
 import TimelineItem from '@mui/lab/TimelineItem';
@@ -13,7 +13,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TreeItem from '@mui/lab/TreeItem';
 import { format } from 'date-fns';
-import { TimelineDotProps, TimelineProps } from '@mui/lab';
+import { TimelineDotProps } from '@mui/lab';
 
 const prefix = 'task-progress';
 const classes = {
@@ -26,11 +26,13 @@ interface TaskLogProps {
   fetchTaskLogs?: () => Promise<never[] | undefined>;
 }
 
-const Item = styled(Paper)(({ theme }) => ({
-  ...theme.typography.body2,
-  color: theme.palette.text.secondary,
-  width: 290,
-}));
+const Item = styled((props: PaperProps) => <Paper variant="outlined" {...props} />)(
+  ({ theme }) => ({
+    ...theme.typography.body2,
+    color: theme.palette.text.secondary,
+    width: 290,
+  }),
+);
 
 function nestedEvents(eventsStates: EventState[], child: number) {
   const deps = eventsStates[child] ? eventsStates[child].deps : [];
@@ -56,7 +58,7 @@ function colorDot(eventsStates: EventState[]) {
     if (event.status === 'underway') {
       return 'success' as const;
     }
-    if (event.status != 'standby') {
+    if (event.status !== 'standby') {
       standby = false;
     }
   }
@@ -76,7 +78,6 @@ export function TaskProgress(props: TaskLogProps) {
       <Timeline className={classes.root} position="right">
         {phaseIds.length > 0 ? (
           phaseIds.map((id: string) => {
-            const getEventObj: any = taskLog.phases ? taskLog.phases[id] : null;
             const phaseStateObj: any = taskState.phases ? taskState.phases[id] : null;
             const eventsStates = phaseStateObj ? phaseStateObj.events : {};
             const eventIds = eventsStates ? Object.keys(eventsStates) : [];

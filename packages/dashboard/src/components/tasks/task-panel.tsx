@@ -50,6 +50,7 @@ const StyledDiv = styled('div')(({ theme }) => ({
   },
   [`& .${classes.detailPanelContainer}`]: {
     width: 400,
+    marginLeft: theme.spacing(2),
     padding: theme.spacing(2),
     flex: '1 1 100%',
     maxHeight: '100%',

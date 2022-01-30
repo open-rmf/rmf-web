@@ -1,8 +1,6 @@
 import { Divider, Grid, Paper, PaperProps, styled, Typography, useTheme } from '@mui/material';
 import { TaskEventLog, TaskState, LogEntry } from 'api-client';
 import { format } from 'date-fns';
-import React from 'react';
-import TimelineDot from '@mui/lab/TimelineDot';
 const prefix = 'task-logs';
 const classes = {
   root: `${prefix}-root`,
@@ -44,6 +42,7 @@ export function TaskLogs(props: TaskLogProps) {
         return theme.palette.info.main;
     }
   }
+
   return (
     <StyledPaper className={classes.root}>
       <Typography variant="h5" style={{ textAlign: 'center' }} gutterBottom>
