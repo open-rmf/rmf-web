@@ -13,6 +13,12 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TreeItem from '@mui/lab/TreeItem';
 import { format } from 'date-fns';
+import { TimelineDotProps, TimelineProps } from '@mui/lab';
+
+const prefix = 'task-progress';
+const classes = {
+  root: `${prefix}-root`,
+};
 
 interface TaskLogProps {
   taskLog: TaskEventLog;
@@ -24,6 +30,15 @@ const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   color: theme.palette.text.secondary,
   width: 290,
+}));
+
+const StyledTimeline = styled(() => <Timeline position="right" />)(({ theme }) => ({
+  [`&.${classes.root}`]: {
+    padding: theme.spacing(2),
+    marginLeft: theme.spacing(2),
+    width: 400,
+    flex: '1 1 100%',
+  },
 }));
 
 function nestedEvents(eventsStates: EventState[], child: number) {
@@ -56,7 +71,7 @@ function colorDot(eventsStates: EventState[]) {
   }
   if (standby) return 'info' as const;
 
-  return 'primary' as const;
+  return 'error' as const;
 }
 
 export function TaskProgress(props: TaskLogProps) {
@@ -67,7 +82,7 @@ export function TaskProgress(props: TaskLogProps) {
 
   return (
     <>
-      <Timeline key={`task-${taskLog.task_id}`} position="right">
+      <Timeline className={classes.root} position="right">
         {phaseIds.length > 0 ? (
           phaseIds.map((id: string) => {
             const getEventObj: any = taskLog.phases ? taskLog.phases[id] : null;
@@ -85,7 +100,14 @@ export function TaskProgress(props: TaskLogProps) {
                       )}
                     </TimelineOppositeContent>
                     <TimelineSeparator>
-                      <TimelineDot color={colorDot(eventsStates)} />
+                      {/* TODO: override default colors with our theme colors */}
+                      <TimelineDot
+                        sx={{
+                          // backgroundColor: theme.palette.error.dark,
+                          margin: '0.5px',
+                        }}
+                        color={colorDot(eventsStates)}
+                      />
                       <TimelineConnector />
                     </TimelineSeparator>
                     <TimelineContent>

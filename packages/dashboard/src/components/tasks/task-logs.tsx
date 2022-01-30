@@ -2,6 +2,7 @@ import { Divider, Grid, Paper, PaperProps, styled, Typography, useTheme } from '
 import { TaskEventLog, TaskState } from 'api-client';
 import { format } from 'date-fns';
 import React from 'react';
+import TimelineDot from '@mui/lab/TimelineDot';
 const prefix = 'task-logs';
 const classes = {
   root: `${prefix}-root`,
@@ -20,6 +21,8 @@ const StyledPaper = styled((props: PaperProps) => <Paper variant="outlined" {...
       width: 500,
       marginLeft: theme.spacing(2),
       flex: '0 0 auto',
+      maxHeight: '80%',
+      overflow: 'auto',
     },
   }),
 );
@@ -44,12 +47,8 @@ export function TaskLogs(props: TaskLogProps) {
           const eventsStates = phaseStateObj ? phaseStateObj.events : {};
 
           return (
-            <Paper
-              sx={{ padding: theme.spacing(1), height: 'inherit' }}
-              variant="outlined"
-              key={`Phase - ${id}`}
-            >
-              <Typography variant="h6" fontWeight="bold">
+            <>
+              <Typography variant="h6" fontWeight="bold" marginTop={3}>
                 {phaseStateObj.category}
               </Typography>
               <Divider />
@@ -86,9 +85,7 @@ export function TaskLogs(props: TaskLogProps) {
                               item
                               xs={4}
                               sx={{
-                                borderRight: `${theme.spacing(1)} solid ${
-                                  theme.palette.success.light
-                                }`,
+                                border: 1,
                                 padding: theme.spacing(1),
                               }}
                             >
@@ -96,7 +93,16 @@ export function TaskLogs(props: TaskLogProps) {
                                 {format(new Date(e.unix_millis_time * 1000), "hh:mm aaaaa'm'")}
                               </Typography>
                             </Grid>
-                            <Grid item xs={8} sx={{ padding: theme.spacing(1) }}>
+                            <Grid
+                              item
+                              xs={8}
+                              sx={{
+                                padding: theme.spacing(1),
+                                borderRight: 1,
+                                borderBottom: 1,
+                                borderTop: 1,
+                              }}
+                            >
                               <Typography variant="body1">{e.text}</Typography>
                             </Grid>
                           </Grid>
@@ -110,7 +116,7 @@ export function TaskLogs(props: TaskLogProps) {
                   No Event Logs
                 </Typography>
               )}
-            </Paper>
+            </>
           );
         })
       ) : (

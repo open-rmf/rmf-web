@@ -36,6 +36,7 @@ const classes = {
   tableTitle: `${prefix}-table-title`,
   detailPanelContainer: `${prefix}-detail-panel-container`,
   enabledToggleButton: `${prefix}-enable-toggle-button`,
+  logsPanelContainer: `${prefix}-task-logs-container`,
 };
 
 const StyledDiv = styled('div')(({ theme }) => ({
@@ -50,11 +51,24 @@ const StyledDiv = styled('div')(({ theme }) => ({
     width: 400,
     padding: theme.spacing(2),
     marginLeft: theme.spacing(2),
-    flex: '0 0 auto',
+    flex: '1 1 100%',
+    flexDirection: 'column',
+    maxHeight: '85%',
+    overflow: 'auto',
   },
   [`& .${classes.enabledToggleButton}`]: {
     background: theme.palette.action.selected,
   },
+  [`& .${classes.logsPanelContainer}`]: {
+    width: 400,
+    padding: theme.spacing(2),
+    marginLeft: theme.spacing(2),
+    flex: '1 1 100%',
+    flexDirection: 'column',
+    maxHeight: '100%',
+  },
+  height: '100%',
+  flexDirection: 'column',
 }));
 
 function NoSelectedTask() {
@@ -255,9 +269,11 @@ export function TaskPanel({
             <NoSelectedTask />
           )}
         </Paper>
-        {showLogs && selectedTaskLog && selectedTaskState ? (
-          <TaskLogs taskLog={selectedTaskLog} taskState={selectedTaskState} />
-        ) : null}
+        <Paper className={classes.logsPanelContainer}>
+          {showLogs && selectedTaskLog && selectedTaskState ? (
+            <TaskLogs taskLog={selectedTaskLog} taskState={selectedTaskState} />
+          ) : null}
+        </Paper>
       </Grid>
       {openCreateTaskForm && (
         <CreateTaskForm
