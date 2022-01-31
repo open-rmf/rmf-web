@@ -11,7 +11,7 @@ export const useFleets = (
     if (!rmfIngress) return;
     let cancel = false;
     (async () => {
-      const result = await rmfIngress.fleetsApi.queryFleetsFleetsGet();
+      const result = await rmfIngress.fleetsApi.getFleetsFleetsGet();
       if (cancel || result.status !== 200) return;
       setFleets(result.data);
     })();

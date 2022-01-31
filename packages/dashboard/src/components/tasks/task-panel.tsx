@@ -1,4 +1,9 @@
 import {
+  AddOutlined as AddOutlinedIcon,
+  Autorenew as AutorenewIcon,
+  Refresh as RefreshIcon,
+} from '@mui/icons-material';
+import {
   Alert,
   AlertProps,
   Button,
@@ -6,20 +11,15 @@ import {
   IconButton,
   Paper,
   Snackbar,
+  styled,
   TableContainer,
   TablePagination,
   Toolbar,
   Tooltip,
   Typography,
   useTheme,
-  styled,
 } from '@mui/material';
-import {
-  AddOutlined as AddOutlinedIcon,
-  Autorenew as AutorenewIcon,
-  Refresh as RefreshIcon,
-} from '@mui/icons-material';
-import { TaskState, TaskEventLog } from 'api-client';
+import { TaskEventLog, TaskState } from 'api-client';
 import React from 'react';
 import { CreateTaskForm, CreateTaskFormProps, TaskInfo, TaskTable } from 'react-components';
 import { UserProfileContext } from 'rmf-auth';
@@ -29,6 +29,7 @@ import { parseTasksFile } from './utils';
 import { TaskLogs } from './task-logs';
 import { TaskProgress } from './task-progress';
 import { RmfIngressContext } from '../rmf-app';
+import { parseTasksFile } from './utils';
 
 const prefix = 'task-panel';
 const classes = {
@@ -130,7 +131,6 @@ export function TaskPanel({
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
   const [snackbarSeverity, setSnackbarSeverity] = React.useState<AlertProps['severity']>('success');
   const [autoRefresh, setAutoRefresh] = React.useState(true);
-  const [showLogs, setShowLogs] = React.useState(false);
   const [selectedTaskLog, setSelectedTaskLog] = React.useState<TaskEventLog | undefined>(undefined);
   const profile = React.useContext(UserProfileContext);
   const { showErrorAlert } = React.useContext(AppControllerContext);
@@ -261,6 +261,7 @@ export function TaskPanel({
                   <TaskProgress taskLog={selectedTaskLog} taskState={selectedTaskState} />
                 ) : null}
               </Paper>
+              <TaskInfo task={selectedTask} />
               <Button
                 style={{ marginTop: theme.spacing(1) }}
                 fullWidth

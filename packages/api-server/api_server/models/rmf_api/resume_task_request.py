@@ -6,10 +6,11 @@ from __future__ import annotations
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
+from typing_extensions import Literal
 
 
 class TaskResumeRequest(BaseModel):
-    type: Optional[str] = Field(
+    type: Optional[Literal["resume_task_request"]] = Field(
         None, description="Indicate that this is a task resuming request"
     )
     for_task: Optional[str] = Field(None, description="Specify task ID to resume.")

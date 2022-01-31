@@ -34,6 +34,57 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } fr
 /**
  *
  * @export
+ * @interface Activity
+ */
+export interface Activity {
+  /**
+   * The category of this activity. There must not be any duplicate activity categories per fleet.
+   * @type {string}
+   * @memberof Activity
+   */
+  category: string;
+  /**
+   * Details about the behavior of the activity.
+   * @type {string}
+   * @memberof Activity
+   */
+  detail: string;
+  /**
+   * The schema for this activity description
+   * @type {object}
+   * @memberof Activity
+   */
+  description_schema?: object;
+}
+/**
+ *
+ * @export
+ * @interface ActivityDiscovery
+ */
+export interface ActivityDiscovery {
+  /**
+   *
+   * @type {Array<Datum>}
+   * @memberof ActivityDiscovery
+   */
+  data?: Array<Datum>;
+}
+/**
+ *
+ * @export
+ * @interface ActivityDiscoveryRequest
+ */
+export interface ActivityDiscoveryRequest {
+  /**
+   * Indicate that this is an activity discovery request
+   * @type {string}
+   * @memberof ActivityDiscoveryRequest
+   */
+  type: string;
+}
+/**
+ *
+ * @export
  * @interface AffineImage
  */
 export interface AffineImage {
@@ -219,6 +270,44 @@ export interface Cancellation {
   labels: Array<string>;
 }
 /**
+ *
+ * @export
+ * @interface Data
+ */
+export interface Data {
+  /**
+   * Name of the fleet that supports these tasks
+   * @type {string}
+   * @memberof Data
+   */
+  fleet_name?: string;
+  /**
+   * (list:replace) List of tasks that the fleet supports
+   * @type {Array<Task>}
+   * @memberof Data
+   */
+  tasks?: Array<Task>;
+}
+/**
+ *
+ * @export
+ * @interface Datum
+ */
+export interface Datum {
+  /**
+   * Name of the fleet that supports these activities
+   * @type {string}
+   * @memberof Datum
+   */
+  fleet_name: string;
+  /**
+   * List of activities that the fleet supports
+   * @type {Array<Activity>}
+   * @memberof Datum
+   */
+  activities: Array<Activity>;
+}
+/**
  * Detailed information about a task, phase, or event
  * @export
  * @interface Detail
@@ -248,6 +337,25 @@ export interface Dispatch {
    * @memberof Dispatch
    */
   errors?: Array<Error>;
+}
+/**
+ *
+ * @export
+ * @interface DispatchTaskRequest
+ */
+export interface DispatchTaskRequest {
+  /**
+   * Indicate that this is a task dispatch request
+   * @type {string}
+   * @memberof DispatchTaskRequest
+   */
+  type: string;
+  /**
+   *
+   * @type {TaskRequest}
+   * @memberof DispatchTaskRequest
+   */
+  request: TaskRequest;
 }
 /**
  *
@@ -1475,6 +1583,31 @@ export interface SkipPhaseRequest {
   undo?: Undo;
 }
 /**
+ * Response to a request for a phase to be skipped
+ * @export
+ * @interface SkipPhaseResponse
+ */
+export interface SkipPhaseResponse {
+  /**
+   * The request failed
+   * @type {boolean}
+   * @memberof SkipPhaseResponse
+   */
+  success: boolean;
+  /**
+   * A token for the request. The value of this token is unique within the scope of this request and can be used by other requests to reference this request.
+   * @type {string}
+   * @memberof SkipPhaseResponse
+   */
+  token: string;
+  /**
+   * Any error messages explaining why the request failed.
+   * @type {Array<Error>}
+   * @memberof SkipPhaseResponse
+   */
+  errors: Array<Error>;
+}
+/**
  * An enumeration.
  * @export
  * @enum {string}
@@ -1526,6 +1659,31 @@ export enum Status2 {
 }
 
 /**
+ *
+ * @export
+ * @interface Task
+ */
+export interface Task {
+  /**
+   * The category of this task. There must not be any duplicate task categories per fleet.
+   * @type {string}
+   * @memberof Task
+   */
+  category: string;
+  /**
+   * Details about the behavior of the task.
+   * @type {string}
+   * @memberof Task
+   */
+  detail: string;
+  /**
+   * The schema for this task description
+   * @type {object}
+   * @memberof Task
+   */
+  description_schema?: object;
+}
+/**
  * Response to a request to cancel a task
  * @export
  * @interface TaskCancelResponse
@@ -1543,6 +1701,101 @@ export interface TaskCancelResponse {
    * @memberof TaskCancelResponse
    */
   errors: Array<Error>;
+}
+/**
+ *
+ * @export
+ * @interface TaskDiscovery
+ */
+export interface TaskDiscovery {
+  /**
+   * Indicate that this is an task discovery update
+   * @type {string}
+   * @memberof TaskDiscovery
+   */
+  type?: string;
+  /**
+   *
+   * @type {Data}
+   * @memberof TaskDiscovery
+   */
+  data?: Data;
+}
+/**
+ *
+ * @export
+ * @interface TaskDiscoveryRequest
+ */
+export interface TaskDiscoveryRequest {
+  /**
+   * Indicate that this is a task discovery request
+   * @type {string}
+   * @memberof TaskDiscoveryRequest
+   */
+  type: string;
+}
+/**
+ * Response to a task dispatch request
+ * @export
+ * @interface TaskDispatchResponse
+ */
+export interface TaskDispatchResponse {
+  /**
+   *
+   * @type {boolean}
+   * @memberof TaskDispatchResponse
+   */
+  success: boolean;
+  /**
+   *
+   * @type {TaskState}
+   * @memberof TaskDispatchResponse
+   */
+  state?: TaskState;
+  /**
+   * Any error messages explaining why the request failed
+   * @type {Array<Error>}
+   * @memberof TaskDispatchResponse
+   */
+  errors?: Array<Error>;
+}
+/**
+ *
+ * @export
+ * @interface TaskDispatchResponseItem
+ */
+export interface TaskDispatchResponseItem {
+  /**
+   *
+   * @type {boolean}
+   * @memberof TaskDispatchResponseItem
+   */
+  success: boolean;
+  /**
+   *
+   * @type {TaskState}
+   * @memberof TaskDispatchResponseItem
+   */
+  state?: TaskState;
+}
+/**
+ *
+ * @export
+ * @interface TaskDispatchResponseItem1
+ */
+export interface TaskDispatchResponseItem1 {
+  /**
+   *
+   * @type {boolean}
+   * @memberof TaskDispatchResponseItem1
+   */
+  success?: boolean;
+  /**
+   * Any error messages explaining why the request failed
+   * @type {Array<Error>}
+   * @memberof TaskDispatchResponseItem1
+   */
+  errors?: Array<Error>;
 }
 /**
  *
@@ -1568,6 +1821,131 @@ export interface TaskEventLog {
    * @memberof TaskEventLog
    */
   phases?: { [key: string]: Phases };
+}
+/**
+ *
+ * @export
+ * @interface TaskInterruptionRequest
+ */
+export interface TaskInterruptionRequest {
+  /**
+   * Indicate that this is a task interruption request
+   * @type {string}
+   * @memberof TaskInterruptionRequest
+   */
+  type: string;
+  /**
+   * Specify the task ID to interrupt
+   * @type {string}
+   * @memberof TaskInterruptionRequest
+   */
+  task_id: string;
+  /**
+   * Labels to describe the purpose of the interruption
+   * @type {Array<string>}
+   * @memberof TaskInterruptionRequest
+   */
+  labels?: Array<string>;
+}
+/**
+ * Response to a request for a task to be interrupted
+ * @export
+ * @interface TaskInterruptionResponse
+ */
+export interface TaskInterruptionResponse {
+  /**
+   * The request failed
+   * @type {boolean}
+   * @memberof TaskInterruptionResponse
+   */
+  success: boolean;
+  /**
+   * A token for the request. The value of this token is unique within the scope of this request and can be used by other requests to reference this request.
+   * @type {string}
+   * @memberof TaskInterruptionResponse
+   */
+  token: string;
+  /**
+   * Any error messages explaining why the request failed.
+   * @type {Array<Error>}
+   * @memberof TaskInterruptionResponse
+   */
+  errors: Array<Error>;
+}
+/**
+ *
+ * @export
+ * @interface TaskKillRequest
+ */
+export interface TaskKillRequest {
+  /**
+   * Indicate that this is a task kill request
+   * @type {string}
+   * @memberof TaskKillRequest
+   */
+  type: string;
+  /**
+   * Specify the task ID to kill
+   * @type {string}
+   * @memberof TaskKillRequest
+   */
+  task_id: string;
+  /**
+   * Labels to describe the purpose of the kill
+   * @type {Array<string>}
+   * @memberof TaskKillRequest
+   */
+  labels?: Array<string>;
+}
+/**
+ * Response to a request to kill a task
+ * @export
+ * @interface TaskKillResponse
+ */
+export interface TaskKillResponse {
+  /**
+   * The request failed
+   * @type {boolean}
+   * @memberof TaskKillResponse
+   */
+  success: boolean;
+  /**
+   * If the request failed, these error messages will explain why
+   * @type {Array<Error>}
+   * @memberof TaskKillResponse
+   */
+  errors: Array<Error>;
+}
+/**
+ *
+ * @export
+ * @interface TaskPhaseSkipRequest
+ */
+export interface TaskPhaseSkipRequest {
+  /**
+   * Indicate that this is a phase skip request
+   * @type {string}
+   * @memberof TaskPhaseSkipRequest
+   */
+  type: string;
+  /**
+   * Specify the task ID whose phase should be skipped
+   * @type {string}
+   * @memberof TaskPhaseSkipRequest
+   */
+  task_id: string;
+  /**
+   * Specify the phase that should be skipped
+   * @type {number}
+   * @memberof TaskPhaseSkipRequest
+   */
+  phase_id: number;
+  /**
+   * Labels to describe the purpose of the skip
+   * @type {Array<string>}
+   * @memberof TaskPhaseSkipRequest
+   */
+  labels?: Array<string>;
 }
 /**
  *
@@ -1605,6 +1983,100 @@ export interface TaskRequest {
    * @memberof TaskRequest
    */
   labels?: Array<string>;
+}
+/**
+ *
+ * @export
+ * @interface TaskResumeRequest
+ */
+export interface TaskResumeRequest {
+  /**
+   * Indicate that this is a task resuming request
+   * @type {string}
+   * @memberof TaskResumeRequest
+   */
+  type?: string;
+  /**
+   * Specify task ID to resume.
+   * @type {string}
+   * @memberof TaskResumeRequest
+   */
+  for_task?: string;
+  /**
+   * A list of tokens of interruption requests which should be resumed. The interruption request associated with each token will be discarded.
+   * @type {Array<string>}
+   * @memberof TaskResumeRequest
+   */
+  for_tokens?: Array<string>;
+  /**
+   * Labels describing this request
+   * @type {Array<string>}
+   * @memberof TaskResumeRequest
+   */
+  labels?: Array<string>;
+}
+/**
+ * Response to a request to resume a task
+ * @export
+ * @interface TaskResumeResponse
+ */
+export interface TaskResumeResponse {
+  /**
+   * The request failed
+   * @type {boolean}
+   * @memberof TaskResumeResponse
+   */
+  success: boolean;
+  /**
+   * If the request failed, these error messages will explain why
+   * @type {Array<Error>}
+   * @memberof TaskResumeResponse
+   */
+  errors: Array<Error>;
+}
+/**
+ *
+ * @export
+ * @interface TaskRewindRequest
+ */
+export interface TaskRewindRequest {
+  /**
+   * Indicate that this is a task rewind request
+   * @type {string}
+   * @memberof TaskRewindRequest
+   */
+  type: string;
+  /**
+   * Specify the ID of the task that should rewind
+   * @type {string}
+   * @memberof TaskRewindRequest
+   */
+  task_id: string;
+  /**
+   * Specify the phase that should be rewound to. The task will restart at the beginning of this phase.
+   * @type {number}
+   * @memberof TaskRewindRequest
+   */
+  phase_id: number;
+}
+/**
+ * Response to a request to rewind a task
+ * @export
+ * @interface TaskRewindResponse
+ */
+export interface TaskRewindResponse {
+  /**
+   * The request failed
+   * @type {boolean}
+   * @memberof TaskRewindResponse
+   */
+  success: boolean;
+  /**
+   * If the request failed, these error messages will explain why
+   * @type {Array<Error>}
+   * @memberof TaskRewindResponse
+   */
+  errors: Array<Error>;
 }
 /**
  *
@@ -1748,6 +2220,69 @@ export interface Time {
   nanosec: number;
 }
 /**
+ * Template for defining a response message that provides a token upon success or errors upon failure
+ * @export
+ * @interface TokenResponse
+ */
+export interface TokenResponse {
+  /**
+   * The request failed
+   * @type {boolean}
+   * @memberof TokenResponse
+   */
+  success: boolean;
+  /**
+   * A token for the request. The value of this token is unique within the scope of this request and can be used by other requests to reference this request.
+   * @type {string}
+   * @memberof TokenResponse
+   */
+  token: string;
+  /**
+   * Any error messages explaining why the request failed.
+   * @type {Array<Error>}
+   * @memberof TokenResponse
+   */
+  errors: Array<Error>;
+}
+/**
+ *
+ * @export
+ * @interface TokenResponseItem
+ */
+export interface TokenResponseItem {
+  /**
+   * The request was successful
+   * @type {boolean}
+   * @memberof TokenResponseItem
+   */
+  success: boolean;
+  /**
+   * A token for the request. The value of this token is unique within the scope of this request and can be used by other requests to reference this request.
+   * @type {string}
+   * @memberof TokenResponseItem
+   */
+  token: string;
+}
+/**
+ *
+ * @export
+ * @interface TokenResponseItem1
+ */
+export interface TokenResponseItem1 {
+  /**
+   * The request failed
+   * @type {boolean}
+   * @memberof TokenResponseItem1
+   */
+  success: boolean;
+  /**
+   * Any error messages explaining why the request failed.
+   * @type {Array<Error>}
+   * @memberof TokenResponseItem1
+   */
+  errors: Array<Error>;
+}
+/**
  *
  * @export
  * @interface Undo
@@ -1765,6 +2300,56 @@ export interface Undo {
    * @memberof Undo
    */
   labels: Array<string>;
+}
+/**
+ *
+ * @export
+ * @interface UndoPhaseSkipRequest
+ */
+export interface UndoPhaseSkipRequest {
+  /**
+   * Indicate that this is a request to undo a phase skip request
+   * @type {string}
+   * @memberof UndoPhaseSkipRequest
+   */
+  type?: string;
+  /**
+   * Specify the relevant task ID
+   * @type {string}
+   * @memberof UndoPhaseSkipRequest
+   */
+  for_task?: string;
+  /**
+   * A list of the tokens of skip requests which should be undone. The skips associated with each token will be discarded.
+   * @type {Array<string>}
+   * @memberof UndoPhaseSkipRequest
+   */
+  for_tokens?: Array<string>;
+  /**
+   * Labels describing this request
+   * @type {Array<string>}
+   * @memberof UndoPhaseSkipRequest
+   */
+  labels?: Array<string>;
+}
+/**
+ * Response to an undo phase skip request
+ * @export
+ * @interface UndoPhaseSkipResponse
+ */
+export interface UndoPhaseSkipResponse {
+  /**
+   * The request failed
+   * @type {boolean}
+   * @memberof UndoPhaseSkipResponse
+   */
+  success: boolean;
+  /**
+   * If the request failed, these error messages will explain why
+   * @type {Array<Error>}
+   * @memberof UndoPhaseSkipResponse
+   */
+  errors: Array<Error>;
 }
 /**
  *
@@ -4343,21 +4928,11 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
     },
     /**
      *
-     * @summary Query Fleets
-     * @param {string} [fleetName] comma separated list of fleet names
-     * @param {number} [limit]
-     * @param {number} [offset]
-     * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
+     * @summary Get Fleets
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    queryFleetsFleetsGet: async (
-      fleetName?: string,
-      limit?: number,
-      offset?: number,
-      orderBy?: string,
-      options: any = {},
-    ): Promise<RequestArgs> => {
+    getFleetsFleetsGet: async (options: any = {}): Promise<RequestArgs> => {
       const localVarPath = `/fleets`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4369,22 +4944,6 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
-
-      if (fleetName !== undefined) {
-        localVarQueryParameter['fleet_name'] = fleetName;
-      }
-
-      if (limit !== undefined) {
-        localVarQueryParameter['limit'] = limit;
-      }
-
-      if (offset !== undefined) {
-        localVarQueryParameter['offset'] = offset;
-      }
-
-      if (orderBy !== undefined) {
-        localVarQueryParameter['order_by'] = orderBy;
-      }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -4448,28 +5007,14 @@ export const FleetsApiFp = function (configuration?: Configuration) {
     },
     /**
      *
-     * @summary Query Fleets
-     * @param {string} [fleetName] comma separated list of fleet names
-     * @param {number} [limit]
-     * @param {number} [offset]
-     * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
+     * @summary Get Fleets
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async queryFleetsFleetsGet(
-      fleetName?: string,
-      limit?: number,
-      offset?: number,
-      orderBy?: string,
+    async getFleetsFleetsGet(
       options?: any,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FleetState>>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.queryFleetsFleetsGet(
-        fleetName,
-        limit,
-        offset,
-        orderBy,
-        options,
-      );
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getFleetsFleetsGet(options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
   };
@@ -4517,24 +5062,12 @@ export const FleetsApiFactory = function (
     },
     /**
      *
-     * @summary Query Fleets
-     * @param {string} [fleetName] comma separated list of fleet names
-     * @param {number} [limit]
-     * @param {number} [offset]
-     * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
+     * @summary Get Fleets
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    queryFleetsFleetsGet(
-      fleetName?: string,
-      limit?: number,
-      offset?: number,
-      orderBy?: string,
-      options?: any,
-    ): AxiosPromise<Array<FleetState>> {
-      return localVarFp
-        .queryFleetsFleetsGet(fleetName, limit, offset, orderBy, options)
-        .then((request) => request(axios, basePath));
+    getFleetsFleetsGet(options?: any): AxiosPromise<Array<FleetState>> {
+      return localVarFp.getFleetsFleetsGet(options).then((request) => request(axios, basePath));
     },
   };
 };
@@ -4577,24 +5110,14 @@ export class FleetsApi extends BaseAPI {
 
   /**
    *
-   * @summary Query Fleets
-   * @param {string} [fleetName] comma separated list of fleet names
-   * @param {number} [limit]
-   * @param {number} [offset]
-   * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
+   * @summary Get Fleets
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof FleetsApi
    */
-  public queryFleetsFleetsGet(
-    fleetName?: string,
-    limit?: number,
-    offset?: number,
-    orderBy?: string,
-    options?: any,
-  ) {
+  public getFleetsFleetsGet(options?: any) {
     return FleetsApiFp(this.configuration)
-      .queryFleetsFleetsGet(fleetName, limit, offset, orderBy, options)
+      .getFleetsFleetsGet(options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -5358,6 +5881,55 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     },
     /**
      *
+     * @summary Post Activity Discovery
+     * @param {ActivityDiscoveryRequest} activityDiscoveryRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postActivityDiscoveryTasksActivityDiscoveryPost: async (
+      activityDiscoveryRequest: ActivityDiscoveryRequest,
+      options: any = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'activityDiscoveryRequest' is not null or undefined
+      assertParamExists(
+        'postActivityDiscoveryTasksActivityDiscoveryPost',
+        'activityDiscoveryRequest',
+        activityDiscoveryRequest,
+      );
+      const localVarPath = `/tasks/activity_discovery`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        activityDiscoveryRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Post Cancel Task
      * @param {CancelTaskRequest} cancelTaskRequest
      * @param {*} [options] Override http request option.
@@ -5407,18 +5979,22 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     },
     /**
      *
-     * @summary Post Task Request
-     * @param {TaskRequest} taskRequest
+     * @summary Post Interrupt Task
+     * @param {TaskInterruptionRequest} taskInterruptionRequest
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    postTaskRequestTasksTaskRequestPost: async (
-      taskRequest: TaskRequest,
+    postInterruptTaskTasksInterruptTaskPost: async (
+      taskInterruptionRequest: TaskInterruptionRequest,
       options: any = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'taskRequest' is not null or undefined
-      assertParamExists('postTaskRequestTasksTaskRequestPost', 'taskRequest', taskRequest);
-      const localVarPath = `/tasks/task_request`;
+      // verify required parameter 'taskInterruptionRequest' is not null or undefined
+      assertParamExists(
+        'postInterruptTaskTasksInterruptTaskPost',
+        'taskInterruptionRequest',
+        taskInterruptionRequest,
+      );
+      const localVarPath = `/tasks/interrupt_task`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -5440,7 +6016,346 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        taskRequest,
+        taskInterruptionRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Post Kill Task
+     * @param {TaskKillRequest} taskKillRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postKillTaskTasksKillTaskPost: async (
+      taskKillRequest: TaskKillRequest,
+      options: any = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'taskKillRequest' is not null or undefined
+      assertParamExists('postKillTaskTasksKillTaskPost', 'taskKillRequest', taskKillRequest);
+      const localVarPath = `/tasks/kill_task`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        taskKillRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Post Resume Task
+     * @param {TaskResumeRequest} taskResumeRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postResumeTaskTasksResumeTaskPost: async (
+      taskResumeRequest: TaskResumeRequest,
+      options: any = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'taskResumeRequest' is not null or undefined
+      assertParamExists(
+        'postResumeTaskTasksResumeTaskPost',
+        'taskResumeRequest',
+        taskResumeRequest,
+      );
+      const localVarPath = `/tasks/resume_task`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        taskResumeRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Post Rewind Task
+     * @param {TaskRewindRequest} taskRewindRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postRewindTaskTasksRewindTaskPost: async (
+      taskRewindRequest: TaskRewindRequest,
+      options: any = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'taskRewindRequest' is not null or undefined
+      assertParamExists(
+        'postRewindTaskTasksRewindTaskPost',
+        'taskRewindRequest',
+        taskRewindRequest,
+      );
+      const localVarPath = `/tasks/rewind_task`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        taskRewindRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Post Skip Phase
+     * @param {TaskPhaseSkipRequest} taskPhaseSkipRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postSkipPhaseTasksSkipPhasePost: async (
+      taskPhaseSkipRequest: TaskPhaseSkipRequest,
+      options: any = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'taskPhaseSkipRequest' is not null or undefined
+      assertParamExists(
+        'postSkipPhaseTasksSkipPhasePost',
+        'taskPhaseSkipRequest',
+        taskPhaseSkipRequest,
+      );
+      const localVarPath = `/tasks/skip_phase`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        taskPhaseSkipRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Post Task Discovery
+     * @param {TaskDiscoveryRequest} taskDiscoveryRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postTaskDiscoveryTasksTaskDiscoveryPost: async (
+      taskDiscoveryRequest: TaskDiscoveryRequest,
+      options: any = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'taskDiscoveryRequest' is not null or undefined
+      assertParamExists(
+        'postTaskDiscoveryTasksTaskDiscoveryPost',
+        'taskDiscoveryRequest',
+        taskDiscoveryRequest,
+      );
+      const localVarPath = `/tasks/task_discovery`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        taskDiscoveryRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Post Task Request
+     * @param {DispatchTaskRequest} dispatchTaskRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postTaskRequestTasksDispatchTaskPost: async (
+      dispatchTaskRequest: DispatchTaskRequest,
+      options: any = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'dispatchTaskRequest' is not null or undefined
+      assertParamExists(
+        'postTaskRequestTasksDispatchTaskPost',
+        'dispatchTaskRequest',
+        dispatchTaskRequest,
+      );
+      const localVarPath = `/tasks/dispatch_task`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        dispatchTaskRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Post Undo Skip Phase
+     * @param {UndoPhaseSkipRequest} undoPhaseSkipRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postUndoSkipPhaseTasksUndoSkipPhasePost: async (
+      undoPhaseSkipRequest: UndoPhaseSkipRequest,
+      options: any = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'undoPhaseSkipRequest' is not null or undefined
+      assertParamExists(
+        'postUndoSkipPhaseTasksUndoSkipPhasePost',
+        'undoPhaseSkipRequest',
+        undoPhaseSkipRequest,
+      );
+      const localVarPath = `/tasks/undo_skip_phase`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        undoPhaseSkipRequest,
         localVarRequestOptions,
         configuration,
       );
@@ -5577,6 +6492,24 @@ export const TasksApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Post Activity Discovery
+     * @param {ActivityDiscoveryRequest} activityDiscoveryRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async postActivityDiscoveryTasksActivityDiscoveryPost(
+      activityDiscoveryRequest: ActivityDiscoveryRequest,
+      options?: any,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ActivityDiscovery>> {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.postActivityDiscoveryTasksActivityDiscoveryPost(
+          activityDiscoveryRequest,
+          options,
+        );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
      * @summary Post Cancel Task
      * @param {CancelTaskRequest} cancelTaskRequest
      * @param {*} [options] Override http request option.
@@ -5594,19 +6527,144 @@ export const TasksApiFp = function (configuration?: Configuration) {
     },
     /**
      *
-     * @summary Post Task Request
-     * @param {TaskRequest} taskRequest
+     * @summary Post Interrupt Task
+     * @param {TaskInterruptionRequest} taskInterruptionRequest
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async postTaskRequestTasksTaskRequestPost(
-      taskRequest: TaskRequest,
+    async postInterruptTaskTasksInterruptTaskPost(
+      taskInterruptionRequest: TaskInterruptionRequest,
       options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.postTaskRequestTasksTaskRequestPost(
-        taskRequest,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskInterruptionResponse>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.postInterruptTaskTasksInterruptTaskPost(
+          taskInterruptionRequest,
+          options,
+        );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Post Kill Task
+     * @param {TaskKillRequest} taskKillRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async postKillTaskTasksKillTaskPost(
+      taskKillRequest: TaskKillRequest,
+      options?: any,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskKillResponse>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.postKillTaskTasksKillTaskPost(
+        taskKillRequest,
         options,
       );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Post Resume Task
+     * @param {TaskResumeRequest} taskResumeRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async postResumeTaskTasksResumeTaskPost(
+      taskResumeRequest: TaskResumeRequest,
+      options?: any,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskResumeResponse>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.postResumeTaskTasksResumeTaskPost(
+        taskResumeRequest,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Post Rewind Task
+     * @param {TaskRewindRequest} taskRewindRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async postRewindTaskTasksRewindTaskPost(
+      taskRewindRequest: TaskRewindRequest,
+      options?: any,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskRewindResponse>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.postRewindTaskTasksRewindTaskPost(
+        taskRewindRequest,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Post Skip Phase
+     * @param {TaskPhaseSkipRequest} taskPhaseSkipRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async postSkipPhaseTasksSkipPhasePost(
+      taskPhaseSkipRequest: TaskPhaseSkipRequest,
+      options?: any,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SkipPhaseResponse>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.postSkipPhaseTasksSkipPhasePost(
+        taskPhaseSkipRequest,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Post Task Discovery
+     * @param {TaskDiscoveryRequest} taskDiscoveryRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async postTaskDiscoveryTasksTaskDiscoveryPost(
+      taskDiscoveryRequest: TaskDiscoveryRequest,
+      options?: any,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskDiscovery>> {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.postTaskDiscoveryTasksTaskDiscoveryPost(
+          taskDiscoveryRequest,
+          options,
+        );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Post Task Request
+     * @param {DispatchTaskRequest} dispatchTaskRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async postTaskRequestTasksDispatchTaskPost(
+      dispatchTaskRequest: DispatchTaskRequest,
+      options?: any,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskDispatchResponse>> {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.postTaskRequestTasksDispatchTaskPost(
+          dispatchTaskRequest,
+          options,
+        );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Post Undo Skip Phase
+     * @param {UndoPhaseSkipRequest} undoPhaseSkipRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async postUndoSkipPhaseTasksUndoSkipPhasePost(
+      undoPhaseSkipRequest: UndoPhaseSkipRequest,
+      options?: any,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UndoPhaseSkipResponse>> {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.postUndoSkipPhaseTasksUndoSkipPhasePost(
+          undoPhaseSkipRequest,
+          options,
+        );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -5689,6 +6747,21 @@ export const TasksApiFactory = function (
     },
     /**
      *
+     * @summary Post Activity Discovery
+     * @param {ActivityDiscoveryRequest} activityDiscoveryRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postActivityDiscoveryTasksActivityDiscoveryPost(
+      activityDiscoveryRequest: ActivityDiscoveryRequest,
+      options?: any,
+    ): AxiosPromise<ActivityDiscovery> {
+      return localVarFp
+        .postActivityDiscoveryTasksActivityDiscoveryPost(activityDiscoveryRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Post Cancel Task
      * @param {CancelTaskRequest} cancelTaskRequest
      * @param {*} [options] Override http request option.
@@ -5704,17 +6777,122 @@ export const TasksApiFactory = function (
     },
     /**
      *
-     * @summary Post Task Request
-     * @param {TaskRequest} taskRequest
+     * @summary Post Interrupt Task
+     * @param {TaskInterruptionRequest} taskInterruptionRequest
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    postTaskRequestTasksTaskRequestPost(
-      taskRequest: TaskRequest,
+    postInterruptTaskTasksInterruptTaskPost(
+      taskInterruptionRequest: TaskInterruptionRequest,
       options?: any,
-    ): AxiosPromise<any> {
+    ): AxiosPromise<TaskInterruptionResponse> {
       return localVarFp
-        .postTaskRequestTasksTaskRequestPost(taskRequest, options)
+        .postInterruptTaskTasksInterruptTaskPost(taskInterruptionRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Post Kill Task
+     * @param {TaskKillRequest} taskKillRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postKillTaskTasksKillTaskPost(
+      taskKillRequest: TaskKillRequest,
+      options?: any,
+    ): AxiosPromise<TaskKillResponse> {
+      return localVarFp
+        .postKillTaskTasksKillTaskPost(taskKillRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Post Resume Task
+     * @param {TaskResumeRequest} taskResumeRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postResumeTaskTasksResumeTaskPost(
+      taskResumeRequest: TaskResumeRequest,
+      options?: any,
+    ): AxiosPromise<TaskResumeResponse> {
+      return localVarFp
+        .postResumeTaskTasksResumeTaskPost(taskResumeRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Post Rewind Task
+     * @param {TaskRewindRequest} taskRewindRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postRewindTaskTasksRewindTaskPost(
+      taskRewindRequest: TaskRewindRequest,
+      options?: any,
+    ): AxiosPromise<TaskRewindResponse> {
+      return localVarFp
+        .postRewindTaskTasksRewindTaskPost(taskRewindRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Post Skip Phase
+     * @param {TaskPhaseSkipRequest} taskPhaseSkipRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postSkipPhaseTasksSkipPhasePost(
+      taskPhaseSkipRequest: TaskPhaseSkipRequest,
+      options?: any,
+    ): AxiosPromise<SkipPhaseResponse> {
+      return localVarFp
+        .postSkipPhaseTasksSkipPhasePost(taskPhaseSkipRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Post Task Discovery
+     * @param {TaskDiscoveryRequest} taskDiscoveryRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postTaskDiscoveryTasksTaskDiscoveryPost(
+      taskDiscoveryRequest: TaskDiscoveryRequest,
+      options?: any,
+    ): AxiosPromise<TaskDiscovery> {
+      return localVarFp
+        .postTaskDiscoveryTasksTaskDiscoveryPost(taskDiscoveryRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Post Task Request
+     * @param {DispatchTaskRequest} dispatchTaskRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postTaskRequestTasksDispatchTaskPost(
+      dispatchTaskRequest: DispatchTaskRequest,
+      options?: any,
+    ): AxiosPromise<TaskDispatchResponse> {
+      return localVarFp
+        .postTaskRequestTasksDispatchTaskPost(dispatchTaskRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Post Undo Skip Phase
+     * @param {UndoPhaseSkipRequest} undoPhaseSkipRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postUndoSkipPhaseTasksUndoSkipPhasePost(
+      undoPhaseSkipRequest: UndoPhaseSkipRequest,
+      options?: any,
+    ): AxiosPromise<UndoPhaseSkipResponse> {
+      return localVarFp
+        .postUndoSkipPhaseTasksUndoSkipPhasePost(undoPhaseSkipRequest, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -5794,6 +6972,23 @@ export class TasksApi extends BaseAPI {
 
   /**
    *
+   * @summary Post Activity Discovery
+   * @param {ActivityDiscoveryRequest} activityDiscoveryRequest
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public postActivityDiscoveryTasksActivityDiscoveryPost(
+    activityDiscoveryRequest: ActivityDiscoveryRequest,
+    options?: any,
+  ) {
+    return TasksApiFp(this.configuration)
+      .postActivityDiscoveryTasksActivityDiscoveryPost(activityDiscoveryRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
    * @summary Post Cancel Task
    * @param {CancelTaskRequest} cancelTaskRequest
    * @param {*} [options] Override http request option.
@@ -5808,15 +7003,128 @@ export class TasksApi extends BaseAPI {
 
   /**
    *
-   * @summary Post Task Request
-   * @param {TaskRequest} taskRequest
+   * @summary Post Interrupt Task
+   * @param {TaskInterruptionRequest} taskInterruptionRequest
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
-  public postTaskRequestTasksTaskRequestPost(taskRequest: TaskRequest, options?: any) {
+  public postInterruptTaskTasksInterruptTaskPost(
+    taskInterruptionRequest: TaskInterruptionRequest,
+    options?: any,
+  ) {
     return TasksApiFp(this.configuration)
-      .postTaskRequestTasksTaskRequestPost(taskRequest, options)
+      .postInterruptTaskTasksInterruptTaskPost(taskInterruptionRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Post Kill Task
+   * @param {TaskKillRequest} taskKillRequest
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public postKillTaskTasksKillTaskPost(taskKillRequest: TaskKillRequest, options?: any) {
+    return TasksApiFp(this.configuration)
+      .postKillTaskTasksKillTaskPost(taskKillRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Post Resume Task
+   * @param {TaskResumeRequest} taskResumeRequest
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public postResumeTaskTasksResumeTaskPost(taskResumeRequest: TaskResumeRequest, options?: any) {
+    return TasksApiFp(this.configuration)
+      .postResumeTaskTasksResumeTaskPost(taskResumeRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Post Rewind Task
+   * @param {TaskRewindRequest} taskRewindRequest
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public postRewindTaskTasksRewindTaskPost(taskRewindRequest: TaskRewindRequest, options?: any) {
+    return TasksApiFp(this.configuration)
+      .postRewindTaskTasksRewindTaskPost(taskRewindRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Post Skip Phase
+   * @param {TaskPhaseSkipRequest} taskPhaseSkipRequest
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public postSkipPhaseTasksSkipPhasePost(
+    taskPhaseSkipRequest: TaskPhaseSkipRequest,
+    options?: any,
+  ) {
+    return TasksApiFp(this.configuration)
+      .postSkipPhaseTasksSkipPhasePost(taskPhaseSkipRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Post Task Discovery
+   * @param {TaskDiscoveryRequest} taskDiscoveryRequest
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public postTaskDiscoveryTasksTaskDiscoveryPost(
+    taskDiscoveryRequest: TaskDiscoveryRequest,
+    options?: any,
+  ) {
+    return TasksApiFp(this.configuration)
+      .postTaskDiscoveryTasksTaskDiscoveryPost(taskDiscoveryRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Post Task Request
+   * @param {DispatchTaskRequest} dispatchTaskRequest
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public postTaskRequestTasksDispatchTaskPost(
+    dispatchTaskRequest: DispatchTaskRequest,
+    options?: any,
+  ) {
+    return TasksApiFp(this.configuration)
+      .postTaskRequestTasksDispatchTaskPost(dispatchTaskRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Post Undo Skip Phase
+   * @param {UndoPhaseSkipRequest} undoPhaseSkipRequest
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public postUndoSkipPhaseTasksUndoSkipPhasePost(
+    undoPhaseSkipRequest: UndoPhaseSkipRequest,
+    options?: any,
+  ) {
+    return TasksApiFp(this.configuration)
+      .postUndoSkipPhaseTasksUndoSkipPhasePost(undoPhaseSkipRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

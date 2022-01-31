@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { DateTimePicker, LocalizationProvider } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import {
@@ -13,18 +15,12 @@ import {
   TextField,
   useTheme,
 } from '@mui/material';
-// import {
-//   CleanTaskDescription,
-//   DeliveryTaskDescription,
-//   LoopTaskDescription,
-//   SubmitTask,
-// } from 'api-client';
+import type { TaskRequest } from 'api-client';
 import React from 'react';
-import { TaskType as RmfTaskType } from 'rmf-models';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
 
-type TaskDescription = any;
+type TaskDescription = Record<string, any>;
 
 const classes = {
   selectFileBtn: 'create-task-selected-file-btn',
@@ -48,22 +44,19 @@ const StyledConfirmationDialog = styled((props: ConfirmationDialogProps) => (
   },
 }));
 
-function getShortDescription(task: any): string {
-  switch (task.task_type) {
-    case RmfTaskType.TYPE_CLEAN: {
-      const desc = task.description as any;
-      return `[Clean] zone [${desc.cleaning_zone}]`;
+function getShortDescription(taskRequest: TaskRequest): string {
+  switch (taskRequest.category) {
+    case 'clean': {
+      return `[Clean] zone [${taskRequest.description.zone}]`;
     }
-    case RmfTaskType.TYPE_DELIVERY: {
-      const desc = task.description as any;
-      return `[Delivery] from [${desc.pickup_place_name}] to [${desc.dropoff_place_name}]`;
+    case 'delivery': {
+      return `[Delivery] from [${taskRequest.description.pickup.place}] to [${taskRequest.description.dropoff.place}]`;
     }
-    case RmfTaskType.TYPE_LOOP: {
-      const desc = task.description as any;
-      return `[Loop] from [${desc.start_name}] to [${desc.finish_name}]`;
+    case 'patrol': {
+      return `[Loop] from [${taskRequest.description.places[0]}] to [${taskRequest.description.places[1]}]`;
     }
     default:
-      return `[Unknown] type ${task.task_type}`;
+      return `[Unknown] type "${taskRequest.category}"`;
   }
 }
 
@@ -86,11 +79,11 @@ function FormToolbar({ onSelectFileClick }: FormToolbarProps) {
 }
 
 interface DeliveryTaskFormProps {
-  taskDesc: any;
+  taskDesc: TaskDescription;
   deliveryWaypoints: string[];
   dispensers: string[];
   ingestors: string[];
-  onChange(deliveryTaskDescription: any): void;
+  onChange(taskDesc: TaskDescription): void;
 }
 
 function DeliveryTaskForm({
@@ -111,16 +104,25 @@ function DeliveryTaskForm({
             freeSolo
             fullWidth
             options={deliveryWaypoints}
-            value={taskDesc.pickup_place_name}
+            value={taskDesc.pickup.place}
             onChange={(_ev, newValue) =>
               newValue !== null &&
               onChange({
                 ...taskDesc,
-                pickup_place_name: newValue,
+                pickup: {
+                  ...taskDesc.pickup,
+                  place: newValue,
+                },
               })
             }
             onBlur={(ev) =>
-              onChange({ ...taskDesc, pickup_place_name: (ev.target as HTMLInputElement).value })
+              onChange({
+                ...taskDesc,
+                pickup: {
+                  ...taskDesc.pickup,
+                  place: (ev.target as HTMLInputElement).value,
+                },
+              })
             }
             renderInput={(params) => (
               <TextField {...params} label="Pickup Location" margin="normal" />
@@ -139,16 +141,25 @@ function DeliveryTaskForm({
             freeSolo
             fullWidth
             options={dispensers}
-            value={taskDesc.pickup_dispenser}
+            value={taskDesc.pickup.handler}
             onChange={(_ev, newValue) =>
               newValue !== null &&
               onChange({
                 ...taskDesc,
-                pickup_dispenser: newValue,
+                pickup: {
+                  ...taskDesc.pickup,
+                  handler: newValue,
+                },
               })
             }
             onBlur={(ev) =>
-              onChange({ ...taskDesc, pickup_dispenser: (ev.target as HTMLInputElement).value })
+              onChange({
+                ...taskDesc,
+                pickup: {
+                  ...taskDesc.pickup,
+                  handler: (ev.target as HTMLInputElement).value,
+                },
+              })
             }
             renderInput={(params) => <TextField {...params} label="Dispenser" margin="normal" />}
           />
@@ -161,16 +172,25 @@ function DeliveryTaskForm({
             freeSolo
             fullWidth
             options={deliveryWaypoints}
-            value={taskDesc.dropoff_place_name}
+            value={taskDesc.dropoff.place}
             onChange={(_ev, newValue) =>
               newValue !== null &&
               onChange({
                 ...taskDesc,
-                dropoff_place_name: newValue,
+                dropoff: {
+                  ...taskDesc.dropoff,
+                  place: newValue,
+                },
               })
             }
             onBlur={(ev) =>
-              onChange({ ...taskDesc, dropoff_place_name: (ev.target as HTMLInputElement).value })
+              onChange({
+                ...taskDesc,
+                dropoff: {
+                  ...taskDesc.dropoff,
+                  place: (ev.target as HTMLInputElement).value,
+                },
+              })
             }
             renderInput={(params) => (
               <TextField {...params} label="Dropoff Location" margin="normal" />
@@ -189,16 +209,25 @@ function DeliveryTaskForm({
             freeSolo
             fullWidth
             options={ingestors}
-            value={taskDesc.dropoff_ingestor}
+            value={taskDesc.dropoff.handler}
             onChange={(_ev, newValue) =>
               newValue !== null &&
               onChange({
                 ...taskDesc,
-                dropoff_ingestor: newValue,
+                dropoff: {
+                  ...taskDesc.dropoff,
+                  handler: newValue,
+                },
               })
             }
             onBlur={(ev) =>
-              onChange({ ...taskDesc, dropoff_ingestor: (ev.target as HTMLInputElement).value })
+              onChange({
+                ...taskDesc,
+                dropoff: {
+                  ...taskDesc.dropoff,
+                  handler: (ev.target as HTMLInputElement).value,
+                },
+              })
             }
             renderInput={(params) => <TextField {...params} label="Ingestor" margin="normal" />}
           />
@@ -224,16 +253,19 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
         freeSolo
         fullWidth
         options={loopWaypoints}
-        value={taskDesc.start_name}
+        value={taskDesc.places[0]}
         onChange={(_ev, newValue) =>
           newValue !== null &&
           onChange({
             ...taskDesc,
-            start_name: newValue,
+            places: [newValue, taskDesc.places[1]],
           })
         }
         onBlur={(ev) =>
-          onChange({ ...taskDesc, start_name: (ev.target as HTMLInputElement).value })
+          onChange({
+            ...taskDesc,
+            places: [(ev.target as HTMLInputElement).value, taskDesc.places[1]],
+          })
         }
         renderInput={(params) => <TextField {...params} label="Start Location" margin="normal" />}
       />
@@ -244,16 +276,19 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
             freeSolo
             fullWidth
             options={loopWaypoints}
-            value={taskDesc.finish_name}
+            value={taskDesc.places[1]}
             onChange={(_ev, newValue) =>
               newValue !== null &&
               onChange({
                 ...taskDesc,
-                finish_name: newValue,
+                places: [taskDesc.places[0], newValue],
               })
             }
             onBlur={(ev) =>
-              onChange({ ...taskDesc, finish_name: (ev.target as HTMLInputElement).value })
+              onChange({
+                ...taskDesc,
+                places: [taskDesc.places[0], (ev.target as HTMLInputElement).value],
+              })
             }
             renderInput={(params) => (
               <TextField {...params} label="Finish Location" margin="normal" />
@@ -275,7 +310,7 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
             onChange={(_ev, val) => {
               onChange({
                 ...taskDesc,
-                num_loops: val,
+                rounds: val,
               });
             }}
           />
@@ -298,64 +333,68 @@ function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps
       freeSolo
       fullWidth
       options={cleaningZones}
-      value={taskDesc.cleaning_zone}
+      value={taskDesc.zone}
       onChange={(_ev, newValue) =>
         newValue !== null &&
         onChange({
           ...taskDesc,
-          cleaning_zone: newValue,
+          zone: newValue,
         })
       }
-      onBlur={(ev) =>
-        onChange({ ...taskDesc, cleaning_zone: (ev.target as HTMLInputElement).value })
-      }
+      onBlur={(ev) => onChange({ ...taskDesc, zone: (ev.target as HTMLInputElement).value })}
       renderInput={(params) => <TextField {...params} label="Cleaning Zone" margin="normal" />}
     />
   );
 }
 
-function defaultCleanTask(): any {
+function defaultCleanTask(): Record<string, any> {
   return {
-    cleaning_zone: '',
+    zone: '',
+    type: '',
   };
 }
 
-function defaultLoopsTask(): any {
+function defaultLoopsTask(): Record<string, any> {
   return {
-    start_name: '',
-    finish_name: '',
-    num_loops: 1,
+    places: ['', ''],
+    rounds: 1,
   };
 }
 
-function defaultDeliveryTask(): any {
+function defaultDeliveryTask(): Record<string, any> {
   return {
-    pickup_place_name: '',
-    pickup_dispenser: '',
-    dropoff_place_name: '',
-    dropoff_ingestor: '',
+    pickup: {
+      place: '',
+      handler: '',
+      payload: '',
+    },
+    dropoff: {
+      place: '',
+      handler: '',
+      payload: '',
+    },
   };
 }
 
-function defaultTaskDescription(taskType?: number): TaskDescription | undefined {
-  switch (taskType) {
-    case RmfTaskType.TYPE_CLEAN:
+function defaultTaskDescription(taskCategory: string): TaskDescription | undefined {
+  switch (taskCategory) {
+    case 'clean':
       return defaultCleanTask();
-    case RmfTaskType.TYPE_LOOP:
+    case 'patrol':
       return defaultLoopsTask();
-    case RmfTaskType.TYPE_DELIVERY:
+    case 'delivery':
       return defaultDeliveryTask();
     default:
       return undefined;
   }
 }
 
-function defaultTask(): any {
+function defaultTask(): TaskRequest {
   return {
-    description: defaultCleanTask(),
-    start_time: Math.floor(Date.now() / 1000),
-    task_type: -1,
-    priority: 0,
+    category: 'patrol',
+    description: defaultLoopsTask(),
+    unix_millis_earliest_start_time: Date.now(),
+    priority: { type: 'binary', value: 0 },
   };
 }
 
@@ -370,7 +409,7 @@ export interface CreateTaskFormProps
   deliveryWaypoints?: string[];
   dispensers?: string[];
   ingestors?: string[];
-  submitTasks?(tasks: any[]): Promise<void>;
+  submitTasks?(tasks: TaskRequest[]): Promise<void>;
   tasksFromFile?(): Promise<any[]> | any[];
   onSuccess?(tasks: any[]): void;
   onFail?(error: Error, tasks: any[]): void;
@@ -389,57 +428,54 @@ export function CreateTaskForm({
   ...otherProps
 }: CreateTaskFormProps): JSX.Element {
   const theme = useTheme();
-  const [tasks, setTasks] = React.useState<any[]>(() => [defaultTask()]);
+  const [taskRequests, setTaskRequests] = React.useState<TaskRequest[]>(() => [defaultTask()]);
   const [selectedTaskIdx, setSelectedTaskIdx] = React.useState(0);
   const taskTitles = React.useMemo(
-    () => tasks && tasks.map((t, i) => `${i + 1}: ${getShortDescription(t)}`),
-    [tasks],
+    () => taskRequests && taskRequests.map((t, i) => `${i + 1}: ${getShortDescription(t)}`),
+    [taskRequests],
   );
   const [submitting, setSubmitting] = React.useState(false);
-  const task = tasks[selectedTaskIdx];
+  const taskRequest = taskRequests[selectedTaskIdx];
 
   const updateTasks = () => {
-    setTasks((prev) => {
-      prev.splice(selectedTaskIdx, 1, task);
+    setTaskRequests((prev) => {
+      prev.splice(selectedTaskIdx, 1, taskRequest);
       return [...prev];
     });
   };
 
-  const handleTaskDescriptionChange = (newType: number, newDesc: TaskDescription) => {
-    task.task_type = newType;
-    task.description = newDesc;
+  const handleTaskDescriptionChange = (newCategory: string, newDesc: TaskDescription) => {
+    taskRequest.category = newCategory;
+    taskRequest.description = newDesc;
     updateTasks();
   };
 
   const renderTaskDescriptionForm = () => {
-    if ((task.task_type as number) === -1) {
-      return null;
-    }
-    switch (task.task_type) {
-      case RmfTaskType.TYPE_CLEAN:
+    switch (taskRequest.category) {
+      case 'clean':
         return (
           <CleanTaskForm
-            taskDesc={task.description as any}
+            taskDesc={taskRequest.description as any}
             cleaningZones={cleaningZones}
-            onChange={(desc) => handleTaskDescriptionChange(RmfTaskType.TYPE_CLEAN, desc)}
+            onChange={(desc) => handleTaskDescriptionChange('clean', desc)}
           />
         );
-      case RmfTaskType.TYPE_LOOP:
+      case 'patrol':
         return (
           <LoopTaskForm
-            taskDesc={task.description as any}
+            taskDesc={taskRequest.description as any}
             loopWaypoints={loopWaypoints}
-            onChange={(desc) => handleTaskDescriptionChange(RmfTaskType.TYPE_LOOP, desc)}
+            onChange={(desc) => handleTaskDescriptionChange('patrol', desc)}
           />
         );
-      case RmfTaskType.TYPE_DELIVERY:
+      case 'delivery':
         return (
           <DeliveryTaskForm
-            taskDesc={task.description as any}
+            taskDesc={taskRequest.description as any}
             deliveryWaypoints={deliveryWaypoints}
             dispensers={dispensers}
             ingestors={ingestors}
-            onChange={(desc) => handleTaskDescriptionChange(RmfTaskType.TYPE_DELIVERY, desc)}
+            onChange={(desc) => handleTaskDescriptionChange('delivery', desc)}
           />
         );
       default:
@@ -448,13 +484,13 @@ export function CreateTaskForm({
   };
 
   const handleTaskTypeChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    const newType = parseInt(ev.target.value);
-    const newDesc = defaultTaskDescription(newType);
+    const newCategory = ev.target.value;
+    const newDesc = defaultTaskDescription(newCategory);
     if (newDesc === undefined) {
       return;
     }
-    task.description = newDesc;
-    task.task_type = newType;
+    taskRequest.description = newDesc;
+    taskRequest.category = newCategory;
     updateTasks();
   };
 
@@ -462,18 +498,18 @@ export function CreateTaskForm({
   const handleSubmit: React.MouseEventHandler = async (ev) => {
     ev.preventDefault();
     if (!submitTasks) {
-      onSuccess && onSuccess(tasks);
+      onSuccess && onSuccess(taskRequests);
       return;
     }
     setSubmitting(true);
     try {
       setSubmitting(true);
-      await submitTasks(tasks);
+      await submitTasks(taskRequests);
       setSubmitting(false);
-      onSuccess && onSuccess(tasks);
+      onSuccess && onSuccess(taskRequests);
     } catch (e) {
       setSubmitting(false);
-      onFail && onFail(e as Error, tasks);
+      onFail && onFail(e as Error, taskRequests);
     }
   };
 
@@ -486,12 +522,12 @@ export function CreateTaskForm({
       if (newTasks.length === 0) {
         return;
       }
-      setTasks(newTasks);
+      setTaskRequests(newTasks);
       setSelectedTaskIdx(0);
     })();
   };
 
-  const submitText = tasks.length > 1 ? 'Submit All' : 'Submit';
+  const submitText = taskRequests.length > 1 ? 'Submit All' : 'Submit';
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -500,7 +536,7 @@ export function CreateTaskForm({
         submitting={submitting}
         confirmText={submitText}
         maxWidth="md"
-        fullWidth={tasks.length > 1}
+        fullWidth={taskRequests.length > 1}
         toolbar={<FormToolbar onSelectFileClick={handleSelectFileClick} />}
         onSubmit={handleSubmit}
         disableEnforceFocus
@@ -511,28 +547,31 @@ export function CreateTaskForm({
             <TextField
               select
               id="task-type"
-              label="Task Type"
+              label="Task Category"
               variant="outlined"
               fullWidth
               margin="normal"
-              value={(task.task_type as number) !== -1 ? task.task_type : ''}
+              value={taskRequest.category}
               onChange={handleTaskTypeChange}
             >
-              <MenuItem value={RmfTaskType.TYPE_CLEAN}>Clean</MenuItem>
-              <MenuItem value={RmfTaskType.TYPE_LOOP}>Loop</MenuItem>
-              <MenuItem value={RmfTaskType.TYPE_DELIVERY}>Delivery</MenuItem>
+              <MenuItem value="clean">Clean</MenuItem>
+              <MenuItem value="patrol">Loop</MenuItem>
+              <MenuItem value="delivery">Delivery</MenuItem>
             </TextField>
             <Grid container wrap="nowrap">
               <Grid style={{ flexGrow: 1 }}>
                 <DateTimePicker
                   inputFormat={'MM/dd/yyyy HH:mm'}
-                  value={new Date(task.start_time * 1000)}
+                  value={
+                    taskRequest.unix_millis_earliest_start_time
+                      ? new Date(taskRequest.unix_millis_earliest_start_time)
+                      : new Date()
+                  }
                   onChange={(date) => {
                     if (!date) {
                       return;
                     }
-                    // FIXME: needed because dateio typings default to moment
-                    task.start_time = Math.floor((date as unknown as Date).getTime() / 1000);
+                    taskRequest.unix_millis_earliest_start_time = date.valueOf();
                     updateTasks();
                   }}
                   label="Start Time"
@@ -550,9 +589,9 @@ export function CreateTaskForm({
                   id="priority"
                   label="Priority"
                   margin="normal"
-                  value={task.priority || 0}
+                  value={(taskRequest.priority as Record<string, any>)?.value || 0}
                   onChange={(_ev, val) => {
-                    task.priority = val;
+                    taskRequest.priority = { type: 'binary', value: val };
                     updateTasks();
                   }}
                 />

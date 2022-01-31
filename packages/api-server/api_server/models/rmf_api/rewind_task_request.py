@@ -4,10 +4,13 @@
 from __future__ import annotations
 
 from pydantic import BaseModel, Field, conint
+from typing_extensions import Literal
 
 
 class TaskRewindRequest(BaseModel):
-    type: str = Field(..., description="Indicate that this is a task rewind request")
+    type: Literal["rewind_task_request"] = Field(
+        ..., description="Indicate that this is a task rewind request"
+    )
     task_id: str = Field(
         ..., description="Specify the ID of the task that should rewind"
     )

@@ -5,10 +5,13 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 from . import models as mdl
 from .logger import logger as base_logger
+from .repositories import TaskRepository
 from .rmf_io import fleet_events, task_events
 
 app = FastAPI()
 logger = base_logger.getChild("RmfGatewayApp")
+user: mdl.User = mdl.User(username="_rmf_gateway_app", is_admin=True)
+task_repo = TaskRepository(user)
 
 
 async def process_msg(msg: Dict[str, Any]) -> None:
@@ -21,11 +24,11 @@ async def process_msg(msg: Dict[str, Any]) -> None:
 
     if payload_type == "task_state_update":
         task_state = mdl.TaskState(**msg["data"])
-        await task_state.save()
+        await task_repo.save_task_state(task_state)
         task_events.task_states.on_next(task_state)
     elif payload_type == "task_log_update":
         task_log = mdl.TaskEventLog(**msg["data"])
-        await task_log.save()
+        await task_repo.save_task_log(task_log)
         task_events.task_event_logs.on_next(task_log)
     elif payload_type == "fleet_state_update":
         fleet_state = mdl.FleetState(**msg["data"])

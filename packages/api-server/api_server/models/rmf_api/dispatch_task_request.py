@@ -4,10 +4,13 @@
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
+from typing_extensions import Literal
 
 from . import task_request
 
 
 class DispatchTaskRequest(BaseModel):
-    type: str = Field(..., description="Indicate that this is a task dispatch request")
+    type: Literal["dispatch_task_request"] = Field(
+        ..., description="Indicate that this is a task dispatch request"
+    )
     request: task_request.TaskRequest

@@ -3,15 +3,14 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 from pydantic import BaseModel, Field
+from typing_extensions import Literal
 
 from . import task_log
 
 
 class TaskEventLogUpdate(BaseModel):
-    type: Optional[str] = Field(
-        None, description="Indicate that this is an event log update"
+    type: Literal["task_log_update"] = Field(
+        ..., description="Indicate that this is an event log update"
     )
-    data: Optional[task_log.TaskEventLog] = None
+    data: task_log.TaskEventLog
