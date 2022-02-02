@@ -4,7 +4,10 @@
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
+from typing_extensions import Literal
 
 
 class TaskDiscoveryRequest(BaseModel):
-    type: str = Field(..., description="Indicate that this is a task discovery request")
+    type: Literal["task_discovery_request"] = Field(
+        ..., description="Indicate that this is a task discovery request"
+    )

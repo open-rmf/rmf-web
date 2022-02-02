@@ -2,26 +2,19 @@ from typing import List, Optional, Tuple, cast
 
 from fastapi import Depends
 from tortoise.query_utils import Prefetch
-from tortoise.queryset import QuerySet
 
 from api_server.authenticator import user_dep
-from api_server.models import FleetLog, FleetState, LogEntry, Pagination, User
+from api_server.models import FleetLog, FleetState, LogEntry, User
 from api_server.models import tortoise_models as ttm
-from api_server.query import add_pagination
 
 
 class FleetRepository:
     def __init__(self, user: User):
         self.user = user
 
-    async def query_fleet_states(
-        self, query: QuerySet[ttm.FleetState], pagination: Optional[Pagination] = None
-    ) -> List[FleetState]:
-        # TODO: enforce with authz
-        if pagination:
-            query = add_pagination(query, pagination)
-        results = await query.values_list("data", flat=True)
-        return [FleetState(**r) for r in results]
+    async def get_all_fleets(self) -> List[FleetState]:
+        db_states = await ttm.FleetState.all().values_list("data", flat=True)
+        return [FleetState(**s) for s in db_states]
 
     async def get_fleet_state(self, name: str) -> Optional[FleetState]:
         # TODO: enforce with authz

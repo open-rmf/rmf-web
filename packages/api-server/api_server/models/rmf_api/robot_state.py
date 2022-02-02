@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field, confloat
 from . import location_2D
 
 
-class Status2(Enum):
+class Status(Enum):
     uninitialized = "uninitialized"
     offline = "offline"
     shutdown = "shutdown"
@@ -30,7 +30,7 @@ class Issue(BaseModel):
 
 class RobotState(BaseModel):
     name: Optional[str] = None
-    status: Optional[Status2] = Field(
+    status: Optional[Status] = Field(
         None, description="A simple token representing the status of the robot"
     )
     task_id: Optional[str] = Field(

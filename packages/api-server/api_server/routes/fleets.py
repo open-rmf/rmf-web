@@ -1,33 +1,23 @@
-from typing import List, Optional, Tuple, cast
+from typing import List, Tuple, cast
 
-from fastapi import Depends, HTTPException, Query
+from fastapi import Depends, HTTPException
 from rx import operators as rxops
 from rx.subject.replaysubject import ReplaySubject
 
-from api_server.dependencies import between_query, pagination_query, sio_user
+from api_server.dependencies import between_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.models import FleetLog, FleetState, Pagination
-from api_server.models.tortoise_models import FleetState as DbFleetState
+from api_server.models import FleetLog, FleetState
 from api_server.repositories import FleetRepository, fleet_repo_dep
 from api_server.rmf_io import fleet_events
 
 router = FastIORouter(tags=["Fleets"])
 
-router = FastIORouter(tags=["Fleets"])
-
 
 @router.get("", response_model=List[FleetState])
-async def query_fleets(
+async def get_fleets(
     repo: FleetRepository = Depends(fleet_repo_dep),
-    pagination: Pagination = Depends(pagination_query),
-    fleet_name: Optional[str] = Query(
-        None, description="comma separated list of fleet names"
-    ),
 ):
-    filters = {}
-    if fleet_name is not None:
-        filters["name__in"] = fleet_name.split(",")
-    return await repo.query_fleet_states(DbFleetState.filter(**filters), pagination)
+    return await repo.get_all_fleets()
 
 
 @router.get("/{name}/state", response_model=FleetState)

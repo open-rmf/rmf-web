@@ -4,10 +4,13 @@
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
+from typing_extensions import Literal
 
 
 class TaskLogRequest(BaseModel):
-    type: str = Field(..., description="Indicate that this is a task log request")
+    type: Literal["task_log_request"] = Field(
+        ..., description="Indicate that this is a task log request"
+    )
     task_id: str = Field(
         ..., description="Specify the ID of the task whose log should be fetched"
     )

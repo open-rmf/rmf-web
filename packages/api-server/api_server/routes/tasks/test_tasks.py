@@ -2,8 +2,9 @@ from unittest.mock import patch
 from uuid import uuid4
 
 from api_server import models as mdl
+from api_server.repositories import TaskRepository
 from api_server.rmf_io import task_events, tasks_service
-from api_server.test import AppFixture, make_task_log, make_task_state
+from api_server.test import AppFixture, make_task_log, make_task_state, test_user
 
 
 class TestTasksRoute(AppFixture):
@@ -13,12 +14,13 @@ class TestTasksRoute(AppFixture):
         task_ids = [uuid4()]
         cls.task_states = [make_task_state(task_id=f"test_{x}") for x in task_ids]
         cls.task_logs = [make_task_log(task_id=f"test_{x}") for x in task_ids]
+        repo = TaskRepository(test_user)
 
         async def prepare_db():
             for t in cls.task_states:
-                await t.save()
+                await repo.save_task_state(t)
             for t in cls.task_logs:
-                await t.save()
+                await repo.save_task_log(t)
 
         cls.run_in_app_loop(prepare_db())
 
@@ -120,7 +122,7 @@ class TestTasksRoute(AppFixture):
 
     def test_activity_discovery(self):
         with patch.object(tasks_service, "call") as mock:
-            mock.return_value = mdl.ActivityDiscovery().json(exclude_none=True)
+            mock.return_value = "{}"
             resp = self.session.post(
                 "/tasks/activity_discovery",
                 data=mdl.ActivityDiscoveryRequest(
@@ -131,9 +133,7 @@ class TestTasksRoute(AppFixture):
 
     def test_cancel_task(self):
         with patch.object(tasks_service, "call") as mock:
-            mock.return_value = mdl.TaskCancelResponse.parse_obj(
-                {"success": True}
-            ).json(exclude_none=True)
+            mock.return_value = '{ "success": true }'
             resp = self.session.post(
                 "/tasks/activity_discovery",
                 data=mdl.ActivityDiscoveryRequest(
@@ -142,25 +142,53 @@ class TestTasksRoute(AppFixture):
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
-    def test_dispatch_task(self):
+    def post_task_request(self):
+        return self.session.post(
+            "/tasks/dispatch_task",
+            data=mdl.DispatchTaskRequest(
+                type="dispatch_task_request",
+                request=mdl.TaskRequest(
+                    category="test",
+                    description="description",
+                ),  # type: ignore
+            ).json(exclude_none=True),
+        )
+
+    def test_dispatch_task_success(self):
         with patch.object(tasks_service, "call") as mock:
-            mock.return_value = mdl.TaskDispatchResponse.parse_obj(
-                {"success": True}
-            ).json(exclude_none=True)
-            resp = self.session.post(
-                "/tasks/dispatch_task",
-                data=mdl.DispatchTaskRequest(
-                    type="dispatch_task_request",
-                    request=mdl.TaskRequest(category="test", description="description"),  # type: ignore
-                ).json(exclude_none=True),
+            mock.return_value = (
+                '{ "success": true, "state": { "booking": { "id": "test_id" } } }'
             )
+            resp = self.post_task_request()
             self.assertEqual(200, resp.status_code, resp.content)
+
+    def test_dispatch_task_fail_with_multiple_errors(self):
+        # fails with multiple errors
+        with patch.object(tasks_service, "call") as mock:
+            mock.return_value = """{
+                "success": false,
+                "errors": [
+                    { "code": 1, "category": "test_error_1", "detail": "detail 1" },
+                    { "code": 2, "category": "test_error_2", "detail": "detail 2" }
+                ]
+            }
+            """
+            resp = self.post_task_request()
+            self.assertEqual(500, resp.status_code, resp.content)
+
+    def test_dispatch_task_fail_with_no_errors(self):
+        # fails with multiple errors
+        with patch.object(tasks_service, "call") as mock:
+            mock.return_value = """{
+                "success": false
+            }
+            """
+            resp = self.post_task_request()
+            self.assertEqual(500, resp.status_code, resp.content)
 
     def test_interrupt_task(self):
         with patch.object(tasks_service, "call") as mock:
-            mock.return_value = mdl.TaskInterruptionResponse.parse_obj(
-                {"success": True, "token": "token"}
-            ).json(exclude_none=True)
+            mock.return_value = '{ "success": True, "token": "token" }'
             resp = self.session.post(
                 "/tasks/interrupt_task",
                 data=mdl.TaskInterruptionRequest(  # type: ignore
@@ -171,9 +199,7 @@ class TestTasksRoute(AppFixture):
 
     def test_kill_task(self):
         with patch.object(tasks_service, "call") as mock:
-            mock.return_value = mdl.TaskKillResponse.parse_obj({"success": True}).json(
-                exclude_none=True
-            )
+            mock.return_value = '{ "success": true }'
             resp = self.session.post(
                 "/tasks/kill_task",
                 data=mdl.TaskKillRequest(  # type: ignore
@@ -184,9 +210,7 @@ class TestTasksRoute(AppFixture):
 
     def test_resume_task(self):
         with patch.object(tasks_service, "call") as mock:
-            mock.return_value = mdl.TaskResumeResponse.parse_obj(
-                {"success": True}
-            ).json(exclude_none=True)
+            mock.return_value = '{ "success": true }'
             resp = self.session.post(
                 "/tasks/resume_task",
                 data=mdl.TaskResumeRequest().json(exclude_none=True),  # type: ignore
@@ -195,9 +219,7 @@ class TestTasksRoute(AppFixture):
 
     def test_rewind_task(self):
         with patch.object(tasks_service, "call") as mock:
-            mock.return_value = mdl.TaskRewindResponse.parse_obj(
-                {"success": True}
-            ).json(exclude_none=True)
+            mock.return_value = '{ "success": true }'
             resp = self.session.post(
                 "/tasks/rewind_task",
                 data=mdl.TaskRewindRequest(
@@ -210,9 +232,7 @@ class TestTasksRoute(AppFixture):
 
     def test_skip_phase(self):
         with patch.object(tasks_service, "call") as mock:
-            mock.return_value = mdl.SkipPhaseResponse.parse_obj(
-                {"success": True, "token": "token"}
-            ).json(exclude_none=True)
+            mock.return_value = '{ "success": True, "token": "token" }'
             resp = self.session.post(
                 "/tasks/skip_phase",
                 data=mdl.TaskPhaseSkipRequest(  # type: ignore
@@ -223,7 +243,7 @@ class TestTasksRoute(AppFixture):
 
     def test_task_discovery(self):
         with patch.object(tasks_service, "call") as mock:
-            mock.return_value = mdl.TaskDiscovery().json(exclude_none=True)  # type: ignore
+            mock.return_value = "{}"
             resp = self.session.post(
                 "/tasks/task_discovery",
                 data=mdl.TaskDiscoveryRequest(type="task_discovery_request").json(
@@ -234,9 +254,7 @@ class TestTasksRoute(AppFixture):
 
     def test_undo_skip_phase(self):
         with patch.object(tasks_service, "call") as mock:
-            mock.return_value = mdl.UndoPhaseSkipResponse.parse_obj(
-                {"success": True}
-            ).json(exclude_none=True)
+            mock.return_value = '{ "success": True }'
             resp = self.session.post(
                 "/tasks/undo_skip_phase",
                 data=mdl.UndoPhaseSkipRequest(type="undo_phase_skip_request").json(exclude_none=True),  # type: ignore

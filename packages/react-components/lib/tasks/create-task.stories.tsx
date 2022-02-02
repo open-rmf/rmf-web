@@ -1,18 +1,18 @@
 import { Meta, Story } from '@storybook/react';
-import type { SubmitTask } from 'api-client';
+import type { TaskRequest } from 'api-client';
 import React from 'react';
 import { CreateTaskForm, CreateTaskFormProps } from './create-task';
-import { makeSubmitTask } from './test-data.spec';
+import { makeTaskRequest } from './test-data.spec';
 
 export default {
   title: 'Tasks/Create Task',
   component: CreateTaskForm,
 } as Meta;
 
-function makeTasks(): SubmitTask[] {
+function makeTasks(): TaskRequest[] {
   const tasks = [];
   for (let i = 0; i < 100; i++) {
-    tasks.push(makeSubmitTask());
+    tasks.push(makeTaskRequest());
   }
   return tasks;
 }

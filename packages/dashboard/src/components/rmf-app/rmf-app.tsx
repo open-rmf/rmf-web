@@ -106,7 +106,7 @@ function FleetsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
     }
     let cancel = false;
     (async () => {
-      const results = await fleetsApi.queryFleetsFleetsGet();
+      const results = await fleetsApi.getFleetsFleetsGet();
       if (cancel || results.status !== 200) return;
       setFleets(results.data);
     })();

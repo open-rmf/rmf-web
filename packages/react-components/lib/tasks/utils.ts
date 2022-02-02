@@ -53,25 +53,3 @@ export function parseTaskDetail(task: TaskState, category?: string) {
     return {};
   }
 }
-
-export function getState(task: TaskState) {
-  // TODO - handle killed and cancelled states
-  if (task.phases && task.completed?.length === Object.keys(task.phases).length) return 'Completed';
-  if (task.active) return 'Underway';
-  return '';
-}
-
-export function getTreeViewHeader(category: TaskState['category']) {
-  switch (category) {
-    case 'Loop':
-      return 'Loop Sequence';
-    case 'Clean':
-      return 'Clean Sequence';
-    case 'Delivery':
-    // TODO - not sure about return structure,
-    // once able to receive delivery task
-    // come back again.
-    default:
-      return '';
-  }
-}

@@ -24,7 +24,7 @@ class TestFleetsRoute(AppFixture):
         resp = self.session.get(f"/fleets?fleet_name={self.fleet_states[0].name}")
         self.assertEqual(200, resp.status_code)
         resp_json = resp.json()
-        self.assertEqual(len(resp_json), 1)
+        self.assertEqual(2, len(resp_json))
         self.assertEqual(self.fleet_states[0].name, resp_json[0]["name"])
 
     def test_get_fleet_state(self):

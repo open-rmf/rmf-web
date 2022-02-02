@@ -4,10 +4,13 @@
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
+from typing_extensions import Literal
 
 from . import fleet_state
 
 
 class FleetStateUpdate(BaseModel):
-    type: str = Field(..., description="Indicate that this is a fleet state update")
+    type: Literal["fleet_state_update"] = Field(
+        ..., description="Indicate that this is a fleet state update"
+    )
     data: fleet_state.FleetState

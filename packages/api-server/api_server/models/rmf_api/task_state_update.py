@@ -4,10 +4,13 @@
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
+from typing_extensions import Literal
 
 from . import task_state
 
 
 class TaskStateUpdate(BaseModel):
-    type: str = Field(..., description="Indicate that this is a task state update")
+    type: Literal["task_state_update"] = Field(
+        ..., description="Indicate that this is a task state update"
+    )
     data: task_state.TaskState

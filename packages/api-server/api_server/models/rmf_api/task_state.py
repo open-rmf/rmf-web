@@ -64,6 +64,12 @@ class Assignment(BaseModel):
     expected_robot_name: Optional[str] = None
 
 
+class Dispatch(BaseModel):
+    status: Status1
+    assignment: Optional[Assignment] = None
+    errors: Optional[List[error.Error]] = None
+
+
 class EstimateMillis(BaseModel):
     __root__: conint(ge=0) = Field(
         ...,
@@ -143,12 +149,6 @@ class SkipPhaseRequest(BaseModel):
         None,
         description="Information about an undo skip request that applied to this request",
     )
-
-
-class Dispatch(BaseModel):
-    status: Status1
-    assignment: Optional[Assignment] = None
-    errors: Optional[List[error.Error]] = None
 
 
 class Phase(BaseModel):
