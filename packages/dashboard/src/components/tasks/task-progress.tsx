@@ -14,6 +14,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TreeItem from '@mui/lab/TreeItem';
 import { format } from 'date-fns';
 import { TimelineDotProps } from '@mui/lab';
+import React from 'react';
 
 const prefix = 'task-progress';
 const classes = {
@@ -26,28 +27,36 @@ interface TaskLogProps {
   fetchTaskLogs?: () => Promise<never[] | undefined>;
 }
 
-const Item = styled((props: PaperProps) => <Paper variant="outlined" {...props} />)(
-  ({ theme }) => ({
-    ...theme.typography.body2,
-    color: theme.palette.text.secondary,
-    width: 290,
-  }),
-);
+const Item = styled((props: PaperProps) => <Paper {...props} />)(({ theme }) => ({
+  ...theme.typography.body2,
+  color: theme.palette.text.secondary,
+  width: 290,
+}));
 
 function nestedEvents(eventsStates: EventState[], child: number) {
   const deps = eventsStates[child] ? eventsStates[child].deps : [];
   return (
-    <Item key={`event-${child}`} elevation={3}>
-      <TreeItem nodeId={`parent-${child}`} label={eventsStates[child].name}>
-        {deps?.map((id) => {
-          if (eventsStates[id].deps?.length) {
-            nestedEvents(eventsStates, id);
-          } else {
-            return <TreeItem nodeId={`child-${id}`} label={eventsStates[id].name}></TreeItem>;
-          }
-        })}
-      </TreeItem>
-    </Item>
+    // <Item key={`event-${child}`} elevation={3}>
+    <TreeItem
+      key={`event-${child}`}
+      nodeId={`parent-${eventsStates[child].name}`}
+      label={eventsStates[child].name}
+    >
+      {deps?.map((id) => {
+        if (eventsStates[id].deps?.length) {
+          nestedEvents(eventsStates, id);
+        } else {
+          return (
+            <TreeItem
+              key={`event--${child}`}
+              nodeId={`child-${id}`}
+              label={eventsStates[id].name}
+            ></TreeItem>
+          );
+        }
+      })}
+    </TreeItem>
+    // </Item>
   );
 }
 
@@ -74,17 +83,21 @@ export function TaskProgress(props: TaskLogProps) {
   const phaseIds = taskLog.phases ? Object.keys(taskLog.phases) : [];
 
   return (
-    <>
-      <Timeline className={classes.root} position="right">
+    <Paper
+      sx={{ padding: theme.spacing(1) }}
+      variant="outlined"
+      key={`task - ${taskState.booking.id}`}
+    >
+      <Timeline className={classes.root} position="right" key={`task - ${taskState.booking.id}`}>
         {phaseIds.length > 0 ? (
           phaseIds.map((id: string) => {
             const phaseStateObj: any = taskState.phases ? taskState.phases[id] : null;
             const eventsStates = phaseStateObj ? phaseStateObj.events : {};
             const eventIds = eventsStates ? Object.keys(eventsStates) : [];
             return (
-              <>
+              <React.Fragment key={`task - ${taskState.booking.id}`}>
                 {eventIds.length > 0 ? (
-                  <TimelineItem>
+                  <TimelineItem key={`timeline-item-${id}`}>
                     <TimelineOppositeContent color="text.secondary">
                       {format(
                         new Date(phaseStateObj.original_estimate_millis * 1000),
@@ -92,7 +105,6 @@ export function TaskProgress(props: TaskLogProps) {
                       )}
                     </TimelineOppositeContent>
                     <TimelineSeparator>
-                      {/* TODO: override default colors with our theme colors */}
                       <TimelineDot
                         sx={{
                           // backgroundColor: theme.palette.error.dark,
@@ -107,6 +119,7 @@ export function TaskProgress(props: TaskLogProps) {
                         aria-label="file system navigator"
                         defaultCollapseIcon={<ExpandMoreIcon />}
                         defaultExpandIcon={<ChevronRightIcon />}
+                        key={`tree-item-${id}`}
                       >
                         {eventIds.map((idx) => {
                           return nestedEvents(eventsStates, parseInt(idx));
@@ -119,7 +132,7 @@ export function TaskProgress(props: TaskLogProps) {
                     No Event Logs
                   </Typography>
                 )}
-              </>
+              </React.Fragment>
             );
           })
         ) : (
@@ -130,6 +143,6 @@ export function TaskProgress(props: TaskLogProps) {
           </div>
         )}
       </Timeline>
-    </>
+    </Paper>
   );
 }

@@ -58,7 +58,7 @@ export function TaskLogs(props: TaskLogProps) {
           const eventsStates = phaseStateObj ? phaseStateObj.events : {};
 
           return (
-            <>
+            <Paper sx={{ padding: theme.spacing(1) }} variant="outlined" key={`Phase - ${id}`}>
               <Typography variant="h6" fontWeight="bold" marginTop={3}>
                 {phaseStateObj.category}
               </Typography>
@@ -127,7 +127,7 @@ export function TaskLogs(props: TaskLogProps) {
                   No Event Logs
                 </Typography>
               )}
-            </>
+            </Paper>
           );
         })
       ) : (
