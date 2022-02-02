@@ -36,7 +36,6 @@ const Item = styled((props: PaperProps) => <Paper {...props} />)(({ theme }) => 
 function nestedEvents(eventsStates: EventState[], child: number) {
   const deps = eventsStates[child] ? eventsStates[child].deps : [];
   return (
-    // <Item key={`event-${child}`} elevation={3}>
     <TreeItem
       key={`event-${child}`}
       nodeId={`parent-${eventsStates[child].name}`}
@@ -56,7 +55,6 @@ function nestedEvents(eventsStates: EventState[], child: number) {
         }
       })}
     </TreeItem>
-    // </Item>
   );
 }
 

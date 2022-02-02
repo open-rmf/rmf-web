@@ -25,7 +25,6 @@ import { CreateTaskForm, CreateTaskFormProps, TaskInfo, TaskTable } from 'react-
 import { UserProfileContext } from 'rmf-auth';
 import { AppControllerContext } from '../app-contexts';
 import { Enforcer } from '../permissions';
-import { parseTasksFile } from './utils';
 import { TaskLogs } from './task-logs';
 import { TaskProgress } from './task-progress';
 import { RmfIngressContext } from '../rmf-app';
@@ -255,13 +254,12 @@ export function TaskPanel({
         <Paper className={classes.detailPanelContainer}>
           {selectedTask ? (
             <>
-              <TaskInfo task={selectedTask} showLogs={showLogs} onShowLogs={setShowLogs} />
+              <TaskInfo task={selectedTask} />
               <Paper className={classes.progressPanelContainer}>
-                {showLogs && selectedTaskLog && selectedTaskState ? (
+                {selectedTaskLog && selectedTaskState ? (
                   <TaskProgress taskLog={selectedTaskLog} taskState={selectedTaskState} />
                 ) : null}
               </Paper>
-              <TaskInfo task={selectedTask} />
               <Button
                 style={{ marginTop: theme.spacing(1) }}
                 fullWidth
@@ -279,7 +277,7 @@ export function TaskPanel({
           )}
         </Paper>
         <Paper className={classes.logsPanelContainer}>
-          {showLogs && selectedTaskLog && selectedTaskState ? (
+          {selectedTaskLog && selectedTaskState ? (
             <TaskLogs taskLog={selectedTaskLog} taskState={selectedTaskState} />
           ) : null}
         </Paper>
@@ -294,7 +292,7 @@ export function TaskPanel({
           open={openCreateTaskForm}
           onClose={() => setOpenCreateTaskForm(false)}
           submitTasks={submitTasks}
-          tasksFromFile={tasksFromFile}
+          // tasksFromFile={tasksFromFile}
           onSuccess={() => {
             setOpenCreateTaskForm(false);
             setSnackbarSeverity('success');
