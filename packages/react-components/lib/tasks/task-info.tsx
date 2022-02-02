@@ -128,9 +128,9 @@ export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
           {showLogs ? 'CLOSE LOGS' : 'SHOW LOGS'}
         </Button>
       </div> */}
-      <div style={{ padding: '4px' }}>
+      {/* <div style={{ padding: '4px' }}>
         <TaskTimeline taskState={task} />
-      </div>
+      </div> */}
     </StyledDiv>
   );
 }
