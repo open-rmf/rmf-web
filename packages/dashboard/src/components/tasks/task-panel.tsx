@@ -58,7 +58,7 @@ const StyledDiv = styled('div')(({ theme }) => ({
     width: '100%',
     flex: '1 1 100%',
     flexDirection: 'column',
-    maxHeight: '75%',
+    maxHeight: '95%',
     overflow: 'auto',
   },
   [`& .${classes.enabledToggleButton}`]: {
