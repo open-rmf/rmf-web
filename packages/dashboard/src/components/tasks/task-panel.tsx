@@ -26,7 +26,6 @@ import { UserProfileContext } from 'rmf-auth';
 import { AppControllerContext } from '../app-contexts';
 import { Enforcer } from '../permissions';
 import { TaskLogs } from './task-logs';
-import { TaskProgress } from './task-progress';
 import { RmfIngressContext } from '../rmf-app';
 import { parseTasksFile } from './utils';
 
@@ -254,11 +253,8 @@ export function TaskPanel({
         <Paper className={classes.detailPanelContainer}>
           {selectedTask ? (
             <>
-              <TaskInfo task={selectedTask} />
               <Paper className={classes.progressPanelContainer}>
-                {selectedTaskLog && selectedTaskState ? (
-                  <TaskProgress taskLog={selectedTaskLog} taskState={selectedTaskState} />
-                ) : null}
+                {selectedTaskState ? <TaskInfo task={selectedTaskState} /> : null}
               </Paper>
               <Button
                 style={{ marginTop: theme.spacing(1) }}
