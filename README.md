@@ -33,7 +33,7 @@ Refer to the following documentations:
 
 ## Bootstrap
 
-Before running the commands, make sure that rmf is sourced. We recommend using an `npm` version lower than 7.0.0 ([more information](https://github.com/open-rmf/rmf-web/issues/232)).
+Before running the commands, make sure that rmf is sourced.
 ```bash
 git clone https://github.com/open-rmf/rmf-web
 cd rmf-web
