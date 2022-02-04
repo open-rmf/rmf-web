@@ -107,7 +107,11 @@ async def post_cancel_task(
     return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
 
 
-@router.post("/dispatch_task", response_model=mdl.TaskDispatchResponse)
+@router.post(
+    "/dispatch_task",
+    response_model=mdl.TaskDispatchResponseItem,
+    responses={400: {"model": mdl.TaskDispatchResponseItem1}},
+)
 async def post_dispatch_task(
     request: mdl.DispatchTaskRequest = Body(...),
     task_repo: TaskRepository = Depends(task_repo_dep),
@@ -116,16 +120,11 @@ async def post_dispatch_task(
         await tasks_service.call(request.json(exclude_none=True))
     )
     if not resp.__root__.success:
-        errors = cast(mdl.TaskDispatchResponseItem1, resp.__root__).errors
-        if errors is None:
-            raise HTTPException(500)
-        errmsgs = [e.detail for e in errors if e.detail]
-        raise HTTPException(500, ",".join(errmsgs))
-    task_state = cast(mdl.TaskDispatchResponseItem, resp.__root__).state
-    if not task_state:
-        raise HTTPException(500, "Task request succeeded but no task state returned")
-    await task_repo.save_task_state(task_state)
-    return task_state
+        return RawJSONResponse(resp.json(), 400)
+    await task_repo.save_task_state(
+        cast(mdl.TaskDispatchResponseItem, resp.__root__).state
+    )
+    return resp
 
 
 @router.post("/interrupt_task", response_model=mdl.TaskInterruptionResponse)
