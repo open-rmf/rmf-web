@@ -13,7 +13,7 @@ import {
   Typography,
   styled,
 } from '@mui/material';
-import type { RobotState } from 'api-client';
+import type { RobotState, TaskState } from 'api-client';
 import { Refresh as RefreshIcon } from '@mui/icons-material';
 import React from 'react';
 
@@ -60,44 +60,11 @@ const StyledPaper = styled((props: PaperProps) => <Paper {...props} />)(({ theme
 
 interface RobotRowProps {
   robot: RobotState;
+  fetchSelectedTask?: (taskId: string) => Promise<TaskState | undefined>;
   onClick: React.MouseEventHandler<HTMLTableRowElement>;
 }
 
-const returnLocationCells = (robot: RobotState) => {
-  // const taskDescription = robot.tasks[0].summary.task_profile.description;
-  // switch (taskTypeToStr(taskDescription.task_type.type)) {
-  //   case 'Loop':
-  //     return (
-  //       <>
-  //         <TableCell>{taskDescription.loop.start_name}</TableCell>
-  //         <TableCell>{taskDescription.loop.finish_name}</TableCell>
-  //       </>
-  //     );
-  //   case 'Delivery':
-  //     return (
-  //       <>
-  //         <TableCell>{taskDescription.delivery.pickup_place_name}</TableCell>
-  //         <TableCell>{taskDescription.delivery.dropoff_place_name}</TableCell>
-  //       </>
-  //     );
-  //   case 'Clean':
-  //     return (
-  //       <>
-  //         <TableCell>-</TableCell>
-  //         <TableCell>{taskDescription.clean.start_waypoint}</TableCell>
-  //       </>
-  //     );
-  //   default:
-  return (
-    <>
-      <TableCell>-</TableCell>
-      <TableCell>-</TableCell>
-    </>
-  );
-  // }
-};
-
-function RobotRow({ robot, onClick }: RobotRowProps) {
+function RobotRow({ robot, fetchSelectedTask, onClick }: RobotRowProps) {
   const getRobotModeClass = (robotMode: string) => {
     switch (robotMode) {
       case 'emergency':
@@ -117,14 +84,25 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
   let robotModeClass = '';
   if (robot.status) robotModeClass = getRobotModeClass(robot.status);
 
+  const [currentTask, setCurrentTask] = React.useState<TaskState | undefined>();
+  React.useEffect(() => {
+    (async () => {
+      if (robot.task_id) {
+        fetchSelectedTask && setCurrentTask(await fetchSelectedTask(robot.task_id));
+      }
+    })();
+  });
+
   if (robot.task_id) {
     return (
       <>
         <TableRow onClick={onClick} className={classes.tableRow}>
           <TableCell>{robot.name}</TableCell>
-          <TableCell>{'-'}</TableCell>
-          <TableCell>{'-'}</TableCell>
-          <TableCell>{'-'}</TableCell>
+          <TableCell>
+            {currentTask && currentTask.estimate_millis
+              ? new Date(currentTask.estimate_millis).toISOString().substr(11, 8)
+              : '-'}
+          </TableCell>
           <TableCell>{robot.battery ? robot.battery * 100 : 0}%</TableCell>
           <TableCell className={robotModeClass}>{robot.status}</TableCell>
         </TableRow>
@@ -135,13 +113,7 @@ function RobotRow({ robot, onClick }: RobotRowProps) {
       <>
         <TableRow onClick={onClick} className={classes.tableRow}>
           <TableCell>{robot.name}</TableCell>
-          {returnLocationCells(robot)}
-          <TableCell>
-            end time
-            {/* {robot.tasks
-              ? robot.tasks[0].summary.end_time.sec - robot.tasks[0].summary.start_time.sec
-              : '-'} */}
-          </TableCell>
+          <TableCell>{'-'}</TableCell>
           <TableCell>{robot.battery ? robot.battery * 100 : 0}%</TableCell>
           <TableCell className={robotModeClass}>{robot.status}</TableCell>
         </TableRow>
@@ -161,6 +133,7 @@ export interface RobotTableProps extends PaperProps {
    * contain the robots for the current page.
    */
   robots: RobotState[];
+  fetchSelectedTask?: (taskId: string) => Promise<TaskState | undefined>;
   paginationOptions?: PaginationOptions;
   onRefreshClick?: React.MouseEventHandler<HTMLButtonElement>;
   onRobotClick?(ev: React.MouseEvent<HTMLDivElement>, robot: RobotState): void;
@@ -168,6 +141,7 @@ export interface RobotTableProps extends PaperProps {
 
 export function RobotTable({
   robots,
+  fetchSelectedTask,
   paginationOptions,
   onRefreshClick,
   onRobotClick,
@@ -188,8 +162,6 @@ export function RobotTable({
           <TableHead>
             <TableRow>
               <TableCell>Robot Name</TableCell>
-              <TableCell>Start Location</TableCell>
-              <TableCell>Destination</TableCell>
               <TableCell>Active Task Duration</TableCell>
               <TableCell>Battery</TableCell>
               <TableCell>State</TableCell>
@@ -201,6 +173,7 @@ export function RobotTable({
                 <RobotRow
                   key={robot_id}
                   robot={robot}
+                  fetchSelectedTask={fetchSelectedTask}
                   onClick={(ev) => onRobotClick && onRobotClick(ev, robot)}
                 />
               ))}

@@ -36,69 +36,6 @@ export function RobotInfo({ robot, fetchSelectedTask }: RobotInfoProps): JSX.Ele
     })();
   });
 
-  // function returnTaskLocations(task: TaskSummary): string {
-  //   switch (taskTypeToStr(task.task_profile.description.task_type.type)) {
-  //     case 'Loop':
-  //       return task.task_profile.description.loop.start_name;
-  //     case 'Delivery':
-  //       return task.task_profile.description.delivery.pickup_place_name;
-  //     default:
-  //       return '-';
-  //   }
-  // }
-
-  // function returnTaskDestinations(task: TaskSummary): string {
-  //   switch (taskTypeToStr(task.task_profile.description.task_type.type)) {
-  //     case 'Loop':
-  //       return task.task_profile.description.loop.finish_name;
-  //     case 'Delivery':
-  //       return task.task_profile.description.delivery.dropoff_place_name;
-  //     case 'Clean':
-  //       return task.task_profile.description.clean.start_waypoint;
-  //     default:
-  //       return '-';
-  //   }
-  // }
-
-  // function assignedTasksToStr(robot: RobotState): string {
-  //   return robot.tasks
-  //     .map((task, index) => {
-  //       if (index !== robot.tasks.length - 1) {
-  //         return task.booking.id.concat(' → ');
-  //       } else {
-  //         return task.booking.id;
-  //       }
-  //     })
-  //     .join('');
-  // }
-
-  // React.useEffect(() => {
-  //   const concreteTasks = [
-  //     RmfTaskSummary.STATE_CANCELED,
-  //     RmfTaskSummary.STATE_COMPLETED,
-  //     RmfTaskSummary.STATE_FAILED,
-  //   ];
-
-  //   if (robot.tasks.length > 0) {
-  //     setCurrentTask(robot.tasks[0]);
-  //     if (currentTask) {
-  //       setHasConcreteEndTime(concreteTasks.includes(currentTask.summary.state));
-  //     }
-  //   } else {
-  //     setCurrentTask(undefined);
-  //     setHasConcreteEndTime(false);
-  //   }
-  // }, [currentTask, robot, setCurrentTask]);
-
-  const taskDetails = React.useMemo(() => {
-    // if (currentTask) {
-    //   const location = returnTaskLocations(currentTask.summary);
-    //   const destination = returnTaskDestinations(currentTask.summary);
-    //   const assignedTasks = assignedTasksToStr(robot);
-    //   return { location, destination, assignedTasks };
-    // }
-  }, [currentTask, robot]);
-
   return (
     <StyledDiv>
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
@@ -113,14 +50,18 @@ export function RobotInfo({ robot, fetchSelectedTask }: RobotInfoProps): JSX.Ele
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          11%
-          {/**TODO - figure out a way to calculate task progress
-           * One idea is to use the length of pending and completed phases
-           * drawback is that there may be some task without any phases so a seperate solution needs to handle such a case
-           */}
-          {/* {currentTask && (
-            <LinearProgressBar value={parseInt(currentTask.progress.status.slice(0, -1)) || 0} />
-          )} */}
+          {currentTask &&
+          currentTask.unix_millis_start_time &&
+          currentTask.unix_millis_finish_time ? (
+            <LinearProgressBar
+              value={
+                (100 * (Date.now() - currentTask.unix_millis_start_time)) /
+                (currentTask.unix_millis_finish_time - currentTask.unix_millis_start_time)
+              }
+            />
+          ) : (
+            <LinearProgressBar value={0} />
+          )}
         </Grid>
         <Grid container item xs={12} justifyContent="center">
           <Typography variant="h6" gutterBottom>
@@ -137,40 +78,6 @@ export function RobotInfo({ robot, fetchSelectedTask }: RobotInfoProps): JSX.Ele
           >
             assigned task
             {robot ? ` - ${robot.task_id}` : '-'}
-          </Button>
-        </Grid>
-        <Grid item xs={6}>
-          <Typography variant="h6" align="left">
-            Location
-          </Typography>
-        </Grid>
-        <Grid item xs={6}>
-          <Typography variant="h6" align="left">
-            Destination
-          </Typography>
-        </Grid>
-        <Grid item xs={6}>
-          <Button
-            size="small"
-            disableElevation
-            variant="outlined"
-            className={classes.button}
-            disableRipple={true}
-          >
-            location
-            {currentTask ? ` - ${parseTaskDetail(currentTask, currentTask?.category).from}` : '-'}
-          </Button>
-        </Grid>
-        <Grid item xs={6}>
-          <Button
-            size="small"
-            disableElevation
-            variant="outlined"
-            className={classes.button}
-            disableRipple={true}
-          >
-            destination
-            {currentTask ? ` - ${parseTaskDetail(currentTask, currentTask?.category).to}` : '-'}
           </Button>
         </Grid>
         <Grid item xs={6}>
@@ -202,7 +109,7 @@ export function RobotInfo({ robot, fetchSelectedTask }: RobotInfoProps): JSX.Ele
             time
             {currentTask?.estimate_millis
               ? ` - ${format(
-                  new Date(currentTask.estimate_millis * 1000 + Date.now()),
+                  new Date(currentTask.estimate_millis * 1 + Date.now()),
                   "hh:mm aaaaa'm'",
                 )}`
               : '-'}

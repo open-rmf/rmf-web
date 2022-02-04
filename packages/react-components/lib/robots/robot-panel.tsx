@@ -81,6 +81,7 @@ export function RobotPanel({
           <RobotTable
             className={classes.robotTable}
             robots={verboseRobots}
+            fetchSelectedTask={fetchSelectedTask}
             paginationOptions={paginationOptions}
             onRobotClick={handleRobotClick}
             onRefreshClick={() => handleRefresh(selectedRobot)}
