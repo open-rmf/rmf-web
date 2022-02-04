@@ -142,50 +142,6 @@ class TestTasksRoute(AppFixture):
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
-    def post_task_request(self):
-        return self.session.post(
-            "/tasks/dispatch_task",
-            data=mdl.DispatchTaskRequest(
-                type="dispatch_task_request",
-                request=mdl.TaskRequest(
-                    category="test",
-                    description="description",
-                ),  # type: ignore
-            ).json(exclude_none=True),
-        )
-
-    def test_dispatch_task_success(self):
-        with patch.object(tasks_service, "call") as mock:
-            mock.return_value = (
-                '{ "success": true, "state": { "booking": { "id": "test_id" } } }'
-            )
-            resp = self.post_task_request()
-            self.assertEqual(200, resp.status_code, resp.content)
-
-    def test_dispatch_task_fail_with_multiple_errors(self):
-        # fails with multiple errors
-        with patch.object(tasks_service, "call") as mock:
-            mock.return_value = """{
-                "success": false,
-                "errors": [
-                    { "code": 1, "category": "test_error_1", "detail": "detail 1" },
-                    { "code": 2, "category": "test_error_2", "detail": "detail 2" }
-                ]
-            }
-            """
-            resp = self.post_task_request()
-            self.assertEqual(500, resp.status_code, resp.content)
-
-    def test_dispatch_task_fail_with_no_errors(self):
-        # fails with multiple errors
-        with patch.object(tasks_service, "call") as mock:
-            mock.return_value = """{
-                "success": false
-            }
-            """
-            resp = self.post_task_request()
-            self.assertEqual(500, resp.status_code, resp.content)
-
     def test_interrupt_task(self):
         with patch.object(tasks_service, "call") as mock:
             mock.return_value = '{ "success": True, "token": "token" }'
@@ -260,3 +216,53 @@ class TestTasksRoute(AppFixture):
                 data=mdl.UndoPhaseSkipRequest(type="undo_phase_skip_request").json(exclude_none=True),  # type: ignore
             )
             self.assertEqual(200, resp.status_code, resp.content)
+
+
+class TestDispatchTask(AppFixture):
+    def post_task_request(self):
+        return self.session.post(
+            "/tasks/dispatch_task",
+            data=mdl.DispatchTaskRequest(
+                type="dispatch_task_request",
+                request=mdl.TaskRequest(
+                    category="test",
+                    description="description",
+                ),  # type: ignore
+            ).json(exclude_none=True),
+        )
+
+    def test_success(self):
+        task_id = str(uuid4())
+        with patch.object(tasks_service, "call") as mock:
+            mock.return_value = f'{{ "success": true, "state": {{ "booking": {{ "id": "{task_id}" }} }} }}'
+            resp = self.post_task_request()
+            self.assertEqual(200, resp.status_code, resp.content)
+
+        # check that the task is already in the database by the time the dispatch request returns
+        resp = self.session.get(f"/tasks/{task_id}/state")
+        self.assertEqual(200, resp.status_code, resp.content)
+        self.assertEqual(task_id, resp.json()["booking"]["id"])
+
+    def test_fail_with_multiple_errors(self):
+        # fails with multiple errors
+        with patch.object(tasks_service, "call") as mock:
+            mock.return_value = """{
+                "success": false,
+                "errors": [
+                    { "code": 1, "category": "test_error_1", "detail": "detail 1" },
+                    { "code": 2, "category": "test_error_2", "detail": "detail 2" }
+                ]
+            }
+            """
+            resp = self.post_task_request()
+            self.assertEqual(400, resp.status_code, resp.content)
+
+    def test_fail_with_no_errors(self):
+        # fails with multiple errors
+        with patch.object(tasks_service, "call") as mock:
+            mock.return_value = """{
+                "success": false
+            }
+            """
+            resp = self.post_task_request()
+            self.assertEqual(400, resp.status_code, resp.content)
