@@ -19,7 +19,6 @@ async def process_msg(msg: Dict[str, Any]) -> None:
     if not isinstance(payload_type, str):
         logger.error("error processing message, 'type' must be a string")
         return
-    logger.info(f"received message of type '{payload_type}'")
     logger.debug(msg)
 
     if payload_type == "task_state_update":
