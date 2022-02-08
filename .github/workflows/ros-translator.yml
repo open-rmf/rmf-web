@@ -2,6 +2,7 @@ name: ros-translator
 on:
   pull_request:
     paths:
+      - '.github/workflows/ros-translator.yml'
       - 'packages/ros-translator/**'
   push:
     branches:

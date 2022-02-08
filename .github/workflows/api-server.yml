@@ -2,6 +2,7 @@ name: api-server
 on:
   pull_request:
     paths:
+      - '.github/workflows/api-server.yml'
       - 'packages/api-server/**'
   push:
     branches:

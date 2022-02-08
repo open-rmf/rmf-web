@@ -2,6 +2,7 @@ name: react-components
 on:
   pull_request:
     paths:
+      - '.github/workflows/react-components.yml'
       - 'packages/react-components/**'
       - 'packages/rmf-models/**'
   push:

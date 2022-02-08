@@ -2,6 +2,7 @@ name: dashboard
 on:
   pull_request:
     paths:
+      - '.github/workflows/dashboard.yml'
       - 'packages/dashboard/**'
       - 'packages/react-components/**'
       - 'packages/rmf-auth/**'
