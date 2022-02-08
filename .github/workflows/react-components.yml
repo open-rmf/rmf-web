@@ -36,6 +36,8 @@ jobs:
         working-directory: .
       - name: test build storybook
         run: npm run build:storybook
+      - name: lint
+        run: npm run lint
       - name: test
         run: npm run test:coverage
       - name: Upload coverage to Codecov
