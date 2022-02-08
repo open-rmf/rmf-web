@@ -13,9 +13,10 @@ import {
   Typography,
   styled,
 } from '@mui/material';
-import type { RobotState, TaskState } from 'api-client';
+import type { TaskState } from 'api-client';
 import { Refresh as RefreshIcon } from '@mui/icons-material';
 import React from 'react';
+import { VerboseRobot } from '.';
 
 const classes = {
   table: 'robot-table',
@@ -59,12 +60,11 @@ const StyledPaper = styled((props: PaperProps) => <Paper {...props} />)(({ theme
 }));
 
 interface RobotRowProps {
-  robot: RobotState;
-  fetchSelectedTask?: (taskId: string) => Promise<TaskState | undefined>;
+  verboseRobot: VerboseRobot;
   onClick: React.MouseEventHandler<HTMLTableRowElement>;
 }
 
-function RobotRow({ robot, fetchSelectedTask, onClick }: RobotRowProps) {
+function RobotRow({ verboseRobot, onClick }: RobotRowProps) {
   const getRobotModeClass = (robotMode: string) => {
     switch (robotMode) {
       case 'emergency':
@@ -81,30 +81,23 @@ function RobotRow({ robot, fetchSelectedTask, onClick }: RobotRowProps) {
         return '';
     }
   };
-  let robotModeClass = '';
-  if (robot.status) robotModeClass = getRobotModeClass(robot.status);
+  const st = verboseRobot.state.status ? verboseRobot.state.status : '';
+  const robotModeClass = getRobotModeClass(st);
+  const name = verboseRobot.state.name;
+  const battery = verboseRobot.state.battery ? verboseRobot.state.battery * 100 : 0;
 
-  const [currentTask, setCurrentTask] = React.useState<TaskState | undefined>();
-  React.useEffect(() => {
-    (async () => {
-      if (robot.task_id) {
-        fetchSelectedTask && setCurrentTask(await fetchSelectedTask(robot.task_id));
-      }
-    })();
-  });
+  if (verboseRobot.current_task_state) {
+    const date = verboseRobot.current_task_state.estimate_millis
+      ? new Date(verboseRobot.current_task_state.estimate_millis).toISOString().substr(11, 8)
+      : '-';
 
-  if (robot.task_id) {
     return (
       <>
         <TableRow onClick={onClick} className={classes.tableRow}>
-          <TableCell>{robot.name}</TableCell>
-          <TableCell>
-            {currentTask && currentTask.estimate_millis
-              ? new Date(currentTask.estimate_millis).toISOString().substr(11, 8)
-              : '-'}
-          </TableCell>
-          <TableCell>{robot.battery ? robot.battery * 100 : 0}%</TableCell>
-          <TableCell className={robotModeClass}>{robot.status}</TableCell>
+          <TableCell>{name}</TableCell>
+          <TableCell>{date} </TableCell>
+          <TableCell>{battery}%</TableCell>
+          <TableCell className={robotModeClass}>{st}</TableCell>
         </TableRow>
       </>
     );
@@ -112,10 +105,10 @@ function RobotRow({ robot, fetchSelectedTask, onClick }: RobotRowProps) {
     return (
       <>
         <TableRow onClick={onClick} className={classes.tableRow}>
-          <TableCell>{robot.name}</TableCell>
+          <TableCell>{name}</TableCell>
           <TableCell>{'-'}</TableCell>
-          <TableCell>{robot.battery ? robot.battery * 100 : 0}%</TableCell>
-          <TableCell className={robotModeClass}>{robot.status}</TableCell>
+          <TableCell>{battery}%</TableCell>
+          <TableCell className={robotModeClass}>{st}</TableCell>
         </TableRow>
       </>
     );
@@ -132,16 +125,15 @@ export interface RobotTableProps extends PaperProps {
    * The current list of robots to display, when pagination is enabled, this should only
    * contain the robots for the current page.
    */
-  robots: RobotState[];
+  robots: VerboseRobot[];
   fetchSelectedTask?: (taskId: string) => Promise<TaskState | undefined>;
   paginationOptions?: PaginationOptions;
   onRefreshClick?: React.MouseEventHandler<HTMLButtonElement>;
-  onRobotClick?(ev: React.MouseEvent<HTMLDivElement>, robot: RobotState): void;
+  onRobotClick?(ev: React.MouseEvent<HTMLDivElement>, robot: VerboseRobot): void;
 }
 
 export function RobotTable({
   robots,
-  fetchSelectedTask,
   paginationOptions,
   onRefreshClick,
   onRobotClick,
@@ -172,8 +164,7 @@ export function RobotTable({
               robots.map((robot, robot_id) => (
                 <RobotRow
                   key={robot_id}
-                  robot={robot}
-                  fetchSelectedTask={fetchSelectedTask}
+                  verboseRobot={robot}
                   onClick={(ev) => onRobotClick && onRobotClick(ev, robot)}
                 />
               ))}

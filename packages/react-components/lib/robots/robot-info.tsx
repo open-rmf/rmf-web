@@ -1,10 +1,10 @@
 import { Button, Divider, Grid, Typography, useTheme, styled } from '@mui/material';
-import type { RobotState, TaskState } from 'api-client';
 import React from 'react';
-import { taskStateToStr, parseTaskDetail } from '../tasks/utils';
+import { taskStateToStr } from '../tasks/utils';
 import { format } from 'date-fns';
 import { CircularProgressBar } from './circular-progress-bar';
 import { LinearProgressBar } from './linear-progress-bar';
+import { VerboseRobot } from './utils';
 
 const classes = {
   button: 'robot-info-button',
@@ -19,27 +19,19 @@ const StyledDiv = styled('div')(() => ({
 }));
 
 export interface RobotInfoProps {
-  robot: RobotState;
-  fetchSelectedTask?: (taskId: string) => Promise<TaskState | undefined>;
+  robot: VerboseRobot;
 }
 
-export function RobotInfo({ robot, fetchSelectedTask }: RobotInfoProps): JSX.Element {
+export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   const theme = useTheme();
-  const [currentTask, setCurrentTask] = React.useState<TaskState | undefined>();
   const [hasConcreteEndTime, setHasConcreteEndTime] = React.useState<boolean>(false);
 
-  React.useEffect(() => {
-    (async () => {
-      if (robot.task_id) {
-        fetchSelectedTask && setCurrentTask(await fetchSelectedTask(robot.task_id));
-      }
-    })();
-  });
+  const currentTask = robot.current_task_state;
 
   return (
     <StyledDiv>
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
-        {robot.name}
+        {robot.state.name}
       </Typography>
       <Divider />
       <div style={{ marginBottom: theme.spacing(1) }}></div>
@@ -77,7 +69,7 @@ export function RobotInfo({ robot, fetchSelectedTask }: RobotInfoProps): JSX.Ele
             component="div"
           >
             assigned task
-            {robot ? ` - ${robot.task_id}` : '-'}
+            {robot ? ` - ${robot.state.task_id}` : '-'}
           </Button>
         </Grid>
         <Grid item xs={6}>
@@ -92,10 +84,12 @@ export function RobotInfo({ robot, fetchSelectedTask }: RobotInfoProps): JSX.Ele
         </Grid>
         <Grid item xs={6}>
           <CircularProgressBar
-            progress={robot.battery ? robot.battery * 100 : 0}
+            progress={robot.state.battery ? robot.state.battery * 100 : 0}
             strokeColor="#20a39e"
           >
-            <Typography variant="h6">{`${robot.battery ? robot.battery * 100 : 0}%`}</Typography>
+            <Typography variant="h6">{`${
+              robot.state.battery ? robot.state.battery * 100 : 0
+            }%`}</Typography>
           </CircularProgressBar>
         </Grid>
         <Grid item xs={6}>

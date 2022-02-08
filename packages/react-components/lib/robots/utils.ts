@@ -1,5 +1,5 @@
-import type { TaskState } from 'api-client';
-import { RobotMode as RmfRobotMode, RobotState as RmfRobotState } from 'rmf-models';
+import { RobotMode as RmfRobotMode } from 'rmf-models';
+import type { RobotState, TaskState } from 'api-client';
 
 /**
  * Returns a uniquely identifiable string representing a robot.
@@ -32,8 +32,6 @@ export function robotModeToString(robotMode: RmfRobotMode): string {
 }
 
 export interface VerboseRobot {
-  fleet: string;
-  name: string;
-  state: RmfRobotState;
-  tasks: TaskState[];
+  state: RobotState;
+  current_task_state?: TaskState;
 }
