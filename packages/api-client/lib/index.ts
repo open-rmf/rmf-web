@@ -23,27 +23,41 @@ export type Subscription = Listener;
 
 export class SioClient {
   public sio: Socket;
-  private _subscriptions = new Map<Listener, string>();
+  private _subscriptions: Record<string, number> = {};
+  private _listenerRoom = new Map<Listener, string>();
 
   constructor(...args: Parameters<typeof io>) {
     this.sio = io(...args);
   }
 
   subscribe<T>(room: string, listener: Listener<T>): Listener<T> {
-    this.sio.emit('subscribe', { room });
+    const subs = this._subscriptions[room] || 0;
+    if (subs === 0) {
+      this.sio.emit('subscribe', { room });
+      debug(`subscribed to ${room}`);
+    } else {
+      debug(`reusing previous subscription to ${room}`);
+    }
     this.sio.on(room, listener);
-    this._subscriptions.set(listener, room);
-    debug(`subscribed to ${room}`);
+    this._subscriptions[room] = subs + 1;
+    this._listenerRoom.set(listener, room);
     return listener;
   }
 
   unsubscribe(listener: Listener): void {
-    const room = this._subscriptions.get(listener);
+    const room = this._listenerRoom.get(listener);
     if (room) {
-      this.sio.emit('unsubscribe', { room });
+      const count = this._subscriptions[room] || 0;
+      if (count - 1 <= 0) {
+        this.sio.emit('unsubscribe', { room });
+        delete this._subscriptions[room];
+        debug(`unsubscribed to ${room}`);
+      } else {
+        this._subscriptions[room] = count - 1;
+        debug(`skipping unsubscribe to ${room} because there are still ${count - 1} subscribers`);
+      }
       this.sio.off(room, listener);
-      this._subscriptions.delete(listener);
-      debug(`unsubscribed to ${room}`);
+      this._listenerRoom.delete(listener);
     } else {
       debug('fail to unsubscribe, listener not found in list of subscriptions');
     }
