@@ -2,6 +2,7 @@ name: reporting
 on:
   pull_request:
     paths:
+      - '.github/workflows/reporting.yml'
       - 'packages/reporting/**'
       - 'packages/react-components/**'
       - 'packages/rmf-auth/**'

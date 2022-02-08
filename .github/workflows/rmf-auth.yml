@@ -2,6 +2,7 @@ name: rmf-auth
 on:
   pull_request:
     paths:
+      - '.github/workflows/rmf-auth.yml'
       - 'packages/rmf-auth/**'
   push:
     branches:

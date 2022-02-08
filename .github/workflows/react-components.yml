@@ -2,6 +2,7 @@ name: react-components
 on:
   pull_request:
     paths:
+      - '.github/workflows/react-components.yml'
       - 'packages/react-components/**'
       - 'packages/rmf-models/**'
   push:
@@ -36,6 +37,8 @@ jobs:
         working-directory: .
       - name: test build storybook
         run: npm run build:storybook
+      - name: lint
+        run: npm run lint
       - name: test
         run: npm run test:coverage
       - name: Upload coverage to Codecov
