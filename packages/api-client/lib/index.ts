@@ -19,82 +19,88 @@ const debug = Debug('rmf-client');
 
 // https://stackoverflow.com/questions/52667959/what-is-the-purpose-of-bivariancehack-in-typescript-types
 export type Listener<T = unknown> = { bivarianceHack(resp: T): void }['bivarianceHack'];
-export type Subscription = Listener;
+export interface Subscription {
+  room: string;
+  listener: Listener;
+}
 
 export class SioClient {
   public sio: Socket;
-  private _subscriptions = new Map<Listener, string>();
+  private _subscriptions: Record<string, number> = {};
 
   constructor(...args: Parameters<typeof io>) {
     this.sio = io(...args);
   }
 
-  subscribe<T>(room: string, listener: Listener<T>): Listener<T> {
-    this.sio.emit('subscribe', { room });
-    this.sio.on(room, listener);
-    this._subscriptions.set(listener, room);
-    debug(`subscribed to ${room}`);
-    return listener;
-  }
-
-  unsubscribe(listener: Listener): void {
-    const room = this._subscriptions.get(listener);
-    if (room) {
-      this.sio.emit('unsubscribe', { room });
-      this.sio.off(room, listener);
-      this._subscriptions.delete(listener);
-      debug(`unsubscribed to ${room}`);
+  subscribe<T>(room: string, listener: Listener<T>): Subscription {
+    const subs = this._subscriptions[room] || 0;
+    if (subs === 0) {
+      this.sio.emit('subscribe', { room });
+      debug(`subscribed to ${room}`);
     } else {
-      debug('fail to unsubscribe, listener not found in list of subscriptions');
+      debug(`reusing previous subscription to ${room}`);
     }
+    this.sio.on(room, listener);
+    this._subscriptions[room] = subs + 1;
+    return { room, listener };
   }
 
-  subscribeBuildingMap(listener: Listener<BuildingMap>): Listener<BuildingMap> {
+  unsubscribe(sub: Subscription): void {
+    const subCount = this._subscriptions[sub.room] || 0;
+    if (!subCount) {
+      debug(`tried to unsubscribe from ${sub.room}, but no subscriptions exist`);
+      // continue regardless
+    }
+    if (subCount <= 1) {
+      this.sio.emit('unsubscribe', { room: sub.room });
+      delete this._subscriptions[sub.room];
+      debug(`unsubscribed to ${sub.room}`);
+    } else {
+      this._subscriptions[sub.room] = subCount - 1;
+      debug(
+        `skipping unsubscribe to ${sub.room} because there are still ${subCount - 1} subscribers`,
+      );
+    }
+    this.sio.off(sub.room, sub.listener);
+  }
+
+  subscribeBuildingMap(listener: Listener<BuildingMap>): Subscription {
     return this.subscribe<BuildingMap>(`/building_map`, listener);
   }
 
-  subscribeDoorState(doorName: string, listener: Listener<DoorState>): Listener<DoorState> {
+  subscribeDoorState(doorName: string, listener: Listener<DoorState>): Subscription {
     return this.subscribe<DoorState>(`/doors/${doorName}/state`, listener);
   }
 
-  subscribeDoorHealth(doorName: string, listener: Listener<DoorHealth>): Listener<DoorHealth> {
+  subscribeDoorHealth(doorName: string, listener: Listener<DoorHealth>): Subscription {
     return this.subscribe<DoorHealth>(`/doors/${doorName}/health`, listener);
   }
 
-  subscribeLiftState(liftName: string, listener: Listener<LiftState>): Listener<LiftState> {
+  subscribeLiftState(liftName: string, listener: Listener<LiftState>): Subscription {
     return this.subscribe<LiftState>(`/lifts/${liftName}/state`, listener);
   }
 
-  subscribeLiftHealth(liftName: string, listener: Listener<LiftHealth>): Listener<LiftHealth> {
+  subscribeLiftHealth(liftName: string, listener: Listener<LiftHealth>): Subscription {
     return this.subscribe<LiftHealth>(`/doors/${liftName}/health`, listener);
   }
 
-  subscribeDispenserState(
-    guid: string,
-    listener: Listener<DispenserState>,
-  ): Listener<DispenserState> {
+  subscribeDispenserState(guid: string, listener: Listener<DispenserState>): Subscription {
     return this.subscribe<DispenserState>(`/dispensers/${guid}/state`, listener);
   }
 
-  subscribeDispenserHealth(
-    guid: string,
-    listener: Listener<DispenserHealth>,
-  ): Listener<DispenserHealth> {
+  subscribeDispenserHealth(guid: string, listener: Listener<DispenserHealth>): Subscription {
     return this.subscribe<DispenserHealth>(`/dispensers/${guid}/health`, listener);
   }
 
-  subscribeIngestorState(guid: string, listener: Listener<IngestorState>): Listener<IngestorState> {
+  subscribeIngestorState(guid: string, listener: Listener<IngestorState>): Subscription {
     return this.subscribe<IngestorState>(`/ingestors/${guid}/state`, listener);
   }
 
-  subscribeIngestorHealth(
-    guid: string,
-    listener: Listener<IngestorHealth>,
-  ): Listener<IngestorHealth> {
+  subscribeIngestorHealth(guid: string, listener: Listener<IngestorHealth>): Subscription {
     return this.subscribe<IngestorHealth>(`/ingestors/${guid}/health`, listener);
   }
 
-  subscribeFleetState(name: string, listener: Listener<FleetState>): Listener<FleetState> {
+  subscribeFleetState(name: string, listener: Listener<FleetState>): Subscription {
     return this.subscribe<FleetState>(`/fleets/${name}/state`, listener);
   }
 
@@ -102,11 +108,11 @@ export class SioClient {
     fleetName: string,
     robotName: string,
     listener: Listener<RobotHealth>,
-  ): Listener<RobotHealth> {
+  ): Subscription {
     return this.subscribe<RobotHealth>(`/fleets/${fleetName}/${robotName}/health`, listener);
   }
 
-  subscribeTaskSummary(taskId: string, listener: Listener<TaskSummary>): Listener<TaskSummary> {
+  subscribeTaskSummary(taskId: string, listener: Listener<TaskSummary>): Subscription {
     const encoded = taskId.replace('/', '__');
     return this.subscribe<TaskSummary>(`/tasks/${encoded}/summary`, listener);
   }
