@@ -7,7 +7,7 @@
     "build": "../../scripts/nws.sh build -d && tsc --build",
     "clean": "tsc --build --clean",
     "prepack": "npm run clean && npm run build && npm run lint",
-    "lint": "eslint --ext ts,tsx lib",
+    "lint": "eslint --max-warnings 0 --ext ts,tsx lib",
     "test": "jasmine"
   },
   "author": "koonpeng@openrobotics.org",
