@@ -7,7 +7,8 @@
     "build": "../../scripts/nws.sh build -d && tsc --build",
     "clean": "tsc --build --clean",
     "prepack": "npm run clean && npm run build && npm run lint",
-    "lint": "eslint --ext ts,tsx lib"
+    "lint": "eslint --ext ts,tsx lib",
+    "test": "jasmine"
   },
   "author": "koonpeng@openrobotics.org",
   "license": "Apache-2.0",
@@ -20,8 +21,11 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
+    "@types/jasmine": "^3.8.2",
     "axios": "^0.21.1",
     "eslint": "^7.26.0",
+    "jasmine": "^3.6.6",
+    "ts-node": "^9.1.1",
     "typescript": "~4.4.4"
   },
   "peerDependencies": {

@@ -2,6 +2,7 @@ name: reporting-server
 on:
   pull_request:
     paths:
+      - '.github/workflows/reporting-server.yml'
       - 'packages/reporting-server/**'
   push:
     branches:

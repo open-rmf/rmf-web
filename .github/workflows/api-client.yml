@@ -1,9 +1,9 @@
-name: ros-translator
+name: api-client
 on:
   pull_request:
     paths:
-      - '.github/workflows/ros-translator.yml'
-      - 'packages/ros-translator/**'
+      - '.github/workflows/api-client.yml'
+      - 'packages/api-client/**'
   push:
     branches:
       - main
@@ -13,12 +13,10 @@ jobs:
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
-    container:
-      image: ros:foxy
     defaults:
       run:
         shell: bash
-        working-directory: packages/ros-translator
+        working-directory: packages/api-client
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -27,12 +25,9 @@ jobs:
           cache: 'npm'
       - name: bootstrap
         run: |
-          . /opt/ros/foxy/setup.bash
-          apt update && apt install -y python3-pip
           pip3 install pipenv
-          npm config set unsafe-perm
           npm install -g npm@latest
-          scripts/bootstrap.sh ros-translator
+          scripts/bootstrap.sh api-client
         working-directory: .
       - name: test
-        run: . /opt/ros/foxy/setup.bash && npm test
+        run: npm run test
