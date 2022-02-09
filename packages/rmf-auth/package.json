@@ -8,7 +8,7 @@
     "build:storybook": "../../scripts/nws.sh build -d && build-storybook -s test-data",
     "build:watch": "npm run build -- --watch",
     "clean": "tsc --build --clean",
-    "lint": "eslint --ext ts,tsx, lib",
+    "lint": "eslint --max-warnings 0 --ext ts,tsx, lib",
     "prepack": "npm run clean && npm run lint && npm run build && npm run test && cp package.json dist/",
     "start": "../../scripts/nws.sh build -d && start-storybook -p 6006 -s test-data",
     "test": "jest --watch",
