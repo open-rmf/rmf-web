@@ -1,5 +1,5 @@
 import { Divider, Grid, Paper, PaperProps, styled, Typography, useTheme } from '@mui/material';
-import { TaskEventLog, TaskState, LogEntry } from 'api-client';
+import { TaskEventLog, TaskState, LogEntry, Phase } from 'api-client';
 import { format } from 'date-fns';
 const prefix = 'task-logs';
 const classes = {
@@ -24,13 +24,11 @@ const StyledPaper = styled((props: PaperProps) => <Paper variant="outlined" {...
   }),
 );
 
-export function TaskLogs(props: TaskLogProps) {
-  const { taskLog } = props;
-  const { taskState } = props;
+export function TaskLogs({ taskLog, taskState }: TaskLogProps) {
   const theme = useTheme();
   const phaseIds = taskLog.phases ? Object.keys(taskLog.phases) : [];
 
-  function MapEventColor(event: LogEntry) {
+  function mapEventColor(event: LogEntry) {
     switch (event.tier) {
       case 'warning':
         return theme.palette.warning.main;
@@ -54,14 +52,15 @@ export function TaskLogs(props: TaskLogProps) {
           const getEventObj: any = taskLog.phases ? taskLog.phases[id] : null;
           const events = getEventObj ? getEventObj['events'] : {};
           const eventIds = events ? Object.keys(events) : [];
-          const phaseStateObj: any = taskState.phases ? taskState.phases[id] : null;
+          const phaseStateObj = taskState.phases ? taskState.phases[id] : null;
           const eventsStates = phaseStateObj ? phaseStateObj.events : {};
 
           return (
             <Paper sx={{ padding: theme.spacing(1) }} variant="outlined" key={`Phase - ${id}`}>
               <Typography variant="h6" fontWeight="bold" marginTop={3}>
-                {phaseStateObj.category}
+                {phaseStateObj && phaseStateObj.category ? phaseStateObj.category : 'undefined'}
               </Typography>
+
               <Divider />
               {eventIds.length > 0 ? (
                 eventIds.map((idx) => {
@@ -70,14 +69,14 @@ export function TaskLogs(props: TaskLogProps) {
                     <div
                       style={{
                         marginTop: theme.spacing(1),
-                        backgroundColor: MapEventColor(event),
+                        backgroundColor: mapEventColor(event),
                         padding: theme.spacing(1),
-                        borderRadius: '6px',
+                        borderRadius: theme.spacing(1),
                       }}
                       key={`event - ${idx}`}
                     >
                       <Typography variant="body1" fontWeight="bold">
-                        {eventsStates && eventsStates.length > 0 ? eventsStates[0].name : null}
+                        {eventsStates ? eventsStates[0].name : null}
                       </Typography>
                       {event.map((e: any, i: any) => {
                         return (

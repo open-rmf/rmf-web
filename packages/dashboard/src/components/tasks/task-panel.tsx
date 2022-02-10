@@ -187,7 +187,10 @@ export function TaskPanel({
       return [];
     }
     if (selectedTask) {
-      const logs = await tasksApi.getTaskLogTasksTaskIdLogGet(selectedTask.booking.id, '0,999999');
+      const logs = await tasksApi.getTaskLogTasksTaskIdLogGet(
+        selectedTask.booking.id,
+        '0,99999999',
+      );
       const state = await tasksApi.getTaskStateTasksTaskIdStateGet(selectedTask.booking.id);
       setSelectedTaskLog(logs.data);
       setSelectedTaskState(state.data);

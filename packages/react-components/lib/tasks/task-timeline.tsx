@@ -5,6 +5,7 @@ import {
   TimelineConnector,
   TimelineContent,
   TimelineDot,
+  TimelineDotProps,
   TimelineItem,
   TimelineOppositeContent,
   TimelineProps,
@@ -47,47 +48,51 @@ const StyledTimeLine = styled((props: TimeLinePropsWithRef) => <Timeline {...pro
   }),
 );
 
-function nestedEvents(eventsStates: { [key: string]: EventState } | undefined, child: number) {
+function NestedEvents(eventsStates: { [key: string]: EventState } | undefined, child: number) {
   if (eventsStates !== undefined) {
     const deps = eventsStates[child] ? eventsStates[child].deps : [];
     return (
       <TreeItem
         key={`event-${child}`}
-        nodeId={`parent-${eventsStates[child].name}`}
+        nodeId={`parent-${eventsStates[child].id}`}
         label={eventsStates[child].name}
       >
-        {deps?.map((id) => {
-          if (eventsStates[id].deps?.length) {
-            nestedEvents(eventsStates, id);
-          } else {
-            return (
-              <TreeItem
-                key={eventsStates[child].name}
-                nodeId={`child-${id}`}
-                label={eventsStates[id].name}
-              ></TreeItem>
-            );
-          }
-        })}
+        {deps
+          ? deps.map((id) => {
+              if (eventsStates[id].deps?.length) {
+                return NestedEvents(eventsStates, id);
+              } else {
+                return (
+                  <TreeItem
+                    key={eventsStates[child].name}
+                    nodeId={`child-${id}`}
+                    label={eventsStates[id].name}
+                  ></TreeItem>
+                );
+              }
+            })
+          : null}
       </TreeItem>
     );
   }
 }
 
-function colorDot(eventsStates: { [key: string]: EventState } | undefined) {
-  let standby: Boolean = true;
+function colorDot(
+  eventsStates: { [key: string]: EventState } | undefined,
+): TimelineDotProps['color'] {
+  let standby: boolean = true;
   for (const id in eventsStates) {
     const event: EventState = eventsStates[id];
     if (event.status === 'underway') {
-      return 'success' as const;
+      return 'success';
     }
     if (event.status !== 'standby') {
       standby = false;
     }
   }
-  if (standby) return 'info' as const;
+  if (standby) return 'info';
 
-  return 'error' as const;
+  return 'error';
 }
 
 export interface TaskTimelineProps {
@@ -104,18 +109,13 @@ export function TaskTimeline({ taskState }: TaskTimelineProps): JSX.Element {
             <TimelineOppositeContent color="text.secondary">
               <Typography variant="overline" color="textSecondary" style={{ textAlign: 'justify' }}>
                 {phase.original_estimate_millis
-                  ? format(new Date(phase.original_estimate_millis * 1000), "hh:mm aaaaa'm'")
+                  ? format(new Date(phase.original_estimate_millis), "hh:mm aaaaa'm'")
                   : null}
               </Typography>
             </TimelineOppositeContent>
             <TimelineSeparator>
-              <TimelineDot
-                color={colorDot(phase.events)}
-                sx={{
-                  margin: '0.5px',
-                }}
-              />
-              {idx < phases.length - 1 && <TimelineConnector />}
+              <TimelineDot color={colorDot(phase.events)} />
+              <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
               <TreeView
@@ -130,7 +130,7 @@ export function TaskTimeline({ taskState }: TaskTimelineProps): JSX.Element {
                   >
                     {event.deps && event.deps.length > 0
                       ? Object.values(event.deps).map((childId) =>
-                          nestedEvents(phase.events, childId),
+                          NestedEvents(phase.events, childId),
                         )
                       : null}
                   </TreeItem>
