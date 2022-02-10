@@ -12,6 +12,8 @@ function makeFetchRobots(robots: VerboseRobot[]): RobotPanelProps['fetchVerboseR
   };
 }
 
+// TODO(FIXME): Fix tests for Tasksv2
+
 // describe('RobotPanel', () => {
 //   it('shows empty information when robot is clicked when there are no assigned tasks', async () => {
 //     const robots = [makeRandomRobot('test_robot1', 'test_fleet', 2)];
