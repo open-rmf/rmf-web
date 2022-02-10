@@ -43,7 +43,7 @@ export function TaskPage() {
         undefined,
         11,
         page * 10,
-        undefined,
+        '-unix_millis_start_time',
         undefined,
       );
       const results = resp.data as TaskState[];
