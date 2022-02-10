@@ -1,5 +1,5 @@
 import { Divider, Grid, Paper, PaperProps, styled, Typography, useTheme } from '@mui/material';
-import { TaskEventLog, TaskState, LogEntry, Phase } from 'api-client';
+import { TaskEventLog, TaskState, LogEntry } from 'api-client';
 import { format } from 'date-fns';
 const prefix = 'task-logs';
 const classes = {
@@ -76,7 +76,9 @@ export function TaskLogs({ taskLog, taskState }: TaskLogProps) {
                       key={`event - ${idx}`}
                     >
                       <Typography variant="body1" fontWeight="bold">
-                        {eventsStates ? eventsStates[0].name : null}
+                        {eventsStates && eventsStates[0] && eventsStates[0].name
+                          ? eventsStates[0].name
+                          : null}
                       </Typography>
                       {event.map((e: any, i: any) => {
                         return (
