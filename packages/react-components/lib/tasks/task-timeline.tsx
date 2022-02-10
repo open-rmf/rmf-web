@@ -66,6 +66,8 @@ function NestedEvents(
       );
     }
   }
+
+  return null;
 }
 
 function colorDot(
