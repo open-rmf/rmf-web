@@ -80,7 +80,7 @@ function NestedEvents(eventsStates: { [key: string]: EventState } | undefined, c
 function colorDot(
   eventsStates: { [key: string]: EventState } | undefined,
 ): TimelineDotProps['color'] {
-  let standby: boolean = true;
+  let standby = true;
   for (const id in eventsStates) {
     const event: EventState = eventsStates[id];
     if (event.status === 'underway') {
