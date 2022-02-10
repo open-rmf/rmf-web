@@ -97,8 +97,8 @@ function RenderPhase(phase: Phase) {
     <TimelineItem key={phase.id}>
       <TimelineOppositeContent color="text.secondary">
         <Typography variant="overline" color="textSecondary" style={{ textAlign: 'justify' }}>
-          {phase.original_estimate_millis
-            ? format(new Date(phase.original_estimate_millis), "hh:mm aaaaa'm'")
+          {phase.unix_millis_start_time
+            ? format(new Date(phase.unix_millis_start_time), "hh:mm:ss aaaaa'm'")
             : null}
         </Typography>
       </TimelineOppositeContent>

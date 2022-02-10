@@ -102,7 +102,7 @@ export function TaskLogs({ taskLog, taskState }: TaskLogProps) {
                               }}
                             >
                               <Typography variant="body1">
-                                {format(new Date(e.unix_millis_time * 1000), "hh:mm aaaaa'm'")}
+                                {format(new Date(e.unix_millis_time), "hh:mm:ss aaaaa'm'")}
                               </Typography>
                             </Grid>
                             <Grid
