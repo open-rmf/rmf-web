@@ -16,7 +16,7 @@ import {
 import { styled } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { format } from 'date-fns';
-import { TaskState, Phase, EventState } from 'api-client';
+import { TaskState, Phase, EventState, Status } from 'api-client';
 import React from 'react';
 
 interface TimeLinePropsWithRef extends TimelineProps {
@@ -70,20 +70,44 @@ function NestedEvents(
   return null;
 }
 
-function colorDot(
-  eventsStates: { [key: string]: EventState } | undefined,
-): TimelineDotProps['color'] {
-  let standby = true;
-  for (const id in eventsStates) {
-    const event: EventState = eventsStates[id];
-    if (event.status === 'underway') {
+function colorDot(phase: Phase | undefined): TimelineDotProps['color'] {
+  if (phase == null) return 'error';
+
+  if (phase.final_event_id == null || phase.events == null) return 'grey';
+
+  const root_event = phase.events[phase.final_event_id];
+  if (root_event == null) return 'error';
+
+  if (root_event.status == null) return 'error';
+
+  switch (root_event.status) {
+    case Status.Uninitialized:
+    case Status.Blocked:
+    case Status.Error:
+    case Status.Failed:
+      return 'error';
+
+    case Status.Queued:
+    case Status.Standby:
+      return 'grey';
+
+    case Status.Underway:
       return 'success';
-    }
-    if (event.status !== 'standby') {
-      standby = false;
-    }
+
+    case Status.Skipped:
+    case Status.Canceled:
+    case Status.Killed:
+      return 'secondary';
+
+    case Status.Delayed:
+      return 'warning';
+
+    case Status.Completed:
+      return 'primary';
+
+    default:
+      return 'error';
   }
-  if (standby) return 'info';
 
   return 'error';
 }
@@ -103,7 +127,7 @@ function RenderPhase(phase: Phase) {
         </Typography>
       </TimelineOppositeContent>
       <TimelineSeparator>
-        <TimelineDot color={colorDot(phase.events)} />
+        <TimelineDot color={colorDot(phase)} />
         <TimelineConnector />
       </TimelineSeparator>
       <TimelineContent>

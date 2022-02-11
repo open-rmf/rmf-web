@@ -1,5 +1,5 @@
 import { Divider, Grid, Paper, PaperProps, styled, Typography, useTheme } from '@mui/material';
-import { TaskEventLog, TaskState, LogEntry } from 'api-client';
+import { TaskEventLog, TaskState, EventState, Status, LogEntry } from 'api-client';
 import { format } from 'date-fns';
 const prefix = 'task-logs';
 const classes = {
@@ -28,16 +28,38 @@ export function TaskLogs({ taskLog, taskState }: TaskLogProps) {
   const theme = useTheme();
   const phaseIds = taskLog.phases ? Object.keys(taskLog.phases) : [];
 
-  function mapEventColor(event: LogEntry) {
-    switch (event.tier) {
-      case 'warning':
+  function mapEventColor(event: EventState | null) {
+    // TODO(MXG): We should make this color selection consistent with the color
+    // selection that's done for task states.
+    if (event == null || event.status == null) return theme.palette.warning.light;
+
+    switch (event.status) {
+      case Status.Uninitialized:
+      case Status.Blocked:
+      case Status.Error:
+      case Status.Failed:
+        return theme.palette.error.dark;
+
+      case Status.Queued:
+      case Status.Standby:
+        return theme.palette.info.light;
+
+      case Status.Underway:
+        return theme.palette.success.light;
+
+      case Status.Delayed:
         return theme.palette.warning.main;
 
-      case 'error':
-        return theme.palette.error.main;
+      case Status.Skipped:
+      case Status.Canceled:
+      case Status.Killed:
+        return theme.palette.error.light;
+
+      case Status.Completed:
+        return theme.palette.info.light;
 
       default:
-        return theme.palette.info.main;
+        return theme.palette.error.dark;
     }
   }
 
@@ -53,11 +75,12 @@ export function TaskLogs({ taskLog, taskState }: TaskLogProps) {
           const events = getEventObj ? getEventObj['events'] : {};
           const eventIds = events ? Object.keys(events) : [];
           const phaseStateObj = taskState.phases ? taskState.phases[id] : null;
-          const eventsStates = phaseStateObj ? phaseStateObj.events : {};
+          const eventStates = phaseStateObj ? phaseStateObj.events : {};
 
           return (
             <Paper sx={{ padding: theme.spacing(1) }} variant="outlined" key={`Phase - ${id}`}>
               <Typography variant="h6" fontWeight="bold" marginTop={3}>
+                {phaseStateObj && phaseStateObj.id ? phaseStateObj.id.toString() : 'unknown #'}.{' '}
                 {phaseStateObj && phaseStateObj.category ? phaseStateObj.category : 'undefined'}
               </Typography>
 
@@ -65,20 +88,19 @@ export function TaskLogs({ taskLog, taskState }: TaskLogProps) {
               {eventIds.length > 0 ? (
                 eventIds.map((idx) => {
                   const event = events[idx];
+                  const eventState = eventStates ? eventStates[idx] : null;
                   return (
                     <div
                       style={{
                         marginTop: theme.spacing(1),
-                        backgroundColor: mapEventColor(event),
+                        backgroundColor: mapEventColor(eventState),
                         padding: theme.spacing(1),
                         borderRadius: theme.spacing(1),
                       }}
                       key={`event - ${idx}`}
                     >
                       <Typography variant="body1" fontWeight="bold">
-                        {eventsStates && eventsStates[0] && eventsStates[0].name
-                          ? eventsStates[0].name
-                          : null}
+                        {eventState?.name}
                       </Typography>
                       {event.map((e: any, i: any) => {
                         return (
