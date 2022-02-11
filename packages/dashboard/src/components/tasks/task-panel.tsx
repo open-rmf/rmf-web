@@ -257,7 +257,9 @@ export function TaskPanel({
           {selectedTask ? (
             <>
               <Paper className={classes.progressPanelContainer}>
-                {selectedTaskState ? <TaskInfo task={selectedTaskState} /> : null}
+                {selectedTaskState && taskCancellable ? (
+                  <TaskInfo task={selectedTaskState} />
+                ) : null}
               </Paper>
               <Button
                 style={{ marginTop: theme.spacing(1) }}
@@ -276,7 +278,7 @@ export function TaskPanel({
           )}
         </Paper>
         <Paper className={classes.logsPanelContainer}>
-          {selectedTaskLog && selectedTaskState ? (
+          {selectedTaskLog && selectedTaskState && taskCancellable ? (
             <TaskLogs taskLog={selectedTaskLog} taskState={selectedTaskState} />
           ) : null}
         </Paper>
