@@ -95,6 +95,8 @@ export interface TaskInfoProps {
 }
 
 export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
+  const [showLogs, setShowLogs] = React.useState(false);
+  const onShowLogs: React.Dispatch<React.SetStateAction<boolean>> = setShowLogs;
   const theme = useTheme();
   // const taskType = task.category;
   // const detailInfo = (() => {
@@ -122,15 +124,24 @@ export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
         <InfoValue>{task.status || 'unknown'}</InfoValue>
       </InfoLine>
       {/* {detailInfo} */}
-      {/* <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Typography variant="h6">Progress</Typography>
-        <Button variant="contained" onClick={() => onShowLogs && onShowLogs(!showLogs)}>
+        <Button
+          variant="contained"
+          style={{ marginTop: theme.spacing(1), marginBottom: theme.spacing(1) }}
+          onClick={() => onShowLogs && onShowLogs(!showLogs)}
+        >
           {showLogs ? 'CLOSE LOGS' : 'SHOW LOGS'}
         </Button>
-      </div> */}
-      <div style={{ padding: '4px' }}>
-        <TaskTimeline taskState={task} />
       </div>
+
+      {showLogs ? (
+        <div style={{ padding: '4px' }}>
+          <TaskTimeline taskState={task} />
+        </div>
+      ) : null}
+
+      {/* Add task logs component here */}
     </StyledDiv>
   );
 }
