@@ -46,23 +46,24 @@ const StyledTable = styled((props: TableProps) => <Table {...props} />)(({ theme
     marginTop: theme.spacing(1),
   },
   [`& .${classes.taskActiveCell}`]: {
-    backgroundColor: theme.palette.info.light,
-    color: theme.palette.getContrastText(theme.palette.info.light),
+    backgroundColor: theme.palette.success.light,
+    color: theme.palette.getContrastText(theme.palette.success.light),
   },
   [`& .${classes.taskCancelledCell}`]: {
     backgroundColor: theme.palette.grey[500],
+    color: theme.palette.getContrastText(theme.palette.grey[500]),
   },
   [`& .${classes.taskCompletedCell}`]: {
-    backgroundColor: theme.palette.success.main,
-    color: theme.palette.getContrastText(theme.palette.success.main),
+    backgroundColor: theme.palette.info.light,
+    color: theme.palette.getContrastText(theme.palette.info.light),
   },
   [`& .${classes.taskFailedCell}`]: {
     backgroundColor: theme.palette.error.main,
     color: theme.palette.getContrastText(theme.palette.error.main),
   },
   [`& .${classes.taskQueuedCell}`]: {
-    backgroundColor: theme.palette.info.dark,
-    color: theme.palette.getContrastText(theme.palette.info.light),
+    backgroundColor: theme.palette.grey[300],
+    color: theme.palette.getContrastText(theme.palette.grey[300]),
   },
   [`& .${classes.taskUnknownCell}`]: {
     backgroundColor: theme.palette.warning.main,
