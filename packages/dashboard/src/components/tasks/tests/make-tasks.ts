@@ -9,6 +9,18 @@
 //   TaskSummary,
 // } from 'api-client';
 // import { TaskSummary as RmfTaskSummary } from 'rmf-models';
+import {
+  TaskEventLog,
+  TaskState,
+  Phases,
+  LogEntry,
+  Tier,
+  Booking,
+  Detail,
+  Status,
+  Phase,
+  EventState,
+} from 'api-client';
 import react from 'react';
 /**
  * FIXME: These `makeX` functions are duplicated in `react-components`.
@@ -153,3 +165,80 @@ import react from 'react';
 //     summary: taskSummary,
 //   };
 // }
+
+export function makeLogEntry(): LogEntry {
+  return {
+    seq: 0,
+    tier: Tier.Info,
+    unix_millis_time: 90000,
+    text: 'Open Door',
+  };
+}
+
+export function makePhases(logEntries: Array<LogEntry>): Phases {
+  return {
+    log: logEntries,
+    events: { '0': logEntries },
+  };
+}
+
+export function makeEventState(eventId: number, deps?: Array<number>): EventState {
+  return {
+    id: eventId,
+    status: Status.Underway,
+    name: '-',
+    detail: '',
+    deps: deps,
+  };
+}
+
+export function makePhase(phaseId: number): Phase {
+  const eventState0 = makeEventState(0);
+  const eventState1 = makeEventState(1, [0]);
+  return {
+    id: phaseId,
+    category: '',
+    detail: '',
+    unix_millis_start_time: 90000,
+    unix_millis_finish_time: 90009,
+    original_estimate_millis: 900000,
+    estimate_millis: 1000,
+    events: { '0': eventState0, '1': eventState1 },
+  };
+}
+
+export function makeTaskEventLog(taskId: string): TaskEventLog {
+  const logEntry = makeLogEntry();
+  const phases = makePhases([logEntry]);
+  return {
+    task_id: taskId,
+    log: [logEntry],
+    phases: { '0': phases },
+  };
+}
+
+export function makeBooking(bookingId: string): Booking {
+  return {
+    id: bookingId,
+    unix_millis_earliest_start_time: 90000,
+    priority: '1',
+    labels: ['', ''],
+  };
+}
+
+export function makeTaskEventState(taskId: string): TaskState {
+  const booking = makeBooking(taskId);
+  const phase = makePhase(0);
+  return {
+    booking: booking,
+    category: '',
+    detail: '',
+    unix_millis_start_time: 90000,
+    unix_millis_finish_time: 90009,
+    original_estimate_millis: 90009,
+    estimate_millis: 1000,
+    status: Status.Underway,
+    completed: [],
+    phases: { '0': phase },
+  };
+}
