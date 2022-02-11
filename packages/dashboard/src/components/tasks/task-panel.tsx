@@ -25,9 +25,9 @@ import { CreateTaskForm, CreateTaskFormProps, TaskInfo, TaskTable } from 'react-
 import { UserProfileContext } from 'rmf-auth';
 import { AppControllerContext } from '../app-contexts';
 import { Enforcer } from '../permissions';
-import { TaskLogs } from './task-logs';
 import { RmfIngressContext } from '../rmf-app';
 import { parseTasksFile } from './utils';
+import { TaskLogs } from './task-logs';
 
 const prefix = 'task-panel';
 const classes = {
