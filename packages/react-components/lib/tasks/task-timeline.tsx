@@ -108,8 +108,6 @@ function colorDot(phase: Phase | undefined): TimelineDotProps['color'] {
     default:
       return 'error';
   }
-
-  return 'error';
 }
 
 export interface TaskTimelineProps {
