@@ -13,7 +13,7 @@ const classes = {
 const StyledTaskPage = styled((props: TaskPanelProps) => <TaskPanel {...props} />)(({ theme }) => ({
   [`&.${classes.taskPanel}`]: {
     padding: `${theme.spacing(4)}`,
-    maxWidth: 1600,
+    maxWidth: '100%',
     backgroundColor: theme.palette.background.default,
   },
 }));
