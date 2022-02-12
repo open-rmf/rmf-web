@@ -116,7 +116,7 @@ export interface TaskTimelineProps {
 
 function RenderPhase(phase: Phase) {
   return (
-    <TimelineItem key={phase.id}>
+    <TimelineItem key={phase.id} sx={{ width: 0 }}>
       <TimelineOppositeContent color="text.secondary">
         <Typography variant="overline" color="textSecondary" style={{ textAlign: 'justify' }}>
           {phase.unix_millis_start_time
