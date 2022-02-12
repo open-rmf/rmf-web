@@ -56,7 +56,11 @@ function NestedEvents(
     const event = eventStates[eventId];
     if (event !== undefined) {
       return (
-        <TreeItem nodeId={`event-${event.id}`} label={event.name || 'undefined'}>
+        <TreeItem
+          nodeId={`event-${event.id}`}
+          key={`event-${event.id}`}
+          label={event.name || 'undefined'}
+        >
           {event.deps
             ? event.deps.map((childId) => {
                 return NestedEvents(eventStates, childId);
