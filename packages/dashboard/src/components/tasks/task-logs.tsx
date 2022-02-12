@@ -16,9 +16,9 @@ const StyledPaper = styled((props: PaperProps) => <Paper variant="outlined" {...
   ({ theme }) => ({
     [`&.${classes.root}`]: {
       padding: theme.spacing(1),
-      width: '95%',
+      width: '100%',
       flex: '0 0 auto',
-      maxHeight: '95%',
+      maxHeight: '100%',
       overflow: 'auto',
     },
   }),

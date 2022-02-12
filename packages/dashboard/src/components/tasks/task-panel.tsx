@@ -8,6 +8,7 @@ import {
   AlertProps,
   Button,
   Grid,
+  GridProps,
   IconButton,
   Paper,
   Snackbar,
@@ -36,6 +37,9 @@ const classes = {
   taskInfoContainer: `${prefix}-task-info-container`,
   enabledToggleButton: `${prefix}-enable-toggle-button`,
   logsPanelContainer: `${prefix}-task-logs-container`,
+  tableGrid: `${prefix}-table-grid`,
+  timelineGrid: `${prefix}-timeline-grid`,
+  logsGrid: `${prefix}-logs-grid`,
 };
 
 const StyledDiv = styled('div')(({ theme }) => ({
@@ -49,7 +53,7 @@ const StyledDiv = styled('div')(({ theme }) => ({
     flex: '1 1 100%',
   },
   [`& .${classes.taskInfoContainer}`]: {
-    marginLeft: theme.spacing(2),
+    display: 'flex',
     padding: theme.spacing(2),
     flex: '1 1 100%',
     flexDirection: 'column',
@@ -59,14 +63,24 @@ const StyledDiv = styled('div')(({ theme }) => ({
   [`& .${classes.enabledToggleButton}`]: {
     background: theme.palette.action.selected,
   },
-  [`& .${classes.logsPanelContainer}`]: {
+  [`&.${classes.tableGrid}`]: {
+    xs: 5,
+  },
+  [`& .${classes.timelineGrid}`]: {
+    marginLeft: theme.spacing(2),
+    marginButtom: theme.spacing(2),
     padding: theme.spacing(2),
+    maxHeight: '100%',
+    xs: 4,
+  },
+  [`& .${classes.logsGrid}`]: {
+    display: 'flex',
     marginLeft: theme.spacing(2),
     flex: '1 1 100%',
     flexDirection: 'column',
-    maxHeight: '100%',
+    xs: 4,
   },
-  height: '100%',
+  height: '90%',
   flexDirection: 'column',
 }));
 
@@ -207,7 +221,7 @@ export function TaskPanel({
   return (
     <StyledDiv {...divProps}>
       <Grid container wrap="nowrap" justifyContent="center" style={{ height: 'inherit' }}>
-        <Grid item xs={5}>
+        <Grid item xs={5} className={classes.tableGrid}>
           <Paper className={classes.tableContainer}>
             <Toolbar>
               <Typography className={classes.tableTitle} variant="h6">
@@ -253,7 +267,7 @@ export function TaskPanel({
             )}
           </Paper>
         </Grid>
-        <Grid item xs={3}>
+        <Grid className={classes.timelineGrid} item xs={4}>
           <Paper className={classes.taskInfoContainer}>
             {selectedTask ? (
               <>
@@ -266,7 +280,7 @@ export function TaskPanel({
             )}
           </Paper>
           <Button
-            style={{ marginTop: theme.spacing(1) }}
+            style={{ marginTop: theme.spacing(1), marginBottom: theme.spacing(1) }}
             fullWidth
             variant="contained"
             color="secondary"
@@ -277,7 +291,7 @@ export function TaskPanel({
             Cancel Task
           </Button>
         </Grid>
-        <Grid item xs={4} className={classes.logsPanelContainer}>
+        <Grid item xs={4} className={classes.logsGrid}>
           {selectedTaskLog && selectedTaskState && taskCancellable ? (
             <TaskLogs taskLog={selectedTaskLog} taskState={selectedTaskState} />
           ) : null}
