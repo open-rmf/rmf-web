@@ -277,12 +277,10 @@ export function TaskPanel({
             Cancel Task
           </Button>
         </Grid>
-        <Grid item xs={4}>
-          <Paper className={classes.logsPanelContainer}>
-            {selectedTaskLog && selectedTaskState && taskCancellable ? (
-              <TaskLogs taskLog={selectedTaskLog} taskState={selectedTaskState} />
-            ) : null}
-          </Paper>
+        <Grid item xs={4} className={classes.logsPanelContainer}>
+          {selectedTaskLog && selectedTaskState && taskCancellable ? (
+            <TaskLogs taskLog={selectedTaskLog} taskState={selectedTaskState} />
+          ) : null}
         </Grid>
       </Grid>
       {openCreateTaskForm && (
