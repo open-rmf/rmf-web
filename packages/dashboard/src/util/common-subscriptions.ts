@@ -50,7 +50,7 @@ export const useIngestorStatesRef = (sioClient: SioClient | undefined, ingestors
       ),
     );
     return () => {
-      subs.forEach((s) => sioClient.unsubscribe(s));
+      subs.filter(() => null).forEach((s) => sioClient.unsubscribe(s));
     };
   }, [sioClient, ingestors, ingestorStatesRef]);
   return ingestorStatesRef;

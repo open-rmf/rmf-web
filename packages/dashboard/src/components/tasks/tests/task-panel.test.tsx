@@ -1,6 +1,18 @@
 // import { waitFor } from '@testing-library/react';
 // import userEvent from '@testing-library/user-event';
-import React from 'react';
+import { TaskPanel } from '../task-panel';
+import { render } from '../../tests/test-utils';
+
+jest.mock('./../../schedule-visualizer', () => () => null);
+
+it('renders without crashing', async () => {
+  URL.createObjectURL = jest.fn();
+
+  const root = render(<TaskPanel tasks={[]} />);
+  root.unmount();
+  (URL.createObjectURL as jest.Mock).mockReset();
+});
+
 // import { TaskSummary as RmfTaskSummary, TaskType as RmfTaskType } from 'rmf-models';
 import { render } from '../../tests/test-utils';
 import { TaskPanel, TaskPanelProps } from '../task-panel';

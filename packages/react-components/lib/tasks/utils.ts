@@ -1,4 +1,4 @@
-import { TaskSummary as RmfTaskSummary, TaskType as RmfTaskType } from 'rmf-models';
+import { TaskType as RmfTaskType } from 'rmf-models';
 import type { TaskState } from 'api-client';
 
 export function taskStateToStr(taskState: TaskState): string {
