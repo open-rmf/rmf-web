@@ -1,30 +1,69 @@
-import { Divider, Grid, Paper, PaperProps, styled, Typography, useTheme } from '@mui/material';
-import { TaskEventLog } from 'api-client';
 import React from 'react';
-
+import { Divider, Grid, Paper, PaperProps, styled, Typography, useTheme } from '@mui/material';
+import { TaskEventLog, TaskState, EventState, Status, LogEntry } from 'api-client';
+import { format } from 'date-fns';
 const prefix = 'task-logs';
 const classes = {
   root: `${prefix}-root`,
 };
 
-export interface TaskLogsProps {
+export interface TaskLogProps {
   taskLog: TaskEventLog;
+  taskState: TaskState;
+  fetchTaskLogs?: () => Promise<never[] | undefined>;
 }
 
 const StyledPaper = styled((props: PaperProps) => <Paper variant="outlined" {...props} />)(
   ({ theme }) => ({
     [`&.${classes.root}`]: {
-      padding: theme.spacing(2),
-      marginLeft: theme.spacing(2),
+      padding: theme.spacing(1),
+      width: '95%',
       flex: '0 0 auto',
+      maxHeight: '95%',
+      overflow: 'auto',
     },
   }),
 );
 
-export function TaskLogs(props: TaskLogsProps) {
-  const { taskLog } = props;
+export function TaskLogs({ taskLog, taskState }: TaskLogProps) {
   const theme = useTheme();
   const phaseIds = taskLog.phases ? Object.keys(taskLog.phases) : [];
+
+  function mapEventColor(event: EventState | null) {
+    // TODO(MXG): We should make this color selection consistent with the color
+    // selection that's done for task states.
+    if (event == null || event.status == null) return theme.palette.warning.light;
+
+    switch (event.status) {
+      case Status.Uninitialized:
+      case Status.Blocked:
+      case Status.Error:
+      case Status.Failed:
+        return theme.palette.error.dark;
+
+      case Status.Queued:
+      case Status.Standby:
+        return theme.palette.info.light;
+
+      case Status.Underway:
+        return theme.palette.success.light;
+
+      case Status.Delayed:
+        return theme.palette.warning.main;
+
+      case Status.Skipped:
+      case Status.Canceled:
+      case Status.Killed:
+        return theme.palette.error.light;
+
+      case Status.Completed:
+        return theme.palette.info.light;
+
+      default:
+        return theme.palette.error.dark;
+    }
+  }
+
   return (
     <StyledPaper className={classes.root}>
       <Typography variant="h5" style={{ textAlign: 'center' }} gutterBottom>
@@ -36,25 +75,34 @@ export function TaskLogs(props: TaskLogsProps) {
           const getEventObj: any = taskLog.phases ? taskLog.phases[id] : null;
           const events = getEventObj ? getEventObj['events'] : {};
           const eventIds = events ? Object.keys(events) : [];
+          const phaseStateObj = taskState.phases ? taskState.phases[id] : null;
+          const eventStates = phaseStateObj ? phaseStateObj.events : {};
+
           return (
             <Paper sx={{ padding: theme.spacing(1) }} variant="outlined" key={`Phase - ${id}`}>
-              <Typography variant="h6" fontWeight="bold">
-                {`Phase - ${id}`}
+              <Typography variant="h6" fontWeight="bold" marginTop={3}>
+                {phaseStateObj && phaseStateObj.id ? phaseStateObj.id.toString() : 'unknown #'}.{' '}
+                {phaseStateObj && phaseStateObj.category ? phaseStateObj.category : 'undefined'}
               </Typography>
+
               <Divider />
               {eventIds.length > 0 ? (
                 eventIds.map((idx) => {
                   const event = events[idx];
+                  const eventState = eventStates ? eventStates[idx] : null;
                   return (
                     <div
                       style={{
                         marginTop: theme.spacing(1),
-                        backgroundColor: theme.palette.success.light,
+                        backgroundColor: mapEventColor(eventState),
                         padding: theme.spacing(1),
+                        borderRadius: theme.spacing(1),
                       }}
                       key={`event - ${idx}`}
                     >
-                      <Typography variant="body1" fontWeight="bold">{`Event - ${idx}`}</Typography>
+                      <Typography variant="body1" fontWeight="bold">
+                        {eventState?.name}
+                      </Typography>
                       {event.map((e: any, i: any) => {
                         return (
                           <Grid
@@ -62,23 +110,34 @@ export function TaskLogs(props: TaskLogsProps) {
                             key={`info-${i}`}
                             direction="row"
                             justifyItems="center"
-                            sx={{ backgroundColor: 'white', marginTop: theme.spacing(1) }}
+                            sx={{
+                              backgroundColor: 'white',
+                              marginTop: theme.spacing(1),
+                              borderRadius: '8px',
+                            }}
                           >
                             <Grid
                               item
                               xs={4}
                               sx={{
-                                borderRight: `${theme.spacing(1)} solid ${
-                                  theme.palette.success.light
-                                }`,
+                                border: 1,
                                 padding: theme.spacing(1),
                               }}
                             >
                               <Typography variant="body1">
-                                {new Date(e.unix_millis_time).toLocaleString()}
+                                {format(new Date(e.unix_millis_time), "hh:mm:ss aaaaa'm'")}
                               </Typography>
                             </Grid>
-                            <Grid item xs={8} sx={{ padding: theme.spacing(1) }}>
+                            <Grid
+                              item
+                              xs={8}
+                              sx={{
+                                padding: theme.spacing(1),
+                                borderRight: 1,
+                                borderBottom: 1,
+                                borderTop: 1,
+                              }}
+                            >
                               <Typography variant="body1">{e.text}</Typography>
                             </Grid>
                           </Grid>
@@ -98,7 +157,7 @@ export function TaskLogs(props: TaskLogsProps) {
       ) : (
         <div>
           <Typography align="center" sx={{ padding: theme.spacing(1) }} fontWeight="bold">
-            No Logs
+            No Logs to be shown
           </Typography>
         </div>
       )}

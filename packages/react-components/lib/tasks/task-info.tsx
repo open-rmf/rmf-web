@@ -1,4 +1,4 @@
-import { Button, Divider, Typography, useTheme } from '@mui/material';
+import { Divider, Typography, useTheme } from '@mui/material';
 import { styled } from '@mui/material';
 import type { TaskState } from 'api-client';
 import React from 'react';

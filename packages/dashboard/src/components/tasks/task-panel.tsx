@@ -8,6 +8,7 @@ import {
   AlertProps,
   Button,
   Grid,
+  GridProps,
   IconButton,
   Paper,
   Snackbar,
@@ -26,34 +27,61 @@ import { UserProfileContext } from 'rmf-auth';
 import { AppControllerContext } from '../app-contexts';
 import { Enforcer } from '../permissions';
 import { RmfIngressContext } from '../rmf-app';
-import { TaskLogs } from './task-logs';
 import { parseTasksFile } from './utils';
+import { TaskLogs } from './task-logs';
 
 const prefix = 'task-panel';
 const classes = {
   tableContainer: `${prefix}-table-container`,
   tableTitle: `${prefix}-table-title`,
-  detailPanelContainer: `${prefix}-detail-panel-container`,
+  taskInfoContainer: `${prefix}-task-info-container`,
   enabledToggleButton: `${prefix}-enable-toggle-button`,
+  logsPanelContainer: `${prefix}-task-logs-container`,
+  tableGrid: `${prefix}-table-grid`,
+  timelineGrid: `${prefix}-timeline-grid`,
+  logsGrid: `${prefix}-logs-grid`,
 };
 
 const StyledDiv = styled('div')(({ theme }) => ({
   [`& .${classes.tableContainer}`]: {
     display: 'flex',
+    flex: '1 1 100%',
     flexDirection: 'column',
+    overflow: 'auto',
   },
   [`& .${classes.tableTitle}`]: {
     flex: '1 1 100%',
   },
-  [`& .${classes.detailPanelContainer}`]: {
-    width: 350,
+  [`& .${classes.taskInfoContainer}`]: {
+    display: 'flex',
     padding: theme.spacing(2),
-    marginLeft: theme.spacing(2),
-    flex: '0 0 auto',
+    flex: '1 1 100%',
+    flexDirection: 'column',
+    maxHeight: '100%',
+    overflow: 'auto',
   },
   [`& .${classes.enabledToggleButton}`]: {
     background: theme.palette.action.selected,
   },
+  [`&.${classes.tableGrid}`]: {
+    xs: 5,
+  },
+  [`& .${classes.timelineGrid}`]: {
+    marginLeft: theme.spacing(2),
+    marginButtom: theme.spacing(2),
+    padding: theme.spacing(2),
+    maxHeight: '100%',
+    xs: 4,
+  },
+  [`& .${classes.logsGrid}`]: {
+    display: 'flex',
+    marginLeft: theme.spacing(2),
+    flex: '1 1 100%',
+    flexDirection: 'column',
+    xs: 4,
+  },
+  height: '90%',
+  flexDirection: 'column',
 }));
 
 function NoSelectedTask() {
@@ -100,6 +128,9 @@ export function TaskPanel({
 }: TaskPanelProps): JSX.Element {
   const theme = useTheme();
   const [selectedTask, setSelectedTask] = React.useState<TaskState | undefined>(undefined);
+  const [selectedTaskState, setSelectedTaskState] = React.useState<TaskState | undefined>(
+    undefined,
+  );
   const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
   const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
@@ -164,8 +195,13 @@ export function TaskPanel({
       return [];
     }
     if (selectedTask) {
-      const logs = await tasksApi.getTaskLogTasksTaskIdLogGet(selectedTask.booking.id);
+      const logs = await tasksApi.getTaskLogTasksTaskIdLogGet(
+        selectedTask.booking.id,
+        '0,99999999',
+      );
+      const state = await tasksApi.getTaskStateTasksTaskIdStateGet(selectedTask.booking.id);
       setSelectedTaskLog(logs.data);
+      setSelectedTaskState(state.data);
     }
   }, [tasksApi, selectedTask]);
 
@@ -185,67 +221,81 @@ export function TaskPanel({
   return (
     <StyledDiv {...divProps}>
       <Grid container wrap="nowrap" justifyContent="center" style={{ height: 'inherit' }}>
-        <Paper className={classes.tableContainer}>
-          <Toolbar>
-            <Typography className={classes.tableTitle} variant="h6">
-              Tasks
-            </Typography>
-            <Tooltip title={`${autoRefreshTooltipPrefix} auto refresh`}>
-              <IconButton
-                className={autoRefresh ? classes.enabledToggleButton : undefined}
-                onClick={() => {
-                  setAutoRefresh((prev) => !prev);
-                  onAutoRefresh && onAutoRefresh(!autoRefresh);
-                }}
-                aria-label={`${autoRefreshTooltipPrefix} auto refresh`}
-              >
-                <AutorenewIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Refresh">
-              <IconButton onClick={() => onRefresh && onRefresh()} aria-label="Refresh">
-                <RefreshIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Create task">
-              <IconButton onClick={() => setOpenCreateTaskForm(true)} aria-label="Create Task">
-                <AddOutlinedIcon />
-              </IconButton>
-            </Tooltip>
-          </Toolbar>
-          <TableContainer>
-            <TaskTable
-              tasks={tasks.map((t) => t)}
-              onTaskClick={(_ev, task) =>
-                setSelectedTask(tasks.find((t) => t.booking.id === task.booking.id))
-              }
-            />
-          </TableContainer>
-          {paginationOptions && (
-            <TablePagination component="div" {...paginationOptions} style={{ flex: '0 0 auto' }} />
-          )}
-        </Paper>
-        <Paper className={classes.detailPanelContainer}>
-          {selectedTask ? (
-            <>
-              <TaskInfo task={selectedTask} />
-              <Button
-                style={{ marginTop: theme.spacing(1) }}
-                fullWidth
-                variant="contained"
-                color="secondary"
-                aria-label="Cancel Task"
-                disabled={!taskCancellable}
-                onClick={handleCancelTaskClick}
-              >
-                Cancel Task
-              </Button>
-            </>
-          ) : (
-            <NoSelectedTask />
-          )}
-        </Paper>
-        {selectedTaskLog ? <TaskLogs taskLog={selectedTaskLog} /> : null}
+        <Grid item xs={5} className={classes.tableGrid}>
+          <Paper className={classes.tableContainer}>
+            <Toolbar>
+              <Typography className={classes.tableTitle} variant="h6">
+                Tasks
+              </Typography>
+              <Tooltip title={`${autoRefreshTooltipPrefix} auto refresh`}>
+                <IconButton
+                  className={autoRefresh ? classes.enabledToggleButton : undefined}
+                  onClick={() => {
+                    setAutoRefresh((prev) => !prev);
+                    onAutoRefresh && onAutoRefresh(!autoRefresh);
+                  }}
+                  aria-label={`${autoRefreshTooltipPrefix} auto refresh`}
+                >
+                  <AutorenewIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Refresh">
+                <IconButton onClick={() => onRefresh && onRefresh()} aria-label="Refresh">
+                  <RefreshIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Create task">
+                <IconButton onClick={() => setOpenCreateTaskForm(true)} aria-label="Create Task">
+                  <AddOutlinedIcon />
+                </IconButton>
+              </Tooltip>
+            </Toolbar>
+            <TableContainer>
+              <TaskTable
+                tasks={tasks.map((t) => t)}
+                onTaskClick={(_ev, task) =>
+                  setSelectedTask(tasks.find((t) => t.booking.id === task.booking.id))
+                }
+              />
+            </TableContainer>
+            {paginationOptions && (
+              <TablePagination
+                component="div"
+                {...paginationOptions}
+                style={{ flex: '0 0 auto' }}
+              />
+            )}
+          </Paper>
+        </Grid>
+        <Grid className={classes.timelineGrid} item xs={4}>
+          <Paper className={classes.taskInfoContainer}>
+            {selectedTask ? (
+              <>
+                {selectedTaskState && taskCancellable ? (
+                  <TaskInfo task={selectedTaskState} />
+                ) : null}
+              </>
+            ) : (
+              <NoSelectedTask />
+            )}
+          </Paper>
+          <Button
+            style={{ marginTop: theme.spacing(1), marginBottom: theme.spacing(1) }}
+            fullWidth
+            variant="contained"
+            color="secondary"
+            aria-label="Cancel Task"
+            disabled={!taskCancellable}
+            onClick={handleCancelTaskClick}
+          >
+            Cancel Task
+          </Button>
+        </Grid>
+        <Grid item xs={4} className={classes.logsGrid}>
+          {selectedTaskLog && selectedTaskState && taskCancellable ? (
+            <TaskLogs taskLog={selectedTaskLog} taskState={selectedTaskState} />
+          ) : null}
+        </Grid>
       </Grid>
       {openCreateTaskForm && (
         <CreateTaskForm
@@ -257,7 +307,7 @@ export function TaskPanel({
           open={openCreateTaskForm}
           onClose={() => setOpenCreateTaskForm(false)}
           submitTasks={submitTasks}
-          tasksFromFile={tasksFromFile}
+          // tasksFromFile={tasksFromFile}
           onSuccess={() => {
             setOpenCreateTaskForm(false);
             setSnackbarSeverity('success');
