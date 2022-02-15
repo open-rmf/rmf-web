@@ -2,6 +2,7 @@
 
 import { styled } from '@mui/material';
 import type { TaskState } from 'api-client';
+import { DispatchTaskRequestTypeEnum, CancelTaskRequestTypeEnum } from 'api-client';
 import type { AxiosError } from 'axios';
 import React from 'react';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
@@ -83,8 +84,8 @@ export function TaskPage() {
       }
       await Promise.all(
         taskRequests.map((taskReq) =>
-          tasksApi.postTaskRequestTasksDispatchTaskPost({
-            type: 'dispatch_task_request',
+          tasksApi.postDispatchTaskTasksDispatchTaskPost({
+            type: DispatchTaskRequestTypeEnum.DispatchTaskRequest,
             request: taskReq,
           }),
         ),
@@ -97,7 +98,10 @@ export function TaskPage() {
   const cancelTask = React.useCallback<Required<TaskPanelProps>['cancelTask']>(
     async (task) => {
       try {
-        await tasksApi?.postCancelTaskTasksCancelTaskPost({ type: '', task_id: task.booking.id });
+        await tasksApi?.postCancelTaskTasksCancelTaskPost({
+          type: CancelTaskRequestTypeEnum.CancelTaskRequest,
+          task_id: task.booking.id,
+        });
       } catch (e) {
         const axiosErr = e as AxiosError;
         let errMsg = 'unspecified error';

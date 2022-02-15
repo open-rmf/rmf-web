@@ -17,7 +17,7 @@ import {
   Tier,
   Booking,
   Detail,
-  Status,
+  ApiServerModelsRmfApiTaskStateStatus as Status,
   Phase,
   EventState,
 } from 'api-client';
