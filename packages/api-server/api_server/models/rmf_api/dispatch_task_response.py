@@ -19,8 +19,8 @@ class TaskDispatchResponseItem1(BaseModel):
 
 
 class TaskDispatchResponseItem(BaseModel):
-    success: Literal[1]
-    state: task_state.TaskState
+    success: Optional[Literal[1]]
+    state: Optional[task_state.TaskState]
 
 
 class TaskDispatchResponse(BaseModel):
