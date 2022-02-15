@@ -107,17 +107,17 @@ export function RobotPage() {
   }, [rmfIngress, fetchSelectedTask]);
 
   const onRobotZoom = (robot: VerboseRobot) => {
-    leafletMap &&
-      leafletMap.leafletElement.setView(
-        [
-          robot.state.location ? robot.state.location.y : 0.0,
-          robot.state.location ? robot.state.location.x : 0.0,
-        ],
-        5.5,
-        {
-          animate: true,
-        },
-      );
+    //leafletMap &&
+    //leafletMap.leafletElement.setView(
+    //[
+    //robot.state.location ? robot.state.location.y : 0.0,
+    //robot.state.location ? robot.state.location.x : 0.0,
+    //],
+    //5.5,
+    //{
+    //animate: true,
+    //},
+    //);
   };
 
   React.useEffect(() => {

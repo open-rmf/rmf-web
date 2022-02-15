@@ -24,8 +24,7 @@ export interface RobotInfoProps {
 
 export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
   const theme = useTheme();
-  const [hasConcreteEndTime, setHasConcreteEndTime] = React.useState<boolean>(false);
-  setHasConcreteEndTime(false);
+  const [hasConcreteEndTime] = React.useState<boolean>(false);
 
   const currentTask = robot.current_task_state;
 
