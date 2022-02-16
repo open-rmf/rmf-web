@@ -83,7 +83,7 @@ export function TaskPage() {
       }
       await Promise.all(
         taskRequests.map((taskReq) =>
-          tasksApi.postTaskRequestTasksDispatchTaskPost({
+          tasksApi.postDispatchTaskTasksDispatchTaskPost({
             type: 'dispatch_task_request',
             request: taskReq,
           }),
@@ -97,7 +97,10 @@ export function TaskPage() {
   const cancelTask = React.useCallback<Required<TaskPanelProps>['cancelTask']>(
     async (task) => {
       try {
-        await tasksApi?.postCancelTaskTasksCancelTaskPost({ type: '', task_id: task.booking.id });
+        await tasksApi?.postCancelTaskTasksCancelTaskPost({
+          type: 'cancel_task_request',
+          task_id: task.booking.id,
+        });
       } catch (e) {
         const axiosErr = e as AxiosError;
         let errMsg = 'unspecified error';
