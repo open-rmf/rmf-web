@@ -124,7 +124,7 @@ async def post_dispatch_task(
     await task_repo.save_task_state(
         cast(mdl.TaskDispatchResponseItem, resp.__root__).state
     )
-    return resp
+    return resp.__root__
 
 
 @router.post("/interrupt_task", response_model=mdl.TaskInterruptionResponse)
