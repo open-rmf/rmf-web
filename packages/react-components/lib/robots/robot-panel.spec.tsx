@@ -1,16 +1,18 @@
-import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import React from 'react';
+//import { render } from '@testing-library/react';
+//import userEvent from '@testing-library/user-event';
+//import React from 'react';
 // import { makeDefinedTask } from '../tasks/test-data.spec';
-import { RobotPanel, RobotPanelProps } from './robot-panel';
-import { makeRandomRobot } from './test-utils.spec';
-import { VerboseRobot } from './utils';
+//import { RobotPanel, RobotPanelProps } from './robot-panel';
+//import { makeRandomRobot } from './test-utils.spec';
+//import { VerboseRobot } from './utils';
 
-function makeFetchRobots(robots: VerboseRobot[]): RobotPanelProps['fetchVerboseRobots'] {
-  return async () => {
-    return robots;
-  };
-}
+//function makeFetchRobots(robots: VerboseRobot[]): RobotPanelProps['fetchVerboseRobots'] {
+//return async () => {
+//return robots;
+//};
+//}
+
+// TODO(FIXME): Fix tests for Tasksv2
 
 // describe('RobotPanel', () => {
 //   it('shows empty information when robot is clicked when there are no assigned tasks', async () => {

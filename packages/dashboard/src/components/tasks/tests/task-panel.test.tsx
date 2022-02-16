@@ -1,22 +1,34 @@
 // import { waitFor } from '@testing-library/react';
 // import userEvent from '@testing-library/user-event';
-import React from 'react';
-// import { TaskSummary as RmfTaskSummary, TaskType as RmfTaskType } from 'rmf-models';
+import { TaskPanel } from '../task-panel';
 import { render } from '../../tests/test-utils';
-import { TaskPanel, TaskPanelProps } from '../task-panel';
-import { makeTaskState } from './make-tasks';
 
-// react-leaflet doesn't work well in jsdom.
 jest.mock('./../../schedule-visualizer', () => () => null);
 
 it('renders without crashing', async () => {
   URL.createObjectURL = jest.fn();
-  const taskState = makeTaskState('0');
 
-  const root = render(<TaskPanel tasks={[taskState]} />);
+  const root = render(<TaskPanel tasks={[]} />);
   root.unmount();
   (URL.createObjectURL as jest.Mock).mockReset();
 });
+
+// import { TaskSummary as RmfTaskSummary, TaskType as RmfTaskType } from 'rmf-models';
+//import { render } from '../../tests/test-utils';
+//import { TaskPanel, TaskPanelProps } from '../task-panel';
+//import { makeTaskState } from './make-tasks';
+
+// react-leaflet doesn't work well in jsdom.
+//jest.mock('./../../schedule-visualizer', () => () => null);
+
+//it('renders without crashing', async () => {
+//URL.createObjectURL = jest.fn();
+//const taskState = makeTaskState('0');
+
+//const root = render(<TaskPanel tasks={[taskState]} />);
+//root.unmount();
+//(URL.createObjectURL as jest.Mock).mockReset();
+//});
 
 export {};
 

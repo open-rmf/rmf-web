@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import { styled, GridProps, Grid, Card } from '@mui/material';
 import React from 'react';
-import { FleetState, RobotState } from 'api-client';
+import { FleetState } from 'api-client';
 import { MapProps, Map } from 'react-leaflet';
 import { RobotPanel, VerboseRobot } from 'react-components';
 import {
@@ -69,23 +69,7 @@ export function RobotPage() {
   // robot panel stuff
   const [hasMore, setHasMore] = React.useState(true);
   const [page, setPage] = React.useState(0);
-  const [verboseRobots, setVerboseRobots] = React.useState<RobotState[]>([]);
-  const fetchVerboseRobots = React.useCallback(async () => {
-    if (!rmfIngress) {
-      setHasMore(false);
-      return [];
-    }
-    const resp = await rmfIngress.fleetsApi.getFleetsFleetsGet();
-    let robotState: RobotState[] = [];
-    resp.data?.forEach((fleet) => {
-      const robotKey = fleet.robots && Object.keys(fleet.robots);
-      robotKey?.forEach((key) => {
-        fleet.robots && robotState.push(fleet.robots[key]);
-      });
-    });
-    setVerboseRobots(robotState);
-    return resp.data;
-  }, [rmfIngress]);
+  const [verboseRobots, setVerboseRobots] = React.useState<VerboseRobot[]>([]);
 
   const fetchSelectedTask = React.useCallback(
     async (taskId: string) => {
@@ -96,10 +80,39 @@ export function RobotPage() {
     [taskApi],
   );
 
-  const onRobotZoom = (robot: RobotState) => {
+  const fetchVerboseRobots = React.useCallback(async () => {
+    if (!rmfIngress) {
+      setHasMore(false);
+      return [];
+    }
+    const resp = await rmfIngress.fleetsApi.getFleetsFleetsGet();
+    let verboseRobots: VerboseRobot[] = [];
+    resp.data?.forEach((fleet) => {
+      const robotKey = fleet.robots && Object.keys(fleet.robots);
+      robotKey?.forEach(async (key) => {
+        if (fleet.robots) {
+          let robot = fleet.robots[key];
+          if (robot.task_id) {
+            let task = await fetchSelectedTask(robot.task_id);
+            verboseRobots.push({ state: fleet.robots[key], current_task_state: task });
+          } else {
+            verboseRobots.push({ state: fleet.robots[key] });
+          }
+        }
+      });
+    });
+
+    setVerboseRobots(verboseRobots);
+    return resp.data;
+  }, [rmfIngress, fetchSelectedTask]);
+
+  const onRobotZoom = (robot: VerboseRobot) => {
     leafletMap &&
       leafletMap.leafletElement.setView(
-        [robot.location ? robot.location.y : 0.0, robot.location ? robot.location.x : 0.0],
+        [
+          robot.state.location ? robot.state.location.y : 0.0,
+          robot.state.location ? robot.state.location.x : 0.0,
+        ],
         5.5,
         {
           animate: true,
@@ -131,8 +144,6 @@ export function RobotPage() {
       <Grid item xs={8}>
         <RobotPanel
           className={classes.robotPanel}
-          fetchVerboseRobots={fetchVerboseRobots}
-          fetchSelectedTask={fetchSelectedTask}
           paginationOptions={{
             count: hasMore ? -1 : page * 10 + verboseRobots.length,
             rowsPerPage: 10,

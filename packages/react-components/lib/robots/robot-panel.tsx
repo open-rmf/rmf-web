@@ -1,5 +1,4 @@
 import { Grid, Paper, TablePagination, Typography, styled } from '@mui/material';
-import { RobotState, TaskState } from 'api-client';
 import React from 'react';
 import { RobotInfo } from './robot-info';
 import { RobotTable } from './robot-table';
@@ -36,9 +35,7 @@ function NoSelectedRobot() {
 export interface RobotPanelProps
   extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
   paginationOptions?: Omit<React.ComponentPropsWithoutRef<typeof TablePagination>, 'component'>;
-  verboseRobots: RobotState[];
-  fetchVerboseRobots: () => Promise<RobotState[]>;
-  fetchSelectedTask?: (taskId: string) => Promise<TaskState | undefined>;
+  verboseRobots: VerboseRobot[];
   onRobotZoom?: (robot: VerboseRobot) => void;
 }
 
@@ -47,18 +44,15 @@ export interface RobotPanelProps
 export function RobotPanel({
   paginationOptions,
   verboseRobots,
-  fetchVerboseRobots,
-  fetchSelectedTask,
   onRobotZoom,
   ...divProps
 }: RobotPanelProps): JSX.Element {
-  const [selectedRobot, setSelectedRobot] = React.useState<RobotState | undefined>(undefined);
+  const [selectedRobot, setSelectedRobot] = React.useState<VerboseRobot | undefined>(undefined);
 
-  const handleRefresh = async (selectedRobot?: RobotState) => {
+  const handleRefresh = async (selectedRobot?: VerboseRobot) => {
     (async () => {
-      const result = await fetchVerboseRobots();
-      result.forEach((robot) => {
-        if (selectedRobot && robot.name === selectedRobot.name) {
+      verboseRobots.forEach((robot) => {
+        if (selectedRobot && robot.state.name === selectedRobot.state.name) {
           setSelectedRobot(robot);
         }
       });
@@ -87,11 +81,7 @@ export function RobotPanel({
           />
         </Grid>
         <Paper className={classes.detailPanelContainer}>
-          {selectedRobot ? (
-            <RobotInfo robot={selectedRobot} fetchSelectedTask={fetchSelectedTask} />
-          ) : (
-            <NoSelectedRobot />
-          )}
+          {selectedRobot ? <RobotInfo robot={selectedRobot} /> : <NoSelectedRobot />}
         </Paper>
       </Grid>
     </StyledDiv>

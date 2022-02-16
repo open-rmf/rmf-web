@@ -8,7 +8,6 @@ import {
   AlertProps,
   Button,
   Grid,
-  GridProps,
   IconButton,
   Paper,
   Snackbar,
@@ -24,10 +23,10 @@ import { TaskEventLog, TaskState } from 'api-client';
 import React from 'react';
 import { CreateTaskForm, CreateTaskFormProps, TaskInfo, TaskTable } from 'react-components';
 import { UserProfileContext } from 'rmf-auth';
-import { AppControllerContext } from '../app-contexts';
+//import { AppControllerContext } from '../app-contexts';
 import { Enforcer } from '../permissions';
 import { RmfIngressContext } from '../rmf-app';
-import { parseTasksFile } from './utils';
+//import { parseTasksFile } from './utils';
 import { TaskLogs } from './task-logs';
 
 const prefix = 'task-panel';
@@ -139,7 +138,7 @@ export function TaskPanel({
   const [autoRefresh, setAutoRefresh] = React.useState(true);
   const [selectedTaskLog, setSelectedTaskLog] = React.useState<TaskEventLog | undefined>(undefined);
   const profile = React.useContext(UserProfileContext);
-  const { showErrorAlert } = React.useContext(AppControllerContext);
+  //const { showErrorAlert } = React.useContext(AppControllerContext);
   const { tasksApi } = React.useContext(RmfIngressContext) || {};
 
   const handleCancelTaskClick = React.useCallback<React.MouseEventHandler>(async () => {
@@ -160,35 +159,35 @@ export function TaskPanel({
   }, [cancelTask, selectedTask]);
 
   // /* istanbul ignore next */
-  const tasksFromFile = (): Promise<TaskState[]> => {
-    return new Promise((res) => {
-      const fileInputEl = uploadFileInputRef.current;
-      if (!fileInputEl) {
-        return [];
-      }
-      let taskFiles: TaskState[];
-      const listener = async () => {
-        try {
-          if (!fileInputEl.files || fileInputEl.files.length === 0) {
-            return res([]);
-          }
-          try {
-            taskFiles = parseTasksFile(await fileInputEl.files[0].text());
-          } catch (err) {
-            showErrorAlert((err as Error).message, 5000);
-            return res([]);
-          }
-          // only submit tasks when all tasks are error free
-          return res(taskFiles);
-        } finally {
-          fileInputEl.removeEventListener('input', listener);
-          fileInputEl.value = '';
-        }
-      };
-      fileInputEl.addEventListener('input', listener);
-      fileInputEl.click();
-    });
-  };
+  //const tasksFromFile = (): Promise<TaskState[]> => {
+  //return new Promise((res) => {
+  //const fileInputEl = uploadFileInputRef.current;
+  //if (!fileInputEl) {
+  //return [];
+  //}
+  //let taskFiles: TaskState[];
+  //const listener = async () => {
+  //try {
+  //if (!fileInputEl.files || fileInputEl.files.length === 0) {
+  //return res([]);
+  //}
+  //try {
+  //taskFiles = parseTasksFile(await fileInputEl.files[0].text());
+  //} catch (err) {
+  //showErrorAlert((err as Error).message, 5000);
+  //return res([]);
+  //}
+  //// only submit tasks when all tasks are error free
+  //return res(taskFiles);
+  //} finally {
+  //fileInputEl.removeEventListener('input', listener);
+  //fileInputEl.value = '';
+  //}
+  //};
+  //fileInputEl.addEventListener('input', listener);
+  //fileInputEl.click();
+  //});
+  //};
 
   const fetchLogs = React.useCallback(async () => {
     if (!tasksApi) {

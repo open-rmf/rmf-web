@@ -1,9 +1,9 @@
-import { render } from '@testing-library/react';
-import type { Task } from 'api-client';
-import React from 'react';
-import { TaskType as RmfTaskType } from 'rmf-models';
-import { RobotInfo } from './robot-info';
-import { makeRandomRobot } from './test-utils.spec';
+//import { render } from '@testing-library/react';
+//import type { Task } from 'api-client';
+//import React from 'react';
+//import { TaskType as RmfTaskType } from 'rmf-models';
+//import { RobotInfo } from './robot-info';
+//import { makeRandomRobot } from './test-utils.spec';
 
 // describe('RobotInfo', () => {
 //   it('information renders correctly', () => {
