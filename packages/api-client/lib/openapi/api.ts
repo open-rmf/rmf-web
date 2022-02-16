@@ -1818,13 +1818,13 @@ export interface TaskDispatchResponseItem {
    * @type {number}
    * @memberof TaskDispatchResponseItem
    */
-  success: TaskDispatchResponseItemSuccessEnum;
+  success?: TaskDispatchResponseItemSuccessEnum;
   /**
    *
    * @type {TaskState}
    * @memberof TaskDispatchResponseItem
    */
-  state: TaskState;
+  state?: TaskState;
 }
 
 /**
