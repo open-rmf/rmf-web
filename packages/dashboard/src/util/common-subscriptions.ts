@@ -1,6 +1,6 @@
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import { FleetState, SioClient, Ingestor, Dispenser } from 'api-client';
+import { FleetState, SioClient, Ingestor, Dispenser, Subscription } from 'api-client';
 import { RmfIngress } from '../components/rmf-app/rmf-ingress';
 
 export const useFleets = (
@@ -25,13 +25,18 @@ export const useFleetStateRef = (sioClient: SioClient | undefined, fleets: Fleet
   const fleetStatesRef = React.useRef<Record<string, FleetState>>({});
   React.useEffect(() => {
     if (!sioClient) return;
-    const subs = fleets.map((f) =>
-      f.name
-        ? sioClient.subscribeFleetState(f.name, (state) => {
-            if (f.name) fleetStatesRef.current[f.name] = state;
-          })
-        : () => null,
-    );
+    const subs = fleets.reduce((acc, f) => {
+      if (!f.name) {
+        return acc;
+      }
+      const fleetName = f.name;
+      acc.push(
+        sioClient.subscribeFleetState(fleetName, (state) => {
+          fleetStatesRef.current[fleetName] = state;
+        }),
+      );
+      return acc;
+    }, [] as Subscription[]);
     return () => {
       subs.forEach((s) => sioClient.unsubscribe(s));
     };
