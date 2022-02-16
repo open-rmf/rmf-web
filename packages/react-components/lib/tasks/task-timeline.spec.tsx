@@ -5,7 +5,7 @@ import { makeTaskState } from './test-data.spec';
 
 describe('Task Timeline', () => {
   // FIXME: sample phases has no start time
-  xit('shows the time for each phase', () => {
+  it('shows the time for each phase', () => {
     const task = makeTaskState('task_0');
     const root = render(<TaskTimeline taskState={task} />);
     Object.values(task.phases).forEach((p) => {
