@@ -12,14 +12,14 @@ from . import error, task_state
 
 
 class TaskDispatchResponseItem1(BaseModel):
-    success: Optional[Literal[0]] = None
+    success: Optional[Literal[False]] = None
     errors: Optional[List[error.Error]] = Field(
         None, description="Any error messages explaining why the request failed"
     )
 
 
 class TaskDispatchResponseItem(BaseModel):
-    success: Literal[1]
+    success: Literal[True]
     state: task_state.TaskState
 
 
