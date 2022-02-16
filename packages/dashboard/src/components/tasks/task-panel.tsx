@@ -146,7 +146,7 @@ export function TaskPanel({
       return;
     }
     try {
-      // await cancelTask(selectedTask.summary);
+      await cancelTask(selectedTask);
       setSnackbarMessage('Successfully cancelled task');
       setSnackbarSeverity('success');
       setOpenSnackbar(true);
