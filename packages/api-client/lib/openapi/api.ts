@@ -4088,6 +4088,38 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
       };
     },
     /**
+     * Get the current rmf time in unix milliseconds
+     * @summary Get Time
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getTimeTimeGet: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+      const localVarPath = `/time`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Get the currently logged in user
      * @summary Get User
      * @param {*} [options] Override http request option.
@@ -4175,6 +4207,18 @@ export const DefaultApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
+     * Get the current rmf time in unix milliseconds
+     * @summary Get Time
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getTimeTimeGet(
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<number>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getTimeTimeGet(options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
      * Get the currently logged in user
      * @summary Get User
      * @param {*} [options] Override http request option.
@@ -4224,6 +4268,15 @@ export const DefaultApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
+     * Get the current rmf time in unix milliseconds
+     * @summary Get Time
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getTimeTimeGet(options?: any): AxiosPromise<number> {
+      return localVarFp.getTimeTimeGet(options).then((request) => request(axios, basePath));
+    },
+    /**
      * Get the currently logged in user
      * @summary Get User
      * @param {*} [options] Override http request option.
@@ -4261,6 +4314,19 @@ export class DefaultApi extends BaseAPI {
   public getEffectivePermissionsPermissionsGet(options?: AxiosRequestConfig) {
     return DefaultApiFp(this.configuration)
       .getEffectivePermissionsPermissionsGet(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Get the current rmf time in unix milliseconds
+   * @summary Get Time
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DefaultApi
+   */
+  public getTimeTimeGet(options?: AxiosRequestConfig) {
+    return DefaultApiFp(this.configuration)
+      .getTimeTimeGet(options)
       .then((request) => request(this.axios, this.basePath));
   }
 
