@@ -504,6 +504,7 @@ export function CreateTaskForm({
     setSubmitting(true);
     try {
       setSubmitting(true);
+      console.log(taskRequests);
       await submitTasks(taskRequests);
       setSubmitting(false);
       onSuccess && onSuccess(taskRequests);
