@@ -13,7 +13,7 @@
  */
 
 import { Configuration } from './configuration';
-import globalAxios, { AxiosPromise, AxiosInstance } from 'axios';
+import globalAxios, { AxiosPromise, AxiosInstance, AxiosRequestConfig } from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import {
@@ -80,8 +80,16 @@ export interface ActivityDiscoveryRequest {
    * @type {string}
    * @memberof ActivityDiscoveryRequest
    */
-  type: string;
+  type: ActivityDiscoveryRequestTypeEnum;
 }
+
+export const ActivityDiscoveryRequestTypeEnum = {
+  ActivitiyDiscoveryRequest: 'activitiy_discovery_request',
+} as const;
+
+export type ActivityDiscoveryRequestTypeEnum =
+  typeof ActivityDiscoveryRequestTypeEnum[keyof typeof ActivityDiscoveryRequestTypeEnum];
+
 /**
  *
  * @export
@@ -131,6 +139,34 @@ export interface AffineImage {
    */
   data: string;
 }
+/**
+ * An enumeration.
+ * @export
+ * @enum {string}
+ */
+export type ApiServerModelsRmfApiSimpleResponseFailure = false;
+
+/**
+ * An enumeration.
+ * @export
+ * @enum {string}
+ */
+export type ApiServerModelsRmfApiSimpleResponseSuccess = true;
+
+/**
+ * An enumeration.
+ * @export
+ * @enum {string}
+ */
+export type ApiServerModelsRmfApiTokenResponseFailure = false;
+
+/**
+ * An enumeration.
+ * @export
+ * @enum {string}
+ */
+export type ApiServerModelsRmfApiTokenResponseSuccess = true;
+
 /**
  *
  * @export
@@ -236,7 +272,7 @@ export interface CancelTaskRequest {
    * @type {string}
    * @memberof CancelTaskRequest
    */
-  type: string;
+  type: CancelTaskRequestTypeEnum;
   /**
    * Specify the task ID to cancel
    * @type {string}
@@ -250,6 +286,14 @@ export interface CancelTaskRequest {
    */
   labels?: Array<string>;
 }
+
+export const CancelTaskRequestTypeEnum = {
+  CancelTaskRequest: 'cancel_task_request',
+} as const;
+
+export type CancelTaskRequestTypeEnum =
+  typeof CancelTaskRequestTypeEnum[keyof typeof CancelTaskRequestTypeEnum];
+
 /**
  *
  * @export
@@ -349,7 +393,7 @@ export interface DispatchTaskRequest {
    * @type {string}
    * @memberof DispatchTaskRequest
    */
-  type: string;
+  type: DispatchTaskRequestTypeEnum;
   /**
    *
    * @type {TaskRequest}
@@ -357,6 +401,14 @@ export interface DispatchTaskRequest {
    */
   request: TaskRequest;
 }
+
+export const DispatchTaskRequestTypeEnum = {
+  DispatchTaskRequest: 'dispatch_task_request',
+} as const;
+
+export type DispatchTaskRequestTypeEnum =
+  typeof DispatchTaskRequestTypeEnum[keyof typeof DispatchTaskRequestTypeEnum];
+
 /**
  *
  * @export
@@ -1513,11 +1565,11 @@ export interface RobotState {
  */
 export interface SimpleResponse {
   /**
-   * The request failed
-   * @type {boolean}
+   *
+   * @type {ApiServerModelsRmfApiSimpleResponseFailure}
    * @memberof SimpleResponse
    */
-  success: boolean;
+  success: ApiServerModelsRmfApiSimpleResponseFailure;
   /**
    * If the request failed, these error messages will explain why
    * @type {Array<Error>}
@@ -1532,11 +1584,11 @@ export interface SimpleResponse {
  */
 export interface SimpleResponseItem {
   /**
-   * The request was successful
-   * @type {boolean}
+   *
+   * @type {ApiServerModelsRmfApiSimpleResponseSuccess}
    * @memberof SimpleResponseItem
    */
-  success: boolean;
+  success: ApiServerModelsRmfApiSimpleResponseSuccess;
 }
 /**
  *
@@ -1545,11 +1597,11 @@ export interface SimpleResponseItem {
  */
 export interface SimpleResponseItem1 {
   /**
-   * The request failed
-   * @type {boolean}
+   *
+   * @type {ApiServerModelsRmfApiSimpleResponseFailure}
    * @memberof SimpleResponseItem1
    */
-  success: boolean;
+  success: ApiServerModelsRmfApiSimpleResponseFailure;
   /**
    * If the request failed, these error messages will explain why
    * @type {Array<Error>}
@@ -1589,11 +1641,11 @@ export interface SkipPhaseRequest {
  */
 export interface SkipPhaseResponse {
   /**
-   * The request failed
-   * @type {boolean}
+   *
+   * @type {ApiServerModelsRmfApiTokenResponseFailure}
    * @memberof SkipPhaseResponse
    */
-  success: boolean;
+  success: ApiServerModelsRmfApiTokenResponseFailure;
   /**
    * A token for the request. The value of this token is unique within the scope of this request and can be used by other requests to reference this request.
    * @type {string}
@@ -1613,20 +1665,22 @@ export interface SkipPhaseResponse {
  * @enum {string}
  */
 
-export enum Status {
-  Uninitialized = 'uninitialized',
-  Blocked = 'blocked',
-  Error = 'error',
-  Failed = 'failed',
-  Queued = 'queued',
-  Standby = 'standby',
-  Underway = 'underway',
-  Delayed = 'delayed',
-  Skipped = 'skipped',
-  Canceled = 'canceled',
-  Killed = 'killed',
-  Completed = 'completed',
-}
+export const Status = {
+  Uninitialized: 'uninitialized',
+  Blocked: 'blocked',
+  Error: 'error',
+  Failed: 'failed',
+  Queued: 'queued',
+  Standby: 'standby',
+  Underway: 'underway',
+  Delayed: 'delayed',
+  Skipped: 'skipped',
+  Canceled: 'canceled',
+  Killed: 'killed',
+  Completed: 'completed',
+} as const;
+
+export type Status = typeof Status[keyof typeof Status];
 
 /**
  * An enumeration.
@@ -1634,13 +1688,15 @@ export enum Status {
  * @enum {string}
  */
 
-export enum Status1 {
-  Queued = 'queued',
-  Selected = 'selected',
-  Dispatched = 'dispatched',
-  FailedToAssign = 'failed_to_assign',
-  CanceledInFlight = 'canceled_in_flight',
-}
+export const Status1 = {
+  Queued: 'queued',
+  Selected: 'selected',
+  Dispatched: 'dispatched',
+  FailedToAssign: 'failed_to_assign',
+  CanceledInFlight: 'canceled_in_flight',
+} as const;
+
+export type Status1 = typeof Status1[keyof typeof Status1];
 
 /**
  * An enumeration.
@@ -1648,15 +1704,17 @@ export enum Status1 {
  * @enum {string}
  */
 
-export enum Status2 {
-  Uninitialized = 'uninitialized',
-  Offline = 'offline',
-  Shutdown = 'shutdown',
-  Idle = 'idle',
-  Charging = 'charging',
-  Working = 'working',
-  Error = 'error',
-}
+export const Status2 = {
+  Uninitialized: 'uninitialized',
+  Offline: 'offline',
+  Shutdown: 'shutdown',
+  Idle: 'idle',
+  Charging: 'charging',
+  Working: 'working',
+  Error: 'error',
+} as const;
+
+export type Status2 = typeof Status2[keyof typeof Status2];
 
 /**
  *
@@ -1690,11 +1748,11 @@ export interface Task {
  */
 export interface TaskCancelResponse {
   /**
-   * The request failed
-   * @type {boolean}
+   *
+   * @type {ApiServerModelsRmfApiSimpleResponseFailure}
    * @memberof TaskCancelResponse
    */
-  success: boolean;
+  success: ApiServerModelsRmfApiSimpleResponseFailure;
   /**
    * If the request failed, these error messages will explain why
    * @type {Array<Error>}
@@ -1713,14 +1771,22 @@ export interface TaskDiscovery {
    * @type {string}
    * @memberof TaskDiscovery
    */
-  type?: string;
+  type: TaskDiscoveryTypeEnum;
   /**
    *
    * @type {Data}
    * @memberof TaskDiscovery
    */
-  data?: Data;
+  data: Data;
 }
+
+export const TaskDiscoveryTypeEnum = {
+  TaskDiscoveryUpdate: 'task_discovery_update',
+} as const;
+
+export type TaskDiscoveryTypeEnum =
+  typeof TaskDiscoveryTypeEnum[keyof typeof TaskDiscoveryTypeEnum];
+
 /**
  *
  * @export
@@ -1732,33 +1798,16 @@ export interface TaskDiscoveryRequest {
    * @type {string}
    * @memberof TaskDiscoveryRequest
    */
-  type: string;
+  type: TaskDiscoveryRequestTypeEnum;
 }
-/**
- * Response to a task dispatch request
- * @export
- * @interface TaskDispatchResponse
- */
-export interface TaskDispatchResponse {
-  /**
-   *
-   * @type {boolean}
-   * @memberof TaskDispatchResponse
-   */
-  success: boolean;
-  /**
-   *
-   * @type {TaskState}
-   * @memberof TaskDispatchResponse
-   */
-  state?: TaskState;
-  /**
-   * Any error messages explaining why the request failed
-   * @type {Array<Error>}
-   * @memberof TaskDispatchResponse
-   */
-  errors?: Array<Error>;
-}
+
+export const TaskDiscoveryRequestTypeEnum = {
+  TaskDiscoveryRequest: 'task_discovery_request',
+} as const;
+
+export type TaskDiscoveryRequestTypeEnum =
+  typeof TaskDiscoveryRequestTypeEnum[keyof typeof TaskDiscoveryRequestTypeEnum];
+
 /**
  *
  * @export
@@ -1770,14 +1819,22 @@ export interface TaskDispatchResponseItem {
    * @type {boolean}
    * @memberof TaskDispatchResponseItem
    */
-  success: boolean;
+  success: TaskDispatchResponseItemSuccessEnum;
   /**
    *
    * @type {TaskState}
    * @memberof TaskDispatchResponseItem
    */
-  state?: TaskState;
+  state: TaskState;
 }
+
+export const TaskDispatchResponseItemSuccessEnum = {
+  True: true,
+} as const;
+
+export type TaskDispatchResponseItemSuccessEnum =
+  typeof TaskDispatchResponseItemSuccessEnum[keyof typeof TaskDispatchResponseItemSuccessEnum];
+
 /**
  *
  * @export
@@ -1789,7 +1846,7 @@ export interface TaskDispatchResponseItem1 {
    * @type {boolean}
    * @memberof TaskDispatchResponseItem1
    */
-  success?: boolean;
+  success?: TaskDispatchResponseItem1SuccessEnum;
   /**
    * Any error messages explaining why the request failed
    * @type {Array<Error>}
@@ -1797,6 +1854,14 @@ export interface TaskDispatchResponseItem1 {
    */
   errors?: Array<Error>;
 }
+
+export const TaskDispatchResponseItem1SuccessEnum = {
+  False: false,
+} as const;
+
+export type TaskDispatchResponseItem1SuccessEnum =
+  typeof TaskDispatchResponseItem1SuccessEnum[keyof typeof TaskDispatchResponseItem1SuccessEnum];
+
 /**
  *
  * @export
@@ -1833,7 +1898,7 @@ export interface TaskInterruptionRequest {
    * @type {string}
    * @memberof TaskInterruptionRequest
    */
-  type: string;
+  type: TaskInterruptionRequestTypeEnum;
   /**
    * Specify the task ID to interrupt
    * @type {string}
@@ -1847,6 +1912,14 @@ export interface TaskInterruptionRequest {
    */
   labels?: Array<string>;
 }
+
+export const TaskInterruptionRequestTypeEnum = {
+  InterruptTaskRequest: 'interrupt_task_request',
+} as const;
+
+export type TaskInterruptionRequestTypeEnum =
+  typeof TaskInterruptionRequestTypeEnum[keyof typeof TaskInterruptionRequestTypeEnum];
+
 /**
  * Response to a request for a task to be interrupted
  * @export
@@ -1854,11 +1927,11 @@ export interface TaskInterruptionRequest {
  */
 export interface TaskInterruptionResponse {
   /**
-   * The request failed
-   * @type {boolean}
+   *
+   * @type {ApiServerModelsRmfApiTokenResponseFailure}
    * @memberof TaskInterruptionResponse
    */
-  success: boolean;
+  success: ApiServerModelsRmfApiTokenResponseFailure;
   /**
    * A token for the request. The value of this token is unique within the scope of this request and can be used by other requests to reference this request.
    * @type {string}
@@ -1883,7 +1956,7 @@ export interface TaskKillRequest {
    * @type {string}
    * @memberof TaskKillRequest
    */
-  type: string;
+  type: TaskKillRequestTypeEnum;
   /**
    * Specify the task ID to kill
    * @type {string}
@@ -1897,6 +1970,14 @@ export interface TaskKillRequest {
    */
   labels?: Array<string>;
 }
+
+export const TaskKillRequestTypeEnum = {
+  KillTaskRequest: 'kill_task_request',
+} as const;
+
+export type TaskKillRequestTypeEnum =
+  typeof TaskKillRequestTypeEnum[keyof typeof TaskKillRequestTypeEnum];
+
 /**
  * Response to a request to kill a task
  * @export
@@ -1904,11 +1985,11 @@ export interface TaskKillRequest {
  */
 export interface TaskKillResponse {
   /**
-   * The request failed
-   * @type {boolean}
+   *
+   * @type {ApiServerModelsRmfApiSimpleResponseFailure}
    * @memberof TaskKillResponse
    */
-  success: boolean;
+  success: ApiServerModelsRmfApiSimpleResponseFailure;
   /**
    * If the request failed, these error messages will explain why
    * @type {Array<Error>}
@@ -1927,7 +2008,7 @@ export interface TaskPhaseSkipRequest {
    * @type {string}
    * @memberof TaskPhaseSkipRequest
    */
-  type: string;
+  type: TaskPhaseSkipRequestTypeEnum;
   /**
    * Specify the task ID whose phase should be skipped
    * @type {string}
@@ -1947,6 +2028,14 @@ export interface TaskPhaseSkipRequest {
    */
   labels?: Array<string>;
 }
+
+export const TaskPhaseSkipRequestTypeEnum = {
+  SkipPhaseRequest: 'skip_phase_request',
+} as const;
+
+export type TaskPhaseSkipRequestTypeEnum =
+  typeof TaskPhaseSkipRequestTypeEnum[keyof typeof TaskPhaseSkipRequestTypeEnum];
+
 /**
  *
  * @export
@@ -1976,7 +2065,7 @@ export interface TaskRequest {
    * @type {any}
    * @memberof TaskRequest
    */
-  description: any | null;
+  description: any;
   /**
    * Labels to describe the purpose of the task dispatch request
    * @type {Array<string>}
@@ -1995,7 +2084,7 @@ export interface TaskResumeRequest {
    * @type {string}
    * @memberof TaskResumeRequest
    */
-  type?: string;
+  type?: TaskResumeRequestTypeEnum;
   /**
    * Specify task ID to resume.
    * @type {string}
@@ -2015,6 +2104,14 @@ export interface TaskResumeRequest {
    */
   labels?: Array<string>;
 }
+
+export const TaskResumeRequestTypeEnum = {
+  ResumeTaskRequest: 'resume_task_request',
+} as const;
+
+export type TaskResumeRequestTypeEnum =
+  typeof TaskResumeRequestTypeEnum[keyof typeof TaskResumeRequestTypeEnum];
+
 /**
  * Response to a request to resume a task
  * @export
@@ -2022,11 +2119,11 @@ export interface TaskResumeRequest {
  */
 export interface TaskResumeResponse {
   /**
-   * The request failed
-   * @type {boolean}
+   *
+   * @type {ApiServerModelsRmfApiSimpleResponseFailure}
    * @memberof TaskResumeResponse
    */
-  success: boolean;
+  success: ApiServerModelsRmfApiSimpleResponseFailure;
   /**
    * If the request failed, these error messages will explain why
    * @type {Array<Error>}
@@ -2045,7 +2142,7 @@ export interface TaskRewindRequest {
    * @type {string}
    * @memberof TaskRewindRequest
    */
-  type: string;
+  type: TaskRewindRequestTypeEnum;
   /**
    * Specify the ID of the task that should rewind
    * @type {string}
@@ -2059,6 +2156,14 @@ export interface TaskRewindRequest {
    */
   phase_id: number;
 }
+
+export const TaskRewindRequestTypeEnum = {
+  RewindTaskRequest: 'rewind_task_request',
+} as const;
+
+export type TaskRewindRequestTypeEnum =
+  typeof TaskRewindRequestTypeEnum[keyof typeof TaskRewindRequestTypeEnum];
+
 /**
  * Response to a request to rewind a task
  * @export
@@ -2066,11 +2171,11 @@ export interface TaskRewindRequest {
  */
 export interface TaskRewindResponse {
   /**
-   * The request failed
-   * @type {boolean}
+   *
+   * @type {ApiServerModelsRmfApiSimpleResponseFailure}
    * @memberof TaskRewindResponse
    */
-  success: boolean;
+  success: ApiServerModelsRmfApiSimpleResponseFailure;
   /**
    * If the request failed, these error messages will explain why
    * @type {Array<Error>}
@@ -2193,12 +2298,14 @@ export interface TaskState {
  * @enum {string}
  */
 
-export enum Tier {
-  Uninitialized = 'uninitialized',
-  Info = 'info',
-  Warning = 'warning',
-  Error = 'error',
-}
+export const Tier = {
+  Uninitialized: 'uninitialized',
+  Info: 'info',
+  Warning: 'warning',
+  Error: 'error',
+} as const;
+
+export type Tier = typeof Tier[keyof typeof Tier];
 
 /**
  *
@@ -2226,11 +2333,11 @@ export interface Time {
  */
 export interface TokenResponse {
   /**
-   * The request failed
-   * @type {boolean}
+   *
+   * @type {ApiServerModelsRmfApiTokenResponseFailure}
    * @memberof TokenResponse
    */
-  success: boolean;
+  success: ApiServerModelsRmfApiTokenResponseFailure;
   /**
    * A token for the request. The value of this token is unique within the scope of this request and can be used by other requests to reference this request.
    * @type {string}
@@ -2251,11 +2358,11 @@ export interface TokenResponse {
  */
 export interface TokenResponseItem {
   /**
-   * The request was successful
-   * @type {boolean}
+   *
+   * @type {ApiServerModelsRmfApiTokenResponseSuccess}
    * @memberof TokenResponseItem
    */
-  success: boolean;
+  success: ApiServerModelsRmfApiTokenResponseSuccess;
   /**
    * A token for the request. The value of this token is unique within the scope of this request and can be used by other requests to reference this request.
    * @type {string}
@@ -2270,11 +2377,11 @@ export interface TokenResponseItem {
  */
 export interface TokenResponseItem1 {
   /**
-   * The request failed
-   * @type {boolean}
+   *
+   * @type {ApiServerModelsRmfApiTokenResponseFailure}
    * @memberof TokenResponseItem1
    */
-  success: boolean;
+  success: ApiServerModelsRmfApiTokenResponseFailure;
   /**
    * Any error messages explaining why the request failed.
    * @type {Array<Error>}
@@ -2312,7 +2419,7 @@ export interface UndoPhaseSkipRequest {
    * @type {string}
    * @memberof UndoPhaseSkipRequest
    */
-  type?: string;
+  type?: UndoPhaseSkipRequestTypeEnum;
   /**
    * Specify the relevant task ID
    * @type {string}
@@ -2332,6 +2439,14 @@ export interface UndoPhaseSkipRequest {
    */
   labels?: Array<string>;
 }
+
+export const UndoPhaseSkipRequestTypeEnum = {
+  UndoPhaseSkipRequest: 'undo_phase_skip_request',
+} as const;
+
+export type UndoPhaseSkipRequestTypeEnum =
+  typeof UndoPhaseSkipRequestTypeEnum[keyof typeof UndoPhaseSkipRequestTypeEnum];
+
 /**
  * Response to an undo phase skip request
  * @export
@@ -2339,11 +2454,11 @@ export interface UndoPhaseSkipRequest {
  */
 export interface UndoPhaseSkipResponse {
   /**
-   * The request failed
-   * @type {boolean}
+   *
+   * @type {ApiServerModelsRmfApiSimpleResponseFailure}
    * @memberof UndoPhaseSkipResponse
    */
-  success: boolean;
+  success: ApiServerModelsRmfApiSimpleResponseFailure;
   /**
    * If the request failed, these error messages will explain why
    * @type {Array<Error>}
@@ -2419,7 +2534,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
     addRolePermissionAdminRolesRolePermissionsPost: async (
       role: string,
       permission: Permission,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'role' is not null or undefined
       assertParamExists('addRolePermissionAdminRolesRolePermissionsPost', 'role', role);
@@ -2442,7 +2557,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -2471,7 +2586,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
     addUserRoleAdminUsersUsernameRolesPost: async (
       username: string,
       postRoles: PostRoles,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'username' is not null or undefined
       assertParamExists('addUserRoleAdminUsersUsernameRolesPost', 'username', username);
@@ -2494,7 +2609,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -2521,7 +2636,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
      */
     createRoleAdminRolesPost: async (
       postRoles: PostRoles,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'postRoles' is not null or undefined
       assertParamExists('createRoleAdminRolesPost', 'postRoles', postRoles);
@@ -2539,7 +2654,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -2566,7 +2681,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
      */
     createUserAdminUsersPost: async (
       postUsers: PostUsers,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'postUsers' is not null or undefined
       assertParamExists('createUserAdminUsersPost', 'postUsers', postUsers);
@@ -2584,7 +2699,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -2611,7 +2726,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
      */
     deleteRoleAdminRolesRoleDelete: async (
       role: string,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'role' is not null or undefined
       assertParamExists('deleteRoleAdminRolesRoleDelete', 'role', role);
@@ -2630,7 +2745,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -2652,7 +2767,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
      */
     deleteUserAdminUsersUsernameDelete: async (
       username: string,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'username' is not null or undefined
       assertParamExists('deleteUserAdminUsersUsernameDelete', 'username', username);
@@ -2671,7 +2786,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -2695,7 +2810,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
     deleteUserRoleAdminUsersUsernameRolesRoleDelete: async (
       username: string,
       role: string,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'username' is not null or undefined
       assertParamExists('deleteUserRoleAdminUsersUsernameRolesRoleDelete', 'username', username);
@@ -2715,7 +2830,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -2737,7 +2852,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
      */
     getRolePermissionsAdminRolesRolePermissionsGet: async (
       role: string,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'role' is not null or undefined
       assertParamExists('getRolePermissionsAdminRolesRolePermissionsGet', 'role', role);
@@ -2756,7 +2871,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -2775,7 +2890,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getRolesAdminRolesGet: async (options: any = {}): Promise<RequestArgs> => {
+    getRolesAdminRolesGet: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       const localVarPath = `/admin/roles`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2788,7 +2903,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -2810,7 +2925,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
      */
     getUserAdminUsersUsernameGet: async (
       username: string,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'username' is not null or undefined
       assertParamExists('getUserAdminUsersUsernameGet', 'username', username);
@@ -2829,7 +2944,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -2859,7 +2974,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
       limit?: number,
       offset?: number,
       orderBy?: string,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/admin/users`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -2893,7 +3008,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
         localVarQueryParameter['order_by'] = orderBy;
       }
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -2917,7 +3032,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
     makeAdminAdminUsersUsernameMakeAdminPost: async (
       username: string,
       postMakeAdmin: PostMakeAdmin,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'username' is not null or undefined
       assertParamExists('makeAdminAdminUsersUsernameMakeAdminPost', 'username', username);
@@ -2940,7 +3055,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -2969,7 +3084,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
     removeRolePermissionAdminRolesRolePermissionsRemovePost: async (
       role: string,
       permission: Permission,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'role' is not null or undefined
       assertParamExists('removeRolePermissionAdminRolesRolePermissionsRemovePost', 'role', role);
@@ -2996,7 +3111,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -3025,7 +3140,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
     setUserRolesAdminUsersUsernameRolesPut: async (
       username: string,
       postRoles: Array<PostRoles>,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'username' is not null or undefined
       assertParamExists('setUserRolesAdminUsersUsernameRolesPut', 'username', username);
@@ -3048,7 +3163,7 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -3087,7 +3202,7 @@ export const AdminApiFp = function (configuration?: Configuration) {
     async addRolePermissionAdminRolesRolePermissionsPost(
       role: string,
       permission: Permission,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.addRolePermissionAdminRolesRolePermissionsPost(
@@ -3108,7 +3223,7 @@ export const AdminApiFp = function (configuration?: Configuration) {
     async addUserRoleAdminUsersUsernameRolesPost(
       username: string,
       postRoles: PostRoles,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.addUserRoleAdminUsersUsernameRolesPost(
@@ -3127,7 +3242,7 @@ export const AdminApiFp = function (configuration?: Configuration) {
      */
     async createRoleAdminRolesPost(
       postRoles: PostRoles,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createRoleAdminRolesPost(
         postRoles,
@@ -3144,7 +3259,7 @@ export const AdminApiFp = function (configuration?: Configuration) {
      */
     async createUserAdminUsersPost(
       postUsers: PostUsers,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createUserAdminUsersPost(
         postUsers,
@@ -3161,7 +3276,7 @@ export const AdminApiFp = function (configuration?: Configuration) {
      */
     async deleteRoleAdminRolesRoleDelete(
       role: string,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteRoleAdminRolesRoleDelete(
         role,
@@ -3178,7 +3293,7 @@ export const AdminApiFp = function (configuration?: Configuration) {
      */
     async deleteUserAdminUsersUsernameDelete(
       username: string,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteUserAdminUsersUsernameDelete(
         username,
@@ -3197,7 +3312,7 @@ export const AdminApiFp = function (configuration?: Configuration) {
     async deleteUserRoleAdminUsersUsernameRolesRoleDelete(
       username: string,
       role: string,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.deleteUserRoleAdminUsersUsernameRolesRoleDelete(
@@ -3216,7 +3331,7 @@ export const AdminApiFp = function (configuration?: Configuration) {
      */
     async getRolePermissionsAdminRolesRolePermissionsGet(
       role: string,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Permission>>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.getRolePermissionsAdminRolesRolePermissionsGet(
@@ -3232,7 +3347,7 @@ export const AdminApiFp = function (configuration?: Configuration) {
      * @throws {RequiredError}
      */
     async getRolesAdminRolesGet(
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<string>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getRolesAdminRolesGet(options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -3246,7 +3361,7 @@ export const AdminApiFp = function (configuration?: Configuration) {
      */
     async getUserAdminUsersUsernameGet(
       username: string,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getUserAdminUsersUsernameGet(
         username,
@@ -3271,7 +3386,7 @@ export const AdminApiFp = function (configuration?: Configuration) {
       limit?: number,
       offset?: number,
       orderBy?: string,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<string>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getUsersAdminUsersGet(
         username,
@@ -3294,7 +3409,7 @@ export const AdminApiFp = function (configuration?: Configuration) {
     async makeAdminAdminUsersUsernameMakeAdminPost(
       username: string,
       postMakeAdmin: PostMakeAdmin,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.makeAdminAdminUsersUsernameMakeAdminPost(
@@ -3315,7 +3430,7 @@ export const AdminApiFp = function (configuration?: Configuration) {
     async removeRolePermissionAdminRolesRolePermissionsRemovePost(
       role: string,
       permission: Permission,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.removeRolePermissionAdminRolesRolePermissionsRemovePost(
@@ -3336,7 +3451,7 @@ export const AdminApiFp = function (configuration?: Configuration) {
     async setUserRolesAdminUsersUsernameRolesPut(
       username: string,
       postRoles: Array<PostRoles>,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.setUserRolesAdminUsersUsernameRolesPut(
@@ -3591,7 +3706,7 @@ export class AdminApi extends BaseAPI {
   public addRolePermissionAdminRolesRolePermissionsPost(
     role: string,
     permission: Permission,
-    options?: any,
+    options?: AxiosRequestConfig,
   ) {
     return AdminApiFp(this.configuration)
       .addRolePermissionAdminRolesRolePermissionsPost(role, permission, options)
@@ -3610,7 +3725,7 @@ export class AdminApi extends BaseAPI {
   public addUserRoleAdminUsersUsernameRolesPost(
     username: string,
     postRoles: PostRoles,
-    options?: any,
+    options?: AxiosRequestConfig,
   ) {
     return AdminApiFp(this.configuration)
       .addUserRoleAdminUsersUsernameRolesPost(username, postRoles, options)
@@ -3625,7 +3740,7 @@ export class AdminApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof AdminApi
    */
-  public createRoleAdminRolesPost(postRoles: PostRoles, options?: any) {
+  public createRoleAdminRolesPost(postRoles: PostRoles, options?: AxiosRequestConfig) {
     return AdminApiFp(this.configuration)
       .createRoleAdminRolesPost(postRoles, options)
       .then((request) => request(this.axios, this.basePath));
@@ -3639,7 +3754,7 @@ export class AdminApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof AdminApi
    */
-  public createUserAdminUsersPost(postUsers: PostUsers, options?: any) {
+  public createUserAdminUsersPost(postUsers: PostUsers, options?: AxiosRequestConfig) {
     return AdminApiFp(this.configuration)
       .createUserAdminUsersPost(postUsers, options)
       .then((request) => request(this.axios, this.basePath));
@@ -3653,7 +3768,7 @@ export class AdminApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof AdminApi
    */
-  public deleteRoleAdminRolesRoleDelete(role: string, options?: any) {
+  public deleteRoleAdminRolesRoleDelete(role: string, options?: AxiosRequestConfig) {
     return AdminApiFp(this.configuration)
       .deleteRoleAdminRolesRoleDelete(role, options)
       .then((request) => request(this.axios, this.basePath));
@@ -3667,7 +3782,7 @@ export class AdminApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof AdminApi
    */
-  public deleteUserAdminUsersUsernameDelete(username: string, options?: any) {
+  public deleteUserAdminUsersUsernameDelete(username: string, options?: AxiosRequestConfig) {
     return AdminApiFp(this.configuration)
       .deleteUserAdminUsersUsernameDelete(username, options)
       .then((request) => request(this.axios, this.basePath));
@@ -3685,7 +3800,7 @@ export class AdminApi extends BaseAPI {
   public deleteUserRoleAdminUsersUsernameRolesRoleDelete(
     username: string,
     role: string,
-    options?: any,
+    options?: AxiosRequestConfig,
   ) {
     return AdminApiFp(this.configuration)
       .deleteUserRoleAdminUsersUsernameRolesRoleDelete(username, role, options)
@@ -3700,7 +3815,10 @@ export class AdminApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof AdminApi
    */
-  public getRolePermissionsAdminRolesRolePermissionsGet(role: string, options?: any) {
+  public getRolePermissionsAdminRolesRolePermissionsGet(
+    role: string,
+    options?: AxiosRequestConfig,
+  ) {
     return AdminApiFp(this.configuration)
       .getRolePermissionsAdminRolesRolePermissionsGet(role, options)
       .then((request) => request(this.axios, this.basePath));
@@ -3713,7 +3831,7 @@ export class AdminApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof AdminApi
    */
-  public getRolesAdminRolesGet(options?: any) {
+  public getRolesAdminRolesGet(options?: AxiosRequestConfig) {
     return AdminApiFp(this.configuration)
       .getRolesAdminRolesGet(options)
       .then((request) => request(this.axios, this.basePath));
@@ -3727,7 +3845,7 @@ export class AdminApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof AdminApi
    */
-  public getUserAdminUsersUsernameGet(username: string, options?: any) {
+  public getUserAdminUsersUsernameGet(username: string, options?: AxiosRequestConfig) {
     return AdminApiFp(this.configuration)
       .getUserAdminUsersUsernameGet(username, options)
       .then((request) => request(this.axios, this.basePath));
@@ -3751,7 +3869,7 @@ export class AdminApi extends BaseAPI {
     limit?: number,
     offset?: number,
     orderBy?: string,
-    options?: any,
+    options?: AxiosRequestConfig,
   ) {
     return AdminApiFp(this.configuration)
       .getUsersAdminUsersGet(username, isAdmin, limit, offset, orderBy, options)
@@ -3770,7 +3888,7 @@ export class AdminApi extends BaseAPI {
   public makeAdminAdminUsersUsernameMakeAdminPost(
     username: string,
     postMakeAdmin: PostMakeAdmin,
-    options?: any,
+    options?: AxiosRequestConfig,
   ) {
     return AdminApiFp(this.configuration)
       .makeAdminAdminUsersUsernameMakeAdminPost(username, postMakeAdmin, options)
@@ -3789,7 +3907,7 @@ export class AdminApi extends BaseAPI {
   public removeRolePermissionAdminRolesRolePermissionsRemovePost(
     role: string,
     permission: Permission,
-    options?: any,
+    options?: AxiosRequestConfig,
   ) {
     return AdminApiFp(this.configuration)
       .removeRolePermissionAdminRolesRolePermissionsRemovePost(role, permission, options)
@@ -3808,7 +3926,7 @@ export class AdminApi extends BaseAPI {
   public setUserRolesAdminUsersUsernameRolesPut(
     username: string,
     postRoles: Array<PostRoles>,
-    options?: any,
+    options?: AxiosRequestConfig,
   ) {
     return AdminApiFp(this.configuration)
       .setUserRolesAdminUsersUsernameRolesPut(username, postRoles, options)
@@ -3828,7 +3946,9 @@ export const BuildingApiAxiosParamCreator = function (configuration?: Configurat
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getBuildingMapBuildingMapGet: async (options: any = {}): Promise<RequestArgs> => {
+    getBuildingMapBuildingMapGet: async (
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
       const localVarPath = `/building_map`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3841,7 +3961,7 @@ export const BuildingApiAxiosParamCreator = function (configuration?: Configurat
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -3871,7 +3991,7 @@ export const BuildingApiFp = function (configuration?: Configuration) {
      * @throws {RequiredError}
      */
     async getBuildingMapBuildingMapGet(
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BuildingMap>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getBuildingMapBuildingMapGet(
         options,
@@ -3920,7 +4040,7 @@ export class BuildingApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof BuildingApi
    */
-  public getBuildingMapBuildingMapGet(options?: any) {
+  public getBuildingMapBuildingMapGet(options?: AxiosRequestConfig) {
     return BuildingApiFp(this.configuration)
       .getBuildingMapBuildingMapGet(options)
       .then((request) => request(this.axios, this.basePath));
@@ -3939,7 +4059,9 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getEffectivePermissionsPermissionsGet: async (options: any = {}): Promise<RequestArgs> => {
+    getEffectivePermissionsPermissionsGet: async (
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
       const localVarPath = `/permissions`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3952,7 +4074,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -3971,7 +4093,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getUserUserGet: async (options: any = {}): Promise<RequestArgs> => {
+    getUserUserGet: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       const localVarPath = `/user`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3984,7 +4106,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -4003,7 +4125,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    lambdaSocketIoGet: async (options: any = {}): Promise<RequestArgs> => {
+    lambdaSocketIoGet: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       const localVarPath = `/socket.io`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4016,7 +4138,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -4046,7 +4168,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
      * @throws {RequiredError}
      */
     async getEffectivePermissionsPermissionsGet(
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Permission>>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.getEffectivePermissionsPermissionsGet(options);
@@ -4059,7 +4181,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
      * @throws {RequiredError}
      */
     async getUserUserGet(
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getUserUserGet(options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -4071,7 +4193,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
      * @throws {RequiredError}
      */
     async lambdaSocketIoGet(
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.lambdaSocketIoGet(options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -4136,7 +4258,7 @@ export class DefaultApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof DefaultApi
    */
-  public getEffectivePermissionsPermissionsGet(options?: any) {
+  public getEffectivePermissionsPermissionsGet(options?: AxiosRequestConfig) {
     return DefaultApiFp(this.configuration)
       .getEffectivePermissionsPermissionsGet(options)
       .then((request) => request(this.axios, this.basePath));
@@ -4149,7 +4271,7 @@ export class DefaultApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof DefaultApi
    */
-  public getUserUserGet(options?: any) {
+  public getUserUserGet(options?: AxiosRequestConfig) {
     return DefaultApiFp(this.configuration)
       .getUserUserGet(options)
       .then((request) => request(this.axios, this.basePath));
@@ -4162,7 +4284,7 @@ export class DefaultApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof DefaultApi
    */
-  public lambdaSocketIoGet(options?: any) {
+  public lambdaSocketIoGet(options?: AxiosRequestConfig) {
     return DefaultApiFp(this.configuration)
       .lambdaSocketIoGet(options)
       .then((request) => request(this.axios, this.basePath));
@@ -4184,7 +4306,7 @@ export const DispensersApiAxiosParamCreator = function (configuration?: Configur
      */
     getDispenserHealthDispensersGuidHealthGet: async (
       guid: string,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'guid' is not null or undefined
       assertParamExists('getDispenserHealthDispensersGuidHealthGet', 'guid', guid);
@@ -4203,7 +4325,7 @@ export const DispensersApiAxiosParamCreator = function (configuration?: Configur
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -4225,7 +4347,7 @@ export const DispensersApiAxiosParamCreator = function (configuration?: Configur
      */
     getDispenserStateDispensersGuidStateGet: async (
       guid: string,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'guid' is not null or undefined
       assertParamExists('getDispenserStateDispensersGuidStateGet', 'guid', guid);
@@ -4244,7 +4366,7 @@ export const DispensersApiAxiosParamCreator = function (configuration?: Configur
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -4263,7 +4385,7 @@ export const DispensersApiAxiosParamCreator = function (configuration?: Configur
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getDispensersDispensersGet: async (options: any = {}): Promise<RequestArgs> => {
+    getDispensersDispensersGet: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       const localVarPath = `/dispensers`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4276,7 +4398,7 @@ export const DispensersApiAxiosParamCreator = function (configuration?: Configur
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -4308,7 +4430,7 @@ export const DispensersApiFp = function (configuration?: Configuration) {
      */
     async getDispenserHealthDispensersGuidHealthGet(
       guid: string,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DispenserHealth>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.getDispenserHealthDispensersGuidHealthGet(guid, options);
@@ -4323,7 +4445,7 @@ export const DispensersApiFp = function (configuration?: Configuration) {
      */
     async getDispenserStateDispensersGuidStateGet(
       guid: string,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DispenserState>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.getDispenserStateDispensersGuidStateGet(guid, options);
@@ -4336,7 +4458,7 @@ export const DispensersApiFp = function (configuration?: Configuration) {
      * @throws {RequiredError}
      */
     async getDispensersDispensersGet(
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Dispenser>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getDispensersDispensersGet(options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -4414,7 +4536,7 @@ export class DispensersApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof DispensersApi
    */
-  public getDispenserHealthDispensersGuidHealthGet(guid: string, options?: any) {
+  public getDispenserHealthDispensersGuidHealthGet(guid: string, options?: AxiosRequestConfig) {
     return DispensersApiFp(this.configuration)
       .getDispenserHealthDispensersGuidHealthGet(guid, options)
       .then((request) => request(this.axios, this.basePath));
@@ -4428,7 +4550,7 @@ export class DispensersApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof DispensersApi
    */
-  public getDispenserStateDispensersGuidStateGet(guid: string, options?: any) {
+  public getDispenserStateDispensersGuidStateGet(guid: string, options?: AxiosRequestConfig) {
     return DispensersApiFp(this.configuration)
       .getDispenserStateDispensersGuidStateGet(guid, options)
       .then((request) => request(this.axios, this.basePath));
@@ -4441,7 +4563,7 @@ export class DispensersApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof DispensersApi
    */
-  public getDispensersDispensersGet(options?: any) {
+  public getDispensersDispensersGet(options?: AxiosRequestConfig) {
     return DispensersApiFp(this.configuration)
       .getDispensersDispensersGet(options)
       .then((request) => request(this.axios, this.basePath));
@@ -4463,7 +4585,7 @@ export const DoorsApiAxiosParamCreator = function (configuration?: Configuration
      */
     getDoorHealthDoorsDoorNameHealthGet: async (
       doorName: string,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'doorName' is not null or undefined
       assertParamExists('getDoorHealthDoorsDoorNameHealthGet', 'doorName', doorName);
@@ -4482,7 +4604,7 @@ export const DoorsApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -4504,7 +4626,7 @@ export const DoorsApiAxiosParamCreator = function (configuration?: Configuration
      */
     getDoorStateDoorsDoorNameStateGet: async (
       doorName: string,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'doorName' is not null or undefined
       assertParamExists('getDoorStateDoorsDoorNameStateGet', 'doorName', doorName);
@@ -4523,7 +4645,7 @@ export const DoorsApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -4542,7 +4664,7 @@ export const DoorsApiAxiosParamCreator = function (configuration?: Configuration
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getDoorsDoorsGet: async (options: any = {}): Promise<RequestArgs> => {
+    getDoorsDoorsGet: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       const localVarPath = `/doors`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4555,7 +4677,7 @@ export const DoorsApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -4579,7 +4701,7 @@ export const DoorsApiAxiosParamCreator = function (configuration?: Configuration
     postDoorRequestDoorsDoorNameRequestPost: async (
       doorName: string,
       doorRequest: DoorRequest,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'doorName' is not null or undefined
       assertParamExists('postDoorRequestDoorsDoorNameRequestPost', 'doorName', doorName);
@@ -4602,7 +4724,7 @@ export const DoorsApiAxiosParamCreator = function (configuration?: Configuration
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -4639,7 +4761,7 @@ export const DoorsApiFp = function (configuration?: Configuration) {
      */
     async getDoorHealthDoorsDoorNameHealthGet(
       doorName: string,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DoorHealth>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getDoorHealthDoorsDoorNameHealthGet(
         doorName,
@@ -4656,7 +4778,7 @@ export const DoorsApiFp = function (configuration?: Configuration) {
      */
     async getDoorStateDoorsDoorNameStateGet(
       doorName: string,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DoorState>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getDoorStateDoorsDoorNameStateGet(
         doorName,
@@ -4671,7 +4793,7 @@ export const DoorsApiFp = function (configuration?: Configuration) {
      * @throws {RequiredError}
      */
     async getDoorsDoorsGet(
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Door>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getDoorsDoorsGet(options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -4687,7 +4809,7 @@ export const DoorsApiFp = function (configuration?: Configuration) {
     async postDoorRequestDoorsDoorNameRequestPost(
       doorName: string,
       doorRequest: DoorRequest,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.postDoorRequestDoorsDoorNameRequestPost(
@@ -4779,7 +4901,7 @@ export class DoorsApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof DoorsApi
    */
-  public getDoorHealthDoorsDoorNameHealthGet(doorName: string, options?: any) {
+  public getDoorHealthDoorsDoorNameHealthGet(doorName: string, options?: AxiosRequestConfig) {
     return DoorsApiFp(this.configuration)
       .getDoorHealthDoorsDoorNameHealthGet(doorName, options)
       .then((request) => request(this.axios, this.basePath));
@@ -4793,7 +4915,7 @@ export class DoorsApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof DoorsApi
    */
-  public getDoorStateDoorsDoorNameStateGet(doorName: string, options?: any) {
+  public getDoorStateDoorsDoorNameStateGet(doorName: string, options?: AxiosRequestConfig) {
     return DoorsApiFp(this.configuration)
       .getDoorStateDoorsDoorNameStateGet(doorName, options)
       .then((request) => request(this.axios, this.basePath));
@@ -4806,7 +4928,7 @@ export class DoorsApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof DoorsApi
    */
-  public getDoorsDoorsGet(options?: any) {
+  public getDoorsDoorsGet(options?: AxiosRequestConfig) {
     return DoorsApiFp(this.configuration)
       .getDoorsDoorsGet(options)
       .then((request) => request(this.axios, this.basePath));
@@ -4824,7 +4946,7 @@ export class DoorsApi extends BaseAPI {
   public postDoorRequestDoorsDoorNameRequestPost(
     doorName: string,
     doorRequest: DoorRequest,
-    options?: any,
+    options?: AxiosRequestConfig,
   ) {
     return DoorsApiFp(this.configuration)
       .postDoorRequestDoorsDoorNameRequestPost(doorName, doorRequest, options)
@@ -4849,7 +4971,7 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
     getFleetLogFleetsNameLogGet: async (
       name: string,
       between?: string,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'name' is not null or undefined
       assertParamExists('getFleetLogFleetsNameLogGet', 'name', name);
@@ -4872,7 +4994,7 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
         localVarQueryParameter['between'] = between;
       }
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -4894,7 +5016,7 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
      */
     getFleetStateFleetsNameStateGet: async (
       name: string,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'name' is not null or undefined
       assertParamExists('getFleetStateFleetsNameStateGet', 'name', name);
@@ -4913,7 +5035,7 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -4932,7 +5054,7 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getFleetsFleetsGet: async (options: any = {}): Promise<RequestArgs> => {
+    getFleetsFleetsGet: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       const localVarPath = `/fleets`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -4945,7 +5067,7 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -4979,7 +5101,7 @@ export const FleetsApiFp = function (configuration?: Configuration) {
     async getFleetLogFleetsNameLogGet(
       name: string,
       between?: string,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FleetLog>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getFleetLogFleetsNameLogGet(
         name,
@@ -4997,7 +5119,7 @@ export const FleetsApiFp = function (configuration?: Configuration) {
      */
     async getFleetStateFleetsNameStateGet(
       name: string,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FleetState>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getFleetStateFleetsNameStateGet(
         name,
@@ -5012,7 +5134,7 @@ export const FleetsApiFp = function (configuration?: Configuration) {
      * @throws {RequiredError}
      */
     async getFleetsFleetsGet(
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FleetState>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getFleetsFleetsGet(options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -5088,7 +5210,7 @@ export class FleetsApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof FleetsApi
    */
-  public getFleetLogFleetsNameLogGet(name: string, between?: string, options?: any) {
+  public getFleetLogFleetsNameLogGet(name: string, between?: string, options?: AxiosRequestConfig) {
     return FleetsApiFp(this.configuration)
       .getFleetLogFleetsNameLogGet(name, between, options)
       .then((request) => request(this.axios, this.basePath));
@@ -5102,7 +5224,7 @@ export class FleetsApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof FleetsApi
    */
-  public getFleetStateFleetsNameStateGet(name: string, options?: any) {
+  public getFleetStateFleetsNameStateGet(name: string, options?: AxiosRequestConfig) {
     return FleetsApiFp(this.configuration)
       .getFleetStateFleetsNameStateGet(name, options)
       .then((request) => request(this.axios, this.basePath));
@@ -5115,7 +5237,7 @@ export class FleetsApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof FleetsApi
    */
-  public getFleetsFleetsGet(options?: any) {
+  public getFleetsFleetsGet(options?: AxiosRequestConfig) {
     return FleetsApiFp(this.configuration)
       .getFleetsFleetsGet(options)
       .then((request) => request(this.axios, this.basePath));
@@ -5137,7 +5259,7 @@ export const IngestorsApiAxiosParamCreator = function (configuration?: Configura
      */
     getIngestorHealthIngestorsGuidHealthGet: async (
       guid: string,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'guid' is not null or undefined
       assertParamExists('getIngestorHealthIngestorsGuidHealthGet', 'guid', guid);
@@ -5156,7 +5278,7 @@ export const IngestorsApiAxiosParamCreator = function (configuration?: Configura
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -5178,7 +5300,7 @@ export const IngestorsApiAxiosParamCreator = function (configuration?: Configura
      */
     getIngestorStateIngestorsGuidStateGet: async (
       guid: string,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'guid' is not null or undefined
       assertParamExists('getIngestorStateIngestorsGuidStateGet', 'guid', guid);
@@ -5197,7 +5319,7 @@ export const IngestorsApiAxiosParamCreator = function (configuration?: Configura
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -5216,7 +5338,7 @@ export const IngestorsApiAxiosParamCreator = function (configuration?: Configura
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getIngestorsIngestorsGet: async (options: any = {}): Promise<RequestArgs> => {
+    getIngestorsIngestorsGet: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       const localVarPath = `/ingestors`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5229,7 +5351,7 @@ export const IngestorsApiAxiosParamCreator = function (configuration?: Configura
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -5261,7 +5383,7 @@ export const IngestorsApiFp = function (configuration?: Configuration) {
      */
     async getIngestorHealthIngestorsGuidHealthGet(
       guid: string,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IngestorHealth>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.getIngestorHealthIngestorsGuidHealthGet(guid, options);
@@ -5276,7 +5398,7 @@ export const IngestorsApiFp = function (configuration?: Configuration) {
      */
     async getIngestorStateIngestorsGuidStateGet(
       guid: string,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IngestorState>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.getIngestorStateIngestorsGuidStateGet(guid, options);
@@ -5289,7 +5411,7 @@ export const IngestorsApiFp = function (configuration?: Configuration) {
      * @throws {RequiredError}
      */
     async getIngestorsIngestorsGet(
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Ingestor>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getIngestorsIngestorsGet(options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -5367,7 +5489,7 @@ export class IngestorsApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof IngestorsApi
    */
-  public getIngestorHealthIngestorsGuidHealthGet(guid: string, options?: any) {
+  public getIngestorHealthIngestorsGuidHealthGet(guid: string, options?: AxiosRequestConfig) {
     return IngestorsApiFp(this.configuration)
       .getIngestorHealthIngestorsGuidHealthGet(guid, options)
       .then((request) => request(this.axios, this.basePath));
@@ -5381,7 +5503,7 @@ export class IngestorsApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof IngestorsApi
    */
-  public getIngestorStateIngestorsGuidStateGet(guid: string, options?: any) {
+  public getIngestorStateIngestorsGuidStateGet(guid: string, options?: AxiosRequestConfig) {
     return IngestorsApiFp(this.configuration)
       .getIngestorStateIngestorsGuidStateGet(guid, options)
       .then((request) => request(this.axios, this.basePath));
@@ -5394,7 +5516,7 @@ export class IngestorsApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof IngestorsApi
    */
-  public getIngestorsIngestorsGet(options?: any) {
+  public getIngestorsIngestorsGet(options?: AxiosRequestConfig) {
     return IngestorsApiFp(this.configuration)
       .getIngestorsIngestorsGet(options)
       .then((request) => request(this.axios, this.basePath));
@@ -5416,7 +5538,7 @@ export const LiftsApiAxiosParamCreator = function (configuration?: Configuration
      */
     getLiftHealthLiftsLiftNameHealthGet: async (
       liftName: string,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'liftName' is not null or undefined
       assertParamExists('getLiftHealthLiftsLiftNameHealthGet', 'liftName', liftName);
@@ -5435,7 +5557,7 @@ export const LiftsApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -5457,7 +5579,7 @@ export const LiftsApiAxiosParamCreator = function (configuration?: Configuration
      */
     getLiftStateLiftsLiftNameStateGet: async (
       liftName: string,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'liftName' is not null or undefined
       assertParamExists('getLiftStateLiftsLiftNameStateGet', 'liftName', liftName);
@@ -5476,7 +5598,7 @@ export const LiftsApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -5495,7 +5617,7 @@ export const LiftsApiAxiosParamCreator = function (configuration?: Configuration
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getLiftsLiftsGet: async (options: any = {}): Promise<RequestArgs> => {
+    getLiftsLiftsGet: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
       const localVarPath = `/lifts`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5508,7 +5630,7 @@ export const LiftsApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -5532,7 +5654,7 @@ export const LiftsApiAxiosParamCreator = function (configuration?: Configuration
     postLiftRequestLiftsLiftNameRequestPost: async (
       liftName: string,
       liftRequest: LiftRequest,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'liftName' is not null or undefined
       assertParamExists('postLiftRequestLiftsLiftNameRequestPost', 'liftName', liftName);
@@ -5555,7 +5677,7 @@ export const LiftsApiAxiosParamCreator = function (configuration?: Configuration
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -5592,7 +5714,7 @@ export const LiftsApiFp = function (configuration?: Configuration) {
      */
     async getLiftHealthLiftsLiftNameHealthGet(
       liftName: string,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LiftHealth>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getLiftHealthLiftsLiftNameHealthGet(
         liftName,
@@ -5609,7 +5731,7 @@ export const LiftsApiFp = function (configuration?: Configuration) {
      */
     async getLiftStateLiftsLiftNameStateGet(
       liftName: string,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LiftState>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getLiftStateLiftsLiftNameStateGet(
         liftName,
@@ -5624,7 +5746,7 @@ export const LiftsApiFp = function (configuration?: Configuration) {
      * @throws {RequiredError}
      */
     async getLiftsLiftsGet(
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Lift>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getLiftsLiftsGet(options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -5640,7 +5762,7 @@ export const LiftsApiFp = function (configuration?: Configuration) {
     async postLiftRequestLiftsLiftNameRequestPost(
       liftName: string,
       liftRequest: LiftRequest,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.postLiftRequestLiftsLiftNameRequestPost(
@@ -5732,7 +5854,7 @@ export class LiftsApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof LiftsApi
    */
-  public getLiftHealthLiftsLiftNameHealthGet(liftName: string, options?: any) {
+  public getLiftHealthLiftsLiftNameHealthGet(liftName: string, options?: AxiosRequestConfig) {
     return LiftsApiFp(this.configuration)
       .getLiftHealthLiftsLiftNameHealthGet(liftName, options)
       .then((request) => request(this.axios, this.basePath));
@@ -5746,7 +5868,7 @@ export class LiftsApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof LiftsApi
    */
-  public getLiftStateLiftsLiftNameStateGet(liftName: string, options?: any) {
+  public getLiftStateLiftsLiftNameStateGet(liftName: string, options?: AxiosRequestConfig) {
     return LiftsApiFp(this.configuration)
       .getLiftStateLiftsLiftNameStateGet(liftName, options)
       .then((request) => request(this.axios, this.basePath));
@@ -5759,7 +5881,7 @@ export class LiftsApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof LiftsApi
    */
-  public getLiftsLiftsGet(options?: any) {
+  public getLiftsLiftsGet(options?: AxiosRequestConfig) {
     return LiftsApiFp(this.configuration)
       .getLiftsLiftsGet(options)
       .then((request) => request(this.axios, this.basePath));
@@ -5777,7 +5899,7 @@ export class LiftsApi extends BaseAPI {
   public postLiftRequestLiftsLiftNameRequestPost(
     liftName: string,
     liftRequest: LiftRequest,
-    options?: any,
+    options?: AxiosRequestConfig,
   ) {
     return LiftsApiFp(this.configuration)
       .postLiftRequestLiftsLiftNameRequestPost(liftName, liftRequest, options)
@@ -5802,7 +5924,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     getTaskLogTasksTaskIdLogGet: async (
       taskId: string,
       between?: string,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskId' is not null or undefined
       assertParamExists('getTaskLogTasksTaskIdLogGet', 'taskId', taskId);
@@ -5825,7 +5947,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
         localVarQueryParameter['between'] = between;
       }
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -5847,7 +5969,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      */
     getTaskStateTasksTaskIdStateGet: async (
       taskId: string,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskId' is not null or undefined
       assertParamExists('getTaskStateTasksTaskIdStateGet', 'taskId', taskId);
@@ -5866,7 +5988,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -5888,7 +6010,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      */
     postActivityDiscoveryTasksActivityDiscoveryPost: async (
       activityDiscoveryRequest: ActivityDiscoveryRequest,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'activityDiscoveryRequest' is not null or undefined
       assertParamExists(
@@ -5910,7 +6032,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -5937,7 +6059,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      */
     postCancelTaskTasksCancelTaskPost: async (
       cancelTaskRequest: CancelTaskRequest,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'cancelTaskRequest' is not null or undefined
       assertParamExists(
@@ -5959,7 +6081,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -5979,6 +6101,55 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     },
     /**
      *
+     * @summary Post Dispatch Task
+     * @param {DispatchTaskRequest} dispatchTaskRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postDispatchTaskTasksDispatchTaskPost: async (
+      dispatchTaskRequest: DispatchTaskRequest,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'dispatchTaskRequest' is not null or undefined
+      assertParamExists(
+        'postDispatchTaskTasksDispatchTaskPost',
+        'dispatchTaskRequest',
+        dispatchTaskRequest,
+      );
+      const localVarPath = `/tasks/dispatch_task`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        dispatchTaskRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Post Interrupt Task
      * @param {TaskInterruptionRequest} taskInterruptionRequest
      * @param {*} [options] Override http request option.
@@ -5986,7 +6157,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      */
     postInterruptTaskTasksInterruptTaskPost: async (
       taskInterruptionRequest: TaskInterruptionRequest,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskInterruptionRequest' is not null or undefined
       assertParamExists(
@@ -6008,7 +6179,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -6035,7 +6206,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      */
     postKillTaskTasksKillTaskPost: async (
       taskKillRequest: TaskKillRequest,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskKillRequest' is not null or undefined
       assertParamExists('postKillTaskTasksKillTaskPost', 'taskKillRequest', taskKillRequest);
@@ -6053,7 +6224,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -6080,7 +6251,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      */
     postResumeTaskTasksResumeTaskPost: async (
       taskResumeRequest: TaskResumeRequest,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskResumeRequest' is not null or undefined
       assertParamExists(
@@ -6102,7 +6273,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -6129,7 +6300,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      */
     postRewindTaskTasksRewindTaskPost: async (
       taskRewindRequest: TaskRewindRequest,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskRewindRequest' is not null or undefined
       assertParamExists(
@@ -6151,7 +6322,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -6178,7 +6349,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      */
     postSkipPhaseTasksSkipPhasePost: async (
       taskPhaseSkipRequest: TaskPhaseSkipRequest,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskPhaseSkipRequest' is not null or undefined
       assertParamExists(
@@ -6200,7 +6371,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -6227,7 +6398,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      */
     postTaskDiscoveryTasksTaskDiscoveryPost: async (
       taskDiscoveryRequest: TaskDiscoveryRequest,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskDiscoveryRequest' is not null or undefined
       assertParamExists(
@@ -6249,7 +6420,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -6269,55 +6440,6 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     },
     /**
      *
-     * @summary Post Task Request
-     * @param {DispatchTaskRequest} dispatchTaskRequest
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    postTaskRequestTasksDispatchTaskPost: async (
-      dispatchTaskRequest: DispatchTaskRequest,
-      options: any = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'dispatchTaskRequest' is not null or undefined
-      assertParamExists(
-        'postTaskRequestTasksDispatchTaskPost',
-        'dispatchTaskRequest',
-        dispatchTaskRequest,
-      );
-      const localVarPath = `/tasks/dispatch_task`;
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      localVarHeaderParameter['Content-Type'] = 'application/json';
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-      localVarRequestOptions.data = serializeDataIfNeeded(
-        dispatchTaskRequest,
-        localVarRequestOptions,
-        configuration,
-      );
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
-     *
      * @summary Post Undo Skip Phase
      * @param {UndoPhaseSkipRequest} undoPhaseSkipRequest
      * @param {*} [options] Override http request option.
@@ -6325,7 +6447,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      */
     postUndoSkipPhaseTasksUndoSkipPhasePost: async (
       undoPhaseSkipRequest: UndoPhaseSkipRequest,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'undoPhaseSkipRequest' is not null or undefined
       assertParamExists(
@@ -6347,7 +6469,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -6386,7 +6508,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       limit?: number,
       offset?: number,
       orderBy?: string,
-      options: any = {},
+      options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/tasks`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -6430,7 +6552,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
         localVarQueryParameter['order_by'] = orderBy;
       }
 
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
         ...localVarHeaderParameter,
@@ -6464,7 +6586,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
     async getTaskLogTasksTaskIdLogGet(
       taskId: string,
       between?: string,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskEventLog>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getTaskLogTasksTaskIdLogGet(
         taskId,
@@ -6482,7 +6604,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
      */
     async getTaskStateTasksTaskIdStateGet(
       taskId: string,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskState>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getTaskStateTasksTaskIdStateGet(
         taskId,
@@ -6499,7 +6621,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
      */
     async postActivityDiscoveryTasksActivityDiscoveryPost(
       activityDiscoveryRequest: ActivityDiscoveryRequest,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ActivityDiscovery>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.postActivityDiscoveryTasksActivityDiscoveryPost(
@@ -6517,12 +6639,32 @@ export const TasksApiFp = function (configuration?: Configuration) {
      */
     async postCancelTaskTasksCancelTaskPost(
       cancelTaskRequest: CancelTaskRequest,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskCancelResponse>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.postCancelTaskTasksCancelTaskPost(
         cancelTaskRequest,
         options,
       );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Post Dispatch Task
+     * @param {DispatchTaskRequest} dispatchTaskRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async postDispatchTaskTasksDispatchTaskPost(
+      dispatchTaskRequest: DispatchTaskRequest,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskDispatchResponseItem>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.postDispatchTaskTasksDispatchTaskPost(
+          dispatchTaskRequest,
+          options,
+        );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -6534,7 +6676,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
      */
     async postInterruptTaskTasksInterruptTaskPost(
       taskInterruptionRequest: TaskInterruptionRequest,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskInterruptionResponse>
     > {
@@ -6554,7 +6696,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
      */
     async postKillTaskTasksKillTaskPost(
       taskKillRequest: TaskKillRequest,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskKillResponse>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.postKillTaskTasksKillTaskPost(
         taskKillRequest,
@@ -6571,7 +6713,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
      */
     async postResumeTaskTasksResumeTaskPost(
       taskResumeRequest: TaskResumeRequest,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskResumeResponse>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.postResumeTaskTasksResumeTaskPost(
         taskResumeRequest,
@@ -6588,7 +6730,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
      */
     async postRewindTaskTasksRewindTaskPost(
       taskRewindRequest: TaskRewindRequest,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskRewindResponse>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.postRewindTaskTasksRewindTaskPost(
         taskRewindRequest,
@@ -6605,7 +6747,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
      */
     async postSkipPhaseTasksSkipPhasePost(
       taskPhaseSkipRequest: TaskPhaseSkipRequest,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SkipPhaseResponse>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.postSkipPhaseTasksSkipPhasePost(
         taskPhaseSkipRequest,
@@ -6622,29 +6764,11 @@ export const TasksApiFp = function (configuration?: Configuration) {
      */
     async postTaskDiscoveryTasksTaskDiscoveryPost(
       taskDiscoveryRequest: TaskDiscoveryRequest,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskDiscovery>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.postTaskDiscoveryTasksTaskDiscoveryPost(
           taskDiscoveryRequest,
-          options,
-        );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-    },
-    /**
-     *
-     * @summary Post Task Request
-     * @param {DispatchTaskRequest} dispatchTaskRequest
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async postTaskRequestTasksDispatchTaskPost(
-      dispatchTaskRequest: DispatchTaskRequest,
-      options?: any,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskDispatchResponse>> {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.postTaskRequestTasksDispatchTaskPost(
-          dispatchTaskRequest,
           options,
         );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -6658,7 +6782,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
      */
     async postUndoSkipPhaseTasksUndoSkipPhasePost(
       undoPhaseSkipRequest: UndoPhaseSkipRequest,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UndoPhaseSkipResponse>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.postUndoSkipPhaseTasksUndoSkipPhasePost(
@@ -6688,7 +6812,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
       limit?: number,
       offset?: number,
       orderBy?: string,
-      options?: any,
+      options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskState>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.queryTaskStatesTasksGet(
         taskId,
@@ -6773,6 +6897,21 @@ export const TasksApiFactory = function (
     ): AxiosPromise<TaskCancelResponse> {
       return localVarFp
         .postCancelTaskTasksCancelTaskPost(cancelTaskRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Post Dispatch Task
+     * @param {DispatchTaskRequest} dispatchTaskRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postDispatchTaskTasksDispatchTaskPost(
+      dispatchTaskRequest: DispatchTaskRequest,
+      options?: any,
+    ): AxiosPromise<TaskDispatchResponseItem> {
+      return localVarFp
+        .postDispatchTaskTasksDispatchTaskPost(dispatchTaskRequest, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -6867,21 +7006,6 @@ export const TasksApiFactory = function (
     },
     /**
      *
-     * @summary Post Task Request
-     * @param {DispatchTaskRequest} dispatchTaskRequest
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    postTaskRequestTasksDispatchTaskPost(
-      dispatchTaskRequest: DispatchTaskRequest,
-      options?: any,
-    ): AxiosPromise<TaskDispatchResponse> {
-      return localVarFp
-        .postTaskRequestTasksDispatchTaskPost(dispatchTaskRequest, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
-     *
      * @summary Post Undo Skip Phase
      * @param {UndoPhaseSkipRequest} undoPhaseSkipRequest
      * @param {*} [options] Override http request option.
@@ -6950,7 +7074,11 @@ export class TasksApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof TasksApi
    */
-  public getTaskLogTasksTaskIdLogGet(taskId: string, between?: string, options?: any) {
+  public getTaskLogTasksTaskIdLogGet(
+    taskId: string,
+    between?: string,
+    options?: AxiosRequestConfig,
+  ) {
     return TasksApiFp(this.configuration)
       .getTaskLogTasksTaskIdLogGet(taskId, between, options)
       .then((request) => request(this.axios, this.basePath));
@@ -6964,7 +7092,7 @@ export class TasksApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof TasksApi
    */
-  public getTaskStateTasksTaskIdStateGet(taskId: string, options?: any) {
+  public getTaskStateTasksTaskIdStateGet(taskId: string, options?: AxiosRequestConfig) {
     return TasksApiFp(this.configuration)
       .getTaskStateTasksTaskIdStateGet(taskId, options)
       .then((request) => request(this.axios, this.basePath));
@@ -6980,7 +7108,7 @@ export class TasksApi extends BaseAPI {
    */
   public postActivityDiscoveryTasksActivityDiscoveryPost(
     activityDiscoveryRequest: ActivityDiscoveryRequest,
-    options?: any,
+    options?: AxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
       .postActivityDiscoveryTasksActivityDiscoveryPost(activityDiscoveryRequest, options)
@@ -6995,9 +7123,29 @@ export class TasksApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof TasksApi
    */
-  public postCancelTaskTasksCancelTaskPost(cancelTaskRequest: CancelTaskRequest, options?: any) {
+  public postCancelTaskTasksCancelTaskPost(
+    cancelTaskRequest: CancelTaskRequest,
+    options?: AxiosRequestConfig,
+  ) {
     return TasksApiFp(this.configuration)
       .postCancelTaskTasksCancelTaskPost(cancelTaskRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Post Dispatch Task
+   * @param {DispatchTaskRequest} dispatchTaskRequest
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public postDispatchTaskTasksDispatchTaskPost(
+    dispatchTaskRequest: DispatchTaskRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return TasksApiFp(this.configuration)
+      .postDispatchTaskTasksDispatchTaskPost(dispatchTaskRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -7011,7 +7159,7 @@ export class TasksApi extends BaseAPI {
    */
   public postInterruptTaskTasksInterruptTaskPost(
     taskInterruptionRequest: TaskInterruptionRequest,
-    options?: any,
+    options?: AxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
       .postInterruptTaskTasksInterruptTaskPost(taskInterruptionRequest, options)
@@ -7026,7 +7174,10 @@ export class TasksApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof TasksApi
    */
-  public postKillTaskTasksKillTaskPost(taskKillRequest: TaskKillRequest, options?: any) {
+  public postKillTaskTasksKillTaskPost(
+    taskKillRequest: TaskKillRequest,
+    options?: AxiosRequestConfig,
+  ) {
     return TasksApiFp(this.configuration)
       .postKillTaskTasksKillTaskPost(taskKillRequest, options)
       .then((request) => request(this.axios, this.basePath));
@@ -7040,7 +7191,10 @@ export class TasksApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof TasksApi
    */
-  public postResumeTaskTasksResumeTaskPost(taskResumeRequest: TaskResumeRequest, options?: any) {
+  public postResumeTaskTasksResumeTaskPost(
+    taskResumeRequest: TaskResumeRequest,
+    options?: AxiosRequestConfig,
+  ) {
     return TasksApiFp(this.configuration)
       .postResumeTaskTasksResumeTaskPost(taskResumeRequest, options)
       .then((request) => request(this.axios, this.basePath));
@@ -7054,7 +7208,10 @@ export class TasksApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof TasksApi
    */
-  public postRewindTaskTasksRewindTaskPost(taskRewindRequest: TaskRewindRequest, options?: any) {
+  public postRewindTaskTasksRewindTaskPost(
+    taskRewindRequest: TaskRewindRequest,
+    options?: AxiosRequestConfig,
+  ) {
     return TasksApiFp(this.configuration)
       .postRewindTaskTasksRewindTaskPost(taskRewindRequest, options)
       .then((request) => request(this.axios, this.basePath));
@@ -7070,7 +7227,7 @@ export class TasksApi extends BaseAPI {
    */
   public postSkipPhaseTasksSkipPhasePost(
     taskPhaseSkipRequest: TaskPhaseSkipRequest,
-    options?: any,
+    options?: AxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
       .postSkipPhaseTasksSkipPhasePost(taskPhaseSkipRequest, options)
@@ -7087,27 +7244,10 @@ export class TasksApi extends BaseAPI {
    */
   public postTaskDiscoveryTasksTaskDiscoveryPost(
     taskDiscoveryRequest: TaskDiscoveryRequest,
-    options?: any,
+    options?: AxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
       .postTaskDiscoveryTasksTaskDiscoveryPost(taskDiscoveryRequest, options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
-   *
-   * @summary Post Task Request
-   * @param {DispatchTaskRequest} dispatchTaskRequest
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof TasksApi
-   */
-  public postTaskRequestTasksDispatchTaskPost(
-    dispatchTaskRequest: DispatchTaskRequest,
-    options?: any,
-  ) {
-    return TasksApiFp(this.configuration)
-      .postTaskRequestTasksDispatchTaskPost(dispatchTaskRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -7121,7 +7261,7 @@ export class TasksApi extends BaseAPI {
    */
   public postUndoSkipPhaseTasksUndoSkipPhasePost(
     undoPhaseSkipRequest: UndoPhaseSkipRequest,
-    options?: any,
+    options?: AxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
       .postUndoSkipPhaseTasksUndoSkipPhasePost(undoPhaseSkipRequest, options)
@@ -7150,7 +7290,7 @@ export class TasksApi extends BaseAPI {
     limit?: number,
     offset?: number,
     orderBy?: string,
-    options?: any,
+    options?: AxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
       .queryTaskStatesTasksGet(
