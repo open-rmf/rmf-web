@@ -1,16 +1,6 @@
 import { TaskType as RmfTaskType } from 'rmf-models';
 import type { TaskState } from 'api-client';
 
-export function taskStateToStr(taskState: TaskState): string {
-  if (taskState.active) return 'active';
-  if (taskState.cancellation) return 'cancelled';
-  if (taskState.killed) return 'killed';
-  if (taskState.pending?.length === 0) return 'completed';
-  else {
-    return 'unknown';
-  }
-}
-
 export function taskTypeToStr(taskType: number): string {
   switch (taskType) {
     case RmfTaskType.TYPE_CHARGE_BATTERY:

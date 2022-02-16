@@ -1,7 +1,9 @@
+import { Refresh as RefreshIcon } from '@mui/icons-material';
 import {
   IconButton,
   Paper,
   PaperProps,
+  styled,
   Table,
   TableBody,
   TableCell,
@@ -11,12 +13,9 @@ import {
   TableRow,
   Toolbar,
   Typography,
-  styled,
 } from '@mui/material';
-import type { TaskState } from 'api-client';
-import { Refresh as RefreshIcon } from '@mui/icons-material';
+import type { RobotState } from 'api-client';
 import React from 'react';
-import { VerboseRobot } from '.';
 
 const classes = {
   table: 'robot-table',
@@ -59,60 +58,50 @@ const StyledPaper = styled((props: PaperProps) => <Paper {...props} />)(({ theme
   },
 }));
 
-interface RobotRowProps {
-  verboseRobot: VerboseRobot;
+type RobotStatus = Required<RobotState>['status'];
+
+export interface RobotTableData {
+  name: string;
+  status?: RobotStatus;
+  battery?: number;
+  estFinishTime?: number;
+}
+
+interface RobotRowProps extends RobotTableData {
   onClick: React.MouseEventHandler<HTMLTableRowElement>;
 }
 
-function RobotRow({ verboseRobot, onClick }: RobotRowProps) {
-  const getRobotModeClass = (robotMode: string) => {
-    switch (robotMode) {
-      case 'emergency':
-        return classes.robotErrorClass;
-      case 'charging':
-        return classes.robotChargingClass;
-      case 'working':
-        return classes.robotInMotionClass;
-      case 'idle':
-      case 'paused':
-      case 'waiting':
-        return classes.robotStoppedClass;
-      default:
-        return '';
-    }
-  };
-  const st = verboseRobot.state.status ? verboseRobot.state.status : '';
-  const robotModeClass = getRobotModeClass(st);
-  const name = verboseRobot.state.name;
-  const battery = verboseRobot.state.battery ? verboseRobot.state.battery * 100 : 0;
-
-  if (verboseRobot.current_task_state) {
-    const date = verboseRobot.current_task_state.estimate_millis
-      ? new Date(verboseRobot.current_task_state.estimate_millis).toISOString().substr(11, 8)
-      : '-';
-
-    return (
-      <>
-        <TableRow onClick={onClick} className={classes.tableRow}>
-          <TableCell>{name}</TableCell>
-          <TableCell>{date} </TableCell>
-          <TableCell>{battery}%</TableCell>
-          <TableCell className={robotModeClass}>{st}</TableCell>
-        </TableRow>
-      </>
-    );
-  } else {
-    return (
-      <>
-        <TableRow onClick={onClick} className={classes.tableRow}>
-          <TableCell>{name}</TableCell>
-          <TableCell>{'-'}</TableCell>
-          <TableCell>{battery}%</TableCell>
-          <TableCell className={robotModeClass}>{st}</TableCell>
-        </TableRow>
-      </>
-    );
+function getRobotStatusClass(robotStatus?: RobotStatus) {
+  if (!robotStatus) {
+    return '';
   }
+  switch (robotStatus) {
+    case 'error':
+      return classes.robotErrorClass;
+    case 'charging':
+      return classes.robotChargingClass;
+    case 'working':
+      return classes.robotInMotionClass;
+    case 'idle':
+    case 'offline':
+    case 'shutdown':
+    case 'uninitialized':
+      return classes.robotStoppedClass;
+  }
+  return '';
+}
+
+function RobotRow({ name, status, battery = 0, estFinishTime, onClick }: RobotRowProps) {
+  const robotStatusClass = getRobotStatusClass(status);
+
+  return (
+    <TableRow onClick={onClick} className={classes.tableRow}>
+      <TableCell>{name}</TableCell>
+      <TableCell>{estFinishTime ? new Date(estFinishTime).toLocaleString() : '-'}</TableCell>
+      <TableCell>{battery * 100}%</TableCell>
+      <TableCell className={robotStatusClass}>{status}</TableCell>
+    </TableRow>
+  );
 }
 
 export type PaginationOptions = Omit<
@@ -125,11 +114,10 @@ export interface RobotTableProps extends PaperProps {
    * The current list of robots to display, when pagination is enabled, this should only
    * contain the robots for the current page.
    */
-  robots: VerboseRobot[];
-  fetchSelectedTask?: (taskId: string) => Promise<TaskState | undefined>;
+  robots: RobotTableData[];
   paginationOptions?: PaginationOptions;
   onRefreshClick?: React.MouseEventHandler<HTMLButtonElement>;
-  onRobotClick?(ev: React.MouseEvent<HTMLDivElement>, robot: VerboseRobot): void;
+  onRobotClick?(ev: React.MouseEvent<HTMLDivElement>, robotName: string): void;
 }
 
 export function RobotTable({
@@ -154,20 +142,19 @@ export function RobotTable({
           <TableHead>
             <TableRow>
               <TableCell>Robot Name</TableCell>
-              <TableCell>Active Task Duration</TableCell>
+              <TableCell>Est. Task Finish Time</TableCell>
               <TableCell>Battery</TableCell>
-              <TableCell>State</TableCell>
+              <TableCell>Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {robots &&
-              robots.map((robot, robot_id) => (
-                <RobotRow
-                  key={robot_id}
-                  verboseRobot={robot}
-                  onClick={(ev) => onRobotClick && onRobotClick(ev, robot)}
-                />
-              ))}
+            {robots.map((robot, robot_id) => (
+              <RobotRow
+                key={robot_id}
+                {...robot}
+                onClick={(ev) => onRobotClick && onRobotClick(ev, robot.name)}
+              />
+            ))}
           </TableBody>
         </Table>
       </TableContainer>

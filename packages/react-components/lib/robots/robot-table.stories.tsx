@@ -1,39 +1,11 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { makeDefinedTask } from '../tasks/test-data.spec';
 import { PaginationOptions, RobotTable, RobotTableProps } from './robot-table';
-import { makeRandomRobot } from './test-utils.spec';
-import { VerboseRobot } from './utils';
-
-const verboseRobots: VerboseRobot[] = [
-  {
-    ...makeRandomRobot('test_robot1', 'test_fleet', 2),
-    tasks: [makeDefinedTask('Delivery', 'test_robot1', 'active_task_1', 3, 3)],
-  },
-  {
-    ...makeRandomRobot('test_robot2', 'test_fleet', 1),
-    tasks: [makeDefinedTask('Loop', 'test_robot2', 'active_task_2', 4, 3)],
-  },
-  {
-    ...makeRandomRobot('test_robot3', 'test_fleet', 3),
-    tasks: [makeDefinedTask('Clean', 'test_robot3', 'active_task_3', 4, 3)],
-  },
-  {
-    ...makeRandomRobot('test_robot4', 'test_fleet', 4),
-    tasks: [makeDefinedTask('Loop', 'test_robot4', 'active_task_4', 4, 3)],
-  },
-];
+import { RobotTableData } from './robot-table';
+import { Status2 as RobotStatus } from 'api-client';
 
 export default {
   title: 'Robots/Table',
-  component: RobotTable,
-  argTypes: {
-    paginationOptions: {
-      control: {
-        disable: true,
-      },
-    },
-  },
 } as Meta;
 
 export const Table: Story<RobotTableProps> = (args) => {
@@ -51,13 +23,25 @@ export const Table: Story<RobotTableProps> = (args) => {
       <RobotTable
         {...args}
         style={{ height: '95vh', display: 'flex', flexDirection: 'column' }}
-        robots={args.robots.slice(page * 10, (page + 1) * 10)}
+        robots={robots.slice(page * 10, (page + 1) * 10)}
         paginationOptions={paginationOptions}
       />
     </>
   );
 };
 
+const allStatuses: RobotStatus[] = Object.values(RobotStatus) as RobotStatus[];
+
+const robots: RobotTableData[] = [];
+for (let i = 0; i < 12; ++i) {
+  robots.push({
+    name: `Robot ${i + 1}`,
+    battery: Math.min(i / 10, 1),
+    status: allStatuses[i % allStatuses.length],
+    estFinishTime: Date.now() + i * 1000000,
+  });
+}
+
 Table.args = {
-  robots: verboseRobots,
+  robots,
 };

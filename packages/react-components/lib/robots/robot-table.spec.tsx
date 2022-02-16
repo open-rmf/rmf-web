@@ -1,41 +1,24 @@
 import { render } from '@testing-library/react';
+import { Status2 as RobotStatus } from 'api-client';
 import React from 'react';
-import { RobotTable } from './robot-table';
-import { makeRandomRobot } from './test-utils.spec';
+import { RobotTable, RobotTableData } from './robot-table';
+import { makeRobot } from './test-utils.spec';
+
+const allStatuses = Object.values(RobotStatus) as RobotStatus[];
 
 describe('RobotTable', () => {
   it('shows all robots', () => {
-    const robots = [
-      makeRandomRobot('test_robot1', 'test_fleet', 2),
-      makeRandomRobot('test_robot2', 'test_fleet', 1),
-    ];
-    const root = render(<RobotTable robots={robots} />);
+    const robots = [makeRobot({ name: 'test_robot1' }), makeRobot({ name: 'test_robot2' })];
+    const tableData: RobotTableData[] = robots.map((robot) => ({
+      name: robot.name,
+    }));
+    const root = render(<RobotTable robots={tableData} />);
     expect(root.getByText('test_robot1')).toBeTruthy();
     expect(root.getByText('test_robot2')).toBeTruthy();
   });
 
-  it('smoke test for different robot states', () => {
-    const idleRobot = makeRandomRobot('test_robot1', 'test_fleet', 0);
-    const chargingRobot = makeRandomRobot('test_robot2', 'test_fleet', 1);
-    const movingRobot = makeRandomRobot('test_robot3', 'test_fleet', 2);
-    const pausedRobot = makeRandomRobot('test_robot4', 'test_fleet', 3);
-    const waitingRobot = makeRandomRobot('test_robot5', 'test_fleet', 4);
-    const emergencyRobot = makeRandomRobot('test_robot6', 'test_fleet', 5);
-    const goingHomeRobot = makeRandomRobot('test_robot7', 'test_fleet', 6);
-    const dockingRobot = makeRandomRobot('test_robot8', 'test_fleet', 7);
-    const errorRobot = makeRandomRobot('test_robot19', 'test_fleet', 8);
-
-    const robots = [
-      idleRobot,
-      chargingRobot,
-      movingRobot,
-      pausedRobot,
-      waitingRobot,
-      emergencyRobot,
-      goingHomeRobot,
-      dockingRobot,
-      errorRobot,
-    ];
+  it('smoke test for different robot status', () => {
+    const robots = allStatuses.map((status) => makeRobot({ name: `${status}_robot`, status }));
     render(<RobotTable robots={robots} />);
   });
 
@@ -43,7 +26,7 @@ describe('RobotTable', () => {
     const spy = jasmine.createSpy();
     const root = render(
       <RobotTable
-        robots={[makeRandomRobot('test_robot1', 'test_fleet', 2)]}
+        robots={[makeRobot()]}
         paginationOptions={{
           count: 1,
           page: 0,
@@ -58,7 +41,7 @@ describe('RobotTable', () => {
   });
 
   it('pagination is not shown when no pagination option is provided', () => {
-    const root = render(<RobotTable robots={[makeRandomRobot('test_robot1', 'test_fleet', 2)]} />);
+    const root = render(<RobotTable robots={[makeRobot()]} />);
     // NOTE: mui v5 is using the unicode char '–', different from '-'!!
     expect(root.queryByText('1–1 of 1')).toBeNull();
   });

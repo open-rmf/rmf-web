@@ -1,10 +1,19 @@
-import { Button, Divider, Grid, Typography, useTheme, styled } from '@mui/material';
+import { Button, Divider, Grid, styled, Typography, useTheme } from '@mui/material';
 import React from 'react';
-import { taskStateToStr } from '../tasks/utils';
-import { format } from 'date-fns';
 import { CircularProgressBar } from './circular-progress-bar';
 import { LinearProgressBar } from './linear-progress-bar';
-import { VerboseRobot } from './utils';
+import type { TaskState } from 'api-client';
+
+function getTaskStatusDisplay(assignedTask?: string, taskStatus?: string) {
+  if (assignedTask && !taskStatus) {
+    return 'Unknown';
+  }
+  if (assignedTask && taskStatus) {
+    return taskStatus;
+  } else {
+    return 'No Task';
+  }
+}
 
 const classes = {
   button: 'robot-info-button',
@@ -18,42 +27,43 @@ const StyledDiv = styled('div')(() => ({
   },
 }));
 
+type TaskStatus = Required<TaskState>['status'];
+
 export interface RobotInfoProps {
-  robot: VerboseRobot;
+  robotName: string;
+  battery?: number;
+  assignedTask?: string;
+  taskStatus?: TaskStatus;
+  taskProgress?: number;
+  estFinishTime?: number;
 }
 
-export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
+export function RobotInfo({
+  robotName,
+  battery,
+  assignedTask,
+  taskStatus,
+  taskProgress,
+  estFinishTime,
+}: RobotInfoProps): JSX.Element {
   const theme = useTheme();
   const [hasConcreteEndTime] = React.useState<boolean>(false);
-
-  const currentTask = robot.current_task_state;
 
   return (
     <StyledDiv>
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
-        {robot.state.name}
+        {robotName}
       </Typography>
       <Divider />
       <div style={{ marginBottom: theme.spacing(1) }}></div>
       <Grid container>
         <Grid container item xs={12} justifyContent="center">
-          <Typography variant="h6" gutterBottom>
-            {`Task Progress - ${currentTask ? taskStateToStr(currentTask) : 'No Task'}`}
+          <Typography variant="h6" gutterBottom sx={{ textTransform: 'capitalize' }}>
+            {`Task Progress - ${getTaskStatusDisplay(assignedTask, taskStatus)}`}
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          {currentTask &&
-          currentTask.unix_millis_start_time &&
-          currentTask.unix_millis_finish_time ? (
-            <LinearProgressBar
-              value={
-                (100 * (Date.now() - currentTask.unix_millis_start_time)) /
-                (currentTask.unix_millis_finish_time - currentTask.unix_millis_start_time)
-              }
-            />
-          ) : (
-            <LinearProgressBar value={0} />
-          )}
+          {taskProgress && <LinearProgressBar value={taskProgress * 100} />}
         </Grid>
         <Grid container item xs={12} justifyContent="center">
           <Typography variant="h6" gutterBottom>
@@ -68,8 +78,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
             disableRipple={true}
             component="div"
           >
-            assigned task
-            {robot ? ` - ${robot.state.task_id}` : '-'}
+            {assignedTask || '-'}
           </Button>
         </Grid>
         <Grid item xs={6}>
@@ -83,13 +92,8 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
           </Typography>
         </Grid>
         <Grid item xs={6}>
-          <CircularProgressBar
-            progress={robot.state.battery ? robot.state.battery * 100 : 0}
-            strokeColor="#20a39e"
-          >
-            <Typography variant="h6">{`${
-              robot.state.battery ? robot.state.battery * 100 : 0
-            }%`}</Typography>
+          <CircularProgressBar progress={battery ? battery * 100 : 0} strokeColor="#20a39e">
+            <Typography variant="h6">{`${battery ? battery * 100 : 0}%`}</Typography>
           </CircularProgressBar>
         </Grid>
         <Grid item xs={6}>
@@ -100,13 +104,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
             className={classes.button}
             disableRipple={true}
           >
-            time
-            {currentTask?.estimate_millis
-              ? ` - ${format(
-                  new Date(currentTask.estimate_millis * 1 + Date.now()),
-                  "hh:mm aaaaa'm'",
-                )}`
-              : '-'}
+            {estFinishTime !== undefined ? `${new Date(estFinishTime).toLocaleString()}` : '-'}
           </Button>
         </Grid>
       </Grid>
