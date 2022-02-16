@@ -16,12 +16,7 @@ import {
 import { styled } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { format } from 'date-fns';
-import {
-  TaskState,
-  Phase,
-  EventState,
-  ApiServerModelsRmfApiTaskStateStatus as Status,
-} from 'api-client';
+import { TaskState, Phase, EventState, Status } from 'api-client';
 import React from 'react';
 
 interface TimeLinePropsWithRef extends TimelineProps {

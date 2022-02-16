@@ -7,7 +7,7 @@ import {
   TableProps,
   TableRow,
 } from '@mui/material';
-import { ApiServerModelsRmfApiTaskStateStatus as Status, TaskState } from 'api-client';
+import { Status, TaskState } from 'api-client';
 import clsx from 'clsx';
 import React from 'react';
 
