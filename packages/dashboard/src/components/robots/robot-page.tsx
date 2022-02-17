@@ -20,6 +20,8 @@ import {
 } from '../rmf-app';
 import ScheduleVisualizer from '../schedule-visualizer';
 
+const MemoRobotInfo = React.memo(RobotInfo);
+
 const UpdateRate = 1000;
 const prefix = 'robot-page';
 const classes = {
@@ -225,7 +227,7 @@ export function RobotPage() {
       <Grid item xs={4}>
         <Paper variant="outlined" className={classes.detailPanelContainer}>
           {selectedRobot && selectedRobot.name ? (
-            <RobotInfo
+            <MemoRobotInfo
               robotName={selectedRobot.name}
               assignedTask={selectedRobot.task_id}
               battery={selectedRobot.battery}

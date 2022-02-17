@@ -89,18 +89,20 @@ function getRobotStatusClass(robotStatus?: RobotStatus) {
   return '';
 }
 
-function RobotRow({ name, status, battery = 0, estFinishTime, onClick }: RobotRowProps) {
-  const robotStatusClass = getRobotStatusClass(status);
+const RobotRow = React.memo(
+  ({ name, status, battery = 0, estFinishTime, onClick }: RobotRowProps) => {
+    const robotStatusClass = getRobotStatusClass(status);
 
-  return (
-    <TableRow onClick={onClick} className={classes.tableRow}>
-      <TableCell>{name}</TableCell>
-      <TableCell>{estFinishTime ? new Date(estFinishTime).toLocaleString() : '-'}</TableCell>
-      <TableCell>{battery * 100}%</TableCell>
-      <TableCell className={robotStatusClass}>{status}</TableCell>
-    </TableRow>
-  );
-}
+    return (
+      <TableRow onClick={onClick} className={classes.tableRow}>
+        <TableCell>{name}</TableCell>
+        <TableCell>{estFinishTime ? new Date(estFinishTime).toLocaleString() : '-'}</TableCell>
+        <TableCell>{battery * 100}%</TableCell>
+        <TableCell className={robotStatusClass}>{status}</TableCell>
+      </TableRow>
+    );
+  },
+);
 
 export type PaginationOptions = Omit<
   React.ComponentPropsWithoutRef<typeof TablePagination>,
