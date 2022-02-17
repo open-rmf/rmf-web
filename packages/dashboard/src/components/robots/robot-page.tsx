@@ -1,23 +1,16 @@
 /* istanbul ignore file */
 import { Box, Card, Grid, GridProps, Paper, styled, Typography } from '@mui/material';
-import { FleetState, RobotState, TaskState } from 'api-client';
+import { Dispenser, FleetState, Ingestor, RobotState, TaskState } from 'api-client';
 import { AxiosResponse } from 'axios';
 import React from 'react';
-import { RobotInfo, RobotTable, RobotTableData } from 'react-components';
+import { PaginationOptions, RobotInfo, RobotTable, RobotTableData } from 'react-components';
 import { Map, MapProps } from 'react-leaflet';
 import {
   useDispenserStatesRef,
-  useFleets,
   useFleetStateRef,
   useIngestorStatesRef,
 } from '../../util/common-subscriptions';
-import {
-  BuildingMapContext,
-  DispensersContext,
-  IngestorsContext,
-  RmfIngress,
-  RmfIngressContext,
-} from '../rmf-app';
+import { BuildingMapContext, RmfIngress, RmfIngressContext } from '../rmf-app';
 import ScheduleVisualizer from '../schedule-visualizer';
 
 const MemoRobotInfo = React.memo(RobotInfo);
@@ -122,15 +115,13 @@ export function RobotPage() {
   }, []);
 
   // get work cells to display on map
-  const dispensers = React.useContext(DispensersContext);
+  const [dispensers, setDispensers] = React.useState<Dispenser[]>([]);
   useDispenserStatesRef(sioClient, dispensers);
-
-  const ingestors = React.useContext(IngestorsContext);
+  const [ingestors, setIngestors] = React.useState<Ingestor[]>([]);
   useIngestorStatesRef(sioClient, ingestors);
 
   // schedule visualizer fleet
   const [fleets, setFleets] = React.useState<FleetState[]>([]);
-  useFleets(rmfIngress, setFleets);
   const fleetStatesRef = useFleetStateRef(sioClient, fleets);
 
   // fetch data
@@ -139,6 +130,8 @@ export function RobotPage() {
       return;
     }
     (async () => {
+      const dispensers = (await rmfIngress.dispensersApi.getDispensersDispensersGet()).data;
+      const ingestors = (await rmfIngress.ingestorsApi.getIngestorsIngestorsGet()).data;
       const fleets = (await rmfIngress.fleetsApi.getFleetsFleetsGet()).data;
       const tasks = await fetchActiveTaskStates(fleets, rmfIngress);
       const newRobotTableData: RobotTableData[] = [];
@@ -165,6 +158,9 @@ export function RobotPage() {
       });
       setRobotTableData(newRobotTableData);
       taskStatesRef.current = tasks;
+      setDispensers(dispensers);
+      setIngestors(ingestors);
+      setFleets(fleets);
     })();
   }, [rmfIngress]);
 
@@ -193,6 +189,17 @@ export function RobotPage() {
       );
   };
 
+  const paginationOptions = React.useMemo<PaginationOptions>(
+    () => ({
+      count: robotTableData.length,
+      page,
+      onPageChange: (_, page) => setPage(page),
+      rowsPerPage: 10,
+      rowsPerPageOptions: [10],
+    }),
+    [page, robotTableData.length],
+  );
+
   return (
     <StyledGrid container className={classes.container} wrap="nowrap" spacing={2}>
       <Grid item xs={4}>
@@ -214,13 +221,7 @@ export function RobotPage() {
         <RobotTable
           className={classes.robotTable}
           robots={robotTableData}
-          paginationOptions={{
-            count: robotTableData.length,
-            page,
-            onPageChange: (_, page) => setPage(page),
-            rowsPerPage: 10,
-            rowsPerPageOptions: [10],
-          }}
+          paginationOptions={paginationOptions}
           onRobotClick={handleRobotClick}
         />
       </Grid>
