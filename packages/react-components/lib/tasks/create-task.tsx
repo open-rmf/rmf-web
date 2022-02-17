@@ -233,6 +233,164 @@ function DeliveryTaskForm({
           />
         </Grid>
       </Grid>
+      <Grid container wrap="nowrap">
+        <Grid style={{ flex: '1 1 60%' }}>
+          <Autocomplete
+            id="pickup_sku"
+            freeSolo
+            fullWidth
+            value={taskDesc.pickup.payload.sku}
+            options={[]}
+            onChange={(_ev, newValue) =>
+              newValue !== null &&
+              onChange({
+                ...taskDesc,
+                pickup: {
+                  ...taskDesc.pickup,
+                  payload: {
+                    ...taskDesc.pickup.payload,
+                    sku: newValue,
+                  },
+                },
+              })
+            }
+            onBlur={(ev) =>
+              onChange({
+                ...taskDesc,
+                pickup: {
+                  ...taskDesc.dropoff,
+                  payload: {
+                    ...taskDesc.pickup.payload,
+                    sku: (ev.target as HTMLInputElement).value,
+                  },
+                },
+              })
+            }
+            renderInput={(params) => <TextField {...params} label="Pickup SKU" margin="normal" />}
+          />
+        </Grid>
+        <Grid
+          style={{
+            flex: '1 1 40%',
+            marginLeft: theme.spacing(2),
+            marginRight: theme.spacing(2),
+          }}
+        >
+          <Autocomplete
+            id="pickup_quantity"
+            freeSolo
+            fullWidth
+            value={taskDesc.pickup.payload.quantity}
+            options={[]}
+            onChange={(_ev, newValue) =>
+              newValue !== null &&
+              onChange({
+                ...taskDesc,
+                pickup: {
+                  ...taskDesc.pickup,
+                  payload: {
+                    ...taskDesc.pickup.payload,
+                    quantity: parseInt(newValue),
+                  },
+                },
+              })
+            }
+            onBlur={(ev) =>
+              onChange({
+                ...taskDesc,
+                pickup: {
+                  ...taskDesc.pickup,
+                  payload: {
+                    ...taskDesc.pickup.payload,
+                    quantity: parseInt((ev.target as HTMLInputElement).value),
+                  },
+                },
+              })
+            }
+            renderInput={(params) => (
+              <TextField {...params} label="Pickup Quantity" margin="normal" />
+            )}
+          />
+        </Grid>
+        <Grid style={{ flex: '1 1 60%' }}>
+          <Autocomplete
+            id="dropoff_sku"
+            freeSolo
+            fullWidth
+            value={taskDesc.dropoff.payload.sku}
+            options={[]}
+            onChange={(_ev, newValue) =>
+              newValue !== null &&
+              onChange({
+                ...taskDesc,
+                dropoff: {
+                  ...taskDesc.dropoff,
+                  payload: {
+                    ...taskDesc.dropoff.payload,
+                    sku: newValue,
+                  },
+                },
+              })
+            }
+            onBlur={(ev) =>
+              onChange({
+                ...taskDesc,
+                dropoff: {
+                  ...taskDesc.dropoff,
+                  payload: {
+                    ...taskDesc.dropoff.payload,
+                    sku: (ev.target as HTMLInputElement).value,
+                  },
+                },
+              })
+            }
+            renderInput={(params) => <TextField {...params} label="Dropoff SKU" margin="normal" />}
+          />
+        </Grid>
+        <Grid
+          style={{
+            flex: '1 1 40%',
+            marginLeft: theme.spacing(2),
+            marginRight: theme.spacing(2),
+          }}
+        >
+          <Autocomplete
+            id="dropoff_quantity"
+            freeSolo
+            fullWidth
+            value={taskDesc.dropoff.payload.quantity}
+            options={[]}
+            onChange={(_ev, newValue) =>
+              newValue !== null &&
+              onChange({
+                ...taskDesc,
+                dropoff: {
+                  ...taskDesc.dropoff,
+                  payload: {
+                    ...taskDesc.dropoff.payload,
+                    quantity: parseInt(newValue),
+                  },
+                },
+              })
+            }
+            onBlur={(ev) =>
+              onChange({
+                ...taskDesc,
+                dropoff: {
+                  ...taskDesc.dropoff,
+                  payload: {
+                    ...taskDesc.dropoff.payload,
+                    quantity: parseInt((ev.target as HTMLInputElement).value),
+                  },
+                },
+              })
+            }
+            renderInput={(params) => (
+              <TextField {...params} label="Dropoff Quantity" margin="normal" />
+            )}
+          />
+        </Grid>
+      </Grid>
     </>
   );
 }
