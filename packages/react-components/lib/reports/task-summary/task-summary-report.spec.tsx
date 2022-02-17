@@ -1,10 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
+import { TestLocalizationProvider } from '../../test/locale';
 import { getTaskSummaryLogs, reportConfigProps } from '../utils.spec';
 import { TaskSummaryReport } from './task-summary-report';
 
-const getLogsPromise = async () => await getTaskSummaryLogs();
+const getLogsPromise = async () => getTaskSummaryLogs();
 
 it('smoke test', async () => {
   await waitFor(() => {
@@ -14,7 +15,7 @@ it('smoke test', async () => {
 
 it('does not show the table when the logs list is empty', async () => {
   await waitFor(() => {
-    render(<TaskSummaryReport getLogs={async () => await []} />);
+    render(<TaskSummaryReport getLogs={async () => []} />);
   });
 
   expect(screen.queryByText('Task Summary')).toBeFalsy();
@@ -24,10 +25,12 @@ it('calls the Retrieve Logs function when the button is clicked', async () => {
   const getLogsPromiseMock = jasmine.createSpy();
   const getLogsPromise = async () => {
     getLogsPromiseMock();
-    return await getTaskSummaryLogs();
+    return getTaskSummaryLogs();
   };
 
-  render(<TaskSummaryReport getLogs={getLogsPromise} {...reportConfigProps} />);
+  render(<TaskSummaryReport getLogs={getLogsPromise} {...reportConfigProps} />, {
+    wrapper: TestLocalizationProvider,
+  });
   const retrieveLogsButton = screen.getByRole('button', { name: /Retrieve Logs/i });
   expect(retrieveLogsButton).toBeTruthy();
   userEvent.click(retrieveLogsButton);

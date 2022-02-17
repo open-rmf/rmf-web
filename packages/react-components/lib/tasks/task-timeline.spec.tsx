@@ -4,12 +4,13 @@ import { TaskTimeline } from './task-timeline';
 import { makeTaskState } from './test-data.spec';
 
 describe('Task Timeline', () => {
-  // FIXME: sample phases has no start time
   it('shows the time for each phase', () => {
     const task = makeTaskState('task_0');
+    Object.values(task.phases).forEach((p, idx) => {
+      p.unix_millis_start_time = 1000 * idx;
+    });
     const root = render(<TaskTimeline taskState={task} />);
     Object.values(task.phases).forEach((p) => {
-      expect(p.unix_millis_start_time).toBeTruthy();
       const expectedTime = new Date(p.unix_millis_start_time).toLocaleTimeString();
       expect(() => root.getByText(expectedTime)).not.toThrow();
     });

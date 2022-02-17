@@ -15,8 +15,7 @@ import {
 } from '@mui/lab';
 import { styled } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { format } from 'date-fns';
-import { TaskState, Phase, EventState, Status } from 'api-client';
+import { EventState, Phase, Status, TaskState } from 'api-client';
 import React from 'react';
 
 interface TimeLinePropsWithRef extends TimelineProps {
@@ -123,8 +122,8 @@ function RenderPhase(phase: Phase) {
     <TimelineItem key={phase.id} sx={{ width: 0 }}>
       <TimelineOppositeContent color="text.secondary">
         <Typography variant="overline" color="textSecondary" style={{ textAlign: 'justify' }}>
-          {phase.unix_millis_start_time
-            ? format(new Date(phase.unix_millis_start_time), "hh:mm:ss aaaaa'm'")
+          {phase.unix_millis_start_time != null
+            ? new Date(phase.unix_millis_start_time).toLocaleTimeString()
             : null}
         </Typography>
       </TimelineOppositeContent>
