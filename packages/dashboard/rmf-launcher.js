@@ -45,9 +45,9 @@ exports.LocalLauncher = class {
     }
 
     const headless = !process.env.RMF_DASHBOARD_NO_HEADLESS;
-    const demoPkg = process.env.RMF_DASHBOARD_DEMO_PACKAGE || 'rmf_demos_gz';
+    const demoPkg = process.env.RMF_DASHBOARD_DEMO_PACKAGE || 'rmf_demos_ign';
     const demoMap = process.env.RMF_DASHBOARD_DEMO_MAP || 'office.launch.xml';
-    const demoArgs = ['launch', demoPkg, demoMap];
+    const demoArgs = ['launch', demoPkg, demoMap, 'server_uri:=ws://localhost:8001'];
     if (headless) {
       demoArgs.push('headless:=true');
     }

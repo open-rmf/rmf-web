@@ -1,6 +1,4 @@
-import { Refresh as RefreshIcon } from '@mui/icons-material';
 import {
-  IconButton,
   Paper,
   PaperProps,
   styled,
@@ -116,14 +114,12 @@ export interface RobotTableProps extends PaperProps {
    */
   robots: RobotTableData[];
   paginationOptions?: PaginationOptions;
-  onRefreshClick?: React.MouseEventHandler<HTMLButtonElement>;
   onRobotClick?(ev: React.MouseEvent<HTMLDivElement>, robotName: string): void;
 }
 
 export function RobotTable({
   robots,
   paginationOptions,
-  onRefreshClick,
   onRobotClick,
   ...paperProps
 }: RobotTableProps): JSX.Element {
@@ -133,9 +129,6 @@ export function RobotTable({
         <Typography className={classes.title} variant="h6">
           Robots
         </Typography>
-        <IconButton onClick={onRefreshClick} aria-label="Refresh">
-          <RefreshIcon />
-        </IconButton>
       </Toolbar>
       <TableContainer style={{ flex: '1 1 auto' }} id="robot-table">
         <Table stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
