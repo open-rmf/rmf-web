@@ -1,8 +1,8 @@
 import { Button, Divider, Grid, styled, Typography, useTheme } from '@mui/material';
+import type { TaskState } from 'api-client';
 import React from 'react';
 import { CircularProgressBar } from './circular-progress-bar';
 import { LinearProgressBar } from './linear-progress-bar';
-import type { TaskState } from 'api-client';
 
 function getTaskStatusDisplay(assignedTask?: string, taskStatus?: string) {
   if (assignedTask && !taskStatus) {
@@ -38,6 +38,8 @@ export interface RobotInfoProps {
   estFinishTime?: number;
 }
 
+const finishedStatus: TaskStatus[] = ['failed', 'completed', 'skipped', 'killed', 'canceled'];
+
 export function RobotInfo({
   robotName,
   battery,
@@ -47,7 +49,7 @@ export function RobotInfo({
   estFinishTime,
 }: RobotInfoProps): JSX.Element {
   const theme = useTheme();
-  const [hasConcreteEndTime] = React.useState<boolean>(false);
+  const hasConcreteEndTime = taskStatus && taskStatus in finishedStatus;
 
   return (
     <StyledDiv>

@@ -21,4 +21,28 @@ describe('RobotInfo', () => {
     expect(() => root.getByText(/.*underway/)).not.toThrow();
     expect(() => root.getByText(new Date(0).toLocaleString())).not.toThrow();
   });
+
+  describe('Task status', () => {
+    it('shows no task when there is no assigned task and task status', () => {
+      const root = render(<RobotInfo robotName="test_robot" />);
+      expect(() => root.getByText(/No Task/)).not.toThrow();
+    });
+
+    it('shows unknown when there is an assigned task but no status', () => {
+      const root = render(
+        <RobotInfo
+          robotName="test_robot"
+          battery={0.5}
+          estFinishTime={0}
+          assignedTask="test_task"
+        />,
+      );
+      expect(() => root.getByText(/Unknown/)).not.toThrow();
+    });
+  });
+
+  it('defaults to 0% when no battery is available', () => {
+    const root = render(<RobotInfo robotName="test_robot" />);
+    expect(() => root.getByText('0%')).not.toThrow();
+  });
 });

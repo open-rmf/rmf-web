@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Status2 as RobotStatus } from 'api-client';
 import React from 'react';
 import { RobotTable, RobotTableData } from './robot-table';
@@ -44,5 +45,20 @@ describe('RobotTable', () => {
     const root = render(<RobotTable robots={[makeRobot()]} />);
     // NOTE: mui v5 is using the unicode char '–', different from '-'!!
     expect(root.queryByText('1–1 of 1')).toBeNull();
+  });
+
+  it('onRobotClick is called when row is clicked', () => {
+    const onRobotClick = jasmine.createSpy();
+    const root = render(
+      <RobotTable robots={[makeRobot({ name: 'test_robot' })]} onRobotClick={onRobotClick} />,
+    );
+    const robot = root.getByText('test_robot');
+    userEvent.click(robot);
+    expect(onRobotClick).toHaveBeenCalledWith(jasmine.anything(), 'test_robot');
+  });
+
+  it('finish time is shown when it is available', () => {
+    const root = render(<RobotTable robots={[{ name: 'test_robot', estFinishTime: 1000 }]} />);
+    expect(() => root.getByText(new Date(1000).toLocaleString())).not.toThrow();
   });
 });

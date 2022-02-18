@@ -86,7 +86,6 @@ function getRobotStatusClass(robotStatus?: RobotStatus) {
     case 'uninitialized':
       return classes.robotStoppedClass;
   }
-  return '';
 }
 
 const RobotRow = React.memo(
