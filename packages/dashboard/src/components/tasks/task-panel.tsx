@@ -125,6 +125,7 @@ export function TaskPanel({
   onAutoRefresh,
   ...divProps
 }: TaskPanelProps): JSX.Element {
+  const RefreshRate = 5000;
   const theme = useTheme();
   const [selectedTask, setSelectedTask] = React.useState<TaskState | undefined>(undefined);
   const [selectedTaskState, setSelectedTaskState] = React.useState<TaskState | undefined>(
@@ -203,6 +204,13 @@ export function TaskPanel({
       setSelectedTaskState(state.data);
     }
   }, [tasksApi, selectedTask]);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      if (autoRefresh) fetchLogs();
+    }, RefreshRate);
+    return () => clearInterval(interval);
+  }, [tasksApi, selectedTask, onAutoRefresh]);
 
   React.useEffect(() => {
     fetchLogs();
