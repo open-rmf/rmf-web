@@ -210,7 +210,7 @@ export function TaskPanel({
       if (autoRefresh) fetchLogs();
     }, RefreshRate);
     return () => clearInterval(interval);
-  }, [tasksApi, selectedTask, onAutoRefresh]);
+  }, [tasksApi, selectedTask, autoRefresh]);
 
   React.useEffect(() => {
     fetchLogs();

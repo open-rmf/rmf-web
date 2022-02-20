@@ -55,13 +55,6 @@ export function TaskPage() {
   );
 
   React.useEffect(() => {
-    const interval = setInterval(() => {
-      if (autoRefreshEnabled) handleRefresh();
-    }, RefreshRate);
-    return () => clearInterval(interval);
-  }, [sioClient, autoRefreshEnabled]);
-
-  React.useEffect(() => {
     if (!autoRefreshEnabled || !sioClient) return;
     const subs = fetchedTasks.map((t) =>
       sioClient.subscribeTaskState(t.booking.id, (newState) =>
@@ -83,6 +76,13 @@ export function TaskPage() {
   React.useEffect(() => {
     handleRefresh();
   }, [handleRefresh]);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      if (autoRefreshEnabled) handleRefresh();
+    }, RefreshRate);
+    return () => clearInterval(interval);
+  }, [handleRefresh, sioClient, autoRefreshEnabled]);
 
   const submitTasks = React.useCallback<Required<TaskPanelProps>['submitTasks']>(
     async (taskRequests) => {
