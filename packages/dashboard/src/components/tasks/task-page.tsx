@@ -18,6 +18,7 @@ const StyledTaskPage = styled((props: TaskPanelProps) => <TaskPanel {...props} /
   },
 }));
 export function TaskPage() {
+  const RefreshRate = 1000;
   const { tasksApi, sioClient } = React.useContext(RmfIngressContext) || {};
   const [fetchedTasks, setFetchedTasks] = React.useState<TaskState[]>([]);
   const [updatedSummaries, setUpdatedStates] = React.useState<Record<string, TaskState>>({});
@@ -75,6 +76,13 @@ export function TaskPage() {
   React.useEffect(() => {
     handleRefresh();
   }, [handleRefresh]);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      if (autoRefreshEnabled) handleRefresh();
+    }, RefreshRate);
+    return () => clearInterval(interval);
+  }, [handleRefresh, sioClient, autoRefreshEnabled]);
 
   const submitTasks = React.useCallback<Required<TaskPanelProps>['submitTasks']>(
     async (taskRequests) => {
