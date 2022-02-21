@@ -1,3 +1,3 @@
 {
-  "main": "../../../dist/lib/schema/index.js"
+  "main": "../../dist/lib/schema/index.js"
 }

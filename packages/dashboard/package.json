@@ -99,5 +99,8 @@
       "!**/stories/**",
       "!**/tests/**"
     ]
+  },
+  "dependencies": {
+    "ajv": "^8.10.0"
   }
 }
