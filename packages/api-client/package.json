@@ -32,6 +32,7 @@
     "axios": "^0.21.1"
   },
   "files": [
-    "dist/"
+    "dist/",
+    "openapi/schema/"
   ]
 }

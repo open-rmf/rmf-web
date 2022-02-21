@@ -42,4 +42,10 @@ export const version = {
 
 EOF
 
-../../node_modules/.bin/prettier -w lib
+npx prettier -w lib
+
+# generate schema
+cat << EOF > openapi/schema/index.ts
+export default $(cat build/openapi.json)
+EOF
+npx prettier -w openapi/schema
