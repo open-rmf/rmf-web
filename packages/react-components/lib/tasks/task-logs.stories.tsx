@@ -6,24 +6,16 @@ import { makeTaskLog } from './test-data.spec';
 export default {
   title: 'Tasks/Logs',
   component: TaskLogs,
-  argTypes: {
-    paginationOptions: {
-      control: {
-        disable: true,
-      },
-    },
-    submitTask: {
-      control: {
-        disable: true,
-      },
-    },
-  },
 } as Meta;
 
 export const Logs: Story<TaskLogsProps> = (args) => {
   return <TaskLogs {...args} />;
 };
 
+const taskLog = makeTaskLog('task');
+
 Logs.args = {
-  taskLog: makeTaskLog('task'),
+  taskLog,
+  eventName: (_phaseId, eventId) => `Event ${eventId}`,
+  eventStatus: () => 'completed',
 };
