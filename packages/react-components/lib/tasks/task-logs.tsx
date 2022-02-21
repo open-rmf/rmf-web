@@ -1,62 +1,63 @@
-import React from 'react';
 import { Divider, Grid, Paper, PaperProps, styled, Typography, useTheme } from '@mui/material';
-import { TaskEventLog, TaskState, EventState, Status } from 'api-client';
-import { format } from 'date-fns';
+import type { EventState, TaskEventLog } from 'api-client';
+import React from 'react';
+
+type EventStatus = Required<EventState>['status'];
+
 const prefix = 'task-logs';
 const classes = {
   root: `${prefix}-root`,
 };
 
-export interface TaskLogProps {
+export interface TaskLogsProps {
   taskLog: TaskEventLog;
-  taskState: TaskState;
-  fetchTaskLogs?: () => Promise<never[] | undefined>;
+  eventName: (phaseId: string, eventId: string) => string;
+  eventStatus: (phaseId: string, eventId: string) => EventStatus | undefined;
 }
 
 const StyledPaper = styled((props: PaperProps) => <Paper variant="outlined" {...props} />)(
   ({ theme }) => ({
     [`&.${classes.root}`]: {
       padding: theme.spacing(1),
-      width: '95%',
+      width: '100%',
       flex: '0 0 auto',
-      maxHeight: '95%',
+      maxHeight: '100%',
       overflow: 'auto',
     },
   }),
 );
 
-export function TaskLogs({ taskLog, taskState }: TaskLogProps) {
+export const TaskLogs: React.FC<TaskLogsProps> = ({ taskLog, eventName, eventStatus }) => {
   const theme = useTheme();
-  const phaseIds = taskLog.phases ? Object.keys(taskLog.phases) : [];
 
-  function mapEventColor(event: EventState | null) {
+  function mapEventColor(eventStatus?: EventStatus) {
     // TODO(MXG): We should make this color selection consistent with the color
     // selection that's done for task states.
-    if (event == null || event.status == null) return theme.palette.warning.light;
+    if (eventStatus == null) return theme.palette.warning.light;
 
-    switch (event.status) {
-      case Status.Uninitialized:
-      case Status.Blocked:
-      case Status.Error:
-      case Status.Failed:
+    switch (eventStatus) {
+      case 'uninitialized':
+      case 'blocked':
+      case 'error':
+      case 'failed':
         return theme.palette.error.dark;
 
-      case Status.Queued:
-      case Status.Standby:
+      case 'queued':
+      case 'standby':
         return theme.palette.info.light;
 
-      case Status.Underway:
+      case 'underway':
         return theme.palette.success.light;
 
-      case Status.Delayed:
+      case 'delayed':
         return theme.palette.warning.main;
 
-      case Status.Skipped:
-      case Status.Canceled:
-      case Status.Killed:
+      case 'skipped':
+      case 'canceled':
+      case 'killed':
         return theme.palette.error.light;
 
-      case Status.Completed:
+      case 'completed':
         return theme.palette.info.light;
 
       default:
@@ -70,97 +71,90 @@ export function TaskLogs({ taskLog, taskState }: TaskLogProps) {
         {taskLog.task_id}
       </Typography>
       <Divider />
-      {phaseIds.length > 0 ? (
-        phaseIds.map((id: string) => {
-          const getEventObj: any = taskLog.phases ? taskLog.phases[id] : null;
-          const events = getEventObj ? getEventObj['events'] : {};
-          const eventIds = events ? Object.keys(events) : [];
-          const phaseStateObj = taskState.phases ? taskState.phases[id] : null;
-          const eventStates = phaseStateObj ? phaseStateObj.events : {};
+      {taskLog.phases ? (
+        Object.entries(taskLog.phases).map(([phaseId, phase]) => (
+          <Paper sx={{ padding: theme.spacing(1) }} variant="outlined" key={phaseId}>
+            <Typography variant="h6" fontWeight="bold" marginTop={3}>
+              Phase - {phaseId}
+            </Typography>
 
-          return (
-            <Paper sx={{ padding: theme.spacing(1) }} variant="outlined" key={`Phase - ${id}`}>
-              <Typography variant="h6" fontWeight="bold" marginTop={3}>
-                {phaseStateObj && phaseStateObj.id ? phaseStateObj.id.toString() : 'unknown #'}.{' '}
-                {phaseStateObj && phaseStateObj.category ? phaseStateObj.category : 'undefined'}
-              </Typography>
-
-              <Divider />
-              {eventIds.length > 0 ? (
-                eventIds.map((idx) => {
-                  const event = events[idx];
-                  const eventState = eventStates ? eventStates[idx] : null;
-                  return (
-                    <div
-                      style={{
-                        marginTop: theme.spacing(1),
-                        backgroundColor: mapEventColor(eventState),
-                        padding: theme.spacing(1),
-                        borderRadius: theme.spacing(1),
-                      }}
-                      key={`event - ${idx}`}
-                    >
-                      <Typography variant="body1" fontWeight="bold">
-                        {eventState?.name}
-                      </Typography>
-                      {event.map((e: any, i: any) => {
-                        return (
+            <Divider />
+            {phase.events ? (
+              Object.entries(phase.events).map(([eventId, event]) => {
+                return (
+                  <div
+                    style={{
+                      marginTop: theme.spacing(1),
+                      backgroundColor: mapEventColor(eventStatus(phaseId, eventId)),
+                      padding: theme.spacing(1),
+                      borderRadius: theme.spacing(1),
+                    }}
+                    key={eventId}
+                  >
+                    <Typography variant="body1" fontWeight="bold">
+                      {eventName(phaseId, eventId)}
+                    </Typography>
+                    {event.length > 0 ? (
+                      event.map((log, idx) => (
+                        <Grid
+                          container
+                          key={idx}
+                          direction="row"
+                          justifyItems="center"
+                          sx={{
+                            backgroundColor: 'white',
+                            marginTop: theme.spacing(1),
+                            borderRadius: '8px',
+                          }}
+                        >
                           <Grid
-                            container
-                            key={`info-${i}`}
-                            direction="row"
-                            justifyItems="center"
+                            item
+                            xs={4}
                             sx={{
-                              backgroundColor: 'white',
-                              marginTop: theme.spacing(1),
-                              borderRadius: '8px',
+                              padding: theme.spacing(1),
                             }}
                           >
-                            <Grid
-                              item
-                              xs={4}
-                              sx={{
-                                border: 1,
-                                padding: theme.spacing(1),
-                              }}
-                            >
-                              <Typography variant="body1">
-                                {format(new Date(e.unix_millis_time), "hh:mm:ss aaaaa'm'")}
-                              </Typography>
-                            </Grid>
-                            <Grid
-                              item
-                              xs={8}
-                              sx={{
-                                padding: theme.spacing(1),
-                                borderRight: 1,
-                                borderBottom: 1,
-                                borderTop: 1,
-                              }}
-                            >
-                              <Typography variant="body1">{e.text}</Typography>
-                            </Grid>
+                            <Typography variant="body1">
+                              {new Date(log.unix_millis_time).toLocaleString()}
+                            </Typography>
                           </Grid>
-                        );
-                      })}
-                    </div>
-                  );
-                })
-              ) : (
-                <Typography align="center" sx={{ padding: theme.spacing(1) }} fontWeight="bold">
-                  No Event Logs
-                </Typography>
-              )}
-            </Paper>
-          );
-        })
+                          <Grid
+                            item
+                            xs={8}
+                            sx={{
+                              padding: theme.spacing(1),
+                            }}
+                          >
+                            <Typography variant="body1">{log.text}</Typography>
+                          </Grid>
+                        </Grid>
+                      ))
+                    ) : (
+                      <Typography
+                        align="center"
+                        sx={{ padding: theme.spacing(1) }}
+                        fontWeight="bold"
+                      >
+                        No Logs
+                      </Typography>
+                    )}
+                  </div>
+                );
+              })
+            ) : (
+              <Typography align="center" sx={{ padding: theme.spacing(1) }} fontWeight="bold">
+                No Event Logs
+              </Typography>
+            )}
+          </Paper>
+        ))
       ) : (
         <div>
           <Typography align="center" sx={{ padding: theme.spacing(1) }} fontWeight="bold">
-            No Logs to be shown
+            No logs to be shown
           </Typography>
         </div>
       )}
     </StyledPaper>
   );
-}
+};
