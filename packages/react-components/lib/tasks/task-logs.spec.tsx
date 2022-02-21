@@ -3,7 +3,7 @@ import React from 'react';
 import { TaskLogs } from './task-logs';
 import { makeTaskLog } from './test-data.spec';
 
-fdescribe('TaskLogs', () => {
+describe('TaskLogs', () => {
   it('shows all event logs', () => {
     const logs = makeTaskLog('task');
     const root = render(
