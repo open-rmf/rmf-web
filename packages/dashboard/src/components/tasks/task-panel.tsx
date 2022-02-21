@@ -19,7 +19,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { DispatchTaskRequest, TaskEventLog, TaskState } from 'api-client';
+import { TaskEventLog, TaskRequest, TaskState } from 'api-client';
 import React from 'react';
 import { CreateTaskForm, CreateTaskFormProps, TaskInfo, TaskTable } from 'react-components';
 import { UserProfileContext } from 'rmf-auth';
@@ -160,13 +160,13 @@ export function TaskPanel({
   }, [cancelTask, selectedTask]);
 
   // /* istanbul ignore next */
-  const tasksFromFile = (): Promise<DispatchTaskRequest[]> => {
+  const tasksFromFile = (): Promise<TaskRequest[]> => {
     return new Promise((res) => {
       const fileInputEl = uploadFileInputRef.current;
       if (!fileInputEl) {
         return [];
       }
-      let taskFiles: DispatchTaskRequest[];
+      let taskFiles: TaskRequest[];
       const listener = async () => {
         try {
           if (!fileInputEl.files || fileInputEl.files.length === 0) {

@@ -1,29 +1,17 @@
-import Ajv, { ValidateFunction } from 'ajv';
-import { DispatchTaskRequest } from 'api-client';
-import schema from 'api-client/openapi/schema';
-
-let validate: ValidateFunction | null = null;
-
-function getValidator() {
-  if (validate) {
-    return validate;
-  }
-  const ajv = new Ajv();
-  validate = ajv.compile<DispatchTaskRequest>(schema.components.schemas.DispatchTaskRequest);
-  return validate;
-}
+import { TaskRequest } from 'api-client';
+import schema from 'api-client/dist/schema';
+import { ajv } from '../utils';
 
 /* istanbul ignore next */
-export function parseTasksFile(contents: string): DispatchTaskRequest[] {
+export function parseTasksFile(contents: string): TaskRequest[] {
   const obj = JSON.parse(contents) as unknown[];
   if (!Array.isArray(obj)) {
     throw new Error('Expected an array of tasks');
   }
 
-  const validate = getValidator();
-  const errIdx = obj.findIndex((req) => !validate(req));
+  const errIdx = obj.findIndex((req) => !ajv.validate(schema.components.schemas.TaskRequest, req));
   if (errIdx !== -1) {
-    const errors = validate.errors!;
+    const errors = ajv.errors!;
     throw new Error(`Validation error on item ${errIdx + 1}: ${errors[0].message}`);
   }
   return obj;

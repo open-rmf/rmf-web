@@ -2,7 +2,7 @@
   "name": "api-client",
   "version": "0.0.1",
   "description": "",
-  "main": "dist/lib/index.js",
+  "main": "./dist/lib/index.js",
   "scripts": {
     "build": "../../scripts/nws.sh build -d && tsc --build",
     "clean": "tsc --build --clean",
