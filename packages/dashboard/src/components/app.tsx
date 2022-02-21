@@ -10,7 +10,14 @@ import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { LoginPage, PrivateRoute } from 'rmf-auth';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
-import { AdminRoute, DashboardRoute, LoginRoute, RobotsRoute, TasksRoute } from '../util/url';
+import {
+  AdminRoute,
+  DashboardRoute,
+  LoginRoute,
+  RobotsRoute,
+  TasksRoute,
+  TeleoperationRoute,
+} from '../util/url';
 import { AdminRouter } from './admin';
 import { AppBase } from './app-base';
 import { ResourcesContext } from './app-contexts';
@@ -18,6 +25,7 @@ import './app.css';
 import Dashboard from './dashboard/dashboard';
 import { RmfApp } from './rmf-app';
 import { RobotPage } from './robots';
+import { TeleoperationPage } from './teleoperation';
 import { TaskPage } from './tasks';
 
 export default function App(): JSX.Element | null {
@@ -97,6 +105,14 @@ export default function App(): JSX.Element | null {
                     user={user}
                   >
                     <TaskPage />
+                  </PrivateRoute>
+                  <PrivateRoute
+                    exact
+                    path={TeleoperationRoute}
+                    unauthorizedComponent={loginRedirect}
+                    user={user}
+                  >
+                    <TeleoperationPage />
                   </PrivateRoute>
                   <PrivateRoute path={AdminRoute} unauthorizedComponent={loginRedirect} user={user}>
                     <AdminRouter />

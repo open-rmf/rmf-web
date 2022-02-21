@@ -13,7 +13,13 @@ import {
 } from 'react-components';
 import { useHistory, useLocation } from 'react-router-dom';
 import { UserProfileContext } from 'rmf-auth';
-import { AdminRoute, DashboardRoute, RobotsRoute, TasksRoute } from '../util/url';
+import {
+  AdminRoute,
+  DashboardRoute,
+  RobotsRoute,
+  TasksRoute,
+  TeleoperationRoute,
+} from '../util/url';
 import {
   AppConfigContext,
   AppControllerContext,
@@ -45,7 +51,7 @@ const StyledHeaderBar = styled((props: HeaderBarProps) => <HeaderBar {...props} 
   }),
 );
 
-export type TabValue = 'infrastructure' | 'robots' | 'tasks' | 'admin';
+export type TabValue = 'infrastructure' | 'robots' | 'tasks' | 'admin' | 'teleoperation';
 
 function locationToTabValue(pathname: string): TabValue | undefined {
   // `DashboardRoute` being the root, it is a prefix to all routes, so we need to check exactly.
@@ -53,6 +59,7 @@ function locationToTabValue(pathname: string): TabValue | undefined {
   if (pathname.startsWith(TasksRoute)) return 'tasks';
   if (pathname.startsWith(RobotsRoute)) return 'robots';
   if (pathname.startsWith(AdminRoute)) return 'admin';
+  if (pathname.startsWith(TeleoperationRoute)) return 'teleoperation';
   return undefined;
 }
 
@@ -113,6 +120,12 @@ export const AppBar = React.memo((): React.ReactElement => {
           value="tasks"
           aria-label="Tasks"
           onTabClick={() => history.push(TasksRoute)}
+        />
+        <AppBarTab
+          label="Teleoperation"
+          value="teleoperation"
+          aria-label="Teleoperation"
+          onTabClick={() => history.push(TeleoperationRoute)}
         />
         {profile?.user.is_admin && (
           <AppBarTab

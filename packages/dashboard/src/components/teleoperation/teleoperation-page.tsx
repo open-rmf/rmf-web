@@ -3,7 +3,7 @@ import { Box, Card, Grid, GridProps, Paper, styled, Typography } from '@mui/mate
 import { Dispenser, FleetState, Ingestor, RobotState, TaskState } from 'api-client';
 import { AxiosResponse } from 'axios';
 import React from 'react';
-import { PaginationOptions, RobotInfo, RobotTable, RobotTableData } from 'react-components';
+import { PaginationOptions, TeleoperationInfo, RobotTable, RobotTableData } from 'react-components';
 import { Map, MapProps } from 'react-leaflet';
 import {
   useDispenserStatesRef,
@@ -13,13 +13,13 @@ import {
 import { BuildingMapContext, RmfIngress, RmfIngressContext } from '../rmf-app';
 import ScheduleVisualizer from '../schedule-visualizer';
 
-const MemoRobotInfo = React.memo(RobotInfo);
+const MemoTeleoperationInfo = React.memo(TeleoperationInfo);
 
 const UpdateRate = 1000;
-const prefix = 'robot-page';
+const prefix = 'teleoperation-page';
 const classes = {
   container: `${prefix}-container`,
-  robotPanel: `${prefix}-robot-panel`,
+  teleoperationPanel: `${prefix}-teleoperation-panel`,
   mapPanel: `${prefix}-map-panel`,
   detailPanelContainer: `${prefix}-detail-container`,
   robotTable: `${prefix}-robot-table`,
@@ -30,7 +30,7 @@ const StyledGrid = styled((props: GridProps) => <Grid {...props} />)(({ theme })
     height: '100%',
     backgroundColor: theme.palette.background.default,
   },
-  [`& .${classes.robotPanel}`]: {
+  [`& .${classes.teleoperationPanel}`]: {
     height: '100%',
   },
   [`& .${classes.mapPanel}`]: {
@@ -66,34 +66,17 @@ async function fetchActiveTaskStates(fleets: FleetState[], rmfIngress: RmfIngres
   }, {});
 }
 
-function getTaskProgress(robot: RobotState, task?: TaskState) {
-  if (
-    !robot.task_id ||
-    !robot.unix_millis_time ||
-    !task ||
-    !task.unix_millis_start_time ||
-    !task.estimate_millis
-  ) {
-    return undefined;
-  }
-  return Math.min(
-    (robot.unix_millis_time - task.unix_millis_start_time) /
-      (task.estimate_millis - task.unix_millis_start_time),
-    1,
-  );
-}
-
 function NoSelectedRobot() {
   return (
     <Box sx={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
       <Typography variant="h6" align="center">
-        Click on a robot to view more information
+        Click on a robot to access teleoperation controls
       </Typography>
     </Box>
   );
 }
 
-export function RobotPage() {
+export function TeleoperationPage() {
   const rmfIngress = React.useContext(RmfIngressContext);
   const sioClient = React.useContext(RmfIngressContext)?.sioClient;
   const buildingMap = React.useContext(BuildingMapContext);
@@ -169,6 +152,7 @@ export function RobotPage() {
     robotName: string,
   ) => {
     const robot = robotStatesRef.current[robotName];
+    console.log(robotName, robot);
     if (!robot) {
       return;
     }
@@ -227,14 +211,7 @@ export function RobotPage() {
       <Grid item xs={4}>
         <Paper variant="outlined" className={classes.detailPanelContainer}>
           {selectedRobot && selectedRobot.name ? (
-            <MemoRobotInfo
-              robotName={selectedRobot.name}
-              assignedTask={selectedRobot.task_id}
-              battery={selectedRobot.battery}
-              estFinishTime={selectedTask && selectedTask.estimate_millis}
-              taskProgress={getTaskProgress(selectedRobot, selectedTask)}
-              taskStatus={selectedTask?.status}
-            />
+            <MemoTeleoperationInfo robotName={selectedRobot.name} />
           ) : (
             <NoSelectedRobot />
           )}
