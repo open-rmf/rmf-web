@@ -568,7 +568,7 @@ export interface CreateTaskFormProps
   dispensers?: string[];
   ingestors?: string[];
   submitTasks?(tasks: TaskRequest[]): Promise<void>;
-  tasksFromFile?(): Promise<any[]> | any[];
+  tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
   onSuccess?(tasks: any[]): void;
   onFail?(error: Error, tasks: any[]): void;
 }
