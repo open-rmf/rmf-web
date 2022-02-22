@@ -7,3 +7,4 @@ from .ingestors import router as ingestors_router
 from .lifts import router as lifts_router
 from .main import router as main_router
 from .tasks import *
+from .teleoperation import router as teleoperation_router

@@ -1,5 +1,5 @@
-import { Divider, Grid, styled, useTheme, Typography } from '@mui/material';
-import { SioClient } from 'api-client';
+import { Divider, Grid, styled, useTheme } from '@mui/material';
+import { TeleoperationApi } from 'api-client';
 import React from 'react';
 
 const classes = {
@@ -16,11 +16,17 @@ const StyledDiv = styled('div')(() => ({
 
 export interface TeleoperationInfoProps {
   robotName: string;
-  sioClient: SioClient;
+  teleoperationApi: TeleoperationApi;
 }
 
-export function TeleoperationInfo({ robotName }: TeleoperationInfoProps): JSX.Element {
+export function TeleoperationInfo({
+  robotName,
+  teleoperationApi,
+}: TeleoperationInfoProps): JSX.Element {
   const theme = useTheme();
+  // TODO(BH): Make this globally configurable
+  const name = robotName.trim();
+  const url = 'https://meet.jit.si/' + name;
 
   return (
     <StyledDiv style={{ height: '100%', width: '100%' }}>
@@ -29,16 +35,25 @@ export function TeleoperationInfo({ robotName }: TeleoperationInfoProps): JSX.El
         <Grid container item xs={12} justifyContent="center">
           <iframe
             allow="camera; microphone; fullscreen; display-capture; autoplay"
-            src={'https://meet.jit.si/' + robotName.trim()}
+            src={url}
             style={{ height: '95%', width: '100%', border: '0px' }}
           ></iframe>
-          <button>Join</button>
-          <button>Leave</button>
+          <button
+            onClick={() =>
+              teleoperationApi.joinVideoRoomTeleoperationNameVideoJoinPost(name, {
+                target_name: name,
+                url: url,
+              })
+            }
+          >
+            Join
+          </button>
+          <button onClick={() => console.log('LEAVE')}>Leave</button>
           <Divider />
-          <button>Turn Left</button>
-          <button>Drive</button>
-          <button>Reverse</button>
-          <button>Turn Right</button>
+          <button onClick={() => console.log('LEFT')}>Turn Left</button>
+          <button onClick={() => console.log('DRIVE')}>Drive</button>
+          <button onClick={() => console.log('REVERSE')}>Reverse</button>
+          <button onClick={() => console.log('RIGHT')}>Turn Right</button>
         </Grid>
       </Grid>
     </StyledDiv>

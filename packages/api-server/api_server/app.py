@@ -81,6 +81,7 @@ app.include_router(routes.dispensers_router, prefix="/dispensers")
 app.include_router(routes.ingestors_router, prefix="/ingestors")
 app.include_router(routes.fleets_router, prefix="/fleets")
 app.include_router(routes.admin_router, prefix="/admin")
+app.include_router(routes.teleoperation_router, prefix="/teleoperation")
 
 
 @app.on_event("startup")

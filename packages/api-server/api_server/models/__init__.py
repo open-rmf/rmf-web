@@ -35,4 +35,5 @@ from .rmf_api.task_request import TaskRequest
 from .rmf_api.task_state import TaskState
 from .rmf_api.undo_skip_phase_request import UndoPhaseSkipRequest
 from .rmf_api.undo_skip_phase_response import UndoPhaseSkipResponse
+from .teleoperation import *
 from .user import *

@@ -152,7 +152,6 @@ export function TeleoperationPage() {
     robotName: string,
   ) => {
     const robot = robotStatesRef.current[robotName];
-    console.log(robotName, robot);
     if (!robot) {
       return;
     }
@@ -210,8 +209,11 @@ export function TeleoperationPage() {
       </Grid>
       <Grid item xs={4}>
         <Paper variant="outlined" className={classes.detailPanelContainer}>
-          {selectedRobot && selectedRobot.name ? (
-            <MemoTeleoperationInfo robotName={selectedRobot.name} />
+          {selectedRobot && selectedRobot.name && rmfIngress ? (
+            <MemoTeleoperationInfo
+              robotName={selectedRobot.name}
+              teleoperationApi={rmfIngress.teleoperationApi}
+            />
           ) : (
             <NoSelectedRobot />
           )}

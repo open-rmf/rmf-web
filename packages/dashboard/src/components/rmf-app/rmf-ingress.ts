@@ -9,6 +9,7 @@ import {
   LiftsApi,
   SioClient,
   TasksApi,
+  TeleoperationApi,
 } from 'api-client';
 import axios from 'axios';
 import { Authenticator } from 'rmf-auth';
@@ -29,6 +30,7 @@ export class RmfIngress {
   fleetsApi: FleetsApi;
   tasksApi: TasksApi;
   adminApi: AdminApi;
+  teleoperationApi: TeleoperationApi;
   negotiationStatusManager: NegotiationStatusManager;
   trajectoryManager: RobotTrajectoryManager;
 
@@ -79,6 +81,7 @@ export class RmfIngress {
     this.fleetsApi = new FleetsApi(apiConfig, undefined, axiosInst);
     this.tasksApi = new TasksApi(apiConfig, undefined, axiosInst);
     this.adminApi = new AdminApi(apiConfig, undefined, axiosInst);
+    this.teleoperationApi = new TeleoperationApi(apiConfig, undefined, axiosInst);
 
     const ws = new WebSocket(appConfig.trajServerUrl);
     this.trajectoryManager = new DefaultTrajectoryManager(ws, authenticator);
