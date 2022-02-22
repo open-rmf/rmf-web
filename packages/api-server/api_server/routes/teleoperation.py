@@ -7,13 +7,14 @@ from rx.subject.subject import Subject
 
 from api_server.dependencies import sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.models import VideoRoomModel
+from api_server.models import MotionObjectModel, VideoRoomModel
 from api_server.repositories import RmfRepository, rmf_repo_dep
 from api_server.rmf_io import fleet_events
 
 router = FastIORouter(tags=["Teleoperation"])
 join_video_room_obs = Subject()
 leave_video_room_obs = Subject()
+motion_obs = Subject()
 
 
 @router.post("/{name}/video/join")
@@ -36,3 +37,17 @@ async def leave_video_room(name: str, rmf_repo: RmfRepository = Depends(rmf_repo
 @router.sub("/{name}/video/leave")
 def sub_leave_video_room(req: SubscriptionRequest, name: str):
     return leave_video_room_obs.pipe(rxops.filter(lambda x: x["id"] == name))
+
+
+@router.post("/{name}/move")
+async def move(
+    name: str,
+    motion: MotionObjectModel,
+    rmf_repo: RmfRepository = Depends(rmf_repo_dep),
+):
+    motion_obs.on_next({"id": name, "data": motion.dict()})
+
+
+@router.sub("/{name}/move")
+def sub_move(req: SubscriptionRequest, name: str):
+    return motion_obs.pipe(rxops.filter(lambda x: x["id"] == name))

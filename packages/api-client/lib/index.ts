@@ -12,6 +12,8 @@ import {
   LiftHealth,
   LiftState,
   TaskState,
+  VideoRoomModel,
+  MotionObjectModel,
 } from './openapi';
 
 const debug = Debug('rmf-client');
@@ -105,6 +107,18 @@ export class SioClient {
 
   subscribeTaskState(taskId: string, listener: Listener<TaskState>): Subscription {
     return this.subscribe<TaskState>(`/tasks/${taskId}/state`, listener);
+  }
+
+  subscribeTeleoperationVideoJoin(name: string, listener: Listener<VideoRoomModel>): Subscription {
+    return this.subscribe<VideoRoomModel>(`/teleoperation/${name}/video/join`, listener);
+  }
+
+  subscribeTeleoperationVideoLeave(name: string, listener: Listener<VideoRoomModel>): Subscription {
+    return this.subscribe<VideoRoomModel>(`/teleoperation/${name}/video/leave`, listener);
+  }
+
+  subscribeTeleoperationMotion(name: string, listener: Listener<MotionObjectModel>): Subscription {
+    return this.subscribe<MotionObjectModel>(`/teleoperation/${name}/move`, listener);
   }
 }
 

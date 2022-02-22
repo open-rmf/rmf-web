@@ -38,22 +38,118 @@ export function TeleoperationInfo({
             src={url}
             style={{ height: '95%', width: '100%', border: '0px' }}
           ></iframe>
-          <button
-            onClick={() =>
-              teleoperationApi.joinVideoRoomTeleoperationNameVideoJoinPost(name, {
-                target_name: name,
-                url: url,
-              })
-            }
-          >
-            Join
-          </button>
-          <button onClick={() => console.log('LEAVE')}>Leave</button>
-          <Divider />
-          <button onClick={() => console.log('LEFT')}>Turn Left</button>
-          <button onClick={() => console.log('DRIVE')}>Drive</button>
-          <button onClick={() => console.log('REVERSE')}>Reverse</button>
-          <button onClick={() => console.log('RIGHT')}>Turn Right</button>
+
+          <div>
+            <button
+              onClick={() =>
+                teleoperationApi.joinVideoRoomTeleoperationNameVideoJoinPost(name, {
+                  url: url,
+                })
+              }
+            >
+              Join
+            </button>
+            <button
+              onClick={() =>
+                teleoperationApi.leaveVideoRoomTeleoperationNameVideoLeavePost(name, {})
+              }
+            >
+              Leave
+            </button>
+            <button
+              onClick={() =>
+                teleoperationApi.moveTeleoperationNameMovePost(name, {
+                  name: 'camera',
+                  x_m: 0.0,
+                  y_m: 0.0,
+                  z_m: 0.0,
+                  roll_deg: 0.0,
+                  pitch_deg: 1.0,
+                  yaw_deg: 0.0,
+                })
+              }
+            >
+              Camera Up
+            </button>
+            <button
+              onClick={() =>
+                teleoperationApi.moveTeleoperationNameMovePost(name, {
+                  name: 'camera',
+                  x_m: 0.0,
+                  y_m: 0.0,
+                  z_m: 0.0,
+                  roll_deg: 0.0,
+                  pitch_deg: -1.0,
+                  yaw_deg: 0.0,
+                })
+              }
+            >
+              Camera Down
+            </button>
+          </div>
+
+          <div>
+            <button
+              onClick={() =>
+                teleoperationApi.moveTeleoperationNameMovePost(name, {
+                  name: name,
+                  x_m: 0.0,
+                  y_m: 0.0,
+                  z_m: 0.0,
+                  roll_deg: 0.0,
+                  pitch_deg: 0.0,
+                  yaw_deg: -0.5,
+                })
+              }
+            >
+              Turn Left
+            </button>
+            <button
+              onClick={() =>
+                teleoperationApi.moveTeleoperationNameMovePost(name, {
+                  name: name,
+                  x_m: -1.0,
+                  y_m: 0.0,
+                  z_m: 0.0,
+                  roll_deg: 0.0,
+                  pitch_deg: 0.0,
+                  yaw_deg: 0.0,
+                })
+              }
+            >
+              Down
+            </button>
+            <button
+              onClick={() =>
+                teleoperationApi.moveTeleoperationNameMovePost(name, {
+                  name: name,
+                  x_m: 1.0,
+                  y_m: 0.0,
+                  z_m: 0.0,
+                  roll_deg: 0.0,
+                  pitch_deg: 0.0,
+                  yaw_deg: 0.0,
+                })
+              }
+            >
+              Up
+            </button>
+            <button
+              onClick={() =>
+                teleoperationApi.moveTeleoperationNameMovePost(name, {
+                  name: name,
+                  x_m: 0.0,
+                  y_m: 0.0,
+                  z_m: 0.0,
+                  roll_deg: 0.0,
+                  pitch_deg: 0.0,
+                  yaw_deg: 0.5,
+                })
+              }
+            >
+              Turn Right
+            </button>
+          </div>
         </Grid>
       </Grid>
     </StyledDiv>
