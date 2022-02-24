@@ -2,6 +2,7 @@ import { render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { LogManagement } from './log-management';
 import { LogRowsType } from './log-table';
+import { TestLocalizationProvider } from '../../test/locale';
 
 const getLogLabels = () => [
   { label: 'Web Server', value: 'web-server' },
@@ -27,6 +28,8 @@ const getLabelsPromise = async () => await getLogLabels();
 it('smoke test', async () => {
   // Added the waitFor because this component is updating a state inside a useEffect.
   await waitFor(() => {
-    render(<LogManagement getLabels={getLabelsPromise} getLogs={getLogsPromise} />);
+    render(<LogManagement getLabels={getLabelsPromise} getLogs={getLogsPromise} />, {
+      wrapper: TestLocalizationProvider,
+    });
   });
 });

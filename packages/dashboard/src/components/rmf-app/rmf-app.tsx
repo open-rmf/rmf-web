@@ -1,4 +1,4 @@
-import { BuildingMap, Dispenser, Fleet, Ingestor } from 'api-client';
+import { BuildingMap, FleetState, Dispenser, Ingestor } from 'api-client';
 import React from 'react';
 import { getPlaces } from 'react-components';
 import { UserProfileProvider } from 'rmf-auth';
@@ -98,7 +98,7 @@ function IngestorsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
 
 function FleetsProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   const { sioClient, fleetsApi } = React.useContext(RmfIngressContext) || {};
-  const [fleets, setFleets] = React.useState<Fleet[]>([]);
+  const [fleets, setFleets] = React.useState<FleetState[]>([]);
 
   React.useEffect(() => {
     if (!sioClient || !fleetsApi) {

@@ -19,7 +19,8 @@ class Time(pydantic.BaseModel):
         }
 
 
-# # Time indicates a specific point in time, relative to a clock's 0 point.
+# # This message communicates ROS Time defined here:
+# # https://design.ros2.org/articles/clock_and_time.html
 #
 # # The seconds component, valid over all int32 values.
 # int32 sec

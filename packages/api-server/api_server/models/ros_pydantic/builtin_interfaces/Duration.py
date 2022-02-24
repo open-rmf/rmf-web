@@ -19,8 +19,9 @@ class Duration(pydantic.BaseModel):
         }
 
 
-# # Duration defines a period between two time points. It is comprised of a
-# # seconds component and a nanoseconds component.
+# # Duration defines a period between two time points.
+# # Messages of this datatype are of ROS Time following this design:
+# # https://design.ros2.org/articles/clock_and_time.html
 #
 # # Seconds component, range is valid over any possible int32 value.
 # int32 sec

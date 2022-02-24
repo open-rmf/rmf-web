@@ -18,8 +18,8 @@ class TestServer:
             def on_startup():
                 self._ready.release()
 
-            app: FastAPI = srv.config.app
-            app.add_event_handler("startup", on_startup)
+            srv_app: FastAPI = srv.config.app
+            srv_app.add_event_handler("startup", on_startup)
 
         self.loop: asyncio.AbstractEventLoop
 

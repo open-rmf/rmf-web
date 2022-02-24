@@ -1,12 +1,11 @@
-import React from 'react';
-import { TextField, SelectChangeEvent, styled } from '@mui/material';
-import Button from '@mui/material/Button';
-import { SearchFilter } from './search-filter';
-import DateAndTimePickers from '../../date-time-picker';
 import { DateTimePickerProps } from '@mui/lab';
-import { LogLevel } from './log-level';
-
+import DateTimePicker from '@mui/lab/DateTimePicker';
+import { SelectChangeEvent, styled, TextField } from '@mui/material';
+import Button from '@mui/material/Button';
+import React from 'react';
 import { LogQueryPayload } from '.';
+import { LogLevel } from './log-level';
+import { SearchFilter } from './search-filter';
 
 interface SearchLogFormProps {
   logLabelValues: { label: string; value: string }[];
@@ -101,14 +100,14 @@ export const SearchLogForm = (props: SearchLogFormProps): React.ReactElement => 
           currentValue={logLevel}
         />
 
-        <DateAndTimePickers
+        <DateTimePicker
           maxDate={new Date()}
           label="From"
           value={fromLogDate}
           onChange={handleFromLogDateChange}
           renderInput={(props) => <TextField id={'From'} {...props} />}
         />
-        <DateAndTimePickers
+        <DateTimePicker
           maxDate={new Date()}
           label="To"
           value={toLogDate}

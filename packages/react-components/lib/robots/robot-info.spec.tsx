@@ -1,33 +1,48 @@
 import { render } from '@testing-library/react';
-import type { Task } from 'api-client';
 import React from 'react';
-import { TaskType as RmfTaskType } from 'rmf-models';
-import { makeTaskSummaryWithPhases } from '../tasks/test-data.spec';
 import { RobotInfo } from './robot-info';
-import { makeRandomRobot } from './test-utils.spec';
 
 describe('RobotInfo', () => {
   it('information renders correctly', () => {
-    const robot = makeRandomRobot('test_robot', 'test_fleet', 1);
-    const deliveryTask = makeTaskSummaryWithPhases('delivery_task', 1, 1);
-    deliveryTask.task_profile.description.task_type.type = RmfTaskType.TYPE_DELIVERY;
-    deliveryTask.task_profile.description.delivery.pickup_place_name = 'test_waypoint_1';
-    deliveryTask.task_profile.description.delivery.pickup_dispenser = 'test_dispenser';
-    deliveryTask.task_profile.description.delivery.dropoff_place_name = 'test_waypoint_2';
-    deliveryTask.task_profile.description.delivery.dropoff_ingestor = 'test_ingestor';
-    const task: Task = {
-      summary: deliveryTask,
-      progress: { status: '10' },
-      task_id: 'delivery_task',
-    };
+    const root = render(
+      <RobotInfo
+        robotName="test_robot"
+        assignedTask="test_task"
+        battery={0.5}
+        estFinishTime={0}
+        taskProgress={0.6}
+        taskStatus="underway"
+      />,
+    );
+    expect(() => root.getByText('test_robot')).not.toThrow();
+    expect(() => root.getByText('test_task')).not.toThrow();
+    expect(() => root.getByText('50%')).not.toThrow(); // task progress
+    expect(() => root.getByText('60%')).not.toThrow(); // battery
+    expect(() => root.getByText(/.*underway/)).not.toThrow();
+    expect(() => root.getByText(new Date(0).toLocaleString())).not.toThrow();
+  });
 
-    const robot1 = { ...robot, tasks: [task] };
+  describe('Task status', () => {
+    it('shows no task when there is no assigned task and task status', () => {
+      const root = render(<RobotInfo robotName="test_robot" />);
+      expect(() => root.getByText(/No Task/)).not.toThrow();
+    });
 
-    const root = render(<RobotInfo robot={robot1} />);
+    it('shows unknown when there is an assigned task but no status', () => {
+      const root = render(
+        <RobotInfo
+          robotName="test_robot"
+          battery={0.5}
+          estFinishTime={0}
+          assignedTask="test_task"
+        />,
+      );
+      expect(() => root.getByText(/Unknown/)).not.toThrow();
+    });
+  });
 
-    expect(root.getByRole('heading', { name: 'test_robot' })).toBeTruthy();
-    expect(root.getByRole('button', { name: 'delivery_task' })).toBeTruthy();
-    expect(root.getByRole('button', { name: 'test_waypoint_1' })).toBeTruthy();
-    expect(root.getByRole('button', { name: 'test_waypoint_2' })).toBeTruthy();
+  it('defaults to 0% when no battery is available', () => {
+    const root = render(<RobotInfo robotName="test_robot" />);
+    expect(() => root.getByText('0%')).not.toThrow();
   });
 });

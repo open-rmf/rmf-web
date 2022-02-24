@@ -1,11 +1,8 @@
 import { Typography } from '@mui/material';
-import type { TaskDescription } from 'api-client';
+// import type { TaskDescription } from 'api-client';
 import React from 'react';
 
-export const returnTaskDetails = (
-  taskId: string,
-  taskDescription: TaskDescription,
-): React.ReactNode => {
+export const returnTaskDetails = (taskId: string, taskDescription: any): React.ReactNode => {
   let taskTypeDetails;
   if (taskId.includes('Loop')) {
     taskTypeDetails = taskDescription.loop;

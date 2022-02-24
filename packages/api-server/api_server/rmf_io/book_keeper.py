@@ -4,7 +4,6 @@ import logging
 from collections import namedtuple
 from typing import Coroutine, List
 
-import tortoise.transactions
 from rx.core.typing import Disposable
 from rx.subject.subject import Subject
 
@@ -14,16 +13,12 @@ from api_server.models import (
     DispenserState,
     DoorHealth,
     DoorState,
-    FleetState,
     HealthStatus,
     IngestorHealth,
     IngestorState,
     LiftHealth,
     LiftState,
-    RobotHealth,
-    TaskSummary,
 )
-from api_server.models import tortoise_models as ttm
 from api_server.models.health import BaseBasicHealth
 
 from .events import RmfEvents
@@ -105,9 +100,6 @@ class RmfBookKeeper:
         self._record_dispenser_health()
         self._record_ingestor_state()
         self._record_ingestor_health()
-        self._record_fleet_state()
-        self._record_robot_health()
-        self._record_task_summary()
 
     async def stop(self):
         for sub in self._subscriptions:
@@ -212,44 +204,4 @@ class RmfBookKeeper:
 
         self._subscriptions.append(
             self.rmf.ingestor_health.subscribe(lambda x: self._create_task(update(x)))
-        )
-
-    def _record_fleet_state(self):
-        async def update(fleet_state: FleetState):
-            tasks = [
-                ttm.RobotState.update_or_create(
-                    {
-                        "data": r.dict(),
-                    },
-                    fleet_name=fleet_state.name,
-                    robot_name=r.name,
-                )
-                for r in fleet_state.robots
-            ]
-            async with tortoise.transactions.in_transaction():
-                await asyncio.gather(fleet_state.save(), *tasks)
-
-            self._loggers.fleet_state.info(fleet_state.json())
-
-        self._subscriptions.append(
-            self.rmf.fleet_states.subscribe(lambda x: self._create_task(update(x)))
-        )
-
-    def _record_robot_health(self):
-        async def update(health: RobotHealth):
-            await health.save()
-            self._report_health(health, self._loggers.robot_health)
-
-        self._subscriptions.append(
-            self.rmf.robot_health.subscribe(lambda x: self._create_task(update(x)))
-        )
-
-    def _record_task_summary(self):
-        async def update(summary: TaskSummary):
-            await summary.save()
-            self._loggers.task_summary.info(summary.json())
-            self.bookkeeper_events.task_summary_written.on_next(summary)
-
-        self._subscriptions.append(
-            self.rmf.task_summaries.subscribe(lambda x: self._create_task(update(x)))
         )

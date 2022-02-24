@@ -1,6 +1,5 @@
 import { Button, TextField, Autocomplete } from '@mui/material';
 import React, { ChangeEvent } from 'react';
-import type { Behavior } from 'api-client';
 import { StyledForm, commandFormsClasses } from './form-styles';
 
 export type DoDeliveryRequest = (
@@ -8,8 +7,6 @@ export type DoDeliveryRequest = (
   pickupDispenser: string,
   dropOffPlaceName: string,
   dropOffDispenser: string,
-  pickupBehaviour?: Behavior,
-  dropOffBehavior?: Behavior,
 ) => void;
 
 export interface DeliveryRequestFormProps {

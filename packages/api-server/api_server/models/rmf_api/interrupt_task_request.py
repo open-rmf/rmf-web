@@ -6,10 +6,11 @@ from __future__ import annotations
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
+from typing_extensions import Literal
 
 
 class TaskInterruptionRequest(BaseModel):
-    type: str = Field(
+    type: Literal["interrupt_task_request"] = Field(
         ..., description="Indicate that this is a task interruption request"
     )
     task_id: str = Field(..., description="Specify the task ID to interrupt")

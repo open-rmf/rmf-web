@@ -1,7 +1,7 @@
 import React from 'react';
 import { almostShallowEqual } from '../utils';
 import { fromRmfCoords, fromRmfYaw } from '../utils/geometry';
-import { RobotState as RmfRobotState } from 'rmf-models';
+import { RobotState } from 'api-client';
 import { useAutoScale } from './hooks';
 import { RobotMarker as RobotMarker_, RobotMarkerProps } from './robot-marker';
 import { SVGOverlay, SVGOverlayProps } from './svg-overlay';
@@ -44,7 +44,7 @@ const RobotMarker = React.memo(withLabel(bindMarker(RobotMarker_)), (prev, next)
 
 export interface RobotsOverlayProps extends Omit<SVGOverlayProps, 'viewBox'> {
   robots: RobotData[];
-  getRobotState: (fleet: string, robot: string) => RmfRobotState | null;
+  getRobotState: (fleet: string, robot: string) => RobotState | null;
   /**
    * The zoom level at which the markers should transition from actual size to fixed size.
    */
@@ -70,9 +70,10 @@ export const RobotsOverlay = ({
       {robots.map((robot) => {
         const state = getRobotState(robot.fleet, robot.name);
         if (!state) return;
-        const [x, y] = fromRmfCoords([state.location.x, state.location.y]);
-        const theta = fromRmfYaw(state.location.yaw);
-
+        const [x, y] = state.location
+          ? fromRmfCoords([state.location.x, state.location.y])
+          : [0, 0];
+        const theta = state.location ? fromRmfYaw(state.location.yaw) : 0;
         return (
           <RobotMarker
             key={`${robot.fleet}/${robot.name}`}

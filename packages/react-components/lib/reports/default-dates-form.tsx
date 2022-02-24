@@ -1,8 +1,7 @@
-import React from 'react';
-import { TextField, styled } from '@mui/material';
+import DateTimePicker from '@mui/lab/DateTimePicker';
+import { styled, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
-import DateAndTimePickers from '../date-time-picker';
-
+import React from 'react';
 import { LogQueryPayload } from '.';
 
 interface DefaultDatesFormProps {
@@ -36,19 +35,33 @@ export const DefaultDatesForm = (props: DefaultDatesFormProps): JSX.Element | nu
   return onSelectFromDate && onSelectToDate ? (
     <StyledDiv>
       <div className={classes.searchForm}>
-        <DateAndTimePickers
+        <DateTimePicker
           maxDate={new Date()}
           label="From"
           value={fromLogDate}
           onChange={onSelectFromDate}
-          renderInput={(props) => <TextField {...props} />}
+          data-unix-time="asdjs"
+          renderInput={(props) => (
+            <TextField
+              id="from-log-date-input"
+              {...props}
+              inputProps={{ ...props.inputProps, 'data-unix': fromLogDate?.valueOf() }}
+            />
+          )}
         />
-        <DateAndTimePickers
+        <DateTimePicker
           maxDate={new Date()}
           label="To"
           value={toLogDate}
           onChange={onSelectToDate}
-          renderInput={(props) => <TextField {...props} />}
+          data-unix-time={toLogDate?.valueOf()}
+          renderInput={(props) => (
+            <TextField
+              id="to-log-date-input"
+              {...props}
+              inputProps={{ ...props.inputProps, 'data-unix': toLogDate?.valueOf() }}
+            />
+          )}
         />
       </div>
 

@@ -3,13 +3,9 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
-
-
-class Description(BaseModel):
-    category: str
 
 
 class TaskRequest(BaseModel):
@@ -20,7 +16,11 @@ class TaskRequest(BaseModel):
         None,
         description="(Optional) The priority of this task. This must match a priority schema supported by a fleet.",
     )
-    description: Description = Field(
+    category: str
+    description: Any = Field(
         ...,
-        description="A description of the task. This must match a schema supported by a fleet.",
+        description="A description of the task. This must match a schema supported by a fleet for the category of this task request.",
+    )
+    labels: Optional[List[str]] = Field(
+        None, description="Labels to describe the purpose of the task dispatch request"
     )

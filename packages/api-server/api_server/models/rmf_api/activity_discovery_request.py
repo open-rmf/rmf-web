@@ -4,9 +4,10 @@
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
+from typing_extensions import Literal
 
 
 class ActivityDiscoveryRequest(BaseModel):
-    type: str = Field(
+    type: Literal["activitiy_discovery_request"] = Field(
         ..., description="Indicate that this is an activity discovery request"
     )

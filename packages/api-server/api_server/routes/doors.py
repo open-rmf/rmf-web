@@ -2,6 +2,7 @@ from typing import List, cast
 
 from fastapi import Depends, HTTPException
 from rx import operators as rxops
+from rx.subject.replaysubject import ReplaySubject
 
 from api_server.dependencies import sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
@@ -35,10 +36,13 @@ async def get_door_state(
 async def sub_door_state(req: SubscriptionRequest, door_name: str):
     user = sio_user(req)
     door_state = await get_door_state(door_name, RmfRepository(user))
-    await req.sio.emit(req.room, door_state, req.sid)
-    return rmf_events.door_states.pipe(
+    sub = ReplaySubject(1)
+    if door_name:
+        sub.on_next(door_state)
+    rmf_events.door_states.pipe(
         rxops.filter(lambda x: cast(DoorState, x).door_name == door_name)
-    )
+    ).subscribe(sub)
+    return sub
 
 
 @router.get("/{door_name}/health", response_model=DoorHealth)
@@ -58,10 +62,13 @@ async def get_door_health(
 async def sub_door_health(req: SubscriptionRequest, door_name: str):
     user = sio_user(req)
     health = await get_door_health(door_name, RmfRepository(user))
-    await req.sio.emit(req.room, health, req.sid)
-    return rmf_events.door_health.pipe(
+    sub = ReplaySubject(1)
+    if health:
+        sub.on_next(health)
+    rmf_events.door_health.pipe(
         rxops.filter(lambda x: cast(DoorHealth, x).id_ == door_name)
-    )
+    ).subscribe(sub)
+    return sub
 
 
 @router.post("/{door_name}/request")

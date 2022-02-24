@@ -1,20 +1,22 @@
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
-import { styled } from '@mui/material';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Timeline,
   TimelineConnector,
   TimelineContent,
   TimelineDot,
+  TimelineDotProps,
   TimelineItem,
   TimelineOppositeContent,
-  TimelineSeparator,
   TimelineProps,
+  TimelineSeparator,
+  TreeItem,
+  TreeView,
 } from '@mui/lab';
-import type { TaskSummary } from 'api-client';
+import { styled } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import { EventState, Phase, Status, TaskState } from 'api-client';
 import React from 'react';
-import { TaskSummary as RmfTaskSummary } from 'rmf-models';
-import { rosTimeToJs } from '../utils';
 
 interface TimeLinePropsWithRef extends TimelineProps {
   ref?: React.RefObject<HTMLUListElement>;
@@ -23,31 +25,21 @@ interface TimeLinePropsWithRef extends TimelineProps {
 const classes = {
   paper: 'timeline-paper',
   secondaryTail: 'timeline-secondary-tail',
-  pendingPhase: 'timeline-pending-phase',
-  completedPhase: 'timeline-completed-phase',
-  failedPhase: 'timeline-failed-phase',
   timelineRoot: 'timeline-root',
 };
+
 const StyledTimeLine = styled((props: TimeLinePropsWithRef) => <Timeline {...props} />)(
   ({ theme }) => ({
     [`& .${classes.paper}`]: {
-      padding: '6px 16px',
+      padding: theme.spacing(1),
+      marginTop: theme.spacing(1),
       width: '200px',
-      maxHeight: '100px',
       overflow: 'auto',
       display: 'inline-block',
+      maxHeight: '95%',
     },
     [`& .${classes.secondaryTail}`]: {
       backgroundColor: theme.palette.secondary.main,
-    },
-    [`& .${classes.pendingPhase}`]: {
-      background: theme.palette.info.light,
-    },
-    [`& .${classes.completedPhase}`]: {
-      background: theme.palette.success.light,
-    },
-    [`& .${classes.failedPhase}`]: {
-      background: theme.palette.error.light,
     },
     [`&.${classes.timelineRoot}`]: {
       padding: '6px 0px',
@@ -55,64 +47,107 @@ const StyledTimeLine = styled((props: TimeLinePropsWithRef) => <Timeline {...pro
   }),
 );
 
-export interface TaskTimelineProps {
-  taskSummary: TaskSummary;
+function NestedEvents(
+  eventStates: { [key: string]: EventState } | undefined,
+  eventId: number | undefined,
+) {
+  if (eventStates !== undefined && eventStates !== null && eventId !== undefined) {
+    const event = eventStates[eventId];
+    if (event !== undefined) {
+      return (
+        <TreeItem
+          nodeId={`event-${event.id}`}
+          key={`event-${event.id}`}
+          label={event.name || 'undefined'}
+        >
+          {event.deps
+            ? event.deps.map((childId) => {
+                return NestedEvents(eventStates, childId);
+              })
+            : null}
+        </TreeItem>
+      );
+    }
+  }
+
+  return null;
 }
 
-export function TaskTimeline({ taskSummary }: TaskTimelineProps): JSX.Element {
-  const timelinePhases = taskSummary.status.split('\n\n');
-  const currentDotIdx = timelinePhases.findIndex((msg: string) => msg.startsWith('*'));
-  const timelineInfo = taskSummary.status.split('\n\n');
+function colorDot(phase: Phase | undefined): TimelineDotProps['color'] {
+  if (phase == null) return 'error';
 
-  const timelineDotProps = timelinePhases.map((_: string, idx: number) => {
-    if ([RmfTaskSummary.STATE_CANCELED, RmfTaskSummary.STATE_FAILED].includes(taskSummary.state)) {
-      return {
-        className: classes.failedPhase,
-      };
-    }
+  if (phase.final_event_id == null || phase.events == null) return 'grey';
 
-    if (taskSummary.state === RmfTaskSummary.STATE_COMPLETED) {
-      return {
-        className: classes.completedPhase,
-      };
-    }
+  const root_event = phase.events[phase.final_event_id];
+  if (root_event == null) return 'error';
 
-    if (taskSummary.state === RmfTaskSummary.STATE_ACTIVE && idx < currentDotIdx) {
-      return {
-        className: classes.completedPhase,
-      };
-    }
+  if (root_event.status == null) return 'error';
 
-    return {
-      className: classes.pendingPhase,
-    };
-  });
+  switch (root_event.status) {
+    case Status.Uninitialized:
+    case Status.Blocked:
+    case Status.Error:
+    case Status.Failed:
+      return 'error';
 
+    case Status.Queued:
+    case Status.Standby:
+      return 'grey';
+
+    case Status.Underway:
+      return 'success';
+
+    case Status.Skipped:
+    case Status.Canceled:
+    case Status.Killed:
+      return 'secondary';
+
+    case Status.Delayed:
+      return 'warning';
+
+    case Status.Completed:
+      return 'primary';
+
+    default:
+      return 'error';
+  }
+}
+
+export interface TaskTimelineProps {
+  taskState: TaskState;
+}
+
+function RenderPhase(phase: Phase) {
   return (
-    <StyledTimeLine position="left" className={classes.timelineRoot}>
-      {timelineInfo.map((dotInfo, idx) => {
-        return (
-          <TimelineItem key={idx}>
-            <TimelineOppositeContent style={{ flex: 0.1, padding: '0px 12px 0px 0px' }}>
-              <Typography variant="overline" color="textSecondary" style={{ textAlign: 'justify' }}>
-                {idx === 0 && rosTimeToJs(taskSummary.start_time).toLocaleTimeString()}
-                {idx > 0 &&
-                  idx === timelineInfo.length - 1 &&
-                  rosTimeToJs(taskSummary.end_time).toLocaleTimeString()}
-              </Typography>
-            </TimelineOppositeContent>
-            <TimelineSeparator>
-              <TimelineDot {...timelineDotProps[idx]} />
-              {idx < timelineInfo.length - 1 && <TimelineConnector />}
-            </TimelineSeparator>
-            <TimelineContent>
-              <Paper className={classes.paper}>
-                <Typography variant="caption">{dotInfo}</Typography>
-              </Paper>
-            </TimelineContent>
-          </TimelineItem>
-        );
-      })}
+    <TimelineItem key={phase.id} sx={{ width: 0 }}>
+      <TimelineOppositeContent color="text.secondary">
+        <Typography variant="overline" color="textSecondary" style={{ textAlign: 'justify' }}>
+          {phase.unix_millis_start_time != null
+            ? new Date(phase.unix_millis_start_time).toLocaleTimeString()
+            : null}
+        </Typography>
+      </TimelineOppositeContent>
+      <TimelineSeparator>
+        <TimelineDot color={colorDot(phase)} />
+        <TimelineConnector />
+      </TimelineSeparator>
+      <TimelineContent>
+        <Typography variant="overline" color="textSecondary" style={{ textAlign: 'justify' }}>
+          {phase.id}. {phase.category}
+        </Typography>
+        <TreeView defaultCollapseIcon={<ExpandMoreIcon />} defaultExpandIcon={<ChevronRightIcon />}>
+          {NestedEvents(phase.events, phase.final_event_id)}
+        </TreeView>
+      </TimelineContent>
+    </TimelineItem>
+  );
+}
+
+export function TaskTimeline({ taskState }: TaskTimelineProps): JSX.Element {
+  const phases = taskState.phases ? Object.values(taskState.phases) : [];
+  return (
+    <StyledTimeLine className={classes.timelineRoot}>
+      {phases.map((phase) => RenderPhase(phase))}
     </StyledTimeLine>
   );
 }

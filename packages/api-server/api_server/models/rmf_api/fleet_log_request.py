@@ -4,10 +4,13 @@
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
+from typing_extensions import Literal
 
 
 class FleetLogRequest(BaseModel):
-    type: str = Field(..., description="Indicate that this is a fleet log request")
+    type: Literal["fleet_log_request"] = Field(
+        ..., description="Indicate that this is a fleet log request"
+    )
     fleet: str = Field(
         ..., description="Specify the name of the fleet whose log should be fetched"
     )

@@ -1,23 +1,5 @@
-import { TaskSummary as RmfTaskSummary, TaskType as RmfTaskType } from 'rmf-models';
-
-export function taskStateToStr(state: number): string {
-  switch (state) {
-    case RmfTaskSummary.STATE_ACTIVE:
-      return 'Active';
-    case RmfTaskSummary.STATE_CANCELED:
-      return 'Cancelled';
-    case RmfTaskSummary.STATE_COMPLETED:
-      return 'Completed';
-    case RmfTaskSummary.STATE_FAILED:
-      return 'Failed';
-    case RmfTaskSummary.STATE_PENDING:
-      return 'Pending';
-    case RmfTaskSummary.STATE_QUEUED:
-      return 'Queued';
-    default:
-      return 'Unknown';
-  }
-}
+import { TaskType as RmfTaskType } from 'rmf-models';
+import type { TaskState } from 'api-client';
 
 export function taskTypeToStr(taskType: number): string {
   switch (taskType) {
@@ -35,5 +17,29 @@ export function taskTypeToStr(taskType: number): string {
       return 'Station';
     default:
       return 'Unknown';
+  }
+}
+
+function parsePhaseDetail(phases: TaskState['phases'], category?: string) {
+  if (phases) {
+    if (category === 'Loop') {
+      const startPhase = phases['1'];
+      const endPhase = phases['2'];
+      const from = startPhase.category?.split('[place:')[1].split(']')[0];
+      const to = endPhase.category?.split('[place:')[1].split(']')[0];
+      return { to, from };
+    }
+  }
+  return {};
+}
+
+export function parseTaskDetail(task: TaskState, category?: string) {
+  if (category?.includes('Loop')) return parsePhaseDetail(task.phases, category);
+  if (category?.includes('Delivery')) {
+    const from = category?.split('[place:')[1].split(']')[0];
+    const to = category?.split('[place:')[2].split(']')[0];
+    return { to, from };
+  } else {
+    return {};
   }
 }

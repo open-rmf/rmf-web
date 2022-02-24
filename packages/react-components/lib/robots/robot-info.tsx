@@ -1,12 +1,19 @@
-import { Button, Divider, Grid, Typography, useTheme, styled } from '@mui/material';
-import type { Task, TaskSummary } from 'api-client';
+import { Button, Divider, Grid, styled, Typography, useTheme } from '@mui/material';
+import type { TaskState } from 'api-client';
 import React from 'react';
-import { TaskSummary as RmfTaskSummary } from 'rmf-models';
-import { taskStateToStr, taskTypeToStr } from '../tasks/utils';
-import { rosTimeToJs } from '../utils';
 import { CircularProgressBar } from './circular-progress-bar';
 import { LinearProgressBar } from './linear-progress-bar';
-import { VerboseRobot } from './utils';
+
+function getTaskStatusDisplay(assignedTask?: string, taskStatus?: string) {
+  if (assignedTask && !taskStatus) {
+    return 'Unknown';
+  }
+  if (assignedTask && taskStatus) {
+    return taskStatus;
+  } else {
+    return 'No Task';
+  }
+}
 
 const classes = {
   button: 'robot-info-button',
@@ -20,97 +27,45 @@ const StyledDiv = styled('div')(() => ({
   },
 }));
 
+type TaskStatus = Required<TaskState>['status'];
+
 export interface RobotInfoProps {
-  robot: VerboseRobot;
+  robotName: string;
+  battery?: number;
+  assignedTask?: string;
+  taskStatus?: TaskStatus;
+  taskProgress?: number;
+  estFinishTime?: number;
 }
 
-export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
+const finishedStatus: TaskStatus[] = ['failed', 'completed', 'skipped', 'killed', 'canceled'];
+
+export function RobotInfo({
+  robotName,
+  battery,
+  assignedTask,
+  taskStatus,
+  taskProgress,
+  estFinishTime,
+}: RobotInfoProps): JSX.Element {
   const theme = useTheme();
-  const [currentTask, setCurrentTask] = React.useState<Task | undefined>();
-  const [hasConcreteEndTime, setHasConcreteEndTime] = React.useState<boolean>(false);
-
-  function returnTaskLocations(task: TaskSummary): string {
-    switch (taskTypeToStr(task.task_profile.description.task_type.type)) {
-      case 'Loop':
-        return task.task_profile.description.loop.start_name;
-      case 'Delivery':
-        return task.task_profile.description.delivery.pickup_place_name;
-      default:
-        return '-';
-    }
-  }
-
-  function returnTaskDestinations(task: TaskSummary): string {
-    switch (taskTypeToStr(task.task_profile.description.task_type.type)) {
-      case 'Loop':
-        return task.task_profile.description.loop.finish_name;
-      case 'Delivery':
-        return task.task_profile.description.delivery.dropoff_place_name;
-      case 'Clean':
-        return task.task_profile.description.clean.start_waypoint;
-      default:
-        return '-';
-    }
-  }
-
-  function assignedTasksToStr(robot: VerboseRobot): string {
-    return robot.tasks
-      .map((task, index) => {
-        if (index !== robot.tasks.length - 1) {
-          return task.summary.task_id.concat(' → ');
-        } else {
-          return task.summary.task_id;
-        }
-      })
-      .join('');
-  }
-
-  React.useEffect(() => {
-    const concreteTasks = [
-      RmfTaskSummary.STATE_CANCELED,
-      RmfTaskSummary.STATE_COMPLETED,
-      RmfTaskSummary.STATE_FAILED,
-    ];
-
-    if (robot.tasks.length > 0) {
-      setCurrentTask(robot.tasks[0]);
-      if (currentTask) {
-        setHasConcreteEndTime(concreteTasks.includes(currentTask.summary.state));
-      }
-    } else {
-      setCurrentTask(undefined);
-      setHasConcreteEndTime(false);
-    }
-  }, [currentTask, robot, setCurrentTask]);
-
-  const taskDetails = React.useMemo(() => {
-    if (currentTask) {
-      const location = returnTaskLocations(currentTask.summary);
-      const destination = returnTaskDestinations(currentTask.summary);
-      const assignedTasks = assignedTasksToStr(robot);
-      return { location, destination, assignedTasks };
-    }
-  }, [currentTask, robot]);
+  const hasConcreteEndTime = taskStatus && taskStatus in finishedStatus;
 
   return (
     <StyledDiv>
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
-        {robot.name}
+        {robotName}
       </Typography>
       <Divider />
       <div style={{ marginBottom: theme.spacing(1) }}></div>
       <Grid container>
         <Grid container item xs={12} justifyContent="center">
-          <Typography variant="h6" gutterBottom>
-            {`Task Progress - ${
-              currentTask ? taskStateToStr(currentTask.summary.state) : 'No Task'
-            }`}
+          <Typography variant="h6" gutterBottom sx={{ textTransform: 'capitalize' }}>
+            {`Task Progress - ${getTaskStatusDisplay(assignedTask, taskStatus)}`}
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          {currentTask && (
-            <LinearProgressBar value={parseInt(currentTask.progress.status.slice(0, -1)) || 0} />
-          )}
+          {taskProgress && <LinearProgressBar value={taskProgress * 100} />}
         </Grid>
         <Grid container item xs={12} justifyContent="center">
           <Typography variant="h6" gutterBottom>
@@ -125,39 +80,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
             disableRipple={true}
             component="div"
           >
-            {taskDetails ? taskDetails.assignedTasks : '-'}
-          </Button>
-        </Grid>
-        <Grid item xs={6}>
-          <Typography variant="h6" align="left">
-            Location
-          </Typography>
-        </Grid>
-        <Grid item xs={6}>
-          <Typography variant="h6" align="left">
-            Destination
-          </Typography>
-        </Grid>
-        <Grid item xs={6}>
-          <Button
-            size="small"
-            disableElevation
-            variant="outlined"
-            className={classes.button}
-            disableRipple={true}
-          >
-            {taskDetails ? taskDetails.location : '-'}
-          </Button>
-        </Grid>
-        <Grid item xs={6}>
-          <Button
-            size="small"
-            disableElevation
-            variant="outlined"
-            className={classes.button}
-            disableRipple={true}
-          >
-            {taskDetails ? taskDetails.destination : '-'}
+            {assignedTask || '-'}
           </Button>
         </Grid>
         <Grid item xs={6}>
@@ -171,8 +94,8 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
           </Typography>
         </Grid>
         <Grid item xs={6}>
-          <CircularProgressBar progress={robot.state.battery_percent} strokeColor="#20a39e">
-            <Typography variant="h6">{`${robot.state.battery_percent}%`}</Typography>
+          <CircularProgressBar progress={battery ? battery * 100 : 0} strokeColor="#20a39e">
+            <Typography variant="h6">{`${battery ? battery * 100 : 0}%`}</Typography>
           </CircularProgressBar>
         </Grid>
         <Grid item xs={6}>
@@ -183,7 +106,7 @@ export function RobotInfo({ robot }: RobotInfoProps): JSX.Element {
             className={classes.button}
             disableRipple={true}
           >
-            {currentTask ? rosTimeToJs(currentTask.summary.end_time).toLocaleTimeString() : '-'}
+            {estFinishTime !== undefined ? `${new Date(estFinishTime).toLocaleString()}` : '-'}
           </Button>
         </Grid>
       </Grid>

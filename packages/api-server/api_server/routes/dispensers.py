@@ -2,6 +2,7 @@ from typing import List, cast
 
 from fastapi import Depends, HTTPException
 from rx import operators as rxops
+from rx.subject.replaysubject import ReplaySubject
 
 from api_server.dependencies import sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
@@ -34,10 +35,13 @@ async def get_dispenser_state(
 async def sub_dispenser_state(req: SubscriptionRequest, guid: str):
     user = sio_user(req)
     dispenser_state = await get_dispenser_state(guid, RmfRepository(user))
-    await req.sio.emit(req.room, dispenser_state, req.sid)
-    return rmf_events.dispenser_states.pipe(
+    sub = ReplaySubject(1)
+    if dispenser_state:
+        sub.on_next(dispenser_state)
+    rmf_events.dispenser_states.pipe(
         rxops.filter(lambda x: cast(DispenserState, x).guid == guid)
-    )
+    ).subscribe(sub)
+    return sub
 
 
 @router.get("/{guid}/health", response_model=DispenserHealth)
@@ -57,7 +61,10 @@ async def get_dispenser_health(
 async def sub_dispenser_health(req: SubscriptionRequest, guid: str):
     user = sio_user(req)
     health = await get_dispenser_health(guid, RmfRepository(user))
-    await req.sio.emit(req.room, health, req.sid)
-    return rmf_events.dispenser_health.pipe(
+    sub = ReplaySubject(1)
+    if health:
+        sub.on_next(health)
+    rmf_events.dispenser_health.pipe(
         rxops.filter(lambda x: cast(DispenserHealth, x).id_ == guid)
-    )
+    ).subscribe(sub)
+    return sub

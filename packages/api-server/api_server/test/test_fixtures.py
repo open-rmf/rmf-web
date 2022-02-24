@@ -4,6 +4,7 @@ import os
 import os.path
 import time
 import unittest
+import unittest.mock
 from concurrent.futures import Future
 from typing import Any, Awaitable, Callable, List, Optional, TypeVar, Union, cast
 from uuid import uuid4
@@ -120,6 +121,7 @@ class AppFixture(unittest.TestCase):
         cls.session.close()
 
     def setUp(self):
+        self.test_time = 0
         self._sioClients: List[socketio.Client] = []
 
     def tearDown(self):
@@ -165,7 +167,10 @@ class AppFixture(unittest.TestCase):
                 fut.set_result(data)
 
         client.on(room, on_event)
+        subscribe_fut = Future()
+        client.on("subscribe", subscribe_fut.set_result)
         client.emit("subscribe", {"room": room})
+        subscribe_fut.result(1)
 
         return fut
 
@@ -200,3 +205,9 @@ class AppFixture(unittest.TestCase):
     def assign_role(self, username: str, role: str):
         resp = self.session.post(f"/admin/users/{username}/roles", json={"name": role})
         self.assertEqual(200, resp.status_code)
+
+    def now(self) -> int:
+        """
+        Returns the current time in the testing clock in unix millis.
+        """
+        return self.test_time

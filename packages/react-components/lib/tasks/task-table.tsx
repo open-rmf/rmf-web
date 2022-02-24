@@ -1,22 +1,17 @@
 import {
+  styled,
   Table,
   TableBody,
   TableCell,
   TableHead,
-  TableRow,
   TableProps,
-  styled,
+  TableRow,
 } from '@mui/material';
-import type { TaskSummary, Time } from 'api-client';
+import { Status, TaskState } from 'api-client';
 import clsx from 'clsx';
-import { formatDistanceToNow } from 'date-fns';
 import React from 'react';
-import { TaskSummary as RmfTaskSummary } from 'rmf-models';
-import { rosTimeToJs } from '../utils';
-import { taskStateToStr } from './utils';
 
 const classes = {
-  table: 'task-table-table-root',
   taskRowHover: 'task-table-taskrow-hover',
   infoRow: 'task-table-info-row',
   phasesCell: 'task-table-phase-cell',
@@ -30,9 +25,6 @@ const classes = {
   taskUnknownCell: 'task-table-unknown-cell',
 };
 const StyledTable = styled((props: TableProps) => <Table {...props} />)(({ theme }) => ({
-  [`&.${classes.table}`]: {
-    minWidth: 650,
-  },
   [`& .${classes.taskRowHover}`]: {
     background: theme.palette.action.hover,
     cursor: 'pointer',
@@ -54,27 +46,24 @@ const StyledTable = styled((props: TableProps) => <Table {...props} />)(({ theme
     marginTop: theme.spacing(1),
   },
   [`& .${classes.taskActiveCell}`]: {
-    backgroundColor: theme.palette.info.light,
-    color: theme.palette.getContrastText(theme.palette.info.light),
+    backgroundColor: theme.palette.success.light,
+    color: theme.palette.getContrastText(theme.palette.success.light),
   },
   [`& .${classes.taskCancelledCell}`]: {
     backgroundColor: theme.palette.grey[500],
+    color: theme.palette.getContrastText(theme.palette.grey[500]),
   },
   [`& .${classes.taskCompletedCell}`]: {
-    backgroundColor: theme.palette.success.main,
-    color: theme.palette.getContrastText(theme.palette.success.main),
+    backgroundColor: theme.palette.info.light,
+    color: theme.palette.getContrastText(theme.palette.info.light),
   },
   [`& .${classes.taskFailedCell}`]: {
     backgroundColor: theme.palette.error.main,
     color: theme.palette.getContrastText(theme.palette.error.main),
   },
-  [`& .${classes.taskPendingCell}`]: {
-    backgroundColor: theme.palette.info.dark,
-    color: theme.palette.getContrastText(theme.palette.info.light),
-  },
   [`& .${classes.taskQueuedCell}`]: {
-    backgroundColor: theme.palette.info.dark,
-    color: theme.palette.getContrastText(theme.palette.info.light),
+    backgroundColor: theme.palette.grey[300],
+    color: theme.palette.getContrastText(theme.palette.grey[300]),
   },
   [`& .${classes.taskUnknownCell}`]: {
     backgroundColor: theme.palette.warning.main,
@@ -83,34 +72,32 @@ const StyledTable = styled((props: TableProps) => <Table {...props} />)(({ theme
 }));
 
 interface TaskRowProps {
-  task: TaskSummary;
+  task: TaskState;
   onClick: React.MouseEventHandler<HTMLTableRowElement>;
 }
 
 function TaskRow({ task, onClick }: TaskRowProps) {
+  // replace all temp info
   const [hover, setHover] = React.useState(false);
 
-  const returnTaskStateCellClass = (task: TaskSummary) => {
-    switch (task.state) {
-      case RmfTaskSummary.STATE_ACTIVE:
+  const getTaskStateCellClass = (task: TaskState) => {
+    switch (task.status) {
+      case Status.Underway:
         return classes.taskActiveCell;
-      case RmfTaskSummary.STATE_CANCELED:
-        return classes.taskCancelledCell;
-      case RmfTaskSummary.STATE_COMPLETED:
+      case Status.Completed:
         return classes.taskCompletedCell;
-      case RmfTaskSummary.STATE_FAILED:
+      case Status.Canceled:
+        return classes.taskCancelledCell;
+      case Status.Failed:
         return classes.taskFailedCell;
-      case RmfTaskSummary.STATE_PENDING:
-        return classes.taskPendingCell;
-      case RmfTaskSummary.STATE_QUEUED:
+      case Status.Queued:
         return classes.taskQueuedCell;
       default:
         return classes.taskUnknownCell;
     }
   };
 
-  const taskStateCellClass = returnTaskStateCellClass(task);
-
+  const taskStateCellClass = getTaskStateCellClass(task);
   return (
     <>
       <TableRow
@@ -119,39 +106,44 @@ function TaskRow({ task, onClick }: TaskRowProps) {
         onMouseOver={() => setHover(true)}
         onMouseOut={() => setHover(false)}
       >
-        <TableCell>{task.task_id}</TableCell>
-        <TableCell>{task.robot_name}</TableCell>
-        <TableCell>{toRelativeDate(task.start_time)}</TableCell>
-        <TableCell>{toRelativeDate(task.end_time)}</TableCell>
-        <TableCell className={taskStateCellClass}>{taskStateToStr(task.state)}</TableCell>
+        <TableCell>
+          {task.unix_millis_start_time
+            ? new Date(task.unix_millis_start_time).toLocaleDateString()
+            : 'unknown'}
+        </TableCell>
+        <TableCell>{task.booking.id}</TableCell>
+        <TableCell>{task.assigned_to ? task.assigned_to.name : 'unknown'}</TableCell>
+        <TableCell>
+          {task.unix_millis_start_time
+            ? new Date(task.unix_millis_start_time).toLocaleTimeString()
+            : '-'}
+        </TableCell>
+        <TableCell>
+          {task.unix_millis_finish_time
+            ? new Date(task.unix_millis_finish_time).toLocaleTimeString()
+            : '-'}
+        </TableCell>
+        <TableCell className={taskStateCellClass}>{task.status || 'unknown'}</TableCell>
       </TableRow>
     </>
   );
 }
-
-const toRelativeDate = (rosTime: Time) => {
-  return formatDistanceToNow(rosTimeToJs(rosTime), { addSuffix: true });
-};
 
 export interface TaskTableProps {
   /**
    * The current list of tasks to display, when pagination is enabled, this should only
    * contain the tasks for the current page.
    */
-  tasks: TaskSummary[];
-  onTaskClick?(ev: React.MouseEvent<HTMLDivElement>, task: TaskSummary): void;
+  tasks: TaskState[];
+  onTaskClick?(ev: React.MouseEvent<HTMLDivElement>, task: TaskState): void;
 }
 
 export function TaskTable({ tasks, onTaskClick }: TaskTableProps): JSX.Element {
   return (
-    <StyledTable
-      className={classes.table}
-      stickyHeader
-      size="small"
-      style={{ tableLayout: 'fixed' }}
-    >
+    <StyledTable stickyHeader size="small">
       <TableHead>
         <TableRow>
+          <TableCell>Date</TableCell>
           <TableCell>Task Id</TableCell>
           <TableCell>Assignee</TableCell>
           <TableCell>Start Time</TableCell>
@@ -162,7 +154,7 @@ export function TaskTable({ tasks, onTaskClick }: TaskTableProps): JSX.Element {
       <TableBody>
         {tasks.map((task) => (
           <TaskRow
-            key={task.task_id}
+            key={task.booking.id}
             task={task}
             onClick={(ev) => onTaskClick && onTaskClick(ev, task)}
           />

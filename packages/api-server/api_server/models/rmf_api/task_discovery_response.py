@@ -6,6 +6,7 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
+from typing_extensions import Literal
 
 
 class Task(BaseModel):
@@ -29,7 +30,7 @@ class Data(BaseModel):
 
 
 class TaskDiscovery(BaseModel):
-    type: Optional[str] = Field(
-        None, description="Indicate that this is an task discovery update"
+    type: Literal["task_discovery_update"] = Field(
+        ..., description="Indicate that this is an task discovery update"
     )
-    data: Optional[Data] = None
+    data: Data

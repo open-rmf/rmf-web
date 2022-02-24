@@ -12,3 +12,5 @@ it('renders without crashing', async () => {
   root.unmount();
   (URL.createObjectURL as jest.Mock).mockReset();
 });
+
+export {};

@@ -11,8 +11,7 @@ import {
   IngestorState,
   LiftHealth,
   LiftState,
-  RobotHealth,
-  TaskSummary,
+  TaskState,
 } from './openapi';
 
 const debug = Debug('rmf-client');
@@ -104,17 +103,8 @@ export class SioClient {
     return this.subscribe<FleetState>(`/fleets/${name}/state`, listener);
   }
 
-  subscribeRobotHealth(
-    fleetName: string,
-    robotName: string,
-    listener: Listener<RobotHealth>,
-  ): Subscription {
-    return this.subscribe<RobotHealth>(`/fleets/${fleetName}/${robotName}/health`, listener);
-  }
-
-  subscribeTaskSummary(taskId: string, listener: Listener<TaskSummary>): Subscription {
-    const encoded = taskId.replace('/', '__');
-    return this.subscribe<TaskSummary>(`/tasks/${encoded}/summary`, listener);
+  subscribeTaskState(taskId: string, listener: Listener<TaskState>): Subscription {
+    return this.subscribe<TaskState>(`/tasks/${taskId}/state`, listener);
   }
 }
 

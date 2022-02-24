@@ -28,4 +28,8 @@ config = {
     # Used to verify the "iss" claim
     # If iss is set to None, it means that authentication should be disabled
     "iss": None,
+    # list of arguments passed to the ros node, "--ros-args" is automatically prepended to the list.
+    # e.g.
+    #   Run with sim time: ["-p", "use_sim_time:=true"]
+    "ros_args": [],
 }

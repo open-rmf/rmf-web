@@ -1,7 +1,8 @@
-import { io } from '../lib';
+import { SioClient } from '../lib';
 
-const client = io('http://localhost:8000');
-client.emit('subscribe', 'building_map');
-client.emit('subscribe', 'door_states');
-client.on('building_map', () => console.log('got building map'));
-client.on('door_states', console.log);
+const client = new SioClient('http://localhost:8000');
+const l1 = client.subscribeDoorState('coe_door', console.log);
+const l2 = client.subscribeDoorState('coe_door', console.log);
+
+client.unsubscribe(l1);
+client.unsubscribe(l2);

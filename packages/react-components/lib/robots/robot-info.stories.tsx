@@ -1,36 +1,23 @@
 import { Meta, Story } from '@storybook/react';
 import React from 'react';
-import { makeDefinedTask } from '../tasks/test-data.spec';
 import { RobotInfo, RobotInfoProps } from './robot-info';
-import { makeRobot } from './test-utils.spec';
-import { Paper } from '@mui/material';
 
 export default {
-  title: 'Robots/Info',
+  title: 'Robots/Detailed Info',
   component: RobotInfo,
 } as Meta;
 
-export const Info: Story<RobotInfoProps> = (args) => {
-  return (
-    <Paper style={{ padding: '1rem' }}>
-      <RobotInfo {...args}></RobotInfo>
-    </Paper>
-  );
+export const Default: Story<RobotInfoProps> = (args) => {
+  return <RobotInfo {...args}></RobotInfo>;
 };
 
-const exampleRobot = makeRobot();
-const tasks = [
-  makeDefinedTask('Loop', 'test', '1002', 3, 1),
-  makeDefinedTask('Delivery', 'test', '1004', 3, 1),
-  makeDefinedTask('Loop', 'test', '1007', 4, 1),
-];
-const verboseRobot = {
-  fleet: 'fleet',
-  name: exampleRobot.name,
-  state: exampleRobot,
-  tasks,
-};
+Default.storyName = 'Detailed Info';
 
-Info.args = {
-  robot: verboseRobot,
+Default.args = {
+  robotName: 'Robot Name',
+  assignedTask: 'mytask',
+  battery: 0.5,
+  taskProgress: 0.5,
+  taskStatus: 'underway',
+  estFinishTime: Date.now(),
 };

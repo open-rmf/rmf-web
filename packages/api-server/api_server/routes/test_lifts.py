@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 
-from api_server.test import AppFixture, make_building_map, make_lift_state, try_until
+from api_server.test import AppFixture, make_building_map, make_lift_state
 
 
 class TestLiftsRoute(AppFixture):
@@ -34,8 +34,7 @@ class TestLiftsRoute(AppFixture):
 
     def test_sub_lift_state(self):
         fut = self.subscribe_sio(f"/lifts/{self.lift_states[0].lift_name}/state")
-        try_until(fut.done, lambda x: x)
-        result = fut.result(0)
+        result = fut.result(1)
         self.assertEqual(self.lift_states[0].lift_name, result["lift_name"])
 
     def test_request_lift(self):

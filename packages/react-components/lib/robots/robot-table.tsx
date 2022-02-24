@@ -1,7 +1,7 @@
 import {
-  IconButton,
   Paper,
   PaperProps,
+  styled,
   Table,
   TableBody,
   TableCell,
@@ -11,14 +11,9 @@ import {
   TableRow,
   Toolbar,
   Typography,
-  styled,
 } from '@mui/material';
-import type { RobotMode } from 'api-client';
-import { Refresh as RefreshIcon } from '@mui/icons-material';
+import type { RobotState } from 'api-client';
 import React from 'react';
-import { RobotMode as RmfRobotMode } from 'rmf-models';
-import { taskTypeToStr } from '../tasks/utils';
-import { robotModeToString, VerboseRobot } from './utils';
 
 const classes = {
   table: 'robot-table',
@@ -61,99 +56,52 @@ const StyledPaper = styled((props: PaperProps) => <Paper {...props} />)(({ theme
   },
 }));
 
-interface RobotRowProps {
-  robot: VerboseRobot;
+type RobotStatus = Required<RobotState>['status'];
+
+export interface RobotTableData {
+  name: string;
+  status?: RobotStatus;
+  battery?: number;
+  estFinishTime?: number;
+}
+
+interface RobotRowProps extends RobotTableData {
   onClick: React.MouseEventHandler<HTMLTableRowElement>;
 }
 
-const returnLocationCells = (robot: VerboseRobot) => {
-  const taskDescription = robot.tasks[0].summary.task_profile.description;
-  switch (taskTypeToStr(taskDescription.task_type.type)) {
-    case 'Loop':
-      return (
-        <>
-          <TableCell>{taskDescription.loop.start_name}</TableCell>
-          <TableCell>{taskDescription.loop.finish_name}</TableCell>
-        </>
-      );
-    case 'Delivery':
-      return (
-        <>
-          <TableCell>{taskDescription.delivery.pickup_place_name}</TableCell>
-          <TableCell>{taskDescription.delivery.dropoff_place_name}</TableCell>
-        </>
-      );
-    case 'Clean':
-      return (
-        <>
-          <TableCell>-</TableCell>
-          <TableCell>{taskDescription.clean.start_waypoint}</TableCell>
-        </>
-      );
-    default:
-      return (
-        <>
-          <TableCell>-</TableCell>
-          <TableCell>-</TableCell>
-        </>
-      );
+function getRobotStatusClass(robotStatus?: RobotStatus) {
+  if (!robotStatus) {
+    return '';
   }
-};
-
-function RobotRow({ robot, onClick }: RobotRowProps) {
-  const getRobotModeClass = (robotMode: RobotMode) => {
-    switch (robotMode.mode) {
-      case RmfRobotMode.MODE_EMERGENCY:
-        return classes.robotErrorClass;
-      case RmfRobotMode.MODE_CHARGING:
-        return classes.robotChargingClass;
-      case RmfRobotMode.MODE_GOING_HOME:
-      case RmfRobotMode.MODE_DOCKING:
-      case RmfRobotMode.MODE_MOVING:
-        return classes.robotInMotionClass;
-      case RmfRobotMode.MODE_IDLE:
-      case RmfRobotMode.MODE_PAUSED:
-      case RmfRobotMode.MODE_WAITING:
-        return classes.robotStoppedClass;
-      default:
-        return '';
-    }
-  };
-
-  const robotMode = robotModeToString(robot.state.mode);
-  const robotModeClass = getRobotModeClass(robot.state.mode);
-
-  if (robot.tasks.length === 0) {
-    return (
-      <>
-        <TableRow onClick={onClick} className={classes.tableRow}>
-          <TableCell>{robot.name}</TableCell>
-          <TableCell>{'-'}</TableCell>
-          <TableCell>{'-'}</TableCell>
-          <TableCell>{'-'}</TableCell>
-          <TableCell>{robot.state.battery_percent.toFixed(2)}%</TableCell>
-          <TableCell className={robotModeClass}>{robotMode}</TableCell>
-        </TableRow>
-      </>
-    );
-  } else {
-    return (
-      <>
-        <TableRow onClick={onClick} className={classes.tableRow}>
-          <TableCell>{robot.name}</TableCell>
-          {returnLocationCells(robot)}
-          <TableCell>
-            {robot.tasks
-              ? robot.tasks[0].summary.end_time.sec - robot.tasks[0].summary.start_time.sec
-              : '-'}
-          </TableCell>
-          <TableCell>{robot.state.battery_percent.toFixed(2)}%</TableCell>
-          <TableCell className={robotModeClass}>{robotMode}</TableCell>
-        </TableRow>
-      </>
-    );
+  switch (robotStatus) {
+    case 'error':
+      return classes.robotErrorClass;
+    case 'charging':
+      return classes.robotChargingClass;
+    case 'working':
+      return classes.robotInMotionClass;
+    case 'idle':
+    case 'offline':
+    case 'shutdown':
+    case 'uninitialized':
+      return classes.robotStoppedClass;
   }
 }
+
+const RobotRow = React.memo(
+  ({ name, status, battery = 0, estFinishTime, onClick }: RobotRowProps) => {
+    const robotStatusClass = getRobotStatusClass(status);
+
+    return (
+      <TableRow onClick={onClick} className={classes.tableRow}>
+        <TableCell>{name}</TableCell>
+        <TableCell>{estFinishTime ? new Date(estFinishTime).toLocaleString() : '-'}</TableCell>
+        <TableCell>{battery * 100}%</TableCell>
+        <TableCell className={robotStatusClass}>{status}</TableCell>
+      </TableRow>
+    );
+  },
+);
 
 export type PaginationOptions = Omit<
   React.ComponentPropsWithoutRef<typeof TablePagination>,
@@ -165,16 +113,14 @@ export interface RobotTableProps extends PaperProps {
    * The current list of robots to display, when pagination is enabled, this should only
    * contain the robots for the current page.
    */
-  robots: VerboseRobot[];
+  robots: RobotTableData[];
   paginationOptions?: PaginationOptions;
-  onRefreshClick?: React.MouseEventHandler<HTMLButtonElement>;
-  onRobotClick?(ev: React.MouseEvent<HTMLDivElement>, robot: VerboseRobot): void;
+  onRobotClick?(ev: React.MouseEvent<HTMLDivElement>, robotName: string): void;
 }
 
 export function RobotTable({
   robots,
   paginationOptions,
-  onRefreshClick,
   onRobotClick,
   ...paperProps
 }: RobotTableProps): JSX.Element {
@@ -184,31 +130,25 @@ export function RobotTable({
         <Typography className={classes.title} variant="h6">
           Robots
         </Typography>
-        <IconButton onClick={onRefreshClick} aria-label="Refresh">
-          <RefreshIcon />
-        </IconButton>
       </Toolbar>
       <TableContainer style={{ flex: '1 1 auto' }} id="robot-table">
         <Table stickyHeader size="small" style={{ tableLayout: 'fixed' }}>
           <TableHead>
             <TableRow>
               <TableCell>Robot Name</TableCell>
-              <TableCell>Start Location</TableCell>
-              <TableCell>Destination</TableCell>
-              <TableCell>Active Task Duration</TableCell>
+              <TableCell>Est. Task Finish Time</TableCell>
               <TableCell>Battery</TableCell>
-              <TableCell>State</TableCell>
+              <TableCell>Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {robots &&
-              robots.map((robot, robot_id) => (
-                <RobotRow
-                  key={robot_id}
-                  robot={robot}
-                  onClick={(ev) => onRobotClick && onRobotClick(ev, robot)}
-                />
-              ))}
+            {robots.map((robot, robot_id) => (
+              <RobotRow
+                key={robot_id}
+                {...robot}
+                onClick={(ev) => onRobotClick && onRobotClick(ev, robot.name)}
+              />
+            ))}
           </TableBody>
         </Table>
       </TableContainer>

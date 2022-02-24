@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
 import { styled } from '@mui/material';
-import type { Task, TaskSummary } from 'api-client';
+import type { TaskState } from 'api-client';
 import type { AxiosError } from 'axios';
 import React from 'react';
 import { PlacesContext, RmfIngressContext } from '../rmf-app';
@@ -13,23 +13,22 @@ const classes = {
 const StyledTaskPage = styled((props: TaskPanelProps) => <TaskPanel {...props} />)(({ theme }) => ({
   [`&.${classes.taskPanel}`]: {
     padding: `${theme.spacing(4)}`,
-    maxWidth: 1600,
-    height: '100%',
+    maxWidth: '100%',
     backgroundColor: theme.palette.background.default,
   },
 }));
-
 export function TaskPage() {
+  const RefreshRate = 1000;
   const { tasksApi, sioClient } = React.useContext(RmfIngressContext) || {};
-  const [fetchedTasks, setFetchedTasks] = React.useState<Task[]>([]);
-  const [updatedSummaries, setUpdatedSummaries] = React.useState<Record<string, TaskSummary>>({});
+  const [fetchedTasks, setFetchedTasks] = React.useState<TaskState[]>([]);
+  const [updatedSummaries, setUpdatedStates] = React.useState<Record<string, TaskState>>({});
   const [autoRefreshEnabled, setAutoRefreshEnabled] = React.useState(true);
   const [page, setPage] = React.useState(0);
   const [hasMore, setHasMore] = React.useState(true);
   const places = React.useContext(PlacesContext);
   const placeNames = places.map((p) => p.vertex.name);
   const tasks = React.useMemo(
-    () => fetchedTasks.map((t) => ({ ...t, summary: updatedSummaries[t.task_id] || t.summary })),
+    () => fetchedTasks.map((t) => ({ ...t, summary: updatedSummaries[t.booking.id] })),
     [fetchedTasks, updatedSummaries],
   );
 
@@ -38,21 +37,17 @@ export function TaskPage() {
       if (!tasksApi) {
         return [];
       }
-      const resp = await tasksApi.getTasksTasksGet(
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
+      const resp = await tasksApi.queryTaskStatesTasksGet(
         undefined,
         undefined,
         undefined,
         undefined,
         11,
         page * 10,
-        '-priority,-start_time',
+        '-unix_millis_start_time',
+        undefined,
       );
-      const results = resp.data as Task[];
+      const results = resp.data as TaskState[];
       setHasMore(results.length > 10);
       setFetchedTasks(results.slice(0, 10));
     },
@@ -62,10 +57,10 @@ export function TaskPage() {
   React.useEffect(() => {
     if (!autoRefreshEnabled || !sioClient) return;
     const subs = fetchedTasks.map((t) =>
-      sioClient.subscribeTaskSummary(t.task_id, (newSummary) =>
-        setUpdatedSummaries((prev) => ({
+      sioClient.subscribeTaskState(t.booking.id, (newState) =>
+        setUpdatedStates((prev) => ({
           ...prev,
-          [newSummary.task_id]: newSummary,
+          [newState.booking.id]: newState,
         })),
       ),
     );
@@ -82,12 +77,26 @@ export function TaskPage() {
     handleRefresh();
   }, [handleRefresh]);
 
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      if (autoRefreshEnabled) handleRefresh();
+    }, RefreshRate);
+    return () => clearInterval(interval);
+  }, [handleRefresh, sioClient, autoRefreshEnabled]);
+
   const submitTasks = React.useCallback<Required<TaskPanelProps>['submitTasks']>(
-    async (tasks) => {
+    async (taskRequests) => {
       if (!tasksApi) {
         throw new Error('tasks api not available');
       }
-      await Promise.all(tasks.map((t) => tasksApi.submitTaskTasksSubmitTaskPost(t)));
+      await Promise.all(
+        taskRequests.map((taskReq) =>
+          tasksApi.postDispatchTaskTasksDispatchTaskPost({
+            type: 'dispatch_task_request',
+            request: taskReq,
+          }),
+        ),
+      );
       handleRefresh();
     },
     [tasksApi, handleRefresh],
@@ -96,7 +105,10 @@ export function TaskPage() {
   const cancelTask = React.useCallback<Required<TaskPanelProps>['cancelTask']>(
     async (task) => {
       try {
-        await tasksApi?.cancelTaskTasksCancelTaskPost({ task_id: task.task_id });
+        await tasksApi?.postCancelTaskTasksCancelTaskPost({
+          type: 'cancel_task_request',
+          task_id: task.booking.id,
+        });
       } catch (e) {
         const axiosErr = e as AxiosError;
         let errMsg = 'unspecified error';
@@ -112,6 +124,7 @@ export function TaskPage() {
     },
     [tasksApi],
   );
+
   //extra task panel will be removed
   return (
     <StyledTaskPage
