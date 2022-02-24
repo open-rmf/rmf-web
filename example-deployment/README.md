@@ -36,7 +36,7 @@ others:
 For this example we will be using [rmf_demos](https://github.com/open-rmf/rmf_demos) as a local "deployment" of RMF, check that you have a working installation with
 
 ```bash
-ros2 launch rmf_demos_gz office.launch.xml
+RMW_IMPLEMENTATION=rmw_fastrtps_cpp ros2 launch rmf_demos_gz office.launch.xml
 ```
 
 ## kubernetes
@@ -276,9 +276,10 @@ The jobs we will run in this example can be found at `k8s/example-full/cronjobs.
 ## Test the deployment
 
 If not done so already, launch the office demo
+NOTE: Due to DDS challenging behavior with minikube over NAT, we will use `rmw_fastrtps_cpp` to bypass NAT traversal using sharede memory transport.
 
 ```bash
-ros2 launch rmf_demos_gz office.launch.xml headless:=true
+RMW_IMPLEMENTATION=rmw_fastrtps_cpp ros2 launch rmf_demos_gz office.launch.xml headless:=1 use_sim_time:=false server_uri:=ws://example.com:8001
 ```
 
 Go to https://example.com/dashboard, if everything works, you should see a log in screen, use user=example, password=example.
@@ -292,7 +293,7 @@ It can be very useful to automate everything mentioned above and instantly deplo
 Before you run the script, first you have to obtain the source. Refer to the above instructions if you don't know how to do it. You should have a git repo for rmf-web and a colcon workspace for rmf, then just run
 
 ```bash
-./deploy.sh --rmf-ws <path-to-rmf-ws> --rmf-web-ws <path-to-rmf-web-ws>
+./deploy.sh <path-to-rmf-ws> <path-to-rmf-web-ws>
 ```
 
 Note: If you followed the above instructions to obtain the source, your rmf workspace will be in `ws/rmf`, and your rmf-web workspace will be in `ws/rmf-web`. So you will run it with `./deploy.sh --rmf-ws ws/rmf --rmf-web-ws ws/rmf`.
@@ -399,7 +400,11 @@ If you can connect to rmf, there is a chance that there is some discovery issues
 
 ## Some containers crashes at first startup
 
-Some deployments like the rmf-server may crash on the first startup, this is often due to the database not being ready yet. This is normal and kubernetes will automatically restart the container.
+Some deployments like the rmf-server may crash on the first startup, this is often due to the database not being ready yet. This is normal and kubernetes will automatically restart the container. Alternatively, you can forcefully terminate the rmf-server to force a restart:
+```
+kubectl get pods 
+kubectl delete pods [rmf-server-xxxx]
+```
 
 One solution is to add an init container to probe for the readiness of the database, but this comes at a small cost which is not normally expected to happen in an actual deployment. It is also not fail proof as there is no guarantee that
 

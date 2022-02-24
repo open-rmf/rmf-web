@@ -71,7 +71,7 @@ echo '🗒 setting up apps and users'
 try() {
   "$@" || (sleep 1 && "$@") || (sleep 5 && "$@")
 }
-try node keycloak-tools/bootstrap-keycloak.js
+try node keycloak-tools/bootstrap-keycloak.js || true  # persistent keycloak database might fail this script if it has already been run before
 try node keycloak-tools/get-cert.js > k8s/example-full/keycloak/keycloak.pem
 openssl x509 -in k8s/example-full/keycloak/keycloak.pem -pubkey -noout -out k8s/example-full/keycloak/jwt-pub-key.pub
 echo '✅ successfully setup keycloak'
