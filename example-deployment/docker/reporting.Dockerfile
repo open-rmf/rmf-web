@@ -2,8 +2,6 @@ ARG BUILDER_TAG
 FROM rmf-web/builder:$BUILDER_TAG
 
 COPY . /root/rmf-web
-RUN cd /root/rmf-web && \
-  lerna run prepare --include-dependencies --scope=reporting
 
 ARG PUBLIC_URL
 ARG REACT_APP_REPORTING_SERVER

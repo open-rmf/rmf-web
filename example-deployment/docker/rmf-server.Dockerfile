@@ -1,6 +1,6 @@
 FROM rmf-web/rmf-server:build as stage0
 
-FROM ros:foxy-ros-base-focal
+FROM ros:galactic
 
 SHELL ["bash", "-c"]
 
@@ -15,7 +15,8 @@ COPY rmf/rmf_internal_msgs/rmf_traffic_msgs /root/rmf_ws/src/rmf_traffic_msgs
 COPY rmf/rmf_internal_msgs/rmf_workcell_msgs /root/rmf_ws/src/rmf_workcell_msgs
 COPY rmf/rmf_building_map_msgs /root/rmf_ws/src/rmf_building_map_msgs
 
-RUN . /opt/ros/foxy/setup.bash && cd /root/rmf_ws && \
+RUN apt update && apt install -y ros-galactic-rmw-fastrtps-cpp
+RUN . /opt/ros/galactic/setup.bash && cd /root/rmf_ws && \
   colcon build --merge-install --install-base /opt/rmf --cmake-args -DCMAKE_BUILD_TYPE=Release && \
   rm -rf /root/rmf_ws
 
@@ -27,6 +28,6 @@ RUN cd /root/rmf-server && \
 
 RUN echo -e '#!/bin/bash\n\
   . /opt/rmf/setup.bash\n\
-  exec rmf_api_server "$@"\n\
+  rmf_api_server "$@"\n\
   ' > /docker-entry-point.sh && chmod +x /docker-entry-point.sh
 ENTRYPOINT ["/docker-entry-point.sh"]

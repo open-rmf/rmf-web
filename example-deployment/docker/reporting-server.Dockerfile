@@ -3,7 +3,6 @@ FROM rmf-web/builder:$BUILDER_TAG
 
 COPY . /root/rmf-web
 RUN cd /root/rmf-web && \
-  lerna run prepare --include-dependencies --scope=reporting-server && \
   cd packages/reporting-server && \
   npm run prepack
 
