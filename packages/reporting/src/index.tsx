@@ -2,10 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/app';
 import * as serviceWorker from './serviceWorker';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <App />
+    </LocalizationProvider>
   </React.StrictMode>,
   document.getElementById('root'),
 );
