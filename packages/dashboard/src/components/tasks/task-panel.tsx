@@ -21,12 +21,17 @@ import {
 } from '@mui/material';
 import { TaskEventLog, TaskRequest, TaskState } from 'api-client';
 import React from 'react';
-import { CreateTaskForm, CreateTaskFormProps, TaskInfo, TaskTable } from 'react-components';
+import {
+  CreateTaskForm,
+  CreateTaskFormProps,
+  TaskInfo,
+  TaskTable,
+  TaskLogs,
+} from 'react-components';
 import { UserProfileContext } from 'rmf-auth';
 import { AppControllerContext } from '../app-contexts';
 import { Enforcer } from '../permissions';
 import { RmfIngressContext } from '../rmf-app';
-import { TaskLogs } from './task-logs';
 import { parseTasksFile } from './utils';
 
 const prefix = 'task-panel';
