@@ -19,7 +19,6 @@ export * from './logo-button';
 export * from './map';
 export * from './navigation-bar';
 export * from './place';
-export * from './reports';
 export * from './robots';
 export * from './simple-filter';
 export * from './simple-info';

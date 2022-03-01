@@ -33,7 +33,10 @@ function parsePhaseDetail(phases: TaskState['phases'], category?: string) {
   return {};
 }
 
-export function parseTaskDetail(task: TaskState, category?: string) {
+export function parseTaskDetail(
+  task: TaskState,
+  category?: string,
+): { to: string; from: string } | {} {
   if (category?.includes('Loop')) return parsePhaseDetail(task.phases, category);
   if (category?.includes('Delivery')) {
     const from = category?.split('[place:')[1].split(']')[0];

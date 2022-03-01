@@ -77,21 +77,6 @@ async function createAudienceClientScope(headers, name, description, audience) {
       },
     );
 
-    await tryRequest(
-      `${baseUrl}/admin/realms/rmf-web/clients`,
-      {
-        method: 'POST',
-        headers: authHeaders(token),
-      },
-      {
-        clientId: 'reporting',
-        rootUrl: 'https://example.com',
-        redirectUris: ['https://example.com/*'],
-        webOrigins: ['https://example.com'],
-        publicClient: true,
-      },
-    );
-
     {
       // create admin user
       await tryRequest(
@@ -182,14 +167,7 @@ async function createAudienceClientScope(headers, name, description, audience) {
       'dashboard',
     );
 
-    await createAudienceClientScope(
-      authHeaders(token),
-      'reporting',
-      'reporting scope',
-      'reporting',
-    );
-
-    // get existing clients (dashboard and reporting)
+    // get existing clients
     const clientsRaw = await request(`${baseUrl}/admin/realms/rmf-web/clients`, {
       method: 'GET',
       headers: authHeaders(token),
@@ -201,11 +179,7 @@ async function createAudienceClientScope(headers, name, description, audience) {
       return item.clientId === 'dashboard';
     })[0].id;
 
-    const reportingId = clientArray.filter(function (item) {
-      return item.clientId === 'reporting';
-    })[0].id;
-
-    // get existing clients (dashboard and reporting)
+    // get existing clients
     const clientsScopeRaw = await request(`${baseUrl}/admin/realms/rmf-web/client-scopes`, {
       method: 'GET',
       headers: authHeaders(token),
@@ -216,12 +190,7 @@ async function createAudienceClientScope(headers, name, description, audience) {
       return item.name == 'dashboard';
     })[0].id;
 
-    const clientScopeReportingId = clientScopesArray.filter(function (item) {
-      return item.name == 'reporting';
-    })[0].id;
-
     await setClientScopeToClient(authHeaders(token), dashboardId, clientScopeDashboardId);
-    await setClientScopeToClient(authHeaders(token), reportingId, clientScopeReportingId);
   } catch (e) {
     process.exitCode = 1;
   }

@@ -6,8 +6,6 @@ commonLabels:
 
 bases:
   - ../example-lite
-  - ../base/reporting-server
-  - ../base/reporting
 
 resources:
   - cronjobs.yaml
@@ -21,19 +19,8 @@ images:
     newTag: ${RMF_SERVER_TAG}
   - name: rmf-web/dashboard
     newTag: ${DASHBOARD_TAG}
-  - name: rmf-web/reporting-server
-    newTag: ${REPORTING_SERVER_TAG}
-  - name: rmf-web/reporting
-    newTag: ${REPORTING_TAG}
 
 configMapGenerator:
   - name: jwt-pub-key
     files:
       - keycloak/jwt-pub-key.pub
-  - name: reporting-server-config
-    files:
-      - reporting_server_config.py
-  - name: rmf-server-config
-    files:
-      - rmf_server_config.py
-    behavior: replace

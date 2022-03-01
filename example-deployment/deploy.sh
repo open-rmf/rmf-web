@@ -44,19 +44,6 @@ docker build -t rmf-web/dashboard:$rmf_web_ver -f docker/dashboard.Dockerfile "$
 echo '📤 publishing dashboard image...'
 docker save rmf-web/dashboard:$rmf_web_ver | bash -c 'eval $(.bin/minikube docker-env) && docker load'
 
-docker build -t rmf-web/reporting-server:$rmf_web_ver -f docker/reporting-server.Dockerfile "$rmf_web_ws" --build-arg BUILDER_TAG=$rmf_web_ver
-echo '📤 publishing reporting-server image...'
-docker save rmf-web/reporting-server:$rmf_web_ver | bash -c 'eval $(.bin/minikube docker-env) && docker load'
-
-docker build -t rmf-web/reporting:$rmf_web_ver -f docker/reporting.Dockerfile "$rmf_web_ws" \
-  --build-arg BUILDER_TAG=$rmf_web_ver \
-  --build-arg PUBLIC_URL='/reporting' \
-  --build-arg REACT_APP_REPORTING_SERVER='https://example.com/logserver/api/v1' \
-  --build-arg REACT_APP_AUTH_PROVIDER='keycloak' \
-  --build-arg REACT_APP_KEYCLOAK_CONFIG='{ "realm": "rmf-web", "clientId": "reporting", "url": "https://example.com/auth" }'
-echo '📤 publishing reporting image...'
-docker save rmf-web/reporting:$rmf_web_ver | bash -c 'eval $(.bin/minikube docker-env) && docker load'
-
 ### deploy phase
 
 # need to deploy keycloak separately because we need to register the apps prior to generating
@@ -79,6 +66,4 @@ echo '✅ successfully setup keycloak'
 # deploy all other components
 export RMF_SERVER_TAG=$rmf_web_ver
 export DASHBOARD_TAG=$rmf_web_ver
-export REPORTING_SERVER_TAG=$rmf_web_ver
-export REPORTING_TAG=$rmf_web_ver
 ./kustomize-env.sh k8s/example-full | kubectl apply -f -
