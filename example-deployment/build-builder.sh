@@ -13,7 +13,6 @@ cd $root_dir
 mkdir -p build/builder/
 
 cd $1
-cp lerna.json "$root_dir/build/builder/"
 find . -name node_modules -prune -o -name build -prune -o \
   \(\
     -name 'package*.json' -o \

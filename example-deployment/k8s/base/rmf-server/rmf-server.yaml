@@ -80,6 +80,23 @@ spec:
   ports:
     - protocol: TCP
       port: 8000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rmf-server-ws
+  labels:
+    app: rmf-server-ws
+    tier: app
+spec:
+  selector:
+    app: rmf-server
+    tier: app
+  ports:
+    - protocol: TCP
+      port: 8001
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -107,6 +124,8 @@ spec:
           env:
             - name: RMF_API_SERVER_CONFIG
               value: /rmf-server-config/rmf_server_config.py
+            - name: RMW_IMPLEMENTATION
+              value: rmw_fastrtps_cpp
           volumeMounts:
             - mountPath: /rmf-server-config
               name: rmf-server-config

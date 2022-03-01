@@ -2,8 +2,6 @@ ARG BUILDER_TAG
 FROM rmf-web/builder:$BUILDER_TAG
 
 COPY . /root/rmf-web
-RUN cd /root/rmf-web && \
-  lerna run prepare --include-dependencies --scope=reporting
 
 ARG PUBLIC_URL
 ARG REACT_APP_REPORTING_SERVER
@@ -30,10 +28,6 @@ RUN echo -e 'server {\n\
     root /usr/share/nginx/html;\n\
     index index.html index.htm;\n\
     try_files $uri /reporting/index.html;\n\
-  }\n\
-\n\
-  location /reporting/static/ {\n\
-    expires 30d;\n\
   }\n\
 \n\
   error_page 500 502 503 504 /50x.html;\n\
