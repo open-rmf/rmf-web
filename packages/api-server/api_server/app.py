@@ -4,12 +4,13 @@ import signal
 import threading
 from typing import Any, Callable, Coroutine, List, Optional, Union
 
+from fastapi import Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from . import routes
 from .app_config import app_config
-from .authenticator import AuthenticationError, authenticator
+from .authenticator import AuthenticationError, authenticator, user_dep
 from .fast_io import FastIO
 from .gateway import rmf_gateway
 from .logger import logger
@@ -28,7 +29,7 @@ from .repositories import StaticFilesRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, rmf_events
 from .types import is_coroutine
 
-app = FastIO(title="RMF API Server")
+app = FastIO(title="RMF API Server", dependencies=[Depends(user_dep)])
 
 
 async def on_connect(sid: str, _environ: dict, auth: Optional[dict] = None):
