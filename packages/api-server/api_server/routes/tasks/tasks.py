@@ -127,6 +127,26 @@ async def post_dispatch_task(
     return resp.__root__
 
 
+@router.post(
+    "/robot_task",
+    response_model=mdl.RobotTaskResponse,
+    responses={400: {"model": mdl.RobotTaskResponse}},
+)
+async def post_robot_task(
+    request: mdl.RobotTaskRequest = Body(...),
+    task_repo: TaskRepository = Depends(task_repo_dep),
+):
+    resp = mdl.RobotTaskResponse.parse_raw(
+        await tasks_service.call(request.json(exclude_none=True))
+    )
+    if not resp.__root__.__root__.success:
+        return RawJSONResponse(resp.json(), 400)
+    await task_repo.save_task_state(
+        cast(mdl.TaskDispatchResponse, resp.__root__).__root__.state
+    )
+    return resp.__root__
+
+
 @router.post("/interrupt_task", response_model=mdl.TaskInterruptionResponse)
 async def post_interrupt_task(
     request: mdl.TaskInterruptionRequest = Body(...),
