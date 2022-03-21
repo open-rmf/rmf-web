@@ -50,7 +50,9 @@ npm run setup
 
 ### Environment Variables
 
-The default launch script with `npm start` automatically launches an instance of `rmf_demos` and all the backend servers, this is good for local development, but in production you would need to configure the dashboard so that it knows where to find the various services.
+The default launch script with `npm start` launches only the backend servers without any simulation instances from `rmf_demos`. For local development, the launch script `npm run start:sim` launches a headless simulation instance on top of all the backend servers.
+
+In production, the dashboard would need to be configured so that it knows where to find the various services.
 
 Here are the environment variables that you can set before you build the dashboard:
 
