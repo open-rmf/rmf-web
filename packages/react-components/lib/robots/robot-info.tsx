@@ -15,6 +15,16 @@ function getTaskStatusDisplay(assignedTask?: string, taskStatus?: string) {
   }
 }
 
+function calculateLastUpdateTime(updateTime: number): string {
+  if (lastUpdateTime === updateTime) {
+    return ((Date.now() - timeOfLastUpdate) / 1000).toFixed(1);
+  } else {
+    lastUpdateTime = updateTime;
+    timeOfLastUpdate = Date.now();
+    return '< 1';
+  }
+}
+
 const classes = {
   button: 'robot-info-button',
 };
@@ -36,9 +46,12 @@ export interface RobotInfoProps {
   taskStatus?: TaskStatus;
   taskProgress?: number;
   estFinishTime?: number;
+  updateTime?: number;
 }
 
 const finishedStatus: TaskStatus[] = ['failed', 'completed', 'skipped', 'killed', 'canceled'];
+let timeOfLastUpdate: number = Date.now();
+let lastUpdateTime: number = 0;
 
 export function RobotInfo({
   robotName,
@@ -47,6 +60,7 @@ export function RobotInfo({
   taskStatus,
   taskProgress,
   estFinishTime,
+  updateTime,
 }: RobotInfoProps): JSX.Element {
   const theme = useTheme();
   const hasConcreteEndTime = taskStatus && taskStatus in finishedStatus;
@@ -55,6 +69,11 @@ export function RobotInfo({
     <StyledDiv>
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
         {robotName}
+        <Typography variant="caption" display="block">
+          {updateTime !== undefined
+            ? `Last update - ${calculateLastUpdateTime(updateTime).toLocaleString()}s ago`
+            : '-'}
+        </Typography>
       </Typography>
       <Divider />
       <div style={{ marginBottom: theme.spacing(1) }}></div>

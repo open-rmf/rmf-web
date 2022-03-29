@@ -154,6 +154,12 @@ export function RobotPage() {
           });
           newRobotStates[robot.name] = robot;
           robotStatesRef.current[robot.name] = robot;
+          if (selectedRobot && selectedRobot.name && robot.name) {
+            setSelectedRobot(robot);
+            if (robot.task_id) {
+              setSelectedTask(taskStatesRef.current[robot.task_id]);
+            }
+          }
         });
       });
       setRobotTableData(newRobotTableData);
@@ -162,7 +168,7 @@ export function RobotPage() {
       setIngestors(ingestors);
       setFleets(fleets);
     })();
-  }, [rmfIngress]);
+  }, [rmfIngress, _triggerRender, selectedRobot]);
 
   const handleRobotClick = async (
     _ev: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -235,6 +241,7 @@ export function RobotPage() {
               estFinishTime={selectedTask && selectedTask.estimate_millis}
               taskProgress={getTaskProgress(selectedRobot, selectedTask)}
               taskStatus={selectedTask?.status}
+              updateTime={selectedRobot.unix_millis_time}
             />
           ) : (
             <NoSelectedRobot />
