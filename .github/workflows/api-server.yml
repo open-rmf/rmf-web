@@ -22,6 +22,9 @@ jobs:
       run:
         shell: bash
         working-directory: packages/api-server
+    straetgy:
+      matrix:
+        npm: ['latest', '8.5.3']
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -30,7 +33,7 @@ jobs:
           cache: 'npm'
       - name: bootstrap
         run: |
-          npm install -g npm@latest
+          npm install -g npm@${{ matrix.npm }}
           . /rmf_demos_ws/install/setup.bash
           scripts/bootstrap.sh api-server
         working-directory: .
