@@ -15,7 +15,11 @@ env:
   CI: true
 jobs:
   unit-tests:
-    name: Unit Tests
+    strategy:
+      matrix:
+        npm: ['latest', '8.5.3']
+      fail-fast: false
+    name: Unit Tests (npm ${{ matrix.npm }})
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/${{ github.repository }}/e2e
@@ -34,7 +38,7 @@ jobs:
           cache: 'npm'
       - name: bootstrap
         run: |
-          npm install -g npm@latest
+          npm install -g npm@${{ matrix.npm }}
           . /rmf_demos_ws/install/setup.bash
           scripts/bootstrap.sh rmf-dashboard
         working-directory: .

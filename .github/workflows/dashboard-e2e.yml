@@ -8,7 +8,11 @@ env:
   CI: true
 jobs:
   dashboard-e2e:
-    name: Dashboard e2e
+    strategy:
+      matrix:
+        npm: ['latest', '8.5.3']
+      fail-fast: false
+    name: Dashboard e2e (npm ${{ matrix.npm }})
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/${{ github.repository }}/e2e
@@ -32,7 +36,7 @@ jobs:
           cache: 'npm'
       - name: bootstrap
         run: |
-          npm install -g npm@latest
+          npm install -g npm@${{ matrix.npm }}
           scripts/bootstrap.sh rmf-dashboard-e2e
         working-directory: .
       - name: test
