@@ -19,8 +19,12 @@ jobs:
           tags: latest
           path: docker
   dashboard-e2e:
+    strategy:
+      matrix:
+        npm: ['latest', '8.5.3']
+      fail-fast: false
     needs: build-docker-images
-    name: Dashboard e2e
+    name: Dashboard e2e (npm ${{ matrix.npm }})
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/${{ github.repository }}/e2e
@@ -41,7 +45,7 @@ jobs:
           cache: 'npm'
       - name: bootstrap
         run: |
-          npm install -g npm@latest
+          npm install -g npm@${{ matrix.npm }}
           scripts/bootstrap.sh rmf-dashboard-e2e
         working-directory: .
       - name: test
@@ -55,8 +59,12 @@ jobs:
           name: artifacts
           path: packages/dashboard-e2e/artifacts
   reporting-e2e:
+    strategy:
+      matrix:
+        npm: ['latest', '8.5.3']
+      fail-fast: false
     needs: build-docker-images
-    name: Reporting e2e
+    name: Reporting e2e (npm ${{ matrix.npm }})
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/${{ github.repository }}/e2e
@@ -76,7 +84,7 @@ jobs:
           cache: 'npm'
       - name: bootstrap
         run: |
-          npm install -g npm@latest
+          npm install -g npm@${{ matrix.npm }}
           scripts/bootstrap.sh reporting-e2e
         working-directory: .
       - name: test
