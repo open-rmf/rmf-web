@@ -15,7 +15,7 @@ import ScheduleVisualizer from '../schedule-visualizer';
 
 const MemoRobotInfo = React.memo(RobotInfo);
 
-const UpdateRate = 1000;
+const UpdateRate = 3000;
 const prefix = 'robot-page';
 const classes = {
   container: `${prefix}-container`,
@@ -154,7 +154,7 @@ export function RobotPage() {
           });
           newRobotStates[robot.name] = robot;
           robotStatesRef.current[robot.name] = robot;
-          if (selectedRobot && selectedRobot.name && robot.name) {
+          if (selectedRobot && selectedRobot.name && selectedRobot.name === robot.name) {
             setSelectedRobot(robot);
             if (robot.task_id) {
               setSelectedTask(taskStatesRef.current[robot.task_id]);
