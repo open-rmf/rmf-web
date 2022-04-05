@@ -1559,6 +1559,70 @@ export interface RobotState {
   issues?: Array<Issue>;
 }
 /**
+ *
+ * @export
+ * @interface RobotTaskRequest
+ */
+export interface RobotTaskRequest {
+  /**
+   * Indicate that this is a task dispatch request
+   * @type {string}
+   * @memberof RobotTaskRequest
+   */
+  type: string;
+  /**
+   * The name of the robot
+   * @type {string}
+   * @memberof RobotTaskRequest
+   */
+  robot: string;
+  /**
+   * The fleet the robot belongs to
+   * @type {string}
+   * @memberof RobotTaskRequest
+   */
+  fleet: string;
+  /**
+   *
+   * @type {TaskRequest}
+   * @memberof RobotTaskRequest
+   */
+  request: TaskRequest;
+}
+/**
+ * Response to a robot task request
+ * @export
+ * @interface RobotTaskResponse
+ */
+export interface RobotTaskResponse {
+  /**
+   *
+   * @type {boolean}
+   * @memberof RobotTaskResponse
+   */
+  success: RobotTaskResponseSuccessEnum;
+  /**
+   *
+   * @type {TaskState}
+   * @memberof RobotTaskResponse
+   */
+  state: TaskState;
+  /**
+   * Any error messages explaining why the request failed
+   * @type {Array<Error>}
+   * @memberof RobotTaskResponse
+   */
+  errors?: Array<Error>;
+}
+
+export const RobotTaskResponseSuccessEnum = {
+  False: false,
+} as const;
+
+export type RobotTaskResponseSuccessEnum =
+  typeof RobotTaskResponseSuccessEnum[keyof typeof RobotTaskResponseSuccessEnum];
+
+/**
  * Template for defining a response message that only indicates success and describes any errors
  * @export
  * @interface SimpleResponse
@@ -1807,6 +1871,39 @@ export const TaskDiscoveryRequestTypeEnum = {
 
 export type TaskDiscoveryRequestTypeEnum =
   typeof TaskDiscoveryRequestTypeEnum[keyof typeof TaskDiscoveryRequestTypeEnum];
+
+/**
+ * Response to a task dispatch request
+ * @export
+ * @interface TaskDispatchResponse
+ */
+export interface TaskDispatchResponse {
+  /**
+   *
+   * @type {boolean}
+   * @memberof TaskDispatchResponse
+   */
+  success: TaskDispatchResponseSuccessEnum;
+  /**
+   *
+   * @type {TaskState}
+   * @memberof TaskDispatchResponse
+   */
+  state: TaskState;
+  /**
+   * Any error messages explaining why the request failed
+   * @type {Array<Error>}
+   * @memberof TaskDispatchResponse
+   */
+  errors?: Array<Error>;
+}
+
+export const TaskDispatchResponseSuccessEnum = {
+  False: false,
+} as const;
+
+export type TaskDispatchResponseSuccessEnum =
+  typeof TaskDispatchResponseSuccessEnum[keyof typeof TaskDispatchResponseSuccessEnum];
 
 /**
  *
@@ -6408,6 +6505,51 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     },
     /**
      *
+     * @summary Post Robot Task
+     * @param {RobotTaskRequest} robotTaskRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postRobotTaskTasksRobotTaskPost: async (
+      robotTaskRequest: RobotTaskRequest,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'robotTaskRequest' is not null or undefined
+      assertParamExists('postRobotTaskTasksRobotTaskPost', 'robotTaskRequest', robotTaskRequest);
+      const localVarPath = `/tasks/robot_task`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        robotTaskRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Post Skip Phase
      * @param {TaskPhaseSkipRequest} taskPhaseSkipRequest
      * @param {*} [options] Override http request option.
@@ -6806,6 +6948,23 @@ export const TasksApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Post Robot Task
+     * @param {RobotTaskRequest} robotTaskRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async postRobotTaskTasksRobotTaskPost(
+      robotTaskRequest: RobotTaskRequest,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RobotTaskResponse>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.postRobotTaskTasksRobotTaskPost(
+        robotTaskRequest,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
      * @summary Post Skip Phase
      * @param {TaskPhaseSkipRequest} taskPhaseSkipRequest
      * @param {*} [options] Override http request option.
@@ -7038,6 +7197,21 @@ export const TasksApiFactory = function (
     ): AxiosPromise<TaskRewindResponse> {
       return localVarFp
         .postRewindTaskTasksRewindTaskPost(taskRewindRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Post Robot Task
+     * @param {RobotTaskRequest} robotTaskRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postRobotTaskTasksRobotTaskPost(
+      robotTaskRequest: RobotTaskRequest,
+      options?: any,
+    ): AxiosPromise<RobotTaskResponse> {
+      return localVarFp
+        .postRobotTaskTasksRobotTaskPost(robotTaskRequest, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -7280,6 +7454,23 @@ export class TasksApi extends BaseAPI {
   ) {
     return TasksApiFp(this.configuration)
       .postRewindTaskTasksRewindTaskPost(taskRewindRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Post Robot Task
+   * @param {RobotTaskRequest} robotTaskRequest
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public postRobotTaskTasksRobotTaskPost(
+    robotTaskRequest: RobotTaskRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return TasksApiFp(this.configuration)
+      .postRobotTaskTasksRobotTaskPost(robotTaskRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

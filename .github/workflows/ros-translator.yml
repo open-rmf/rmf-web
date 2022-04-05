@@ -11,7 +11,11 @@ env:
   CI: true
 jobs:
   unit-tests:
-    name: Unit Tests
+    strategy:
+      matrix:
+        npm: ['latest', '8.5.3']
+      fail-fast: false
+    name: Unit Tests (npm ${{ matrix.npm }})
     runs-on: ubuntu-latest
     container:
       image: ros:foxy
@@ -31,7 +35,7 @@ jobs:
           apt update && apt install -y python3-pip
           pip3 install pipenv
           npm config set unsafe-perm
-          npm install -g npm@latest
+          npm install -g npm@${{ matrix.npm }}
           scripts/bootstrap.sh ros-translator
         working-directory: .
       - name: test

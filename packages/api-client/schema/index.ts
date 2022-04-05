@@ -570,6 +570,39 @@ export default {
         },
       },
     },
+    '/tasks/robot_task': {
+      post: {
+        tags: ['Tasks'],
+        summary: 'Post Robot Task',
+        operationId: 'post_robot_task_tasks_robot_task_post',
+        requestBody: {
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/RobotTaskRequest' } },
+          },
+          required: true,
+        },
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/RobotTaskResponse' } },
+            },
+          },
+          '400': {
+            description: 'Bad Request',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/RobotTaskResponse' } },
+            },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
     '/tasks/interrupt_task': {
       post: {
         tags: ['Tasks'],
@@ -2418,6 +2451,26 @@ export default {
           },
         },
       },
+      RobotTaskRequest: {
+        title: 'RobotTaskRequest',
+        required: ['type', 'robot', 'fleet', 'request'],
+        type: 'object',
+        properties: {
+          type: {
+            title: 'Type',
+            type: 'string',
+            description: 'Indicate that this is a task dispatch request',
+          },
+          robot: { title: 'Robot', type: 'string', description: 'The name of the robot' },
+          fleet: { title: 'Fleet', type: 'string', description: 'The fleet the robot belongs to' },
+          request: { $ref: '#/components/schemas/TaskRequest' },
+        },
+      },
+      RobotTaskResponse: {
+        title: 'RobotTaskResponse',
+        allOf: [{ $ref: '#/components/schemas/TaskDispatchResponse' }],
+        description: 'Response to a robot task request',
+      },
       SimpleResponse: {
         title: 'SimpleResponse',
         anyOf: [
@@ -2563,6 +2616,14 @@ export default {
             description: 'Indicate that this is a task discovery request',
           },
         },
+      },
+      TaskDispatchResponse: {
+        title: 'TaskDispatchResponse',
+        anyOf: [
+          { $ref: '#/components/schemas/TaskDispatchResponseItem' },
+          { $ref: '#/components/schemas/TaskDispatchResponseItem1' },
+        ],
+        description: 'Response to a task dispatch request',
       },
       TaskDispatchResponseItem: {
         title: 'TaskDispatchResponseItem',
