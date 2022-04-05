@@ -168,7 +168,7 @@ export function RobotPage() {
       setIngestors(ingestors);
       setFleets(fleets);
     })();
-  }, [rmfIngress, _triggerRender, selectedRobot]);
+  }, [rmfIngress, _triggerRender]);
 
   const handleRobotClick = async (
     _ev: React.MouseEvent<HTMLDivElement, MouseEvent>,

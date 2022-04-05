@@ -66,8 +66,8 @@ export function RobotInfo({
 }: RobotInfoProps): JSX.Element {
   const theme = useTheme();
   const hasConcreteEndTime = taskStatus && taskStatus in finishedStatus;
-  const timeOfLastUpdate: number = Date.now();
-  const lastUpdateTime: number = 0;
+  const timeOfLastUpdate = Date.now();
+  const lastUpdateTime = 0;
 
   return (
     <StyledDiv>
