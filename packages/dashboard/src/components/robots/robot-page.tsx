@@ -106,6 +106,10 @@ export function RobotPage() {
   const [robotTableData, setRobotTableData] = React.useState<RobotTableData[]>([]);
   const [selectedRobot, setSelectedRobot] = React.useState<RobotState | undefined>(undefined);
   const [selectedTask, setSelectedTask] = React.useState<TaskState | undefined>(undefined);
+
+  const [lastUpdateTime, setLastUpdateTime] = React.useState<number>(0);
+  const [timeOfLastUpdate, setTimeOfLastUpdate] = React.useState<number>(Date.now());
+
   const [page, setPage] = React.useState(0);
 
   const [_triggerRender, setTriggerRender] = React.useState(0); // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -233,7 +237,10 @@ export function RobotPage() {
       </Grid>
       <Grid item xs={4}>
         <Paper variant="outlined" className={classes.detailPanelContainer}>
-          {selectedRobot && selectedRobot.name ? (
+          {selectedRobot &&
+          selectedRobot.name &&
+          timeOfLastUpdate !== undefined &&
+          lastUpdateTime !== undefined ? (
             <MemoRobotInfo
               robotName={selectedRobot.name}
               assignedTask={selectedRobot.task_id}
@@ -242,6 +249,10 @@ export function RobotPage() {
               taskProgress={getTaskProgress(selectedRobot, selectedTask)}
               taskStatus={selectedTask?.status}
               updateTime={selectedRobot.unix_millis_time}
+              timeOfLastUpdate={timeOfLastUpdate}
+              lastUpdateTime={lastUpdateTime}
+              setTimeOfLastUpdate={setTimeOfLastUpdate}
+              setLastUpdateTime={setLastUpdateTime}
             />
           ) : (
             <NoSelectedRobot />

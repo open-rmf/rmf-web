@@ -19,12 +19,14 @@ function calculateLastUpdateTime(
   updateTime: number,
   lastUpdateTime: number,
   timeOfLastUpdate: number,
+  setLastUpdateTime: any,
+  setTimeOfLastUpdate: any,
 ): string {
   if (lastUpdateTime === updateTime) {
-    return ((Date.now() - timeOfLastUpdate) / 1000).toFixed(1);
+    return ((Date.now() - timeOfLastUpdate) / 1000).toFixed(2).toString();
   } else {
-    lastUpdateTime = updateTime;
-    timeOfLastUpdate = Date.now();
+    setLastUpdateTime(updateTime);
+    setTimeOfLastUpdate(Date.now());
     return '< 1';
   }
 }
@@ -51,6 +53,10 @@ export interface RobotInfoProps {
   taskProgress?: number;
   estFinishTime?: number;
   updateTime?: number;
+  timeOfLastUpdate?: number;
+  lastUpdateTime?: number;
+  setTimeOfLastUpdate?: React.Dispatch<React.SetStateAction<number>>;
+  setLastUpdateTime?: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const finishedStatus: TaskStatus[] = ['failed', 'completed', 'skipped', 'killed', 'canceled'];
@@ -63,22 +69,29 @@ export function RobotInfo({
   taskProgress,
   estFinishTime,
   updateTime,
+  timeOfLastUpdate,
+  lastUpdateTime,
+  setTimeOfLastUpdate,
+  setLastUpdateTime,
 }: RobotInfoProps): JSX.Element {
   const theme = useTheme();
   const hasConcreteEndTime = taskStatus && taskStatus in finishedStatus;
-  const timeOfLastUpdate = Date.now();
-  const lastUpdateTime = 0;
-
   return (
     <StyledDiv>
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
         {robotName}
         <Typography variant="caption" display="block">
-          {updateTime !== undefined
+          {updateTime !== undefined &&
+          lastUpdateTime !== undefined &&
+          timeOfLastUpdate !== undefined &&
+          setLastUpdateTime &&
+          setTimeOfLastUpdate
             ? `Last update - ${calculateLastUpdateTime(
                 updateTime,
                 lastUpdateTime,
                 timeOfLastUpdate,
+                setLastUpdateTime,
+                setTimeOfLastUpdate,
               ).toLocaleString()}s ago`
             : '-'}
         </Typography>
