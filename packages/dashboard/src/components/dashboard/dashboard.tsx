@@ -160,7 +160,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                 mode="normal"
               ></ScheduleVisualizer>
             </Card>
-            <Grid item className={classes.itemPanels}>
+            {/* <Grid item className={classes.itemPanels}>
               {doors.length > 0 ? (
                 <DoorPanel
                   doors={doors}
@@ -182,7 +182,7 @@ export default function Dashboard(_props: {}): React.ReactElement {
                   workcellStates={workcellStates}
                 />
               ) : null}
-            </Grid>
+            </Grid> */}
           </Grid>
         )}
       </GlobalHotKeys>

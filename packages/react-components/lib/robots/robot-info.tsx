@@ -22,13 +22,14 @@ function calculateLastUpdateTime(
   setLastUpdateTime: any,
   setTimeOfLastUpdate: any,
 ): string {
-  if (lastUpdateTime === updateTime) {
-    return ((Date.now() - timeOfLastUpdate) / 1000).toFixed(2).toString();
-  } else {
-    setLastUpdateTime(updateTime);
-    setTimeOfLastUpdate(Date.now());
-    return '< 1';
-  }
+  return ((Date.now() - updateTime) / 1000).toFixed(2).toString();
+  // if (lastUpdateTime === updateTime) {
+  //   return ((Date.now() - timeOfLastUpdate) / 1000).toFixed(2).toString();
+  // } else {
+  //   setLastUpdateTime(updateTime);
+  //   setTimeOfLastUpdate(Date.now());
+  //   return '< 1';
+  // }
 }
 
 const classes = {
