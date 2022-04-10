@@ -169,6 +169,7 @@ export function RobotPage() {
     robotName: string,
   ) => {
     const robot = robotStatesRef.current[robotName];
+    console.log(robotName, robot);
     if (!robot) {
       return;
     }

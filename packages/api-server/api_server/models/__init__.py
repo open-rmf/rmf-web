@@ -24,6 +24,8 @@ from .rmf_api.resume_task_request import TaskResumeRequest
 from .rmf_api.resume_task_response import TaskResumeResponse
 from .rmf_api.rewind_task_request import TaskRewindRequest
 from .rmf_api.rewind_task_response import TaskRewindResponse
+from .rmf_api.robot_task_request import RobotTaskRequest
+from .rmf_api.robot_task_response import *
 from .rmf_api.skip_phase_request import TaskPhaseSkipRequest
 from .rmf_api.skip_phase_response import SkipPhaseResponse
 from .rmf_api.task_discovery_request import TaskDiscoveryRequest
@@ -35,5 +37,4 @@ from .rmf_api.task_request import TaskRequest
 from .rmf_api.task_state import TaskState
 from .rmf_api.undo_skip_phase_request import UndoPhaseSkipRequest
 from .rmf_api.undo_skip_phase_response import UndoPhaseSkipResponse
-from .teleoperation import *
 from .user import *

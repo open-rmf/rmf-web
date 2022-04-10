@@ -92,6 +92,10 @@ async def sub_task_log(_req: SubscriptionRequest, task_id: str):
         rxops.filter(lambda x: cast(mdl.TaskEventLog, x).task_id == task_id)
     )
 
+    result = await task_repo.get_task_log(task_id, between)
+    if result is None:
+        raise HTTPException(status_code=404)
+    return result
 
 @router.post("/activity_discovery", response_model=mdl.ActivityDiscovery)
 async def post_activity_discovery(
@@ -120,6 +124,26 @@ async def post_dispatch_task(
         await tasks_service.call(request.json(exclude_none=True))
     )
     if not resp.__root__.success:
+        return RawJSONResponse(resp.json(), 400)
+    await task_repo.save_task_state(
+        cast(mdl.TaskDispatchResponseItem, resp.__root__).state
+    )
+    return resp.__root__
+
+
+@router.post(
+    "/robot_task",
+    response_model=mdl.RobotTaskResponse,
+    responses={400: {"model": mdl.RobotTaskResponse}},
+)
+async def post_robot_task(
+    request: mdl.RobotTaskRequest = Body(...),
+    task_repo: TaskRepository = Depends(task_repo_dep),
+):
+    resp = mdl.RobotTaskResponse.parse_raw(
+        await tasks_service.call(request.json(exclude_none=True))
+    )
+    if not resp.__root__.__root__.success:
         return RawJSONResponse(resp.json(), 400)
     await task_repo.save_task_state(
         cast(mdl.TaskDispatchResponseItem, resp.__root__).state

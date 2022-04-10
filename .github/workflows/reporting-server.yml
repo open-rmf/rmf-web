@@ -11,7 +11,11 @@ env:
   CI: true
 jobs:
   tests:
-    name: Tests
+    strategy:
+      matrix:
+        npm: ['latest', '8.5.3']
+      fail-fast: false
+    name: Tests (npm ${{ matrix.npm }})
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/${{ github.repository }}/e2e
@@ -31,7 +35,7 @@ jobs:
       - name: bootstrap
         run: |
           . /rmf_demos_ws/install/setup.bash
-          npm install -g npm@latest
+          npm install -g npm@${{ matrix.npm }}
           scripts/bootstrap.sh reporting-server
         working-directory: .
       - name: tests
