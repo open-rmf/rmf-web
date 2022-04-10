@@ -7,7 +7,7 @@ from rx.subject.subject import Subject
 
 from api_server.dependencies import sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.models import VideoRoomModel
+from api_server.models.teleoperation import VideoRoomModel
 from api_server.repositories import RmfRepository, rmf_repo_dep
 from api_server.rmf_io import fleet_events
 
