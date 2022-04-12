@@ -150,7 +150,7 @@ export function RobotPage() {
             name: robot.name,
             battery: robot.battery,
             status: robot.status,
-            estFinishTime: activeTask && activeTask.estimate_millis,
+            estFinishTime: activeTask && activeTask.unix_millis_finish_time,
           });
           newRobotStates[robot.name] = robot;
           robotStatesRef.current[robot.name] = robot;
@@ -232,7 +232,7 @@ export function RobotPage() {
               robotName={selectedRobot.name}
               assignedTask={selectedRobot.task_id}
               battery={selectedRobot.battery}
-              estFinishTime={selectedTask && selectedTask.estimate_millis}
+              estFinishTime={selectedTask && selectedTask.unix_millis_finish_time}
               taskProgress={getTaskProgress(selectedRobot, selectedTask)}
               taskStatus={selectedTask?.status}
             />
