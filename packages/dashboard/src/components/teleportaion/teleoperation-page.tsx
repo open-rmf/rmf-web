@@ -10,8 +10,17 @@ import {
   useFleetStateRef,
   useIngestorStatesRef,
 } from '../../util/common-subscriptions';
+import {
+  robot_manager_login_url,
+  robot_manager_robot_id,
+  robot_manager_access_key,
+  robot_manager_server_endpoint,
+  robot_manager_server_port,
+  robot_manager_company_id,
+} from '../../util/url';
 import { BuildingMapContext, RmfIngress, RmfIngressContext } from '../rmf-app';
 import ScheduleVisualizer from '../schedule-visualizer';
+import * as mqtt from 'mqtt';
 
 const MemoTeleoperationInfo = React.memo(TeleoperationInfo);
 
@@ -93,8 +102,37 @@ export function TeleoperationPage() {
 
   const [_triggerRender, setTriggerRender] = React.useState(0); // eslint-disable-line @typescript-eslint/no-unused-vars
   React.useEffect(() => {
+    console.log('here');
     const interval = setInterval(() => setTriggerRender((prev) => prev + 1), UpdateRate);
     return () => clearInterval(interval);
+  }, []);
+
+  React.useEffect(() => {
+    console.log('fetching robot username and password');
+    const payload = { robotId: robot_manager_robot_id, accessKey: robot_manager_access_key };
+    const headers = { Accept: 'application/json', 'Content-Type': 'application/json' };
+    // To be implemented in api client
+    const requestOptions = {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(payload),
+    };
+
+    fetch(robot_manager_login_url, requestOptions)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+      });
+
+    // const result =  json.loads(response.text);
+    // if result is not None and \
+    //   len(result['error']) == 0 and \
+    //     result['message'] == 'Success':
+    // username = result['result']['userName']
+    // password = result['result']['password']
+
+    // // Connect to mqtt server
+    // let client = mqtt.connect('dev.mqtt.robotmanager.io', { port: 1883, username: , password: });
   }, []);
 
   // get work cells to display on map
