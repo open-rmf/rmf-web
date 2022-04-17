@@ -1,5 +1,17 @@
-import { Button, Divider, Grid, styled, Typography, useTheme } from '@mui/material';
-import type { TaskState } from 'api-client';
+import {
+  Button,
+  Divider,
+  Grid,
+  styled,
+  Typography,
+  useTheme,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material';
+import ReportProblemRoundedIcon from '@mui/icons-material/ReportProblemRounded';
+import type { TaskState, RobotState } from 'api-client';
 import React from 'react';
 import { CircularProgressBar } from './circular-progress-bar';
 import { LinearProgressBar } from './linear-progress-bar';
@@ -28,6 +40,7 @@ const StyledDiv = styled('div')(() => ({
 }));
 
 type TaskStatus = Required<TaskState>['status'];
+type RobotIssues = Required<RobotState>['issues'];
 
 export interface RobotInfoProps {
   robotName: string;
@@ -36,6 +49,7 @@ export interface RobotInfoProps {
   taskStatus?: TaskStatus;
   taskProgress?: number;
   estFinishTime?: number;
+  robotIssues?: RobotIssues;
 }
 
 const finishedStatus: TaskStatus[] = ['failed', 'completed', 'skipped', 'killed', 'canceled'];
@@ -47,9 +61,11 @@ export function RobotInfo({
   taskStatus,
   taskProgress,
   estFinishTime,
+  robotIssues,
 }: RobotInfoProps): JSX.Element {
   const theme = useTheme();
   const hasConcreteEndTime = taskStatus && taskStatus in finishedStatus;
+  const robotIssuesArray = robotIssues !== undefined ? robotIssues : [];
 
   return (
     <StyledDiv>
@@ -108,6 +124,29 @@ export function RobotInfo({
           >
             {estFinishTime !== undefined ? `${new Date(estFinishTime).toLocaleString()}` : '-'}
           </Button>
+        </Grid>
+
+        <Divider />
+
+        <Grid container item xs={12} justifyContent="center">
+          <Typography variant="h6" gutterBottom>
+            Issues
+          </Typography>
+        </Grid>
+        <Grid container item xs={12} justifyContent="center">
+          <List dense disablePadding component="div" role="list">
+            {robotIssuesArray.map((issue) => (
+              <ListItem>
+                <ListItemIcon>
+                  <ReportProblemRoundedIcon />
+                </ListItemIcon>
+                <ListItemText>{JSON.stringify(issue)}</ListItemText>
+              </ListItem>
+            ))}
+            {robotIssuesArray.length === 0 && (
+              <Typography gutterBottom>No pending issues.</Typography>
+            )}
+          </List>
         </Grid>
       </Grid>
     </StyledDiv>

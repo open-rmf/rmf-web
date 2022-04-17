@@ -235,6 +235,7 @@ export function RobotPage() {
               estFinishTime={selectedTask && selectedTask.estimate_millis}
               taskProgress={getTaskProgress(selectedRobot, selectedTask)}
               taskStatus={selectedTask?.status}
+              robotIssues={selectedRobot.issues}
             />
           ) : (
             <NoSelectedRobot />
