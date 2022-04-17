@@ -210,10 +210,7 @@ export function TeleoperationPage() {
       <Grid item xs={4}>
         <Paper variant="outlined" className={classes.detailPanelContainer}>
           {selectedRobot && selectedRobot.name && rmfIngress ? (
-            <MemoTeleoperationInfo
-              robotName={selectedRobot.name}
-              teleoperationApi={rmfIngress.teleoperationApi}
-            />
+            <MemoTeleoperationInfo />
           ) : (
             <NoSelectedRobot />
           )}

@@ -1,9 +1,7 @@
 import { Divider, Grid, styled, useTheme, Popover, TextField, Box, Switch } from '@mui/material';
 import { height } from '@mui/system';
-import { TeleoperationApi } from 'api-client';
-// import { robot_manager_login_url, robot_manager_robot_id, robot_manager_access_key, robot_manager_server_endpoint, robot_manager_server_port, robot_manager_company_id } from '../../../dashboard/src/util/url';
 import * as mqtt from 'mqtt';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const classes = {
   button: 'robot-info-button',
@@ -17,15 +15,7 @@ const StyledDiv = styled('div')(() => ({
   },
 }));
 
-export interface TeleoperationInfoProps {
-  robotName: string;
-  teleoperationApi: TeleoperationApi;
-}
-
-export function TeleoperationInfo({
-  robotName,
-  teleoperationApi,
-}: TeleoperationInfoProps): JSX.Element {
+export function TeleoperationInfo(): JSX.Element {
   const theme = useTheme();
   const [client, setClient] = React.useState<mqtt.MqttClient | null>();
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
@@ -45,90 +35,11 @@ export function TeleoperationInfo({
     setAnchorEl(null);
   };
 
+  // TODO(BH): Make this globally configurable
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
-
-  // TODO(BH): Make this globally configurable
-  const name = robotName.trim();
-
-  React.useEffect(() => {
-    const payload = {
-      robotId: robotId,
-      accessKey: accessKey,
-    };
-    const headers = { Accept: 'application/json', 'Content-Type': 'application/json' };
-    const requestOptions: RequestInit = {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(payload),
-      mode: 'no-cors',
-    };
-
-    // console.log('login data are');
-    // // Fetch login info
-    // fetch('http://dev.robotmanager.io:83/api/v2/mqtt/loginInfo', requestOptions)
-    // .then((response) => {
-    //   return response.text();
-    // })
-    // .then((data) => {
-    //   console.log(data);
-    // })
-    // .catch((error) => {
-    //   console.log(error);
-    // });
-
-    const client = mqtt.connect({
-      hostname: 'dev.mqtt.robotmanager.io',
-      port: 9001,
-      protocol: 'ws',
-      username: 'Admin',
-      password: 'Admin123',
-      keepalive: 60,
-      // clientId: robotId+'_API',
-      clean: true,
-    });
-
-    setClient(client);
-
-    client.once('connect', function () {
-      console.log('Connected to mqqt server');
-      // Subscribe to video channel
-      const vcTopic = '/robot/vc/update/' + companyId;
-      client.subscribe(vcTopic, function (err, granted) {
-        console.log(granted);
-        if (err) {
-          console.log(err);
-        }
-      });
-      const stTopic = '/robot/status/' + companyId;
-      client.subscribe(stTopic, function (err, granted) {
-        console.log(granted);
-        if (err) {
-          console.log(err);
-        }
-      });
-      const controlStTopic = '/robot/control/status/' + companyId;
-      client.subscribe(controlStTopic, function (err, granted) {
-        console.log(granted);
-        if (err) {
-          console.log(err);
-        }
-      });
-    });
-
-    client.on('message', function (topic, message) {
-      // message is Buffer
-      console.log('recived a msg of topic ', topic);
-      parseVC(message.toString());
-      console.log(JSON.parse(message.toString()));
-      client.end();
-    });
-
-    client.on('error', function (err) {
-      // message is Buffer
-      console.log(err);
-    });
-  }, []);
+  const controlTopic = '/rm/mode/' + companyId;
+  const vcTopic = '/robot/vc/update/' + companyId;
 
   const parseVC = (message: string) => {
     console.log('vc message: ', message);
@@ -166,39 +77,162 @@ export function TeleoperationInfo({
           y = 1;
           break;
       }
-      client.publish(
-        '/rm/move/' + companyId,
-        JSON.stringify({
-          id: 1,
-          robotId: robotId,
-          companyId: companyId,
-          timestamp: Date.now(),
-          payload: { x: x, y: y },
-        }),
-      );
+      const msg = JSON.stringify({
+        id: 1,
+        robotId: robotId,
+        companyId: companyId,
+        timestamp: Date.now(),
+        payload: { x: x, y: y },
+      });
+      client.publish('/rm/move/' + companyId, msg);
     } else {
       console.log('Cant  control robot, NOT CONNECTED');
       return;
     }
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setManualControl(event.target.checked);
-
-    // Send mode request to robot
-    const topic = '/rm/mode/' + companyId;
+  async function switchControl() {
     if (client && client.connected) {
+      const msg = JSON.stringify({
+        id: Date.now(),
+        robotId: robotId,
+        companyId: companyId,
+        timestamp: Date.now(),
+        teleoperation: !manualControl,
+      });
+      client.publish(controlTopic, msg);
+    } else {
+      console.log('no longer connected');
+    }
+  }
+
+  useEffect(() => {
+    switchControl();
+  }, [robotId, companyId]);
+
+  useEffect(() => {
+    const payload = {
+      robotId: robotId,
+      accessKey: accessKey,
+    };
+    const headers = { Accept: 'application/json', 'Content-Type': 'application/json' };
+    const requestOptions: RequestInit = {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(payload),
+      mode: 'no-cors',
+    };
+
+    // // Fetch login info
+    // fetch('http://dev.robotmanager.io:83/api/v2/mqtt/loginInfo', requestOptions)
+    // .then((response) => {
+    //   return response.text();
+    // })
+    // .then((data) => {
+    //   console.log(data);
+    // })
+    // .catch((error) => {
+    //   console.log(error);
+    // });
+
+    const client = mqtt.connect({
+      hostname: 'dev.mqtt.robotmanager.io',
+      port: 9001,
+      protocol: 'ws',
+      username: 'Admin',
+      password: 'Admin123',
+      keepalive: 60,
+      clientId: 'mqttjs_' + Math.random().toString(16),
+      clean: true,
+    });
+
+    setClient(client);
+    client.on('disconnect', function (packet) {
+      console.log('disconnected');
+      console.log(packet);
+    });
+
+    client.on('close', function () {
+      console.log('connection closed');
+    });
+
+    client.on('error', function (packet) {
+      console.log(packet);
+    });
+
+    client.on('connect', function () {
+      console.log('Connected to mqqt server');
+
+      // Subscribe to video channel
+      client.subscribe(vcTopic, function (err) {
+        if (err) {
+          console.log(err);
+        }
+      });
+
       client.publish(
-        topic,
+        '/rm/vc/request/' + companyId,
         JSON.stringify({
           id: Date.now(),
+          timestamp: Date.now(),
           robotId: robotId,
           companyId: companyId,
-          timestamp: Date.now(),
-          teleoperation: !manualControl,
+          enableVideo: true,
+          enableAudio: true,
+          hostUrl: 'http://video.robotmanager.io',
+          token: 'hjkkjfehjk', // TODO (MH) ??
         }),
       );
-    }
+
+      // Subscribe to robot status
+      const stTopic = '/robot/status/' + companyId;
+      client.subscribe(stTopic, function (err) {
+        if (err) {
+          console.log(err);
+        }
+      });
+
+      // Subscribe to control startus
+      const controlStTopic = '/robot/control/status/' + companyId;
+      client.subscribe(controlStTopic, function (err) {
+        if (err) {
+          console.log(err);
+        }
+      });
+
+      client.subscribe(controlTopic, function (err) {
+        if (err) {
+          console.log(err);
+        }
+      });
+
+      const mvTopic = '/robot/move/' + companyId;
+      client.subscribe(mvTopic, function (err) {
+        if (err) {
+          console.log(err);
+        }
+      });
+    });
+
+    client.on('message', function (topic, message) {
+      // message is Buffer
+      console.log('recived a msg of topic ', topic);
+      if (topic === vcTopic) {
+        parseVC(message.toString());
+      }
+      console.log(JSON.parse(message.toString()));
+      client.end();
+    });
+
+    client.on('error', function (err) {
+      // message is Buffer
+      console.log(err);
+    });
+  }, []);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setManualControl(event.target.checked);
+    switchControl();
   };
 
   return (
