@@ -222,7 +222,8 @@ export function TaskPanel({
     selectedTask &&
     profile &&
     Enforcer.canCancelTask(profile) &&
-    (selectedTask.active || selectedTask.pending);
+    selectedTask.status &&
+    !['canceled', 'killed', 'completed'].includes(selectedTask.status);
   // selectedTask. === RmfTaskSummary.STATE_QUEUED
 
   return (
