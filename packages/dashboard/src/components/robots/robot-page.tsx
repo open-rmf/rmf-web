@@ -152,7 +152,7 @@ export function RobotPage() {
             robot.task_id != null && tasks[robot.task_id] ? tasks[robot.task_id] : undefined;
           newRobotTableData.push({
             name: robot.name,
-            battery: robot.battery,
+            battery: robot.battery && +robot.battery.toFixed(2),
             status: robot.status,
             estFinishTime: activeTask && activeTask.unix_millis_finish_time,
           });
@@ -244,7 +244,7 @@ export function RobotPage() {
             <MemoRobotInfo
               robotName={selectedRobot.name}
               assignedTask={selectedRobot.task_id}
-              battery={selectedRobot.battery}
+              battery={selectedRobot.battery && +selectedRobot.battery.toFixed(2)}
               estFinishTime={selectedTask && selectedTask.unix_millis_finish_time}
               taskProgress={getTaskProgress(selectedRobot, selectedTask)}
               taskStatus={selectedTask?.status}
