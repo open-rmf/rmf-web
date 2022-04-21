@@ -1,6 +1,14 @@
 /* istanbul ignore file */
 import { Box, Card, Grid, GridProps, Paper, styled, Typography } from '@mui/material';
-import { Dispenser, FleetState, Ingestor, RobotState, TaskState } from 'api-client';
+import {
+  Dispenser,
+  FleetState,
+  Ingestor,
+  RobotState,
+  TaskState,
+  LogEntry,
+  FleetLog,
+} from 'api-client';
 import { AxiosResponse } from 'axios';
 import React from 'react';
 import { PaginationOptions, RobotInfo, RobotTable, RobotTableData } from 'react-components';
@@ -105,14 +113,13 @@ export function RobotPage() {
   const taskStatesRef = React.useRef<Record<string, TaskState>>({});
   const [robotTableData, setRobotTableData] = React.useState<RobotTableData[]>([]);
   const [selectedRobot, setSelectedRobot] = React.useState<RobotState | undefined>(undefined);
+  const [selectedFleetName, setSelectedFleetName] = React.useState<string | undefined>(undefined);
   const [selectedTask, setSelectedTask] = React.useState<TaskState | undefined>(undefined);
+  const [selectedRobotLogs, setSelectedRobotLogs] = React.useState<Array<LogEntry> | undefined>(
+    undefined,
+  );
   const [page, setPage] = React.useState(0);
-
-  const [_triggerRender, setTriggerRender] = React.useState(0); // eslint-disable-line @typescript-eslint/no-unused-vars
-  React.useEffect(() => {
-    const interval = setInterval(() => setTriggerRender((prev) => prev + 1), UpdateRate);
-    return () => clearInterval(interval);
-  }, []);
+  const { fleetsApi } = React.useContext(RmfIngressContext) || {};
 
   // get work cells to display on map
   const [dispensers, setDispensers] = React.useState<Dispenser[]>([]);
@@ -123,6 +130,33 @@ export function RobotPage() {
   // schedule visualizer fleet
   const [fleets, setFleets] = React.useState<FleetState[]>([]);
   const fleetStatesRef = useFleetStateRef(sioClient, fleets);
+
+  // fetch logs
+  const fetchLogs = React.useCallback(async () => {
+    if (!fleetsApi) {
+      return [];
+    }
+
+    if (selectedRobot && selectedRobot.name && selectedFleetName) {
+      const logs = await fleetsApi.getFleetLogFleetsNameLogGet(
+        selectedFleetName,
+        `0,${Number.MAX_SAFE_INTEGER}`,
+      );
+
+      if (logs.data.robots && selectedRobot.name in logs.data.robots) {
+        setSelectedRobotLogs(logs.data.robots[selectedRobot.name]);
+      }
+    }
+  }, [fleetsApi, selectedRobot, selectedFleetName]);
+
+  const [_triggerRender, setTriggerRender] = React.useState(0); // eslint-disable-line @typescript-eslint/no-unused-vars
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      fetchLogs();
+      setTriggerRender((prev) => prev + 1);
+    }, UpdateRate);
+    return () => clearInterval(interval);
+  }, [fetchLogs]);
 
   // fetch data
   React.useEffect(() => {
@@ -177,6 +211,21 @@ export function RobotPage() {
     if (robot.task_id) {
       setSelectedTask(taskStatesRef.current[robot.task_id]);
     }
+
+    fleets.forEach((fleet) => {
+      if (!fleet.robots || !fleet.name) {
+        return;
+      }
+      Object.values(fleet.robots).forEach((robot) => {
+        if (!robot.name) {
+          return;
+        }
+
+        if (robot.name === robotName) {
+          setSelectedFleetName(fleet.name);
+        }
+      });
+    });
 
     // zoom to robot
     leafletMap &&
@@ -236,6 +285,7 @@ export function RobotPage() {
               taskProgress={getTaskProgress(selectedRobot, selectedTask)}
               taskStatus={selectedTask?.status}
               robotIssues={selectedRobot.issues}
+              robotLogs={selectedRobotLogs}
             />
           ) : (
             <NoSelectedRobot />

@@ -21,4 +21,5 @@ Default.args = {
   taskStatus: 'underway',
   estFinishTime: Date.now(),
   robotIssues: [],
+  robotLogs: [],
 };

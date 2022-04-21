@@ -1,9 +1,12 @@
-from typing import List, Optional, Tuple, cast
+from typing import Dict, List, Optional, Sequence, Tuple, cast
 
 from fastapi import Depends
+from tortoise.exceptions import IntegrityError
 from tortoise.query_utils import Prefetch
+from tortoise.transactions import in_transaction
 
 from api_server.authenticator import user_dep
+from api_server.logger import format_exception, logger
 from api_server.models import FleetLog, FleetState, LogEntry, User
 from api_server.models import tortoise_models as ttm
 
@@ -56,6 +59,46 @@ class FleetRepository:
             log=[LogEntry(**dict(db_log)) for db_log in result.log],
             robots=robots,
         )
+
+    async def _saveRobotLog(
+        self,
+        db_fleet_log: ttm.FleetLog,
+        robots: Dict[str, List[LogEntry]],
+    ):
+        for robot_name, logs in robots.items():
+            db_robot = (
+                await ttm.FleetLogRobots.get_or_create(
+                    fleet=db_fleet_log, name=robot_name
+                )
+            )[0]
+            for log in logs:
+                await ttm.FleetLogRobotsLog.create(
+                    robot=db_robot,
+                    **log.dict(),
+                )
+
+    async def _saveFleetLogs(
+        self, db_fleet_log: ttm.FleetLog, logs: Sequence[LogEntry]
+    ):
+        for log in logs:
+            await ttm.FleetLogLog.create(
+                fleet=db_fleet_log,
+                seq=log.seq,
+                unix_millis_time=log.unix_millis_time,
+                tier=log.tier.name,
+                text=log.text,
+            )
+
+    async def save_fleet_log(self, fleet_log: FleetLog) -> None:
+        async with in_transaction():
+            db_fleet_log = (await ttm.FleetLog.get_or_create(name=fleet_log.name))[0]
+            try:
+                if fleet_log.log:
+                    await self._saveFleetLogs(db_fleet_log, fleet_log.log)
+                if fleet_log.robots:
+                    await self._saveRobotLog(db_fleet_log, fleet_log.robots)
+            except IntegrityError as e:
+                logger.error(format_exception(e))
 
 
 def fleet_repo_dep(user: User = Depends(user_dep)):
