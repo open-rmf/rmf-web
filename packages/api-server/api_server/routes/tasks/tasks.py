@@ -92,6 +92,11 @@ async def sub_task_log(_req: SubscriptionRequest, task_id: str):
         rxops.filter(lambda x: cast(mdl.TaskEventLog, x).task_id == task_id)
     )
 
+    result = await task_repo.get_task_log(task_id, between)
+    if result is None:
+        raise HTTPException(status_code=404)
+    return result
+
 
 @router.post("/activity_discovery", response_model=mdl.ActivityDiscovery)
 async def post_activity_discovery(

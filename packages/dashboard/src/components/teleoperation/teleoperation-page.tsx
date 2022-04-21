@@ -3,8 +3,14 @@ import { Box, Card, Grid, GridProps, Paper, styled, Typography } from '@mui/mate
 import { Dispenser, FleetState, Ingestor, RobotState, TaskState } from 'api-client';
 import { AxiosResponse } from 'axios';
 import React from 'react';
-import { PaginationOptions, RobotInfo, RobotTable, RobotTableData } from 'react-components';
+import {
+  PaginationOptions,
+  TeleoperationInfo,
+  TeleoperationRobotTable,
+  TeleoperationRobotConfig,
+} from 'react-components';
 import { Map, MapProps } from 'react-leaflet';
+import { BasePath } from '../../util/url';
 import {
   useDispenserStatesRef,
   useFleetStateRef,
@@ -12,14 +18,15 @@ import {
 } from '../../util/common-subscriptions';
 import { BuildingMapContext, RmfIngress, RmfIngressContext } from '../rmf-app';
 import ScheduleVisualizer from '../schedule-visualizer';
+import { parse } from 'yaml';
 
-const MemoRobotInfo = React.memo(RobotInfo);
+const MemoTeleoperationInfo = React.memo(TeleoperationInfo);
 
 const UpdateRate = 1000;
-const prefix = 'robot-page';
+const prefix = 'teleoperation-page';
 const classes = {
   container: `${prefix}-container`,
-  robotPanel: `${prefix}-robot-panel`,
+  teleoperationPanel: `${prefix}-teleoperation-panel`,
   mapPanel: `${prefix}-map-panel`,
   detailPanelContainer: `${prefix}-detail-container`,
   robotTable: `${prefix}-robot-table`,
@@ -30,7 +37,7 @@ const StyledGrid = styled((props: GridProps) => <Grid {...props} />)(({ theme })
     height: '100%',
     backgroundColor: theme.palette.background.default,
   },
-  [`& .${classes.robotPanel}`]: {
+  [`& .${classes.teleoperationPanel}`]: {
     height: '100%',
   },
   [`& .${classes.mapPanel}`]: {
@@ -66,34 +73,17 @@ async function fetchActiveTaskStates(fleets: FleetState[], rmfIngress: RmfIngres
   }, {});
 }
 
-function getTaskProgress(robot: RobotState, task?: TaskState) {
-  if (
-    !robot.task_id ||
-    !robot.unix_millis_time ||
-    !task ||
-    !task.unix_millis_start_time ||
-    !task.estimate_millis
-  ) {
-    return undefined;
-  }
-  return Math.min(
-    (robot.unix_millis_time - task.unix_millis_start_time) /
-      (task.estimate_millis - task.unix_millis_start_time),
-    1,
-  );
-}
-
 function NoSelectedRobot() {
   return (
     <Box sx={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
       <Typography variant="h6" align="center">
-        Click on a robot to view more information
+        Click on a robot to access teleoperation controls
       </Typography>
     </Box>
   );
 }
 
-export function RobotPage() {
+export function TeleoperationPage() {
   const rmfIngress = React.useContext(RmfIngressContext);
   const sioClient = React.useContext(RmfIngressContext)?.sioClient;
   const buildingMap = React.useContext(BuildingMapContext);
@@ -103,15 +93,51 @@ export function RobotPage() {
   // will be broken in that case.
   const robotStatesRef = React.useRef<Record<string, RobotState>>({});
   const taskStatesRef = React.useRef<Record<string, TaskState>>({});
-  const [robotTableData, setRobotTableData] = React.useState<RobotTableData[]>([]);
-  const [selectedRobot, setSelectedRobot] = React.useState<RobotState | undefined>(undefined);
-  const [selectedTask, setSelectedTask] = React.useState<TaskState | undefined>(undefined);
+  const [robotsConfig, setRobotsConfig] = React.useState<TeleoperationRobotConfig[]>([]);
+  const [selectedRobotConfig, setSelectedRobotConfig] = React.useState<
+    TeleoperationRobotConfig | undefined
+  >(undefined);
+  const [companyId, setCompanyId] = React.useState<string>('');
   const [page, setPage] = React.useState(0);
 
   const [_triggerRender, setTriggerRender] = React.useState(0); // eslint-disable-line @typescript-eslint/no-unused-vars
   React.useEffect(() => {
     const interval = setInterval(() => setTriggerRender((prev) => prev + 1), UpdateRate);
     return () => clearInterval(interval);
+  }, []);
+
+  const parseRobotManagerConfig = async () => {
+    const newRobotConfigs: TeleoperationRobotConfig[] = [];
+    // OP2 move to the public folder, serve the file and then use fetch
+    const TELEOP_CONFIG_PATH = process.env.TELEOP_CONFIG;
+    if (!TELEOP_CONFIG_PATH) {
+      console.log('No config path for teleoperation and video streaming found.');
+      setCompanyId('');
+      setRobotsConfig([]);
+      return;
+    }
+
+    const response = await fetch(`${TELEOP_CONFIG_PATH}`);
+    const text = await response.text();
+    const config = parse(text);
+    for (let key in config) {
+      if (key === 'robots') {
+        for (let robot in config[key]) {
+          newRobotConfigs.push({
+            name: robot,
+            id: config[key][robot].robot_config.robot_id,
+            accessKey: config[key][robot].robot_config.access_key,
+          });
+        }
+      }
+    }
+
+    setCompanyId(config.robotmanager.company_id);
+    setRobotsConfig(newRobotConfigs);
+  };
+
+  React.useEffect(() => {
+    parseRobotManagerConfig();
   }, []);
 
   // get work cells to display on map
@@ -134,7 +160,6 @@ export function RobotPage() {
       const ingestors = (await rmfIngress.ingestorsApi.getIngestorsIngestorsGet()).data;
       const fleets = (await rmfIngress.fleetsApi.getFleetsFleetsGet()).data;
       const tasks = await fetchActiveTaskStates(fleets, rmfIngress);
-      const newRobotTableData: RobotTableData[] = [];
       const newRobotStates: Record<string, RobotState> = {};
       fleets.forEach((fleet) => {
         if (!fleet.robots) {
@@ -144,19 +169,10 @@ export function RobotPage() {
           if (!robot.name) {
             return;
           }
-          const activeTask =
-            robot.task_id != null && tasks[robot.task_id] ? tasks[robot.task_id] : undefined;
-          newRobotTableData.push({
-            name: robot.name,
-            battery: robot.battery,
-            status: robot.status,
-            estFinishTime: activeTask && activeTask.estimate_millis,
-          });
           newRobotStates[robot.name] = robot;
           robotStatesRef.current[robot.name] = robot;
         });
       });
-      setRobotTableData(newRobotTableData);
       taskStatesRef.current = tasks;
       setDispensers(dispensers);
       setIngestors(ingestors);
@@ -168,36 +184,22 @@ export function RobotPage() {
     _ev: React.MouseEvent<HTMLDivElement, MouseEvent>,
     robotName: string,
   ) => {
-    const robot = robotStatesRef.current[robotName];
-    console.log(robotName, robot);
-    if (!robot) {
-      return;
+    for (const config of robotsConfig) {
+      if (config.name === robotName) {
+        setSelectedRobotConfig(config);
+      }
     }
-    setSelectedRobot(robot);
-    if (robot.task_id) {
-      setSelectedTask(taskStatesRef.current[robot.task_id]);
-    }
-
-    // zoom to robot
-    leafletMap &&
-      leafletMap.leafletElement.setView(
-        [robot.location ? robot.location.y : 0.0, robot.location ? robot.location.x : 0.0],
-        5.5,
-        {
-          animate: true,
-        },
-      );
   };
 
   const paginationOptions = React.useMemo<PaginationOptions>(
     () => ({
-      count: robotTableData.length,
+      count: robotsConfig.length,
       page,
       onPageChange: (_, page) => setPage(page),
       rowsPerPage: 10,
       rowsPerPageOptions: [10],
     }),
-    [page, robotTableData.length],
+    [page, robotsConfig.length],
   );
 
   return (
@@ -217,25 +219,22 @@ export function RobotPage() {
           )}
         </Card>
       </Grid>
-      <Grid item xs={8}>
-        <RobotTable
+      <Grid item xs={4}>
+        <TeleoperationRobotTable
           className={classes.robotTable}
-          robots={robotTableData}
+          robots={robotsConfig}
           paginationOptions={paginationOptions}
           onRobotClick={handleRobotClick}
         />
       </Grid>
-      <Grid item xs={4}>
+      <Grid item xs={8}>
         <Paper variant="outlined" className={classes.detailPanelContainer}>
-          {selectedRobot && selectedRobot.name ? (
-            <MemoRobotInfo
-              robotName={selectedRobot.name}
-              assignedTask={selectedRobot.task_id}
-              battery={selectedRobot.battery}
-              estFinishTime={selectedTask && selectedTask.estimate_millis}
-              taskProgress={getTaskProgress(selectedRobot, selectedTask)}
-              taskStatus={selectedTask?.status}
-              robotIssues={selectedRobot.issues}
+          {selectedRobotConfig ? (
+            <MemoTeleoperationInfo
+              name={selectedRobotConfig.name}
+              id={selectedRobotConfig.id}
+              accessKey={selectedRobotConfig.accessKey}
+              companyId={companyId}
             />
           ) : (
             <NoSelectedRobot />

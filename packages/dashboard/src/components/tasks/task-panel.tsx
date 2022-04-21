@@ -197,7 +197,7 @@ export function TaskPanel({
     if (selectedTask) {
       const logs = await tasksApi.getTaskLogTasksTaskIdLogGet(
         selectedTask.booking.id,
-        `0,${Number.MAX_SAFE_INTEGER}`,
+        '0,99999999',
       );
       const state = await tasksApi.getTaskStateTasksTaskIdStateGet(selectedTask.booking.id);
       setSelectedTaskLog(logs.data);
