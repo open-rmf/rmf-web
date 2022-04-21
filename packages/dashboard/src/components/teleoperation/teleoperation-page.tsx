@@ -108,8 +108,7 @@ export function TeleoperationPage() {
 
   const parseRobotManagerConfig = async () => {
     const newRobotConfigs: TeleoperationRobotConfig[] = [];
-    // OP2 move to the public folder, serve the file and then use fetch
-    const TELEOP_CONFIG_PATH = process.env.TELEOP_CONFIG;
+    const TELEOP_CONFIG_PATH = process.env.REACT_APP_TELEOP_CONFIG;
     if (!TELEOP_CONFIG_PATH) {
       console.log('No config path for teleoperation and video streaming found.');
       setCompanyId('');
