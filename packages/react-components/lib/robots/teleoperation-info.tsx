@@ -320,6 +320,7 @@ export function TeleoperationInfo({
               onClick={() => publishControl('DRIVE')}
               disabled={!manualControl}
               size="large"
+              color="secondary"
             >
               <KeyboardArrowUpSharp />
             </IconButton>
@@ -329,6 +330,7 @@ export function TeleoperationInfo({
               onClick={() => publishControl('LEFT')}
               disabled={!manualControl}
               size="large"
+              color="secondary"
             >
               <KeyboardArrowLeftSharp />
             </IconButton>
@@ -336,6 +338,7 @@ export function TeleoperationInfo({
               onClick={() => publishControl('RIGHT')}
               disabled={!manualControl}
               size="large"
+              color="secondary"
             >
               <KeyboardArrowRightSharp />
             </IconButton>
@@ -345,6 +348,7 @@ export function TeleoperationInfo({
               onClick={() => publishControl('REVERSE')}
               disabled={!manualControl}
               size="large"
+              color="secondary"
             >
               <KeyboardArrowDownSharp />
             </IconButton>
