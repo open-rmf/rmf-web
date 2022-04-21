@@ -173,15 +173,15 @@ export function RobotInfo({
             sx={{ overflow: 'auto', maxHeight: 250, width: '100%' }}
           >
             {robotLogsArray.map((log, i) => (
-              <ListItem key={i} style={{ backgroundColor: mapTierColor(log.tier) }}>
-                <ListItemIcon>
+              <ListItem key={i}>
+                <ListItemIcon style={{ color: mapTierColor(log.tier) }}>
                   {log.tier === Tier.Info && <InfoIcon />}
                   {log.tier === Tier.Warning && <WarningIcon />}
                   {log.tier === Tier.Error && <ErrorIcon />}
                   {log.tier === Tier.Uninitialized && <HelpIcon />}
                 </ListItemIcon>
                 <ListItemText>
-                  {format(new Date(log.unix_millis_time), "hh:mm:ss aaaaa'm'")}: {log.text}
+                  {format(new Date(log.unix_millis_time), "hh:mm:ss aaaaa'm'")} {log.text}
                 </ListItemText>
               </ListItem>
             ))}
