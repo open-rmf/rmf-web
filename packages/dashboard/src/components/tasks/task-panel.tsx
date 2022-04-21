@@ -278,11 +278,7 @@ export function TaskPanel({
         <Grid className={classes.timelineGrid} item xs={4}>
           <Paper className={classes.taskInfoContainer}>
             {selectedTask ? (
-              <>
-                {selectedTaskState && taskCancellable ? (
-                  <TaskInfo task={selectedTaskState} />
-                ) : null}
-              </>
+              <>{selectedTaskState ? <TaskInfo task={selectedTaskState} /> : null}</>
             ) : (
               <NoSelectedTask />
             )}
@@ -300,7 +296,7 @@ export function TaskPanel({
           </Button>
         </Grid>
         <Grid item xs={4} className={classes.logsGrid}>
-          {selectedTaskLog && selectedTaskState && taskCancellable ? (
+          {selectedTaskLog && selectedTaskState ? (
             <TaskLogs taskLog={selectedTaskLog} taskState={selectedTaskState} />
           ) : null}
         </Grid>
