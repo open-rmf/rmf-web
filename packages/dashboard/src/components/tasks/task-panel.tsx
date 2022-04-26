@@ -229,7 +229,7 @@ export function TaskPanel({
   return (
     <StyledDiv {...divProps}>
       <Grid container wrap="nowrap" justifyContent="center" style={{ height: 'inherit' }}>
-        <Grid item xs={5} className={classes.tableGrid}>
+        <Grid item xs={7} className={classes.tableGrid}>
           <Paper className={classes.tableContainer}>
             <Toolbar>
               <Typography className={classes.tableTitle} variant="h6">
@@ -275,7 +275,7 @@ export function TaskPanel({
             )}
           </Paper>
         </Grid>
-        <Grid className={classes.timelineGrid} item xs={4}>
+        <Grid className={classes.timelineGrid} item xs={3}>
           <Paper className={classes.taskInfoContainer}>
             {selectedTask ? (
               <>{selectedTaskState ? <TaskInfo task={selectedTaskState} /> : null}</>
@@ -295,7 +295,7 @@ export function TaskPanel({
             Cancel Task
           </Button>
         </Grid>
-        <Grid item xs={4} className={classes.logsGrid}>
+        <Grid item xs={3} className={classes.logsGrid}>
           {selectedTaskLog && selectedTaskState ? (
             <TaskLogs taskLog={selectedTaskLog} taskState={selectedTaskState} />
           ) : null}
