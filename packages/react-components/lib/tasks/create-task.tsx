@@ -52,7 +52,7 @@ function getShortDescription(taskRequest: TaskRequest): string {
       return `[Delivery] from [${taskRequest.description.pickup.place}] to [${taskRequest.description.dropoff.place}]`;
     }
     case 'patrol': {
-      return `[Loop] from [${taskRequest.description.places[0]}] to [${taskRequest.description.places[1]}]`;
+      return `[Patrol] [${taskRequest.description.places[0]}] to [${taskRequest.description.places[1]}]`;
     }
     default:
       return `[Unknown] type "${taskRequest.category}"`;
@@ -410,18 +410,21 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
         freeSolo
         fullWidth
         options={loopWaypoints}
-        value={taskDesc.places[0]}
         onChange={(_ev, newValue) =>
           newValue !== null &&
           onChange({
             ...taskDesc,
-            places: [newValue, taskDesc.places[1]],
+            places: [newValue, taskDesc.places[1]].filter(
+              (el) => el, // filter null and empty str in places array
+            ),
           })
         }
         onBlur={(ev) =>
           onChange({
             ...taskDesc,
-            places: [(ev.target as HTMLInputElement).value, taskDesc.places[1]],
+            places: [(ev.target as HTMLInputElement).value, taskDesc.places[1]].filter(
+              (el) => el, // filter null and empty str in places array
+            ),
           })
         }
         renderInput={(params) => <TextField {...params} label="Start Location" margin="normal" />}
@@ -433,18 +436,21 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
             freeSolo
             fullWidth
             options={loopWaypoints}
-            value={taskDesc.places[1]}
             onChange={(_ev, newValue) =>
               newValue !== null &&
               onChange({
                 ...taskDesc,
-                places: [taskDesc.places[0], newValue],
+                places: [taskDesc.places[0], newValue].filter(
+                  (el) => el, // filter null and empty str in places array
+                ),
               })
             }
             onBlur={(ev) =>
               onChange({
                 ...taskDesc,
-                places: [taskDesc.places[0], (ev.target as HTMLInputElement).value],
+                places: [taskDesc.places[0], (ev.target as HTMLInputElement).value].filter(
+                  (el) => el, // filter null and empty str in places array
+                ),
               })
             }
             renderInput={(params) => (
@@ -463,7 +469,7 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
             id="loops"
             label="Loops"
             margin="normal"
-            value={taskDesc.num_loops}
+            value={taskDesc.rounds}
             onChange={(_ev, val) => {
               onChange({
                 ...taskDesc,
@@ -513,7 +519,7 @@ function defaultCleanTask(): Record<string, any> {
 
 function defaultLoopsTask(): Record<string, any> {
   return {
-    places: ['', ''],
+    places: [],
     rounds: 1,
   };
 }
