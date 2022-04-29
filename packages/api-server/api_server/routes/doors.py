@@ -76,4 +76,4 @@ def post_door_request(
     door_name: str,
     door_request: DoorRequest,
 ):
-    rmf_gateway.request_door(door_name, door_request.mode)
+    rmf_gateway().request_door(door_name, door_request.mode)

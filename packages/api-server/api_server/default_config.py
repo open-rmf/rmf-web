@@ -23,7 +23,7 @@ config = {
     "oidc_url": None,
     # Audience the access token is meant for. Can also be an array.
     # Used to verify the "aud" claim.
-    "aud": "localhost",
+    "aud": "rmf_api_server",
     # url or string that identifies the entity that issued the jwt token
     # Used to verify the "iss" claim
     # If iss is set to None, it means that authentication should be disabled

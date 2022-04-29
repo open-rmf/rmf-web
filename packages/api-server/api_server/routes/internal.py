@@ -1,20 +1,22 @@
 # NOTE: This will eventually replace `gateway.py``
 from typing import Any, Dict
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 
-from . import models as mdl
-from .logger import logger as base_logger
-from .repositories import TaskRepository
-from .rmf_io import fleet_events, task_events
+from api_server import app_config
+from api_server import models as mdl
+from api_server.app_config import app_config
+from api_server.logger import logger as base_logger
+from api_server.repositories import FleetRepository, TaskRepository, fleet_repo_dep
+from api_server.rmf_io import fleet_events, task_events
 
-app = FastAPI()
+router = APIRouter(tags=["_internal"])
 logger = base_logger.getChild("RmfGatewayApp")
 user: mdl.User = mdl.User(username="_rmf_gateway_app", is_admin=True)
 task_repo = TaskRepository(user)
 
 
-async def process_msg(msg: Dict[str, Any]) -> None:
+async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
     payload_type: str = msg["type"]
     if not isinstance(payload_type, str):
         logger.error("error processing message, 'type' must be a string")
@@ -31,20 +33,23 @@ async def process_msg(msg: Dict[str, Any]) -> None:
         task_events.task_event_logs.on_next(task_log)
     elif payload_type == "fleet_state_update":
         fleet_state = mdl.FleetState(**msg["data"])
-        await fleet_state.save()
+        await fleet_repo.save_fleet_state(fleet_state)
         fleet_events.fleet_states.on_next(fleet_state)
     elif payload_type == "fleet_log_update":
         fleet_log = mdl.FleetLog(**msg["data"])
-        await fleet_log.save()
+        await fleet_repo.save_fleet_log(fleet_log)
         fleet_events.fleet_logs.on_next(fleet_log)
 
 
-@app.websocket("/")
+@router.websocket("")
 async def rmf_gateway(websocket: WebSocket):
     await websocket.accept()
+    # The internal route has full access to everything
+    user = mdl.User(username=app_config.builtin_admin, is_admin=True)
+    fleet_repo = FleetRepository(user)
     try:
         while True:
             msg: Dict[str, Any] = await websocket.receive_json()
-            await process_msg(msg)
+            await process_msg(msg, fleet_repo)
     except WebSocketDisconnect:
         pass

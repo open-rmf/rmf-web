@@ -14,8 +14,8 @@ class TestMainRoute(AppFixture):
         self.assign_role(user, role2)
         self.assign_role(user, role3)
 
-        self.set_user(user)
-        resp = self.session.get("/permissions")
+        self.client.set_user(user)
+        resp = self.client.get("/permissions")
         self.assertEqual(200, resp.status_code)
         perms = resp.json()
         self.assertEqual(2, len(perms))

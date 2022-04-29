@@ -1,6 +1,6 @@
 import asyncio
 from asyncio import Future
-from typing import Dict
+from typing import Callable, Dict, Optional
 from uuid import uuid4
 
 import rclpy
@@ -10,7 +10,7 @@ from fastapi import HTTPException
 from rmf_task_msgs.msg import ApiRequest, ApiResponse
 
 from api_server.logger import logger
-from api_server.ros import ros_node as g_ros_node
+from api_server.ros import ros_node as default_ros_node
 
 
 class RmfService:
@@ -24,12 +24,15 @@ class RmfService:
     """
 
     def __init__(
-        self, ros_node: rclpy.node.Node, request_topic: str, response_topic: str
+        self,
+        ros_node: Callable[[], rclpy.node.Node],
+        request_topic: str,
+        response_topic: str,
     ):
         self.ros_node = ros_node
         self._logger = logger.getChild(self.__class__.__name__)
         self._requests: Dict[str, Future] = {}
-        self._api_pub = self.ros_node.create_publisher(
+        self._api_pub = self.ros_node().create_publisher(
             ApiRequest,
             request_topic,
             rclpy.qos.QoSProfile(
@@ -39,7 +42,7 @@ class RmfService:
                 durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
             ),
         )
-        self._api_sub = self.ros_node.create_subscription(
+        self._api_sub = self.ros_node().create_subscription(
             ApiResponse,
             response_topic,
             self._handle_response,
@@ -85,4 +88,13 @@ class RmfService:
         fut.set_result(msg.json_msg)
 
 
-tasks_service = RmfService(g_ros_node, "task_api_requests", "task_api_responses")
+_tasks_service: Optional[RmfService] = None
+
+
+def tasks_service():
+    global _tasks_service
+    if _tasks_service is None:
+        _tasks_service = RmfService(
+            default_ros_node, "task_api_requests", "task_api_responses"
+        )
+    return _tasks_service

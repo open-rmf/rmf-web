@@ -1,6 +1,7 @@
 from api_server.authenticator import JwtAuthenticator
 from api_server.models import User
 
+from .test_client import client
 from .test_data import *
 from .test_fixtures import *
 from .test_utils import *

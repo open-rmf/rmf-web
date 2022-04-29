@@ -26,7 +26,9 @@ class TestRmfService(unittest.TestCase):
         cls.client_node = rclpy.node.Node(
             f"test_client{cls._create_node_id()}", context=cls._client_context
         )
-        cls._client_executor = rclpy.executors.SingleThreadedExecutor()
+        cls._client_executor = rclpy.executors.SingleThreadedExecutor(
+            context=cls._client_context
+        )
 
         def client():
             while cls._client_context.ok():
@@ -43,7 +45,9 @@ class TestRmfService(unittest.TestCase):
             f"test_server_{cls._create_node_id()}",
             context=cls._server_context,
         )
-        cls._server_executor = rclpy.executors.SingleThreadedExecutor()
+        cls._server_executor = rclpy.executors.SingleThreadedExecutor(
+            context=cls._server_context
+        )
 
         def server():
             pub = cls.server_node.create_publisher(
@@ -88,7 +92,9 @@ class TestRmfService(unittest.TestCase):
         while cls.client_node.get_name() not in cls.server_node.get_node_names():
             time.sleep(0.1)
 
-        cls.rmf_service = RmfService(cls.client_node, "test_request", "test_response")
+        cls.rmf_service = RmfService(
+            lambda: cls.client_node, "test_request", "test_response"
+        )
 
     @classmethod
     def tearDownClass(cls) -> None:

@@ -76,7 +76,7 @@ def _post_lift_request(
     lift_name: str,
     lift_request: LiftRequest,
 ):
-    rmf_gateway.request_lift(
+    rmf_gateway().request_lift(
         lift_name,
         lift_request.destination,
         lift_request.request_type,

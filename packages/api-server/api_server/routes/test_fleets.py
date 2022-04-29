@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from api_server.rmf_io import fleet_events
+from api_server.models import FleetLogUpdate, FleetStateUpdate
 from api_server.test import AppFixture, make_fleet_log, make_fleet_state
 
 
@@ -12,42 +12,53 @@ class TestFleetsRoute(AppFixture):
         cls.fleet_states = [make_fleet_state(f"test_{x}") for x in names]
         cls.fleet_logs = [make_fleet_log(f"test_{x}") for x in names]
 
-        async def prepare_db():
+        with cls.client.websocket_connect("/_internal") as ws:
             for x in cls.fleet_states:
-                await x.save()
+                ws.send_text(FleetStateUpdate(type="fleet_state_update", data=x).json())
             for x in cls.fleet_logs:
-                await x.save()
-
-        cls.run_in_app_loop(prepare_db())
+                ws.send_text(FleetLogUpdate(type="fleet_log_update", data=x).json())
 
     def test_query_fleets(self):
-        resp = self.session.get(f"/fleets?fleet_name={self.fleet_states[0].name}")
+        resp = self.client.get(f"/fleets?fleet_name={self.fleet_states[0].name}")
         self.assertEqual(200, resp.status_code)
         resp_json = resp.json()
         self.assertEqual(2, len(resp_json))
         self.assertEqual(self.fleet_states[0].name, resp_json[0]["name"])
 
     def test_get_fleet_state(self):
-        resp = self.session.get(f"/fleets/{self.fleet_states[0].name}/state")
+        resp = self.client.get(f"/fleets/{self.fleet_states[0].name}/state")
         self.assertEqual(200, resp.status_code)
         state = resp.json()
         self.assertEqual(self.fleet_states[0].name, state["name"])
 
     def test_sub_fleet_state(self):
-        fut = self.subscribe_sio(f"/fleets/{self.fleet_states[0].name}/state")
-        result = fut.result(1)
-        self.assertEqual(self.fleet_states[0].name, result["name"])
+        fleet = self.fleet_states[0].name
+        gen = self.subscribe_sio(f"/fleets/{fleet}/state")
+
+        with self.client.websocket_connect("/_internal") as ws:
+            ws.send_text(
+                FleetStateUpdate(
+                    type="fleet_state_update", data=self.fleet_states[0]
+                ).json()
+            )
+
+        msg = next(gen)
+        self.assertEqual(fleet, msg.name)
 
     def test_get_fleet_log(self):
         # Since there are no sample fleet logs, we cannot check the log contents
-        resp = self.session.get(f"/fleets/{self.fleet_logs[0].name}/log")
+        resp = self.client.get(f"/fleets/{self.fleet_logs[0].name}/log")
         self.assertEqual(200, resp.status_code)
         self.assertEqual(self.fleet_logs[0].name, resp.json()["name"])
 
     def test_sub_fleet_log(self):
-        fleet = f"fleet_{uuid4()}"
-        fut = self.subscribe_sio(f"/fleets/{fleet}/log")
-        fleet_logs = make_fleet_log(fleet)
-        fleet_events.fleet_logs.on_next(fleet_logs)
-        result = fut.result(1)
-        self.assertEqual(fleet, result["name"])
+        fleet = self.fleet_logs[0].name
+        gen = self.subscribe_sio(f"/fleets/{fleet}/log")
+
+        with self.client.websocket_connect("/_internal") as ws:
+            ws.send_text(
+                FleetLogUpdate(type="fleet_log_update", data=self.fleet_logs[0]).json()
+            )
+
+        msg = next(gen)
+        self.assertEqual(fleet, msg.name)
