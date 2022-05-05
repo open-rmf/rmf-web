@@ -139,8 +139,9 @@ async def post_robot_task(
     )
     if not resp.__root__.__root__.success:
         return RawJSONResponse(resp.json(), 400)
+    ## TODO:(YL) clarify response implementation compare to /dispatch_task
     await task_repo.save_task_state(
-        cast(mdl.TaskDispatchResponseItem, resp.__root__).state
+        cast(mdl.TaskDispatchResponseItem, resp.__root__).__root__.state
     )
     return resp.__root__
 
