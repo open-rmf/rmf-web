@@ -94,8 +94,11 @@ export function RobotInfo({
           </Typography>
         </Grid>
         <Grid item xs={6}>
-          <CircularProgressBar progress={battery ? battery * 100 : 0} strokeColor="#20a39e">
-            <Typography variant="h6">{`${battery ? battery * 100 : 0}%`}</Typography>
+          <CircularProgressBar
+            progress={battery ? +(battery * 100).toFixed(2) : 0}
+            strokeColor="#20a39e"
+          >
+            <Typography variant="h6">{`${battery ? (battery * 100).toFixed(2) : 0}%`}</Typography>
           </CircularProgressBar>
         </Grid>
         <Grid item xs={6}>
