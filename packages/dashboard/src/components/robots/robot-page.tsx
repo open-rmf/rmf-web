@@ -66,19 +66,17 @@ async function fetchActiveTaskStates(fleets: FleetState[], rmfIngress: RmfIngres
   }, {});
 }
 
-function getTaskProgress(robot: RobotState, task?: TaskState) {
+function getTaskProgress(task?: TaskState) {
   if (
-    !robot.task_id ||
-    !robot.unix_millis_time ||
     !task ||
+    !task.unix_millis_finish_time ||
     !task.unix_millis_start_time ||
     !task.estimate_millis
   ) {
     return undefined;
   }
   return Math.min(
-    (robot.unix_millis_time - task.unix_millis_start_time) /
-      (task.estimate_millis - task.unix_millis_start_time),
+    1.0 - task.estimate_millis / (task.unix_millis_finish_time - task.unix_millis_start_time),
     1,
   );
 }
@@ -233,7 +231,7 @@ export function RobotPage() {
               assignedTask={selectedRobot.task_id}
               battery={selectedRobot.battery && +selectedRobot.battery.toFixed(2)}
               estFinishTime={selectedTask && selectedTask.unix_millis_finish_time}
-              taskProgress={getTaskProgress(selectedRobot, selectedTask)}
+              taskProgress={getTaskProgress(selectedTask)}
               taskStatus={selectedTask?.status}
             />
           ) : (
