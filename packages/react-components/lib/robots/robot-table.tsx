@@ -96,7 +96,7 @@ const RobotRow = React.memo(
       <TableRow onClick={onClick} className={classes.tableRow}>
         <TableCell>{name}</TableCell>
         <TableCell>{estFinishTime ? new Date(estFinishTime).toLocaleString() : '-'}</TableCell>
-        <TableCell>{battery * 100}%</TableCell>
+        <TableCell>{(battery * 100).toFixed(2)}%</TableCell>
         <TableCell className={robotStatusClass}>{status}</TableCell>
       </TableRow>
     );
