@@ -10,7 +10,7 @@ from typing import Any, List, Optional, cast
 @dataclass
 class AppConfig:
     host: str
-    base_port: int
+    port: int
     db_url: str
     public_url: urllib.parse.ParseResult
     static_directory: str

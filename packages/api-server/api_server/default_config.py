@@ -1,10 +1,7 @@
 # pylint: disable=line-too-long
 config = {
     "host": "127.0.0.1",  # ip or hostname to bind the socket to
-    # ports used are:
-    # base_port: public REST and socketio endpoints
-    # base_port + 1: internal websocket endpoint for communication with rmf
-    "base_port": 8000,
+    "port": 8000,
     "db_url": "sqlite://:memory:",
     # url that rmf-server is being served on.
     # When being a proxy, this must be the url that rmf-server is mounted on.
