@@ -9,7 +9,8 @@ from .test.test_fixtures import AppFixture
 
 
 class TestSioAuth(AppFixture):
-    def try_connect(self, token: Optional[str]):
+    @staticmethod
+    def try_connect(token: Optional[str]):
         with patch.object(app, "sio") as mock:
             # set up mocks
             session = {}

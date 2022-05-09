@@ -43,7 +43,7 @@ class TestFleetsRoute(AppFixture):
             )
 
         msg = next(gen)
-        self.assertEqual(fleet, msg.name)
+        self.assertEqual(fleet, msg.name)  # type: ignore
 
     def test_get_fleet_log(self):
         # Since there are no sample fleet logs, we cannot check the log contents
@@ -61,4 +61,4 @@ class TestFleetsRoute(AppFixture):
             )
 
         msg = next(gen)
-        self.assertEqual(fleet, msg.name)
+        self.assertEqual(fleet, msg.name)  # type: ignore

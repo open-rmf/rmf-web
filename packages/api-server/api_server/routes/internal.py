@@ -1,18 +1,16 @@
 # NOTE: This will eventually replace `gateway.py``
 from typing import Any, Dict
 
-from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
-from api_server import app_config
 from api_server import models as mdl
-from api_server.app_config import app_config
 from api_server.logger import logger as base_logger
-from api_server.repositories import FleetRepository, TaskRepository, fleet_repo_dep
+from api_server.repositories import FleetRepository, TaskRepository
 from api_server.rmf_io import fleet_events, task_events
 
 router = APIRouter(tags=["_internal"])
 logger = base_logger.getChild("RmfGatewayApp")
-user: mdl.User = mdl.User(username="_rmf_gateway_app", is_admin=True)
+user: mdl.User = mdl.User(username="__rmf_internal__", is_admin=True)
 task_repo = TaskRepository(user)
 
 
@@ -44,8 +42,6 @@ async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
 @router.websocket("")
 async def rmf_gateway(websocket: WebSocket):
     await websocket.accept()
-    # The internal route has full access to everything
-    user = mdl.User(username=app_config.builtin_admin, is_admin=True)
     fleet_repo = FleetRepository(user)
     try:
         while True:

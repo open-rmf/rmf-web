@@ -96,7 +96,7 @@ class AppFixture(unittest.TestCase):
                 async def handle_resp(emit_room, msg, *_args, **_kwargs):
                     if emit_room == "subscribe" and not msg["success"]:
                         raise Exception("Failed to subscribe")
-                    elif emit_room == room:
+                    if emit_room == room:
                         async with condition:
                             msgs.append(msg)
                             condition.notify()
@@ -107,6 +107,7 @@ class AppFixture(unittest.TestCase):
                 loop.run_until_complete(
                     on_sio_connect("test", {}, {"token": self.client.token(user)})
                 )
+                # pylint: disable=protected-access
                 loop.run_until_complete(app._on_subscribe("test", {"room": room}))
 
                 yield

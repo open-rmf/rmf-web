@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from api_server import models as mdl
 from api_server.rmf_io import tasks_service
-from api_server.test import AppFixture, make_task_log, make_task_state, test_user
+from api_server.test import AppFixture, make_task_log, make_task_state
 
 
 class TestTasksRoute(AppFixture):
@@ -49,7 +49,7 @@ class TestTasksRoute(AppFixture):
                 ).json()
             )
         state = next(gen)
-        self.assertEqual(task_id, state.booking.id)
+        self.assertEqual(task_id, state.booking.id)  # type: ignore
 
     def test_get_task_log(self):
         resp = self.client.get(
@@ -129,7 +129,7 @@ class TestTasksRoute(AppFixture):
                 ).json()
             )
         log = next(gen)
-        self.assertEqual(task_id, log.task_id)
+        self.assertEqual(task_id, log.task_id)  # type: ignore
 
     def test_activity_discovery(self):
         with patch.object(tasks_service(), "call") as mock:

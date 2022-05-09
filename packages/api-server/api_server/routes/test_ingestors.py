@@ -34,4 +34,4 @@ class TestIngestorsRoute(AppFixture):
         msg = next(
             self.subscribe_sio(f"/ingestors/{self.ingestor_states[0].guid}/state")
         )
-        self.assertEqual(self.ingestor_states[0].guid, msg.guid)
+        self.assertEqual(self.ingestor_states[0].guid, msg.guid)  # type: ignore

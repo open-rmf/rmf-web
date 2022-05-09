@@ -48,7 +48,7 @@ class TestClient(BaseTestClient):
         return _generate_token(username)
 
     def set_user(self, user):
-        _client.headers["Authorization"] = f"bearer {self.token(user)}"
+        self.headers["Authorization"] = f"bearer {self.token(user)}"
 
 
 _client: Optional[TestClient] = None

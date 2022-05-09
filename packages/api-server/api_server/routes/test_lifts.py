@@ -32,7 +32,7 @@ class TestLiftsRoute(AppFixture):
 
     def test_sub_lift_state(self):
         msg = next(self.subscribe_sio(f"/lifts/{self.lift_states[0].lift_name}/state"))
-        self.assertEqual(self.lift_states[0].lift_name, msg.lift_name)
+        self.assertEqual(self.lift_states[0].lift_name, msg.lift_name)  # type: ignore
 
     def test_request_lift(self):
         resp = self.client.post(

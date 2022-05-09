@@ -148,7 +148,9 @@ class FastIO(FastAPI):
         self,
         *args,
         socketio_path: str = "/socket.io",
-        socketio_connect: Optional[Callable[[str, dict, Optional[dict]], None]] = None,
+        socketio_connect: Optional[
+            Callable[[str, dict, Optional[dict]], Coroutine[Any, Any, bool]]
+        ] = None,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)

@@ -34,4 +34,4 @@ class TestDispensersRoute(AppFixture):
         msg = next(
             self.subscribe_sio(f"/dispensers/{self.dispenser_states[0].guid}/state")
         )
-        self.assertEqual(self.dispenser_states[0].guid, msg.guid)
+        self.assertEqual(self.dispenser_states[0].guid, msg.guid)  # type: ignore

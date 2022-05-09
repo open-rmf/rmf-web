@@ -69,9 +69,7 @@ class FleetRepository:
         )
 
     async def save_fleet_log(self, fleet_log: FleetLog) -> None:
-        async def _save_logs(
-            self, db_fleet_log: ttm.FleetLog, logs: Sequence[LogEntry]
-        ):
+        async def _save_logs(db_fleet_log: ttm.FleetLog, logs: Sequence[LogEntry]):
             for log in logs:
                 await ttm.FleetLogLog.create(
                     fleet=db_fleet_log,
@@ -85,7 +83,7 @@ class FleetRepository:
             db_fleet_log = (await ttm.FleetLog.get_or_create(name=fleet_log.name))[0]
             try:
                 if fleet_log.log:
-                    await _save_logs(db_fleet_log, fleet_log)
+                    await _save_logs(db_fleet_log, fleet_log.log)
             except IntegrityError as e:
                 logger.error(format_exception(e))
 
