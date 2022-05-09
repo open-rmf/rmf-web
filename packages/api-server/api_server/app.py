@@ -29,10 +29,8 @@ from .repositories import StaticFilesRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, rmf_events
 from .types import is_coroutine
 
-app = FastIO(title="RMF API Server")
 
-
-async def on_connect(sid: str, _environ: dict, auth: Optional[dict] = None):
+async def on_sio_connect(sid: str, _environ: dict, auth: Optional[dict] = None):
     session = await app.sio.get_session(sid)
     token = None
     if auth:
@@ -46,7 +44,8 @@ async def on_connect(sid: str, _environ: dict, auth: Optional[dict] = None):
         return False
 
 
-app.sio.on("connect", on_connect)
+app = FastIO(title="RMF API Server", socketio_connect=on_sio_connect)
+
 
 app.add_middleware(
     CORSMiddleware,

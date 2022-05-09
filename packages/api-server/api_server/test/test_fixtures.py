@@ -5,16 +5,13 @@ import os.path
 import time
 import unittest
 import unittest.mock
-from concurrent.futures import Future
-from typing import Any, Awaitable, Callable, List, Optional, Tuple, TypeVar, Union
-from unittest.mock import patch
+from typing import Awaitable, Callable, Optional, TypeVar, Union
 from uuid import uuid4
 
-import jwt
+from api_server.app import app, on_sio_connect
 
-from api_server.app import app
-from api_server.app import on_connect as on_sio_connect
-from api_server.test import client
+from .mocks import patch_sio
+from .test_client import client
 
 T = TypeVar("T")
 
@@ -92,21 +89,21 @@ class AppFixture(unittest.TestCase):
         """
 
         def impl():
-            with patch.object(app.sio, "emit") as mock:
-                loop = asyncio.get_event_loop()
-                session = {}
-                app.sio.get_session.return_value = session
+            with patch_sio() as mock_sio:
+                msgs = []
+                condition = asyncio.Condition()
 
-                fut = asyncio.Future()
-
-                async def wait(emit_room, msg, *_args, **_kwargs):
+                async def handle_resp(emit_room, msg, *_args, **_kwargs):
                     if emit_room == "subscribe" and not msg["success"]:
                         raise Exception("Failed to subscribe")
                     elif emit_room == room:
-                        fut.set_result(msg)
+                        async with condition:
+                            msgs.append(msg)
+                            condition.notify()
 
-                mock.side_effect = wait
+                mock_sio.emit.side_effect = handle_resp
 
+                loop = asyncio.get_event_loop()
                 loop.run_until_complete(
                     on_sio_connect("test", {}, {"token": self.client.token(user)})
                 )
@@ -114,18 +111,19 @@ class AppFixture(unittest.TestCase):
 
                 yield
 
+                async def wait_for_msgs():
+                    async with condition:
+                        if len(msgs) == 0:
+                            await condition.wait()
+                        return msgs.pop(0)
+
                 try:
-                    yield fut.result()
-                    fut = asyncio.Future()
-                except asyncio.InvalidStateError:
-                    pass
-
-                while True:
-                    loop.run_until_complete(asyncio.wait_for(fut, 5))
-                    result = fut.result()
-                    fut = asyncio.Future()
-
-                    yield result
+                    while True:
+                        yield loop.run_until_complete(
+                            asyncio.wait_for(wait_for_msgs(), 5)
+                        )
+                finally:
+                    loop.run_until_complete(app._on_disconnect("test"))
 
         gen = impl()
         next(gen)
