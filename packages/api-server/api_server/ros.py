@@ -1,4 +1,3 @@
-# pylint: disable=global-statement
 import os
 import threading
 
@@ -15,8 +14,11 @@ def ros_node():
     return _ros_node
 
 
-def setup():
-    global _spin_thread
+def startup():
+    """
+    Initializes the rcl context and creates the ros node.
+    Must be called before all calls to `ros_node()`.
+    """
     global _ros_node
 
     # TODO: remove support for `RMF_SERVER_USE_SIM_TIME`?
@@ -31,25 +33,22 @@ def setup():
         )
     else:
         rclpy.init(args=["--ros-args"] + app_config.ros_args)
-
     _ros_node = rclpy.node.Node("rmf_api_server")
-    _spin_thread = threading.Thread(target=lambda: rclpy.spin(_ros_node))
-    _spin_thread.start()
 
 
 def shutdown():
+    """
+    Shuts down the rcl context and wait for the spin thread to finish.
+    """
     rclpy.shutdown()
     _spin_thread.join()
 
 
-def ros_spin():
+def spin_background():
+    """
+    Start spinning the ros node in a background thread.
+    Must be called after setting up all subscriptions to avoid missing messages.
+    """
     global _spin_thread
-    _spin_thread = threading.Thread(target=lambda: rclpy.spin(ros_node))
+    _spin_thread = threading.Thread(target=lambda: rclpy.spin(_ros_node))
     _spin_thread.start()
-
-
-def ros_shutdown():
-    rclpy.shutdown()
-    global _spin_thread
-    _spin_thread.join()
-    del _spin_thread

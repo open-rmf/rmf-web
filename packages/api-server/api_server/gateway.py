@@ -146,8 +146,6 @@ class RmfGateway:
         )
         self._subscriptions.append(map_sub)
 
-        ros_node().executor.wake()
-
     @staticmethod
     def now() -> Optional[RosTime]:
         """
@@ -180,11 +178,18 @@ class RmfGateway:
         self._lift_req.publish(msg)
 
 
-_rmf_gateway: Optional[RmfGateway] = None
+_rmf_gateway: RmfGateway
 
 
-def rmf_gateway():
+def rmf_gateway() -> RmfGateway:
+    return _rmf_gateway
+
+
+def startup():
+    """
+    Starts subscribing to all ROS topics.
+    Must be called after the ros node is created and before spinning the it.
+    """
     global _rmf_gateway
-    if _rmf_gateway is None:
-        _rmf_gateway = RmfGateway(static_files_repo)
+    _rmf_gateway = RmfGateway(static_files_repo)
     return _rmf_gateway

@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
 
-from . import ros, routes
+from . import gateway, ros, routes
 from .app_config import app_config
 from .authenticator import AuthenticationError, authenticator, user_dep
 from .fast_io import FastIO
@@ -112,8 +112,10 @@ async def on_startup():
     await Tortoise.generate_schemas()
     shutdown_cbs.append(Tortoise.close_connections())
 
-    ros.setup()
+    ros.startup()
     shutdown_cbs.append(ros.shutdown)
+
+    gateway.startup()
 
     # shutdown event is not called when the app crashes, this can cause the app to be
     # "locked up" as some dependencies like tortoise does not allow python to exit until
@@ -151,6 +153,7 @@ async def on_startup():
     )
     await health_watchdog.start()
 
+    ros.spin_background()
     logger.info("started app")
 
 
