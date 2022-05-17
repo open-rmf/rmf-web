@@ -2,5 +2,10 @@ import uvicorn
 
 from .app import app
 
-if __name__ == "__main__":
+
+def main():
     uvicorn.run(app)
+
+
+if __name__ == "__main__":
+    main()
