@@ -13,7 +13,7 @@ jobs:
   unit-tests:
     strategy:
       matrix:
-        npm: ['latest', '8.5.3']
+        npm: ['latest']
       fail-fast: false
     name: Unit Tests (npm ${{ matrix.npm }})
     runs-on: ubuntu-latest
