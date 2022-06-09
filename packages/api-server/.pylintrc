@@ -151,6 +151,9 @@ disable=print-statement,
         fixme,
         logging-fstring-interpolation,
         line-too-long,
+# fastapi heavily uses singletons, disallowing global statements just ends up with things
+# using nonlocal as singletons which are functionally the same as globals.
+        global-statement,
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option

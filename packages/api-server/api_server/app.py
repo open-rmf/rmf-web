@@ -7,12 +7,12 @@ from typing import Any, Callable, Coroutine, List, Optional, Union
 from fastapi import Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from tortoise import Tortoise
 
-from . import routes
+from . import gateway, ros, routes
 from .app_config import app_config
 from .authenticator import AuthenticationError, authenticator, user_dep
 from .fast_io import FastIO
-from .gateway import rmf_gateway
 from .logger import logger
 from .models import (
     DispenserHealth,
@@ -29,10 +29,8 @@ from .repositories import StaticFilesRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, rmf_events
 from .types import is_coroutine
 
-app = FastIO(title="RMF API Server", dependencies=[Depends(user_dep)])
 
-
-async def on_connect(sid: str, _environ: dict, auth: Optional[dict] = None):
+async def on_sio_connect(sid: str, _environ: dict, auth: Optional[dict] = None):
     session = await app.sio.get_session(sid)
     token = None
     if auth:
@@ -46,7 +44,8 @@ async def on_connect(sid: str, _environ: dict, auth: Optional[dict] = None):
         return False
 
 
-app.sio.on("connect", on_connect)
+app = FastIO(title="RMF API Server", socketio_connect=on_sio_connect)
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -74,19 +73,49 @@ static_files_repo = StaticFilesRepository(
 rmf_bookkeeper = RmfBookKeeper(rmf_events, logger=logger.getChild("BookKeeper"))
 
 app.include_router(routes.main_router)
-app.include_router(routes.building_map_router, prefix="/building_map")
-app.include_router(routes.doors_router, prefix="/doors")
-app.include_router(routes.lifts_router, prefix="/lifts")
-app.include_router(routes.tasks_router, prefix="/tasks")
-app.include_router(routes.dispensers_router, prefix="/dispensers")
-app.include_router(routes.ingestors_router, prefix="/ingestors")
-app.include_router(routes.fleets_router, prefix="/fleets")
-app.include_router(routes.admin_router, prefix="/admin")
+app.include_router(
+    routes.building_map_router, prefix="/building_map", dependencies=[Depends(user_dep)]
+)
+app.include_router(
+    routes.doors_router, prefix="/doors", dependencies=[Depends(user_dep)]
+)
+app.include_router(
+    routes.lifts_router, prefix="/lifts", dependencies=[Depends(user_dep)]
+)
+app.include_router(
+    routes.tasks_router, prefix="/tasks", dependencies=[Depends(user_dep)]
+)
+app.include_router(
+    routes.dispensers_router, prefix="/dispensers", dependencies=[Depends(user_dep)]
+)
+app.include_router(
+    routes.ingestors_router, prefix="/ingestors", dependencies=[Depends(user_dep)]
+)
+app.include_router(
+    routes.fleets_router, prefix="/fleets", dependencies=[Depends(user_dep)]
+)
+app.include_router(
+    routes.admin_router, prefix="/admin", dependencies=[Depends(user_dep)]
+)
+app.include_router(routes.internal_router, prefix="/_internal")
 
 
 @app.on_event("startup")
 async def on_startup():
     loop = asyncio.get_event_loop()
+
+    await Tortoise.init(
+        db_url=app_config.db_url,
+        modules={"models": ["api_server.models.tortoise_models"]},
+    )
+    # FIXME: do this outside the app as recommended by the docs
+    await Tortoise.generate_schemas()
+    shutdown_cbs.append(Tortoise.close_connections())
+
+    ros.startup()
+    shutdown_cbs.append(ros.shutdown)
+
+    gateway.startup()
 
     # shutdown event is not called when the app crashes, this can cause the app to be
     # "locked up" as some dependencies like tortoise does not allow python to exit until
@@ -124,9 +153,7 @@ async def on_startup():
     )
     await health_watchdog.start()
 
-    rmf_gateway.subscribe_all()
-    shutdown_cbs.append(rmf_gateway.unsubscribe_all)
-
+    ros.spin_background()
     logger.info("started app")
 
 

@@ -3,7 +3,6 @@ from typing import List, Optional, Tuple, cast
 
 from fastapi import Body, Depends, HTTPException, Path, Query
 from rx import operators as rxops
-from rx.subject.replaysubject import ReplaySubject
 
 from api_server import models as mdl
 from api_server.dependencies import between_query, pagination_query, sio_user
@@ -60,14 +59,13 @@ async def get_task_state(
 async def sub_task_state(req: SubscriptionRequest, task_id: str):
     user = sio_user(req)
     task_repo = TaskRepository(user)
-    current_state = await get_task_state(task_repo, task_id)
-    sub = ReplaySubject(1)
-    if current_state:
-        sub.on_next(current_state)
-    task_events.task_states.pipe(
+    obs = task_events.task_states.pipe(
         rxops.filter(lambda x: cast(mdl.TaskState, x).booking.id == task_id)
-    ).subscribe(sub)
-    return sub
+    )
+    current_state = await get_task_state(task_repo, task_id)
+    if current_state:
+        return obs.pipe(rxops.start_with(current_state))
+    return obs
 
 
 @router.get("/{task_id}/log", response_model=mdl.TaskEventLog)
@@ -97,14 +95,14 @@ async def sub_task_log(_req: SubscriptionRequest, task_id: str):
 async def post_activity_discovery(
     request: mdl.ActivityDiscoveryRequest = Body(...),
 ):
-    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+    return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
 
 
 @router.post("/cancel_task", response_model=mdl.TaskCancelResponse)
 async def post_cancel_task(
     request: mdl.CancelTaskRequest = Body(...),
 ):
-    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+    return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
 
 
 @router.post(
@@ -117,7 +115,7 @@ async def post_dispatch_task(
     task_repo: TaskRepository = Depends(task_repo_dep),
 ):
     resp = mdl.TaskDispatchResponse.parse_raw(
-        await tasks_service.call(request.json(exclude_none=True))
+        await tasks_service().call(request.json(exclude_none=True))
     )
     if not resp.__root__.success:
         return RawJSONResponse(resp.json(), 400)
@@ -137,7 +135,7 @@ async def post_robot_task(
     task_repo: TaskRepository = Depends(task_repo_dep),
 ):
     resp = mdl.RobotTaskResponse.parse_raw(
-        await tasks_service.call(request.json(exclude_none=True))
+        await tasks_service().call(request.json(exclude_none=True))
     )
     if not resp.__root__.__root__.success:
         return RawJSONResponse(resp.json(), 400)
@@ -151,46 +149,46 @@ async def post_robot_task(
 async def post_interrupt_task(
     request: mdl.TaskInterruptionRequest = Body(...),
 ):
-    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+    return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
 
 
 @router.post("/kill_task", response_model=mdl.TaskKillResponse)
 async def post_kill_task(
     request: mdl.TaskKillRequest = Body(...),
 ):
-    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+    return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
 
 
 @router.post("/resume_task", response_model=mdl.TaskResumeResponse)
 async def post_resume_task(
     request: mdl.TaskResumeRequest = Body(...),
 ):
-    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+    return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
 
 
 @router.post("/rewind_task", response_model=mdl.TaskRewindResponse)
 async def post_rewind_task(
     request: mdl.TaskRewindRequest = Body(...),
 ):
-    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+    return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
 
 
 @router.post("/skip_phase", response_model=mdl.SkipPhaseResponse)
 async def post_skip_phase(
     request: mdl.TaskPhaseSkipRequest = Body(...),
 ):
-    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+    return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
 
 
 @router.post("/task_discovery", response_model=mdl.TaskDiscovery)
 async def post_task_discovery(
     request: mdl.TaskDiscoveryRequest = Body(...),
 ):
-    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+    return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
 
 
 @router.post("/undo_skip_phase", response_model=mdl.UndoPhaseSkipResponse)
 async def post_undo_skip_phase(
     request: mdl.UndoPhaseSkipRequest = Body(...),
 ):
-    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+    return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))

@@ -8,10 +8,9 @@ test_port = os.environ.get("RMF_SERVER_TEST_PORT", "8000")
 config.update(
     {
         "host": "127.0.0.1",
-        "base_port": int(test_port),
+        "port": int(test_port),
         "log_level": "CRITICAL",
         "jwt_public_key": f"{here}/test.pub",
-        "aud": "test",
         "iss": "test",
     }
 )
