@@ -3,7 +3,6 @@ from typing import List, Optional, Tuple, cast
 
 from fastapi import Body, Depends, HTTPException, Path, Query
 from rx import operators as rxops
-from rx.subject.replaysubject import ReplaySubject
 
 from api_server import models as mdl
 from api_server.dependencies import between_query, pagination_query, sio_user

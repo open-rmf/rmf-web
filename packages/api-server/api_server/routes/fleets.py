@@ -2,7 +2,6 @@ from typing import List, Tuple, cast
 
 from fastapi import Depends, HTTPException
 from rx import operators as rxops
-from rx.subject.replaysubject import ReplaySubject
 
 from api_server.dependencies import between_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
