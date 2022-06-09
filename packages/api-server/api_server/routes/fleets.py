@@ -38,7 +38,7 @@ async def sub_fleet_state(req: SubscriptionRequest, name: str):
     )
     fleet_state = await get_fleet_state(name, FleetRepository(user))
     if fleet_state:
-        obs.pipe(rxops.start_with(fleet_state))
+        return obs.pipe(rxops.start_with(fleet_state))
     return obs
 
 

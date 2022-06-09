@@ -38,7 +38,7 @@ async def sub_dispenser_state(req: SubscriptionRequest, guid: str):
     )
     dispenser_state = await get_dispenser_state(guid, RmfRepository(user))
     if dispenser_state:
-        obs.pipe(rxops.start_with(dispenser_state))
+        return obs.pipe(rxops.start_with(dispenser_state))
     return obs
 
 
@@ -63,5 +63,5 @@ async def sub_dispenser_health(req: SubscriptionRequest, guid: str):
     )
     health = await get_dispenser_health(guid, RmfRepository(user))
     if health:
-        obs.pipe(rxops.start_with(health))
+        return obs.pipe(rxops.start_with(health))
     return obs

@@ -64,7 +64,7 @@ async def sub_task_state(req: SubscriptionRequest, task_id: str):
     )
     current_state = await get_task_state(task_repo, task_id)
     if current_state:
-        obs.pipe(rxops.start_with(current_state))
+        return obs.pipe(rxops.start_with(current_state))
     return obs
 
 

@@ -38,7 +38,7 @@ async def sub_ingestor_state(req: SubscriptionRequest, guid: str):
     )
     ingestor_state = await get_ingestor_state(guid, RmfRepository(user))
     if ingestor_state:
-        obs.pipe(rxops.start_with(ingestor_state))
+        return obs.pipe(rxops.start_with(ingestor_state))
     return obs
 
 
@@ -63,5 +63,5 @@ async def sub_ingestor_health(req: SubscriptionRequest, guid: str):
     )
     health = await get_ingestor_health(guid, RmfRepository(user))
     if health:
-        obs.pipe(rxops.start_with(health))
+        return obs.pipe(rxops.start_with(health))
     return obs

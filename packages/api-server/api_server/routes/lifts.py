@@ -39,7 +39,7 @@ async def sub_lift_state(req: SubscriptionRequest, lift_name: str):
     )
     lift_state = await get_lift_state(lift_name, RmfRepository(user))
     if lift_state:
-        obs.pipe(rxops.start_with(lift_state))
+        return obs.pipe(rxops.start_with(lift_state))
     return obs
 
 
@@ -64,7 +64,7 @@ async def sub_lift_health(req: SubscriptionRequest, lift_name: str):
     )
     health = await get_lift_health(lift_name, RmfRepository(user))
     if health:
-        obs.pipe(rxops.start_with(health))
+        return obs.pipe(rxops.start_with(health))
     return obs
 
 

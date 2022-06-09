@@ -39,7 +39,7 @@ async def sub_door_state(req: SubscriptionRequest, door_name: str):
     )
     door_state = await get_door_state(door_name, RmfRepository(user))
     if door_state:
-        obs.pipe(rxops.start_with(door_state))
+        return obs.pipe(rxops.start_with(door_state))
     return obs
 
 
@@ -64,7 +64,7 @@ async def sub_door_health(req: SubscriptionRequest, door_name: str):
     )
     health = await get_door_health(door_name, RmfRepository(user))
     if health:
-        obs.pipe(rxops.start_with(health))
+        return obs.pipe(rxops.start_with(health))
     return obs
 
 
