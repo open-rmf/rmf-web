@@ -34,14 +34,13 @@ async def get_ingestor_state(
 @router.sub("/{guid}/state", response_model=IngestorState)
 async def sub_ingestor_state(req: SubscriptionRequest, guid: str):
     user = sio_user(req)
-    ingestor_state = await get_ingestor_state(guid, RmfRepository(user))
-    sub = ReplaySubject(1)
-    if ingestor_state:
-        sub.on_next(ingestor_state)
-    rmf_events.ingestor_states.pipe(
+    obs = rmf_events.ingestor_states.pipe(
         rxops.filter(lambda x: cast(IngestorState, x).guid == guid)
-    ).subscribe(sub)
-    return sub
+    )
+    ingestor_state = await get_ingestor_state(guid, RmfRepository(user))
+    if ingestor_state:
+        obs.pipe(rxops.start_with(ingestor_state))
+    return obs
 
 
 @router.get("/{guid}/health", response_model=IngestorHealth)
@@ -60,11 +59,10 @@ async def get_ingestor_health(
 @router.sub("/{guid}/health", response_model=IngestorHealth)
 async def sub_ingestor_health(req: SubscriptionRequest, guid: str):
     user = sio_user(req)
-    health = await get_ingestor_health(guid, RmfRepository(user))
-    sub = ReplaySubject(1)
-    if health:
-        sub.on_next(health)
-    rmf_events.ingestor_health.pipe(
+    obs = rmf_events.ingestor_health.pipe(
         rxops.filter(lambda x: cast(IngestorHealth, x).id_ == guid)
-    ).subscribe(sub)
-    return sub
+    )
+    health = await get_ingestor_health(guid, RmfRepository(user))
+    if health:
+        obs.pipe(rxops.start_with(health))
+    return obs

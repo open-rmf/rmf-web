@@ -34,14 +34,13 @@ async def get_fleet_state(name: str, repo: FleetRepository = Depends(fleet_repo_
 @router.sub("/{name}/state", response_model=FleetState)
 async def sub_fleet_state(req: SubscriptionRequest, name: str):
     user = sio_user(req)
-    fleet_state = await get_fleet_state(name, FleetRepository(user))
-    sub = ReplaySubject(1)
-    if fleet_state:
-        sub.on_next(fleet_state)
-    fleet_events.fleet_states.pipe(
+    obs = fleet_events.fleet_states.pipe(
         rxops.filter(lambda x: cast(FleetState, x).name == name)
-    ).subscribe(sub)
-    return sub
+    )
+    fleet_state = await get_fleet_state(name, FleetRepository(user))
+    if fleet_state:
+        obs.pipe(rxops.start_with(fleet_state))
+    return obs
 
 
 @router.get("/{name}/log", response_model=FleetLog)

@@ -308,6 +308,7 @@ The message must be of the form:
                 if sub is None:
                     raise SubscribeError("not subscribed to topic")
                 sub.dispose()
+                del session["_subscriptions"][sub_data.room]
                 await self.sio.emit("unsubscribe", {"success": True})
         except SubscribeError as e:
             await self.sio.emit("unsubscribe", {"success": False, "error": str(e)})

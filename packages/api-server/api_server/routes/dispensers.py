@@ -34,14 +34,13 @@ async def get_dispenser_state(
 @router.sub("/{guid}/state", response_model=DispenserState)
 async def sub_dispenser_state(req: SubscriptionRequest, guid: str):
     user = sio_user(req)
-    dispenser_state = await get_dispenser_state(guid, RmfRepository(user))
-    sub = ReplaySubject(1)
-    if dispenser_state:
-        sub.on_next(dispenser_state)
-    rmf_events.dispenser_states.pipe(
+    obs = rmf_events.dispenser_states.pipe(
         rxops.filter(lambda x: cast(DispenserState, x).guid == guid)
-    ).subscribe(sub)
-    return sub
+    )
+    dispenser_state = await get_dispenser_state(guid, RmfRepository(user))
+    if dispenser_state:
+        obs.pipe(rxops.start_with(dispenser_state))
+    return obs
 
 
 @router.get("/{guid}/health", response_model=DispenserHealth)
@@ -60,11 +59,10 @@ async def get_dispenser_health(
 @router.sub("/{guid}/health", response_model=DispenserHealth)
 async def sub_dispenser_health(req: SubscriptionRequest, guid: str):
     user = sio_user(req)
-    health = await get_dispenser_health(guid, RmfRepository(user))
-    sub = ReplaySubject(1)
-    if health:
-        sub.on_next(health)
-    rmf_events.dispenser_health.pipe(
+    obs = rmf_events.dispenser_health.pipe(
         rxops.filter(lambda x: cast(DispenserHealth, x).id_ == guid)
-    ).subscribe(sub)
-    return sub
+    )
+    health = await get_dispenser_health(guid, RmfRepository(user))
+    if health:
+        obs.pipe(rxops.start_with(health))
+    return obs

@@ -60,14 +60,13 @@ async def get_task_state(
 async def sub_task_state(req: SubscriptionRequest, task_id: str):
     user = sio_user(req)
     task_repo = TaskRepository(user)
-    current_state = await get_task_state(task_repo, task_id)
-    sub = ReplaySubject(1)
-    if current_state:
-        sub.on_next(current_state)
-    task_events.task_states.pipe(
+    obs = task_events.task_states.pipe(
         rxops.filter(lambda x: cast(mdl.TaskState, x).booking.id == task_id)
-    ).subscribe(sub)
-    return sub
+    )
+    current_state = await get_task_state(task_repo, task_id)
+    if current_state:
+        obs.pipe(rxops.start_with(current_state))
+    return obs
 
 
 @router.get("/{task_id}/log", response_model=mdl.TaskEventLog)
