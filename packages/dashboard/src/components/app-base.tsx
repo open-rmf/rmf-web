@@ -1,6 +1,7 @@
 import { createTheme, Grid } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import React from 'react';
-import { ErrorSnackbar, rmfDark, ThemeProvider } from 'react-components';
+import { ErrorSnackbar, rmfDark } from 'react-components';
 import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
 import {
   AppController,
