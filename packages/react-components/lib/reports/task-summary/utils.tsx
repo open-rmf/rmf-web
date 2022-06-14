@@ -2,6 +2,8 @@ import { Typography } from '@mui/material';
 // import type { TaskDescription } from 'api-client';
 import React from 'react';
 
+// FIXME: no `any`
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
 export const returnTaskDetails = (taskId: string, taskDescription: any): React.ReactNode => {
   let taskTypeDetails;
   if (taskId.includes('Loop')) {

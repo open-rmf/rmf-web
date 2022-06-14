@@ -1,4 +1,4 @@
-import DateTimePicker from '@mui/lab/DateTimePicker';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { styled, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import React from 'react';

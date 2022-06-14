@@ -1,11 +1,12 @@
-import { DateTimePickerProps } from '@mui/lab';
-import DateTimePicker from '@mui/lab/DateTimePicker';
 import { SelectChangeEvent, styled, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import React from 'react';
 import { LogQueryPayload } from '.';
 import { LogLevel } from './log-level';
 import { SearchFilter } from './search-filter';
+
+type DateTimePickerProps = React.ComponentProps<typeof DateTimePicker>;
 
 interface SearchLogFormProps {
   logLabelValues: { label: string; value: string }[];

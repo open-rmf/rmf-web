@@ -4,10 +4,10 @@ import commonTheme from './common-theme';
 export const base = createTheme({
   //Light Grey, Cultured, Silver Sand
   palette: {
-    mode: 'light',
     ...commonTheme,
+    mode: 'light',
     primary: {
-      main: '#CFD8DC ',
+      main: '#1FD8DC ',
       light: '#ECEFF1',
       dark: '#B0BEC5',
     },
@@ -20,6 +20,7 @@ export const base = createTheme({
 });
 
 export const rmfLight = createTheme({
+  ...base,
   components: {
     MuiTableCell: {
       styleOverrides: {
