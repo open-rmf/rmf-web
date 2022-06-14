@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 import { Box, Card, Grid, GridProps, Paper, styled, Typography } from '@mui/material';
-import { Dispenser, FleetState, Ingestor, RobotState, TaskState } from 'api-client';
+import { Dispenser, FleetState, Ingestor, RobotState, TaskState, Subscription } from 'api-client';
 import { AxiosResponse } from 'axios';
 import React from 'react';
 import { PaginationOptions, RobotInfo, RobotTable, RobotTableData } from 'react-components';
@@ -124,7 +124,25 @@ export function RobotPage() {
 
   // schedule visualizer fleet
   const [fleets, setFleets] = React.useState<FleetState[]>([]);
-  const fleetStatesRef = useFleetStateRef(sioClient, fleets);
+  // const fleetStatesRef = useFleetStateRef(sioClient, fleets);
+
+  /// TODO (YL): Testing implementation to prevent repeating subscription of socketio
+  /// This implementation was originally in common-subscriptions.ts
+  const fleetStatesRef = React.useRef<Record<string, FleetState>>({});
+  if (sioClient) {
+    const subs = fleets.reduce((acc, f) => {
+      if (!f.name) {
+        return acc;
+      }
+      const fleetName = f.name;
+      acc.push(
+        sioClient.subscribeFleetState(fleetName, (state) => {
+          fleetStatesRef.current[fleetName] = state;
+        }),
+      );
+      return acc;
+    }, [] as Subscription[]);
+  }
 
   // fetch data
   React.useEffect(() => {

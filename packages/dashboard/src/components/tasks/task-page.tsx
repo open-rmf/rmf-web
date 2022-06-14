@@ -54,20 +54,37 @@ export function TaskPage() {
     [tasksApi],
   );
 
-  React.useEffect(() => {
-    if (!autoRefreshEnabled || !sioClient) return;
-    const subs = fetchedTasks.map((t) =>
-      sioClient.subscribeTaskState(t.booking.id, (newState) =>
-        setUpdatedStates((prev) => ({
-          ...prev,
-          [newState.booking.id]: newState,
-        })),
-      ),
-    );
-    return () => {
-      subs.forEach((s) => sioClient.unsubscribe(s));
-    };
-  }, [autoRefreshEnabled, sioClient, fetchedTasks]);
+  /// TODO (YL): Testing solution to prevent repeating subscription of socketio,
+  ///           addressing server oom issue when increase subscriptions
+  ///// Again, commented this out, as brower dashboard will freeze when there is an
+  ////    on-going task publishing task-log. it works fine when no on-going tasks.
+  ////    suspect that this is relevant to how tasklog and taskstate interact
+  // if (sioClient)
+  // {
+  //   const subs = fetchedTasks.map((t) =>
+  //     sioClient.subscribeTaskState(t.booking.id, (newState) =>
+  //       setUpdatedStates((prev) => ({
+  //         ...prev,
+  //         [newState.booking.id]: newState,
+  //       })),
+  //     ),
+  //   );
+  // }
+
+  // React.useEffect(() => {
+  //   if (!sioClient) return;
+  //   const subs = fetchedTasks.map((t) =>
+  //     sioClient.subscribeTaskState(t.booking.id, (newState) =>
+  //       setUpdatedStates((prev) => ({
+  //         ...prev,
+  //         [newState.booking.id]: newState,
+  //       })),
+  //     ),
+  //   );
+  //   return () => {
+  //     subs.forEach((s) => sioClient.unsubscribe(s));
+  //   };
+  // }, [autoRefreshEnabled, sioClient, fetchedTasks]);
 
   const handleRefresh = React.useCallback<Required<TaskPanelProps>['onRefresh']>(async () => {
     fetchTasks(page);
