@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Optional
 
 from api_server.app_config import app_config
 from api_server.logger import logger as _logger
@@ -10,7 +11,7 @@ class StaticFilesRepository:
         self,
         base_url: str,
         directory: str,
-        logger: logging.Logger = None,
+        logger: Optional[logging.Logger] = None,
     ):
         """
         :param base_url: base url that static files are served from. When running behind a proxy,
