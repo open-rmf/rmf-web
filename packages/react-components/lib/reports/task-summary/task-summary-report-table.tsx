@@ -12,7 +12,7 @@ export type TaskSummaryRowsType = {
   fleet: { id: number; name: string };
   robot: { id: number; name: string; model?: string };
   task_id: string;
-  task_profile: any;
+  task_profile: unknown;
   state: string;
   status: string;
   submission_time: Time;

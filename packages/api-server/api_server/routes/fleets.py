@@ -2,7 +2,6 @@ from typing import List, Tuple, cast
 
 from fastapi import Depends, HTTPException
 from rx import operators as rxops
-from rx.subject.replaysubject import ReplaySubject
 
 from api_server.dependencies import between_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
@@ -34,14 +33,13 @@ async def get_fleet_state(name: str, repo: FleetRepository = Depends(fleet_repo_
 @router.sub("/{name}/state", response_model=FleetState)
 async def sub_fleet_state(req: SubscriptionRequest, name: str):
     user = sio_user(req)
-    fleet_state = await get_fleet_state(name, FleetRepository(user))
-    sub = ReplaySubject(1)
-    if fleet_state:
-        sub.on_next(fleet_state)
-    fleet_events.fleet_states.pipe(
+    obs = fleet_events.fleet_states.pipe(
         rxops.filter(lambda x: cast(FleetState, x).name == name)
-    ).subscribe(sub)
-    return sub
+    )
+    fleet_state = await get_fleet_state(name, FleetRepository(user))
+    if fleet_state:
+        return obs.pipe(rxops.start_with(fleet_state))
+    return obs
 
 
 @router.get("/{name}/log", response_model=FleetLog)

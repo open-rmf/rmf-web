@@ -65,19 +65,20 @@ class RmfGateway:
         *,
         logger: logging.Logger = None,
     ):
-        self._door_req = ros_node.create_publisher(
+        self._door_req = ros_node().create_publisher(
             RmfDoorRequest, "adapter_door_requests", 10
         )
-        self._lift_req = ros_node.create_publisher(
+        self._lift_req = ros_node().create_publisher(
             RmfLiftRequest, "adapter_lift_requests", 10
         )
-        self._submit_task_srv = ros_node.create_client(RmfSubmitTask, "submit_task")
-        self._cancel_task_srv = ros_node.create_client(RmfCancelTask, "cancel_task")
+        self._submit_task_srv = ros_node().create_client(RmfSubmitTask, "submit_task")
+        self._cancel_task_srv = ros_node().create_client(RmfCancelTask, "cancel_task")
 
         self.static_files = static_files
         self.logger = logger or base_logger.getChild(self.__class__.__name__)
         self._subscriptions: List[Subscription] = []
-        self._loop: asyncio.AbstractEventLoop
+
+        self._subscribe_all()
 
     async def call_service(self, client: rclpy.client.Client, req, timeout=1) -> Any:
         """
@@ -91,8 +92,8 @@ class RmfGateway:
         except asyncio.TimeoutError as e:
             raise HTTPException(503, "ros service call timed out") from e
 
-    def subscribe_all(self):
-        door_states_sub = ros_node.create_subscription(
+    def _subscribe_all(self):
+        door_states_sub = ros_node().create_subscription(
             RmfDoorState,
             "door_states",
             lambda msg: rmf_events.door_states.on_next(DoorState.from_orm(msg)),
@@ -104,7 +105,7 @@ class RmfGateway:
             dic = message_to_ordereddict(lift_state)
             return LiftState(**dic)
 
-        lift_states_sub = ros_node.create_subscription(
+        lift_states_sub = ros_node().create_subscription(
             RmfLiftState,
             "lift_states",
             lambda msg: rmf_events.lift_states.on_next(convert_lift_state(msg)),
@@ -112,7 +113,7 @@ class RmfGateway:
         )
         self._subscriptions.append(lift_states_sub)
 
-        dispenser_states_sub = ros_node.create_subscription(
+        dispenser_states_sub = ros_node().create_subscription(
             RmfDispenserState,
             "dispenser_states",
             lambda msg: rmf_events.dispenser_states.on_next(
@@ -122,7 +123,7 @@ class RmfGateway:
         )
         self._subscriptions.append(dispenser_states_sub)
 
-        ingestor_states_sub = ros_node.create_subscription(
+        ingestor_states_sub = ros_node().create_subscription(
             RmfIngestorState,
             "ingestor_states",
             lambda msg: rmf_events.ingestor_states.on_next(IngestorState.from_orm(msg)),
@@ -130,7 +131,7 @@ class RmfGateway:
         )
         self._subscriptions.append(ingestor_states_sub)
 
-        map_sub = ros_node.create_subscription(
+        map_sub = ros_node().create_subscription(
             RmfBuildingMap,
             "map",
             lambda msg: rmf_events.building_map.on_next(
@@ -145,25 +146,18 @@ class RmfGateway:
         )
         self._subscriptions.append(map_sub)
 
-        ros_node.executor.wake()
-
-    def unsubscribe_all(self) -> None:
-        for sub in self._subscriptions:
-            sub.destroy()
-        self._subscriptions = []
-
     @staticmethod
     def now() -> Optional[RosTime]:
         """
         Returns the current sim time, or `None` if not using sim time
         """
-        return ros_node.get_clock().now().to_msg()
+        return ros_node().get_clock().now().to_msg()
 
     def request_door(self, door_name: str, mode: int) -> None:
         msg = RmfDoorRequest(
             door_name=door_name,
-            request_time=ros_node.get_clock().now().to_msg(),
-            requester_id=ros_node.get_name(),  # FIXME: use username
+            request_time=ros_node().get_clock().now().to_msg(),
+            requester_id=ros_node().get_name(),  # FIXME: use username
             requested_mode=RmfDoorMode(
                 value=mode,
             ),
@@ -175,8 +169,8 @@ class RmfGateway:
     ):
         msg = RmfLiftRequest(
             lift_name=lift_name,
-            request_time=ros_node.get_clock().now().to_msg(),
-            session_id=ros_node.get_name(),
+            request_time=ros_node().get_clock().now().to_msg(),
+            session_id=ros_node().get_name(),
             request_type=request_type,
             destination_floor=destination,
             door_state=door_mode,
@@ -184,4 +178,18 @@ class RmfGateway:
         self._lift_req.publish(msg)
 
 
-rmf_gateway = RmfGateway(static_files_repo)
+_rmf_gateway: RmfGateway
+
+
+def rmf_gateway() -> RmfGateway:
+    return _rmf_gateway
+
+
+def startup():
+    """
+    Starts subscribing to all ROS topics.
+    Must be called after the ros node is created and before spinning the it.
+    """
+    global _rmf_gateway
+    _rmf_gateway = RmfGateway(static_files_repo)
+    return _rmf_gateway

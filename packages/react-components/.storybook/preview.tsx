@@ -1,11 +1,8 @@
-import { Theme } from '@mui/material/styles';
+import { CssBaseline } from '@mui/material';
+import { Theme, ThemeProvider } from '@mui/material/styles';
 import defaultTheme from '@mui/material/styles/defaultTheme';
 import { DecoratorFn } from '@storybook/react';
-import React from 'react';
-import { rmfDark, rmfLight } from '../lib';
-import { ThemeProvider } from '../lib/themes';
-import { StyledEngineProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import { LocalizationProvider, rmfDark, rmfLight } from '../lib';
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
@@ -32,15 +29,22 @@ const getTheme = (themeName: string): Theme => {
 const withThemeProvider: DecoratorFn = (Story, context) => {
   const theme = getTheme(context.globals.theme);
   return (
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Story {...context} />
-      </ThemeProvider>
-    </StyledEngineProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Story {...context} />
+    </ThemeProvider>
   );
 };
-export const decorators = [withThemeProvider];
+
+const withLocalization: DecoratorFn = (Story, context) => {
+  return (
+    <LocalizationProvider>
+      <Story {...context} />
+    </LocalizationProvider>
+  );
+};
+
+export const decorators = [withThemeProvider, withLocalization];
 
 export const globalTypes = {
   theme: {

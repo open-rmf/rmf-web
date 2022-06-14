@@ -18,7 +18,7 @@ setup(
         "Topic :: Software Development",
     ],
     install_requires=[
-        "jinja2~=2.11.0",
+        "jinja2~=3.1.2",
     ],
     entry_points={
         "console_scripts": [

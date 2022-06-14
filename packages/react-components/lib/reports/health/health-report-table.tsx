@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 
 export type HealthRowsType = {
   created: string; //date
-  device: { id?: number; type: string; actor: string };
+  device: { id: number; type: string; actor: string };
   health_status: string;
   health_message: string;
 }[];

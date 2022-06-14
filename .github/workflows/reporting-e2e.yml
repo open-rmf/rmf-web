@@ -10,7 +10,7 @@ jobs:
   reporting-e2e:
     strategy:
       matrix:
-        npm: ['latest', '8.5.3']
+        npm: ['latest']
       fail-fast: false
     name: Reporting e2e (npm ${{ matrix.npm }})
     runs-on: ubuntu-latest

@@ -1,9 +1,12 @@
-from typing import List, Optional, Tuple, cast
+from typing import List, Optional, Sequence, Tuple, cast
 
 from fastapi import Depends
+from tortoise.exceptions import IntegrityError
 from tortoise.query_utils import Prefetch
+from tortoise.transactions import in_transaction
 
 from api_server.authenticator import user_dep
+from api_server.logger import format_exception, logger
 from api_server.models import FleetLog, FleetState, LogEntry, User
 from api_server.models import tortoise_models as ttm
 
@@ -56,6 +59,33 @@ class FleetRepository:
             log=[LogEntry(**dict(db_log)) for db_log in result.log],
             robots=robots,
         )
+
+    async def save_fleet_state(self, fleet_state: FleetState) -> None:
+        await ttm.FleetState.update_or_create(
+            {
+                "data": fleet_state.json(),
+            },
+            name=fleet_state.name,
+        )
+
+    async def save_fleet_log(self, fleet_log: FleetLog) -> None:
+        async def _save_logs(db_fleet_log: ttm.FleetLog, logs: Sequence[LogEntry]):
+            for log in logs:
+                await ttm.FleetLogLog.create(
+                    fleet=db_fleet_log,
+                    seq=log.seq,
+                    unix_millis_time=log.unix_millis_time,
+                    tier=log.tier.name,
+                    text=log.text,
+                )
+
+        async with in_transaction():
+            db_fleet_log = (await ttm.FleetLog.get_or_create(name=fleet_log.name))[0]
+            try:
+                if fleet_log.log:
+                    await _save_logs(db_fleet_log, fleet_log.log)
+            except IntegrityError as e:
+                logger.error(format_exception(e))
 
 
 def fleet_repo_dep(user: User = Depends(user_dep)):
