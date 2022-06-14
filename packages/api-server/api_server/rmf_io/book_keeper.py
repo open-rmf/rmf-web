@@ -2,7 +2,7 @@ import asyncio
 import json
 import logging
 from collections import namedtuple
-from typing import Coroutine, List
+from typing import Coroutine, List, Optional
 
 from rx.core.typing import Disposable
 from rx.subject.subject import Subject
@@ -52,7 +52,7 @@ class RmfBookKeeper:
         self,
         rmf_events: RmfEvents,
         *,
-        logger: logging.Logger = None,
+        logger: Optional[logging.Logger] = None,
     ):
         self.rmf = rmf_events
         self.bookkeeper_events = RmfBookKeeperEvents()

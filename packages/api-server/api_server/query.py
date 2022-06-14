@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional
 
 from tortoise.queryset import MODEL, QuerySet
 
@@ -8,7 +8,7 @@ from api_server.models.pagination import Pagination
 def add_pagination(
     query: QuerySet[MODEL],
     pagination: Pagination,
-    field_mappings: Dict[str, str] = None,
+    field_mappings: Optional[Dict[str, str]] = None,
 ) -> QuerySet[MODEL]:
     """
     Adds pagination and ordering to a query.

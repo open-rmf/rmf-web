@@ -4,8 +4,8 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import { StyledEngineProvider } from '@mui/material';
 import React from 'react';
+import { LocalizationProvider } from 'react-components';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { LoginPage, PrivateRoute } from 'rmf-auth';
 import appConfig from '../app-config';
@@ -64,8 +64,8 @@ export default function App(): JSX.Element | null {
   const loginRedirect = React.useMemo(() => <Redirect to={LoginRoute} />, []);
 
   return authInitialized && appReady ? (
-    <ResourcesContext.Provider value={resourceManager.current}>
-      <StyledEngineProvider injectFirst>
+    <LocalizationProvider>
+      <ResourcesContext.Provider value={resourceManager.current}>
         <BrowserRouter>
           {user ? (
             <RmfApp>
@@ -124,7 +124,7 @@ export default function App(): JSX.Element | null {
             </Switch>
           )}
         </BrowserRouter>
-      </StyledEngineProvider>
-    </ResourcesContext.Provider>
+      </ResourcesContext.Provider>
+    </LocalizationProvider>
   ) : null;
 }
