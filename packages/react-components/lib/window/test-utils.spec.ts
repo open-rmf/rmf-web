@@ -1,4 +1,4 @@
-import { WindowLayout } from './window-manager';
+import { WindowLayout } from './window-container';
 
 export const makeLayout: () => WindowLayout[] = () => [
   { i: '0', x: 0, y: 0, w: 2, h: 4, minW: 2, minH: 4 },

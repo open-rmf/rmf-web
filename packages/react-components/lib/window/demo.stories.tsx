@@ -3,7 +3,7 @@ import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { makeLayout } from './test-utils.spec';
 import { Window } from './window';
-import { WindowManager, WindowManagerProps } from './window-manager';
+import { WindowContainer, WindowContainerProps } from './window-container';
 
 export default {
   title: 'Window/Demo',
@@ -11,7 +11,7 @@ export default {
 
 const defaultLayout = makeLayout();
 
-export const Demo: Story<WindowManagerProps> = () => {
+export const Demo: Story<WindowContainerProps> = () => {
   const [layout, setLayout] = React.useState(defaultLayout);
   const [designMode, setDesignMode] = React.useState(true);
   const counter = React.useRef(defaultLayout.length - 1);
@@ -39,7 +39,7 @@ export const Demo: Story<WindowManagerProps> = () => {
       <button onClick={() => setDesignMode(!designMode)}>
         {designMode ? 'Normal Mode' : 'Design Mode'}
       </button>
-      <WindowManager
+      <WindowContainer
         designMode={designMode}
         layout={layout}
         onLayoutChange={(newLayout) => setLayout(newLayout)}
@@ -66,7 +66,7 @@ export const Demo: Story<WindowManagerProps> = () => {
             </div>
           </Window>
         ))}
-      </WindowManager>
+      </WindowContainer>
     </div>
   );
 };

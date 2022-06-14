@@ -11,7 +11,7 @@ const GridLayout = WidthProvider(GridLayout_);
 // a fixed margin for now.
 const MARGIN = 10;
 
-export interface WindowManagerProps extends React.HTMLProps<HTMLDivElement> {
+export interface WindowContainerProps extends React.HTMLProps<HTMLDivElement> {
   /**
    * Layout works by splitting the available space into 12 columns and rows.
    * The values defined in the layouts are in column / row units. The size of each
@@ -34,7 +34,7 @@ export interface WindowManagerProps extends React.HTMLProps<HTMLDivElement> {
  * A resizable and draggable grid layout based on react-grid-layout. By default, the layout
  * follows material-ui convention of 12 columns and rows.
  */
-export const WindowManager: React.FC<WindowManagerProps> = ({
+export const WindowContainer: React.FC<WindowContainerProps> = ({
   layout,
   cols = 12,
   rows = 12,
@@ -43,7 +43,7 @@ export const WindowManager: React.FC<WindowManagerProps> = ({
   children,
   style,
   ...otherProps
-}: WindowManagerProps) => {
+}: WindowContainerProps) => {
   const windowManagerState = React.useMemo(
     () => ({
       designMode: designMode ?? false,
