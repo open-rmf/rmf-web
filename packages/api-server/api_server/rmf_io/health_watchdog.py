@@ -40,7 +40,7 @@ class HealthWatchdog:
         rmf_events: RmfEvents,
         *,
         scheduler: Optional[Scheduler] = None,
-        logger: logging.Logger = None,
+        logger: Optional[logging.Logger] = None,
     ):
         self.rmf = rmf_events
         self.scheduler = scheduler

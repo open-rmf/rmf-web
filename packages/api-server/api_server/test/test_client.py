@@ -9,13 +9,13 @@ from api_server.app import app
 here = os.path.dirname(__file__)
 
 
-_jwt_key: Optional[bytes] = None
+_jwt_key: Optional[str] = None
 
 
 def jwt_key():
     global _jwt_key
     if _jwt_key is None:
-        with open(f"{here}/../../scripts/test.key", "br") as f:
+        with open(f"{here}/../../scripts/test.key", "r", encoding="utf8") as f:
             _jwt_key = f.read()
     return _jwt_key
 
