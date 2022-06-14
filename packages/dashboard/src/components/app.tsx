@@ -15,7 +15,7 @@ import { AdminRouter } from './admin';
 import { AppBase } from './app-base';
 import { ResourcesContext } from './app-contexts';
 import './app.css';
-import Dashboard from './dashboard/dashboard';
+import { Dashboard } from './dashboard';
 import { RmfApp } from './rmf-app';
 import { RobotPage } from './robots';
 import { TaskPage } from './tasks';

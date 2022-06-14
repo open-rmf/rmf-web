@@ -8,10 +8,13 @@ import {
   IngestorsApi,
   LiftsApi,
   SioClient,
+  Subscription as SioSubscription,
   TasksApi,
 } from 'api-client';
 import axios from 'axios';
 import { Authenticator } from 'rmf-auth';
+import { Door, DoorState } from 'rmf-models';
+import { Observable, share } from 'rxjs';
 import appConfig from '../../app-config';
 import { NegotiationStatusManager } from '../../managers/negotiation-status-manager';
 import {
@@ -83,5 +86,36 @@ export class RmfIngress {
     const ws = new WebSocket(appConfig.trajServerUrl);
     this.trajectoryManager = new DefaultTrajectoryManager(ws, authenticator);
     this.negotiationStatusManager = new NegotiationStatusManager(ws, authenticator);
+  }
+
+  private _convertSioToRxObs<T>(
+    key: string,
+    cache: Record<string, Observable<T>>,
+    sioSubscribe: (key: string, handler: (data: T) => void) => SioSubscription,
+  ): Observable<T> {
+    if (!cache[key]) {
+      cache[key] = new Observable<T>((subscriber) => {
+        const sioSub = sioSubscribe(key, subscriber.next.bind(subscriber));
+        return () => this.sioClient.unsubscribe(sioSub);
+      }).pipe(share());
+    }
+    return cache[key];
+  }
+
+  private _doors?: Door[];
+  async getDoors() {
+    if (!this._doors) {
+      this._doors = (await this.doorsApi.getDoorsDoorsGet()).data;
+    }
+    return this._doors;
+  }
+
+  private _doorStateObsCache: Record<string, Observable<DoorState>> = {};
+  getDoorStateObs(name: string): Observable<DoorState> {
+    return this._convertSioToRxObs(
+      name,
+      this._doorStateObsCache,
+      this.sioClient.subscribeDoorState.bind(this.sioClient),
+    );
   }
 }
