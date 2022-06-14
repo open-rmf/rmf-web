@@ -27,7 +27,7 @@ setup(
         "pydantic~=1.8",
     ],
     extras_require={
-        "postgres": ["asyncpg~=0.22.0"],
+        "postgres": ["asyncpg~=0.25.0"],
         "mysql": ["aiomysql~=0.0.21"],
         "maria": ["aiomysql~=0.0.21"],
     },
