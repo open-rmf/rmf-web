@@ -63,7 +63,7 @@ class RmfGateway:
         self,
         static_files: StaticFilesRepository,
         *,
-        logger: logging.Logger = None,
+        logger: Optional[logging.Logger] = None,
     ):
         self._door_req = ros_node().create_publisher(
             RmfDoorRequest, "adapter_door_requests", 10

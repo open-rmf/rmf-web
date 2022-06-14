@@ -23,7 +23,7 @@ class JwtAuthenticator:
         self.aud = aud
         self.iss = iss
         self.oidc_url = oidc_url
-        with open(pem_file, "br") as f:
+        with open(pem_file, "r", encoding="utf8") as f:
             self._public_key = f.read()
 
     async def _get_user(self, claims: dict) -> User:
