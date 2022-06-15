@@ -1,9 +1,16 @@
 import { DoorsApp } from './doors-app';
-import { WorkspaceManager, WorkspaceProps } from './workspace';
+import { LiftsApp } from './lifts-app';
+import { WorkspaceManager, WorkspaceState } from './workspace';
 
-export const dashboardWorkspace: WorkspaceProps = {
-  layout: [{ i: 'doors', x: 0, y: 0, w: 4, h: 4 }],
-  windows: [{ key: 'doors', app: DoorsApp }],
+export const dashboardWorkspace: WorkspaceState = {
+  layout: [
+    { i: 'doors', x: 0, y: 0, w: 4, h: 4 },
+    { i: 'lifts', x: 4, y: 0, w: 4, h: 4 },
+  ],
+  windows: [
+    { key: 'doors', app: DoorsApp },
+    { key: 'lifts', app: LiftsApp },
+  ],
 };
 
 WorkspaceManager['dashboard'] = dashboardWorkspace;

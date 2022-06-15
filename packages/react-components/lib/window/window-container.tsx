@@ -84,7 +84,7 @@ export const WindowContainer: React.FC<WindowContainerProps> = ({
             rowHeight={rowHeight}
             isResizable={designMode}
             isDraggable={designMode}
-            useCSSTransforms={designMode}
+            useCSSTransforms={false}
             onLayoutChange={onLayoutChange}
           >
             {children}

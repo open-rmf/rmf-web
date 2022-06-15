@@ -1,7 +1,6 @@
-import { styled, Autocomplete } from '@mui/material';
+import { Autocomplete, styled } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import React from 'react';
-import type { Lift } from 'api-client';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { requestDoorModeToString, requestModeToString } from './lift-utils';
 
@@ -52,14 +51,14 @@ const StyledConfirmationDialog = styled((props: ConfirmationDialogProps) => (
   },
 }));
 
-export interface LiftRequestFormProps {
-  lift: Lift;
+export interface LiftRequestDialogProps {
+  currentLevel: string;
+  availableLevels: string[];
   showFormDialog: boolean;
   availableRequestTypes: number[];
   availableDoorModes: number[];
   onRequestSubmit?(
     event: React.FormEvent,
-    lift: Lift,
     doorState: number,
     requestType: number,
     destination: string,
@@ -67,17 +66,18 @@ export interface LiftRequestFormProps {
   onClose: () => void;
 }
 
-export const LiftRequestFormDialog = ({
-  lift,
+export const LiftRequestDialog = ({
+  currentLevel,
+  availableLevels,
   availableRequestTypes,
   availableDoorModes,
   showFormDialog,
   onRequestSubmit,
   onClose,
-}: LiftRequestFormProps): JSX.Element => {
+}: LiftRequestDialogProps): JSX.Element => {
   const [doorState, setDoorState] = React.useState(availableDoorModes[0]);
   const [requestType, setRequestType] = React.useState(availableRequestTypes[0]);
-  const [destination, setDestination] = React.useState(lift.levels[0]);
+  const [destination, setDestination] = React.useState(currentLevel);
 
   // Error states
   const [doorStateError, setDoorStateError] = React.useState('');
@@ -87,7 +87,7 @@ export const LiftRequestFormDialog = ({
   const cleanUpForm = () => {
     setDoorState(availableDoorModes[0]);
     setRequestType(availableRequestTypes[0]);
-    setDestination(lift.levels[0]);
+    setDestination(currentLevel);
     cleanUpError();
   };
 
@@ -111,7 +111,7 @@ export const LiftRequestFormDialog = ({
   const handleLiftRequest = (event: React.FormEvent) => {
     event.preventDefault();
     if (isFormValid()) {
-      onRequestSubmit && onRequestSubmit(event, lift, doorState, requestType, destination);
+      onRequestSubmit && onRequestSubmit(event, doorState, requestType, destination);
       onClose();
       cleanUpForm();
     }
@@ -132,7 +132,7 @@ export const LiftRequestFormDialog = ({
         <Autocomplete
           getOptionLabel={(option) => option}
           onChange={(_, value) => setDestination(value || '')}
-          options={['', ...lift.levels]}
+          options={availableLevels}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -188,4 +188,4 @@ export const LiftRequestFormDialog = ({
   );
 };
 
-export default LiftRequestFormDialog;
+export default LiftRequestDialog;

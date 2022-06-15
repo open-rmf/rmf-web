@@ -65,6 +65,8 @@ export default function App(): JSX.Element | null {
 
   const loginRedirect = React.useMemo(() => <Redirect to={LoginRoute} />, []);
 
+  const [workspaceState, setWorkspaceState] = React.useState(dashboardWorkspace);
+
   return authInitialized && appReady ? (
     <LocalizationProvider>
       <ResourcesContext.Provider value={resourceManager.current}>
@@ -82,7 +84,7 @@ export default function App(): JSX.Element | null {
                     unauthorizedComponent={loginRedirect}
                     user={user}
                   >
-                    <Workspace {...dashboardWorkspace} />
+                    <Workspace state={workspaceState} onStateChange={setWorkspaceState} />
                   </PrivateRoute>
                   <PrivateRoute
                     exact

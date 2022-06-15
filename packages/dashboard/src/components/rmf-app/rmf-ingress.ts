@@ -1,20 +1,25 @@
 import {
   AdminApi,
+  BuildingApi,
+  BuildingMap,
   Configuration,
   DefaultApi,
   DispensersApi,
+  Door,
   DoorsApi,
+  DoorState,
   FleetsApi,
   IngestorsApi,
+  Lift,
   LiftsApi,
+  LiftState,
   SioClient,
   Subscription as SioSubscription,
   TasksApi,
 } from 'api-client';
 import axios from 'axios';
 import { Authenticator } from 'rmf-auth';
-import { Door, DoorState } from 'rmf-models';
-import { Observable, share } from 'rxjs';
+import { map, Observable, share } from 'rxjs';
 import appConfig from '../../app-config';
 import { NegotiationStatusManager } from '../../managers/negotiation-status-manager';
 import {
@@ -24,6 +29,7 @@ import {
 
 export class RmfIngress {
   sioClient: SioClient;
+  buildingApi: BuildingApi;
   defaultApi: DefaultApi;
   doorsApi: DoorsApi;
   liftsApi: LiftsApi;
@@ -74,6 +80,7 @@ export class RmfIngress {
       basePath: appConfig.rmfServerUrl,
     });
 
+    this.buildingApi = new BuildingApi(apiConfig, undefined, axiosInst);
     this.defaultApi = new DefaultApi(apiConfig, undefined, axiosInst);
     this.doorsApi = new DoorsApi(apiConfig, undefined, axiosInst);
     this.liftsApi = new LiftsApi(apiConfig, undefined, axiosInst);
@@ -102,13 +109,13 @@ export class RmfIngress {
     return cache[key];
   }
 
-  private _doors?: Door[];
-  async getDoors() {
-    if (!this._doors) {
-      this._doors = (await this.doorsApi.getDoorsDoorsGet()).data;
-    }
-    return this._doors;
-  }
+  buildingMapObs: Observable<BuildingMap> = new Observable((subscriber) => {
+    this.sioClient.subscribeBuildingMap((data) => subscriber.next(data));
+  });
+
+  doorsObs: Observable<Door[]> = this.buildingMapObs.pipe(
+    map((buildingMap) => buildingMap.levels.flatMap((level) => level.doors)),
+  );
 
   private _doorStateObsCache: Record<string, Observable<DoorState>> = {};
   getDoorStateObs(name: string): Observable<DoorState> {
@@ -116,6 +123,17 @@ export class RmfIngress {
       name,
       this._doorStateObsCache,
       this.sioClient.subscribeDoorState.bind(this.sioClient),
+    );
+  }
+
+  liftsObs: Observable<Lift[]> = this.buildingMapObs.pipe(map((buildingMap) => buildingMap.lifts));
+
+  private _liftStateObsCache: Record<string, Observable<LiftState>> = {};
+  getLiftStateObs(name: string): Observable<LiftState> {
+    return this._convertSioToRxObs(
+      name,
+      this._liftStateObsCache,
+      this.sioClient.subscribeLiftState.bind(this.sioClient),
     );
   }
 }
