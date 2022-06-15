@@ -58,12 +58,3 @@ export const Window = styled(
   flexWrap: 'nowrap',
   overflow: 'hidden',
 });
-
-export function createWindow(Component: React.ComponentType<{}>): React.ComponentType<WindowProps> {
-  return React.forwardRef(({ children, ...otherProps }, ref) => (
-    <Window ref={ref} {...otherProps}>
-      <Component />
-      {children}
-    </Window>
-  ));
-}

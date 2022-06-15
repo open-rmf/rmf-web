@@ -16,10 +16,11 @@ import { AdminRouter } from './admin';
 import { AppBase } from './app-base';
 import { ResourcesContext } from './app-contexts';
 import './app.css';
-import { Dashboard } from './dashboard';
+import { dashboardWorkspace } from './dashboard';
 import { RmfApp } from './rmf-app';
 import { RobotPage } from './robots';
 import { TaskPage } from './tasks';
+import { Workspace } from './workspace';
 
 export default function App(): JSX.Element | null {
   const authenticator = appConfig.authenticator;
@@ -81,7 +82,7 @@ export default function App(): JSX.Element | null {
                     unauthorizedComponent={loginRedirect}
                     user={user}
                   >
-                    <Dashboard />
+                    <Workspace {...dashboardWorkspace} />
                   </PrivateRoute>
                   <PrivateRoute
                     exact

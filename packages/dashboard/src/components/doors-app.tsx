@@ -1,12 +1,13 @@
 import { CardActions, Grid } from '@mui/material';
 import React from 'react';
-import { DoorCard as DoorCard_, DoorControls, createWindow } from 'react-components';
+import { DoorCard as DoorCard_, DoorControls } from 'react-components';
 import { Door, DoorState } from 'rmf-models';
+import { AppRegistry, createMicroApp } from './micro-app';
 import { RmfIngressContext } from './rmf-app';
 
 const DoorCard = React.memo(DoorCard_);
 
-export const DoorsWindow = createWindow(() => {
+export const DoorsApp = createMicroApp('Doors', () => {
   const rmf = React.useContext(RmfIngressContext);
   const [doors, setDoors] = React.useState<Door[]>([]);
   const [doorStates, setDoorStates] = React.useState<Record<string, DoorState>>({});
@@ -45,3 +46,5 @@ export const DoorsWindow = createWindow(() => {
     </Grid>
   );
 });
+
+AppRegistry['Doors'] = DoorsApp;

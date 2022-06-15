@@ -1,10 +1,9 @@
-import { DoorsWindow } from './doors-window';
-import { WindowContainer } from 'react-components';
+import { DoorsApp } from './doors-app';
+import { WorkspaceManager, WorkspaceProps } from './workspace';
 
-export function Dashboard(): JSX.Element {
-  return (
-    <WindowContainer layout={[{ i: 'a', x: 0, y: 0, w: 4, h: 4 }]} designMode>
-      <DoorsWindow key="a" title="Doors" />
-    </WindowContainer>
-  );
-}
+export const dashboardWorkspace: WorkspaceProps = {
+  layout: [{ i: 'doors', x: 0, y: 0, w: 4, h: 4 }],
+  windows: [{ key: 'doors', app: DoorsApp }],
+};
+
+WorkspaceManager['dashboard'] = dashboardWorkspace;
