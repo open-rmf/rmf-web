@@ -6,6 +6,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import React from 'react';
 import { LocalizationProvider } from 'react-components';
+import 'react-grid-layout/css/styles.css';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { LoginPage, PrivateRoute } from 'rmf-auth';
 import appConfig from '../app-config';

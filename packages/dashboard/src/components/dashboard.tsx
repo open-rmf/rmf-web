@@ -1,10 +1,10 @@
-import { DoorsPanel } from './doors-panel';
-import GridLayout from 'react-grid-layout';
+import { DoorsWindow } from './doors-window';
+import { WindowContainer } from 'react-components';
 
 export function Dashboard(): JSX.Element {
   return (
-    <GridLayout layout={[{ i: 'a', x: 0, y: 2, w: 4, h: 4 }]} cols={12} rowHeight={30} width={1200}>
-      <DoorsPanel key="a" />
-    </GridLayout>
+    <WindowContainer layout={[{ i: 'a', x: 0, y: 0, w: 4, h: 4 }]} designMode>
+      <DoorsWindow key="a" title="Doors" />
+    </WindowContainer>
   );
 }

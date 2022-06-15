@@ -45,5 +45,8 @@
       "python3 -m pipenv run black"
     ]
   },
-  "dependencies": {}
+  "dependencies": {},
+  "overrides": {
+    "react-error-overlay": "6.0.9"
+  }
 }

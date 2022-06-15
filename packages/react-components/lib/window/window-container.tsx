@@ -64,7 +64,6 @@ export const WindowContainer: React.FC<WindowContainerProps> = ({
       resizeObserver.disconnect();
     };
   }, [rows]);
-  console.log(rowHeight);
 
   return (
     <WindowManagerStateContext.Provider value={windowManagerState}>

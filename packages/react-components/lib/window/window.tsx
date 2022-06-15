@@ -9,6 +9,7 @@ import { WindowToolbar } from './window-toolbar';
 export interface WindowProps extends PaperProps {
   key: string;
   title: string;
+  // children: React.ReactChildren;
   'data-grid'?: Layout;
   toolbar?: React.ReactNode;
   onClose?: () => void;
@@ -20,6 +21,13 @@ export const Window = styled(
       { title, toolbar, onClose, sx, children, ...otherProps }: WindowProps,
       ref: React.Ref<HTMLDivElement>,
     ) => {
+      // The resize marker injected by `react-grid-layout` must be a direct children, but we
+      // want to wrap the window components in a div so it shows a scrollbar. So we assume that
+      // the injected resize marker is always the last component and render it separately.
+      const childrenArr = React.Children.toArray(children);
+      const childComponents = childrenArr.slice(0, childrenArr.length - 1);
+      const resizeComponent = childrenArr[childrenArr.length - 1];
+
       const windowManagerState = React.useContext(WindowManagerStateContext);
       return (
         <Paper
@@ -38,8 +46,8 @@ export const Window = styled(
               )}
             </WindowToolbar>
           </Grid>
-          {/* NOTE: The resize marker injected by `react-grid-layout` must be a direct children */}
-          {children}
+          <div style={{ overflow: 'auto' }}>{childComponents}</div>
+          {resizeComponent}
         </Paper>
       );
     },
@@ -50,3 +58,12 @@ export const Window = styled(
   flexWrap: 'nowrap',
   overflow: 'hidden',
 });
+
+export function createWindow(Component: React.ComponentType<{}>): React.ComponentType<WindowProps> {
+  return React.forwardRef(({ children, ...otherProps }, ref) => (
+    <Window ref={ref} {...otherProps}>
+      <Component />
+      {children}
+    </Window>
+  ));
+}
