@@ -1,12 +1,11 @@
 import { CardActions, Grid } from '@mui/material';
 import { BuildingMap, LiftState } from 'api-client';
 import React from 'react';
-import { LiftCard as LiftCard_, LiftControls as LiftControls_ } from 'react-components';
+import { LiftCard as LiftCard_, LiftControls } from 'react-components';
 import { AppRegistry, createMicroApp } from './micro-app';
 import { RmfIngressContext } from './rmf-app';
 
 const LiftCard = React.memo(LiftCard_);
-const LiftControls = React.memo(LiftControls_);
 
 export const LiftsApp = createMicroApp('Lifts', () => {
   const rmf = React.useContext(RmfIngressContext);
@@ -17,7 +16,7 @@ export const LiftsApp = createMicroApp('Lifts', () => {
     if (!rmf) {
       return;
     }
-    rmf.buildingMapObs.subscribe((newMap) => {
+    const sub = rmf.buildingMapObs.subscribe((newMap) => {
       for (const lift of newMap.lifts) {
         rmf.getLiftStateObs(lift.name).subscribe((state) => {
           setLiftStates((prev) => ({ ...prev, [lift.name]: state }));
@@ -25,6 +24,7 @@ export const LiftsApp = createMicroApp('Lifts', () => {
       }
       setBuildingMap(newMap);
     });
+    return () => sub.unsubscribe();
   }, [rmf]);
 
   return (
@@ -46,6 +46,13 @@ export const LiftsApp = createMicroApp('Lifts', () => {
                 <LiftControls
                   availableLevels={lift.levels}
                   currentLevel={liftState?.current_floor}
+                  onRequestSubmit={(_ev, doorState, requestType, destination) =>
+                    rmf?.liftsApi.postLiftRequestLiftsLiftNameRequestPost(lift.name, {
+                      destination,
+                      door_mode: doorState,
+                      request_type: requestType,
+                    })
+                  }
                 />
               </CardActions>
             </LiftCard>

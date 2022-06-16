@@ -11,15 +11,17 @@ export function createMicroApp(
   Component: React.ComponentType<{}>,
   Toolbar?: React.ComponentType<{}>,
 ): React.ComponentType<MicroAppProps> {
-  return React.forwardRef(
-    (
-      { children, ...otherProps }: React.PropsWithChildren<MicroAppProps>,
-      ref: React.Ref<HTMLDivElement>,
-    ) => (
-      <Window ref={ref} title={title} toolbar={Toolbar && <Toolbar />} {...otherProps}>
-        <Component />
-        {children}
-      </Window>
+  return React.memo(
+    React.forwardRef(
+      (
+        { children, ...otherProps }: React.PropsWithChildren<MicroAppProps>,
+        ref: React.Ref<HTMLDivElement>,
+      ) => (
+        <Window ref={ref} title={title} toolbar={Toolbar && <Toolbar />} {...otherProps}>
+          <Component />
+          {children}
+        </Window>
+      ),
     ),
   );
 }
