@@ -69,7 +69,7 @@ export const WindowContainer: React.FC<WindowContainerProps> = ({
     <WindowManagerStateContext.Provider value={windowManagerState}>
       <div
         ref={containerRef}
-        style={{ overflow: 'hidden', height: '100%', maxHeight: '100%', ...style }}
+        style={{ overflow: 'auto', height: '100%', maxHeight: '100%', ...style }}
         {...otherProps}
       >
         {rowHeight !== null && (

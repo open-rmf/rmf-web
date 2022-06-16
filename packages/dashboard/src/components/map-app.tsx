@@ -2,7 +2,7 @@ import { styled } from '@mui/material';
 import { BuildingMap, Dispenser, DoorState, FleetState, Ingestor, LiftState } from 'api-client';
 import React from 'react';
 import { Subscription } from 'rxjs';
-import { createMicroApp } from './micro-app';
+import { AppRegistry, createMicroApp } from './micro-app';
 import { RmfIngressContext } from './rmf-app';
 import { ScheduleVisualizer } from './schedule-visualizer';
 
@@ -88,3 +88,5 @@ export const MapApp = styled(
     zIndex: 1001,
   },
 });
+
+AppRegistry['Map'] = MapApp;
