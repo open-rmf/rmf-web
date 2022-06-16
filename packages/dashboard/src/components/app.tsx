@@ -4,10 +4,12 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
+import DesignModeIcon from '@mui/icons-material/AutoFixNormal';
+import { IconButton, useTheme } from '@mui/material';
 import React from 'react';
-import { LocalizationProvider } from 'react-components';
 import 'react-grid-layout/css/styles.css';
-import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
+import { useRouteMatch } from 'react-router';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import { LoginPage, PrivateRoute } from 'rmf-auth';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
@@ -66,69 +68,85 @@ export default function App(): JSX.Element | null {
   const loginRedirect = React.useMemo(() => <Redirect to={LoginRoute} />, []);
 
   const [workspaceState, setWorkspaceState] = React.useState(dashboardWorkspace);
+  const workspaceRoute = useRouteMatch({ exact: true, path: DashboardRoute });
+  const [designMode, setDesignMode] = React.useState(false);
+  const theme = useTheme();
+
+  const extraToolbarItems = React.useMemo(() => {
+    if (workspaceRoute) {
+      return (
+        <IconButton
+          color="inherit"
+          sx={{ opacity: designMode ? undefined : theme.palette.action.disabledOpacity }}
+          onClick={() => setDesignMode((prev) => !prev)}
+        >
+          <DesignModeIcon />
+        </IconButton>
+      );
+    }
+    return null;
+  }, [workspaceRoute, theme, designMode]);
 
   return authInitialized && appReady ? (
-    <LocalizationProvider>
-      <ResourcesContext.Provider value={resourceManager.current}>
-        <BrowserRouter>
-          {user ? (
-            <RmfApp>
-              <AppBase>
-                <Switch>
-                  <Route exact path={LoginRoute}>
-                    <Redirect to={DashboardRoute} />
-                  </Route>
-                  <PrivateRoute
-                    exact
-                    path={DashboardRoute}
-                    unauthorizedComponent={loginRedirect}
-                    user={user}
-                  >
-                    <Workspace state={workspaceState} onStateChange={setWorkspaceState} />
-                  </PrivateRoute>
-                  <PrivateRoute
-                    exact
-                    path={RobotsRoute}
-                    unauthorizedComponent={loginRedirect}
-                    user={user}
-                  >
-                    <RobotPage />
-                  </PrivateRoute>
-                  <PrivateRoute
-                    exact
-                    path={TasksRoute}
-                    unauthorizedComponent={loginRedirect}
-                    user={user}
-                  >
-                    <TaskPage />
-                  </PrivateRoute>
-                  <PrivateRoute path={AdminRoute} unauthorizedComponent={loginRedirect} user={user}>
-                    <AdminRouter />
-                  </PrivateRoute>
-                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-                    <Redirect to={DashboardRoute} />
-                  </PrivateRoute>
-                </Switch>
-              </AppBase>
-            </RmfApp>
-          ) : (
+    <ResourcesContext.Provider value={resourceManager.current}>
+      {user ? (
+        <RmfApp>
+          <AppBase extraToolbarItems={extraToolbarItems}>
             <Switch>
               <Route exact path={LoginRoute}>
-                <LoginPage
-                  title={'Dashboard'}
-                  logo="assets/ros-health.png"
-                  onLoginClick={() =>
-                    authenticator.login(`${window.location.origin}${DashboardRoute}`)
-                  }
+                <Redirect to={DashboardRoute} />
+              </Route>
+              <PrivateRoute
+                exact
+                path={DashboardRoute}
+                unauthorizedComponent={loginRedirect}
+                user={user}
+              >
+                <Workspace
+                  state={workspaceState}
+                  onStateChange={setWorkspaceState}
+                  designMode={designMode}
                 />
-              </Route>
-              <Route>
-                <Redirect to={LoginRoute} />
-              </Route>
+              </PrivateRoute>
+              <PrivateRoute
+                exact
+                path={RobotsRoute}
+                unauthorizedComponent={loginRedirect}
+                user={user}
+              >
+                <RobotPage />
+              </PrivateRoute>
+              <PrivateRoute
+                exact
+                path={TasksRoute}
+                unauthorizedComponent={loginRedirect}
+                user={user}
+              >
+                <TaskPage />
+              </PrivateRoute>
+              <PrivateRoute path={AdminRoute} unauthorizedComponent={loginRedirect} user={user}>
+                <AdminRouter />
+              </PrivateRoute>
+              <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
+                <Redirect to={DashboardRoute} />
+              </PrivateRoute>
             </Switch>
-          )}
-        </BrowserRouter>
-      </ResourcesContext.Provider>
-    </LocalizationProvider>
+          </AppBase>
+        </RmfApp>
+      ) : (
+        <Switch>
+          <Route exact path={LoginRoute}>
+            <LoginPage
+              title={'Dashboard'}
+              logo="assets/ros-health.png"
+              onLoginClick={() => authenticator.login(`${window.location.origin}${DashboardRoute}`)}
+            />
+          </Route>
+          <Route>
+            <Redirect to={LoginRoute} />
+          </Route>
+        </Switch>
+      )}
+    </ResourcesContext.Provider>
   ) : null;
 }

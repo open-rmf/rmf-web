@@ -17,6 +17,10 @@ import SettingsDrawer from './drawers/settings-drawer';
 
 const defaultTheme = createTheme();
 
+export interface AppBaseProps {
+  extraToolbarItems?: React.ReactNode;
+}
+
 /**
  * Contains various components that are essential to the app and provides contexts to control them.
  * Components include:
@@ -29,7 +33,10 @@ const defaultTheme = createTheme();
  *
  * Also provides `AppControllerContext` to allow children components to control them.
  */
-export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element | null {
+export function AppBase({
+  extraToolbarItems,
+  children,
+}: React.PropsWithChildren<AppBaseProps>): JSX.Element | null {
   const [settings, setSettings] = React.useState(() => loadSettings());
   const [showSettings, setShowSettings] = React.useState(false);
   const [showHelp, setShowHelp] = React.useState(false);
@@ -86,7 +93,7 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
               style={{ width: '100%', height: '100%' }}
               wrap="nowrap"
             >
-              <AppBar />
+              <AppBar extraToolbarItems={extraToolbarItems} />
               {children}
               <SettingsDrawer
                 open={showSettings}

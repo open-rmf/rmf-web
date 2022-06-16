@@ -57,12 +57,14 @@ function locationToTabValue(pathname: string): TabValue | undefined {
 }
 
 export interface AppBarProps {
+  extraToolbarItems?: React.ReactNode;
+
   // TODO: change the alarm status to required when we have an alarm
   // service working properly in the backend
   alarmState?: boolean | null;
 }
 
-export const AppBar = React.memo((): React.ReactElement => {
+export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.ReactElement => {
   const { showHelp: setShowHelp /* , setShowSettings */ } = React.useContext(AppControllerContext);
   const history = useHistory();
   const location = useLocation();
@@ -125,6 +127,7 @@ export const AppBar = React.memo((): React.ReactElement => {
       </NavigationBar>
       <Toolbar variant="dense" className={classes.toolbar}>
         <Typography variant="caption">Powered by OpenRMF</Typography>
+        {extraToolbarItems}
         {/* TODO: Hiding until we have a better theme */}
         {/* <IconButton
             id="show-settings-btn"

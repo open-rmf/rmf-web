@@ -13,18 +13,19 @@ export interface WorkspaceState {
 }
 
 export interface WorkspaceProps {
+  designMode: boolean;
   state: WorkspaceState;
   onStateChange?: (state: WorkspaceState) => void;
 }
 
-export function Workspace({ state, onStateChange }: WorkspaceProps): JSX.Element {
+export function Workspace({ designMode, state, onStateChange }: WorkspaceProps): JSX.Element {
   return (
     <WindowContainer
       layout={state.layout}
       onLayoutChange={(newLayout) =>
         onStateChange && onStateChange({ ...state, layout: newLayout })
       }
-      designMode
+      designMode={designMode}
     >
       {state.windows.map((w) => (
         <w.app
