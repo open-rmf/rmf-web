@@ -36,7 +36,7 @@ export const Window = styled(
           sx={{ cursor: windowManagerState.designMode ? 'move' : undefined, ...sx }}
           {...otherProps}
         >
-          <Grid item>
+          <Grid item className="rgl-draggable">
             <WindowToolbar title={title}>
               {toolbar}
               {windowManagerState.designMode && (
@@ -46,7 +46,9 @@ export const Window = styled(
               )}
             </WindowToolbar>
           </Grid>
-          <div style={{ overflow: 'auto' }}>{childComponents}</div>
+          <div style={{ overflow: 'auto', width: '100%', height: '100%', cursor: 'auto' }}>
+            {childComponents}
+          </div>
           {resizeComponent}
         </Paper>
       );

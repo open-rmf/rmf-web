@@ -1,15 +1,20 @@
 import {
   AdminApi,
+  FleetState,
   BuildingApi,
   BuildingMap,
   Configuration,
   DefaultApi,
+  Dispenser,
   DispensersApi,
+  DispenserState,
   Door,
   DoorsApi,
   DoorState,
   FleetsApi,
+  Ingestor,
   IngestorsApi,
+  IngestorState,
   Lift,
   LiftsApi,
   LiftState,
@@ -120,5 +125,42 @@ export class RmfIngress {
 
   getLiftStateObs(name: string): Observable<LiftState> {
     return this._convertSioToRxObs((handler) => this.sioClient.subscribeLiftState(name, handler));
+  }
+
+  dispensersObs: Observable<Dispenser[]> = new Observable<Dispenser[]>((subscriber) => {
+    (async () => {
+      const dispensers = (await this.dispensersApi.getDispensersDispensersGet()).data;
+      subscriber.next(dispensers);
+    })();
+  }).pipe(shareReplay(1));
+
+  getDispenserStateObs(guid: string): Observable<DispenserState> {
+    return this._convertSioToRxObs((handler) =>
+      this.sioClient.subscribeDispenserState(guid, handler),
+    );
+  }
+
+  ingestorsObs: Observable<Ingestor[]> = new Observable<Ingestor[]>((subscriber) => {
+    (async () => {
+      const ingestors = (await this.ingestorsApi.getIngestorsIngestorsGet()).data;
+      subscriber.next(ingestors);
+    })();
+  }).pipe(shareReplay(1));
+
+  getIngestorStateObs(guid: string): Observable<IngestorState> {
+    return this._convertSioToRxObs((handler) =>
+      this.sioClient.subscribeIngestorState(guid, handler),
+    );
+  }
+
+  fleetsObs: Observable<FleetState[]> = new Observable<FleetState[]>((subscriber) => {
+    (async () => {
+      const fleets = (await this.fleetsApi.getFleetsFleetsGet()).data;
+      subscriber.next(fleets);
+    })();
+  }).pipe(shareReplay(1));
+
+  getFleetStateObs(name: string): Observable<FleetState> {
+    return this._convertSioToRxObs((handler) => this.sioClient.subscribeFleetState(name, handler));
   }
 }

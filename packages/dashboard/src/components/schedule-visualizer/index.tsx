@@ -74,7 +74,7 @@ interface ScheduleVisualizerSettings {
   trajectoryTime: number;
 }
 
-export default React.forwardRef(function ScheduleVisualizer(
+export const ScheduleVisualizer = React.forwardRef(function ScheduleVisualizer(
   {
     buildingMap,
     negotiationTrajStore = {},
@@ -437,3 +437,5 @@ export default React.forwardRef(function ScheduleVisualizer(
     </LMap>
   ) : null;
 });
+
+export default ScheduleVisualizer;

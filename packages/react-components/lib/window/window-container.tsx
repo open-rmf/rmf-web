@@ -85,6 +85,7 @@ export const WindowContainer: React.FC<WindowContainerProps> = ({
             isResizable={designMode}
             isDraggable={designMode}
             useCSSTransforms={false}
+            draggableHandle=".rgl-draggable"
             onLayoutChange={onLayoutChange}
           >
             {children}
