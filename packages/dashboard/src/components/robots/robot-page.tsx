@@ -93,8 +93,8 @@ function NoSelectedRobot() {
 
 export function RobotPage() {
   return <div></div>;
-  // const rmfIngress = React.useContext(RmfIngressContext);
-  // const sioClient = React.useContext(RmfIngressContext)?.sioClient;
+  // const rmfIngress = React.useContext(RmfAppContext);
+  // const sioClient = React.useContext(RmfAppContext)?.sioClient;
   // const buildingMap = React.useContext(BuildingMapContext);
   // const [leafletMap, setLeafletMap] = React.useState<Map<MapProps, L.Map>>();
   // // FIXME: RobotTable does not know about which fleet a robot belongs to, so there is no way to

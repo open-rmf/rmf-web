@@ -25,7 +25,7 @@ import { CreateTaskForm, CreateTaskFormProps, TaskInfo, TaskTable } from 'react-
 import { UserProfileContext } from 'rmf-auth';
 import { AppControllerContext } from '../app-contexts';
 import { Enforcer } from '../permissions';
-import { RmfIngressContext } from '../rmf-app';
+import { RmfAppContext } from '../rmf-app';
 import { TaskLogs } from './task-logs';
 import { parseTasksFile } from './utils';
 
@@ -140,7 +140,7 @@ export function TaskPanel({
   const [selectedTaskLog, setSelectedTaskLog] = React.useState<TaskEventLog | undefined>(undefined);
   const profile = React.useContext(UserProfileContext);
   const { showErrorAlert } = React.useContext(AppControllerContext);
-  const { tasksApi } = React.useContext(RmfIngressContext) || {};
+  const { tasksApi } = React.useContext(RmfAppContext) || {};
 
   const handleCancelTaskClick = React.useCallback<React.MouseEventHandler>(async () => {
     if (!cancelTask || !selectedTask) {

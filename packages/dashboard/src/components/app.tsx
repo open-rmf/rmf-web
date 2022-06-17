@@ -2,11 +2,8 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import DesignModeIcon from '@mui/icons-material/AutoFixNormal';
-import { IconButton, useTheme } from '@mui/material';
 import React from 'react';
 import 'react-grid-layout/css/styles.css';
-import { useRouteMatch } from 'react-router';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { LoginPage, PrivateRoute } from 'rmf-auth';
 import appConfig from '../app-config';
@@ -73,33 +70,11 @@ export default function App(): JSX.Element | null {
 
   const loginRedirect = React.useMemo(() => <Redirect to={LoginRoute} />, []);
 
-  const customRoute1 = useRouteMatch(CustomRoute1);
-  const customRoute2 = useRouteMatch(CustomRoute2);
-  const isCustomRoute = customRoute1 || customRoute2;
-
-  const [designMode, setDesignMode] = React.useState(false);
-  const theme = useTheme();
-
-  const extraToolbarItems = React.useMemo(() => {
-    if (isCustomRoute) {
-      return (
-        <IconButton
-          color="inherit"
-          sx={{ opacity: designMode ? undefined : theme.palette.action.disabledOpacity }}
-          onClick={() => setDesignMode((prev) => !prev)}
-        >
-          <DesignModeIcon />
-        </IconButton>
-      );
-    }
-    return null;
-  }, [isCustomRoute, theme, designMode]);
-
   return authInitialized && appReady ? (
     <ResourcesContext.Provider value={resourceManager.current}>
       {user ? (
         <RmfApp>
-          <AppBase extraToolbarItems={extraToolbarItems}>
+          <AppBase>
             <Switch>
               <Route exact path={LoginRoute}>
                 <Redirect to={DashboardRoute} />
@@ -128,11 +103,11 @@ export default function App(): JSX.Element | null {
               >
                 <Workspace state={tasksWorkspace} />
               </PrivateRoute>
-              <PrivateRoute unauthorizedComponent={loginRedirect} user={user} {...customRoute1}>
-                <ManagedWorkspace workspaceId="custom1" designMode={designMode} />
+              <PrivateRoute unauthorizedComponent={loginRedirect} user={user} path={CustomRoute1}>
+                <ManagedWorkspace key="custom1" workspaceId="custom1" />
               </PrivateRoute>
-              <PrivateRoute unauthorizedComponent={loginRedirect} user={user} {...customRoute2}>
-                <ManagedWorkspace workspaceId="custom2" designMode={designMode} />
+              <PrivateRoute unauthorizedComponent={loginRedirect} user={user} path={CustomRoute2}>
+                <ManagedWorkspace key="custom2" workspaceId="custom2" />
               </PrivateRoute>
               <PrivateRoute path={AdminRoute} unauthorizedComponent={loginRedirect} user={user}>
                 <AdminRouter />

@@ -34,7 +34,11 @@ import {
 } from '../../managers/robot-trajectory-manager';
 
 export class RmfIngress {
-  sioClient: SioClient;
+  // This should be private because socketio does not support "replaying" subscription. If
+  // subscription is made before the one made by the observables, the replays will not work
+  // correctly.
+  private _sioClient: SioClient;
+
   buildingApi: BuildingApi;
   defaultApi: DefaultApi;
   doorsApi: DoorsApi;
@@ -54,7 +58,7 @@ export class RmfIngress {
       );
     }
 
-    this.sioClient = (() => {
+    this._sioClient = (() => {
       const token = authenticator.token;
       const url = new URL(appConfig.rmfServerUrl);
       const path = url.pathname === '/' ? '' : url.pathname;
@@ -67,7 +71,7 @@ export class RmfIngress {
       }
       return new SioClient(url.origin, options);
     })();
-    this.sioClient.sio.on('error', console.error);
+    this._sioClient.sio.on('error', console.error);
 
     // the axios swagger generator is bugged, it does not properly attach the token so we have
     // to manually add them.
@@ -106,26 +110,38 @@ export class RmfIngress {
   ): Observable<T> {
     return new Observable<T>((subscriber) => {
       const sioSub = sioSubscribe(subscriber.next.bind(subscriber));
-      return () => this.sioClient.unsubscribe(sioSub);
+      return () => this._sioClient.unsubscribe(sioSub);
     }).pipe(shareReplay(1));
   }
 
   buildingMapObs: Observable<BuildingMap> = this._convertSioToRxObs((handler) =>
-    this.sioClient.subscribeBuildingMap(handler),
+    this._sioClient.subscribeBuildingMap(handler),
   );
 
   doorsObs: Observable<Door[]> = this.buildingMapObs.pipe(
     map((buildingMap) => buildingMap.levels.flatMap((level) => level.doors)),
   );
 
+  private _doorStateObsStore: Record<string, Observable<DoorState>> = {};
   getDoorStateObs(name: string): Observable<DoorState> {
-    return this._convertSioToRxObs((handler) => this.sioClient.subscribeDoorState(name, handler));
+    if (!this._doorStateObsStore[name]) {
+      this._doorStateObsStore[name] = this._convertSioToRxObs((handler) =>
+        this._sioClient.subscribeDoorState(name, handler),
+      );
+    }
+    return this._doorStateObsStore[name];
   }
 
   liftsObs: Observable<Lift[]> = this.buildingMapObs.pipe(map((buildingMap) => buildingMap.lifts));
 
+  private _liftStateObsStore: Record<string, Observable<LiftState>> = {};
   getLiftStateObs(name: string): Observable<LiftState> {
-    return this._convertSioToRxObs((handler) => this.sioClient.subscribeLiftState(name, handler));
+    if (!this._liftStateObsStore[name]) {
+      this._liftStateObsStore[name] = this._convertSioToRxObs((handler) =>
+        this._sioClient.subscribeLiftState(name, handler),
+      );
+    }
+    return this._liftStateObsStore[name];
   }
 
   dispensersObs: Observable<Dispenser[]> = new Observable<Dispenser[]>((subscriber) => {
@@ -135,10 +151,14 @@ export class RmfIngress {
     })();
   }).pipe(shareReplay(1));
 
+  private _dispenserStateObsStore: Record<string, Observable<DispenserState>> = {};
   getDispenserStateObs(guid: string): Observable<DispenserState> {
-    return this._convertSioToRxObs((handler) =>
-      this.sioClient.subscribeDispenserState(guid, handler),
-    );
+    if (!this._dispenserStateObsStore[guid]) {
+      this._dispenserStateObsStore[guid] = this._convertSioToRxObs((handler) =>
+        this._sioClient.subscribeDispenserState(guid, handler),
+      );
+    }
+    return this._dispenserStateObsStore[guid];
   }
 
   ingestorsObs: Observable<Ingestor[]> = new Observable<Ingestor[]>((subscriber) => {
@@ -148,10 +168,14 @@ export class RmfIngress {
     })();
   }).pipe(shareReplay(1));
 
+  private _ingestorStateObsStore: Record<string, Observable<IngestorState>> = {};
   getIngestorStateObs(guid: string): Observable<IngestorState> {
-    return this._convertSioToRxObs((handler) =>
-      this.sioClient.subscribeIngestorState(guid, handler),
-    );
+    if (!this._ingestorStateObsStore[guid]) {
+      this._ingestorStateObsStore[guid] = this._convertSioToRxObs((handler) =>
+        this._sioClient.subscribeIngestorState(guid, handler),
+      );
+    }
+    return this._ingestorStateObsStore[guid];
   }
 
   fleetsObs: Observable<FleetState[]> = new Observable<FleetState[]>((subscriber) => {
@@ -161,11 +185,23 @@ export class RmfIngress {
     })();
   }).pipe(shareReplay(1));
 
+  private _fleetStateObsStore: Record<string, Observable<FleetState>> = {};
   getFleetStateObs(name: string): Observable<FleetState> {
-    return this._convertSioToRxObs((handler) => this.sioClient.subscribeFleetState(name, handler));
+    if (!this._fleetStateObsStore[name]) {
+      this._fleetStateObsStore[name] = this._convertSioToRxObs((handler) =>
+        this._sioClient.subscribeFleetState(name, handler),
+      );
+    }
+    return this._fleetStateObsStore[name];
   }
 
+  private _taskStateObsStore: Record<string, Observable<TaskState>> = {};
   getTaskStateObs(taskId: string): Observable<TaskState> {
-    return this._convertSioToRxObs((handler) => this.sioClient.subscribeTaskState(taskId, handler));
+    if (!this._taskStateObsStore[taskId]) {
+      this._taskStateObsStore[taskId] = this._convertSioToRxObs((handler) =>
+        this._sioClient.subscribeTaskState(taskId, handler),
+      );
+    }
+    return this._taskStateObsStore[taskId];
   }
 }

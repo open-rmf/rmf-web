@@ -1,11 +1,11 @@
 import React from 'react';
-import { RmfIngressContext } from '../rmf-app';
+import { RmfAppContext } from '../rmf-app';
 import { getApiErrorMessage } from '../utils';
 import { adminPageClasses, AdminPageContainer } from './page-css';
 import { UserListCard } from './user-list-card';
 
 export function UserListPage(): JSX.Element | null {
-  const rmfIngress = React.useContext(RmfIngressContext);
+  const rmfIngress = React.useContext(RmfAppContext);
   const adminApi = rmfIngress?.adminApi;
 
   if (!adminApi) return null;

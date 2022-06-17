@@ -19,7 +19,7 @@ import { AppEvents } from './app-events';
 import { DoorsOverlay } from './doors-overlay';
 import { LiftsOverlay } from './lifts-overlay';
 import { createMicroApp } from './micro-app';
-import { RmfIngressContext } from './rmf-app';
+import { RmfAppContext } from './rmf-app';
 import { RobotData, RobotsOverlay } from './robots-overlay';
 import { TrajectoriesOverlay, TrajectoryData } from './trajectories-overlay';
 import { WaypointsOverlay } from './waypoints-overlay';
@@ -39,7 +39,7 @@ interface MapSettings {
 
 export const MapApp = styled(
   createMicroApp('Map', () => {
-    const rmf = React.useContext(RmfIngressContext);
+    const rmf = React.useContext(RmfAppContext);
     const resourceManager = React.useContext(ResourcesContext);
     const [currentLevel, setCurrentLevel] = React.useState<Level | undefined>(undefined);
     const [disabledLayers, setDisabledLayers] = React.useState<Record<string, boolean>>({});

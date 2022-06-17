@@ -13,7 +13,7 @@ import {
   WithLabelProps,
 } from 'react-components';
 import { EMPTY, mergeMap, of } from 'rxjs';
-import { RmfIngressContext } from './rmf-app';
+import { RmfAppContext } from './rmf-app';
 
 export interface RobotData {
   fleet: string;
@@ -35,7 +35,7 @@ interface RobotMarkerProps
 }
 
 const RobotMarker = ({ robot, scale, ...otherProps }: RobotMarkerProps) => {
-  const rmf = React.useContext(RmfIngressContext);
+  const rmf = React.useContext(RmfAppContext);
   const [robotState, setRobotState] = React.useState<RobotState | undefined>(undefined);
   React.useEffect(() => {
     if (!rmf) {

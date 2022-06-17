@@ -1,7 +1,9 @@
 import AddIcon from '@mui/icons-material/Add';
-import { Box, Fab, Menu, MenuItem, Typography } from '@mui/material';
+import DesignModeIcon from '@mui/icons-material/AutoFixNormal';
+import { Box, Fab, IconButton, Menu, MenuItem, Typography, useTheme } from '@mui/material';
 import React from 'react';
 import { WindowContainer, WindowLayout } from 'react-components';
+import { AppControllerContext } from './app-contexts';
 import { AppRegistry } from './app-registry';
 
 export interface WorkspaceWindow {
@@ -96,14 +98,29 @@ export function Workspace({
 
 export interface ManagedWorkspaceProps {
   workspaceId: string;
-  designMode: boolean;
 }
 
-export function ManagedWorkspace({ workspaceId, designMode }: ManagedWorkspaceProps) {
+export function ManagedWorkspace({ workspaceId }: ManagedWorkspaceProps) {
+  const theme = useTheme();
+  const appController = React.useContext(AppControllerContext);
   const [workspaceState, setWorkspaceState] = React.useState<WorkspaceState>(() => {
     const json = localStorage.getItem(`workspace-${workspaceId}`);
     return json ? JSON.parse(json) : { layout: [], windows: [] };
   });
+  const [designMode, setDesignMode] = React.useState(false);
+
+  React.useEffect(() => {
+    appController.setExtraAppbarIcons(
+      <IconButton
+        color="inherit"
+        sx={{ opacity: designMode ? undefined : theme.palette.action.disabledOpacity }}
+        onClick={() => setDesignMode((prev) => !prev)}
+      >
+        <DesignModeIcon />
+      </IconButton>,
+    );
+    return () => appController.setExtraAppbarIcons(null);
+  }, [appController, designMode, theme]);
 
   return workspaceState.windows.length > 0 || designMode ? (
     <Workspace
@@ -125,7 +142,7 @@ export function ManagedWorkspace({ workspaceId, designMode }: ManagedWorkspacePr
       }}
     >
       <Typography variant="h6">
-        Enable design mode in the app bar to start customizing the layout
+        Click <DesignModeIcon /> in the app bar to start customizing the layout
       </Typography>
     </Box>
   );

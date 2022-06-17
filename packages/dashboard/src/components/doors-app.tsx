@@ -8,12 +8,12 @@ import {
 } from 'react-components';
 import { DoorMode as RmfDoorMode } from 'rmf-models';
 import { createMicroApp } from './micro-app';
-import { RmfIngressContext } from './rmf-app';
+import { RmfAppContext } from './rmf-app';
 
 type DoorCardProps = Omit<BaseDoorCardProps, 'mode'>;
 
 const DoorCard = ({ children, ...otherProps }: DoorCardProps) => {
-  const rmf = React.useContext(RmfIngressContext);
+  const rmf = React.useContext(RmfAppContext);
   const [doorState, setDoorState] = React.useState<DoorState | null>(null);
   React.useEffect(() => {
     if (!rmf) {
@@ -31,7 +31,7 @@ const DoorCard = ({ children, ...otherProps }: DoorCardProps) => {
 };
 
 export const DoorsApp = createMicroApp('Doors', () => {
-  const rmf = React.useContext(RmfIngressContext);
+  const rmf = React.useContext(RmfAppContext);
   const [buildingMap, setBuildingMap] = React.useState<BuildingMap | null>(null);
 
   React.useEffect(() => {

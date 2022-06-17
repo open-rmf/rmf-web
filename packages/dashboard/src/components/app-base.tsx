@@ -45,6 +45,7 @@ export function AppBase({
   const [showErrorAlert, setShowErrorAlert] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [errDuration, setErrDuration] = React.useState(2000);
+  const [extraAppbarIcons, setExtraAppbarIcons] = React.useState<React.ReactNode>(null);
 
   const theme = React.useMemo(() => {
     const preferDarkMode = settings.themeMode === ThemeMode.Dark;
@@ -78,6 +79,7 @@ export function AppBase({
         setShowErrorAlert(true);
         autoHideDuration && setErrDuration(autoHideDuration);
       },
+      setExtraAppbarIcons,
     }),
     [updateSettings],
   );
@@ -93,7 +95,7 @@ export function AppBase({
               style={{ width: '100%', height: '100%' }}
               wrap="nowrap"
             >
-              <AppBar extraToolbarItems={extraToolbarItems} />
+              <AppBar extraToolbarItems={extraAppbarIcons} />
               {children}
               <SettingsDrawer
                 open={showSettings}

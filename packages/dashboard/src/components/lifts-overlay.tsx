@@ -15,7 +15,7 @@ import {
   withLabel,
 } from 'react-components';
 import { LiftState as RmfLiftState } from 'rmf-models';
-import { RmfIngressContext } from './rmf-app';
+import { RmfAppContext } from './rmf-app';
 
 function toDoorMode(liftState: LiftState): DoorMode {
   // LiftState uses its own enum definition of door state/mode which is separated from DoorMode.
@@ -50,7 +50,7 @@ interface LiftMarkerProps extends Omit<BaseLiftMarkerProps, 'liftState' | 'varia
 }
 
 const LiftMarker = withLabel(({ lift, currentLevel, ...otherProps }: LiftMarkerProps) => {
-  const rmf = React.useContext(RmfIngressContext);
+  const rmf = React.useContext(RmfAppContext);
   const [liftState, setLiftState] = React.useState<LiftState | undefined>(undefined);
   React.useEffect(() => {
     if (!rmf) {

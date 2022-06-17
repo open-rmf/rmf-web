@@ -7,7 +7,7 @@ import {
   LiftControls,
 } from 'react-components';
 import { createMicroApp } from './micro-app';
-import { RmfIngressContext } from './rmf-app';
+import { RmfAppContext } from './rmf-app';
 
 type LiftCardProps = Omit<
   BaseLiftCardProps,
@@ -15,7 +15,7 @@ type LiftCardProps = Omit<
 >;
 
 const LiftCard = ({ children, ...otherProps }: LiftCardProps) => {
-  const rmf = React.useContext(RmfIngressContext);
+  const rmf = React.useContext(RmfAppContext);
   const [liftState, setLiftState] = React.useState<LiftState | null>(null);
   React.useEffect(() => {
     if (!rmf) {
@@ -39,7 +39,7 @@ const LiftCard = ({ children, ...otherProps }: LiftCardProps) => {
 };
 
 export const LiftsApp = createMicroApp('Lifts', () => {
-  const rmf = React.useContext(RmfIngressContext);
+  const rmf = React.useContext(RmfAppContext);
   const [buildingMap, setBuildingMap] = React.useState<BuildingMap | null>(null);
   const [liftStates, setLiftStates] = React.useState<Record<string, LiftState>>({});
 

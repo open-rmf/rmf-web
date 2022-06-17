@@ -11,14 +11,14 @@ import {
   viewBoxFromLeafletBounds,
   withLabel,
 } from 'react-components';
-import { RmfIngressContext } from './rmf-app';
+import { RmfAppContext } from './rmf-app';
 
 interface DoorMarkerProps extends Omit<BaseDoorMarkerProps, 'doorMode'> {
   door: Door;
 }
 
 const DoorMarker = withLabel(({ door, ...otherProps }: DoorMarkerProps) => {
-  const rmf = React.useContext(RmfIngressContext);
+  const rmf = React.useContext(RmfAppContext);
   const [doorState, setDoorState] = React.useState<DoorState | null>(null);
   React.useEffect(() => {
     if (!rmf) {

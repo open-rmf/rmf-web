@@ -26,6 +26,7 @@ export interface AppController {
    */
   toggleTooltips(): void;
   showErrorAlert: (message: string, autoHideDuration?: number) => void;
+  setExtraAppbarIcons: (node: React.ReactNode) => void;
 }
 
 export interface Tooltips {
@@ -46,6 +47,7 @@ export const AppControllerContext = React.createContext<AppController>({
   showTooltips: () => {},
   toggleTooltips: () => {},
   showErrorAlert: () => {},
+  setExtraAppbarIcons: () => {},
 });
 
 export const AppConfigContext = React.createContext<AppConfig>(appConfig);
