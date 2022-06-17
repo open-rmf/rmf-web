@@ -1,5 +1,3 @@
-/* istanbul ignore file */
-
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
@@ -13,7 +11,15 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import { LoginPage, PrivateRoute } from 'rmf-auth';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
-import { AdminRoute, DashboardRoute, LoginRoute, RobotsRoute, TasksRoute } from '../util/url';
+import {
+  AdminRoute,
+  CustomRoute1,
+  CustomRoute2,
+  DashboardRoute,
+  LoginRoute,
+  RobotsRoute,
+  TasksRoute,
+} from '../util/url';
 import { AdminRouter } from './admin';
 import { AppBase } from './app-base';
 import { ResourcesContext } from './app-contexts';
@@ -21,8 +27,8 @@ import './app.css';
 import { dashboardWorkspace } from './dashboard';
 import { RmfApp } from './rmf-app';
 import { RobotPage } from './robots';
-import { TaskPage } from './tasks';
-import { Workspace } from './workspace';
+import { tasksWorkspace } from './tasks-workspace';
+import { ManagedWorkspace, Workspace } from './workspace';
 
 export default function App(): JSX.Element | null {
   const authenticator = appConfig.authenticator;
@@ -67,13 +73,15 @@ export default function App(): JSX.Element | null {
 
   const loginRedirect = React.useMemo(() => <Redirect to={LoginRoute} />, []);
 
-  const [workspaceState, setWorkspaceState] = React.useState(dashboardWorkspace);
-  const workspaceRoute = useRouteMatch({ exact: true, path: DashboardRoute });
+  const customRoute1 = useRouteMatch(CustomRoute1);
+  const customRoute2 = useRouteMatch(CustomRoute2);
+  const isCustomRoute = customRoute1 || customRoute2;
+
   const [designMode, setDesignMode] = React.useState(false);
   const theme = useTheme();
 
   const extraToolbarItems = React.useMemo(() => {
-    if (workspaceRoute) {
+    if (isCustomRoute) {
       return (
         <IconButton
           color="inherit"
@@ -85,7 +93,7 @@ export default function App(): JSX.Element | null {
       );
     }
     return null;
-  }, [workspaceRoute, theme, designMode]);
+  }, [isCustomRoute, theme, designMode]);
 
   return authInitialized && appReady ? (
     <ResourcesContext.Provider value={resourceManager.current}>
@@ -102,11 +110,7 @@ export default function App(): JSX.Element | null {
                 unauthorizedComponent={loginRedirect}
                 user={user}
               >
-                <Workspace
-                  state={workspaceState}
-                  onStateChange={setWorkspaceState}
-                  designMode={designMode}
-                />
+                <Workspace state={dashboardWorkspace} />
               </PrivateRoute>
               <PrivateRoute
                 exact
@@ -122,7 +126,13 @@ export default function App(): JSX.Element | null {
                 unauthorizedComponent={loginRedirect}
                 user={user}
               >
-                <TaskPage />
+                <Workspace state={tasksWorkspace} />
+              </PrivateRoute>
+              <PrivateRoute unauthorizedComponent={loginRedirect} user={user} {...customRoute1}>
+                <ManagedWorkspace workspaceId="custom1" designMode={designMode} />
+              </PrivateRoute>
+              <PrivateRoute unauthorizedComponent={loginRedirect} user={user} {...customRoute2}>
+                <ManagedWorkspace workspaceId="custom2" designMode={designMode} />
               </PrivateRoute>
               <PrivateRoute path={AdminRoute} unauthorizedComponent={loginRedirect} user={user}>
                 <AdminRouter />

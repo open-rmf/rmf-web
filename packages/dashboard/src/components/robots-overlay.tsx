@@ -12,7 +12,7 @@ import {
   withLabel,
   WithLabelProps,
 } from 'react-components';
-import { filter, map } from 'rxjs';
+import { EMPTY, mergeMap, of } from 'rxjs';
 import { RmfIngressContext } from './rmf-app';
 
 export interface RobotData {
@@ -44,8 +44,9 @@ const RobotMarker = ({ robot, scale, ...otherProps }: RobotMarkerProps) => {
     const sub = rmf
       .getFleetStateObs(robot.fleet)
       .pipe(
-        map((state) => (state.robots ? state.robots[robot.name] : undefined)),
-        filter((state) => !!state),
+        mergeMap((state) =>
+          state.robots && state.robots[robot.name] ? of(state.robots[robot.name]) : EMPTY,
+        ),
       )
       .subscribe(setRobotState);
     return () => sub.unsubscribe();

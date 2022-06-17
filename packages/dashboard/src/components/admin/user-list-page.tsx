@@ -1,5 +1,3 @@
-/* istanbul ignore file */
-
 import React from 'react';
 import { RmfIngressContext } from '../rmf-app';
 import { getApiErrorMessage } from '../utils';

@@ -9,7 +9,6 @@ export interface MicroAppProps {
 export function createMicroApp(
   title: string,
   Component: React.ComponentType<{}>,
-  Toolbar?: React.ComponentType<{}>,
 ): React.ComponentType<MicroAppProps> {
   return React.memo(
     React.forwardRef(
@@ -17,7 +16,7 @@ export function createMicroApp(
         { children, ...otherProps }: React.PropsWithChildren<MicroAppProps>,
         ref: React.Ref<HTMLDivElement>,
       ) => (
-        <Window ref={ref} title={title} toolbar={Toolbar && <Toolbar />} {...otherProps}>
+        <Window ref={ref} title={title} {...otherProps}>
           <Component />
           {children}
         </Window>
@@ -25,5 +24,3 @@ export function createMicroApp(
     ),
   );
 }
-
-export const AppRegistry: Record<string, React.ComponentType<MicroAppProps>> = {};

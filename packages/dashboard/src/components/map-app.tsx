@@ -18,7 +18,7 @@ import { ResourcesContext } from './app-contexts';
 import { AppEvents } from './app-events';
 import { DoorsOverlay } from './doors-overlay';
 import { LiftsOverlay } from './lifts-overlay';
-import { AppRegistry, createMicroApp } from './micro-app';
+import { createMicroApp } from './micro-app';
 import { RmfIngressContext } from './rmf-app';
 import { RobotData, RobotsOverlay } from './robots-overlay';
 import { TrajectoriesOverlay, TrajectoryData } from './trajectories-overlay';
@@ -405,5 +405,3 @@ export const MapApp = styled(
     zIndex: 1001,
   },
 });
-
-AppRegistry['Map'] = MapApp;

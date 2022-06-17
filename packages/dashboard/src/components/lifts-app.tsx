@@ -6,7 +6,7 @@ import {
   LiftCardProps as BaseLiftCardProps,
   LiftControls,
 } from 'react-components';
-import { AppRegistry, createMicroApp } from './micro-app';
+import { createMicroApp } from './micro-app';
 import { RmfIngressContext } from './rmf-app';
 
 type LiftCardProps = Omit<
@@ -84,5 +84,3 @@ export const LiftsApp = createMicroApp('Lifts', () => {
     </Grid>
   );
 });
-
-AppRegistry['Lifts'] = LiftsApp;

@@ -7,7 +7,7 @@ import {
   DoorControls,
 } from 'react-components';
 import { DoorMode as RmfDoorMode } from 'rmf-models';
-import { AppRegistry, createMicroApp } from './micro-app';
+import { createMicroApp } from './micro-app';
 import { RmfIngressContext } from './rmf-app';
 
 type DoorCardProps = Omit<BaseDoorCardProps, 'mode'>;
@@ -74,5 +74,3 @@ export const DoorsApp = createMicroApp('Doors', () => {
     </Grid>
   );
 });
-
-AppRegistry['Doors'] = DoorsApp;

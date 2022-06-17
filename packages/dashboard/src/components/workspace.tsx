@@ -1,12 +1,12 @@
 import AddIcon from '@mui/icons-material/Add';
-import { Fab, Menu, MenuItem } from '@mui/material';
+import { Box, Fab, Menu, MenuItem, Typography } from '@mui/material';
 import React from 'react';
 import { WindowContainer, WindowLayout } from 'react-components';
-import { AppRegistry, MicroAppProps } from './micro-app';
+import { AppRegistry } from './app-registry';
 
 export interface WorkspaceWindow {
   key: string;
-  app: React.ComponentType<MicroAppProps>;
+  appName: keyof typeof AppRegistry;
 }
 
 export interface WorkspaceState {
@@ -15,12 +15,16 @@ export interface WorkspaceState {
 }
 
 export interface WorkspaceProps {
-  designMode: boolean;
   state: WorkspaceState;
+  designMode?: boolean;
   onStateChange?: (state: WorkspaceState) => void;
 }
 
-export function Workspace({ designMode, state, onStateChange }: WorkspaceProps): JSX.Element {
+export function Workspace({
+  state,
+  designMode = false,
+  onStateChange,
+}: WorkspaceProps): JSX.Element {
   const [addMenuAnchor, setAddMenuAnchor] = React.useState<HTMLElement | null>(null);
 
   return (
@@ -32,18 +36,23 @@ export function Workspace({ designMode, state, onStateChange }: WorkspaceProps):
         }
         designMode={designMode}
       >
-        {state.windows.map((w) => (
-          <w.app
-            key={w.key}
-            onClose={() => {
-              onStateChange &&
-                onStateChange({
-                  layout: state.layout.filter((l) => l.i !== w.key),
-                  windows: state.windows.filter((w2) => w2.key !== w.key),
-                });
-            }}
-          />
-        ))}
+        {state.windows.map((w) => {
+          const MicroApp = AppRegistry[w.appName] || null;
+          return MicroApp ? (
+            <MicroApp
+              key={w.key}
+              onClose={() => {
+                onStateChange &&
+                  onStateChange({
+                    layout: state.layout.filter((l) => l.i !== w.key),
+                    windows: state.windows.filter((w2) => w2.key !== w.key),
+                  });
+              }}
+            />
+          ) : (
+            <div></div>
+          );
+        })}
       </WindowContainer>
       {designMode && (
         <Fab
@@ -61,20 +70,23 @@ export function Workspace({ designMode, state, onStateChange }: WorkspaceProps):
         open={!!addMenuAnchor}
         onClose={() => setAddMenuAnchor(null)}
       >
-        {Object.entries(AppRegistry).map(([name, app]) => (
+        {Object.keys(AppRegistry).map((appName) => (
           <MenuItem
-            key={name}
+            key={appName}
             onClick={() => {
-              const newKey = `${name}-${state.layout.length}`;
+              const newKey = `${appName}-${state.layout.length}`;
               onStateChange &&
                 onStateChange({
                   layout: [...state.layout, { i: newKey, x: 0, y: 0, w: 2, h: 2 }],
-                  windows: [...state.windows, { key: newKey, app }],
+                  windows: [
+                    ...state.windows,
+                    { key: newKey, appName: appName as keyof typeof AppRegistry },
+                  ],
                 });
               setAddMenuAnchor(null);
             }}
           >
-            {name}
+            {appName}
           </MenuItem>
         ))}
       </Menu>
@@ -82,4 +94,39 @@ export function Workspace({ designMode, state, onStateChange }: WorkspaceProps):
   );
 }
 
-export const WorkspaceManager: Record<string, WorkspaceState> = {};
+export interface ManagedWorkspaceProps {
+  workspaceId: string;
+  designMode: boolean;
+}
+
+export function ManagedWorkspace({ workspaceId, designMode }: ManagedWorkspaceProps) {
+  const [workspaceState, setWorkspaceState] = React.useState<WorkspaceState>(() => {
+    const json = localStorage.getItem(`workspace-${workspaceId}`);
+    return json ? JSON.parse(json) : { layout: [], windows: [] };
+  });
+
+  return workspaceState.windows.length > 0 || designMode ? (
+    <Workspace
+      state={workspaceState}
+      onStateChange={(newState) => {
+        setWorkspaceState(newState);
+        localStorage.setItem(`workspace-${workspaceId}`, JSON.stringify(newState));
+      }}
+      designMode={designMode}
+    />
+  ) : (
+    <Box
+      sx={{
+        display: 'flex',
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Typography variant="h6">
+        Enable design mode in the app bar to start customizing the layout
+      </Typography>
+    </Box>
+  );
+}

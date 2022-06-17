@@ -1,52 +1,10 @@
-import { BuildingMap, FleetState, Dispenser, Ingestor } from 'api-client';
+import { Dispenser, FleetState, Ingestor } from 'api-client';
 import React from 'react';
-import { getPlaces } from 'react-components';
 import { UserProfileProvider } from 'rmf-auth';
 import appConfig from '../../app-config';
 import { AppConfigContext } from '../app-contexts';
-import {
-  BuildingMapContext,
-  DispensersContext,
-  FleetsContext,
-  IngestorsContext,
-  PlacesContext,
-  RmfIngressContext,
-} from './contexts';
+import { DispensersContext, FleetsContext, IngestorsContext, RmfIngressContext } from './contexts';
 import { RmfIngress } from './rmf-ingress';
-
-function PlacesProvider({ children }: React.PropsWithChildren<unknown>): JSX.Element {
-  const buildingMap = React.useContext(BuildingMapContext);
-  const places = React.useMemo(() => {
-    if (!buildingMap) {
-      return [];
-    }
-    return getPlaces(buildingMap);
-  }, [buildingMap]);
-
-  return <PlacesContext.Provider value={places}>{children}</PlacesContext.Provider>;
-}
-
-function BuildingMapProvider(props: React.PropsWithChildren<{}>): JSX.Element {
-  const { sioClient } = React.useContext(RmfIngressContext) || {};
-  const [buildingMap, setBuildingMap] = React.useState<BuildingMap | null>(null);
-
-  React.useEffect(() => {
-    if (!sioClient) {
-      return;
-    }
-    const sub = sioClient.subscribeBuildingMap(setBuildingMap);
-
-    return () => {
-      sioClient.unsubscribe(sub);
-    };
-  }, [sioClient]);
-
-  return (
-    <BuildingMapContext.Provider value={buildingMap}>
-      <PlacesProvider>{props.children}</PlacesProvider>
-    </BuildingMapContext.Provider>
-  );
-}
 
 function DispensersProvider(props: React.PropsWithChildren<{}>): JSX.Element {
   const { sioClient, dispensersApi } = React.useContext(RmfIngressContext) || {};
@@ -158,13 +116,11 @@ export function RmfApp(props: RmfAppProps): JSX.Element {
   return (
     <UserProfileProvider authenticator={appConfig.authenticator} basePath={appConfig.rmfServerUrl}>
       <RmfIngressProvider>
-        <BuildingMapProvider>
-          <FleetsProvider>
-            <DispensersProvider>
-              <IngestorsProvider>{props.children}</IngestorsProvider>
-            </DispensersProvider>
-          </FleetsProvider>
-        </BuildingMapProvider>
+        <FleetsProvider>
+          <DispensersProvider>
+            <IngestorsProvider>{props.children}</IngestorsProvider>
+          </DispensersProvider>
+        </FleetsProvider>
       </RmfIngressProvider>
     </UserProfileProvider>
   );

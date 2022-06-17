@@ -159,7 +159,6 @@ export function TaskPanel({
     }
   }, [cancelTask, selectedTask]);
 
-  // /* istanbul ignore next */
   const tasksFromFile = (): Promise<TaskRequest[]> => {
     return new Promise((res) => {
       const fileInputEl = uploadFileInputRef.current;

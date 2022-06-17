@@ -1,6 +1,5 @@
 import {
   AdminApi,
-  FleetState,
   BuildingApi,
   BuildingMap,
   Configuration,
@@ -12,6 +11,7 @@ import {
   DoorsApi,
   DoorState,
   FleetsApi,
+  FleetState,
   Ingestor,
   IngestorsApi,
   IngestorState,
@@ -21,6 +21,7 @@ import {
   SioClient,
   Subscription as SioSubscription,
   TasksApi,
+  TaskState,
 } from 'api-client';
 import axios from 'axios';
 import { Authenticator } from 'rmf-auth';
@@ -162,5 +163,9 @@ export class RmfIngress {
 
   getFleetStateObs(name: string): Observable<FleetState> {
     return this._convertSioToRxObs((handler) => this.sioClient.subscribeFleetState(name, handler));
+  }
+
+  getTaskStateObs(taskId: string): Observable<TaskState> {
+    return this._convertSioToRxObs((handler) => this.sioClient.subscribeTaskState(taskId, handler));
   }
 }

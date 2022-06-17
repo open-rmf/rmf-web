@@ -1,6 +1,6 @@
-import { IconButton, Menu, MenuItem, Toolbar, Typography, styled } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import HelpIcon from '@mui/icons-material/Help';
+import { IconButton, Menu, MenuItem, styled, Toolbar, Typography } from '@mui/material';
 import React from 'react';
 import {
   AppBarTab,
@@ -13,7 +13,15 @@ import {
 } from 'react-components';
 import { useHistory, useLocation } from 'react-router-dom';
 import { UserProfileContext } from 'rmf-auth';
-import { AdminRoute, DashboardRoute, RobotsRoute, TasksRoute } from '../util/url';
+import { logoSize } from '../managers/resource-manager';
+import {
+  AdminRoute,
+  CustomRoute1,
+  CustomRoute2,
+  DashboardRoute,
+  RobotsRoute,
+  TasksRoute,
+} from '../util/url';
 import {
   AppConfigContext,
   AppControllerContext,
@@ -21,7 +29,6 @@ import {
   SettingsContext,
   TooltipsContext,
 } from './app-contexts';
-import { logoSize } from '../managers/resource-manager';
 
 const prefix = 'app-bar';
 const classes = {
@@ -45,13 +52,15 @@ const StyledHeaderBar = styled((props: HeaderBarProps) => <HeaderBar {...props} 
   }),
 );
 
-export type TabValue = 'infrastructure' | 'robots' | 'tasks' | 'admin';
+export type TabValue = 'infrastructure' | 'robots' | 'tasks' | 'custom1' | 'custom2' | 'admin';
 
 function locationToTabValue(pathname: string): TabValue | undefined {
   // `DashboardRoute` being the root, it is a prefix to all routes, so we need to check exactly.
   if (pathname === DashboardRoute) return 'infrastructure';
-  if (pathname.startsWith(TasksRoute)) return 'tasks';
   if (pathname.startsWith(RobotsRoute)) return 'robots';
+  if (pathname.startsWith(TasksRoute)) return 'tasks';
+  if (pathname.startsWith(CustomRoute1)) return 'custom1';
+  if (pathname.startsWith(CustomRoute2)) return 'custom2';
   if (pathname.startsWith(AdminRoute)) return 'admin';
   return undefined;
 }
@@ -115,6 +124,18 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           value="tasks"
           aria-label="Tasks"
           onTabClick={() => history.push(TasksRoute)}
+        />
+        <AppBarTab
+          label="Custom 1"
+          value="custom1"
+          aria-label="Custom 1"
+          onTabClick={() => history.push(CustomRoute1)}
+        />
+        <AppBarTab
+          label="Custom 2"
+          value="custom2"
+          aria-label="Custom 2"
+          onTabClick={() => history.push(CustomRoute2)}
         />
         {profile?.user.is_admin && (
           <AppBarTab

@@ -1,7 +1,4 @@
-import { DoorsApp } from './doors-app';
-import { LiftsApp } from './lifts-app';
-import { MapApp } from './map-app';
-import { WorkspaceManager, WorkspaceState } from './workspace';
+import { WorkspaceState } from './workspace';
 
 export const dashboardWorkspace: WorkspaceState = {
   layout: [
@@ -10,10 +7,8 @@ export const dashboardWorkspace: WorkspaceState = {
     { i: 'lifts', x: 8, y: 6, w: 4, h: 6 },
   ],
   windows: [
-    { key: 'map', app: MapApp },
-    { key: 'doors', app: DoorsApp },
-    { key: 'lifts', app: LiftsApp },
+    { key: 'map', appName: 'Map' },
+    { key: 'doors', appName: 'Doors' },
+    { key: 'lifts', appName: 'Lifts' },
   ],
 };
-
-WorkspaceManager['dashboard'] = dashboardWorkspace;
