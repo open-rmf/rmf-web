@@ -1,11 +1,42 @@
 import { CardActions, Grid } from '@mui/material';
 import { BuildingMap, LiftState } from 'api-client';
 import React from 'react';
-import { LiftCard as LiftCard_, LiftControls } from 'react-components';
+import {
+  LiftCard as BaseLiftCard,
+  LiftCardProps as BaseLiftCardProps,
+  LiftControls,
+} from 'react-components';
 import { AppRegistry, createMicroApp } from './micro-app';
 import { RmfIngressContext } from './rmf-app';
 
-const LiftCard = React.memo(LiftCard_);
+type LiftCardProps = Omit<
+  BaseLiftCardProps,
+  'motionState' | 'doorState' | 'currentFloor' | 'destinationFloor'
+>;
+
+const LiftCard = ({ children, ...otherProps }: LiftCardProps) => {
+  const rmf = React.useContext(RmfIngressContext);
+  const [liftState, setLiftState] = React.useState<LiftState | null>(null);
+  React.useEffect(() => {
+    if (!rmf) {
+      return;
+    }
+    const sub = rmf.getLiftStateObs(otherProps.name).subscribe(setLiftState);
+    return () => sub.unsubscribe();
+  }, [rmf, otherProps.name]);
+
+  return (
+    <BaseLiftCard
+      motionState={liftState?.motion_state}
+      doorState={liftState?.door_state}
+      currentFloor={liftState?.current_floor}
+      destinationFloor={liftState?.destination_floor}
+      {...otherProps}
+    >
+      {children}
+    </BaseLiftCard>
+  );
+};
 
 export const LiftsApp = createMicroApp('Lifts', () => {
   const rmf = React.useContext(RmfIngressContext);
@@ -33,15 +64,7 @@ export const LiftsApp = createMicroApp('Lifts', () => {
         buildingMap.lifts.map((lift) => {
           const liftState: LiftState | undefined = liftStates[lift.name];
           return (
-            <LiftCard
-              key={lift.name}
-              name={lift.name}
-              motionState={liftState?.motion_state}
-              doorState={liftState?.door_state}
-              currentFloor={liftState?.current_floor}
-              destinationFloor={liftState?.destination_floor}
-              sx={{ width: 200 }}
-            >
+            <LiftCard key={lift.name} name={lift.name} sx={{ width: 200 }}>
               <CardActions sx={{ justifyContent: 'center' }}>
                 <LiftControls
                   availableLevels={lift.levels}

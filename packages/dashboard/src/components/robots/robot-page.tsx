@@ -11,7 +11,7 @@ import {
   useIngestorStatesRef,
 } from '../../util/common-subscriptions';
 import { BuildingMapContext, RmfIngress, RmfIngressContext } from '../rmf-app';
-import ScheduleVisualizer from '../schedule-visualizer';
+// import ScheduleVisualizer from '../schedule-visualizer';
 
 const MemoRobotInfo = React.memo(RobotInfo);
 
@@ -204,7 +204,7 @@ export function RobotPage() {
     <StyledGrid container className={classes.container} wrap="nowrap" spacing={2}>
       <Grid item xs={4}>
         <Card variant="outlined" className={classes.mapPanel}>
-          {buildingMap && (
+          {/* {buildingMap && (
             <ScheduleVisualizer
               buildingMap={buildingMap}
               dispensers={dispensers}
@@ -214,7 +214,7 @@ export function RobotPage() {
               zoom={4.5}
               ref={(map: Map<MapProps, L.Map>) => setLeafletMap(map)}
             />
-          )}
+          )} */}
         </Card>
       </Grid>
       <Grid item xs={8}>
