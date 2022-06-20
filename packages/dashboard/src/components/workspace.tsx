@@ -122,28 +122,32 @@ export function ManagedWorkspace({ workspaceId }: ManagedWorkspaceProps) {
     return () => appController.setExtraAppbarIcons(null);
   }, [appController, designMode, theme]);
 
-  return workspaceState.windows.length > 0 || designMode ? (
-    <Workspace
-      state={workspaceState}
-      onStateChange={(newState) => {
-        setWorkspaceState(newState);
-        localStorage.setItem(`workspace-${workspaceId}`, JSON.stringify(newState));
-      }}
-      designMode={designMode}
-    />
-  ) : (
-    <Box
-      sx={{
-        display: 'flex',
-        width: '100%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <Typography variant="h6">
-        Click <DesignModeIcon /> in the app bar to start customizing the layout
-      </Typography>
-    </Box>
+  return (
+    <>
+      <Workspace
+        state={workspaceState}
+        onStateChange={(newState) => {
+          setWorkspaceState(newState);
+          localStorage.setItem(`workspace-${workspaceId}`, JSON.stringify(newState));
+        }}
+        designMode={designMode}
+      />
+      {workspaceState.windows.length === 0 && (
+        <Box
+          sx={{
+            position: 'absolute',
+            display: 'flex',
+            width: '100%',
+            height: '100%',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Typography variant="h6">
+            Click <DesignModeIcon /> in the app bar to start customizing the layout
+          </Typography>
+        </Box>
+      )}
+    </>
   );
 }

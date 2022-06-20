@@ -22,11 +22,11 @@ import {
   TaskTable,
   Window,
 } from 'react-components';
-import { AppControllerContext, ResourcesContext } from './app-contexts';
-import { AppEvents } from './app-events';
-import { MicroAppProps } from './micro-app';
-import { RmfAppContext } from './rmf-app';
-import { parseTasksFile } from './tasks/utils';
+import { AppControllerContext, ResourcesContext } from '../app-contexts';
+import { AppEvents } from '../app-events';
+import { MicroAppProps } from '../micro-app';
+import { RmfAppContext } from '../rmf-app';
+import { parseTasksFile } from './utils';
 
 export interface TaskPanelProps
   extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
@@ -64,7 +64,7 @@ export const TasksApp = React.memo(
       const [snackbarMessage, setSnackbarMessage] = React.useState('');
       const [snackbarSeverity, setSnackbarSeverity] =
         React.useState<AlertProps['severity']>('success');
-      const { showErrorAlert } = React.useContext(AppControllerContext);
+      const { showAlert } = React.useContext(AppControllerContext);
 
       const tasksFromFile = (): Promise<TaskRequest[]> => {
         return new Promise((res) => {
@@ -81,7 +81,7 @@ export const TasksApp = React.memo(
               try {
                 taskFiles = parseTasksFile(await fileInputEl.files[0].text());
               } catch (err) {
-                showErrorAlert((err as Error).message, 5000);
+                showAlert('error', (err as Error).message, 5000);
                 return res([]);
               }
               // only submit tasks when all tasks are error free
@@ -151,6 +151,10 @@ export const TasksApp = React.memo(
         },
         [rmf],
       );
+
+      React.useEffect(() => {
+        handleRefresh(page);
+      }, [handleRefresh, page]);
 
       React.useEffect(() => {
         if (!autoRefresh || !rmf) {

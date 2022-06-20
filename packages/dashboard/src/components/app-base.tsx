@@ -1,7 +1,7 @@
-import { createTheme, Grid } from '@mui/material';
+import { Alert, AlertProps, createTheme, Grid, Snackbar } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import React from 'react';
-import { ErrorSnackbar, rmfDark } from 'react-components';
+import { rmfDark } from 'react-components';
 import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
 import {
   AppController,
@@ -15,6 +15,7 @@ import HelpDrawer from './drawers/help-drawer';
 import HotKeysDialog from './drawers/hotkeys-dialog';
 import SettingsDrawer from './drawers/settings-drawer';
 
+const DefaultAlertDuration = 2000;
 const defaultTheme = createTheme();
 
 export interface AppBaseProps {
@@ -42,9 +43,10 @@ export function AppBase({
   const [showHelp, setShowHelp] = React.useState(false);
   const [showHotkeysDialog, setShowHotkeysDialog] = React.useState(false);
   const [showTooltips, setShowTooltips] = React.useState(false);
-  const [showErrorAlert, setShowErrorAlert] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState('');
-  const [errDuration, setErrDuration] = React.useState(2000);
+  const [showAlert, setShowAlert] = React.useState(false);
+  const [alertSeverity, setAlertSeverity] = React.useState<AlertProps['severity']>('error');
+  const [alertMessage, setAlertMessage] = React.useState('');
+  const [alertDuration, setAlertDuration] = React.useState(DefaultAlertDuration);
   const [extraAppbarIcons, setExtraAppbarIcons] = React.useState<React.ReactNode>(null);
 
   const theme = React.useMemo(() => {
@@ -74,10 +76,11 @@ export function AppBase({
       toggleHotkeysDialog: () => setShowHotkeysDialog((prev) => !prev),
       showTooltips: setShowTooltips,
       toggleTooltips: () => setShowTooltips((prev) => !prev),
-      showErrorAlert: (message, autoHideDuration) => {
-        setErrorMessage(message);
-        setShowErrorAlert(true);
-        autoHideDuration && setErrDuration(autoHideDuration);
+      showAlert: (severity, message, autoHideDuration) => {
+        setAlertSeverity(severity);
+        setAlertMessage(message);
+        setShowAlert(true);
+        setAlertDuration(autoHideDuration || DefaultAlertDuration);
       },
       setExtraAppbarIcons,
     }),
@@ -121,12 +124,21 @@ export function AppBase({
                   handleClose={() => setShowHotkeysDialog(false)}
                 />
               )}
-              <ErrorSnackbar
-                open={showErrorAlert}
-                message={errorMessage}
-                onClose={() => setShowErrorAlert(false)}
-                autoHideDuration={errDuration}
-              />
+              {/* TODO: Support stacking of alerts */}
+              <Snackbar
+                open={showAlert}
+                message={alertMessage}
+                onClose={() => setShowAlert(false)}
+                autoHideDuration={alertDuration}
+              >
+                <Alert
+                  onClose={() => setShowAlert(false)}
+                  severity={alertSeverity}
+                  sx={{ width: '100%' }}
+                >
+                  {alertMessage}
+                </Alert>
+              </Snackbar>
             </Grid>
           </AppControllerContext.Provider>
         </TooltipsContext.Provider>

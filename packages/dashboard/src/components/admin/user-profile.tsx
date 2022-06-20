@@ -35,7 +35,7 @@ export function UserProfileCard({ user, makeAdmin }: UserProfileCardProps): JSX.
   const safeAsync = useAsync();
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const [disableAdminCheckbox, setDisableAdminCheckbox] = React.useState(false);
-  const { showErrorAlert } = React.useContext(AppControllerContext);
+  const { showAlert } = React.useContext(AppControllerContext);
 
   return (
     <StyledCard variant="outlined">
@@ -57,7 +57,7 @@ export function UserProfileCard({ user, makeAdmin }: UserProfileCardProps): JSX.
             try {
               makeAdmin && (await safeAsync(makeAdmin(!user.is_admin)));
             } catch (e) {
-              showErrorAlert(`Failed to change admin status: ${(e as Error).message}`);
+              showAlert('error', `Failed to change admin status: ${(e as Error).message}`);
             } finally {
               setDisableAdminCheckbox(false);
             }

@@ -1,3 +1,4 @@
+import { AlertProps } from '@mui/material';
 import React from 'react';
 import appConfig, { AppConfig } from '../app-config';
 import ResourceManager from '../managers/resource-manager';
@@ -25,7 +26,7 @@ export interface AppController {
    * a tooltip to show.
    */
   toggleTooltips(): void;
-  showErrorAlert: (message: string, autoHideDuration?: number) => void;
+  showAlert: (severity: AlertProps['severity'], message: string, autoHideDuration?: number) => void;
   setExtraAppbarIcons: (node: React.ReactNode) => void;
 }
 
@@ -46,7 +47,7 @@ export const AppControllerContext = React.createContext<AppController>({
   toggleHotkeysDialog: () => {},
   showTooltips: () => {},
   toggleTooltips: () => {},
-  showErrorAlert: () => {},
+  showAlert: () => {},
   setExtraAppbarIcons: () => {},
 });
 

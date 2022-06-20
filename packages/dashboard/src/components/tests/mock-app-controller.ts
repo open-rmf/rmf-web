@@ -10,7 +10,7 @@ export function makeMockAppController(): AppController {
     toggleHelp: jest.fn(),
     toggleHotkeysDialog: jest.fn(),
     toggleTooltips: jest.fn(),
-    showErrorAlert: jest.fn(),
+    showAlert: jest.fn(),
     setExtraAppbarIcons: jest.fn(),
   };
 }
