@@ -10,7 +10,7 @@ pylint = "==2.10.2"
 coverage = "~=5.5"
 # api-server
 api-server = {editable = true, path = "./packages/api-server"}
-requests = "~=2.27"
+requests = "~=2.25"
 asyncpg = "~=0.25.0"
 websocket-client = "~=1.2.3"
 # reporting-server
@@ -19,4 +19,4 @@ reporting-server = {editable = true, path = "./packages/reporting-server"}
 ros-translator = {editable = true, path = "./packages/ros-translator"}
 
 [requires]
-python_version = "3.10"
+python_version = "3.8"
