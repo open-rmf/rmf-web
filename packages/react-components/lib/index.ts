@@ -9,7 +9,6 @@ export * from './commands';
 export * from './confirmation-dialog';
 export * from './doors';
 export * from './error-overlay';
-export * from './error-snackbar';
 export * from './form-inputs';
 export * from './header-bar';
 export * from './lifts';

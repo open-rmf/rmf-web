@@ -2,11 +2,8 @@ import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import {
-  Alert,
-  AlertProps,
   Grid,
   IconButton,
-  Snackbar,
   TableContainer,
   TablePagination,
   Toolbar,
@@ -60,10 +57,6 @@ export const TasksApp = React.memo(
 
       const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
       const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
-      const [openSnackbar, setOpenSnackbar] = React.useState(false);
-      const [snackbarMessage, setSnackbarMessage] = React.useState('');
-      const [snackbarSeverity, setSnackbarSeverity] =
-        React.useState<AlertProps['severity']>('success');
       const { showAlert } = React.useContext(AppControllerContext);
 
       const tasksFromFile = (): Promise<TaskRequest[]> => {
@@ -251,25 +244,14 @@ export const TasksApp = React.memo(
               tasksFromFile={tasksFromFile}
               onSuccess={() => {
                 setOpenCreateTaskForm(false);
-                setSnackbarSeverity('success');
-                setSnackbarMessage('Successfully created task');
-                setOpenSnackbar(true);
+                showAlert('success', 'Successfully created task');
               }}
               onFail={(e) => {
-                setSnackbarSeverity('error');
-                setSnackbarMessage(`Failed to create task: ${e.message}`);
-                setOpenSnackbar(true);
+                showAlert('error', `Failed to create task: ${e.message}`);
               }}
             />
           )}
           <input type="file" style={{ display: 'none' }} ref={uploadFileInputRef} />
-          <Snackbar
-            open={openSnackbar}
-            onClose={() => setOpenSnackbar(false)}
-            autoHideDuration={2000}
-          >
-            <Alert severity={snackbarSeverity}>{snackbarMessage}</Alert>
-          </Snackbar>
           {children}
         </Window>
       );

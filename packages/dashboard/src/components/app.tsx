@@ -23,8 +23,8 @@ import { ResourcesContext } from './app-contexts';
 import './app.css';
 import { dashboardWorkspace } from './dashboard';
 import { RmfApp } from './rmf-app';
-import { RobotPage } from './robots';
-import { tasksWorkspace } from './tasks-workspace';
+import { robotsWorkspace } from './robots/robots-workspace';
+import { tasksWorkspace } from './tasks/tasks-workspace';
 import { ManagedWorkspace, Workspace } from './workspace';
 
 export default function App(): JSX.Element | null {
@@ -54,7 +54,7 @@ export default function App(): JSX.Element | null {
   const [appReady, setAppReady] = React.useState(false);
 
   /**
-   * If resource loading gets too long we should add a loading screen.
+   * TODO: If resource loading gets too long we should add a loading screen.
    */
   React.useEffect(() => {
     (async () => {
@@ -93,7 +93,7 @@ export default function App(): JSX.Element | null {
                 unauthorizedComponent={loginRedirect}
                 user={user}
               >
-                <RobotPage />
+                <Workspace state={robotsWorkspace} />
               </PrivateRoute>
               <PrivateRoute
                 exact

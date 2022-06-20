@@ -1,4 +1,4 @@
-import { WorkspaceState } from './workspace';
+import { WorkspaceState } from '../workspace';
 
 export const tasksWorkspace: WorkspaceState = {
   layout: [
