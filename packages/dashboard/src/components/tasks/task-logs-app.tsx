@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { CardContent } from '@mui/material';
 import { TaskEventLog, TaskState } from 'api-client';
 import React from 'react';
 import { AppEvents } from '../app-events';
@@ -36,9 +36,9 @@ export const TaskLogsApp = createMicroApp('Task Logs', () => {
     return () => sub.unsubscribe();
   }, [rmf]);
 
-  return (
-    <Box>
-      {taskLogs && taskState ? <TaskLogs taskLog={taskLogs} taskState={taskState} /> : null}
-    </Box>
-  );
+  return taskLogs && taskState ? (
+    <CardContent>
+      <TaskLogs taskLog={taskLogs} taskState={taskState} />
+    </CardContent>
+  ) : null;
 });

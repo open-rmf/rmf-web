@@ -1,11 +1,10 @@
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import HelpIcon from '@mui/icons-material/Help';
-import { IconButton, Menu, MenuItem, styled, Toolbar, Typography } from '@mui/material';
+import { IconButton, Menu, MenuItem, Toolbar, Typography } from '@mui/material';
 import React from 'react';
 import {
   AppBarTab,
   HeaderBar,
-  HeaderBarProps,
   LogoButton,
   NavigationBar,
   Tooltip,
@@ -29,28 +28,6 @@ import {
   SettingsContext,
   TooltipsContext,
 } from './app-contexts';
-
-const prefix = 'app-bar';
-const classes = {
-  appBar: `${prefix}-root`,
-  logoBtn: `${prefix}-logo-button`,
-  toolbar: `${prefix}-toolbar`,
-};
-
-const StyledHeaderBar = styled((props: HeaderBarProps) => <HeaderBar {...props} />)(
-  ({ theme }) => ({
-    [`&.${classes.appBar}`]: {
-      zIndex: theme.zIndex.drawer + 1,
-    },
-    [`& .${classes.logoBtn}`]: {
-      width: logoSize,
-    },
-    [`& .${classes.toolbar}`]: {
-      textAlign: 'right',
-      flexGrow: -1,
-    },
-  }),
-);
 
 export type TabValue = 'infrastructure' | 'robots' | 'tasks' | 'custom1' | 'custom2' | 'admin';
 
@@ -104,8 +81,8 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   }, [logoResourcesContext, safeAsync, curTheme]);
 
   return (
-    <StyledHeaderBar className={classes.appBar}>
-      <LogoButton src={brandingIconPath} alt="logo" className={classes.logoBtn} />
+    <HeaderBar>
+      <LogoButton src={brandingIconPath} alt="logo" sx={{ width: logoSize }} />
       <NavigationBar value={tabValue}>
         <AppBarTab
           label="Infrastructure"
@@ -146,7 +123,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           />
         )}
       </NavigationBar>
-      <Toolbar variant="dense" className={classes.toolbar}>
+      <Toolbar variant="dense" sx={{ textAlign: 'right', flexGrow: -1 }}>
         <Typography variant="caption">Powered by OpenRMF</Typography>
         {extraToolbarItems}
         {/* TODO: Hiding until we have a better theme */}
@@ -198,7 +175,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           </IconButton>
         </Tooltip>
       </Toolbar>
-    </StyledHeaderBar>
+    </HeaderBar>
   );
 });
 

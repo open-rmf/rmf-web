@@ -2,9 +2,9 @@ import { WorkspaceState } from '../workspace';
 
 export const tasksWorkspace: WorkspaceState = {
   layout: [
-    { i: 'tasks', x: 1, y: 0, w: 6, h: 12 },
-    { i: 'task-details', x: 7, y: 0, w: 2, h: 12 },
-    { i: 'task-logs', x: 9, y: 0, w: 2, h: 12 },
+    { i: 'tasks', x: 2, y: 0, w: 6, h: 12 },
+    { i: 'task-details', x: 8, y: 0, w: 2, h: 6 },
+    { i: 'task-logs', x: 8, y: 6, w: 2, h: 6 },
   ],
   windows: [
     { key: 'tasks', appName: 'Tasks' },

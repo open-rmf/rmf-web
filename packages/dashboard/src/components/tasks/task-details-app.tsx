@@ -49,29 +49,35 @@ export const TaskDetailsApp = createMicroApp('Task Details', () => {
   }, [appController, taskState]);
 
   return (
-    <CardContent sx={{ height: '100%', boxSizing: 'border-box' }}>
+    <Grid container direction="column" wrap="nowrap" height="100%">
       {taskState ? (
         <>
-          <TaskInfo task={taskState} />
-          <Button
-            style={{ marginTop: theme.spacing(1), marginBottom: theme.spacing(1) }}
-            fullWidth
-            variant="contained"
-            color="secondary"
-            aria-label="Cancel Task"
-            disabled={!taskCancellable}
-            onClick={handleCancelTaskClick}
-          >
-            Cancel Task
-          </Button>
+          <CardContent sx={{ overflow: 'auto' }}>
+            <TaskInfo task={taskState} />
+          </CardContent>
+          <Grid item paddingLeft={2} paddingRight={2}>
+            <Button
+              style={{ marginTop: theme.spacing(1), marginBottom: theme.spacing(1) }}
+              fullWidth
+              variant="contained"
+              color="secondary"
+              aria-label="Cancel Task"
+              disabled={!taskCancellable}
+              onClick={handleCancelTaskClick}
+            >
+              Cancel Task
+            </Button>
+          </Grid>
         </>
       ) : (
         <Grid container wrap="nowrap" alignItems="center" style={{ height: '100%' }}>
-          <Typography variant="h6" align="center">
-            Click on a task to view more information
-          </Typography>
+          <CardContent>
+            <Typography variant="h6" align="center">
+              Click on a task to view more information
+            </Typography>
+          </CardContent>
         </Grid>
       )}
-    </CardContent>
+    </Grid>
   );
 });

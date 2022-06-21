@@ -17,16 +17,21 @@ export const RobotsApp = createMicroApp('Robots', () => {
     // TODO: support auto refresh
     rmf.fleetsObs.subscribe(async (fleets) => {
       // fetch active tasks
-      const taskIds = fleets.flatMap(
-        (fleet) => fleet.robots && Object.values(fleet.robots).map((robot) => robot.task_id),
-      );
-      const tasks = (await rmf.tasksApi.queryTaskStatesTasksGet(taskIds.join(','))).data.reduce(
-        (acc, task) => {
-          acc[task.booking.id] = task;
-          return acc;
-        },
-        {} as Record<string, TaskState>,
-      );
+      const taskIds = fleets
+        .flatMap(
+          (fleet) => fleet.robots && Object.values(fleet.robots).map((robot) => robot.task_id),
+        )
+        .filter((taskId) => taskId !== '');
+      const tasks =
+        taskIds.length > 0
+          ? (await rmf.tasksApi.queryTaskStatesTasksGet(taskIds.join(','))).data.reduce(
+              (acc, task) => {
+                acc[task.booking.id] = task;
+                return acc;
+              },
+              {} as Record<string, TaskState>,
+            )
+          : {};
 
       setRobots(
         fleets.flatMap((fleet) =>
@@ -45,14 +50,14 @@ export const RobotsApp = createMicroApp('Robots', () => {
         ),
       );
     });
-  });
+  }, [rmf]);
 
   return (
     <TableContainer>
       <RobotTable
         robots={robots}
         onRobotClick={(_ev, robot) => {
-          AppEvents.robotSelect.next(['', robot.name]);
+          AppEvents.robotSelect.next([robot.fleet, robot.name]);
         }}
       />
     </TableContainer>
