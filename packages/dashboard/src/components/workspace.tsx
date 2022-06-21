@@ -123,7 +123,7 @@ export function ManagedWorkspace({ workspaceId }: ManagedWorkspaceProps) {
   }, [appController, designMode, theme]);
 
   return (
-    <>
+    <Box sx={{ display: 'contents', position: 'relative' }}>
       <Workspace
         state={workspaceState}
         onStateChange={(newState) => {
@@ -136,9 +136,9 @@ export function ManagedWorkspace({ workspaceId }: ManagedWorkspaceProps) {
         <Box
           sx={{
             position: 'absolute',
-            display: 'flex',
-            width: '100%',
-            height: '100%',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
             justifyContent: 'center',
             alignItems: 'center',
           }}
@@ -148,6 +148,6 @@ export function ManagedWorkspace({ workspaceId }: ManagedWorkspaceProps) {
           </Typography>
         </Box>
       )}
-    </>
+    </Box>
   );
 }

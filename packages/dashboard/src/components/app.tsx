@@ -85,7 +85,7 @@ export default function App(): JSX.Element | null {
                 unauthorizedComponent={loginRedirect}
                 user={user}
               >
-                <Workspace state={dashboardWorkspace} />
+                <Workspace key="dashboard" state={dashboardWorkspace} />
               </PrivateRoute>
               <PrivateRoute
                 exact
@@ -93,7 +93,7 @@ export default function App(): JSX.Element | null {
                 unauthorizedComponent={loginRedirect}
                 user={user}
               >
-                <Workspace state={robotsWorkspace} />
+                <Workspace key="robots" state={robotsWorkspace} />
               </PrivateRoute>
               <PrivateRoute
                 exact
@@ -101,7 +101,7 @@ export default function App(): JSX.Element | null {
                 unauthorizedComponent={loginRedirect}
                 user={user}
               >
-                <Workspace state={tasksWorkspace} />
+                <Workspace key="tasks" state={tasksWorkspace} />
               </PrivateRoute>
               <PrivateRoute unauthorizedComponent={loginRedirect} user={user} path={CustomRoute1}>
                 <ManagedWorkspace key="custom1" workspaceId="custom1" />

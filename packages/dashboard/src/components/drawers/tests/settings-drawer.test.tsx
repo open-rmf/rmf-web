@@ -11,7 +11,7 @@ describe('Settings Drawer', () => {
   let handleCloseButton: jest.Mock;
 
   beforeEach(() => {
-    settings = { themeMode: ThemeMode.Light };
+    settings = { themeMode: ThemeMode.RmfLight };
     onSettingsChange = jest.fn();
     handleCloseButton = jest.fn();
   });

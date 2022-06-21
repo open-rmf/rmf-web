@@ -1,7 +1,15 @@
-import { Alert, AlertProps, createTheme, Grid, Snackbar } from '@mui/material';
+import {
+  Alert,
+  AlertProps,
+  createTheme,
+  CssBaseline,
+  GlobalStyles,
+  Grid,
+  Snackbar,
+} from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import React from 'react';
-import { rmfDark } from 'react-components';
+import { rmfDark, rmfDarkLeaflet, rmfLight } from 'react-components';
 import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
 import {
   AppController,
@@ -13,14 +21,9 @@ import {
 import AppBar from './appbar';
 import HelpDrawer from './drawers/help-drawer';
 import HotKeysDialog from './drawers/hotkeys-dialog';
-import SettingsDrawer from './drawers/settings-drawer';
 
 const DefaultAlertDuration = 2000;
 const defaultTheme = createTheme();
-
-export interface AppBaseProps {
-  extraToolbarItems?: React.ReactNode;
-}
 
 /**
  * Contains various components that are essential to the app and provides contexts to control them.
@@ -34,12 +37,8 @@ export interface AppBaseProps {
  *
  * Also provides `AppControllerContext` to allow children components to control them.
  */
-export function AppBase({
-  extraToolbarItems,
-  children,
-}: React.PropsWithChildren<AppBaseProps>): JSX.Element | null {
+export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element | null {
   const [settings, setSettings] = React.useState(() => loadSettings());
-  const [showSettings, setShowSettings] = React.useState(false);
   const [showHelp, setShowHelp] = React.useState(false);
   const [showHotkeysDialog, setShowHotkeysDialog] = React.useState(false);
   const [showTooltips, setShowTooltips] = React.useState(false);
@@ -50,8 +49,14 @@ export function AppBase({
   const [extraAppbarIcons, setExtraAppbarIcons] = React.useState<React.ReactNode>(null);
 
   const theme = React.useMemo(() => {
-    const preferDarkMode = settings.themeMode === ThemeMode.Dark;
-    return preferDarkMode ? rmfDark : defaultTheme;
+    switch (settings.themeMode) {
+      case ThemeMode.RmfLight:
+        return rmfLight;
+      case ThemeMode.RmfDark:
+        return rmfDark;
+      default:
+        return defaultTheme;
+    }
   }, [settings.themeMode]);
 
   const tooltips = React.useMemo<Tooltips>(
@@ -68,7 +73,6 @@ export function AppBase({
 
   const appController = React.useMemo<AppController>(
     () => ({
-      setShowSettings,
       updateSettings,
       showHelp: setShowHelp,
       toggleHelp: () => setShowHelp((prev) => !prev),
@@ -89,6 +93,8 @@ export function AppBase({
 
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
+      {settings.themeMode === ThemeMode.RmfDark && <GlobalStyles styles={rmfDarkLeaflet} />}
       <SettingsContext.Provider value={settings}>
         <TooltipsContext.Provider value={tooltips}>
           <AppControllerContext.Provider value={appController}>
@@ -100,15 +106,6 @@ export function AppBase({
             >
               <AppBar extraToolbarItems={extraAppbarIcons} />
               {children}
-              <SettingsDrawer
-                open={showSettings}
-                settings={settings}
-                onSettingsChange={(settings) => {
-                  setSettings(settings);
-                  saveSettings(settings);
-                }}
-                handleCloseButton={() => setShowSettings(false)}
-              />
               <HelpDrawer
                 open={showHelp}
                 handleCloseButton={() => setShowHelp(false)}

@@ -38,7 +38,7 @@ export const rmfDark = createTheme(
  * Leaflet theme for RmfDark, use with material's `GlobalStyles` or other css injectors.
  *
  * Example:
- *   <GlobalStyles styles=rmfDarkLeaflet />
+ *   <GlobalStyles styles={rmfDarkLeaflet} />
  */
 export const rmfDarkLeaflet = {
   '.leaflet-control-zoom a': {
