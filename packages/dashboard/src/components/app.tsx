@@ -123,7 +123,7 @@ export default function App(): JSX.Element | null {
           <Route exact path={LoginRoute}>
             <LoginPage
               title={'Dashboard'}
-              logo="assets/ros-health.png"
+              logo="assets/defaultLogo.png"
               onLoginClick={() => authenticator.login(`${window.location.origin}${DashboardRoute}`)}
             />
           </Route>

@@ -11,16 +11,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import React from 'react';
 import { rmfDark, rmfDarkLeaflet, rmfLight } from 'react-components';
 import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
-import {
-  AppController,
-  AppControllerContext,
-  SettingsContext,
-  Tooltips,
-  TooltipsContext,
-} from './app-contexts';
+import { AppController, AppControllerContext, SettingsContext } from './app-contexts';
 import AppBar from './appbar';
-import HelpDrawer from './drawers/help-drawer';
-import HotKeysDialog from './drawers/hotkeys-dialog';
 
 const DefaultAlertDuration = 2000;
 const defaultTheme = createTheme();
@@ -30,18 +22,12 @@ const defaultTheme = createTheme();
  * Components include:
  *
  * - Settings
- * - Help
- * - Tooltip
- * - Hotkeys reference
- * - Notifications
+ * - Alerts
  *
  * Also provides `AppControllerContext` to allow children components to control them.
  */
 export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element | null {
   const [settings, setSettings] = React.useState(() => loadSettings());
-  const [showHelp, setShowHelp] = React.useState(false);
-  const [showHotkeysDialog, setShowHotkeysDialog] = React.useState(false);
-  const [showTooltips, setShowTooltips] = React.useState(false);
   const [showAlert, setShowAlert] = React.useState(false);
   const [alertSeverity, setAlertSeverity] = React.useState<AlertProps['severity']>('error');
   const [alertMessage, setAlertMessage] = React.useState('');
@@ -59,13 +45,6 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
     }
   }, [settings.themeMode]);
 
-  const tooltips = React.useMemo<Tooltips>(
-    () => ({
-      showTooltips,
-    }),
-    [showTooltips],
-  );
-
   const updateSettings = React.useCallback((newSettings: Settings) => {
     saveSettings(newSettings);
     setSettings(newSettings);
@@ -74,12 +53,6 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
   const appController = React.useMemo<AppController>(
     () => ({
       updateSettings,
-      showHelp: setShowHelp,
-      toggleHelp: () => setShowHelp((prev) => !prev),
-      showHotkeysDialog: setShowHotkeysDialog,
-      toggleHotkeysDialog: () => setShowHotkeysDialog((prev) => !prev),
-      showTooltips: setShowTooltips,
-      toggleTooltips: () => setShowTooltips((prev) => !prev),
       showAlert: (severity, message, autoHideDuration) => {
         setAlertSeverity(severity);
         setAlertMessage(message);
@@ -96,49 +69,32 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
       <CssBaseline />
       {settings.themeMode === ThemeMode.RmfDark && <GlobalStyles styles={rmfDarkLeaflet} />}
       <SettingsContext.Provider value={settings}>
-        <TooltipsContext.Provider value={tooltips}>
-          <AppControllerContext.Provider value={appController}>
-            <Grid
-              container
-              direction="column"
-              style={{ width: '100%', height: '100%' }}
-              wrap="nowrap"
+        <AppControllerContext.Provider value={appController}>
+          <Grid
+            container
+            direction="column"
+            style={{ width: '100%', height: '100%' }}
+            wrap="nowrap"
+          >
+            <AppBar extraToolbarItems={extraAppbarIcons} />
+            {children}
+            {/* TODO: Support stacking of alerts */}
+            <Snackbar
+              open={showAlert}
+              message={alertMessage}
+              onClose={() => setShowAlert(false)}
+              autoHideDuration={alertDuration}
             >
-              <AppBar extraToolbarItems={extraAppbarIcons} />
-              {children}
-              <HelpDrawer
-                open={showHelp}
-                handleCloseButton={() => setShowHelp(false)}
-                onClose={() => setShowHelp(false)}
-                setShowHotkeyDialog={() => setShowHotkeysDialog(true)}
-                showTour={() => {
-                  setShowHelp(false);
-                }}
-              />
-              {showHotkeysDialog && (
-                <HotKeysDialog
-                  open={showHotkeysDialog}
-                  handleClose={() => setShowHotkeysDialog(false)}
-                />
-              )}
-              {/* TODO: Support stacking of alerts */}
-              <Snackbar
-                open={showAlert}
-                message={alertMessage}
+              <Alert
                 onClose={() => setShowAlert(false)}
-                autoHideDuration={alertDuration}
+                severity={alertSeverity}
+                sx={{ width: '100%' }}
               >
-                <Alert
-                  onClose={() => setShowAlert(false)}
-                  severity={alertSeverity}
-                  sx={{ width: '100%' }}
-                >
-                  {alertMessage}
-                </Alert>
-              </Snackbar>
-            </Grid>
-          </AppControllerContext.Provider>
-        </TooltipsContext.Provider>
+                {alertMessage}
+              </Alert>
+            </Snackbar>
+          </Grid>
+        </AppControllerContext.Provider>
       </SettingsContext.Provider>
     </ThemeProvider>
   );

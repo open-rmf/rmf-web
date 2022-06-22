@@ -11,20 +11,6 @@ export const SettingsContext = React.createContext(defaultSettings());
 
 export interface AppController {
   updateSettings: (settings: Settings) => void;
-  showHelp(show: boolean): void;
-  toggleHelp(): void;
-  showHotkeysDialog(show: boolean): void;
-  toggleHotkeysDialog(): void;
-  /**
-   * FIXME: Move this to settings, this sets if we should show the tooltip icon, and not trigger
-   * a tooltip to show.
-   */
-  showTooltips(show: boolean): void;
-  /**
-   * FIXME: Move this to settings, this sets if we should show the tooltip icon, and not trigger
-   * a tooltip to show.
-   */
-  toggleTooltips(): void;
   showAlert: (severity: AlertProps['severity'], message: string, autoHideDuration?: number) => void;
   setExtraAppbarIcons: (node: React.ReactNode) => void;
 }
@@ -39,12 +25,6 @@ export const TooltipsContext = React.createContext<Tooltips>({
 
 export const AppControllerContext = React.createContext<AppController>({
   updateSettings: () => {},
-  showHelp: () => {},
-  toggleHelp: () => {},
-  showHotkeysDialog: () => {},
-  toggleHotkeysDialog: () => {},
-  showTooltips: () => {},
-  toggleTooltips: () => {},
   showAlert: () => {},
   setExtraAppbarIcons: () => {},
 });

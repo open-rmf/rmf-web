@@ -1,5 +1,4 @@
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import HelpIcon from '@mui/icons-material/Help';
 import SettingsIcon from '@mui/icons-material/Settings';
 import {
   CardContent,
@@ -15,14 +14,7 @@ import {
   Typography,
 } from '@mui/material';
 import React from 'react';
-import {
-  AppBarTab,
-  HeaderBar,
-  LogoButton,
-  NavigationBar,
-  Tooltip,
-  useAsync,
-} from 'react-components';
+import { AppBarTab, HeaderBar, LogoButton, NavigationBar, useAsync } from 'react-components';
 import { useHistory, useLocation } from 'react-router-dom';
 import { UserProfileContext } from 'rmf-auth';
 import { logoSize } from '../managers/resource-manager';
@@ -40,7 +32,6 @@ import {
   AppControllerContext,
   ResourcesContext,
   SettingsContext,
-  TooltipsContext,
 } from './app-contexts';
 
 export type TabValue = 'infrastructure' | 'robots' | 'tasks' | 'custom1' | 'custom2' | 'admin';
@@ -104,7 +95,6 @@ export interface AppBarProps {
 }
 
 export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.ReactElement => {
-  const { showHelp: setShowHelp /* , setShowSettings */ } = React.useContext(AppControllerContext);
   const history = useHistory();
   const location = useLocation();
   const tabValue = React.useMemo(() => locationToTabValue(location.pathname), [location]);
@@ -112,7 +102,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const { authenticator } = React.useContext(AppConfigContext);
   const profile = React.useContext(UserProfileContext);
-  const { showTooltips } = React.useContext(TooltipsContext);
   const safeAsync = useAsync();
   const [brandingIconPath, setBrandingIconPath] = React.useState<string>('');
   const [settingsAnchor, setSettingsAnchor] = React.useState<HTMLElement | null>(null);
@@ -218,16 +207,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
               </Menu>
             </>
           )}
-          <Tooltip title="Help tools and resources" id="help-tooltip" enabled={showTooltips}>
-            <IconButton
-              id="show-help-btn"
-              aria-label="help"
-              color="inherit"
-              onClick={() => setShowHelp(true)}
-            >
-              <HelpIcon />
-            </IconButton>
-          </Tooltip>
         </Toolbar>
       </HeaderBar>
       <Menu

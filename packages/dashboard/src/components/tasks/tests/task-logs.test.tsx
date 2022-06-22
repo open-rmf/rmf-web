@@ -3,9 +3,6 @@ import { render } from '../../tests/test-utils';
 import { TaskLogs } from '../task-logs';
 import { makeTaskLog, makeTaskState } from './make-tasks';
 
-// react-leaflet doesn't work well in jsdom.
-jest.mock('./../../schedule-visualizer', () => () => null);
-
 it('renders without crashing', async () => {
   URL.createObjectURL = jest.fn();
   const taskLog = makeTaskLog('0');

@@ -30,8 +30,6 @@ export * from './tasks';
 export * from './themes';
 export * from './tooltip';
 export * from './transfer-list';
-export * from './trashbin-control-button-group';
-export * from './trashbin-control-button-group-reducer';
 export * from './use-async';
 export * from './utils';
 export * from './window';
