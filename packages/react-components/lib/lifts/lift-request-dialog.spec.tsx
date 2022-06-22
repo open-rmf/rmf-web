@@ -1,15 +1,18 @@
-import { render, screen, within } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
+import { LiftRequestDialog } from './lift-request-dialog';
 import { requestDoorModes, requestModes } from './lift-utils';
-import { LiftRequestFormDialog } from './lift-request-form-dialog';
-import { makeLift } from './test-utils.spec';
+import { makeLift, makeLiftState } from './test-utils.spec';
 
 function renderLiftRequestForm() {
   const mockOnClose = jasmine.createSpy();
+  const lift = makeLift();
+  const liftState = makeLiftState();
   return render(
-    <LiftRequestFormDialog
-      lift={makeLift()}
+    <LiftRequestDialog
+      currentLevel={liftState.current_floor}
+      availableLevels={lift.levels}
       availableRequestTypes={requestModes}
       availableDoorModes={requestDoorModes}
       showFormDialog={true}
@@ -23,30 +26,18 @@ describe('Lift request form', () => {
 
   beforeEach(() => {
     const mockOnClose = jasmine.createSpy();
+    const lift = makeLift();
+    const liftState = makeLiftState();
     root = render(
-      <LiftRequestFormDialog
-        lift={makeLift()}
+      <LiftRequestDialog
+        currentLevel={liftState.current_floor}
+        availableLevels={lift.levels}
         availableRequestTypes={requestModes}
         availableDoorModes={requestDoorModes}
         showFormDialog={true}
         onClose={mockOnClose}
       />,
     );
-  });
-
-  it('resets form after submitting', () => {
-    userEvent.click(root.getByPlaceholderText('Pick a Destination'));
-    userEvent.click(within(screen.getByRole('listbox')).getByText('L2'));
-    userEvent.click(root.getByPlaceholderText('Pick a Door State'));
-    userEvent.click(within(screen.getByRole('listbox')).getByText('Closed'));
-    userEvent.click(root.getByPlaceholderText('Pick Request Type'));
-    userEvent.click(within(screen.getByRole('listbox')).getByText('Human'));
-
-    userEvent.click(root.getByText('Request'));
-
-    expect(root.getByPlaceholderText('Pick a Destination').getAttribute('value')).toBe('L1');
-    expect(root.getByPlaceholderText('Pick a Door State').getAttribute('value')).toBe('Open');
-    expect(root.getByPlaceholderText('Pick Request Type').getAttribute('value')).toBe('AGV');
   });
 
   it('destination is required', () => {

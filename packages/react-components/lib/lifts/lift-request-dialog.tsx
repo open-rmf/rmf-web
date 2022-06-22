@@ -84,13 +84,6 @@ export const LiftRequestDialog = ({
   const [requestTypeError, setRequestTypeError] = React.useState('');
   const [destinationError, setDestinationError] = React.useState('');
 
-  const cleanUpForm = () => {
-    setDoorState(availableDoorModes[0]);
-    setRequestType(availableRequestTypes[0]);
-    setDestination(currentLevel);
-    cleanUpError();
-  };
-
   const cleanUpError = () => {
     setDoorStateError('');
     setRequestTypeError('');
@@ -113,7 +106,6 @@ export const LiftRequestDialog = ({
     if (isFormValid()) {
       onRequestSubmit && onRequestSubmit(event, doorState, requestType, destination);
       onClose();
-      cleanUpForm();
     }
   };
 

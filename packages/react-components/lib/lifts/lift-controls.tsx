@@ -18,6 +18,9 @@ export function LiftControls({
   ...otherProps
 }: LiftControlsProps): JSX.Element {
   const [showDialog, setShowDialog] = React.useState(false);
+  // Doing `{showDialog && <Form .../>}` will unomunt it before the animations are done.
+  // Instead we give a `key` to the form to make react spawn a new instance.
+  const [resetForm, setResetForm] = React.useState(0);
 
   return (
     <>
@@ -26,11 +29,15 @@ export function LiftControls({
         color="primary"
         fullWidth
         size="small"
-        onClick={() => setShowDialog(true)}
+        onClick={() => {
+          setResetForm((prev) => prev + 1);
+          setShowDialog(true);
+        }}
       >
         Request
       </Button>
       <LiftRequestDialog
+        key={resetForm}
         showFormDialog={showDialog}
         currentLevel={currentLevel ? currentLevel : 'Unknown'}
         availableDoorModes={requestDoorModes}
