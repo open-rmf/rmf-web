@@ -71,7 +71,7 @@ export const RobotsApp = createMicroApp('Robots', () => {
                   status: robot.status,
                   estFinishTime:
                     robot.task_id && tasks[robot.task_id]
-                      ? tasks[robot.task_id].estimate_millis
+                      ? tasks[robot.task_id].unix_millis_finish_time
                       : undefined,
                 }))
               : [],
