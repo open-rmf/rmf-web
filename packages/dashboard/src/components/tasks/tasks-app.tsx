@@ -1,15 +1,6 @@
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
-import AutorenewIcon from '@mui/icons-material/Autorenew';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import {
-  Grid,
-  IconButton,
-  TableContainer,
-  TablePagination,
-  Toolbar,
-  Tooltip,
-  useTheme,
-} from '@mui/material';
+import { Grid, IconButton, TableContainer, TablePagination, Toolbar, Tooltip } from '@mui/material';
 import { TaskRequest, TaskState } from 'api-client';
 import React from 'react';
 import {
@@ -19,29 +10,12 @@ import {
   TaskTable,
   Window,
 } from 'react-components';
+import { Subscription } from 'rxjs';
 import { AppControllerContext, ResourcesContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
 import { parseTasksFile } from './utils';
-
-export interface TaskPanelProps
-  extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
-  /**
-   * Should only contain the tasks of the current page.
-   */
-  tasks: TaskState[];
-  paginationOptions?: Omit<React.ComponentPropsWithoutRef<typeof TablePagination>, 'component'>;
-  cleaningZones?: string[];
-  loopWaypoints?: string[];
-  deliveryWaypoints?: string[];
-  dispensers?: string[];
-  ingestors?: string[];
-  submitTasks?: CreateTaskFormProps['submitTasks'];
-  cancelTask?: (task: TaskState) => Promise<void>;
-  onRefresh?: () => void;
-  onAutoRefresh?: (enabled: boolean) => void;
-}
 
 export const TasksApp = React.memo(
   React.forwardRef(
@@ -49,11 +23,10 @@ export const TasksApp = React.memo(
       { onClose, children, ...otherProps }: React.PropsWithChildren<MicroAppProps>,
       ref: React.Ref<HTMLDivElement>,
     ) => {
-      const theme = useTheme();
       const rmf = React.useContext(RmfAppContext);
 
-      const [fetchedTasks, setFetchedTasks] = React.useState<TaskState[]>([]);
-      const [latestTasks, setLatestTasks] = React.useState<Record<string, TaskState>>({});
+      const [forceRefresh, setForceRefresh] = React.useState(0);
+      const [taskStates, setTaskStates] = React.useState<Record<string, TaskState>>({});
 
       const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
       const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
@@ -89,9 +62,6 @@ export const TasksApp = React.memo(
         });
       };
 
-      const [autoRefresh, setAutoRefresh] = React.useState(true);
-      const autoRefreshTooltipPrefix = autoRefresh ? 'Disable' : 'Enable';
-
       const [page, setPage] = React.useState(0);
       const [hasMore, setHasMore] = React.useState(true);
 
@@ -116,11 +86,12 @@ export const TasksApp = React.memo(
         setWorkcells(Object.keys(resourceManager.dispensers.dispensers));
       }, [resourceManager]);
 
-      const handleRefresh = React.useCallback(
-        async (page: number) => {
-          if (!rmf) {
-            return [];
-          }
+      React.useEffect(() => {
+        if (!rmf) {
+          return;
+        }
+        const subs: Subscription[] = [];
+        (async () => {
           const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
             undefined,
             undefined,
@@ -134,35 +105,27 @@ export const TasksApp = React.memo(
           const results = resp.data as TaskState[];
           setHasMore(results.length > 10);
           const newTasks = results.slice(0, 10);
-          setFetchedTasks(newTasks);
-          setLatestTasks(
+
+          setTaskStates(
             newTasks.reduce<Record<string, TaskState>>((acc, task) => {
               acc[task.booking.id] = task;
               return acc;
             }, {}),
           );
-        },
-        [rmf],
-      );
+          subs.push(
+            ...newTasks.map((task) =>
+              rmf
+                .getTaskStateObs(task.booking.id)
+                .subscribe((task) =>
+                  setTaskStates((prev) => ({ ...prev, [task.booking.id]: task })),
+                ),
+            ),
+          );
+        })();
+        return () => subs.forEach((s) => s.unsubscribe());
+      }, [rmf, page, forceRefresh]);
 
-      React.useEffect(() => {
-        handleRefresh(page);
-      }, [handleRefresh, page]);
-
-      React.useEffect(() => {
-        if (!autoRefresh || !rmf) {
-          return;
-        }
-        for (const task of fetchedTasks) {
-          rmf
-            .getTaskStateObs(task.booking.id)
-            .subscribe((state) =>
-              setLatestTasks((prev) => ({ ...prev, [state.booking.id]: state })),
-            );
-        }
-      }, [rmf, autoRefresh, fetchedTasks]);
-
-      const submitTasks = React.useCallback<Required<TaskPanelProps>['submitTasks']>(
+      const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
         async (taskRequests) => {
           if (!rmf) {
             throw new Error('tasks api not available');
@@ -175,9 +138,9 @@ export const TasksApp = React.memo(
               }),
             ),
           );
-          handleRefresh(page);
+          setForceRefresh((prev) => prev + 1);
         },
-        [rmf, page, handleRefresh],
+        [rmf],
       );
 
       return (
@@ -187,17 +150,11 @@ export const TasksApp = React.memo(
           onClose={onClose}
           toolbar={
             <Toolbar variant="dense">
-              <Tooltip title={`${autoRefreshTooltipPrefix} auto refresh`} color="inherit">
-                <IconButton
-                  sx={{ background: autoRefresh ? theme.palette.action.selected : undefined }}
-                  onClick={() => setAutoRefresh((prev) => !prev)}
-                  aria-label={`${autoRefreshTooltipPrefix} auto refresh`}
-                >
-                  <AutorenewIcon />
-                </IconButton>
-              </Tooltip>
               <Tooltip title="Refresh" color="inherit">
-                <IconButton onClick={() => handleRefresh(page)} aria-label="Refresh">
+                <IconButton
+                  onClick={() => setForceRefresh((prev) => prev + 1)}
+                  aria-label="Refresh"
+                >
                   <RefreshIcon />
                 </IconButton>
               </Tooltip>
@@ -214,7 +171,7 @@ export const TasksApp = React.memo(
             <Grid item flexGrow={1}>
               <TableContainer>
                 <TaskTable
-                  tasks={Object.values(latestTasks)}
+                  tasks={Object.values(taskStates)}
                   onTaskClick={(_ev, task) => AppEvents.taskSelect.next(task)}
                 />
               </TableContainer>
@@ -223,7 +180,7 @@ export const TasksApp = React.memo(
               <TablePagination
                 component="div"
                 page={page}
-                count={hasMore ? -1 : page * 10 + fetchedTasks.length}
+                count={hasMore ? -1 : page * 10 + Object.keys(taskStates).length}
                 rowsPerPage={10}
                 rowsPerPageOptions={[10]}
                 onPageChange={(_ev, page) => setPage(page)}
