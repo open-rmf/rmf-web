@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { NineKOutlined } from '@mui/icons-material';
 import {
   Autocomplete,
   Button,
@@ -12,8 +13,12 @@ import {
   styled,
   TextField,
   useTheme,
+  ListItemIcon,
+  IconButton,
 } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import PlaceOutlined from '@mui/icons-material/PlaceOutlined';
+import DeleteIcon from '@mui/icons-material/Delete';
 import type { TaskRequest } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
@@ -394,6 +399,41 @@ function DeliveryTaskForm({
   );
 }
 
+interface PlaceListProps {
+  places: string[];
+  onClick(places_index: number): void;
+}
+
+function PlaceList({ places, onClick }: PlaceListProps) {
+  const theme = useTheme();
+  return (
+    <List
+      dense
+      sx={{
+        bgcolor: 'background.paper',
+        marginLeft: theme.spacing(3),
+        marginRight: theme.spacing(3),
+      }}
+    >
+      {places.map((value, index) => (
+        <ListItem
+          key={`${value}-${index}`}
+          secondaryAction={
+            <IconButton edge="end" aria-label="delete" onClick={() => onClick(index)}>
+              <DeleteIcon />
+            </IconButton>
+          }
+        >
+          <ListItemIcon>
+            <PlaceOutlined />
+          </ListItemIcon>
+          <ListItemText primary={`Place Name:   ${value}`} />
+        </ListItem>
+      ))}
+    </List>
+  );
+}
+
 interface LoopTaskFormProps {
   taskDesc: any;
   loopWaypoints: string[];
@@ -405,34 +445,10 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
 
   return (
     <>
-      <Autocomplete
-        id="start-location"
-        freeSolo
-        fullWidth
-        options={loopWaypoints}
-        onChange={(_ev, newValue) =>
-          newValue !== null &&
-          onChange({
-            ...taskDesc,
-            places: [newValue, taskDesc.places[1]].filter(
-              (el) => el, // filter null and empty str in places array
-            ),
-          })
-        }
-        onBlur={(ev) =>
-          onChange({
-            ...taskDesc,
-            places: [(ev.target as HTMLInputElement).value, taskDesc.places[1]].filter(
-              (el) => el, // filter null and empty str in places array
-            ),
-          })
-        }
-        renderInput={(params) => <TextField {...params} label="Location 1" margin="normal" />}
-      />
       <Grid container wrap="nowrap">
         <Grid style={{ flex: '1 1 100%' }}>
           <Autocomplete
-            id="finish-location"
+            id="place-input"
             freeSolo
             fullWidth
             options={loopWaypoints}
@@ -440,22 +456,20 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
               newValue !== null &&
               onChange({
                 ...taskDesc,
-                places: [taskDesc.places[0], newValue].filter(
-                  (el) => el, // filter null and empty str in places array
+                places: taskDesc.places.concat(newValue).filter(
+                  (el: string) => el, // filter null and empty str in places array
                 ),
               })
             }
             onBlur={(ev) =>
               onChange({
                 ...taskDesc,
-                places: [taskDesc.places[0], (ev.target as HTMLInputElement).value].filter(
-                  (el) => el, // filter null and empty str in places array
+                places: taskDesc.places.concat((ev.target as HTMLInputElement).value).filter(
+                  (el: string) => el, // filter null and empty str in places array
                 ),
               })
             }
-            renderInput={(params) => (
-              <TextField {...params} label="Location 2 (Optional)" margin="normal" />
-            )}
+            renderInput={(params) => <TextField {...params} label="Place Name" margin="normal" />}
           />
         </Grid>
         <Grid
@@ -479,6 +493,10 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
           />
         </Grid>
       </Grid>
+      <PlaceList
+        places={taskDesc && taskDesc.places ? taskDesc.places : []}
+        onClick={(places_index) => taskDesc.places.splice(places_index, 1)}
+      />
     </>
   );
 }
