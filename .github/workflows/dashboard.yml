@@ -20,7 +20,7 @@ jobs:
         npm: ['latest']
       fail-fast: false
     name: Unit Tests (npm ${{ matrix.npm }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container:
       image: ghcr.io/${{ github.repository }}/e2e
       credentials:
@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: '16'
           cache: 'npm'
       - name: bootstrap
         run: |
