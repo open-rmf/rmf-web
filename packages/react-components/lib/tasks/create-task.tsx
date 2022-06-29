@@ -427,7 +427,7 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
             ),
           })
         }
-        renderInput={(params) => <TextField {...params} label="Start Location" margin="normal" />}
+        renderInput={(params) => <TextField {...params} label="Location 1" margin="normal" />}
       />
       <Grid container wrap="nowrap">
         <Grid style={{ flex: '1 1 100%' }}>
@@ -454,7 +454,7 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
               })
             }
             renderInput={(params) => (
-              <TextField {...params} label="Finish Location" margin="normal" />
+              <TextField {...params} label="Location 2 (Optional)" margin="normal" />
             )}
           />
         </Grid>
