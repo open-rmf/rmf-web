@@ -4,16 +4,16 @@
 
 ## Prerequisites
 
-### Ubuntu 20.04
+### Ubuntu 22.04
 
 Install nodejs
 ```bash
 sudo apt update && sudo apt install curl
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
-nvm install 14
+nvm install 16
 ```
 
-A recent version of pipenv is needed, the system packaged version is too old.
+Install pipenv.
 ```bash
 pip3 install pipenv
 ```
@@ -28,7 +28,7 @@ Refer to the following documentation:
 
 Refer to the following documentations:
 
-* [nodejs](https://nodejs.org/en/download/package-manager/) >= 14, npm >= 7
+* [nodejs](https://nodejs.org/en/download/package-manager/) >= 16, npm >= 8
 * [rmf_demos](https://github.com/open-rmf/rmf_demos)
 
 ## Bootstrap
@@ -40,8 +40,6 @@ cd rmf-web
 npm install -g npm@latest
 scripts/bootstrap.sh
 ```
-
-NOTE: npm >= 7 is required because this repo uses the new workspaces feature.
 
 You may also choose to bootstrap a subset of the packages, e.g.
 ```bash
@@ -95,7 +93,3 @@ See the [rmf-dashboard](packages/dashboard/README.md#configuration) docs.
 First thing to try is to build rmf from source, in order to speed up development, `rmf-web` may use in-development features of rmf. That means that the binary releases may not have the features required, sometimes the features `rmf-web` uses may be so new that not even the rolling releases has it.
 
 Refer to [rmf_demos](https://github.com/open-rmf/rmf_demos) for instructions to build rmf. You should end up with a colcon workspace with all of rmf packages, remember to source the workspace before running any of the commands.
-
-## Deploying
-
-See [example deployment](example-deployment/README.md)
