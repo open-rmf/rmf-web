@@ -11,27 +11,33 @@ export interface AppConfig {
   appResourcesFactory: () => Promise<ResourceManager | undefined>;
 }
 
+declare global {
+  interface Window {
+    ENV: any;
+  }
+}
+
 export const appConfig: AppConfig = (() => {
-  const trajServer = process.env.REACT_APP_TRAJECTORY_SERVER;
+  const trajServer = window.ENV.REACT_APP_TRAJECTORY_SERVER;
   if (!trajServer) {
     throw new Error('REACT_APP_TRAJECTORY_SERVER env variable is needed but not defined');
   }
 
   const authenticator = (() => {
-    if (!process.env.REACT_APP_AUTH_PROVIDER) {
+    if (!window.ENV.REACT_APP_AUTH_PROVIDER) {
       return new StubAuthenticator();
     }
     // it is important that we do not do any processing on REACT_APP_AUTH_PROVIDER so that webpack
     // can remove dead code, we DO NOT want the output to have the stub authenticator even if
     // it is not used.
-    const provider = process.env.REACT_APP_AUTH_PROVIDER;
+    const provider = window.ENV.REACT_APP_AUTH_PROVIDER;
     switch (provider) {
       case 'keycloak':
-        if (!process.env.REACT_APP_KEYCLOAK_CONFIG) {
+        if (!window.ENV.REACT_APP_KEYCLOAK_CONFIG) {
           throw new Error('missing REACT_APP_KEYCLOAK_CONFIG');
         }
         return new KeycloakAuthenticator(
-          JSON.parse(process.env.REACT_APP_KEYCLOAK_CONFIG),
+          JSON.parse(window.ENV.REACT_APP_KEYCLOAK_CONFIG),
           `${window.location.origin}${BasePath}/silent-check-sso.html`,
         );
       case 'stub':
@@ -41,7 +47,7 @@ export const appConfig: AppConfig = (() => {
     }
   })();
 
-  if (!process.env.REACT_APP_RMF_SERVER) {
+  if (!window.ENV.REACT_APP_RMF_SERVER) {
     throw new Error('REACT_APP_RMF_SERVER is required');
   }
 
@@ -49,7 +55,7 @@ export const appConfig: AppConfig = (() => {
     authenticator,
     appResourcesFactory: ResourceManager.defaultResourceManager,
     trajServerUrl: trajServer,
-    rmfServerUrl: process.env.REACT_APP_RMF_SERVER,
+    rmfServerUrl: window.ENV.REACT_APP_RMF_SERVER,
   } as AppConfig;
 })();
 
