@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+pwd
 cd "$(dirname $0)/.."
 
 # Current version of poetry does not support system site packages so we manually create

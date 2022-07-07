@@ -6,9 +6,6 @@
     "pnpm": ">=7.5.0",
     "npm": ">=99"
   },
-  "scripts": {
-    "postinstall": "scripts/poetry-install.sh"
-  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",

@@ -56,7 +56,10 @@ importers:
       typescript: 4.4.4
 
   packages/api-server:
-    specifiers: {}
+    specifiers:
+      poetry-install: file://../../poetry-install
+    devDependencies:
+      poetry-install: file:poetry-install
 
   packages/dashboard:
     specifiers:
@@ -475,13 +478,18 @@ importers:
     specifiers:
       '@types/jasmine': ^3.8.2
       jasmine: ^3.6.6
+      poetry-install: file://../../poetry-install
       ts-node: ^9.1.1
       typescript: ~4.4.4
     devDependencies:
       '@types/jasmine': 3.10.6
       jasmine: 3.99.0
+      poetry-install: file:poetry-install
       ts-node: 9.1.1_typescript@4.4.4
       typescript: 4.4.4
+
+  poetry-install:
+    specifiers: {}
 
 packages:
 
@@ -22763,6 +22771,13 @@ packages:
     resolution: {directory: packages/rmf-models, type: directory}
     name: rmf-models
     version: 0.0.1
+
+  file:poetry-install:
+    resolution: {directory: poetry-install, type: directory}
+    name: poetry-install
+    version: 0.0.0
+    requiresBuild: true
+    dev: true
 
   github.com/lorenwest/node-config/f54b41990095c2b340ae129dfd8f623da1dfa20d:
     resolution: {commit: f54b41990095c2b340ae129dfd8f623da1dfa20d, repo: git+ssh://git@github.com/lorenwest/node-config.git, type: git}
