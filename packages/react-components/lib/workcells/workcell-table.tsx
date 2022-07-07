@@ -1,7 +1,7 @@
 import { styled, Table, TableBody, TableHead, TableRow } from '@mui/material';
 import clsx from 'clsx';
 import React from 'react';
-import AutoSizer, { AutoSizerProps } from 'react-virtualized-auto-sizer';
+import AutoSizer, { AutoSizerProps, Size } from 'react-virtualized-auto-sizer';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import { DispenserState as RmfDispenserState } from 'rmf-models';
 import { Workcell, WorkcellState } from '.';
@@ -193,7 +193,7 @@ export const WorkcellTable = ({ workcells, workcellStates }: WorkcellTableProps)
   const { fixedTableCell } = useFixedTableCellStylesClasses;
   return (
     <StyledAutosizer disableHeight>
-      {({ width }) => {
+      {({ width }: Size) => {
         return (
           <Table component="div" size="small" aria-label="workcell-table">
             <TableHead component="div">

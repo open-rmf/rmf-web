@@ -1,23 +1,13 @@
 {
   "name": "root",
   "private": true,
-  "workspaces": [
-    "packages/api-client",
-    "packages/api-server",
-    "packages/dashboard",
-    "packages/dashboard-e2e",
-    "packages/react-components",
-    "packages/reporting",
-    "packages/reporting-e2e",
-    "packages/reporting-server",
-    "packages/rmf-auth",
-    "packages/rmf-models",
-    "packages/ros-translator",
-    "poetry-install"
-  ],
   "engines": {
     "node": ">=16",
-    "npm": ">=8"
+    "pnpm": ">=7.5.0",
+    "npm": ">=99"
+  },
+  "scripts": {
+    "postinstall": "scripts/poetry-install.sh"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.33.0",

@@ -7,15 +7,9 @@ on:
   push:
     branches:
       - main
-env:
-  CI: true
 jobs:
   unit-tests:
-    strategy:
-      matrix:
-        npm: ['latest']
-      fail-fast: false
-    name: Unit Tests (npm ${{ matrix.npm }})
+    name: Unit Tests
     runs-on: ubuntu-22.04
     defaults:
       run:
@@ -26,13 +20,13 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
-          cache: 'npm'
-      - name: bootstrap
-        run: |
-          pip3 install pipenv
-          npm install -g npm@${{ matrix.npm }}
-          scripts/bootstrap.sh api-client
-        working-directory: .
+          cache: 'pnpm'
+      - uses: Gr1N/setup-poetry@v7
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 'latest'
+          run_install:
+            args: --filter api-client...
       - name: lint
         run: npm run lint
       - name: test

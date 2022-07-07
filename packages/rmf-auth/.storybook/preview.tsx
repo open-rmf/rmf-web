@@ -1,9 +1,7 @@
 import { ThemeProvider } from '@mui/material';
-import { StyledEngineProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import defaultTheme from '@mui/material/styles/defaultTheme';
 import { DecoratorFn } from '@storybook/react';
-import { ThemeProvider as EmotionThemeProvider } from 'emotion-theming';
-import CssBaseline from '@mui/material/CssBaseline';
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
@@ -17,14 +15,12 @@ export const parameters = {
 
 const withThemeProvider: DecoratorFn = (Story, context) => {
   return (
-    <StyledEngineProvider injectFirst>
-      <EmotionThemeProvider theme={defaultTheme}>
-        <ThemeProvider theme={defaultTheme}>
-          <CssBaseline />
-          <Story {...context} />
-        </ThemeProvider>
-      </EmotionThemeProvider>
-    </StyledEngineProvider>
+    <ThemeProvider theme={defaultTheme}>
+      <ThemeProvider theme={defaultTheme}>
+        <CssBaseline />
+        <Story {...context} />
+      </ThemeProvider>
+    </ThemeProvider>
   );
 };
 export const decorators = [withThemeProvider];
