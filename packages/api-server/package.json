@@ -5,14 +5,14 @@
   "private": true,
   "scripts": {
     "prepack": "../../scripts/nws.sh build -d && poetry build -f wheel",
-    "restart": "../../scripts/nws.sh build -d && RMF_API_SERVER_CONFIG=sqlite_local_config.py pipenv run python -m api_server",
-    "start": "../../scripts/nws.sh build -d && rm -rf run && mkdir -p run && RMF_API_SERVER_CONFIG=sqlite_local_config.py pipenv run python -m api_server",
-    "test": "../../scripts/nws.sh build -d && pipenv run python scripts/test.py",
-    "test:cov": "../../scripts/nws.sh build -d && pipenv run python -m coverage run scripts/test.py",
-    "test:report": "pipenv run python -m coverage html && xdg-open htmlcov/index.html",
-    "lint": "pipenv run pyright && pipenv run pylint api_server --ignore=ros_pydantic,rmf_api"
+    "restart": "../../scripts/nws.sh build -d && RMF_API_SERVER_CONFIG=sqlite_local_config.py poetry run python -m api_server",
+    "start": "../../scripts/nws.sh build -d && rm -rf run && mkdir -p run && RMF_API_SERVER_CONFIG=sqlite_local_config.py poetry run python -m api_server",
+    "test": "../../scripts/nws.sh build -d && poetry run python scripts/test.py",
+    "test:cov": "../../scripts/nws.sh build -d && poetry run python -m coverage run scripts/test.py",
+    "test:report": "poetry run python -m coverage html && xdg-open htmlcov/index.html",
+    "lint": "poetry run pyright && poetry run pylint api_server --ignore=ros_pydantic,rmf_api"
   },
   "devDependencies": {
-    "pipenv-install": "file:../../pipenv-install"
+    "poetry-install": "file:../../poetry-install"
   }
 }

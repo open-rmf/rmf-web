@@ -1,5 +1,3 @@
-from uuid import uuid4
-
 from api_server.models import FleetLogUpdate, FleetStateUpdate
 from api_server.test import AppFixture, make_fleet_log, make_fleet_state
 

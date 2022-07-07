@@ -8,10 +8,10 @@ In the following image, we can observe how all the pods interact with the report
 
 # Setup
 
-Install pipenv
+Install poetry
 
 ```bash
-pip3 install pipenv
+curl -sSL https://install.python-poetry.org | python3 -
 ```
 
 If not already done so, [bootstrap](../../README.md#bootstrap) the project, you can use

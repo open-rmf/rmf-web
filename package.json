@@ -41,8 +41,8 @@
       "prettier --write"
     ],
     "**/*.py": [
-      "python3 -m pipenv run isort",
-      "python3 -m pipenv run black"
+      "poetry run isort",
+      "poetry run black"
     ]
   },
   "dependencies": {},
