@@ -103,12 +103,11 @@ class AppFixture(unittest.TestCase):
 
                 mock_sio.emit.side_effect = handle_resp
 
-                loop = asyncio.get_event_loop()
-                loop.run_until_complete(
-                    on_sio_connect("test", {}, {"token": self.client.token(user)})
+                self.client.portal.call(
+                    on_sio_connect, "test", {}, {"token": self.client.token(user)}
                 )
                 # pylint: disable=protected-access
-                loop.run_until_complete(app._on_subscribe("test", {"room": room}))
+                self.client.portal.call(app._on_subscribe, "test", {"room": room})
 
                 yield
 
@@ -120,11 +119,11 @@ class AppFixture(unittest.TestCase):
 
                 try:
                     while True:
-                        yield loop.run_until_complete(
-                            asyncio.wait_for(wait_for_msgs(), 5)
+                        yield self.client.portal.call(
+                            asyncio.wait_for, wait_for_msgs(), 5
                         )
                 finally:
-                    loop.run_until_complete(app._on_disconnect("test"))
+                    self.client.portal.call(app._on_disconnect, "test")
 
         gen = impl()
         next(gen)

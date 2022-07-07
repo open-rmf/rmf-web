@@ -13,7 +13,7 @@
     "packages/rmf-auth",
     "packages/rmf-models",
     "packages/ros-translator",
-    "pipenv-install"
+    "poetry-install"
   ],
   "engines": {
     "node": ">=16",

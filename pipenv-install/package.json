@@ -1,9 +1,0 @@
-{
-  "name": "pipenv-install",
-  "version": "0.0.0",
-  "description": "dummy package",
-  "private": true,
-  "scripts": {
-    "install": "node ../scripts/pipenv-install.js"
-  }
-}

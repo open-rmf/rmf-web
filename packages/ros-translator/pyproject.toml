@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "ros-translator"
+version = "0.0.1"
+description = "Translates ros interface definitions to other formats"
+authors = ["Teo Koon Peng <koonpeng@openrobotics.org>"]
+repository = "https://github.com/open-rmf/rmf-web.git"
+license = "Apache-2.0"
+packages = [
+  { include = "ros_translator" }
+]
+keywords = ["ROS"]
+classifiers = [
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python",
+  "Topic :: Software Development",
+]
+
+[tool.poetry.scripts]
+ros_translator = "ros_translator.__main__:main"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Jinja2 = "^3.1.2"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

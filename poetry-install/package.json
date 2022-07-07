@@ -1,0 +1,9 @@
+{
+  "name": "poetry-install",
+  "version": "0.0.0",
+  "description": "dummy package to install python dependencies as part of npm install",
+  "private": true,
+  "scripts": {
+    "install": "../scripts/poetry-install.sh"
+  }
+}
