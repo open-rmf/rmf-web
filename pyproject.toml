@@ -7,7 +7,7 @@ repository = "https://github.com/open-rmf/rmf-web.git"
 license = "Apache-2.0"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "~3.10"
 
 [tool.poetry.dev-dependencies]
 black = "22.6.0"
