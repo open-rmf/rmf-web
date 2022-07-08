@@ -6,13 +6,13 @@ importers:
     specifiers:
       '@typescript-eslint/eslint-plugin': ^4.33.0
       '@typescript-eslint/parser': ^4.33.0
-      eslint: ^7.26.0
-      eslint-plugin-react: ^7.21.4
-      eslint-plugin-react-hooks: ^4.1.2
-      husky: ^8.0.0
-      lint-staged: ^10.4.0
-      prettier: ^2.1.2
-      pyright: ^1.1.181
+      eslint: ^7.32.0
+      eslint-plugin-react: ^7.30.1
+      eslint-plugin-react-hooks: ^4.6.0
+      husky: ^8.0.1
+      lint-staged: ^10.5.4
+      prettier: ^2.7.1
+      pyright: ^1.1.257
       typescript: ~4.4.4
     devDependencies:
       '@typescript-eslint/eslint-plugin': 4.33.0_zrqxgwgitu7trrjeml3nqco3jq
@@ -406,7 +406,7 @@ importers:
       '@types/react-dom': ^17.0.9
       '@types/react-router': ^5.1.7
       '@types/react-router-dom': ^5.1.7
-      api-client: ^0.0.1
+      api-client: workspace:*
       concurrently: ^5.3.0
       eslint: ^7.26.0
       eslint-plugin-react: ^7.21.4
@@ -7641,13 +7641,6 @@ packages:
       normalize-path: 3.0.0
       picomatch: 2.3.1
     dev: true
-
-  /api-client/0.0.1:
-    resolution: {integrity: sha512-Nc41gb1sNrbHTPmUApEPk/KYE86EIVZPmJ4APUEE4yASDQ3HJt3yACpXkRBwemYbHg+snCufGBfftASFh7f/KQ==}
-    dependencies:
-      config: github.com/lorenwest/node-config/f54b41990095c2b340ae129dfd8f623da1dfa20d
-      request: 2.14.0
-      underscore: 1.4.4
 
   /app-root-dir/1.0.2:
     resolution: {integrity: sha512-jlpIfsOoNoafl92Sz//64uQHGSyMrD2vYG5d8o2a4qGvyNCvXur7bzIsWtAC/6flI2RYAp3kv8rsfBtaLm7w0g==}
@@ -19115,14 +19108,6 @@ packages:
     dev: true
     optional: true
 
-  /request/2.14.0:
-    resolution: {integrity: sha512-L8hGGkSLQf2e0V5BJDX0tpKBQU1dchI2cXZj8IgahCnUwZeLoUB/z5/CcBD0jPB84rV3EC4DHTYfPsEU94JZ1g==}
-    engines: {'0': node >= 0.3.6}
-    deprecated: request has been deprecated, see https://github.com/request/request/issues/3142
-    bundledDependencies:
-      - form-data
-      - mime
-
   /require-directory/2.1.1:
     resolution: {integrity: sha512-fGxEI7+wsG9xrvdjsrlmL22OMTTiHRwAMroiEeMgq8gzoLC/PQr7RsRDSTLUg/bZAZtF+TVIkHc6/4RIKrui+Q==}
     engines: {node: '>=0.10.0'}
@@ -21229,9 +21214,6 @@ packages:
       through: 2.3.8
     dev: true
 
-  /underscore/1.4.4:
-    resolution: {integrity: sha512-ZqGrAgaqqZM7LGRzNjLnw5elevWb5M8LEoDMadxIW3OWbcv72wMMgKdwOKpd5Fqxe8choLD8HN3iSj3TUh/giQ==}
-
   /unfetch/4.2.0:
     resolution: {integrity: sha512-F9p7yYCn6cIW9El1zi0HI6vqpeIvBsr3dSuRO6Xuppb1u5rXpCPmMvLSyECLhybr9isec8Ohl0hPekMVrEinDA==}
     dev: true
@@ -22718,7 +22700,7 @@ packages:
       '@mui/icons-material': 5.8.4_kvph6qsx6c7p7rhep4xods6o6m
       '@mui/lab': 5.0.0-alpha.86_d4ztt27k5xb5vqpt5ozi45o7wq
       '@mui/material': 5.8.7_nn45z5sr7igu7sfun6tiae5hx4
-      api-client: 0.0.1
+      api-client: link:packages/api-client
       eventemitter3: 4.0.7
       keycloak-js: 11.0.3
       react: 17.0.2
@@ -22737,11 +22719,3 @@ packages:
     resolution: {directory: packages/rmf-models, type: directory}
     name: rmf-models
     version: 0.0.1
-
-  github.com/lorenwest/node-config/f54b41990095c2b340ae129dfd8f623da1dfa20d:
-    resolution: {commit: f54b41990095c2b340ae129dfd8f623da1dfa20d, repo: git+ssh://git@github.com/lorenwest/node-config.git, type: git}
-    name: config
-    version: 3.3.7
-    engines: {node: '>= 10.0.0'}
-    dependencies:
-      json5: 2.2.1

@@ -26,7 +26,7 @@
     "@fontsource/roboto": "^4.3.0",
     "@mui/icons-material": "^5.8.3",
     "@mui/lab": "5.0.0-alpha.86",
-    "api-client": "^0.0.1",
+    "api-client": "workspace:*",
     "eventemitter3": "^4.0.7",
     "keycloak-js": "^11.0.2"
   },
