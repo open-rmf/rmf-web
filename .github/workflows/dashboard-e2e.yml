@@ -26,6 +26,8 @@ jobs:
       BROWSERSTACK_BUILD: ${{ github.head_ref }}:${{ github.event.number }}
     steps:
       - uses: actions/checkout@v2
+      - name: setup python
+        run: apt update && apt install -y python3-venv python-is-python3
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:
