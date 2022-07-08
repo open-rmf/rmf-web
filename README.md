@@ -34,7 +34,7 @@ Refer to the following documentation:
 
 Refer to the following documentations:
 
-* [nodejs](https://nodejs.org/en/download/package-manager/) >= 16, npm >= 8
+* [nodejs](https://nodejs.org/en/download/package-manager/) >= 16
 * [rmf_demos](https://github.com/open-rmf/rmf_demos)
 
 ## Install dependencies
