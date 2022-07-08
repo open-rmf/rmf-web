@@ -17,17 +17,11 @@ jobs:
         working-directory: packages/api-client
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - name: bootstrap
+        uses: ./.github/actions/bootstrap
         with:
-          node-version: '16'
-          cache: 'pnpm'
-      - uses: Gr1N/setup-poetry@v7
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: 'latest'
-          run_install:
-            args: --filter api-client...
+          package: api-client
       - name: lint
-        run: npm run lint
+        run: pnpm run lint
       - name: test
-        run: npm run test
+        run: pnpm test

@@ -6,10 +6,10 @@
   "scripts": {
     "build": "tsc --build",
     "build:storybook": "build-storybook -s test-data",
-    "build:watch": "npm run build -- --watch",
+    "build:watch": "pnpm run build -- --watch",
     "clean": "tsc --build --clean",
     "lint": "eslint --max-warnings 0 --ext ts,tsx, lib",
-    "prepack": "npm run clean && npm run lint && npm run build && npm run test && cp package.json dist/",
+    "prepack": "pnpm run clean && pnpm run lint && pnpm run --filter {.}... build && pnpm test",
     "start": "start-storybook -p 6006 -s test-data",
     "test": "jest --watch",
     "test:coverage": "jest --coverage"
@@ -21,6 +21,8 @@
   "author": "matiasbavera@gmail.com",
   "license": "Apache-2.0",
   "dependencies": {
+    "@emotion/react": "^11.9.3",
+    "@emotion/styled": "^11.9.3",
     "@fontsource/roboto": "^4.3.0",
     "@mui/icons-material": "^5.8.3",
     "@mui/lab": "5.0.0-alpha.86",

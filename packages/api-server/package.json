@@ -13,6 +13,6 @@
     "lint": "poetry run pyright && poetry run pylint api_server --ignore=ros_pydantic,rmf_api"
   },
   "devDependencies": {
-    "poetry-install": "file://../../poetry-install"
+    "poetry-install": "workspace:*"
   }
 }

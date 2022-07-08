@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc --build",
     "clean": "tsc --build --clean",
-    "prepack": "npm run clean && npm run build && npm run lint",
+    "prepack": "pnpm run clean && pnpm run --filter {.}... build && pnpm run lint",
     "lint": "eslint --max-warnings 0 --ext ts,tsx lib",
     "test": "jasmine"
   },

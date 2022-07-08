@@ -11,11 +11,7 @@ env:
   CI: true
 jobs:
   unit-tests:
-    strategy:
-      matrix:
-        npm: ['latest']
-      fail-fast: false
-    name: Unit Tests (npm ${{ matrix.npm }})
+    name: Unit Tests
     runs-on: ubuntu-22.04
     defaults:
       run:
@@ -23,23 +19,14 @@ jobs:
         working-directory: packages/rmf-auth
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-          cache: 'npm'
       - name: bootstrap
-        run: |
-          pip3 install pipenv
-          npm config set unsafe-perm
-          npm install -g npm@${{ matrix.npm }}
-          scripts/bootstrap.sh rmf-auth
-        working-directory: .
+        uses: ./.github/actions/bootstrap
+        with:
+          package: rmf-auth
       - name: lint
-        run: npm run lint
-      - name: build
-        run: npm run build
+        run: pnpm run lint
       - name: unit test
-        run: npm run test:coverage
+        run: pnpm run test:coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:

@@ -15,7 +15,7 @@ nvm install 16
 
 Install pnpm and nodejs
 ```bash
-curl -fsSL https://get.pnpm.io/install.sh | sh -
+curl -fsSL https://get.pnpm.io/install.sh | bash -
 pnpm env use --global 16
 ```
 
@@ -37,19 +37,15 @@ Refer to the following documentations:
 * [nodejs](https://nodejs.org/en/download/package-manager/) >= 16, npm >= 8
 * [rmf_demos](https://github.com/open-rmf/rmf_demos)
 
-## Bootstrap
+## Install dependencies
 
-Before running the commands, make sure that rmf is sourced.
 ```bash
-git clone https://github.com/open-rmf/rmf-web
-cd rmf-web
-npm install -g npm@latest
-scripts/bootstrap.sh
+pnpm install
 ```
 
-You may also choose to bootstrap a subset of the packages, e.g.
+You may also install dependencies for only a subset of the packages
 ```bash
-scripts/bootstrap.sh rmf-dashboard
+pnpm install -w --filter <package>...
 ```
 
 ### PostgreSQL

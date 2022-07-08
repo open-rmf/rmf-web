@@ -11,32 +11,21 @@ env:
   CI: true
 jobs:
   unit-tests:
-    strategy:
-      matrix:
-        npm: ['latest']
-      fail-fast: false
-    name: Unit Tests (npm ${{ matrix.npm }})
+    name: Unit Tests
     runs-on: ubuntu-22.04
     container:
-      image: ros:foxy
+      image: ros:humble-ros-base
     defaults:
       run:
         shell: bash
         working-directory: packages/ros-translator
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-          cache: 'npm'
+      - name: setup python
+        run: apt update && apt install -y python3-venv python-is-python3
       - name: bootstrap
-        run: |
-          . /opt/ros/foxy/setup.bash
-          apt update && apt install -y python3-pip
-          pip3 install pipenv
-          npm config set unsafe-perm
-          npm install -g npm@${{ matrix.npm }}
-          scripts/bootstrap.sh ros-translator
-        working-directory: .
+        uses: ./.github/actions/bootstrap
+        with:
+          package: ros-translator
       - name: test
-        run: . /opt/ros/foxy/setup.bash && npm test
+        run: . /opt/ros/humble/setup.bash && pnpm test
