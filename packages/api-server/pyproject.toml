@@ -20,7 +20,7 @@ classifiers = [
 rmf_api_server = "api_server.__main__:main"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
 fastapi = "^0.78.0"
 aiofiles = "^0.8.0"
 uvicorn = {version = "^0.18.2", extras = ["standard"]}

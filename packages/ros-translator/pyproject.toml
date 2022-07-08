@@ -20,7 +20,7 @@ classifiers = [
 ros_translator = "ros_translator.__main__:main"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
 Jinja2 = "^3.1.2"
 
 [tool.poetry.dev-dependencies]

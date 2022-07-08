@@ -429,7 +429,7 @@ version = "0.0.1"
 description = "API server for RMF"
 category = "dev"
 optional = false
-python-versions = "^3.8"
+python-versions = "^3.10"
 develop = true
 
 [package.dependencies]
@@ -457,7 +457,7 @@ version = "0.0.1"
 description = "Translates ros interface definitions to other formats"
 category = "dev"
 optional = false
-python-versions = "^3.8"
+python-versions = "^3.10"
 develop = true
 
 [package.dependencies]
@@ -631,8 +631,8 @@ python-versions = "*"
 
 [metadata]
 lock-version = "1.1"
-python-versions = "~3.10"
-content-hash = "438fa7646e881ceda62eb9e9840c89762f9a25108d5d79b32df5d0d14b688162"
+python-versions = "^3.10"
+content-hash = "3718b1bf671c131aabcb3fa2333dca08ccdffb23bcf06f8a5f2e3b3a6e6e4e75"
 
 [metadata.files]
 aiofiles = [
