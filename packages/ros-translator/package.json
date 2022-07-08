@@ -5,7 +5,7 @@
   "description": "dummy package",
   "main": "index.js",
   "scripts": {
-    "test": "bash -c './test.sh'"
+    "test": "./test.sh"
   },
   "author": "",
   "license": "ISC",
