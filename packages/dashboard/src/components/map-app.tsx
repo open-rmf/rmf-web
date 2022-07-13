@@ -5,6 +5,7 @@ import React from 'react';
 import {
   affineImageBounds,
   ColorManager,
+  fromRmfCoords,
   getPlaces,
   LMap,
   loadAffineImage,
@@ -12,7 +13,7 @@ import {
   TrajectoryTimeControl,
 } from 'react-components';
 import { AttributionControl, ImageOverlay, LayersControl, Pane } from 'react-leaflet';
-import { Subscription } from 'rxjs';
+import { EMPTY, merge, Subscription, switchMap } from 'rxjs';
 import appConfig from '../app-config';
 import { ResourcesContext } from './app-contexts';
 import { AppEvents } from './app-events';
@@ -32,6 +33,10 @@ const TrajectoryUpdateInterval = 2000;
 // of the whole app when it changes.
 const SettingsKey = 'mapAppSettings';
 const colorManager = new ColorManager();
+
+function getRobotId(fleetName: string, robotName: string): string {
+  return `${fleetName}/${robotName}`;
+}
 
 interface MapSettings {
   trajectoryTime: number;
@@ -223,6 +228,7 @@ export const MapApp = styled(
 
     const [image, setImage] = React.useState<HTMLImageElement | null>(null);
     const [bounds, setBounds] = React.useState<L.LatLngBoundsLiteral | null>(null);
+    const [center, setCenter] = React.useState<L.LatLngTuple>([0, 0]);
     React.useEffect(() => {
       if (!currentLevel?.images[0]) {
         setImage(null);
@@ -230,9 +236,13 @@ export const MapApp = styled(
       }
       (async () => {
         const image = await loadAffineImage(currentLevel.images[0]);
-        setBounds(
-          affineImageBounds(currentLevel.images[0], image.naturalWidth, image.naturalHeight),
+        const bounds = affineImageBounds(
+          currentLevel.images[0],
+          image.naturalWidth,
+          image.naturalHeight,
         );
+        setBounds(bounds);
+        setCenter([(bounds[1][0] - bounds[0][0]) / 2, (bounds[1][1] - bounds[0][1]) / 2]);
         setImage(image);
       })();
     }, [currentLevel]);
@@ -248,7 +258,7 @@ export const MapApp = styled(
           const robotKey = fleetState.robots && Object.keys(fleetState.robots);
           const fleetName = fleetState.name ? fleetState.name : '';
           return robotKey?.map(async (r) => {
-            const robotId = `${fleetState.name}/${r}`;
+            const robotId = getRobotId(fleetName, r);
             if (robotId in robotsStore) return;
             robotsStore[robotId] = {
               fleet: fleetName,
@@ -277,6 +287,72 @@ export const MapApp = styled(
       })();
     }, [fleets, robotsStore, resourceManager, currentLevel]);
 
+    const { current: robotLocations } = React.useRef<Record<string, [number, number]>>({});
+    // updates the robot location
+    React.useEffect(() => {
+      if (!rmf) {
+        return;
+      }
+      const sub = rmf.fleetsObs
+        .pipe(
+          switchMap((fleets) =>
+            merge(...fleets.map((f) => (f.name ? rmf.getFleetStateObs(f.name) : EMPTY))),
+          ),
+        )
+        .subscribe((fleetState) => {
+          const fleetName = fleetState.name;
+          if (!fleetName || !fleetState.robots) {
+            console.warn('Map: Fail to update robot location (missing fleet name or robots)');
+            return;
+          }
+          Object.entries(fleetState.robots).forEach(([robotName, robotState]) => {
+            const robotId = getRobotId(fleetName, robotName);
+            if (!robotState.location) {
+              console.warn(`Map: Fail to update robot location for ${robotId} (missing location)`);
+              return;
+            }
+            robotLocations[robotId] = [robotState.location.x, robotState.location.y];
+          });
+        });
+      return () => sub.unsubscribe();
+    }, [rmf, robotLocations]);
+
+    // zoom to robot on select
+    React.useEffect(() => {
+      const sub = AppEvents.robotSelect.subscribe((data) => {
+        if (!data) {
+          return;
+        }
+        const [fleetName, robotName] = data;
+        const robotId = getRobotId(fleetName, robotName);
+        const robotLocation = robotLocations[robotId];
+        if (!robotLocation) {
+          console.warn(`Map: Failed to zoom to robot ${robotId} (robot location was not found)`);
+          return;
+        }
+        if (!bounds) {
+          console.warn(
+            `Map: Fail to zoom to robot ${robotId} (missing bounds, map was not loaded?)`,
+          );
+          return;
+        }
+        const mapCoords = fromRmfCoords(robotLocation);
+        setCenter((prev) => {
+          const newCenter = [mapCoords[1], mapCoords[0]] as L.LatLngTuple;
+          // react-leaftlet does not properly update state when the previous LatLng is the same,
+          // even when a new array is passed.
+          if (prev[0] === newCenter[0]) {
+            newCenter[0] += 0.00001;
+          }
+          if (prev[1] === newCenter[1]) {
+            newCenter[1] += 0.00001;
+          }
+          return newCenter;
+        });
+      });
+      return () => sub.unsubscribe();
+    }, [robotLocations, bounds]);
+
     const registeredLayersHandlers = React.useRef(false);
 
     const ready = buildingMap && currentLevel && bounds;
@@ -295,10 +371,11 @@ export const MapApp = styled(
         attributionControl={false}
         zoomDelta={0.5}
         zoomSnap={0.5}
-        center={[(bounds[1][0] - bounds[0][0]) / 2, (bounds[1][1] - bounds[0][1]) / 2]}
+        center={center}
         zoom={6}
         bounds={bounds}
         maxBounds={bounds}
+        animate
       >
         <AttributionControl position="bottomright" prefix="OSRC-SG" />
         <LayersControl
