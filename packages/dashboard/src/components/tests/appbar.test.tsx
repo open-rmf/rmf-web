@@ -40,31 +40,6 @@ describe('AppBar', () => {
     expect(root.getAllByRole('tablist').length > 0).toBeTruthy();
   });
 
-  test('shows help when help button is clicked', () => {
-    const root = render(
-      <Base>
-        <AppBar />
-      </Base>,
-    );
-    act(() => {
-      const elements = root.getAllByTestId('help-tooltip-tooltip');
-      for (let element in elements) {
-        userEvent.click(elements[element]);
-      }
-    });
-    expect(appController.showHelp).toBeCalledTimes(1);
-  });
-
-  test('renders tooltips when it is enabled', async () => {
-    const root = render(
-      <Base>
-        <AppBar />
-      </Base>,
-    );
-    userEvent.hover(root.getByTestId('help-tooltip-tooltip'));
-    expect(await root.findByText('Help tools and resources')).toBeTruthy();
-  });
-
   test('user button is shown when there is an authenticated user', () => {
     const profile: UserProfile = {
       user: { username: 'test', is_admin: false, roles: [] },

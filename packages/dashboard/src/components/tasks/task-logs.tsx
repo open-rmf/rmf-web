@@ -1,28 +1,12 @@
-import { Divider, Grid, Paper, PaperProps, styled, Typography, useTheme } from '@mui/material';
-import { TaskEventLog, TaskState, EventState, Status } from 'api-client';
+import { Box, Divider, Grid, Paper, Typography, useTheme } from '@mui/material';
+import { EventState, Status, TaskEventLog, TaskState } from 'api-client';
 import { format } from 'date-fns';
-const prefix = 'task-logs';
-const classes = {
-  root: `${prefix}-root`,
-};
 
 interface TaskLogProps {
   taskLog: TaskEventLog;
   taskState: TaskState;
   fetchTaskLogs?: () => Promise<never[] | undefined>;
 }
-
-const StyledPaper = styled((props: PaperProps) => <Paper variant="outlined" {...props} />)(
-  ({ theme }) => ({
-    [`&.${classes.root}`]: {
-      padding: theme.spacing(1),
-      width: '100%',
-      flex: '0 0 auto',
-      maxHeight: '100%',
-      overflow: 'auto',
-    },
-  }),
-);
 
 export function TaskLogs({ taskLog, taskState }: TaskLogProps) {
   const theme = useTheme();
@@ -64,7 +48,7 @@ export function TaskLogs({ taskLog, taskState }: TaskLogProps) {
   }
 
   return (
-    <StyledPaper className={classes.root}>
+    <Box>
       <Typography variant="h5" style={{ textAlign: 'center' }} gutterBottom>
         {taskLog.task_id}
       </Typography>
@@ -160,6 +144,6 @@ export function TaskLogs({ taskLog, taskState }: TaskLogProps) {
           </Typography>
         </div>
       )}
-    </StyledPaper>
+    </Box>
   );
 }

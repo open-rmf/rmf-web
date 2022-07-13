@@ -34,7 +34,7 @@ export class LogoResourceManager {
   getHeaderLogoPath = async (theme: ThemeMode): Promise<string> => {
     // FIXME: standardize a way to define different assets for different theme mode.
     const themeIcon =
-      theme === ThemeMode.Dark
+      theme === ThemeMode.RmfDark
         ? await this.getIconPath('darkThemeLogo')
         : await this.getIconPath('headerLogo');
     if (themeIcon) return themeIcon;

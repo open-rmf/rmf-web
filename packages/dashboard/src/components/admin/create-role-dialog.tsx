@@ -18,7 +18,7 @@ export function CreateRoleDialog({
   const [creating, setCreating] = React.useState(false);
   const [role, setRole] = React.useState('');
   const [roleError, setRoleError] = React.useState(false);
-  const { showErrorAlert } = React.useContext(AppControllerContext);
+  const { showAlert } = React.useContext(AppControllerContext);
 
   const validateForm = () => {
     let error = false;
@@ -42,7 +42,7 @@ export function CreateRoleDialog({
       setOpen && setOpen(false);
     } catch (e) {
       setCreating(false);
-      showErrorAlert(`Failed to create role: ${(e as Error).message}`);
+      showAlert('error', `Failed to create role: ${(e as Error).message}`);
     }
   };
 

@@ -11,6 +11,7 @@ describe('RobotTable', () => {
   it('shows all robots', () => {
     const robots = [makeRobot({ name: 'test_robot1' }), makeRobot({ name: 'test_robot2' })];
     const tableData: RobotTableData[] = robots.map((robot) => ({
+      fleet: 'test_fleet',
       name: robot.name,
     }));
     const root = render(<RobotTable robots={tableData} />);
@@ -20,45 +21,34 @@ describe('RobotTable', () => {
 
   it('smoke test for different robot status', () => {
     const robots = allStatuses.map((status) => makeRobot({ name: `${status}_robot`, status }));
-    render(<RobotTable robots={robots} />);
-  });
-
-  it('pagination is shown when pagination option is provided', () => {
-    const spy = jasmine.createSpy();
-    const root = render(
+    render(
       <RobotTable
-        robots={[makeRobot()]}
-        paginationOptions={{
-          count: 1,
-          page: 0,
-          rowsPerPage: 10,
-          rowsPerPageOptions: [10],
-          onPageChange: spy,
-        }}
+        robots={robots.map((robot) => ({
+          fleet: 'test_fleet',
+          name: robot.name,
+          status: robot.status,
+        }))}
       />,
     );
-    // NOTE: mui v5 is using the unicode char '–', different from '-'!!
-    expect(root.getByText('1–1 of 1')).toBeTruthy();
-  });
-
-  it('pagination is not shown when no pagination option is provided', () => {
-    const root = render(<RobotTable robots={[makeRobot()]} />);
-    // NOTE: mui v5 is using the unicode char '–', different from '-'!!
-    expect(root.queryByText('1–1 of 1')).toBeNull();
   });
 
   it('onRobotClick is called when row is clicked', () => {
     const onRobotClick = jasmine.createSpy();
     const root = render(
-      <RobotTable robots={[makeRobot({ name: 'test_robot' })]} onRobotClick={onRobotClick} />,
+      <RobotTable
+        robots={[{ fleet: 'test_fleet', name: 'test_robot' }]}
+        onRobotClick={onRobotClick}
+      />,
     );
     const robot = root.getByText('test_robot');
     userEvent.click(robot);
-    expect(onRobotClick).toHaveBeenCalledWith(jasmine.anything(), 'test_robot');
+    expect(onRobotClick).toHaveBeenCalled();
   });
 
   it('finish time is shown when it is available', () => {
-    const root = render(<RobotTable robots={[{ name: 'test_robot', estFinishTime: 1000 }]} />);
+    const root = render(
+      <RobotTable robots={[{ fleet: 'test_fleet', name: 'test_robot', estFinishTime: 1000 }]} />,
+    );
     expect(() => root.getByText(new Date(1000).toLocaleString())).not.toThrow();
   });
 });

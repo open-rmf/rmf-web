@@ -11,6 +11,7 @@ import {
   IngestorState,
   LiftHealth,
   LiftState,
+  TaskEventLog,
   TaskState,
 } from './openapi';
 
@@ -105,6 +106,10 @@ export class SioClient {
 
   subscribeTaskState(taskId: string, listener: Listener<TaskState>): Subscription {
     return this.subscribe<TaskState>(`/tasks/${taskId}/state`, listener);
+  }
+
+  subscribeTaskLogs(taskId: string, listener: Listener<TaskEventLog>): Subscription {
+    return this.subscribe<TaskEventLog>(`/tasks/${taskId}/log`, listener);
   }
 }
 

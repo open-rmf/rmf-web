@@ -14,7 +14,7 @@ export function affineImageBounds(
   image: AffineImage,
   width: number,
   height: number,
-): L.LatLngBoundsExpression {
+): L.LatLngBoundsLiteral {
   // FIXME: This assumes that the origin is at the top left.
   // RMF does not provide enough information to determine the origin. We need at least 2
   // points to draw a rectangle, but RMF only provides x, y, width. height. Width and height
