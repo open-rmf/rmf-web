@@ -59,7 +59,7 @@ export function PermissionsCard({
   const [loading, setLoading] = React.useState(false);
   const [permissions, setPermissions] = React.useState<Permission[]>([]);
   const [openDialog, setOpenDialog] = React.useState(false);
-  const { showErrorAlert } = React.useContext(AppControllerContext);
+  const { showAlert } = React.useContext(AppControllerContext);
 
   const refresh = React.useCallback(async () => {
     if (!getPermissions) return;
@@ -76,11 +76,11 @@ export function PermissionsCard({
       });
       setPermissions(newPermissions);
     } catch (e) {
-      showErrorAlert(`Failed to get permissions: ${(e as Error).message}`);
+      showAlert('error', `Failed to get permissions: ${(e as Error).message}`);
     } finally {
       setLoading(false);
     }
-  }, [getPermissions, showErrorAlert, safeAsync]);
+  }, [getPermissions, showAlert, safeAsync]);
 
   React.useEffect(() => {
     refresh();
@@ -124,7 +124,10 @@ export function PermissionsCard({
                             await removePermission(p);
                             refresh();
                           } catch (e) {
-                            showErrorAlert(`Failed to remove permission: ${(e as Error).message}`);
+                            showAlert(
+                              'error',
+                              `Failed to remove permission: ${(e as Error).message}`,
+                            );
                           }
                         })
                       }

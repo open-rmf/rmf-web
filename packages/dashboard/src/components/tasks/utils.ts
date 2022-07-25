@@ -2,7 +2,6 @@ import { TaskRequest } from 'api-client';
 import schema from 'api-client/dist/schema';
 import { ajv } from '../utils';
 
-/* istanbul ignore next */
 export function parseTasksFile(contents: string): TaskRequest[] {
   const obj = JSON.parse(contents) as unknown[];
   if (!Array.isArray(obj)) {

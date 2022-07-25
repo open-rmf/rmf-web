@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { DeliveryRequestForm } from './delivery-request-form';
@@ -65,12 +65,12 @@ describe('Form validation', () => {
   it('Dropoff place cannot be empty', () => {
     userEvent.type(root.getByPlaceholderText('Pick Drop Off Location'), '{selectall}{backspace}');
 
-    userEvent.click(root.getByText('Request'));
     expect(root.container.querySelector('.MuiFormHelperText-root.Mui-error')).toBeTruthy();
+    userEvent.click(root.getByText('Request'));
     expect(fakeDoDeliveryRequest).not.toHaveBeenCalled();
   });
 
-  it('shows error when a place with no dispenser is picked', () => {
+  it('shows error when a place with no dispenser is picked', async () => {
     userEvent.click(root.getByPlaceholderText('Choose Target Fleet'));
     userEvent.click(within(screen.getByRole('listbox')).getByText('fleetB'));
 
@@ -83,7 +83,14 @@ describe('Form validation', () => {
     userEvent.click(root.getByPlaceholderText('Pick Drop Off Location'));
     userEvent.click(within(screen.getByRole('listbox')).getByText('placeC'));
 
-    expect(root.container.querySelector('.MuiFormHelperText-root.Mui-error')).toBeTruthy();
+    expect(
+      await waitFor(() => {
+        if (!root.container.querySelector('.MuiFormHelperText-root.Mui-error')) {
+          throw '';
+        }
+        return true;
+      }),
+    ).toBe(true);
   });
 
   it('Pickup dispenser cannot be equal to dropoff dispenser', () => {

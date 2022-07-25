@@ -62,7 +62,7 @@ export function ManageRolesDialog({
   const [assignedRoles, setAssignedRoles] = React.useState<string[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
-  const { showErrorAlert } = React.useContext(AppControllerContext);
+  const { showAlert } = React.useContext(AppControllerContext);
 
   React.useEffect(() => {
     if (!open || !getAllRoles) return;
@@ -73,12 +73,12 @@ export function ManageRolesDialog({
         setAvailableRoles(allRoles.filter((r) => defaultAssignedRoles.indexOf(r) === -1).sort());
         setAssignedRoles(defaultAssignedRoles.sort());
       } catch (e) {
-        showErrorAlert(`Failed to get roles: ${(e as Error).message}`);
+        showAlert('error', `Failed to get roles: ${(e as Error).message}`);
       } finally {
         setLoading(false);
       }
     })();
-  }, [open, getAllRoles, defaultAssignedRoles, showErrorAlert, safeAsync]);
+  }, [open, getAllRoles, defaultAssignedRoles, showAlert, safeAsync]);
 
   const handleOkClick = () => {
     setSaving(true);
@@ -89,7 +89,7 @@ export function ManageRolesDialog({
         setOpen && setOpen(false);
       } catch (e) {
         setSaving(false);
-        showErrorAlert(`Failed to save roles: ${(e as Error).message}`);
+        showAlert('error', `Failed to save roles: ${(e as Error).message}`);
       }
     })();
   };

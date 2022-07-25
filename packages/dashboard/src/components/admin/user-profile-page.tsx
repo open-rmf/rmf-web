@@ -1,12 +1,10 @@
-/* istanbul ignore file */
-
 import { Typography } from '@mui/material';
 import { User } from 'api-client';
 import { AxiosError } from 'axios';
 import React from 'react';
 import { useAsync } from 'react-components';
 import { useRouteMatch } from 'react-router';
-import { RmfIngressContext } from '../rmf-app';
+import { RmfAppContext } from '../rmf-app';
 import { getApiErrorMessage } from '../utils';
 import { ManageRolesCard } from './manage-roles-dialog';
 import { adminPageClasses, AdminPageContainer } from './page-css';
@@ -16,7 +14,7 @@ export function UserProfilePage(): JSX.Element | null {
   const match = useRouteMatch<{ user: string }>();
   const userId: string | undefined = match.params.user;
   const safeAsync = useAsync();
-  const { adminApi } = React.useContext(RmfIngressContext) || {};
+  const { adminApi } = React.useContext(RmfAppContext) || {};
   const [user, setUser] = React.useState<User | undefined>(undefined);
   const [notFound, setNotFound] = React.useState(false);
 

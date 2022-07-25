@@ -90,7 +90,7 @@ export function RobotInfo({
         </Grid>
         <Grid item xs={6}>
           <Typography variant="h6" align="left">
-            <span>{!hasConcreteEndTime && 'Est. '}End Time</span>
+            <span>{!hasConcreteEndTime && 'Est. '}Finish Time</span>
           </Typography>
         </Grid>
         <Grid item xs={6}>

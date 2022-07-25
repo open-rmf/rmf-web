@@ -1,5 +1,3 @@
-/* istanbul ignore file */
-
 import { Authenticator, KeycloakAuthenticator, StubAuthenticator } from 'rmf-auth';
 import ResourceManager from './managers/resource-manager';
 import { BasePath } from './util/url';
