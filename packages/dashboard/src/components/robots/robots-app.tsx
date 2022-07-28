@@ -67,7 +67,7 @@ export const RobotsApp = createMicroApp('Robots', () => {
               ? Object.entries(fleet.robots).map<RobotTableData>(([name, robot]) => ({
                   fleet: fleet.name || '',
                   name,
-                  battery: robot.battery,
+                  battery: robot.battery && +robot.battery.toFixed(2),
                   status: robot.status,
                   estFinishTime:
                     robot.task_id && tasks[robot.task_id]

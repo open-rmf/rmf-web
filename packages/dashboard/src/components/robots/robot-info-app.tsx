@@ -43,21 +43,20 @@ export const RobotInfoApp = createMicroApp('Robot Info', () => {
 
   const taskProgress = React.useMemo(() => {
     if (
-      !robotState ||
-      !robotState.task_id ||
-      !robotState.unix_millis_time ||
       !taskState ||
+      !taskState.estimate_millis ||
       !taskState.unix_millis_start_time ||
       !taskState.unix_millis_finish_time
     ) {
       return undefined;
     }
     return Math.min(
-      (robotState.unix_millis_time - taskState.unix_millis_start_time) /
-        (taskState.unix_millis_finish_time - taskState.unix_millis_start_time),
+      1.0 -
+        taskState.estimate_millis /
+          (taskState.unix_millis_finish_time - taskState.unix_millis_start_time),
       1,
     );
-  }, [robotState, taskState]);
+  }, [taskState]);
 
   return (
     <CardContent sx={{ height: '100%', boxSizing: 'border-box' }}>
@@ -65,7 +64,7 @@ export const RobotInfoApp = createMicroApp('Robot Info', () => {
         <RobotInfo
           robotName={robotState.name || 'unknown'}
           assignedTask={robotState.task_id}
-          battery={robotState.battery}
+          battery={robotState.battery && +robotState.battery.toFixed(2)}
           estFinishTime={taskState?.unix_millis_finish_time}
           taskProgress={taskProgress}
           taskStatus={taskState?.status}
