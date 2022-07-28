@@ -42,12 +42,19 @@ export const TaskDetailsApp = createMicroApp('Task Details', () => {
       return;
     }
     try {
+      if (!rmf) {
+        throw new Error('tasks api not available');
+      }
+      await rmf.tasksApi?.postCancelTaskTasksCancelTaskPost({
+        type: 'cancel_task_request',
+        task_id: taskState.booking.id,
+      });
       appController.showAlert('success', 'Successfully cancelled task');
       AppEvents.taskSelect.next(null);
     } catch (e) {
       appController.showAlert('error', `Failed to cancel task: ${(e as Error).message}`);
     }
-  }, [appController, taskState]);
+  }, [appController, taskState, rmf]);
 
   return (
     <Grid container direction="column" wrap="nowrap" height="100%">
