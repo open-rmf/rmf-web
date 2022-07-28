@@ -18,7 +18,7 @@ export function CreateUserDialog({
   const [creating, setCreating] = React.useState(false);
   const [username, setUsername] = React.useState('');
   const [usernameError, setUsernameError] = React.useState(false);
-  const { showErrorAlert } = React.useContext(AppControllerContext);
+  const { showAlert } = React.useContext(AppControllerContext);
 
   const validateForm = () => {
     let error = false;
@@ -42,7 +42,7 @@ export function CreateUserDialog({
       setOpen && setOpen(false);
     } catch (e) {
       setCreating(false);
-      showErrorAlert(`Failed to create user: ${(e as Error).message}`);
+      showAlert('error', `Failed to create user: ${(e as Error).message}`);
     }
   };
 

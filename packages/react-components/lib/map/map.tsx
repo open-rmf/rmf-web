@@ -50,9 +50,9 @@ export interface LMapProps extends Omit<LMapProps_, 'crs'> {
 }
 
 export const LMap = React.forwardRef(
-  ({ children, ...otherProps }: LMapProps, ref: React.Ref<LMap_>) => {
+  ({ children, bounds, ...otherProps }: LMapProps, ref: React.Ref<LMap_>) => {
     const [labelsPortal, setLabelsPortal] = React.useState<SVGSVGElement | null>(null);
-    const viewBox = otherProps.bounds ? viewBoxFromLeafletBounds(otherProps.bounds) : undefined;
+    const viewBox = bounds ? viewBoxFromLeafletBounds(bounds) : undefined;
     const theme = useTheme();
     return (
       <LMap_
@@ -70,14 +70,14 @@ export const LMap = React.forwardRef(
         <EntityManagerProvider>
           <LabelsPortalContext.Provider value={labelsPortal}>
             {children}
-            {otherProps.bounds && (
+            {bounds && (
               <Pane name="label" style={{ zIndex: 1000 }}>
                 <SVGOverlay
                   ref={(current) => {
                     setLabelsPortal(current?.container || null);
                   }}
                   viewBox={viewBox}
-                  bounds={otherProps.bounds}
+                  bounds={bounds}
                 />
               </Pane>
             )}
