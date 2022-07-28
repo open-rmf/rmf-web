@@ -12,6 +12,7 @@ coverage = "~=5.5"
 api-server = {editable = true, path = "./packages/api-server"}
 requests = "~=2.25"
 asyncpg = "~=0.25.0"
+numpy = "~=1.23.1"
 websocket-client = "~=1.2.3"
 # reporting-server
 reporting-server = {editable = true, path = "./packages/reporting-server"}
