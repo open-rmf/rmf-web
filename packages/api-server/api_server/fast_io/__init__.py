@@ -148,14 +148,19 @@ class FastIO(FastAPI):
         self,
         *args,
         socketio_path: str = "/socket.io",
+        socketio_connect: Optional[
+            Callable[[str, dict, Optional[dict]], Coroutine[Any, Any, bool]]
+        ] = None,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.sio = socketio.AsyncServer(
-            async_mode="asgi", cors_allowed_origins="*", serializer=FastIOPacket
+            async_mode="asgi", cors_allowed_origins=[], serializer=FastIOPacket
         )
+        self.sio.on("connect", socketio_connect)
         self.sio.on("subscribe", self._on_subscribe)
         self.sio.on("unsubscribe", self._on_unsubscribe)
+        self.sio.on("disconnect", self._on_disconnect)
         self._sub_routes: List[SubRoute] = []
 
         self._sio_route = APIRoute(
@@ -194,13 +199,8 @@ The message must be of the form:
         )
         self.routes.append(self._sio_route)
 
-        self._sio_app = socketio.ASGIApp(
-            self.sio, super().__call__, socketio_path=socketio_path
-        )
-
-    async def __call__(self, scope, receive, send):
-        # Make the sio the "primary" app because fastapi does not support mounting a single path.
-        return await self._sio_app(scope, receive, send)
+        self._sio_app = socketio.ASGIApp(self.sio, socketio_path="")
+        self.mount(socketio_path, self._sio_app)
 
     def include_router(self, router: APIRouter, *args, prefix: str = "", **kwargs):
         super().include_router(router, *args, prefix=prefix, **kwargs)
@@ -303,6 +303,15 @@ The message must be of the form:
                 if sub is None:
                     raise SubscribeError("not subscribed to topic")
                 sub.dispose()
+                del session["_subscriptions"][sub_data.room]
                 await self.sio.emit("unsubscribe", {"success": True})
         except SubscribeError as e:
             await self.sio.emit("unsubscribe", {"success": False, "error": str(e)})
+
+    async def _on_disconnect(self, sid: str):
+        async with self.sio.session(sid) as session:
+            subs = session.get("_subscriptions")
+            if subs is None:
+                return
+            for s in subs.values():
+                s.dispose()

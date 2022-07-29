@@ -2,7 +2,6 @@ from typing import List, cast
 
 from fastapi import Depends, HTTPException
 from rx import operators as rxops
-from rx.subject.replaysubject import ReplaySubject
 
 from api_server.dependencies import sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
@@ -35,14 +34,13 @@ async def get_door_state(
 @router.sub("/{door_name}/state", response_model=DoorState)
 async def sub_door_state(req: SubscriptionRequest, door_name: str):
     user = sio_user(req)
-    door_state = await get_door_state(door_name, RmfRepository(user))
-    sub = ReplaySubject(1)
-    if door_name:
-        sub.on_next(door_state)
-    rmf_events.door_states.pipe(
+    obs = rmf_events.door_states.pipe(
         rxops.filter(lambda x: cast(DoorState, x).door_name == door_name)
-    ).subscribe(sub)
-    return sub
+    )
+    door_state = await get_door_state(door_name, RmfRepository(user))
+    if door_state:
+        return obs.pipe(rxops.start_with(door_state))
+    return obs
 
 
 @router.get("/{door_name}/health", response_model=DoorHealth)
@@ -61,14 +59,13 @@ async def get_door_health(
 @router.sub("/{door_name}/health", response_model=DoorHealth)
 async def sub_door_health(req: SubscriptionRequest, door_name: str):
     user = sio_user(req)
-    health = await get_door_health(door_name, RmfRepository(user))
-    sub = ReplaySubject(1)
-    if health:
-        sub.on_next(health)
-    rmf_events.door_health.pipe(
+    obs = rmf_events.door_health.pipe(
         rxops.filter(lambda x: cast(DoorHealth, x).id_ == door_name)
-    ).subscribe(sub)
-    return sub
+    )
+    health = await get_door_health(door_name, RmfRepository(user))
+    if health:
+        return obs.pipe(rxops.start_with(health))
+    return obs
 
 
 @router.post("/{door_name}/request")
@@ -76,4 +73,4 @@ def post_door_request(
     door_name: str,
     door_request: DoorRequest,
 ):
-    rmf_gateway.request_door(door_name, door_request.mode)
+    rmf_gateway().request_door(door_name, door_request.mode)

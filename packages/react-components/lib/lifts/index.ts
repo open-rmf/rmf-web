@@ -1,4 +1,4 @@
-export * from './lift-panel';
-export * from './lift-request-form-dialog';
-export * from './lift-table';
+export * from './lift-card';
+export * from './lift-controls';
+export * from './lift-request-dialog';
 export * from './lift-utils';

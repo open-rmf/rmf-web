@@ -2,12 +2,11 @@ import { Tab, TabProps, styled } from '@mui/material';
 import React from 'react';
 
 const StyledTab = styled((props: TabProps) => <Tab {...props} />)(({ theme }) => ({
-  color: 'rgba(255, 255, 255, 0.7)',
+  color: theme.palette.primary.contrastText,
+  opacity: 0.6,
   '&.Mui-selected': {
-    color: theme.palette.text.primary,
-  },
-  '&.Mui-focusVisible': {
-    backgroundColor: 'rgba(100, 95, 228, 0.32)',
+    color: theme.palette.primary.contrastText,
+    opacity: 1,
   },
 }));
 

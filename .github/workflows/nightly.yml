@@ -21,7 +21,7 @@ jobs:
   dashboard-e2e:
     strategy:
       matrix:
-        npm: ['latest', '8.5.3']
+        npm: ['latest']
       fail-fast: false
     needs: build-docker-images
     name: Dashboard e2e (npm ${{ matrix.npm }})
@@ -61,7 +61,7 @@ jobs:
   reporting-e2e:
     strategy:
       matrix:
-        npm: ['latest', '8.5.3']
+        npm: ['latest']
       fail-fast: false
     needs: build-docker-images
     name: Reporting e2e (npm ${{ matrix.npm }})

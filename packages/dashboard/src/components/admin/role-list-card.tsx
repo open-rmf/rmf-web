@@ -104,7 +104,7 @@ export function RoleListCard({
   const [openDialog, setOpenDialog] = React.useState(false);
   const [selectedDeleteRole, setSelectedDeleteRole] = React.useState<string | null>(null);
   const [deleting, setDeleting] = React.useState(false);
-  const { showErrorAlert } = React.useContext(AppControllerContext);
+  const { showAlert } = React.useContext(AppControllerContext);
 
   const refresh = React.useCallback(async () => {
     if (!getRoles) return;
@@ -113,11 +113,11 @@ export function RoleListCard({
       const newRoles = await safeAsync(getRoles());
       setRoles(newRoles.sort());
     } catch (e) {
-      showErrorAlert(`Failed to get roles: ${(e as Error).message}`);
+      showAlert('error', `Failed to get roles: ${(e as Error).message}`);
     } finally {
       setLoading(false);
     }
-  }, [getRoles, showErrorAlert, safeAsync]);
+  }, [getRoles, showAlert, safeAsync]);
 
   React.useEffect(() => {
     refresh();
@@ -198,7 +198,7 @@ export function RoleListCard({
               deleteRole && (await safeAsync(deleteRole(selectedDeleteRole)));
               refresh();
             } catch (e) {
-              showErrorAlert(`Failed to delete user: ${(e as Error).message}`);
+              showAlert('error', `Failed to delete user: ${(e as Error).message}`);
             } finally {
               setSelectedDeleteRole(null);
             }

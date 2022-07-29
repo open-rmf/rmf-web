@@ -44,12 +44,13 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "@fortawesome/react-fontawesome": "^0.1.11",
-    "@mui/material": "^5.0.4",
-    "@mui/styles": "^5.0.1",
-    "@storybook/addon-actions": "^6.3.7",
-    "@storybook/addon-essentials": "^6.3.7",
-    "@storybook/addon-links": "^6.3.7",
-    "@storybook/react": "^6.3.7",
+    "@mui/material": "^5.8.3",
+    "@mui/styles": "^5.8.3",
+    "@storybook/addon-actions": "^6.5.8",
+    "@storybook/addon-essentials": "^6.5.8",
+    "@storybook/addon-links": "^6.5.8",
+    "@storybook/preset-create-react-app": "^3.2.0",
+    "@storybook/react": "^6.5.8",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.2.3",
     "@testing-library/react-hooks": "^5.0.3",
@@ -77,11 +78,9 @@
     "react-components": "file:../react-components",
     "react-customizable-progressbar": "^1.0.3",
     "react-dom": "^17.0.2",
-    "react-hotkeys": "^2.0.0",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.3",
-    "reactour": "^1.18.0",
     "rmf-auth": "file:../rmf-auth",
     "rmf-models": "file:../rmf-models",
     "source-map-explorer": "^2.5.2",
@@ -102,6 +101,7 @@
     ]
   },
   "dependencies": {
-    "ajv": "^8.10.0"
+    "ajv": "^8.10.0",
+    "rxjs": "^7.5.5"
   }
 }

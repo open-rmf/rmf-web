@@ -1,6 +1,7 @@
+import { ThemeProvider } from '@mui/material/styles';
 import { render as render_, RenderOptions as RenderOptions_ } from '@testing-library/react';
 import React from 'react';
-import { rmfLight, ThemeProvider } from 'react-components';
+import { rmfLight } from 'react-components';
 import { MemoryRouter } from 'react-router';
 import { UserProfile, UserProfileContext } from 'rmf-auth';
 

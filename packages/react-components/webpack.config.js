@@ -10,7 +10,7 @@ const webpack = require('webpack');
 module.exports = (options) => {
   return {
     mode: options.env,
-    devtool: 'eval-source-map',
+    devtool: 'inline-source-map',
 
     /**
      * Options affecting the resolving of modules.

@@ -19,7 +19,7 @@ setup(
     install_requires=[
         "fastapi~=0.65.2",
         "aiofiles~=0.6.0",
-        "uvicorn[standard]~=0.13.4",
+        "uvicorn[standard]~=0.16.0",
         "python-socketio~=5.1",
         "rx~=3.1",
         "tortoise-orm~=0.17.4",
@@ -27,7 +27,7 @@ setup(
         "pydantic~=1.8",
     ],
     extras_require={
-        "postgres": ["asyncpg~=0.22.0"],
+        "postgres": ["asyncpg~=0.25.0"],
         "mysql": ["aiomysql~=0.0.21"],
         "maria": ["aiomysql~=0.0.21"],
     },

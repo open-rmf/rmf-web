@@ -2,7 +2,6 @@ from typing import List, cast
 
 from fastapi import Depends, HTTPException
 from rx import operators as rxops
-from rx.subject.replaysubject import ReplaySubject
 
 from api_server.dependencies import sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
@@ -35,14 +34,13 @@ async def get_lift_state(
 @router.sub("/{lift_name}/state", response_model=LiftState)
 async def sub_lift_state(req: SubscriptionRequest, lift_name: str):
     user = sio_user(req)
-    lift_state = await get_lift_state(lift_name, RmfRepository(user))
-    sub = ReplaySubject(1)
-    if lift_state:
-        sub.on_next(lift_state)
-    rmf_events.lift_states.pipe(
+    obs = rmf_events.lift_states.pipe(
         rxops.filter(lambda x: cast(LiftState, x).lift_name == lift_name)
-    ).subscribe(sub)
-    return sub
+    )
+    lift_state = await get_lift_state(lift_name, RmfRepository(user))
+    if lift_state:
+        return obs.pipe(rxops.start_with(lift_state))
+    return obs
 
 
 @router.get("/{lift_name}/health", response_model=LiftHealth)
@@ -61,14 +59,13 @@ async def get_lift_health(
 @router.sub("/{lift_name}/health", response_model=LiftHealth)
 async def sub_lift_health(req: SubscriptionRequest, lift_name: str):
     user = sio_user(req)
-    health = await get_lift_health(lift_name, RmfRepository(user))
-    sub = ReplaySubject(1)
-    if health:
-        sub.on_next(health)
-    rmf_events.lift_health.pipe(
+    obs = rmf_events.lift_health.pipe(
         rxops.filter(lambda x: cast(LiftHealth, x).id_ == lift_name)
-    ).subscribe(sub)
-    return sub
+    )
+    health = await get_lift_health(lift_name, RmfRepository(user))
+    if health:
+        return obs.pipe(rxops.start_with(health))
+    return obs
 
 
 @router.post("/{lift_name}/request")
@@ -76,7 +73,7 @@ def _post_lift_request(
     lift_name: str,
     lift_request: LiftRequest,
 ):
-    rmf_gateway.request_lift(
+    rmf_gateway().request_lift(
         lift_name,
         lift_request.destination,
         lift_request.request_type,

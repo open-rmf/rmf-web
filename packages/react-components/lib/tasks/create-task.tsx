@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { DateTimePicker, LocalizationProvider } from '@mui/lab';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import {
   Autocomplete,
   Button,
@@ -14,7 +12,12 @@ import {
   styled,
   TextField,
   useTheme,
+  ListItemIcon,
+  IconButton,
 } from '@mui/material';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import PlaceOutlined from '@mui/icons-material/PlaceOutlined';
+import DeleteIcon from '@mui/icons-material/Delete';
 import type { TaskRequest } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
@@ -53,7 +56,7 @@ function getShortDescription(taskRequest: TaskRequest): string {
       return `[Delivery] from [${taskRequest.description.pickup.place}] to [${taskRequest.description.dropoff.place}]`;
     }
     case 'patrol': {
-      return `[Loop] from [${taskRequest.description.places[0]}] to [${taskRequest.description.places[1]}]`;
+      return `[Patrol] [${taskRequest.description.places[0]}] to [${taskRequest.description.places[1]}]`;
     }
     default:
       return `[Unknown] type "${taskRequest.category}"`;
@@ -395,6 +398,41 @@ function DeliveryTaskForm({
   );
 }
 
+interface PlaceListProps {
+  places: string[];
+  onClick(places_index: number): void;
+}
+
+function PlaceList({ places, onClick }: PlaceListProps) {
+  const theme = useTheme();
+  return (
+    <List
+      dense
+      sx={{
+        bgcolor: 'background.paper',
+        marginLeft: theme.spacing(3),
+        marginRight: theme.spacing(3),
+      }}
+    >
+      {places.map((value, index) => (
+        <ListItem
+          key={`${value}-${index}`}
+          secondaryAction={
+            <IconButton edge="end" aria-label="delete" onClick={() => onClick(index)}>
+              <DeleteIcon />
+            </IconButton>
+          }
+        >
+          <ListItemIcon>
+            <PlaceOutlined />
+          </ListItemIcon>
+          <ListItemText primary={`Place Name:   ${value}`} />
+        </ListItem>
+      ))}
+    </List>
+  );
+}
+
 interface LoopTaskFormProps {
   taskDesc: any;
   loopWaypoints: string[];
@@ -406,51 +444,23 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
 
   return (
     <>
-      <Autocomplete
-        id="start-location"
-        freeSolo
-        fullWidth
-        options={loopWaypoints}
-        value={taskDesc.places[0]}
-        onChange={(_ev, newValue) =>
-          newValue !== null &&
-          onChange({
-            ...taskDesc,
-            places: [newValue, taskDesc.places[1]],
-          })
-        }
-        onBlur={(ev) =>
-          onChange({
-            ...taskDesc,
-            places: [(ev.target as HTMLInputElement).value, taskDesc.places[1]],
-          })
-        }
-        renderInput={(params) => <TextField {...params} label="Start Location" margin="normal" />}
-      />
       <Grid container wrap="nowrap">
         <Grid style={{ flex: '1 1 100%' }}>
           <Autocomplete
-            id="finish-location"
+            id="place-input"
             freeSolo
             fullWidth
             options={loopWaypoints}
-            value={taskDesc.places[1]}
             onChange={(_ev, newValue) =>
               newValue !== null &&
               onChange({
                 ...taskDesc,
-                places: [taskDesc.places[0], newValue],
+                places: taskDesc.places.concat(newValue).filter(
+                  (el: string) => el, // filter null and empty str in places array
+                ),
               })
             }
-            onBlur={(ev) =>
-              onChange({
-                ...taskDesc,
-                places: [taskDesc.places[0], (ev.target as HTMLInputElement).value],
-              })
-            }
-            renderInput={(params) => (
-              <TextField {...params} label="Finish Location" margin="normal" />
-            )}
+            renderInput={(params) => <TextField {...params} label="Place Name" margin="normal" />}
           />
         </Grid>
         <Grid
@@ -464,7 +474,7 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
             id="loops"
             label="Loops"
             margin="normal"
-            value={taskDesc.num_loops}
+            value={taskDesc.rounds}
             onChange={(_ev, val) => {
               onChange({
                 ...taskDesc,
@@ -474,6 +484,15 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
           />
         </Grid>
       </Grid>
+      <PlaceList
+        places={taskDesc && taskDesc.places ? taskDesc.places : []}
+        onClick={(places_index) =>
+          taskDesc.places.splice(places_index, 1) &&
+          onChange({
+            ...taskDesc,
+          })
+        }
+      />
     </>
   );
 }
@@ -514,7 +533,7 @@ function defaultCleanTask(): Record<string, any> {
 
 function defaultLoopsTask(): Record<string, any> {
   return {
-    places: ['', ''],
+    places: [],
     rounds: 1,
   };
 }
@@ -689,99 +708,97 @@ export function CreateTaskForm({
   const submitText = taskRequests.length > 1 ? 'Submit All' : 'Submit';
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <StyledConfirmationDialog
-        title="Create Task"
-        submitting={submitting}
-        confirmText={submitText}
-        maxWidth="md"
-        fullWidth={taskRequests.length > 1}
-        toolbar={<FormToolbar onSelectFileClick={handleSelectFileClick} />}
-        onSubmit={handleSubmit}
-        disableEnforceFocus
-        {...otherProps}
-      >
-        <Grid container direction="row" wrap="nowrap">
-          <Grid>
-            <TextField
-              select
-              id="task-type"
-              label="Task Category"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              value={taskRequest.category}
-              onChange={handleTaskTypeChange}
-            >
-              <MenuItem value="clean">Clean</MenuItem>
-              <MenuItem value="patrol">Loop</MenuItem>
-              <MenuItem value="delivery">Delivery</MenuItem>
-            </TextField>
-            <Grid container wrap="nowrap">
-              <Grid style={{ flexGrow: 1 }}>
-                <DateTimePicker
-                  inputFormat={'MM/dd/yyyy HH:mm'}
-                  value={
-                    taskRequest.unix_millis_earliest_start_time
-                      ? new Date(taskRequest.unix_millis_earliest_start_time)
-                      : new Date()
+    <StyledConfirmationDialog
+      title="Create Task"
+      submitting={submitting}
+      confirmText={submitText}
+      maxWidth="md"
+      fullWidth={taskRequests.length > 1}
+      toolbar={<FormToolbar onSelectFileClick={handleSelectFileClick} />}
+      onSubmit={handleSubmit}
+      disableEnforceFocus
+      {...otherProps}
+    >
+      <Grid container direction="row" wrap="nowrap">
+        <Grid>
+          <TextField
+            select
+            id="task-type"
+            label="Task Category"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={taskRequest.category}
+            onChange={handleTaskTypeChange}
+          >
+            <MenuItem value="clean">Clean</MenuItem>
+            <MenuItem value="patrol">Loop</MenuItem>
+            <MenuItem value="delivery">Delivery</MenuItem>
+          </TextField>
+          <Grid container wrap="nowrap">
+            <Grid style={{ flexGrow: 1 }}>
+              <DateTimePicker
+                inputFormat={'MM/dd/yyyy HH:mm'}
+                value={
+                  taskRequest.unix_millis_earliest_start_time
+                    ? new Date(taskRequest.unix_millis_earliest_start_time)
+                    : new Date()
+                }
+                onChange={(date) => {
+                  if (!date) {
+                    return;
                   }
-                  onChange={(date) => {
-                    if (!date) {
-                      return;
-                    }
-                    taskRequest.unix_millis_earliest_start_time = date.valueOf();
-                    updateTasks();
-                  }}
-                  label="Start Time"
-                  renderInput={(props) => <TextField {...props} />}
-                />
-              </Grid>
-              <Grid
-                style={{
-                  flex: '0 1 5em',
-                  marginLeft: theme.spacing(2),
-                  marginRight: theme.spacing(2),
+                  taskRequest.unix_millis_earliest_start_time = date.valueOf();
+                  updateTasks();
                 }}
-              >
-                <PositiveIntField
-                  id="priority"
-                  label="Priority"
-                  margin="normal"
-                  value={(taskRequest.priority as Record<string, any>)?.value || 0}
-                  onChange={(_ev, val) => {
-                    taskRequest.priority = { type: 'binary', value: val };
-                    updateTasks();
-                  }}
-                />
-              </Grid>
-            </Grid>
-            {renderTaskDescriptionForm()}
-          </Grid>
-          {taskTitles.length > 1 && (
-            <>
-              <Divider
-                orientation="vertical"
-                flexItem
-                style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
+                label="Start Time"
+                renderInput={(props) => <TextField {...props} />}
               />
-              <List dense className={classes.taskList} aria-label="Tasks List">
-                {taskTitles.map((title, idx) => (
-                  <ListItem
-                    key={idx}
-                    button
-                    onClick={() => setSelectedTaskIdx(idx)}
-                    className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
-                    role="listitem button"
-                  >
-                    <ListItemText primary={title} />
-                  </ListItem>
-                ))}
-              </List>
-            </>
-          )}
+            </Grid>
+            <Grid
+              style={{
+                flex: '0 1 5em',
+                marginLeft: theme.spacing(2),
+                marginRight: theme.spacing(2),
+              }}
+            >
+              <PositiveIntField
+                id="priority"
+                label="Priority"
+                margin="normal"
+                value={(taskRequest.priority as Record<string, any>)?.value || 0}
+                onChange={(_ev, val) => {
+                  taskRequest.priority = { type: 'binary', value: val };
+                  updateTasks();
+                }}
+              />
+            </Grid>
+          </Grid>
+          {renderTaskDescriptionForm()}
         </Grid>
-      </StyledConfirmationDialog>
-    </LocalizationProvider>
+        {taskTitles.length > 1 && (
+          <>
+            <Divider
+              orientation="vertical"
+              flexItem
+              style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
+            />
+            <List dense className={classes.taskList} aria-label="Tasks List">
+              {taskTitles.map((title, idx) => (
+                <ListItem
+                  key={idx}
+                  button
+                  onClick={() => setSelectedTaskIdx(idx)}
+                  className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
+                  role="listitem button"
+                >
+                  <ListItemText primary={title} />
+                </ListItem>
+              ))}
+            </List>
+          </>
+        )}
+      </Grid>
+    </StyledConfirmationDialog>
   );
 }

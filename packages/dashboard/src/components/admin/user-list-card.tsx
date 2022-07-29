@@ -69,7 +69,7 @@ export function UserListCard({
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [deleting, setDeleting] = React.useState(false);
   const [openCreateDialog, setOpenCreateDialog] = React.useState(false);
-  const { showErrorAlert } = React.useContext(AppControllerContext);
+  const { showAlert } = React.useContext(AppControllerContext);
 
   const refresh = React.useCallback(async () => {
     if (!searchUsers) return;
@@ -80,12 +80,12 @@ export function UserListCard({
         setHasMore(results.length > ItemsPerPage);
         setUsers(results.slice(0, ItemsPerPage));
       } catch (e) {
-        showErrorAlert(`Failed to get users: ${(e as Error).message}`);
+        showAlert('error', `Failed to get users: ${(e as Error).message}`);
       } finally {
         setSearching(false);
       }
     })();
-  }, [page, search, searchUsers, showErrorAlert, safeAsync]);
+  }, [page, search, searchUsers, showAlert, safeAsync]);
 
   React.useEffect(() => {
     refresh();
@@ -186,7 +186,7 @@ export function UserListCard({
               refresh();
             } catch (e) {
               setDeleting(false);
-              showErrorAlert(`Failed to delete user: ${(e as Error).message}`);
+              showAlert('error', `Failed to delete user: ${(e as Error).message}`);
             }
           }}
         >

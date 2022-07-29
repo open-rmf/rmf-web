@@ -22,7 +22,7 @@ export function AddPermissionDialog({
   const [actionError, setActionError] = React.useState(false);
   const [authzGrpError, setAuthzGrpError] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
-  const { showErrorAlert } = React.useContext(AppControllerContext);
+  const { showAlert } = React.useContext(AppControllerContext);
 
   const validateForm = () => {
     let error = false;
@@ -52,7 +52,7 @@ export function AddPermissionDialog({
       setOpen && setOpen(false);
     } catch (e) {
       setSaving(false);
-      showErrorAlert(`Failed to save permission: ${(e as Error).message}`);
+      showAlert('error', `Failed to save permission: ${(e as Error).message}`);
     }
   };
 

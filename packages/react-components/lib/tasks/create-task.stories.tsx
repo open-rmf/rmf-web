@@ -10,7 +10,7 @@ export default {
 } as Meta;
 
 function makeTasks(): TaskRequest[] {
-  const tasks = [];
+  const tasks: TaskRequest[] = [];
   for (let i = 0; i < 100; i++) {
     tasks.push(makeTaskRequest());
   }

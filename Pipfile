@@ -3,8 +3,6 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
-[packages]
-
 [dev-packages]
 black = "==21.12b0"
 isort = "~=5.8"
@@ -13,7 +11,8 @@ coverage = "~=5.5"
 # api-server
 api-server = {editable = true, path = "./packages/api-server"}
 requests = "~=2.25"
-asyncpg = "~=0.24.0"
+asyncpg = "~=0.25.0"
+numpy = "~=1.23.1"
 websocket-client = "~=1.2.3"
 # reporting-server
 reporting-server = {editable = true, path = "./packages/reporting-server"}

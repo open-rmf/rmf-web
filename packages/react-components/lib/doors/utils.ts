@@ -37,7 +37,7 @@ export function doorModeToString(doorMode?: number): string {
     case RmfDoorMode.MODE_MOVING:
       return 'MOVING';
     default:
-      return 'N/A';
+      return 'UNKNOWN';
   }
 }
 

@@ -8,7 +8,7 @@ class TestBuildingMapRoute(AppFixture):
         rmf_events.building_map.on_next(building_map)
 
         resp = try_until(
-            lambda: self.session.get("/building_map"), lambda x: x.status_code == 200
+            lambda: self.client.get("/building_map"), lambda x: x.status_code == 200
         )
         self.assertEqual(200, resp.status_code)
         result_map = resp.json()

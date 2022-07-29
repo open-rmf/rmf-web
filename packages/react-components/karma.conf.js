@@ -13,6 +13,14 @@ module.exports = (config) => {
   });
 
   config.set({
+    client: {
+      jasmine: {
+        random: false,
+        // Doesn't work due to https://github.com/karma-runner/karma-jasmine/issues/218
+        // stopSpecOnExpectationFailure: true,
+      },
+    },
+
     browserStack: {
       username: process.env.BROWSERSTACK_USERNAME,
       accessKey: process.env.BROWSERSTACK_ACCESS_KEY,
@@ -26,7 +34,7 @@ module.exports = (config) => {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'source-map-support'],
 
     // list of files / patterns to load in the browser
     files: [
