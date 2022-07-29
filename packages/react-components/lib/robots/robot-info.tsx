@@ -23,7 +23,12 @@ function calculateLastUpdateTime(
   setTimeOfLastUpdate: any,
 ): string {
   if (lastUpdateTime === updateTime) {
-    return ((Date.now() - timeOfLastUpdate) / 1000).toFixed(2).toString();
+    const lastUpdateMillis = Date.now() - timeOfLastUpdate;
+    if (lastUpdateMillis < 1000) {
+      return '< 1';
+    } else {
+      return (lastUpdateMillis / 1000.0).toFixed(1).toString();
+    }
   } else {
     setLastUpdateTime(updateTime);
     setTimeOfLastUpdate(Date.now());
