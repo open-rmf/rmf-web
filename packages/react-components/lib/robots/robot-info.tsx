@@ -19,8 +19,8 @@ function calculateLastUpdateTime(
   updateTime: number,
   lastUpdateTime: number,
   timeOfLastUpdate: number,
-  setLastUpdateTime: any,
-  setTimeOfLastUpdate: any,
+  setLastUpdateTime: React.Dispatch<React.SetStateAction<number>>,
+  setTimeOfLastUpdate: React.Dispatch<React.SetStateAction<number>>,
 ): string {
   if (lastUpdateTime === updateTime) {
     const lastUpdateMillis = Date.now() - timeOfLastUpdate;
