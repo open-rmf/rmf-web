@@ -91,7 +91,7 @@ export function RobotInfo({
           timeOfLastUpdate !== undefined &&
           setLastUpdateTime &&
           setTimeOfLastUpdate
-            ? `Last update - ${calculateLastUpdateTime(
+            ? `Last update from adapter - ${calculateLastUpdateTime(
                 updateTime,
                 lastUpdateTime,
                 timeOfLastUpdate,
