@@ -15,6 +15,9 @@ task_repo = TaskRepository(user)
 
 
 async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
+    if "type" not in msg:
+        logger.debug("Ignoring message, 'type' must include in msg field")
+        return
     payload_type: str = msg["type"]
     if not isinstance(payload_type, str):
         logger.error("error processing message, 'type' must be a string")
