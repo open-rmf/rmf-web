@@ -12,7 +12,6 @@ export const RobotInfoApp = createMicroApp('Robot Info', () => {
 
   const [robotState, setRobotState] = React.useState<RobotState | null>(null);
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
-
   React.useEffect(() => {
     if (!rmf) {
       return;

@@ -50,6 +50,7 @@ export function RobotInfo({
 }: RobotInfoProps): JSX.Element {
   const theme = useTheme();
   const hasConcreteEndTime = taskStatus && taskStatus in finishedStatus;
+
   return (
     <StyledDiv>
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
