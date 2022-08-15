@@ -15,27 +15,6 @@ function getTaskStatusDisplay(assignedTask?: string, taskStatus?: string) {
   }
 }
 
-function calculateLastUpdateTime(
-  updateTime: number,
-  lastUpdateTime: number,
-  timeOfLastUpdate: number,
-  setLastUpdateTime: React.Dispatch<React.SetStateAction<number>>,
-  setTimeOfLastUpdate: React.Dispatch<React.SetStateAction<number>>,
-): string {
-  if (lastUpdateTime === updateTime) {
-    const lastUpdateMillis = Date.now() - timeOfLastUpdate;
-    if (lastUpdateMillis < 1000) {
-      return '< 1';
-    } else {
-      return (lastUpdateMillis / 1000.0).toFixed(1).toString();
-    }
-  } else {
-    setLastUpdateTime(updateTime);
-    setTimeOfLastUpdate(Date.now());
-    return '< 1';
-  }
-}
-
 const classes = {
   button: 'robot-info-button',
 };
@@ -57,11 +36,6 @@ export interface RobotInfoProps {
   taskStatus?: TaskStatus;
   taskProgress?: number;
   estFinishTime?: number;
-  updateTime?: number;
-  timeOfLastUpdate?: number;
-  lastUpdateTime?: number;
-  setTimeOfLastUpdate?: React.Dispatch<React.SetStateAction<number>>;
-  setLastUpdateTime?: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const finishedStatus: TaskStatus[] = ['failed', 'completed', 'skipped', 'killed', 'canceled'];
@@ -73,11 +47,6 @@ export function RobotInfo({
   taskStatus,
   taskProgress,
   estFinishTime,
-  updateTime,
-  timeOfLastUpdate,
-  lastUpdateTime,
-  setTimeOfLastUpdate,
-  setLastUpdateTime,
 }: RobotInfoProps): JSX.Element {
   const theme = useTheme();
   const hasConcreteEndTime = taskStatus && taskStatus in finishedStatus;
@@ -85,21 +54,6 @@ export function RobotInfo({
     <StyledDiv>
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
         {robotName}
-        <Typography variant="caption" display="block">
-          {updateTime !== undefined &&
-          lastUpdateTime !== undefined &&
-          timeOfLastUpdate !== undefined &&
-          setLastUpdateTime &&
-          setTimeOfLastUpdate
-            ? `Last update from adapter - ${calculateLastUpdateTime(
-                updateTime,
-                lastUpdateTime,
-                timeOfLastUpdate,
-                setLastUpdateTime,
-                setTimeOfLastUpdate,
-              ).toLocaleString()}s ago`
-            : '-'}
-        </Typography>
       </Typography>
       <Divider />
       <div style={{ marginBottom: theme.spacing(1) }}></div>

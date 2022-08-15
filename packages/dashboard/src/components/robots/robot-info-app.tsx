@@ -12,15 +12,6 @@ export const RobotInfoApp = createMicroApp('Robot Info', () => {
 
   const [robotState, setRobotState] = React.useState<RobotState | null>(null);
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
-  const [lastUpdateTime, setLastUpdateTime] = React.useState<number>(0);
-  const [timeOfLastUpdate, setTimeOfLastUpdate] = React.useState<number>(0);
-
-  const PassiveUpdateRate = 3000;
-  const [triggerRender, setTriggerRender] = React.useState<number>(0);
-  React.useEffect(() => {
-    const interval = setInterval(() => setTriggerRender((prev) => prev + 1), PassiveUpdateRate);
-    return () => clearInterval(interval);
-  }, [lastUpdateTime]);
 
   React.useEffect(() => {
     if (!rmf) {
@@ -49,7 +40,7 @@ export const RobotInfoApp = createMicroApp('Robot Info', () => {
         setTaskState(taskState);
       });
     return () => sub.unsubscribe();
-  }, [rmf, triggerRender]);
+  }, [rmf]);
 
   const taskProgress = React.useMemo(() => {
     if (
@@ -78,11 +69,6 @@ export const RobotInfoApp = createMicroApp('Robot Info', () => {
           estFinishTime={taskState?.unix_millis_finish_time}
           taskProgress={taskProgress}
           taskStatus={taskState?.status}
-          updateTime={robotState.unix_millis_time}
-          timeOfLastUpdate={timeOfLastUpdate}
-          lastUpdateTime={lastUpdateTime}
-          setTimeOfLastUpdate={setTimeOfLastUpdate}
-          setLastUpdateTime={setLastUpdateTime}
         />
       ) : (
         <Box
