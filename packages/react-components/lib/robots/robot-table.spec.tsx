@@ -47,8 +47,13 @@ describe('RobotTable', () => {
 
   it('finish time is shown when it is available', () => {
     const root = render(
-      <RobotTable robots={[{ fleet: 'test_fleet', name: 'test_robot', estFinishTime: 1000 }]} />,
+      <RobotTable
+        robots={[
+          { fleet: 'test_fleet', name: 'test_robot', estFinishTime: 1000, lastUpdateTime: 900 },
+        ]}
+      />,
     );
     expect(() => root.getByText(new Date(1000).toLocaleString())).not.toThrow();
+    expect(() => root.getByText(new Date(900).toLocaleString())).not.toThrow();
   });
 });
