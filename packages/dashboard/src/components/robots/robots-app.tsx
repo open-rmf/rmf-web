@@ -73,6 +73,7 @@ export const RobotsApp = createMicroApp('Robots', () => {
                     robot.task_id && tasks[robot.task_id]
                       ? tasks[robot.task_id].unix_millis_finish_time
                       : undefined,
+                  lastUpdateTime: robot.unix_millis_time ? robot.unix_millis_time : undefined,
                 }))
               : [],
           };

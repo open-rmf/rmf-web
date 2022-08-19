@@ -20,6 +20,7 @@ export interface RobotTableData {
   status?: RobotStatus;
   battery?: number;
   estFinishTime?: number;
+  lastUpdateTime?: number;
 }
 
 interface RobotRowProps extends RobotTableData {
@@ -27,7 +28,7 @@ interface RobotRowProps extends RobotTableData {
 }
 
 const RobotRow = React.memo(
-  ({ fleet, name, status, battery = 0, estFinishTime, onClick }: RobotRowProps) => {
+  ({ fleet, name, status, battery = 0, estFinishTime, lastUpdateTime, onClick }: RobotRowProps) => {
     const theme = useTheme();
 
     const robotStatusClass: SxProps = React.useMemo(() => {
@@ -69,6 +70,7 @@ const RobotRow = React.memo(
         <TableCell>{name}</TableCell>
         <TableCell>{estFinishTime ? new Date(estFinishTime).toLocaleString() : '-'}</TableCell>
         <TableCell>{(battery * 100).toFixed(2)}%</TableCell>
+        <TableCell>{lastUpdateTime ? new Date(lastUpdateTime).toLocaleString() : '-'}</TableCell>
         <TableCell sx={robotStatusClass}>{status}</TableCell>
       </TableRow>
     );
@@ -98,6 +100,7 @@ export function RobotTable({ robots, onRobotClick, ...otherProps }: RobotTablePr
           <TableCell>Robot Name</TableCell>
           <TableCell>Est. Task Finish Time</TableCell>
           <TableCell>Battery</TableCell>
+          <TableCell>Last Updated</TableCell>
           <TableCell>Status</TableCell>
         </TableRow>
       </TableHead>

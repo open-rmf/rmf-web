@@ -39,6 +39,7 @@ for (let i = 0; i < 12; ++i) {
     battery: Math.min(i / 10, 1),
     status: allStatuses[i % allStatuses.length],
     estFinishTime: Date.now() + i * 1000000,
+    lastUpdateTime: Date.now(),
   });
 }
 
