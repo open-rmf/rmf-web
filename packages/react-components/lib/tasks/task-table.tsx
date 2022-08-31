@@ -112,6 +112,7 @@ function TaskRow({ task, onClick }: TaskRowProps) {
             : 'unknown'}
         </TableCell>
         <TableCell>{task.booking.id}</TableCell>
+        <TableCell>{task.category}</TableCell>
         <TableCell>{task.assigned_to ? task.assigned_to.name : 'unknown'}</TableCell>
         <TableCell>
           {task.unix_millis_start_time
@@ -145,6 +146,7 @@ export function TaskTable({ tasks, onTaskClick }: TaskTableProps): JSX.Element {
         <TableRow>
           <TableCell>Date</TableCell>
           <TableCell>Task Id</TableCell>
+          <TableCell>Category</TableCell>
           <TableCell>Assignee</TableCell>
           <TableCell>Start Time</TableCell>
           <TableCell>End Time</TableCell>

@@ -5,6 +5,7 @@ import { Layout } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import { WindowManagerStateContext } from './context';
 import { WindowToolbar } from './window-toolbar';
+
 export interface WindowProps extends PaperProps {
   key: string;
   title: string;

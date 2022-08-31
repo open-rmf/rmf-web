@@ -460,14 +460,6 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
                 ),
               })
             }
-            onBlur={(ev) =>
-              onChange({
-                ...taskDesc,
-                places: taskDesc.places.concat((ev.target as HTMLInputElement).value).filter(
-                  (el: string) => el, // filter null and empty str in places array
-                ),
-              })
-            }
             renderInput={(params) => <TextField {...params} label="Place Name" margin="normal" />}
           />
         </Grid>
@@ -494,7 +486,12 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
       </Grid>
       <PlaceList
         places={taskDesc && taskDesc.places ? taskDesc.places : []}
-        onClick={(places_index) => taskDesc.places.splice(places_index, 1)}
+        onClick={(places_index) =>
+          taskDesc.places.splice(places_index, 1) &&
+          onChange({
+            ...taskDesc,
+          })
+        }
       />
     </>
   );

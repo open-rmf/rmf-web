@@ -16,8 +16,8 @@ describe('RobotInfo', () => {
     );
     expect(() => root.getByText('test_robot')).not.toThrow();
     expect(() => root.getByText('test_task')).not.toThrow();
-    expect(() => root.getByText('50%')).not.toThrow(); // task progress
-    expect(() => root.getByText('60%')).not.toThrow(); // battery
+    expect(() => root.getByText('50.00%')).not.toThrow(); // battery
+    expect(() => root.getByText('60%')).not.toThrow(); // task progress
     expect(() => root.getByText(/.*underway/)).not.toThrow();
     expect(() => root.getByText(new Date(0).toLocaleString())).not.toThrow();
   });
