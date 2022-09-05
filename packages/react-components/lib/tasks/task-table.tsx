@@ -6,6 +6,7 @@ import {
   TableHead,
   TableProps,
   TableRow,
+  Button,
 } from '@mui/material';
 import { Status, TaskState } from 'api-client';
 import clsx from 'clsx';
@@ -137,14 +138,32 @@ export interface TaskTableProps {
    */
   tasks: TaskState[];
   onTaskClick?(ev: React.MouseEvent<HTMLDivElement>, task: TaskState): void;
+
+  /**
+   * Handles the event when clicking the date title and reverts the chronological order of the list.
+   * @param ev Mouse event click.
+   */
+  onDateTitleClick?(ev: React.MouseEvent<HTMLButtonElement>): void;
 }
 
-export function TaskTable({ tasks, onTaskClick }: TaskTableProps): JSX.Element {
+export function TaskTable({ tasks, onTaskClick, onDateTitleClick }: TaskTableProps): JSX.Element {
   return (
     <StyledTable stickyHeader size="small">
       <TableHead>
         <TableRow>
-          <TableCell>Date</TableCell>
+          <TableCell>
+            <Button
+              variant="text"
+              onClick={(ev) => onDateTitleClick && onDateTitleClick(ev)}
+              sx={{
+                color: 'inherit',
+                textTransform: 'none',
+              }}
+            >
+              Date
+            </Button>
+          </TableCell>
+
           <TableCell>Task Id</TableCell>
           <TableCell>Category</TableCell>
           <TableCell>Assignee</TableCell>
