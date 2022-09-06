@@ -1,4 +1,5 @@
 import {
+  Button,
   styled,
   Table,
   TableBody,
@@ -6,7 +7,6 @@ import {
   TableHead,
   TableProps,
   TableRow,
-  Button,
 } from '@mui/material';
 import { ArrowCircleDown, ArrowCircleUp } from '@mui/icons-material';
 import { Status, TaskState } from 'api-client';
