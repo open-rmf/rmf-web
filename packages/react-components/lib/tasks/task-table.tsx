@@ -8,6 +8,7 @@ import {
   TableRow,
   Button,
 } from '@mui/material';
+import { ArrowCircleDown, ArrowCircleUp } from '@mui/icons-material';
 import { Status, TaskState } from 'api-client';
 import clsx from 'clsx';
 import React from 'react';
@@ -144,23 +145,39 @@ export interface TaskTableProps {
    * @param ev Mouse event click.
    */
   onDateTitleClick?(ev: React.MouseEvent<HTMLButtonElement>): void;
+
+  /**
+   * State: Tasks table sorting by date in descending order.
+   */
+  chronologicalOrder: boolean;
 }
 
-export function TaskTable({ tasks, onTaskClick, onDateTitleClick }: TaskTableProps): JSX.Element {
+export function TaskTable({
+  tasks,
+  onTaskClick,
+  onDateTitleClick,
+  chronologicalOrder,
+}: TaskTableProps): JSX.Element {
   return (
     <StyledTable stickyHeader size="small">
       <TableHead>
         <TableRow>
-          <TableCell>
+          <TableCell
+            sx={{
+              padding: 0,
+            }}
+          >
             <Button
               variant="text"
               onClick={(ev) => onDateTitleClick && onDateTitleClick(ev)}
               sx={{
                 color: 'inherit',
                 textTransform: 'none',
+                width: '100%',
               }}
             >
-              Date
+              Date &nbsp;
+              {chronologicalOrder ? <ArrowCircleDown /> : <ArrowCircleUp />}
             </Button>
           </TableCell>
 

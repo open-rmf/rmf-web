@@ -179,6 +179,7 @@ export const TasksApp = React.memo(
                   tasks={Object.values(taskStates)}
                   onTaskClick={(_ev, task) => AppEvents.taskSelect.next(task)}
                   onDateTitleClick={(_ev) => setChronologicalOrder((prev) => !prev)}
+                  chronologicalOrder={chronologicalOrder}
                 />
               </TableContainer>
             </Grid>
