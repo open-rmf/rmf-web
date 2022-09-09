@@ -10,4 +10,4 @@ if [ ! -f .venv/pyvenv.cfg ]; then
   .venv/bin/pip install 'pipenv==2022.9.8'
 fi
 
-.venv/bin/pipenv install -d
+scripts/pipenv install -d
