@@ -35,7 +35,7 @@ jobs:
           . /rmf_demos_ws/install/setup.bash
           pnpm run lint
           pnpm run test:cov
-          poetry run python -m coverage xml
+          ../../.venv/pipenv run python -m coverage xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:

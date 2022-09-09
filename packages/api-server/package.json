@@ -4,16 +4,17 @@
   "description": "dummy package",
   "private": true,
   "scripts": {
-    "prepack": "poetry build -f wheel",
-    "restart": "RMF_API_SERVER_CONFIG=sqlite_local_config.py poetry run python -m api_server",
-    "start": "rm -rf run && mkdir -p run && RMF_API_SERVER_CONFIG=sqlite_local_config.py poetry run python -m api_server",
-    "start:psql": "rm -rf run && mkdir -p run && RMF_API_SERVER_CONFIG=psql_local_config.py poetry run python -m api_server",
-    "test": "poetry run python scripts/test.py",
-    "test:cov": "poetry run python -m coverage run scripts/test.py",
-    "test:report": "poetry run python -m coverage html && xdg-open htmlcov/index.html",
-    "lint": "poetry run pyright && poetry run pylint api_server --ignore=ros_pydantic,rmf_api"
+    "prepack": "../../.venv/bin/pipenv run python setup.py bdist_wheel",
+    "restart": "RMF_API_SERVER_CONFIG=sqlite_local_config.py ../../.venv/bin/pipenv run python -m api_server",
+    "start": "rm -rf run && mkdir -p run && RMF_API_SERVER_CONFIG=sqlite_local_config.py ../../.venv/bin/pipenv run python -m api_server",
+    "start:psql": "rm -rf run && mkdir -p run && RMF_API_SERVER_CONFIG=psql_local_config.py ../../.venv/bin/pipenv run python -m api_server",
+    "test": "../../.venv/bin/pipenv run python scripts/test.py",
+    "test:cov": "../../.venv/bin/pipenv run python -m coverage run scripts/test.py",
+    "test:report": "../../.venv/bin/pipenv run python -m coverage html && xdg-open htmlcov/index.html",
+    "lint": "../../.venv/bin/pipenv run pyright && ../../.venv/bin/pipenv run pylint api_server --ignore=ros_pydantic,rmf_api",
+    "generate-models": "../../.venv/bin/pipenv run generate-models.sh"
   },
   "devDependencies": {
-    "poetry-install": "workspace:*"
+    "pipenv-install": "workspace:*"
   }
 }

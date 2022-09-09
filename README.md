@@ -19,11 +19,6 @@ curl -fsSL https://get.pnpm.io/install.sh | bash -
 pnpm env use --global 16
 ```
 
-Install poetry.
-```bash
-curl -sSL https://install.python-poetry.org | python3 -
-```
-
 ### Install rmf
 
 Refer to the following documentation:
