@@ -2,6 +2,7 @@ import { DoorsApp } from './doors-app';
 import { LiftsApp } from './lifts-app';
 import { MapApp } from './map-app';
 import { RobotInfoApp } from './robots/robot-info-app';
+import { RobotIssuesApp } from './robots/robot-issues-app';
 import { RobotsApp } from './robots/robots-app';
 import { TaskDetailsApp } from './tasks/task-details-app';
 import { TaskLogsApp } from './tasks/task-logs-app';
@@ -16,4 +17,5 @@ export const AppRegistry = {
   'Task Logs': TaskLogsApp,
   Robots: RobotsApp,
   'Robot Info': RobotInfoApp,
+  'Robot Issues': RobotIssuesApp,
 };
