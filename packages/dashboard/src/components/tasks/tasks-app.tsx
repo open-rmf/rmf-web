@@ -65,6 +65,11 @@ export const TasksApp = React.memo(
       const [page, setPage] = React.useState(0);
       const [hasMore, setHasMore] = React.useState(true);
 
+      /**
+       * This state, if toggled, reverts the chronological order of the tasks listed in the tasks table.
+       */
+      const [chronologicalOrder, setChronologicalOrder] = React.useState<boolean>(true);
+
       const [placeNames, setPlaceNames] = React.useState<string[]>([]);
       React.useEffect(() => {
         if (!rmf) {
@@ -99,7 +104,7 @@ export const TasksApp = React.memo(
             undefined,
             11,
             page * 10,
-            '-unix_millis_start_time',
+            chronologicalOrder ? '-unix_millis_start_time' : 'unix_millis_start_time',
             undefined,
           );
           const results = resp.data as TaskState[];
@@ -123,7 +128,7 @@ export const TasksApp = React.memo(
           );
         })();
         return () => subs.forEach((s) => s.unsubscribe());
-      }, [rmf, page, forceRefresh]);
+      }, [rmf, page, forceRefresh, chronologicalOrder]);
 
       const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
         async (taskRequests) => {
@@ -173,6 +178,8 @@ export const TasksApp = React.memo(
                 <TaskTable
                   tasks={Object.values(taskStates)}
                   onTaskClick={(_ev, task) => AppEvents.taskSelect.next(task)}
+                  onDateTitleClick={(_ev) => setChronologicalOrder((prev) => !prev)}
+                  chronologicalOrder={chronologicalOrder}
                 />
               </TableContainer>
             </Grid>
