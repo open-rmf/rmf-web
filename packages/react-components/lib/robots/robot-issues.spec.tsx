@@ -11,12 +11,9 @@ describe('RobotIssues', () => {
     expect(() => root.getByText('first_value')).not.toThrow();
     expect(() => root.getByText('second_field')).not.toThrow();
     expect(() => root.getByText('second_value')).not.toThrow();
-    expect(() => root.getByText('third_field')).not.toThrow();
-    expect(() => root.getByText('third_value')).not.toThrow();
     expect(() => root.getByText('array category')).not.toThrow();
     expect(() => root.getByText('first_item')).not.toThrow();
     expect(() => root.getByText('second_item')).not.toThrow();
-    expect(() => root.getByText('third_item')).not.toThrow();
     expect(() => root.getByText('string category')).not.toThrow();
     expect(() => root.getByText('string value')).not.toThrow();
   });
