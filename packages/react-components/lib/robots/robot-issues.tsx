@@ -1,13 +1,5 @@
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Typography,
-  useTheme,
-} from '@mui/material';
-import BugReportIcon from '@mui/icons-material/BugReport';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from '@mui/material';
+import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import type { RobotState } from 'api-client';
 import React from 'react';
@@ -19,7 +11,6 @@ export interface RobotIssuesProps {
 }
 
 export function RobotIssues({ robotIssues }: RobotIssuesProps): JSX.Element {
-  const theme = useTheme();
   const robotIssuesArray = robotIssues !== undefined ? robotIssues : [];
   if (robotIssuesArray.length === 0) {
     return (
@@ -33,13 +24,13 @@ export function RobotIssues({ robotIssues }: RobotIssuesProps): JSX.Element {
   return (
     <div>
       {robotIssuesArray.map((issue, i) => (
-        <Accordion>
+        <Accordion key={i}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />} id={String(i)}>
-            <BugReportIcon />
+            <ErrorOutlineOutlinedIcon style={{ minWidth: '40px' }} />
             {issue.category}
           </AccordionSummary>
           <AccordionDetails>
-            <Typography>{JSON.stringify(issue.detail)}</Typography>
+            <Typography variant="subtitle2">{JSON.stringify(issue.detail, null, 2)}</Typography>
           </AccordionDetails>
         </Accordion>
       ))}
