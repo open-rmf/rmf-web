@@ -1,6 +1,7 @@
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { Grid, IconButton, TableContainer, TablePagination, Toolbar, Tooltip } from '@mui/material';
+import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import { TaskRequest, TaskState } from 'api-client';
 import React from 'react';
 import {
@@ -16,6 +17,37 @@ import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
 import { parseTasksFile } from './utils';
+
+const columns: GridColDef[] = [
+  {
+    field: 'id',
+    headerName: 'ID',
+    width: 90,
+    valueGetter: (params: GridValueGetterParams) => params.row.booking.id,
+  },
+  {
+    field: 'category',
+    headerName: 'Category',
+    width: 150,
+    editable: false,
+  },
+  {
+    field: 'name',
+    headerName: 'Assignee',
+    width: 150,
+    editable: true,
+    valueGetter: (params: GridValueGetterParams) =>
+      params.row.assigned_to ? params.row.assigned_to.name : 'unknown',
+  },
+  {
+    field: 'status',
+    headerName: 'State',
+    width: 150,
+    editable: true,
+    valueGetter: (params: GridValueGetterParams) =>
+      params.row.status ? params.row.status : 'unknown',
+  },
+];
 
 export const TasksApp = React.memo(
   React.forwardRef(
@@ -62,8 +94,16 @@ export const TasksApp = React.memo(
         });
       };
 
-      const [page, setPage] = React.useState(0);
+      const [page, setPage] = React.useState(1);
       const [hasMore, setHasMore] = React.useState(true);
+
+      const [pageState, setPageState] = React.useState({
+        isLoading: false,
+        data: [] as TaskState[],
+        total: 0,
+        page: 1,
+        pageSize: 10,
+      });
 
       /**
        * This state, if toggled, reverts the chronological order of the tasks listed in the tasks table.
@@ -102,7 +142,7 @@ export const TasksApp = React.memo(
             undefined,
             undefined,
             undefined,
-            11,
+            undefined,
             page * 10,
             chronologicalOrder ? '-unix_millis_start_time' : 'unix_millis_start_time',
             undefined,
@@ -110,6 +150,13 @@ export const TasksApp = React.memo(
           const results = resp.data as TaskState[];
           setHasMore(results.length > 10);
           const newTasks = results.slice(0, 10);
+
+          setPageState((old) => ({
+            ...old,
+            isLoading: false,
+            data: results,
+            total: results.length,
+          }));
 
           setTaskStates(
             newTasks.reduce<Record<string, TaskState>>((acc, task) => {
@@ -128,7 +175,7 @@ export const TasksApp = React.memo(
           );
         })();
         return () => subs.forEach((s) => s.unsubscribe());
-      }, [rmf, page, forceRefresh, chronologicalOrder]);
+      }, [rmf, page, forceRefresh, chronologicalOrder, pageState.page, pageState.pageSize]);
 
       const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
         async (taskRequests) => {
@@ -175,15 +222,44 @@ export const TasksApp = React.memo(
           <Grid container wrap="nowrap" direction="column" height="100%">
             <Grid item flexGrow={1}>
               <TableContainer>
-                <TaskTable
+                <div style={{ height: '100%', width: '100%' }}>
+                  <DataGrid
+                    autoHeight
+                    getRowId={(r) => r.booking.id}
+                    rows={pageState.data}
+                    rowCount={pageState.total}
+                    loading={pageState.isLoading}
+                    rowsPerPageOptions={[10, 30, 50, 70, 100]}
+                    pagination
+                    page={pageState.page - 1}
+                    pageSize={pageState.pageSize}
+                    // paginationMode="server"
+                    onPageChange={(newPage) => {
+                      setPageState((old) => ({ ...old, page: newPage + 1 }));
+                    }}
+                    onPageSizeChange={(newPageSize) =>
+                      setPageState((old) => ({ ...old, pageSize: newPageSize }))
+                    }
+                    columns={columns}
+                  />
+                </div>
+                {/* <TaskTableDataGrid
                   tasks={Object.values(taskStates)}
                   onTaskClick={(_ev, task) => AppEvents.taskSelect.next(task)}
                   onDateTitleClick={(_ev) => setChronologicalOrder((prev) => !prev)}
                   chronologicalOrder={chronologicalOrder}
-                />
+                  addMoreRows={setPage}
+                  page={page}
+                /> */}
+                {/* <TaskTable
+                  tasks={Object.values(taskStates)}
+                  onTaskClick={(_ev, task) => AppEvents.taskSelect.next(task)}
+                  onDateTitleClick={(_ev) => setChronologicalOrder((prev) => !prev)}
+                  chronologicalOrder={chronologicalOrder}
+                /> */}
               </TableContainer>
             </Grid>
-            <Grid item>
+            {/* <Grid item>
               <TablePagination
                 component="div"
                 page={page}
@@ -193,7 +269,7 @@ export const TasksApp = React.memo(
                 onPageChange={(_ev, page) => setPage(page)}
                 style={{ flex: '0 0 auto' }}
               />
-            </Grid>
+            </Grid> */}
           </Grid>
           {openCreateTaskForm && (
             <CreateTaskForm
