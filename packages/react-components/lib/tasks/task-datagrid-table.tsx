@@ -5,9 +5,48 @@ import {
   GridValueGetterParams,
   MuiEvent,
   GridRowParams,
+  GridCellParams,
 } from '@mui/x-data-grid';
-import { TaskState } from 'api-client';
+import { styled } from '@mui/material';
+import { TaskState, Status } from 'api-client';
 import React from 'react';
+
+const classes = {
+  taskActiveCell: 'MuiDataGrid-cell-active-cell',
+  taskCancelledCell: 'MuiDataGrid-cell-cancelled-cell',
+  taskCompletedCell: 'MuiDataGrid-cell-completed-cell',
+  taskFailedCell: 'MuiDataGrid-cell-failed-cell',
+  taskPendingCell: 'MuiDataGrid-cell-pending-cell',
+  taskQueuedCell: 'MuiDataGrid-cell-queued-cell',
+  taskUnknownCell: 'MuiDataGrid-cell-unknown-cell',
+};
+
+const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
+  [`& .${classes.taskActiveCell}`]: {
+    backgroundColor: theme.palette.success.light,
+    color: theme.palette.getContrastText(theme.palette.success.light),
+  },
+  [`& .${classes.taskCancelledCell}`]: {
+    backgroundColor: theme.palette.grey[500],
+    color: theme.palette.getContrastText(theme.palette.grey[500]),
+  },
+  [`& .${classes.taskCompletedCell}`]: {
+    backgroundColor: theme.palette.info.light,
+    color: theme.palette.getContrastText(theme.palette.info.light),
+  },
+  [`& .${classes.taskFailedCell}`]: {
+    backgroundColor: theme.palette.error.main,
+    color: theme.palette.getContrastText(theme.palette.error.main),
+  },
+  [`& .${classes.taskQueuedCell}`]: {
+    backgroundColor: theme.palette.grey[300],
+    color: theme.palette.getContrastText(theme.palette.grey[300]),
+  },
+  [`& .${classes.taskUnknownCell}`]: {
+    backgroundColor: theme.palette.warning.main,
+    color: theme.palette.getContrastText(theme.palette.warning.main),
+  },
+}));
 
 export interface DefaultTableDataGridProps {
   isLoading: boolean;
@@ -46,6 +85,26 @@ const columns: GridColDef[] = [
       params.row.assigned_to ? params.row.assigned_to.name : 'unknown',
   },
   {
+    field: 'unix_millis_start_time',
+    headerName: 'Start Time',
+    width: 150,
+    editable: false,
+    valueGetter: (params: GridValueGetterParams) =>
+      params.row.unix_millis_start_time
+        ? new Date(params.row.unix_millis_start_time).toLocaleDateString()
+        : 'unknown',
+  },
+  {
+    field: 'unix_millis_finish_time',
+    headerName: 'End Time',
+    width: 150,
+    editable: false,
+    valueGetter: (params: GridValueGetterParams) =>
+      params.row.unix_millis_finish_time
+        ? new Date(params.row.unix_millis_finish_time).toLocaleTimeString()
+        : '-',
+  },
+  {
     field: 'status',
     headerName: 'State',
     width: 150,
@@ -72,7 +131,7 @@ export function TaskDataGridTable({
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
-      <DataGrid
+      <StyledDataGrid
         autoHeight
         getRowId={(r) => r.booking.id}
         rows={tasks.data}
@@ -86,6 +145,25 @@ export function TaskDataGridTable({
         onPageSizeChange={onPageSizeChange}
         columns={columns}
         onRowClick={handleEvent}
+        getCellClassName={(params: GridCellParams<string>) => {
+          if (params.field === 'status') {
+            switch (params.value) {
+              case Status.Underway:
+                return classes.taskActiveCell;
+              case Status.Completed:
+                return classes.taskCompletedCell;
+              case Status.Canceled:
+                return classes.taskCancelledCell;
+              case Status.Failed:
+                return classes.taskFailedCell;
+              case Status.Queued:
+                return classes.taskQueuedCell;
+              default:
+                return classes.taskUnknownCell;
+            }
+          }
+          return '';
+        }}
       />
     </div>
   );
