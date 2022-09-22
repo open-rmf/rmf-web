@@ -1,4 +1,11 @@
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridColDef,
+  GridEventListener,
+  GridValueGetterParams,
+  MuiEvent,
+  GridRowParams,
+} from '@mui/x-data-grid';
 import { TaskState } from 'api-client';
 import React from 'react';
 
@@ -12,7 +19,7 @@ export interface DefaultTableDataGridProps {
 
 export interface TaskDataGridTableProps {
   tasks: DefaultTableDataGridProps;
-  onTaskClick?(ev: React.MouseEvent<HTMLDivElement>, task: TaskState): void;
+  onTaskClick?(ev: MuiEvent<React.MouseEvent<HTMLElement>>, task: TaskState): void;
   onPageChange: (newPage: number) => void;
   onPageSizeChange: (newPageSize: number) => void;
 }
@@ -34,7 +41,7 @@ const columns: GridColDef[] = [
     field: 'name',
     headerName: 'Assignee',
     width: 150,
-    editable: true,
+    editable: false,
     valueGetter: (params: GridValueGetterParams) =>
       params.row.assigned_to ? params.row.assigned_to.name : 'unknown',
   },
@@ -42,7 +49,7 @@ const columns: GridColDef[] = [
     field: 'status',
     headerName: 'State',
     width: 150,
-    editable: true,
+    editable: false,
     valueGetter: (params: GridValueGetterParams) =>
       params.row.status ? params.row.status : 'unknown',
   },
@@ -54,6 +61,15 @@ export function TaskDataGridTable({
   onPageChange,
   onPageSizeChange,
 }: TaskDataGridTableProps): JSX.Element {
+  const handleEvent: GridEventListener<'rowClick'> = (
+    params: GridRowParams,
+    event: MuiEvent<React.MouseEvent<HTMLElement>>,
+  ) => {
+    if (onTaskClick) {
+      onTaskClick(event, params.row);
+    }
+  };
+
   return (
     <div style={{ height: '100%', width: '100%' }}>
       <DataGrid
@@ -69,6 +85,7 @@ export function TaskDataGridTable({
         onPageChange={onPageChange}
         onPageSizeChange={onPageSizeChange}
         columns={columns}
+        onRowClick={handleEvent}
       />
     </div>
   );
