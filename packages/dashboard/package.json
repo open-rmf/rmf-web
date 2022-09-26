@@ -70,8 +70,8 @@
     "react-leaflet": "^2.7.0",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
-    "rmf-auth": "file:../rmf-auth",
-    "rmf-models": "file:../rmf-models",
+    "rmf-auth": "workspace:*",
+    "rmf-models": "workspace:*",
     "rxjs": "^7.5.5"
   },
   "devDependencies": {
