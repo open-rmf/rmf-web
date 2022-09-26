@@ -129,7 +129,7 @@ async def on_startup():
         elif sig == signal.SIGTERM and callable(prev_sigterm):
             prev_sigterm(sig, frame)
 
-    if threading.currentThread() is threading.main_thread():
+    if threading.current_thread() is threading.main_thread():
         prev_sigint = signal.signal(signal.SIGINT, on_signal)
         prev_sigterm = signal.signal(signal.SIGTERM, on_signal)
 

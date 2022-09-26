@@ -1,10 +1,10 @@
 # Setup
 
-If not already done so, [bootstrap](../../README.md#bootstrap) the project, you can use
+If not already done so, [install dependencies](../../README.md#Install-dependencies), you can use
 ```bash
-scripts/bootstrap.sh api-server
+pnpm install -w --filter api-server...
 ```
-to bootstrap only this package.
+to install dependencies for only this package.
 
 # Run the server
 

@@ -1,21 +1,22 @@
-[![Nightly](https://github.com/open-rmf/rmf-web/actions/workflows/nightly.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/nightly.yml) [![Dashboard End-to-End](https://github.com/open-rmf/rmf-web/actions/workflows/dashboard-e2e.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/dashboard-e2e.yml) [![Reporting End-to-End](https://github.com/open-rmf/rmf-web/actions/workflows/reporting-e2e.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/reporting-e2e.yml) [![react-components](https://github.com/open-rmf/rmf-web/workflows/react-components/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Areact-components+branch%3Amain) [![dashboard](https://github.com/open-rmf/rmf-web/workflows/dashboard/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Adashboard+branch%3Amain) [![api-server](https://github.com/open-rmf/rmf-web/workflows/api-server/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Aapi-server+branch%3Amain) [![reporting](https://github.com/open-rmf/rmf-web/actions/workflows/reporting.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/reporting.yml) [![reporting-server](https://github.com/open-rmf/rmf-web/actions/workflows/reporting-server.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/reporting-server.yml) [![rmf-auth](https://github.com/open-rmf/rmf-web/actions/workflows/rmf-auth.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/rmf-auth.yml) [![ros-translator](https://github.com/open-rmf/rmf-web/actions/workflows/ros-translator.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/ros-translator.yml) [![api-client](https://github.com/open-rmf/rmf-web/actions/workflows/api-client.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/api-client.yml) [![codecov](https://codecov.io/gh/open-rmf/rmf-web/branch/main/graph/badge.svg)](https://codecov.io/gh/open-rmf/rmf-web)
+[![Nightly](https://github.com/open-rmf/rmf-web/actions/workflows/nightly.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/nightly.yml) [![Dashboard End-to-End](https://github.com/open-rmf/rmf-web/actions/workflows/dashboard-e2e.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/dashboard-e2e.yml) [![react-components](https://github.com/open-rmf/rmf-web/workflows/react-components/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Areact-components+branch%3Amain) [![dashboard](https://github.com/open-rmf/rmf-web/workflows/dashboard/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Adashboard+branch%3Amain) [![api-server](https://github.com/open-rmf/rmf-web/workflows/api-server/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Aapi-server+branch%3Amain) [![rmf-auth](https://github.com/open-rmf/rmf-web/actions/workflows/rmf-auth.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/rmf-auth.yml) [![ros-translator](https://github.com/open-rmf/rmf-web/actions/workflows/ros-translator.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/ros-translator.yml) [![api-client](https://github.com/open-rmf/rmf-web/actions/workflows/api-client.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/api-client.yml) [![codecov](https://codecov.io/gh/open-rmf/rmf-web/branch/main/graph/badge.svg)](https://codecov.io/gh/open-rmf/rmf-web)
 
 # Building the Dashboard
 
 ## Prerequisites
 
-### Ubuntu 20.04
+### Ubuntu 22.04
 
 Install nodejs
 ```bash
 sudo apt update && sudo apt install curl
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
-nvm install 14
+nvm install 16
 ```
 
-A recent version of pipenv is needed, the system packaged version is too old.
+Install pnpm and nodejs
 ```bash
-pip3 install pipenv
+curl -fsSL https://get.pnpm.io/install.sh | bash -
+pnpm env use --global 16
 ```
 
 ### Install rmf
@@ -28,24 +29,18 @@ Refer to the following documentation:
 
 Refer to the following documentations:
 
-* [nodejs](https://nodejs.org/en/download/package-manager/) >= 14, npm >= 7
+* [nodejs](https://nodejs.org/en/download/package-manager/) >= 16
 * [rmf_demos](https://github.com/open-rmf/rmf_demos)
 
-## Bootstrap
+## Install dependencies
 
-Before running the commands, make sure that rmf is sourced.
 ```bash
-git clone https://github.com/open-rmf/rmf-web
-cd rmf-web
-npm install -g npm@latest
-scripts/bootstrap.sh
+pnpm install
 ```
 
-NOTE: npm >= 7 is required because this repo uses the new workspaces feature.
-
-You may also choose to bootstrap a subset of the packages, e.g.
+You may also install dependencies for only a subset of the packages
 ```bash
-scripts/bootstrap.sh rmf-dashboard
+pnpm install -w --filter <package>...
 ```
 
 ### PostgreSQL

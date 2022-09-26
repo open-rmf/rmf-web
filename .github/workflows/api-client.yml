@@ -7,33 +7,21 @@ on:
   push:
     branches:
       - main
-env:
-  CI: true
 jobs:
   unit-tests:
-    strategy:
-      matrix:
-        npm: ['latest']
-      fail-fast: false
-    name: Unit Tests (npm ${{ matrix.npm }})
-    runs-on: ubuntu-latest
+    name: Unit Tests
+    runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash
         working-directory: packages/api-client
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-          cache: 'npm'
       - name: bootstrap
-        run: |
-          pip3 install pipenv
-          npm install -g npm@${{ matrix.npm }}
-          scripts/bootstrap.sh api-client
-        working-directory: .
+        uses: ./.github/actions/bootstrap
+        with:
+          package: api-client
       - name: lint
-        run: npm run lint
+        run: pnpm run lint
       - name: test
-        run: npm run test
+        run: pnpm test

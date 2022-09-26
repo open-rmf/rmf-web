@@ -6,7 +6,7 @@ on:
 jobs:
   build-docker-images:
     name: Push Docker images to GitHub Packages
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - name: Push e2e image to GitHub Packages
@@ -24,8 +24,8 @@ jobs:
         npm: ['latest']
       fail-fast: false
     needs: build-docker-images
-    name: Dashboard e2e (npm ${{ matrix.npm }})
-    runs-on: ubuntu-latest
+    name: Dashboard e2e
+    runs-on: ubuntu-22.04
     container:
       image: ghcr.io/${{ github.repository }}/e2e
       options: --privileged --ipc=host
@@ -39,59 +39,18 @@ jobs:
       BROWSERSTACK_BUILD: ${{ github.head_ref }}:${{ github.event.number }}
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-          cache: 'npm'
       - name: bootstrap
-        run: |
-          npm install -g npm@${{ matrix.npm }}
-          scripts/bootstrap.sh rmf-dashboard-e2e
-        working-directory: .
+        uses: ./.github/actions/bootstrap
+        with:
+          package: rmf-dashboard-e2e
+          skip-build: true
       - name: test
         run: |
           . /rmf_demos_ws/install/setup.bash
-          npm test
+          pnpm test
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: always()
         with:
           name: artifacts
           path: packages/dashboard-e2e/artifacts
-  reporting-e2e:
-    strategy:
-      matrix:
-        npm: ['latest']
-      fail-fast: false
-    needs: build-docker-images
-    name: Reporting e2e (npm ${{ matrix.npm }})
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/${{ github.repository }}/e2e
-      credentials:
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-      options: --privileged --ipc=host
-    defaults:
-      run:
-        shell: bash
-        working-directory: packages/reporting-e2e
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-          cache: 'npm'
-      - name: bootstrap
-        run: |
-          npm install -g npm@${{ matrix.npm }}
-          scripts/bootstrap.sh reporting-e2e
-        working-directory: .
-      - name: test
-        run: npm test
-      - name: upload artifacts
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: artifacts
-          path: packages/reporting-e2e/artifacts

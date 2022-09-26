@@ -7,6 +7,7 @@ from api_server.dependencies import between_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import FleetLog, FleetState
 from api_server.repositories import FleetRepository, fleet_repo_dep
+from api_server.repositories.tasks import TaskRepository
 from api_server.rmf_io import fleet_events
 
 router = FastIORouter(tags=["Fleets"])
@@ -33,10 +34,11 @@ async def get_fleet_state(name: str, repo: FleetRepository = Depends(fleet_repo_
 @router.sub("/{name}/state", response_model=FleetState)
 async def sub_fleet_state(req: SubscriptionRequest, name: str):
     user = sio_user(req)
+    repo = FleetRepository(user)
     obs = fleet_events.fleet_states.pipe(
         rxops.filter(lambda x: cast(FleetState, x).name == name)
     )
-    fleet_state = await get_fleet_state(name, FleetRepository(user))
+    fleet_state = await repo.get_fleet_state(name)
     if fleet_state:
         return obs.pipe(rxops.start_with(fleet_state))
     return obs

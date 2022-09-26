@@ -1,0 +1,30 @@
+# This is a generated file, do not edit
+
+from typing import List
+
+import pydantic
+{% for dep_msg in msg.dependent_types %}
+from ..{{ dep_msg.spec.base_type.pkg_name }}.{{ dep_msg.spec.base_type.type }} import {{ dep_msg.spec.base_type.type }}
+{% endfor %}
+
+
+class {{ msg.spec.base_type.type }}(pydantic.BaseModel):
+{% for field in msg.spec.fields %}
+    {{ field.name }}: {{ field.pydantic_type.type }} = {{ field.pydantic_type.default_value }} # {% if field.type.pkg_name %}{{ field.type.pkg_name }}/{% endif %}{{ field.type.type }}
+{% endfor %}
+{% if not msg.spec.fields %}
+    pass
+{% endif %}
+
+    class Config:
+        orm_mode = True
+        schema_extra = {
+            "required": [
+{% for field in msg.spec.fields %}
+                "{{ field.name }}",
+{% endfor %}
+            ],
+        }
+
+
+{{ msg.commented_raw }}

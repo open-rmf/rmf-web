@@ -1,0 +1,27 @@
+name: bootstrap
+description: bootstrap rmf-web
+inputs:
+  package:
+    description: string, target package to bootstrap
+    required: true
+  skip-build:
+    description: boolean, if true, skip the build step
+    required: false
+    default: "false"
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v2.2.2
+      with:
+        version: 'latest'
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+        cache: 'pnpm'
+    - name: Install dependencies
+      run: pnpm install -w --filter ${{ inputs.package }}...
+      shell: bash
+    - name: Build
+      if: '!${{ inputs.skip-build }}'
+      run: pnpm run --filter ${{ inputs.package }}... build
+      shell: bash
