@@ -1,4 +1,5 @@
 import json
+from uuid import uuid4
 
 from rmf_building_map_msgs.msg import Door as RmfDoor
 from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
@@ -98,12 +99,12 @@ def make_ingestor_state(guid: str = "test_ingestor") -> IngestorState:
     )
 
 
-def make_fleet_state(name: str = "test_fleet") -> FleetState:
-    return FleetState(name=name, robots={})
+def make_fleet_state() -> FleetState:
+    return FleetState(name=str(uuid4()), robots={})
 
 
-def make_fleet_log(name: str = "test_fleet") -> FleetLog:
-    return FleetLog(name=name, log=[], robots={})
+def make_fleet_log() -> FleetLog:
+    return FleetLog(name=str(uuid4()), log=[], robots={})
 
 
 def make_task_state(task_id: str = "test_task") -> TaskState:
