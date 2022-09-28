@@ -4,16 +4,17 @@
   "description": "dummy package",
   "private": true,
   "scripts": {
-    "prepack": "../../scripts/nws.sh build -d && pipenv run python setup.py bdist_wheel",
-    "restart": "../../scripts/nws.sh build -d && RMF_API_SERVER_CONFIG=sqlite_local_config.py pipenv run python -m api_server",
-    "start": "../../scripts/nws.sh build -d && rm -rf run && mkdir -p run && RMF_API_SERVER_CONFIG=sqlite_local_config.py pipenv run python -m api_server",
-    "start:psql": "../../scripts/nws.sh build -d && rm -rf run && mkdir -p run && RMF_API_SERVER_CONFIG=psql_local_config.py pipenv run python -m api_server",
-    "test": "../../scripts/nws.sh build -d && pipenv run python scripts/test.py",
-    "test:cov": "../../scripts/nws.sh build -d && pipenv run python -m coverage run scripts/test.py",
-    "test:report": "pipenv run python -m coverage html && xdg-open htmlcov/index.html",
-    "lint": "pipenv run pyright && pipenv run pylint api_server --ignore=ros_pydantic,rmf_api"
+    "prepack": "../../scripts/pipenv run python setup.py bdist_wheel",
+    "restart": "RMF_API_SERVER_CONFIG=sqlite_local_config.py ../../scripts/pipenv run python -m api_server",
+    "start": "rm -rf run && mkdir -p run && RMF_API_SERVER_CONFIG=sqlite_local_config.py ../../scripts/pipenv run python -m api_server",
+    "start:psql": "rm -rf run && mkdir -p run && RMF_API_SERVER_CONFIG=psql_local_config.py ../../scripts/pipenv run python -m api_server",
+    "test": "../../scripts/pipenv run python scripts/test.py",
+    "test:cov": "../../scripts/pipenv run python -m coverage run scripts/test.py",
+    "test:report": "../../scripts/pipenv run python -m coverage html && xdg-open htmlcov/index.html",
+    "lint": "../../scripts/pipenv run pyright && ../../scripts/pipenv run pylint api_server --ignore=ros_pydantic,rmf_api",
+    "generate-models": "../../scripts/pipenv run generate-models.sh"
   },
   "devDependencies": {
-    "pipenv-install": "file:../../pipenv-install"
+    "pipenv-install": "workspace:*"
   }
 }

@@ -12,12 +12,8 @@ env:
   CI: true
 jobs:
   unit-tests:
-    strategy:
-      matrix:
-        npm: ['latest']
-      fail-fast: false
-    name: Unit Tests (npm ${{ matrix.npm }})
-    runs-on: ubuntu-latest
+    name: Unit Tests
+    runs-on: ubuntu-22.04
     defaults:
       run:
         shell: bash
@@ -28,23 +24,16 @@ jobs:
       BROWSERSTACK_BUILD: ${{ github.head_ref }}:${{ github.event.number }}
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-          cache: 'npm'
       - name: bootstrap
-        run: |
-          pip3 install pipenv
-          npm config set unsafe-perm
-          npm install -g npm@${{ matrix.npm }}
-          scripts/bootstrap.sh react-components
-        working-directory: .
-      - name: test build storybook
-        run: npm run build:storybook
+        uses: ./.github/actions/bootstrap
+        with:
+          package: react-components
+      - name: build storybook
+        run: pnpm run build:storybook
       - name: lint
-        run: npm run lint
+        run: pnpm run lint
       - name: test
-        run: npm run test:coverage
+        run: pnpm run test:coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:

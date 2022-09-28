@@ -6,12 +6,13 @@
     "test": "tests"
   },
   "scripts": {
-    "start": "../../scripts/nws.sh build -d && node scripts/start.js",
+    "start": "node scripts/start.js",
     "start:rmf-server": "npm --prefix ../api-server start",
-    "test": "../../scripts/nws.sh build -d && node scripts/test-e2e.js",
+    "test": "node scripts/test-e2e.js",
     "test:dev": "E2E_DASHBOARD_URL=http://localhost:3000 RMF_LAUNCH_MODE=none wdio"
   },
   "devDependencies": {
+    "@babel/core": "^7.18.6",
     "@types/mocha": "^9.0.0",
     "@wdio/browserstack-service": "7.11.1",
     "@wdio/cli": "7.11.1",

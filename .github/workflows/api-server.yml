@@ -11,12 +11,8 @@ env:
   CI: true
 jobs:
   tests:
-    strategy:
-      matrix:
-        npm: ['latest']
-      fail-fast: false
-    name: Tests (npm ${{ matrix.npm }})
-    runs-on: ubuntu-latest
+    name: Tests
+    runs-on: ubuntu-22.04
     container:
       image: ghcr.io/${{ github.repository }}/e2e
       credentials:
@@ -28,22 +24,18 @@ jobs:
         working-directory: packages/api-server
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-          cache: 'npm'
+      - name: setup python
+        run: apt update && apt install -y python3-venv python-is-python3
       - name: bootstrap
-        run: |
-          npm install -g npm@${{ matrix.npm }}
-          . /rmf_demos_ws/install/setup.bash
-          scripts/bootstrap.sh api-server
-        working-directory: .
+        uses: ./.github/actions/bootstrap
+        with:
+          package: api-server
       - name: tests
         run: |
           . /rmf_demos_ws/install/setup.bash
-          npm run lint
-          npm run test:cov
-          python3 -m pipenv run python -m coverage xml
+          pnpm run lint
+          pnpm run test:cov
+          ../../.venv/pipenv run python -m coverage xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:

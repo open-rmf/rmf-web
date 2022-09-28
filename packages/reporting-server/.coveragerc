@@ -1,7 +1,0 @@
-[run]
-source =
-    rest_server
-omit =
-    # test files
-    **/test_*.py
-

@@ -76,7 +76,14 @@ module.exports = (config) => {
     // List of plugins to load. A plugin can be a string (in which case it will be required by
     // Karma or an inlined plugin - Object. By default, Karma loads all sibling NPM modules which
     // have a name starting with karma-*.
-    // plugins: [],
+    plugins: [
+      'karma-browserstack-launcher',
+      'karma-chrome-launcher',
+      'karma-coverage',
+      'karma-jasmine',
+      'karma-source-map-support',
+      'karma-webpack',
+    ],
 
     // test results reporter to use
     // possible values: 'dots', 'progress'

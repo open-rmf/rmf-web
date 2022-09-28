@@ -1,0 +1,2305 @@
+{
+  "0 debug pnpm:scope": {
+    "selected": 9,
+    "total": 9,
+    "workspacePrefix": "/home/koonpeng/ws-osrf/rmf/src/rmf-web"
+  },
+  "1 debug pnpm:package-manifest": {
+    "initial": {
+      "name": "api-server",
+      "version": "0.0.0",
+      "description": "dummy package",
+      "private": true,
+      "scripts": {
+        "prepack": "../../.venv/bin/pipenv run python setup.py bdist_wheel",
+        "restart": "RMF_API_SERVER_CONFIG=sqlite_local_config.py ../../.venv/bin/pipenv run python -m api_server",
+        "start": "rm -rf run && mkdir -p run && RMF_API_SERVER_CONFIG=sqlite_local_config.py ../../.venv/bin/pipenv run python -m api_server",
+        "start:psql": "rm -rf run && mkdir -p run && RMF_API_SERVER_CONFIG=psql_local_config.py ../../.venv/bin/pipenv run python -m api_server",
+        "test": "../../.venv/bin/pipenv run python scripts/test.py",
+        "test:cov": "../../.venv/bin/pipenv run python -m coverage run scripts/test.py",
+        "test:report": "../../.venv/bin/pipenv run python -m coverage html && xdg-open htmlcov/index.html",
+        "lint": "../../.venv/bin/pipenv run pyright && ../../.venv/bin/pipenv run pylint api_server --ignore=ros_pydantic,rmf_api"
+      },
+      "devDependencies": {
+        "pipenv-install": "workspace:*"
+      }
+    },
+    "prefix": "/home/koonpeng/ws-osrf/rmf/src/rmf-web/packages/api-server"
+  },
+  "2 debug pnpm:package-manifest": {
+    "initial": {
+      "name": "rmf-models",
+      "version": "0.0.1",
+      "description": "RMF models generated from ROS messages",
+      "main": "dist/index.js",
+      "scripts": {
+        "build": "tsc --build"
+      },
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/open-rmf"
+      },
+      "author": "Teo Koon Peng <koonpeng@openrobotics.org>",
+      "license": "Apache-2.0",
+      "devDependencies": {
+        "@types/jasmine": "^3.8.2",
+        "@types/node": "^14.14.35",
+        "jasmine": "^3.6.6",
+        "json-schema-to-typescript": "^10.1.4",
+        "ts-node": "^9.1.1",
+        "typescript": "~4.4.4"
+      },
+      "files": [
+        "dist/**"
+      ]
+    },
+    "prefix": "/home/koonpeng/ws-osrf/rmf/src/rmf-web/packages/rmf-models"
+  },
+  "3 debug pnpm:package-manifest": {
+    "initial": {
+      "name": "ros-translator",
+      "version": "0.0.0",
+      "private": true,
+      "description": "dummy package",
+      "main": "index.js",
+      "scripts": {
+        "test": ". ../../.venv/bin/activate && ./test.sh"
+      },
+      "author": "",
+      "license": "ISC",
+      "devDependencies": {
+        "@types/jasmine": "^3.8.2",
+        "jasmine": "^3.6.6",
+        "pipenv-install": "workspace:*",
+        "ts-node": "^9.1.1",
+        "typescript": "~4.4.4"
+      }
+    },
+    "prefix": "/home/koonpeng/ws-osrf/rmf/src/rmf-web/packages/ros-translator"
+  },
+  "4 debug pnpm:package-manifest": {
+    "initial": {
+      "name": "api-client",
+      "version": "0.0.1",
+      "description": "",
+      "main": "./dist/lib/index.js",
+      "scripts": {
+        "build": "tsc --build",
+        "clean": "tsc --build --clean",
+        "prepack": "pnpm run clean && pnpm run --filter {.}... build && pnpm run lint",
+        "lint": "eslint --max-warnings 0 --ext ts,tsx lib",
+        "test": "jasmine"
+      },
+      "author": "koonpeng@openrobotics.org",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@types/debug": "^4.1.5",
+        "debug": "^4.2.0",
+        "rmf-models": "workspace:*",
+        "socket.io-client": "^3.1.3"
+      },
+      "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^4.33.0",
+        "@typescript-eslint/parser": "^4.33.0",
+        "@types/jasmine": "^3.8.2",
+        "axios": "^0.21.1",
+        "eslint": "^7.26.0",
+        "jasmine": "^3.6.6",
+        "ts-node": "^9.1.1",
+        "typescript": "~4.4.4"
+      },
+      "peerDependencies": {
+        "axios": "^0.21.1"
+      },
+      "files": [
+        "dist/",
+        "openapi/schema/"
+      ]
+    },
+    "prefix": "/home/koonpeng/ws-osrf/rmf/src/rmf-web/packages/api-client"
+  },
+  "5 debug pnpm:package-manifest": {
+    "initial": {
+      "name": "react-components",
+      "version": "0.0.1",
+      "description": "",
+      "main": "dist/index.js",
+      "scripts": {
+        "build": "tsc --build",
+        "build:storybook": "build-storybook -s test-data",
+        "build:watch": "tsc --build --watch",
+        "clean": "tsc --build --clean",
+        "lint": "eslint --max-warnings 0 --ext ts,tsx, lib",
+        "prepack": "pnpm run clean && pnpm run lint && pnpm run --filter {.}... build && pnpm run test",
+        "start": "pnpm run --filter {.}^... build && start-storybook -p 6006 -s test-data",
+        "test": "karma start karma.conf.js",
+        "test:coverage": "karma start karma.conf.js --coverage"
+      },
+      "author": "koonpeng@openrobotics.org",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@date-io/core": "^2.11.0",
+        "@date-io/date-fns": "^2.11.0",
+        "@emotion/react": "^11.9.3",
+        "@emotion/styled": "^11.9.3",
+        "@mui/icons-material": "^5.8.3",
+        "@mui/lab": "5.0.0-alpha.86",
+        "@mui/styles": "^5.8.3",
+        "@mui/x-data-grid": "^5.12.1",
+        "@mui/x-date-pickers": "5.0.0-alpha.6",
+        "@types/crc": "^3.4.0",
+        "@types/rbush": "^3.0.0",
+        "@types/react-grid-layout": "^1.3.2",
+        "@types/react-leaflet": "^2.5.2",
+        "@types/shallowequal": "^1.1.1",
+        "api-client": "workspace:*",
+        "clsx": "^1.1.1",
+        "crc": "^3.8.0",
+        "date-fns": "^2.21.3",
+        "debug": "^4.2.0",
+        "eventemitter3": "^4.0.7",
+        "node-vibrant": "^3.1.6",
+        "rbush": "^3.0.1",
+        "react-customizable-progressbar": "^1.0.3",
+        "react-grid-layout": "^1.3.4",
+        "react-leaflet": "^2.7.0",
+        "react-virtualized-auto-sizer": "^1.0.6",
+        "react-window": "^1.8.6",
+        "rmf-models": "workspace:*",
+        "shallowequal": "^1.1.0"
+      },
+      "devDependencies": {
+        "@babel/core": "^7.18.6",
+        "@fontsource/roboto": "^4.3.0",
+        "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
+        "@mui/material": "^5.8.3",
+        "@mui/system": "^5.8.3",
+        "@storybook/addon-actions": "^6.5.8",
+        "@storybook/addon-essentials": "^6.5.8",
+        "@storybook/addon-links": "^6.5.8",
+        "@storybook/react": "^6.5.8",
+        "@testing-library/dom": "^8.14.0",
+        "@testing-library/react": "^11.2.3",
+        "@testing-library/react-hooks": "^5.0.3",
+        "@testing-library/user-event": "^12.1.9",
+        "@types/debug": "^4.1.5",
+        "@types/jasmine": "^3.8.2",
+        "@types/leaflet": "^1.5.17",
+        "@types/react": "^17.0.19",
+        "@types/react-dom": "^17.0.9",
+        "@types/react-grid-layout": "^1.3.2",
+        "@types/react-router": "^5.1.7",
+        "@types/react-router-dom": "^5.1.7",
+        "@types/react-virtualized-auto-sizer": "^1.0.1",
+        "@types/react-window": "^1.8.5",
+        "@typescript-eslint/eslint-plugin": "^4.33.0",
+        "@typescript-eslint/parser": "^4.33.0",
+        "concurrently": "^5.3.0",
+        "css-loader": "^5",
+        "date-fns": "^2.21.3",
+        "eslint": "^7.26.0",
+        "eslint-plugin-react": "^7.21.4",
+        "eslint-plugin-react-hooks": "^4.1.2",
+        "file-loader": "^6.2.0",
+        "jasmine": "^3.6.6",
+        "karma": "^6.3.20",
+        "karma-browserstack-launcher": "^1.6.0",
+        "karma-chrome-launcher": "^3.1.0",
+        "karma-coverage": "^2.2.0",
+        "karma-jasmine": "^4.0.1",
+        "karma-source-map-support": "^1.4.0",
+        "karma-webpack": "^4.0.2",
+        "leaflet": "^1.7.1",
+        "process": "0.11.10",
+        "puppeteer": "*",
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2",
+        "react-leaflet": "^2.7.0",
+        "react-router": "^5.2.0",
+        "react-router-dom": "^5.2.0",
+        "require-from-string": "^2.0.2",
+        "style-loader": "^2",
+        "ts-loader": "^8.1.0",
+        "typescript": "~4.4.4",
+        "webpack": "^4.46.0",
+        "webpack-cli": "^4.8.0"
+      },
+      "peerDependencies": {
+        "@fontsource/roboto": "^4.3.0",
+        "@mui/material": "^5.8.3",
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2",
+        "react-grid-layout": "^1.3.4",
+        "react-router": "^5.2.0",
+        "react-router-dom": "^5.2.0"
+      }
+    },
+    "prefix": "/home/koonpeng/ws-osrf/rmf/src/rmf-web/packages/react-components"
+  },
+  "6 debug pnpm:package-manifest": {
+    "initial": {
+      "name": "rmf-auth",
+      "version": "0.0.1",
+      "description": "Auth layer to be used on web UI services",
+      "main": "dist/index.js",
+      "scripts": {
+        "build": "tsc --build",
+        "build:storybook": "build-storybook -s test-data",
+        "build:watch": "pnpm run build -- --watch",
+        "clean": "tsc --build --clean",
+        "lint": "eslint --max-warnings 0 --ext ts,tsx, lib",
+        "prepack": "pnpm run clean && pnpm run lint && pnpm run --filter {.}... build && pnpm test",
+        "start": "start-storybook -p 6006 -s test-data",
+        "test": "jest --watch",
+        "test:coverage": "jest --coverage"
+      },
+      "keywords": [
+        "auth",
+        "rmf"
+      ],
+      "author": "matiasbavera@gmail.com",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "@emotion/react": "^11.9.3",
+        "@emotion/styled": "^11.9.3",
+        "@fontsource/roboto": "^4.3.0",
+        "@mui/icons-material": "^5.8.3",
+        "@mui/lab": "5.0.0-alpha.86",
+        "api-client": "workspace:*",
+        "eventemitter3": "^4.0.7",
+        "keycloak-js": "^11.0.2"
+      },
+      "devDependencies": {
+        "@babel/core": "^7.18.6",
+        "@mui/material": "^5.8.3",
+        "@storybook/addon-actions": "^6.5.8",
+        "@storybook/addon-essentials": "^6.5.8",
+        "@storybook/addon-links": "^6.5.8",
+        "@storybook/react": "^6.5.8",
+        "@testing-library/dom": "^8.14.0",
+        "@testing-library/jest-dom": "^5.11.4",
+        "@testing-library/react": "^11.2.3",
+        "@testing-library/react-hooks": "^5.0.3",
+        "@testing-library/user-event": "^12.1.9",
+        "@types/debug": "^4.1.5",
+        "@types/history": "^4.7.11",
+        "@types/jest": "^26.0.13",
+        "@types/react": "^17.0.19",
+        "@types/react-dom": "^17.0.9",
+        "@types/react-router": "^5.1.7",
+        "@types/react-router-dom": "^5.1.7",
+        "concurrently": "^5.3.0",
+        "eslint": "^7.26.0",
+        "eslint-plugin-react": "^7.21.4",
+        "eslint-plugin-react-hooks": "^4.1.2",
+        "history": "^4.10.1",
+        "jest": "^26.5.0",
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2",
+        "react-router": "^5.2.0",
+        "react-router-dom": "^5.2.0",
+        "require-from-string": "^2.0.2",
+        "ts-jest": "^26.4.1",
+        "ts-node": "^9.1.1",
+        "typescript": "~4.4.4",
+        "webpack": "^4"
+      },
+      "peerDependencies": {
+        "@mui/material": "^5.8.3",
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2",
+        "react-router": "^5.2.0",
+        "react-router-dom": "^5.2.0"
+      },
+      "files": [
+        "lib/"
+      ]
+    },
+    "prefix": "/home/koonpeng/ws-osrf/rmf/src/rmf-web/packages/rmf-auth"
+  },
+  "7 debug pnpm:package-manifest": {
+    "initial": {
+      "name": "rmf-dashboard",
+      "version": "0.0.1",
+      "private": true,
+      "scripts": {
+        "analyze": "source-map-explorer 'build/static/js/*.js'",
+        "start": "pnpm run --filter {.}^... build && concurrently npm:start:rmf-server npm:start:react",
+        "start:sim": "concurrently npm:start:rmf-server npm:start:rmf npm:start:react",
+        "start:clinic": "RMF_DASHBOARD_DEMO_MAP=clinic.launch.xml pnpm run start:sim",
+        "start:airport": "RMF_DASHBOARD_DEMO_MAP=airport_terminal.launch.xml pnpm run start:sim",
+        "start:react": "react-scripts start",
+        "start:rmf": "node scripts/start-rmf.js",
+        "start:rmf-server": "RMF_SERVER_USE_SIM_TIME=true npm --prefix ../api-server start",
+        "start:rmf-server:psql": "RMF_SERVER_USE_SIM_TIME=true npm run --prefix ../api-server start:psql",
+        "build": "react-scripts build",
+        "test": "react-scripts test",
+        "test:coverage": "pnpm test -- --coverage --watchAll=false",
+        "test:e2e": "cd e2e && npm test",
+        "test:e2e:dev": "cd e2e && pnpm run test:dev",
+        "eject": "react-scripts eject",
+        "setup": "node ./scripts/setup/setup.js",
+        "storybook": "start-storybook -p 9009 -s public -s src/stories/static",
+        "build:storybook": "build-storybook -s public -s src/stories/static"
+      },
+      "eslintConfig": {
+        "extends": "react-app"
+      },
+      "browserslist": {
+        "production": [
+          ">0.2%",
+          "not dead",
+          "not op_mini all"
+        ],
+        "development": [
+          "last 1 chrome version",
+          "last 1 firefox version",
+          "last 1 safari version"
+        ]
+      },
+      "dependencies": {
+        "@fontsource/roboto": "^4.3.0",
+        "@fortawesome/fontawesome-svg-core": "^1.2.30",
+        "@fortawesome/free-solid-svg-icons": "^5.14.0",
+        "@fortawesome/react-fontawesome": "^0.1.11",
+        "@mui/icons-material": "^5.8.3",
+        "@mui/material": "^5.8.3",
+        "@mui/system": "^5.8.3",
+        "@types/debug": "^4.1.5",
+        "@types/leaflet": "^1.5.17",
+        "@types/react": "^17.0.19",
+        "@types/react-dom": "^17.0.9",
+        "@types/react-grid-layout": "^1.3.2",
+        "@types/react-leaflet": "^2.5.2",
+        "@types/react-router": "^5.1.7",
+        "@types/react-router-dom": "^5.1.7",
+        "ajv": "^8.10.0",
+        "api-client": "workspace:*",
+        "axios": "^0.21.1",
+        "date-fns": "^2.21.3",
+        "debug": "^4.2.0",
+        "eventemitter3": "^4.0.7",
+        "keycloak-js": "^11.0.2",
+        "leaflet": "^1.7.1",
+        "node-vibrant": "^3.1.6",
+        "react": "^17.0.2",
+        "react-components": "workspace:*",
+        "react-customizable-progressbar": "^1.0.3",
+        "react-dom": "^17.0.2",
+        "react-grid-layout": "^1.3.4",
+        "react-leaflet": "^2.7.0",
+        "react-router": "^5.2.0",
+        "react-router-dom": "^5.2.0",
+        "rmf-auth": "file:../rmf-auth",
+        "rmf-models": "file:../rmf-models",
+        "rxjs": "^7.5.5"
+      },
+      "devDependencies": {
+        "@babel/core": "^7.18.6",
+        "@storybook/addon-actions": "^6.5.8",
+        "@storybook/addon-essentials": "^6.5.8",
+        "@storybook/addon-links": "^6.5.8",
+        "@storybook/node-logger": "^6.5.9",
+        "@storybook/preset-create-react-app": "^3.2.0",
+        "@storybook/react": "^6.5.8",
+        "@testing-library/dom": "^8.14.0",
+        "@testing-library/jest-dom": "^5.11.4",
+        "@testing-library/react": "^11.2.3",
+        "@testing-library/react-hooks": "^5.0.3",
+        "@testing-library/user-event": "^12.1.9",
+        "@types/jest": "^26.0.13",
+        "api-server": "file:../api-server",
+        "canvas": "^2.6.1",
+        "chalk": "^4.1.0",
+        "concurrently": "^5.3.0",
+        "inquirer": "^8.1.2",
+        "react-refresh": "^0.9",
+        "react-scripts": "^4.0.3",
+        "require-from-string": "^2.0.2",
+        "source-map-explorer": "^2.5.2",
+        "styled-components": "^4.4.1",
+        "ts-node": "^9.1.1",
+        "typescript": "~4.4.4",
+        "webpack": "^4"
+      },
+      "jest": {
+        "collectCoverageFrom": [
+          "src/**/*.{js,jsx,ts,tsx}",
+          "!src/index.tsx",
+          "!src/serviceWorker.ts",
+          "!src/app-config.ts",
+          "!src/managers/**",
+          "!src/components/rmf-app/**",
+          "!**/stories/**",
+          "!**/tests/**"
+        ]
+      }
+    },
+    "prefix": "/home/koonpeng/ws-osrf/rmf/src/rmf-web/packages/dashboard"
+  },
+  "8 debug pnpm:package-manifest": {
+    "initial": {
+      "name": "rmf-dashboard-e2e",
+      "description": "",
+      "main": "index.js",
+      "directories": {
+        "test": "tests"
+      },
+      "scripts": {
+        "start": "node scripts/start.js",
+        "start:rmf-server": "npm --prefix ../api-server start",
+        "test": "node scripts/test-e2e.js",
+        "test:dev": "E2E_DASHBOARD_URL=http://localhost:3000 RMF_LAUNCH_MODE=none wdio"
+      },
+      "devDependencies": {
+        "@babel/core": "^7.18.6",
+        "@types/mocha": "^9.0.0",
+        "@wdio/browserstack-service": "7.11.1",
+        "@wdio/cli": "7.11.1",
+        "@wdio/local-runner": "7.11.1",
+        "@wdio/mocha-framework": "7.11.1",
+        "@wdio/spec-reporter": "7.10.1",
+        "concurrently": "^5.3.0",
+        "rmf-dashboard": "file:../dashboard",
+        "serve": "^11.3.2",
+        "ts-node": "^9.1.1",
+        "typescript": "~4.4.4"
+      }
+    },
+    "prefix": "/home/koonpeng/ws-osrf/rmf/src/rmf-web/packages/dashboard-e2e"
+  },
+  "9 debug pnpm:package-manifest": {
+    "initial": {
+      "name": "root",
+      "private": true,
+      "engines": {
+        "node": ">=16",
+        "pnpm": ">=7.5.0",
+        "npm": ">=99"
+      },
+      "scripts": {
+        "prepare": "husky install"
+      },
+      "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^4.33.0",
+        "@typescript-eslint/parser": "^4.33.0",
+        "eslint": "^7.32.0",
+        "eslint-plugin-react": "^7.30.1",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "husky": "^8.0.1",
+        "lint-staged": "^10.5.4",
+        "prettier": "^2.7.1",
+        "pyright": "^1.1.257",
+        "typescript": "~4.4.4"
+      },
+      "lint-staged": {
+        "**/*.{js,jsx,ts,tsx,css,scss}": [
+          "prettier --write"
+        ],
+        "**/*.py": [
+          "../../.venv/bin/pipenv run isort",
+          "../../.venv/bin/pipenv run black"
+        ]
+      },
+      "overrides": {
+        "react-error-overlay": "6.0.9"
+      }
+    },
+    "prefix": "/home/koonpeng/ws-osrf/rmf/src/rmf-web"
+  },
+  "10 debug pnpm:context": {
+    "currentLockfileExists": false,
+    "storeDir": "/home/koonpeng/ws-osrf/.pnpm-store/v3",
+    "virtualStoreDir": "/home/koonpeng/ws-osrf/rmf/src/rmf-web/node_modules/.pnpm"
+  },
+  "11 debug pnpm:stage": {
+    "prefix": "/home/koonpeng/ws-osrf/rmf/src/rmf-web",
+    "stage": "resolution_started"
+  },
+  "12 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/jasmine/3.10.6",
+    "wanted": {
+      "dependentId": "packages/rmf-models",
+      "name": "@types/jasmine",
+      "rawSpec": "^3.8.2"
+    }
+  },
+  "13 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/node/14.18.21",
+    "wanted": {
+      "dependentId": "packages/rmf-models",
+      "name": "@types/node",
+      "rawSpec": "^14.14.35"
+    }
+  },
+  "14 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/jasmine/3.99.0",
+    "wanted": {
+      "dependentId": "packages/rmf-models",
+      "name": "jasmine",
+      "rawSpec": "^3.6.6"
+    }
+  },
+  "15 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/json-schema-to-typescript/10.1.5",
+    "wanted": {
+      "dependentId": "packages/rmf-models",
+      "name": "json-schema-to-typescript",
+      "rawSpec": "^10.1.4"
+    }
+  },
+  "16 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/ts-node/9.1.1",
+    "wanted": {
+      "dependentId": "packages/rmf-models",
+      "name": "ts-node",
+      "rawSpec": "^9.1.1"
+    }
+  },
+  "17 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/typescript/4.4.4",
+    "wanted": {
+      "dependentId": "packages/rmf-models",
+      "name": "typescript",
+      "rawSpec": "~4.4.4"
+    }
+  },
+  "18 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/jasmine/3.10.6",
+    "wanted": {
+      "dependentId": "packages/ros-translator",
+      "name": "@types/jasmine",
+      "rawSpec": "^3.8.2"
+    }
+  },
+  "19 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/jasmine/3.99.0",
+    "wanted": {
+      "dependentId": "packages/ros-translator",
+      "name": "jasmine",
+      "rawSpec": "^3.6.6"
+    }
+  },
+  "20 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/ts-node/9.1.1",
+    "wanted": {
+      "dependentId": "packages/ros-translator",
+      "name": "ts-node",
+      "rawSpec": "^9.1.1"
+    }
+  },
+  "21 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/typescript/4.4.4",
+    "wanted": {
+      "dependentId": "packages/ros-translator",
+      "name": "typescript",
+      "rawSpec": "~4.4.4"
+    }
+  },
+  "22 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@typescript-eslint/eslint-plugin/4.33.0",
+    "wanted": {
+      "dependentId": "packages/api-client",
+      "name": "@typescript-eslint/eslint-plugin",
+      "rawSpec": "^4.33.0"
+    }
+  },
+  "23 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@typescript-eslint/parser/4.33.0",
+    "wanted": {
+      "dependentId": "packages/api-client",
+      "name": "@typescript-eslint/parser",
+      "rawSpec": "^4.33.0"
+    }
+  },
+  "24 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/jasmine/3.10.6",
+    "wanted": {
+      "dependentId": "packages/api-client",
+      "name": "@types/jasmine",
+      "rawSpec": "^3.8.2"
+    }
+  },
+  "25 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/axios/0.21.4",
+    "wanted": {
+      "dependentId": "packages/api-client",
+      "name": "axios",
+      "rawSpec": "^0.21.1"
+    }
+  },
+  "26 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/eslint/7.32.0",
+    "wanted": {
+      "dependentId": "packages/api-client",
+      "name": "eslint",
+      "rawSpec": "^7.26.0"
+    }
+  },
+  "27 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/jasmine/3.99.0",
+    "wanted": {
+      "dependentId": "packages/api-client",
+      "name": "jasmine",
+      "rawSpec": "^3.6.6"
+    }
+  },
+  "28 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/ts-node/9.1.1",
+    "wanted": {
+      "dependentId": "packages/api-client",
+      "name": "ts-node",
+      "rawSpec": "^9.1.1"
+    }
+  },
+  "29 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/typescript/4.4.4",
+    "wanted": {
+      "dependentId": "packages/api-client",
+      "name": "typescript",
+      "rawSpec": "~4.4.4"
+    }
+  },
+  "30 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/debug/4.1.7",
+    "wanted": {
+      "dependentId": "packages/api-client",
+      "name": "@types/debug",
+      "rawSpec": "^4.1.5"
+    }
+  },
+  "31 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/debug/4.3.4",
+    "wanted": {
+      "dependentId": "packages/api-client",
+      "name": "debug",
+      "rawSpec": "^4.2.0"
+    }
+  },
+  "32 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/socket.io-client/3.1.3",
+    "wanted": {
+      "dependentId": "packages/api-client",
+      "name": "socket.io-client",
+      "rawSpec": "^3.1.3"
+    }
+  },
+  "33 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@babel/core/7.18.6",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@babel/core",
+      "rawSpec": "^7.18.6"
+    }
+  },
+  "34 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@fontsource/roboto/4.5.7",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@fontsource/roboto",
+      "rawSpec": "^4.3.0"
+    }
+  },
+  "35 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@jsdevtools/coverage-istanbul-loader/3.0.5",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@jsdevtools/coverage-istanbul-loader",
+      "rawSpec": "^3.0.5"
+    }
+  },
+  "36 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@mui/material/5.8.7",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@mui/material",
+      "rawSpec": "^5.8.3"
+    }
+  },
+  "37 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@mui/system/5.8.7",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@mui/system",
+      "rawSpec": "^5.8.3"
+    }
+  },
+  "38 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@storybook/addon-actions/6.5.9",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@storybook/addon-actions",
+      "rawSpec": "^6.5.8"
+    }
+  },
+  "39 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@storybook/addon-essentials/6.5.9",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@storybook/addon-essentials",
+      "rawSpec": "^6.5.8"
+    }
+  },
+  "40 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@storybook/addon-links/6.5.9",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@storybook/addon-links",
+      "rawSpec": "^6.5.8"
+    }
+  },
+  "41 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@storybook/react/6.5.9",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@storybook/react",
+      "rawSpec": "^6.5.8"
+    }
+  },
+  "42 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@testing-library/dom/8.14.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@testing-library/dom",
+      "rawSpec": "^8.14.0"
+    }
+  },
+  "43 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@testing-library/react/11.2.7",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@testing-library/react",
+      "rawSpec": "^11.2.3"
+    }
+  },
+  "44 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@testing-library/react-hooks/5.1.3",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@testing-library/react-hooks",
+      "rawSpec": "^5.0.3"
+    }
+  },
+  "45 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@testing-library/user-event/12.8.3",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@testing-library/user-event",
+      "rawSpec": "^12.1.9"
+    }
+  },
+  "46 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/debug/4.1.7",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@types/debug",
+      "rawSpec": "^4.1.5"
+    }
+  },
+  "47 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/jasmine/3.10.6",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@types/jasmine",
+      "rawSpec": "^3.8.2"
+    }
+  },
+  "48 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/leaflet/1.7.11",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@types/leaflet",
+      "rawSpec": "^1.5.17"
+    }
+  },
+  "49 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/react/17.0.47",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@types/react",
+      "rawSpec": "^17.0.19"
+    }
+  },
+  "50 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/react-dom/17.0.17",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@types/react-dom",
+      "rawSpec": "^17.0.9"
+    }
+  },
+  "51 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/react-grid-layout/1.3.2",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@types/react-grid-layout",
+      "rawSpec": "^1.3.2"
+    }
+  },
+  "52 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/react-router/5.1.18",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@types/react-router",
+      "rawSpec": "^5.1.7"
+    }
+  },
+  "53 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/react-router-dom/5.3.3",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@types/react-router-dom",
+      "rawSpec": "^5.1.7"
+    }
+  },
+  "54 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/react-virtualized-auto-sizer/1.0.1",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@types/react-virtualized-auto-sizer",
+      "rawSpec": "^1.0.1"
+    }
+  },
+  "55 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/react-window/1.8.5",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@types/react-window",
+      "rawSpec": "^1.8.5"
+    }
+  },
+  "56 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@typescript-eslint/eslint-plugin/4.33.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@typescript-eslint/eslint-plugin",
+      "rawSpec": "^4.33.0"
+    }
+  },
+  "57 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@typescript-eslint/parser/4.33.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@typescript-eslint/parser",
+      "rawSpec": "^4.33.0"
+    }
+  },
+  "58 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/concurrently/5.3.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "concurrently",
+      "rawSpec": "^5.3.0"
+    }
+  },
+  "59 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/css-loader/5.2.7",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "css-loader",
+      "rawSpec": "^5"
+    }
+  },
+  "60 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/date-fns/2.28.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "date-fns",
+      "rawSpec": "^2.21.3"
+    }
+  },
+  "61 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/eslint/7.32.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "eslint",
+      "rawSpec": "^7.26.0"
+    }
+  },
+  "62 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/eslint-plugin-react/7.30.1",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "eslint-plugin-react",
+      "rawSpec": "^7.21.4"
+    }
+  },
+  "63 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/eslint-plugin-react-hooks/4.6.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "eslint-plugin-react-hooks",
+      "rawSpec": "^4.1.2"
+    }
+  },
+  "64 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/file-loader/6.2.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "file-loader",
+      "rawSpec": "^6.2.0"
+    }
+  },
+  "65 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/jasmine/3.99.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "jasmine",
+      "rawSpec": "^3.6.6"
+    }
+  },
+  "66 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/karma/6.4.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "karma",
+      "rawSpec": "^6.3.20"
+    }
+  },
+  "67 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/karma-browserstack-launcher/1.6.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "karma-browserstack-launcher",
+      "rawSpec": "^1.6.0"
+    }
+  },
+  "68 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/karma-chrome-launcher/3.1.1",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "karma-chrome-launcher",
+      "rawSpec": "^3.1.0"
+    }
+  },
+  "69 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/karma-coverage/2.2.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "karma-coverage",
+      "rawSpec": "^2.2.0"
+    }
+  },
+  "70 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/karma-jasmine/4.0.2",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "karma-jasmine",
+      "rawSpec": "^4.0.1"
+    }
+  },
+  "71 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/karma-source-map-support/1.4.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "karma-source-map-support",
+      "rawSpec": "^1.4.0"
+    }
+  },
+  "72 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/karma-webpack/4.0.2",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "karma-webpack",
+      "rawSpec": "^4.0.2"
+    }
+  },
+  "73 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/leaflet/1.8.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "leaflet",
+      "rawSpec": "^1.7.1"
+    }
+  },
+  "74 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/process/0.11.10",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "process",
+      "rawSpec": "0.11.10"
+    }
+  },
+  "75 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/puppeteer/15.3.1",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "puppeteer",
+      "rawSpec": "*"
+    }
+  },
+  "76 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react/17.0.2",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "react",
+      "rawSpec": "^17.0.2"
+    }
+  },
+  "77 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react-dom/17.0.2",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "react-dom",
+      "rawSpec": "^17.0.2"
+    }
+  },
+  "78 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react-leaflet/2.8.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "react-leaflet",
+      "rawSpec": "^2.7.0"
+    }
+  },
+  "79 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react-router/5.3.3",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "react-router",
+      "rawSpec": "^5.2.0"
+    }
+  },
+  "80 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react-router-dom/5.3.3",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "react-router-dom",
+      "rawSpec": "^5.2.0"
+    }
+  },
+  "81 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/require-from-string/2.0.2",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "require-from-string",
+      "rawSpec": "^2.0.2"
+    }
+  },
+  "82 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/style-loader/2.0.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "style-loader",
+      "rawSpec": "^2"
+    }
+  },
+  "83 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/ts-loader/8.4.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "ts-loader",
+      "rawSpec": "^8.1.0"
+    }
+  },
+  "84 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/typescript/4.4.4",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "typescript",
+      "rawSpec": "~4.4.4"
+    }
+  },
+  "85 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/webpack/4.46.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "webpack",
+      "rawSpec": "^4.46.0"
+    }
+  },
+  "86 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/webpack-cli/4.10.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "webpack-cli",
+      "rawSpec": "^4.8.0"
+    }
+  },
+  "87 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@date-io/core/2.14.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@date-io/core",
+      "rawSpec": "^2.11.0"
+    }
+  },
+  "88 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@date-io/date-fns/2.14.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@date-io/date-fns",
+      "rawSpec": "^2.11.0"
+    }
+  },
+  "89 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@emotion/react/11.9.3",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@emotion/react",
+      "rawSpec": "^11.9.3"
+    }
+  },
+  "90 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@emotion/styled/11.9.3",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@emotion/styled",
+      "rawSpec": "^11.9.3"
+    }
+  },
+  "91 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@mui/icons-material/5.8.4",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@mui/icons-material",
+      "rawSpec": "^5.8.3"
+    }
+  },
+  "92 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@mui/lab/5.0.0-alpha.86",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@mui/lab",
+      "rawSpec": "5.0.0-alpha.86"
+    }
+  },
+  "93 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@mui/styles/5.8.7",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@mui/styles",
+      "rawSpec": "^5.8.3"
+    }
+  },
+  "94 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@mui/x-data-grid/5.12.3",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@mui/x-data-grid",
+      "rawSpec": "^5.12.1"
+    }
+  },
+  "95 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@mui/x-date-pickers/5.0.0-alpha.6",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@mui/x-date-pickers",
+      "rawSpec": "5.0.0-alpha.6"
+    }
+  },
+  "96 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/crc/3.8.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@types/crc",
+      "rawSpec": "^3.4.0"
+    }
+  },
+  "97 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/rbush/3.0.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@types/rbush",
+      "rawSpec": "^3.0.0"
+    }
+  },
+  "98 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/react-leaflet/2.8.2",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@types/react-leaflet",
+      "rawSpec": "^2.5.2"
+    }
+  },
+  "99 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/shallowequal/1.1.1",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "@types/shallowequal",
+      "rawSpec": "^1.1.1"
+    }
+  },
+  "100 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/clsx/1.2.1",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "clsx",
+      "rawSpec": "^1.1.1"
+    }
+  },
+  "101 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/crc/3.8.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "crc",
+      "rawSpec": "^3.8.0"
+    }
+  },
+  "102 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/debug/4.3.4",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "debug",
+      "rawSpec": "^4.2.0"
+    }
+  },
+  "103 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/eventemitter3/4.0.7",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "eventemitter3",
+      "rawSpec": "^4.0.7"
+    }
+  },
+  "104 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/node-vibrant/3.1.6",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "node-vibrant",
+      "rawSpec": "^3.1.6"
+    }
+  },
+  "105 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/rbush/3.0.1",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "rbush",
+      "rawSpec": "^3.0.1"
+    }
+  },
+  "106 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react-customizable-progressbar/1.0.3",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "react-customizable-progressbar",
+      "rawSpec": "^1.0.3"
+    }
+  },
+  "107 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react-grid-layout/1.3.4",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "react-grid-layout",
+      "rawSpec": "^1.3.4"
+    }
+  },
+  "108 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react-virtualized-auto-sizer/1.0.6",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "react-virtualized-auto-sizer",
+      "rawSpec": "^1.0.6"
+    }
+  },
+  "109 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react-window/1.8.7",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "react-window",
+      "rawSpec": "^1.8.6"
+    }
+  },
+  "110 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/shallowequal/1.1.0",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "shallowequal",
+      "rawSpec": "^1.1.0"
+    }
+  },
+  "111 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@babel/core/7.18.6",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@babel/core",
+      "rawSpec": "^7.18.6"
+    }
+  },
+  "112 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@mui/material/5.8.7",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@mui/material",
+      "rawSpec": "^5.8.3"
+    }
+  },
+  "113 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@storybook/addon-actions/6.5.9",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@storybook/addon-actions",
+      "rawSpec": "^6.5.8"
+    }
+  },
+  "114 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@storybook/addon-essentials/6.5.9",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@storybook/addon-essentials",
+      "rawSpec": "^6.5.8"
+    }
+  },
+  "115 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@storybook/addon-links/6.5.9",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@storybook/addon-links",
+      "rawSpec": "^6.5.8"
+    }
+  },
+  "116 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@storybook/react/6.5.9",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@storybook/react",
+      "rawSpec": "^6.5.8"
+    }
+  },
+  "117 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@testing-library/dom/8.14.0",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@testing-library/dom",
+      "rawSpec": "^8.14.0"
+    }
+  },
+  "118 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@testing-library/jest-dom/5.16.4",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@testing-library/jest-dom",
+      "rawSpec": "^5.11.4"
+    }
+  },
+  "119 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@testing-library/react/11.2.7",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@testing-library/react",
+      "rawSpec": "^11.2.3"
+    }
+  },
+  "120 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@testing-library/react-hooks/5.1.3",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@testing-library/react-hooks",
+      "rawSpec": "^5.0.3"
+    }
+  },
+  "121 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@testing-library/user-event/12.8.3",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@testing-library/user-event",
+      "rawSpec": "^12.1.9"
+    }
+  },
+  "122 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/debug/4.1.7",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@types/debug",
+      "rawSpec": "^4.1.5"
+    }
+  },
+  "123 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/history/4.7.11",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@types/history",
+      "rawSpec": "^4.7.11"
+    }
+  },
+  "124 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/jest/26.0.24",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@types/jest",
+      "rawSpec": "^26.0.13"
+    }
+  },
+  "125 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/react/17.0.47",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@types/react",
+      "rawSpec": "^17.0.19"
+    }
+  },
+  "126 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/react-dom/17.0.17",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@types/react-dom",
+      "rawSpec": "^17.0.9"
+    }
+  },
+  "127 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/react-router/5.1.18",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@types/react-router",
+      "rawSpec": "^5.1.7"
+    }
+  },
+  "128 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/react-router-dom/5.3.3",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@types/react-router-dom",
+      "rawSpec": "^5.1.7"
+    }
+  },
+  "129 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/concurrently/5.3.0",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "concurrently",
+      "rawSpec": "^5.3.0"
+    }
+  },
+  "130 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/eslint/7.32.0",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "eslint",
+      "rawSpec": "^7.26.0"
+    }
+  },
+  "131 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/eslint-plugin-react/7.30.1",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "eslint-plugin-react",
+      "rawSpec": "^7.21.4"
+    }
+  },
+  "132 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/eslint-plugin-react-hooks/4.6.0",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "eslint-plugin-react-hooks",
+      "rawSpec": "^4.1.2"
+    }
+  },
+  "133 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/history/4.10.1",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "history",
+      "rawSpec": "^4.10.1"
+    }
+  },
+  "134 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/jest/26.6.3",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "jest",
+      "rawSpec": "^26.5.0"
+    }
+  },
+  "135 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react/17.0.2",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "react",
+      "rawSpec": "^17.0.2"
+    }
+  },
+  "136 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react-dom/17.0.2",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "react-dom",
+      "rawSpec": "^17.0.2"
+    }
+  },
+  "137 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react-router/5.3.3",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "react-router",
+      "rawSpec": "^5.2.0"
+    }
+  },
+  "138 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react-router-dom/5.3.3",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "react-router-dom",
+      "rawSpec": "^5.2.0"
+    }
+  },
+  "139 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/require-from-string/2.0.2",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "require-from-string",
+      "rawSpec": "^2.0.2"
+    }
+  },
+  "140 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/ts-jest/26.5.6",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "ts-jest",
+      "rawSpec": "^26.4.1"
+    }
+  },
+  "141 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/ts-node/9.1.1",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "ts-node",
+      "rawSpec": "^9.1.1"
+    }
+  },
+  "142 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/typescript/4.4.4",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "typescript",
+      "rawSpec": "~4.4.4"
+    }
+  },
+  "143 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/webpack/4.46.0",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "webpack",
+      "rawSpec": "^4"
+    }
+  },
+  "144 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@emotion/react/11.9.3",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@emotion/react",
+      "rawSpec": "^11.9.3"
+    }
+  },
+  "145 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@emotion/styled/11.9.3",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@emotion/styled",
+      "rawSpec": "^11.9.3"
+    }
+  },
+  "146 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@fontsource/roboto/4.5.7",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@fontsource/roboto",
+      "rawSpec": "^4.3.0"
+    }
+  },
+  "147 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@mui/icons-material/5.8.4",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@mui/icons-material",
+      "rawSpec": "^5.8.3"
+    }
+  },
+  "148 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@mui/lab/5.0.0-alpha.86",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "@mui/lab",
+      "rawSpec": "5.0.0-alpha.86"
+    }
+  },
+  "149 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/eventemitter3/4.0.7",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "eventemitter3",
+      "rawSpec": "^4.0.7"
+    }
+  },
+  "150 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/keycloak-js/11.0.3",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "keycloak-js",
+      "rawSpec": "^11.0.2"
+    }
+  },
+  "151 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@babel/core/7.18.6",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@babel/core",
+      "rawSpec": "^7.18.6"
+    }
+  },
+  "152 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@storybook/addon-actions/6.5.9",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@storybook/addon-actions",
+      "rawSpec": "^6.5.8"
+    }
+  },
+  "153 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@storybook/addon-essentials/6.5.9",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@storybook/addon-essentials",
+      "rawSpec": "^6.5.8"
+    }
+  },
+  "154 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@storybook/addon-links/6.5.9",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@storybook/addon-links",
+      "rawSpec": "^6.5.8"
+    }
+  },
+  "155 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@storybook/node-logger/6.5.9",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@storybook/node-logger",
+      "rawSpec": "^6.5.9"
+    }
+  },
+  "156 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@storybook/preset-create-react-app/3.2.0",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@storybook/preset-create-react-app",
+      "rawSpec": "^3.2.0"
+    }
+  },
+  "157 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@storybook/react/6.5.9",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@storybook/react",
+      "rawSpec": "^6.5.8"
+    }
+  },
+  "158 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@testing-library/dom/8.14.0",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@testing-library/dom",
+      "rawSpec": "^8.14.0"
+    }
+  },
+  "159 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@testing-library/jest-dom/5.16.4",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@testing-library/jest-dom",
+      "rawSpec": "^5.11.4"
+    }
+  },
+  "160 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@testing-library/react/11.2.7",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@testing-library/react",
+      "rawSpec": "^11.2.3"
+    }
+  },
+  "161 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@testing-library/react-hooks/5.1.3",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@testing-library/react-hooks",
+      "rawSpec": "^5.0.3"
+    }
+  },
+  "162 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@testing-library/user-event/12.8.3",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@testing-library/user-event",
+      "rawSpec": "^12.1.9"
+    }
+  },
+  "163 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/jest/26.0.24",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@types/jest",
+      "rawSpec": "^26.0.13"
+    }
+  },
+  "164 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/canvas/2.9.3",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "canvas",
+      "rawSpec": "^2.6.1"
+    }
+  },
+  "165 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/chalk/4.1.2",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "chalk",
+      "rawSpec": "^4.1.0"
+    }
+  },
+  "166 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/concurrently/5.3.0",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "concurrently",
+      "rawSpec": "^5.3.0"
+    }
+  },
+  "167 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/inquirer/8.2.4",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "inquirer",
+      "rawSpec": "^8.1.2"
+    }
+  },
+  "168 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react-refresh/0.9.0",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "react-refresh",
+      "rawSpec": "^0.9"
+    }
+  },
+  "169 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react-scripts/4.0.3",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "react-scripts",
+      "rawSpec": "^4.0.3"
+    }
+  },
+  "170 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/require-from-string/2.0.2",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "require-from-string",
+      "rawSpec": "^2.0.2"
+    }
+  },
+  "171 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/source-map-explorer/2.5.2",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "source-map-explorer",
+      "rawSpec": "^2.5.2"
+    }
+  },
+  "172 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/styled-components/4.4.1",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "styled-components",
+      "rawSpec": "^4.4.1"
+    }
+  },
+  "173 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/ts-node/9.1.1",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "ts-node",
+      "rawSpec": "^9.1.1"
+    }
+  },
+  "174 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/typescript/4.4.4",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "typescript",
+      "rawSpec": "~4.4.4"
+    }
+  },
+  "175 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/webpack/4.46.0",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "webpack",
+      "rawSpec": "^4"
+    }
+  },
+  "176 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@fontsource/roboto/4.5.7",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@fontsource/roboto",
+      "rawSpec": "^4.3.0"
+    }
+  },
+  "177 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@fortawesome/fontawesome-svg-core/1.2.36",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@fortawesome/fontawesome-svg-core",
+      "rawSpec": "^1.2.30"
+    }
+  },
+  "178 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@fortawesome/free-solid-svg-icons/5.15.4",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@fortawesome/free-solid-svg-icons",
+      "rawSpec": "^5.14.0"
+    }
+  },
+  "179 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@fortawesome/react-fontawesome/0.1.19",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@fortawesome/react-fontawesome",
+      "rawSpec": "^0.1.11"
+    }
+  },
+  "180 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@mui/icons-material/5.8.4",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@mui/icons-material",
+      "rawSpec": "^5.8.3"
+    }
+  },
+  "181 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@mui/material/5.8.7",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@mui/material",
+      "rawSpec": "^5.8.3"
+    }
+  },
+  "182 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@mui/system/5.8.7",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@mui/system",
+      "rawSpec": "^5.8.3"
+    }
+  },
+  "183 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/debug/4.1.7",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@types/debug",
+      "rawSpec": "^4.1.5"
+    }
+  },
+  "184 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/leaflet/1.7.11",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@types/leaflet",
+      "rawSpec": "^1.5.17"
+    }
+  },
+  "185 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/react/17.0.47",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@types/react",
+      "rawSpec": "^17.0.19"
+    }
+  },
+  "186 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/react-dom/17.0.17",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@types/react-dom",
+      "rawSpec": "^17.0.9"
+    }
+  },
+  "187 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/react-grid-layout/1.3.2",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@types/react-grid-layout",
+      "rawSpec": "^1.3.2"
+    }
+  },
+  "188 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/react-leaflet/2.8.2",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@types/react-leaflet",
+      "rawSpec": "^2.5.2"
+    }
+  },
+  "189 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/react-router/5.1.18",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@types/react-router",
+      "rawSpec": "^5.1.7"
+    }
+  },
+  "190 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/react-router-dom/5.3.3",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "@types/react-router-dom",
+      "rawSpec": "^5.1.7"
+    }
+  },
+  "191 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/ajv/8.11.0",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "ajv",
+      "rawSpec": "^8.10.0"
+    }
+  },
+  "192 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/axios/0.21.4",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "axios",
+      "rawSpec": "^0.21.1"
+    }
+  },
+  "193 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/date-fns/2.28.0",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "date-fns",
+      "rawSpec": "^2.21.3"
+    }
+  },
+  "194 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/debug/4.3.4",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "debug",
+      "rawSpec": "^4.2.0"
+    }
+  },
+  "195 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/eventemitter3/4.0.7",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "eventemitter3",
+      "rawSpec": "^4.0.7"
+    }
+  },
+  "196 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/keycloak-js/11.0.3",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "keycloak-js",
+      "rawSpec": "^11.0.2"
+    }
+  },
+  "197 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/leaflet/1.8.0",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "leaflet",
+      "rawSpec": "^1.7.1"
+    }
+  },
+  "198 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/node-vibrant/3.1.6",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "node-vibrant",
+      "rawSpec": "^3.1.6"
+    }
+  },
+  "199 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react/17.0.2",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "react",
+      "rawSpec": "^17.0.2"
+    }
+  },
+  "200 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react-customizable-progressbar/1.0.3",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "react-customizable-progressbar",
+      "rawSpec": "^1.0.3"
+    }
+  },
+  "201 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react-dom/17.0.2",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "react-dom",
+      "rawSpec": "^17.0.2"
+    }
+  },
+  "202 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react-grid-layout/1.3.4",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "react-grid-layout",
+      "rawSpec": "^1.3.4"
+    }
+  },
+  "203 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react-leaflet/2.8.0",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "react-leaflet",
+      "rawSpec": "^2.7.0"
+    }
+  },
+  "204 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react-router/5.3.3",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "react-router",
+      "rawSpec": "^5.2.0"
+    }
+  },
+  "205 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/react-router-dom/5.3.3",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "react-router-dom",
+      "rawSpec": "^5.2.0"
+    }
+  },
+  "206 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/rxjs/7.5.5",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "rxjs",
+      "rawSpec": "^7.5.5"
+    }
+  },
+  "207 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@babel/core/7.18.6",
+    "wanted": {
+      "dependentId": "packages/dashboard-e2e",
+      "name": "@babel/core",
+      "rawSpec": "^7.18.6"
+    }
+  },
+  "208 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@types/mocha/9.1.1",
+    "wanted": {
+      "dependentId": "packages/dashboard-e2e",
+      "name": "@types/mocha",
+      "rawSpec": "^9.0.0"
+    }
+  },
+  "209 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@wdio/browserstack-service/7.11.1",
+    "wanted": {
+      "dependentId": "packages/dashboard-e2e",
+      "name": "@wdio/browserstack-service",
+      "rawSpec": "7.11.1"
+    }
+  },
+  "210 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@wdio/cli/7.11.1",
+    "wanted": {
+      "dependentId": "packages/dashboard-e2e",
+      "name": "@wdio/cli",
+      "rawSpec": "7.11.1"
+    }
+  },
+  "211 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@wdio/local-runner/7.11.1",
+    "wanted": {
+      "dependentId": "packages/dashboard-e2e",
+      "name": "@wdio/local-runner",
+      "rawSpec": "7.11.1"
+    }
+  },
+  "212 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@wdio/mocha-framework/7.11.1",
+    "wanted": {
+      "dependentId": "packages/dashboard-e2e",
+      "name": "@wdio/mocha-framework",
+      "rawSpec": "7.11.1"
+    }
+  },
+  "213 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@wdio/spec-reporter/7.10.1",
+    "wanted": {
+      "dependentId": "packages/dashboard-e2e",
+      "name": "@wdio/spec-reporter",
+      "rawSpec": "7.10.1"
+    }
+  },
+  "214 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/concurrently/5.3.0",
+    "wanted": {
+      "dependentId": "packages/dashboard-e2e",
+      "name": "concurrently",
+      "rawSpec": "^5.3.0"
+    }
+  },
+  "215 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/serve/11.3.2",
+    "wanted": {
+      "dependentId": "packages/dashboard-e2e",
+      "name": "serve",
+      "rawSpec": "^11.3.2"
+    }
+  },
+  "216 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/ts-node/9.1.1",
+    "wanted": {
+      "dependentId": "packages/dashboard-e2e",
+      "name": "ts-node",
+      "rawSpec": "^9.1.1"
+    }
+  },
+  "217 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/typescript/4.4.4",
+    "wanted": {
+      "dependentId": "packages/dashboard-e2e",
+      "name": "typescript",
+      "rawSpec": "~4.4.4"
+    }
+  },
+  "218 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@typescript-eslint/eslint-plugin/4.33.0",
+    "wanted": {
+      "dependentId": ".",
+      "name": "@typescript-eslint/eslint-plugin",
+      "rawSpec": "^4.33.0"
+    }
+  },
+  "219 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/@typescript-eslint/parser/4.33.0",
+    "wanted": {
+      "dependentId": ".",
+      "name": "@typescript-eslint/parser",
+      "rawSpec": "^4.33.0"
+    }
+  },
+  "220 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/eslint/7.32.0",
+    "wanted": {
+      "dependentId": ".",
+      "name": "eslint",
+      "rawSpec": "^7.32.0"
+    }
+  },
+  "221 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/eslint-plugin-react/7.30.1",
+    "wanted": {
+      "dependentId": ".",
+      "name": "eslint-plugin-react",
+      "rawSpec": "^7.30.1"
+    }
+  },
+  "222 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/eslint-plugin-react-hooks/4.6.0",
+    "wanted": {
+      "dependentId": ".",
+      "name": "eslint-plugin-react-hooks",
+      "rawSpec": "^4.6.0"
+    }
+  },
+  "223 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/husky/8.0.1",
+    "wanted": {
+      "dependentId": ".",
+      "name": "husky",
+      "rawSpec": "^8.0.1"
+    }
+  },
+  "224 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/lint-staged/10.5.4",
+    "wanted": {
+      "dependentId": ".",
+      "name": "lint-staged",
+      "rawSpec": "^10.5.4"
+    }
+  },
+  "225 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/prettier/2.7.1",
+    "wanted": {
+      "dependentId": ".",
+      "name": "prettier",
+      "rawSpec": "^2.7.1"
+    }
+  },
+  "226 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/pyright/1.1.257",
+    "wanted": {
+      "dependentId": ".",
+      "name": "pyright",
+      "rawSpec": "^1.1.257"
+    }
+  },
+  "227 debug pnpm:_dependency_resolved": {
+    "resolution": "registry.npmjs.org/typescript/4.4.4",
+    "wanted": {
+      "dependentId": ".",
+      "name": "typescript",
+      "rawSpec": "~4.4.4"
+    }
+  },
+  "228 debug pnpm:_dependency_resolved": {
+    "resolution": "link:../rmf-models",
+    "wanted": {
+      "dependentId": "packages/api-client",
+      "name": "rmf-models",
+      "rawSpec": "workspace:*"
+    }
+  },
+  "229 debug pnpm:_dependency_resolved": {
+    "resolution": "link:../api-client",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "api-client",
+      "rawSpec": "workspace:*"
+    }
+  },
+  "230 debug pnpm:_dependency_resolved": {
+    "resolution": "link:../rmf-models",
+    "wanted": {
+      "dependentId": "packages/react-components",
+      "name": "rmf-models",
+      "rawSpec": "workspace:*"
+    }
+  },
+  "231 debug pnpm:_dependency_resolved": {
+    "resolution": "link:../api-client",
+    "wanted": {
+      "dependentId": "packages/rmf-auth",
+      "name": "api-client",
+      "rawSpec": "workspace:*"
+    }
+  },
+  "232 debug pnpm:_dependency_resolved": {
+    "resolution": "link:../api-client",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "api-client",
+      "rawSpec": "workspace:*"
+    }
+  },
+  "233 debug pnpm:_dependency_resolved": {
+    "resolution": "link:../react-components",
+    "wanted": {
+      "dependentId": "packages/dashboard",
+      "name": "react-components",
+      "rawSpec": "workspace:*"
+    }
+  },
+  "234 error pnpm": {
+    "code": "ERR_PNPM_NO_MATCHING_VERSION_INSIDE_WORKSPACE",
+    "pkgsStack": [],
+    "err": {
+      "name": "pnpm",
+      "message": "In : No matching version found for pipenv-install@* inside the workspace",
+      "code": "ERR_PNPM_NO_MATCHING_VERSION_INSIDE_WORKSPACE",
+      "stack": "pnpm: In : No matching version found for pipenv-install@* inside the workspace\n    at tryResolveFromWorkspace (/snapshot/dist/pnpm.cjs)\n    at resolveNpm (/snapshot/dist/pnpm.cjs)\n    at Object.resolve (/snapshot/dist/pnpm.cjs)\n    at /snapshot/dist/pnpm.cjs\n    at run (/snapshot/dist/pnpm.cjs)\n    at PQueue._tryToStartAnother (/snapshot/dist/pnpm.cjs)\n    at /snapshot/dist/pnpm.cjs\n    at new Promise (<anonymous>)\n    at PQueue.add (/snapshot/dist/pnpm.cjs)\n    at resolveAndFetch (/snapshot/dist/pnpm.cjs)"
+    }
+  }
+}
