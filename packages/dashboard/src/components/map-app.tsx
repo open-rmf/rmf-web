@@ -221,19 +221,24 @@ export const MapApp = styled(
       };
     }, [rmf]);
 
-    const [image, setImage] = React.useState<HTMLImageElement | null>(null);
+    const [imageUrl, setImageUrl] = React.useState<string | null>(null);
     const [bounds, setBounds] = React.useState<L.LatLngBoundsLiteral | null>(null);
     React.useEffect(() => {
       if (!currentLevel?.images[0]) {
-        setImage(null);
+        setImageUrl(null);
         return;
       }
+
       (async () => {
-        const image = await loadAffineImage(currentLevel.images[0]);
+        const affineImage = await loadAffineImage(currentLevel.images[0]);
         setBounds(
-          affineImageBounds(currentLevel.images[0], image.naturalWidth, image.naturalHeight),
+          affineImageBounds(
+            currentLevel.images[0],
+            affineImage.naturalWidth,
+            affineImage.naturalHeight,
+          ),
         );
-        setImage(image);
+        setImageUrl(affineImage.src);
       })();
     }, [currentLevel]);
 
@@ -299,28 +304,30 @@ export const MapApp = styled(
         zoom={6}
         bounds={bounds}
         maxBounds={bounds}
+        onbaselayerchange={({ name }: L.LayersControlEvent) => {
+          setCurrentLevel(
+            buildingMap.levels.find((l: Level) => l.name === name) || buildingMap.levels[0],
+          );
+        }}
       >
         <AttributionControl position="bottomright" prefix="OSRC-SG" />
-        <LayersControl
-          position="topleft"
-          onbaselayerchange={(ev) =>
-            setCurrentLevel(
-              buildingMap.levels.find((l) => l.name === ev.name) || buildingMap.levels[0],
-            )
-          }
-        >
+        <LayersControl position="topleft">
           <Pane name="image" style={{ zIndex: 0 }} />
-          {buildingMap.levels.map((level) => (
-            <LayersControl.BaseLayer
-              key={level.name}
-              name={level.name}
-              checked={currentLevel === level}
-            >
-              {currentLevel.images.length > 0 && image && (
-                <ImageOverlay bounds={bounds} url={image} pane="image" />
-              )}
-            </LayersControl.BaseLayer>
-          ))}
+          {buildingMap.levels.map((level: Level) =>
+            currentLevel.name === level.name ? (
+              <LayersControl.BaseLayer key={level.name} name={level.name} checked>
+                {currentLevel.images.length > 0 && imageUrl && (
+                  <ImageOverlay bounds={bounds} url={imageUrl} pane="image" />
+                )}
+              </LayersControl.BaseLayer>
+            ) : (
+              <LayersControl.BaseLayer key={level.name} name={level.name}>
+                {currentLevel.images.length > 0 && imageUrl && (
+                  <ImageOverlay bounds={bounds} url={imageUrl} pane="image" />
+                )}
+              </LayersControl.BaseLayer>
+            ),
+          )}
 
           <LayersControl.Overlay name="Waypoints" checked={!disabledLayers['Waypoints']}>
             <WaypointsOverlay
