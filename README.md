@@ -36,6 +36,12 @@ Refer to the following documentations:
 
 ## Install dependencies
 
+For Debian/Ubuntu systems, you may need to install `python3-venv` first.
+```bash
+sudo apt install python3-venv
+```
+
+Run
 ```bash
 pnpm install
 ```
