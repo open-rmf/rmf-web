@@ -133,7 +133,7 @@ export const TasksApp = React.memo(
           );
         })();
         return () => subs.forEach((s) => s.unsubscribe());
-      }, [rmf, forceRefresh, chronologicalOrder, tasksState.page, tasksState.pageSize]);
+      }, [rmf, forceRefresh, chronologicalOrder, tasksState.pageSize]);
 
       const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
         async (taskRequests) => {
