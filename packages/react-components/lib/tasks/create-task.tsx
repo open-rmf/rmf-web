@@ -49,8 +49,9 @@ const StyledConfirmationDialog = styled((props: ConfirmationDialogProps) => (
 
 function getShortDescription(taskRequest: TaskRequest): string {
   switch (taskRequest.category) {
-    case 'clean': {
-      return `[Clean] zone [${taskRequest.description.zone}]`;
+    case 'compose': {
+      // TODO(XY): update with the correct fields for compose tasks
+      return `[Clean] task [${taskRequest.description.zone}]`;
     }
     case 'delivery': {
       return `[Delivery] from [${taskRequest.description.pickup.place}] to [${taskRequest.description.dropoff.place}]`;
@@ -517,7 +518,7 @@ function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps
             defaultCleanTask(
               newValue,
               taskDesc.phases[0].activity.description.activities[1].description.description
-                .task_name,
+                .clean_task_name,
             ),
           )
         }
@@ -526,7 +527,7 @@ function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps
             defaultCleanTask(
               (ev.target as HTMLInputElement).value,
               taskDesc.phases[0].activity.description.activities[1].description.description
-                .task_name,
+                .clean_task_name,
             ),
           )
         }
@@ -618,7 +619,7 @@ function defaultDeliveryTask(): Record<string, any> {
 
 function defaultTaskDescription(taskCategory: string): TaskDescription | undefined {
   switch (taskCategory) {
-    case 'clean':
+    case 'compose':
       return defaultCleanTask();
     case 'patrol':
       return defaultLoopsTask();
@@ -692,12 +693,12 @@ export function CreateTaskForm({
 
   const renderTaskDescriptionForm = () => {
     switch (taskRequest.category) {
-      case 'clean':
+      case 'compose':
         return (
           <CleanTaskForm
             taskDesc={taskRequest.description as any}
             cleaningZones={cleaningZones}
-            onChange={(desc) => handleTaskDescriptionChange('clean', desc)}
+            onChange={(desc) => handleTaskDescriptionChange('compose', desc)}
           />
         );
       case 'patrol':
@@ -794,7 +795,7 @@ export function CreateTaskForm({
             value={taskRequest.category}
             onChange={handleTaskTypeChange}
           >
-            <MenuItem value="clean">Clean</MenuItem>
+            <MenuItem value="compose">Clean</MenuItem>
             <MenuItem value="patrol">Loop</MenuItem>
             <MenuItem value="delivery">Delivery</MenuItem>
           </TextField>
