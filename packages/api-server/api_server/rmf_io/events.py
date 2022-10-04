@@ -1,4 +1,3 @@
-from reactivex.subject.behaviorsubject import BehaviorSubject
 from reactivex.subject.subject import Subject
 
 
@@ -15,7 +14,7 @@ class RmfEvents:
         self.ingestor_health = Subject()  # IngestorHealth
         self.fleet_states = Subject()  # FleetState
         self.robot_health = Subject()  # RobotHealth
-        self.building_map = BehaviorSubject(None)  # Optional[BuildingMap]
+        self.building_map = Subject()  # BuildingMap
 
 
 rmf_events = RmfEvents()
