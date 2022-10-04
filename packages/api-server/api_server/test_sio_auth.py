@@ -23,7 +23,7 @@ class TestSioAuth(AppFixture):
                 fut.set_result(await on_sio_connect("test", {}, {"token": token}))
 
             loop.run_until_complete(result())
-            asyncio.set_event_loop(loop)
+            loop.close()
             return fut.result()
 
     def test_fail_with_no_token(self):
