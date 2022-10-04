@@ -103,6 +103,8 @@ class AppFixture(unittest.TestCase):
 
                 mock_sio.emit.side_effect = handle_resp
 
+                self.assertIsNotNone(self.client.portal)
+
                 self.client.portal.call(
                     on_sio_connect, "test", {}, {"token": self.client.token(user)}
                 )
