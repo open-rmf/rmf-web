@@ -1,5 +1,5 @@
-from rx.subject.behaviorsubject import BehaviorSubject
-from rx.subject.subject import Subject
+from reactivex.subject.behaviorsubject import BehaviorSubject
+from reactivex.subject.subject import Subject
 
 
 class RmfEvents:

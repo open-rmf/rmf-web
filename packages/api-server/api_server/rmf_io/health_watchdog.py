@@ -1,16 +1,16 @@
 import logging
 from typing import Any, Dict, List, Optional, cast
 
+from reactivex import compose
+from reactivex import operators as ops
+from reactivex.disposable import Disposable
+from reactivex.observable import Observable
+from reactivex.scheduler.scheduler import Scheduler
+from reactivex.subject.behaviorsubject import BehaviorSubject
 from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
-from rx import operators as ops
-from rx.core.observable.observable import Observable
-from rx.core.pipe import pipe
-from rx.core.typing import Disposable
-from rx.scheduler.scheduler import Scheduler
-from rx.subject.behaviorsubject import BehaviorSubject
 
 from api_server.models import (
     BuildingMap,
@@ -63,7 +63,7 @@ class HealthWatchdog:
 
         :param obs: Sequence[rx.Observable[BasicHealthModel]]
         """
-        return pipe(
+        return compose(
             ops.timestamp(),
             ops.combine_latest(*[x.pipe(ops.timestamp()) for x in obs]),
             most_critical(),

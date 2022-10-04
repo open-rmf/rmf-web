@@ -1,9 +1,9 @@
 from typing import Any, Callable, cast
 
-from rx.core.observable.observable import Observable
-from rx.core.pipe import pipe
-from rx.operators import buffer_with_time_or_count, distinct_until_changed
-from rx.operators import map as rx_map
+from reactivex import compose
+from reactivex.observable import Observable
+from reactivex.operators import buffer_with_time_or_count, distinct_until_changed
+from reactivex.operators import map as rx_map
 
 
 def heartbeat(liveliness) -> Callable[[Observable], Observable]:
@@ -15,7 +15,7 @@ def heartbeat(liveliness) -> Callable[[Observable], Observable]:
         considered alive. Note that an observable may stay alive for up to 2x liveliness between
         each event as this operator checks for items emitted between this window.
     """
-    return pipe(
+    return compose(
         buffer_with_time_or_count(liveliness, 1),
         rx_map(cast(Any, lambda items: len(items) > 0)),
         distinct_until_changed(),
