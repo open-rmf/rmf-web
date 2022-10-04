@@ -4,8 +4,8 @@ import logging
 from collections import namedtuple
 from typing import Coroutine, List, Optional
 
-from rx.core.typing import Disposable
-from rx.subject.subject import Subject
+from reactivex.disposable import Disposable
+from reactivex.subject.subject import Subject
 
 from api_server.models import (
     BuildingMap,
