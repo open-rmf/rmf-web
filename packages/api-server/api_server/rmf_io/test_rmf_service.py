@@ -116,6 +116,7 @@ class TestRmfService(unittest.TestCase):
         async def run():
             tasks = [self.rmf_service.call("hello"), self.rmf_service.call("world")]
             results = await asyncio.gather(*tasks)
-            self.assertListEqual(["hello", "world"], results)
+            results_list = [r for r in results]
+            self.assertListEqual(["hello", "world"], results_list)
 
         asyncio.get_event_loop().run_until_complete(run())
