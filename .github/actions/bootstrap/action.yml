@@ -19,7 +19,7 @@ runs:
         node-version: '16'
         cache: 'pnpm'
     - name: Install dependencies
-      run: pnpm install -w --filter ${{ inputs.package }}...
+      run: pnpm install -w --filter ${{ inputs.package }}... --no-frozen-lockfile
       shell: bash
     - name: Build
       if: '!${{ inputs.skip-build }}'
