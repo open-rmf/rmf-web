@@ -4,7 +4,7 @@ import logging
 from collections import namedtuple
 from typing import Coroutine, List, Optional
 
-from reactivex.disposable import Disposable
+from reactivex.abc import DisposableBase as Disposable
 from reactivex.subject.subject import Subject
 
 from api_server.models import (
