@@ -13,7 +13,7 @@ import {
   useGridApiContext,
   GridRenderEditCellParams,
 } from '@mui/x-data-grid';
-import { InputBase, styled, TextField } from '@mui/material';
+import { FormControl, InputBase, NativeSelect, styled, TextField } from '@mui/material';
 import locale from 'date-fns/locale/en-US';
 import { TaskState, Status } from 'api-client';
 import React from 'react';
@@ -24,11 +24,11 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
  * Custom filter operation
  * https://mui.com/x/react-data-grid/filtering/
  */
-function buildApplyDateFilterFn(
+const buildApplyDateFilterFn = (
   filterItem: GridFilterItem,
   compareFn: (value1: number, value2: number) => boolean,
   showTime: boolean,
-) {
+) => {
   if (!filterItem.value) {
     return null;
   }
@@ -47,9 +47,9 @@ function buildApplyDateFilterFn(
 
     return compareFn(cellValueMs, filterValueMs);
   };
-}
+};
 
-function getDateFilterOperators(showTime: boolean): GridColTypeDef['filterOperators'] {
+const getDateFilterOperators = (showTime: boolean): GridColTypeDef['filterOperators'] => {
   return [
     {
       value: 'is',
@@ -116,7 +116,7 @@ function getDateFilterOperators(showTime: boolean): GridColTypeDef['filterOperat
       },
     },
   ];
-}
+};
 
 const dateAdapter = new AdapterDateFns({ locale });
 
@@ -147,12 +147,12 @@ const GridEditDateInput = styled(InputBase)({
   padding: '0 9px',
 });
 
-function GridEditDateCell({
+const GridEditDateCell = ({
   id,
   field,
   value,
   colDef,
-}: GridRenderEditCellParams<Date | string | null>) {
+}: GridRenderEditCellParams<Date | string | null>) => {
   const apiRef = useGridApiContext();
 
   const Component = colDef.type === 'dateTime' ? DateTimePicker : DatePicker;
@@ -178,9 +178,9 @@ function GridEditDateCell({
       onChange={handleChange}
     />
   );
-}
+};
 
-function GridFilterDateInput(props: GridFilterInputValueProps & { showTime?: boolean }) {
+const GridFilterDateInput = (props: GridFilterInputValueProps & { showTime?: boolean }) => {
   const { item, showTime, applyValue, apiRef } = props;
 
   const Component = showTime ? DateTimePicker : DatePicker;
@@ -209,7 +209,82 @@ function GridFilterDateInput(props: GridFilterInputValueProps & { showTime?: boo
       onChange={handleFilterChange}
     />
   );
-}
+};
+
+const buildApplyStateFilterFn = (
+  filterItem: GridFilterItem,
+  compareFn: (value1: string, value2: string) => boolean,
+) => {
+  if (!filterItem.value) {
+    return null;
+  }
+
+  const filterValue = filterItem.value;
+
+  return ({ value }: GridCellParams<string>): boolean => {
+    if (!value) {
+      return false;
+    }
+
+    return compareFn(value, filterValue.target.value);
+  };
+};
+
+const getSelectFilterOperators = (): GridColTypeDef['filterOperators'] => {
+  return [
+    {
+      value: 'is',
+      getApplyFilterFn: (filterItem) => {
+        return buildApplyStateFilterFn(filterItem, (value1, value2) => value1 === value2);
+      },
+      InputComponent: GridFilterSelectInput,
+      InputComponentProps: { type: 'string' },
+    },
+    {
+      value: 'isEmpty',
+      getApplyFilterFn: () => {
+        return ({ value }): boolean => {
+          return value == null;
+        };
+      },
+    },
+    {
+      value: 'isNotEmpty',
+      getApplyFilterFn: () => {
+        return ({ value }): boolean => {
+          return value != null;
+        };
+      },
+    },
+  ];
+};
+
+const GridFilterSelectInput = (props: GridFilterInputValueProps) => {
+  const { item, applyValue } = props;
+  const handleFilterChange = (newValue: unknown) => {
+    applyValue({ ...item, value: newValue });
+  };
+
+  return (
+    <FormControl fullWidth>
+      <NativeSelect onChange={handleFilterChange} sx={{ mt: '16px' }}>
+        <option value={''}></option>
+        <option value={Status.Uninitialized}>{Status.Uninitialized}</option>
+        <option value={Status.Blocked}>{Status.Blocked}</option>
+        <option value={Status.Error}>{Status.Error}</option>
+        <option value={Status.Failed}>{Status.Failed}</option>
+        <option value={Status.Queued}>{Status.Queued}</option>
+        <option value={Status.Standby}>{Status.Standby}</option>
+        <option value={Status.Underway}>{Status.Underway}</option>
+        <option value={Status.Delayed}>{Status.Delayed}</option>
+        <option value={Status.Skipped}>{Status.Skipped}</option>
+        <option value={Status.Canceled}>{Status.Canceled}</option>
+        <option value={Status.Killed}>{Status.Killed}</option>
+        <option value={Status.Completed}>{Status.Completed}</option>
+      </NativeSelect>
+    </FormControl>
+  );
+};
 
 const classes = {
   taskActiveCell: 'MuiDataGrid-cell-active-cell',
@@ -313,11 +388,11 @@ const columns: GridColDef[] = [
   {
     field: 'status',
     headerName: 'State',
-    width: 150,
     editable: false,
     valueGetter: (params: GridValueGetterParams) =>
       params.row.status ? params.row.status : 'unknown',
     flex: 1,
+    filterOperators: getSelectFilterOperators(),
   },
 ];
 
