@@ -9,6 +9,7 @@ on:
       - main
 env:
   CI: true
+  PIPENV_VERBOSITY: -1
 jobs:
   tests:
     name: Tests
