@@ -17,7 +17,7 @@ import { FormControl, InputBase, NativeSelect, styled, TextField } from '@mui/ma
 import locale from 'date-fns/locale/en-US';
 import { TaskState, Status } from 'api-client';
 import React from 'react';
-import { DatePicker, DateTimePicker } from '@mui/x-date-pickers';
+import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 /**
@@ -26,7 +26,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
  */
 const buildApplyDateFilterFn = (
   filterItem: GridFilterItem,
-  compareFn: (value1: number, value2: number) => boolean,
+  compareFn: (value1: number, value2: number | string) => boolean,
   showTime: boolean,
 ) => {
   if (!filterItem.value) {
@@ -35,9 +35,14 @@ const buildApplyDateFilterFn = (
 
   const filterValueMs = filterItem.value.getTime();
 
-  return ({ value }: GridCellParams<Date>): boolean => {
-    if (!value) {
+  return ({ value }: GridCellParams): boolean => {
+    if (!value || value === '-') {
       return false;
+    }
+
+    if (showTime) {
+      const filterValueTime = new Date(filterValueMs).toLocaleTimeString();
+      return compareFn(value, filterValueTime);
     }
 
     // Make a copy of the date to not reset the hours in the original object
@@ -155,7 +160,7 @@ const GridEditDateCell = ({
 }: GridRenderEditCellParams<Date | string | null>) => {
   const apiRef = useGridApiContext();
 
-  const Component = colDef.type === 'dateTime' ? DateTimePicker : DatePicker;
+  const Component = colDef.type === 'dateTime' ? TimePicker : DatePicker;
 
   const handleChange = (newValue: unknown) => {
     apiRef.current.setEditCellValue({ id, field, value: newValue });
@@ -183,14 +188,35 @@ const GridEditDateCell = ({
 const GridFilterDateInput = (props: GridFilterInputValueProps & { showTime?: boolean }) => {
   const { item, showTime, applyValue, apiRef } = props;
 
-  const Component = showTime ? DateTimePicker : DatePicker;
-
   const handleFilterChange = (newValue: unknown) => {
     applyValue({ ...item, value: newValue });
   };
 
-  return (
-    <Component
+  return showTime ? (
+    <TimePicker
+      openTo="hours"
+      views={['hours', 'minutes', 'seconds']}
+      inputFormat="HH:mm:ss"
+      mask="__:__:__"
+      value={item.value || null}
+      InputAdornmentProps={{
+        sx: {
+          '& .MuiButtonBase-root': {
+            marginRight: -1,
+          },
+        },
+      }}
+      onChange={handleFilterChange}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          variant="standard"
+          label={apiRef.current.getLocaleText('filterPanelInputLabel')}
+        />
+      )}
+    />
+  ) : (
+    <DatePicker
       value={item.value || null}
       renderInput={(params) => (
         <TextField
@@ -373,17 +399,20 @@ const columns: GridColDef[] = [
         ? new Date(params.row.unix_millis_start_time).toLocaleDateString()
         : 'unknown',
     flex: 1,
+    filterOperators: getDateFilterOperators(false),
   },
   {
     field: 'unix_millis_finish_time',
     headerName: 'End Time',
     width: 150,
     editable: false,
+    type: 'dateTime',
     valueGetter: (params: GridValueGetterParams) =>
       params.row.unix_millis_finish_time
         ? new Date(params.row.unix_millis_finish_time).toLocaleTimeString()
         : '-',
     flex: 1,
+    filterOperators: getDateFilterOperators(true),
   },
   {
     field: 'status',
