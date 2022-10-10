@@ -19,5 +19,5 @@ export function getScheduleVisualizer(): ReturnType<WebdriverIO.Browser['$']> {
 }
 
 export function getDoorCell(doorName: string): ReturnType<WebdriverIO.Browser['$']> {
-  return $(`[aria-labelledby=door-cell-${doorName}`);
+  return $(`[aria-labelledby=door-cell-${doorName}]`);
 }
