@@ -10,6 +10,7 @@ import {
   Window,
   TaskDataGridTable,
   DefaultTableDataGridProps,
+  DefaultFilterFields,
 } from 'react-components';
 import { Subscription } from 'rxjs';
 import { AppControllerContext, ResourcesContext } from '../app-contexts';
@@ -70,6 +71,13 @@ export const TasksApp = React.memo(
         pageSize: 10,
       });
 
+      const [defaultFilterFields, setDefaultFilterFields] = React.useState<DefaultFilterFields>({
+        category: undefined,
+        taskId: undefined,
+        startTime: undefined,
+        finisTime: undefined,
+      });
+
       const [placeNames, setPlaceNames] = React.useState<string[]>([]);
       React.useEffect(() => {
         if (!rmf) {
@@ -91,6 +99,7 @@ export const TasksApp = React.memo(
         setWorkcells(Object.keys(resourceManager.dispensers.dispensers));
       }, [resourceManager]);
 
+      const GET_LIMIT = 10;
       React.useEffect(() => {
         if (!rmf) {
           return;
@@ -98,12 +107,12 @@ export const TasksApp = React.memo(
         const subs: Subscription[] = [];
         (async () => {
           const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
+            defaultFilterFields.taskId,
+            defaultFilterFields.category,
+            defaultFilterFields.startTime,
+            defaultFilterFields.finisTime,
+            GET_LIMIT,
+            (tasksState.page - 1) * 10,
             undefined,
             undefined,
           );
@@ -113,8 +122,9 @@ export const TasksApp = React.memo(
           setTasksState((old) => ({
             ...old,
             isLoading: false,
-            data: results,
-            total: results.length,
+            data: newTasks,
+            total:
+              results.length === GET_LIMIT ? tasksState.page * 10 + 1 : tasksState.page * 10 - 9,
           }));
 
           subs.push(
@@ -128,7 +138,15 @@ export const TasksApp = React.memo(
           );
         })();
         return () => subs.forEach((s) => s.unsubscribe());
-      }, [rmf, forceRefresh, tasksState.pageSize]);
+      }, [
+        rmf,
+        forceRefresh,
+        tasksState.page,
+        defaultFilterFields.taskId,
+        defaultFilterFields.category,
+        defaultFilterFields.finisTime,
+        defaultFilterFields.startTime,
+      ]);
 
       const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
         async (taskRequests) => {
@@ -178,6 +196,7 @@ export const TasksApp = React.memo(
                 <TaskDataGridTable
                   tasks={tasksState}
                   onTaskClick={(_ev, task) => AppEvents.taskSelect.next(task)}
+                  setDefaultFilterFields={setDefaultFilterFields}
                   onPageChange={(newPage: number) =>
                     setTasksState((old) => ({ ...old, page: newPage + 1 }))
                   }
