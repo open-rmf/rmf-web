@@ -240,6 +240,13 @@ export const MapApp = styled(
         );
         setImageUrl(affineImage.src);
       })();
+
+      buildingMap &&
+        setWaypoints(
+          getPlaces(buildingMap).filter(
+            (p) => p.level === currentLevel.name && p.vertex.name.length > 0,
+          ),
+        );
     }, [currentLevel]);
 
     const [robots, setRobots] = React.useState<RobotData[]>([]);
