@@ -7,10 +7,14 @@ import {
   GridRowParams,
   GridCellParams,
   GridToolbar,
+  GridColTypeDef,
+  GridFilterInputValueProps,
+  GridFilterItem,
 } from '@mui/x-data-grid';
-import { styled } from '@mui/material';
+import { Box, styled, TextField, TextFieldProps } from '@mui/material';
 import * as React from 'react';
 import { TaskState, Status } from 'api-client';
+import SyncIcon from '@mui/icons-material/Sync';
 
 const classes = {
   taskActiveCell: 'MuiDataGrid-cell-active-cell',
@@ -57,11 +61,19 @@ export interface DefaultTableDataGridProps {
   pageSize: number;
 }
 
+export interface DefaultFilterFields {
+  category: string | undefined;
+  taskId: string | undefined;
+  startTime: string | undefined;
+  finisTime: string | undefined;
+}
+
 export interface TaskDataGridTableProps {
   tasks: DefaultTableDataGridProps;
   onTaskClick?(ev: MuiEvent<React.MouseEvent<HTMLElement>>, task: TaskState): void;
   onPageChange: (newPage: number) => void;
   onPageSizeChange: (newPageSize: number) => void;
+  setDefaultFilterFields: React.Dispatch<React.SetStateAction<DefaultFilterFields>>;
 }
 
 export function TaskDataGridTable({
@@ -69,6 +81,7 @@ export function TaskDataGridTable({
   onTaskClick,
   onPageChange,
   onPageSizeChange,
+  setDefaultFilterFields,
 }: TaskDataGridTableProps): JSX.Element {
   const handleEvent: GridEventListener<'rowClick'> = (
     params: GridRowParams,
@@ -77,6 +90,117 @@ export function TaskDataGridTable({
     if (onTaskClick) {
       onTaskClick(event, params.row);
     }
+  };
+
+  const buildApplyCategoryFilter = (
+    filterItem: GridFilterItem,
+    compareFn: (value1: string, value2: string) => boolean,
+  ) => {
+    if (!filterItem.value) {
+      return null;
+    }
+
+    const filterValue = filterItem.value;
+
+    return ({ value }: GridCellParams<string>): boolean => {
+      if (!value) {
+        return false;
+      }
+
+      return compareFn(value, filterValue);
+    };
+  };
+
+  const getCategoryFilterOperators = (): GridColTypeDef['filterOperators'] => {
+    return [
+      {
+        value: 'is',
+        getApplyFilterFn: (filterItem) => {
+          return buildApplyCategoryFilter(filterItem, (value1, value2) => value1 === value2);
+        },
+        InputComponent: GridFilterCategoryInput,
+        InputComponentProps: { type: 'string' },
+      },
+
+      {
+        value: 'isEmpty',
+        getApplyFilterFn: () => {
+          return ({ value }): boolean => {
+            return value == null;
+          };
+        },
+      },
+      {
+        value: 'isNotEmpty',
+        getApplyFilterFn: () => {
+          return ({ value }): boolean => {
+            return value != null;
+          };
+        },
+      },
+    ];
+  };
+
+  const GridFilterCategoryInput = (props: GridFilterInputValueProps) => {
+    const { item, applyValue, focusElementRef = null } = props;
+
+    const [filterValueState, setFilterValueState] = React.useState(item.value ?? '');
+    const [applying, setIsApplying] = React.useState(false);
+
+    const filterTimeout = React.useRef<ReturnType<typeof setTimeout>>();
+    React.useEffect(() => {
+      return () => {
+        clearTimeout(filterTimeout.current);
+      };
+    }, []);
+
+    React.useEffect(() => {
+      const itemValue = item.value ?? '';
+      setFilterValueState(itemValue);
+    }, [item.value]);
+
+    const updateFilterValue = (category: string) => {
+      clearTimeout(filterTimeout.current);
+      setFilterValueState(category);
+
+      setIsApplying(true);
+      filterTimeout.current = setTimeout(() => {
+        setIsApplying(false);
+        setDefaultFilterFields((old) => ({
+          ...old,
+          category: category === '' ? undefined : category,
+        }));
+        applyValue({ ...item, value: category });
+      }, 500);
+    };
+
+    const handleLowerFilterChange: TextFieldProps['onChange'] = (event) => {
+      updateFilterValue(event.target.value);
+    };
+
+    return (
+      <Box
+        sx={{
+          display: 'inline-flex',
+          flexDirection: 'row',
+          alignItems: 'end',
+          height: 48,
+          pl: '20px',
+        }}
+      >
+        <TextField
+          name="filter"
+          placeholder="Filter Value"
+          label="Value"
+          variant="standard"
+          value={filterValueState}
+          onChange={handleLowerFilterChange}
+          inputRef={focusElementRef}
+          sx={{ mr: 2 }}
+          InputProps={applying ? { endAdornment: <SyncIcon /> } : {}}
+        />
+      </Box>
+    );
   };
 
   const columns: GridColDef[] = [
@@ -93,6 +217,7 @@ export function TaskDataGridTable({
       width: 150,
       editable: false,
       flex: 1,
+      filterOperators: getCategoryFilterOperators(),
     },
     {
       field: 'name',
