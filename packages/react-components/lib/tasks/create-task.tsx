@@ -570,7 +570,7 @@ function defaultTask(): TaskRequest {
   return {
     category: 'patrol',
     description: defaultLoopsTask(),
-    unix_millis_earliest_start_time: Date.now(),
+    unix_millis_earliest_start_time: 0,
     priority: { type: 'binary', value: 0 },
   };
 }
@@ -742,7 +742,7 @@ export function CreateTaskForm({
                 value={
                   taskRequest.unix_millis_earliest_start_time
                     ? new Date(taskRequest.unix_millis_earliest_start_time)
-                    : new Date()
+                    : new Date(0)
                 }
                 onChange={(date) => {
                   if (!date) {
