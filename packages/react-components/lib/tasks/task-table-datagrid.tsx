@@ -10,11 +10,17 @@ import {
   GridColTypeDef,
   GridFilterInputValueProps,
   GridFilterItem,
+  GridRenderEditCellParams,
+  useGridApiContext,
+  GRID_DATE_COL_DEF,
 } from '@mui/x-data-grid';
-import { Box, styled, TextField, TextFieldProps } from '@mui/material';
+import locale from 'date-fns/locale/en-US';
+import { Box, InputBase, styled, TextField, TextFieldProps } from '@mui/material';
 import * as React from 'react';
 import { TaskState, Status } from 'api-client';
 import SyncIcon from '@mui/icons-material/Sync';
+import { DatePicker, TimePicker } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 const classes = {
   taskActiveCell: 'MuiDataGrid-cell-active-cell',
@@ -90,6 +96,241 @@ export function TaskDataGridTable({
     if (onTaskClick) {
       onTaskClick(event, params.row);
     }
+  };
+
+  /**
+   * Custom filter operation
+   * https://mui.com/x/react-data-grid/filtering/
+   */
+  const buildApplyDateFilterFn = (
+    filterItem: GridFilterItem,
+    compareFn: (value1: number, value2: number | string) => boolean,
+    showTime: boolean,
+  ) => {
+    if (!filterItem.value) {
+      return null;
+    }
+
+    const filterValueMs = filterItem.value.getTime();
+
+    return ({ value }: GridCellParams): boolean => {
+      if (!value || value === '-') {
+        return false;
+      }
+
+      if (showTime) {
+        const filterValueTime = new Date(filterValueMs).toLocaleTimeString();
+        return compareFn(value, filterValueTime);
+      }
+
+      // Make a copy of the date to not reset the hours in the original object
+      const dateCopy = new Date(value);
+      dateCopy.setHours(showTime ? value.getHours() : 0, showTime ? value.getMinutes() : 0, 0, 0);
+      const cellValueMs = dateCopy.getTime();
+
+      return compareFn(cellValueMs, filterValueMs);
+    };
+  };
+
+  const getDateFilterOperators = (showTime: boolean): GridColTypeDef['filterOperators'] => {
+    return [
+      {
+        value: 'is',
+        getApplyFilterFn: (filterItem) => {
+          return buildApplyDateFilterFn(
+            filterItem,
+            (value1, value2) => value1 === value2,
+            showTime,
+          );
+        },
+        InputComponent: GridFilterDateInput,
+        InputComponentProps: { showTime },
+      },
+      {
+        value: 'not',
+        getApplyFilterFn: (filterItem) => {
+          return buildApplyDateFilterFn(
+            filterItem,
+            (value1, value2) => value1 !== value2,
+            showTime,
+          );
+        },
+        InputComponent: GridFilterDateInput,
+        InputComponentProps: { showTime },
+      },
+      {
+        value: 'after',
+        getApplyFilterFn: (filterItem) => {
+          return buildApplyDateFilterFn(filterItem, (value1, value2) => value1 > value2, showTime);
+        },
+        InputComponent: GridFilterDateInput,
+        InputComponentProps: { showTime },
+      },
+      {
+        value: 'onOrAfter',
+        getApplyFilterFn: (filterItem) => {
+          return buildApplyDateFilterFn(filterItem, (value1, value2) => value1 >= value2, showTime);
+        },
+        InputComponent: GridFilterDateInput,
+        InputComponentProps: { showTime },
+      },
+      {
+        value: 'before',
+        getApplyFilterFn: (filterItem) => {
+          return buildApplyDateFilterFn(filterItem, (value1, value2) => value1 < value2, showTime);
+        },
+        InputComponent: GridFilterDateInput,
+        InputComponentProps: { showTime },
+      },
+      {
+        value: 'onOrBefore',
+        getApplyFilterFn: (filterItem) => {
+          return buildApplyDateFilterFn(filterItem, (value1, value2) => value1 <= value2, showTime);
+        },
+        InputComponent: GridFilterDateInput,
+        InputComponentProps: { showTime },
+      },
+      {
+        value: 'isEmpty',
+        getApplyFilterFn: () => {
+          return ({ value }): boolean => {
+            return value == null;
+          };
+        },
+      },
+      {
+        value: 'isNotEmpty',
+        getApplyFilterFn: () => {
+          return ({ value }): boolean => {
+            return value != null;
+          };
+        },
+      },
+    ];
+  };
+
+  const dateAdapter = new AdapterDateFns({ locale });
+
+  /**
+   * `date` column
+   */
+
+  const dateColumnType: GridColTypeDef<Date | string, string> = {
+    ...GRID_DATE_COL_DEF,
+    resizable: false,
+    renderEditCell: (params) => {
+      return <GridEditDateCell {...params} />;
+    },
+    filterOperators: getDateFilterOperators(false),
+    valueFormatter: (params) => {
+      if (typeof params.value === 'string') {
+        return params.value;
+      }
+      if (params.value) {
+        console.log('Formating...');
+        console.log(params.value);
+        return dateAdapter.format(params.value, 'keyboardDate');
+      }
+      return '';
+    },
+  };
+
+  const GridEditDateInput = styled(InputBase)({
+    fontSize: 'inherit',
+    padding: '0 9px',
+  });
+
+  const GridEditDateCell = ({
+    id,
+    field,
+    value,
+    colDef,
+  }: GridRenderEditCellParams<Date | string | null>) => {
+    const apiRef = useGridApiContext();
+
+    const Component = colDef.type === 'dateTime' ? TimePicker : DatePicker;
+
+    const handleChange = (newValue: unknown) => {
+      apiRef.current.setEditCellValue({ id, field, value: newValue });
+    };
+
+    return (
+      <Component
+        value={value}
+        renderInput={({ inputRef, inputProps, InputProps, disabled, error }) => (
+          <GridEditDateInput
+            fullWidth
+            autoFocus
+            ref={inputRef}
+            {...InputProps}
+            disabled={disabled}
+            error={error}
+            inputProps={inputProps}
+          />
+        )}
+        onChange={handleChange}
+      />
+    );
+  };
+
+  const GridFilterDateInput = (props: GridFilterInputValueProps & { showTime?: boolean }) => {
+    const { item, showTime, applyValue, apiRef } = props;
+
+    const handleFilterChange = (newValue: unknown) => {
+      const localDate = new Date(newValue as Date);
+      const filterValue = dateAdapter.toISO(localDate);
+
+      setDefaultFilterFields((old) => ({
+        ...old,
+        startTime: filterValue === '' ? undefined : filterValue,
+      }));
+
+      applyValue({ ...item, value: newValue });
+    };
+
+    return showTime ? (
+      <TimePicker
+        openTo="hours"
+        views={['hours', 'minutes', 'seconds']}
+        inputFormat="HH:mm:ss"
+        mask="__:__:__"
+        value={item.value || null}
+        InputAdornmentProps={{
+          sx: {
+            '& .MuiButtonBase-root': {
+              marginRight: -1,
+            },
+          },
+        }}
+        onChange={handleFilterChange}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant="standard"
+            label={apiRef.current.getLocaleText('filterPanelInputLabel')}
+          />
+        )}
+      />
+    ) : (
+      <DatePicker
+        value={item.value || null}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant="standard"
+            label={apiRef.current.getLocaleText('filterPanelInputLabel')}
+          />
+        )}
+        InputAdornmentProps={{
+          sx: {
+            '& .MuiButtonBase-root': {
+              marginRight: -1,
+            },
+          },
+        }}
+        onChange={handleFilterChange}
+      />
+    );
   };
 
   const buildApplyCategoryFilter = (
@@ -233,11 +474,13 @@ export function TaskDataGridTable({
       headerName: 'Start Time',
       width: 150,
       editable: false,
+      ...dateColumnType,
       valueGetter: (params: GridValueGetterParams) =>
         params.row.unix_millis_start_time
           ? new Date(params.row.unix_millis_start_time).toLocaleDateString()
           : 'unknown',
       flex: 1,
+      filterOperators: getDateFilterOperators(false),
     },
     {
       field: 'unix_millis_finish_time',
