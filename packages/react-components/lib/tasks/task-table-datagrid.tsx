@@ -19,7 +19,7 @@ import { Box, InputBase, styled, TextField, TextFieldProps } from '@mui/material
 import * as React from 'react';
 import { TaskState, Status } from 'api-client';
 import SyncIcon from '@mui/icons-material/Sync';
-import { DatePicker, TimePicker } from '@mui/x-date-pickers';
+import { DatePicker, TimePicker, DateTimePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 const classes = {
@@ -227,8 +227,6 @@ export function TaskDataGridTable({
         return params.value;
       }
       if (params.value) {
-        console.log('Formating...');
-        console.log(params.value);
         return dateAdapter.format(params.value, 'keyboardDate');
       }
       return '';
@@ -275,6 +273,35 @@ export function TaskDataGridTable({
 
   const GridFilterDateInput = (props: GridFilterInputValueProps & { showTime?: boolean }) => {
     const { item, showTime, applyValue, apiRef } = props;
+    const [filterValueState, setFilterValueState] = React.useState(item.value ?? '');
+    const filterTimeout = React.useRef<ReturnType<typeof setTimeout>>();
+
+    React.useEffect(() => {
+      return () => {
+        clearTimeout(filterTimeout.current);
+      };
+    }, []);
+
+    React.useEffect(() => {
+      const itemValue = item.value ?? '';
+      setFilterValueState(itemValue);
+    }, [item.value]);
+
+    const handleFilterTimePickerChange = (newValue: unknown) => {
+      const filterValue = new Date(dateAdapter.toISO(newValue as Date)).getTime() / 1000;
+
+      clearTimeout(filterTimeout.current);
+
+      setFilterValueState(newValue);
+
+      filterTimeout.current = setTimeout(() => {
+        setDefaultFilterFields((old) => ({
+          ...old,
+          finisTime: filterValue.toString(),
+        }));
+        applyValue({ ...item, value: newValue });
+      }, 5000);
+    };
 
     const handleFilterChange = (newValue: unknown) => {
       const localDate = new Date(newValue as Date);
@@ -289,12 +316,8 @@ export function TaskDataGridTable({
     };
 
     return showTime ? (
-      <TimePicker
-        openTo="hours"
-        views={['hours', 'minutes', 'seconds']}
-        inputFormat="HH:mm:ss"
-        mask="__:__:__"
-        value={item.value || null}
+      <DateTimePicker
+        value={filterValueState}
         InputAdornmentProps={{
           sx: {
             '& .MuiButtonBase-root': {
@@ -302,7 +325,7 @@ export function TaskDataGridTable({
             },
           },
         }}
-        onChange={handleFilterChange}
+        onChange={handleFilterTimePickerChange}
         renderInput={(params) => (
           <TextField
             {...params}
@@ -493,6 +516,7 @@ export function TaskDataGridTable({
           ? new Date(params.row.unix_millis_finish_time).toLocaleTimeString()
           : '-',
       flex: 1,
+      filterOperators: getDateFilterOperators(true),
     },
     {
       field: 'status',
