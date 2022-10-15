@@ -175,7 +175,16 @@ export const TasksApp = React.memo(
             <Toolbar variant="dense">
               <Tooltip title="Refresh" color="inherit">
                 <IconButton
-                  onClick={() => setForceRefresh((prev) => prev + 1)}
+                  onClick={() => {
+                    setForceRefresh((prev) => prev + 1);
+                    setDefaultFilterFields((old) => ({
+                      ...old,
+                      category: undefined,
+                      startTime: undefined,
+                      finisTime: undefined,
+                      taskId: undefined,
+                    }));
+                  }}
                   aria-label="Refresh"
                 >
                   <RefreshIcon />
