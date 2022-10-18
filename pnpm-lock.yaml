@@ -71,6 +71,7 @@ importers:
       '@mui/icons-material': ^5.8.3
       '@mui/material': ^5.8.3
       '@mui/system': ^5.8.3
+      '@react-leaflet/core': 1.1.1
       '@storybook/addon-actions': ^6.5.8
       '@storybook/addon-essentials': ^6.5.8
       '@storybook/addon-links': ^6.5.8
@@ -88,7 +89,7 @@ importers:
       '@types/react': ^17.0.19
       '@types/react-dom': ^17.0.9
       '@types/react-grid-layout': ^1.3.2
-      '@types/react-leaflet': ^2.5.2
+      '@types/react-leaflet': ^2.8.2
       '@types/react-router': ^5.1.7
       '@types/react-router-dom': ^5.1.7
       ajv: ^8.10.0
@@ -103,21 +104,23 @@ importers:
       eventemitter3: ^4.0.7
       inquirer: ^8.1.2
       keycloak-js: ^11.0.2
-      leaflet: ^1.7.1
+      leaflet: ^1.8.0
       node-vibrant: ^3.1.6
       react: ^17.0.2
+      react-app-rewire-babel-loader: ^0.1.1
+      react-app-rewired: ^2.2.1
       react-components: workspace:*
       react-customizable-progressbar: ^1.0.3
       react-dom: ^17.0.2
       react-grid-layout: ^1.3.4
-      react-leaflet: ^2.7.0
+      react-leaflet: 3.2.5
       react-refresh: ^0.9
       react-router: ^5.2.0
       react-router-dom: ^5.2.0
       react-scripts: ^4.0.3
       require-from-string: ^2.0.2
-      rmf-auth: file:../rmf-auth
-      rmf-models: file:../rmf-models
+      rmf-auth: workspace:*
+      rmf-models: workspace:*
       rxjs: ^7.5.5
       source-map-explorer: ^2.5.2
       styled-components: ^4.4.1
@@ -132,12 +135,12 @@ importers:
       '@mui/icons-material': 5.8.4_kvph6qsx6c7p7rhep4xods6o6m
       '@mui/material': 5.8.7_nn45z5sr7igu7sfun6tiae5hx4
       '@mui/system': 5.8.7_sudpmbbyhqtxq6t4xf6jlicdem
+      '@react-leaflet/core': 1.1.1_6k6ga34dyylvilikktgvdmyx6a
       '@types/debug': 4.1.7
       '@types/leaflet': 1.7.11
       '@types/react': 17.0.47
       '@types/react-dom': 17.0.17
       '@types/react-grid-layout': 1.3.2
-      '@types/react-leaflet': 2.8.2
       '@types/react-router': 5.1.18
       '@types/react-router-dom': 5.3.3
       ajv: 8.11.0
@@ -154,11 +157,11 @@ importers:
       react-customizable-progressbar: 1.0.3_react@17.0.2
       react-dom: 17.0.2_react@17.0.2
       react-grid-layout: 1.3.4_sfoxds7t5ydpegc3knd667wn6m
-      react-leaflet: 2.8.0_6k6ga34dyylvilikktgvdmyx6a
+      react-leaflet: 3.2.5_6k6ga34dyylvilikktgvdmyx6a
       react-router: 5.3.3_react@17.0.2
       react-router-dom: 5.3.3_react@17.0.2
-      rmf-auth: file:packages/rmf-auth_j3cervwsprovj3mlqz6gmsp66u
-      rmf-models: file:packages/rmf-models
+      rmf-auth: link:../rmf-auth
+      rmf-models: link:../rmf-models
       rxjs: 7.5.5
     devDependencies:
       '@babel/core': 7.18.6
@@ -174,11 +177,14 @@ importers:
       '@testing-library/react-hooks': 5.1.3_sfoxds7t5ydpegc3knd667wn6m
       '@testing-library/user-event': 12.8.3_ihvo3xlg2d6kwqju3os3zitn3y
       '@types/jest': 26.0.24
+      '@types/react-leaflet': 2.8.2
       api-server: file:packages/api-server
       canvas: 2.9.3
       chalk: 4.1.2
       concurrently: 5.3.0
       inquirer: 8.2.4
+      react-app-rewire-babel-loader: 0.1.1_react-scripts@4.0.3
+      react-app-rewired: 2.2.1_react-scripts@4.0.3
       react-refresh: 0.9.0
       react-scripts: 4.0.3_uiqijp4xikdbdjkhli4gylh7zu
       require-from-string: 2.0.2
@@ -211,7 +217,7 @@ importers:
       '@wdio/mocha-framework': 7.11.1
       '@wdio/spec-reporter': 7.10.1_@wdio+cli@7.11.1
       concurrently: 5.3.0
-      rmf-dashboard: file:packages/dashboard_@babel+core@7.18.6
+      rmf-dashboard: file:packages/dashboard
       serve: 11.3.2
       ts-node: 9.1.1_typescript@4.4.4
       typescript: 4.4.4
@@ -232,6 +238,7 @@ importers:
       '@mui/system': ^5.8.3
       '@mui/x-data-grid': ^5.12.1
       '@mui/x-date-pickers': 5.0.0-alpha.6
+      '@react-leaflet/core': 1.1.1
       '@storybook/addon-actions': ^6.5.8
       '@storybook/addon-essentials': ^6.5.8
       '@storybook/addon-links': ^6.5.8
@@ -248,7 +255,7 @@ importers:
       '@types/react': ^17.0.19
       '@types/react-dom': ^17.0.9
       '@types/react-grid-layout': ^1.3.2
-      '@types/react-leaflet': ^2.5.2
+      '@types/react-leaflet': ^2.8.2
       '@types/react-router': ^5.1.7
       '@types/react-router-dom': ^5.1.7
       '@types/react-virtualized-auto-sizer': ^1.0.1
@@ -276,7 +283,7 @@ importers:
       karma-jasmine: ^4.0.1
       karma-source-map-support: ^1.4.0
       karma-webpack: ^4.0.2
-      leaflet: ^1.7.1
+      leaflet: ^1.8.0
       node-vibrant: ^3.1.6
       process: 0.11.10
       puppeteer: '*'
@@ -285,7 +292,7 @@ importers:
       react-customizable-progressbar: ^1.0.3
       react-dom: ^17.0.2
       react-grid-layout: ^1.3.4
-      react-leaflet: ^2.7.0
+      react-leaflet: 3.2.5
       react-router: ^5.2.0
       react-router-dom: ^5.2.0
       react-virtualized-auto-sizer: ^1.0.6
@@ -308,10 +315,10 @@ importers:
       '@mui/styles': 5.8.7_sudpmbbyhqtxq6t4xf6jlicdem
       '@mui/x-data-grid': 5.12.3_oop6dcki46d7lexi6nxggagcai
       '@mui/x-date-pickers': 5.0.0-alpha.6_5ven2gtssvqbzui2gfo734hiwq
+      '@react-leaflet/core': 1.1.1_6k6ga34dyylvilikktgvdmyx6a
       '@types/crc': 3.8.0
       '@types/rbush': 3.0.0
       '@types/react-grid-layout': 1.3.2
-      '@types/react-leaflet': 2.8.2
       '@types/shallowequal': 1.1.1
       api-client: link:../api-client
       clsx: 1.2.1
@@ -323,7 +330,7 @@ importers:
       rbush: 3.0.1
       react-customizable-progressbar: 1.0.3_react@17.0.2
       react-grid-layout: 1.3.4_sfoxds7t5ydpegc3knd667wn6m
-      react-leaflet: 2.8.0_6k6ga34dyylvilikktgvdmyx6a
+      react-leaflet: 3.2.5_6k6ga34dyylvilikktgvdmyx6a
       react-virtualized-auto-sizer: 1.0.6_sfoxds7t5ydpegc3knd667wn6m
       react-window: 1.8.7_sfoxds7t5ydpegc3knd667wn6m
       rmf-models: link:../rmf-models
@@ -347,6 +354,7 @@ importers:
       '@types/leaflet': 1.7.11
       '@types/react': 17.0.47
       '@types/react-dom': 17.0.17
+      '@types/react-leaflet': 2.8.2
       '@types/react-router': 5.1.18
       '@types/react-router-dom': 5.3.3
       '@types/react-virtualized-auto-sizer': 1.0.1
@@ -2168,6 +2176,7 @@ packages:
 
   /@date-io/core/2.14.0:
     resolution: {integrity: sha512-qFN64hiFjmlDHJhu+9xMkdfDG2jLsggNxKXglnekUpXSq8faiqZgtHm2lsHCUuaPDTV6wuXHcCl8J1GQ5wLmPw==}
+    dev: false
 
   /@date-io/date-fns/2.14.0:
     resolution: {integrity: sha512-4fJctdVyOd5cKIKGaWUM+s3MUXMuzkZaHuTY15PH70kU1YTMrCoauA7hgQVx9qj0ZEbGrH9VSPYJYnYro7nKiA==}
@@ -2190,6 +2199,7 @@ packages:
     dependencies:
       '@date-io/core': 2.14.0
       date-fns: 2.28.0
+    dev: false
 
   /@date-io/dayjs/2.14.0:
     resolution: {integrity: sha512-4fRvNWaOh7AjvOyJ4h6FYMS7VHLQnIEeAV5ahv6sKYWx+1g1UwYup8h7+gPuoF+sW2hTScxi7PVaba2Jk/U8Og==}
@@ -2200,6 +2210,7 @@ packages:
         optional: true
     dependencies:
       '@date-io/core': 2.14.0
+    dev: false
 
   /@date-io/luxon/2.14.0:
     resolution: {integrity: sha512-KmpBKkQFJ/YwZgVd0T3h+br/O0uL9ZdE7mn903VPAG2ZZncEmaUfUdYKFT7v7GyIKJ4KzCp379CRthEbxevEVg==}
@@ -2210,6 +2221,7 @@ packages:
         optional: true
     dependencies:
       '@date-io/core': 2.14.0
+    dev: false
 
   /@date-io/moment/2.14.0:
     resolution: {integrity: sha512-VsoLXs94GsZ49ecWuvFbsa081zEv2xxG7d+izJsqGa2L8RPZLlwk27ANh87+SNnOUpp+qy2AoCAf0mx4XXhioA==}
@@ -2220,6 +2232,7 @@ packages:
         optional: true
     dependencies:
       '@date-io/core': 2.14.0
+    dev: false
 
   /@discoveryjs/json-ext/0.5.7:
     resolution: {integrity: sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==}
@@ -2969,6 +2982,7 @@ packages:
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
       react-is: 17.0.2
+    dev: false
 
   /@mui/base/5.0.0-alpha.88_nn45z5sr7igu7sfun6tiae5hx4:
     resolution: {integrity: sha512-uL7ej2F/3GUnZewsDQSHUVHoSBT3AQcTIdfdy6QeCHy7X26mtbcIvTRcjl2PzbbNQplppavSTibPiQG/giJ+ng==}
@@ -3005,7 +3019,7 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.18.6
-      '@mui/material': 5.8.7_mzmbzck2qunrnxjb6zwxgpnkmu
+      '@mui/material': 5.8.7_nn45z5sr7igu7sfun6tiae5hx4
       '@types/react': 17.0.47
       react: 17.0.2
 
@@ -3056,6 +3070,7 @@ packages:
       react-is: 17.0.2
       react-transition-group: 4.4.2_sfoxds7t5ydpegc3knd667wn6m
       rifm: 0.12.1_react@17.0.2
+    dev: false
 
   /@mui/lab/5.0.0-alpha.86_scioorpqxgmyxwumjkw4frwxae:
     resolution: {integrity: sha512-5dx9/vHldiE5KFu99YUtEGKyUgwTiq8wM+IhEnNKkU+YjEMULVYV+mgS9nvnf6laKtgqy2hOE4JivqRPIuOGdA==}
@@ -3393,6 +3408,7 @@ packages:
       react-dom: 17.0.2_react@17.0.2
       react-transition-group: 4.4.2_sfoxds7t5ydpegc3knd667wn6m
       rifm: 0.12.1_react@17.0.2
+    dev: false
 
   /@mui/x-date-pickers/5.0.0-alpha.1_oop6dcki46d7lexi6nxggagcai:
     resolution: {integrity: sha512-dLPkRiIn2Gr0momblxiOnIwrxn4SijVix+8e08mwAGWhiWcmWep1O9XTRDpZsjB0kjHYCf+kZjlRX4dxnj2acg==}
@@ -3629,11 +3645,23 @@ packages:
       react-refresh: 0.11.0
       schema-utils: 3.1.1
       source-map: 0.7.4
-      webpack: 4.46.0_webpack-cli@4.10.0
+      webpack: 4.46.0
     dev: true
 
   /@popperjs/core/2.11.5:
     resolution: {integrity: sha512-9X2obfABZuDVLCgPK9aX0a/x4jaOEweTTWE2+9sr0Qqqevj2Uv5XorvusThmc9XGYpS9yI+fhh8RTafBtGposw==}
+
+  /@react-leaflet/core/1.1.1_6k6ga34dyylvilikktgvdmyx6a:
+    resolution: {integrity: sha512-7PGLWa9MZ5x/cWy8EH2VzI4T8q5WpuHbixzCDXqixP/WyqwIrg5NDUPgYuFnB4IEIZF+6nA265mYzswFo/h1Pw==}
+    peerDependencies:
+      leaflet: ^1.7.1
+      react: ^17.0.1
+      react-dom: ^17.0.1
+    dependencies:
+      leaflet: 1.8.0
+      react: 17.0.2
+      react-dom: 17.0.2_react@17.0.2
+    dev: false
 
   /@rollup/plugin-node-resolve/7.1.3_rollup@1.32.1:
     resolution: {integrity: sha512-RxtSL3XmdTAE2byxekYLnx+98kEUOrPHF/KRVjLH+DEIHy6kjIw7YINQzn+NXiH/NTrQLAwYs0GWB+csWygA9Q==}
@@ -4778,7 +4806,7 @@ packages:
       typescript: 4.4.4
       unfetch: 4.2.0
       util-deprecate: 1.0.2
-      webpack: 4.46.0_webpack-cli@4.10.0
+      webpack: 4.46.0
     dev: true
 
   /@storybook/core-common/6.5.9_6mk4fwenfamrdmp5qntahco6au:
@@ -5667,7 +5695,7 @@ packages:
       react-docgen-typescript: 2.2.2_typescript@4.4.4
       tslib: 2.4.0
       typescript: 4.4.4
-      webpack: 4.46.0_webpack-cli@4.10.0
+      webpack: 4.46.0
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -6660,6 +6688,7 @@ packages:
     dependencies:
       '@types/leaflet': 1.7.11
       '@types/react': 17.0.47
+    dev: true
 
   /@types/react-router-dom/5.3.3:
     resolution: {integrity: sha512-kpqnYK4wcdm5UaWI3fLcELopqLrHgLqNsdpHauzlQktfkHL3npOSwtj1Uz9oKBAzs7lFtVkV8j83voAz2D8fhw==}
@@ -8038,7 +8067,7 @@ packages:
       loader-utils: 2.0.2
       make-dir: 3.1.0
       schema-utils: 2.7.1
-      webpack: 4.46.0_webpack-cli@4.10.0
+      webpack: 4.46.0
     dev: true
 
   /babel-plugin-add-react-displayname/0.0.5:
@@ -9876,7 +9905,7 @@ packages:
       postcss-value-parser: 4.2.0
       schema-utils: 2.7.1
       semver: 6.3.0
-      webpack: 4.46.0_webpack-cli@4.10.0
+      webpack: 4.46.0
     dev: true
 
   /css-loader/4.3.0_webpack@4.44.2:
@@ -10280,7 +10309,6 @@ packages:
     dependencies:
       ms: 2.1.2
       supports-color: 6.1.0
-    dev: true
 
   /decamelize/1.2.0:
     resolution: {integrity: sha512-z2S+W9X73hAUUki+N+9Za2lBlun89zigOyGrsax+KUQ6wKW4ZoWpEYBkGhQjwAjjDCkWxhY0VKEhk8wzY7F5cA==}
@@ -10720,6 +10748,11 @@ packages:
 
   /dotenv-expand/5.1.0:
     resolution: {integrity: sha512-YXQl1DSa4/PQyRfgrv6aoNjhasp/p4qs9FjJ4q4cQk+8m4r6k4ZSiEyytKG8f8W9gi8WsQtIObNmKd+tMzNTmA==}
+    dev: true
+
+  /dotenv/4.0.0:
+    resolution: {integrity: sha512-XcaMACOr3JMVcEv0Y/iUM2XaOsATRZ3U1In41/1jjK6vJZ2PZbQ1bzCG8uvaByfaBpl9gqc9QWJovpUGBXLLYQ==}
+    engines: {node: '>=4.6.0'}
     dev: true
 
   /dotenv/8.2.0:
@@ -11928,7 +11961,7 @@ packages:
     dependencies:
       loader-utils: 2.0.2
       schema-utils: 3.1.1
-      webpack: 4.46.0_webpack-cli@4.10.0
+      webpack: 4.46.0
     dev: true
 
   /file-system-cache/1.1.0:
@@ -12123,7 +12156,7 @@ packages:
       debug:
         optional: true
     dependencies:
-      debug: 4.3.4
+      debug: 4.3.4_supports-color@6.1.0
 
   /for-in/1.0.2:
     resolution: {integrity: sha512-7EwmXrOjyL+ChxMhmG5lnW9MPt1aIeZEwKhQzoBUdTV0N3zuwWDZYVJatDvZ2OyzPUvdIAZDsCetk3coyMfcnQ==}
@@ -13084,7 +13117,7 @@ packages:
       pretty-error: 2.1.2
       tapable: 1.1.3
       util.promisify: 1.0.0
-      webpack: 4.46.0_webpack-cli@4.10.0
+      webpack: 4.46.0
     dev: true
 
   /htmlparser2/6.1.0:
@@ -17445,7 +17478,7 @@ packages:
       postcss: 7.0.39
       schema-utils: 3.1.1
       semver: 7.3.7
-      webpack: 4.46.0_webpack-cli@4.10.0
+      webpack: 4.46.0
     dev: true
 
   /postcss-logical/3.0.0:
@@ -18343,7 +18376,7 @@ packages:
     dependencies:
       loader-utils: 2.0.2
       schema-utils: 3.1.1
-      webpack: 4.46.0_webpack-cli@4.10.0
+      webpack: 4.46.0
     dev: true
 
   /rbush/3.0.1:
@@ -18374,6 +18407,35 @@ packages:
       whatwg-fetch: 3.6.2
     dev: true
 
+  /react-app-rewire-babel-loader/0.1.1_react-scripts@4.0.3:
+    resolution: {integrity: sha512-T0i7jM4BMhJa3aaVd1ohfQunANHzY9QToHKLBoVXMwq29OnCwZEa7SFB0xbJUKZBP+AtZkp2DMzGWIDF7JSJsQ==}
+    dependencies:
+      react-app-rewired: 1.6.2_react-scripts@4.0.3
+    transitivePeerDependencies:
+      - react-scripts
+    dev: true
+
+  /react-app-rewired/1.6.2_react-scripts@4.0.3:
+    resolution: {integrity: sha512-TxbP1W9jPPTmj0YJeFNgcJc6IMg7sv845aHUIUvVQtXdA8IWzOZairk3Bth6GHbxoF2QitbvUlM7/NAH4VmmJg==}
+    hasBin: true
+    peerDependencies:
+      react-scripts: ^1.0.14
+    dependencies:
+      cross-spawn: 5.1.0
+      dotenv: 4.0.0
+      react-scripts: 4.0.3_uiqijp4xikdbdjkhli4gylh7zu
+    dev: true
+
+  /react-app-rewired/2.2.1_react-scripts@4.0.3:
+    resolution: {integrity: sha512-uFQWTErXeLDrMzOJHKp0h8P1z0LV9HzPGsJ6adOtGlA/B9WfT6Shh4j2tLTTGlXOfiVx6w6iWpp7SOC5pvk+gA==}
+    hasBin: true
+    peerDependencies:
+      react-scripts: '>=2.1.3'
+    dependencies:
+      react-scripts: 4.0.3_uiqijp4xikdbdjkhli4gylh7zu
+      semver: 5.7.1
+    dev: true
+
   /react-customizable-progressbar/1.0.3_react@17.0.2:
     resolution: {integrity: sha512-aqkZoexIfXXiQgFvo1++7GaxAKAQCb/zj5lRMj6oniZjn9CSIhowr3dSnGnvvvygvegVcPGEYK8shPV5MZasSQ==}
     peerDependencies:
@@ -18384,6 +18446,12 @@ packages:
   /react-dev-utils/11.0.4_lqszvzlozoiycnphcgimetch2i:
     resolution: {integrity: sha512-dx0LvIGHcOPtKbeiSUM4jqpBl3TcY7CDjZdfOIcKeznE7BWr9dg0iPG90G5yfVQ+p/rGNMXdbfStvzQZEVEi4A==}
     engines: {node: '>=10'}
+    peerDependencies:
+      typescript: '>=2.7'
+      webpack: '>=4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
     dependencies:
       '@babel/code-frame': 7.10.4
       address: 1.1.2
@@ -18409,12 +18477,12 @@ packages:
       shell-quote: 1.7.2
       strip-ansi: 6.0.0
       text-table: 0.2.0
+      typescript: 4.4.4
+      webpack: 4.44.2
     transitivePeerDependencies:
       - eslint
       - supports-color
-      - typescript
       - vue-template-compiler
-      - webpack
     dev: true
 
   /react-docgen-typescript-plugin/1.0.1_bubf4veva5nnocx7gaznjuarcu:
@@ -18569,6 +18637,20 @@ packages:
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
       warning: 4.0.3
+    dev: true
+
+  /react-leaflet/3.2.5_6k6ga34dyylvilikktgvdmyx6a:
+    resolution: {integrity: sha512-Z3KZ+4SijsRbbrt2I1a3ZDY6+V6Pm91eYTdxTN18G6IOkFRsJo1BuSPLFnyFrlF3WDjQFPEcTPkEgD1VEeAoBg==}
+    peerDependencies:
+      leaflet: ^1.7.1
+      react: ^17.0.1
+      react-dom: ^17.0.1
+    dependencies:
+      '@react-leaflet/core': 1.1.1_6k6ga34dyylvilikktgvdmyx6a
+      leaflet: 1.8.0
+      react: 17.0.2
+      react-dom: 17.0.2_react@17.0.2
+    dev: false
 
   /react-refresh/0.11.0:
     resolution: {integrity: sha512-F27qZr8uUqwhWZboondsPx8tnC3Ct3SxZA3V5WyEvujRyyNv0VYPhoBg1gZ8/MV5tubQp76Trw8lTv9hzRBa+A==}
@@ -19277,6 +19359,7 @@ packages:
       react: '>=16.8'
     dependencies:
       react: 17.0.2
+    dev: false
 
   /rimraf/2.5.4:
     resolution: {integrity: sha512-Lw7SHMjssciQb/rRz7JyPIy9+bbUshEucPoLRvWqy09vC5zQixl8Uet+Zl+SROBB/JMWHJRdCk1qdxNWHNMvlQ==}
@@ -20445,7 +20528,7 @@ packages:
     dependencies:
       loader-utils: 2.0.2
       schema-utils: 2.7.1
-      webpack: 4.46.0_webpack-cli@4.10.0
+      webpack: 4.46.0
     dev: true
 
   /style-loader/2.0.0_webpack@4.46.0:
@@ -20534,7 +20617,6 @@ packages:
     engines: {node: '>=6'}
     dependencies:
       has-flag: 3.0.0
-    dev: true
 
   /supports-color/7.2.0:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
@@ -20750,7 +20832,7 @@ packages:
       serialize-javascript: 4.0.0
       source-map: 0.6.1
       terser: 4.8.0
-      webpack: 4.46.0_webpack-cli@4.10.0
+      webpack: 4.46.0
       webpack-sources: 1.4.3
       worker-farm: 1.7.0
     dev: true
@@ -20789,7 +20871,7 @@ packages:
       serialize-javascript: 5.0.1
       source-map: 0.6.1
       terser: 5.14.1
-      webpack: 4.46.0_webpack-cli@4.10.0
+      webpack: 4.46.0
       webpack-sources: 1.4.3
     transitivePeerDependencies:
       - bluebird
@@ -21251,6 +21333,7 @@ packages:
   /unified/9.2.0:
     resolution: {integrity: sha512-vx2Z0vY+a3YoTj8+pttM3tiJHCwY5UFbYdiWrwBEbHmK8pvsPj2rtAX2BFfgXen8T39CJWblWRDT4L5WGXtDdg==}
     dependencies:
+      '@types/unist': 2.0.6
       bail: 1.0.5
       extend: 3.0.2
       is-buffer: 2.0.5
@@ -21443,7 +21526,7 @@ packages:
       loader-utils: 2.0.2
       mime-types: 2.1.35
       schema-utils: 3.1.1
-      webpack: 4.46.0_webpack-cli@4.10.0
+      webpack: 4.46.0
     dev: true
 
   /url-parse/1.5.10:
@@ -21618,6 +21701,7 @@ packages:
     resolution: {integrity: sha512-rpJyN222KWIvHJ/F53XSZv0Zl/accqHR8et1kpaMTD/fLCRxtV8iX8czMzY7sVZupTI3zcUTg8eycS2kNF9l6w==}
     dependencies:
       loose-envify: 1.4.0
+    dev: true
 
   /watchpack-chokidar2/2.0.1:
     resolution: {integrity: sha512-nCFfBIPKr5Sh61s4LPpy1Wtfi0HE8isJ3d2Yb5/Ppw2P2B/3eVSEBjKfN0fmHJSK14+31KwMKmcrzs2GM4P0Ww==}
@@ -21792,7 +21876,7 @@ packages:
       mime: 2.6.0
       mkdirp: 0.5.6
       range-parser: 1.2.1
-      webpack: 4.46.0_webpack-cli@4.10.0
+      webpack: 4.46.0
       webpack-log: 2.0.0
     dev: true
 
@@ -21852,7 +21936,7 @@ packages:
     peerDependencies:
       webpack: ^2.0.0 || ^3.0.0 || ^4.0.0
     dependencies:
-      webpack: 4.46.0_webpack-cli@4.10.0
+      webpack: 4.46.0
     dev: true
 
   /webpack-hot-middleware/2.25.1:
@@ -22629,14 +22713,11 @@ packages:
     version: 0.0.0
     dev: true
 
-  file:packages/dashboard_@babel+core@7.18.6:
+  file:packages/dashboard:
     resolution: {directory: packages/dashboard, type: directory}
-    id: file:packages/dashboard
     name: rmf-dashboard
     version: 0.0.1
     dependencies:
-      '@emotion/react': 11.9.3_7xvhny4l7yi42slhiqkpgmpofm
-      '@emotion/styled': 11.9.3_i64ertekxmxppn657xiekwuutq
       '@fontsource/roboto': 4.5.7
       '@fortawesome/fontawesome-svg-core': 1.2.36
       '@fortawesome/free-solid-svg-icons': 5.15.4
@@ -22669,53 +22750,11 @@ packages:
       react-leaflet: 2.8.0_6k6ga34dyylvilikktgvdmyx6a
       react-router: 5.3.3_react@17.0.2
       react-router-dom: 5.3.3_react@17.0.2
-      rmf-auth: file:packages/rmf-auth_j3cervwsprovj3mlqz6gmsp66u
-      rmf-models: file:packages/rmf-models
+      rmf-auth: link:packages/rmf-auth
+      rmf-models: link:packages/rmf-models
       rxjs: 7.5.5
     transitivePeerDependencies:
-      - '@babel/core'
       - '@emotion/react'
       - '@emotion/styled'
-      - dayjs
-      - luxon
-      - moment
       - supports-color
     dev: true
-
-  file:packages/rmf-auth_j3cervwsprovj3mlqz6gmsp66u:
-    resolution: {directory: packages/rmf-auth, type: directory}
-    id: file:packages/rmf-auth
-    name: rmf-auth
-    version: 0.0.1
-    peerDependencies:
-      '@mui/material': ^5.8.3
-      react: ^17.0.2
-      react-dom: ^17.0.2
-      react-router: ^5.2.0
-      react-router-dom: ^5.2.0
-    dependencies:
-      '@emotion/react': 11.9.3_7xvhny4l7yi42slhiqkpgmpofm
-      '@emotion/styled': 11.9.3_i64ertekxmxppn657xiekwuutq
-      '@fontsource/roboto': 4.5.7
-      '@mui/icons-material': 5.8.4_kvph6qsx6c7p7rhep4xods6o6m
-      '@mui/lab': 5.0.0-alpha.86_d4ztt27k5xb5vqpt5ozi45o7wq
-      '@mui/material': 5.8.7_nn45z5sr7igu7sfun6tiae5hx4
-      api-client: link:packages/api-client
-      eventemitter3: 4.0.7
-      keycloak-js: 11.0.3
-      react: 17.0.2
-      react-dom: 17.0.2_react@17.0.2
-      react-router: 5.3.3_react@17.0.2
-      react-router-dom: 5.3.3_react@17.0.2
-    transitivePeerDependencies:
-      - '@babel/core'
-      - '@types/react'
-      - date-fns
-      - dayjs
-      - luxon
-      - moment
-
-  file:packages/rmf-models:
-    resolution: {directory: packages/rmf-models, type: directory}
-    name: rmf-models
-    version: 0.0.1

@@ -3,7 +3,8 @@ import GestureIcon from '@mui/icons-material/Gesture';
 import Leaflet from 'leaflet';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { MapControl, MapControlProps, withLeaflet } from 'react-leaflet';
+// import { MapControl, MapControlProps, withLeaflet } from 'react-leaflet';
+import { useMap } from 'react-leaflet';
 import { PositiveIntField } from '../form-inputs';
 
 const classes = {
@@ -29,7 +30,7 @@ const StyledDiv = styled('div')(() => ({
   },
 }));
 
-export interface TrajectoryTimeControlProps extends MapControlProps {
+export interface TrajectoryTimeControlProps {
   /**
    * How far ahead to show the trajectory, in ms.
    */
@@ -95,38 +96,39 @@ function Component({ value, min, max, onChange }: TrajectoryTimeControlProps) {
   );
 }
 
-export class BaseTrajectoryTimeControl extends MapControl<TrajectoryTimeControlProps> {
-  constructor(props: TrajectoryTimeControlProps) {
-    super(props);
-    this._container = Leaflet.DomUtil.create('div');
-    this._container.className = 'leaflet-control-layers';
-  }
+// export class BaseTrajectoryTimeControl<TrajectoryTimeControlProps> {
+//   constructor(props: TrajectoryTimeControlProps) {
+//     this._container = Leaflet.DomUtil.create('div');
+//     this._container.className = 'leaflet-control-layers';
+//   }
 
-  createLeafletElement(props: TrajectoryTimeControlProps): Leaflet.Control {
-    const LeafletControl = Leaflet.Control.extend({
-      onAdd: () => {
-        ReactDOM.render(<Component {...props} />, this._container);
-        // FIXME: react <= 16 installs event handlers on the root document. Stopping propagation
-        // of the events on the container will stop react from receiving these events, but not
-        // stopping them causes them to propagate to leaflet, causing weird behavior when
-        // interacting with the widget.
-        // Leaflet.DomEvent.disableClickPropagation(this._container);
-        return this._container;
-      },
-    });
-    return new LeafletControl(props);
-  }
+//   createLeafletElement(props: TrajectoryTimeControlProps): Leaflet.Control {
+//     const LeafletControl = Leaflet.Control.extend({
+//       onAdd: () => {
+//         ReactDOM.render(<Component {...props} />, this._container);
+//         // FIXME: react <= 16 installs event handlers on the root document. Stopping propagation
+//         // of the events on the container will stop react from receiving these events, but not
+//         // stopping them causes them to propagate to leaflet, causing weird behavior when
+//         // interacting with the widget.
+//         // Leaflet.DomEvent.disableClickPropagation(this._container);
+//         return this._container;
+//       },
+//     });
+//     return new LeafletControl(props);
+//   }
 
-  updateLeafletElement(
-    _fromProps: TrajectoryTimeControlProps,
-    toProps: TrajectoryTimeControlProps,
-  ): void {
-    ReactDOM.render(<Component {...toProps} />, this._container);
-  }
+//   updateLeafletElement(
+//     _fromProps: TrajectoryTimeControlProps,
+//     toProps: TrajectoryTimeControlProps,
+//   ): void {
+//     ReactDOM.render(<Component {...toProps} />, this._container);
+//   }
 
-  private _container: HTMLElement;
-}
+//   private _container: HTMLElement;
+// }
 
-export const TrajectoryTimeControl = withLeaflet(BaseTrajectoryTimeControl);
+// export const TrajectoryTimeControl = withLeaflet(BaseTrajectoryTimeControl);
+
+export const TrajectoryTimeControl = null;
 
 export default TrajectoryTimeControl;

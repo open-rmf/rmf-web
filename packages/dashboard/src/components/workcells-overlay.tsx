@@ -1,13 +1,12 @@
 import React from 'react';
 import {
   fromRmfCoords,
-  SVGOverlay,
-  SVGOverlayProps,
   useAutoScale,
   viewBoxFromLeafletBounds,
   withLabel,
   WorkcellMarker as BaseWorkcellMarker,
 } from 'react-components';
+import { SVGOverlay, SVGOverlayProps } from 'react-leaflet';
 
 const WorkcellMarker = withLabel(BaseWorkcellMarker);
 
@@ -35,7 +34,7 @@ export const WorkcellsOverlay = React.memo(
     const scale = useAutoScale(40);
 
     return (
-      <SVGOverlay viewBox={viewBox} {...otherProps}>
+      <SVGOverlay attributes={{ viewBox: viewBox }} {...otherProps}>
         {workcells.map((workcell) => {
           const [x, y] = fromRmfCoords(workcell.location);
           return (

@@ -1,12 +1,13 @@
+import { LeafletContextInterface, CONTEXT_VERSION, useLeafletContext } from '@react-leaflet/core';
 import { useTheme } from '@mui/material';
 import type { Level } from 'api-client';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import React from 'react';
-import { Map as LMap_, MapProps as LMapProps_, Pane, useLeaflet } from 'react-leaflet';
+import { MapContainer, MapContainerProps, Pane, useMap } from 'react-leaflet';
+import { SVGOverlay } from 'react-leaflet';
 import { EntityManager, EntityManagerContext } from './entity-manager';
 import { LabelsPortalContext } from './labels-overlay';
-import { SVGOverlay } from './svg-overlay';
 import { viewBoxFromLeafletBounds } from './utils';
 
 export interface MapFloorLayer {
@@ -26,37 +27,47 @@ export function calcMaxBounds(
   return bounds.pad(0.2);
 }
 
-function EntityManagerProvider({ children }: React.PropsWithChildren<{}>) {
-  const leaflet = useLeaflet();
+function EntityManagerProvider({
+  setLeafletMap,
+  children,
+}: React.PropsWithChildren<{
+  setLeafletMap?: React.Dispatch<React.SetStateAction<LeafletContextInterface>>;
+}>) {
+  const mapInstance = useMap();
+  const leafletContext = useLeafletContext();
   const { current: entityManager } = React.useRef(new EntityManager());
   React.useEffect(() => {
-    if (!leaflet.map) return;
+    if (!mapInstance) return;
+    if (setLeafletMap) setLeafletMap({ __version: CONTEXT_VERSION, map: mapInstance });
     const listener = () => {
       // TODO: recalculate positions
     };
-    leaflet.map.on('zoom', listener);
+    mapInstance.on('zoom', listener);
     return () => {
-      leaflet.map && leaflet.map.off('zoom', listener);
+      mapInstance && mapInstance.off('zoom', listener);
     };
-  }, [leaflet, leaflet.map]);
+  }, [mapInstance, setLeafletMap, leafletContext]);
 
   return entityManager ? (
     <EntityManagerContext.Provider value={entityManager}>{children}</EntityManagerContext.Provider>
   ) : null;
 }
 
-export interface LMapProps extends Omit<LMapProps_, 'crs'> {
-  ref?: React.Ref<LMap_>;
+export interface LMapProps extends Omit<MapContainerProps, 'crs'> {
+  setLeafletMap?: React.Dispatch<React.SetStateAction<LeafletContextInterface>>;
+  leafletMap?: LeafletContextInterface;
 }
 
 export const LMap = React.forwardRef(
-  ({ children, bounds, ...otherProps }: LMapProps, ref: React.Ref<LMap_>) => {
-    const [labelsPortal, setLabelsPortal] = React.useState<SVGSVGElement | null>(null);
-    const viewBox = bounds ? viewBoxFromLeafletBounds(bounds) : undefined;
+  ({ children, setLeafletMap, ...otherProps }: LMapProps, ref): React.ReactElement => {
     const theme = useTheme();
+    const [labelsPortal, setLabelsPortal] = React.useState<SVGSVGElement | null>(null);
+    const viewBox = otherProps.bounds ? viewBoxFromLeafletBounds(otherProps.bounds) : '';
+
     return (
-      <LMap_
-        ref={ref}
+      <MapContainer
+        crs={L.CRS.Simple}
+        maxZoom={22}
         style={{
           height: '100%',
           width: '100%',
@@ -64,26 +75,29 @@ export const LMap = React.forwardRef(
           padding: 0,
           backgroundColor: theme.palette.background.default,
         }}
-        crs={L.CRS.Simple}
+        whenCreated={(mapInstance) => {
+          ref = { current: null };
+          ref.current = mapInstance;
+        }}
         {...otherProps}
       >
-        <EntityManagerProvider>
+        <EntityManagerProvider setLeafletMap={setLeafletMap}>
           <LabelsPortalContext.Provider value={labelsPortal}>
             {children}
-            {bounds && (
+            {otherProps.bounds && (
               <Pane name="label" style={{ zIndex: 1000 }}>
                 <SVGOverlay
+                  attributes={{ viewBox: viewBox }}
+                  bounds={otherProps.bounds}
                   ref={(current) => {
-                    setLabelsPortal(current?.container || null);
+                    setLabelsPortal(current?.getElement()?.ownerSVGElement || null);
                   }}
-                  viewBox={viewBox}
-                  bounds={bounds}
                 />
               </Pane>
             )}
           </LabelsPortalContext.Provider>
         </EntityManagerProvider>
-      </LMap_>
+      </MapContainer>
     );
   },
 );

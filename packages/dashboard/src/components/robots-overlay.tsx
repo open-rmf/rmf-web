@@ -5,13 +5,12 @@ import {
   fromRmfYaw,
   RobotMarker as BaseRobotMarker,
   RobotMarkerProps as BaseRobotMarkerProps,
-  SVGOverlay,
-  SVGOverlayProps,
   useAutoScale,
   viewBoxFromLeafletBounds,
   withLabel,
   WithLabelProps,
 } from 'react-components';
+import { SVGOverlay, SVGOverlayProps } from 'react-leaflet';
 import { EMPTY, mergeMap, of } from 'rxjs';
 import { RmfAppContext } from './rmf-app';
 
@@ -95,7 +94,7 @@ export const RobotsOverlay = React.memo(
     const footprint = 0.5;
 
     return (
-      <SVGOverlay viewBox={viewBox} {...otherProps}>
+      <SVGOverlay attributes={{ viewBox: viewBox }} {...otherProps}>
         {robots.map((robot) => {
           return (
             <RobotMarker

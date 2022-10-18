@@ -24,6 +24,7 @@ import { RobotData, RobotsOverlay } from './robots-overlay';
 import { TrajectoriesOverlay, TrajectoryData } from './trajectories-overlay';
 import { WaypointsOverlay } from './waypoints-overlay';
 import { WorkcellData, WorkcellsOverlay } from './workcells-overlay';
+import { LeafletContextInterface } from '@react-leaflet/core';
 
 const debug = Debug('MapApp');
 
@@ -238,6 +239,10 @@ export const MapApp = styled(
             affineImage.naturalHeight,
           ),
         );
+        if (bounds) {
+          leafletMap.map.setMaxBounds(bounds);
+          leafletMap.map.fitBounds(bounds);
+        }
         setImageUrl(affineImage.src);
       })();
 
@@ -256,6 +261,7 @@ export const MapApp = styled(
         if (!currentLevel) {
           return;
         }
+        console.log('current level changed', currentLevel);
         const promises = Object.values(fleets).flatMap((fleetState) => {
           const robotKey = fleetState.robots && Object.keys(fleetState.robots);
           const fleetName = fleetState.name ? fleetState.name : '';
@@ -290,32 +296,33 @@ export const MapApp = styled(
     }, [fleets, robotsStore, resourceManager, currentLevel]);
 
     const registeredLayersHandlers = React.useRef(false);
+    const baseLayerHandler = (levelName: string): L.LeafletEventHandlerFnMap | undefined => {
+      return {
+        add: () =>
+          setCurrentLevel(
+            buildingMap?.levels.find((l) => l.name === levelName) || buildingMap?.levels[0],
+          ),
+        remove: () =>
+          setCurrentLevel(
+            buildingMap?.levels.find((l) => l.name === levelName) || buildingMap?.levels[0],
+          ),
+      };
+    };
+
+    const leafletContext: LeafletContextInterface = Object.create({});
+    const [leafletMap, setLeafletMap] = React.useState<LeafletContextInterface>(leafletContext);
 
     const ready = buildingMap && currentLevel && bounds;
     return ready ? (
       <LMap
-        ref={(cur) => {
-          if (registeredLayersHandlers.current || !cur) return;
-          cur.leafletElement.on('overlayadd', (ev: L.LayersControlEvent) =>
-            setDisabledLayers((prev) => ({ ...prev, [ev.name]: false })),
-          );
-          cur.leafletElement.on('overlayremove', (ev: L.LayersControlEvent) =>
-            setDisabledLayers((prev) => ({ ...prev, [ev.name]: true })),
-          );
-          registeredLayersHandlers.current = true;
-        }}
         attributionControl={false}
+        minZoom={0}
+        maxZoom={8}
         zoomDelta={0.5}
         zoomSnap={0.5}
-        center={[(bounds[1][0] - bounds[0][0]) / 2, (bounds[1][1] - bounds[0][1]) / 2]}
-        zoom={6}
         bounds={bounds}
-        maxBounds={bounds}
-        onbaselayerchange={({ name }: L.LayersControlEvent) => {
-          setCurrentLevel(
-            buildingMap.levels.find((l: Level) => l.name === name) || buildingMap.levels[0],
-          );
-        }}
+        setLeafletMap={setLeafletMap}
+        leafletMap={leafletMap}
       >
         <AttributionControl position="bottomright" prefix="OSRC-SG" />
         <LayersControl position="topleft">
@@ -324,13 +331,23 @@ export const MapApp = styled(
             currentLevel.name === level.name ? (
               <LayersControl.BaseLayer key={level.name} name={level.name} checked>
                 {currentLevel.images.length > 0 && imageUrl && (
-                  <ImageOverlay bounds={bounds} url={imageUrl} pane="image" />
+                  <ImageOverlay
+                    eventHandlers={baseLayerHandler(level.name)}
+                    bounds={bounds}
+                    url={imageUrl}
+                    pane="image"
+                  />
                 )}
               </LayersControl.BaseLayer>
             ) : (
               <LayersControl.BaseLayer key={level.name} name={level.name}>
                 {currentLevel.images.length > 0 && imageUrl && (
-                  <ImageOverlay bounds={bounds} url={imageUrl} pane="image" />
+                  <ImageOverlay
+                    eventHandlers={baseLayerHandler(level.name)}
+                    bounds={bounds}
+                    url={imageUrl}
+                    pane="image"
+                  />
                 )}
               </LayersControl.BaseLayer>
             ),
@@ -396,20 +413,6 @@ export const MapApp = styled(
             />
           </LayersControl.Overlay>
         </LayersControl>
-
-        <TrajectoryTimeControl
-          position="topleft"
-          value={trajectoryTime}
-          min={60000}
-          max={600000}
-          onChange={(_ev, newValue) =>
-            setMapSettings((prev) => {
-              const newSettings = { ...prev, trajectoryTime: newValue };
-              window.localStorage.setItem(SettingsKey, JSON.stringify(newSettings));
-              return newSettings;
-            })
-          }
-        />
       </LMap>
     ) : null;
   }),

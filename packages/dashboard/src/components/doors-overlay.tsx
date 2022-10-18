@@ -5,12 +5,11 @@ import {
   DoorMarkerProps as BaseDoorMarkerProps,
   fromRmfCoords,
   getDoorCenter,
-  SVGOverlay,
-  SVGOverlayProps,
   useAutoScale,
   viewBoxFromLeafletBounds,
   withLabel,
 } from 'react-components';
+import { SVGOverlay, SVGOverlayProps } from 'react-leaflet';
 import { RmfAppContext } from './rmf-app';
 
 interface DoorMarkerProps extends Omit<BaseDoorMarkerProps, 'doorMode'> {
@@ -48,7 +47,7 @@ export const DoorsOverlay = React.memo(
     const scale = useAutoScale(40);
 
     return (
-      <SVGOverlay viewBox={viewBox} {...otherProps}>
+      <SVGOverlay attributes={{ viewBox: viewBox }} {...otherProps}>
         {doors.map((door) => {
           const center = fromRmfCoords(getDoorCenter(door));
           const [x1, y1] = fromRmfCoords([door.v1_x, door.v1_y]);

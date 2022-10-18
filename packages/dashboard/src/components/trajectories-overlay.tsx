@@ -1,11 +1,10 @@
 import React from 'react';
 import {
-  SVGOverlay,
-  SVGOverlayProps,
   TrajectoryMarker as TrajectoryMarker_,
   TrajectoryMarkerProps,
   viewBoxFromLeafletBounds,
 } from 'react-components';
+import { SVGOverlay, SVGOverlayProps } from 'react-leaflet';
 
 const TrajectoryMarker = React.memo(TrajectoryMarker_);
 
@@ -20,7 +19,7 @@ export const TrajectoriesOverlay = React.memo(
     const viewBox = viewBoxFromLeafletBounds(otherProps.bounds);
 
     return (
-      <SVGOverlay viewBox={viewBox} {...otherProps}>
+      <SVGOverlay attributes={{ viewBox: viewBox }} {...otherProps}>
         {trajectoriesData.map((trajData) => (
           <TrajectoryMarker
             key={trajData.trajectory.id}

@@ -8,12 +8,11 @@ import {
   liftMarkerClasses,
   LiftMarkerProps as BaseLiftMarkerProps,
   radiansToDegrees,
-  SVGOverlay,
-  SVGOverlayProps,
   useAutoScale,
   viewBoxFromLeafletBounds,
   withLabel,
 } from 'react-components';
+import { SVGOverlay, SVGOverlayProps } from 'react-leaflet';
 import { LiftState as RmfLiftState } from 'rmf-models';
 import { RmfAppContext } from './rmf-app';
 
@@ -109,7 +108,7 @@ export const LiftsOverlay = React.memo(
     const scale = useAutoScale(40);
 
     return (
-      <SVGOverlay viewBox={viewBox} {...otherProps}>
+      <SVGOverlay attributes={{ viewBox: viewBox }} {...otherProps}>
         {lifts.map((lift) => {
           const pos = fromRmfCoords([lift.ref_x, lift.ref_y]);
           return (
