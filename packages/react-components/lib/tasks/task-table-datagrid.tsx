@@ -97,6 +97,7 @@ export function TaskDataGridTable({
     }
   };
 
+  const [categoryFilter, setCategoryFilter] = React.useState('');
   /**
    * Custom filter operation
    * https://mui.com/x/react-data-grid/filtering/
@@ -420,6 +421,9 @@ export function TaskDataGridTable({
     React.useEffect(() => {
       const itemValue = item.value ?? '';
       setFilterValueState(itemValue);
+
+      // Setting the flag state to reset the category filter when closing the filter panel
+      setCategoryFilter(itemValue);
     }, [item.value]);
 
     const updateFilterValue = (category: string) => {
@@ -542,7 +546,7 @@ export function TaskDataGridTable({
         onPreferencePanelClose={() => {
           setDefaultFilterFields((old) => ({
             ...old,
-            category: undefined,
+            category: categoryFilter === '' ? undefined : categoryFilter,
             taskId: undefined,
             startTime: undefined,
             finisTime: undefined,
