@@ -539,6 +539,15 @@ export function TaskDataGridTable({
         rowsPerPageOptions={[10]}
         pagination
         paginationMode="server"
+        onPreferencePanelClose={() => {
+          setDefaultFilterFields((old) => ({
+            ...old,
+            category: undefined,
+            taskId: undefined,
+            startTime: undefined,
+            finisTime: undefined,
+          }));
+        }}
         page={tasks.page - 1}
         onPageChange={onPageChange}
         onPageSizeChange={onPageSizeChange}
