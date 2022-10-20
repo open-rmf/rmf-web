@@ -6,7 +6,6 @@ import {
   MuiEvent,
   GridRowParams,
   GridCellParams,
-  GridToolbar,
   GridColTypeDef,
   GridFilterInputValueProps,
   GridFilterItem,
@@ -538,9 +537,6 @@ export function TaskDataGridTable({
         loading={tasks.isLoading}
         pageSize={tasks.pageSize}
         rowsPerPageOptions={[10]}
-        components={{
-          Toolbar: GridToolbar,
-        }}
         pagination
         paginationMode="server"
         page={tasks.page - 1}
@@ -548,7 +544,6 @@ export function TaskDataGridTable({
         onPageSizeChange={onPageSizeChange}
         columns={columns}
         onRowClick={handleEvent}
-        disableColumnMenu={true}
         getCellClassName={(params: GridCellParams<string>) => {
           if (params.field === 'status') {
             switch (params.value) {
