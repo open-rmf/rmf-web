@@ -547,9 +547,6 @@ export function TaskDataGridTable({
           setDefaultFilterFields((old) => ({
             ...old,
             category: categoryFilter === '' ? undefined : categoryFilter,
-            taskId: undefined,
-            startTime: undefined,
-            finisTime: undefined,
           }));
         }}
         page={tasks.page - 1}
