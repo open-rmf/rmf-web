@@ -53,10 +53,10 @@ export const DoorsApp = createMicroApp('Doors', () => {
               level={level.name}
               type={door.door_type}
               sx={{ width: 200 }}
-              aria-labelledby={`door-cell-${door.name}`}
             >
               <CardActions sx={{ justifyContent: 'center' }}>
                 <DoorControls
+                  doorName={door.name}
                   onOpenClick={() =>
                     rmf?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(door.name, {
                       mode: RmfDoorMode.MODE_OPEN,
