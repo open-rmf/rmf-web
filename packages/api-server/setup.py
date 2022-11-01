@@ -22,7 +22,7 @@ setup(
         "aiofiles~=0.8.0",
         "uvicorn[standard]~=0.18.2",
         "python-socketio~=5.7",
-        "reactivex~=4.0.4",
+        "rx~=3.2",
         "tortoise-orm~=0.18.1",
         "pyjwt[crypto]~=2.4",
         "pydantic~=1.9",

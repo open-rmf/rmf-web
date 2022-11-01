@@ -1,7 +1,7 @@
 import unittest
 
-from reactivex.scheduler.historicalscheduler import HistoricalScheduler
-from reactivex.subject.subject import Subject
+from rx.scheduler.historicalscheduler import HistoricalScheduler
+from rx.subject.subject import Subject
 
 from .grouped_sample import grouped_sample
 

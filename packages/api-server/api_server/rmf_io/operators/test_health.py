@@ -2,9 +2,9 @@ import unittest
 from datetime import datetime
 from typing import Optional, cast
 
-import reactivex as rx
-from reactivex import operators as ops
-from reactivex.scheduler.historicalscheduler import HistoricalScheduler
+import rx
+from rx import operators as ops
+from rx.scheduler.historicalscheduler import HistoricalScheduler
 
 from api_server.models import BaseBasicHealth, HealthStatus
 

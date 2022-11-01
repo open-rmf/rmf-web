@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List, Optional, Tuple, cast
 
 from fastapi import Body, Depends, HTTPException, Path, Query
-from reactivex import operators as rxops
+from rx import operators as rxops
 
 from api_server import models as mdl
 from api_server.dependencies import between_query, pagination_query, sio_user
