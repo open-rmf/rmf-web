@@ -20,8 +20,7 @@ describe('submit task', () => {
     const loopOption = (await getLoopOption())!;
     await loopOption.click();
 
-    await (await $('#start-location')).setValue('coe');
-    await (await $('#finish-location')).setValue('pantry');
+    await (await $('#place-input')).setValue('coe');
 
     await (await $('button=Submit')).click();
     await expect($('div=Successfully created task')).toBeDisplayed();

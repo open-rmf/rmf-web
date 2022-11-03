@@ -96,6 +96,8 @@ class TestRmfService(unittest.TestCase):
             lambda: cls.client_node, "test_request", "test_response"
         )
 
+        cls.loop = asyncio.new_event_loop()
+
     @classmethod
     def tearDownClass(cls) -> None:
         cls._client_context.shutdown()
@@ -104,19 +106,19 @@ class TestRmfService(unittest.TestCase):
         cls._server_context.shutdown()
         cls._server_executor.shutdown()
         cls._server_thread.join()
+        cls.loop.close()
 
     def test_call(self):
         async def run():
             result = await self.rmf_service.call("hello")
             self.assertEqual("hello", result)
 
-        asyncio.get_event_loop().run_until_complete(run())
+        self.loop.run_until_complete(run())
 
     def test_multiple_calls(self):
         async def run():
             tasks = [self.rmf_service.call("hello"), self.rmf_service.call("world")]
             results = await asyncio.gather(*tasks)
-            self.assertEqual("hello", results[0])
-            self.assertEqual("world", results[1])  # type: ignore (bug in pylance)
+            self.assertListEqual(["hello", "world"], list(results))
 
-        asyncio.get_event_loop().run_until_complete(run())
+        self.loop.run_until_complete(run())

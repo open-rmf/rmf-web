@@ -57,7 +57,7 @@ export function DoorCard({
             </Typography>
           </Grid>
           <Grid item xs={8}>
-            <Typography sx={labelStyle} variant="body2" align="center">
+            <Typography sx={labelStyle} variant="body2" align="center" role="status">
               {doorModeToString(mode)}
             </Typography>
           </Grid>

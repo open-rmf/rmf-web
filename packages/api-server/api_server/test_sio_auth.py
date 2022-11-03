@@ -16,13 +16,14 @@ class TestSioAuth(AppFixture):
             session = {}
             mock.get_session = AsyncMock(return_value=session)
 
-            loop = asyncio.get_event_loop()
-            fut = asyncio.Future()
+            loop = asyncio.new_event_loop()
+            fut = asyncio.Future(loop=loop)
 
             async def result():
                 fut.set_result(await on_sio_connect("test", {}, {"token": token}))
 
             loop.run_until_complete(result())
+            loop.close()
             return fut.result()
 
     def test_fail_with_no_token(self):
