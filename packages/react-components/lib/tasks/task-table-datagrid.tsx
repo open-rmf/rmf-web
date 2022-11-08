@@ -58,7 +58,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   },
 }));
 
-export interface DefaultTableDataGridProps {
+export interface Tasks {
   isLoading: boolean;
   data: TaskState[];
   total: number;
@@ -66,19 +66,19 @@ export interface DefaultTableDataGridProps {
   pageSize: number;
 }
 
-export interface DefaultFilterFields {
+export interface FilterFields {
   category: string | undefined;
   taskId: string | undefined;
   startTime: string | undefined;
   finisTime: string | undefined;
 }
 
-export interface TaskDataGridTableProps {
-  tasks: DefaultTableDataGridProps;
+export interface TableDataGridState {
+  tasks: Tasks;
   onTaskClick?(ev: MuiEvent<React.MouseEvent<HTMLElement>>, task: TaskState): void;
   onPageChange: (newPage: number) => void;
   onPageSizeChange: (newPageSize: number) => void;
-  setDefaultFilterFields: React.Dispatch<React.SetStateAction<DefaultFilterFields>>;
+  setFilterFields: React.Dispatch<React.SetStateAction<FilterFields>>;
 }
 
 export function TaskDataGridTable({
@@ -86,8 +86,8 @@ export function TaskDataGridTable({
   onTaskClick,
   onPageChange,
   onPageSizeChange,
-  setDefaultFilterFields,
-}: TaskDataGridTableProps): JSX.Element {
+  setFilterFields,
+}: TableDataGridState): JSX.Element {
   const handleEvent: GridEventListener<'rowClick'> = (
     params: GridRowParams,
     event: MuiEvent<React.MouseEvent<HTMLElement>>,
@@ -295,7 +295,7 @@ export function TaskDataGridTable({
       setFilterValueState(newValue);
 
       filterTimeout.current = setTimeout(() => {
-        setDefaultFilterFields((old) => ({
+        setFilterFields((old) => ({
           ...old,
           finisTime: filterValue.toString(),
         }));
@@ -307,7 +307,7 @@ export function TaskDataGridTable({
       const localDate = new Date(newValue as Date);
       const filterValue = dateAdapter.toISO(localDate);
 
-      setDefaultFilterFields((old) => ({
+      setFilterFields((old) => ({
         ...old,
         startTime: filterValue === '' ? undefined : filterValue,
       }));
@@ -433,7 +433,7 @@ export function TaskDataGridTable({
       setIsApplying(true);
       filterTimeout.current = setTimeout(() => {
         setIsApplying(false);
-        setDefaultFilterFields((old) => ({
+        setFilterFields((old) => ({
           ...old,
           category: category === '' ? undefined : category,
         }));
@@ -544,7 +544,7 @@ export function TaskDataGridTable({
         pagination
         paginationMode="server"
         onPreferencePanelClose={() => {
-          setDefaultFilterFields((old) => ({
+          setFilterFields((old) => ({
             ...old,
             category: categoryFilter === '' ? undefined : categoryFilter,
           }));

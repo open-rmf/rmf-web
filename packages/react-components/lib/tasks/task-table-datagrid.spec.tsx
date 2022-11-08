@@ -1,14 +1,10 @@
 import { cleanup, render, RenderResult, screen } from '@testing-library/react';
 import React from 'react';
-import {
-  TaskDataGridTable,
-  DefaultTableDataGridProps,
-  DefaultFilterFields,
-} from './task-table-datagrid';
+import { TaskDataGridTable, Tasks, FilterFields } from './task-table-datagrid';
 import { makeTaskState } from './test-data.spec';
 
 describe('Tasks table', () => {
-  const tasksProps: DefaultTableDataGridProps = {
+  const tasks: Tasks = {
     isLoading: false,
     data: [],
     total: 0,
@@ -16,12 +12,12 @@ describe('Tasks table', () => {
     pageSize: 10,
   };
 
-  tasksProps.data = [makeTaskState('task_0'), makeTaskState('task_1')];
+  tasks.data = [makeTaskState('task_0'), makeTaskState('task_1')];
   let root: RenderResult;
   let mockAddMoreRows: ReturnType<typeof jasmine.createSpy>;
 
   beforeEach(() => {
-    const setDefaultFilterFields: DefaultFilterFields = {
+    const setFilterFields: FilterFields = {
       category: undefined,
       taskId: undefined,
       startTime: undefined,
@@ -31,10 +27,10 @@ describe('Tasks table', () => {
     mockAddMoreRows = jasmine.createSpy();
     root = render(
       <TaskDataGridTable
-        tasks={tasksProps}
+        tasks={tasks}
         onPageChange={mockAddMoreRows}
         onPageSizeChange={mockAddMoreRows}
-        setDefaultFilterFields={() => setDefaultFilterFields}
+        setFilterFields={() => setFilterFields}
       />,
     );
   });
