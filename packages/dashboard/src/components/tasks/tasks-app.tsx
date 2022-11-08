@@ -64,7 +64,7 @@ export const TasksApp = React.memo(
       };
 
       const [tasksState, setTasksState] = React.useState<Tasks>({
-        isLoading: false,
+        isLoading: true,
         data: [],
         total: 0,
         page: 1,
