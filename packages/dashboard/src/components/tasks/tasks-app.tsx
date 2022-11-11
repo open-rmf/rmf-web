@@ -104,7 +104,7 @@ export const TasksApp = React.memo(
         if (!rmf) {
           return;
         }
-        const subs: Subscription[] = [];
+
         (async () => {
           const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
             filterFields.taskId,
@@ -128,18 +128,7 @@ export const TasksApp = React.memo(
                 ? tasksState.page * GET_LIMIT + 1
                 : tasksState.page * GET_LIMIT - 9,
           }));
-
-          subs.push(
-            ...newTasks.map((task) =>
-              rmf
-                .getTaskStateObs(task.booking.id)
-                .subscribe((task) =>
-                  setTasksState((prev) => ({ ...prev, [task.booking.id]: task })),
-                ),
-            ),
-          );
         })();
-        return () => subs.forEach((s) => s.unsubscribe());
       }, [
         rmf,
         forceRefresh,
