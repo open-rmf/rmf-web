@@ -1,16 +1,17 @@
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { Grid, IconButton, TableContainer, TablePagination, Toolbar, Tooltip } from '@mui/material';
+import { Grid, IconButton, TableContainer, Toolbar, Tooltip } from '@mui/material';
 import { TaskRequest, TaskState } from 'api-client';
 import React from 'react';
 import {
   CreateTaskForm,
   CreateTaskFormProps,
   getPlaces,
-  TaskTable,
   Window,
+  TaskDataGridTable,
+  Tasks,
+  FilterFields,
 } from 'react-components';
-import { Subscription } from 'rxjs';
 import { AppControllerContext, ResourcesContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
@@ -26,7 +27,6 @@ export const TasksApp = React.memo(
       const rmf = React.useContext(RmfAppContext);
 
       const [forceRefresh, setForceRefresh] = React.useState(0);
-      const [taskStates, setTaskStates] = React.useState<Record<string, TaskState>>({});
 
       const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
       const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
@@ -62,13 +62,20 @@ export const TasksApp = React.memo(
         });
       };
 
-      const [page, setPage] = React.useState(0);
-      const [hasMore, setHasMore] = React.useState(true);
+      const [tasksState, setTasksState] = React.useState<Tasks>({
+        isLoading: true,
+        data: [],
+        total: 0,
+        page: 1,
+        pageSize: 10,
+      });
 
-      /**
-       * This state, if toggled, reverts the chronological order of the tasks listed in the tasks table.
-       */
-      const [chronologicalOrder, setChronologicalOrder] = React.useState<boolean>(true);
+      const [filterFields, setFilterFields] = React.useState<FilterFields>({
+        category: undefined,
+        taskId: undefined,
+        startTime: undefined,
+        finisTime: undefined,
+      });
 
       const [placeNames, setPlaceNames] = React.useState<string[]>([]);
       React.useEffect(() => {
@@ -91,44 +98,46 @@ export const TasksApp = React.memo(
         setWorkcells(Object.keys(resourceManager.dispensers.dispensers));
       }, [resourceManager]);
 
+      // TODO: parameterize this variable
+      const GET_LIMIT = 10;
       React.useEffect(() => {
         if (!rmf) {
           return;
         }
-        const subs: Subscription[] = [];
+
         (async () => {
           const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
+            filterFields.taskId,
+            filterFields.category,
+            filterFields.startTime,
+            filterFields.finisTime,
+            GET_LIMIT,
+            (tasksState.page - 1) * GET_LIMIT, // Datagrid component need to start in page 1. Otherwise works wrong
             undefined,
-            undefined,
-            undefined,
-            undefined,
-            11,
-            page * 10,
-            chronologicalOrder ? '-unix_millis_start_time' : 'unix_millis_start_time',
             undefined,
           );
           const results = resp.data as TaskState[];
-          setHasMore(results.length > 10);
-          const newTasks = results.slice(0, 10);
+          const newTasks = results.slice(0, GET_LIMIT);
 
-          setTaskStates(
-            newTasks.reduce<Record<string, TaskState>>((acc, task) => {
-              acc[task.booking.id] = task;
-              return acc;
-            }, {}),
-          );
-          subs.push(
-            ...newTasks.map((task) =>
-              rmf
-                .getTaskStateObs(task.booking.id)
-                .subscribe((task) =>
-                  setTaskStates((prev) => ({ ...prev, [task.booking.id]: task })),
-                ),
-            ),
-          );
+          setTasksState((old) => ({
+            ...old,
+            isLoading: false,
+            data: newTasks,
+            total:
+              results.length === GET_LIMIT
+                ? tasksState.page * GET_LIMIT + 1
+                : tasksState.page * GET_LIMIT - 9,
+          }));
         })();
-        return () => subs.forEach((s) => s.unsubscribe());
-      }, [rmf, page, forceRefresh, chronologicalOrder]);
+      }, [
+        rmf,
+        forceRefresh,
+        tasksState.page,
+        filterFields.taskId,
+        filterFields.category,
+        filterFields.finisTime,
+        filterFields.startTime,
+      ]);
 
       const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
         async (taskRequests) => {
@@ -157,7 +166,16 @@ export const TasksApp = React.memo(
             <Toolbar variant="dense">
               <Tooltip title="Refresh" color="inherit">
                 <IconButton
-                  onClick={() => setForceRefresh((prev) => prev + 1)}
+                  onClick={() => {
+                    setForceRefresh((prev) => prev + 1);
+                    setFilterFields((old) => ({
+                      ...old,
+                      category: undefined,
+                      startTime: undefined,
+                      finisTime: undefined,
+                      taskId: undefined,
+                    }));
+                  }}
                   aria-label="Refresh"
                 >
                   <RefreshIcon />
@@ -175,24 +193,18 @@ export const TasksApp = React.memo(
           <Grid container wrap="nowrap" direction="column" height="100%">
             <Grid item flexGrow={1}>
               <TableContainer>
-                <TaskTable
-                  tasks={Object.values(taskStates)}
+                <TaskDataGridTable
+                  tasks={tasksState}
                   onTaskClick={(_ev, task) => AppEvents.taskSelect.next(task)}
-                  onDateTitleClick={(_ev) => setChronologicalOrder((prev) => !prev)}
-                  chronologicalOrder={chronologicalOrder}
+                  setFilterFields={setFilterFields}
+                  onPageChange={(newPage: number) =>
+                    setTasksState((old) => ({ ...old, page: newPage + 1 }))
+                  }
+                  onPageSizeChange={(newPageSize: number) =>
+                    setTasksState((old) => ({ ...old, pageSize: newPageSize }))
+                  }
                 />
               </TableContainer>
-            </Grid>
-            <Grid item>
-              <TablePagination
-                component="div"
-                page={page}
-                count={hasMore ? -1 : page * 10 + Object.keys(taskStates).length}
-                rowsPerPage={10}
-                rowsPerPageOptions={[10]}
-                onPageChange={(_ev, page) => setPage(page)}
-                style={{ flex: '0 0 auto' }}
-              />
             </Grid>
           </Grid>
           {openCreateTaskForm && (
