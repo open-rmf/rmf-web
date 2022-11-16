@@ -501,10 +501,24 @@ export function TaskDataGridTable({
       width: 150,
       editable: false,
       ...dateColumnType,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.unix_millis_start_time
-          ? new Date(params.row.unix_millis_start_time).toLocaleDateString()
-          : 'unknown',
+      renderCell: (cellValues) => {
+        return (
+          <TextField
+            variant="standard"
+            value={
+              cellValues.row.unix_millis_start_time
+                ? `${new Date(
+                    cellValues.row.unix_millis_start_time,
+                  ).toLocaleDateString()} ${new Date(
+                    cellValues.row.unix_millis_start_time,
+                  ).toLocaleTimeString()}`
+                : 'unknown'
+            }
+            InputProps={{ disableUnderline: true }}
+            multiline
+          />
+        );
+      },
       flex: 1,
       filterOperators: getDateFilterOperators(false),
     },
@@ -514,10 +528,24 @@ export function TaskDataGridTable({
       width: 150,
       editable: false,
       type: 'dateTime',
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.unix_millis_finish_time
-          ? new Date(params.row.unix_millis_finish_time).toLocaleTimeString()
-          : '-',
+      renderCell: (cellValues) => {
+        return (
+          <TextField
+            variant="standard"
+            value={
+              cellValues.row.unix_millis_finish_time
+                ? `${new Date(
+                    cellValues.row.unix_millis_finish_time,
+                  ).toLocaleDateString()} ${new Date(
+                    cellValues.row.unix_millis_finish_time,
+                  ).toLocaleTimeString()}`
+                : 'unknown'
+            }
+            InputProps={{ disableUnderline: true }}
+            multiline
+          />
+        );
+      },
       flex: 1,
       filterOperators: getDateFilterOperators(true),
     },
