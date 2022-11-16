@@ -12,7 +12,6 @@ import {
   Tasks,
   FilterFields,
 } from 'react-components';
-import { Subscription } from 'rxjs';
 import { AppControllerContext, ResourcesContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
@@ -99,6 +98,7 @@ export const TasksApp = React.memo(
         setWorkcells(Object.keys(resourceManager.dispensers.dispensers));
       }, [resourceManager]);
 
+      // TODO: parameterize this variable
       const GET_LIMIT = 10;
       React.useEffect(() => {
         if (!rmf) {
