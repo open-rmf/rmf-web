@@ -1,0 +1,97 @@
+{% set msgspec = msg.spec %}
+{% set base_type = msgspec.base_type %}
+/* This is a generated file, do not edit */
+
+{% for dep_msg in msg.dependent_types %}
+import { {{ dep_msg.spec.base_type.type }} } from '../../{{ dep_msg.spec.base_type.pkg_name }}/{{ dep_msg.rel_dir }}/{{ dep_msg.spec.base_type.type }}';
+{% endfor %}
+
+export class {{ base_type.type }} {
+  static readonly FullTypeName = '{{ base_type.pkg_name }}/{{ msg.rel_dir }}/{{ base_type.type }}';
+
+{% if msgspec.constants %}
+{% for const in msgspec.constants %}
+  static readonly {{ const.name }} = {{ const.value }};
+{% endfor %}
+{% endif %}
+
+{% for field in msgspec.fields %}
+{% if field.js_type.is_typed_array %}
+  {{ field.name }}: {{ field.js_type.type }} | number[];
+{% else %}
+  {{ field.name }}: {{ field.js_type.type }};
+{% endif %}
+{% endfor %}
+
+  constructor(fields: Partial<{{ base_type.type }}> = {}) {
+{% for field in msgspec.fields %}
+    this.{{ field.name }} = fields.{{ field.name }} || {{ field.js_type.default_value }};
+{% endfor %}
+  }
+
+  static validate(obj: Record<string, unknown>): void {
+{% for field in msgspec.fields %}
+{% if field.type.is_array %}
+{% if field.js_type.is_typed_array %}
+    if (!(obj['{{ field.name }}'] instanceof {{ field.js_type.type }}) && !Array.isArray(obj['{{ field.name }}'])) {
+      throw new Error('expected "{{ field.name }}" to be "{{ field.js_type.type }}" or an array');
+    }
+{% else %}
+    if (!Array.isArray(obj['{{ field.name }}'])) {
+      throw new Error('expected "{{ field.name }}" to be an array');
+    }
+{% endif %}
+{% if field.type.is_upper_bound %}
+    if (obj['{{ field.name }}'].length > {{ field.type.array_size }}) {
+      throw new Error('"{{ field.name }}" exceeds the upper bound of {{ field.type.array_size }}')
+    }
+{% elif field.type.array_size %}
+    if (obj['{{ field.name }}'].length != {{ field.type.array_size }}) {
+      throw new Error('"{{ field.name }}" must have length of {{ field.type.array_size }}');
+    }
+{% endif %}
+{% if field.js_type.is_typed_array %}
+    if (Array.isArray(obj['{{ field.name }}'])) {
+      for (const [i, v] of obj['{{ field.name }}'].entries()) {
+        if (typeof v !== 'number') {
+          throw new Error(`expected index ${i} of "{{ field.name }}" to be "number"`);
+        }
+      }
+    }
+{% else %}
+{% if field.js_type.is_primitive %}
+    for (const [i, v] of obj['{{ field.name }}'].entries()) {
+      if (typeof v !== '{{ field.js_type.element_type.type }}') {
+        throw new Error(`expected index ${i} of "{{ field.name }}" to be "{{ field.js_type.element_type.type }}"`);
+      }
+    }
+{% else %}
+    for (const [i, v] of obj['{{ field.name }}'].entries()) {
+      try {
+        {{ field.type.type }}.validate(v)
+      } catch (e) {
+        throw new Error(`in index ${i} of "{{ field.name }}":\n  ` + (e as Error).message);
+      }
+    }
+{% endif %}
+{% endif %}
+{% else %}
+{% if field.js_type.is_primitive %}
+    if (typeof obj['{{ field.name }}'] !== '{{ field.js_type.type }}') {
+      throw new Error('expected "{{ field.name }}" to be "{{ field.js_type.type }}"');
+    }
+{% else %}
+    try {
+      {{ field.type.type }}.validate(obj['{{ field.name }}'] as Record<string, unknown>);
+    } catch (e) {
+      throw new Error('in "{{ field.name }}":\n  ' + (e as Error).message);
+    }
+{% endif %}
+{% endif %}
+{% endfor %}
+  }
+}
+
+/*
+{{ msg.raw }}
+*/

@@ -19,11 +19,6 @@ curl -fsSL https://get.pnpm.io/install.sh | bash -
 pnpm env use --global 16
 ```
 
-Install poetry.
-```bash
-curl -sSL https://install.python-poetry.org | python3 -
-```
-
 ### Install rmf
 
 Refer to the following documentation:
@@ -81,7 +76,7 @@ sudo -u postgres bash -c "dropdb postgres; createdb postgres"
 Before running the commands, make sure that rmf is sourced.
 ```bash
 cd packages/dashboard
-npm start
+pnpm start
 ```
 When presented with a login screen, use `user=admin password=admin`.
 

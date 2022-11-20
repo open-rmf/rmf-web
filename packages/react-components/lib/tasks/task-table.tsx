@@ -1,4 +1,5 @@
 import {
+  Button,
   styled,
   Table,
   TableBody,
@@ -7,6 +8,7 @@ import {
   TableProps,
   TableRow,
 } from '@mui/material';
+import { ArrowCircleDown, ArrowCircleUp } from '@mui/icons-material';
 import { Status, TaskState } from 'api-client';
 import clsx from 'clsx';
 import React from 'react';
@@ -112,6 +114,7 @@ function TaskRow({ task, onClick }: TaskRowProps) {
             : 'unknown'}
         </TableCell>
         <TableCell>{task.booking.id}</TableCell>
+        <TableCell>{task.category}</TableCell>
         <TableCell>{task.assigned_to ? task.assigned_to.name : 'unknown'}</TableCell>
         <TableCell>
           {task.unix_millis_start_time
@@ -136,15 +139,50 @@ export interface TaskTableProps {
    */
   tasks: TaskState[];
   onTaskClick?(ev: React.MouseEvent<HTMLDivElement>, task: TaskState): void;
+
+  /**
+   * Handles the event when clicking the date title and reverts the chronological order of the list.
+   * @param ev Mouse event click.
+   */
+  onDateTitleClick?(ev: React.MouseEvent<HTMLButtonElement>): void;
+
+  /**
+   * State: Tasks table sorting by date in descending order.
+   */
+  chronologicalOrder: boolean;
 }
 
-export function TaskTable({ tasks, onTaskClick }: TaskTableProps): JSX.Element {
+export function TaskTable({
+  tasks,
+  onTaskClick,
+  onDateTitleClick,
+  chronologicalOrder,
+}: TaskTableProps): JSX.Element {
   return (
     <StyledTable stickyHeader size="small">
       <TableHead>
         <TableRow>
-          <TableCell>Date</TableCell>
+          <TableCell
+            sx={{
+              padding: 0,
+            }}
+          >
+            <Button
+              variant="text"
+              onClick={(ev) => onDateTitleClick && onDateTitleClick(ev)}
+              sx={{
+                color: 'inherit',
+                textTransform: 'none',
+                width: '100%',
+              }}
+            >
+              Date &nbsp;
+              {chronologicalOrder ? <ArrowCircleDown /> : <ArrowCircleUp />}
+            </Button>
+          </TableCell>
+
           <TableCell>Task Id</TableCell>
+          <TableCell>Category</TableCell>
           <TableCell>Assignee</TableCell>
           <TableCell>Start Time</TableCell>
           <TableCell>End Time</TableCell>

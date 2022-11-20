@@ -118,7 +118,7 @@ export const MapApp = styled(
     const [trajectories, setTrajectories] = React.useState<TrajectoryData[]>([]);
     const [mapSettings, setMapSettings] = React.useState<MapSettings>(() => {
       const settings = window.localStorage.getItem(SettingsKey);
-      return settings ? JSON.parse(settings) : { trajectoryTime: 60000 /* 1 min */ };
+      return settings ? JSON.parse(settings) : { trajectoryTime: 300000 /* 5 min */ };
     });
     const trajectoryTime = mapSettings.trajectoryTime;
     const trajectoryAnimScale = trajectoryTime / (0.9 * TrajectoryUpdateInterval);
@@ -375,7 +375,6 @@ export const MapApp = styled(
         zoom={6}
         bounds={bounds}
         maxBounds={bounds}
-        animate
       >
         <AttributionControl position="bottomright" prefix="OSRC-SG" />
         <LayersControl

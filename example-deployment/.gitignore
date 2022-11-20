@@ -1,5 +1,0 @@
-/.bin/
-/ws/
-/k8s/example-full/keycloak/jwt-pub-key.pub
-/k8s/example-full/keycloak/keycloak.pem
-/build/

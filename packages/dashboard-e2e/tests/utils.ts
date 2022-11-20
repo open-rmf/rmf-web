@@ -17,7 +17,3 @@ export function getAppBar(): ReturnType<WebdriverIO.Browser['$']> {
 export function getScheduleVisualizer(): ReturnType<WebdriverIO.Browser['$']> {
   return $('#schedule-visualizer');
 }
-
-export function getDoorCell(doorName: string): ReturnType<WebdriverIO.Browser['$']> {
-  return $(`[role=region][aria-labelledby=door-cell-${doorName}`);
-}

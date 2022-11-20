@@ -26,13 +26,11 @@
       "prettier --write"
     ],
     "**/*.py": [
-      "poetry run isort",
-      "poetry run black"
+      "scripts/pipenv run isort",
+      "scripts/pipenv run black"
     ]
   },
-  "pnpm": {
-    "overrides": {
-      "react-error-overlay": "6.0.9"
-    }
+  "overrides": {
+    "react-error-overlay": "6.0.9"
   }
 }

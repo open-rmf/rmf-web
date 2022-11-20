@@ -6,7 +6,7 @@ RMF_BUILDING_MAP_MSGS_VER=c5e0352e2dfd3d11e4d292a1c2901cad867c1441
 RMF_INTERNAL_MSGS_VER=0c237e1758872917661879975d7dc0acf5fa518c
 RMF_API_MSGS_VER=91295892192d24ec73c9a1c6fa54334963586784
 RMF_ROS2_VER=bf038461b5b0fb7d4594461a724bc9e5e7cb97c6
-CODEGEN_VER=0.11.19
+CODEGEN_VER=$(datamodel-codegen --version)
 
 cd "$(dirname $0)"
 source ../../scripts/rmf-helpers.sh
@@ -62,12 +62,6 @@ EOF
 pipenv run isort api_server/models/ros_pydantic
 pipenv run black api_server/models/ros_pydantic
 
-# install datamodel-codegen
-if [[ ! -d .venv_local/lib ]]; then
-  python3 -m venv .venv_local
-fi
-bash -c ". .venv_local/bin/activate && pip3 install wheel && pip3 install 'datamodel-code-generator==${CODEGEN_VER}'"
-
 generate_from_json_schema() {
   input=$1
   output=$2
@@ -76,7 +70,7 @@ generate_from_json_schema() {
 
   rm -rf "$output"
   mkdir -p "$output"
-  bash -c ". .venv_local/bin/activate && datamodel-codegen --disable-timestamp --input-file-type jsonschema --enum-field-as-literal one --input "$input" --output \"$output\""
+  bash -c "datamodel-codegen --disable-timestamp --input-file-type jsonschema --enum-field-as-literal one --input "$input" --output \"$output\""
   cat << EOF > "$output/version.py"
 # THIS FILE IS GENERATED
 version = {
