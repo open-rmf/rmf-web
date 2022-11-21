@@ -102,9 +102,9 @@ export const TaskLogs: React.FC<TaskLogsProps> = ({ taskLog, eventName, eventSta
                           direction="row"
                           justifyItems="center"
                           sx={{
-                            backgroundColor: 'white',
+                            background: theme.palette.background.paper,
                             marginTop: theme.spacing(1),
-                            borderRadius: '8px',
+                            borderRadius: theme.shape.borderRadius,
                           }}
                         >
                           <Grid
