@@ -168,14 +168,6 @@ export function TaskDataGridTable({
       {
         value: 'after',
         getApplyFilterFn: (filterItem) => {
-          return buildApplyDateFilterFn(filterItem, (value1, value2) => value1 > value2, showTime);
-        },
-        InputComponent: GridFilterDateInput,
-        InputComponentProps: { showTime },
-      },
-      {
-        value: 'onOrAfter',
-        getApplyFilterFn: (filterItem) => {
           return buildApplyDateFilterFn(filterItem, (value1, value2) => value1 >= value2, showTime);
         },
         InputComponent: GridFilterDateInput,
@@ -183,14 +175,6 @@ export function TaskDataGridTable({
       },
       {
         value: 'before',
-        getApplyFilterFn: (filterItem) => {
-          return buildApplyDateFilterFn(filterItem, (value1, value2) => value1 < value2, showTime);
-        },
-        InputComponent: GridFilterDateInput,
-        InputComponentProps: { showTime },
-      },
-      {
-        value: 'onOrBefore',
         getApplyFilterFn: (filterItem) => {
           return buildApplyDateFilterFn(filterItem, (value1, value2) => value1 <= value2, showTime);
         },
