@@ -1,7 +1,18 @@
+import os
+
 import uvicorn
 
 from .app import app
-from .app_config import app_config
+from .app_config import app_config, load_config
+
+app_config = load_config(
+    os.environ.get(
+        "RMF_API_SERVER_CONFIG",
+        f"{os.path.dirname(__file__)}/default_config.py",
+    )
+)
+
+TORTOISE_ORM = app_config.get_tortoise_orm_config()
 
 
 def main():
