@@ -30,7 +30,6 @@ class TaskRepository:
         await ttm.TaskState.update_or_create(
             {
                 "data": task_state.json(),
-                "task_id": task_state.booking.id,
                 "category": task_state.category.__root__
                 if task_state.category
                 else None,

@@ -14,7 +14,6 @@ from .log import LogMixin
 class TaskState(Model):
     id_ = CharField(255, pk=True, source_field="id")
     data = JSONField()
-    task_id = CharField(255, null=True, index=True)
     category = CharField(255, null=True, index=True)
     assigned_to = CharField(255, null=True, index=True)
     unix_millis_start_time = DatetimeField(null=True, index=True)
