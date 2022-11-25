@@ -247,7 +247,7 @@ export const MapApp = styled(
             (p) => p.level === currentLevel.name && p.vertex.name.length > 0,
           ),
         );
-    }, [currentLevel]);
+    }, [buildingMap, currentLevel]);
 
     const [robots, setRobots] = React.useState<RobotData[]>([]);
     const { current: robotsStore } = React.useRef<Record<string, RobotData>>({});
