@@ -550,9 +550,12 @@ export function TaskDataGridTable({
     },
   ];
 
-  const handleSortModelChange = React.useCallback((sortModel: GridSortModel) => {
-    setSortFields({ model: sortModel });
-  }, []);
+  const handleSortModelChange = React.useCallback(
+    (sortModel: GridSortModel) => {
+      setSortFields({ model: sortModel });
+    },
+    [setSortFields],
+  );
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
