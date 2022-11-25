@@ -110,7 +110,6 @@ export const TasksApp = React.memo(
 
         let orderBy: string = '-unix_millis_start_time';
         if (sortFields.model && sortFields.model.length >= 1) {
-          console.log(sortFields.model);
           orderBy =
             sortFields.model[0].sort === 'desc'
               ? '-' + sortFields.model[0].field

@@ -463,7 +463,7 @@ export function TaskDataGridTable({
 
   const columns: GridColDef[] = [
     {
-      field: 'id',
+      field: 'task_id',
       headerName: 'ID',
       width: 90,
       valueGetter: (params: GridValueGetterParams) => params.row.booking.id,
@@ -478,7 +478,7 @@ export function TaskDataGridTable({
       filterOperators: getCategoryFilterOperators(),
     },
     {
-      field: 'name',
+      field: 'assigned_to',
       headerName: 'Assignee',
       width: 150,
       editable: false,
