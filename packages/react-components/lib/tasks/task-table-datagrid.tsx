@@ -10,6 +10,7 @@ import {
   GridFilterInputValueProps,
   GridFilterItem,
   GridRenderEditCellParams,
+  GridSortModel,
   useGridApiContext,
   GRID_DATE_COL_DEF,
 } from '@mui/x-data-grid';
@@ -73,12 +74,17 @@ export interface FilterFields {
   finisTime: string | undefined;
 }
 
+export interface SortFields {
+  model: GridSortModel | undefined;
+}
+
 export interface TableDataGridState {
   tasks: Tasks;
   onTaskClick?(ev: MuiEvent<React.MouseEvent<HTMLElement>>, task: TaskState): void;
   onPageChange: (newPage: number) => void;
   onPageSizeChange: (newPageSize: number) => void;
   setFilterFields: React.Dispatch<React.SetStateAction<FilterFields>>;
+  setSortFields: React.Dispatch<React.SetStateAction<SortFields>>;
 }
 
 export function TaskDataGridTable({
@@ -87,6 +93,7 @@ export function TaskDataGridTable({
   onPageChange,
   onPageSizeChange,
   setFilterFields,
+  setSortFields,
 }: TableDataGridState): JSX.Element {
   const handleEvent: GridEventListener<'rowClick'> = (
     params: GridRowParams,
@@ -161,14 +168,6 @@ export function TaskDataGridTable({
       {
         value: 'after',
         getApplyFilterFn: (filterItem) => {
-          return buildApplyDateFilterFn(filterItem, (value1, value2) => value1 > value2, showTime);
-        },
-        InputComponent: GridFilterDateInput,
-        InputComponentProps: { showTime },
-      },
-      {
-        value: 'onOrAfter',
-        getApplyFilterFn: (filterItem) => {
           return buildApplyDateFilterFn(filterItem, (value1, value2) => value1 >= value2, showTime);
         },
         InputComponent: GridFilterDateInput,
@@ -176,14 +175,6 @@ export function TaskDataGridTable({
       },
       {
         value: 'before',
-        getApplyFilterFn: (filterItem) => {
-          return buildApplyDateFilterFn(filterItem, (value1, value2) => value1 < value2, showTime);
-        },
-        InputComponent: GridFilterDateInput,
-        InputComponentProps: { showTime },
-      },
-      {
-        value: 'onOrBefore',
         getApplyFilterFn: (filterItem) => {
           return buildApplyDateFilterFn(filterItem, (value1, value2) => value1 <= value2, showTime);
         },
@@ -472,7 +463,7 @@ export function TaskDataGridTable({
 
   const columns: GridColDef[] = [
     {
-      field: 'id',
+      field: 'id_',
       headerName: 'ID',
       width: 90,
       valueGetter: (params: GridValueGetterParams) => params.row.booking.id,
@@ -487,7 +478,7 @@ export function TaskDataGridTable({
       filterOperators: getCategoryFilterOperators(),
     },
     {
-      field: 'name',
+      field: 'assigned_to',
       headerName: 'Assignee',
       width: 150,
       editable: false,
@@ -559,6 +550,13 @@ export function TaskDataGridTable({
     },
   ];
 
+  const handleSortModelChange = React.useCallback(
+    (sortModel: GridSortModel) => {
+      setSortFields({ model: sortModel });
+    },
+    [setSortFields],
+  );
+
   return (
     <div style={{ height: '100%', width: '100%' }}>
       <StyledDataGrid
@@ -577,6 +575,8 @@ export function TaskDataGridTable({
             category: categoryFilter === '' ? undefined : categoryFilter,
           }));
         }}
+        sortingMode="server"
+        onSortModelChange={handleSortModelChange}
         page={tasks.page - 1}
         onPageChange={onPageChange}
         onPageSizeChange={onPageSizeChange}

@@ -6,11 +6,12 @@ import React from 'react';
 import {
   CreateTaskForm,
   CreateTaskFormProps,
-  getPlaces,
-  Window,
-  TaskDataGridTable,
-  Tasks,
   FilterFields,
+  getPlaces,
+  SortFields,
+  Tasks,
+  TaskDataGridTable,
+  Window,
 } from 'react-components';
 import { AppControllerContext, ResourcesContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
@@ -77,6 +78,8 @@ export const TasksApp = React.memo(
         finisTime: undefined,
       });
 
+      const [sortFields, setSortFields] = React.useState<SortFields>({ model: undefined });
+
       const [placeNames, setPlaceNames] = React.useState<string[]>([]);
       React.useEffect(() => {
         if (!rmf) {
@@ -105,6 +108,14 @@ export const TasksApp = React.memo(
           return;
         }
 
+        let orderBy: string = '-unix_millis_start_time';
+        if (sortFields.model && sortFields.model.length >= 1) {
+          orderBy =
+            sortFields.model[0].sort === 'desc'
+              ? '-' + sortFields.model[0].field
+              : sortFields.model[0].field;
+        }
+
         (async () => {
           const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
             filterFields.taskId,
@@ -113,7 +124,7 @@ export const TasksApp = React.memo(
             filterFields.finisTime,
             GET_LIMIT,
             (tasksState.page - 1) * GET_LIMIT, // Datagrid component need to start in page 1. Otherwise works wrong
-            undefined,
+            orderBy,
             undefined,
           );
           const results = resp.data as TaskState[];
@@ -137,6 +148,7 @@ export const TasksApp = React.memo(
         filterFields.category,
         filterFields.finisTime,
         filterFields.startTime,
+        sortFields.model,
       ]);
 
       const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
@@ -197,6 +209,7 @@ export const TasksApp = React.memo(
                   tasks={tasksState}
                   onTaskClick={(_ev, task) => AppEvents.taskSelect.next(task)}
                   setFilterFields={setFilterFields}
+                  setSortFields={setSortFields}
                   onPageChange={(newPage: number) =>
                     setTasksState((old) => ({ ...old, page: newPage + 1 }))
                   }

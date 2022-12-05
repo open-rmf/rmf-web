@@ -141,6 +141,77 @@ rmf-server maintains its own database of users, roles and permissions. In order 
 
 A resource's authorizaion group is determined by it's contents. Exactly how they are determined for each type of resource is still either undecided or lacking information from RMF to be implemented, so currently every resource is put into a default empty group of `` (empty string).
 
+
+## Database Migration
+
+[`aerich`](https://github.com/tortoise/aerich) is a database migration tool for TortoiseORM. `aerich` requires a configuration file for initialization before doing any mutations, which can be found in `api_server.__main__.TORTOISE_ORM`.
+
+Install `aerich`
+
+```bash
+pip3 install aerich
+```
+
+This migration example will be for PostgreSQL. First, setup `rmf-web` following [instructions](../../README.md). Then, run the `api-server` with `psql`,
+
+```bash
+# source RMF
+cd ~/rmf-web/packages/api-server
+pnpm run start:psql
+```
+
+In another terminal, activate the virtual environment manually and initialize `aerich`,
+
+```bash
+cd ~/rmf-web
+source .venv/bin/activate
+cd ~/rmf-web/packages/api-server
+
+# First export the RMF_API_SERVER_CONFIG variable
+export RMF_API_SERVER_CONFIG=psql_local_config.py
+
+# Init aerich and save migration workspace to /tmp
+aerich init -t api_server.__main__.TORTOISE_ORM --location /tmp/migrations
+aerich init-db
+```
+
+You can check the current schema of a table. For example, using the `taskstate` table,
+
+```bash
+sudo -u postgres bash -c "psql -c '\d+ taskstate;'"
+```
+
+Now, modify the `TaskState` class in the `api_server/models/tortoise_models/tasks.py` to add a new field:
+
+```python
+new_field = fields.CharField(255)
+```
+
+Don't forget to make necessary changes to `api_server/repositories/tasks.py` too, to allow the dashboard to use the newly added fields.
+
+Now attempt a migration, and allow `aerich` to find the changes required,
+
+```bash
+aerich migrate
+# aerich will generate the migration file with the version
+# check file at /tmp/migration/models/
+```
+
+Perform database upgrade,
+
+```bash
+aerich upgrade
+```
+
+Now, inspecting the database schema, you will find "new_field" available in the schema
+
+```bash
+sudo -u postgres bash -c "psql -c '\d+ taskstate;'"
+```
+
+Restart the `api-server` and the changes to the databse should be reflected.
+
+
 ## Running tests
 
 ### Running unit tests
