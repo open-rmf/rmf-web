@@ -9,6 +9,7 @@ import {
   GridColTypeDef,
   GridFilterInputValueProps,
   GridFilterItem,
+  GridFilterModel,
   GridRenderEditCellParams,
   GridSortModel,
   useGridApiContext,
@@ -468,6 +469,7 @@ export function TaskDataGridTable({
       width: 90,
       valueGetter: (params: GridValueGetterParams) => params.row.booking.id,
       flex: 1,
+      filterable: false,
     },
     {
       field: 'category',
@@ -475,7 +477,8 @@ export function TaskDataGridTable({
       width: 150,
       editable: false,
       flex: 1,
-      filterOperators: getCategoryFilterOperators(),
+      // filterOperators: getCategoryFilterOperators(),
+      filterable: false,
     },
     {
       field: 'assigned_to',
@@ -485,6 +488,7 @@ export function TaskDataGridTable({
       valueGetter: (params: GridValueGetterParams) =>
         params.row.assigned_to ? params.row.assigned_to.name : 'unknown',
       flex: 1,
+      filterable: false,
     },
     {
       field: 'unix_millis_start_time',
@@ -511,7 +515,8 @@ export function TaskDataGridTable({
         );
       },
       flex: 1,
-      filterOperators: getDateFilterOperators(false),
+      // filterOperators: getDateFilterOperators(false),
+      filterable: false,
     },
     {
       field: 'unix_millis_finish_time',
@@ -538,7 +543,8 @@ export function TaskDataGridTable({
         );
       },
       flex: 1,
-      filterOperators: getDateFilterOperators(true),
+      // filterOperators: getDateFilterOperators(true),
+      filterable: false,
     },
     {
       field: 'status',
@@ -547,8 +553,13 @@ export function TaskDataGridTable({
       valueGetter: (params: GridValueGetterParams) =>
         params.row.status ? params.row.status : 'unknown',
       flex: 1,
+      filterable: false,
     },
   ];
+
+  const handleFilterModelChange = React.useCallback((filterModel: GridFilterModel) => {
+    console.log(filterModel);
+  }, []);
 
   const handleSortModelChange = React.useCallback(
     (sortModel: GridSortModel) => {
@@ -569,12 +580,14 @@ export function TaskDataGridTable({
         rowsPerPageOptions={[10]}
         pagination
         paginationMode="server"
-        onPreferencePanelClose={() => {
-          setFilterFields((old) => ({
-            ...old,
-            category: categoryFilter === '' ? undefined : categoryFilter,
-          }));
-        }}
+        // onPreferencePanelClose={() => {
+        //   setFilterFields((old) => ({
+        //     ...old,
+        //     category: categoryFilter === '' ? undefined : categoryFilter,
+        //   }));
+        // }}
+        filterMode="server"
+        onFilterModelChange={handleFilterModelChange}
         sortingMode="server"
         onSortModelChange={handleSortModelChange}
         page={tasks.page - 1}
