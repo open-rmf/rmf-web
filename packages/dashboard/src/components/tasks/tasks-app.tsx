@@ -71,12 +71,14 @@ export const TasksApp = React.memo(
         pageSize: 10,
       });
 
-      const [filterFields, setFilterFields] = React.useState<FilterFields>({
-        category: undefined,
-        taskId: undefined,
-        startTime: undefined,
-        finisTime: undefined,
-      });
+      // const [filterFields, setFilterFields] = React.useState<FilterFields>({
+      //   category: undefined,
+      //   taskId: undefined,
+      //   startTime: undefined,
+      //   finisTime: undefined,
+      // });
+
+      const [filterFields, setFilterFields] = React.useState<FilterFields>({ model: undefined });
 
       const [sortFields, setSortFields] = React.useState<SortFields>({ model: undefined });
 
@@ -108,6 +110,12 @@ export const TasksApp = React.memo(
           return;
         }
 
+        let filterItem = undefined;
+        if (filterFields.model && filterFields.model.items.length >= 1) {
+          filterItem = filterFields.model.items[0];
+          console.log(filterItem);
+        }
+
         let orderBy: string = '-unix_millis_start_time';
         if (sortFields.model && sortFields.model.length >= 1) {
           orderBy =
@@ -118,10 +126,26 @@ export const TasksApp = React.memo(
 
         (async () => {
           const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
-            filterFields.taskId,
-            filterFields.category,
-            filterFields.startTime,
-            filterFields.finisTime,
+            filterItem && filterItem.columnField === 'id_' && filterItem.value
+              ? filterItem.value
+              : undefined,
+            filterItem && filterItem.columnField === 'category' && filterItem.value
+              ? filterItem.value
+              : undefined,
+            filterItem && filterItem.columnField === 'assigned_to' && filterItem.value
+              ? filterItem.value
+              : undefined,
+            filterItem && filterItem.columnField === 'status' && filterItem.value
+              ? filterItem.value
+              : undefined,
+            // '0,1670524582861', // startTimeBetween
+            filterItem && filterItem.columnField === 'unix_millis_start_time' && filterItem.value
+              ? filterItem.value
+              : undefined,
+            // '0,1670524582861', // finishTimeBetween
+            filterItem && filterItem.columnField === 'unix_millis_finish_time' && filterItem.value
+              ? filterItem.value
+              : undefined,
             GET_LIMIT,
             (tasksState.page - 1) * GET_LIMIT, // Datagrid component need to start in page 1. Otherwise works wrong
             orderBy,
@@ -140,16 +164,7 @@ export const TasksApp = React.memo(
                 : tasksState.page * GET_LIMIT - 9,
           }));
         })();
-      }, [
-        rmf,
-        forceRefresh,
-        tasksState.page,
-        filterFields.taskId,
-        filterFields.category,
-        filterFields.finisTime,
-        filterFields.startTime,
-        sortFields.model,
-      ]);
+      }, [rmf, forceRefresh, tasksState.page, filterFields.model, sortFields.model]);
 
       const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
         async (taskRequests) => {
@@ -180,13 +195,13 @@ export const TasksApp = React.memo(
                 <IconButton
                   onClick={() => {
                     setForceRefresh((prev) => prev + 1);
-                    setFilterFields((old) => ({
-                      ...old,
-                      category: undefined,
-                      startTime: undefined,
-                      finisTime: undefined,
-                      taskId: undefined,
-                    }));
+                    // setFilterFields((old) => ({
+                    //   ...old,
+                    //   category: undefined,
+                    //   startTime: undefined,
+                    //   finisTime: undefined,
+                    //   taskId: undefined,
+                    // }));
                   }}
                   aria-label="Refresh"
                 >

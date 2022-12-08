@@ -1,5 +1,6 @@
 import {
   DataGrid,
+  getGridStringOperators,
   GridColDef,
   GridEventListener,
   GridValueGetterParams,
@@ -12,6 +13,7 @@ import {
   GridFilterModel,
   GridRenderEditCellParams,
   GridSortModel,
+  GridToolbar,
   useGridApiContext,
   GRID_DATE_COL_DEF,
 } from '@mui/x-data-grid';
@@ -69,10 +71,7 @@ export interface Tasks {
 }
 
 export interface FilterFields {
-  category: string | undefined;
-  taskId: string | undefined;
-  startTime: string | undefined;
-  finisTime: string | undefined;
+  model: GridFilterModel | undefined;
 }
 
 export interface SortFields {
@@ -105,7 +104,6 @@ export function TaskDataGridTable({
     }
   };
 
-  const [categoryFilter, setCategoryFilter] = React.useState('');
   /**
    * Custom filter operation
    * https://mui.com/x/react-data-grid/filtering/
@@ -142,34 +140,24 @@ export function TaskDataGridTable({
 
   const getDateFilterOperators = (showTime: boolean): GridColTypeDef['filterOperators'] => {
     return [
-      {
-        value: 'is',
-        getApplyFilterFn: (filterItem) => {
-          return buildApplyDateFilterFn(
-            filterItem,
-            (value1, value2) => value1 === value2,
-            showTime,
-          );
-        },
-        InputComponent: GridFilterDateInput,
-        InputComponentProps: { showTime },
-      },
-      {
-        value: 'not',
-        getApplyFilterFn: (filterItem) => {
-          return buildApplyDateFilterFn(
-            filterItem,
-            (value1, value2) => value1 !== value2,
-            showTime,
-          );
-        },
-        InputComponent: GridFilterDateInput,
-        InputComponentProps: { showTime },
-      },
+      // {
+      //   value: 'is',
+      //   getApplyFilterFn: (filterItem) => {
+      //     return buildApplyDateFilterFn(
+      //       filterItem,
+      //       (value1, value2) => value1 === value2,
+      //       showTime,
+      //     );
+      //     // return null;
+      //   },
+      //   InputComponent: GridFilterDateInput,
+      //   InputComponentProps: { showTime },
+      // },
       {
         value: 'after',
         getApplyFilterFn: (filterItem) => {
-          return buildApplyDateFilterFn(filterItem, (value1, value2) => value1 >= value2, showTime);
+          // return buildApplyDateFilterFn(filterItem, (value1, value2) => value1 >= value2, showTime);
+          return null;
         },
         InputComponent: GridFilterDateInput,
         InputComponentProps: { showTime },
@@ -177,26 +165,11 @@ export function TaskDataGridTable({
       {
         value: 'before',
         getApplyFilterFn: (filterItem) => {
-          return buildApplyDateFilterFn(filterItem, (value1, value2) => value1 <= value2, showTime);
+          // return buildApplyDateFilterFn(filterItem, (value1, value2) => value1 <= value2, showTime);
+          return null;
         },
         InputComponent: GridFilterDateInput,
         InputComponentProps: { showTime },
-      },
-      {
-        value: 'isEmpty',
-        getApplyFilterFn: () => {
-          return ({ value }): boolean => {
-            return value == null;
-          };
-        },
-      },
-      {
-        value: 'isNotEmpty',
-        getApplyFilterFn: () => {
-          return ({ value }): boolean => {
-            return value != null;
-          };
-        },
       },
     ];
   };
@@ -348,57 +321,21 @@ export function TaskDataGridTable({
     );
   };
 
-  const buildApplyCategoryFilter = (
-    filterItem: GridFilterItem,
-    compareFn: (value1: string, value2: string) => boolean,
-  ) => {
-    if (!filterItem.value) {
-      return null;
-    }
-
-    const filterValue = filterItem.value;
-
-    return ({ value }: GridCellParams<string>): boolean => {
-      if (!value) {
-        return false;
-      }
-
-      return compareFn(value, filterValue);
-    };
-  };
-
-  const getCategoryFilterOperators = (): GridColTypeDef['filterOperators'] => {
+  const getMinimalAnyFilterOperators = (): GridColTypeDef['filterOperators'] => {
     return [
       {
         value: 'is',
-        getApplyFilterFn: (filterItem) => {
-          return buildApplyCategoryFilter(filterItem, (value1, value2) => value1 === value2);
+        getApplyFilterFn: (_) => {
+          return null;
         },
-        InputComponent: GridFilterCategoryInput,
+        InputComponent: GridFilterMinimalStringInput,
         InputComponentProps: { type: 'string' },
-      },
-
-      {
-        value: 'isEmpty',
-        getApplyFilterFn: () => {
-          return ({ value }): boolean => {
-            return value == null;
-          };
-        },
-      },
-      {
-        value: 'isNotEmpty',
-        getApplyFilterFn: () => {
-          return ({ value }): boolean => {
-            return value != null;
-          };
-        },
       },
     ];
   };
 
-  const GridFilterCategoryInput = (props: GridFilterInputValueProps) => {
-    const { item, applyValue, focusElementRef = null } = props;
+  const GridFilterMinimalStringInput = (props: GridFilterInputValueProps) => {
+    const { item, applyValue, focusElementRef } = props;
 
     const [filterValueState, setFilterValueState] = React.useState(item.value ?? '');
     const [applying, setIsApplying] = React.useState(false);
@@ -413,24 +350,17 @@ export function TaskDataGridTable({
     React.useEffect(() => {
       const itemValue = item.value ?? '';
       setFilterValueState(itemValue);
-
-      // Setting the flag state to reset the category filter when closing the filter panel
-      setCategoryFilter(itemValue);
     }, [item.value]);
 
-    const updateFilterValue = (category: string) => {
+    const updateFilterValue = (input: string) => {
       clearTimeout(filterTimeout.current);
-      setFilterValueState(category);
+      setFilterValueState(input);
 
       setIsApplying(true);
+      applyValue({ ...item, value: input });
       filterTimeout.current = setTimeout(() => {
         setIsApplying(false);
-        setFilterFields((old) => ({
-          ...old,
-          category: category === '' ? undefined : category,
-        }));
-        applyValue({ ...item, value: category });
-      }, 500);
+      }, 5000);
     };
 
     const handleLowerFilterChange: TextFieldProps['onChange'] = (event) => {
@@ -469,16 +399,19 @@ export function TaskDataGridTable({
       width: 90,
       valueGetter: (params: GridValueGetterParams) => params.row.booking.id,
       flex: 1,
-      filterable: false,
+      filterOperators: getMinimalAnyFilterOperators(),
+      filterable: true,
     },
     {
       field: 'category',
       headerName: 'Category',
       width: 150,
       editable: false,
+      valueGetter: (params: GridValueGetterParams) =>
+        params.row.category ? params.row.category : 'unknown',
       flex: 1,
-      // filterOperators: getCategoryFilterOperators(),
-      filterable: false,
+      filterOperators: getMinimalAnyFilterOperators(),
+      filterable: true,
     },
     {
       field: 'assigned_to',
@@ -488,7 +421,8 @@ export function TaskDataGridTable({
       valueGetter: (params: GridValueGetterParams) =>
         params.row.assigned_to ? params.row.assigned_to.name : 'unknown',
       flex: 1,
-      filterable: false,
+      filterOperators: getMinimalAnyFilterOperators(),
+      filterable: true,
     },
     {
       field: 'unix_millis_start_time',
@@ -515,8 +449,8 @@ export function TaskDataGridTable({
         );
       },
       flex: 1,
-      // filterOperators: getDateFilterOperators(false),
-      filterable: false,
+      filterOperators: getDateFilterOperators(false),
+      filterable: true,
     },
     {
       field: 'unix_millis_finish_time',
@@ -543,8 +477,8 @@ export function TaskDataGridTable({
         );
       },
       flex: 1,
-      // filterOperators: getDateFilterOperators(true),
-      filterable: false,
+      filterOperators: getDateFilterOperators(true),
+      filterable: true,
     },
     {
       field: 'status',
@@ -553,13 +487,19 @@ export function TaskDataGridTable({
       valueGetter: (params: GridValueGetterParams) =>
         params.row.status ? params.row.status : 'unknown',
       flex: 1,
-      filterable: false,
+      filterOperators: getMinimalAnyFilterOperators(),
+      filterable: true,
     },
   ];
 
-  const handleFilterModelChange = React.useCallback((filterModel: GridFilterModel) => {
-    console.log(filterModel);
-  }, []);
+  const [tmpFilterFields, setTmpFilterFields] = React.useState<FilterFields>({ model: undefined });
+
+  const handleFilterModelChange = React.useCallback(
+    (filterModel: GridFilterModel) => {
+      setTmpFilterFields({ model: filterModel });
+    },
+    [setTmpFilterFields],
+  );
 
   const handleSortModelChange = React.useCallback(
     (sortModel: GridSortModel) => {
@@ -580,12 +520,9 @@ export function TaskDataGridTable({
         rowsPerPageOptions={[10]}
         pagination
         paginationMode="server"
-        // onPreferencePanelClose={() => {
-        //   setFilterFields((old) => ({
-        //     ...old,
-        //     category: categoryFilter === '' ? undefined : categoryFilter,
-        //   }));
-        // }}
+        onPreferencePanelClose={() => {
+          setFilterFields(tmpFilterFields);
+        }}
         filterMode="server"
         onFilterModelChange={handleFilterModelChange}
         sortingMode="server"
@@ -614,6 +551,16 @@ export function TaskDataGridTable({
           }
           return '';
         }}
+        // components={{
+        //   Toolbar: GridToolbar,
+        // }}
+        // initialState={{
+        //   filter: {
+        //     filterModel: {
+        //       items: [{ columnField: 'status', operatorValue: '=', value: '2.5' }],
+        //     },
+        //   },
+        // }}
       />
     </div>
   );

@@ -52,8 +52,6 @@ class TaskRepository:
             if pagination:
                 query = add_pagination(query, pagination)
             # TODO: enforce with authz
-            # import pdb
-            # pdb.set_trace()
             results = await query.values_list("data", flat=True)
             return [TaskState(**r) for r in results]
         except FieldError as e:
