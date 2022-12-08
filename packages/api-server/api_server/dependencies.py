@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional, Tuple
 
 from fastapi import Depends, Query
@@ -44,4 +45,66 @@ def between_query(
     else:
         parts = between.split(",")
         period = (int(parts[0]), int(parts[1]))
+    return period
+
+
+def start_time_between_query(
+    start_time_between: str = Query(
+        None,
+        description="""
+        The period of starting time to fetch, in unix millis.
+
+        This can be either a comma separated string or a string prefixed with '-' to fetch the last X millis.
+
+        Example:
+            "1000,2000" - Fetches logs between unix millis 1000 and 2000.
+            "-60000" - Fetches logs in the last minute.
+        """,
+    ),
+    now: int = Depends(clock.now),
+) -> Optional[Tuple[datetime, datetime]]:
+    if start_time_between is None:
+        return None
+    if start_time_between.startswith("-"):
+        period = (
+            datetime.fromtimestamp(now - int(start_time_between[1:])),
+            datetime.fromtimestamp(now / 1000),
+        )
+    else:
+        parts = start_time_between.split(",")
+        period = (
+            datetime.fromtimestamp(int(parts[0]) / 1000),
+            datetime.fromtimestamp(int(parts[1]) / 1000),
+        )
+    return period
+
+
+def finish_time_between_query(
+    finish_time_between: str = Query(
+        None,
+        description="""
+        The period of finishing time to fetch, in unix millis.
+
+        This can be either a comma separated string or a string prefixed with '-' to fetch the last X millis.
+
+        Example:
+            "1000,2000" - Fetches logs between unix millis 1000 and 2000.
+            "-60000" - Fetches logs in the last minute.
+        """,
+    ),
+    now: int = Depends(clock.now),
+) -> Optional[Tuple[datetime, datetime]]:
+    if finish_time_between is None:
+        return None
+    if finish_time_between.startswith("-"):
+        period = (
+            datetime.fromtimestamp(now - int(finish_time_between[1:])),
+            datetime.fromtimestamp(now / 1000),
+        )
+    else:
+        parts = finish_time_between.split(",")
+        period = (
+            datetime.fromtimestamp(int(parts[0]) / 1000),
+            datetime.fromtimestamp(int(parts[1]) / 1000),
+        )
     return period

@@ -6902,8 +6902,10 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      * @summary Query Task States
      * @param {string} [taskId] comma separated list of task ids
      * @param {string} [category] comma separated list of task categories
-     * @param {string} [startTime]
-     * @param {string} [finishTime]
+     * @param {string} [assignedTo] comma separated list of assigned robot names
+     * @param {string} [status] comma separated list of statuses
+     * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
+     * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
      * @param {number} [limit]
      * @param {number} [offset]
      * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -6913,8 +6915,10 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     queryTaskStatesTasksGet: async (
       taskId?: string,
       category?: string,
-      startTime?: string,
-      finishTime?: string,
+      assignedTo?: string,
+      status?: string,
+      startTimeBetween?: string,
+      finishTimeBetween?: string,
       limit?: number,
       offset?: number,
       orderBy?: string,
@@ -6940,14 +6944,20 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
         localVarQueryParameter['category'] = category;
       }
 
-      if (startTime !== undefined) {
-        localVarQueryParameter['start_time'] =
-          (startTime as any) instanceof Date ? (startTime as any).toISOString() : startTime;
+      if (assignedTo !== undefined) {
+        localVarQueryParameter['assigned_to'] = assignedTo;
       }
 
-      if (finishTime !== undefined) {
-        localVarQueryParameter['finish_time'] =
-          (finishTime as any) instanceof Date ? (finishTime as any).toISOString() : finishTime;
+      if (status !== undefined) {
+        localVarQueryParameter['status'] = status;
+      }
+
+      if (startTimeBetween !== undefined) {
+        localVarQueryParameter['start_time_between'] = startTimeBetween;
+      }
+
+      if (finishTimeBetween !== undefined) {
+        localVarQueryParameter['finish_time_between'] = finishTimeBetween;
       }
 
       if (limit !== undefined) {
@@ -7223,8 +7233,10 @@ export const TasksApiFp = function (configuration?: Configuration) {
      * @summary Query Task States
      * @param {string} [taskId] comma separated list of task ids
      * @param {string} [category] comma separated list of task categories
-     * @param {string} [startTime]
-     * @param {string} [finishTime]
+     * @param {string} [assignedTo] comma separated list of assigned robot names
+     * @param {string} [status] comma separated list of statuses
+     * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
+     * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
      * @param {number} [limit]
      * @param {number} [offset]
      * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -7234,8 +7246,10 @@ export const TasksApiFp = function (configuration?: Configuration) {
     async queryTaskStatesTasksGet(
       taskId?: string,
       category?: string,
-      startTime?: string,
-      finishTime?: string,
+      assignedTo?: string,
+      status?: string,
+      startTimeBetween?: string,
+      finishTimeBetween?: string,
       limit?: number,
       offset?: number,
       orderBy?: string,
@@ -7244,8 +7258,10 @@ export const TasksApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs = await localVarAxiosParamCreator.queryTaskStatesTasksGet(
         taskId,
         category,
-        startTime,
-        finishTime,
+        assignedTo,
+        status,
+        startTimeBetween,
+        finishTimeBetween,
         limit,
         offset,
         orderBy,
@@ -7466,8 +7482,10 @@ export const TasksApiFactory = function (
      * @summary Query Task States
      * @param {string} [taskId] comma separated list of task ids
      * @param {string} [category] comma separated list of task categories
-     * @param {string} [startTime]
-     * @param {string} [finishTime]
+     * @param {string} [assignedTo] comma separated list of assigned robot names
+     * @param {string} [status] comma separated list of statuses
+     * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
+     * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
      * @param {number} [limit]
      * @param {number} [offset]
      * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -7477,8 +7495,10 @@ export const TasksApiFactory = function (
     queryTaskStatesTasksGet(
       taskId?: string,
       category?: string,
-      startTime?: string,
-      finishTime?: string,
+      assignedTo?: string,
+      status?: string,
+      startTimeBetween?: string,
+      finishTimeBetween?: string,
       limit?: number,
       offset?: number,
       orderBy?: string,
@@ -7488,8 +7508,10 @@ export const TasksApiFactory = function (
         .queryTaskStatesTasksGet(
           taskId,
           category,
-          startTime,
-          finishTime,
+          assignedTo,
+          status,
+          startTimeBetween,
+          finishTimeBetween,
           limit,
           offset,
           orderBy,
@@ -7732,8 +7754,10 @@ export class TasksApi extends BaseAPI {
    * @summary Query Task States
    * @param {string} [taskId] comma separated list of task ids
    * @param {string} [category] comma separated list of task categories
-   * @param {string} [startTime]
-   * @param {string} [finishTime]
+   * @param {string} [assignedTo] comma separated list of assigned robot names
+   * @param {string} [status] comma separated list of statuses
+   * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
+   * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
    * @param {number} [limit]
    * @param {number} [offset]
    * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -7744,8 +7768,10 @@ export class TasksApi extends BaseAPI {
   public queryTaskStatesTasksGet(
     taskId?: string,
     category?: string,
-    startTime?: string,
-    finishTime?: string,
+    assignedTo?: string,
+    status?: string,
+    startTimeBetween?: string,
+    finishTimeBetween?: string,
     limit?: number,
     offset?: number,
     orderBy?: string,
@@ -7755,8 +7781,10 @@ export class TasksApi extends BaseAPI {
       .queryTaskStatesTasksGet(
         taskId,
         category,
-        startTime,
-        finishTime,
+        assignedTo,
+        status,
+        startTimeBetween,
+        finishTimeBetween,
         limit,
         offset,
         orderBy,

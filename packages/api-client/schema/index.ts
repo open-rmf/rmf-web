@@ -332,15 +332,53 @@ export default {
             in: 'query',
           },
           {
+            description: 'comma separated list of assigned robot names',
             required: false,
-            schema: { title: 'Start Time', type: 'string', format: 'date-time' },
-            name: 'start_time',
+            schema: {
+              title: 'Assigned To',
+              type: 'string',
+              description: 'comma separated list of assigned robot names',
+            },
+            name: 'assigned_to',
             in: 'query',
           },
           {
+            description: 'comma separated list of statuses',
             required: false,
-            schema: { title: 'Finish Time', type: 'string', format: 'date-time' },
-            name: 'finish_time',
+            schema: {
+              title: 'Status',
+              type: 'string',
+              description: 'comma separated list of statuses',
+            },
+            name: 'status',
+            in: 'query',
+          },
+          {
+            description:
+              '\n        The period of starting time to fetch, in unix millis.\n\n        This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            "-60000" - Fetches logs in the last minute.\n        ',
+            required: false,
+            schema: {
+              title: 'Start Time Between',
+              type: 'string',
+              description:
+                '\n        The period of starting time to fetch, in unix millis.\n\n        This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            "-60000" - Fetches logs in the last minute.\n        ',
+              default: '-60000',
+            },
+            name: 'start_time_between',
+            in: 'query',
+          },
+          {
+            description:
+              '\n        The period of finishing time to fetch, in unix millis.\n\n        This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            "-60000" - Fetches logs in the last minute.\n        ',
+            required: false,
+            schema: {
+              title: 'Finish Time Between',
+              type: 'string',
+              description:
+                '\n        The period of finishing time to fetch, in unix millis.\n\n        This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            "-60000" - Fetches logs in the last minute.\n        ',
+              default: '-60000',
+            },
+            name: 'finish_time_between',
             in: 'query',
           },
           {
