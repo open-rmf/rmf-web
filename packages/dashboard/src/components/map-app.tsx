@@ -31,6 +31,8 @@ import { TrajectoriesOverlay, TrajectoryData } from './trajectories-overlay';
 import { WaypointsOverlay } from './waypoints-overlay';
 import { WorkcellData, WorkcellsOverlay } from './workcells-overlay';
 
+type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
+
 const debug = Debug('MapApp');
 
 const TrajectoryUpdateInterval = 2000;
@@ -112,7 +114,7 @@ export const MapApp = styled(
       })();
     }, [resourceManager?.dispensers, ingestors, currentLevel]);
 
-    const [fleets, setFleets] = React.useState<ApiServerModelsRmfApiFleetStateFleetState[]>([]);
+    const [fleets, setFleets] = React.useState<FleetState[]>([]);
 
     const [waypoints, setWaypoints] = React.useState<Place[]>([]);
 

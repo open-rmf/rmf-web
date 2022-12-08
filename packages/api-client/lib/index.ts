@@ -15,6 +15,8 @@ import {
   TaskState,
 } from './openapi';
 
+type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
+
 const debug = Debug('rmf-client');
 
 // https://stackoverflow.com/questions/52667959/what-is-the-purpose-of-bivariancehack-in-typescript-types
@@ -100,14 +102,8 @@ export class SioClient {
     return this.subscribe<IngestorHealth>(`/ingestors/${guid}/health`, listener);
   }
 
-  subscribeFleetState(
-    name: string,
-    listener: Listener<ApiServerModelsRmfApiFleetStateFleetState>,
-  ): Subscription {
-    return this.subscribe<ApiServerModelsRmfApiFleetStateFleetState>(
-      `/fleets/${name}/state`,
-      listener,
-    );
+  subscribeFleetState(name: string, listener: Listener<FleetState>): Subscription {
+    return this.subscribe<FleetState>(`/fleets/${name}/state`, listener);
   }
 
   subscribeTaskState(taskId: string, listener: Listener<TaskState>): Subscription {

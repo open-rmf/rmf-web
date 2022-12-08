@@ -9,9 +9,11 @@ import {
 } from 'api-client';
 import { RmfIngress } from '../components/rmf-app/rmf-ingress';
 
+type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
+
 export const useFleets = (
   rmfIngress: RmfIngress | undefined,
-  setFleets: React.Dispatch<React.SetStateAction<ApiServerModelsRmfApiFleetStateFleetState[]>>,
+  setFleets: React.Dispatch<React.SetStateAction<FleetState[]>>,
 ) => {
   React.useEffect(() => {
     if (!rmfIngress) return;
@@ -27,13 +29,8 @@ export const useFleets = (
   }, [rmfIngress, setFleets]);
 };
 
-export const useFleetStateRef = (
-  sioClient: SioClient | undefined,
-  fleets: ApiServerModelsRmfApiFleetStateFleetState[],
-) => {
-  const fleetStatesRef = React.useRef<Record<string, ApiServerModelsRmfApiFleetStateFleetState>>(
-    {},
-  );
+export const useFleetStateRef = (sioClient: SioClient | undefined, fleets: FleetState[]) => {
+  const fleetStatesRef = React.useRef<Record<string, FleetState>>({});
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = fleets.reduce((acc, f) => {

@@ -33,6 +33,8 @@ import {
   RobotTrajectoryManager,
 } from '../../managers/robot-trajectory-manager';
 
+type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
+
 export class RmfIngress {
   // This should be private because socketio does not support "replaying" subscription. If
   // subscription is made before the one made by the observables, the replays will not work
@@ -178,20 +180,15 @@ export class RmfIngress {
     return this._ingestorStateObsStore[guid];
   }
 
-  fleetsObs: Observable<ApiServerModelsRmfApiFleetStateFleetState[]> = new Observable<
-    ApiServerModelsRmfApiFleetStateFleetState[]
-  >((subscriber) => {
+  fleetsObs: Observable<FleetState[]> = new Observable<FleetState[]>((subscriber) => {
     (async () => {
       const fleets = (await this.fleetsApi.getFleetsFleetsGet()).data;
       subscriber.next(fleets);
     })();
   }).pipe(shareReplay(1));
 
-  private _fleetStateObsStore: Record<
-    string,
-    Observable<ApiServerModelsRmfApiFleetStateFleetState>
-  > = {};
-  getFleetStateObs(name: string): Observable<ApiServerModelsRmfApiFleetStateFleetState> {
+  private _fleetStateObsStore: Record<string, Observable<FleetState>> = {};
+  getFleetStateObs(name: string): Observable<FleetState> {
     if (!this._fleetStateObsStore[name]) {
       this._fleetStateObsStore[name] = this._convertSioToRxObs((handler) =>
         this._sioClient.subscribeFleetState(name, handler),
