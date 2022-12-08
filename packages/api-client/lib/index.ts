@@ -6,7 +6,7 @@ import {
   DispenserState,
   DoorHealth,
   DoorState,
-  FleetState,
+  ApiServerModelsRmfApiFleetStateFleetState,
   IngestorHealth,
   IngestorState,
   LiftHealth,
@@ -100,8 +100,14 @@ export class SioClient {
     return this.subscribe<IngestorHealth>(`/ingestors/${guid}/health`, listener);
   }
 
-  subscribeFleetState(name: string, listener: Listener<FleetState>): Subscription {
-    return this.subscribe<FleetState>(`/fleets/${name}/state`, listener);
+  subscribeFleetState(
+    name: string,
+    listener: Listener<ApiServerModelsRmfApiFleetStateFleetState>,
+  ): Subscription {
+    return this.subscribe<ApiServerModelsRmfApiFleetStateFleetState>(
+      `/fleets/${name}/state`,
+      listener,
+    );
   }
 
   subscribeTaskState(taskId: string, listener: Listener<TaskState>): Subscription {

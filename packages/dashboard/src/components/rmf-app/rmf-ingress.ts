@@ -11,7 +11,7 @@ import {
   DoorsApi,
   DoorState,
   FleetsApi,
-  FleetState,
+  ApiServerModelsRmfApiFleetStateFleetState,
   Ingestor,
   IngestorsApi,
   IngestorState,
@@ -178,15 +178,20 @@ export class RmfIngress {
     return this._ingestorStateObsStore[guid];
   }
 
-  fleetsObs: Observable<FleetState[]> = new Observable<FleetState[]>((subscriber) => {
+  fleetsObs: Observable<ApiServerModelsRmfApiFleetStateFleetState[]> = new Observable<
+    ApiServerModelsRmfApiFleetStateFleetState[]
+  >((subscriber) => {
     (async () => {
       const fleets = (await this.fleetsApi.getFleetsFleetsGet()).data;
       subscriber.next(fleets);
     })();
   }).pipe(shareReplay(1));
 
-  private _fleetStateObsStore: Record<string, Observable<FleetState>> = {};
-  getFleetStateObs(name: string): Observable<FleetState> {
+  private _fleetStateObsStore: Record<
+    string,
+    Observable<ApiServerModelsRmfApiFleetStateFleetState>
+  > = {};
+  getFleetStateObs(name: string): Observable<ApiServerModelsRmfApiFleetStateFleetState> {
     if (!this._fleetStateObsStore[name]) {
       this._fleetStateObsStore[name] = this._convertSioToRxObs((handler) =>
         this._sioClient.subscribeFleetState(name, handler),

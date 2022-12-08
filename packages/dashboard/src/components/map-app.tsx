@@ -1,5 +1,11 @@
 import { styled } from '@mui/material';
-import { BuildingMap, Dispenser, FleetState, Ingestor, Level } from 'api-client';
+import {
+  BuildingMap,
+  Dispenser,
+  ApiServerModelsRmfApiFleetStateFleetState,
+  Ingestor,
+  Level,
+} from 'api-client';
 import Debug from 'debug';
 import React from 'react';
 import {
@@ -106,7 +112,7 @@ export const MapApp = styled(
       })();
     }, [resourceManager?.dispensers, ingestors, currentLevel]);
 
-    const [fleets, setFleets] = React.useState<FleetState[]>([]);
+    const [fleets, setFleets] = React.useState<ApiServerModelsRmfApiFleetStateFleetState[]>([]);
 
     const [waypoints, setWaypoints] = React.useState<Place[]>([]);
 
