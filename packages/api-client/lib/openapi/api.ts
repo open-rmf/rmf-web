@@ -6904,8 +6904,8 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string} [category] comma separated list of task categories
      * @param {string} [assignedTo] comma separated list of assigned robot names
      * @param {string} [status] comma separated list of statuses
-     * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
-     * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
+     * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
      * @param {number} [limit]
      * @param {number} [offset]
      * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -7235,8 +7235,8 @@ export const TasksApiFp = function (configuration?: Configuration) {
      * @param {string} [category] comma separated list of task categories
      * @param {string} [assignedTo] comma separated list of assigned robot names
      * @param {string} [status] comma separated list of statuses
-     * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
-     * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
+     * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
      * @param {number} [limit]
      * @param {number} [offset]
      * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -7484,8 +7484,8 @@ export const TasksApiFactory = function (
      * @param {string} [category] comma separated list of task categories
      * @param {string} [assignedTo] comma separated list of assigned robot names
      * @param {string} [status] comma separated list of statuses
-     * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
-     * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
+     * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
      * @param {number} [limit]
      * @param {number} [offset]
      * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -7756,8 +7756,8 @@ export class TasksApi extends BaseAPI {
    * @param {string} [category] comma separated list of task categories
    * @param {string} [assignedTo] comma separated list of assigned robot names
    * @param {string} [status] comma separated list of statuses
-   * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
-   * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
+   * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+   * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
    * @param {number} [limit]
    * @param {number} [offset]
    * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.

@@ -355,28 +355,26 @@ export default {
           },
           {
             description:
-              '\n        The period of starting time to fetch, in unix millis.\n\n        This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            "-60000" - Fetches logs in the last minute.\n        ',
+              '\n        The period of starting time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n        ',
             required: false,
             schema: {
               title: 'Start Time Between',
               type: 'string',
               description:
-                '\n        The period of starting time to fetch, in unix millis.\n\n        This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            "-60000" - Fetches logs in the last minute.\n        ',
-              default: '-60000',
+                '\n        The period of starting time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n        ',
             },
             name: 'start_time_between',
             in: 'query',
           },
           {
             description:
-              '\n        The period of finishing time to fetch, in unix millis.\n\n        This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            "-60000" - Fetches logs in the last minute.\n        ',
+              '\n        The period of finishing time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            "-60000" - Fetches logs in the last minute.\n        ',
             required: false,
             schema: {
               title: 'Finish Time Between',
               type: 'string',
               description:
-                '\n        The period of finishing time to fetch, in unix millis.\n\n        This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            "-60000" - Fetches logs in the last minute.\n        ',
-              default: '-60000',
+                '\n        The period of finishing time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            "-60000" - Fetches logs in the last minute.\n        ',
             },
             name: 'finish_time_between',
             in: 'query',

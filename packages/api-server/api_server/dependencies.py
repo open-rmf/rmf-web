@@ -54,11 +54,10 @@ def start_time_between_query(
         description="""
         The period of starting time to fetch, in unix millis.
 
-        This can be either a comma separated string or a string prefixed with '-' to fetch the last X millis.
+        This must be a comma separated string, 'X,Y' to fetch between X millis and Y millis inclusive.
 
         Example:
             "1000,2000" - Fetches logs between unix millis 1000 and 2000.
-            "-60000" - Fetches logs in the last minute.
         """,
     ),
     now: int = Depends(clock.now),
@@ -66,8 +65,9 @@ def start_time_between_query(
     if start_time_between is None:
         return None
     if start_time_between.startswith("-"):
+        # Cap at 0 millis
         period = (
-            datetime.fromtimestamp(now - int(start_time_between[1:])),
+            datetime.fromtimestamp(0),
             datetime.fromtimestamp(now / 1000),
         )
     else:
@@ -85,7 +85,7 @@ def finish_time_between_query(
         description="""
         The period of finishing time to fetch, in unix millis.
 
-        This can be either a comma separated string or a string prefixed with '-' to fetch the last X millis.
+        This must be a comma separated string, 'X,Y' to fetch between X millis and Y millis inclusive.
 
         Example:
             "1000,2000" - Fetches logs between unix millis 1000 and 2000.
@@ -97,8 +97,9 @@ def finish_time_between_query(
     if finish_time_between is None:
         return None
     if finish_time_between.startswith("-"):
+        # Cap at 0 millis
         period = (
-            datetime.fromtimestamp(now - int(finish_time_between[1:])),
+            datetime.fromtimestamp(0),
             datetime.fromtimestamp(now / 1000),
         )
     else:
