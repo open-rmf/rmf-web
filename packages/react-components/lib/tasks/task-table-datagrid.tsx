@@ -99,11 +99,9 @@ export function TaskDataGridTable({
     (operator) => operator.value === 'equals',
   );
 
-  const getMinimalDateOperators = getGridDateOperators().filter(
+  const getMinimalDateOperators = getGridDateOperators(true).filter(
     (operator) => operator.value === 'onOrAfter' || operator.value === 'onOrBefore',
   );
-
-  // const getMinimalSingleSelectOperators
 
   const columns: GridColDef[] = [
     {
