@@ -71,13 +71,6 @@ export const TasksApp = React.memo(
         pageSize: 10,
       });
 
-      // const [filterFields, setFilterFields] = React.useState<FilterFields>({
-      //   category: undefined,
-      //   taskId: undefined,
-      //   startTime: undefined,
-      //   finisTime: undefined,
-      // });
-
       const [filterFields, setFilterFields] = React.useState<FilterFields>({ model: undefined });
 
       const [sortFields, setSortFields] = React.useState<SortFields>({ model: undefined });
@@ -110,10 +103,32 @@ export const TasksApp = React.memo(
           return;
         }
 
-        let filterItem = undefined;
+        let filterColumn: string | undefined = undefined;
+        let filterValue: string | undefined = undefined;
         if (filterFields.model && filterFields.model.items.length >= 1) {
-          filterItem = filterFields.model.items[0];
-          console.log(filterItem);
+          console.log(filterFields.model.items[0]);
+          filterColumn = filterFields.model.items[0].columnField;
+          filterValue = filterFields.model.items[0].value;
+
+          const filterOperator: string | undefined = filterFields.model.items[0].operatorValue;
+          if (
+            (filterColumn === 'unix_millis_start_time' ||
+              filterColumn === 'unix_millis_finish_time') &&
+            filterValue
+          ) {
+            const selectedTime = new Date(filterValue);
+            if (filterOperator && filterOperator === 'onOrBefore') {
+              filterValue = `0,${selectedTime.getTime()}`;
+            } else if (filterOperator && filterOperator === 'onOrAfter') {
+              // Enforce an upper limit which is 24 hours ahead of the current time
+              const now = new Date();
+              const upperLimit = now.getTime() + 86400000;
+              filterValue = `${selectedTime.getTime()},${upperLimit}`;
+            }
+          }
+
+          console.log(filterColumn);
+          console.log(filterValue);
         }
 
         let orderBy: string = '-unix_millis_start_time';
@@ -126,26 +141,12 @@ export const TasksApp = React.memo(
 
         (async () => {
           const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
-            filterItem && filterItem.columnField === 'id_' && filterItem.value
-              ? filterItem.value
-              : undefined,
-            filterItem && filterItem.columnField === 'category' && filterItem.value
-              ? filterItem.value
-              : undefined,
-            filterItem && filterItem.columnField === 'assigned_to' && filterItem.value
-              ? filterItem.value
-              : undefined,
-            filterItem && filterItem.columnField === 'status' && filterItem.value
-              ? filterItem.value
-              : undefined,
-            // '0,1670524582861', // startTimeBetween
-            filterItem && filterItem.columnField === 'unix_millis_start_time' && filterItem.value
-              ? filterItem.value
-              : undefined,
-            // '0,1670524582861', // finishTimeBetween
-            filterItem && filterItem.columnField === 'unix_millis_finish_time' && filterItem.value
-              ? filterItem.value
-              : undefined,
+            filterColumn && filterColumn === 'id_' ? filterValue : undefined,
+            filterColumn && filterColumn === 'category' ? filterValue : undefined,
+            filterColumn && filterColumn === 'assigned_to' ? filterValue : undefined,
+            filterColumn && filterColumn === 'status' ? filterValue : undefined,
+            filterColumn && filterColumn === 'unix_millis_start_time' ? filterValue : undefined,
+            filterColumn && filterColumn === 'unix_millis_finish_time' ? filterValue : undefined,
             GET_LIMIT,
             (tasksState.page - 1) * GET_LIMIT, // Datagrid component need to start in page 1. Otherwise works wrong
             orderBy,
@@ -195,13 +196,6 @@ export const TasksApp = React.memo(
                 <IconButton
                   onClick={() => {
                     setForceRefresh((prev) => prev + 1);
-                    // setFilterFields((old) => ({
-                    //   ...old,
-                    //   category: undefined,
-                    //   startTime: undefined,
-                    //   finisTime: undefined,
-                    //   taskId: undefined,
-                    // }));
                   }}
                   aria-label="Refresh"
                 >

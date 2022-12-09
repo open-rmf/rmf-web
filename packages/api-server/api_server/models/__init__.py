@@ -38,7 +38,7 @@ from .rmf_api.task_log_request import TaskLogRequest
 from .rmf_api.task_log_response import TaskLogResponse
 from .rmf_api.task_log_update import TaskEventLogUpdate
 from .rmf_api.task_request import TaskRequest
-from .rmf_api.task_state import TaskState
+from .rmf_api.task_state import Status, TaskState
 from .rmf_api.task_state_update import TaskStateUpdate
 from .rmf_api.undo_skip_phase_request import UndoPhaseSkipRequest
 from .rmf_api.undo_skip_phase_response import UndoPhaseSkipResponse
