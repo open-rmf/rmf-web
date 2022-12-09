@@ -13,6 +13,7 @@ import {
   TaskDataGridTable,
   Window,
 } from 'react-components';
+import { Subscription } from 'rxjs';
 import { AppControllerContext, ResourcesContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
@@ -106,7 +107,6 @@ export const TasksApp = React.memo(
         let filterColumn: string | undefined = undefined;
         let filterValue: string | undefined = undefined;
         if (filterFields.model && filterFields.model.items.length >= 1) {
-          console.log(filterFields.model.items[0]);
           filterColumn = filterFields.model.items[0].columnField;
           filterValue = filterFields.model.items[0].value;
 
@@ -126,9 +126,6 @@ export const TasksApp = React.memo(
               filterValue = `${selectedTime.getTime()},${upperLimit}`;
             }
           }
-
-          console.log(filterColumn);
-          console.log(filterValue);
         }
 
         let orderBy: string = '-unix_millis_start_time';
@@ -139,6 +136,7 @@ export const TasksApp = React.memo(
               : sortFields.model[0].field;
         }
 
+        const subs: Subscription[] = [];
         (async () => {
           const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
             filterColumn && filterColumn === 'id_' ? filterValue : undefined,
@@ -164,7 +162,18 @@ export const TasksApp = React.memo(
                 ? tasksState.page * GET_LIMIT + 1
                 : tasksState.page * GET_LIMIT - 9,
           }));
+
+          subs.push(
+            ...newTasks.map((task) =>
+              rmf
+                .getTaskStateObs(task.booking.id)
+                .subscribe((task) =>
+                  setTasksState((prev) => ({ ...prev, [task.booking.id]: task })),
+                ),
+            ),
+          );
         })();
+        return () => subs.forEach((s) => s.unsubscribe());
       }, [rmf, forceRefresh, tasksState.page, filterFields.model, sortFields.model]);
 
       const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
