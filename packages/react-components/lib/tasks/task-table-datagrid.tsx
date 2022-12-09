@@ -1,7 +1,6 @@
 import {
   DataGrid,
   getGridDateOperators,
-  // getGridSingleSelectOperators,
   getGridStringOperators,
   GridColDef,
   GridEventListener,
@@ -12,11 +11,9 @@ import {
   GridFilterModel,
   GridSortModel,
 } from '@mui/x-data-grid';
-import locale from 'date-fns/locale/en-US';
 import { styled, TextField } from '@mui/material';
 import * as React from 'react';
 import { TaskState, Status } from 'api-client';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 const classes = {
   taskActiveCell: 'MuiDataGrid-cell-active-cell',
@@ -96,8 +93,6 @@ export function TaskDataGridTable({
       onTaskClick(event, params.row);
     }
   };
-
-  const dateAdapter = new AdapterDateFns({ locale });
 
   const getMinimalStringFilterOperators = getGridStringOperators().filter(
     // TODO: implement contains on the server end as well
