@@ -1,5 +1,11 @@
 import { styled } from '@mui/material';
-import { BuildingMap, Dispenser, FleetState, Ingestor, Level } from 'api-client';
+import {
+  BuildingMap,
+  Dispenser,
+  ApiServerModelsRmfApiFleetStateFleetState,
+  Ingestor,
+  Level,
+} from 'api-client';
 import Debug from 'debug';
 import React from 'react';
 import {
@@ -24,6 +30,8 @@ import { RobotData, RobotsOverlay } from './robots-overlay';
 import { TrajectoriesOverlay, TrajectoryData } from './trajectories-overlay';
 import { WaypointsOverlay } from './waypoints-overlay';
 import { WorkcellData, WorkcellsOverlay } from './workcells-overlay';
+
+type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
 const debug = Debug('MapApp');
 

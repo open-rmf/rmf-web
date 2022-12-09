@@ -5,7 +5,13 @@ from fastapi import Body, Depends, HTTPException, Path, Query
 from rx import operators as rxops
 
 from api_server import models as mdl
-from api_server.dependencies import between_query, pagination_query, sio_user
+from api_server.dependencies import (
+    between_query,
+    finish_time_between_query,
+    pagination_query,
+    sio_user,
+    start_time_between_query,
+)
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.repositories import TaskRepository, task_repo_dep
@@ -24,8 +30,16 @@ async def query_task_states(
     category: Optional[str] = Query(
         None, description="comma separated list of task categories"
     ),
-    start_time: Optional[datetime] = None,
-    finish_time: Optional[datetime] = None,
+    assigned_to: Optional[str] = Query(
+        None, description="comma separated list of assigned robot names"
+    ),
+    start_time_between: Optional[Tuple[datetime, datetime]] = Depends(
+        start_time_between_query
+    ),
+    finish_time_between: Optional[Tuple[datetime, datetime]] = Depends(
+        finish_time_between_query
+    ),
+    status: Optional[str] = Query(None, description="comma separated list of statuses"),
     pagination: mdl.Pagination = Depends(pagination_query),
 ):
     filters = {}
@@ -33,10 +47,21 @@ async def query_task_states(
         filters["id___in"] = task_id.split(",")
     if category is not None:
         filters["category__in"] = category.split(",")
-    if start_time is not None:
-        filters["unix_millis_start_time__gte"] = start_time
-    if finish_time is not None:
-        filters["unix_millis_finish_time__gte"] = finish_time
+    if assigned_to is not None:
+        filters["assigned_to__in"] = assigned_to.split(",")
+    if start_time_between is not None:
+        filters["unix_millis_start_time__gte"] = start_time_between[0]
+        filters["unix_millis_start_time__lte"] = start_time_between[1]
+    if finish_time_between is not None:
+        filters["unix_millis_finish_time__gte"] = finish_time_between[0]
+        filters["unix_millis_finish_time__lte"] = finish_time_between[1]
+    if status is not None:
+        valid_values = [member.value for member in mdl.Status]
+        filters["status__in"] = []
+        for status_string in status.split(","):
+            if status_string not in valid_values:
+                continue
+            filters["status__in"].append(mdl.Status(status_string))
 
     return await task_repo.query_task_states(DbTaskState.filter(**filters), pagination)
 

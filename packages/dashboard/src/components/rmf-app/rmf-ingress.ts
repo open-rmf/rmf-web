@@ -11,7 +11,7 @@ import {
   DoorsApi,
   DoorState,
   FleetsApi,
-  FleetState,
+  ApiServerModelsRmfApiFleetStateFleetState,
   Ingestor,
   IngestorsApi,
   IngestorState,
@@ -32,6 +32,8 @@ import {
   DefaultTrajectoryManager,
   RobotTrajectoryManager,
 } from '../../managers/robot-trajectory-manager';
+
+type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
 export class RmfIngress {
   // This should be private because socketio does not support "replaying" subscription. If

@@ -8,9 +8,9 @@ function usage() {
 cd $(dirname $0)
 
 source ../../scripts/version.sh
-openapi_generator_ver=5.4.0
+openapi_generator_ver=6.2.1
 
-expected_sha='f3ed312310e390324b33ba2ffff290ce812935207a1493ec5c098d0a441be51c'
+expected_sha='f2c8600f2c23ee1123eebf47ef0f40db386627e75b0340ca16182c10f4174fa9'
 
 if [[ ! -f ".bin/openapi-generator-cli-${openapi_generator_ver}.jar" ]]; then
   mkdir -p .bin
@@ -48,4 +48,4 @@ npx prettier -w lib
 cat << EOF > schema/index.ts
 export default $(cat build/openapi.json)
 EOF
-npx prettier -w openapi/schema
+npx prettier -w schema
