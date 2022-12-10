@@ -72,7 +72,12 @@
     "react-router-dom": "^5.2.0",
     "rmf-auth": "workspace:*",
     "rmf-models": "workspace:*",
-    "rxjs": "^7.5.5"
+    "rxjs": "^7.5.5",
+    "three": "0.138.0",
+    "@types/three": "0.138.0",
+    "@react-three/drei": "7.27.5",
+    "@react-three/fiber": "7.0.29",
+    "camera-controls": "1.30.0"
   },
   "devDependencies": {
     "@babel/core": "^7.18.6",
