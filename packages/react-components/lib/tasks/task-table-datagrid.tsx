@@ -438,6 +438,7 @@ export function TaskDataGridTable({
 
     return (
       <Box
+        component="div"
         sx={{
           display: 'inline-flex',
           flexDirection: 'row',

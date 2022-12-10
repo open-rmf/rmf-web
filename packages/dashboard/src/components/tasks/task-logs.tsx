@@ -48,7 +48,7 @@ export function TaskLogs({ taskLog, taskState }: TaskLogProps) {
   }
 
   return (
-    <Box>
+    <Box component="div">
       <Typography variant="h5" style={{ textAlign: 'center' }} gutterBottom>
         {taskLog.task_id}
       </Typography>

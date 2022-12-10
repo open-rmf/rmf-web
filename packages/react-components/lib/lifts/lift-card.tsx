@@ -75,7 +75,7 @@ export function LiftCard({
             <Typography noWrap align="center" variant="h6" title={name}>
               {name}
             </Typography>
-            <Box border={1} borderColor="divider">
+            <Box component="div" border={1} borderColor="divider">
               <Typography align="center">{destinationFloor || 'Unknown'}</Typography>
             </Box>
             <Typography variant="body2" align="center" sx={doorStateLabelStyle}>
