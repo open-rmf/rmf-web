@@ -300,13 +300,22 @@ export const MapApp = styled(
     const ready = buildingMap && currentLevel && bounds;
 
     return ready ? (
-      <Canvas>
+      <Canvas
+        camera={{
+          up: [0, 0, 1],
+          position: [
+            buildingMap.levels[0].wall_graph.vertices[0].x,
+            buildingMap.levels[0].wall_graph.vertices[0].y,
+            0,
+          ],
+        }}
+      >
         <ambientLight />
         <OrbitControls up={[0, 0, 1]} />
         <pointLight position={[10, 10, 10]} />
-        <BuidlingLevel level={buildingMap.levels[0]} show={true} />
-        {/* {buildingMap.levels.map((level, i)=>(<BuidlingLevel level={level} show={true}/>))} */}
-        {/* {buildingMap.lifts.map((lift, i)=>{(null)})}      */}
+        {buildingMap.levels.map((level, i) => (
+          <BuidlingLevel level={level} show={true} />
+        ))}
       </Canvas>
     ) : null;
   }),
