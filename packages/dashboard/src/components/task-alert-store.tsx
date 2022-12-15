@@ -1,53 +1,97 @@
-import { TaskState } from 'api-client';
+import { RobotState, TaskState } from 'api-client';
 import React from 'react';
-import { Subscription } from 'rxjs';
 import { RmfAppContext } from './rmf-app';
-import { useTaskStore } from './store';
 import { AlertComponentStore } from './task-alert';
+
+export interface RobotAlert {
+  task?: TaskState;
+  robot?: RobotState;
+}
 
 export const AlertComponent = React.memo(() => {
   const rmf = React.useContext(RmfAppContext);
 
-  const setTaskStore = useTaskStore((state) => state.setTask);
+  const [fleets, setFleets] = React.useState<string[]>([]);
+  const [robots, setRobots] = React.useState<Record<string, RobotAlert[]>>({});
 
   React.useEffect(() => {
     if (!rmf) {
       return;
     }
-    const subs: Subscription[] = [];
-    (async () => {
-      const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
-        undefined,
-        undefined,
-        undefined,
-        'underway',
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-      );
 
-      const newTasks = resp.data as TaskState[];
-
-      subs.push(
-        ...newTasks.map((task) =>
-          rmf.getTaskStateObs(task.booking.id).subscribe((task) => {
-            if (task.status === 'underway') {
-              setTaskStore([...newTasks, task]);
-            }
-          }),
-        ),
+    const sub = rmf.fleetsObs.subscribe((fleets) => {
+      setFleets(
+        fleets.reduce<string[]>((acc, f) => {
+          if (f.name) {
+            acc.push(f.name);
+          }
+          return acc;
+        }, []),
       );
-      return () => subs.forEach((s) => s.unsubscribe());
-    })();
-  }, [rmf, setTaskStore]);
+      setRobots({});
+    });
+    return () => sub.unsubscribe();
+  }, [rmf]);
+
+  React.useEffect(() => {
+    if (!rmf) {
+      return;
+    }
+    const subs = fleets.map((f) =>
+      rmf.getFleetStateObs(f).subscribe(async (fleet) => {
+        const taskIds = fleet.robots
+          ? Object.values(fleet.robots).reduce<string[]>((acc, robot) => {
+              if (robot.task_id) {
+                acc.push(robot.task_id);
+              }
+              return acc;
+            }, [])
+          : [];
+
+        const tasks =
+          taskIds.length > 0
+            ? (await rmf.tasksApi.queryTaskStatesTasksGet(taskIds.join(','))).data.reduce(
+                (acc, task) => {
+                  acc[task.booking.id] = task;
+                  return acc;
+                },
+                {} as Record<string, TaskState>,
+              )
+            : {};
+
+        setRobots((prev) => {
+          if (!fleet.name) {
+            return prev;
+          }
+          return {
+            ...prev,
+            [fleet.name]: fleet.robots
+              ? Object.entries(fleet.robots).map<RobotAlert>(([name, robot]) =>
+                  robot.task_id
+                    ? {
+                        task: tasks[robot.task_id],
+                        robot: robot,
+                      }
+                    : {},
+                )
+              : [],
+          };
+        });
+      }),
+    );
+    return () => subs.forEach((sub) => sub.unsubscribe());
+  }, [rmf, fleets]);
 
   return (
-    <div>
-      <div>
-        <AlertComponentStore />
-      </div>
-    </div>
+    <AlertComponentStore
+      robots={Object.values(robots)
+        .flatMap((r) => r)
+        .filter((element) => {
+          if (Object.keys(element).length !== 0) {
+            return true;
+          }
+          return false;
+        })}
+    />
   );
 });
