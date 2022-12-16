@@ -8,6 +8,7 @@ import {
   Typography,
   Divider,
   TextField,
+  useTheme,
 } from '@mui/material';
 import React from 'react';
 import Dialog from '@mui/material/Dialog';
@@ -34,6 +35,9 @@ const useStyles = makeStyles((theme: Theme) =>
         fontWeight: 'bold',
       },
     },
+    textField: {
+      background: theme.palette.background.default,
+    },
   }),
 );
 export interface AlertProps {
@@ -55,14 +59,33 @@ function LinearProgressWithLabel(props: LinearProgressProps & { value: number })
   );
 }
 
+interface ShowAlert {
+  taskId?: string;
+  show: boolean;
+}
+
 export function AlertComponentStore({ robots }: AlertProps): JSX.Element {
   const rmf = React.useContext(RmfAppContext);
   const classes = useStyles();
+  const theme = useTheme();
   const [count, setCount] = React.useState(0);
-  const [completed, setCompleted] = React.useState(true);
+  const [showAlert, setShowAlert] = React.useState<ShowAlert[]>([]);
 
-  const handleClose = () => {
-    setCount(count + 1);
+  const setDialogColor = (taskStatus: Status | undefined) => {
+    if (taskStatus === undefined) return;
+
+    switch (taskStatus) {
+      case Status.Failed:
+        return theme.palette.error.dark;
+
+      case Status.Completed:
+        // TODO
+        // Add this color in the common-theme
+        return '#6dff6f';
+
+      default:
+        return;
+    }
   };
 
   React.useEffect(() => {
@@ -76,8 +99,8 @@ export function AlertComponentStore({ robots }: AlertProps): JSX.Element {
       if (r.robot?.task_id) {
         return subs.push(
           rmf.getTaskStateObs(r.robot.task_id).subscribe((task) => {
-            if (task.status === Status.Underway) {
-              setCompleted(true);
+            if (task.status === Status.Completed || task.status === Status.Failed) {
+              setShowAlert((prev) => [...prev, { taskId: r.robot?.task_id, show: true }]);
             }
           }),
         );
@@ -89,10 +112,22 @@ export function AlertComponentStore({ robots }: AlertProps): JSX.Element {
   }, [rmf, robots]);
 
   const showTaskComplete = (robot: RobotAlert) => {
-    if (completed) {
-      console.log('Se completó la tarea');
+    if (!showAlert.length) {
+      return;
+    }
+
+    if (showAlert[count].show) {
       return (
-        <Dialog open={count < robots.length} onClose={handleClose} maxWidth="xs">
+        <Dialog
+          PaperProps={{
+            style: {
+              backgroundColor: setDialogColor(robot.task?.status),
+              boxShadow: 'none',
+            },
+          }}
+          open={count < robots.length}
+          maxWidth="xs"
+        >
           <DialogTitle className={classes.title}>Alert</DialogTitle>
           <Divider />
           <DialogTitle className={classes.title}>Task State</DialogTitle>
@@ -110,6 +145,7 @@ export function AlertComponentStore({ robots }: AlertProps): JSX.Element {
                   value={robot.task?.booking.id}
                   InputProps={{
                     readOnly: true,
+                    className: classes.textField,
                   }}
                 />
               </Grid>
@@ -124,6 +160,7 @@ export function AlertComponentStore({ robots }: AlertProps): JSX.Element {
                   value={robot.robot?.location?.map}
                   InputProps={{
                     readOnly: true,
+                    className: classes.textField,
                   }}
                 />
               </Grid>
@@ -140,13 +177,23 @@ export function AlertComponentStore({ robots }: AlertProps): JSX.Element {
                   maxRows={4}
                   InputProps={{
                     readOnly: true,
+                    className: classes.textField,
                   }}
                 />
               </Grid>
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} autoFocus>
+            <Button
+              onClick={() => {
+                setCount(count + 1);
+                const clone = [...showAlert];
+                clone.filter((item) => item.taskId === robot.robot?.task_id);
+                clone[count].show = true;
+                setShowAlert(clone);
+              }}
+              autoFocus
+            >
               Close
             </Button>
           </DialogActions>
