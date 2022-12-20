@@ -17,7 +17,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { makeStyles, createStyles } from '@mui/styles';
 import { RobotAlert } from './task-alert-store';
-import { Status } from 'api-client';
+import { RobotState, Status, TaskState } from 'api-client';
 import { RmfAppContext } from './rmf-app';
 import { Subscription } from 'rxjs';
 
@@ -60,8 +60,9 @@ function LinearProgressWithLabel(props: LinearProgressProps & { value: number })
 }
 
 interface ShowAlert {
-  taskId?: string;
   show: boolean;
+  task: TaskState;
+  robot?: RobotState;
 }
 
 export function AlertComponentStore({ robots }: AlertProps): JSX.Element {
@@ -100,7 +101,7 @@ export function AlertComponentStore({ robots }: AlertProps): JSX.Element {
         return subs.push(
           rmf.getTaskStateObs(r.robot.task_id).subscribe((task) => {
             if (task.status === Status.Completed || task.status === Status.Failed) {
-              setShowAlert((prev) => [...prev, { taskId: r.robot?.task_id, show: true }]);
+              setShowAlert((prev) => [...prev, { show: true, task: task, robot: r.robot }]);
             }
           }),
         );
@@ -111,96 +112,91 @@ export function AlertComponentStore({ robots }: AlertProps): JSX.Element {
     return () => subs.forEach((s) => s.unsubscribe());
   }, [rmf, robots]);
 
-  const showTaskComplete = (robot: RobotAlert) => {
-    if (!showAlert.length) {
-      return;
-    }
-
-    if (showAlert[count].show) {
-      return (
-        <Dialog
-          PaperProps={{
-            style: {
-              backgroundColor: setDialogColor(robot.task?.status),
-              boxShadow: 'none',
-            },
-          }}
-          open={count < robots.length}
-          maxWidth="xs"
-        >
-          <DialogTitle className={classes.title}>Alert</DialogTitle>
-          <Divider />
-          <DialogTitle className={classes.title}>Task State</DialogTitle>
-          <Box sx={{ width: '100%' }}>
-            <LinearProgressWithLabel value={robot.robot?.battery ? robot.robot?.battery : -1} />
-          </Box>
-          <DialogContent>
-            <Grid container mb={1} alignItems="center" spacing={1}>
-              <Grid item xs={3}>
-                <Typography className={classes.subtitle}>Task</Typography>
-              </Grid>
-              <Grid item xs={9}>
-                <TextField
-                  size="small"
-                  value={robot.task?.booking.id}
-                  InputProps={{
-                    readOnly: true,
-                    className: classes.textField,
-                  }}
-                />
-              </Grid>
+  const showTaskComplete = (current: ShowAlert) => {
+    return (
+      <Dialog
+        PaperProps={{
+          style: {
+            backgroundColor: setDialogColor(current.task.status),
+            boxShadow: 'none',
+          },
+        }}
+        open={current.show}
+        maxWidth="xs"
+      >
+        <DialogTitle className={classes.title}>Alert</DialogTitle>
+        <Divider />
+        <DialogTitle className={classes.title}>Task State</DialogTitle>
+        <Box sx={{ width: '100%' }}>
+          <LinearProgressWithLabel value={current.robot?.battery ? current.robot?.battery : -1} />
+        </Box>
+        <DialogContent>
+          <Grid container mb={1} alignItems="center" spacing={1}>
+            <Grid item xs={3}>
+              <Typography className={classes.subtitle}>Task</Typography>
             </Grid>
-            <Grid container mb={1} alignItems="center" spacing={1}>
-              <Grid item xs={3}>
-                <Typography className={classes.subtitle}>Location</Typography>
-              </Grid>
-              <Grid item xs={9}>
-                <TextField
-                  size="small"
-                  value={robot.robot?.location?.map}
-                  InputProps={{
-                    readOnly: true,
-                    className: classes.textField,
-                  }}
-                />
-              </Grid>
+            <Grid item xs={9}>
+              <TextField
+                size="small"
+                value={current.task.booking.id}
+                InputProps={{
+                  readOnly: true,
+                  className: classes.textField,
+                }}
+              />
             </Grid>
-            <Grid container alignItems="center" spacing={1}>
-              <Grid item xs={3}>
-                <Typography className={classes.subtitle}>Message</Typography>
-              </Grid>
-              <Grid item xs={9}>
-                <TextField
-                  size="small"
-                  multiline
-                  value="AMR ready for pickup at CSSD LOT3; cart not found, please push cart in CSSD LOT3"
-                  maxRows={4}
-                  InputProps={{
-                    readOnly: true,
-                    className: classes.textField,
-                  }}
-                />
-              </Grid>
+          </Grid>
+          <Grid container mb={1} alignItems="center" spacing={1}>
+            <Grid item xs={3}>
+              <Typography className={classes.subtitle}>Location</Typography>
             </Grid>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={() => {
-                setCount(count + 1);
-                const clone = [...showAlert];
-                clone.filter((item) => item.taskId === robot.robot?.task_id);
-                clone[count].show = true;
-                setShowAlert(clone);
-              }}
-              autoFocus
-            >
-              Close
-            </Button>
-          </DialogActions>
-        </Dialog>
-      );
-    }
+            <Grid item xs={9}>
+              <TextField
+                size="small"
+                value={current.robot?.location?.map}
+                InputProps={{
+                  readOnly: true,
+                  className: classes.textField,
+                }}
+              />
+            </Grid>
+          </Grid>
+          <Grid container alignItems="center" spacing={1}>
+            <Grid item xs={3}>
+              <Typography className={classes.subtitle}>Message</Typography>
+            </Grid>
+            <Grid item xs={9}>
+              <TextField
+                size="small"
+                multiline
+                value="AMR ready for pickup at CSSD LOT3; cart not found, please push cart in CSSD LOT3"
+                maxRows={4}
+                InputProps={{
+                  readOnly: true,
+                  className: classes.textField,
+                }}
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              const clone = [...showAlert];
+              clone[count].show = false;
+              setShowAlert(clone);
+              setCount(count + 1);
+            }}
+            autoFocus
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
   };
 
-  return <>{robots && count < robots.length ? showTaskComplete(robots[count]) : null}</>;
+  return (
+    <>{showAlert[count] && showAlert[count].show ? showTaskComplete(showAlert[count]) : null}</>
+  );
 }
