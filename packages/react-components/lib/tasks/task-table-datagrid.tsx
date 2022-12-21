@@ -211,13 +211,11 @@ export function TaskDataGridTable({
     },
   ];
 
-  const [tmpFilterFields, setTmpFilterFields] = React.useState<FilterFields>({ model: undefined });
-
   const handleFilterModelChange = React.useCallback(
     (filterModel: GridFilterModel) => {
-      setTmpFilterFields({ model: filterModel });
+      setFilterFields({ model: filterModel });
     },
-    [setTmpFilterFields],
+    [setFilterFields],
   );
 
   const handleSortModelChange = React.useCallback(
@@ -258,9 +256,6 @@ export function TaskDataGridTable({
         rowsPerPageOptions={[10]}
         pagination
         paginationMode="server"
-        onPreferencePanelClose={() => {
-          setFilterFields(tmpFilterFields);
-        }}
         filterMode="server"
         onFilterModelChange={handleFilterModelChange}
         sortingMode="server"
