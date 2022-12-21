@@ -10,9 +10,12 @@ import {
   GridCellParams,
   GridFilterModel,
   GridSortModel,
+  GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarContainerProps,
+  GridToolbarDensitySelector,
   GridToolbarExportContainer,
+  GridToolbarFilterButton,
 } from '@mui/x-data-grid';
 import { styled, TextField } from '@mui/material';
 import { ButtonProps } from '@mui/material/Button';
@@ -236,6 +239,9 @@ export function TaskDataGridTable({
 
   const ExportToolbar = (props: GridToolbarContainerProps) => (
     <GridToolbarContainer {...props}>
+      <GridToolbarColumnsButton />
+      <GridToolbarFilterButton />
+      <GridToolbarDensitySelector />
       <FullExportButton />
     </GridToolbarContainer>
   );
