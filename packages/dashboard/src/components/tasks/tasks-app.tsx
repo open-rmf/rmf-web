@@ -181,12 +181,13 @@ export const TasksApp = React.memo(
           return;
         }
 
+        const now = new Date();
         const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
           undefined,
           undefined,
           undefined,
           undefined,
-          '0,1671525336000',
+          `0,${now.getTime()}`,
           undefined,
           undefined,
           undefined,
@@ -194,6 +195,10 @@ export const TasksApp = React.memo(
           undefined,
         );
         const allTasks = resp.data as TaskState[];
+        if (!allTasks || !allTasks.length) {
+          return;
+        }
+
         const columnSeparator = ';';
         const rowSeparator = '\n';
         const keys = Object.keys(allTasks[0]);
@@ -214,7 +219,7 @@ export const TasksApp = React.memo(
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'DataGrid_demo.csv';
+        a.download = `${now.toJSON().slice(0, 10)}_task_history.csv`;
         a.click();
 
         setTimeout(() => {
