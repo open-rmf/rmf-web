@@ -18,10 +18,4 @@ export interface BuildingMap extends Omit<RmfBuildingMap, 'levels'> {
   levels: Level[];
 }
 
-export { DispenserHealth } from './tortoise/dispenser-health';
-export { DoorHealth } from './tortoise/door-health';
-export { IngestorHealth } from './tortoise/ingestor-health';
-export { LiftHealth } from './tortoise/lift-health';
-export { RobotHealth } from './tortoise/robot-health';
-
 export * from './version';

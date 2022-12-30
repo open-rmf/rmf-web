@@ -1,64 +1,67 @@
 #!/bin/bash
 set -e
 
-cd "$(dirname $0)"
-source ../../scripts/version.sh
-source ../../scripts/rmf-helpers.sh
+rmf_internal_msgs_ver='0c237e1758872917661879975d7dc0acf5fa518c'
+rmf_building_map_msgs_ver='1.2.0'
+rmf_ros2_ver='3be4edfce77e1a4ecb5ce99504e7696eb61658d9'
 
-usage() {
-  echo "Usage: generate-models.sh"
-  echo "Options:"
-  echo "  --rmf-tag <tag-or-branch>"
-  echo "  --rmf-server-ver <version> If not provided, use the git sha of the current commit"
+cd "$(dirname $0)"
+. ../../.venv/bin/activate
+
+rm -rf build
+
+# git shallow clone single commit
+git_clone() {
+  mkdir -p "build/src/$1"
+  pushd "build/src/$1"
+  git init
+  git remote add origin "https://github.com/open-rmf/$1"
+  git fetch --depth 1 origin "$2"
+  git checkout FETCH_HEAD
+  popd  
 }
 
-options=$(getopt -o '' -l rmf-tag:,rmf-server-ver: -- "$@")
-eval set -- "$options"
-while true; do
-  case "$1" in
-    --rmf-tag)
-      shift
-      rmf_tag=$1
-      ;;
-    --rmf-server-ver)
-      shift
-      rmf_server_ver=$1
-      ;;
-    --)
-      shift
-      break
-      ;;
-  esac
-  shift
-done
+git_clone rmf_internal_msgs "$rmf_internal_msgs_ver"
+git_clone rmf_building_map_msgs "$rmf_building_map_msgs_ver"
+git_clone rmf_ros2 "$rmf_ros2_ver"
 
-if [[ -z $rmf_tag ]]; then
-  rmf_tag='main'
-fi
-if [[ -z $rmf_server_ver ]]; then
-  rmf_server_ver=$(getVersion .)
-fi
+pushd build
+rmf_msgs=(
+  'rmf_building_map_msgs'
+  'rmf_charger_msgs'
+  'rmf_door_msgs'
+  'rmf_lift_msgs'
+  'rmf_dispenser_msgs'
+  'rmf_ingestor_msgs'
+  'rmf_fleet_msgs'
+  'rmf_task_msgs'
+)
+colcon build --merge-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-up-to "${rmf_msgs[@]}"
+popd
 
-build_and_source_rmf_msgs "$rmf_tag"
-node generate-models.js "${rmf_msgs[@]}"
+. build/install/setup.bash
+rm -rf lib/ros
+python -m ros_translator -t=typescript -o=lib/ros "${rmf_msgs[@]}"
+pnpm exec prettier -w lib/ros
+echo 'THIS DIRECTORY IS GENERATED, DO NOT EDIT!!' > lib/ros/GENERATED
 
-rmf_internal_msgs_ver=$(getVersion "build/rmf/src/rmf_internal_msgs")
-rmf_building_map_msgs_ver=$(getVersion "build/rmf/src/rmf_building_map_msgs")
+rm -rf lib/task_descriptions
+pnpm exec json2ts build/src/rmf_ros2/rmf_fleet_adapter/schemas/ lib/task_descriptions --cwd build/src/rmf_ros2/rmf_fleet_adapter/schemas/
+echo 'THIS DIRECTORY IS GENERATED, DO NOT EDIT!!' > lib/task_descriptions/GENERATED
 
 cat << EOF > lib/version.ts
 // THIS FILE IS GENERATED
 export const version = {
   rmf_internal_msgs: '$rmf_internal_msgs_ver',
   rmf_building_map_msgs: '$rmf_building_map_msgs_ver',
-  rmf_server: '$rmf_server_ver',
+  rmf_ros2: '$rmf_ros2_ver',
 };
-
 EOF
 
 echo ''
 echo 'versions:'
 echo "  rmf_internal_msgs: $rmf_internal_msgs_ver"
 echo "  rmf_building_map_msgs: $rmf_building_map_msgs_ver"
-echo "  rmf_server: $rmf_server_ver"
+echo "  rmf_ros2: $rmf_ros2_ver"
 echo ''
 echo 'Successfully generated rmf-models'

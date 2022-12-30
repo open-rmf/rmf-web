@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import {
   Autocomplete,
   Button,
@@ -22,8 +20,11 @@ import type { TaskRequest } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
+import { CleanTask as CleanTaskDescription } from 'rmf-models/task_descriptions/task_description__clean';
+import { DeliveryTaskDescription } from 'rmf-models/task_descriptions/task_description__delivery';
+import { PatrolTaskDescription } from 'rmf-models/task_descriptions/task_description__patrol';
 
-type TaskDescription = Record<string, any>;
+type TaskDescription = CleanTaskDescription | DeliveryTaskDescription | PatrolTaskDescription;
 
 const classes = {
   selectFileBtn: 'create-task-selected-file-btn',
@@ -82,11 +83,11 @@ function FormToolbar({ onSelectFileClick }: FormToolbarProps) {
 }
 
 interface DeliveryTaskFormProps {
-  taskDesc: TaskDescription;
+  taskDesc: DeliveryTaskDescription;
   deliveryWaypoints: string[];
   dispensers: string[];
   ingestors: string[];
-  onChange(taskDesc: TaskDescription): void;
+  onChange(taskDesc: DeliveryTaskDescription): void;
 }
 
 function DeliveryTaskForm({
@@ -98,6 +99,20 @@ function DeliveryTaskForm({
 }: DeliveryTaskFormProps) {
   const theme = useTheme();
 
+  if (Array.isArray(taskDesc.pickup.payload) || Array.isArray(taskDesc.dropoff.payload)) {
+    throw new Error('array of payloads is not supported');
+  }
+
+  const pickupPlace =
+    typeof taskDesc.pickup.place === 'object'
+      ? taskDesc.pickup.place.waypoint.toString()
+      : taskDesc.pickup.place.toString();
+
+  const dropoffPlace =
+    typeof taskDesc.dropoff.place === 'object'
+      ? taskDesc.dropoff.place.waypoint.toString()
+      : taskDesc.dropoff.place.toString();
+
   return (
     <>
       <Grid container wrap="nowrap">
@@ -107,7 +122,7 @@ function DeliveryTaskForm({
             freeSolo
             fullWidth
             options={deliveryWaypoints}
-            value={taskDesc.pickup.place}
+            value={pickupPlace}
             onChange={(_ev, newValue) =>
               newValue !== null &&
               onChange({
@@ -175,7 +190,7 @@ function DeliveryTaskForm({
             freeSolo
             fullWidth
             options={deliveryWaypoints}
-            value={taskDesc.dropoff.place}
+            value={dropoffPlace}
             onChange={(_ev, newValue) =>
               newValue !== null &&
               onChange({
@@ -293,7 +308,7 @@ function DeliveryTaskForm({
                   ...taskDesc.pickup,
                   payload: {
                     ...taskDesc.pickup.payload,
-                    quantity: parseInt(newValue),
+                    quantity: typeof newValue === 'string' ? parseInt(newValue) : newValue,
                   },
                 },
               })
@@ -371,7 +386,7 @@ function DeliveryTaskForm({
                   ...taskDesc.dropoff,
                   payload: {
                     ...taskDesc.dropoff.payload,
-                    quantity: parseInt(newValue),
+                    quantity: typeof newValue === 'string' ? parseInt(newValue) : newValue,
                   },
                 },
               })
@@ -434,13 +449,19 @@ function PlaceList({ places, onClick }: PlaceListProps) {
 }
 
 interface LoopTaskFormProps {
-  taskDesc: any;
+  taskDesc: PatrolTaskDescription;
   loopWaypoints: string[];
-  onChange(loopTaskDescription: any): void;
+  onChange(loopTaskDescription: PatrolTaskDescription): void;
 }
 
 function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) {
   const theme = useTheme();
+
+  const places = React.useMemo(
+    () =>
+      taskDesc.places.map((p) => (typeof p === 'object' ? p.waypoint.toString() : p.toString())),
+    [taskDesc],
+  );
 
   return (
     <>
@@ -456,7 +477,7 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
               onChange({
                 ...taskDesc,
                 places: taskDesc.places.concat(newValue).filter(
-                  (el: string) => el, // filter null and empty str in places array
+                  (el) => (typeof el === 'object' ? el.waypoint : el), // filter empty str in places array
                 ),
               })
             }
@@ -485,7 +506,7 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
         </Grid>
       </Grid>
       <PlaceList
-        places={taskDesc && taskDesc.places ? taskDesc.places : []}
+        places={places}
         onClick={(places_index) =>
           taskDesc.places.splice(places_index, 1) &&
           onChange({
@@ -498,9 +519,9 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
 }
 
 interface CleanTaskFormProps {
-  taskDesc: any;
+  taskDesc: CleanTaskDescription;
   cleaningZones: string[];
-  onChange(cleanTaskDescription: any): void;
+  onChange(cleanTaskDescription: CleanTaskDescription): void;
 }
 
 function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps) {
@@ -524,31 +545,37 @@ function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps
   );
 }
 
-function defaultCleanTask(): Record<string, any> {
+function defaultCleanTask(): CleanTaskDescription {
   return {
     zone: '',
     type: '',
   };
 }
 
-function defaultLoopsTask(): Record<string, any> {
+function defaultLoopsTask(): PatrolTaskDescription {
   return {
     places: [],
     rounds: 1,
   };
 }
 
-function defaultDeliveryTask(): Record<string, any> {
+function defaultDeliveryTask(): DeliveryTaskDescription {
   return {
     pickup: {
       place: '',
       handler: '',
-      payload: '',
+      payload: {
+        sku: '',
+        quantity: 0,
+      },
     },
     dropoff: {
       place: '',
       handler: '',
-      payload: '',
+      payload: {
+        sku: '',
+        quantity: 0,
+      },
     },
   };
 }
@@ -588,8 +615,8 @@ export interface CreateTaskFormProps
   ingestors?: string[];
   submitTasks?(tasks: TaskRequest[]): Promise<void>;
   tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
-  onSuccess?(tasks: any[]): void;
-  onFail?(error: Error, tasks: any[]): void;
+  onSuccess?(tasks: TaskRequest[]): void;
+  onFail?(error: Error, tasks: TaskRequest[]): void;
 }
 
 export function CreateTaskForm({
@@ -632,7 +659,7 @@ export function CreateTaskForm({
       case 'clean':
         return (
           <CleanTaskForm
-            taskDesc={taskRequest.description as any}
+            taskDesc={taskRequest.description as CleanTaskDescription}
             cleaningZones={cleaningZones}
             onChange={(desc) => handleTaskDescriptionChange('clean', desc)}
           />
@@ -640,7 +667,7 @@ export function CreateTaskForm({
       case 'patrol':
         return (
           <LoopTaskForm
-            taskDesc={taskRequest.description as any}
+            taskDesc={taskRequest.description as PatrolTaskDescription}
             loopWaypoints={loopWaypoints}
             onChange={(desc) => handleTaskDescriptionChange('patrol', desc)}
           />
@@ -648,7 +675,7 @@ export function CreateTaskForm({
       case 'delivery':
         return (
           <DeliveryTaskForm
-            taskDesc={taskRequest.description as any}
+            taskDesc={taskRequest.description as DeliveryTaskDescription}
             deliveryWaypoints={deliveryWaypoints}
             dispensers={dispensers}
             ingestors={ingestors}
@@ -766,7 +793,7 @@ export function CreateTaskForm({
                 id="priority"
                 label="Priority"
                 margin="normal"
-                value={(taskRequest.priority as Record<string, any>)?.value || 0}
+                value={(taskRequest.priority as Record<string, number>)?.value || 0}
                 onChange={(_ev, val) => {
                   taskRequest.priority = { type: 'binary', value: val };
                   updateTasks();

@@ -5,12 +5,11 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type Id = string;
-
-export interface DispenserState {
-  id_: Id;
-  data?: Data;
-}
-export interface Data {
+/**
+ * Clean a zone
+ */
+export interface CleanTask {
+  zone: string;
+  type?: string;
   [k: string]: unknown;
 }

@@ -5,12 +5,11 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type HealthStatus = string;
-export type HealthMessage = string;
-export type Id = string;
-
-export interface IngestorHealth {
-  health_status?: HealthStatus;
-  health_message?: HealthMessage;
-  id_: Id;
+/**
+ * Clean a zone
+ */
+export interface CleanEvent {
+  zone: string;
+  type?: string;
+  [k: string]: unknown;
 }
