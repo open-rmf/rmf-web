@@ -17,7 +17,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { makeStyles, createStyles } from '@mui/styles';
 import { RobotWithTask } from './task-alert-store';
-import { Status } from 'api-client';
+import { Status, TaskState } from 'api-client';
 import { RmfAppContext } from './rmf-app';
 import { Subscription } from 'rxjs';
 
@@ -84,6 +84,20 @@ export function AlertComponent({ robots }: AlertProps): JSX.Element {
 
       default:
         return;
+    }
+  };
+
+  const showMessage = (task: TaskState) => {
+    switch (task.status) {
+      case Status.Failed:
+        return `${task.dispatch?.status} 
+                ${task.dispatch?.errors?.map((e) => e.message)}`;
+
+      case Status.Completed:
+        return 'Task completed!';
+
+      default:
+        return 'No message';
     }
   };
 
@@ -167,7 +181,7 @@ export function AlertComponent({ robots }: AlertProps): JSX.Element {
               <TextField
                 size="small"
                 multiline
-                value="AMR ready for pickup at CSSD LOT3; cart not found, please push cart in CSSD LOT3"
+                value={current.task && showMessage(current.task)}
                 maxRows={4}
                 InputProps={{
                   readOnly: true,
