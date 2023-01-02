@@ -1,18 +1,18 @@
 import { RobotState, TaskState } from 'api-client';
 import React from 'react';
 import { RmfAppContext } from './rmf-app';
-import { AlertComponentStore } from './task-alert';
+import { AlertComponent } from './task-alert';
 
-export interface RobotAlert {
+export interface RobotWithTask {
   task?: TaskState;
   robot?: RobotState;
 }
 
-export const AlertComponent = React.memo(() => {
+export const TaskAlertStore = React.memo(() => {
   const rmf = React.useContext(RmfAppContext);
 
   const [fleets, setFleets] = React.useState<string[]>([]);
-  const [robots, setRobots] = React.useState<Record<string, RobotAlert[]>>({});
+  const [robots, setRobots] = React.useState<Record<string, RobotWithTask[]>>({});
 
   React.useEffect(() => {
     if (!rmf) {
@@ -66,7 +66,7 @@ export const AlertComponent = React.memo(() => {
           return {
             ...prev,
             [fleet.name]: fleet.robots
-              ? Object.entries(fleet.robots).map<RobotAlert>(([name, robot]) =>
+              ? Object.entries(fleet.robots).map<RobotWithTask>(([name, robot]) =>
                   robot.task_id
                     ? {
                         task: tasks[robot.task_id],
@@ -83,15 +83,17 @@ export const AlertComponent = React.memo(() => {
   }, [rmf, fleets]);
 
   return (
-    <AlertComponentStore
-      robots={Object.values(robots)
-        .flatMap((r) => r)
-        .filter((element) => {
-          if (Object.keys(element).length !== 0) {
-            return true;
-          }
-          return false;
-        })}
-    />
+    <>
+      <AlertComponent
+        robots={Object.values(robots)
+          .flatMap((r) => r)
+          .filter((element) => {
+            if (Object.keys(element).length !== 0) {
+              return true;
+            }
+            return false;
+          })}
+      />
+    </>
   );
 });

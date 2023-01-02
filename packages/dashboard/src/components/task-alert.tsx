@@ -16,8 +16,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { makeStyles, createStyles } from '@mui/styles';
-import { RobotAlert } from './task-alert-store';
-import { RobotState, Status, TaskState } from 'api-client';
+import { RobotWithTask } from './task-alert-store';
+import { Status } from 'api-client';
 import { RmfAppContext } from './rmf-app';
 import { Subscription } from 'rxjs';
 
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 export interface AlertProps {
-  robots: RobotAlert[];
+  robots: RobotWithTask[];
 }
 
 function LinearProgressWithLabel(props: LinearProgressProps & { value: number }) {
@@ -59,18 +59,16 @@ function LinearProgressWithLabel(props: LinearProgressProps & { value: number })
   );
 }
 
-interface ShowAlert {
+interface AlertToDisplay extends RobotWithTask {
   show: boolean;
-  task: TaskState;
-  robot?: RobotState;
 }
 
-export function AlertComponentStore({ robots }: AlertProps): JSX.Element {
+export function AlertComponent({ robots }: AlertProps): JSX.Element {
   const rmf = React.useContext(RmfAppContext);
   const classes = useStyles();
   const theme = useTheme();
-  const [count, setCount] = React.useState(0);
-  const [showAlert, setShowAlert] = React.useState<ShowAlert[]>([]);
+  const [index, setIndex] = React.useState(0);
+  const [alertToDisplay, setAlertToDisplay] = React.useState<AlertToDisplay[]>([]);
 
   const setDialogColor = (taskStatus: Status | undefined) => {
     if (taskStatus === undefined) return;
@@ -101,7 +99,7 @@ export function AlertComponentStore({ robots }: AlertProps): JSX.Element {
         return subs.push(
           rmf.getTaskStateObs(r.robot.task_id).subscribe((task) => {
             if (task.status === Status.Completed || task.status === Status.Failed) {
-              setShowAlert((prev) => [...prev, { show: true, task: task, robot: r.robot }]);
+              setAlertToDisplay((prev) => [...prev, { show: true, task: task, robot: r.robot }]);
             }
           }),
         );
@@ -112,12 +110,12 @@ export function AlertComponentStore({ robots }: AlertProps): JSX.Element {
     return () => subs.forEach((s) => s.unsubscribe());
   }, [rmf, robots]);
 
-  const showTaskComplete = (current: ShowAlert) => {
+  const showTaskCompleteOrFailed = (current: AlertToDisplay) => {
     return (
       <Dialog
         PaperProps={{
           style: {
-            backgroundColor: setDialogColor(current.task.status),
+            backgroundColor: setDialogColor(current.task?.status),
             boxShadow: 'none',
           },
         }}
@@ -138,7 +136,7 @@ export function AlertComponentStore({ robots }: AlertProps): JSX.Element {
             <Grid item xs={9}>
               <TextField
                 size="small"
-                value={current.task.booking.id}
+                value={current.task?.booking.id}
                 InputProps={{
                   readOnly: true,
                   className: classes.textField,
@@ -182,10 +180,10 @@ export function AlertComponentStore({ robots }: AlertProps): JSX.Element {
         <DialogActions>
           <Button
             onClick={() => {
-              const clone = [...showAlert];
-              clone[count].show = false;
-              setShowAlert(clone);
-              setCount(count + 1);
+              const clone = [...alertToDisplay];
+              clone[index].show = false;
+              setAlertToDisplay(clone);
+              setIndex(index + 1);
             }}
             autoFocus
           >
@@ -197,6 +195,10 @@ export function AlertComponentStore({ robots }: AlertProps): JSX.Element {
   };
 
   return (
-    <>{showAlert[count] && showAlert[count].show ? showTaskComplete(showAlert[count]) : null}</>
+    <>
+      {alertToDisplay[index] && alertToDisplay[index].show
+        ? showTaskCompleteOrFailed(alertToDisplay[index])
+        : null}
+    </>
   );
 }
