@@ -176,6 +176,57 @@ export const TasksApp = React.memo(
         return () => subs.forEach((s) => s.unsubscribe());
       }, [rmf, forceRefresh, tasksState.page, filterFields.model, sortFields.model]);
 
+      const exportAllTasksToCsv = async () => {
+        if (!rmf) {
+          return;
+        }
+
+        const now = new Date();
+        const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          `0,${now.getTime()}`,
+          undefined,
+          undefined,
+          undefined,
+          '-unix_millis_start_time',
+          undefined,
+        );
+        const allTasks = resp.data as TaskState[];
+        if (!allTasks || !allTasks.length) {
+          return;
+        }
+
+        const columnSeparator = ';';
+        const rowSeparator = '\n';
+        const keys = Object.keys(allTasks[0]);
+        let csvContent = keys.join(columnSeparator) + rowSeparator;
+        allTasks.forEach((task) => {
+          keys.forEach((k) => {
+            type TaskStateKey = keyof typeof task;
+            const columnKey = k as TaskStateKey;
+            const value =
+              task[columnKey] === null || task[columnKey] === undefined
+                ? ''
+                : JSON.stringify(task[columnKey]);
+            csvContent += value + columnSeparator;
+          });
+          csvContent += rowSeparator;
+        });
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${now.toJSON().slice(0, 10)}_task_history.csv`;
+        a.click();
+
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+        });
+      };
+
       const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
         async (taskRequests) => {
           if (!rmf) {
@@ -228,6 +279,7 @@ export const TasksApp = React.memo(
                   onTaskClick={(_ev, task) => AppEvents.taskSelect.next(task)}
                   setFilterFields={setFilterFields}
                   setSortFields={setSortFields}
+                  exportAllTasks={exportAllTasksToCsv}
                   onPageChange={(newPage: number) =>
                     setTasksState((old) => ({ ...old, page: newPage + 1 }))
                   }

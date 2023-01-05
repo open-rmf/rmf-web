@@ -10,7 +10,7 @@ from .models import Pagination, User
 
 
 def pagination_query(
-    limit: int = Query(100, gt=0, le=100),
+    limit: int = Query(1000000, gt=0, le=1000000),
     offset: int = Query(0, ge=0, le=1000000),
     order_by: Optional[str] = Query(
         None,

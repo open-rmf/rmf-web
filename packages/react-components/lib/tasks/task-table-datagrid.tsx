@@ -10,8 +10,16 @@ import {
   GridCellParams,
   GridFilterModel,
   GridSortModel,
+  GridToolbarColumnsButton,
+  GridToolbarContainer,
+  GridToolbarContainerProps,
+  GridToolbarDensitySelector,
+  GridToolbarExportContainer,
+  GridToolbarFilterButton,
 } from '@mui/x-data-grid';
 import { styled, TextField } from '@mui/material';
+import { ButtonProps } from '@mui/material/Button';
+import MenuItem from '@mui/material/MenuItem';
 import * as React from 'react';
 import { TaskState, Status } from 'api-client';
 
@@ -75,6 +83,7 @@ export interface TableDataGridState {
   onPageSizeChange: (newPageSize: number) => void;
   setFilterFields: React.Dispatch<React.SetStateAction<FilterFields>>;
   setSortFields: React.Dispatch<React.SetStateAction<SortFields>>;
+  exportAllTasks: () => Promise<void>;
 }
 
 export function TaskDataGridTable({
@@ -84,6 +93,7 @@ export function TaskDataGridTable({
   onPageSizeChange,
   setFilterFields,
   setSortFields,
+  exportAllTasks,
 }: TableDataGridState): JSX.Element {
   const handleEvent: GridEventListener<'rowClick'> = (
     params: GridRowParams,
@@ -201,13 +211,11 @@ export function TaskDataGridTable({
     },
   ];
 
-  const [tmpFilterFields, setTmpFilterFields] = React.useState<FilterFields>({ model: undefined });
-
   const handleFilterModelChange = React.useCallback(
     (filterModel: GridFilterModel) => {
-      setTmpFilterFields({ model: filterModel });
+      setFilterFields({ model: filterModel });
     },
-    [setTmpFilterFields],
+    [setFilterFields],
   );
 
   const handleSortModelChange = React.useCallback(
@@ -215,6 +223,25 @@ export function TaskDataGridTable({
       setSortFields({ model: sortModel });
     },
     [setSortFields],
+  );
+
+  const FullExportMenuItem = () => {
+    return <MenuItem onClick={exportAllTasks}>Export CSV</MenuItem>;
+  };
+
+  const FullExportButton = (props: ButtonProps) => (
+    <GridToolbarExportContainer {...props}>
+      <FullExportMenuItem />
+    </GridToolbarExportContainer>
+  );
+
+  const ExportToolbar = (props: GridToolbarContainerProps) => (
+    <GridToolbarContainer {...props}>
+      <GridToolbarColumnsButton />
+      <GridToolbarFilterButton />
+      <GridToolbarDensitySelector />
+      <FullExportButton />
+    </GridToolbarContainer>
   );
 
   return (
@@ -229,9 +256,6 @@ export function TaskDataGridTable({
         rowsPerPageOptions={[10]}
         pagination
         paginationMode="server"
-        onPreferencePanelClose={() => {
-          setFilterFields(tmpFilterFields);
-        }}
         filterMode="server"
         onFilterModelChange={handleFilterModelChange}
         sortingMode="server"
@@ -260,6 +284,7 @@ export function TaskDataGridTable({
           }
           return '';
         }}
+        components={{ Toolbar: ExportToolbar }}
       />
     </div>
   );
