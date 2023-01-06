@@ -8,7 +8,6 @@ import {
   Typography,
   Divider,
   TextField,
-  useTheme,
 } from '@mui/material';
 import React from 'react';
 import Dialog from '@mui/material/Dialog';
@@ -20,6 +19,7 @@ import { RobotWithTask } from './task-alert-store';
 import { Status, TaskState } from 'api-client';
 import { RmfAppContext } from './rmf-app';
 import { Subscription } from 'rxjs';
+import { base } from 'react-components';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -66,7 +66,6 @@ interface AlertToDisplay extends RobotWithTask {
 export function AlertComponent({ robots }: AlertProps): JSX.Element {
   const rmf = React.useContext(RmfAppContext);
   const classes = useStyles();
-  const theme = useTheme();
   const [index, setIndex] = React.useState(0);
   const [alertToDisplay, setAlertToDisplay] = React.useState<AlertToDisplay[]>([]);
 
@@ -75,12 +74,10 @@ export function AlertComponent({ robots }: AlertProps): JSX.Element {
 
     switch (taskStatus) {
       case Status.Failed:
-        return theme.palette.error.dark;
+        return base.palette.error.dark;
 
       case Status.Completed:
-        // TODO
-        // Add this color in the common-theme
-        return '#6dff6f';
+        return base.palette.success.dark;
 
       default:
         return;
