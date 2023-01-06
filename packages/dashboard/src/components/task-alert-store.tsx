@@ -12,7 +12,7 @@ export const TaskAlertStore = React.memo(() => {
   const rmf = React.useContext(RmfAppContext);
 
   const [fleets, setFleets] = React.useState<string[]>([]);
-  const [robots, setRobots] = React.useState<Record<string, RobotWithTask[]>>({});
+  const [robotsWithTasks, setRobotsWithTasks] = React.useState<Record<string, RobotWithTask[]>>({});
 
   React.useEffect(() => {
     if (!rmf) {
@@ -28,7 +28,7 @@ export const TaskAlertStore = React.memo(() => {
           return acc;
         }, []),
       );
-      setRobots({});
+      setRobotsWithTasks({});
     });
     return () => sub.unsubscribe();
   }, [rmf]);
@@ -59,7 +59,7 @@ export const TaskAlertStore = React.memo(() => {
               )
             : {};
 
-        setRobots((prev) => {
+        setRobotsWithTasks((prev) => {
           if (!fleet.name) {
             return prev;
           }
@@ -85,7 +85,7 @@ export const TaskAlertStore = React.memo(() => {
   return (
     <>
       <AlertComponent
-        robots={Object.values(robots)
+        robots={Object.values(robotsWithTasks)
           .flatMap((r) => r)
           .filter((element) => {
             if (Object.keys(element).length !== 0) {
