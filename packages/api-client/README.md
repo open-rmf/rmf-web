@@ -39,6 +39,10 @@ client.on('door_states', console.log);
 Requirements:
 * java >= 8
 
+After installing all the dependencies,
+
 ```bash
+cd ~/rmf-web/packages/api-client
+source ~/rmf-web/.venv/bin/activate
 ./generate-openapi.sh
 ```

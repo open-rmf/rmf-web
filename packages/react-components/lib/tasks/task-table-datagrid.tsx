@@ -1,25 +1,27 @@
 import {
   DataGrid,
+  getGridDateOperators,
+  getGridStringOperators,
   GridColDef,
   GridEventListener,
   GridValueGetterParams,
   MuiEvent,
   GridRowParams,
   GridCellParams,
-  GridColTypeDef,
-  GridFilterInputValueProps,
-  GridFilterItem,
-  GridRenderEditCellParams,
-  useGridApiContext,
-  GRID_DATE_COL_DEF,
+  GridFilterModel,
+  GridSortModel,
+  GridToolbarColumnsButton,
+  GridToolbarContainer,
+  GridToolbarContainerProps,
+  GridToolbarDensitySelector,
+  GridToolbarExportContainer,
+  GridToolbarFilterButton,
 } from '@mui/x-data-grid';
-import locale from 'date-fns/locale/en-US';
-import { Box, InputBase, styled, TextField, TextFieldProps } from '@mui/material';
+import { styled, TextField } from '@mui/material';
+import { ButtonProps } from '@mui/material/Button';
+import MenuItem from '@mui/material/MenuItem';
 import * as React from 'react';
 import { TaskState, Status } from 'api-client';
-import SyncIcon from '@mui/icons-material/Sync';
-import { DatePicker, TimePicker, DateTimePicker } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 const classes = {
   taskActiveCell: 'MuiDataGrid-cell-active-cell',
@@ -67,10 +69,11 @@ export interface Tasks {
 }
 
 export interface FilterFields {
-  category: string | undefined;
-  taskId: string | undefined;
-  startTime: string | undefined;
-  finisTime: string | undefined;
+  model: GridFilterModel | undefined;
+}
+
+export interface SortFields {
+  model: GridSortModel | undefined;
 }
 
 export interface TableDataGridState {
@@ -79,6 +82,8 @@ export interface TableDataGridState {
   onPageChange: (newPage: number) => void;
   onPageSizeChange: (newPageSize: number) => void;
   setFilterFields: React.Dispatch<React.SetStateAction<FilterFields>>;
+  setSortFields: React.Dispatch<React.SetStateAction<SortFields>>;
+  exportAllTasks: () => Promise<void>;
 }
 
 export function TaskDataGridTable({
@@ -87,6 +92,8 @@ export function TaskDataGridTable({
   onPageChange,
   onPageSizeChange,
   setFilterFields,
+  setSortFields,
+  exportAllTasks,
 }: TableDataGridState): JSX.Element {
   const handleEvent: GridEventListener<'rowClick'> = (
     params: GridRowParams,
@@ -97,410 +104,52 @@ export function TaskDataGridTable({
     }
   };
 
-  const [categoryFilter, setCategoryFilter] = React.useState('');
-  /**
-   * Custom filter operation
-   * https://mui.com/x/react-data-grid/filtering/
-   */
-  const buildApplyDateFilterFn = (
-    filterItem: GridFilterItem,
-    compareFn: (value1: number, value2: number | string) => boolean,
-    showTime: boolean,
-  ) => {
-    if (!filterItem.value) {
-      return null;
-    }
+  const getMinimalStringFilterOperators = getGridStringOperators().filter(
+    // TODO: implement contains on the server end as well
+    (operator) => operator.value === 'equals',
+  );
 
-    const filterValueMs = filterItem.value.getTime();
-
-    return ({ value }: GridCellParams): boolean => {
-      if (!value || value === '-') {
-        return false;
-      }
-
-      if (showTime) {
-        const filterValueTime = new Date(filterValueMs).toLocaleTimeString();
-        return compareFn(value, filterValueTime);
-      }
-
-      // Make a copy of the date to not reset the hours in the original object
-      const dateCopy = new Date(value);
-      dateCopy.setHours(showTime ? value.getHours() : 0, showTime ? value.getMinutes() : 0, 0, 0);
-      const cellValueMs = dateCopy.getTime();
-
-      return compareFn(cellValueMs, filterValueMs);
-    };
-  };
-
-  const getDateFilterOperators = (showTime: boolean): GridColTypeDef['filterOperators'] => {
-    return [
-      {
-        value: 'is',
-        getApplyFilterFn: (filterItem) => {
-          return buildApplyDateFilterFn(
-            filterItem,
-            (value1, value2) => value1 === value2,
-            showTime,
-          );
-        },
-        InputComponent: GridFilterDateInput,
-        InputComponentProps: { showTime },
-      },
-      {
-        value: 'not',
-        getApplyFilterFn: (filterItem) => {
-          return buildApplyDateFilterFn(
-            filterItem,
-            (value1, value2) => value1 !== value2,
-            showTime,
-          );
-        },
-        InputComponent: GridFilterDateInput,
-        InputComponentProps: { showTime },
-      },
-      {
-        value: 'after',
-        getApplyFilterFn: (filterItem) => {
-          return buildApplyDateFilterFn(filterItem, (value1, value2) => value1 > value2, showTime);
-        },
-        InputComponent: GridFilterDateInput,
-        InputComponentProps: { showTime },
-      },
-      {
-        value: 'onOrAfter',
-        getApplyFilterFn: (filterItem) => {
-          return buildApplyDateFilterFn(filterItem, (value1, value2) => value1 >= value2, showTime);
-        },
-        InputComponent: GridFilterDateInput,
-        InputComponentProps: { showTime },
-      },
-      {
-        value: 'before',
-        getApplyFilterFn: (filterItem) => {
-          return buildApplyDateFilterFn(filterItem, (value1, value2) => value1 < value2, showTime);
-        },
-        InputComponent: GridFilterDateInput,
-        InputComponentProps: { showTime },
-      },
-      {
-        value: 'onOrBefore',
-        getApplyFilterFn: (filterItem) => {
-          return buildApplyDateFilterFn(filterItem, (value1, value2) => value1 <= value2, showTime);
-        },
-        InputComponent: GridFilterDateInput,
-        InputComponentProps: { showTime },
-      },
-      {
-        value: 'isEmpty',
-        getApplyFilterFn: () => {
-          return ({ value }): boolean => {
-            return value == null;
-          };
-        },
-      },
-      {
-        value: 'isNotEmpty',
-        getApplyFilterFn: () => {
-          return ({ value }): boolean => {
-            return value != null;
-          };
-        },
-      },
-    ];
-  };
-
-  const dateAdapter = new AdapterDateFns({ locale });
-
-  /**
-   * `date` column
-   */
-
-  const dateColumnType: GridColTypeDef<Date | string, string> = {
-    ...GRID_DATE_COL_DEF,
-    resizable: false,
-    renderEditCell: (params) => {
-      return <GridEditDateCell {...params} />;
-    },
-    filterOperators: getDateFilterOperators(false),
-    valueFormatter: (params) => {
-      if (typeof params.value === 'string') {
-        return params.value;
-      }
-      if (params.value) {
-        return dateAdapter.format(params.value, 'keyboardDate');
-      }
-      return '';
-    },
-  };
-
-  const GridEditDateInput = styled(InputBase)({
-    fontSize: 'inherit',
-    padding: '0 9px',
-  });
-
-  const GridEditDateCell = ({
-    id,
-    field,
-    value,
-    colDef,
-  }: GridRenderEditCellParams<Date | string | null>) => {
-    const apiRef = useGridApiContext();
-
-    const Component = colDef.type === 'dateTime' ? TimePicker : DatePicker;
-
-    const handleChange = (newValue: unknown) => {
-      apiRef.current.setEditCellValue({ id, field, value: newValue });
-    };
-
-    return (
-      <Component
-        value={value}
-        renderInput={({ inputRef, inputProps, InputProps, disabled, error }) => (
-          <GridEditDateInput
-            fullWidth
-            autoFocus
-            ref={inputRef}
-            {...InputProps}
-            disabled={disabled}
-            error={error}
-            inputProps={inputProps}
-          />
-        )}
-        onChange={handleChange}
-      />
-    );
-  };
-
-  const GridFilterDateInput = (props: GridFilterInputValueProps & { showTime?: boolean }) => {
-    const { item, showTime, applyValue, apiRef } = props;
-    const [filterValueState, setFilterValueState] = React.useState(item.value ?? '');
-    const filterTimeout = React.useRef<ReturnType<typeof setTimeout>>();
-
-    React.useEffect(() => {
-      return () => {
-        clearTimeout(filterTimeout.current);
-      };
-    }, []);
-
-    React.useEffect(() => {
-      const itemValue = item.value ?? '';
-      setFilterValueState(itemValue);
-    }, [item.value]);
-
-    const handleFilterTimePickerChange = (newValue: unknown) => {
-      const filterValue = new Date(dateAdapter.toISO(newValue as Date)).getTime() / 1000;
-
-      clearTimeout(filterTimeout.current);
-
-      setFilterValueState(newValue);
-
-      filterTimeout.current = setTimeout(() => {
-        setFilterFields((old) => ({
-          ...old,
-          finisTime: filterValue.toString(),
-        }));
-        applyValue({ ...item, value: newValue });
-      }, 5000);
-    };
-
-    const handleFilterChange = (newValue: unknown) => {
-      const localDate = new Date(newValue as Date);
-      const filterValue = dateAdapter.toISO(localDate);
-
-      setFilterFields((old) => ({
-        ...old,
-        startTime: filterValue === '' ? undefined : filterValue,
-      }));
-
-      applyValue({ ...item, value: newValue });
-    };
-
-    return showTime ? (
-      <DateTimePicker
-        value={filterValueState}
-        InputAdornmentProps={{
-          sx: {
-            '& .MuiButtonBase-root': {
-              marginRight: -1,
-            },
-          },
-        }}
-        onChange={handleFilterTimePickerChange}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            variant="standard"
-            label={apiRef.current.getLocaleText('filterPanelInputLabel')}
-          />
-        )}
-      />
-    ) : (
-      <DatePicker
-        value={item.value || null}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            variant="standard"
-            label={apiRef.current.getLocaleText('filterPanelInputLabel')}
-          />
-        )}
-        InputAdornmentProps={{
-          sx: {
-            '& .MuiButtonBase-root': {
-              marginRight: -1,
-            },
-          },
-        }}
-        onChange={handleFilterChange}
-      />
-    );
-  };
-
-  const buildApplyCategoryFilter = (
-    filterItem: GridFilterItem,
-    compareFn: (value1: string, value2: string) => boolean,
-  ) => {
-    if (!filterItem.value) {
-      return null;
-    }
-
-    const filterValue = filterItem.value;
-
-    return ({ value }: GridCellParams<string>): boolean => {
-      if (!value) {
-        return false;
-      }
-
-      return compareFn(value, filterValue);
-    };
-  };
-
-  const getCategoryFilterOperators = (): GridColTypeDef['filterOperators'] => {
-    return [
-      {
-        value: 'is',
-        getApplyFilterFn: (filterItem) => {
-          return buildApplyCategoryFilter(filterItem, (value1, value2) => value1 === value2);
-        },
-        InputComponent: GridFilterCategoryInput,
-        InputComponentProps: { type: 'string' },
-      },
-
-      {
-        value: 'isEmpty',
-        getApplyFilterFn: () => {
-          return ({ value }): boolean => {
-            return value == null;
-          };
-        },
-      },
-      {
-        value: 'isNotEmpty',
-        getApplyFilterFn: () => {
-          return ({ value }): boolean => {
-            return value != null;
-          };
-        },
-      },
-    ];
-  };
-
-  const GridFilterCategoryInput = (props: GridFilterInputValueProps) => {
-    const { item, applyValue, focusElementRef = null } = props;
-
-    const [filterValueState, setFilterValueState] = React.useState(item.value ?? '');
-    const [applying, setIsApplying] = React.useState(false);
-
-    const filterTimeout = React.useRef<ReturnType<typeof setTimeout>>();
-    React.useEffect(() => {
-      return () => {
-        clearTimeout(filterTimeout.current);
-      };
-    }, []);
-
-    React.useEffect(() => {
-      const itemValue = item.value ?? '';
-      setFilterValueState(itemValue);
-
-      // Setting the flag state to reset the category filter when closing the filter panel
-      setCategoryFilter(itemValue);
-    }, [item.value]);
-
-    const updateFilterValue = (category: string) => {
-      clearTimeout(filterTimeout.current);
-      setFilterValueState(category);
-
-      setIsApplying(true);
-      filterTimeout.current = setTimeout(() => {
-        setIsApplying(false);
-        setFilterFields((old) => ({
-          ...old,
-          category: category === '' ? undefined : category,
-        }));
-        applyValue({ ...item, value: category });
-      }, 500);
-    };
-
-    const handleLowerFilterChange: TextFieldProps['onChange'] = (event) => {
-      updateFilterValue(event.target.value);
-    };
-
-    return (
-      <Box
-        sx={{
-          display: 'inline-flex',
-          flexDirection: 'row',
-          alignItems: 'end',
-          height: 48,
-          pl: '20px',
-        }}
-      >
-        <TextField
-          name="filter"
-          placeholder="Filter Value"
-          label="Value"
-          variant="standard"
-          value={filterValueState}
-          onChange={handleLowerFilterChange}
-          inputRef={focusElementRef}
-          sx={{ mr: 2 }}
-          InputProps={applying ? { endAdornment: <SyncIcon /> } : {}}
-        />
-      </Box>
-    );
-  };
+  const getMinimalDateOperators = getGridDateOperators(true).filter(
+    (operator) => operator.value === 'onOrAfter' || operator.value === 'onOrBefore',
+  );
 
   const columns: GridColDef[] = [
     {
-      field: 'id',
+      field: 'id_',
       headerName: 'ID',
       width: 90,
       valueGetter: (params: GridValueGetterParams) => params.row.booking.id,
       flex: 1,
+      filterOperators: getMinimalStringFilterOperators,
+      filterable: true,
     },
     {
       field: 'category',
       headerName: 'Category',
       width: 150,
       editable: false,
+      valueGetter: (params: GridValueGetterParams) =>
+        params.row.category ? params.row.category : 'unknown',
       flex: 1,
-      filterOperators: getCategoryFilterOperators(),
+      filterOperators: getMinimalStringFilterOperators,
+      filterable: true,
     },
     {
-      field: 'name',
+      field: 'assigned_to',
       headerName: 'Assignee',
       width: 150,
       editable: false,
       valueGetter: (params: GridValueGetterParams) =>
         params.row.assigned_to ? params.row.assigned_to.name : 'unknown',
       flex: 1,
+      filterOperators: getMinimalStringFilterOperators,
+      filterable: true,
     },
     {
       field: 'unix_millis_start_time',
       headerName: 'Start Time',
       width: 150,
       editable: false,
-      ...dateColumnType,
       renderCell: (cellValues) => {
         return (
           <TextField
@@ -520,14 +169,14 @@ export function TaskDataGridTable({
         );
       },
       flex: 1,
-      filterOperators: getDateFilterOperators(false),
+      filterOperators: getMinimalDateOperators,
+      filterable: true,
     },
     {
       field: 'unix_millis_finish_time',
       headerName: 'End Time',
       width: 150,
       editable: false,
-      type: 'dateTime',
       renderCell: (cellValues) => {
         return (
           <TextField
@@ -547,7 +196,8 @@ export function TaskDataGridTable({
         );
       },
       flex: 1,
-      filterOperators: getDateFilterOperators(true),
+      filterOperators: getMinimalDateOperators,
+      filterable: true,
     },
     {
       field: 'status',
@@ -556,8 +206,43 @@ export function TaskDataGridTable({
       valueGetter: (params: GridValueGetterParams) =>
         params.row.status ? params.row.status : 'unknown',
       flex: 1,
+      filterOperators: getMinimalStringFilterOperators,
+      filterable: true,
     },
   ];
+
+  const handleFilterModelChange = React.useCallback(
+    (filterModel: GridFilterModel) => {
+      setFilterFields({ model: filterModel });
+    },
+    [setFilterFields],
+  );
+
+  const handleSortModelChange = React.useCallback(
+    (sortModel: GridSortModel) => {
+      setSortFields({ model: sortModel });
+    },
+    [setSortFields],
+  );
+
+  const FullExportMenuItem = () => {
+    return <MenuItem onClick={exportAllTasks}>Export CSV</MenuItem>;
+  };
+
+  const FullExportButton = (props: ButtonProps) => (
+    <GridToolbarExportContainer {...props}>
+      <FullExportMenuItem />
+    </GridToolbarExportContainer>
+  );
+
+  const ExportToolbar = (props: GridToolbarContainerProps) => (
+    <GridToolbarContainer {...props}>
+      <GridToolbarColumnsButton />
+      <GridToolbarFilterButton />
+      <GridToolbarDensitySelector />
+      <FullExportButton />
+    </GridToolbarContainer>
+  );
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
@@ -571,12 +256,10 @@ export function TaskDataGridTable({
         rowsPerPageOptions={[10]}
         pagination
         paginationMode="server"
-        onPreferencePanelClose={() => {
-          setFilterFields((old) => ({
-            ...old,
-            category: categoryFilter === '' ? undefined : categoryFilter,
-          }));
-        }}
+        filterMode="server"
+        onFilterModelChange={handleFilterModelChange}
+        sortingMode="server"
+        onSortModelChange={handleSortModelChange}
         page={tasks.page - 1}
         onPageChange={onPageChange}
         onPageSizeChange={onPageSizeChange}
@@ -601,6 +284,7 @@ export function TaskDataGridTable({
           }
           return '';
         }}
+        components={{ Toolbar: ExportToolbar }}
       />
     </div>
   );

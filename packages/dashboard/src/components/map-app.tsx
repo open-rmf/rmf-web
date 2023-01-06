@@ -1,5 +1,11 @@
 import { styled } from '@mui/material';
-import { BuildingMap, Dispenser, FleetState, Ingestor, Level } from 'api-client';
+import {
+  BuildingMap,
+  Dispenser,
+  ApiServerModelsRmfApiFleetStateFleetState,
+  Ingestor,
+  Level,
+} from 'api-client';
 import Debug from 'debug';
 import React from 'react';
 import {
@@ -25,6 +31,8 @@ import { RobotData, RobotsOverlay } from './robots-overlay';
 import { TrajectoriesOverlay, TrajectoryData } from './trajectories-overlay';
 import { WaypointsOverlay } from './waypoints-overlay';
 import { WorkcellData, WorkcellsOverlay } from './workcells-overlay';
+
+type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
 const debug = Debug('MapApp');
 
@@ -226,26 +234,34 @@ export const MapApp = styled(
       };
     }, [rmf]);
 
-    const [image, setImage] = React.useState<HTMLImageElement | null>(null);
+    const [imageUrl, setImageUrl] = React.useState<string | null>(null);
     const [bounds, setBounds] = React.useState<L.LatLngBoundsLiteral | null>(null);
     const [center, setCenter] = React.useState<L.LatLngTuple>([0, 0]);
     React.useEffect(() => {
       if (!currentLevel?.images[0]) {
-        setImage(null);
+        setImageUrl(null);
         return;
       }
+
       (async () => {
-        const image = await loadAffineImage(currentLevel.images[0]);
+        const affineImage = await loadAffineImage(currentLevel.images[0]);
         const bounds = affineImageBounds(
           currentLevel.images[0],
-          image.naturalWidth,
-          image.naturalHeight,
+          affineImage.naturalWidth,
+          affineImage.naturalHeight,
         );
         setBounds(bounds);
         setCenter([(bounds[1][0] - bounds[0][0]) / 2, (bounds[1][1] - bounds[0][1]) / 2]);
-        setImage(image);
+        setImageUrl(affineImage.src);
       })();
-    }, [currentLevel]);
+
+      buildingMap &&
+        setWaypoints(
+          getPlaces(buildingMap).filter(
+            (p) => p.level === currentLevel.name && p.vertex.name.length > 0,
+          ),
+        );
+    }, [buildingMap, currentLevel]);
 
     const [robots, setRobots] = React.useState<RobotData[]>([]);
     const { current: robotsStore } = React.useRef<Record<string, RobotData>>({});
@@ -375,28 +391,30 @@ export const MapApp = styled(
         zoom={6}
         bounds={bounds}
         maxBounds={bounds}
+        onbaselayerchange={({ name }: L.LayersControlEvent) => {
+          setCurrentLevel(
+            buildingMap.levels.find((l: Level) => l.name === name) || buildingMap.levels[0],
+          );
+        }}
       >
         <AttributionControl position="bottomright" prefix="OSRC-SG" />
-        <LayersControl
-          position="topleft"
-          onbaselayerchange={(ev) =>
-            setCurrentLevel(
-              buildingMap.levels.find((l) => l.name === ev.name) || buildingMap.levels[0],
-            )
-          }
-        >
+        <LayersControl position="topleft">
           <Pane name="image" style={{ zIndex: 0 }} />
-          {buildingMap.levels.map((level) => (
-            <LayersControl.BaseLayer
-              key={level.name}
-              name={level.name}
-              checked={currentLevel === level}
-            >
-              {currentLevel.images.length > 0 && image && (
-                <ImageOverlay bounds={bounds} url={image} pane="image" />
-              )}
-            </LayersControl.BaseLayer>
-          ))}
+          {buildingMap.levels.map((level: Level) =>
+            currentLevel.name === level.name ? (
+              <LayersControl.BaseLayer key={level.name} name={level.name} checked>
+                {currentLevel.images.length > 0 && imageUrl && (
+                  <ImageOverlay bounds={bounds} url={imageUrl} pane="image" />
+                )}
+              </LayersControl.BaseLayer>
+            ) : (
+              <LayersControl.BaseLayer key={level.name} name={level.name}>
+                {currentLevel.images.length > 0 && imageUrl && (
+                  <ImageOverlay bounds={bounds} url={imageUrl} pane="image" />
+                )}
+              </LayersControl.BaseLayer>
+            ),
+          )}
 
           <LayersControl.Overlay name="Waypoints" checked={!disabledLayers['Waypoints']}>
             <WaypointsOverlay

@@ -18,10 +18,7 @@ describe('Tasks table', () => {
 
   beforeEach(() => {
     const setFilterFields: FilterFields = {
-      category: undefined,
-      taskId: undefined,
-      startTime: undefined,
-      finisTime: undefined,
+      model: undefined,
     };
 
     mockAddMoreRows = jasmine.createSpy();

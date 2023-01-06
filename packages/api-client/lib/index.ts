@@ -6,7 +6,7 @@ import {
   DispenserState,
   DoorHealth,
   DoorState,
-  FleetState,
+  ApiServerModelsRmfApiFleetStateFleetState,
   IngestorHealth,
   IngestorState,
   LiftHealth,
@@ -14,6 +14,8 @@ import {
   TaskEventLog,
   TaskState,
 } from './openapi';
+
+type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
 const debug = Debug('rmf-client');
 
