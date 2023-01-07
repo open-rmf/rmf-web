@@ -9,8 +9,8 @@ import {
   FilterFields,
   getPlaces,
   SortFields,
-  Tasks,
   TaskDataGridTable,
+  Tasks,
   Window,
 } from 'react-components';
 import { Subscription } from 'rxjs';
