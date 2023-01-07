@@ -7,7 +7,6 @@ from api_server.dependencies import between_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import FleetLog, FleetState
 from api_server.repositories import FleetRepository, fleet_repo_dep
-from api_server.repositories.tasks import TaskRepository
 from api_server.rmf_io import fleet_events
 
 router = FastIORouter(tags=["Fleets"])
