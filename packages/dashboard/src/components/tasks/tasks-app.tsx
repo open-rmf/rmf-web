@@ -1,6 +1,6 @@
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { Grid, IconButton, TableContainer, Toolbar, Tooltip } from '@mui/material';
+import { Grid, IconButton, Tab, Tabs, TableContainer, Toolbar, Tooltip } from '@mui/material';
 import { TaskRequest, TaskState } from 'api-client';
 import React from 'react';
 import {
@@ -245,6 +245,11 @@ export const TasksApp = React.memo(
         [rmf],
       );
 
+      const [tabValue, setTabValue] = React.useState(0);
+      const handleTabChange = (event: React.SyntheticEvent, newTabValue: number) => {
+        setTabValue(newTabValue);
+      };
+
       return (
         <Window
           ref={ref}
@@ -271,25 +276,47 @@ export const TasksApp = React.memo(
           }
           {...otherProps}
         >
-          <Grid container wrap="nowrap" direction="column" height="100%">
-            <Grid item flexGrow={1}>
-              <TableContainer>
-                <TaskDataGridTable
-                  tasks={tasksState}
-                  onTaskClick={(_ev, task) => AppEvents.taskSelect.next(task)}
-                  setFilterFields={setFilterFields}
-                  setSortFields={setSortFields}
-                  exportAllTasks={exportAllTasksToCsv}
-                  onPageChange={(newPage: number) =>
-                    setTasksState((old) => ({ ...old, page: newPage + 1 }))
-                  }
-                  onPageSizeChange={(newPageSize: number) =>
-                    setTasksState((old) => ({ ...old, pageSize: newPageSize }))
-                  }
-                />
-              </TableContainer>
+          <Tabs value={tabValue} onChange={handleTabChange} aria-label="basic tabs example">
+            <Tab label="History" id="history-subtab" aria-controls="history-subtab-panel" />
+            <Tab label="Scheduled" id="scheduled-subtab" aria-controls="scheduled-subtab-panel" />
+          </Tabs>
+
+          <div
+            role="subtabpanel"
+            hidden={tabValue !== 0}
+            id="history-subtab-panel"
+            aria-labelledby="history-subtab"
+          >
+            <Grid container wrap="nowrap" direction="column" height="100%">
+              <Grid item flexGrow={1}>
+                <TableContainer>
+                  <TaskDataGridTable
+                    tasks={tasksState}
+                    onTaskClick={(_ev, task) => AppEvents.taskSelect.next(task)}
+                    setFilterFields={setFilterFields}
+                    setSortFields={setSortFields}
+                    exportAllTasks={exportAllTasksToCsv}
+                    onPageChange={(newPage: number) =>
+                      setTasksState((old) => ({ ...old, page: newPage + 1 }))
+                    }
+                    onPageSizeChange={(newPageSize: number) =>
+                      setTasksState((old) => ({ ...old, pageSize: newPageSize }))
+                    }
+                  />
+                </TableContainer>
+              </Grid>
             </Grid>
-          </Grid>
+          </div>
+
+          <div
+            role="subtabpanel"
+            hidden={tabValue !== 1}
+            id="scheduled-subtab-panel"
+            aria-labelledby="scheduled-subtab"
+          >
+            This is the scehdule tab panel
+          </div>
+
           {openCreateTaskForm && (
             <CreateTaskForm
               cleaningZones={placeNames}
