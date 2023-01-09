@@ -9,7 +9,7 @@ const commonTheme = {
     // Apple Green, Inchworm, Avocado
     main: '#7FB800',
     light: '#B3EB49',
-    dark: '#4C8800',
+    dark: '#6dff6f',
   },
   error: {
     // Radical Red, Salmon Pink, Red NCS
