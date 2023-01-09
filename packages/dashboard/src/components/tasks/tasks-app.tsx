@@ -19,6 +19,7 @@ import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
 import { parseTasksFile } from './utils';
+import { Scheduler } from '@aldabil/react-scheduler';
 
 export const TasksApp = React.memo(
   React.forwardRef(
@@ -314,7 +315,23 @@ export const TasksApp = React.memo(
             id="scheduled-subtab-panel"
             aria-labelledby="scheduled-subtab"
           >
-            This is the scehdule tab panel
+            <Scheduler
+              view="month"
+              events={[
+                {
+                  event_id: 1,
+                  title: 'Event 1',
+                  start: new Date('2021/5/2 09:30'),
+                  end: new Date('2021/5/2 10:30'),
+                },
+                {
+                  event_id: 2,
+                  title: 'Event 2',
+                  start: new Date('2021/5/4 10:00'),
+                  end: new Date('2021/5/4 11:00'),
+                },
+              ]}
+            />
           </div>
 
           {openCreateTaskForm && (
