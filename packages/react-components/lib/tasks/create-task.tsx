@@ -799,6 +799,19 @@ export function CreateTaskForm({
           </>
         )}
       </Grid>
+      <Grid
+        container
+        // wrap="nowrap"
+        style={{
+          justifyContent: 'flex-end',
+          // marginLeft: theme.spacing(2),
+          // marginRight: theme.spacing(2),
+        }}
+      >
+        <Button variant="contained" color="primary">
+          Make Recurring Task
+        </Button>
+      </Grid>
     </StyledConfirmationDialog>
   );
 }
