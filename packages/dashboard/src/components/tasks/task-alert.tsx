@@ -1,9 +1,62 @@
 import React from 'react';
 import { AlertProps, AlertToDisplay } from '../alert-store';
-import { Status } from 'api-client';
+import { Status, TaskState } from 'api-client';
 import { RmfAppContext } from '../rmf-app';
 import { Subscription } from 'rxjs';
-import { AlertDialog } from '../alert-dialog-component';
+import { AlertDialog, AlertInput } from '../alert-dialog-component';
+import { base } from 'react-components';
+
+const showMessage = (task: TaskState | undefined) => {
+  if (!task) {
+    return 'No message';
+  }
+
+  switch (task.status) {
+    case Status.Failed:
+      return `${task.dispatch?.status} 
+                ${task.dispatch?.errors?.map((e) => e.message)}`;
+
+    case Status.Completed:
+      return 'Task completed!';
+
+    default:
+      return 'No message';
+  }
+};
+
+const setTaskDialogColor = (taskStatus: Status | undefined) => {
+  if (!taskStatus) {
+    return base.palette.background.default;
+  }
+
+  switch (taskStatus) {
+    case Status.Failed:
+      return base.palette.error.dark;
+
+    case Status.Completed:
+      return base.palette.success.dark;
+
+    default:
+      return base.palette.background.default;
+  }
+};
+
+const buildDialogContent = (alertToDisplay: AlertToDisplay): AlertInput[] => {
+  return [
+    {
+      title: 'Task',
+      value: alertToDisplay.task ? alertToDisplay.task.booking.id : '',
+    },
+    {
+      title: 'Location',
+      value: alertToDisplay.robot.location ? alertToDisplay.robot.location.map : '',
+    },
+    {
+      title: 'Message',
+      value: showMessage(alertToDisplay.task),
+    },
+  ];
+};
 
 export function TaskAlertComponent({ robots }: AlertProps): JSX.Element {
   const rmf = React.useContext(RmfAppContext);
@@ -40,7 +93,10 @@ export function TaskAlertComponent({ robots }: AlertProps): JSX.Element {
             key={r.robot.name}
             current={r}
             setValue={setAlertToDisplay}
-            robotAlert={false}
+            dialogTitle={'Task State'}
+            progress={r.robot.battery ? r.robot.battery : -1}
+            inputs={buildDialogContent(r)}
+            backgroundColor={setTaskDialogColor(r.task?.status)}
           />
         ) : null,
       )}

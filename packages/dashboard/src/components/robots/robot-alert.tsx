@@ -2,7 +2,8 @@ import React from 'react';
 import { RobotState, Status2 } from 'api-client';
 import { RmfAppContext } from '../rmf-app';
 import { AlertProps, AlertToDisplay, RobotWithTask } from '../alert-store';
-import { AlertDialog } from '../alert-dialog-component';
+import { AlertDialog, AlertInput } from '../alert-dialog-component';
+import { base } from 'react-components';
 
 const statusToAlert = (robot: RobotState) => {
   switch (robot.status) {
@@ -14,6 +15,53 @@ const statusToAlert = (robot: RobotState) => {
     default:
       return false;
   }
+};
+
+const setRobotDialogColor = (robotStatus: Status2 | undefined) => {
+  if (!robotStatus) {
+    return base.palette.background.default;
+  }
+
+  switch (robotStatus) {
+    case Status2.Error:
+      return base.palette.error.main;
+
+    case Status2.Offline:
+      return base.palette.warning.main;
+
+    default:
+      return base.palette.background.default;
+  }
+};
+
+const showMessage = (robot: RobotState) => {
+  switch (robot.status) {
+    case Status2.Error:
+      return 'Robot changed its state to Error.';
+
+    case Status2.Offline:
+      return 'Robot changed its state to offline';
+
+    default:
+      return 'No message';
+  }
+};
+
+const buildDialogContent = (robot: RobotState): AlertInput[] => {
+  return [
+    {
+      title: 'Robot Name',
+      value: robot.name ? robot.name : 'No name',
+    },
+    {
+      title: 'Location',
+      value: robot.location ? robot.location.map : '',
+    },
+    {
+      title: 'Message',
+      value: showMessage(robot),
+    },
+  ];
 };
 
 export function RobotAlertComponent({ robots }: AlertProps): JSX.Element {
@@ -86,7 +134,10 @@ export function RobotAlertComponent({ robots }: AlertProps): JSX.Element {
             key={r.robot.name}
             current={r}
             setValue={setRobotsInStorage}
-            robotAlert={true}
+            dialogTitle={'Robot State'}
+            progress={r.robot.battery ? r.robot.battery : -1}
+            inputs={buildDialogContent(r.robot)}
+            backgroundColor={setRobotDialogColor(r.robot.status)}
           />
         ) : null,
       )}
