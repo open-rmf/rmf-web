@@ -13,13 +13,11 @@ import {
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarContainerProps,
-  GridToolbarDensitySelector,
-  GridToolbarExportContainer,
   GridToolbarFilterButton,
 } from '@mui/x-data-grid';
 import { styled, TextField } from '@mui/material';
-import { ButtonProps } from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
+import Button, { ButtonProps } from '@mui/material/Button';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import * as React from 'react';
 import { TaskState, Status } from 'api-client';
 
@@ -225,24 +223,29 @@ export function TaskDataGridTable({
     [setSortFields],
   );
 
-  const FullExportMenuItem = () => {
-    return <MenuItem onClick={exportAllTasks}>Export CSV</MenuItem>;
+  const CustomToolbar = (props: GridToolbarContainerProps) => {
+    const exportButtonProps: ButtonProps = {
+      color: 'primary',
+      size: 'small',
+      startIcon: <FileDownloadIcon />,
+    };
+
+    return (
+      <GridToolbarContainer {...props}>
+        <GridToolbarColumnsButton />
+        <GridToolbarFilterButton />
+        <Button {...exportButtonProps} onClick={exportAllTasks}>
+          Full Export
+        </Button>
+        <Button
+          {...exportButtonProps}
+          // onClick={() => handleExport({ getRowsToExport: getFilteredRows })}
+        >
+          Basic Export
+        </Button>
+      </GridToolbarContainer>
+    );
   };
-
-  const FullExportButton = (props: ButtonProps) => (
-    <GridToolbarExportContainer {...props}>
-      <FullExportMenuItem />
-    </GridToolbarExportContainer>
-  );
-
-  const ExportToolbar = (props: GridToolbarContainerProps) => (
-    <GridToolbarContainer {...props}>
-      <GridToolbarColumnsButton />
-      <GridToolbarFilterButton />
-      <GridToolbarDensitySelector />
-      <FullExportButton />
-    </GridToolbarContainer>
-  );
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
@@ -284,7 +287,7 @@ export function TaskDataGridTable({
           }
           return '';
         }}
-        components={{ Toolbar: ExportToolbar }}
+        components={{ Toolbar: CustomToolbar }}
       />
     </div>
   );
