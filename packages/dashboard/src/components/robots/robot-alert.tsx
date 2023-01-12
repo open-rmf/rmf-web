@@ -1,15 +1,11 @@
 import React from 'react';
-import { Status2 } from 'api-client';
+import { RobotState, Status2 } from 'api-client';
 import { RmfAppContext } from '../rmf-app';
-import { RobotWithTask } from '../task-alert-store';
+import { AlertProps, AlertToDisplay, RobotWithTask } from '../task-alert-store';
 import { AlertDialog } from '../dialog-component';
 
-export interface AlertProps {
-  robots: RobotWithTask[];
-}
-
-const statusToAlert = (r: AlertToDisplay) => {
-  switch (r.robot?.status) {
+const statusToAlert = (robot: RobotState) => {
+  switch (robot.status) {
     case Status2.Working:
     case Status2.Idle:
     case Status2.Error:
@@ -20,14 +16,11 @@ const statusToAlert = (r: AlertToDisplay) => {
   }
 };
 
-interface AlertToDisplay extends RobotWithTask {
-  show: boolean;
-}
-
 export function RobotAlertComponent({ robots }: AlertProps): JSX.Element {
   const rmf = React.useContext(RmfAppContext);
   const [robotsInStorage, setRobotsInStorage] = React.useState<AlertToDisplay[]>([]);
 
+  // Set all robots in localstorage
   React.useEffect(() => {
     if (!robotsInStorage.length) {
       robots.map((r) =>
@@ -36,6 +29,7 @@ export function RobotAlertComponent({ robots }: AlertProps): JSX.Element {
     }
   }, [robotsInStorage, robots]);
 
+  // Set robots from localStorage into local state in the first rendering
   React.useEffect(() => {
     const data = window.localStorage.getItem('robots');
     if (data !== null) {
@@ -52,36 +46,48 @@ export function RobotAlertComponent({ robots }: AlertProps): JSX.Element {
       return;
     }
 
-    const local = localStorage.getItem('robots');
-    if (!local) {
+    const localItems = localStorage.getItem('robots');
+    if (!localItems) {
       return;
     }
 
-    const robotLocal: RobotWithTask[] = JSON.parse(local);
+    const robotsLocal: RobotWithTask[] = JSON.parse(localItems);
 
-    robots.map((r) =>
-      robotLocal.map((i) =>
-        r.robot?.name === i.robot?.name
-          ? r.robot?.status !== i.robot?.status
-            ? setRobotsInStorage((current) =>
-                current.map((obj) => {
-                  if (obj.robot?.name === i.robot?.name) {
-                    return { ...obj, robot: r.robot, task: r.task, show: true };
-                  }
-                  return obj;
-                }),
-              )
-            : []
-          : [],
-      ),
-    );
+    /**
+     * Loop through the robots array and compare with the local storage element.
+     * If the state of the robot changes we have to set "show" property to "true" so that we can show the
+     * alert after if the state meets with this "statusToAlert" function
+     */
+    robots.map((r) => {
+      const robotItem = robotsLocal.find((rl) => r.robot?.name === rl.robot?.name);
+
+      if (!robotItem) {
+        return [];
+      }
+
+      if (r.robot?.status !== robotItem.robot?.status) {
+        return setRobotsInStorage((prev) =>
+          prev.map((alertToDisplay) =>
+            alertToDisplay.robot?.name === robotItem.robot?.name
+              ? { ...alertToDisplay, robot: r.robot, task: r.task, show: true }
+              : alertToDisplay,
+          ),
+        );
+      }
+      return [];
+    });
   }, [rmf, robots]);
 
   return (
     <>
       {robotsInStorage.map((r) =>
-        statusToAlert(r) && r.show ? (
-          <AlertDialog key={r.robot?.name} current={r} setValue={setRobotsInStorage} />
+        statusToAlert(r.robot) && r.show ? (
+          <AlertDialog
+            key={r.robot.name}
+            current={r}
+            setValue={setRobotsInStorage}
+            robotAlert={true}
+          />
         ) : null,
       )}
     </>
