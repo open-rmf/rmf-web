@@ -2,7 +2,7 @@ import { RobotState, TaskState } from 'api-client';
 import React from 'react';
 import { RmfAppContext } from './rmf-app';
 import { RobotAlertComponent } from './robots/robot-alert';
-import { TaskAlertComponent } from './task-alert';
+import { TaskAlertComponent } from './tasks/task-alert';
 
 export interface RobotWithTask {
   task?: TaskState;

@@ -13,7 +13,7 @@ import { rmfDark, rmfDarkLeaflet, rmfLight } from 'react-components';
 import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
 import { AppController, AppControllerContext, SettingsContext } from './app-contexts';
 import AppBar from './appbar';
-import { TaskAlertStore } from './task-alert-store';
+import { TaskAlertStore } from './alert-store';
 
 const DefaultAlertDuration = 2000;
 const defaultTheme = createTheme();

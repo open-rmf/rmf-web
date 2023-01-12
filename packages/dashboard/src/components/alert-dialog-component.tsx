@@ -16,7 +16,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { makeStyles, createStyles } from '@mui/styles';
-import { RobotWithTask } from './task-alert-store';
+import { RobotWithTask } from './alert-store';
 import { RobotState, Status, Status2, TaskState } from 'api-client';
 
 const useStyles = makeStyles((theme: Theme) =>

@@ -1,9 +1,9 @@
 import React from 'react';
-import { AlertProps, AlertToDisplay } from './task-alert-store';
+import { AlertProps, AlertToDisplay } from '../alert-store';
 import { Status } from 'api-client';
-import { RmfAppContext } from './rmf-app';
+import { RmfAppContext } from '../rmf-app';
 import { Subscription } from 'rxjs';
-import { AlertDialog } from './alert-dialog-component';
+import { AlertDialog } from '../alert-dialog-component';
 
 export function TaskAlertComponent({ robots }: AlertProps): JSX.Element {
   const rmf = React.useContext(RmfAppContext);

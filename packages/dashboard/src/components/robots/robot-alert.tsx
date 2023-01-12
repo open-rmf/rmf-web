@@ -1,7 +1,7 @@
 import React from 'react';
 import { RobotState, Status2 } from 'api-client';
 import { RmfAppContext } from '../rmf-app';
-import { AlertProps, AlertToDisplay, RobotWithTask } from '../task-alert-store';
+import { AlertProps, AlertToDisplay, RobotWithTask } from '../alert-store';
 import { AlertDialog } from '../alert-dialog-component';
 
 const statusToAlert = (robot: RobotState) => {
