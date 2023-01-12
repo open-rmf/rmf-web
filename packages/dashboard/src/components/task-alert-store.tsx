@@ -1,18 +1,38 @@
 import { RobotState, TaskState } from 'api-client';
 import React from 'react';
 import { RmfAppContext } from './rmf-app';
-import { AlertComponent } from './task-alert';
+import { RobotAlertComponent } from './robots/robot-alert';
+import { TaskAlertComponent } from './task-alert';
 
 export interface RobotWithTask {
   task?: TaskState;
-  robot?: RobotState;
+  robot: RobotState;
 }
+
+export interface AlertProps {
+  robots: RobotWithTask[];
+}
+
+export interface AlertToDisplay extends RobotWithTask {
+  show: boolean;
+}
+
+const returnOnlyRobotsWithTask = (value: Record<string, RobotWithTask[]>) => {
+  return Object.values(value)
+    .flatMap((r) => r)
+    .filter((element) => {
+      if (element.task) {
+        return true;
+      }
+      return false;
+    });
+};
 
 export const TaskAlertStore = React.memo(() => {
   const rmf = React.useContext(RmfAppContext);
 
   const [fleets, setFleets] = React.useState<string[]>([]);
-  const [robotsWithTasks, setRobotsWithTasks] = React.useState<Record<string, RobotWithTask[]>>({});
+  const [robots, setRobots] = React.useState<Record<string, RobotWithTask[]>>({});
 
   React.useEffect(() => {
     if (!rmf) {
@@ -28,7 +48,6 @@ export const TaskAlertStore = React.memo(() => {
           return acc;
         }, []),
       );
-      setRobotsWithTasks({});
     });
     return () => sub.unsubscribe();
   }, [rmf]);
@@ -59,21 +78,17 @@ export const TaskAlertStore = React.memo(() => {
               )
             : {};
 
-        setRobotsWithTasks((prev) => {
+        setRobots((prev) => {
           if (!fleet.name) {
             return prev;
           }
           return {
             ...prev,
             [fleet.name]: fleet.robots
-              ? Object.entries(fleet.robots).map<RobotWithTask>(([name, robot]) =>
-                  robot.task_id
-                    ? {
-                        task: tasks[robot.task_id],
-                        robot: robot,
-                      }
-                    : {},
-                )
+              ? Object.entries(fleet.robots).map<RobotWithTask>(([name, robot]) => ({
+                  task: robot.task_id ? tasks[robot.task_id] : undefined,
+                  robot: robot,
+                }))
               : [],
           };
         });
@@ -84,16 +99,8 @@ export const TaskAlertStore = React.memo(() => {
 
   return (
     <>
-      <AlertComponent
-        robots={Object.values(robotsWithTasks)
-          .flatMap((r) => r)
-          .filter((element) => {
-            if (Object.keys(element).length !== 0) {
-              return true;
-            }
-            return false;
-          })}
-      />
+      <TaskAlertComponent robots={returnOnlyRobotsWithTask(robots)} />
+      <RobotAlertComponent robots={Object.values(robots).flatMap((r) => r)} />
     </>
   );
 });
