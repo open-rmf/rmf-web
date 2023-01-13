@@ -2,7 +2,7 @@ import React from 'react';
 import { RobotState, Status2 } from 'api-client';
 import { RmfAppContext } from '../rmf-app';
 import { AlertProps, AlertToDisplay, RobotWithTask } from '../alert-store';
-import { AlertDialog, AlertInput } from '../alert-dialog-component';
+import { AlertDialog, AlertContent } from '../alert-dialog-component';
 import { base } from 'react-components';
 
 const statusToAlert = (robot: RobotState) => {
@@ -47,7 +47,7 @@ const showMessage = (robot: RobotState) => {
   }
 };
 
-const buildDialogContent = (robot: RobotState): AlertInput[] => {
+const buildDialogContent = (robot: RobotState): AlertContent[] => {
   return [
     {
       title: 'Robot Name',
@@ -132,11 +132,11 @@ export function RobotAlertComponent({ robots }: AlertProps): JSX.Element {
         statusToAlert(r.robot) && r.show ? (
           <AlertDialog
             key={r.robot.name}
-            current={r}
+            alertToDisplay={r}
             setValue={setRobotsInStorage}
             dialogTitle={'Robot State'}
             progress={r.robot.battery ? r.robot.battery : -1}
-            inputs={buildDialogContent(r.robot)}
+            alertContents={buildDialogContent(r.robot)}
             backgroundColor={setRobotDialogColor(r.robot.status)}
           />
         ) : null,

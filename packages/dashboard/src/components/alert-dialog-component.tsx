@@ -56,26 +56,26 @@ interface AlertToDisplay extends RobotWithTask {
   show: boolean;
 }
 
-export interface AlertInput {
+export interface AlertContent {
   title: string;
   value: string;
 }
-export interface DialogAlarmProps {
-  current: AlertToDisplay;
+export interface DialogAlertProps {
+  alertToDisplay: AlertToDisplay;
   setValue: (value: React.SetStateAction<AlertToDisplay[]>) => void;
   dialogTitle: string;
   progress: number;
-  inputs: AlertInput[];
+  alertContents: AlertContent[];
   backgroundColor: string;
 }
 
-export const AlertDialog = React.memo((props: DialogAlarmProps) => {
+export const AlertDialog = React.memo((props: DialogAlertProps) => {
   const classes = useStyles();
 
-  const returnDialogContent = (inputs: AlertInput[]) => {
+  const returnDialogContent = (alertContents: AlertContent[]) => {
     return (
       <>
-        {inputs.map((message, index) => (
+        {alertContents.map((message, index) => (
           <Grid key={index} container mb={1} alignItems="center" spacing={1}>
             <Grid item xs={3}>
               <Typography className={classes.subtitle}>{message.title}</Typography>
@@ -96,18 +96,18 @@ export const AlertDialog = React.memo((props: DialogAlarmProps) => {
     );
   };
 
-  const { setValue, current, dialogTitle, progress, inputs, backgroundColor } = props;
+  const { setValue, alertToDisplay, dialogTitle, progress, alertContents, backgroundColor } = props;
 
   return (
     <Dialog
-      key={current.robot.name}
+      key={alertToDisplay.robot.name}
       PaperProps={{
         style: {
           backgroundColor: backgroundColor,
           boxShadow: 'none',
         },
       }}
-      open={current.show}
+      open={alertToDisplay.show}
       maxWidth="xs"
     >
       <DialogTitle className={classes.title}>Alert</DialogTitle>
@@ -116,13 +116,13 @@ export const AlertDialog = React.memo((props: DialogAlarmProps) => {
       <Box sx={{ width: '100%' }}>
         <LinearProgressWithLabel value={progress} />
       </Box>
-      <DialogContent>{returnDialogContent(inputs)}</DialogContent>
+      <DialogContent>{returnDialogContent(alertContents)}</DialogContent>
       <DialogActions>
         <Button
           onClick={() =>
             setValue((prev) =>
               prev.map((obj) => {
-                if (obj.robot.name === current.robot.name) {
+                if (obj.robot.name === alertToDisplay.robot.name) {
                   return { ...obj, show: false };
                 }
                 return obj;

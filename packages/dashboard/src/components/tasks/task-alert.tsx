@@ -3,7 +3,7 @@ import { AlertProps, AlertToDisplay } from '../alert-store';
 import { Status, TaskState } from 'api-client';
 import { RmfAppContext } from '../rmf-app';
 import { Subscription } from 'rxjs';
-import { AlertDialog, AlertInput } from '../alert-dialog-component';
+import { AlertDialog, AlertContent } from '../alert-dialog-component';
 import { base } from 'react-components';
 
 const showMessage = (task: TaskState | undefined) => {
@@ -41,7 +41,7 @@ const setTaskDialogColor = (taskStatus: Status | undefined) => {
   }
 };
 
-const buildDialogContent = (alertToDisplay: AlertToDisplay): AlertInput[] => {
+const buildDialogContent = (alertToDisplay: AlertToDisplay): AlertContent[] => {
   return [
     {
       title: 'Task',
@@ -91,11 +91,11 @@ export function TaskAlertComponent({ robots }: AlertProps): JSX.Element {
         r.show ? (
           <AlertDialog
             key={r.robot.name}
-            current={r}
+            alertToDisplay={r}
             setValue={setAlertToDisplay}
             dialogTitle={'Task State'}
             progress={r.robot.battery ? r.robot.battery : -1}
-            inputs={buildDialogContent(r)}
+            alertContents={buildDialogContent(r)}
             backgroundColor={setTaskDialogColor(r.task?.status)}
           />
         ) : null,
