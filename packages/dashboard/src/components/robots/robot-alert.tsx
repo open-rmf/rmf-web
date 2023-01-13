@@ -7,8 +7,6 @@ import { base } from 'react-components';
 
 const statusToAlert = (robot: RobotState) => {
   switch (robot.status) {
-    case Status2.Working:
-    case Status2.Idle:
     case Status2.Error:
     case Status2.Offline:
       return true;
@@ -37,6 +35,20 @@ const setRobotDialogColor = (robotStatus: Status2 | undefined) => {
 const showMessage = (robot: RobotState) => {
   switch (robot.status) {
     case Status2.Error:
+      if (robot.issues) {
+        robot.issues.map((i) => {
+          if (!i.detail) {
+            return 'No Detail';
+          }
+          if (Array.isArray(i.detail)) {
+            i.detail.map(
+              (d) => ` * ${d} 
+                `,
+            );
+          }
+          return i.detail;
+        });
+      }
       return 'Robot changed its state to Error.';
 
     case Status2.Offline:
