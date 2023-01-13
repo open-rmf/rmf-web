@@ -28,7 +28,7 @@ const returnOnlyRobotsWithTask = (value: Record<string, RobotWithTask[]>) => {
     });
 };
 
-export const TaskAlertStore = React.memo(() => {
+export const AlertStore = React.memo(() => {
   const rmf = React.useContext(RmfAppContext);
 
   const [fleets, setFleets] = React.useState<string[]>([]);

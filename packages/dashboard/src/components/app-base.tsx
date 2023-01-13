@@ -13,7 +13,7 @@ import { rmfDark, rmfDarkLeaflet, rmfLight } from 'react-components';
 import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
 import { AppController, AppControllerContext, SettingsContext } from './app-contexts';
 import AppBar from './appbar';
-import { TaskAlertStore } from './alert-store';
+import { AlertStore } from './alert-store';
 
 const DefaultAlertDuration = 2000;
 const defaultTheme = createTheme();
@@ -71,7 +71,7 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
       {settings.themeMode === ThemeMode.RmfDark && <GlobalStyles styles={rmfDarkLeaflet} />}
       <SettingsContext.Provider value={settings}>
         <AppControllerContext.Provider value={appController}>
-          <TaskAlertStore />
+          <AlertStore />
           <Grid
             container
             direction="column"
