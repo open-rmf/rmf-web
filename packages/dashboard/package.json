@@ -19,8 +19,8 @@
     "test:e2e:dev": "cd e2e && pnpm run test:dev",
     "eject": "react-scripts eject",
     "setup": "node ./scripts/setup/setup.js",
-    "storybook": "start-storybook -p 9009 -s public -s src/stories/static",
-    "build:storybook": "build-storybook -s public -s src/stories/static"
+    "storybook": "start-storybook -p 9009 -s public",
+    "build:storybook": "build-storybook -s public"
   },
   "eslintConfig": {
     "extends": "react-app"
