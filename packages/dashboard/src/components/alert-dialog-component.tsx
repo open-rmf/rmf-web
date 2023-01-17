@@ -15,7 +15,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { makeStyles, createStyles } from '@mui/styles';
-import { RobotWithTask } from './alert-store';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -52,21 +51,18 @@ const LinearProgressWithLabel = (props: LinearProgressProps & { value: number })
   );
 };
 
-interface AlertToDisplay extends RobotWithTask {
-  show: boolean;
-}
-
 export interface AlertContent {
   title: string;
   value: string;
 }
+
 export interface DialogAlertProps {
-  alertToDisplay: AlertToDisplay;
-  setValue: (value: React.SetStateAction<AlertToDisplay[]>) => void;
+  stopShowing: () => void;
   dialogTitle: string;
   progress: number;
   alertContents: AlertContent[];
   backgroundColor: string;
+  show: boolean;
 }
 
 export const AlertDialog = React.memo((props: DialogAlertProps) => {
@@ -96,18 +92,17 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
     );
   };
 
-  const { setValue, alertToDisplay, dialogTitle, progress, alertContents, backgroundColor } = props;
+  const { stopShowing, dialogTitle, progress, alertContents, backgroundColor, show } = props;
 
   return (
     <Dialog
-      key={alertToDisplay.robot.name}
       PaperProps={{
         style: {
           backgroundColor: backgroundColor,
           boxShadow: 'none',
         },
       }}
-      open={alertToDisplay.show}
+      open={show}
       maxWidth="xs"
     >
       <DialogTitle className={classes.title}>Alert</DialogTitle>
@@ -118,19 +113,7 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
       </Box>
       <DialogContent>{returnDialogContent(alertContents)}</DialogContent>
       <DialogActions>
-        <Button
-          onClick={() =>
-            setValue((prev) =>
-              prev.map((obj) => {
-                if (obj.robot.name === alertToDisplay.robot.name) {
-                  return { ...obj, show: false };
-                }
-                return obj;
-              }),
-            )
-          }
-          autoFocus
-        >
+        <Button onClick={stopShowing} autoFocus>
           Close
         </Button>
       </DialogActions>
