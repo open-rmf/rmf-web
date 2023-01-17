@@ -78,35 +78,35 @@ const buildDialogContent = (robot: RobotState): AlertContent[] => {
 
 export function RobotAlertComponent({ robots }: AlertProps): JSX.Element {
   const rmf = React.useContext(RmfAppContext);
-  const [robotsInStorage, setRobotsInStorage] = React.useState<AlertToDisplay[]>([]);
+  const [alertsToDisplay, setAlertsToDisplay] = React.useState<AlertToDisplay[]>([]);
 
   // Set all robots in localstorage
   React.useEffect(() => {
-    if (!robotsInStorage.length) {
+    if (!alertsToDisplay.length) {
       robots.map((r) =>
-        setRobotsInStorage((prev) => [...prev, { show: true, task: r.task, robot: r.robot }]),
+        setAlertsToDisplay((prev) => [...prev, { show: true, task: r.task, robot: r.robot }]),
       );
     }
-  }, [robotsInStorage, robots]);
+  }, [alertsToDisplay, robots]);
 
   // Set robots from localStorage into local state in the first rendering
   React.useEffect(() => {
-    const data = window.localStorage.getItem('robots');
+    const data = window.localStorage.getItem('robots_with_tasks');
     if (data !== null) {
-      setRobotsInStorage(JSON.parse(data));
+      setAlertsToDisplay(JSON.parse(data));
     }
   }, []);
 
   React.useEffect(() => {
-    localStorage.setItem('robots', JSON.stringify(robotsInStorage));
-  }, [robotsInStorage]);
+    localStorage.setItem('robots_with_tasks', JSON.stringify(alertsToDisplay));
+  }, [alertsToDisplay]);
 
   React.useEffect(() => {
     if (!rmf) {
       return;
     }
 
-    const localItems = localStorage.getItem('robots');
+    const localItems = localStorage.getItem('robots_with_tasks');
     if (!localItems) {
       return;
     }
@@ -126,7 +126,7 @@ export function RobotAlertComponent({ robots }: AlertProps): JSX.Element {
       }
 
       if (r.robot?.status !== robotItem.robot?.status) {
-        return setRobotsInStorage((prev) =>
+        return setAlertsToDisplay((prev) =>
           prev.map((alertToDisplay) =>
             alertToDisplay.robot?.name === robotItem.robot?.name
               ? { ...alertToDisplay, robot: r.robot, task: r.task, show: true }
@@ -140,12 +140,12 @@ export function RobotAlertComponent({ robots }: AlertProps): JSX.Element {
 
   return (
     <>
-      {robotsInStorage.map((r) =>
+      {alertsToDisplay.map((r) =>
         statusToAlert(r.robot) && r.show ? (
           <AlertDialog
             key={r.robot.name}
             stopShowing={() =>
-              setRobotsInStorage((prev) =>
+              setAlertsToDisplay((prev) =>
                 prev.map((obj) => {
                   if (obj.robot.name === r.robot.name) {
                     return { ...obj, show: false };
