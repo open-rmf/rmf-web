@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertProps, AlertToDisplay } from '../alert-store';
+import { AlertStoreProps, AlertToDisplay } from '../alert-store';
 import { Status, TaskState } from 'api-client';
 import { RmfAppContext } from '../rmf-app';
 import { Subscription } from 'rxjs';
@@ -58,7 +58,7 @@ const buildDialogContent = (alertToDisplay: AlertToDisplay): AlertContent[] => {
   ];
 };
 
-export function TaskAlertComponent({ robots }: AlertProps): JSX.Element {
+export function TaskAlertComponent({ robots }: AlertStoreProps): JSX.Element {
   const rmf = React.useContext(RmfAppContext);
   const [alertsToDisplay, setAlertsToDisplay] = React.useState<AlertToDisplay[]>([]);
 

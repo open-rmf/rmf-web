@@ -1,7 +1,7 @@
 import React from 'react';
 import { RobotState, Status2 } from 'api-client';
 import { RmfAppContext } from '../rmf-app';
-import { AlertProps, AlertToDisplay, RobotWithTask } from '../alert-store';
+import { AlertStoreProps, AlertToDisplay, RobotWithTask } from '../alert-store';
 import { AlertDialog, AlertContent } from '../alert-dialog-component';
 import { base } from 'react-components';
 
@@ -76,7 +76,7 @@ const buildDialogContent = (robot: RobotState): AlertContent[] => {
   ];
 };
 
-export function RobotAlertComponent({ robots }: AlertProps): JSX.Element {
+export function RobotAlertComponent({ robots }: AlertStoreProps): JSX.Element {
   const rmf = React.useContext(RmfAppContext);
   const [alertsToDisplay, setAlertsToDisplay] = React.useState<AlertToDisplay[]>([]);
 

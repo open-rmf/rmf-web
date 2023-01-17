@@ -9,7 +9,7 @@ export interface RobotWithTask {
   robot: RobotState;
 }
 
-export interface AlertProps {
+export interface AlertStoreProps {
   robots: RobotWithTask[];
 }
 
