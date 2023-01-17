@@ -60,7 +60,7 @@ const buildDialogContent = (alertToDisplay: AlertToDisplay): AlertContent[] => {
 
 export function TaskAlertComponent({ robots }: AlertProps): JSX.Element {
   const rmf = React.useContext(RmfAppContext);
-  const [alertToDisplay, setAlertToDisplay] = React.useState<AlertToDisplay[]>([]);
+  const [alertsToDisplay, setAlertsToDisplay] = React.useState<AlertToDisplay[]>([]);
 
   React.useEffect(() => {
     if (!rmf) {
@@ -74,7 +74,7 @@ export function TaskAlertComponent({ robots }: AlertProps): JSX.Element {
         return subs.push(
           rmf.getTaskStateObs(r.robot.task_id).subscribe((task) => {
             if (task.status === Status.Completed || task.status === Status.Failed) {
-              setAlertToDisplay((prev) => [...prev, { show: true, task: task, robot: r.robot }]);
+              setAlertsToDisplay((prev) => [...prev, { show: true, task: task, robot: r.robot }]);
             }
           }),
         );
@@ -87,12 +87,12 @@ export function TaskAlertComponent({ robots }: AlertProps): JSX.Element {
 
   return (
     <>
-      {alertToDisplay.map((r) =>
+      {alertsToDisplay.map((r) =>
         r.show ? (
           <AlertDialog
             key={r.robot.name}
             stopShowing={() =>
-              setAlertToDisplay((prev) =>
+              setAlertsToDisplay((prev) =>
                 prev.map((obj) => {
                   if (obj.robot.name === r.robot.name) {
                     return { ...obj, show: false };
