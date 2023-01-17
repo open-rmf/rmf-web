@@ -144,12 +144,21 @@ export function RobotAlertComponent({ robots }: AlertProps): JSX.Element {
         statusToAlert(r.robot) && r.show ? (
           <AlertDialog
             key={r.robot.name}
-            alertToDisplay={r}
-            setValue={setRobotsInStorage}
+            stopShowing={() =>
+              setRobotsInStorage((prev) =>
+                prev.map((obj) => {
+                  if (obj.robot.name === r.robot.name) {
+                    return { ...obj, show: false };
+                  }
+                  return obj;
+                }),
+              )
+            }
             dialogTitle={'Robot State'}
             progress={r.robot.battery ? r.robot.battery : -1}
             alertContents={buildDialogContent(r.robot)}
             backgroundColor={setRobotDialogColor(r.robot.status)}
+            show={r.show}
           />
         ) : null,
       )}

@@ -91,12 +91,21 @@ export function TaskAlertComponent({ robots }: AlertProps): JSX.Element {
         r.show ? (
           <AlertDialog
             key={r.robot.name}
-            alertToDisplay={r}
-            setValue={setAlertToDisplay}
+            stopShowing={() =>
+              setAlertToDisplay((prev) =>
+                prev.map((obj) => {
+                  if (obj.robot.name === r.robot.name) {
+                    return { ...obj, show: false };
+                  }
+                  return obj;
+                }),
+              )
+            }
             dialogTitle={'Task State'}
             progress={r.robot.battery ? r.robot.battery : -1}
             alertContents={buildDialogContent(r)}
             backgroundColor={setTaskDialogColor(r.task?.status)}
+            show={r.show}
           />
         ) : null,
       )}
