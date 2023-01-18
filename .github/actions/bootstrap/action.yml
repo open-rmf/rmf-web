@@ -18,6 +18,9 @@ runs:
       with:
         node-version: '16'
         cache: 'pnpm'
+    - name: Install pipenv
+      run: pip3 install pipenv
+      shell: bash
     - name: Install dependencies
       run: pnpm install -w --filter ${{ inputs.package }}... --no-frozen-lockfile
       shell: bash

@@ -4,7 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
-pipenv = "==2022.9.8"
 black = "==22.6.0"
 isort = "~=5.8"
 pylint = "==2.10.2"
