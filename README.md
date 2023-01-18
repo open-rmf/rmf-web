@@ -19,6 +19,11 @@ curl -fsSL https://get.pnpm.io/install.sh | bash -
 pnpm env use --global 16
 ```
 
+Install pipenv
+```bash
+pip3 install pipenv
+```
+
 ### Install rmf
 
 Refer to the following documentation:
