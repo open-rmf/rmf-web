@@ -3,7 +3,7 @@ import { AlertStoreProps, AlertToDisplay } from '../alert-store';
 import { Status, TaskState } from 'api-client';
 import { RmfAppContext } from '../rmf-app';
 import { Subscription } from 'rxjs';
-import { AlertDialog, AlertContent } from '../alert-dialog-component';
+import { AlertContent, AlertDialog } from 'react-components';
 import { base } from 'react-components';
 
 const showMessage = (task: TaskState | undefined) => {
