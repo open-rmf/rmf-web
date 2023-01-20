@@ -383,10 +383,10 @@ export default {
             required: false,
             schema: {
               title: 'Limit',
-              maximum: 100.0,
+              maximum: 1000000.0,
               exclusiveMinimum: 0.0,
               type: 'integer',
-              default: 100,
+              default: 1000000,
             },
             name: 'limit',
             in: 'query',
@@ -834,6 +834,64 @@ export default {
         },
       },
     },
+    '/tasks/favorite_task': {
+      post: {
+        tags: ['Tasks'],
+        summary: 'Post Favorite Task',
+        operationId: 'post_favorite_task_tasks_favorite_task_post',
+        requestBody: {
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/TaskFavoriteRequest' } },
+          },
+          required: true,
+        },
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/TaskFavoriteResponseItem' },
+              },
+            },
+          },
+          '400': {
+            description: 'Bad Request',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/TaskFavoriteResponseItem1' },
+              },
+            },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
+    '/tasks/favorites_tasks': {
+      get: {
+        tags: ['Tasks'],
+        summary: 'Get Favorites Tasks',
+        operationId: 'get_favorites_tasks_tasks_favorites_tasks_get',
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: {
+              'application/json': {
+                schema: {
+                  title: 'Response Get Favorites Tasks Tasks Favorites Tasks Get',
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/TaskFavorite' },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     '/dispensers': {
       get: {
         tags: ['Dispensers'],
@@ -1099,10 +1157,10 @@ export default {
             required: false,
             schema: {
               title: 'Limit',
-              maximum: 100.0,
+              maximum: 1000000.0,
               exclusiveMinimum: 0.0,
               type: 'integer',
-              default: 100,
+              default: 1000000,
             },
             name: 'limit',
             in: 'query',
@@ -2679,6 +2737,66 @@ export default {
           },
         },
         additionalProperties: false,
+      },
+      TaskFavorite: {
+        title: 'TaskFavorite',
+        required: ['name', 'category', 'description'],
+        type: 'object',
+        properties: {
+          name: { title: 'Name', type: 'string' },
+          unix_millis_earliest_start_time: {
+            title: 'Unix Millis Earliest Start Time',
+            type: 'integer',
+            description: '(Optional) The earliest time that this task may start',
+          },
+          priority: {
+            title: 'Priority',
+            type: 'object',
+            description: '(Optional) The priority of this task.',
+          },
+          category: { title: 'Category', type: 'string' },
+          description: {
+            title: 'Description',
+            description: 'A description of the task. Task properties by category',
+          },
+        },
+      },
+      TaskFavoriteRequest: {
+        title: 'TaskFavoriteRequest',
+        required: ['type', 'request'],
+        type: 'object',
+        properties: {
+          type: {
+            title: 'Type',
+            enum: ['task_favorite_request'],
+            type: 'string',
+            description: 'Indicate that this is a task favorite request',
+          },
+          request: { $ref: '#/components/schemas/TaskFavorite' },
+        },
+      },
+      TaskFavoriteResponseItem: {
+        title: 'TaskFavoriteResponseItem',
+        required: ['success', 'data'],
+        type: 'object',
+        properties: {
+          success: { title: 'Success', enum: [true], type: 'boolean' },
+          data: { $ref: '#/components/schemas/TaskFavorite' },
+        },
+      },
+      TaskFavoriteResponseItem1: {
+        title: 'TaskFavoriteResponseItem1',
+        required: ['success'],
+        type: 'object',
+        properties: {
+          success: { title: 'Success', enum: [false], type: 'boolean' },
+          errors: {
+            title: 'Errors',
+            type: 'array',
+            items: { $ref: '#/components/schemas/Error' },
+            description: 'Any error messages explaining why the request failed',
+          },
+        },
       },
       TaskInterruptionRequest: {
         title: 'TaskInterruptionRequest',
