@@ -14,6 +14,7 @@ from api_server.models import (
     Pagination,
     Phases,
     TaskEventLog,
+    TaskFavorite,
     TaskState,
     User,
 )
@@ -165,6 +166,28 @@ class TaskRepository:
                     await self._savePhaseLogs(db_task_log, task_log.phases)
             except IntegrityError as e:
                 logger.error(format_exception(e))
+
+    async def save_task_favorite(self, task_favorite: TaskFavorite) -> None:
+        await ttm.TaskFavorite.update_or_create(
+            {
+                "name": task_favorite.name,
+                "unix_millis_earliest_start_time": task_favorite.unix_millis_earliest_start_time
+                and datetime.fromtimestamp(
+                    task_favorite.unix_millis_earliest_start_time / 1000
+                ),
+                "priority": task_favorite.priority.json()
+                if task_favorite.priority
+                else None,
+                "category": task_favorite.category,
+                "description": task_favorite.description.json()
+                if task_favorite.description
+                else None,
+            },
+        )
+
+    async def get_all_favorites_tasks(self) -> List[TaskFavorite]:
+        db_tasks_favorites = await ttm.TaskFavorite.all().values_list("data", flat=True)
+        return [TaskFavorite(**s) for s in db_tasks_favorites]
 
 
 def task_repo_dep(user: User = Depends(user_dep)):
