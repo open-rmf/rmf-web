@@ -388,7 +388,7 @@ export const MapApp = styled(
         zoomDelta={0.5}
         zoomSnap={0.5}
         center={center}
-        zoom={6}
+        zoom={2.5}
         bounds={bounds}
         maxBounds={bounds}
         onbaselayerchange={({ name }: L.LayersControlEvent) => {
