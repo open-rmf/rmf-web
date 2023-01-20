@@ -59,3 +59,12 @@ class TaskEventLogPhasesEventsLog(Model, LogMixin):
 
     class Meta:
         unique_together = ("id", "seq")
+
+
+class TaskFavorite(Model):
+    id_ = CharField(255, pk=True, source_field="id")
+    name = CharField(255, null=False, index=True)
+    unix_millis_earliest_start_time = DatetimeField(null=True, index=True)
+    priority = JSONField(null=True)
+    category = CharField(255, null=False, index=True)
+    description = JSONField()
