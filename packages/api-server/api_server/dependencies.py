@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, Tuple
+from typing import Tuple
 
 from fastapi import Depends, Query
 
@@ -10,13 +10,16 @@ from .models import Pagination, User
 
 
 def pagination_query(
-    limit: int = Query(1000000, gt=0, le=1000000),
-    offset: int = Query(0, ge=0, le=1000000),
-    order_by: Optional[str] = Query(
+    limit: int | None = Query(None, gt=0, le=1000, description="defaults to 100"),
+    offset: int | None = Query(None, ge=0, description="defaults to 0"),
+    order_by: str
+    | None = Query(
         None,
         description="common separated list of fields to order by, prefix with '-' to sort descendingly.",
     ),
 ) -> Pagination:
+    limit = limit or 100
+    offset = offset or 0
     return Pagination(limit=limit, offset=offset, order_by=order_by)
 
 
@@ -61,7 +64,7 @@ def start_time_between_query(
         """,
     ),
     now: int = Depends(clock.now),
-) -> Optional[Tuple[datetime, datetime]]:
+) -> Tuple[datetime, datetime] | None:
     if start_time_between is None:
         return None
     if start_time_between.startswith("-"):
@@ -93,7 +96,7 @@ def finish_time_between_query(
         """,
     ),
     now: int = Depends(clock.now),
-) -> Optional[Tuple[datetime, datetime]]:
+) -> Tuple[datetime, datetime] | None:
     if finish_time_between is None:
         return None
     if finish_time_between.startswith("-"):
