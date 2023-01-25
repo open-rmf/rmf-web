@@ -3,6 +3,7 @@ from typing import List, Optional, Tuple, cast
 
 from fastapi import Body, Depends, HTTPException, Path, Query
 from rx import operators as rxops
+from tortoise.exceptions import IntegrityError
 
 from api_server import models as mdl
 from api_server.dependencies import (
@@ -229,15 +230,10 @@ async def post_favorite_task(
     request: mdl.TaskFavoriteRequest = Body(...),
     task_repo: TaskRepository = Depends(task_repo_dep),
 ):
-    resp = mdl.TaskFavoriteResponse.parse_raw(
-        await tasks_service().call(request.json(exclude_none=True))
-    )
-    if not resp.__root__.success:
-        return RawJSONResponse(resp.json(), 400)
-    await task_repo.save_task_favorite(
-        cast(mdl.TaskFavoriteResponseItem, resp.__root__).state
-    )
-    return resp.__root__
+    try:
+        await task_repo.save_task_favorite(request.request)
+    except IntegrityError as e:
+        raise HTTPException(422, str(e)) from e
 
 
 @router.get("/favorites_tasks", response_model=List[TaskFavorite])
