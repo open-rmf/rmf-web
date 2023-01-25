@@ -4,7 +4,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Grid, IconButton, TableContainer, Toolbar, Tooltip } from '@mui/material';
-import { TaskRequest, TaskState } from 'api-client';
+import { TaskFavorite, TaskRequest, TaskState } from 'api-client';
 import React from 'react';
 import {
   CreateTaskForm,
@@ -32,6 +32,7 @@ export const TasksApp = React.memo(
       const rmf = React.useContext(RmfAppContext);
 
       const [forceRefresh, setForceRefresh] = React.useState(0);
+      const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
 
       const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
       const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
@@ -88,6 +89,23 @@ export const TasksApp = React.memo(
           setPlaceNames(getPlaces(map).map((p) => p.vertex.name)),
         );
         return () => sub.unsubscribe();
+      }, [rmf]);
+
+      React.useEffect(() => {
+        if (!rmf) {
+          return;
+        }
+        (async () => {
+          const resp = await rmf.tasksApi.getFavoritesTasksTasksFavoritesTasksGet();
+
+          const results = resp.data as TaskFavorite[];
+          console.log(results);
+          setFavoritesTasks(results);
+        })();
+
+        return () => {
+          setFavoritesTasks([]);
+        };
       }, [rmf]);
 
       const resourceManager = React.useContext(ResourcesContext);
@@ -333,6 +351,7 @@ export const TasksApp = React.memo(
               deliveryWaypoints={placeNames}
               dispensers={workcells}
               ingestors={workcells}
+              favoritesTasks={favoritesTasks}
               open={openCreateTaskForm}
               onClose={() => setOpenCreateTaskForm(false)}
               submitTasks={submitTasks}
