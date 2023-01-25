@@ -3,6 +3,7 @@ from tortoise.fields import (
     DatetimeField,
     ForeignKeyField,
     ForeignKeyRelation,
+    IntField,
     JSONField,
     ReverseRelation,
 )
@@ -62,7 +63,7 @@ class TaskEventLogPhasesEventsLog(Model, LogMixin):
 
 
 class TaskFavorite(Model):
-    id_ = CharField(255, pk=True, source_field="id")
+    id = IntField(pk=True)
     name = CharField(255, null=False, index=True)
     unix_millis_earliest_start_time = DatetimeField(null=True, index=True)
     priority = JSONField(null=True)
