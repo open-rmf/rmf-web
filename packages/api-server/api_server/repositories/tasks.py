@@ -186,8 +186,27 @@ class TaskRepository:
         )
 
     async def get_all_favorites_tasks(self) -> List[TaskFavorite]:
-        db_tasks_favorites = await ttm.TaskFavorite.all().values_list("data", flat=True)
-        return [TaskFavorite(**s) for s in db_tasks_favorites]
+        favorites_tasks = await ttm.TaskFavorite.all()
+        favorites_tasks_out = []
+        for favorite_task in favorites_tasks:
+            favorites_tasks_out.append(
+                {
+                    "name": favorite_task.name,
+                    "unix_millis_earliest_start_time": int(
+                        favorite_task.unix_millis_earliest_start_time.strftime(
+                            "%Y%m%d%H%M%S"
+                        )
+                    ),
+                    "priority": favorite_task.priority
+                    if favorite_task.priority
+                    else None,
+                    "category": favorite_task.category,
+                    "description": favorite_task.description
+                    if favorite_task.description
+                    else None,
+                }
+            ),
+        return favorites_tasks_out
 
 
 def task_repo_dep(user: User = Depends(user_dep)):
