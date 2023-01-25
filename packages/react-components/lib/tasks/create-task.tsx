@@ -14,14 +14,16 @@ import {
   useTheme,
   ListItemIcon,
   IconButton,
+  Typography,
 } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import PlaceOutlined from '@mui/icons-material/PlaceOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
-import type { TaskRequest } from 'api-client';
+import type { TaskFavorite, TaskRequest } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
+import { FavoriteTask } from './favorite-task';
 
 type TaskDescription = Record<string, any>;
 
@@ -586,6 +588,7 @@ export interface CreateTaskFormProps
   deliveryWaypoints?: string[];
   dispensers?: string[];
   ingestors?: string[];
+  favoritesTasks: TaskFavorite[];
   submitTasks?(tasks: TaskRequest[]): Promise<void>;
   tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
   onSuccess?(tasks: any[]): void;
@@ -598,6 +601,7 @@ export function CreateTaskForm({
   deliveryWaypoints = [],
   dispensers = [],
   ingestors = [],
+  favoritesTasks = [],
   submitTasks,
   tasksFromFile,
   onSuccess,
@@ -712,7 +716,7 @@ export function CreateTaskForm({
       title="Create Task"
       submitting={submitting}
       confirmText={submitText}
-      maxWidth="md"
+      maxWidth="lg"
       fullWidth={taskRequests.length > 1}
       toolbar={<FormToolbar onSelectFileClick={handleSelectFileClick} />}
       onSubmit={handleSubmit}
@@ -720,6 +724,43 @@ export function CreateTaskForm({
       {...otherProps}
     >
       <Grid container direction="row" wrap="nowrap">
+        {favoritesTasks.length > 0 && (
+          <>
+            <List dense className={classes.taskList} aria-label="Favorites Tasks">
+              <Typography variant="h6" component="div">
+                Favorite tasks
+              </Typography>
+              {favoritesTasks.map((favoriteTask, index) => {
+                return (
+                  <FavoriteTask
+                    listItemText={favoriteTask.name}
+                    key={index}
+                    listItemClick={() =>
+                      setTaskRequests((prev) => {
+                        return [
+                          {
+                            ...prev,
+                            category: favoriteTask.category,
+                            description: favoriteTask.description,
+                            unix_millis_earliest_start_time: Date.now(),
+                            priority: favoriteTask.priority,
+                          },
+                        ];
+                      })
+                    }
+                  />
+                );
+              })}
+            </List>
+
+            <Divider
+              orientation="vertical"
+              flexItem
+              style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
+            />
+          </>
+        )}
+
         <Grid>
           <TextField
             select
