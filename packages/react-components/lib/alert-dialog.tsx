@@ -15,6 +15,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { makeStyles, createStyles } from '@mui/styles';
+import { Detail2 } from 'api-client';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -53,7 +54,7 @@ const LinearProgressWithLabel = (props: LinearProgressProps & { value: number })
 
 export interface AlertContent {
   title: string;
-  value: string;
+  value: string | Detail2;
 }
 
 export interface DialogAlertProps {
@@ -80,6 +81,7 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
               <TextField
                 size="small"
                 value={message.value}
+                multiline
                 InputProps={{
                   readOnly: true,
                   className: classes.textField,
