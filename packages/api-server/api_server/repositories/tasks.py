@@ -187,6 +187,7 @@ class TaskRepository:
         for favorite_task in favorites_tasks:
             favorites_tasks_out.append(
                 {
+                    "id": favorite_task.id,
                     "name": favorite_task.name,
                     "unix_millis_earliest_start_time": int(
                         favorite_task.unix_millis_earliest_start_time.strftime(
@@ -205,6 +206,12 @@ class TaskRepository:
                 }
             ),
         return favorites_tasks_out
+
+    async def get_favorite_task_by_id(self, id: int) -> ttm.TaskFavorite:
+        favorite_task = await ttm.TaskFavorite.get_or_none(id=id)
+        if favorite_task is None:
+            raise HTTPException(404)
+        return favorite_task
 
 
 def task_repo_dep(user: User = Depends(user_dep)):
