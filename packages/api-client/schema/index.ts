@@ -892,6 +892,28 @@ export default {
         },
       },
     },
+    '/tasks/favorite_task/{id}': {
+      delete: {
+        tags: ['Tasks'],
+        summary: 'Delete Favorite Task',
+        operationId: 'delete_favorite_task_tasks_favorite_task__id__delete',
+        parameters: [
+          { required: true, schema: { title: 'Id', type: 'integer' }, name: 'id', in: 'path' },
+        ],
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: { 'application/json': { schema: {} } },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
     '/dispensers': {
       get: {
         tags: ['Dispensers'],
@@ -2740,9 +2762,10 @@ export default {
       },
       TaskFavorite: {
         title: 'TaskFavorite',
-        required: ['name', 'category', 'description'],
+        required: ['id', 'name', 'category', 'description'],
         type: 'object',
         properties: {
+          id: { title: 'Id', type: 'integer' },
           name: { title: 'Name', type: 'string' },
           unix_millis_earliest_start_time: {
             title: 'Unix Millis Earliest Start Time',
