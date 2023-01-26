@@ -35,21 +35,22 @@ const setRobotDialogColor = (robotStatus: Status2 | undefined) => {
 const showMessage = (robot: RobotState) => {
   switch (robot.status) {
     case Status2.Error:
-      if (robot.issues) {
-        robot.issues.map((i) => {
-          if (!i.detail) {
-            return 'No Detail';
-          }
-          if (Array.isArray(i.detail)) {
-            i.detail.map(
-              (d) => ` * ${d} 
-                `,
-            );
-          }
-          return i.detail;
-        });
+      if (!robot.issues) {
+        return 'Robot changed its state to Error.';
       }
-      return 'Robot changed its state to Error.';
+
+      return robot.issues.map((i) => {
+        if (!i.detail) {
+          return 'No Detail';
+        }
+        if (Array.isArray(i.detail)) {
+          i.detail.map(
+            (d) => ` * ${d}
+                `,
+          );
+        }
+        return i.detail;
+      });
 
     case Status2.Offline:
       return 'Robot changed its state to offline';
