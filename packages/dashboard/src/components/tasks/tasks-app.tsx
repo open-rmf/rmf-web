@@ -105,7 +105,7 @@ export const TasksApp = React.memo(
         return () => {
           setFavoritesTasks([]);
         };
-      }, [rmf]);
+      }, [rmf, forceRefresh]);
 
       const resourceManager = React.useContext(ResourcesContext);
 
@@ -269,6 +269,20 @@ export const TasksApp = React.memo(
             type: 'task_favorite_request',
             request: taskFavoriteRequest,
           });
+          setForceRefresh((prev) => prev + 1);
+        },
+        [rmf],
+      );
+
+      const deleteFavoriteTask = React.useCallback<
+        Required<CreateTaskFormProps>['deleteFavoriteTask']
+      >(
+        async (favoriteTask) => {
+          if (!rmf) {
+            throw new Error('tasks api not available');
+          }
+          await rmf.tasksApi.deleteFavoriteTaskTasksFavoriteTaskIdDelete(favoriteTask.id);
+          setForceRefresh((prev) => prev + 1);
         },
         [rmf],
       );
@@ -369,6 +383,7 @@ export const TasksApp = React.memo(
               onClose={() => setOpenCreateTaskForm(false)}
               submitTasks={submitTasks}
               submitFavoriteTask={submitFavoriteTask}
+              deleteFavoriteTask={deleteFavoriteTask}
               tasksFromFile={tasksFromFile}
               onSuccess={() => {
                 setOpenCreateTaskForm(false);
@@ -379,10 +394,10 @@ export const TasksApp = React.memo(
               }}
               onSuccessFavoriteTask={() => {
                 setOpenCreateTaskForm(false);
-                showAlert('success', 'Successfully created favorite task');
+                showAlert('success', 'Successfully');
               }}
               onFailFavoriteTask={(e) => {
-                showAlert('error', `Failed to create favorite task: ${e.message}`);
+                showAlert('error', `Failed to create or delete favorite task: ${e.message}`);
               }}
             />
           )}
