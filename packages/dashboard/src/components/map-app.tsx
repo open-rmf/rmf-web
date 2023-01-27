@@ -237,7 +237,7 @@ export const MapApp = styled(
     const [imageUrl, setImageUrl] = React.useState<string | null>(null);
     const [bounds, setBounds] = React.useState<L.LatLngBoundsLiteral | null>(null);
     const [center, setCenter] = React.useState<L.LatLngTuple>([0, 0]);
-    const [zoom, setZoom] = React.useState<number>(5);
+    const [zoom, setZoom] = React.useState<number>(2.5);
     React.useEffect(() => {
       if (!currentLevel?.images[0]) {
         setImageUrl(null);
