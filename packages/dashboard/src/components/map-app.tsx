@@ -237,6 +237,7 @@ export const MapApp = styled(
     const [imageUrl, setImageUrl] = React.useState<string | null>(null);
     const [bounds, setBounds] = React.useState<L.LatLngBoundsLiteral | null>(null);
     const [center, setCenter] = React.useState<L.LatLngTuple>([0, 0]);
+    const [zoom, setZoom] = React.useState<number>(2.5);
     React.useEffect(() => {
       if (!currentLevel?.images[0]) {
         setImageUrl(null);
@@ -365,6 +366,7 @@ export const MapApp = styled(
           }
           return newCenter;
         });
+        setZoom(6);
       });
       return () => sub.unsubscribe();
     }, [robotLocations, bounds]);
@@ -388,7 +390,7 @@ export const MapApp = styled(
         zoomDelta={0.5}
         zoomSnap={0.5}
         center={center}
-        zoom={2.5}
+        zoom={zoom}
         bounds={bounds}
         maxBounds={bounds}
         onbaselayerchange={({ name }: L.LayersControlEvent) => {
