@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional, Tuple
 
 from fastapi import Depends, Query
@@ -9,7 +10,7 @@ from .models import Pagination, User
 
 
 def pagination_query(
-    limit: int = Query(100, gt=0, le=100),
+    limit: int = Query(1000000, gt=0, le=1000000),
     offset: int = Query(0, ge=0, le=1000000),
     order_by: Optional[str] = Query(
         None,
@@ -44,4 +45,67 @@ def between_query(
     else:
         parts = between.split(",")
         period = (int(parts[0]), int(parts[1]))
+    return period
+
+
+def start_time_between_query(
+    start_time_between: str = Query(
+        None,
+        description="""
+        The period of starting time to fetch, in unix millis.
+
+        This must be a comma separated string, 'X,Y' to fetch between X millis and Y millis inclusive.
+
+        Example:
+            "1000,2000" - Fetches logs between unix millis 1000 and 2000.
+        """,
+    ),
+    now: int = Depends(clock.now),
+) -> Optional[Tuple[datetime, datetime]]:
+    if start_time_between is None:
+        return None
+    if start_time_between.startswith("-"):
+        # Cap at 0 millis
+        period = (
+            datetime.fromtimestamp(0),
+            datetime.fromtimestamp(now / 1000),
+        )
+    else:
+        parts = start_time_between.split(",")
+        period = (
+            datetime.fromtimestamp(int(parts[0]) / 1000),
+            datetime.fromtimestamp(int(parts[1]) / 1000),
+        )
+    return period
+
+
+def finish_time_between_query(
+    finish_time_between: str = Query(
+        None,
+        description="""
+        The period of finishing time to fetch, in unix millis.
+
+        This must be a comma separated string, 'X,Y' to fetch between X millis and Y millis inclusive.
+
+        Example:
+            "1000,2000" - Fetches logs between unix millis 1000 and 2000.
+            "-60000" - Fetches logs in the last minute.
+        """,
+    ),
+    now: int = Depends(clock.now),
+) -> Optional[Tuple[datetime, datetime]]:
+    if finish_time_between is None:
+        return None
+    if finish_time_between.startswith("-"):
+        # Cap at 0 millis
+        period = (
+            datetime.fromtimestamp(0),
+            datetime.fromtimestamp(now / 1000),
+        )
+    else:
+        parts = finish_time_between.split(",")
+        period = (
+            datetime.fromtimestamp(int(parts[0]) / 1000),
+            datetime.fromtimestamp(int(parts[1]) / 1000),
+        )
     return period

@@ -44,6 +44,7 @@
     "@fortawesome/react-fontawesome": "^0.1.11",
     "@mui/icons-material": "^5.8.3",
     "@mui/material": "^5.8.3",
+    "@mui/styles": "^5.8.3",
     "@mui/system": "^5.8.3",
     "@types/debug": "^4.1.5",
     "@types/leaflet": "^1.5.17",

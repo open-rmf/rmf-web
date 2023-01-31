@@ -33,10 +33,14 @@ class TaskRepository:
                 "category": task_state.category.__root__
                 if task_state.category
                 else None,
+                "assigned_to": task_state.assigned_to.name
+                if task_state.assigned_to
+                else None,
                 "unix_millis_start_time": task_state.unix_millis_start_time
                 and datetime.fromtimestamp(task_state.unix_millis_start_time / 1000),
                 "unix_millis_finish_time": task_state.unix_millis_finish_time
                 and datetime.fromtimestamp(task_state.unix_millis_finish_time / 1000),
+                "status": task_state.status if task_state.status else None,
             },
             id_=task_state.booking.id,
         )

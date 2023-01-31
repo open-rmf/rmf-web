@@ -6,12 +6,14 @@ import React from 'react';
 import {
   CreateTaskForm,
   CreateTaskFormProps,
+  FilterFields,
   getPlaces,
-  Window,
+  SortFields,
   TaskDataGridTable,
   Tasks,
-  FilterFields,
+  Window,
 } from 'react-components';
+import { Subscription } from 'rxjs';
 import { AppControllerContext, ResourcesContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
@@ -70,12 +72,9 @@ export const TasksApp = React.memo(
         pageSize: 10,
       });
 
-      const [filterFields, setFilterFields] = React.useState<FilterFields>({
-        category: undefined,
-        taskId: undefined,
-        startTime: undefined,
-        finisTime: undefined,
-      });
+      const [filterFields, setFilterFields] = React.useState<FilterFields>({ model: undefined });
+
+      const [sortFields, setSortFields] = React.useState<SortFields>({ model: undefined });
 
       const [placeNames, setPlaceNames] = React.useState<string[]>([]);
       React.useEffect(() => {
@@ -105,15 +104,50 @@ export const TasksApp = React.memo(
           return;
         }
 
+        let filterColumn: string | undefined = undefined;
+        let filterValue: string | undefined = undefined;
+        if (filterFields.model && filterFields.model.items.length >= 1) {
+          filterColumn = filterFields.model.items[0].columnField;
+          filterValue = filterFields.model.items[0].value;
+
+          const filterOperator: string | undefined = filterFields.model.items[0].operatorValue;
+          if (
+            (filterColumn === 'unix_millis_start_time' ||
+              filterColumn === 'unix_millis_finish_time') &&
+            filterValue
+          ) {
+            const selectedTime = new Date(filterValue);
+            if (filterOperator && filterOperator === 'onOrBefore') {
+              filterValue = `0,${selectedTime.getTime()}`;
+            } else if (filterOperator && filterOperator === 'onOrAfter') {
+              // Enforce an upper limit which is 24 hours ahead of the current time
+              const now = new Date();
+              const upperLimit = now.getTime() + 86400000;
+              filterValue = `${selectedTime.getTime()},${upperLimit}`;
+            }
+          }
+        }
+
+        let orderBy: string = '-unix_millis_start_time';
+        if (sortFields.model && sortFields.model.length >= 1) {
+          orderBy =
+            sortFields.model[0].sort === 'desc'
+              ? '-' + sortFields.model[0].field
+              : sortFields.model[0].field;
+        }
+
+        const subs: Subscription[] = [];
         (async () => {
           const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
-            filterFields.taskId,
-            filterFields.category,
-            filterFields.startTime,
-            filterFields.finisTime,
+            filterColumn && filterColumn === 'id_' ? filterValue : undefined,
+            filterColumn && filterColumn === 'category' ? filterValue : undefined,
+            filterColumn && filterColumn === 'assigned_to' ? filterValue : undefined,
+            filterColumn && filterColumn === 'status' ? filterValue : undefined,
+            filterColumn && filterColumn === 'unix_millis_start_time' ? filterValue : undefined,
+            filterColumn && filterColumn === 'unix_millis_finish_time' ? filterValue : undefined,
             GET_LIMIT,
             (tasksState.page - 1) * GET_LIMIT, // Datagrid component need to start in page 1. Otherwise works wrong
-            undefined,
+            orderBy,
             undefined,
           );
           const results = resp.data as TaskState[];
@@ -128,16 +162,70 @@ export const TasksApp = React.memo(
                 ? tasksState.page * GET_LIMIT + 1
                 : tasksState.page * GET_LIMIT - 9,
           }));
+
+          subs.push(
+            ...newTasks.map((task) =>
+              rmf
+                .getTaskStateObs(task.booking.id)
+                .subscribe((task) =>
+                  setTasksState((prev) => ({ ...prev, [task.booking.id]: task })),
+                ),
+            ),
+          );
         })();
-      }, [
-        rmf,
-        forceRefresh,
-        tasksState.page,
-        filterFields.taskId,
-        filterFields.category,
-        filterFields.finisTime,
-        filterFields.startTime,
-      ]);
+        return () => subs.forEach((s) => s.unsubscribe());
+      }, [rmf, forceRefresh, tasksState.page, filterFields.model, sortFields.model]);
+
+      const exportAllTasksToCsv = async () => {
+        if (!rmf) {
+          return;
+        }
+
+        const now = new Date();
+        const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          `0,${now.getTime()}`,
+          undefined,
+          undefined,
+          undefined,
+          '-unix_millis_start_time',
+          undefined,
+        );
+        const allTasks = resp.data as TaskState[];
+        if (!allTasks || !allTasks.length) {
+          return;
+        }
+
+        const columnSeparator = ';';
+        const rowSeparator = '\n';
+        const keys = Object.keys(allTasks[0]);
+        let csvContent = keys.join(columnSeparator) + rowSeparator;
+        allTasks.forEach((task) => {
+          keys.forEach((k) => {
+            type TaskStateKey = keyof typeof task;
+            const columnKey = k as TaskStateKey;
+            const value =
+              task[columnKey] === null || task[columnKey] === undefined
+                ? ''
+                : JSON.stringify(task[columnKey]);
+            csvContent += value + columnSeparator;
+          });
+          csvContent += rowSeparator;
+        });
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${now.toJSON().slice(0, 10)}_task_history.csv`;
+        a.click();
+
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+        });
+      };
 
       const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
         async (taskRequests) => {
@@ -168,13 +256,6 @@ export const TasksApp = React.memo(
                 <IconButton
                   onClick={() => {
                     setForceRefresh((prev) => prev + 1);
-                    setFilterFields((old) => ({
-                      ...old,
-                      category: undefined,
-                      startTime: undefined,
-                      finisTime: undefined,
-                      taskId: undefined,
-                    }));
                   }}
                   aria-label="Refresh"
                 >
@@ -197,6 +278,8 @@ export const TasksApp = React.memo(
                   tasks={tasksState}
                   onTaskClick={(_ev, task) => AppEvents.taskSelect.next(task)}
                   setFilterFields={setFilterFields}
+                  setSortFields={setSortFields}
+                  exportAllTasks={exportAllTasksToCsv}
                   onPageChange={(newPage: number) =>
                     setTasksState((old) => ({ ...old, page: newPage + 1 }))
                   }
