@@ -49,8 +49,9 @@ const StyledConfirmationDialog = styled((props: ConfirmationDialogProps) => (
 
 function getShortDescription(taskRequest: TaskRequest): string {
   switch (taskRequest.category) {
-    case 'clean': {
-      return `[Clean] zone [${taskRequest.description.zone}]`;
+    case 'compose': {
+      // TODO(XY): update with the correct fields for compose tasks
+      return `[Clean] task [${taskRequest.description.zone}]`;
     }
     case 'delivery': {
       return `[Delivery] from [${taskRequest.description.pickup.place}] to [${taskRequest.description.dropoff.place}]`;
@@ -505,29 +506,92 @@ interface CleanTaskFormProps {
 
 function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps) {
   return (
-    <Autocomplete
-      id="cleaning-zone"
-      freeSolo
-      fullWidth
-      options={cleaningZones}
-      value={taskDesc.zone}
-      onChange={(_ev, newValue) =>
-        newValue !== null &&
-        onChange({
-          ...taskDesc,
-          zone: newValue,
-        })
-      }
-      onBlur={(ev) => onChange({ ...taskDesc, zone: (ev.target as HTMLInputElement).value })}
-      renderInput={(params) => <TextField {...params} label="Cleaning Zone" margin="normal" />}
-    />
+    <>
+      <Autocomplete
+        id="clean-location"
+        freeSolo
+        fullWidth
+        options={cleaningZones}
+        onChange={(_ev, newValue) =>
+          newValue !== null &&
+          onChange(
+            defaultCleanTask(
+              newValue,
+              taskDesc.phases[0].activity.description.activities[1].description.description
+                .clean_task_name,
+            ),
+          )
+        }
+        onBlur={(ev) =>
+          onChange(
+            defaultCleanTask(
+              (ev.target as HTMLInputElement).value,
+              taskDesc.phases[0].activity.description.activities[1].description.description
+                .clean_task_name,
+            ),
+          )
+        }
+        renderInput={(params) => <TextField {...params} label="Clean Location" margin="normal" />}
+      />
+      <Autocomplete
+        id="cleaning-task"
+        freeSolo
+        fullWidth
+        options={[]}
+        value={taskDesc.zone}
+        onChange={(_ev, newValue) =>
+          newValue !== null &&
+          onChange(
+            defaultCleanTask(
+              taskDesc.phases[0].activity.description.activities[0].description,
+              newValue,
+            ),
+          )
+        }
+        onBlur={(ev) =>
+          onChange(
+            defaultCleanTask(
+              taskDesc.phases[0].activity.description.activities[0].description,
+              (ev.target as HTMLInputElement).value,
+            ),
+          )
+        }
+        renderInput={(params) => <TextField {...params} label="Cleaning Task" margin="normal" />}
+      />
+    </>
   );
 }
 
-function defaultCleanTask(): Record<string, any> {
+function defaultCleanTask(clean_location: string = '', clean_task_name = ''): Record<string, any> {
   return {
-    zone: '',
-    type: '',
+    category: 'clean',
+    phases: [
+      {
+        activity: {
+          category: 'sequence',
+          description: {
+            activities: [
+              {
+                category: 'go_to_place',
+                description: clean_location,
+              },
+              {
+                category: 'perform_action',
+                description: {
+                  // TODO(AA): To obtain accurate duration estimate.
+                  unix_millis_action_duration_estimate: 60000,
+                  category: 'clean',
+                  description: {
+                    clean_task_name: clean_task_name,
+                  },
+                  use_tool_sink: true,
+                },
+              },
+            ],
+          },
+        },
+      },
+    ],
   };
 }
 
@@ -555,7 +619,7 @@ function defaultDeliveryTask(): Record<string, any> {
 
 function defaultTaskDescription(taskCategory: string): TaskDescription | undefined {
   switch (taskCategory) {
-    case 'clean':
+    case 'compose':
       return defaultCleanTask();
     case 'patrol':
       return defaultLoopsTask();
@@ -629,12 +693,12 @@ export function CreateTaskForm({
 
   const renderTaskDescriptionForm = () => {
     switch (taskRequest.category) {
-      case 'clean':
+      case 'compose':
         return (
           <CleanTaskForm
             taskDesc={taskRequest.description as any}
             cleaningZones={cleaningZones}
-            onChange={(desc) => handleTaskDescriptionChange('clean', desc)}
+            onChange={(desc) => handleTaskDescriptionChange('compose', desc)}
           />
         );
       case 'patrol':
@@ -731,7 +795,7 @@ export function CreateTaskForm({
             value={taskRequest.category}
             onChange={handleTaskTypeChange}
           >
-            <MenuItem value="clean">Clean</MenuItem>
+            <MenuItem value="compose">Clean</MenuItem>
             <MenuItem value="patrol">Loop</MenuItem>
             <MenuItem value="delivery">Delivery</MenuItem>
           </TextField>
