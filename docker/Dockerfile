@@ -7,5 +7,3 @@ RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
     jq && \
   pip3 install pipenv && \
   npm config set unsafe-perm
-
-RUN apt install -y ros-humble-rmw-cyclonedds-cpp
