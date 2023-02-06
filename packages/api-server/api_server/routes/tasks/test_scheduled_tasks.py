@@ -2,9 +2,9 @@ from api_server.test import AppFixture
 
 
 class TestScheduledTasksRoute(AppFixture):
-    def test_post_scheduled_task(self):
+    def test_scheduled_task_crud(self):
         resp = self.client.get("/scheduled_tasks")
-        before = len(resp.json())
+        before = resp.json()
 
         scheduled_task = {
             "task_request": {
@@ -21,6 +21,17 @@ class TestScheduledTasksRoute(AppFixture):
         self.assertEqual(201, resp.status_code)
 
         resp = self.client.get("/scheduled_tasks")
-        after = len(resp.json())
+        after = resp.json()
 
-        self.assertEqual(after - before, 1)
+        self.assertEqual(len(after) - len(before), 1)
+
+        task_id = after[0]["id"]
+        resp = self.client.get(f"/scheduled_tasks/{task_id}")
+        self.assertEqual(200, resp.status_code)
+
+        resp = self.client.delete(f"/scheduled_tasks/{task_id}")
+        self.assertEqual(200, resp.status_code)
+        resp = self.client.get(f"/scheduled_tasks/{task_id}")
+        self.assertEqual(404, resp.status_code)
+        resp = self.client.get("/scheduled_tasks")
+        self.assertEqual(len(before), len(resp.json()))
