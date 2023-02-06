@@ -54,6 +54,20 @@ async def post_scheduled_task(
     user: User = Depends(user_dep),
     task_repo: TaskRepository = Depends(task_repo_dep),
 ):
+    """
+    Create a scheduled task. Below are some examples of how the schedules are represented.
+    For more examples, check the docs of the underlying library used [here](https://github.com/dbader/schedule/blob/6eb0b5346b1ce35ece5050e65789fa6e44368175/docs/examples.rst).
+
+    | every | to | period | at | description |
+    | - | - | - | - | - |
+    | 10 | - | minutes | - | Every 10 minutes |
+    | - | - | hour | - | Every hour |
+    | - | - | day | 10:30 | Every day at 10:30am |
+    | - | - | monday | - | Every monday |
+    | - | - | wednesday | 13:15 | Every wednesday at 01:15pm |
+    | - | - | minute | :17 | Every 17th sec of a mintue |
+    | 5 | 10 | seconds | - | Every 5-10 seconds (randomly) |
+    """
     try:
         async with tortoise.transactions.in_transaction():
             scheduled_task = await ttm.ScheduledTask.create(
