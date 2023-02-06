@@ -88,7 +88,7 @@ app.include_router(
     routes.tasks_router, prefix="/tasks", dependencies=[Depends(user_dep)]
 )
 app.include_router(
-    routes.scheduled_tasks_router,
+    routes.scheduled_tasks.router,
     prefix="/scheduled_tasks",
     dependencies=[Depends(user_dep)],
 )
@@ -167,7 +167,7 @@ async def on_startup():
     for t in scheduled_tasks:
         user = await User.load_from_db(t.created_by)
         if user is None:
-            logger.warn(f"user [{t.created_by}] does not exist")
+            logger.warning(f"user [{t.created_by}] does not exist")
             continue
         task_repo = TaskRepository(user)
         await routes.scheduled_tasks.schedule_task(t, task_repo)

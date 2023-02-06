@@ -25,8 +25,7 @@ class User(BaseModel):
                 {"is_admin": False}, username=username
             )
             return await User.from_db(ttm_user)
-        else:
-            return user
+        return user
 
     @staticmethod
     async def load_from_db(username: str) -> "User | None":
