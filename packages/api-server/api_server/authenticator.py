@@ -33,7 +33,7 @@ class JwtAuthenticator:
             )
 
         username = claims["preferred_username"]
-        return await User.load_from_db(username)
+        return await User.load_or_create_from_db(username)
 
     async def verify_token(self, token: Optional[str]) -> User:
         if not token:

@@ -21,6 +21,7 @@ from tortoise.models import Model
 
 class ScheduledTask(Model):
     task_request = TextField()  # json of the task request
+    created_by = CharField(255)
     schedules: ReverseRelation["ScheduledTaskSchedule"]
     last_ran: Optional[datetime] = DatetimeField(null=True)
     next_run: Optional[datetime] = DatetimeField(null=True)
