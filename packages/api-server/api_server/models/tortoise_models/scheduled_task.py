@@ -12,15 +12,15 @@ from tortoise.fields import (
     ForeignKeyField,
     ForeignKeyRelation,
     IntField,
+    JSONField,
     ReverseRelation,
     SmallIntField,
-    TextField,
 )
 from tortoise.models import Model
 
 
 class ScheduledTask(Model):
-    task_request = TextField()  # json of the task request
+    task_request = JSONField()
     created_by = CharField(255)
     schedules: ReverseRelation["ScheduledTaskSchedule"]
     last_ran: Optional[datetime] = DatetimeField(null=True)
