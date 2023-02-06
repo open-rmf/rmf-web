@@ -20,6 +20,7 @@ import {
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import PlaceOutlined from '@mui/icons-material/PlaceOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
+import UpdateIcon from '@mui/icons-material/Create';
 import type { TaskFavorite, TaskRequest } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
@@ -530,7 +531,7 @@ interface FavoriteTaskProps {
   listItemText: string;
   listItemClick: () => void;
   favoriteTask: TaskFavorite;
-  setFavoriteTaskSelected: (favoriteTask: TaskFavorite) => void;
+  setFavoriteTask: (favoriteTask: TaskFavorite) => void;
   setOpenDialog: (open: boolean) => void;
   setCallToDelete: (open: boolean) => void;
 }
@@ -539,7 +540,7 @@ function FavoriteTask({
   listItemText,
   listItemClick,
   favoriteTask,
-  setFavoriteTaskSelected,
+  setFavoriteTask,
   setOpenDialog,
   setCallToDelete,
 }: FavoriteTaskProps) {
@@ -558,10 +559,19 @@ function FavoriteTask({
         <ListItemSecondaryAction>
           <IconButton
             edge="end"
+            aria-label="update"
+            onClick={() => {
+              console.log('Updating');
+            }}
+          >
+            <UpdateIcon />
+          </IconButton>
+          <IconButton
+            edge="end"
             aria-label="delete"
             onClick={() => {
               setOpenDialog(true);
-              setFavoriteTaskSelected(favoriteTask);
+              setFavoriteTask(favoriteTask);
               setCallToDelete(true);
             }}
           >
@@ -679,9 +689,7 @@ export function CreateTaskForm({
   const [openFavoriteDialog, setOpenFavoriteDialog] = React.useState(false);
   const [callToDelete, setCallToDelete] = React.useState(false);
   const [deleting, setDeleting] = React.useState(false);
-  const [favoriteTaskSelected, setFavoriteTaskSelected] = React.useState<TaskFavorite>(
-    defaultFavoriteTask(),
-  );
+
   const [favoriteTask, setFavoriteTask] = React.useState<TaskFavorite>(defaultFavoriteTask());
   const [favoriteTitleError, setFavoriteTitleError] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
@@ -814,12 +822,12 @@ export function CreateTaskForm({
     setDeleting(true);
     try {
       setDeleting(true);
-      await deleteFavoriteTask(favoriteTaskSelected);
+      await deleteFavoriteTask(favoriteTask);
       setDeleting(false);
-      onSuccessFavoriteTask && onSuccessFavoriteTask(favoriteTaskSelected);
+      onSuccessFavoriteTask && onSuccessFavoriteTask(favoriteTask);
     } catch (e) {
       setDeleting(false);
-      onFailFavoriteTask && onFailFavoriteTask(e as Error, favoriteTaskSelected);
+      onFailFavoriteTask && onFailFavoriteTask(e as Error, favoriteTask);
     }
   };
 
@@ -862,7 +870,7 @@ export function CreateTaskForm({
                 <FavoriteTask
                   listItemText={favoriteTask.name}
                   key={index}
-                  setFavoriteTaskSelected={setFavoriteTaskSelected}
+                  setFavoriteTask={setFavoriteTask}
                   favoriteTask={favoriteTask}
                   setCallToDelete={setCallToDelete}
                   setOpenDialog={setOpenFavoriteDialog}
@@ -1012,7 +1020,7 @@ export function CreateTaskForm({
             />
           )}
           {callToDelete && (
-            <Typography>{`Are you sure you want to delete "${favoriteTaskSelected.name}"?`}</Typography>
+            <Typography>{`Are you sure you want to delete "${favoriteTask.name}"?`}</Typography>
           )}
         </ConfirmationDialog>
       )}
