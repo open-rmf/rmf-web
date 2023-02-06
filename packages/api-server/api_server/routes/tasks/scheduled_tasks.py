@@ -51,7 +51,7 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
 @router.post("", status_code=201, response_class=Response)
 async def post_scheduled_task(
     scheduled_task_request: PostScheduledTaskRequest,
-    user: User = Depends(),
+    user: User = Depends(user_dep),
     task_repo: TaskRepository = Depends(task_repo_dep),
 ):
     try:
