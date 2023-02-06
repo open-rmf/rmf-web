@@ -31,7 +31,7 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
     for j in jobs:
         req = DispatchTaskRequest(
             type="dispatch_task_request",
-            request=TaskRequest.parse_raw(task.task_request),
+            request=TaskRequest(**task.task_request),
         )
 
         async def run():
@@ -39,7 +39,7 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
             task.last_ran = datetime.now()
             await task.save()
 
-        j.do(lambda: asyncio.get_event_loop().create_task(run()))
+        j.do(lambda: asyncio.get_event_loop().create_task(run())).tag(f"task_{task.pk}")
 
     # Job have a operator overload that sorts based on the next run
     next_run = min(jobs).next_run
@@ -72,7 +72,7 @@ async def post_scheduled_task(
             if scheduled_task.next_run is None:
                 # don't allow creating scheduled tasks that never runs
                 raise HTTPException(422, "Task is never going to run")
-        return scheduled_task
+        return await ttm.ScheduledTaskPydantic.from_tortoise_orm(scheduled_task)
     except schedule.ScheduleError as e:
         raise HTTPException(422, str(e))
 
@@ -95,5 +95,7 @@ async def get_scheduled_task(task_id: int):
 
 @router.delete("/{task_id}")
 async def del_scheduled_tasks(task_id: int):
-    task = await get_scheduled_task(task_id)
-    await task.delete()
+    async with tortoise.transactions.in_transaction():
+        task = await get_scheduled_task(task_id)
+        await task.delete()
+        schedule.clear(f"task_{task_id}")
