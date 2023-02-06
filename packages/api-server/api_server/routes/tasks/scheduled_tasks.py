@@ -48,7 +48,7 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
         await task.save()
 
 
-@router.post("", status_code=201, response_class=Response)
+@router.post("", status_code=201, response_model=ttm.ScheduledTaskPydantic)
 async def post_scheduled_task(
     scheduled_task_request: PostScheduledTaskRequest,
     user: User = Depends(user_dep),
@@ -72,6 +72,7 @@ async def post_scheduled_task(
             if scheduled_task.next_run is None:
                 # don't allow creating scheduled tasks that never runs
                 raise HTTPException(422, "Task is never going to run")
+        return scheduled_task
     except schedule.ScheduleError as e:
         raise HTTPException(422, str(e))
 
@@ -82,3 +83,17 @@ async def get_scheduled_tasks(pagination: Pagination = Depends(pagination_query)
     if pagination.order_by:
         q.order_by(*pagination.order_by.split(","))
     return await q
+
+
+@router.get("/{task_id}", response_model=ttm.ScheduledTaskPydantic)
+async def get_scheduled_task(task_id: int):
+    task = await ttm.ScheduledTask.get_or_none(id=task_id)
+    if task is None:
+        raise HTTPException(404)
+    return task
+
+
+@router.delete("/{task_id}")
+async def del_scheduled_tasks(task_id: int):
+    task = await get_scheduled_task(task_id)
+    await task.delete()
