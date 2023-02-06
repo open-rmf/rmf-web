@@ -9,7 +9,7 @@ env:
 jobs:
   dashboard-e2e:
     name: Dashboard e2e
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted
     container:
       image: ghcr.io/${{ github.repository }}/e2e
       credentials:
@@ -24,10 +24,13 @@ jobs:
       BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
       BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
       BROWSERSTACK_BUILD: ${{ github.head_ref }}:${{ github.event.number }}
+      RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
     steps:
       - uses: actions/checkout@v2
       - name: setup python
         run: apt update && apt install -y python3-venv python-is-python3
+      - name: install rmw-cyclonedds-cpp
+        run: apt install -y ros-humble-rmw-cyclonedds-cpp
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:
