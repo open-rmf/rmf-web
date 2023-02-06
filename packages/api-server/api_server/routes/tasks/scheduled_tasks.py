@@ -6,9 +6,10 @@ import tortoise.transactions
 from fastapi import Depends, HTTPException, Response
 from pydantic import BaseModel
 
+from api_server.authenticator import user_dep
 from api_server.dependencies import pagination_query
 from api_server.fast_io import FastIORouter
-from api_server.models import DispatchTaskRequest, Pagination, TaskRequest
+from api_server.models import DispatchTaskRequest, Pagination, TaskRequest, User
 from api_server.models import tortoise_models as ttm
 from api_server.repositories import TaskRepository, task_repo_dep
 
@@ -50,6 +51,7 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
 @router.post("", status_code=201, response_class=Response)
 async def post_scheduled_task(
     scheduled_task_request: PostScheduledTaskRequest,
+    user: User = Depends(),
     task_repo: TaskRepository = Depends(task_repo_dep),
 ):
     try:
@@ -58,6 +60,7 @@ async def post_scheduled_task(
                 task_request=scheduled_task_request.task_request.json(
                     exclude_none=True
                 ),
+                created_by=user.username,
             )
             schedules = [
                 ttm.ScheduledTaskSchedule(scheduled_task=scheduled_task, **x.dict())

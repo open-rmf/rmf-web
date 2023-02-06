@@ -77,7 +77,7 @@ async def get_user(username: str):
     """
     # checks if the user exist in the database
     await _get_db_user(username)
-    return await User.load_from_db(username)
+    return await User.load_or_create_from_db(username)
 
 
 @router.delete("/users/{username}")
