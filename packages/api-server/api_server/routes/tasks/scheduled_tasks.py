@@ -3,7 +3,7 @@ from datetime import datetime
 
 import schedule
 import tortoise.transactions
-from fastapi import Depends, HTTPException, Response
+from fastapi import Depends, HTTPException
 from pydantic import BaseModel
 
 from api_server.authenticator import user_dep
@@ -28,11 +28,11 @@ class PostScheduledTaskRequest(BaseModel):
 async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
     await task.fetch_related("schedules")
     jobs = [x.to_job() for x in task.schedules]
+    req = DispatchTaskRequest(
+        type="dispatch_task_request",
+        request=TaskRequest(**task.task_request),
+    )
     for j in jobs:
-        req = DispatchTaskRequest(
-            type="dispatch_task_request",
-            request=TaskRequest(**task.task_request),
-        )
 
         async def run():
             await post_dispatch_task(req, task_repo)
@@ -88,7 +88,7 @@ async def post_scheduled_task(
                 raise HTTPException(422, "Task is never going to run")
         return await ttm.ScheduledTaskPydantic.from_tortoise_orm(scheduled_task)
     except schedule.ScheduleError as e:
-        raise HTTPException(422, str(e))
+        raise HTTPException(422, str(e)) from e
 
 
 @router.get("", response_model=list[ttm.ScheduledTaskPydantic])
