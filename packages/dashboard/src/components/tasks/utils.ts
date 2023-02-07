@@ -37,7 +37,7 @@ export function downloadCsvFull(timestamp: Date, allTasks: TaskState[]) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${timestamp.toJSON().slice(0, 10)}_task_history.csv`;
+  a.download = `${timestamp.toJSON().slice(0, 10)}_full_task_history.csv`;
   a.click();
 
   setTimeout(() => {
@@ -73,7 +73,7 @@ export function downloadCsvMinimal(timestamp: Date, allTasks: TaskState[]) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${timestamp.toJSON().slice(0, 10)}_task_history.csv`;
+  a.download = `${timestamp.toJSON().slice(0, 10)}_minimal_task_history.csv`;
   a.click();
 
   setTimeout(() => {
