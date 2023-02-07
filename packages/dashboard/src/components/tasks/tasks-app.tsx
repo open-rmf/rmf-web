@@ -235,10 +235,10 @@ export const TasksApp = React.memo(
         null,
       );
       const openExportMenu = Boolean(anchorExportElement);
-      const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+      const handleClickExportMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorExportElement(event.currentTarget);
       };
-      const handleClose = () => {
+      const handleCloseExportMenu = () => {
         setAnchorExportElement(null);
       };
 
@@ -255,7 +255,7 @@ export const TasksApp = React.memo(
                   aria-controls={openExportMenu ? 'export-menu' : undefined}
                   aria-haspopup="true"
                   aria-expanded={openExportMenu ? 'true' : undefined}
-                  onClick={handleClick}
+                  onClick={handleClickExportMenu}
                   color="inherit"
                 >
                   <DownloadIcon />
@@ -267,11 +267,11 @@ export const TasksApp = React.memo(
                   }}
                   anchorEl={anchorExportElement}
                   open={openExportMenu}
-                  onClose={handleClose}
+                  onClose={handleCloseExportMenu}
                 >
                   <MenuItem
                     onClick={() => {
-                      handleClose();
+                      handleCloseExportMenu();
                       exportTasksToCsv(true);
                     }}
                     disableRipple
@@ -280,7 +280,7 @@ export const TasksApp = React.memo(
                   </MenuItem>
                   <MenuItem
                     onClick={() => {
-                      handleClose();
+                      handleCloseExportMenu();
                       exportTasksToCsv(false);
                     }}
                     disableRipple
