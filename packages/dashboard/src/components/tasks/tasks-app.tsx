@@ -18,7 +18,7 @@ import { AppControllerContext, ResourcesContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
-import { parseTasksFile } from './utils';
+import { parseTasksFile, downloadCsvFull, downloadCsvMinimal } from './utils';
 
 export const TasksApp = React.memo(
   React.forwardRef(
@@ -176,9 +176,9 @@ export const TasksApp = React.memo(
         return () => subs.forEach((s) => s.unsubscribe());
       }, [rmf, forceRefresh, tasksState.page, filterFields.model, sortFields.model]);
 
-      const exportAllTasksToCsv = async () => {
+      const getAllTasks = async () => {
         if (!rmf) {
-          return;
+          return [];
         }
 
         const now = new Date();
@@ -195,36 +195,23 @@ export const TasksApp = React.memo(
           undefined,
         );
         const allTasks = resp.data as TaskState[];
+        return allTasks;
+      };
+
+      const exportTasksToCsvFull = async () => {
+        const allTasks = await getAllTasks();
         if (!allTasks || !allTasks.length) {
           return;
         }
+        downloadCsvFull(allTasks);
+      };
 
-        const columnSeparator = ';';
-        const rowSeparator = '\n';
-        const keys = Object.keys(allTasks[0]);
-        let csvContent = keys.join(columnSeparator) + rowSeparator;
-        allTasks.forEach((task) => {
-          keys.forEach((k) => {
-            type TaskStateKey = keyof typeof task;
-            const columnKey = k as TaskStateKey;
-            const value =
-              task[columnKey] === null || task[columnKey] === undefined
-                ? ''
-                : JSON.stringify(task[columnKey]);
-            csvContent += value + columnSeparator;
-          });
-          csvContent += rowSeparator;
-        });
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${now.toJSON().slice(0, 10)}_task_history.csv`;
-        a.click();
-
-        setTimeout(() => {
-          URL.revokeObjectURL(url);
-        });
+      const exportTasksToCsvMinimal = async () => {
+        const allTasks = await getAllTasks();
+        if (!allTasks || !allTasks.length) {
+          return;
+        }
+        downloadCsvMinimal(allTasks);
       };
 
       const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
@@ -279,7 +266,8 @@ export const TasksApp = React.memo(
                   onTaskClick={(_ev, task) => AppEvents.taskSelect.next(task)}
                   setFilterFields={setFilterFields}
                   setSortFields={setSortFields}
-                  exportAllTasks={exportAllTasksToCsv}
+                  exportTasksMinimal={exportTasksToCsvMinimal}
+                  exportTasksFull={exportTasksToCsvFull}
                   onPageChange={(newPage: number) =>
                     setTasksState((old) => ({ ...old, page: newPage + 1 }))
                   }

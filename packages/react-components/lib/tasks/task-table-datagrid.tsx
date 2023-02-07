@@ -81,7 +81,8 @@ export interface TableDataGridState {
   onPageSizeChange: (newPageSize: number) => void;
   setFilterFields: React.Dispatch<React.SetStateAction<FilterFields>>;
   setSortFields: React.Dispatch<React.SetStateAction<SortFields>>;
-  exportAllTasks: () => Promise<void>;
+  exportTasksMinimal: () => Promise<void>;
+  exportTasksFull: () => Promise<void>;
 }
 
 export function TaskDataGridTable({
@@ -91,7 +92,8 @@ export function TaskDataGridTable({
   onPageSizeChange,
   setFilterFields,
   setSortFields,
-  exportAllTasks,
+  exportTasksMinimal,
+  exportTasksFull,
 }: TableDataGridState): JSX.Element {
   const handleEvent: GridEventListener<'rowClick'> = (
     params: GridRowParams,
@@ -234,14 +236,11 @@ export function TaskDataGridTable({
       <GridToolbarContainer {...props}>
         <GridToolbarColumnsButton />
         <GridToolbarFilterButton />
-        <Button {...exportButtonProps} onClick={exportAllTasks}>
+        <Button {...exportButtonProps} onClick={exportTasksFull}>
           Full Export
         </Button>
-        <Button
-          {...exportButtonProps}
-          // onClick={() => handleExport({ getRowsToExport: getFilteredRows })}
-        >
-          Basic Export
+        <Button {...exportButtonProps} onClick={exportTasksMinimal}>
+          Minimal Export
         </Button>
       </GridToolbarContainer>
     );
