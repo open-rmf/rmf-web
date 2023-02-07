@@ -113,6 +113,7 @@ module.exports = (config) => {
         browser_version: 'latest',
         os: 'Windows',
         os_version: '10',
+        flags: ['--no-sandbox'],
       },
       bsSafari: {
         base: 'BrowserStack',
