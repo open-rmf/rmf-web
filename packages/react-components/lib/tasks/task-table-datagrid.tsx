@@ -10,14 +10,8 @@ import {
   GridCellParams,
   GridFilterModel,
   GridSortModel,
-  GridToolbarColumnsButton,
-  GridToolbarContainer,
-  GridToolbarContainerProps,
-  GridToolbarFilterButton,
 } from '@mui/x-data-grid';
 import { styled, TextField } from '@mui/material';
-import Button, { ButtonProps } from '@mui/material/Button';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import * as React from 'react';
 import { TaskState, Status } from 'api-client';
 
@@ -81,8 +75,6 @@ export interface TableDataGridState {
   onPageSizeChange: (newPageSize: number) => void;
   setFilterFields: React.Dispatch<React.SetStateAction<FilterFields>>;
   setSortFields: React.Dispatch<React.SetStateAction<SortFields>>;
-  exportTasksMinimal: () => Promise<void>;
-  exportTasksFull: () => Promise<void>;
 }
 
 export function TaskDataGridTable({
@@ -92,8 +84,6 @@ export function TaskDataGridTable({
   onPageSizeChange,
   setFilterFields,
   setSortFields,
-  exportTasksMinimal,
-  exportTasksFull,
 }: TableDataGridState): JSX.Element {
   const handleEvent: GridEventListener<'rowClick'> = (
     params: GridRowParams,
@@ -225,27 +215,6 @@ export function TaskDataGridTable({
     [setSortFields],
   );
 
-  const CustomToolbar = (props: GridToolbarContainerProps) => {
-    const exportButtonProps: ButtonProps = {
-      color: 'primary',
-      size: 'small',
-      startIcon: <FileDownloadIcon />,
-    };
-
-    return (
-      <GridToolbarContainer {...props}>
-        <GridToolbarColumnsButton />
-        <GridToolbarFilterButton />
-        <Button {...exportButtonProps} onClick={exportTasksFull}>
-          Full Export
-        </Button>
-        <Button {...exportButtonProps} onClick={exportTasksMinimal}>
-          Minimal Export
-        </Button>
-      </GridToolbarContainer>
-    );
-  };
-
   return (
     <div style={{ height: '100%', width: '100%' }}>
       <StyledDataGrid
@@ -286,7 +255,6 @@ export function TaskDataGridTable({
           }
           return '';
         }}
-        components={{ Toolbar: CustomToolbar }}
       />
     </div>
   );

@@ -16,7 +16,7 @@ export function parseTasksFile(contents: string): TaskRequest[] {
   return obj;
 }
 
-export function downloadCsvFull(allTasks: TaskState[]) {
+export function downloadCsvFull(timestamp: Date, allTasks: TaskState[]) {
   const columnSeparator = ';';
   const rowSeparator = '\n';
   const keys = Object.keys(allTasks[0]);
@@ -37,7 +37,6 @@ export function downloadCsvFull(allTasks: TaskState[]) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  const timestamp = new Date();
   a.download = `${timestamp.toJSON().slice(0, 10)}_task_history.csv`;
   a.click();
 
@@ -46,7 +45,7 @@ export function downloadCsvFull(allTasks: TaskState[]) {
   });
 }
 
-export function downloadCsvMinimal(allTasks: TaskState[]) {
+export function downloadCsvMinimal(timestamp: Date, allTasks: TaskState[]) {
   const columnSeparator = ';';
   const rowSeparator = '\n';
   const keys = ['ID', 'Category', 'Assignee', 'Start Time', 'End Time', 'State'];
@@ -74,7 +73,6 @@ export function downloadCsvMinimal(allTasks: TaskState[]) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  const timestamp = new Date();
   a.download = `${timestamp.toJSON().slice(0, 10)}_task_history.csv`;
   a.click();
 

@@ -1,5 +1,8 @@
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
+import DownloadIcon from '@mui/icons-material/Download';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import { Grid, IconButton, TableContainer, Toolbar, Tooltip } from '@mui/material';
 import { TaskRequest, TaskState } from 'api-client';
 import React from 'react';
@@ -176,44 +179,6 @@ export const TasksApp = React.memo(
         return () => subs.forEach((s) => s.unsubscribe());
       }, [rmf, forceRefresh, tasksState.page, filterFields.model, sortFields.model]);
 
-      const getAllTasks = async () => {
-        if (!rmf) {
-          return [];
-        }
-
-        const now = new Date();
-        const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          `0,${now.getTime()}`,
-          undefined,
-          undefined,
-          undefined,
-          '-unix_millis_start_time',
-          undefined,
-        );
-        const allTasks = resp.data as TaskState[];
-        return allTasks;
-      };
-
-      const exportTasksToCsvFull = async () => {
-        const allTasks = await getAllTasks();
-        if (!allTasks || !allTasks.length) {
-          return;
-        }
-        downloadCsvFull(allTasks);
-      };
-
-      const exportTasksToCsvMinimal = async () => {
-        const allTasks = await getAllTasks();
-        if (!allTasks || !allTasks.length) {
-          return;
-        }
-        downloadCsvMinimal(allTasks);
-      };
-
       const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
         async (taskRequests) => {
           if (!rmf) {
@@ -232,6 +197,51 @@ export const TasksApp = React.memo(
         [rmf],
       );
 
+      const getAllTasks = async (timestamp: Date) => {
+        if (!rmf) {
+          return [];
+        }
+
+        const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          `0,${timestamp.getTime()}`,
+          undefined,
+          undefined,
+          undefined,
+          '-unix_millis_start_time',
+          undefined,
+        );
+        const allTasks = resp.data as TaskState[];
+        return allTasks;
+      };
+
+      const exportTasksToCsv = async (minimal: boolean) => {
+        const now = new Date();
+        const allTasks = await getAllTasks(now);
+        if (!allTasks || !allTasks.length) {
+          return;
+        }
+        if (minimal) {
+          downloadCsvMinimal(now, allTasks);
+        } else {
+          downloadCsvFull(now, allTasks);
+        }
+      };
+
+      const [anchorExportElement, setAnchorExportElement] = React.useState<null | HTMLElement>(
+        null,
+      );
+      const openExportMenu = Boolean(anchorExportElement);
+      const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorExportElement(event.currentTarget);
+      };
+      const handleClose = () => {
+        setAnchorExportElement(null);
+      };
+
       return (
         <Window
           ref={ref}
@@ -239,7 +249,47 @@ export const TasksApp = React.memo(
           onClose={onClose}
           toolbar={
             <Toolbar variant="dense">
-              <Tooltip title="Refresh" color="inherit">
+              <div>
+                <IconButton
+                  id="export-button"
+                  aria-controls={openExportMenu ? 'export-menu' : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={openExportMenu ? 'true' : undefined}
+                  onClick={handleClick}
+                  color="inherit"
+                >
+                  <DownloadIcon />
+                </IconButton>
+                <Menu
+                  id="export-menu"
+                  MenuListProps={{
+                    'aria-labelledby': 'export-button',
+                  }}
+                  anchorEl={anchorExportElement}
+                  open={openExportMenu}
+                  onClose={handleClose}
+                >
+                  <MenuItem
+                    onClick={() => {
+                      handleClose();
+                      exportTasksToCsv(true);
+                    }}
+                    disableRipple
+                  >
+                    Export Minimal
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      handleClose();
+                      exportTasksToCsv(false);
+                    }}
+                    disableRipple
+                  >
+                    Export Full
+                  </MenuItem>
+                </Menu>
+              </div>
+              <Tooltip title="Refresh" color="inherit" placement="top">
                 <IconButton
                   onClick={() => {
                     setForceRefresh((prev) => prev + 1);
@@ -249,7 +299,7 @@ export const TasksApp = React.memo(
                   <RefreshIcon />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Create task" color="inherit">
+              <Tooltip title="Create task" color="inherit" placement="top">
                 <IconButton onClick={() => setOpenCreateTaskForm(true)} aria-label="Create Task">
                   <AddOutlinedIcon />
                 </IconButton>
@@ -266,8 +316,6 @@ export const TasksApp = React.memo(
                   onTaskClick={(_ev, task) => AppEvents.taskSelect.next(task)}
                   setFilterFields={setFilterFields}
                   setSortFields={setSortFields}
-                  exportTasksMinimal={exportTasksToCsvMinimal}
-                  exportTasksFull={exportTasksToCsvFull}
                   onPageChange={(newPage: number) =>
                     setTasksState((old) => ({ ...old, page: newPage + 1 }))
                   }
