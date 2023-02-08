@@ -32,13 +32,13 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
         type="dispatch_task_request",
         request=TaskRequest(**task.task_request),
     )
+
+    async def run():
+        await post_dispatch_task(req, task_repo)
+        task.last_ran = datetime.now()
+        await task.save()
+
     for j in jobs:
-
-        async def run():
-            await post_dispatch_task(req, task_repo)
-            task.last_ran = datetime.now()
-            await task.save()
-
         j.do(lambda: asyncio.get_event_loop().create_task(run())).tag(f"task_{task.pk}")
 
     # Job have a operator overload that sorts based on the next run
