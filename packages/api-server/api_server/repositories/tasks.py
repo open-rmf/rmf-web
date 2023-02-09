@@ -168,21 +168,25 @@ class TaskRepository:
                 logger.error(format_exception(e))
 
     async def save_task_favorite(self, task_favorite: TaskFavorite) -> None:
-        await ttm.TaskFavorite.create(
-            name=task_favorite.name,
-            unix_millis_earliest_start_time=task_favorite.unix_millis_earliest_start_time
-            and datetime.fromtimestamp(
-                task_favorite.unix_millis_earliest_start_time / 1000
-            ),
-            priority=task_favorite.priority if task_favorite.priority else None,
-            category=task_favorite.category,
-            description=task_favorite.description
-            if task_favorite.description
-            else None,
+        await ttm.TaskFavorite.update_or_create(
+            {
+                "name": task_favorite.name,
+                "unix_millis_earliest_start_time": task_favorite.unix_millis_earliest_start_time
+                and datetime.fromtimestamp(
+                    task_favorite.unix_millis_earliest_start_time / 1000
+                ),
+                "priority": task_favorite.priority if task_favorite.priority else None,
+                "category": task_favorite.category,
+                "description": task_favorite.description
+                if task_favorite.description
+                else None,
+                "user": self.user.json(),
+            },
+            id=task_favorite.id,
         )
 
     async def get_all_favorites_tasks(self) -> List[TaskFavorite]:
-        favorites_tasks = await ttm.TaskFavorite.all()
+        favorites_tasks = await ttm.TaskFavorite.filter(user=self.user.json())
         favorites_tasks_out = []
         for favorite_task in favorites_tasks:
             favorites_tasks_out.append(
