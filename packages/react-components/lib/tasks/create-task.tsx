@@ -534,6 +534,7 @@ interface FavoriteTaskProps {
   setFavoriteTask: (favoriteTask: TaskFavorite) => void;
   setOpenDialog: (open: boolean) => void;
   setCallToDelete: (open: boolean) => void;
+  setCallToUpdate: (open: boolean) => void;
 }
 
 function FavoriteTask({
@@ -543,6 +544,7 @@ function FavoriteTask({
   setFavoriteTask,
   setOpenDialog,
   setCallToDelete,
+  setCallToUpdate,
 }: FavoriteTaskProps) {
   const theme = useTheme();
 
@@ -550,7 +552,10 @@ function FavoriteTask({
     <>
       <ListItem
         sx={{ width: theme.spacing(30) }}
-        onClick={listItemClick}
+        onClick={() => {
+          listItemClick();
+          setCallToUpdate(false);
+        }}
         role="listitem button"
         button
         divider={true}
@@ -561,7 +566,8 @@ function FavoriteTask({
             edge="end"
             aria-label="update"
             onClick={() => {
-              console.log('Updating');
+              setCallToUpdate(true);
+              listItemClick();
             }}
           >
             <UpdateIcon />
@@ -636,7 +642,7 @@ function defaultTask(): TaskRequest {
 
 const defaultFavoriteTask = (): TaskFavorite => {
   return {
-    id: -1,
+    id: undefined,
     name: '',
     category: 'patrol',
     description: defaultLoopsTask(),
@@ -688,6 +694,7 @@ export function CreateTaskForm({
 
   const [openFavoriteDialog, setOpenFavoriteDialog] = React.useState(false);
   const [callToDelete, setCallToDelete] = React.useState(false);
+  const [callToUpdate, setCallToUpdate] = React.useState(false);
   const [deleting, setDeleting] = React.useState(false);
 
   const [favoriteTask, setFavoriteTask] = React.useState<TaskFavorite>(defaultFavoriteTask());
@@ -873,6 +880,7 @@ export function CreateTaskForm({
                   setFavoriteTask={setFavoriteTask}
                   favoriteTask={favoriteTask}
                   setCallToDelete={setCallToDelete}
+                  setCallToUpdate={setCallToUpdate}
                   setOpenDialog={setOpenFavoriteDialog}
                   listItemClick={() => {
                     setFavoriteTask(favoriteTask);
@@ -967,9 +975,12 @@ export function CreateTaskForm({
                 aria-label="Save as a favorite task"
                 variant="contained"
                 color="primary"
-                onClick={() => setOpenFavoriteDialog(true)}
+                onClick={() => {
+                  !callToUpdate && setFavoriteTask({ ...favoriteTask, name: '' });
+                  setOpenFavoriteDialog(true);
+                }}
               >
-                Save as a favorite task
+                {callToUpdate ? `Editing ` : 'Save as a favorite task'}
               </Button>
             </Grid>
           </Grid>
