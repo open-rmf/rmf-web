@@ -281,6 +281,10 @@ export const TasksApp = React.memo(
           if (!rmf) {
             throw new Error('tasks api not available');
           }
+          if (!favoriteTask.id) {
+            throw new Error('Id is needed');
+          }
+
           await rmf.tasksApi.deleteFavoriteTaskTasksFavoriteTaskIdDelete(favoriteTask.id);
           setForceRefresh((prev) => prev + 1);
         },
