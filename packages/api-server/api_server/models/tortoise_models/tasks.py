@@ -69,3 +69,4 @@ class TaskFavorite(Model):
     priority = JSONField(null=True)
     category = CharField(255, null=False, index=True)
     description = JSONField()
+    user = JSONField()

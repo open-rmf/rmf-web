@@ -2108,7 +2108,7 @@ export interface TaskFavorite {
    * @type {number}
    * @memberof TaskFavorite
    */
-  id: number;
+  id?: number;
   /**
    *
    * @type {string}
@@ -2139,6 +2139,12 @@ export interface TaskFavorite {
    * @memberof TaskFavorite
    */
   description: any;
+  /**
+   * (Optional) The user of the favorite task
+   * @type {object}
+   * @memberof TaskFavorite
+   */
+  user?: object;
 }
 /**
  *

@@ -2762,7 +2762,7 @@ export default {
       },
       TaskFavorite: {
         title: 'TaskFavorite',
-        required: ['id', 'name', 'category', 'description'],
+        required: ['name', 'category', 'description'],
         type: 'object',
         properties: {
           id: { title: 'Id', type: 'integer' },
@@ -2781,6 +2781,11 @@ export default {
           description: {
             title: 'Description',
             description: 'A description of the task. Task properties by category',
+          },
+          user: {
+            title: 'User',
+            type: 'object',
+            description: '(Optional) The user of the favorite task',
           },
         },
       },

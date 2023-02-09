@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 
 
 class TaskFavorite(BaseModel):
-    id: int
+    id: Optional[int]
     name: str
     unix_millis_earliest_start_time: Optional[int] = Field(
         None, description="(Optional) The earliest time that this task may start"
@@ -22,4 +22,8 @@ class TaskFavorite(BaseModel):
     description: Any = Field(
         ...,
         description="A description of the task. Task properties by category",
+    )
+    user: Optional[Dict[str, Any]] = Field(
+        None,
+        description="(Optional) The user of the favorite task",
     )
