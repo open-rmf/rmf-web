@@ -99,7 +99,6 @@ export const TasksApp = React.memo(
           const resp = await rmf.tasksApi.getFavoritesTasksTasksFavoritesTasksGet();
 
           const results = resp.data as TaskFavorite[];
-          console.log(results);
           setFavoritesTasks(results);
         })();
 
@@ -259,6 +258,20 @@ export const TasksApp = React.memo(
       const handleCloseExportMenu = () => {
         setAnchorExportElement(null);
       };
+      const submitFavoriteTask = React.useCallback<
+        Required<CreateTaskFormProps>['submitFavoriteTask']
+      >(
+        async (taskFavoriteRequest) => {
+          if (!rmf) {
+            throw new Error('tasks api not available');
+          }
+          await rmf.tasksApi.postFavoriteTaskTasksFavoriteTaskPost({
+            type: 'task_favorite_request',
+            request: taskFavoriteRequest,
+          });
+        },
+        [rmf],
+      );
 
       return (
         <Window
@@ -355,6 +368,7 @@ export const TasksApp = React.memo(
               open={openCreateTaskForm}
               onClose={() => setOpenCreateTaskForm(false)}
               submitTasks={submitTasks}
+              submitFavoriteTask={submitFavoriteTask}
               tasksFromFile={tasksFromFile}
               onSuccess={() => {
                 setOpenCreateTaskForm(false);
@@ -362,6 +376,13 @@ export const TasksApp = React.memo(
               }}
               onFail={(e) => {
                 showAlert('error', `Failed to create task: ${e.message}`);
+              }}
+              onSuccessFavoriteTask={() => {
+                setOpenCreateTaskForm(false);
+                showAlert('success', 'Successfully created favorite task');
+              }}
+              onFailFavoriteTask={(e) => {
+                showAlert('error', `Failed to create favorite task: ${e.message}`);
               }}
             />
           )}
