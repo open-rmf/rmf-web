@@ -980,7 +980,7 @@ export function CreateTaskForm({
                   setOpenFavoriteDialog(true);
                 }}
               >
-                {callToUpdate ? `Editing ` : 'Save as a favorite task'}
+                {callToUpdate ? `Confirm edits` : 'Save as a favorite task'}
               </Button>
             </Grid>
           </Grid>
