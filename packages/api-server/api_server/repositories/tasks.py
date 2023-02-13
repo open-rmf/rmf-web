@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from typing import Dict, List, Optional, Sequence, Tuple, cast
 
@@ -182,7 +183,7 @@ class TaskRepository:
                 else None,
                 "user": self.user.json(),
             },
-            id=task_favorite.id,
+            id=task_favorite.id if task_favorite.id else uuid.uuid4(),
         )
 
     async def get_all_favorites_tasks(self) -> List[TaskFavorite]:
