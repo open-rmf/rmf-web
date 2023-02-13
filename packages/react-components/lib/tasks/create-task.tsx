@@ -976,7 +976,7 @@ export function CreateTaskForm({
                 variant="contained"
                 color="primary"
                 onClick={() => {
-                  !callToUpdate && setFavoriteTask({ ...favoriteTask, name: '' });
+                  !callToUpdate && setFavoriteTask({ ...favoriteTask, name: '', id: undefined });
                   setOpenFavoriteDialog(true);
                 }}
               >
