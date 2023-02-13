@@ -2105,10 +2105,10 @@ export interface TaskEventLog {
 export interface TaskFavorite {
   /**
    *
-   * @type {number}
+   * @type {string}
    * @memberof TaskFavorite
    */
-  id?: number;
+  id?: string;
   /**
    *
    * @type {string}
@@ -6411,12 +6411,12 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     /**
      *
      * @summary Delete Favorite Task
-     * @param {number} id
+     * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     deleteFavoriteTaskTasksFavoriteTaskIdDelete: async (
-      id: number,
+      id: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
@@ -7252,12 +7252,12 @@ export const TasksApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Delete Favorite Task
-     * @param {number} id
+     * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async deleteFavoriteTaskTasksFavoriteTaskIdDelete(
-      id: number,
+      id: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
@@ -7588,11 +7588,11 @@ export const TasksApiFactory = function (
     /**
      *
      * @summary Delete Favorite Task
-     * @param {number} id
+     * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    deleteFavoriteTaskTasksFavoriteTaskIdDelete(id: number, options?: any): AxiosPromise<any> {
+    deleteFavoriteTaskTasksFavoriteTaskIdDelete(id: string, options?: any): AxiosPromise<any> {
       return localVarFp
         .deleteFavoriteTaskTasksFavoriteTaskIdDelete(id, options)
         .then((request) => request(axios, basePath));
@@ -7872,12 +7872,12 @@ export class TasksApi extends BaseAPI {
   /**
    *
    * @summary Delete Favorite Task
-   * @param {number} id
+   * @param {string} id
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
-  public deleteFavoriteTaskTasksFavoriteTaskIdDelete(id: number, options?: AxiosRequestConfig) {
+  public deleteFavoriteTaskTasksFavoriteTaskIdDelete(id: string, options?: AxiosRequestConfig) {
     return TasksApiFp(this.configuration)
       .deleteFavoriteTaskTasksFavoriteTaskIdDelete(id, options)
       .then((request) => request(this.axios, this.basePath));

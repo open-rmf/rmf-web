@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 
 
 class TaskFavorite(BaseModel):
-    id: Optional[int]
+    id: Optional[str]
     name: str
     unix_millis_earliest_start_time: Optional[int] = Field(
         None, description="(Optional) The earliest time that this task may start"

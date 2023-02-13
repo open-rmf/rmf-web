@@ -1,3 +1,5 @@
+import uuid
+
 from tortoise.fields import (
     CharField,
     DatetimeField,
@@ -6,6 +8,7 @@ from tortoise.fields import (
     IntField,
     JSONField,
     ReverseRelation,
+    UUIDField,
 )
 from tortoise.models import Model
 
@@ -63,7 +66,7 @@ class TaskEventLogPhasesEventsLog(Model, LogMixin):
 
 
 class TaskFavorite(Model):
-    id = IntField(pk=True)
+    id = CharField(255, pk=True, source_field="id", default=uuid.uuid4())
     name = CharField(255, null=False, index=True)
     unix_millis_earliest_start_time = DatetimeField(null=True, index=True)
     priority = JSONField(null=True)

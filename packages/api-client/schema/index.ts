@@ -898,7 +898,7 @@ export default {
         summary: 'Delete Favorite Task',
         operationId: 'delete_favorite_task_tasks_favorite_task__id__delete',
         parameters: [
-          { required: true, schema: { title: 'Id', type: 'integer' }, name: 'id', in: 'path' },
+          { required: true, schema: { title: 'Id', type: 'string' }, name: 'id', in: 'path' },
         ],
         responses: {
           '200': {
@@ -2765,7 +2765,7 @@ export default {
         required: ['name', 'category', 'description'],
         type: 'object',
         properties: {
-          id: { title: 'Id', type: 'integer' },
+          id: { title: 'Id', type: 'string' },
           name: { title: 'Name', type: 'string' },
           unix_millis_earliest_start_time: {
             title: 'Unix Millis Earliest Start Time',
