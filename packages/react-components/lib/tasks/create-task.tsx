@@ -815,8 +815,12 @@ export function CreateTaskForm({
       await submitFavoriteTask(favoriteTask);
       setSaving(false);
       onSuccessFavoriteTask &&
-        onSuccessFavoriteTask('Created favorite task successfully', favoriteTask);
+        onSuccessFavoriteTask(
+          `${!favoriteTask.id ? `Created` : `Edited`}  favorite task successfully`,
+          favoriteTask,
+        );
       setOpenFavoriteDialog(false);
+      setCallToUpdate(false);
     } catch (e) {
       setSaving(false);
       onFailFavoriteTask && onFailFavoriteTask(e as Error, favoriteTask);
@@ -841,6 +845,7 @@ export function CreateTaskForm({
       setTaskRequests([defaultTask()]);
       setOpenFavoriteDialog(false);
       setCallToDelete(false);
+      setCallToUpdate(false);
     } catch (e) {
       setDeleting(false);
       onFailFavoriteTask && onFailFavoriteTask(e as Error, favoriteTask);
