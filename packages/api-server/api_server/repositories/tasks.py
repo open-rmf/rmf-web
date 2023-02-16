@@ -181,13 +181,13 @@ class TaskRepository:
                 "description": task_favorite.description
                 if task_favorite.description
                 else None,
-                "user": self.user.json(),
+                "user": self.user.username,
             },
             id=task_favorite.id if task_favorite.id else uuid.uuid4(),
         )
 
     async def get_all_favorites_tasks(self) -> List[TaskFavorite]:
-        favorites_tasks = await ttm.TaskFavorite.filter(user=self.user.json())
+        favorites_tasks = await ttm.TaskFavorite.filter(user=self.user.username)
         favorites_tasks_out = []
         for favorite_task in favorites_tasks:
             favorites_tasks_out.append(

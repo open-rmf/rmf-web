@@ -2782,11 +2782,7 @@ export default {
             title: 'Description',
             description: 'A description of the task. Task properties by category',
           },
-          user: {
-            title: 'User',
-            type: 'object',
-            description: '(Optional) The user of the favorite task',
-          },
+          user: { title: 'User', type: 'string' },
         },
       },
       TaskFavoriteRequest: {

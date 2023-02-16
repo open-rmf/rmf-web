@@ -5,10 +5,8 @@ from tortoise.fields import (
     DatetimeField,
     ForeignKeyField,
     ForeignKeyRelation,
-    IntField,
     JSONField,
     ReverseRelation,
-    UUIDField,
 )
 from tortoise.models import Model
 
@@ -72,4 +70,4 @@ class TaskFavorite(Model):
     priority = JSONField(null=True)
     category = CharField(255, null=False, index=True)
     description = JSONField()
-    user = JSONField()
+    user = CharField(255, null=False, index=True)

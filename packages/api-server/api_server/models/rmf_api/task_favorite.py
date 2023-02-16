@@ -23,7 +23,4 @@ class TaskFavorite(BaseModel):
         ...,
         description="A description of the task. Task properties by category",
     )
-    user: Optional[Dict[str, Any]] = Field(
-        None,
-        description="(Optional) The user of the favorite task",
-    )
+    user: Optional[str]

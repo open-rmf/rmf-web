@@ -2140,11 +2140,11 @@ export interface TaskFavorite {
    */
   description: any;
   /**
-   * (Optional) The user of the favorite task
-   * @type {object}
+   *
+   * @type {string}
    * @memberof TaskFavorite
    */
-  user?: object;
+  user?: string;
 }
 /**
  *
