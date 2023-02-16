@@ -667,7 +667,7 @@ export interface CreateTaskFormProps
   tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
   onSuccess?(tasks: any[]): void;
   onFail?(error: Error, tasks: any[]): void;
-  onSuccessFavoriteTask?(favoriteTask: TaskFavorite): void;
+  onSuccessFavoriteTask?(message: string, favoriteTask: TaskFavorite): void;
   onFailFavoriteTask?(error: Error, favoriteTask: TaskFavorite): void;
   submitFavoriteTask?(favoriteTask: TaskFavorite): Promise<void>;
   deleteFavoriteTask?(favoriteTask: TaskFavorite): Promise<void>;
@@ -806,15 +806,17 @@ export function CreateTaskForm({
       return;
     }
     if (!submitFavoriteTask) {
-      onSuccessFavoriteTask && onSuccessFavoriteTask(favoriteTask);
       return;
     }
+
     setSaving(true);
     try {
       setSaving(true);
       await submitFavoriteTask(favoriteTask);
       setSaving(false);
-      onSuccessFavoriteTask && onSuccessFavoriteTask(favoriteTask);
+      onSuccessFavoriteTask &&
+        onSuccessFavoriteTask('Created favorite task successfully', favoriteTask);
+      setOpenFavoriteDialog(false);
     } catch (e) {
       setSaving(false);
       onFailFavoriteTask && onFailFavoriteTask(e as Error, favoriteTask);
@@ -827,12 +829,18 @@ export function CreateTaskForm({
     if (!deleteFavoriteTask) {
       return;
     }
+
     setDeleting(true);
     try {
       setDeleting(true);
       await deleteFavoriteTask(favoriteTask);
       setDeleting(false);
-      onSuccessFavoriteTask && onSuccessFavoriteTask(favoriteTask);
+      onSuccessFavoriteTask &&
+        onSuccessFavoriteTask('Deleted favorite task successfully', favoriteTask);
+
+      setTaskRequests([defaultTask()]);
+      setOpenFavoriteDialog(false);
+      setCallToDelete(false);
     } catch (e) {
       setDeleting(false);
       onFailFavoriteTask && onFailFavoriteTask(e as Error, favoriteTask);

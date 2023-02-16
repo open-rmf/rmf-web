@@ -396,9 +396,8 @@ export const TasksApp = React.memo(
               onFail={(e) => {
                 showAlert('error', `Failed to create task: ${e.message}`);
               }}
-              onSuccessFavoriteTask={() => {
-                setOpenCreateTaskForm(false);
-                showAlert('success', 'Successfully');
+              onSuccessFavoriteTask={(message) => {
+                showAlert('success', message);
               }}
               onFailFavoriteTask={(e) => {
                 showAlert('error', `Failed to create or delete favorite task: ${e.message}`);
