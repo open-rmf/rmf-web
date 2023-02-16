@@ -720,6 +720,7 @@ export function CreateTaskForm({
   const handleTaskDescriptionChange = (newCategory: string, newDesc: TaskDescription) => {
     taskRequest.category = newCategory;
     taskRequest.description = newDesc;
+    setFavoriteTask({ ...favoriteTask, description: newDesc, category: newCategory });
     updateTasks();
   };
 
