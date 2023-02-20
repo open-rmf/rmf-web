@@ -243,9 +243,9 @@ async def get_favorites_tasks(
     return await task_repo.get_all_favorites_tasks()
 
 
-@router.delete("/favorite_task/{id}")
+@router.delete("/favorite_task/{favorite_task_id}")
 async def delete_favorite_task(
-    id: str, task_repo: TaskRepository = Depends(task_repo_dep)
+    favorite_task_id: str, task_repo: TaskRepository = Depends(task_repo_dep)
 ):
-    favorite_task = await task_repo.get_favorite_task_by_id(id)
+    favorite_task = await task_repo.get_favorite_task_by_id(favorite_task_id)
     await favorite_task.delete()

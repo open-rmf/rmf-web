@@ -285,7 +285,9 @@ export const TasksApp = React.memo(
             throw new Error('Id is needed');
           }
 
-          await rmf.tasksApi.deleteFavoriteTaskTasksFavoriteTaskIdDelete(favoriteTask.id);
+          await rmf.tasksApi.deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete(
+            favoriteTask.id,
+          );
           setForceRefresh((prev) => prev + 1);
         },
         [rmf],

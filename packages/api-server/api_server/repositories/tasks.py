@@ -209,8 +209,8 @@ class TaskRepository:
             for favorite_task in favorites_tasks
         ]
 
-    async def get_favorite_task_by_id(self, id: str) -> ttm.TaskFavorite:
-        favorite_task = await ttm.TaskFavorite.get_or_none(id=id)
+    async def get_favorite_task_by_id(self, favorite_task_id: str) -> ttm.TaskFavorite:
+        favorite_task = await ttm.TaskFavorite.get_or_none(id=favorite_task_id)
         if favorite_task is None:
             raise HTTPException(404)
         return favorite_task

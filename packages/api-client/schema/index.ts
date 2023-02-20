@@ -892,13 +892,18 @@ export default {
         },
       },
     },
-    '/tasks/favorite_task/{id}': {
+    '/tasks/favorite_task/{favorite_task_id}': {
       delete: {
         tags: ['Tasks'],
         summary: 'Delete Favorite Task',
-        operationId: 'delete_favorite_task_tasks_favorite_task__id__delete',
+        operationId: 'delete_favorite_task_tasks_favorite_task__favorite_task_id__delete',
         parameters: [
-          { required: true, schema: { title: 'Id', type: 'string' }, name: 'id', in: 'path' },
+          {
+            required: true,
+            schema: { title: 'Favorite Task Id', type: 'string' },
+            name: 'favorite_task_id',
+            in: 'path',
+          },
         ],
         responses: {
           '200': {

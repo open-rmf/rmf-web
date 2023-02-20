@@ -6411,19 +6411,23 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     /**
      *
      * @summary Delete Favorite Task
-     * @param {string} id
+     * @param {string} favoriteTaskId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    deleteFavoriteTaskTasksFavoriteTaskIdDelete: async (
-      id: string,
+    deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete: async (
+      favoriteTaskId: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'id' is not null or undefined
-      assertParamExists('deleteFavoriteTaskTasksFavoriteTaskIdDelete', 'id', id);
-      const localVarPath = `/tasks/favorite_task/{id}`.replace(
-        `{${'id'}}`,
-        encodeURIComponent(String(id)),
+      // verify required parameter 'favoriteTaskId' is not null or undefined
+      assertParamExists(
+        'deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete',
+        'favoriteTaskId',
+        favoriteTaskId,
+      );
+      const localVarPath = `/tasks/favorite_task/{favorite_task_id}`.replace(
+        `{${'favorite_task_id'}}`,
+        encodeURIComponent(String(favoriteTaskId)),
       );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -7252,16 +7256,19 @@ export const TasksApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Delete Favorite Task
-     * @param {string} id
+     * @param {string} favoriteTaskId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async deleteFavoriteTaskTasksFavoriteTaskIdDelete(
-      id: string,
+    async deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete(
+      favoriteTaskId: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
-        await localVarAxiosParamCreator.deleteFavoriteTaskTasksFavoriteTaskIdDelete(id, options);
+        await localVarAxiosParamCreator.deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete(
+          favoriteTaskId,
+          options,
+        );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -7588,13 +7595,16 @@ export const TasksApiFactory = function (
     /**
      *
      * @summary Delete Favorite Task
-     * @param {string} id
+     * @param {string} favoriteTaskId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    deleteFavoriteTaskTasksFavoriteTaskIdDelete(id: string, options?: any): AxiosPromise<any> {
+    deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete(
+      favoriteTaskId: string,
+      options?: any,
+    ): AxiosPromise<any> {
       return localVarFp
-        .deleteFavoriteTaskTasksFavoriteTaskIdDelete(id, options)
+        .deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete(favoriteTaskId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -7872,14 +7882,17 @@ export class TasksApi extends BaseAPI {
   /**
    *
    * @summary Delete Favorite Task
-   * @param {string} id
+   * @param {string} favoriteTaskId
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
-  public deleteFavoriteTaskTasksFavoriteTaskIdDelete(id: string, options?: AxiosRequestConfig) {
+  public deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete(
+    favoriteTaskId: string,
+    options?: AxiosRequestConfig,
+  ) {
     return TasksApiFp(this.configuration)
-      .deleteFavoriteTaskTasksFavoriteTaskIdDelete(id, options)
+      .deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete(favoriteTaskId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
