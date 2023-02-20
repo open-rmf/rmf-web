@@ -188,27 +188,25 @@ class TaskRepository:
 
     async def get_all_favorites_tasks(self) -> List[TaskFavorite]:
         favorites_tasks = await ttm.TaskFavorite.filter(user=self.user.username)
-        favorites_tasks_out = []
+        favorites_tasks_out: List[TaskFavorite] = []
         for favorite_task in favorites_tasks:
             favorites_tasks_out.append(
-                {
-                    "id": favorite_task.id,
-                    "name": favorite_task.name,
-                    "unix_millis_earliest_start_time": int(
+                TaskFavorite(
+                    id=favorite_task.id,
+                    name=favorite_task.name,
+                    unix_millis_earliest_start_time=int(
                         favorite_task.unix_millis_earliest_start_time.strftime(
                             "%Y%m%d%H%M%S"
                         )
                     )
                     if favorite_task.unix_millis_earliest_start_time
                     else None,
-                    "priority": favorite_task.priority
-                    if favorite_task.priority
-                    else None,
-                    "category": favorite_task.category,
-                    "description": favorite_task.description
+                    priority=favorite_task.priority if favorite_task.priority else None,
+                    category=favorite_task.category,
+                    description=favorite_task.description
                     if favorite_task.description
                     else None,
-                }
+                )
             ),
         return favorites_tasks_out
 
