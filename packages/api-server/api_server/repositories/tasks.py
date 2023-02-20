@@ -206,6 +206,7 @@ class TaskRepository:
                     description=favorite_task.description
                     if favorite_task.description
                     else None,
+                    user=self.user.username,
                 )
             ),
         return favorites_tasks_out
