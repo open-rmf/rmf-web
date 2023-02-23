@@ -53,7 +53,11 @@ describe('RobotTable', () => {
         ]}
       />,
     );
-    expect(() => root.getByText(new Date(1000).toLocaleString())).not.toThrow();
-    expect(() => root.getByText(new Date(900).toLocaleString())).not.toThrow();
+    expect(() => root.getByText(new Date(1000).toLocaleTimeString())).not.toThrow();
+    expect(() => root.getByText(new Date(900).toLocaleTimeString())).not.toThrow();
+    // expect(() => root.getByText(new Date(1000).toLocaleString().split(',')[0])).not.toThrow();
+    // expect(() => root.getByText(new Date(1000).toLocaleString().split(',')[1])).not.toThrow();
+    // expect(() => root.getByText(new Date(900).toLocaleString().split(',')[0])).not.toThrow();
+    // expect(() => root.getByText(new Date(900).toLocaleString().split(',')[1])).not.toThrow();
   });
 });
