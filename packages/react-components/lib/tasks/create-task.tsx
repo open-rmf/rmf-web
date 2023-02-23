@@ -697,7 +697,9 @@ export function CreateTaskForm({
   const [callToUpdateFavoriteTask, setCallToUpdateFavoriteTask] = React.useState(false);
   const [deletingFavoriteTask, setDeletingFavoriteTask] = React.useState(false);
 
-  const [favoriteTask, setFavoriteTask] = React.useState<TaskFavorite>(defaultFavoriteTask());
+  const [favoriteTaskBuffer, setFavoriteTaskBuffer] = React.useState<TaskFavorite>(
+    defaultFavoriteTask(),
+  );
   const [favoriteTaskTitleError, setFavoriteTaskTitleError] = React.useState(false);
   const [savingFavoriteTask, setSavingFavoriteTask] = React.useState(false);
 
@@ -720,7 +722,7 @@ export function CreateTaskForm({
   const handleTaskDescriptionChange = (newCategory: string, newDesc: TaskDescription) => {
     taskRequest.category = newCategory;
     taskRequest.description = newDesc;
-    setFavoriteTask({ ...favoriteTask, description: newDesc, category: newCategory });
+    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, description: newDesc, category: newCategory });
     updateTasks();
   };
 
@@ -765,7 +767,7 @@ export function CreateTaskForm({
     taskRequest.description = newDesc;
     taskRequest.category = newCategory;
 
-    setFavoriteTask({ ...favoriteTask, category: newCategory, description: newDesc });
+    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, category: newCategory, description: newDesc });
 
     updateTasks();
   };
@@ -792,7 +794,7 @@ export function CreateTaskForm({
   const handleSubmitFavoriteTask: React.MouseEventHandler = async (ev) => {
     ev.preventDefault();
 
-    if (!favoriteTask.name) {
+    if (!favoriteTaskBuffer.name) {
       setFavoriteTaskTitleError(true);
       return;
     }
@@ -806,18 +808,18 @@ export function CreateTaskForm({
     setSavingFavoriteTask(true);
     try {
       setSavingFavoriteTask(true);
-      await submitFavoriteTask(favoriteTask);
+      await submitFavoriteTask(favoriteTaskBuffer);
       setSavingFavoriteTask(false);
       onSuccessFavoriteTask &&
         onSuccessFavoriteTask(
-          `${!favoriteTask.id ? `Created` : `Edited`}  favorite task successfully`,
-          favoriteTask,
+          `${!favoriteTaskBuffer.id ? `Created` : `Edited`}  favorite task successfully`,
+          favoriteTaskBuffer,
         );
       setOpenFavoriteDialog(false);
       setCallToUpdateFavoriteTask(false);
     } catch (e) {
       setSavingFavoriteTask(false);
-      onFailFavoriteTask && onFailFavoriteTask(e as Error, favoriteTask);
+      onFailFavoriteTask && onFailFavoriteTask(e as Error, favoriteTaskBuffer);
     }
   };
 
@@ -831,10 +833,10 @@ export function CreateTaskForm({
     setDeletingFavoriteTask(true);
     try {
       setDeletingFavoriteTask(true);
-      await deleteFavoriteTask(favoriteTask);
+      await deleteFavoriteTask(favoriteTaskBuffer);
       setDeletingFavoriteTask(false);
       onSuccessFavoriteTask &&
-        onSuccessFavoriteTask('Deleted favorite task successfully', favoriteTask);
+        onSuccessFavoriteTask('Deleted favorite task successfully', favoriteTaskBuffer);
 
       setTaskRequests([defaultTask()]);
       setOpenFavoriteDialog(false);
@@ -842,7 +844,7 @@ export function CreateTaskForm({
       setCallToUpdateFavoriteTask(false);
     } catch (e) {
       setDeletingFavoriteTask(false);
-      onFailFavoriteTask && onFailFavoriteTask(e as Error, favoriteTask);
+      onFailFavoriteTask && onFailFavoriteTask(e as Error, favoriteTaskBuffer);
     }
   };
 
@@ -885,13 +887,13 @@ export function CreateTaskForm({
                 <FavoriteTask
                   listItemText={favoriteTask.name}
                   key={index}
-                  setFavoriteTask={setFavoriteTask}
+                  setFavoriteTask={setFavoriteTaskBuffer}
                   favoriteTask={favoriteTask}
                   setCallToDelete={setCallToDeleteFavoriteTask}
                   setCallToUpdate={setCallToUpdateFavoriteTask}
                   setOpenDialog={setOpenFavoriteDialog}
                   listItemClick={() => {
-                    setFavoriteTask(favoriteTask);
+                    setFavoriteTaskBuffer(favoriteTask);
                     setTaskRequests((prev) => {
                       return [
                         {
@@ -944,8 +946,8 @@ export function CreateTaskForm({
                       return;
                     }
                     taskRequest.unix_millis_earliest_start_time = date.valueOf();
-                    setFavoriteTask({
-                      ...favoriteTask,
+                    setFavoriteTaskBuffer({
+                      ...favoriteTaskBuffer,
                       unix_millis_earliest_start_time: date.valueOf(),
                     });
                     updateTasks();
@@ -968,8 +970,8 @@ export function CreateTaskForm({
                   value={(taskRequest.priority as Record<string, any>)?.value || 0}
                   onChange={(_ev, val) => {
                     taskRequest.priority = { type: 'binary', value: val };
-                    setFavoriteTask({
-                      ...favoriteTask,
+                    setFavoriteTaskBuffer({
+                      ...favoriteTaskBuffer,
                       priority: { type: 'binary', value: val },
                     });
                     updateTasks();
@@ -985,7 +987,7 @@ export function CreateTaskForm({
                 color="primary"
                 onClick={() => {
                   !callToUpdateFavoriteTask &&
-                    setFavoriteTask({ ...favoriteTask, name: '', id: undefined });
+                    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: undefined });
                   setOpenFavoriteDialog(true);
                 }}
               >
@@ -1033,14 +1035,16 @@ export function CreateTaskForm({
           {!callToDeleteFavoriteTask && (
             <TextField
               size="small"
-              value={favoriteTask.name}
-              onChange={(e) => setFavoriteTask({ ...favoriteTask, name: e.target.value })}
+              value={favoriteTaskBuffer.name}
+              onChange={(e) =>
+                setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: e.target.value })
+              }
               helperText="Required"
               error={favoriteTaskTitleError}
             />
           )}
           {callToDeleteFavoriteTask && (
-            <Typography>{`Are you sure you want to delete "${favoriteTask.name}"?`}</Typography>
+            <Typography>{`Are you sure you want to delete "${favoriteTaskBuffer.name}"?`}</Typography>
           )}
         </ConfirmationDialog>
       )}
