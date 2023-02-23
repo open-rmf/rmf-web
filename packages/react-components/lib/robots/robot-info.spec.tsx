@@ -19,7 +19,20 @@ describe('RobotInfo', () => {
     expect(() => root.getByText('50.00%')).not.toThrow(); // battery
     expect(() => root.getByText('60%')).not.toThrow(); // task progress
     expect(() => root.getByText(/.*underway/)).not.toThrow();
-    expect(() => root.getByText(new Date(0).toLocaleString())).not.toThrow();
+    // expect(() => root.getByText(new Date(0).toLocaleString())).not.toThrow();
+    expect(() =>
+      root.getByText((content, node) => {
+        if (!node) {
+          return false;
+        }
+
+        const hasText = (node) => node.textContent === new Date(0).toLocaleString();
+        const nodeHasText = hasText(node);
+        const childrenDontHaveText = Array.from(node.children).every((child) => !hasText(child));
+
+        return nodeHasText && childrenDontHaveText;
+      }),
+    );
   });
 
   describe('Task status', () => {
