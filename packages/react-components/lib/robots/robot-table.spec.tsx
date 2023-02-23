@@ -53,7 +53,13 @@ describe('RobotTable', () => {
         ]}
       />,
     );
-    expect(() => root.getByText(new Date(1000).toLocaleString())).not.toThrow();
-    expect(() => root.getByText(new Date(900).toLocaleString())).not.toThrow();
+    const expectedFinishTime = new Date(1000).toLocaleString();
+    expect(() =>
+      root.getByText((_, node) => node.textContent === expectedFinishTime),
+    ).not.toThrow();
+    const expectedLastUpdateTime = new Date(900).toLocaleString();
+    expect(() =>
+      root.getByText((_, node) => node.textContent === expectedLastUpdateTime),
+    ).not.toThrow();
   });
 });

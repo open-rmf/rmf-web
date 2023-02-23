@@ -12,7 +12,7 @@ describe('Task Timeline', () => {
     const root = render(<TaskTimeline taskState={task} />);
     Object.values(task.phases).forEach((p) => {
       const expectedTime = new Date(p.unix_millis_start_time).toLocaleTimeString();
-      expect(() => root.getByText(expectedTime)).not.toThrow();
+      expect(() => root.getByText((_, node) => node.textContent === expectedTime)).not.toThrow();
     });
   });
 
