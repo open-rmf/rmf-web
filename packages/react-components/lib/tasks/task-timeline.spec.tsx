@@ -11,8 +11,18 @@ describe('Task Timeline', () => {
     });
     const root = render(<TaskTimeline taskState={task} />);
     Object.values(task.phases).forEach((p) => {
-      const expectedTime = new Date(p.unix_millis_start_time).toLocaleTimeString();
-      expect(() => root.getByText(expectedTime)).not.toThrow();
+      expect(() =>
+        root.getByText((content, node) => {
+          if (!node) {
+            return false;
+          }
+          const hasText = (node) =>
+            node.textContent === new Date(p.unix_millis_start_time).toLocaleTimeString();
+          const nodeHasText = hasText(node);
+          const childrenDontHaveText = Array.from(node.children).every((child) => !hasText(child));
+          return nodeHasText && childrenDontHaveText;
+        }),
+      );
     });
   });
 

@@ -53,7 +53,27 @@ describe('RobotTable', () => {
         ]}
       />,
     );
-    expect(() => root.getByText(new Date(1000).toLocaleString())).not.toThrow();
-    expect(() => root.getByText(new Date(900).toLocaleString())).not.toThrow();
+    expect(() =>
+      root.getByText((content, node) => {
+        if (!node) {
+          return false;
+        }
+        const hasText = (node) => node.textContent === new Date(1000).toLocaleString();
+        const nodeHasText = hasText(node);
+        const childrenDontHaveText = Array.from(node.children).every((child) => !hasText(child));
+        return nodeHasText && childrenDontHaveText;
+      }),
+    );
+    expect(() =>
+      root.getByText((content, node) => {
+        if (!node) {
+          return false;
+        }
+        const hasText = (node) => node.textContent === new Date(900).toLocaleString();
+        const nodeHasText = hasText(node);
+        const childrenDontHaveText = Array.from(node.children).every((child) => !hasText(child));
+        return nodeHasText && childrenDontHaveText;
+      }),
+    );
   });
 });
