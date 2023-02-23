@@ -19,9 +19,7 @@ describe('RobotInfo', () => {
     expect(() => root.getByText('50.00%')).not.toThrow(); // battery
     expect(() => root.getByText('60%')).not.toThrow(); // task progress
     expect(() => root.getByText(/.*underway/)).not.toThrow();
-    expect(() => root.getByText(new Date(0).toLocaleTimeString())).not.toThrow();
-    // expect(() => root.getByText(new Date(0).toLocaleString().split(',')[0])).not.toThrow();
-    // expect(() => root.getByText(new Date(0).toLocaleString().split(',')[1])).not.toThrow();
+    expect(() => root.getByText(new Date(0).toLocaleString())).not.toThrow();
   });
 
   describe('Task status', () => {
