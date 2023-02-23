@@ -1,10 +1,10 @@
-import { render } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import React from 'react';
 import { RobotInfo } from './robot-info';
 
 describe('RobotInfo', () => {
   it('information renders correctly', () => {
-    const root = render(
+    render(
       <RobotInfo
         robotName="test_robot"
         assignedTask="test_task"
@@ -14,13 +14,13 @@ describe('RobotInfo', () => {
         taskStatus="underway"
       />,
     );
-    expect(() => root.getByText('test_robot')).not.toThrow();
-    expect(() => root.getByText('test_task')).not.toThrow();
-    expect(() => root.getByText('50.00%')).not.toThrow(); // battery
-    expect(() => root.getByText('60%')).not.toThrow(); // task progress
-    expect(() => root.getByText(/.*underway/)).not.toThrow();
-    const expectedTime = new Date(0).toLocaleString();
-    expect(() => root.getByText((_, node) => node.textContent === expectedTime)).not.toThrow();
+    expect(() => screen.getByText('test_robot')).not.toThrow();
+    expect(() => screen.getByText('test_task')).not.toThrow();
+    expect(() => screen.getByText('50.00%')).not.toThrow(); // battery
+    expect(() => screen.getByText('60%')).not.toThrow(); // task progress
+    expect(() => screen.getByText(/.*underway/)).not.toThrow();
+    expect(() => screen.getByText(new Date(0).toLocaleString())).toBeTruthy();
+    cleanup();
   });
 
   describe('Task status', () => {

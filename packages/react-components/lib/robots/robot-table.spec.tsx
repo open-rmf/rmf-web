@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Status2 as RobotStatus } from 'api-client';
 import React from 'react';
@@ -46,20 +46,15 @@ describe('RobotTable', () => {
   });
 
   it('finish time is shown when it is available', () => {
-    const root = render(
+    render(
       <RobotTable
         robots={[
           { fleet: 'test_fleet', name: 'test_robot', estFinishTime: 1000, lastUpdateTime: 900 },
         ]}
       />,
     );
-    const expectedFinishTime = new Date(1000).toLocaleString();
-    expect(() =>
-      root.getByText((_, node) => node.textContent === expectedFinishTime),
-    ).not.toThrow();
-    const expectedLastUpdateTime = new Date(900).toLocaleString();
-    expect(() =>
-      root.getByText((_, node) => node.textContent === expectedLastUpdateTime),
-    ).not.toThrow();
+    expect(() => screen.getByText(new Date(1000).toLocaleString())).toBeTruthy();
+    expect(() => screen.getByText(new Date(900).toLocaleString())).toBeTruthy();
+    cleanup();
   });
 });
