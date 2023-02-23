@@ -693,12 +693,12 @@ export function CreateTaskForm({
   const theme = useTheme();
 
   const [openFavoriteDialog, setOpenFavoriteDialog] = React.useState(false);
-  const [callToDelete, setCallToDelete] = React.useState(false);
-  const [callToUpdate, setCallToUpdate] = React.useState(false);
+  const [callToDeleteFavoriteTask, setCallToDeleteFavoriteTask] = React.useState(false);
+  const [callToUpdateFavoriteTask, setCallToUpdateFavoriteTask] = React.useState(false);
   const [deleting, setDeleting] = React.useState(false);
 
   const [favoriteTask, setFavoriteTask] = React.useState<TaskFavorite>(defaultFavoriteTask());
-  const [favoriteTitleError, setFavoriteTitleError] = React.useState(false);
+  const [favoriteTaskTitleError, setFavoriteTaskTitleError] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
 
   const [taskRequests, setTaskRequests] = React.useState<TaskRequest[]>(() => [defaultTask()]);
@@ -789,22 +789,16 @@ export function CreateTaskForm({
     }
   };
 
-  const validateFavoriteTitle = () => {
-    if (!favoriteTask.name) {
-      setFavoriteTitleError(true);
-      return false;
-    }
-    setFavoriteTitleError(false);
-
-    return true;
-  };
-
   const handleSubmitFavoriteTask: React.MouseEventHandler = async (ev) => {
     ev.preventDefault();
 
-    if (!validateFavoriteTitle()) {
+    if (!favoriteTask.name) {
+      setFavoriteTaskTitleError(true);
       return;
     }
+
+    setFavoriteTaskTitleError(false);
+
     if (!submitFavoriteTask) {
       return;
     }
@@ -820,7 +814,7 @@ export function CreateTaskForm({
           favoriteTask,
         );
       setOpenFavoriteDialog(false);
-      setCallToUpdate(false);
+      setCallToUpdateFavoriteTask(false);
     } catch (e) {
       setSaving(false);
       onFailFavoriteTask && onFailFavoriteTask(e as Error, favoriteTask);
@@ -844,8 +838,8 @@ export function CreateTaskForm({
 
       setTaskRequests([defaultTask()]);
       setOpenFavoriteDialog(false);
-      setCallToDelete(false);
-      setCallToUpdate(false);
+      setCallToDeleteFavoriteTask(false);
+      setCallToUpdateFavoriteTask(false);
     } catch (e) {
       setDeleting(false);
       onFailFavoriteTask && onFailFavoriteTask(e as Error, favoriteTask);
@@ -893,8 +887,8 @@ export function CreateTaskForm({
                   key={index}
                   setFavoriteTask={setFavoriteTask}
                   favoriteTask={favoriteTask}
-                  setCallToDelete={setCallToDelete}
-                  setCallToUpdate={setCallToUpdate}
+                  setCallToDelete={setCallToDeleteFavoriteTask}
+                  setCallToUpdate={setCallToUpdateFavoriteTask}
                   setOpenDialog={setOpenFavoriteDialog}
                   listItemClick={() => {
                     setFavoriteTask(favoriteTask);
@@ -990,11 +984,12 @@ export function CreateTaskForm({
                 variant="contained"
                 color="primary"
                 onClick={() => {
-                  !callToUpdate && setFavoriteTask({ ...favoriteTask, name: '', id: undefined });
+                  !callToUpdateFavoriteTask &&
+                    setFavoriteTask({ ...favoriteTask, name: '', id: undefined });
                   setOpenFavoriteDialog(true);
                 }}
               >
-                {callToUpdate ? `Confirm edits` : 'Save as a favorite task'}
+                {callToUpdateFavoriteTask ? `Confirm edits` : 'Save as a favorite task'}
               </Button>
             </Grid>
           </Grid>
@@ -1024,27 +1019,27 @@ export function CreateTaskForm({
       </StyledConfirmationDialog>
       {openFavoriteDialog && (
         <ConfirmationDialog
-          confirmText={callToDelete ? 'Delete' : 'Save'}
+          confirmText={callToDeleteFavoriteTask ? 'Delete' : 'Save'}
           cancelText="Back"
           open={openFavoriteDialog}
-          title={callToDelete ? 'Confirm Delete' : 'Favorite Task'}
-          submitting={callToDelete ? deleting : saving}
+          title={callToDeleteFavoriteTask ? 'Confirm Delete' : 'Favorite Task'}
+          submitting={callToDeleteFavoriteTask ? deleting : saving}
           onClose={() => {
             setOpenFavoriteDialog(false);
-            setCallToDelete(false);
+            setCallToDeleteFavoriteTask(false);
           }}
-          onSubmit={callToDelete ? handleDeleteFavoriteTask : handleSubmitFavoriteTask}
+          onSubmit={callToDeleteFavoriteTask ? handleDeleteFavoriteTask : handleSubmitFavoriteTask}
         >
-          {!callToDelete && (
+          {!callToDeleteFavoriteTask && (
             <TextField
               size="small"
               value={favoriteTask.name}
               onChange={(e) => setFavoriteTask({ ...favoriteTask, name: e.target.value })}
               helperText="Required"
-              error={favoriteTitleError}
+              error={favoriteTaskTitleError}
             />
           )}
-          {callToDelete && (
+          {callToDeleteFavoriteTask && (
             <Typography>{`Are you sure you want to delete "${favoriteTask.name}"?`}</Typography>
           )}
         </ConfirmationDialog>
