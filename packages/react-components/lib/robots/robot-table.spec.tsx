@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Status2 as RobotStatus } from 'api-client';
 import React from 'react';
@@ -46,15 +46,34 @@ describe('RobotTable', () => {
   });
 
   it('finish time is shown when it is available', () => {
-    render(
+    const root = render(
       <RobotTable
         robots={[
           { fleet: 'test_fleet', name: 'test_robot', estFinishTime: 1000, lastUpdateTime: 900 },
         ]}
       />,
     );
-    expect(() => screen.getByText(new Date(1000).toLocaleString())).toBeTruthy();
-    expect(() => screen.getByText(new Date(900).toLocaleString())).toBeTruthy();
-    cleanup();
+    expect(() =>
+      root.getByText((_, node) => {
+        if (!node) {
+          return false;
+        }
+        const hasText = (node) => node.textContent === new Date(1000).toLocaleString();
+        const nodeHasText = hasText(node);
+        const childrenDontHaveText = Array.from(node.children).every((child) => !hasText(child));
+        return nodeHasText && childrenDontHaveText;
+      }),
+    ).not.toThrow();
+    expect(() =>
+      root.getByText((_, node) => {
+        if (!node) {
+          return false;
+        }
+        const hasText = (node) => node.textContent === new Date(900).toLocaleString();
+        const nodeHasText = hasText(node);
+        const childrenDontHaveText = Array.from(node.children).every((child) => !hasText(child));
+        return nodeHasText && childrenDontHaveText;
+      }),
+    ).not.toThrow();
   });
 });

@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import React from 'react';
 import { TaskTimeline } from './task-timeline';
 import { makeTaskState } from './test-data.spec';
@@ -9,12 +9,21 @@ describe('Task Timeline', () => {
     Object.values(task.phases).forEach((p, idx) => {
       p.unix_millis_start_time = 1000 * idx;
     });
-    render(<TaskTimeline taskState={task} />);
+    const root = render(<TaskTimeline taskState={task} />);
     Object.values(task.phases).forEach((p) => {
-      const expectedTime = new Date(p.unix_millis_start_time).toLocaleTimeString();
-      expect(() => screen.getByText(expectedTime)).toBeTruthy();
+      expect(() =>
+        root.getByText((_, node) => {
+          if (!node) {
+            return false;
+          }
+          const hasText = (node) =>
+            node.textContent === new Date(p.unix_millis_start_time).toLocaleTimeString();
+          const nodeHasText = hasText(node);
+          const childrenDontHaveText = Array.from(node.children).every((child) => !hasText(child));
+          return nodeHasText && childrenDontHaveText;
+        }),
+      ).not.toThrow();
     });
-    cleanup();
   });
 
   it('shows all task events', () => {
