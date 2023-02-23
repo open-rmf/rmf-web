@@ -14,7 +14,6 @@ from api_server.dependencies import (
     start_time_between_query,
 )
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.models.rmf_api.task_favorite import TaskFavorite
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.repositories import TaskRepository, task_repo_dep
 from api_server.response import RawJSONResponse
@@ -236,7 +235,7 @@ async def post_favorite_task(
         raise HTTPException(422, str(e)) from e
 
 
-@router.get("/favorites_tasks", response_model=List[TaskFavorite])
+@router.get("/favorites_tasks", response_model=List[mdl.TaskFavorite])
 async def get_favorites_tasks(
     task_repo: TaskRepository = Depends(task_repo_dep),
 ):
