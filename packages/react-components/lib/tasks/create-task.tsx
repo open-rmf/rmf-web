@@ -699,7 +699,7 @@ export function CreateTaskForm({
 
   const [favoriteTask, setFavoriteTask] = React.useState<TaskFavorite>(defaultFavoriteTask());
   const [favoriteTaskTitleError, setFavoriteTaskTitleError] = React.useState(false);
-  const [saving, setSaving] = React.useState(false);
+  const [savingFavoriteTask, setSavingFavoriteTask] = React.useState(false);
 
   const [taskRequests, setTaskRequests] = React.useState<TaskRequest[]>(() => [defaultTask()]);
   const [selectedTaskIdx, setSelectedTaskIdx] = React.useState(0);
@@ -803,11 +803,11 @@ export function CreateTaskForm({
       return;
     }
 
-    setSaving(true);
+    setSavingFavoriteTask(true);
     try {
-      setSaving(true);
+      setSavingFavoriteTask(true);
       await submitFavoriteTask(favoriteTask);
-      setSaving(false);
+      setSavingFavoriteTask(false);
       onSuccessFavoriteTask &&
         onSuccessFavoriteTask(
           `${!favoriteTask.id ? `Created` : `Edited`}  favorite task successfully`,
@@ -816,7 +816,7 @@ export function CreateTaskForm({
       setOpenFavoriteDialog(false);
       setCallToUpdateFavoriteTask(false);
     } catch (e) {
-      setSaving(false);
+      setSavingFavoriteTask(false);
       onFailFavoriteTask && onFailFavoriteTask(e as Error, favoriteTask);
     }
   };
@@ -1023,7 +1023,7 @@ export function CreateTaskForm({
           cancelText="Back"
           open={openFavoriteDialog}
           title={callToDeleteFavoriteTask ? 'Confirm Delete' : 'Favorite Task'}
-          submitting={callToDeleteFavoriteTask ? deletingFavoriteTask : saving}
+          submitting={callToDeleteFavoriteTask ? deletingFavoriteTask : savingFavoriteTask}
           onClose={() => {
             setOpenFavoriteDialog(false);
             setCallToDeleteFavoriteTask(false);
