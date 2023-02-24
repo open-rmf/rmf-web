@@ -779,7 +779,6 @@ export function CreateTaskForm({
       onSuccess && onSuccess(taskRequests);
       return;
     }
-    setSubmitting(true);
     try {
       setSubmitting(true);
       await submitTasks(taskRequests);
@@ -804,8 +803,6 @@ export function CreateTaskForm({
     if (!submitFavoriteTask) {
       return;
     }
-
-    setSavingFavoriteTask(true);
     try {
       setSavingFavoriteTask(true);
       await submitFavoriteTask(favoriteTaskBuffer);
@@ -829,8 +826,6 @@ export function CreateTaskForm({
     if (!deleteFavoriteTask) {
       return;
     }
-
-    setDeletingFavoriteTask(true);
     try {
       setDeletingFavoriteTask(true);
       await deleteFavoriteTask(favoriteTaskBuffer);
