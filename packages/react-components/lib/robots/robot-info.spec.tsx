@@ -22,18 +22,17 @@ describe('RobotInfo', () => {
     // TODO: use a less convoluted test when
     // https://github.com/testing-library/react-testing-library/issues/1160
     // is resolved.
-    // expect(() =>
-    //   root.getByText((_, node) => {
-    //     if (!node) {
-    //       return false;
-    //     }
-    //     const hasText = (node) => node.textContent === new Date(0).toLocaleString();
-    //     const nodeHasText = hasText(node);
-    //     const childrenDontHaveText = Array.from(node.children).every((child) => !hasText(child));
-    //     return nodeHasText && childrenDontHaveText;
-    //   }),
-    // ).not.toThrow();
-    expect(() => root.getByText(new Date(0).toLocaleString())).not.toThrow();
+    expect(() =>
+      root.getByText((_, node) => {
+        if (!node) {
+          return false;
+        }
+        const hasText = (node) => node.textContent === new Date(0).toLocaleString();
+        const nodeHasText = hasText(node);
+        const childrenDontHaveText = Array.from(node.children).every((child) => !hasText(child));
+        return nodeHasText && childrenDontHaveText;
+      }),
+    ).not.toThrow();
   });
 
   describe('Task status', () => {
