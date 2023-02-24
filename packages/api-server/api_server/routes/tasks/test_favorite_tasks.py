@@ -18,8 +18,12 @@ class TestFavoriteTasksRoute(AppFixture):
         self.create_favorite_task()
         resp = self.client.get("/tasks/favorites_tasks")
         self.assertEqual(200, resp.status_code)
-        start_time = datetime.fromtimestamp(
-            self.favorites_tasks[0].unix_millis_earliest_start_time / 1000
+        start_time = (
+            datetime.fromtimestamp(
+                self.favorites_tasks[0].unix_millis_earliest_start_time / 1000
+            )
+            if self.favorites_tasks[0].unix_millis_earliest_start_time
+            else None
         )
         self.assertEqual(
             int(start_time.strftime("%Y%m%d%H%M%S")),

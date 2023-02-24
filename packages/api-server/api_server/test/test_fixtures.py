@@ -174,6 +174,7 @@ class AppFixture(unittest.TestCase):
             data=mdl.TaskFavoriteRequest(
                 type="task_favorite_request",
                 request=mdl.TaskFavorite(
+                    id=None,
                     name="test",
                     unix_millis_earliest_start_time=1636388410000,
                     priority={},
