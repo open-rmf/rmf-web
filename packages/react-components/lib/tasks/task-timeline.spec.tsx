@@ -14,18 +14,20 @@ describe('Task Timeline', () => {
       // TODO: use a less convoluted test when
       // https://github.com/testing-library/react-testing-library/issues/1160
       // is resolved.
-      expect(() =>
-        root.getByText((_, node) => {
-          if (!node) {
-            return false;
-          }
-          const hasText = (node) =>
-            node.textContent === new Date(p.unix_millis_start_time).toLocaleTimeString();
-          const nodeHasText = hasText(node);
-          const childrenDontHaveText = Array.from(node.children).every((child) => !hasText(child));
-          return nodeHasText && childrenDontHaveText;
-        }),
-      ).not.toThrow();
+      // expect(() =>
+      //   root.getByText((_, node) => {
+      //     if (!node) {
+      //       return false;
+      //     }
+      //     const hasText = (node) =>
+      //       node.textContent === new Date(p.unix_millis_start_time).toLocaleTimeString();
+      //     const nodeHasText = hasText(node);
+      //     const childrenDontHaveText = Array.from(node.children).every((child) => !hasText(child));
+      //     return nodeHasText && childrenDontHaveText;
+      //   }),
+      // ).not.toThrow();
+      const expectedTime = new Date(p.unix_millis_start_time).toLocaleTimeString();
+      expect(() => root.getByText(expectedTime)).not.toThrow();
     });
   });
 
