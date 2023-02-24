@@ -11,6 +11,9 @@ describe('Task Timeline', () => {
     });
     const root = render(<TaskTimeline taskState={task} />);
     Object.values(task.phases).forEach((p) => {
+      // TODO: use a less convoluted test when
+      // https://github.com/testing-library/react-testing-library/issues/1160
+      // is resolved.
       expect(() =>
         root.getByText((_, node) => {
           if (!node) {

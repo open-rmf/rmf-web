@@ -53,6 +53,9 @@ describe('RobotTable', () => {
         ]}
       />,
     );
+    // TODO: use a less convoluted test when
+    // https://github.com/testing-library/react-testing-library/issues/1160
+    // is resolved.
     expect(() =>
       root.getByText((_, node) => {
         if (!node) {

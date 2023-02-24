@@ -19,6 +19,9 @@ describe('RobotInfo', () => {
     expect(() => root.getByText('50.00%')).not.toThrow(); // battery
     expect(() => root.getByText('60%')).not.toThrow(); // task progress
     expect(() => root.getByText(/.*underway/)).not.toThrow();
+    // TODO: use a less convoluted test when
+    // https://github.com/testing-library/react-testing-library/issues/1160
+    // is resolved.
     expect(() =>
       root.getByText((_, node) => {
         if (!node) {
