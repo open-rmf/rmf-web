@@ -23,7 +23,7 @@ class TestFavoriteTasksRoute(AppFixture):
                 self.favorites_tasks[0].unix_millis_earliest_start_time / 1000
             )
             if self.favorites_tasks[0].unix_millis_earliest_start_time
-            else 1636388410000
+            else "1636388410000"
         )
         self.assertEqual(
             int(start_time.strftime("%Y%m%d%H%M%S")),
