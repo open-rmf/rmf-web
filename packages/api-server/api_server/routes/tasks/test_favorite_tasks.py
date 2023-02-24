@@ -1,7 +1,6 @@
 from datetime import datetime
 from uuid import uuid4
 
-from api_server import models as mdl
 from api_server.test import AppFixture, make_task_favorite
 
 
