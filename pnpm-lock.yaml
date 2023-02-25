@@ -78,11 +78,11 @@ importers:
       '@storybook/node-logger': ^6.5.9
       '@storybook/preset-create-react-app': ^3.2.0
       '@storybook/react': ^6.5.8
-      '@testing-library/dom': ^8.14.0
-      '@testing-library/jest-dom': ^5.11.4
-      '@testing-library/react': ^11.2.3
-      '@testing-library/react-hooks': ^5.0.3
-      '@testing-library/user-event': ^12.1.9
+      '@testing-library/dom': ^8.20.0
+      '@testing-library/jest-dom': ^5.16.5
+      '@testing-library/react': ^11.2.7
+      '@testing-library/react-hooks': ^5.1.3
+      '@testing-library/user-event': ^12.8.3
       '@types/debug': ^4.1.5
       '@types/jest': ^26.0.13
       '@types/leaflet': ^1.5.17
@@ -170,11 +170,11 @@ importers:
       '@storybook/node-logger': 6.5.9
       '@storybook/preset-create-react-app': 3.2.0_vpyolfussykyviive6fphdj6k4
       '@storybook/react': 6.5.9_j6ng7opxplwphfhsdrw2xlskou
-      '@testing-library/dom': 8.14.0
-      '@testing-library/jest-dom': 5.16.4
+      '@testing-library/dom': 8.20.0
+      '@testing-library/jest-dom': 5.16.5
       '@testing-library/react': 11.2.7_sfoxds7t5ydpegc3knd667wn6m
       '@testing-library/react-hooks': 5.1.3_sfoxds7t5ydpegc3knd667wn6m
-      '@testing-library/user-event': 12.8.3_ihvo3xlg2d6kwqju3os3zitn3y
+      '@testing-library/user-event': 12.8.3_yxlyej73nftwmh2fiao7paxmlm
       '@types/jest': 26.0.24
       api-server: file:packages/api-server
       canvas: 2.9.3
@@ -238,10 +238,10 @@ importers:
       '@storybook/addon-essentials': ^6.5.8
       '@storybook/addon-links': ^6.5.8
       '@storybook/react': ^6.5.8
-      '@testing-library/dom': ^8.14.0
-      '@testing-library/react': ^11.2.3
-      '@testing-library/react-hooks': ^5.0.3
-      '@testing-library/user-event': ^12.1.9
+      '@testing-library/dom': ^8.20.0
+      '@testing-library/react': ^11.2.7
+      '@testing-library/react-hooks': ^5.1.3
+      '@testing-library/user-event': ^12.8.3
       '@types/crc': ^3.4.0
       '@types/debug': ^4.1.5
       '@types/jasmine': ^3.8.2
@@ -340,10 +340,10 @@ importers:
       '@storybook/addon-essentials': 6.5.9_o7dzebd74uljnceeqkxt3bdnci
       '@storybook/addon-links': 6.5.9_sfoxds7t5ydpegc3knd667wn6m
       '@storybook/react': 6.5.9_nrzqso4m4rnoflfjhxnx5fkfj4
-      '@testing-library/dom': 8.14.0
+      '@testing-library/dom': 8.20.0
       '@testing-library/react': 11.2.7_sfoxds7t5ydpegc3knd667wn6m
       '@testing-library/react-hooks': 5.1.3_sfoxds7t5ydpegc3knd667wn6m
-      '@testing-library/user-event': 12.8.3_ihvo3xlg2d6kwqju3os3zitn3y
+      '@testing-library/user-event': 12.8.3_yxlyej73nftwmh2fiao7paxmlm
       '@types/debug': 4.1.7
       '@types/jasmine': 3.10.6
       '@types/leaflet': 1.7.11
@@ -396,11 +396,11 @@ importers:
       '@storybook/addon-essentials': ^6.5.8
       '@storybook/addon-links': ^6.5.8
       '@storybook/react': ^6.5.8
-      '@testing-library/dom': ^8.14.0
-      '@testing-library/jest-dom': ^5.11.4
-      '@testing-library/react': ^11.2.3
-      '@testing-library/react-hooks': ^5.0.3
-      '@testing-library/user-event': ^12.1.9
+      '@testing-library/dom': ^8.20.0
+      '@testing-library/jest-dom': ^5.16.5
+      '@testing-library/react': ^11.2.7
+      '@testing-library/react-hooks': ^5.1.3
+      '@testing-library/user-event': ^12.8.3
       '@types/debug': ^4.1.5
       '@types/history': ^4.7.11
       '@types/jest': ^26.0.13
@@ -443,11 +443,11 @@ importers:
       '@storybook/addon-essentials': 6.5.9_bhx7f7jsq63mixbhnqhkmszprm
       '@storybook/addon-links': 6.5.9_sfoxds7t5ydpegc3knd667wn6m
       '@storybook/react': 6.5.9_xnzdybpwipo7vnae3bcyo56wxa
-      '@testing-library/dom': 8.14.0
-      '@testing-library/jest-dom': 5.16.4
+      '@testing-library/dom': 8.20.0
+      '@testing-library/jest-dom': 5.16.5
       '@testing-library/react': 11.2.7_sfoxds7t5ydpegc3knd667wn6m
       '@testing-library/react-hooks': 5.1.3_sfoxds7t5ydpegc3knd667wn6m
-      '@testing-library/user-event': 12.8.3_ihvo3xlg2d6kwqju3os3zitn3y
+      '@testing-library/user-event': 12.8.3_yxlyej73nftwmh2fiao7paxmlm
       '@types/debug': 4.1.7
       '@types/history': 4.7.11
       '@types/jest': 26.0.24
@@ -506,6 +506,10 @@ importers:
     specifiers: {}
 
 packages:
+
+  /@adobe/css-tools/4.2.0:
+    resolution: {integrity: sha512-E09FiIft46CmH5Qnjb0wsW54/YQd69LsxeKUOWawmws1XWvyFGURnAChH0mlr7YPFR1ofwvUQfcL0J3lMxXqPA==}
+    dev: true
 
   /@ampproject/remapping/2.2.0:
     resolution: {integrity: sha512-qRmjj8nj9qmLTQXXmaR1cck3UXSRMPrbsLJAasZpF+t3riI71BXed5ebIOYwQntykeZuhjsdweEc9BxH5Jc26w==}
@@ -6288,13 +6292,13 @@ packages:
       pretty-format: 26.6.2
     dev: true
 
-  /@testing-library/dom/8.14.0:
-    resolution: {integrity: sha512-m8FOdUo77iMTwVRCyzWcqxlEIk+GnopbrRI15a0EaLbpZSCinIVI4kSQzWhkShK83GogvEFJSsHF3Ws0z1vrqA==}
+  /@testing-library/dom/8.20.0:
+    resolution: {integrity: sha512-d9ULIT+a4EXLX3UU8FBjauG9NnsZHkHztXoIcTsOKoOw030fyjheN9svkTULjJxtYag9DZz5Jz5qkWZDPxTFwA==}
     engines: {node: '>=12'}
     dependencies:
       '@babel/code-frame': 7.18.6
       '@babel/runtime': 7.18.6
-      '@types/aria-query': 4.2.2
+      '@types/aria-query': 5.0.1
       aria-query: 5.0.0
       chalk: 4.1.2
       dom-accessibility-api: 0.5.14
@@ -6302,15 +6306,15 @@ packages:
       pretty-format: 27.5.1
     dev: true
 
-  /@testing-library/jest-dom/5.16.4:
-    resolution: {integrity: sha512-Gy+IoFutbMQcky0k+bqqumXZ1cTGswLsFqmNLzNdSKkU9KGV2u9oXhukCbbJ9/LRPKiqwxEE8VpV/+YZlfkPUA==}
+  /@testing-library/jest-dom/5.16.5:
+    resolution: {integrity: sha512-N5ixQ2qKpi5OLYfwQmUb/5mSV9LneAcaUfp32pn4yCnpb8r/Yz0pXFPck21dIicKmi+ta5WRAknkZCfA8refMA==}
     engines: {node: '>=8', npm: '>=6', yarn: '>=1'}
     dependencies:
+      '@adobe/css-tools': 4.2.0
       '@babel/runtime': 7.18.6
       '@types/testing-library__jest-dom': 5.14.5
       aria-query: 5.0.0
       chalk: 3.0.0
-      css: 3.0.0
       css.escape: 1.5.1
       dom-accessibility-api: 0.5.14
       lodash: 4.17.21
@@ -6352,14 +6356,14 @@ packages:
       react-dom: 17.0.2_react@17.0.2
     dev: true
 
-  /@testing-library/user-event/12.8.3_ihvo3xlg2d6kwqju3os3zitn3y:
+  /@testing-library/user-event/12.8.3_yxlyej73nftwmh2fiao7paxmlm:
     resolution: {integrity: sha512-IR0iWbFkgd56Bu5ZI/ej8yQwrkCv8Qydx6RzwbKz9faXazR/+5tvYKsZQgyXJiwgpcva127YO6JcWy7YlCfofQ==}
     engines: {node: '>=10', npm: '>=6'}
     peerDependencies:
       '@testing-library/dom': '>=7.21.4'
     dependencies:
       '@babel/runtime': 7.18.6
-      '@testing-library/dom': 8.14.0
+      '@testing-library/dom': 8.20.0
     dev: true
 
   /@tootallnate/once/1.1.2:
@@ -6369,6 +6373,10 @@ packages:
 
   /@types/aria-query/4.2.2:
     resolution: {integrity: sha512-HnYpAE1Y6kRyKM/XkEuiRQhTHvkzMBurTHnpFLYLBGPIylZNPs9jJcuOOYWxPLJCSEtmZT0Y8rHDokKN7rRTig==}
+    dev: true
+
+  /@types/aria-query/5.0.1:
+    resolution: {integrity: sha512-XTIieEY+gvJ39ChLcB4If5zHtPxt3Syj5rgZR+e1ctpmK8NjPf0zFqsz4JpLJT0xla9GFDKjy8Cpu331nrmE1Q==}
     dev: true
 
   /@types/babel__core/7.1.19:
@@ -10050,14 +10058,6 @@ packages:
       urix: 0.1.0
     dev: true
 
-  /css/3.0.0:
-    resolution: {integrity: sha512-DG9pFfwOrzc+hawpmqX/dHYHJG+Bsdb0klhyi1sDneOgGOXy9wQIC8hzyVp1e4NRYDBdxcylvywPkkXCHAzTyQ==}
-    dependencies:
-      inherits: 2.0.4
-      source-map: 0.6.1
-      source-map-resolve: 0.6.0
-    dev: true
-
   /cssdb/4.4.0:
     resolution: {integrity: sha512-LsTAR1JPEM9TpGhl/0p3nQecC2LJ0kD8X5YARu1hk/9I1gril5vDtMZyNxcEpxxDj34YNck/ucjuoUd66K03oQ==}
     dev: true
@@ -10318,6 +10318,7 @@ packages:
     dependencies:
       ms: 2.1.2
       supports-color: 6.1.0
+    dev: true
 
   /decamelize/1.2.0:
     resolution: {integrity: sha512-z2S+W9X73hAUUki+N+9Za2lBlun89zigOyGrsax+KUQ6wKW4ZoWpEYBkGhQjwAjjDCkWxhY0VKEhk8wzY7F5cA==}
@@ -11966,7 +11967,7 @@ packages:
     dependencies:
       loader-utils: 2.0.2
       schema-utils: 3.1.1
-      webpack: 4.46.0
+      webpack: 4.46.0_webpack-cli@4.10.0
     dev: true
 
   /file-system-cache/1.1.0:
@@ -12162,7 +12163,7 @@ packages:
       debug:
         optional: true
     dependencies:
-      debug: 4.3.4_supports-color@6.1.0
+      debug: 4.3.4
 
   /for-in/1.0.2:
     resolution: {integrity: sha512-7EwmXrOjyL+ChxMhmG5lnW9MPt1aIeZEwKhQzoBUdTV0N3zuwWDZYVJatDvZ2OyzPUvdIAZDsCetk3coyMfcnQ==}
@@ -20065,14 +20066,6 @@ packages:
       urix: 0.1.0
     dev: true
 
-  /source-map-resolve/0.6.0:
-    resolution: {integrity: sha512-KXBr9d/fO/bWo97NXsPIAW1bFSBOuCnjbNTBMO7N59hsv5i9yzRDfcYwwt0l04+VqnKC+EwzvJZIP/qkuMgR/w==}
-    deprecated: See https://github.com/lydell/source-map-resolve#deprecated
-    dependencies:
-      atob: 2.1.2
-      decode-uri-component: 0.2.0
-    dev: true
-
   /source-map-support/0.5.21:
     resolution: {integrity: sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w==}
     dependencies:
@@ -20607,6 +20600,7 @@ packages:
     engines: {node: '>=6'}
     dependencies:
       has-flag: 3.0.0
+    dev: true
 
   /supports-color/7.2.0:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
@@ -21869,7 +21863,7 @@ packages:
       mime: 2.6.0
       mkdirp: 0.5.6
       range-parser: 1.2.1
-      webpack: 4.46.0
+      webpack: 4.46.0_webpack-cli@4.10.0
       webpack-log: 2.0.0
     dev: true
 
