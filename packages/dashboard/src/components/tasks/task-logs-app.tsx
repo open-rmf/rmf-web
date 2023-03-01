@@ -31,7 +31,8 @@ export const TaskLogsApp = createMicroApp('Task Logs', () => {
             )
           ).data;
           setTaskLogs(logs);
-        } catch (err) {
+        } catch {
+          console.log(`Failed to fetch task logs for ${task.booking.id}`);
           setTaskLogs(null);
         }
         setTaskState(task);
