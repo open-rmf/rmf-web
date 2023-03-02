@@ -17,7 +17,7 @@ class TaskFavoriteResponseItem(BaseModel):
 
 
 class TaskFavoriteResponseItem1(BaseModel):
-    success: Literal[False]
+    success: Optional[Literal[False]] = None
     errors: Optional[List[error.Error]] = Field(
         None, description="Any error messages explaining why the request failed"
     )
@@ -26,6 +26,6 @@ class TaskFavoriteResponseItem1(BaseModel):
 class TaskFavoriteResponse(BaseModel):
     __root__: Union[TaskFavoriteResponseItem, TaskFavoriteResponseItem1] = Field(
         ...,
-        description="Response to a task dispatch request",
-        title="Task Dispatch Response",
+        description="Response to a task favorite request",
+        title="Task Favorite Response",
     )
