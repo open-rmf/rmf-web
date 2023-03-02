@@ -10,16 +10,8 @@ import {
   GridCellParams,
   GridFilterModel,
   GridSortModel,
-  GridToolbarColumnsButton,
-  GridToolbarContainer,
-  GridToolbarContainerProps,
-  GridToolbarDensitySelector,
-  GridToolbarExportContainer,
-  GridToolbarFilterButton,
 } from '@mui/x-data-grid';
 import { styled, TextField } from '@mui/material';
-import { ButtonProps } from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
 import * as React from 'react';
 import { TaskState, Status } from 'api-client';
 
@@ -83,7 +75,6 @@ export interface TableDataGridState {
   onPageSizeChange: (newPageSize: number) => void;
   setFilterFields: React.Dispatch<React.SetStateAction<FilterFields>>;
   setSortFields: React.Dispatch<React.SetStateAction<SortFields>>;
-  exportAllTasks: () => Promise<void>;
 }
 
 export function TaskDataGridTable({
@@ -93,7 +84,6 @@ export function TaskDataGridTable({
   onPageSizeChange,
   setFilterFields,
   setSortFields,
-  exportAllTasks,
 }: TableDataGridState): JSX.Element {
   const handleEvent: GridEventListener<'rowClick'> = (
     params: GridRowParams,
@@ -225,25 +215,6 @@ export function TaskDataGridTable({
     [setSortFields],
   );
 
-  const FullExportMenuItem = () => {
-    return <MenuItem onClick={exportAllTasks}>Export CSV</MenuItem>;
-  };
-
-  const FullExportButton = (props: ButtonProps) => (
-    <GridToolbarExportContainer {...props}>
-      <FullExportMenuItem />
-    </GridToolbarExportContainer>
-  );
-
-  const ExportToolbar = (props: GridToolbarContainerProps) => (
-    <GridToolbarContainer {...props}>
-      <GridToolbarColumnsButton />
-      <GridToolbarFilterButton />
-      <GridToolbarDensitySelector />
-      <FullExportButton />
-    </GridToolbarContainer>
-  );
-
   return (
     <div style={{ height: '100%', width: '100%' }}>
       <StyledDataGrid
@@ -284,7 +255,6 @@ export function TaskDataGridTable({
           }
           return '';
         }}
-        components={{ Toolbar: ExportToolbar }}
       />
     </div>
   );

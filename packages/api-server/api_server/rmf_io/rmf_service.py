@@ -61,7 +61,7 @@ class RmfService:
         self._api_sub.destroy()
         self._api_pub.destroy()
 
-    async def call(self, payload: str, timeout: float = 1) -> str:
+    async def call(self, payload: str, timeout: float = 5) -> str:
         req_id = str(uuid4())
         msg = ApiRequest(request_id=req_id, json_msg=payload)
         fut = Future()

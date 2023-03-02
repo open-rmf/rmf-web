@@ -1,5 +1,8 @@
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
+import DownloadIcon from '@mui/icons-material/Download';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import { Grid, IconButton, TableContainer, Toolbar, Tooltip } from '@mui/material';
 import { TaskRequest, TaskState } from 'api-client';
 import React from 'react';
@@ -18,7 +21,7 @@ import { AppControllerContext, ResourcesContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
-import { parseTasksFile } from './utils';
+import { parseTasksFile, downloadCsvFull, downloadCsvMinimal } from './utils';
 
 export const TasksApp = React.memo(
   React.forwardRef(
@@ -176,57 +179,6 @@ export const TasksApp = React.memo(
         return () => subs.forEach((s) => s.unsubscribe());
       }, [rmf, forceRefresh, tasksState.page, filterFields.model, sortFields.model]);
 
-      const exportAllTasksToCsv = async () => {
-        if (!rmf) {
-          return;
-        }
-
-        const now = new Date();
-        const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          `0,${now.getTime()}`,
-          undefined,
-          undefined,
-          undefined,
-          '-unix_millis_start_time',
-          undefined,
-        );
-        const allTasks = resp.data as TaskState[];
-        if (!allTasks || !allTasks.length) {
-          return;
-        }
-
-        const columnSeparator = ';';
-        const rowSeparator = '\n';
-        const keys = Object.keys(allTasks[0]);
-        let csvContent = keys.join(columnSeparator) + rowSeparator;
-        allTasks.forEach((task) => {
-          keys.forEach((k) => {
-            type TaskStateKey = keyof typeof task;
-            const columnKey = k as TaskStateKey;
-            const value =
-              task[columnKey] === null || task[columnKey] === undefined
-                ? ''
-                : JSON.stringify(task[columnKey]);
-            csvContent += value + columnSeparator;
-          });
-          csvContent += rowSeparator;
-        });
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${now.toJSON().slice(0, 10)}_task_history.csv`;
-        a.click();
-
-        setTimeout(() => {
-          URL.revokeObjectURL(url);
-        });
-      };
-
       const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
         async (taskRequests) => {
           if (!rmf) {
@@ -245,6 +197,51 @@ export const TasksApp = React.memo(
         [rmf],
       );
 
+      const getAllTasks = async (timestamp: Date) => {
+        if (!rmf) {
+          return [];
+        }
+
+        const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          `0,${timestamp.getTime()}`,
+          undefined,
+          undefined,
+          undefined,
+          '-unix_millis_start_time',
+          undefined,
+        );
+        const allTasks = resp.data as TaskState[];
+        return allTasks;
+      };
+
+      const exportTasksToCsv = async (minimal: boolean) => {
+        const now = new Date();
+        const allTasks = await getAllTasks(now);
+        if (!allTasks || !allTasks.length) {
+          return;
+        }
+        if (minimal) {
+          downloadCsvMinimal(now, allTasks);
+        } else {
+          downloadCsvFull(now, allTasks);
+        }
+      };
+
+      const [anchorExportElement, setAnchorExportElement] = React.useState<null | HTMLElement>(
+        null,
+      );
+      const openExportMenu = Boolean(anchorExportElement);
+      const handleClickExportMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorExportElement(event.currentTarget);
+      };
+      const handleCloseExportMenu = () => {
+        setAnchorExportElement(null);
+      };
+
       return (
         <Window
           ref={ref}
@@ -252,7 +249,47 @@ export const TasksApp = React.memo(
           onClose={onClose}
           toolbar={
             <Toolbar variant="dense">
-              <Tooltip title="Refresh" color="inherit">
+              <div>
+                <IconButton
+                  id="export-button"
+                  aria-controls={openExportMenu ? 'export-menu' : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={openExportMenu ? 'true' : undefined}
+                  onClick={handleClickExportMenu}
+                  color="inherit"
+                >
+                  <DownloadIcon />
+                </IconButton>
+                <Menu
+                  id="export-menu"
+                  MenuListProps={{
+                    'aria-labelledby': 'export-button',
+                  }}
+                  anchorEl={anchorExportElement}
+                  open={openExportMenu}
+                  onClose={handleCloseExportMenu}
+                >
+                  <MenuItem
+                    onClick={() => {
+                      handleCloseExportMenu();
+                      exportTasksToCsv(true);
+                    }}
+                    disableRipple
+                  >
+                    Export Minimal
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      handleCloseExportMenu();
+                      exportTasksToCsv(false);
+                    }}
+                    disableRipple
+                  >
+                    Export Full
+                  </MenuItem>
+                </Menu>
+              </div>
+              <Tooltip title="Refresh" color="inherit" placement="top">
                 <IconButton
                   onClick={() => {
                     setForceRefresh((prev) => prev + 1);
@@ -262,7 +299,7 @@ export const TasksApp = React.memo(
                   <RefreshIcon />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Create task" color="inherit">
+              <Tooltip title="Create task" color="inherit" placement="top">
                 <IconButton onClick={() => setOpenCreateTaskForm(true)} aria-label="Create Task">
                   <AddOutlinedIcon />
                 </IconButton>
@@ -279,7 +316,6 @@ export const TasksApp = React.memo(
                   onTaskClick={(_ev, task) => AppEvents.taskSelect.next(task)}
                   setFilterFields={setFilterFields}
                   setSortFields={setSortFields}
-                  exportAllTasks={exportAllTasksToCsv}
                   onPageChange={(newPage: number) =>
                     setTasksState((old) => ({ ...old, page: newPage + 1 }))
                   }
