@@ -2,6 +2,8 @@
 
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 
+process.env.TZ = 'Asia/Singapore';
+
 const localIdentifier = `${Date.now().toString()}+${Math.random()}`;
 
 module.exports = (config) => {
@@ -122,6 +124,10 @@ module.exports = (config) => {
         os_version: 'Big Sur',
       },
     },
+    captureTimeout: 210000,
+    browserDisconnectTolerance: 3,
+    browserDisconnectTimeout: 210000,
+    browserNoActivityTimeout: 210000,
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher

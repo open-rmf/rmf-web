@@ -3,14 +3,14 @@ import { EventState, Status, TaskEventLog, TaskState } from 'api-client';
 import { format } from 'date-fns';
 
 interface TaskLogProps {
-  taskLog: TaskEventLog;
-  taskState: TaskState;
+  taskLog: TaskEventLog | null;
+  taskState: TaskState | null;
   fetchTaskLogs?: () => Promise<never[] | undefined>;
 }
 
 export function TaskLogs({ taskLog, taskState }: TaskLogProps) {
   const theme = useTheme();
-  const phaseIds = taskLog.phases ? Object.keys(taskLog.phases) : [];
+  const phaseIds = taskLog && taskLog.phases ? Object.keys(taskLog.phases) : [];
 
   function mapEventColor(event: EventState | null) {
     // TODO(MXG): We should make this color selection consistent with the color
@@ -50,15 +50,15 @@ export function TaskLogs({ taskLog, taskState }: TaskLogProps) {
   return (
     <Box>
       <Typography variant="h5" style={{ textAlign: 'center' }} gutterBottom>
-        {taskLog.task_id}
+        {taskState && taskState.booking.id}
       </Typography>
       <Divider />
       {phaseIds.length > 0 ? (
         phaseIds.map((id: string) => {
-          const getEventObj: any = taskLog.phases ? taskLog.phases[id] : null;
+          const getEventObj: any = taskLog && taskLog.phases ? taskLog.phases[id] : null;
           const events = getEventObj ? getEventObj['events'] : {};
           const eventIds = events ? Object.keys(events) : [];
-          const phaseStateObj = taskState.phases ? taskState.phases[id] : null;
+          const phaseStateObj = taskState && taskState.phases ? taskState.phases[id] : null;
           const eventStates = phaseStateObj ? phaseStateObj.events : {};
 
           return (

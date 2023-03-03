@@ -16,29 +16,34 @@ export const TaskLogsApp = createMicroApp('Task Logs', () => {
     }
     const sub = AppEvents.taskSelect.subscribe((task) => {
       if (!task) {
-        setTaskLogs(null);
+        setTaskState(null);
         setTaskLogs(null);
         return;
       }
       (async () => {
         // TODO: Get full logs, then subscribe to log updates for new logs.
         // Unlike with state events, we can't just subscribe to logs updates.
-        const logs = (
-          await rmf.tasksApi.getTaskLogTasksTaskIdLogGet(
-            task.booking.id,
-            `0,${Number.MAX_SAFE_INTEGER}`,
-          )
-        ).data;
+        try {
+          const logs = (
+            await rmf.tasksApi.getTaskLogTasksTaskIdLogGet(
+              task.booking.id,
+              `0,${Number.MAX_SAFE_INTEGER}`,
+            )
+          ).data;
+          setTaskLogs(logs);
+        } catch {
+          console.log(`Failed to fetch task logs for ${task.booking.id}`);
+          setTaskLogs(null);
+        }
         setTaskState(task);
-        setTaskLogs(logs);
       })();
     });
     return () => sub.unsubscribe();
   }, [rmf]);
 
-  return taskLogs && taskState ? (
+  return (
     <CardContent>
       <TaskLogs taskLog={taskLogs} taskState={taskState} />
     </CardContent>
-  ) : null;
+  );
 });
