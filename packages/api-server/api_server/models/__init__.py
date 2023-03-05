@@ -33,6 +33,9 @@ from .rmf_api.skip_phase_request import TaskPhaseSkipRequest
 from .rmf_api.skip_phase_response import SkipPhaseResponse
 from .rmf_api.task_discovery_request import TaskDiscoveryRequest
 from .rmf_api.task_discovery_response import TaskDiscovery
+from .rmf_api.task_favorite import TaskFavorite
+from .rmf_api.task_favorite_request import TaskFavoriteRequest
+from .rmf_api.task_favorite_response import *
 from .rmf_api.task_log import Phases, TaskEventLog
 from .rmf_api.task_log_request import TaskLogRequest
 from .rmf_api.task_log_response import TaskLogResponse

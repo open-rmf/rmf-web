@@ -2100,6 +2100,136 @@ export interface TaskEventLog {
 /**
  *
  * @export
+ * @interface TaskFavorite
+ */
+export interface TaskFavorite {
+  /**
+   *
+   * @type {string}
+   * @memberof TaskFavorite
+   */
+  id?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskFavorite
+   */
+  name: string;
+  /**
+   * (Optional) The earliest time that this task may start
+   * @type {number}
+   * @memberof TaskFavorite
+   */
+  unix_millis_earliest_start_time?: number;
+  /**
+   * (Optional) The priority of this task.
+   * @type {object}
+   * @memberof TaskFavorite
+   */
+  priority?: object;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskFavorite
+   */
+  category: string;
+  /**
+   * A description of the task. Task properties by category
+   * @type {any}
+   * @memberof TaskFavorite
+   */
+  description: any;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskFavorite
+   */
+  user?: string;
+}
+/**
+ *
+ * @export
+ * @interface TaskFavoriteRequest
+ */
+export interface TaskFavoriteRequest {
+  /**
+   * Indicate that this is a task favorite request
+   * @type {string}
+   * @memberof TaskFavoriteRequest
+   */
+  type: TaskFavoriteRequestTypeEnum;
+  /**
+   *
+   * @type {TaskFavorite}
+   * @memberof TaskFavoriteRequest
+   */
+  request: TaskFavorite;
+}
+
+export const TaskFavoriteRequestTypeEnum = {
+  TaskFavoriteRequest: 'task_favorite_request',
+} as const;
+
+export type TaskFavoriteRequestTypeEnum =
+  typeof TaskFavoriteRequestTypeEnum[keyof typeof TaskFavoriteRequestTypeEnum];
+
+/**
+ *
+ * @export
+ * @interface TaskFavoriteResponseItem
+ */
+export interface TaskFavoriteResponseItem {
+  /**
+   *
+   * @type {boolean}
+   * @memberof TaskFavoriteResponseItem
+   */
+  success: TaskFavoriteResponseItemSuccessEnum;
+  /**
+   *
+   * @type {TaskFavorite}
+   * @memberof TaskFavoriteResponseItem
+   */
+  data: TaskFavorite;
+}
+
+export const TaskFavoriteResponseItemSuccessEnum = {
+  True: true,
+} as const;
+
+export type TaskFavoriteResponseItemSuccessEnum =
+  typeof TaskFavoriteResponseItemSuccessEnum[keyof typeof TaskFavoriteResponseItemSuccessEnum];
+
+/**
+ *
+ * @export
+ * @interface TaskFavoriteResponseItem1
+ */
+export interface TaskFavoriteResponseItem1 {
+  /**
+   *
+   * @type {boolean}
+   * @memberof TaskFavoriteResponseItem1
+   */
+  success: TaskFavoriteResponseItem1SuccessEnum;
+  /**
+   * Any error messages explaining why the request failed
+   * @type {Array<Error>}
+   * @memberof TaskFavoriteResponseItem1
+   */
+  errors?: Array<Error>;
+}
+
+export const TaskFavoriteResponseItem1SuccessEnum = {
+  False: false,
+} as const;
+
+export type TaskFavoriteResponseItem1SuccessEnum =
+  typeof TaskFavoriteResponseItem1SuccessEnum[keyof typeof TaskFavoriteResponseItem1SuccessEnum];
+
+/**
+ *
+ * @export
  * @interface TaskInterruptionRequest
  */
 export interface TaskInterruptionRequest {
@@ -6279,6 +6409,85 @@ export class LiftsApi extends BaseAPI {
 export const TasksApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
+     *
+     * @summary Delete Favorite Task
+     * @param {string} favoriteTaskId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete: async (
+      favoriteTaskId: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'favoriteTaskId' is not null or undefined
+      assertParamExists(
+        'deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete',
+        'favoriteTaskId',
+        favoriteTaskId,
+      );
+      const localVarPath = `/tasks/favorite_task/{favorite_task_id}`.replace(
+        `{${'favorite_task_id'}}`,
+        encodeURIComponent(String(favoriteTaskId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get Favorites Tasks
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getFavoritesTasksTasksFavoritesTasksGet: async (
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/tasks/favorites_tasks`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Available in socket.io
      * @summary Get Task Log
      * @param {string} taskId task_id
@@ -6504,6 +6713,55 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
         dispatchTaskRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Post Favorite Task
+     * @param {TaskFavoriteRequest} taskFavoriteRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postFavoriteTaskTasksFavoriteTaskPost: async (
+      taskFavoriteRequest: TaskFavoriteRequest,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'taskFavoriteRequest' is not null or undefined
+      assertParamExists(
+        'postFavoriteTaskTasksFavoriteTaskPost',
+        'taskFavoriteRequest',
+        taskFavoriteRequest,
+      );
+      const localVarPath = `/tasks/favorite_task`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        taskFavoriteRequest,
         localVarRequestOptions,
         configuration,
       );
@@ -6996,6 +7254,37 @@ export const TasksApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = TasksApiAxiosParamCreator(configuration);
   return {
     /**
+     *
+     * @summary Delete Favorite Task
+     * @param {string} favoriteTaskId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete(
+      favoriteTaskId: string,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete(
+          favoriteTaskId,
+          options,
+        );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Get Favorites Tasks
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getFavoritesTasksTasksFavoritesTasksGet(
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskFavorite>>> {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.getFavoritesTasksTasksFavoritesTasksGet(options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
      * Available in socket.io
      * @summary Get Task Log
      * @param {string} taskId task_id
@@ -7083,6 +7372,26 @@ export const TasksApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.postDispatchTaskTasksDispatchTaskPost(
           dispatchTaskRequest,
+          options,
+        );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Post Favorite Task
+     * @param {TaskFavoriteRequest} taskFavoriteRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async postFavoriteTaskTasksFavoriteTaskPost(
+      taskFavoriteRequest: TaskFavoriteRequest,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskFavoriteResponseItem>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.postFavoriteTaskTasksFavoriteTaskPost(
+          taskFavoriteRequest,
           options,
         );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -7284,6 +7593,32 @@ export const TasksApiFactory = function (
   const localVarFp = TasksApiFp(configuration);
   return {
     /**
+     *
+     * @summary Delete Favorite Task
+     * @param {string} favoriteTaskId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete(
+      favoriteTaskId: string,
+      options?: any,
+    ): AxiosPromise<any> {
+      return localVarFp
+        .deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete(favoriteTaskId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get Favorites Tasks
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getFavoritesTasksTasksFavoritesTasksGet(options?: any): AxiosPromise<Array<TaskFavorite>> {
+      return localVarFp
+        .getFavoritesTasksTasksFavoritesTasksGet(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      * Available in socket.io
      * @summary Get Task Log
      * @param {string} taskId task_id
@@ -7355,6 +7690,21 @@ export const TasksApiFactory = function (
     ): AxiosPromise<TaskDispatchResponseItem> {
       return localVarFp
         .postDispatchTaskTasksDispatchTaskPost(dispatchTaskRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Post Favorite Task
+     * @param {TaskFavoriteRequest} taskFavoriteRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postFavoriteTaskTasksFavoriteTaskPost(
+      taskFavoriteRequest: TaskFavoriteRequest,
+      options?: any,
+    ): AxiosPromise<TaskFavoriteResponseItem> {
+      return localVarFp
+        .postFavoriteTaskTasksFavoriteTaskPost(taskFavoriteRequest, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -7530,6 +7880,36 @@ export const TasksApiFactory = function (
  */
 export class TasksApi extends BaseAPI {
   /**
+   *
+   * @summary Delete Favorite Task
+   * @param {string} favoriteTaskId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete(
+    favoriteTaskId: string,
+    options?: AxiosRequestConfig,
+  ) {
+    return TasksApiFp(this.configuration)
+      .deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete(favoriteTaskId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get Favorites Tasks
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public getFavoritesTasksTasksFavoritesTasksGet(options?: AxiosRequestConfig) {
+    return TasksApiFp(this.configuration)
+      .getFavoritesTasksTasksFavoritesTasksGet(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
    * Available in socket.io
    * @summary Get Task Log
    * @param {string} taskId task_id
@@ -7610,6 +7990,23 @@ export class TasksApi extends BaseAPI {
   ) {
     return TasksApiFp(this.configuration)
       .postDispatchTaskTasksDispatchTaskPost(dispatchTaskRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Post Favorite Task
+   * @param {TaskFavoriteRequest} taskFavoriteRequest
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public postFavoriteTaskTasksFavoriteTaskPost(
+    taskFavoriteRequest: TaskFavoriteRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return TasksApiFp(this.configuration)
+      .postFavoriteTaskTasksFavoriteTaskPost(taskFavoriteRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
