@@ -3,6 +3,7 @@ from typing import List, Optional, Tuple, cast
 
 from fastapi import Body, Depends, HTTPException, Path, Query
 from rx import operators as rxops
+from tortoise.exceptions import IntegrityError
 
 from api_server import models as mdl
 from api_server.dependencies import (
@@ -217,3 +218,33 @@ async def post_undo_skip_phase(
     request: mdl.UndoPhaseSkipRequest = Body(...),
 ):
     return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
+
+
+@router.post(
+    "/favorite_task",
+    response_model=mdl.TaskFavoriteResponseItem,
+    responses={400: {"model": mdl.TaskFavoriteResponseItem1}},
+)
+async def post_favorite_task(
+    request: mdl.TaskFavoriteRequest = Body(...),
+    task_repo: TaskRepository = Depends(task_repo_dep),
+):
+    try:
+        await task_repo.save_task_favorite(request.request)
+    except IntegrityError as e:
+        raise HTTPException(422, str(e)) from e
+
+
+@router.get("/favorites_tasks", response_model=List[mdl.TaskFavorite])
+async def get_favorites_tasks(
+    task_repo: TaskRepository = Depends(task_repo_dep),
+):
+    return await task_repo.get_all_favorites_tasks()
+
+
+@router.delete("/favorite_task/{favorite_task_id}")
+async def delete_favorite_task(
+    favorite_task_id: str, task_repo: TaskRepository = Depends(task_repo_dep)
+):
+    favorite_task = await task_repo.get_favorite_task_by_id(favorite_task_id)
+    await favorite_task.delete()

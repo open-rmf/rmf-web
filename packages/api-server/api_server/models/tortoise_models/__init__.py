@@ -22,6 +22,7 @@ from .tasks import (
     TaskEventLogPhasesEvents,
     TaskEventLogPhasesEventsLog,
     TaskEventLogPhasesLog,
+    TaskFavorite,
     TaskState,
 )
 from .user import *

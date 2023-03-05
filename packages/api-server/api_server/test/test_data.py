@@ -21,6 +21,7 @@ from api_server.models import (
     Lift,
     LiftState,
     TaskEventLog,
+    TaskFavorite,
     TaskState,
 )
 
@@ -407,6 +408,38 @@ def make_task_state(task_id: str = "test_task") -> TaskState:
     )
     sample_task["booking"]["id"] = task_id
     return TaskState(**sample_task)
+
+
+def make_task_favorite(favorite_task_id: str = "default_id") -> TaskFavorite:
+    sample_favorite_task = json.loads(
+        """
+   {
+      "id":"56248943-16e7-459c-a9cc-ad242ff8646d",
+      "name":"Delivery task",
+      "unix_millis_earliest_start_time":1636388410000,
+      "priority":{
+         "type":"binary",
+         "value":0
+      },
+      "category":"delivery",
+      "description":{
+         "pickup":{
+            "place":"",
+            "handler":"",
+            "payload":""
+         },
+         "dropoff":{
+            "place":"",
+            "handler":"",
+            "payload":""
+         }
+      },
+      "user":"stub"
+   }
+    """
+    )
+    sample_favorite_task["id"] = favorite_task_id
+    return TaskFavorite(**sample_favorite_task)
 
 
 def make_task_log(task_id: str) -> TaskEventLog:
