@@ -3,18 +3,18 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, Field
 
 
 class TaskFavorite(BaseModel):
     id: Optional[str] = None
-    name: Optional[str] = Field(None, description="The favorite name")
+    name: str = Field(..., description="The favorite name")
     unix_millis_earliest_start_time: Optional[int] = None
     priority: Optional[Dict[str, Any]] = None
-    category: Optional[str] = None
-    description: Optional[Union[Dict[str, Any], List, str]] = Field(
-        None, description="A description of the task. Task properties by category"
+    category: str
+    description: Any = Field(
+        ..., description="A description of the task. Task properties by category"
     )
     user: Optional[str] = None
