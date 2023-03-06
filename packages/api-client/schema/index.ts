@@ -2771,17 +2771,12 @@ export default {
         type: 'object',
         properties: {
           id: { title: 'Id', type: 'string' },
-          name: { title: 'Name', type: 'string' },
+          name: { title: 'Name', type: 'string', description: 'The favorite name' },
           unix_millis_earliest_start_time: {
             title: 'Unix Millis Earliest Start Time',
             type: 'integer',
-            description: '(Optional) The earliest time that this task may start',
           },
-          priority: {
-            title: 'Priority',
-            type: 'object',
-            description: '(Optional) The priority of this task.',
-          },
+          priority: { title: 'Priority', type: 'object' },
           category: { title: 'Category', type: 'string' },
           description: {
             title: 'Description',
@@ -2815,7 +2810,6 @@ export default {
       },
       TaskFavoriteResponseItem1: {
         title: 'TaskFavoriteResponseItem1',
-        required: ['success'],
         type: 'object',
         properties: {
           success: { title: 'Success', enum: [false], type: 'boolean' },

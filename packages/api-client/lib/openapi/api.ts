@@ -2110,19 +2110,19 @@ export interface TaskFavorite {
    */
   id?: string;
   /**
-   *
+   * The favorite name
    * @type {string}
    * @memberof TaskFavorite
    */
   name: string;
   /**
-   * (Optional) The earliest time that this task may start
+   *
    * @type {number}
    * @memberof TaskFavorite
    */
   unix_millis_earliest_start_time?: number;
   /**
-   * (Optional) The priority of this task.
+   *
    * @type {object}
    * @memberof TaskFavorite
    */
@@ -2211,7 +2211,7 @@ export interface TaskFavoriteResponseItem1 {
    * @type {boolean}
    * @memberof TaskFavoriteResponseItem1
    */
-  success: TaskFavoriteResponseItem1SuccessEnum;
+  success?: TaskFavoriteResponseItem1SuccessEnum;
   /**
    * Any error messages explaining why the request failed
    * @type {Array<Error>}
