@@ -1,4 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/**
+ * FIXME(kp): Make the whole task request system task agnostic.
+ * For that RMF needs to support task discovery and UI schemas https://github.com/open-rmf/rmf_api_msgs/issues/32.
+ */
 
 import {
   Autocomplete,
@@ -23,7 +26,41 @@ import React from 'react';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
 
-type TaskDescription = Record<string, any>;
+// A bunch of manually defined descriptions to avoid using `any`.
+interface DeliveryTaskDescription {
+  pickup: {
+    place: string;
+    handler: string;
+    payload: {
+      sku: string;
+      quantity: number;
+    };
+  };
+  dropoff: {
+    place: string;
+    handler: string;
+    payload: {
+      sku: string;
+      quantity: number;
+    };
+  };
+}
+
+interface LoopTaskDescription {
+  places: string[];
+  rounds: number;
+}
+
+interface CleanTaskDescription {
+  zone: string;
+}
+
+type TaskDescription = DeliveryTaskDescription | LoopTaskDescription | CleanTaskDescription;
+
+interface TaskPriority {
+  type: 'binary';
+  value: number;
+}
 
 const classes = {
   selectFileBtn: 'create-task-selected-file-btn',
@@ -82,7 +119,7 @@ function FormToolbar({ onSelectFileClick }: FormToolbarProps) {
 }
 
 interface DeliveryTaskFormProps {
-  taskDesc: TaskDescription;
+  taskDesc: DeliveryTaskDescription;
   deliveryWaypoints: string[];
   dispensers: string[];
   ingestors: string[];
@@ -293,7 +330,7 @@ function DeliveryTaskForm({
                   ...taskDesc.pickup,
                   payload: {
                     ...taskDesc.pickup.payload,
-                    quantity: parseInt(newValue),
+                    quantity: typeof newValue == 'string' ? parseInt(newValue) : newValue,
                   },
                 },
               })
@@ -371,7 +408,7 @@ function DeliveryTaskForm({
                   ...taskDesc.dropoff,
                   payload: {
                     ...taskDesc.dropoff.payload,
-                    quantity: parseInt(newValue),
+                    quantity: typeof newValue == 'string' ? parseInt(newValue) : newValue,
                   },
                 },
               })
@@ -434,9 +471,9 @@ function PlaceList({ places, onClick }: PlaceListProps) {
 }
 
 interface LoopTaskFormProps {
-  taskDesc: any;
+  taskDesc: LoopTaskDescription;
   loopWaypoints: string[];
-  onChange(loopTaskDescription: any): void;
+  onChange(loopTaskDescription: LoopTaskDescription): void;
 }
 
 function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) {
@@ -498,9 +535,9 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
 }
 
 interface CleanTaskFormProps {
-  taskDesc: any;
+  taskDesc: CleanTaskDescription;
   cleaningZones: string[];
-  onChange(cleanTaskDescription: any): void;
+  onChange(cleanTaskDescription: CleanTaskDescription): void;
 }
 
 function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps) {
@@ -524,31 +561,36 @@ function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps
   );
 }
 
-function defaultCleanTask(): Record<string, any> {
+function defaultCleanTask(): CleanTaskDescription {
   return {
     zone: '',
-    type: '',
   };
 }
 
-function defaultLoopsTask(): Record<string, any> {
+function defaultLoopsTask(): LoopTaskDescription {
   return {
     places: [],
     rounds: 1,
   };
 }
 
-function defaultDeliveryTask(): Record<string, any> {
+function defaultDeliveryTask(): DeliveryTaskDescription {
   return {
     pickup: {
       place: '',
       handler: '',
-      payload: '',
+      payload: {
+        sku: '',
+        quantity: 1,
+      },
     },
     dropoff: {
       place: '',
       handler: '',
-      payload: '',
+      payload: {
+        sku: '',
+        quantity: 1,
+      },
     },
   };
 }
@@ -588,8 +630,8 @@ export interface CreateTaskFormProps
   ingestors?: string[];
   submitTasks?(tasks: TaskRequest[]): Promise<void>;
   tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
-  onSuccess?(tasks: any[]): void;
-  onFail?(error: Error, tasks: any[]): void;
+  onSuccess?(tasks: TaskRequest[]): void;
+  onFail?(error: Error, tasks: TaskRequest[]): void;
 }
 
 export function CreateTaskForm({
@@ -632,7 +674,7 @@ export function CreateTaskForm({
       case 'clean':
         return (
           <CleanTaskForm
-            taskDesc={taskRequest.description as any}
+            taskDesc={taskRequest.description as CleanTaskDescription}
             cleaningZones={cleaningZones}
             onChange={(desc) => handleTaskDescriptionChange('clean', desc)}
           />
@@ -640,7 +682,7 @@ export function CreateTaskForm({
       case 'patrol':
         return (
           <LoopTaskForm
-            taskDesc={taskRequest.description as any}
+            taskDesc={taskRequest.description as LoopTaskDescription}
             loopWaypoints={loopWaypoints}
             onChange={(desc) => handleTaskDescriptionChange('patrol', desc)}
           />
@@ -648,7 +690,7 @@ export function CreateTaskForm({
       case 'delivery':
         return (
           <DeliveryTaskForm
-            taskDesc={taskRequest.description as any}
+            taskDesc={taskRequest.description as DeliveryTaskDescription}
             deliveryWaypoints={deliveryWaypoints}
             dispensers={dispensers}
             ingestors={ingestors}
@@ -766,7 +808,7 @@ export function CreateTaskForm({
                 id="priority"
                 label="Priority"
                 margin="normal"
-                value={(taskRequest.priority as Record<string, any>)?.value || 0}
+                value={(taskRequest.priority as TaskPriority)?.value || 0}
                 onChange={(_ev, val) => {
                   taskRequest.priority = { type: 'binary', value: val };
                   updateTasks();
