@@ -24,7 +24,6 @@ class ScheduledTask(Model):
     created_by = CharField(255)
     schedules: ReverseRelation["ScheduledTaskSchedule"]
     last_ran: Optional[datetime] = DatetimeField(null=True)
-    next_run: Optional[datetime] = DatetimeField(null=True)
 
 
 class ScheduledTaskSchedule(Model):
@@ -50,7 +49,8 @@ class ScheduledTaskSchedule(Model):
         "models.ScheduledTask", related_name="schedules"
     )
     every = SmallIntField(null=True)
-    to = SmallIntField(null=True)
+    start_from = DatetimeField(null=True)
+    until = DatetimeField(null=True)
     period = CharEnumField(Period)
     at = CharField(255, null=True)
 
@@ -59,8 +59,9 @@ class ScheduledTaskSchedule(Model):
             job = schedule.every(self.every)
         else:
             job = schedule.every()
-        if self.to is not None:
-            job = job.to(self.to)
+        if self.until is not None:
+            # schedule uses `datetime.now()`, which is tz naive
+            job = job.until(datetime.fromtimestamp(self.until.timestamp()))
 
         if self.period in (
             ScheduledTaskSchedule.Period.Monday,

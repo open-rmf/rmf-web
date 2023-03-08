@@ -1,10 +1,12 @@
 import asyncio
+from collections.abc import Coroutine
 from datetime import datetime
 
 import schedule
 import tortoise.transactions
 from fastapi import Depends, HTTPException
 from pydantic import BaseModel
+from tortoise.fields import DatetimeField
 
 from api_server.authenticator import user_dep
 from api_server.dependencies import pagination_query
@@ -27,7 +29,12 @@ class PostScheduledTaskRequest(BaseModel):
 
 async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
     await task.fetch_related("schedules")
-    jobs = [x.to_job() for x in task.schedules]
+    try:
+        jobs = [(x, x.to_job()) for x in task.schedules]
+    except schedule.ScheduleValueError as e:
+        # don't allow creating scheduled tasks that never runs
+        raise HTTPException(422, "Task is never going to run") from e
+
     req = DispatchTaskRequest(
         type="dispatch_task_request",
         request=TaskRequest(**task.task_request),
@@ -38,14 +45,29 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
         task.last_ran = datetime.now()
         await task.save()
 
-    for j in jobs:
-        j.do(lambda: asyncio.get_event_loop().create_task(run())).tag(f"task_{task.pk}")
+    def schedule_now(job: schedule.Job, coro: Coroutine):
+        job.do(lambda: asyncio.get_event_loop().create_task(coro)).tag(
+            f"task_{task.pk}"
+        )
 
-    # Job has an operator overload that sorts based on the next run
-    next_run = min(jobs).next_run
-    if next_run != task.next_run:
-        task.next_run = next_run
-        await task.save()
+    # FIXME(kp): schedule does not support starting from specified time, workaround by
+    # scheduling a "trigger" job which schedules the actual job.
+    def schedule_later(job: schedule.Job, start: datetime, coro: Coroutine):
+        start_job = job
+
+        def do():
+            if datetime.now() >= start:
+                schedule_now(job, coro)
+                return schedule.CancelJob
+
+        start_job.do(do)
+
+    now = datetime.now()
+    for t, j in jobs:
+        if t.start_from is not None and now.timestamp() >= t.start_from.timestamp():
+            schedule_now(j, run())
+        else:
+            schedule_later(j, t.start_from, run())
 
 
 @router.post("", status_code=201, response_model=ttm.ScheduledTaskPydantic)
@@ -83,9 +105,6 @@ async def post_scheduled_task(
             await ttm.ScheduledTaskSchedule.bulk_create(schedules)
 
             await schedule_task(scheduled_task, task_repo)
-            if scheduled_task.next_run is None:
-                # don't allow creating scheduled tasks that never runs
-                raise HTTPException(422, "Task is never going to run")
         return await ttm.ScheduledTaskPydantic.from_tortoise_orm(scheduled_task)
     except schedule.ScheduleError as e:
         raise HTTPException(422, str(e)) from e

@@ -13,6 +13,7 @@ class TestScheduledTasksRoute(AppFixture):
             },
             "schedules": [
                 {
+                    "start_from": 0,
                     "period": "day",
                 }
             ],
@@ -35,3 +36,20 @@ class TestScheduledTasksRoute(AppFixture):
         self.assertEqual(404, resp.status_code)
         resp = self.client.get("/scheduled_tasks")
         self.assertEqual(len(before), len(resp.json()))
+
+    def test_cannot_create_task_that_never_runs(self):
+        scheduled_task = {
+            "task_request": {
+                "category": "test",
+                "description": "test",
+            },
+            "schedules": [
+                {
+                    "start_from": 0,
+                    "until": 0,
+                    "period": "day",
+                }
+            ],
+        }
+        resp = self.client.post("/scheduled_tasks", json=scheduled_task)
+        self.assertEqual(422, resp.status_code)
