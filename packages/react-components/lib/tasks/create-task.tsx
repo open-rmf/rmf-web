@@ -621,11 +621,11 @@ function defaultTask(): TaskRequest {
   };
 }
 
-type SelectedDays = [boolean, boolean, boolean, boolean, boolean, boolean, boolean];
+export type RecurringDays = [boolean, boolean, boolean, boolean, boolean, boolean, boolean];
 
 interface DaySelectorSwitchProps {
-  onChange: (checked: SelectedDays) => void;
-  value: SelectedDays;
+  onChange: (checked: RecurringDays) => void;
+  value: RecurringDays;
 }
 
 const DaySelectorSwitch: React.VFC<DaySelectorSwitchProps> = ({ onChange, value }) => {
@@ -672,7 +672,7 @@ export interface CreateTaskFormProps
   deliveryWaypoints?: string[];
   dispensers?: string[];
   ingestors?: string[];
-  submitTasks?(tasks: TaskRequest[]): Promise<void>;
+  submitTasks?(tasks: TaskRequest[], schedule: RecurringDays | null): Promise<void>;
   tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
   onSuccess?(tasks: TaskRequest[]): void;
   onFail?(error: Error, tasks: TaskRequest[]): void;
@@ -707,7 +707,7 @@ export function CreateTaskForm({
     [taskRequest.unix_millis_earliest_start_time],
   );
   const [recurring, setRecurring] = React.useState(false);
-  const [selectedDays, setSelectedDays] = React.useState<SelectedDays>([
+  const [selectedDays, setSelectedDays] = React.useState<RecurringDays>([
     true,
     true,
     true,
@@ -716,6 +716,8 @@ export function CreateTaskForm({
     true,
     true,
   ]);
+  // schedule is not supported with batch upload
+  const scheduleEnabled = taskRequests.length === 1;
 
   const updateTasks = () => {
     setTaskRequests((prev) => {
@@ -784,8 +786,8 @@ export function CreateTaskForm({
     setSubmitting(true);
     try {
       setSubmitting(true);
-      console.log(taskRequests);
-      await submitTasks(taskRequests);
+      const schedule = scheduleEnabled ? null : selectedDays;
+      await submitTasks(taskRequests, schedule);
       setSubmitting(false);
       onSuccess && onSuccess(taskRequests);
     } catch (e) {
@@ -867,7 +869,11 @@ export function CreateTaskForm({
             </Grid>
             <FormControlLabel
               control={
-                <Checkbox checked={recurring} onChange={(ev) => setRecurring(ev.target.checked)} />
+                <Checkbox
+                  disabled={!scheduleEnabled}
+                  checked={scheduleEnabled && recurring}
+                  onChange={(ev) => setRecurring(ev.target.checked)}
+                />
               }
               label="Recurring"
             />
@@ -885,7 +891,9 @@ export function CreateTaskForm({
               />
             </Grid>
           </Grid>
-          {recurring && <DaySelectorSwitch value={selectedDays} onChange={setSelectedDays} />}
+          {scheduleEnabled && recurring && (
+            <DaySelectorSwitch value={selectedDays} onChange={setSelectedDays} />
+          )}
           {renderTaskDescriptionForm()}
         </Grid>
         {taskTitles.length > 1 && (
