@@ -278,6 +278,12 @@ export interface ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskSchedule
    * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf
    */
   at?: string | null;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf
+   */
+  once?: boolean | null;
 }
 /**
  * Which agent (robot) is the task assigned to

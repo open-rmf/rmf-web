@@ -3280,6 +3280,7 @@ export default {
               'Monday: monday<br/>Tuesday: tuesday<br/>Wednesday: wednesday<br/>Thursday: thursday<br/>Friday: friday<br/>Saturday: saturday<br/>Sunday: sunday<br/>Day: day<br/>Hour: hour<br/>Minute: minute',
           },
           at: { title: 'At', maxLength: 255, type: 'string', nullable: true },
+          once: { title: 'Once', type: 'boolean', nullable: true },
         },
         additionalProperties: false,
         description:

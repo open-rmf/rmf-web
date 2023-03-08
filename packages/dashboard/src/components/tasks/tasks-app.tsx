@@ -27,7 +27,7 @@ import { downloadCsvFull, downloadCsvMinimal, parseTasksFile } from './utils';
 
 function toApiSchedule(
   taskRequest: TaskRequest,
-  schedule: RecurringDays,
+  schedule?: RecurringDays,
 ): PostScheduledTaskRequest {
   const start =
     taskRequest.unix_millis_earliest_start_time === undefined
@@ -37,13 +37,17 @@ function toApiSchedule(
   const date = new Date(start);
   const start_from = start.toString();
   const at = `${date.getHours()}:${date.getMinutes()}`;
-  schedule[0] && apiSchedules.push({ period: 'monday', start_from, at });
-  schedule[1] && apiSchedules.push({ period: 'tuesday', start_from, at });
-  schedule[2] && apiSchedules.push({ period: 'wednesday', start_from, at });
-  schedule[3] && apiSchedules.push({ period: 'thursday', start_from, at });
-  schedule[4] && apiSchedules.push({ period: 'friday', start_from, at });
-  schedule[5] && apiSchedules.push({ period: 'saturday', start_from, at });
-  schedule[6] && apiSchedules.push({ period: 'sunday', start_from, at });
+  if (!schedule) {
+    apiSchedules.push({ period: 'day', start_from, at, once: true });
+  } else {
+    schedule[0] && apiSchedules.push({ period: 'monday', start_from, at });
+    schedule[1] && apiSchedules.push({ period: 'tuesday', start_from, at });
+    schedule[2] && apiSchedules.push({ period: 'wednesday', start_from, at });
+    schedule[3] && apiSchedules.push({ period: 'thursday', start_from, at });
+    schedule[4] && apiSchedules.push({ period: 'friday', start_from, at });
+    schedule[5] && apiSchedules.push({ period: 'saturday', start_from, at });
+    schedule[6] && apiSchedules.push({ period: 'sunday', start_from, at });
+  }
   return {
     task_request: { ...taskRequest, unix_millis_earliest_start_time: 0 }, // always start asap
     schedules: apiSchedules,
