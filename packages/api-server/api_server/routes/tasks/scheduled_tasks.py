@@ -6,7 +6,6 @@ import schedule
 import tortoise.transactions
 from fastapi import Depends, HTTPException
 from pydantic import BaseModel
-from tortoise.fields import DatetimeField
 
 from api_server.authenticator import user_dep
 from api_server.dependencies import pagination_query
@@ -45,19 +44,25 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
         task.last_ran = datetime.now()
         await task.save()
 
-    def schedule_now(job: schedule.Job, coro: Coroutine):
-        job.do(lambda: asyncio.get_event_loop().create_task(coro)).tag(
-            f"task_{task.pk}"
-        )
+    def schedule_now(job: schedule.Job, coro: Coroutine, *, once=False):
+        def do():
+            asyncio.get_event_loop().create_task(coro)
+            if once:
+                return schedule.CancelJob
+            return None
+
+        job.do(do).tag(f"task_{task.pk}")
 
     # FIXME(kp): schedule does not support starting from specified time, workaround by
     # scheduling a "trigger" job which schedules the actual job.
-    def schedule_later(job: schedule.Job, start: datetime, coro: Coroutine):
+    def schedule_later(
+        job: schedule.Job, start: datetime, coro: Coroutine, *, once=False
+    ):
         start_job = job
 
         def do():
             if datetime.now() >= start:
-                schedule_now(job, coro)
+                schedule_now(job, coro, once=once)
                 return schedule.CancelJob
 
         start_job.do(do)
@@ -65,9 +70,9 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
     now = datetime.now()
     for t, j in jobs:
         if t.start_from is not None and now.timestamp() >= t.start_from.timestamp():
-            schedule_now(j, run())
+            schedule_now(j, run(), once=bool(t.once))
         else:
-            schedule_later(j, t.start_from, run())
+            schedule_later(j, t.start_from, run(), once=bool(t.once))
 
 
 @router.post("", status_code=201, response_model=ttm.ScheduledTaskPydantic)

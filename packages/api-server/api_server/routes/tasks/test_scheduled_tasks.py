@@ -13,7 +13,6 @@ class TestScheduledTasksRoute(AppFixture):
             },
             "schedules": [
                 {
-                    "start_from": 0,
                     "period": "day",
                 }
             ],
