@@ -3,24 +3,28 @@
  * For that RMF needs to support task discovery and UI schemas https://github.com/open-rmf/rmf_api_msgs/issues/32.
  */
 
+import DeleteIcon from '@mui/icons-material/Delete';
+import PlaceOutlined from '@mui/icons-material/PlaceOutlined';
 import {
   Autocomplete,
+  Avatar,
   Button,
+  ButtonBase,
+  Checkbox,
   Divider,
+  FormControlLabel,
   Grid,
+  IconButton,
   List,
   ListItem,
+  ListItemIcon,
   ListItemText,
   MenuItem,
   styled,
   TextField,
   useTheme,
-  ListItemIcon,
-  IconButton,
 } from '@mui/material';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import PlaceOutlined from '@mui/icons-material/PlaceOutlined';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { DatePicker, DatePickerProps, TimePicker } from '@mui/x-date-pickers';
 import type { TaskRequest } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
@@ -567,7 +571,7 @@ function defaultCleanTask(): CleanTaskDescription {
   };
 }
 
-function defaultLoopsTask(): LoopTaskDescription {
+function defaultLoopTask(): LoopTaskDescription {
   return {
     places: [],
     rounds: 1,
@@ -600,7 +604,7 @@ function defaultTaskDescription(taskCategory: string): TaskDescription | undefin
     case 'clean':
       return defaultCleanTask();
     case 'patrol':
-      return defaultLoopsTask();
+      return defaultLoopTask();
     case 'delivery':
       return defaultDeliveryTask();
     default:
@@ -611,11 +615,51 @@ function defaultTaskDescription(taskCategory: string): TaskDescription | undefin
 function defaultTask(): TaskRequest {
   return {
     category: 'patrol',
-    description: defaultLoopsTask(),
+    description: defaultLoopTask(),
     unix_millis_earliest_start_time: Date.now(),
     priority: { type: 'binary', value: 0 },
   };
 }
+
+type SelectedDays = [boolean, boolean, boolean, boolean, boolean, boolean, boolean];
+
+interface DaySelectorSwitchProps {
+  onChange: (checked: SelectedDays) => void;
+  value: SelectedDays;
+}
+
+const DaySelectorSwitch: React.VFC<DaySelectorSwitchProps> = ({ onChange, value }) => {
+  const theme = useTheme();
+  const renderButton = (idx: number, text: string) => (
+    <ButtonBase
+      sx={{ borderRadius: '50%' }}
+      onClick={() => {
+        value[idx] = !value[idx];
+        onChange([...value]);
+      }}
+    >
+      <Avatar
+        sx={{
+          bgcolor: value[idx] ? theme.palette.primary.main : theme.palette.text.disabled,
+          fontSize: '1rem',
+        }}
+      >
+        {text}
+      </Avatar>
+    </ButtonBase>
+  );
+  return (
+    <Grid container gap={theme.spacing(1)}>
+      {renderButton(0, 'Mon')}
+      {renderButton(1, 'Tue')}
+      {renderButton(2, 'Wed')}
+      {renderButton(3, 'Thu')}
+      {renderButton(4, 'Fri')}
+      {renderButton(5, 'Sat')}
+      {renderButton(6, 'Sun')}
+    </Grid>
+  );
+};
 
 export interface CreateTaskFormProps
   extends Omit<ConfirmationDialogProps, 'onConfirmClick' | 'toolbar'> {
@@ -655,6 +699,23 @@ export function CreateTaskForm({
   );
   const [submitting, setSubmitting] = React.useState(false);
   const taskRequest = taskRequests[selectedTaskIdx];
+  const dateTimeValue = React.useMemo(
+    () =>
+      taskRequest.unix_millis_earliest_start_time
+        ? new Date(taskRequest.unix_millis_earliest_start_time)
+        : new Date(NaN),
+    [taskRequest.unix_millis_earliest_start_time],
+  );
+  const [recurring, setRecurring] = React.useState(false);
+  const [selectedDays, setSelectedDays] = React.useState<SelectedDays>([
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+  ]);
 
   const updateTasks = () => {
     setTaskRequests((prev) => {
@@ -747,6 +808,16 @@ export function CreateTaskForm({
     })();
   };
 
+  const handleDateChange: DatePickerProps<Date, Date>['onChange'] = (date) => {
+    if (!date) {
+      return;
+    }
+    const unix_ms = date.valueOf();
+    taskRequest.unix_millis_earliest_start_time = Number.isNaN(unix_ms) ? undefined : unix_ms;
+    setTaskRequests((prev) => [...prev]);
+    updateTasks();
+  };
+
   const submitText = taskRequests.length > 1 ? 'Submit All' : 'Submit';
 
   return (
@@ -761,8 +832,8 @@ export function CreateTaskForm({
       disableEnforceFocus
       {...otherProps}
     >
-      <Grid container direction="row" wrap="nowrap">
-        <Grid>
+      <Grid container>
+        <Grid container width={600}>
           <TextField
             select
             id="task-type"
@@ -777,33 +848,30 @@ export function CreateTaskForm({
             <MenuItem value="patrol">Loop</MenuItem>
             <MenuItem value="delivery">Delivery</MenuItem>
           </TextField>
-          <Grid container wrap="nowrap">
-            <Grid style={{ flexGrow: 1 }}>
-              <DateTimePicker
-                inputFormat={'MM/dd/yyyy HH:mm'}
-                value={
-                  taskRequest.unix_millis_earliest_start_time
-                    ? new Date(taskRequest.unix_millis_earliest_start_time)
-                    : new Date()
-                }
-                onChange={(date) => {
-                  if (!date) {
-                    return;
-                  }
-                  taskRequest.unix_millis_earliest_start_time = date.valueOf();
-                  updateTasks();
-                }}
-                label="Start Time"
+          <Grid container gap={theme.spacing(2)} wrap="nowrap" alignItems="center">
+            <Grid>
+              <DatePicker
+                value={dateTimeValue}
+                onChange={handleDateChange}
+                label={recurring ? 'Start On' : 'On'}
                 renderInput={(props) => <TextField {...props} />}
               />
             </Grid>
-            <Grid
-              style={{
-                flex: '0 1 5em',
-                marginLeft: theme.spacing(2),
-                marginRight: theme.spacing(2),
-              }}
-            >
+            <Grid>
+              <TimePicker
+                value={dateTimeValue}
+                onChange={handleDateChange}
+                label="At"
+                renderInput={(props) => <TextField {...props} />}
+              />
+            </Grid>
+            <FormControlLabel
+              control={
+                <Checkbox checked={recurring} onChange={(ev) => setRecurring(ev.target.checked)} />
+              }
+              label="Recurring"
+            />
+            <Grid width="4em" marginLeft="auto">
               <PositiveIntField
                 id="priority"
                 label="Priority"
@@ -813,9 +881,11 @@ export function CreateTaskForm({
                   taskRequest.priority = { type: 'binary', value: val };
                   updateTasks();
                 }}
+                sx={{ minWidth: '60px' }}
               />
             </Grid>
           </Grid>
+          {recurring && <DaySelectorSwitch value={selectedDays} onChange={setSelectedDays} />}
           {renderTaskDescriptionForm()}
         </Grid>
         {taskTitles.length > 1 && (
