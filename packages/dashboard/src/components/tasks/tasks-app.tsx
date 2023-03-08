@@ -1,28 +1,54 @@
+import { Scheduler } from '@aldabil/react-scheduler';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import DownloadIcon from '@mui/icons-material/Download';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import { Grid, IconButton, TableContainer, Toolbar, Tooltip } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { Grid, IconButton, TableContainer, Toolbar, Tooltip } from '@mui/material';
-import { TaskRequest, TaskState } from 'api-client';
+import { TaskRequest, TaskState, PostScheduledTaskRequest } from 'api-client';
 import React from 'react';
 import {
   CreateTaskForm,
   CreateTaskFormProps,
   FilterFields,
   getPlaces,
+  RecurringDays,
   SortFields,
   TaskDataGridTable,
   Tasks,
   Window,
 } from 'react-components';
 import { Subscription } from 'rxjs';
-import { Scheduler } from '@aldabil/react-scheduler';
 import { AppControllerContext, ResourcesContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
-import { parseTasksFile, downloadCsvFull, downloadCsvMinimal } from './utils';
+import { downloadCsvFull, downloadCsvMinimal, parseTasksFile } from './utils';
+
+function toApiSchedule(
+  taskRequest: TaskRequest,
+  schedule: RecurringDays,
+): PostScheduledTaskRequest {
+  const start =
+    taskRequest.unix_millis_earliest_start_time === undefined
+      ? 0
+      : taskRequest.unix_millis_earliest_start_time;
+  const apiSchedules: PostScheduledTaskRequest['schedules'] = [];
+  const date = new Date(start);
+  const start_from = start.toString();
+  const at = `${date.getHours()}:${date.getMinutes()}`;
+  schedule[0] && apiSchedules.push({ period: 'monday', start_from, at });
+  schedule[1] && apiSchedules.push({ period: 'tuesday', start_from, at });
+  schedule[2] && apiSchedules.push({ period: 'wednesday', start_from, at });
+  schedule[3] && apiSchedules.push({ period: 'thursday', start_from, at });
+  schedule[4] && apiSchedules.push({ period: 'friday', start_from, at });
+  schedule[5] && apiSchedules.push({ period: 'saturday', start_from, at });
+  schedule[6] && apiSchedules.push({ period: 'sunday', start_from, at });
+  return {
+    task_request: { ...taskRequest, unix_millis_earliest_start_time: 0 }, // always start asap
+    schedules: apiSchedules,
+  };
+}
 
 export const TasksApp = React.memo(
   React.forwardRef(
