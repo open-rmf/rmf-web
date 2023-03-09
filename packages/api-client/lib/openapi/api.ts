@@ -2149,6 +2149,55 @@ export interface TaskEventLog {
 /**
  *
  * @export
+ * @interface TaskFavoritePydantic
+ */
+export interface TaskFavoritePydantic {
+  /**
+   *
+   * @type {string}
+   * @memberof TaskFavoritePydantic
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskFavoritePydantic
+   */
+  name: string;
+  /**
+   *
+   * @type {number}
+   * @memberof TaskFavoritePydantic
+   */
+  unix_millis_earliest_start_time: number;
+  /**
+   *
+   * @type {object}
+   * @memberof TaskFavoritePydantic
+   */
+  priority?: object;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskFavoritePydantic
+   */
+  category: string;
+  /**
+   *
+   * @type {object}
+   * @memberof TaskFavoritePydantic
+   */
+  description?: object;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskFavoritePydantic
+   */
+  user: string;
+}
+/**
+ *
+ * @export
  * @interface TaskInterruptionRequest
  */
 export interface TaskInterruptionRequest {
@@ -6644,19 +6693,19 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     /**
      *
      * @summary Post Favorite Task
-     * @param {ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf} apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
+     * @param {TaskFavoritePydantic} taskFavoritePydantic
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postFavoriteTaskTasksFavoriteTaskPost: async (
-      apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf: ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf,
+      taskFavoritePydantic: TaskFavoritePydantic,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf' is not null or undefined
+      // verify required parameter 'taskFavoritePydantic' is not null or undefined
       assertParamExists(
         'postFavoriteTaskTasksFavoriteTaskPost',
-        'apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf',
-        apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf,
+        'taskFavoritePydantic',
+        taskFavoritePydantic,
       );
       const localVarPath = `/tasks/favorite_task`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -6680,7 +6729,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf,
+        taskFavoritePydantic,
         localVarRequestOptions,
         configuration,
       );
@@ -7199,10 +7248,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
     async getFavoritesTasksTasksFavoritesTasksGet(
       options?: AxiosRequestConfig,
     ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string,
-      ) => AxiosPromise<Array<ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf>>
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskFavoritePydantic>>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.getFavoritesTasksTasksFavoritesTasksGet(options);
@@ -7303,12 +7349,12 @@ export const TasksApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Post Favorite Task
-     * @param {ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf} apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
+     * @param {TaskFavoritePydantic} taskFavoritePydantic
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async postFavoriteTaskTasksFavoriteTaskPost(
-      apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf: ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf,
+      taskFavoritePydantic: TaskFavoritePydantic,
       options?: AxiosRequestConfig,
     ): Promise<
       (
@@ -7318,7 +7364,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.postFavoriteTaskTasksFavoriteTaskPost(
-          apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf,
+          taskFavoritePydantic,
           options,
         );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -7542,7 +7588,7 @@ export const TasksApiFactory = function (
      */
     getFavoritesTasksTasksFavoritesTasksGet(
       options?: any,
-    ): AxiosPromise<Array<ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf>> {
+    ): AxiosPromise<Array<TaskFavoritePydantic>> {
       return localVarFp
         .getFavoritesTasksTasksFavoritesTasksGet(options)
         .then((request) => request(axios, basePath));
@@ -7624,19 +7670,16 @@ export const TasksApiFactory = function (
     /**
      *
      * @summary Post Favorite Task
-     * @param {ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf} apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
+     * @param {TaskFavoritePydantic} taskFavoritePydantic
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postFavoriteTaskTasksFavoriteTaskPost(
-      apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf: ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf,
+      taskFavoritePydantic: TaskFavoritePydantic,
       options?: any,
     ): AxiosPromise<ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf> {
       return localVarFp
-        .postFavoriteTaskTasksFavoriteTaskPost(
-          apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf,
-          options,
-        )
+        .postFavoriteTaskTasksFavoriteTaskPost(taskFavoritePydantic, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -7928,20 +7971,17 @@ export class TasksApi extends BaseAPI {
   /**
    *
    * @summary Post Favorite Task
-   * @param {ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf} apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
+   * @param {TaskFavoritePydantic} taskFavoritePydantic
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
   public postFavoriteTaskTasksFavoriteTaskPost(
-    apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf: ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf,
+    taskFavoritePydantic: TaskFavoritePydantic,
     options?: AxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .postFavoriteTaskTasksFavoriteTaskPost(
-        apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf,
-        options,
-      )
+      .postFavoriteTaskTasksFavoriteTaskPost(taskFavoritePydantic, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

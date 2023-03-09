@@ -841,11 +841,7 @@ export default {
         operationId: 'post_favorite_task_tasks_favorite_task_post',
         requestBody: {
           content: {
-            'application/json': {
-              schema: {
-                $ref: '#/components/schemas/api_server.models.tortoise_models.tasks.TaskFavorite.leaf',
-              },
-            },
+            'application/json': { schema: { $ref: '#/components/schemas/TaskFavoritePydantic' } },
           },
           required: true,
         },
@@ -882,9 +878,7 @@ export default {
                 schema: {
                   title: 'Response Get Favorites Tasks Tasks Favorites Tasks Get',
                   type: 'array',
-                  items: {
-                    $ref: '#/components/schemas/api_server.models.tortoise_models.tasks.TaskFavorite.leaf',
-                  },
+                  items: { $ref: '#/components/schemas/TaskFavoritePydantic' },
                 },
               },
             },
@@ -2764,6 +2758,23 @@ export default {
           },
         },
         additionalProperties: false,
+      },
+      TaskFavoritePydantic: {
+        title: 'TaskFavoritePydantic',
+        required: ['id', 'name', 'unix_millis_earliest_start_time', 'category', 'user'],
+        type: 'object',
+        properties: {
+          id: { title: 'Id', type: 'string' },
+          name: { title: 'Name', type: 'string' },
+          unix_millis_earliest_start_time: {
+            title: 'Unix Millis Earliest Start Time',
+            type: 'integer',
+          },
+          priority: { title: 'Priority', type: 'object' },
+          category: { title: 'Category', type: 'string' },
+          description: { title: 'Description', type: 'object' },
+          user: { title: 'User', type: 'string' },
+        },
       },
       TaskInterruptionRequest: {
         title: 'TaskInterruptionRequest',
