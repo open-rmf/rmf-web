@@ -65,7 +65,7 @@ class TaskEventLogPhasesEventsLog(Model, LogMixin):
 
 
 class TaskFavorite(Model):
-    id = CharField(255, pk=True, source_field="id", default=uuid.uuid4())
+    id = CharField(255, pk=True, source_field="id")
     name = CharField(255, null=False, index=True)
     unix_millis_earliest_start_time = DatetimeField(null=True, index=True)
     priority = JSONField(null=True)

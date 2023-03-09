@@ -222,7 +222,7 @@ export interface ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf {
    * @type {string}
    * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
    */
-  id?: string;
+  id: string;
   /**
    *
    * @type {string}

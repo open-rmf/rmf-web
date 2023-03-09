@@ -3156,15 +3156,10 @@ export default {
       },
       'api_server.models.tortoise_models.tasks.TaskFavorite.leaf': {
         title: 'TaskFavorite',
-        required: ['name', 'category', 'user'],
+        required: ['id', 'name', 'category', 'user'],
         type: 'object',
         properties: {
-          id: {
-            title: 'Id',
-            maxLength: 255,
-            type: 'string',
-            default: 'dd9ae40a-3770-4a38-9e42-6e0d7a7766e5',
-          },
+          id: { title: 'Id', maxLength: 255, type: 'string' },
           name: { title: 'Name', maxLength: 255, type: 'string' },
           unix_millis_earliest_start_time: {
             title: 'Unix Millis Earliest Start Time',
