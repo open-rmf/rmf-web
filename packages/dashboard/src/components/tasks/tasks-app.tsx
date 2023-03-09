@@ -4,11 +4,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Grid, IconButton, TableContainer, Toolbar, Tooltip } from '@mui/material';
-import {
-  TaskRequest,
-  TaskState,
-  ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf as TaskFavorite,
-} from 'api-client';
+import { TaskRequest, TaskState, TaskFavoritePydantic as TaskFavorite } from 'api-client';
 import React from 'react';
 import {
   CreateTaskForm,

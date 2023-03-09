@@ -21,10 +21,7 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import PlaceOutlined from '@mui/icons-material/PlaceOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
 import UpdateIcon from '@mui/icons-material/Create';
-import type {
-  ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf as TaskFavorite,
-  TaskRequest,
-} from 'api-client';
+import type { TaskFavoritePydantic as TaskFavorite, TaskRequest } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
@@ -649,7 +646,7 @@ const defaultFavoriteTask = (): TaskFavorite => {
     name: '',
     category: 'patrol',
     description: defaultLoopsTask(),
-    unix_millis_earliest_start_time: Date.now().toString(),
+    unix_millis_earliest_start_time: Date.now(),
     priority: { type: 'binary', value: 0 },
     user: '',
   };
@@ -947,7 +944,7 @@ export function CreateTaskForm({
                     taskRequest.unix_millis_earliest_start_time = date.valueOf();
                     setFavoriteTaskBuffer({
                       ...favoriteTaskBuffer,
-                      unix_millis_earliest_start_time: date.valueOf().toString(),
+                      unix_millis_earliest_start_time: date.valueOf(),
                     });
                     updateTasks();
                   }}
