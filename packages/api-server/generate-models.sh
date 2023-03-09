@@ -6,12 +6,14 @@ RMF_BUILDING_MAP_MSGS_VER=c5e0352e2dfd3d11e4d292a1c2901cad867c1441
 RMF_INTERNAL_MSGS_VER=0c237e1758872917661879975d7dc0acf5fa518c
 RMF_API_MSGS_VER=91295892192d24ec73c9a1c6fa54334963586784
 RMF_ROS2_VER=bf038461b5b0fb7d4594461a724bc9e5e7cb97c6
-CODEGEN_VER=$(datamodel-codegen --version)
+CODEGEN_VER=$(pipenv run datamodel-codegen --version)
 
 cd "$(dirname $0)"
-source ../../scripts/rmf-helpers.sh
 
-check_rmf_not_sourced
+if [[ $ROS_DISTRO != 'humble' ]]; then
+  echo 'Unable to find ros humble, please make sure that it is sourced.'
+  exit 1
+fi
 
 function fetch_sources {
   url=$1
@@ -70,7 +72,7 @@ generate_from_json_schema() {
 
   rm -rf "$output"
   mkdir -p "$output"
-  bash -c "datamodel-codegen --disable-timestamp --input-file-type jsonschema --enum-field-as-literal one --input "$input" --output \"$output\""
+  pipenv run datamodel-codegen --disable-timestamp --input-file-type jsonschema --enum-field-as-literal one --input "$input" --output "$output"
   cat << EOF > "$output/version.py"
 # THIS FILE IS GENERATED
 version = {
