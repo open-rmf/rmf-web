@@ -14,6 +14,7 @@ from api_server.dependencies import (
     start_time_between_query,
 )
 from api_server.fast_io import FastIORouter, SubscriptionRequest
+from api_server.models import tortoise_models as ttm
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.repositories import TaskRepository, task_repo_dep
 from api_server.response import RawJSONResponse
@@ -220,22 +221,18 @@ async def post_undo_skip_phase(
     return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
 
 
-@router.post(
-    "/favorite_task",
-    response_model=mdl.TaskFavoriteResponseItem,
-    responses={400: {"model": mdl.TaskFavoriteResponseItem1}},
-)
+@router.post("/favorite_task", response_model=ttm.TaskFavoritePydantic)
 async def post_favorite_task(
-    request: mdl.TaskFavoriteRequest = Body(...),
+    request: ttm.TaskFavoritePydantic,
     task_repo: TaskRepository = Depends(task_repo_dep),
 ):
     try:
-        await task_repo.save_task_favorite(request.request)
+        await task_repo.save_task_favorite(request)
     except IntegrityError as e:
         raise HTTPException(422, str(e)) from e
 
 
-@router.get("/favorites_tasks", response_model=List[mdl.TaskFavorite])
+@router.get("/favorites_tasks", response_model=List[ttm.TaskFavoritePydantic])
 async def get_favorites_tasks(
     task_repo: TaskRepository = Depends(task_repo_dep),
 ):

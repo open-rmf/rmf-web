@@ -15,7 +15,6 @@ from api_server.models import (
     Pagination,
     Phases,
     TaskEventLog,
-    TaskFavorite,
     TaskState,
     User,
 )
@@ -168,14 +167,11 @@ class TaskRepository:
             except IntegrityError as e:
                 logger.error(format_exception(e))
 
-    async def save_task_favorite(self, task_favorite: TaskFavorite) -> None:
+    async def save_task_favorite(self, task_favorite: ttm.TaskFavoritePydantic) -> None:
         await ttm.TaskFavorite.update_or_create(
             {
                 "name": task_favorite.name,
-                "unix_millis_earliest_start_time": task_favorite.unix_millis_earliest_start_time
-                and datetime.fromtimestamp(
-                    task_favorite.unix_millis_earliest_start_time / 1000
-                ),
+                "unix_millis_earliest_start_time": task_favorite.unix_millis_earliest_start_time,
                 "priority": task_favorite.priority if task_favorite.priority else None,
                 "category": task_favorite.category,
                 "description": task_favorite.description
@@ -186,10 +182,10 @@ class TaskRepository:
             id=task_favorite.id if task_favorite.id else uuid.uuid4(),
         )
 
-    async def get_all_favorites_tasks(self) -> List[TaskFavorite]:
+    async def get_all_favorites_tasks(self) -> List[ttm.TaskFavoritePydantic]:
         favorites_tasks = await ttm.TaskFavorite.filter(user=self.user.username)
         return [
-            TaskFavorite(
+            ttm.TaskFavoritePydantic(
                 id=favorite_task.id,
                 name=favorite_task.name,
                 unix_millis_earliest_start_time=int(
