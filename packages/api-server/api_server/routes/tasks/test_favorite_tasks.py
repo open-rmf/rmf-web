@@ -1,4 +1,3 @@
-from datetime import datetime
 from uuid import uuid4
 
 from api_server.test import AppFixture, make_task_favorite
@@ -14,20 +13,8 @@ class TestFavoriteTasksRoute(AppFixture):
         ]
 
     def test_get_task_favorite(self):
-        self.create_favorite_task()
         resp = self.client.get("/tasks/favorites_tasks")
         self.assertEqual(200, resp.status_code)
-        start_time = (
-            datetime.fromtimestamp(
-                self.favorites_tasks[0].unix_millis_earliest_start_time / 1000
-            )
-            if self.favorites_tasks[0].unix_millis_earliest_start_time
-            else datetime.fromtimestamp(1636388410000 / 1000)
-        )
-        self.assertEqual(
-            int(start_time.strftime("%Y%m%d%H%M%S")),
-            resp.json()[0]["unix_millis_earliest_start_time"],
-        )
         return resp
 
     def test_favorite_create_success(self):
@@ -36,7 +23,10 @@ class TestFavoriteTasksRoute(AppFixture):
         self.assertEqual(resp.json(), None)
 
     def test_delete_favorite(self):
-        resp_get = self.test_get_task_favorite()
-        favorite_task_id = resp_get.json()[0]["id"]
+        self.create_favorite_task()
+        before_delete = self.test_get_task_favorite()
+        favorite_task_id = before_delete.json()[0]["id"]
         resp = self.client.delete(f"/tasks/favorite_task/{favorite_task_id}")
+        after_delete = self.test_get_task_favorite()
         self.assertEqual(200, resp.status_code)
+        self.assertEqual(len(before_delete.json()) - len(after_delete.json()), 1)

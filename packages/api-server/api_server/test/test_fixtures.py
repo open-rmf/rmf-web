@@ -8,8 +8,8 @@ import unittest.mock
 from typing import Awaitable, Callable, Optional, TypeVar, Union
 from uuid import uuid4
 
-from api_server import models as mdl
 from api_server.app import app, on_sio_connect
+from api_server.models import tortoise_models as ttm
 
 from .mocks import patch_sio
 from .test_client import client
@@ -171,17 +171,14 @@ class AppFixture(unittest.TestCase):
     def post_favorite_task(self):
         return self.client.post(
             "/tasks/favorite_task",
-            data=mdl.TaskFavoriteRequest(
-                type="task_favorite_request",
-                request=mdl.TaskFavorite(
-                    id=None,
-                    name="test",
-                    unix_millis_earliest_start_time=1636388410000,
-                    priority={},
-                    category="patrol",
-                    description={"description": "test"},
-                    user="User",
-                ),
+            ttm.TaskFavoritePydantic(
+                id=None,
+                name="test",
+                unix_millis_earliest_start_time="2023-03-09 18:05:00.860000+00:00",
+                priority={},
+                category="patrol",
+                description={"description": "test"},
+                user="User",
             ).json(exclude_none=True),
         )
 
