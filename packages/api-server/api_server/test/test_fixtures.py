@@ -171,7 +171,7 @@ class AppFixture(unittest.TestCase):
         body = {
             "id": "",
             "name": "",
-            "unix_millis_earliest_start_time": "2023-03-09T19:51:41.537Z",
+            "unix_millis_earliest_start_time": 1636388410000,
             "priority": {"type": "binary", "value": 0},
             "category": "clean",
             "description": {"type": "", "zone": ""},

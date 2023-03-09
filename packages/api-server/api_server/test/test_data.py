@@ -418,7 +418,7 @@ def make_task_favorite(
    {
       "id":"56248943-16e7-459c-a9cc-ad242ff8646d",
       "name":"Delivery task",
-      "unix_millis_earliest_start_time":"2023-03-09 18:05:00.860000+00:00",
+      "unix_millis_earliest_start_time":1636388410000,
       "priority":{
          "type":"binary",
          "value":0
