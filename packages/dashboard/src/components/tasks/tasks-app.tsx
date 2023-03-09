@@ -4,7 +4,11 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Grid, IconButton, TableContainer, Toolbar, Tooltip } from '@mui/material';
-import { TaskFavorite, TaskRequest, TaskState } from 'api-client';
+import {
+  TaskRequest,
+  TaskState,
+  ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf as TaskFavorite,
+} from 'api-client';
 import React from 'react';
 import {
   CreateTaskForm,
@@ -265,10 +269,7 @@ export const TasksApp = React.memo(
           if (!rmf) {
             throw new Error('tasks api not available');
           }
-          await rmf.tasksApi.postFavoriteTaskTasksFavoriteTaskPost({
-            type: 'task_favorite_request',
-            request: taskFavoriteRequest,
-          });
+          await rmf.tasksApi.postFavoriteTaskTasksFavoriteTaskPost(taskFavoriteRequest);
           setForceRefresh((prev) => prev + 1);
         },
         [rmf],
