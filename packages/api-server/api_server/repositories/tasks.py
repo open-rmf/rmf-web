@@ -24,14 +24,18 @@ from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.query import add_pagination
 
 
-class TaskFavoriteOut(BaseModel):
+class TaskFavoriteIn(BaseModel):
     id: str
     name: str
     unix_millis_earliest_start_time: datetime
-    priority: dict
+    priority: Dict
     category: str
-    description: dict
+    description: Dict
     user: str
+
+
+class TaskFavoriteOut(TaskFavoriteIn):
+    unix_millis_earliest_start_time: int
 
 
 class TaskRepository:
@@ -178,7 +182,7 @@ class TaskRepository:
             except IntegrityError as e:
                 logger.error(format_exception(e))
 
-    async def save_task_favorite(self, task_favorite: ttm.TaskFavoritePydantic) -> None:
+    async def save_task_favorite(self, task_favorite: TaskFavoriteIn) -> None:
         await ttm.TaskFavorite.update_or_create(
             {
                 "name": task_favorite.name,
