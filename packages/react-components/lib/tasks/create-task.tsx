@@ -645,7 +645,7 @@ function defaultTask(): TaskRequest {
 
 const defaultFavoriteTask = (): TaskFavorite => {
   return {
-    id: undefined,
+    id: '',
     name: '',
     category: 'patrol',
     description: defaultLoopsTask(),
@@ -986,7 +986,7 @@ export function CreateTaskForm({
                 color="primary"
                 onClick={() => {
                   !callToUpdateFavoriteTask &&
-                    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: undefined });
+                    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
                   setOpenFavoriteDialog(true);
                 }}
               >

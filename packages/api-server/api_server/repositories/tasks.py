@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Dict, List, Optional, Sequence, Tuple, cast
 
 from fastapi import Depends, HTTPException
+from pydantic import BaseModel
 from tortoise.exceptions import FieldError, IntegrityError
 from tortoise.query_utils import Prefetch
 from tortoise.queryset import QuerySet
@@ -21,6 +22,16 @@ from api_server.models import (
 from api_server.models import tortoise_models as ttm
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.query import add_pagination
+
+
+class TaskFavoriteOut(BaseModel):
+    id: str
+    name: str
+    unix_millis_earliest_start_time: datetime
+    priority: dict
+    category: str
+    description: dict
+    user: str
 
 
 class TaskRepository:
@@ -179,13 +190,13 @@ class TaskRepository:
                 else None,
                 "user": self.user.username,
             },
-            id=task_favorite.id if task_favorite.id else uuid.uuid4(),
+            id=task_favorite.id if task_favorite.id != "" else uuid.uuid4(),
         )
 
-    async def get_all_favorites_tasks(self) -> List[ttm.TaskFavoritePydantic]:
+    async def get_all_favorites_tasks(self) -> List[TaskFavoriteOut]:
         favorites_tasks = await ttm.TaskFavorite.filter(user=self.user.username)
         return [
-            ttm.TaskFavoritePydantic(
+            TaskFavoriteOut(
                 id=favorite_task.id,
                 name=favorite_task.name,
                 unix_millis_earliest_start_time=int(
