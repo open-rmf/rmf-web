@@ -1,9 +1,8 @@
 import uuid
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple, cast
+from typing import List, Optional, Tuple, cast
 
 from fastapi import Body, Depends, HTTPException, Path, Query
-from pydantic import BaseModel
 from rx import operators as rxops
 from tortoise.exceptions import IntegrityError
 
@@ -25,20 +24,6 @@ from api_server.response import RawJSONResponse
 from api_server.rmf_io import task_events, tasks_service
 
 router = FastIORouter(tags=["Tasks"])
-
-
-class TaskFavoriteOut(BaseModel):
-    id: str
-    name: str
-    unix_millis_earliest_start_time: int | None
-    priority: Dict | None
-    category: str
-    description: Dict | None
-    user: str
-
-
-class TaskFavoriteIn(TaskFavoriteOut):
-    unix_millis_earliest_start_time: datetime
 
 
 @router.get("", response_model=List[mdl.TaskState])
@@ -241,7 +226,7 @@ async def post_undo_skip_phase(
 
 @router.post("/favorite_task", response_model=ttm.TaskFavoritePydantic)
 async def post_favorite_task(
-    request: TaskFavoriteIn,
+    request: ttm.TaskFavoritePydantic,
     user: User = Depends(user_dep),
 ):
     try:
@@ -260,13 +245,13 @@ async def post_favorite_task(
         raise HTTPException(422, str(e)) from e
 
 
-@router.get("/favorites_tasks", response_model=List[TaskFavoriteOut])
+@router.get("/favorites_tasks", response_model=List[ttm.TaskFavoritePydantic])
 async def get_favorites_tasks(
     user: User = Depends(user_dep),
 ):
     favorites_tasks = await ttm.TaskFavorite.filter(user=user.username)
     return [
-        TaskFavoriteOut(
+        ttm.TaskFavoritePydantic(
             id=favorite_task.id,
             name=favorite_task.name,
             unix_millis_earliest_start_time=int(
