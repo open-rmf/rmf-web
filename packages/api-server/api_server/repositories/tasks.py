@@ -182,52 +182,6 @@ class TaskRepository:
             except IntegrityError as e:
                 logger.error(format_exception(e))
 
-    async def save_task_favorite(self, task_favorite: TaskFavoriteIn) -> None:
-        await ttm.TaskFavorite.update_or_create(
-            {
-                "name": task_favorite.name,
-                "unix_millis_earliest_start_time": task_favorite.unix_millis_earliest_start_time,
-                "priority": task_favorite.priority if task_favorite.priority else None,
-                "category": task_favorite.category,
-                "description": task_favorite.description
-                if task_favorite.description
-                else None,
-                "user": self.user.username,
-            },
-            id=task_favorite.id if task_favorite.id != "" else uuid.uuid4(),
-        )
-
-    async def get_all_favorites_tasks(self) -> List[TaskFavoriteOut]:
-        favorites_tasks = await ttm.TaskFavorite.filter(user=self.user.username)
-        return [
-            TaskFavoriteOut(
-                id=favorite_task.id,
-                name=favorite_task.name,
-                unix_millis_earliest_start_time=int(
-                    favorite_task.unix_millis_earliest_start_time.strftime(
-                        "%Y%m%d%H%M%S"
-                    )
-                )
-                if favorite_task.unix_millis_earliest_start_time
-                else None,
-                priority=favorite_task.priority if favorite_task.priority else None,
-                category=favorite_task.category,
-                description=favorite_task.description
-                if favorite_task.description
-                else None,
-                user=self.user.username,
-            )
-            for favorite_task in favorites_tasks
-        ]
-
-    async def get_favorite_task_by_id(self, favorite_task_id: str) -> ttm.TaskFavorite:
-        favorite_task = await ttm.TaskFavorite.get_or_none(id=favorite_task_id)
-        if favorite_task is None:
-            raise HTTPException(
-                404, f"Favorite task with id {favorite_task_id} does not exists"
-            )
-        return favorite_task
-
 
 def task_repo_dep(user: User = Depends(user_dep)):
     return TaskRepository(user)
