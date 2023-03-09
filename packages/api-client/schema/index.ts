@@ -841,7 +841,11 @@ export default {
         operationId: 'post_favorite_task_tasks_favorite_task_post',
         requestBody: {
           content: {
-            'application/json': { schema: { $ref: '#/components/schemas/TaskFavoriteRequest' } },
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/api_server.models.tortoise_models.tasks.TaskFavorite.leaf',
+              },
+            },
           },
           required: true,
         },
@@ -850,15 +854,9 @@ export default {
             description: 'Successful Response',
             content: {
               'application/json': {
-                schema: { $ref: '#/components/schemas/TaskFavoriteResponseItem' },
-              },
-            },
-          },
-          '400': {
-            description: 'Bad Request',
-            content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/TaskFavoriteResponseItem1' },
+                schema: {
+                  $ref: '#/components/schemas/api_server.models.tortoise_models.tasks.TaskFavorite.leaf',
+                },
               },
             },
           },
@@ -884,7 +882,9 @@ export default {
                 schema: {
                   title: 'Response Get Favorites Tasks Tasks Favorites Tasks Get',
                   type: 'array',
-                  items: { $ref: '#/components/schemas/TaskFavorite' },
+                  items: {
+                    $ref: '#/components/schemas/api_server.models.tortoise_models.tasks.TaskFavorite.leaf',
+                  },
                 },
               },
             },
@@ -2765,62 +2765,6 @@ export default {
         },
         additionalProperties: false,
       },
-      TaskFavorite: {
-        title: 'TaskFavorite',
-        required: ['name', 'category', 'description'],
-        type: 'object',
-        properties: {
-          id: { title: 'Id', type: 'string' },
-          name: { title: 'Name', type: 'string', description: 'The favorite name' },
-          unix_millis_earliest_start_time: {
-            title: 'Unix Millis Earliest Start Time',
-            type: 'integer',
-          },
-          priority: { title: 'Priority', type: 'object' },
-          category: { title: 'Category', type: 'string' },
-          description: {
-            title: 'Description',
-            description: 'A description of the task. Task properties by category',
-          },
-          user: { title: 'User', type: 'string' },
-        },
-      },
-      TaskFavoriteRequest: {
-        title: 'TaskFavoriteRequest',
-        required: ['type', 'request'],
-        type: 'object',
-        properties: {
-          type: {
-            title: 'Type',
-            enum: ['task_favorite_request'],
-            type: 'string',
-            description: 'Indicate that this is a task favorite request',
-          },
-          request: { $ref: '#/components/schemas/TaskFavorite' },
-        },
-      },
-      TaskFavoriteResponseItem: {
-        title: 'TaskFavoriteResponseItem',
-        required: ['success', 'data'],
-        type: 'object',
-        properties: {
-          success: { title: 'Success', enum: [true], type: 'boolean' },
-          data: { $ref: '#/components/schemas/TaskFavorite' },
-        },
-      },
-      TaskFavoriteResponseItem1: {
-        title: 'TaskFavoriteResponseItem1',
-        type: 'object',
-        properties: {
-          success: { title: 'Success', enum: [false], type: 'boolean' },
-          errors: {
-            title: 'Errors',
-            type: 'array',
-            items: { $ref: '#/components/schemas/Error' },
-            description: 'Any error messages explaining why the request failed',
-          },
-        },
-      },
       TaskInterruptionRequest: {
         title: 'TaskInterruptionRequest',
         required: ['type', 'task_id'],
@@ -3209,6 +3153,31 @@ export default {
           msg: { title: 'Message', type: 'string' },
           type: { title: 'Error Type', type: 'string' },
         },
+      },
+      'api_server.models.tortoise_models.tasks.TaskFavorite.leaf': {
+        title: 'TaskFavorite',
+        required: ['name', 'category', 'user'],
+        type: 'object',
+        properties: {
+          id: {
+            title: 'Id',
+            maxLength: 255,
+            type: 'string',
+            default: 'dd9ae40a-3770-4a38-9e42-6e0d7a7766e5',
+          },
+          name: { title: 'Name', maxLength: 255, type: 'string' },
+          unix_millis_earliest_start_time: {
+            title: 'Unix Millis Earliest Start Time',
+            type: 'string',
+            format: 'date-time',
+            nullable: true,
+          },
+          priority: { title: 'Priority' },
+          category: { title: 'Category', maxLength: 255, type: 'string' },
+          description: { title: 'Description' },
+          user: { title: 'User', maxLength: 255, type: 'string' },
+        },
+        additionalProperties: false,
       },
       api_server__models__rmf_api__fleet_log__FleetState: {
         title: 'FleetState',

@@ -212,6 +212,55 @@ export type ApiServerModelsRmfApiTokenResponseFailure = false;
 export type ApiServerModelsRmfApiTokenResponseSuccess = true;
 
 /**
+ *
+ * @export
+ * @interface ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
+ */
+export interface ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf {
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
+   */
+  id?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
+   */
+  unix_millis_earliest_start_time?: string | null;
+  /**
+   *
+   * @type {any}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
+   */
+  priority?: any;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
+   */
+  category: string;
+  /**
+   *
+   * @type {any}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
+   */
+  description?: any;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
+   */
+  user: string;
+}
+/**
  * Which agent (robot) is the task assigned to
  * @export
  * @interface AssignedTo
@@ -2097,136 +2146,6 @@ export interface TaskEventLog {
    */
   phases?: { [key: string]: Phases };
 }
-/**
- *
- * @export
- * @interface TaskFavorite
- */
-export interface TaskFavorite {
-  /**
-   *
-   * @type {string}
-   * @memberof TaskFavorite
-   */
-  id?: string;
-  /**
-   * The favorite name
-   * @type {string}
-   * @memberof TaskFavorite
-   */
-  name: string;
-  /**
-   *
-   * @type {number}
-   * @memberof TaskFavorite
-   */
-  unix_millis_earliest_start_time?: number;
-  /**
-   *
-   * @type {object}
-   * @memberof TaskFavorite
-   */
-  priority?: object;
-  /**
-   *
-   * @type {string}
-   * @memberof TaskFavorite
-   */
-  category: string;
-  /**
-   * A description of the task. Task properties by category
-   * @type {any}
-   * @memberof TaskFavorite
-   */
-  description: any;
-  /**
-   *
-   * @type {string}
-   * @memberof TaskFavorite
-   */
-  user?: string;
-}
-/**
- *
- * @export
- * @interface TaskFavoriteRequest
- */
-export interface TaskFavoriteRequest {
-  /**
-   * Indicate that this is a task favorite request
-   * @type {string}
-   * @memberof TaskFavoriteRequest
-   */
-  type: TaskFavoriteRequestTypeEnum;
-  /**
-   *
-   * @type {TaskFavorite}
-   * @memberof TaskFavoriteRequest
-   */
-  request: TaskFavorite;
-}
-
-export const TaskFavoriteRequestTypeEnum = {
-  TaskFavoriteRequest: 'task_favorite_request',
-} as const;
-
-export type TaskFavoriteRequestTypeEnum =
-  typeof TaskFavoriteRequestTypeEnum[keyof typeof TaskFavoriteRequestTypeEnum];
-
-/**
- *
- * @export
- * @interface TaskFavoriteResponseItem
- */
-export interface TaskFavoriteResponseItem {
-  /**
-   *
-   * @type {boolean}
-   * @memberof TaskFavoriteResponseItem
-   */
-  success: TaskFavoriteResponseItemSuccessEnum;
-  /**
-   *
-   * @type {TaskFavorite}
-   * @memberof TaskFavoriteResponseItem
-   */
-  data: TaskFavorite;
-}
-
-export const TaskFavoriteResponseItemSuccessEnum = {
-  True: true,
-} as const;
-
-export type TaskFavoriteResponseItemSuccessEnum =
-  typeof TaskFavoriteResponseItemSuccessEnum[keyof typeof TaskFavoriteResponseItemSuccessEnum];
-
-/**
- *
- * @export
- * @interface TaskFavoriteResponseItem1
- */
-export interface TaskFavoriteResponseItem1 {
-  /**
-   *
-   * @type {boolean}
-   * @memberof TaskFavoriteResponseItem1
-   */
-  success?: TaskFavoriteResponseItem1SuccessEnum;
-  /**
-   * Any error messages explaining why the request failed
-   * @type {Array<Error>}
-   * @memberof TaskFavoriteResponseItem1
-   */
-  errors?: Array<Error>;
-}
-
-export const TaskFavoriteResponseItem1SuccessEnum = {
-  False: false,
-} as const;
-
-export type TaskFavoriteResponseItem1SuccessEnum =
-  typeof TaskFavoriteResponseItem1SuccessEnum[keyof typeof TaskFavoriteResponseItem1SuccessEnum];
-
 /**
  *
  * @export
@@ -6725,19 +6644,19 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     /**
      *
      * @summary Post Favorite Task
-     * @param {TaskFavoriteRequest} taskFavoriteRequest
+     * @param {ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf} apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postFavoriteTaskTasksFavoriteTaskPost: async (
-      taskFavoriteRequest: TaskFavoriteRequest,
+      apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf: ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'taskFavoriteRequest' is not null or undefined
+      // verify required parameter 'apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf' is not null or undefined
       assertParamExists(
         'postFavoriteTaskTasksFavoriteTaskPost',
-        'taskFavoriteRequest',
-        taskFavoriteRequest,
+        'apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf',
+        apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf,
       );
       const localVarPath = `/tasks/favorite_task`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -6761,7 +6680,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        taskFavoriteRequest,
+        apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf,
         localVarRequestOptions,
         configuration,
       );
@@ -7279,7 +7198,12 @@ export const TasksApiFp = function (configuration?: Configuration) {
      */
     async getFavoritesTasksTasksFavoritesTasksGet(
       options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskFavorite>>> {
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<Array<ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf>>
+    > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.getFavoritesTasksTasksFavoritesTasksGet(options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -7379,19 +7303,22 @@ export const TasksApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Post Favorite Task
-     * @param {TaskFavoriteRequest} taskFavoriteRequest
+     * @param {ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf} apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async postFavoriteTaskTasksFavoriteTaskPost(
-      taskFavoriteRequest: TaskFavoriteRequest,
+      apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf: ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf,
       options?: AxiosRequestConfig,
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskFavoriteResponseItem>
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.postFavoriteTaskTasksFavoriteTaskPost(
-          taskFavoriteRequest,
+          apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf,
           options,
         );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -7613,7 +7540,9 @@ export const TasksApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getFavoritesTasksTasksFavoritesTasksGet(options?: any): AxiosPromise<Array<TaskFavorite>> {
+    getFavoritesTasksTasksFavoritesTasksGet(
+      options?: any,
+    ): AxiosPromise<Array<ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf>> {
       return localVarFp
         .getFavoritesTasksTasksFavoritesTasksGet(options)
         .then((request) => request(axios, basePath));
@@ -7695,16 +7624,19 @@ export const TasksApiFactory = function (
     /**
      *
      * @summary Post Favorite Task
-     * @param {TaskFavoriteRequest} taskFavoriteRequest
+     * @param {ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf} apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postFavoriteTaskTasksFavoriteTaskPost(
-      taskFavoriteRequest: TaskFavoriteRequest,
+      apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf: ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf,
       options?: any,
-    ): AxiosPromise<TaskFavoriteResponseItem> {
+    ): AxiosPromise<ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf> {
       return localVarFp
-        .postFavoriteTaskTasksFavoriteTaskPost(taskFavoriteRequest, options)
+        .postFavoriteTaskTasksFavoriteTaskPost(
+          apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
@@ -7996,17 +7928,20 @@ export class TasksApi extends BaseAPI {
   /**
    *
    * @summary Post Favorite Task
-   * @param {TaskFavoriteRequest} taskFavoriteRequest
+   * @param {ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf} apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
   public postFavoriteTaskTasksFavoriteTaskPost(
-    taskFavoriteRequest: TaskFavoriteRequest,
+    apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf: ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf,
     options?: AxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .postFavoriteTaskTasksFavoriteTaskPost(taskFavoriteRequest, options)
+      .postFavoriteTaskTasksFavoriteTaskPost(
+        apiServerModelsTortoiseModelsTasksTaskFavoriteLeaf,
+        options,
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 
