@@ -834,11 +834,30 @@ export default {
         },
       },
     },
-    '/tasks/favorite_task': {
+    '/favorite_tasks': {
+      get: {
+        tags: ['Tasks'],
+        summary: 'Get Favorites Tasks',
+        operationId: 'get_favorites_tasks_favorite_tasks_get',
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: {
+              'application/json': {
+                schema: {
+                  title: 'Response Get Favorites Tasks Favorite Tasks Get',
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/TaskFavoritePydantic' },
+                },
+              },
+            },
+          },
+        },
+      },
       post: {
         tags: ['Tasks'],
         summary: 'Post Favorite Task',
-        operationId: 'post_favorite_task_tasks_favorite_task_post',
+        operationId: 'post_favorite_task_favorite_tasks_post',
         requestBody: {
           content: {
             'application/json': { schema: { $ref: '#/components/schemas/TaskFavoritePydantic' } },
@@ -865,32 +884,11 @@ export default {
         },
       },
     },
-    '/tasks/favorites_tasks': {
-      get: {
-        tags: ['Tasks'],
-        summary: 'Get Favorites Tasks',
-        operationId: 'get_favorites_tasks_tasks_favorites_tasks_get',
-        responses: {
-          '200': {
-            description: 'Successful Response',
-            content: {
-              'application/json': {
-                schema: {
-                  title: 'Response Get Favorites Tasks Tasks Favorites Tasks Get',
-                  type: 'array',
-                  items: { $ref: '#/components/schemas/TaskFavoritePydantic' },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    '/tasks/favorite_task/{favorite_task_id}': {
+    '/favorite_tasks/{favorite_task_id}': {
       delete: {
         tags: ['Tasks'],
         summary: 'Delete Favorite Task',
-        operationId: 'delete_favorite_task_tasks_favorite_task__favorite_task_id__delete',
+        operationId: 'delete_favorite_task_favorite_tasks__favorite_task_id__delete',
         parameters: [
           {
             required: true,

@@ -96,7 +96,7 @@ export const TasksApp = React.memo(
           return;
         }
         (async () => {
-          const resp = await rmf.tasksApi.getFavoritesTasksTasksFavoritesTasksGet();
+          const resp = await rmf.tasksApi.getFavoritesTasksFavoriteTasksGet();
 
           const results = resp.data as TaskFavorite[];
           setFavoritesTasks(results);
@@ -265,7 +265,7 @@ export const TasksApp = React.memo(
           if (!rmf) {
             throw new Error('tasks api not available');
           }
-          await rmf.tasksApi.postFavoriteTaskTasksFavoriteTaskPost(taskFavoriteRequest);
+          await rmf.tasksApi.postFavoriteTaskFavoriteTasksPost(taskFavoriteRequest);
           setForceRefresh((prev) => prev + 1);
         },
         [rmf],
@@ -282,9 +282,7 @@ export const TasksApp = React.memo(
             throw new Error('Id is needed');
           }
 
-          await rmf.tasksApi.deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete(
-            favoriteTask.id,
-          );
+          await rmf.tasksApi.deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(favoriteTask.id);
           setForceRefresh((prev) => prev + 1);
         },
         [rmf],

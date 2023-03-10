@@ -6383,17 +6383,17 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete: async (
+    deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete: async (
       favoriteTaskId: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'favoriteTaskId' is not null or undefined
       assertParamExists(
-        'deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete',
+        'deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete',
         'favoriteTaskId',
         favoriteTaskId,
       );
-      const localVarPath = `/tasks/favorite_task/{favorite_task_id}`.replace(
+      const localVarPath = `/favorite_tasks/{favorite_task_id}`.replace(
         `{${'favorite_task_id'}}`,
         encodeURIComponent(String(favoriteTaskId)),
       );
@@ -6427,10 +6427,10 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getFavoritesTasksTasksFavoritesTasksGet: async (
+    getFavoritesTasksFavoriteTasksGet: async (
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      const localVarPath = `/tasks/favorites_tasks`;
+      const localVarPath = `/favorite_tasks`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -6697,17 +6697,17 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    postFavoriteTaskTasksFavoriteTaskPost: async (
+    postFavoriteTaskFavoriteTasksPost: async (
       taskFavoritePydantic: TaskFavoritePydantic,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskFavoritePydantic' is not null or undefined
       assertParamExists(
-        'postFavoriteTaskTasksFavoriteTaskPost',
+        'postFavoriteTaskFavoriteTasksPost',
         'taskFavoritePydantic',
         taskFavoritePydantic,
       );
-      const localVarPath = `/tasks/favorite_task`;
+      const localVarPath = `/favorite_tasks`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -7228,12 +7228,12 @@ export const TasksApiFp = function (configuration?: Configuration) {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete(
+    async deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(
       favoriteTaskId: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
-        await localVarAxiosParamCreator.deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete(
+        await localVarAxiosParamCreator.deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(
           favoriteTaskId,
           options,
         );
@@ -7245,13 +7245,14 @@ export const TasksApiFp = function (configuration?: Configuration) {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async getFavoritesTasksTasksFavoritesTasksGet(
+    async getFavoritesTasksFavoriteTasksGet(
       options?: AxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskFavoritePydantic>>
     > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getFavoritesTasksTasksFavoritesTasksGet(options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getFavoritesTasksFavoriteTasksGet(
+        options,
+      );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -7353,7 +7354,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async postFavoriteTaskTasksFavoriteTaskPost(
+    async postFavoriteTaskFavoriteTasksPost(
       taskFavoritePydantic: TaskFavoritePydantic,
       options?: AxiosRequestConfig,
     ): Promise<
@@ -7362,11 +7363,10 @@ export const TasksApiFp = function (configuration?: Configuration) {
         basePath?: string,
       ) => AxiosPromise<ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf>
     > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.postFavoriteTaskTasksFavoriteTaskPost(
-          taskFavoritePydantic,
-          options,
-        );
+      const localVarAxiosArgs = await localVarAxiosParamCreator.postFavoriteTaskFavoriteTasksPost(
+        taskFavoritePydantic,
+        options,
+      );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -7572,12 +7572,12 @@ export const TasksApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete(
+    deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(
       favoriteTaskId: string,
       options?: any,
     ): AxiosPromise<any> {
       return localVarFp
-        .deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete(favoriteTaskId, options)
+        .deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(favoriteTaskId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -7586,11 +7586,9 @@ export const TasksApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getFavoritesTasksTasksFavoritesTasksGet(
-      options?: any,
-    ): AxiosPromise<Array<TaskFavoritePydantic>> {
+    getFavoritesTasksFavoriteTasksGet(options?: any): AxiosPromise<Array<TaskFavoritePydantic>> {
       return localVarFp
-        .getFavoritesTasksTasksFavoritesTasksGet(options)
+        .getFavoritesTasksFavoriteTasksGet(options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -7674,12 +7672,12 @@ export const TasksApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    postFavoriteTaskTasksFavoriteTaskPost(
+    postFavoriteTaskFavoriteTasksPost(
       taskFavoritePydantic: TaskFavoritePydantic,
       options?: any,
     ): AxiosPromise<ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf> {
       return localVarFp
-        .postFavoriteTaskTasksFavoriteTaskPost(taskFavoritePydantic, options)
+        .postFavoriteTaskFavoriteTasksPost(taskFavoritePydantic, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -7862,12 +7860,12 @@ export class TasksApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof TasksApi
    */
-  public deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete(
+  public deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(
     favoriteTaskId: string,
     options?: AxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete(favoriteTaskId, options)
+      .deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(favoriteTaskId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -7878,9 +7876,9 @@ export class TasksApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof TasksApi
    */
-  public getFavoritesTasksTasksFavoritesTasksGet(options?: AxiosRequestConfig) {
+  public getFavoritesTasksFavoriteTasksGet(options?: AxiosRequestConfig) {
     return TasksApiFp(this.configuration)
-      .getFavoritesTasksTasksFavoritesTasksGet(options)
+      .getFavoritesTasksFavoriteTasksGet(options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -7976,12 +7974,12 @@ export class TasksApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof TasksApi
    */
-  public postFavoriteTaskTasksFavoriteTaskPost(
+  public postFavoriteTaskFavoriteTasksPost(
     taskFavoritePydantic: TaskFavoritePydantic,
     options?: AxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .postFavoriteTaskTasksFavoriteTaskPost(taskFavoritePydantic, options)
+      .postFavoriteTaskFavoriteTasksPost(taskFavoritePydantic, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
