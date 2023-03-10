@@ -41,7 +41,7 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
     for j in jobs:
         j.do(lambda: asyncio.get_event_loop().create_task(run())).tag(f"task_{task.pk}")
 
-    # Job have a operator overload that sorts based on the next run
+    # Job has an operator overload that sorts based on the next run
     next_run = min(jobs).next_run
     if next_run != task.next_run:
         task.next_run = next_run
