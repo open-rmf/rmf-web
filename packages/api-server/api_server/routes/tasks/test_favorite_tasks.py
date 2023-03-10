@@ -13,7 +13,7 @@ class TestFavoriteTasksRoute(AppFixture):
         ]
 
     def test_get_task_favorite(self):
-        resp = self.client.get("/tasks/favorites_tasks")
+        resp = self.client.get("/favorite_tasks")
         self.assertEqual(200, resp.status_code)
         return resp
 
@@ -26,7 +26,7 @@ class TestFavoriteTasksRoute(AppFixture):
         self.create_favorite_task()
         before_delete = self.test_get_task_favorite()
         favorite_task_id = before_delete.json()[0]["id"]
-        resp = self.client.delete(f"/tasks/favorite_task/{favorite_task_id}")
+        resp = self.client.delete(f"/favorite_tasks/{favorite_task_id}")
         after_delete = self.test_get_task_favorite()
         self.assertEqual(200, resp.status_code)
         self.assertEqual(len(before_delete.json()) - len(after_delete.json()), 1)

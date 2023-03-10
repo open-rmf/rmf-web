@@ -178,7 +178,7 @@ class AppFixture(unittest.TestCase):
             "user": "",
         }
         return self.client.post(
-            "/tasks/favorite_task",
+            "/favorite_tasks",
             json=body,
         )
 
