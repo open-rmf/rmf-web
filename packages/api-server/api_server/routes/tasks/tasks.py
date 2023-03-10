@@ -1,14 +1,10 @@
-import uuid
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple, cast
+from typing import List, Optional, Tuple, cast
 
 from fastapi import Body, Depends, HTTPException, Path, Query
-from pydantic import BaseModel
 from rx import operators as rxops
-from tortoise.exceptions import IntegrityError
 
 from api_server import models as mdl
-from api_server.authenticator import user_dep
 from api_server.dependencies import (
     between_query,
     finish_time_between_query,
@@ -17,24 +13,12 @@ from api_server.dependencies import (
     start_time_between_query,
 )
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.models import tortoise_models as ttm
 from api_server.models.tortoise_models import TaskState as DbTaskState
-from api_server.models.user import User
 from api_server.repositories import TaskRepository, task_repo_dep
 from api_server.response import RawJSONResponse
 from api_server.rmf_io import task_events, tasks_service
 
 router = FastIORouter(tags=["Tasks"])
-
-
-class TaskFavoritePydantic(BaseModel):
-    id: str
-    name: str
-    unix_millis_earliest_start_time: int
-    priority: Dict | None
-    category: str
-    description: Dict | None
-    user: str
 
 
 @router.get("", response_model=List[mdl.TaskState])
@@ -233,61 +217,3 @@ async def post_undo_skip_phase(
     request: mdl.UndoPhaseSkipRequest = Body(...),
 ):
     return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
-
-
-@router.post("/favorite_task", response_model=ttm.TaskFavoritePydantic)
-async def post_favorite_task(
-    request: TaskFavoritePydantic,
-    user: User = Depends(user_dep),
-):
-    try:
-        await ttm.TaskFavorite.update_or_create(
-            {
-                "name": request.name,
-                "unix_millis_earliest_start_time": datetime.fromtimestamp(
-                    request.unix_millis_earliest_start_time / 1000
-                ),
-                "priority": request.priority if request.priority else None,
-                "category": request.category,
-                "description": request.description if request.description else None,
-                "user": user.username,
-            },
-            id=request.id if request.id != "" else uuid.uuid4(),
-        )
-    except IntegrityError as e:
-        raise HTTPException(422, str(e)) from e
-
-
-@router.get("/favorites_tasks", response_model=List[TaskFavoritePydantic])
-async def get_favorites_tasks(
-    user: User = Depends(user_dep),
-):
-    favorites_tasks = await ttm.TaskFavorite.filter(user=user.username)
-    return [
-        TaskFavoritePydantic(
-            id=favorite_task.id,
-            name=favorite_task.name,
-            unix_millis_earliest_start_time=int(
-                favorite_task.unix_millis_earliest_start_time.strftime("%Y%m%d%H%M%S")
-            ),
-            priority=favorite_task.priority if favorite_task.priority else None,
-            category=favorite_task.category,
-            description=favorite_task.description
-            if favorite_task.description
-            else None,
-            user=user.username,
-        )
-        for favorite_task in favorites_tasks
-    ]
-
-
-@router.delete("/favorite_task/{favorite_task_id}")
-async def delete_favorite_task(
-    favorite_task_id: str,
-):
-    favorite_task = await ttm.TaskFavorite.get_or_none(id=favorite_task_id)
-    if favorite_task is None:
-        raise HTTPException(
-            404, f"Favorite task with id {favorite_task_id} does not exists"
-        )
-    await favorite_task.delete()
