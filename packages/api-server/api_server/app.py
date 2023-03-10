@@ -4,6 +4,7 @@ import signal
 import threading
 from typing import Any, Callable, Coroutine, List, Optional, Union
 
+import schedule
 from fastapi import Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -23,9 +24,10 @@ from .models import (
     IngestorState,
     LiftHealth,
     LiftState,
+    User,
 )
 from .models import tortoise_models as ttm
-from .repositories import StaticFilesRepository
+from .repositories import StaticFilesRepository, TaskRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, rmf_events
 from .types import is_coroutine
 
@@ -84,6 +86,11 @@ app.include_router(
 )
 app.include_router(
     routes.tasks_router, prefix="/tasks", dependencies=[Depends(user_dep)]
+)
+app.include_router(
+    routes.scheduled_tasks.router,
+    prefix="/scheduled_tasks",
+    dependencies=[Depends(user_dep)],
 )
 app.include_router(
     routes.dispensers_router, prefix="/dispensers", dependencies=[Depends(user_dep)]
@@ -153,6 +160,21 @@ async def on_startup():
     )
     await health_watchdog.start()
 
+    logger.info("starting scheduler")
+    asyncio.create_task(_spin_scheduler())
+    scheduled_tasks = await ttm.ScheduledTask.all()
+    scheduled = 0
+    for t in scheduled_tasks:
+        user = await User.load_from_db(t.created_by)
+        if user is None:
+            logger.warning(f"user [{t.created_by}] does not exist")
+            continue
+        task_repo = TaskRepository(user)
+        await routes.scheduled_tasks.schedule_task(t, task_repo)
+        scheduled += 1
+    logger.info(f"loaded {scheduled} tasks")
+    logger.info("successfully started scheduler")
+
     ros.spin_background()
     logger.info("started app")
 
@@ -167,6 +189,12 @@ async def on_shutdown():
             cb()
 
     logger.info("shutdown app")
+
+
+async def _spin_scheduler():
+    while True:
+        schedule.run_pending()
+        await asyncio.sleep(1)
 
 
 async def _load_states():
