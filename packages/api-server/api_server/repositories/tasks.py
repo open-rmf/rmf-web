@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 from typing import Dict, List, Optional, Sequence, Tuple, cast
 
@@ -27,6 +28,16 @@ class TaskRepository:
         self.user = user
 
     async def save_task_state(self, task_state: TaskState) -> None:
+        datetime_request_time = (
+            datetime.fromtimestamp(task_state.unix_millis_request_time / 1000)
+            if task_state.unix_millis_request_time
+            else datetime.now()
+        )
+        task_state.unix_millis_request_time = (
+            task_state.unix_millis_request_time
+            if task_state.unix_millis_request_time
+            else round(time.time() * 1000)
+        )
         await ttm.TaskState.update_or_create(
             {
                 "data": task_state.json(),
@@ -41,6 +52,7 @@ class TaskRepository:
                 "unix_millis_finish_time": task_state.unix_millis_finish_time
                 and datetime.fromtimestamp(task_state.unix_millis_finish_time / 1000),
                 "status": task_state.status if task_state.status else None,
+                "unix_millis_request_time": datetime_request_time,
             },
             id_=task_state.booking.id,
         )
