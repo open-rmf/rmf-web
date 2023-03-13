@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Dict, List, Optional, Sequence, Tuple, cast
 
 from fastapi import Depends, HTTPException
-from pydantic import BaseModel
 from tortoise.exceptions import FieldError, IntegrityError
 from tortoise.query_utils import Prefetch
 from tortoise.queryset import QuerySet
