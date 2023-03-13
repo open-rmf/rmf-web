@@ -4,7 +4,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Grid, IconButton, TableContainer, Toolbar, Tooltip } from '@mui/material';
-import { TaskFavorite, TaskRequest, TaskState } from 'api-client';
+import { TaskRequest, TaskState, TaskFavoritePydantic as TaskFavorite } from 'api-client';
 import React from 'react';
 import {
   CreateTaskForm,
@@ -96,7 +96,7 @@ export const TasksApp = React.memo(
           return;
         }
         (async () => {
-          const resp = await rmf.tasksApi.getFavoritesTasksTasksFavoritesTasksGet();
+          const resp = await rmf.tasksApi.getFavoritesTasksFavoriteTasksGet();
 
           const results = resp.data as TaskFavorite[];
           setFavoritesTasks(results);
@@ -265,10 +265,7 @@ export const TasksApp = React.memo(
           if (!rmf) {
             throw new Error('tasks api not available');
           }
-          await rmf.tasksApi.postFavoriteTaskTasksFavoriteTaskPost({
-            type: 'task_favorite_request',
-            request: taskFavoriteRequest,
-          });
+          await rmf.tasksApi.postFavoriteTaskFavoriteTasksPost(taskFavoriteRequest);
           setForceRefresh((prev) => prev + 1);
         },
         [rmf],
@@ -285,9 +282,7 @@ export const TasksApp = React.memo(
             throw new Error('Id is needed');
           }
 
-          await rmf.tasksApi.deleteFavoriteTaskTasksFavoriteTaskFavoriteTaskIdDelete(
-            favoriteTask.id,
-          );
+          await rmf.tasksApi.deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(favoriteTask.id);
           setForceRefresh((prev) => prev + 1);
         },
         [rmf],
