@@ -23,20 +23,6 @@ from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.query import add_pagination
 
 
-class TaskFavoriteIn(BaseModel):
-    id: str
-    name: str
-    unix_millis_earliest_start_time: datetime
-    priority: Dict
-    category: str
-    description: Dict
-    user: str
-
-
-class TaskFavoriteOut(TaskFavoriteIn):
-    unix_millis_earliest_start_time: int
-
-
 class TaskRepository:
     def __init__(self, user: User):
         self.user = user
