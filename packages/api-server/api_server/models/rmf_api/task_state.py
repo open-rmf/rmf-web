@@ -181,6 +181,7 @@ class TaskState(BaseModel):
         None, description="Which agent (robot) is the task assigned to"
     )
     status: Optional[Status] = None
+    unix_millis_request_time: Optional[int] = None
     dispatch: Optional[Dispatch] = None
     phases: Optional[Dict[str, Phase]] = Field(
         None,
