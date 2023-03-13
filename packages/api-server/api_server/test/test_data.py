@@ -21,9 +21,9 @@ from api_server.models import (
     Lift,
     LiftState,
     TaskEventLog,
-    TaskFavorite,
     TaskState,
 )
+from api_server.models import tortoise_models as ttm
 
 
 def make_door(name: str = "test_door") -> Door:
@@ -410,7 +410,9 @@ def make_task_state(task_id: str = "test_task") -> TaskState:
     return TaskState(**sample_task)
 
 
-def make_task_favorite(favorite_task_id: str = "default_id") -> TaskFavorite:
+def make_task_favorite(
+    favorite_task_id: str = "default_id",
+) -> ttm.TaskFavoritePydantic:
     sample_favorite_task = json.loads(
         """
    {
@@ -439,7 +441,7 @@ def make_task_favorite(favorite_task_id: str = "default_id") -> TaskFavorite:
     """
     )
     sample_favorite_task["id"] = favorite_task_id
-    return TaskFavorite(**sample_favorite_task)
+    return ttm.TaskFavoritePydantic(**sample_favorite_task)
 
 
 def make_task_log(task_id: str) -> TaskEventLog:

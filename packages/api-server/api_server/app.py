@@ -93,6 +93,11 @@ app.include_router(
     dependencies=[Depends(user_dep)],
 )
 app.include_router(
+    routes.favorite_tasks_router,
+    prefix="/favorite_tasks",
+    dependencies=[Depends(user_dep)],
+)
+app.include_router(
     routes.dispensers_router, prefix="/dispensers", dependencies=[Depends(user_dep)]
 )
 app.include_router(

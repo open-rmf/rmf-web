@@ -21,7 +21,7 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import PlaceOutlined from '@mui/icons-material/PlaceOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
 import UpdateIcon from '@mui/icons-material/Create';
-import type { TaskFavorite, TaskRequest } from 'api-client';
+import type { TaskFavoritePydantic as TaskFavorite, TaskRequest } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
@@ -642,12 +642,13 @@ function defaultTask(): TaskRequest {
 
 const defaultFavoriteTask = (): TaskFavorite => {
   return {
-    id: undefined,
+    id: '',
     name: '',
     category: 'patrol',
     description: defaultLoopsTask(),
     unix_millis_earliest_start_time: Date.now(),
     priority: { type: 'binary', value: 0 },
+    user: '',
   };
 };
 
@@ -982,7 +983,7 @@ export function CreateTaskForm({
                 color="primary"
                 onClick={() => {
                   !callToUpdateFavoriteTask &&
-                    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: undefined });
+                    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
                   setOpenFavoriteDialog(true);
                 }}
               >
