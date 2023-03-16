@@ -114,8 +114,10 @@ export function TaskDataGridTable({
           <TextField
             variant="standard"
             value={
-              cellValues.row.unix_millis_request_time
-                ? `${new Date(cellValues.row.unix_millis_request_time).toLocaleDateString()}`
+              cellValues.row.booking.unix_millis_request_time
+                ? `${new Date(
+                    cellValues.row.booking.unix_millis_request_time,
+                  ).toLocaleDateString()}`
                 : 'unknown'
             }
             InputProps={{ disableUnderline: true }}
