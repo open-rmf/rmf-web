@@ -33,6 +33,7 @@ class Killed(BaseModel):
 class Booking(BaseModel):
     id: str = Field(..., description="The unique identifier for this task")
     unix_millis_earliest_start_time: Optional[int] = None
+    unix_millis_request_time: Optional[int] = None
     priority: Optional[Union[Dict[str, Any], str]] = Field(
         None, description="Priority information about this task"
     )
@@ -181,7 +182,6 @@ class TaskState(BaseModel):
         None, description="Which agent (robot) is the task assigned to"
     )
     status: Optional[Status] = None
-    unix_millis_request_time: Optional[int] = None
     dispatch: Optional[Dispatch] = None
     phases: Optional[Dict[str, Phase]] = Field(
         None,
