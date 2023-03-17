@@ -105,6 +105,31 @@ export function TaskDataGridTable({
 
   const columns: GridColDef[] = [
     {
+      field: 'unix_millis_request_time',
+      headerName: 'Date',
+      width: 150,
+      editable: false,
+      renderCell: (cellValues) => {
+        return (
+          <TextField
+            variant="standard"
+            value={
+              cellValues.row.booking.unix_millis_request_time
+                ? `${new Date(
+                    cellValues.row.booking.unix_millis_request_time,
+                  ).toLocaleDateString()}`
+                : 'unknown'
+            }
+            InputProps={{ disableUnderline: true }}
+            multiline
+          />
+        );
+      },
+      flex: 1,
+      filterOperators: getMinimalDateOperators,
+      filterable: true,
+    },
+    {
       field: 'id_',
       headerName: 'ID',
       width: 90,

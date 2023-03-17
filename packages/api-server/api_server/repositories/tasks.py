@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 from typing import Dict, List, Optional, Sequence, Tuple, cast
 
@@ -27,6 +28,17 @@ class TaskRepository:
         self.user = user
 
     async def save_task_state(self, task_state: TaskState) -> None:
+        previous_task_state = await DbTaskState.get_or_none(id_=task_state.booking.id)
+        datetime_request_time = datetime.now()
+        task_state.booking.unix_millis_request_time = round(time.time() * 1000)
+
+        if previous_task_state is not None:
+            task_state.booking.unix_millis_request_time = (
+                int(round(previous_task_state.unix_millis_request_time.timestamp()))
+                * 1000
+            )
+            datetime_request_time = previous_task_state.unix_millis_request_time
+
         await ttm.TaskState.update_or_create(
             {
                 "data": task_state.json(),
@@ -41,6 +53,7 @@ class TaskRepository:
                 "unix_millis_finish_time": task_state.unix_millis_finish_time
                 and datetime.fromtimestamp(task_state.unix_millis_finish_time / 1000),
                 "status": task_state.status if task_state.status else None,
+                "unix_millis_request_time": datetime_request_time,
             },
             id_=task_state.booking.id,
         )
