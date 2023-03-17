@@ -40,6 +40,7 @@ class Booking(BaseModel):
     labels: Optional[List[str]] = Field(
         None, description="Information about how and why this task was booked"
     )
+    initiator: Optional[str] = Field(None, description="Task initiator")
 
 
 class Category(BaseModel):
