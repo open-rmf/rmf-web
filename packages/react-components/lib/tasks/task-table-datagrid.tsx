@@ -130,6 +130,17 @@ export function TaskDataGridTable({
       filterable: true,
     },
     {
+      field: 'initiator',
+      headerName: 'Initiator',
+      width: 150,
+      editable: false,
+      valueGetter: (params: GridValueGetterParams) =>
+        params.row.booking.initiator ? params.row.booking.initiator : 'unknown',
+      flex: 1,
+      filterOperators: getMinimalStringFilterOperators,
+      filterable: true,
+    },
+    {
       field: 'id_',
       headerName: 'ID',
       width: 90,
