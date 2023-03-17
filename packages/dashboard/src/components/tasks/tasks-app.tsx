@@ -27,7 +27,7 @@ import { downloadCsvFull, downloadCsvMinimal, parseTasksFile } from './utils';
 
 function toApiSchedule(
   taskRequest: TaskRequest,
-  schedule?: RecurringDays,
+  schedule: RecurringDays | null,
 ): PostScheduledTaskRequest {
   const start =
     taskRequest.unix_millis_earliest_start_time === undefined
@@ -211,17 +211,13 @@ export const TasksApp = React.memo(
       }, [rmf, forceRefresh, tasksState.page, filterFields.model, sortFields.model]);
 
       const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
-        async (taskRequests) => {
+        async (taskRequests, recurringDays) => {
           if (!rmf) {
             throw new Error('tasks api not available');
           }
+          const scheduleRequests = taskRequests.map((req) => toApiSchedule(req, recurringDays));
           await Promise.all(
-            taskRequests.map((taskReq) =>
-              rmf.tasksApi.postDispatchTaskTasksDispatchTaskPost({
-                type: 'dispatch_task_request',
-                request: taskReq,
-              }),
-            ),
+            scheduleRequests.map((req) => rmf.tasksApi.postScheduledTaskScheduledTasksPost(req)),
           );
           setForceRefresh((prev) => prev + 1);
         },
