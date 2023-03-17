@@ -28,35 +28,59 @@ class TaskRepository:
         self.user = user
 
     async def save_task_state(self, task_state: TaskState) -> None:
-        previous_task_state = await DbTaskState.get_or_none(id_=task_state.booking.id)
-        datetime_request_time = datetime.now()
-        task_state.booking.unix_millis_request_time = round(time.time() * 1000)
+        task_exists = await DbTaskState.exists(id_=task_state.booking.id)
 
-        if previous_task_state is not None:
+        if task_exists:
+            previous_task_state = await DbTaskState.get(id_=task_state.booking.id)
             task_state.booking.unix_millis_request_time = (
                 int(round(previous_task_state.unix_millis_request_time.timestamp()))
                 * 1000
             )
-            datetime_request_time = previous_task_state.unix_millis_request_time
-
-        await ttm.TaskState.update_or_create(
-            {
-                "data": task_state.json(),
-                "category": task_state.category.__root__
-                if task_state.category
-                else None,
-                "assigned_to": task_state.assigned_to.name
-                if task_state.assigned_to
-                else None,
-                "unix_millis_start_time": task_state.unix_millis_start_time
-                and datetime.fromtimestamp(task_state.unix_millis_start_time / 1000),
-                "unix_millis_finish_time": task_state.unix_millis_finish_time
-                and datetime.fromtimestamp(task_state.unix_millis_finish_time / 1000),
-                "status": task_state.status if task_state.status else None,
-                "unix_millis_request_time": datetime_request_time,
-            },
-            id_=task_state.booking.id,
-        )
+            await ttm.TaskState.update_or_create(
+                {
+                    "data": task_state.json(),
+                    "category": task_state.category.__root__
+                    if task_state.category
+                    else None,
+                    "assigned_to": task_state.assigned_to.name
+                    if task_state.assigned_to
+                    else None,
+                    "unix_millis_start_time": task_state.unix_millis_start_time
+                    and datetime.fromtimestamp(
+                        task_state.unix_millis_start_time / 1000
+                    ),
+                    "unix_millis_finish_time": task_state.unix_millis_finish_time
+                    and datetime.fromtimestamp(
+                        task_state.unix_millis_finish_time / 1000
+                    ),
+                    "status": task_state.status if task_state.status else None,
+                },
+                id_=task_state.booking.id,
+            )
+        else:
+            task_state.booking.unix_millis_request_time = round(time.time() * 1000)
+            await ttm.TaskState.update_or_create(
+                {
+                    "data": task_state.json(),
+                    "category": task_state.category.__root__
+                    if task_state.category
+                    else None,
+                    "assigned_to": task_state.assigned_to.name
+                    if task_state.assigned_to
+                    else None,
+                    "unix_millis_start_time": task_state.unix_millis_start_time
+                    and datetime.fromtimestamp(
+                        task_state.unix_millis_start_time / 1000
+                    ),
+                    "unix_millis_finish_time": task_state.unix_millis_finish_time
+                    and datetime.fromtimestamp(
+                        task_state.unix_millis_finish_time / 1000
+                    ),
+                    "status": task_state.status if task_state.status else None,
+                    "unix_millis_request_time": datetime.now(),
+                },
+                id_=task_state.booking.id,
+            )
 
     async def query_task_states(
         self, query: QuerySet[DbTaskState], pagination: Optional[Pagination] = None
