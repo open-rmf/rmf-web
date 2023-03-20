@@ -56,6 +56,7 @@ class TaskRepository:
             await db_task_state.save()
         else:
             task_state.booking.unix_millis_request_time = round(time.time() * 1000)
+            task_state.booking.initiator = self.user.username
             await ttm.TaskState.create(
                 id_=task_state.booking.id,
                 data=task_state.json(),
@@ -69,6 +70,7 @@ class TaskRepository:
                 and datetime.fromtimestamp(task_state.unix_millis_finish_time / 1000),
                 status=task_state.status if task_state.status else None,
                 unix_millis_request_time=datetime.now(),
+                initiator=self.user.username,
             )
 
     async def query_task_states(
