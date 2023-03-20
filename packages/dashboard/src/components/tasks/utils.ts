@@ -48,7 +48,16 @@ export function downloadCsvFull(timestamp: Date, allTasks: TaskState[]) {
 export function downloadCsvMinimal(timestamp: Date, allTasks: TaskState[]) {
   const columnSeparator = ';';
   const rowSeparator = '\n';
-  const keys = ['Date', 'ID', 'Category', 'Assignee', 'Start Time', 'End Time', 'State'];
+  const keys = [
+    'Date',
+    'Initiator',
+    'ID',
+    'Category',
+    'Assignee',
+    'Start Time',
+    'End Time',
+    'State',
+  ];
   let csvContent = keys.join(columnSeparator) + rowSeparator;
   allTasks.forEach((task) => {
     const values = [
