@@ -33,6 +33,7 @@ class TaskRepository:
             task_state.booking.unix_millis_request_time = (
                 int(round(db_task_state.unix_millis_request_time.timestamp())) * 1000
             )
+            task_state.booking.initiator = db_task_state.initiator
             db_task_state.update_from_dict(
                 {
                     "data": task_state.json(),
