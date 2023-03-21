@@ -166,3 +166,22 @@ class AppFixture(unittest.TestCase):
         Returns the current time in the testing clock in unix millis.
         """
         return self.test_time
+
+    def post_favorite_task(self):
+        body = {
+            "id": "",
+            "name": "",
+            "unix_millis_earliest_start_time": 1636388410000,
+            "priority": {"type": "binary", "value": 0},
+            "category": "clean",
+            "description": {"type": "", "zone": ""},
+            "user": "",
+        }
+        return self.client.post(
+            "/favorite_tasks",
+            json=body,
+        )
+
+    def create_favorite_task(self):
+        resp = self.post_favorite_task()
+        return resp

@@ -383,10 +383,10 @@ export default {
             required: false,
             schema: {
               title: 'Limit',
-              maximum: 100.0,
+              maximum: 1000000.0,
               exclusiveMinimum: 0.0,
               type: 'integer',
-              default: 100,
+              default: 1000000,
             },
             name: 'limit',
             in: 'query',
@@ -834,6 +834,83 @@ export default {
         },
       },
     },
+    '/favorite_tasks': {
+      get: {
+        tags: ['Tasks'],
+        summary: 'Get Favorites Tasks',
+        operationId: 'get_favorites_tasks_favorite_tasks_get',
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: {
+              'application/json': {
+                schema: {
+                  title: 'Response Get Favorites Tasks Favorite Tasks Get',
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/TaskFavoritePydantic' },
+                },
+              },
+            },
+          },
+        },
+      },
+      post: {
+        tags: ['Tasks'],
+        summary: 'Post Favorite Task',
+        operationId: 'post_favorite_task_favorite_tasks_post',
+        requestBody: {
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/TaskFavoritePydantic' } },
+          },
+          required: true,
+        },
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/api_server.models.tortoise_models.tasks.TaskFavorite.leaf',
+                },
+              },
+            },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
+    '/favorite_tasks/{favorite_task_id}': {
+      delete: {
+        tags: ['Tasks'],
+        summary: 'Delete Favorite Task',
+        operationId: 'delete_favorite_task_favorite_tasks__favorite_task_id__delete',
+        parameters: [
+          {
+            required: true,
+            schema: { title: 'Favorite Task Id', type: 'string' },
+            name: 'favorite_task_id',
+            in: 'path',
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: { 'application/json': { schema: {} } },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
     '/dispensers': {
       get: {
         tags: ['Dispensers'],
@@ -1099,10 +1176,10 @@ export default {
             required: false,
             schema: {
               title: 'Limit',
-              maximum: 100.0,
+              maximum: 1000000.0,
               exclusiveMinimum: 0.0,
               type: 'integer',
-              default: 100,
+              default: 1000000,
             },
             name: 'limit',
             in: 'query',
@@ -2680,6 +2757,23 @@ export default {
         },
         additionalProperties: false,
       },
+      TaskFavoritePydantic: {
+        title: 'TaskFavoritePydantic',
+        required: ['id', 'name', 'unix_millis_earliest_start_time', 'category', 'user'],
+        type: 'object',
+        properties: {
+          id: { title: 'Id', type: 'string' },
+          name: { title: 'Name', type: 'string' },
+          unix_millis_earliest_start_time: {
+            title: 'Unix Millis Earliest Start Time',
+            type: 'integer',
+          },
+          priority: { title: 'Priority', type: 'object' },
+          category: { title: 'Category', type: 'string' },
+          description: { title: 'Description', type: 'object' },
+          user: { title: 'User', type: 'string' },
+        },
+      },
       TaskInterruptionRequest: {
         title: 'TaskInterruptionRequest',
         required: ['type', 'task_id'],
@@ -3068,6 +3162,26 @@ export default {
           msg: { title: 'Message', type: 'string' },
           type: { title: 'Error Type', type: 'string' },
         },
+      },
+      'api_server.models.tortoise_models.tasks.TaskFavorite.leaf': {
+        title: 'TaskFavorite',
+        required: ['id', 'name', 'category', 'user'],
+        type: 'object',
+        properties: {
+          id: { title: 'Id', maxLength: 255, type: 'string' },
+          name: { title: 'Name', maxLength: 255, type: 'string' },
+          unix_millis_earliest_start_time: {
+            title: 'Unix Millis Earliest Start Time',
+            type: 'string',
+            format: 'date-time',
+            nullable: true,
+          },
+          priority: { title: 'Priority' },
+          category: { title: 'Category', maxLength: 255, type: 'string' },
+          description: { title: 'Description' },
+          user: { title: 'User', maxLength: 255, type: 'string' },
+        },
+        additionalProperties: false,
       },
       api_server__models__rmf_api__fleet_log__FleetState: {
         title: 'FleetState',

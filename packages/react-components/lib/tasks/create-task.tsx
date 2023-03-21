@@ -5,20 +5,23 @@ import {
   Button,
   Divider,
   Grid,
+  IconButton,
   List,
   ListItem,
+  ListItemIcon,
+  ListItemSecondaryAction,
   ListItemText,
   MenuItem,
   styled,
   TextField,
+  Typography,
   useTheme,
-  ListItemIcon,
-  IconButton,
 } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import PlaceOutlined from '@mui/icons-material/PlaceOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
-import type { TaskRequest } from 'api-client';
+import UpdateIcon from '@mui/icons-material/Create';
+import type { TaskFavoritePydantic as TaskFavorite, TaskRequest } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
@@ -524,6 +527,68 @@ function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps
   );
 }
 
+interface FavoriteTaskProps {
+  listItemText: string;
+  listItemClick: () => void;
+  favoriteTask: TaskFavorite;
+  setFavoriteTask: (favoriteTask: TaskFavorite) => void;
+  setOpenDialog: (open: boolean) => void;
+  setCallToDelete: (open: boolean) => void;
+  setCallToUpdate: (open: boolean) => void;
+}
+
+function FavoriteTask({
+  listItemText,
+  listItemClick,
+  favoriteTask,
+  setFavoriteTask,
+  setOpenDialog,
+  setCallToDelete,
+  setCallToUpdate,
+}: FavoriteTaskProps) {
+  const theme = useTheme();
+
+  return (
+    <>
+      <ListItem
+        sx={{ width: theme.spacing(30) }}
+        onClick={() => {
+          listItemClick();
+          setCallToUpdate(false);
+        }}
+        role="listitem button"
+        button
+        divider={true}
+      >
+        <ListItemText primary={listItemText} />
+        <ListItemSecondaryAction>
+          <IconButton
+            edge="end"
+            aria-label="update"
+            onClick={() => {
+              setCallToUpdate(true);
+              listItemClick();
+            }}
+          >
+            <UpdateIcon />
+          </IconButton>
+          <IconButton
+            edge="end"
+            aria-label="delete"
+            onClick={() => {
+              setOpenDialog(true);
+              setFavoriteTask(favoriteTask);
+              setCallToDelete(true);
+            }}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </ListItemSecondaryAction>
+      </ListItem>
+    </>
+  );
+}
+
 function defaultCleanTask(): Record<string, any> {
   return {
     zone: '',
@@ -575,6 +640,18 @@ function defaultTask(): TaskRequest {
   };
 }
 
+const defaultFavoriteTask = (): TaskFavorite => {
+  return {
+    id: '',
+    name: '',
+    category: 'patrol',
+    description: defaultLoopsTask(),
+    unix_millis_earliest_start_time: Date.now(),
+    priority: { type: 'binary', value: 0 },
+    user: '',
+  };
+};
+
 export interface CreateTaskFormProps
   extends Omit<ConfirmationDialogProps, 'onConfirmClick' | 'toolbar'> {
   /**
@@ -586,10 +663,15 @@ export interface CreateTaskFormProps
   deliveryWaypoints?: string[];
   dispensers?: string[];
   ingestors?: string[];
+  favoritesTasks: TaskFavorite[];
   submitTasks?(tasks: TaskRequest[]): Promise<void>;
   tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
   onSuccess?(tasks: any[]): void;
   onFail?(error: Error, tasks: any[]): void;
+  onSuccessFavoriteTask?(message: string, favoriteTask: TaskFavorite): void;
+  onFailFavoriteTask?(error: Error, favoriteTask: TaskFavorite): void;
+  submitFavoriteTask?(favoriteTask: TaskFavorite): Promise<void>;
+  deleteFavoriteTask?(favoriteTask: TaskFavorite): Promise<void>;
 }
 
 export function CreateTaskForm({
@@ -598,13 +680,30 @@ export function CreateTaskForm({
   deliveryWaypoints = [],
   dispensers = [],
   ingestors = [],
+  favoritesTasks = [],
   submitTasks,
   tasksFromFile,
   onSuccess,
   onFail,
+  onSuccessFavoriteTask,
+  onFailFavoriteTask,
+  submitFavoriteTask,
+  deleteFavoriteTask,
   ...otherProps
 }: CreateTaskFormProps): JSX.Element {
   const theme = useTheme();
+
+  const [openFavoriteDialog, setOpenFavoriteDialog] = React.useState(false);
+  const [callToDeleteFavoriteTask, setCallToDeleteFavoriteTask] = React.useState(false);
+  const [callToUpdateFavoriteTask, setCallToUpdateFavoriteTask] = React.useState(false);
+  const [deletingFavoriteTask, setDeletingFavoriteTask] = React.useState(false);
+
+  const [favoriteTaskBuffer, setFavoriteTaskBuffer] = React.useState<TaskFavorite>(
+    defaultFavoriteTask(),
+  );
+  const [favoriteTaskTitleError, setFavoriteTaskTitleError] = React.useState(false);
+  const [savingFavoriteTask, setSavingFavoriteTask] = React.useState(false);
+
   const [taskRequests, setTaskRequests] = React.useState<TaskRequest[]>(() => [defaultTask()]);
   const [selectedTaskIdx, setSelectedTaskIdx] = React.useState(0);
   const taskTitles = React.useMemo(
@@ -624,6 +723,7 @@ export function CreateTaskForm({
   const handleTaskDescriptionChange = (newCategory: string, newDesc: TaskDescription) => {
     taskRequest.category = newCategory;
     taskRequest.description = newDesc;
+    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, description: newDesc, category: newCategory });
     updateTasks();
   };
 
@@ -659,7 +759,6 @@ export function CreateTaskForm({
         return null;
     }
   };
-
   const handleTaskTypeChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     const newCategory = ev.target.value;
     const newDesc = defaultTaskDescription(newCategory);
@@ -668,6 +767,9 @@ export function CreateTaskForm({
     }
     taskRequest.description = newDesc;
     taskRequest.category = newCategory;
+
+    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, category: newCategory, description: newDesc });
+
     updateTasks();
   };
 
@@ -678,16 +780,67 @@ export function CreateTaskForm({
       onSuccess && onSuccess(taskRequests);
       return;
     }
-    setSubmitting(true);
     try {
       setSubmitting(true);
-      console.log(taskRequests);
       await submitTasks(taskRequests);
       setSubmitting(false);
       onSuccess && onSuccess(taskRequests);
     } catch (e) {
       setSubmitting(false);
       onFail && onFail(e as Error, taskRequests);
+    }
+  };
+
+  const handleSubmitFavoriteTask: React.MouseEventHandler = async (ev) => {
+    ev.preventDefault();
+
+    if (!favoriteTaskBuffer.name) {
+      setFavoriteTaskTitleError(true);
+      return;
+    }
+
+    setFavoriteTaskTitleError(false);
+
+    if (!submitFavoriteTask) {
+      return;
+    }
+    try {
+      setSavingFavoriteTask(true);
+      await submitFavoriteTask(favoriteTaskBuffer);
+      setSavingFavoriteTask(false);
+      onSuccessFavoriteTask &&
+        onSuccessFavoriteTask(
+          `${!favoriteTaskBuffer.id ? `Created` : `Edited`}  favorite task successfully`,
+          favoriteTaskBuffer,
+        );
+      setOpenFavoriteDialog(false);
+      setCallToUpdateFavoriteTask(false);
+    } catch (e) {
+      setSavingFavoriteTask(false);
+      onFailFavoriteTask && onFailFavoriteTask(e as Error, favoriteTaskBuffer);
+    }
+  };
+
+  const handleDeleteFavoriteTask: React.MouseEventHandler = async (ev) => {
+    ev.preventDefault();
+
+    if (!deleteFavoriteTask) {
+      return;
+    }
+    try {
+      setDeletingFavoriteTask(true);
+      await deleteFavoriteTask(favoriteTaskBuffer);
+      setDeletingFavoriteTask(false);
+      onSuccessFavoriteTask &&
+        onSuccessFavoriteTask('Deleted favorite task successfully', favoriteTaskBuffer);
+
+      setTaskRequests([defaultTask()]);
+      setOpenFavoriteDialog(false);
+      setCallToDeleteFavoriteTask(false);
+      setCallToUpdateFavoriteTask(false);
+    } catch (e) {
+      setDeletingFavoriteTask(false);
+      onFailFavoriteTask && onFailFavoriteTask(e as Error, favoriteTaskBuffer);
     }
   };
 
@@ -708,97 +861,189 @@ export function CreateTaskForm({
   const submitText = taskRequests.length > 1 ? 'Submit All' : 'Submit';
 
   return (
-    <StyledConfirmationDialog
-      title="Create Task"
-      submitting={submitting}
-      confirmText={submitText}
-      maxWidth="md"
-      fullWidth={taskRequests.length > 1}
-      toolbar={<FormToolbar onSelectFileClick={handleSelectFileClick} />}
-      onSubmit={handleSubmit}
-      disableEnforceFocus
-      {...otherProps}
-    >
-      <Grid container direction="row" wrap="nowrap">
-        <Grid>
-          <TextField
-            select
-            id="task-type"
-            label="Task Category"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={taskRequest.category}
-            onChange={handleTaskTypeChange}
-          >
-            <MenuItem value="clean">Clean</MenuItem>
-            <MenuItem value="patrol">Loop</MenuItem>
-            <MenuItem value="delivery">Delivery</MenuItem>
-          </TextField>
-          <Grid container wrap="nowrap">
-            <Grid style={{ flexGrow: 1 }}>
-              <DateTimePicker
-                inputFormat={'MM/dd/yyyy HH:mm'}
-                value={
-                  taskRequest.unix_millis_earliest_start_time
-                    ? new Date(taskRequest.unix_millis_earliest_start_time)
-                    : new Date()
-                }
-                onChange={(date) => {
-                  if (!date) {
-                    return;
-                  }
-                  taskRequest.unix_millis_earliest_start_time = date.valueOf();
-                  updateTasks();
-                }}
-                label="Start Time"
-                renderInput={(props) => <TextField {...props} />}
-              />
-            </Grid>
-            <Grid
-              style={{
-                flex: '0 1 5em',
-                marginLeft: theme.spacing(2),
-                marginRight: theme.spacing(2),
-              }}
+    <>
+      <StyledConfirmationDialog
+        title="Create Task"
+        submitting={submitting}
+        confirmText={submitText}
+        maxWidth="lg"
+        fullWidth={taskRequests.length > 1}
+        toolbar={<FormToolbar onSelectFileClick={handleSelectFileClick} />}
+        onSubmit={handleSubmit}
+        disableEnforceFocus
+        {...otherProps}
+      >
+        <Grid container direction="row" wrap="nowrap">
+          <List dense className={classes.taskList} aria-label="Favorites Tasks">
+            <Typography variant="h6" component="div">
+              Favorite tasks
+            </Typography>
+            {favoritesTasks.map((favoriteTask, index) => {
+              return (
+                <FavoriteTask
+                  listItemText={favoriteTask.name}
+                  key={index}
+                  setFavoriteTask={setFavoriteTaskBuffer}
+                  favoriteTask={favoriteTask}
+                  setCallToDelete={setCallToDeleteFavoriteTask}
+                  setCallToUpdate={setCallToUpdateFavoriteTask}
+                  setOpenDialog={setOpenFavoriteDialog}
+                  listItemClick={() => {
+                    setFavoriteTaskBuffer(favoriteTask);
+                    setTaskRequests((prev) => {
+                      return [
+                        {
+                          ...prev,
+                          category: favoriteTask.category,
+                          description: favoriteTask.description,
+                          unix_millis_earliest_start_time: Date.now(),
+                          priority: favoriteTask.priority,
+                        },
+                      ];
+                    });
+                  }}
+                />
+              );
+            })}
+          </List>
+
+          <Divider
+            orientation="vertical"
+            flexItem
+            style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
+          />
+
+          <Grid>
+            <TextField
+              select
+              id="task-type"
+              label="Task Category"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={taskRequest.category}
+              onChange={handleTaskTypeChange}
             >
-              <PositiveIntField
-                id="priority"
-                label="Priority"
-                margin="normal"
-                value={(taskRequest.priority as Record<string, any>)?.value || 0}
-                onChange={(_ev, val) => {
-                  taskRequest.priority = { type: 'binary', value: val };
-                  updateTasks();
+              <MenuItem value="clean">Clean</MenuItem>
+              <MenuItem value="patrol">Loop</MenuItem>
+              <MenuItem value="delivery">Delivery</MenuItem>
+            </TextField>
+            <Grid container wrap="nowrap">
+              <Grid style={{ flexGrow: 1 }}>
+                <DateTimePicker
+                  inputFormat={'MM/dd/yyyy HH:mm'}
+                  value={
+                    taskRequest.unix_millis_earliest_start_time
+                      ? new Date(taskRequest.unix_millis_earliest_start_time)
+                      : new Date()
+                  }
+                  onChange={(date) => {
+                    if (!date) {
+                      return;
+                    }
+                    taskRequest.unix_millis_earliest_start_time = date.valueOf();
+                    setFavoriteTaskBuffer({
+                      ...favoriteTaskBuffer,
+                      unix_millis_earliest_start_time: date.valueOf(),
+                    });
+                    updateTasks();
+                  }}
+                  label="Start Time"
+                  renderInput={(props) => <TextField {...props} />}
+                />
+              </Grid>
+              <Grid
+                style={{
+                  flex: '0 1 5em',
+                  marginLeft: theme.spacing(2),
+                  marginRight: theme.spacing(2),
                 }}
-              />
+              >
+                <PositiveIntField
+                  id="priority"
+                  label="Priority"
+                  margin="normal"
+                  value={(taskRequest.priority as Record<string, any>)?.value || 0}
+                  onChange={(_ev, val) => {
+                    taskRequest.priority = { type: 'binary', value: val };
+                    setFavoriteTaskBuffer({
+                      ...favoriteTaskBuffer,
+                      priority: { type: 'binary', value: val },
+                    });
+                    updateTasks();
+                  }}
+                />
+              </Grid>
+            </Grid>
+            {renderTaskDescriptionForm()}
+            <Grid container justifyContent="center">
+              <Button
+                aria-label="Save as a favorite task"
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  !callToUpdateFavoriteTask &&
+                    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
+                  setOpenFavoriteDialog(true);
+                }}
+              >
+                {callToUpdateFavoriteTask ? `Confirm edits` : 'Save as a favorite task'}
+              </Button>
             </Grid>
           </Grid>
-          {renderTaskDescriptionForm()}
+          {taskTitles.length > 1 && (
+            <>
+              <Divider
+                orientation="vertical"
+                flexItem
+                style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
+              />
+              <List dense className={classes.taskList} aria-label="Tasks List">
+                {taskTitles.map((title, idx) => (
+                  <ListItem
+                    key={idx}
+                    button
+                    onClick={() => setSelectedTaskIdx(idx)}
+                    className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
+                    role="listitem button"
+                  >
+                    <ListItemText primary={title} />
+                  </ListItem>
+                ))}
+              </List>
+            </>
+          )}
         </Grid>
-        {taskTitles.length > 1 && (
-          <>
-            <Divider
-              orientation="vertical"
-              flexItem
-              style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
+      </StyledConfirmationDialog>
+      {openFavoriteDialog && (
+        <ConfirmationDialog
+          confirmText={callToDeleteFavoriteTask ? 'Delete' : 'Save'}
+          cancelText="Back"
+          open={openFavoriteDialog}
+          title={callToDeleteFavoriteTask ? 'Confirm Delete' : 'Favorite Task'}
+          submitting={callToDeleteFavoriteTask ? deletingFavoriteTask : savingFavoriteTask}
+          onClose={() => {
+            setOpenFavoriteDialog(false);
+            setCallToDeleteFavoriteTask(false);
+          }}
+          onSubmit={callToDeleteFavoriteTask ? handleDeleteFavoriteTask : handleSubmitFavoriteTask}
+        >
+          {!callToDeleteFavoriteTask && (
+            <TextField
+              size="small"
+              value={favoriteTaskBuffer.name}
+              onChange={(e) =>
+                setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: e.target.value })
+              }
+              helperText="Required"
+              error={favoriteTaskTitleError}
             />
-            <List dense className={classes.taskList} aria-label="Tasks List">
-              {taskTitles.map((title, idx) => (
-                <ListItem
-                  key={idx}
-                  button
-                  onClick={() => setSelectedTaskIdx(idx)}
-                  className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
-                  role="listitem button"
-                >
-                  <ListItemText primary={title} />
-                </ListItem>
-              ))}
-            </List>
-          </>
-        )}
-      </Grid>
-    </StyledConfirmationDialog>
+          )}
+          {callToDeleteFavoriteTask && (
+            <Typography>{`Are you sure you want to delete "${favoriteTaskBuffer.name}"?`}</Typography>
+          )}
+        </ConfirmationDialog>
+      )}
+    </>
   );
 }
