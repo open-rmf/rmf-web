@@ -26,10 +26,7 @@ async def get_alert(id: str):
 
 
 @router.post("", status_code=201, response_model=ttm.AlertPydantic)
-async def create_alert(
-    id: str,
-    details: ttm.AlertDetailsPydantic,
-):
+async def create_alert(details: ttm.AlertDetailsPydantic):
     alert, created = await ttm.Alert.get_or_create(
         {
             "created_on": datetime.now(),
@@ -37,7 +34,7 @@ async def create_alert(
             "acknowledged_by": None,
             "acknowledged_on": None,
         },
-        id=id,
+        id=details.id,
     )
     if created:
         return alert

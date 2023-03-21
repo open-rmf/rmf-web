@@ -219,10 +219,10 @@ export type ApiServerModelsRmfApiTokenResponseSuccess = true;
 export interface ApiServerModelsTortoiseModelsAlertsAlertDetailsLeaf {
   /**
    *
-   * @type {number}
+   * @type {string}
    * @memberof ApiServerModelsTortoiseModelsAlertsAlertDetailsLeaf
    */
-  id: number;
+  id: string;
   /**
    *
    * @type {string}
@@ -4415,18 +4415,14 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
     /**
      *
      * @summary Create Alert
-     * @param {string} id
      * @param {ApiServerModelsTortoiseModelsAlertsAlertDetailsLeaf} apiServerModelsTortoiseModelsAlertsAlertDetailsLeaf
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     createAlertAlertsPost: async (
-      id: string,
       apiServerModelsTortoiseModelsAlertsAlertDetailsLeaf: ApiServerModelsTortoiseModelsAlertsAlertDetailsLeaf,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'id' is not null or undefined
-      assertParamExists('createAlertAlertsPost', 'id', id);
       // verify required parameter 'apiServerModelsTortoiseModelsAlertsAlertDetailsLeaf' is not null or undefined
       assertParamExists(
         'createAlertAlertsPost',
@@ -4444,10 +4440,6 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
-
-      if (id !== undefined) {
-        localVarQueryParameter['id'] = id;
-      }
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -4574,13 +4566,11 @@ export const AlertsApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Create Alert
-     * @param {string} id
      * @param {ApiServerModelsTortoiseModelsAlertsAlertDetailsLeaf} apiServerModelsTortoiseModelsAlertsAlertDetailsLeaf
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async createAlertAlertsPost(
-      id: string,
       apiServerModelsTortoiseModelsAlertsAlertDetailsLeaf: ApiServerModelsTortoiseModelsAlertsAlertDetailsLeaf,
       options?: AxiosRequestConfig,
     ): Promise<
@@ -4590,7 +4580,6 @@ export const AlertsApiFp = function (configuration?: Configuration) {
       ) => AxiosPromise<ApiServerModelsTortoiseModelsAlertsAlertLeaf>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createAlertAlertsPost(
-        id,
         apiServerModelsTortoiseModelsAlertsAlertDetailsLeaf,
         options,
       );
@@ -4664,18 +4653,16 @@ export const AlertsApiFactory = function (
     /**
      *
      * @summary Create Alert
-     * @param {string} id
      * @param {ApiServerModelsTortoiseModelsAlertsAlertDetailsLeaf} apiServerModelsTortoiseModelsAlertsAlertDetailsLeaf
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     createAlertAlertsPost(
-      id: string,
       apiServerModelsTortoiseModelsAlertsAlertDetailsLeaf: ApiServerModelsTortoiseModelsAlertsAlertDetailsLeaf,
       options?: any,
     ): AxiosPromise<ApiServerModelsTortoiseModelsAlertsAlertLeaf> {
       return localVarFp
-        .createAlertAlertsPost(id, apiServerModelsTortoiseModelsAlertsAlertDetailsLeaf, options)
+        .createAlertAlertsPost(apiServerModelsTortoiseModelsAlertsAlertDetailsLeaf, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -4731,19 +4718,17 @@ export class AlertsApi extends BaseAPI {
   /**
    *
    * @summary Create Alert
-   * @param {string} id
    * @param {ApiServerModelsTortoiseModelsAlertsAlertDetailsLeaf} apiServerModelsTortoiseModelsAlertsAlertDetailsLeaf
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AlertsApi
    */
   public createAlertAlertsPost(
-    id: string,
     apiServerModelsTortoiseModelsAlertsAlertDetailsLeaf: ApiServerModelsTortoiseModelsAlertsAlertDetailsLeaf,
     options?: AxiosRequestConfig,
   ) {
     return AlertsApiFp(this.configuration)
-      .createAlertAlertsPost(id, apiServerModelsTortoiseModelsAlertsAlertDetailsLeaf, options)
+      .createAlertAlertsPost(apiServerModelsTortoiseModelsAlertsAlertDetailsLeaf, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

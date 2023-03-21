@@ -93,9 +93,6 @@ export default {
         tags: ['Alerts'],
         summary: 'Create Alert',
         operationId: 'create_alert_alerts_post',
-        parameters: [
-          { required: true, schema: { title: 'Id', type: 'string' }, name: 'id', in: 'query' },
-        ],
         requestBody: {
           content: {
             'application/json': {
@@ -3387,7 +3384,7 @@ export default {
         required: ['id', 'title', 'category'],
         type: 'object',
         properties: {
-          id: { title: 'Id', maximum: 2147483647.0, minimum: 1.0, type: 'integer' },
+          id: { title: 'Id', maxLength: 255, type: 'string' },
           title: { title: 'Title', maxLength: 255, type: 'string' },
           category: {
             title: 'Category',
@@ -3396,13 +3393,7 @@ export default {
             description:
               'Default: default<br/>Success: success<br/>Warning: warning<br/>Error: error',
           },
-          progress: {
-            title: 'Progress',
-            maximum: 32767.0,
-            minimum: -32768.0,
-            type: 'integer',
-            nullable: true,
-          },
+          progress: { title: 'Progress', type: 'number', nullable: true },
           description: { title: 'Description', maxLength: 255, type: 'string', nullable: true },
         },
         additionalProperties: false,

@@ -3,14 +3,9 @@ from enum import Enum
 from typing import Optional
 
 from tortoise.contrib.pydantic.creator import pydantic_model_creator
-from tortoise.fields import (
-    CharEnumField,
-    CharField,
-    DatetimeField,
-    ReverseRelation,
-    SmallIntField,
-)
+from tortoise.fields import CharEnumField, CharField, DatetimeField, FloatField
 from tortoise.models import Model
+from tortoise.validators import MaxValueValidator, MinValueValidator
 
 
 class AlertDetails(Model):
@@ -20,9 +15,12 @@ class AlertDetails(Model):
         Warning = "warning"
         Error = "error"
 
+    id = CharField(255, pk=True)
     title = CharField(255)
     category = CharEnumField(Category)
-    progress = SmallIntField(null=True)
+    progress = FloatField(
+        null=True, validators=[MaxValueValidator(1.0), MinValueValidator(0.0)]
+    )
     description = CharField(255, null=True)
 
 
