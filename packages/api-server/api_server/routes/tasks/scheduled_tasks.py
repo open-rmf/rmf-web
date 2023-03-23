@@ -28,11 +28,15 @@ class PostScheduledTaskRequest(BaseModel):
 
 async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
     await task.fetch_related("schedules")
-    try:
-        jobs = [(x, x.to_job()) for x in task.schedules]
-    except schedule.ScheduleValueError as e:
+    jobs: list[tuple[ttm.ScheduledTaskSchedule, schedule.Job]] = []
+    for sche in task.schedules:
+        try:
+            jobs.append((sche, sche.to_job()))
+        except schedule.ScheduleValueError:
+            pass
+    if len(jobs) == 0:
         # don't allow creating scheduled tasks that never runs
-        raise HTTPException(422, "Task is never going to run") from e
+        raise HTTPException(422, "Task is never going to run")
 
     req = DispatchTaskRequest(
         type="dispatch_task_request",
@@ -116,8 +120,18 @@ async def post_scheduled_task(
 
 
 @router.get("", response_model=list[ttm.ScheduledTaskPydantic])
-async def get_scheduled_tasks(pagination: Pagination = Depends(pagination_query)):
-    q = ttm.ScheduledTask.all().limit(pagination.limit).offset(pagination.offset)
+async def get_scheduled_tasks(
+    start_from: datetime,
+    until: datetime,
+    pagination: Pagination = Depends(pagination_query),
+):
+    q = (
+        ttm.ScheduledTask.filter(
+            schedules__start_from__gte=start_from, schedules__until__lte=until
+        )
+        .limit(pagination.limit)
+        .offset(pagination.offset)
+    )
     if pagination.order_by:
         q.order_by(*pagination.order_by.split(","))
     return await q

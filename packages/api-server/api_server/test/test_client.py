@@ -62,8 +62,3 @@ def client(user="admin") -> TestClient:
     _client.headers["Content-Type"] = "application/json"
     _client.set_user(user)
     return _client
-
-
-def shutdown():
-    if _client is not None:
-        _client.__exit__()
