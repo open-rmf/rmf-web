@@ -30,13 +30,13 @@ class TestScheduledTasksRoute(AppFixture):
         resp = self.client.post("/scheduled_tasks", json=scheduled_task)
         self.assertEqual(201, resp.status_code, resp.json())
         task = resp.json()
-        self.assertEqual(len(task.schedules), 2)
+        self.assertEqual(len(task["schedules"]), 2, task)
 
         resp = self.client.get(f"/scheduled_tasks?start_from=1000&until={task_until}")
         self.assertEqual(200, resp.status_code, resp.json())
         after = resp.json()
-
-        self.assertEqual(len(after) - len(before), 1)
+        tasks = {x["id"]: x for x in after}
+        self.assertIn(task["id"], tasks)
 
         task_id = after[0]["id"]
         resp = self.client.get(f"/scheduled_tasks/{task_id}")

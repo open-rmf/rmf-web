@@ -119,7 +119,7 @@ async def post_scheduled_task(
         raise HTTPException(422, str(e)) from e
 
 
-@router.get("", response_model=list[ttm.ScheduledTaskPydantic])
+@router.get("", response_model=ttm.ScheduledTaskPydanticList)
 async def get_scheduled_tasks(
     start_from: datetime,
     until: datetime,
@@ -134,12 +134,12 @@ async def get_scheduled_tasks(
     )
     if pagination.order_by:
         q.order_by(*pagination.order_by.split(","))
-    return await q
+    return await ttm.ScheduledTaskPydanticList.from_queryset(q)
 
 
 @router.get("/{task_id}", response_model=ttm.ScheduledTaskPydantic)
 async def get_scheduled_task(task_id: int):
-    task = await ttm.ScheduledTask.get_or_none(id=task_id)
+    task = await ttm.ScheduledTask.get_or_none(id=task_id).prefetch_related("schedules")
     if task is None:
         raise HTTPException(404)
     return task
