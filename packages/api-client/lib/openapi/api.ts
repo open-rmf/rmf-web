@@ -286,6 +286,55 @@ export interface ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskSchedule
   once?: boolean | null;
 }
 /**
+ *
+ * @export
+ * @interface ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
+ */
+export interface ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf {
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
+   */
+  unix_millis_earliest_start_time?: string | null;
+  /**
+   *
+   * @type {any}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
+   */
+  priority?: any;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
+   */
+  category: string;
+  /**
+   *
+   * @type {any}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
+   */
+  description?: any;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
+   */
+  user: string;
+}
+/**
  * Which agent (robot) is the task assigned to
  * @export
  * @interface AssignedTo
@@ -2189,6 +2238,55 @@ export interface TaskEventLog {
    * @memberof TaskEventLog
    */
   phases?: { [key: string]: Phases };
+}
+/**
+ *
+ * @export
+ * @interface TaskFavoritePydantic
+ */
+export interface TaskFavoritePydantic {
+  /**
+   *
+   * @type {string}
+   * @memberof TaskFavoritePydantic
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskFavoritePydantic
+   */
+  name: string;
+  /**
+   *
+   * @type {number}
+   * @memberof TaskFavoritePydantic
+   */
+  unix_millis_earliest_start_time: number;
+  /**
+   *
+   * @type {object}
+   * @memberof TaskFavoritePydantic
+   */
+  priority?: object;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskFavoritePydantic
+   */
+  category: string;
+  /**
+   *
+   * @type {object}
+   * @memberof TaskFavoritePydantic
+   */
+  description?: object;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskFavoritePydantic
+   */
+  user: string;
 }
 /**
  *
@@ -6414,6 +6512,85 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     },
     /**
      *
+     * @summary Delete Favorite Task
+     * @param {string} favoriteTaskId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete: async (
+      favoriteTaskId: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'favoriteTaskId' is not null or undefined
+      assertParamExists(
+        'deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete',
+        'favoriteTaskId',
+        favoriteTaskId,
+      );
+      const localVarPath = `/favorite_tasks/{favorite_task_id}`.replace(
+        `{${'favorite_task_id'}}`,
+        encodeURIComponent(String(favoriteTaskId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get Favorites Tasks
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getFavoritesTasksFavoriteTasksGet: async (
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/favorite_tasks`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Get Scheduled Task
      * @param {number} taskId
      * @param {*} [options] Override http request option.
@@ -6456,6 +6633,8 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     /**
      *
      * @summary Get Scheduled Tasks
+     * @param {string} startFrom
+     * @param {string} until
      * @param {number} [limit] defaults to 100
      * @param {number} [offset] defaults to 0
      * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -6463,11 +6642,17 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      * @throws {RequiredError}
      */
     getScheduledTasksScheduledTasksGet: async (
+      startFrom: string,
+      until: string,
       limit?: number,
       offset?: number,
       orderBy?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
+      // verify required parameter 'startFrom' is not null or undefined
+      assertParamExists('getScheduledTasksScheduledTasksGet', 'startFrom', startFrom);
+      // verify required parameter 'until' is not null or undefined
+      assertParamExists('getScheduledTasksScheduledTasksGet', 'until', until);
       const localVarPath = `/scheduled_tasks`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -6479,6 +6664,16 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      if (startFrom !== undefined) {
+        localVarQueryParameter['start_from'] =
+          (startFrom as any) instanceof Date ? (startFrom as any).toISOString() : startFrom;
+      }
+
+      if (until !== undefined) {
+        localVarQueryParameter['until'] =
+          (until as any) instanceof Date ? (until as any).toISOString() : until;
+      }
 
       if (limit !== undefined) {
         localVarQueryParameter['limit'] = limit;
@@ -6731,6 +6926,55 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
         dispatchTaskRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Post Favorite Task
+     * @param {TaskFavoritePydantic} taskFavoritePydantic
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postFavoriteTaskFavoriteTasksPost: async (
+      taskFavoritePydantic: TaskFavoritePydantic,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'taskFavoritePydantic' is not null or undefined
+      assertParamExists(
+        'postFavoriteTaskFavoriteTasksPost',
+        'taskFavoritePydantic',
+        taskFavoritePydantic,
+      );
+      const localVarPath = `/favorite_tasks`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        taskFavoritePydantic,
         localVarRequestOptions,
         configuration,
       );
@@ -7291,6 +7535,40 @@ export const TasksApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Delete Favorite Task
+     * @param {string} favoriteTaskId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(
+      favoriteTaskId: string,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(
+          favoriteTaskId,
+          options,
+        );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Get Favorites Tasks
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getFavoritesTasksFavoriteTasksGet(
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskFavoritePydantic>>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getFavoritesTasksFavoriteTasksGet(
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
      * @summary Get Scheduled Task
      * @param {number} taskId
      * @param {*} [options] Override http request option.
@@ -7312,6 +7590,8 @@ export const TasksApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Get Scheduled Tasks
+     * @param {string} startFrom
+     * @param {string} until
      * @param {number} [limit] defaults to 100
      * @param {number} [offset] defaults to 0
      * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -7319,6 +7599,8 @@ export const TasksApiFp = function (configuration?: Configuration) {
      * @throws {RequiredError}
      */
     async getScheduledTasksScheduledTasksGet(
+      startFrom: string,
+      until: string,
       limit?: number,
       offset?: number,
       orderBy?: string,
@@ -7330,6 +7612,8 @@ export const TasksApiFp = function (configuration?: Configuration) {
       ) => AxiosPromise<Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf>>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getScheduledTasksScheduledTasksGet(
+        startFrom,
+        until,
         limit,
         offset,
         orderBy,
@@ -7427,6 +7711,28 @@ export const TasksApiFp = function (configuration?: Configuration) {
           dispatchTaskRequest,
           options,
         );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Post Favorite Task
+     * @param {TaskFavoritePydantic} taskFavoritePydantic
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async postFavoriteTaskFavoriteTasksPost(
+      taskFavoritePydantic: TaskFavoritePydantic,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.postFavoriteTaskFavoriteTasksPost(
+        taskFavoritePydantic,
+        options,
+      );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -7661,6 +7967,32 @@ export const TasksApiFactory = function (
     },
     /**
      *
+     * @summary Delete Favorite Task
+     * @param {string} favoriteTaskId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(
+      favoriteTaskId: string,
+      options?: any,
+    ): AxiosPromise<any> {
+      return localVarFp
+        .deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(favoriteTaskId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get Favorites Tasks
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getFavoritesTasksFavoriteTasksGet(options?: any): AxiosPromise<Array<TaskFavoritePydantic>> {
+      return localVarFp
+        .getFavoritesTasksFavoriteTasksGet(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Get Scheduled Task
      * @param {number} taskId
      * @param {*} [options] Override http request option.
@@ -7677,6 +8009,8 @@ export const TasksApiFactory = function (
     /**
      *
      * @summary Get Scheduled Tasks
+     * @param {string} startFrom
+     * @param {string} until
      * @param {number} [limit] defaults to 100
      * @param {number} [offset] defaults to 0
      * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -7684,13 +8018,15 @@ export const TasksApiFactory = function (
      * @throws {RequiredError}
      */
     getScheduledTasksScheduledTasksGet(
+      startFrom: string,
+      until: string,
       limit?: number,
       offset?: number,
       orderBy?: string,
       options?: any,
     ): AxiosPromise<Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf>> {
       return localVarFp
-        .getScheduledTasksScheduledTasksGet(limit, offset, orderBy, options)
+        .getScheduledTasksScheduledTasksGet(startFrom, until, limit, offset, orderBy, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -7765,6 +8101,21 @@ export const TasksApiFactory = function (
     ): AxiosPromise<TaskDispatchResponseItem> {
       return localVarFp
         .postDispatchTaskTasksDispatchTaskPost(dispatchTaskRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Post Favorite Task
+     * @param {TaskFavoritePydantic} taskFavoritePydantic
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postFavoriteTaskFavoriteTasksPost(
+      taskFavoritePydantic: TaskFavoritePydantic,
+      options?: any,
+    ): AxiosPromise<ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf> {
+      return localVarFp
+        .postFavoriteTaskFavoriteTasksPost(taskFavoritePydantic, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -7970,6 +8321,36 @@ export class TasksApi extends BaseAPI {
 
   /**
    *
+   * @summary Delete Favorite Task
+   * @param {string} favoriteTaskId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(
+    favoriteTaskId: string,
+    options?: AxiosRequestConfig,
+  ) {
+    return TasksApiFp(this.configuration)
+      .deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(favoriteTaskId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get Favorites Tasks
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public getFavoritesTasksFavoriteTasksGet(options?: AxiosRequestConfig) {
+    return TasksApiFp(this.configuration)
+      .getFavoritesTasksFavoriteTasksGet(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
    * @summary Get Scheduled Task
    * @param {number} taskId
    * @param {*} [options] Override http request option.
@@ -7985,6 +8366,8 @@ export class TasksApi extends BaseAPI {
   /**
    *
    * @summary Get Scheduled Tasks
+   * @param {string} startFrom
+   * @param {string} until
    * @param {number} [limit] defaults to 100
    * @param {number} [offset] defaults to 0
    * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -7993,13 +8376,15 @@ export class TasksApi extends BaseAPI {
    * @memberof TasksApi
    */
   public getScheduledTasksScheduledTasksGet(
+    startFrom: string,
+    until: string,
     limit?: number,
     offset?: number,
     orderBy?: string,
     options?: AxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .getScheduledTasksScheduledTasksGet(limit, offset, orderBy, options)
+      .getScheduledTasksScheduledTasksGet(startFrom, until, limit, offset, orderBy, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -8084,6 +8469,23 @@ export class TasksApi extends BaseAPI {
   ) {
     return TasksApiFp(this.configuration)
       .postDispatchTaskTasksDispatchTaskPost(dispatchTaskRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Post Favorite Task
+   * @param {TaskFavoritePydantic} taskFavoritePydantic
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public postFavoriteTaskFavoriteTasksPost(
+    taskFavoritePydantic: TaskFavoritePydantic,
+    options?: AxiosRequestConfig,
+  ) {
+    return TasksApiFp(this.configuration)
+      .postFavoriteTaskFavoriteTasksPost(taskFavoritePydantic, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

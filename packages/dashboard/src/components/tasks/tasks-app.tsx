@@ -5,7 +5,12 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import { Grid, IconButton, TableContainer, Toolbar, Tooltip } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { TaskRequest, TaskState, PostScheduledTaskRequest } from 'api-client';
+import {
+  PostScheduledTaskRequest,
+  TaskRequest,
+  TaskState,
+  TaskFavoritePydantic as TaskFavorite,
+} from 'api-client';
 import React from 'react';
 import {
   CreateTaskForm,
@@ -63,6 +68,7 @@ export const TasksApp = React.memo(
       const rmf = React.useContext(RmfAppContext);
 
       const [forceRefresh, setForceRefresh] = React.useState(0);
+      const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
 
       const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
       const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
@@ -120,6 +126,22 @@ export const TasksApp = React.memo(
         );
         return () => sub.unsubscribe();
       }, [rmf]);
+
+      React.useEffect(() => {
+        if (!rmf) {
+          return;
+        }
+        (async () => {
+          const resp = await rmf.tasksApi.getFavoritesTasksFavoriteTasksGet();
+
+          const results = resp.data as TaskFavorite[];
+          setFavoritesTasks(results);
+        })();
+
+        return () => {
+          setFavoritesTasks([]);
+        };
+      }, [rmf, forceRefresh]);
 
       const resourceManager = React.useContext(ResourcesContext);
 
@@ -268,6 +290,35 @@ export const TasksApp = React.memo(
       const handleCloseExportMenu = () => {
         setAnchorExportElement(null);
       };
+      const submitFavoriteTask = React.useCallback<
+        Required<CreateTaskFormProps>['submitFavoriteTask']
+      >(
+        async (taskFavoriteRequest) => {
+          if (!rmf) {
+            throw new Error('tasks api not available');
+          }
+          await rmf.tasksApi.postFavoriteTaskFavoriteTasksPost(taskFavoriteRequest);
+          setForceRefresh((prev) => prev + 1);
+        },
+        [rmf],
+      );
+
+      const deleteFavoriteTask = React.useCallback<
+        Required<CreateTaskFormProps>['deleteFavoriteTask']
+      >(
+        async (favoriteTask) => {
+          if (!rmf) {
+            throw new Error('tasks api not available');
+          }
+          if (!favoriteTask.id) {
+            throw new Error('Id is needed');
+          }
+
+          await rmf.tasksApi.deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(favoriteTask.id);
+          setForceRefresh((prev) => prev + 1);
+        },
+        [rmf],
+      );
 
       return (
         <Window
@@ -380,9 +431,12 @@ export const TasksApp = React.memo(
               deliveryWaypoints={placeNames}
               dispensers={workcells}
               ingestors={workcells}
+              favoritesTasks={favoritesTasks}
               open={openCreateTaskForm}
               onClose={() => setOpenCreateTaskForm(false)}
               submitTasks={submitTasks}
+              submitFavoriteTask={submitFavoriteTask}
+              deleteFavoriteTask={deleteFavoriteTask}
               tasksFromFile={tasksFromFile}
               onSuccess={() => {
                 setOpenCreateTaskForm(false);
@@ -390,6 +444,12 @@ export const TasksApp = React.memo(
               }}
               onFail={(e) => {
                 showAlert('error', `Failed to create task: ${e.message}`);
+              }}
+              onSuccessFavoriteTask={(message) => {
+                showAlert('success', message);
+              }}
+              onFailFavoriteTask={(e) => {
+                showAlert('error', `Failed to create or delete favorite task: ${e.message}`);
               }}
             />
           )}

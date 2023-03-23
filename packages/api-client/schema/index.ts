@@ -842,6 +842,18 @@ export default {
         operationId: 'get_scheduled_tasks_scheduled_tasks_get',
         parameters: [
           {
+            required: true,
+            schema: { title: 'Start From', type: 'string', format: 'date-time' },
+            name: 'start_from',
+            in: 'query',
+          },
+          {
+            required: true,
+            schema: { title: 'Until', type: 'string', format: 'date-time' },
+            name: 'until',
+            in: 'query',
+          },
+          {
             description: 'defaults to 100',
             required: false,
             schema: {
@@ -978,6 +990,83 @@ export default {
             required: true,
             schema: { title: 'Task Id', type: 'integer' },
             name: 'task_id',
+            in: 'path',
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: { 'application/json': { schema: {} } },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
+    '/favorite_tasks': {
+      get: {
+        tags: ['Tasks'],
+        summary: 'Get Favorites Tasks',
+        operationId: 'get_favorites_tasks_favorite_tasks_get',
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: {
+              'application/json': {
+                schema: {
+                  title: 'Response Get Favorites Tasks Favorite Tasks Get',
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/TaskFavoritePydantic' },
+                },
+              },
+            },
+          },
+        },
+      },
+      post: {
+        tags: ['Tasks'],
+        summary: 'Post Favorite Task',
+        operationId: 'post_favorite_task_favorite_tasks_post',
+        requestBody: {
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/TaskFavoritePydantic' } },
+          },
+          required: true,
+        },
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/api_server.models.tortoise_models.tasks.TaskFavorite.leaf',
+                },
+              },
+            },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
+    '/favorite_tasks/{favorite_task_id}': {
+      delete: {
+        tags: ['Tasks'],
+        summary: 'Delete Favorite Task',
+        operationId: 'delete_favorite_task_favorite_tasks__favorite_task_id__delete',
+        parameters: [
+          {
+            required: true,
+            schema: { title: 'Favorite Task Id', type: 'string' },
+            name: 'favorite_task_id',
             in: 'path',
           },
         ],
@@ -2857,6 +2946,23 @@ export default {
         },
         additionalProperties: false,
       },
+      TaskFavoritePydantic: {
+        title: 'TaskFavoritePydantic',
+        required: ['id', 'name', 'unix_millis_earliest_start_time', 'category', 'user'],
+        type: 'object',
+        properties: {
+          id: { title: 'Id', type: 'string' },
+          name: { title: 'Name', type: 'string' },
+          unix_millis_earliest_start_time: {
+            title: 'Unix Millis Earliest Start Time',
+            type: 'integer',
+          },
+          priority: { title: 'Priority', type: 'object' },
+          category: { title: 'Category', type: 'string' },
+          description: { title: 'Description', type: 'object' },
+          user: { title: 'User', type: 'string' },
+        },
+      },
       TaskInterruptionRequest: {
         title: 'TaskInterruptionRequest',
         required: ['type', 'task_id'],
@@ -3285,6 +3391,26 @@ export default {
         additionalProperties: false,
         description:
           'The schedules for a scheduled task request.<br/>A scheduled task may have multiple schedules.',
+      },
+      'api_server.models.tortoise_models.tasks.TaskFavorite.leaf': {
+        title: 'TaskFavorite',
+        required: ['id', 'name', 'category', 'user'],
+        type: 'object',
+        properties: {
+          id: { title: 'Id', maxLength: 255, type: 'string' },
+          name: { title: 'Name', maxLength: 255, type: 'string' },
+          unix_millis_earliest_start_time: {
+            title: 'Unix Millis Earliest Start Time',
+            type: 'string',
+            format: 'date-time',
+            nullable: true,
+          },
+          priority: { title: 'Priority' },
+          category: { title: 'Category', maxLength: 255, type: 'string' },
+          description: { title: 'Description' },
+          user: { title: 'User', maxLength: 255, type: 'string' },
+        },
+        additionalProperties: false,
       },
       api_server__models__rmf_api__fleet_log__FleetState: {
         title: 'FleetState',
