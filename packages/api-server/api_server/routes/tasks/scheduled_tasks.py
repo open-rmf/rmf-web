@@ -4,7 +4,7 @@ from datetime import datetime
 
 import schedule
 import tortoise.transactions
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Query
 from pydantic import BaseModel
 
 from api_server.authenticator import user_dep
@@ -121,8 +121,12 @@ async def post_scheduled_task(
 
 @router.get("", response_model=ttm.ScheduledTaskPydanticList)
 async def get_scheduled_tasks(
-    start_from: datetime,
-    until: datetime,
+    start_from: datetime = Query(
+        description="Only return scheduled tasks that start after given timestamp"
+    ),
+    until: datetime = Query(
+        description="Only return scheduled tasks that stop before given timestamp"
+    ),
     pagination: Pagination = Depends(pagination_query),
 ):
     q = (
