@@ -121,17 +121,17 @@ async def post_scheduled_task(
 
 @router.get("", response_model=ttm.ScheduledTaskPydanticList)
 async def get_scheduled_tasks(
-    start_from: datetime = Query(
-        description="Only return scheduled tasks that start after given timestamp"
+    start_before: datetime = Query(
+        description="Only return scheduled tasks that start before given timestamp"
     ),
-    until: datetime = Query(
-        description="Only return scheduled tasks that stop before given timestamp"
+    until_after: datetime = Query(
+        description="Only return scheduled tasks that stop after given timestamp"
     ),
     pagination: Pagination = Depends(pagination_query),
 ):
     q = (
         ttm.ScheduledTask.filter(
-            schedules__start_from__gte=start_from, schedules__until__lte=until
+            schedules__start_from__lte=start_before, schedules__until__gte=until_after
         )
         .limit(pagination.limit)
         .offset(pagination.offset)

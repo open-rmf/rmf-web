@@ -6,8 +6,6 @@ from api_server.test import AppFixture
 class TestScheduledTasksRoute(AppFixture):
     def test_scheduled_task_crud(self):
         task_until = (datetime.now() + timedelta(days=30)).timestamp()
-        resp = self.client.get(f"/scheduled_tasks?start_from=1000&until={task_until}")
-        before = resp.json()
 
         scheduled_task = {
             "task_request": {
@@ -29,16 +27,56 @@ class TestScheduledTasksRoute(AppFixture):
         }
         resp = self.client.post("/scheduled_tasks", json=scheduled_task)
         self.assertEqual(201, resp.status_code, resp.json())
-        task = resp.json()
-        self.assertEqual(len(task["schedules"]), 2, task)
+        task1 = resp.json()
+        self.assertEqual(len(task1["schedules"]), 2, task1)
 
-        resp = self.client.get(f"/scheduled_tasks?start_from=1000&until={task_until}")
+        scheduled_task_2 = {
+            "task_request": {
+                "category": "test",
+                "description": "test",
+            },
+            "schedules": [
+                {
+                    "period": "day",
+                    "start_from": 2000,
+                    "until": task_until,
+                },
+            ],
+        }
+        resp = self.client.post("/scheduled_tasks", json=scheduled_task_2)
+        self.assertEqual(201, resp.status_code, resp.json())
+        task2 = resp.json()
+        self.assertEqual(len(task2["schedules"]), 1, task2)
+
+        resp = self.client.get(
+            f"/scheduled_tasks?start_before=1000&until_after={task_until}"
+        )
+        self.assertEqual(200, resp.status_code, resp.json())
+        tasks = {x["id"]: x for x in resp.json()}
+        self.assertIn(task1["id"], tasks)
+        # task2 starts after `start_before`` so should not be included
+        self.assertNotIn(task2["id"], tasks)
+
+        resp = self.client.get(
+            f"/scheduled_tasks?start_before=2000&until_after={task_until}"
+        )
         self.assertEqual(200, resp.status_code, resp.json())
         after = resp.json()
         tasks = {x["id"]: x for x in after}
-        self.assertIn(task["id"], tasks)
+        self.assertIn(task1["id"], tasks)
+        self.assertIn(task2["id"], tasks)
 
-        task_id = after[0]["id"]
+        resp = self.client.get(
+            f"/scheduled_tasks?start_before=2000&until_after={task_until+1}"
+        )
+        self.assertEqual(200, resp.status_code, resp.json())
+        after = resp.json()
+        tasks = {x["id"]: x for x in after}
+        # neither task should be returned as they stop before `until_after`
+        self.assertNotIn(task1["id"], tasks)
+        self.assertNotIn(task2["id"], tasks)
+
+        task_id = task1["id"]
         resp = self.client.get(f"/scheduled_tasks/{task_id}")
         self.assertEqual(200, resp.status_code)
 
@@ -46,8 +84,11 @@ class TestScheduledTasksRoute(AppFixture):
         self.assertEqual(200, resp.status_code)
         resp = self.client.get(f"/scheduled_tasks/{task_id}")
         self.assertEqual(404, resp.status_code)
-        resp = self.client.get(f"/scheduled_tasks?start_from=1000&until={task_until}")
-        self.assertEqual(len(before), len(resp.json()))
+        resp = self.client.get(
+            f"/scheduled_tasks?start_before=1000&until_after={task_until}"
+        )
+        self.assertNotIn(task1["id"], tasks)
+        self.assertNotIn(task2["id"], tasks)
 
     def test_cannot_create_task_that_never_runs(self):
         scheduled_task = {
