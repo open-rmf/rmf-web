@@ -993,7 +993,7 @@ export function CreateTaskForm({
       {...otherProps}
     >
       <Grid container>
-        <Grid container width={600}>
+        <Grid container width={600} wrap="nowrap">
           <List dense className={classes.taskList} aria-label="Favorites Tasks">
             <Typography variant="h6" component="div">
               Favorite tasks
@@ -1033,80 +1033,83 @@ export function CreateTaskForm({
             style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
           />
 
-          <TextField
-            select
-            id="task-type"
-            label="Task Category"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={taskRequest.category}
-            onChange={handleTaskTypeChange}
-          >
-            <MenuItem value="clean">Clean</MenuItem>
-            <MenuItem value="patrol">Loop</MenuItem>
-            <MenuItem value="delivery">Delivery</MenuItem>
-          </TextField>
-          <Grid container gap={theme.spacing(2)} wrap="nowrap" alignItems="center">
-            <Grid>
-              <DatePicker
-                value={dateTimeValue}
-                onChange={handleDateChange}
-                label={recurring ? 'Start On' : 'On'}
-                renderInput={(props) => <TextField {...props} />}
-              />
-            </Grid>
-            <Grid>
-              <TimePicker
-                value={dateTimeValue}
-                onChange={handleDateChange}
-                label="At"
-                renderInput={(props) => <TextField {...props} />}
-              />
-            </Grid>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  disabled={!scheduleEnabled}
-                  checked={scheduleEnabled && recurring}
-                  onChange={(ev) => setRecurring(ev.target.checked)}
+          <Grid>
+            <TextField
+              select
+              id="task-type"
+              label="Task Category"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={taskRequest.category}
+              onChange={handleTaskTypeChange}
+            >
+              <MenuItem value="clean">Clean</MenuItem>
+              <MenuItem value="patrol">Loop</MenuItem>
+              <MenuItem value="delivery">Delivery</MenuItem>
+            </TextField>
+            <Grid container gap={theme.spacing(2)} wrap="nowrap" alignItems="center">
+              <Grid>
+                <DatePicker
+                  value={dateTimeValue}
+                  onChange={handleDateChange}
+                  label={recurring ? 'Start On' : 'On'}
+                  renderInput={(props) => <TextField {...props} />}
                 />
-              }
-              label="Recurring"
-            />
-            <Grid width="4em" marginLeft="auto">
-              <PositiveIntField
-                id="priority"
-                label="Priority"
-                margin="normal"
-                value={(taskRequest.priority as TaskPriority)?.value || 0}
-                onChange={(_ev, val) => {
-                  taskRequest.priority = { type: 'binary', value: val };
-                  updateTasks();
-                }}
-                sx={{ minWidth: '60px' }}
+              </Grid>
+              <Grid>
+                <TimePicker
+                  value={dateTimeValue}
+                  onChange={handleDateChange}
+                  label="At"
+                  renderInput={(props) => <TextField {...props} />}
+                />
+              </Grid>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    disabled={!scheduleEnabled}
+                    checked={scheduleEnabled && recurring}
+                    onChange={(ev) => setRecurring(ev.target.checked)}
+                  />
+                }
+                label="Recurring"
               />
+              <Grid width="4em" marginLeft="auto">
+                <PositiveIntField
+                  id="priority"
+                  label="Priority"
+                  margin="normal"
+                  value={(taskRequest.priority as TaskPriority)?.value || 0}
+                  onChange={(_ev, val) => {
+                    taskRequest.priority = { type: 'binary', value: val };
+                    updateTasks();
+                  }}
+                  sx={{ minWidth: '60px' }}
+                />
+              </Grid>
+            </Grid>
+            {scheduleEnabled && recurring && (
+              <DaySelectorSwitch value={selectedDays} onChange={setSelectedDays} />
+            )}
+            {renderTaskDescriptionForm()}
+            <Grid container justifyContent="center">
+              <Button
+                aria-label="Save as a favorite task"
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  !callToUpdateFavoriteTask &&
+                    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
+                  setOpenFavoriteDialog(true);
+                }}
+              >
+                {callToUpdateFavoriteTask ? `Confirm edits` : 'Save as a favorite task'}
+              </Button>
             </Grid>
           </Grid>
         </Grid>
-        {scheduleEnabled && recurring && (
-          <DaySelectorSwitch value={selectedDays} onChange={setSelectedDays} />
-        )}
-        {renderTaskDescriptionForm()}
-        <Grid container justifyContent="center">
-          <Button
-            aria-label="Save as a favorite task"
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              !callToUpdateFavoriteTask &&
-                setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
-              setOpenFavoriteDialog(true);
-            }}
-          >
-            {callToUpdateFavoriteTask ? `Confirm edits` : 'Save as a favorite task'}
-          </Button>
-        </Grid>
+
         {taskTitles.length > 1 && (
           <>
             <Divider
