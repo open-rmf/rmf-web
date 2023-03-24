@@ -11,7 +11,12 @@ import { ThemeProvider } from '@mui/material/styles';
 import React from 'react';
 import { rmfDark, rmfDarkLeaflet, rmfLight } from 'react-components';
 import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
-import { AppController, AppControllerContext, SettingsContext } from './app-contexts';
+import {
+  AppController,
+  AppControllerContext,
+  SettingsContext,
+  RefreshTaskTableContext,
+} from './app-contexts';
 import AppBar from './appbar';
 import { AlertStore } from './alert-store';
 
@@ -30,6 +35,7 @@ const defaultTheme = createTheme();
 export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element | null {
   const [settings, setSettings] = React.useState(() => loadSettings());
   const [showAlert, setShowAlert] = React.useState(false);
+  const [forceRefresh, setForceRefresh] = React.useState(0);
   const [alertSeverity, setAlertSeverity] = React.useState<AlertProps['severity']>('error');
   const [alertMessage, setAlertMessage] = React.useState('');
   const [alertDuration, setAlertDuration] = React.useState(DefaultAlertDuration);
@@ -71,31 +77,40 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
       {settings.themeMode === ThemeMode.RmfDark && <GlobalStyles styles={rmfDarkLeaflet} />}
       <SettingsContext.Provider value={settings}>
         <AppControllerContext.Provider value={appController}>
-          <AlertStore />
-          <Grid
-            container
-            direction="column"
-            style={{ width: '100%', height: '100%' }}
-            wrap="nowrap"
+          <RefreshTaskTableContext.Provider
+            value={{
+              forceRefreshTask: forceRefresh,
+              setForceRefreshTask: () => {
+                setForceRefresh((prev) => prev + 1);
+              },
+            }}
           >
-            <AppBar extraToolbarItems={extraAppbarIcons} />
-            {children}
-            {/* TODO: Support stacking of alerts */}
-            <Snackbar
-              open={showAlert}
-              message={alertMessage}
-              onClose={() => setShowAlert(false)}
-              autoHideDuration={alertDuration}
+            <AlertStore />
+            <Grid
+              container
+              direction="column"
+              style={{ width: '100%', height: '100%' }}
+              wrap="nowrap"
             >
-              <Alert
+              <AppBar extraToolbarItems={extraAppbarIcons} />
+              {children}
+              {/* TODO: Support stacking of alerts */}
+              <Snackbar
+                open={showAlert}
+                message={alertMessage}
                 onClose={() => setShowAlert(false)}
-                severity={alertSeverity}
-                sx={{ width: '100%' }}
+                autoHideDuration={alertDuration}
               >
-                {alertMessage}
-              </Alert>
-            </Snackbar>
-          </Grid>
+                <Alert
+                  onClose={() => setShowAlert(false)}
+                  severity={alertSeverity}
+                  sx={{ width: '100%' }}
+                >
+                  {alertMessage}
+                </Alert>
+              </Snackbar>
+            </Grid>
+          </RefreshTaskTableContext.Provider>
         </AppControllerContext.Provider>
       </SettingsContext.Provider>
     </ThemeProvider>
