@@ -27,7 +27,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { DatePicker, DatePickerProps, TimePicker } from '@mui/x-date-pickers';
+import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 import type { TaskFavoritePydantic as TaskFavorite, TaskRequest } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
@@ -681,12 +681,17 @@ function defaultTask(): TaskRequest {
   return {
     category: 'patrol',
     description: defaultLoopTask(),
-    unix_millis_earliest_start_time: Date.now(),
+    unix_millis_earliest_start_time: 0,
     priority: { type: 'binary', value: 0 },
   };
 }
 
 export type RecurringDays = [boolean, boolean, boolean, boolean, boolean, boolean, boolean];
+
+export interface Schedule {
+  startOn: Date;
+  days: RecurringDays;
+}
 
 interface DaySelectorSwitchProps {
   disabled?: boolean;
@@ -735,7 +740,7 @@ const defaultFavoriteTask = (): TaskFavorite => {
     name: '',
     category: 'patrol',
     description: defaultLoopTask(),
-    unix_millis_earliest_start_time: Date.now(),
+    unix_millis_earliest_start_time: 0,
     priority: { type: 'binary', value: 0 },
     user: '',
   };
@@ -753,7 +758,7 @@ export interface CreateTaskFormProps
   dispensers?: string[];
   ingestors?: string[];
   favoritesTasks: TaskFavorite[];
-  submitTasks?(tasks: TaskRequest[], schedule: RecurringDays | null): Promise<void>;
+  submitTasks?(tasks: TaskRequest[], schedule: Schedule | null): Promise<void>;
   tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
   onSuccess?(tasks: TaskRequest[]): void;
   onFail?(error: Error, tasks: TaskRequest[]): void;
@@ -801,23 +806,11 @@ export function CreateTaskForm({
   );
   const [submitting, setSubmitting] = React.useState(false);
   const taskRequest = taskRequests[selectedTaskIdx];
-  const dateTimeValue = React.useMemo(
-    () =>
-      taskRequest.unix_millis_earliest_start_time
-        ? new Date(taskRequest.unix_millis_earliest_start_time)
-        : new Date(NaN),
-    [taskRequest.unix_millis_earliest_start_time],
-  );
   const [recurring, setRecurring] = React.useState(true);
-  const [selectedDays, setSelectedDays] = React.useState<RecurringDays>([
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-  ]);
+  const [schedule, setSchedule] = React.useState<Schedule>({
+    startOn: new Date(),
+    days: [true, true, true, true, true, true, true],
+  });
   // schedule is not supported with batch upload
   const scheduleEnabled = taskRequests.length === 1;
 
@@ -890,8 +883,7 @@ export function CreateTaskForm({
     }
     try {
       setSubmitting(true);
-      const schedule = scheduleEnabled && recurring ? selectedDays : null;
-      await submitTasks(taskRequests, schedule);
+      await submitTasks(taskRequests, scheduleEnabled && recurring ? schedule : null);
       setSubmitting(false);
       onSuccess && onSuccess(taskRequests);
     } catch (e) {
@@ -967,20 +959,6 @@ export function CreateTaskForm({
     })();
   };
 
-  const handleDateChange: DatePickerProps<Date, Date>['onChange'] = (date) => {
-    if (!date) {
-      return;
-    }
-    const unix_ms = date.valueOf();
-    taskRequest.unix_millis_earliest_start_time = Number.isNaN(unix_ms) ? undefined : unix_ms;
-    setTaskRequests((prev) => [...prev]);
-    setFavoriteTaskBuffer({
-      ...favoriteTaskBuffer,
-      unix_millis_earliest_start_time: date.valueOf(),
-    });
-    updateTasks();
-  };
-
   const submitText = taskRequests.length > 1 ? 'Submit All' : 'Submit';
 
   return (
@@ -1019,7 +997,7 @@ export function CreateTaskForm({
                           ...prev,
                           category: favoriteTask.category,
                           description: favoriteTask.description,
-                          unix_millis_earliest_start_time: Date.now(),
+                          unix_millis_earliest_start_time: 0,
                           priority: favoriteTask.priority,
                         },
                       ];
@@ -1054,8 +1032,8 @@ export function CreateTaskForm({
             <Grid container gap={theme.spacing(2)} wrap="nowrap" alignItems="center">
               <Grid>
                 <DatePicker
-                  value={dateTimeValue}
-                  onChange={handleDateChange}
+                  value={schedule.startOn}
+                  onChange={(date) => date && setSchedule((prev) => ({ ...prev, startOn: date }))}
                   label="Start On"
                   disabled={!scheduleEnabled || !recurring}
                   renderInput={(props) => <TextField {...props} />}
@@ -1063,8 +1041,8 @@ export function CreateTaskForm({
               </Grid>
               <Grid>
                 <TimePicker
-                  value={dateTimeValue}
-                  onChange={handleDateChange}
+                  value={schedule.startOn}
+                  onChange={(date) => date && setSchedule((prev) => ({ ...prev, startOn: date }))}
                   label="At"
                   disabled={!scheduleEnabled || !recurring}
                   renderInput={(props) => <TextField {...props} />}
@@ -1095,9 +1073,9 @@ export function CreateTaskForm({
               </Grid>
             </Grid>
             <DaySelectorSwitch
-              value={selectedDays}
+              value={schedule.days}
               disabled={!scheduleEnabled || !recurring}
-              onChange={setSelectedDays}
+              onChange={(days) => setSchedule((prev) => ({ ...prev, days }))}
             />
             {renderTaskDescriptionForm()}
             <Grid container justifyContent="center">

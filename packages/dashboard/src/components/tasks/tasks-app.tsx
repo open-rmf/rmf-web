@@ -32,7 +32,7 @@ import { downloadCsvFull, downloadCsvMinimal, parseTasksFile } from './utils';
 
 function toApiSchedule(
   taskRequest: TaskRequest,
-  schedule: RecurringDays | null,
+  schedule: RecurringDays,
 ): PostScheduledTaskRequest {
   const start =
     taskRequest.unix_millis_earliest_start_time === undefined
@@ -44,17 +44,13 @@ function toApiSchedule(
   const hours = date.getHours().toString().padStart(2, '0');
   const minutes = date.getMinutes().toString().padStart(2, '0');
   const at = `${hours}:${minutes}`;
-  if (!schedule) {
-    apiSchedules.push({ period: 'day', start_from, at, once: true });
-  } else {
-    schedule[0] && apiSchedules.push({ period: 'monday', start_from, at });
-    schedule[1] && apiSchedules.push({ period: 'tuesday', start_from, at });
-    schedule[2] && apiSchedules.push({ period: 'wednesday', start_from, at });
-    schedule[3] && apiSchedules.push({ period: 'thursday', start_from, at });
-    schedule[4] && apiSchedules.push({ period: 'friday', start_from, at });
-    schedule[5] && apiSchedules.push({ period: 'saturday', start_from, at });
-    schedule[6] && apiSchedules.push({ period: 'sunday', start_from, at });
-  }
+  schedule[0] && apiSchedules.push({ period: 'monday', start_from, at });
+  schedule[1] && apiSchedules.push({ period: 'tuesday', start_from, at });
+  schedule[2] && apiSchedules.push({ period: 'wednesday', start_from, at });
+  schedule[3] && apiSchedules.push({ period: 'thursday', start_from, at });
+  schedule[4] && apiSchedules.push({ period: 'friday', start_from, at });
+  schedule[5] && apiSchedules.push({ period: 'saturday', start_from, at });
+  schedule[6] && apiSchedules.push({ period: 'sunday', start_from, at });
   return {
     task_request: { ...taskRequest, unix_millis_earliest_start_time: 0 }, // always start asap
     schedules: apiSchedules,
@@ -235,14 +231,25 @@ export const TasksApp = React.memo(
       }, [rmf, forceRefresh, tasksState.page, filterFields.model, sortFields.model]);
 
       const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
-        async (taskRequests, recurringDays) => {
+        async (taskRequests, schedule) => {
           if (!rmf) {
             throw new Error('tasks api not available');
           }
-          const scheduleRequests = taskRequests.map((req) => toApiSchedule(req, recurringDays));
-          await Promise.all(
-            scheduleRequests.map((req) => rmf.tasksApi.postScheduledTaskScheduledTasksPost(req)),
-          );
+          if (!schedule) {
+            await Promise.all(
+              taskRequests.map((request) =>
+                rmf.tasksApi.postDispatchTaskTasksDispatchTaskPost({
+                  type: 'dispatch_task_request',
+                  request,
+                }),
+              ),
+            );
+          } else {
+            const scheduleRequests = taskRequests.map((req) => toApiSchedule(req, schedule));
+            await Promise.all(
+              scheduleRequests.map((req) => rmf.tasksApi.postScheduledTaskScheduledTasksPost(req)),
+            );
+          }
           setForceRefresh((prev) => prev + 1);
         },
         [rmf],
