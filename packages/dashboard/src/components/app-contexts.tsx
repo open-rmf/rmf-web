@@ -19,6 +19,11 @@ export interface Tooltips {
   showTooltips: boolean;
 }
 
+export interface RefreshTasksTable {
+  forceRefreshTask: number;
+  setForceRefreshTask: (forceRefreshTask: number) => void;
+}
+
 export const TooltipsContext = React.createContext<Tooltips>({
   showTooltips: true,
 });
@@ -27,6 +32,11 @@ export const AppControllerContext = React.createContext<AppController>({
   updateSettings: () => {},
   showAlert: () => {},
   setExtraAppbarIcons: () => {},
+});
+
+export const RefreshTaskTableContext = React.createContext<RefreshTasksTable>({
+  forceRefreshTask: 0,
+  setForceRefreshTask: () => {},
 });
 
 export const AppConfigContext = React.createContext<AppConfig>(appConfig);
