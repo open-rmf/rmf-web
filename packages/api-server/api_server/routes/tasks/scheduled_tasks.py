@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from api_server.authenticator import user_dep
 from api_server.dependencies import pagination_query
 from api_server.fast_io import FastIORouter
+from api_server.logger import logger
 from api_server.models import DispatchTaskRequest, Pagination, TaskRequest, User
 from api_server.models import tortoise_models as ttm
 from api_server.repositories import TaskRepository, task_repo_dep
@@ -21,9 +22,7 @@ router = FastIORouter(tags=["Tasks"])
 
 class PostScheduledTaskRequest(BaseModel):
     task_request: TaskRequest
-    schedules: list[
-        ttm.ScheduledTaskSchedulePydantic
-    ]  # a scheduled task can have multiple schedules
+    schedules: list[ttm.ScheduledTaskSchedulePydantic]
 
 
 async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
@@ -48,25 +47,21 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
         task.last_ran = datetime.now()
         await task.save()
 
-    def schedule_now(job: schedule.Job, coro: Coroutine, *, once=False):
+    def schedule_now(job: schedule.Job, coro: Coroutine):
         def do():
+            logger.info(f"starting job {job.tags}")
             asyncio.get_event_loop().create_task(coro)
-            if once:
-                return schedule.CancelJob
-            return None
 
         job.do(do).tag(f"task_{task.pk}")
 
     # FIXME(kp): schedule does not support starting from specified time, workaround by
     # scheduling a "trigger" job which schedules the actual job.
-    def schedule_later(
-        job: schedule.Job, start: datetime, coro: Coroutine, *, once=False
-    ):
+    def schedule_later(job: schedule.Job, start: datetime, coro: Coroutine):
         start_job = job
 
         def do():
             if datetime.now() >= start:
-                schedule_now(job, coro, once=once)
+                schedule_now(job, coro)
                 return schedule.CancelJob
 
         start_job.do(do)
@@ -74,9 +69,9 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
     now = datetime.now()
     for t, j in jobs:
         if t.start_from is not None and now.timestamp() >= t.start_from.timestamp():
-            schedule_now(j, run(), once=bool(t.once))
+            schedule_now(j, run())
         else:
-            schedule_later(j, t.start_from, run(), once=bool(t.once))
+            schedule_later(j, t.start_from, run())
 
 
 @router.post("", status_code=201, response_model=ttm.ScheduledTaskPydantic)

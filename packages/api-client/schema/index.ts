@@ -842,15 +842,27 @@ export default {
         operationId: 'get_scheduled_tasks_scheduled_tasks_get',
         parameters: [
           {
+            description: 'Only return scheduled tasks that start before given timestamp',
             required: true,
-            schema: { title: 'Start From', type: 'string', format: 'date-time' },
-            name: 'start_from',
+            schema: {
+              title: 'Start Before',
+              type: 'string',
+              description: 'Only return scheduled tasks that start before given timestamp',
+              format: 'date-time',
+            },
+            name: 'start_before',
             in: 'query',
           },
           {
+            description: 'Only return scheduled tasks that stop after given timestamp',
             required: true,
-            schema: { title: 'Until', type: 'string', format: 'date-time' },
-            name: 'until',
+            schema: {
+              title: 'Until After',
+              type: 'string',
+              description: 'Only return scheduled tasks that stop after given timestamp',
+              format: 'date-time',
+            },
+            name: 'until_after',
             in: 'query',
           },
           {
@@ -898,11 +910,7 @@ export default {
             content: {
               'application/json': {
                 schema: {
-                  title: 'Response Get Scheduled Tasks Scheduled Tasks Get',
-                  type: 'array',
-                  items: {
-                    $ref: '#/components/schemas/api_server.models.tortoise_models.scheduled_task.ScheduledTask.leaf',
-                  },
+                  $ref: '#/components/schemas/api_server.models.tortoise_models.scheduled_task.ScheduledTask_list',
                 },
               },
             },
@@ -935,7 +943,7 @@ export default {
             content: {
               'application/json': {
                 schema: {
-                  $ref: '#/components/schemas/api_server.models.tortoise_models.scheduled_task.ScheduledTask.leaf',
+                  $ref: '#/components/schemas/api_server.models.tortoise_models.scheduled_task.ScheduledTask',
                 },
               },
             },
@@ -968,7 +976,7 @@ export default {
             content: {
               'application/json': {
                 schema: {
-                  $ref: '#/components/schemas/api_server.models.tortoise_models.scheduled_task.ScheduledTask.leaf',
+                  $ref: '#/components/schemas/api_server.models.tortoise_models.scheduled_task.ScheduledTask',
                 },
               },
             },
@@ -3352,15 +3360,22 @@ export default {
           type: { title: 'Error Type', type: 'string' },
         },
       },
-      'api_server.models.tortoise_models.scheduled_task.ScheduledTask.leaf': {
+      'api_server.models.tortoise_models.scheduled_task.ScheduledTask': {
         title: 'ScheduledTask',
-        required: ['id', 'created_by'],
+        required: ['id', 'created_by', 'schedules'],
         type: 'object',
         properties: {
           id: { title: 'Id', maximum: 2147483647.0, minimum: 1.0, type: 'integer' },
           task_request: { title: 'Task Request' },
           created_by: { title: 'Created By', maxLength: 255, type: 'string' },
           last_ran: { title: 'Last Ran', type: 'string', format: 'date-time', nullable: true },
+          schedules: {
+            title: 'Schedules',
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/api_server.models.tortoise_models.scheduled_task.ScheduledTaskSchedule.leaf',
+            },
+          },
         },
         additionalProperties: false,
       },
@@ -3386,11 +3401,17 @@ export default {
               'Monday: monday<br/>Tuesday: tuesday<br/>Wednesday: wednesday<br/>Thursday: thursday<br/>Friday: friday<br/>Saturday: saturday<br/>Sunday: sunday<br/>Day: day<br/>Hour: hour<br/>Minute: minute',
           },
           at: { title: 'At', maxLength: 255, type: 'string', nullable: true },
-          once: { title: 'Once', type: 'boolean', nullable: true },
         },
         additionalProperties: false,
         description:
           'The schedules for a scheduled task request.<br/>A scheduled task may have multiple schedules.',
+      },
+      'api_server.models.tortoise_models.scheduled_task.ScheduledTask_list': {
+        title: 'ScheduledTask_list',
+        type: 'array',
+        items: {
+          $ref: '#/components/schemas/api_server.models.tortoise_models.scheduled_task.ScheduledTask',
+        },
       },
       'api_server.models.tortoise_models.tasks.TaskFavorite.leaf': {
         title: 'TaskFavorite',

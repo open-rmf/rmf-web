@@ -214,33 +214,39 @@ export type ApiServerModelsRmfApiTokenResponseSuccess = true;
 /**
  *
  * @export
- * @interface ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf
+ * @interface ApiServerModelsTortoiseModelsScheduledTaskScheduledTask
  */
-export interface ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf {
+export interface ApiServerModelsTortoiseModelsScheduledTaskScheduledTask {
   /**
    *
    * @type {number}
-   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf
+   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTask
    */
   id: number;
   /**
    *
    * @type {any}
-   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf
+   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTask
    */
   task_request?: any;
   /**
    *
    * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf
+   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTask
    */
   created_by: string;
   /**
    *
    * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf
+   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTask
    */
   last_ran?: string | null;
+  /**
+   *
+   * @type {Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf>}
+   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTask
+   */
+  schedules: Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf>;
 }
 /**
  * The schedules for a scheduled task request.<br/>A scheduled task may have multiple schedules.
@@ -278,12 +284,6 @@ export interface ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskSchedule
    * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf
    */
   at?: string | null;
-  /**
-   *
-   * @type {boolean}
-   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf
-   */
-  once?: boolean | null;
 }
 /**
  *
@@ -6633,8 +6633,8 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     /**
      *
      * @summary Get Scheduled Tasks
-     * @param {string} startFrom
-     * @param {string} until
+     * @param {string} startBefore Only return scheduled tasks that start before given timestamp
+     * @param {string} untilAfter Only return scheduled tasks that stop after given timestamp
      * @param {number} [limit] defaults to 100
      * @param {number} [offset] defaults to 0
      * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -6642,17 +6642,17 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      * @throws {RequiredError}
      */
     getScheduledTasksScheduledTasksGet: async (
-      startFrom: string,
-      until: string,
+      startBefore: string,
+      untilAfter: string,
       limit?: number,
       offset?: number,
       orderBy?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'startFrom' is not null or undefined
-      assertParamExists('getScheduledTasksScheduledTasksGet', 'startFrom', startFrom);
-      // verify required parameter 'until' is not null or undefined
-      assertParamExists('getScheduledTasksScheduledTasksGet', 'until', until);
+      // verify required parameter 'startBefore' is not null or undefined
+      assertParamExists('getScheduledTasksScheduledTasksGet', 'startBefore', startBefore);
+      // verify required parameter 'untilAfter' is not null or undefined
+      assertParamExists('getScheduledTasksScheduledTasksGet', 'untilAfter', untilAfter);
       const localVarPath = `/scheduled_tasks`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -6665,14 +6665,14 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (startFrom !== undefined) {
-        localVarQueryParameter['start_from'] =
-          (startFrom as any) instanceof Date ? (startFrom as any).toISOString() : startFrom;
+      if (startBefore !== undefined) {
+        localVarQueryParameter['start_before'] =
+          (startBefore as any) instanceof Date ? (startBefore as any).toISOString() : startBefore;
       }
 
-      if (until !== undefined) {
-        localVarQueryParameter['until'] =
-          (until as any) instanceof Date ? (until as any).toISOString() : until;
+      if (untilAfter !== undefined) {
+        localVarQueryParameter['until_after'] =
+          (untilAfter as any) instanceof Date ? (untilAfter as any).toISOString() : untilAfter;
       }
 
       if (limit !== undefined) {
@@ -7581,7 +7581,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
       (
         axios?: AxiosInstance,
         basePath?: string,
-      ) => AxiosPromise<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf>
+      ) => AxiosPromise<ApiServerModelsTortoiseModelsScheduledTaskScheduledTask>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.getScheduledTaskScheduledTasksTaskIdGet(taskId, options);
@@ -7590,8 +7590,8 @@ export const TasksApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Get Scheduled Tasks
-     * @param {string} startFrom
-     * @param {string} until
+     * @param {string} startBefore Only return scheduled tasks that start before given timestamp
+     * @param {string} untilAfter Only return scheduled tasks that stop after given timestamp
      * @param {number} [limit] defaults to 100
      * @param {number} [offset] defaults to 0
      * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -7599,8 +7599,8 @@ export const TasksApiFp = function (configuration?: Configuration) {
      * @throws {RequiredError}
      */
     async getScheduledTasksScheduledTasksGet(
-      startFrom: string,
-      until: string,
+      startBefore: string,
+      untilAfter: string,
       limit?: number,
       offset?: number,
       orderBy?: string,
@@ -7609,11 +7609,11 @@ export const TasksApiFp = function (configuration?: Configuration) {
       (
         axios?: AxiosInstance,
         basePath?: string,
-      ) => AxiosPromise<Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf>>
+      ) => AxiosPromise<Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTask>>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getScheduledTasksScheduledTasksGet(
-        startFrom,
-        until,
+        startBefore,
+        untilAfter,
         limit,
         offset,
         orderBy,
@@ -7837,7 +7837,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
       (
         axios?: AxiosInstance,
         basePath?: string,
-      ) => AxiosPromise<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf>
+      ) => AxiosPromise<ApiServerModelsTortoiseModelsScheduledTaskScheduledTask>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.postScheduledTaskScheduledTasksPost(
         postScheduledTaskRequest,
@@ -8001,7 +8001,7 @@ export const TasksApiFactory = function (
     getScheduledTaskScheduledTasksTaskIdGet(
       taskId: number,
       options?: any,
-    ): AxiosPromise<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf> {
+    ): AxiosPromise<ApiServerModelsTortoiseModelsScheduledTaskScheduledTask> {
       return localVarFp
         .getScheduledTaskScheduledTasksTaskIdGet(taskId, options)
         .then((request) => request(axios, basePath));
@@ -8009,8 +8009,8 @@ export const TasksApiFactory = function (
     /**
      *
      * @summary Get Scheduled Tasks
-     * @param {string} startFrom
-     * @param {string} until
+     * @param {string} startBefore Only return scheduled tasks that start before given timestamp
+     * @param {string} untilAfter Only return scheduled tasks that stop after given timestamp
      * @param {number} [limit] defaults to 100
      * @param {number} [offset] defaults to 0
      * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -8018,15 +8018,22 @@ export const TasksApiFactory = function (
      * @throws {RequiredError}
      */
     getScheduledTasksScheduledTasksGet(
-      startFrom: string,
-      until: string,
+      startBefore: string,
+      untilAfter: string,
       limit?: number,
       offset?: number,
       orderBy?: string,
       options?: any,
-    ): AxiosPromise<Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf>> {
+    ): AxiosPromise<Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTask>> {
       return localVarFp
-        .getScheduledTasksScheduledTasksGet(startFrom, until, limit, offset, orderBy, options)
+        .getScheduledTasksScheduledTasksGet(
+          startBefore,
+          untilAfter,
+          limit,
+          offset,
+          orderBy,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
@@ -8203,7 +8210,7 @@ export const TasksApiFactory = function (
     postScheduledTaskScheduledTasksPost(
       postScheduledTaskRequest: PostScheduledTaskRequest,
       options?: any,
-    ): AxiosPromise<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf> {
+    ): AxiosPromise<ApiServerModelsTortoiseModelsScheduledTaskScheduledTask> {
       return localVarFp
         .postScheduledTaskScheduledTasksPost(postScheduledTaskRequest, options)
         .then((request) => request(axios, basePath));
@@ -8366,8 +8373,8 @@ export class TasksApi extends BaseAPI {
   /**
    *
    * @summary Get Scheduled Tasks
-   * @param {string} startFrom
-   * @param {string} until
+   * @param {string} startBefore Only return scheduled tasks that start before given timestamp
+   * @param {string} untilAfter Only return scheduled tasks that stop after given timestamp
    * @param {number} [limit] defaults to 100
    * @param {number} [offset] defaults to 0
    * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -8376,15 +8383,15 @@ export class TasksApi extends BaseAPI {
    * @memberof TasksApi
    */
   public getScheduledTasksScheduledTasksGet(
-    startFrom: string,
-    until: string,
+    startBefore: string,
+    untilAfter: string,
     limit?: number,
     offset?: number,
     orderBy?: string,
     options?: AxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .getScheduledTasksScheduledTasksGet(startFrom, until, limit, offset, orderBy, options)
+      .getScheduledTasksScheduledTasksGet(startBefore, untilAfter, limit, offset, orderBy, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

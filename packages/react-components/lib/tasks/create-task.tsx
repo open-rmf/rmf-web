@@ -689,15 +689,17 @@ function defaultTask(): TaskRequest {
 export type RecurringDays = [boolean, boolean, boolean, boolean, boolean, boolean, boolean];
 
 interface DaySelectorSwitchProps {
+  disabled?: boolean;
   onChange: (checked: RecurringDays) => void;
   value: RecurringDays;
 }
 
-const DaySelectorSwitch: React.VFC<DaySelectorSwitchProps> = ({ onChange, value }) => {
+const DaySelectorSwitch: React.VFC<DaySelectorSwitchProps> = ({ disabled, onChange, value }) => {
   const theme = useTheme();
   const renderButton = (idx: number, text: string) => (
     <ButtonBase
       sx={{ borderRadius: '50%' }}
+      disabled={disabled}
       onClick={() => {
         value[idx] = !value[idx];
         onChange([...value]);
@@ -705,7 +707,8 @@ const DaySelectorSwitch: React.VFC<DaySelectorSwitchProps> = ({ onChange, value 
     >
       <Avatar
         sx={{
-          bgcolor: value[idx] ? theme.palette.primary.main : theme.palette.text.disabled,
+          bgcolor:
+            value[idx] && !disabled ? theme.palette.primary.main : theme.palette.text.disabled,
           fontSize: '1rem',
         }}
       >
@@ -805,7 +808,7 @@ export function CreateTaskForm({
         : new Date(NaN),
     [taskRequest.unix_millis_earliest_start_time],
   );
-  const [recurring, setRecurring] = React.useState(false);
+  const [recurring, setRecurring] = React.useState(true);
   const [selectedDays, setSelectedDays] = React.useState<RecurringDays>([
     true,
     true,
@@ -887,7 +890,7 @@ export function CreateTaskForm({
     }
     try {
       setSubmitting(true);
-      const schedule = scheduleEnabled ? null : selectedDays;
+      const schedule = scheduleEnabled && recurring ? selectedDays : null;
       await submitTasks(taskRequests, schedule);
       setSubmitting(false);
       onSuccess && onSuccess(taskRequests);
@@ -993,7 +996,7 @@ export function CreateTaskForm({
       {...otherProps}
     >
       <Grid container>
-        <Grid container width={600} wrap="nowrap">
+        <Grid container width={800} wrap="nowrap">
           <List dense className={classes.taskList} aria-label="Favorites Tasks">
             <Typography variant="h6" component="div">
               Favorite tasks
@@ -1053,7 +1056,8 @@ export function CreateTaskForm({
                 <DatePicker
                   value={dateTimeValue}
                   onChange={handleDateChange}
-                  label={recurring ? 'Start On' : 'On'}
+                  label="Start On"
+                  disabled={!scheduleEnabled || !recurring}
                   renderInput={(props) => <TextField {...props} />}
                 />
               </Grid>
@@ -1062,6 +1066,7 @@ export function CreateTaskForm({
                   value={dateTimeValue}
                   onChange={handleDateChange}
                   label="At"
+                  disabled={!scheduleEnabled || !recurring}
                   renderInput={(props) => <TextField {...props} />}
                 />
               </Grid>
@@ -1069,11 +1074,11 @@ export function CreateTaskForm({
                 control={
                   <Checkbox
                     disabled={!scheduleEnabled}
-                    checked={scheduleEnabled && recurring}
-                    onChange={(ev) => setRecurring(ev.target.checked)}
+                    checked={scheduleEnabled && !recurring}
+                    onChange={(ev) => setRecurring(!ev.target.checked)}
                   />
                 }
-                label="Recurring"
+                label="Now"
               />
               <Grid width="4em" marginLeft="auto">
                 <PositiveIntField
@@ -1089,9 +1094,11 @@ export function CreateTaskForm({
                 />
               </Grid>
             </Grid>
-            {scheduleEnabled && recurring && (
-              <DaySelectorSwitch value={selectedDays} onChange={setSelectedDays} />
-            )}
+            <DaySelectorSwitch
+              value={selectedDays}
+              disabled={!scheduleEnabled || !recurring}
+              onChange={setSelectedDays}
+            />
             {renderTaskDescriptionForm()}
             <Grid container justifyContent="center">
               <Button

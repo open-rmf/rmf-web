@@ -41,7 +41,9 @@ function toApiSchedule(
   const apiSchedules: PostScheduledTaskRequest['schedules'] = [];
   const date = new Date(start);
   const start_from = start.toString();
-  const at = `${date.getHours()}:${date.getMinutes()}`;
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const at = `${hours}:${minutes}`;
   if (!schedule) {
     apiSchedules.push({ period: 'day', start_from, at, once: true });
   } else {

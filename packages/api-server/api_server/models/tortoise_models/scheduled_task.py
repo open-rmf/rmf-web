@@ -9,7 +9,6 @@ from tortoise.contrib.pydantic.creator import (
     pydantic_queryset_creator,
 )
 from tortoise.fields import (
-    BooleanField,
     CharEnumField,
     CharField,
     DatetimeField,
@@ -57,7 +56,6 @@ class ScheduledTaskSchedule(Model):
     until = DatetimeField(null=True)
     period = CharEnumField(Period)
     at = CharField(255, null=True)
-    once = BooleanField(null=True)
 
     def to_job(self) -> Job:
         if self.every is not None:
