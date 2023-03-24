@@ -1,7 +1,10 @@
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
+import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import {
+  Button,
   CardContent,
+  Divider,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -13,8 +16,18 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
+import { TaskRequest, TaskFavoritePydantic as TaskFavorite } from 'api-client';
 import React from 'react';
-import { AppBarTab, HeaderBar, LogoButton, NavigationBar, useAsync } from 'react-components';
+import {
+  AppBarTab,
+  CreateTaskForm,
+  CreateTaskFormProps,
+  getPlaces,
+  HeaderBar,
+  LogoButton,
+  NavigationBar,
+  useAsync,
+} from 'react-components';
 import { useHistory, useLocation } from 'react-router-dom';
 import { UserProfileContext } from 'rmf-auth';
 import { logoSize } from '../managers/resource-manager';
@@ -30,9 +43,12 @@ import {
 import {
   AppConfigContext,
   AppControllerContext,
+  RefreshTaskTableContext,
   ResourcesContext,
   SettingsContext,
 } from './app-contexts';
+import { RmfAppContext } from './rmf-app';
+import { parseTasksFile } from './tasks/utils';
 
 export type TabValue = 'infrastructure' | 'robots' | 'tasks' | 'custom1' | 'custom2' | 'admin';
 
@@ -95,6 +111,10 @@ export interface AppBarProps {
 }
 
 export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.ReactElement => {
+  const rmf = React.useContext(RmfAppContext);
+  const resourceManager = React.useContext(ResourcesContext);
+  const { showAlert } = React.useContext(AppControllerContext);
+  const { forceRefreshTask, setForceRefreshTask } = React.useContext(RefreshTaskTableContext);
   const history = useHistory();
   const location = useLocation();
   const tabValue = React.useMemo(() => locationToTabValue(location.pathname), [location]);
@@ -105,6 +125,10 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const safeAsync = useAsync();
   const [brandingIconPath, setBrandingIconPath] = React.useState<string>('');
   const [settingsAnchor, setSettingsAnchor] = React.useState<HTMLElement | null>(null);
+  const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
+  const [placeNames, setPlaceNames] = React.useState<string[]>([]);
+  const [workcells, setWorkcells] = React.useState<string[]>();
+  const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
 
   const curTheme = React.useContext(SettingsContext).themeMode;
 
@@ -122,6 +146,117 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       setBrandingIconPath(await safeAsync(logoResourcesContext.getHeaderLogoPath(curTheme)));
     })();
   }, [logoResourcesContext, safeAsync, curTheme]);
+
+  //#region CreateTaskForm props
+  React.useEffect(() => {
+    if (!resourceManager?.dispensers) {
+      return;
+    }
+    setWorkcells(Object.keys(resourceManager.dispensers.dispensers));
+  }, [resourceManager]);
+
+  React.useEffect(() => {
+    if (!rmf) {
+      return;
+    }
+    const sub = rmf.buildingMapObs.subscribe((map) =>
+      setPlaceNames(getPlaces(map).map((p) => p.vertex.name)),
+    );
+    return () => sub.unsubscribe();
+  }, [rmf]);
+
+  const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
+    async (taskRequests) => {
+      if (!rmf) {
+        throw new Error('tasks api not available');
+      }
+      await Promise.all(
+        taskRequests.map((taskReq) =>
+          rmf.tasksApi.postDispatchTaskTasksDispatchTaskPost({
+            type: 'dispatch_task_request',
+            request: taskReq,
+          }),
+        ),
+      );
+      setForceRefreshTask(forceRefreshTask + 1);
+    },
+    [rmf, forceRefreshTask, setForceRefreshTask],
+  );
+
+  const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
+  const tasksFromFile = (): Promise<TaskRequest[]> => {
+    return new Promise((res) => {
+      const fileInputEl = uploadFileInputRef.current;
+      if (!fileInputEl) {
+        return [];
+      }
+      let taskFiles: TaskRequest[];
+      const listener = async () => {
+        try {
+          if (!fileInputEl.files || fileInputEl.files.length === 0) {
+            return res([]);
+          }
+          try {
+            taskFiles = parseTasksFile(await fileInputEl.files[0].text());
+          } catch (err) {
+            showAlert('error', (err as Error).message, 5000);
+            return res([]);
+          }
+          // only submit tasks when all tasks are error free
+          return res(taskFiles);
+        } finally {
+          fileInputEl.removeEventListener('input', listener);
+          fileInputEl.value = '';
+        }
+      };
+      fileInputEl.addEventListener('input', listener);
+      fileInputEl.click();
+    });
+  };
+  //#endregion CreateTaskForm props
+
+  //#region "Favorite Task"
+  React.useEffect(() => {
+    if (!rmf) {
+      return;
+    }
+    (async () => {
+      const resp = await rmf.tasksApi.getFavoritesTasksFavoriteTasksGet();
+
+      const results = resp.data as TaskFavorite[];
+      setFavoritesTasks(results);
+    })();
+
+    return () => {
+      setFavoritesTasks([]);
+    };
+  }, [rmf]);
+
+  const submitFavoriteTask = React.useCallback<Required<CreateTaskFormProps>['submitFavoriteTask']>(
+    async (taskFavoriteRequest) => {
+      if (!rmf) {
+        throw new Error('tasks api not available');
+      }
+      await rmf.tasksApi.postFavoriteTaskFavoriteTasksPost(taskFavoriteRequest);
+    },
+    [rmf],
+  );
+
+  const deleteFavoriteTask = React.useCallback<Required<CreateTaskFormProps>['deleteFavoriteTask']>(
+    async (favoriteTask) => {
+      if (!rmf) {
+        throw new Error('tasks api not available');
+      }
+      if (!favoriteTask.id) {
+        throw new Error('Id is needed');
+      }
+
+      await rmf.tasksApi.deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(favoriteTask.id);
+    },
+    [rmf],
+  );
+
+  //#endregion "Favorite Task"
 
   return (
     <>
@@ -168,6 +303,18 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           )}
         </NavigationBar>
         <Toolbar variant="dense" sx={{ textAlign: 'right', flexGrow: -1 }}>
+          <Button
+            id="create-new-task-button"
+            aria-label="new task"
+            color="secondary"
+            variant="contained"
+            size="small"
+            onClick={() => setOpenCreateTaskForm(true)}
+          >
+            <AddOutlinedIcon />
+            New Task
+          </Button>
+          <Divider orientation="vertical" sx={{ marginLeft: 1, marginRight: 2 }} />
           <Typography variant="caption">Powered by OpenRMF</Typography>
           {extraToolbarItems}
           <IconButton
@@ -218,6 +365,35 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           <AppSettings />
         </CardContent>
       </Menu>
+      {openCreateTaskForm && (
+        <CreateTaskForm
+          cleaningZones={placeNames}
+          loopWaypoints={placeNames}
+          deliveryWaypoints={placeNames}
+          dispensers={workcells}
+          ingestors={workcells}
+          favoritesTasks={favoritesTasks}
+          open={openCreateTaskForm}
+          onClose={() => setOpenCreateTaskForm(false)}
+          submitTasks={submitTasks}
+          submitFavoriteTask={submitFavoriteTask}
+          deleteFavoriteTask={deleteFavoriteTask}
+          tasksFromFile={tasksFromFile}
+          onSuccess={() => {
+            setOpenCreateTaskForm(false);
+            showAlert('success', 'Successfully created task');
+          }}
+          onFail={(e) => {
+            showAlert('error', `Failed to create task: ${e.message}`);
+          }}
+          onSuccessFavoriteTask={(message) => {
+            showAlert('success', message);
+          }}
+          onFailFavoriteTask={(e) => {
+            showAlert('error', `Failed to create or delete favorite task: ${e.message}`);
+          }}
+        />
+      )}
     </>
   );
 });
