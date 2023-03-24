@@ -230,7 +230,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     return () => {
       setFavoritesTasks([]);
     };
-  }, [rmf]);
+  }, [rmf, forceRefreshTask]);
 
   const submitFavoriteTask = React.useCallback<Required<CreateTaskFormProps>['submitFavoriteTask']>(
     async (taskFavoriteRequest) => {
@@ -238,8 +238,9 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
         throw new Error('tasks api not available');
       }
       await rmf.tasksApi.postFavoriteTaskFavoriteTasksPost(taskFavoriteRequest);
+      setForceRefreshTask(forceRefreshTask + 1);
     },
-    [rmf],
+    [rmf, forceRefreshTask, setForceRefreshTask],
   );
 
   const deleteFavoriteTask = React.useCallback<Required<CreateTaskFormProps>['deleteFavoriteTask']>(
@@ -252,8 +253,9 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       }
 
       await rmf.tasksApi.deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(favoriteTask.id);
+      setForceRefreshTask(forceRefreshTask + 1);
     },
-    [rmf],
+    [rmf, forceRefreshTask, setForceRefreshTask],
   );
 
   //#endregion "Favorite Task"
