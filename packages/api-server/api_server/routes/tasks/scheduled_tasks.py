@@ -6,6 +6,7 @@ import schedule
 import tortoise.transactions
 from fastapi import Depends, HTTPException, Query
 from pydantic import BaseModel
+from tortoise.expressions import Q
 
 from api_server.authenticator import user_dep
 from api_server.dependencies import pagination_query
@@ -47,31 +48,20 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
         task.last_ran = datetime.now()
         await task.save()
 
-    def schedule_now(job: schedule.Job, coro: Coroutine):
-        def do():
-            logger.info(f"starting job {job.tags}")
-            asyncio.get_event_loop().create_task(coro)
+    def do(start_from: datetime):
+        # FIXME(kp): schedule does not support starting from specified time, workaround by
+        # skipping a run when it is before when the task should start.
+        if datetime.now().timestamp() < start_from.timestamp():
+            logger.debug(
+                f"skipping run of task [{task.pk}] because it is before it's [start_from]"
+            )
+            return
+        logger.info(f"starting task {task.pk}")
+        asyncio.get_event_loop().create_task(run())
 
-        job.do(do).tag(f"task_{task.pk}")
-
-    # FIXME(kp): schedule does not support starting from specified time, workaround by
-    # scheduling a "trigger" job which schedules the actual job.
-    def schedule_later(job: schedule.Job, start: datetime, coro: Coroutine):
-        start_job = job
-
-        def do():
-            if datetime.now() >= start:
-                schedule_now(job, coro)
-                return schedule.CancelJob
-
-        start_job.do(do)
-
-    now = datetime.now()
-    for t, j in jobs:
-        if t.start_from is not None and now.timestamp() >= t.start_from.timestamp():
-            schedule_now(j, run())
-        else:
-            schedule_later(j, t.start_from, run())
+    for s, j in jobs:
+        j.do(do, s.start_from)
+    logger.info(f"scheduled task [{task.pk}]")
 
 
 @router.post("", status_code=201, response_model=ttm.ScheduledTaskPydantic)
@@ -126,8 +116,11 @@ async def get_scheduled_tasks(
 ):
     q = (
         ttm.ScheduledTask.filter(
-            schedules__start_from__lte=start_before, schedules__until__gte=until_after
+            Q(schedules__start_from__lte=start_before)
+            | Q(schedules__start_from__isnull=True),
+            Q(schedules__until__gte=until_after) | Q(schedules__until__isnull=True),
         )
+        .distinct()
         .limit(pagination.limit)
         .offset(pagination.offset)
     )

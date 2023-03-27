@@ -7,9 +7,9 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import {
   PostScheduledTaskRequest,
+  TaskFavoritePydantic as TaskFavorite,
   TaskRequest,
   TaskState,
-  TaskFavoritePydantic as TaskFavorite,
 } from 'api-client';
 import React from 'react';
 import {
@@ -17,7 +17,7 @@ import {
   CreateTaskFormProps,
   FilterFields,
   getPlaces,
-  RecurringDays,
+  Schedule,
   SortFields,
   TaskDataGridTable,
   Tasks,
@@ -30,29 +30,23 @@ import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
 import { downloadCsvFull, downloadCsvMinimal, parseTasksFile } from './utils';
 
-function toApiSchedule(
-  taskRequest: TaskRequest,
-  schedule: RecurringDays,
-): PostScheduledTaskRequest {
-  const start =
-    taskRequest.unix_millis_earliest_start_time === undefined
-      ? 0
-      : taskRequest.unix_millis_earliest_start_time;
+function toApiSchedule(taskRequest: TaskRequest, schedule: Schedule): PostScheduledTaskRequest {
+  const start = schedule.startOn;
   const apiSchedules: PostScheduledTaskRequest['schedules'] = [];
   const date = new Date(start);
-  const start_from = start.toString();
+  const start_from = start.toISOString();
   const hours = date.getHours().toString().padStart(2, '0');
   const minutes = date.getMinutes().toString().padStart(2, '0');
   const at = `${hours}:${minutes}`;
-  schedule[0] && apiSchedules.push({ period: 'monday', start_from, at });
-  schedule[1] && apiSchedules.push({ period: 'tuesday', start_from, at });
-  schedule[2] && apiSchedules.push({ period: 'wednesday', start_from, at });
-  schedule[3] && apiSchedules.push({ period: 'thursday', start_from, at });
-  schedule[4] && apiSchedules.push({ period: 'friday', start_from, at });
-  schedule[5] && apiSchedules.push({ period: 'saturday', start_from, at });
-  schedule[6] && apiSchedules.push({ period: 'sunday', start_from, at });
+  schedule.days[0] && apiSchedules.push({ period: 'monday', start_from, at });
+  schedule.days[1] && apiSchedules.push({ period: 'tuesday', start_from, at });
+  schedule.days[2] && apiSchedules.push({ period: 'wednesday', start_from, at });
+  schedule.days[3] && apiSchedules.push({ period: 'thursday', start_from, at });
+  schedule.days[4] && apiSchedules.push({ period: 'friday', start_from, at });
+  schedule.days[5] && apiSchedules.push({ period: 'saturday', start_from, at });
+  schedule.days[6] && apiSchedules.push({ period: 'sunday', start_from, at });
   return {
-    task_request: { ...taskRequest, unix_millis_earliest_start_time: 0 }, // always start asap
+    task_request: taskRequest,
     schedules: apiSchedules,
   };
 }
