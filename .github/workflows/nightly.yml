@@ -7,7 +7,7 @@ on:
 jobs:
   build-docker-images:
     name: Push Docker images to GitHub Packages
-    runs-on: self-hosted
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - name: Push e2e image to GitHub Packages
