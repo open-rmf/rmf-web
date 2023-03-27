@@ -48,13 +48,23 @@ export function downloadCsvFull(timestamp: Date, allTasks: TaskState[]) {
 export function downloadCsvMinimal(timestamp: Date, allTasks: TaskState[]) {
   const columnSeparator = ';';
   const rowSeparator = '\n';
-  const keys = ['Date', 'ID', 'Category', 'Assignee', 'Start Time', 'End Time', 'State'];
+  const keys = [
+    'Date',
+    'Initiator',
+    'ID',
+    'Category',
+    'Assignee',
+    'Start Time',
+    'End Time',
+    'State',
+  ];
   let csvContent = keys.join(columnSeparator) + rowSeparator;
   allTasks.forEach((task) => {
     const values = [
       task.booking.unix_millis_request_time
         ? `${new Date(task.booking.unix_millis_request_time).toLocaleDateString()}`
         : 'unknown',
+      task.booking.initiator ? task.booking.initiator : 'unknown',
       task.booking.id,
       task.category ? task.category : 'unknown',
       task.assigned_to ? task.assigned_to.name : 'unknown',
