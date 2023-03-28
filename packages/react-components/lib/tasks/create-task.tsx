@@ -811,6 +811,7 @@ export function CreateTaskForm({
     startOn: new Date(),
     days: [true, true, true, true, true, true, true],
   });
+  const [atTime, setAtTime] = React.useState(new Date());
   // schedule is not supported with batch upload
   const scheduleEnabled = taskRequests.length === 1;
 
@@ -1033,7 +1034,14 @@ export function CreateTaskForm({
               <Grid>
                 <DatePicker
                   value={schedule.startOn}
-                  onChange={(date) => date && setSchedule((prev) => ({ ...prev, startOn: date }))}
+                  onChange={(date) =>
+                    date &&
+                    setSchedule((prev) => {
+                      date.setHours(atTime.getHours());
+                      date.setMinutes(atTime.getMinutes());
+                      return { ...prev, startOn: date };
+                    })
+                  }
                   label="Start On"
                   disabled={!scheduleEnabled || !recurring}
                   renderInput={(props) => <TextField {...props} />}
@@ -1041,8 +1049,21 @@ export function CreateTaskForm({
               </Grid>
               <Grid>
                 <TimePicker
-                  value={schedule.startOn}
-                  onChange={(date) => date && setSchedule((prev) => ({ ...prev, startOn: date }))}
+                  value={atTime}
+                  onChange={(date) => {
+                    if (!date) {
+                      return;
+                    }
+                    setAtTime(date);
+                    if (!isNaN(date.valueOf())) {
+                      setSchedule((prev) => {
+                        const startOn = prev.startOn;
+                        startOn.setHours(date.getHours());
+                        startOn.setMinutes(date.getMinutes());
+                        return { ...prev, startOn };
+                      });
+                    }
+                  }}
                   label="At"
                   disabled={!scheduleEnabled || !recurring}
                   renderInput={(props) => <TextField {...props} />}
