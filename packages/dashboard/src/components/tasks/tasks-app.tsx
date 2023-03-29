@@ -1,4 +1,5 @@
 import { Scheduler } from '@aldabil/react-scheduler';
+import { ProcessedEvent, SchedulerProps } from '@aldabil/react-scheduler/types';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import DownloadIcon from '@mui/icons-material/Download';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -6,11 +7,30 @@ import { Grid, IconButton, TableContainer, Toolbar, Tooltip } from '@mui/materia
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import {
+  ApiServerModelsTortoiseModelsScheduledTaskScheduledTask as ScheduledTask,
+  ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf as ApiSchedule,
   PostScheduledTaskRequest,
   TaskFavoritePydantic as TaskFavorite,
   TaskRequest,
   TaskState,
 } from 'api-client';
+import {
+  addMinutes,
+  isFriday,
+  isMonday,
+  isSaturday,
+  isSunday,
+  isThursday,
+  isTuesday,
+  isWednesday,
+  nextFriday,
+  nextMonday,
+  nextSaturday,
+  nextSunday,
+  nextThursday,
+  nextTuesday,
+  nextWednesday,
+} from 'date-fns';
 import React from 'react';
 import {
   CreateTaskForm,
@@ -49,6 +69,87 @@ function toApiSchedule(taskRequest: TaskRequest, schedule: Schedule): PostSchedu
     task_request: taskRequest,
     schedules: apiSchedules,
   };
+}
+
+function scheduleToEvents(
+  start: Date,
+  end: Date,
+  schedule: ApiSchedule,
+  getEventId: () => number,
+  getEventTitle: () => string,
+): ProcessedEvent[] {
+  if (!schedule.at) {
+    console.warn('Unable to convert schedule without [at] to an event');
+    return [];
+  }
+
+  const [hours, minutes] = schedule.at.split(':').map((s) => Number(s));
+  let cur = start;
+  cur.setHours(hours);
+  cur.setMinutes(minutes);
+  const scheStartFrom = schedule.start_from ? new Date(schedule.start_from) : null;
+  const scheUntil = schedule.until ? new Date(schedule.until) : null;
+
+  let period = 8.64e7; // 1 day
+  switch (schedule.period) {
+    case 'day':
+      break;
+    case 'monday':
+      cur = isMonday(cur) ? cur : nextMonday(cur);
+      period *= 7;
+      break;
+    case 'tuesday':
+      cur = isTuesday(cur) ? cur : nextTuesday(cur);
+      period *= 7;
+      break;
+    case 'wednesday':
+      cur = isWednesday(cur) ? cur : nextWednesday(cur);
+      period *= 7;
+      break;
+    case 'thursday':
+      cur = isThursday(cur) ? cur : nextThursday(cur);
+      period *= 7;
+      break;
+    case 'friday':
+      cur = isFriday(cur) ? cur : nextFriday(cur);
+      period *= 7;
+      break;
+    case 'saturday':
+      cur = isSaturday(cur) ? cur : nextSaturday(cur);
+      period *= 7;
+      break;
+    case 'sunday':
+      cur = isSunday(cur) ? cur : nextSunday(cur);
+      period *= 7;
+      break;
+    default:
+      console.warn(`Unable to convert schedule with period [${schedule.period}] to events`);
+      return [];
+  }
+
+  const events: ProcessedEvent[] = [];
+  while (cur <= end) {
+    if (
+      (scheStartFrom == null || scheStartFrom <= cur) &&
+      (scheUntil == null || scheUntil >= cur)
+    ) {
+      events.push({
+        start: cur,
+        end: addMinutes(cur, 15),
+        event_id: getEventId(),
+        title: getEventTitle(),
+      });
+    }
+    cur = new Date(cur.valueOf() + period);
+  }
+  return events;
+}
+
+function getScheduledTaskTitle(task: ScheduledTask): string {
+  if (!task.task_request || !task.task_request.category) {
+    return `[${task.id}] Unknown`;
+  }
+  return `[${task.id}] ${task.task_request.category}`;
 }
 
 export const TasksApp = React.memo(
@@ -323,6 +424,39 @@ export const TasksApp = React.memo(
         [rmf],
       );
 
+      const eventsMap = React.useRef<Record<number, ScheduledTask>>({});
+      const getRemoteEvents = React.useCallback<NonNullable<SchedulerProps['getRemoteEvents']>>(
+        async (params) => {
+          console.log('asjdksajd');
+          if (!rmf) {
+            return;
+          }
+          const tasks = (
+            await rmf.tasksApi.getScheduledTasksScheduledTasksGet(
+              params.end.toISOString(),
+              params.start.toISOString(),
+            )
+          ).data;
+          let counter = 0;
+          const getEventId = () => {
+            return counter++;
+          };
+          eventsMap.current = {};
+          return tasks.flatMap((t) =>
+            t.schedules.flatMap<ProcessedEvent>((s) => {
+              const events = scheduleToEvents(params.start, params.end, s, getEventId, () =>
+                getScheduledTaskTitle(t),
+              );
+              events.forEach((ev) => {
+                eventsMap.current[Number(ev.event_id)] = t;
+              });
+              return events;
+            }),
+          );
+        },
+        [rmf],
+      );
+
       return (
         <Window
           ref={ref}
@@ -407,23 +541,38 @@ export const TasksApp = React.memo(
               </TableContainer>
             </Grid>
 
-            <Grid item>
+            <Grid
+              item
+              // react-scheduler does not support disabling clicking calendar to add events.
+              // Workaround by disabling pointer events.
+              sx={{
+                '& .rs__cell': { pointerEvents: 'none' },
+                '& .rs__event__item': { pointerEvents: 'auto' },
+              }}
+            >
               <Scheduler
                 view="week"
-                events={[
-                  {
-                    event_id: 1,
-                    title: 'Event 1',
-                    start: new Date('2021/5/2 09:30'),
-                    end: new Date('2021/5/2 10:30'),
-                  },
-                  {
-                    event_id: 2,
-                    title: 'Event 2',
-                    start: new Date('2021/5/4 10:00'),
-                    end: new Date('2021/5/4 11:00'),
-                  },
-                ]}
+                editable={false}
+                disableViewNavigator
+                getRemoteEvents={getRemoteEvents}
+                onDelete={async (deletedId) => {
+                  const task = eventsMap.current[Number(deletedId)];
+                  if (!task) {
+                    console.error(
+                      `Failed to delete scheduled task: unable to find task for event ${deletedId}`,
+                    );
+                    return;
+                  }
+                  if (!rmf) {
+                    return;
+                  }
+                  try {
+                    await rmf.tasksApi.delScheduledTasksScheduledTasksTaskIdDelete(task.id);
+                    setForceRefresh((prev) => prev + 1);
+                  } catch (e) {
+                    console.error(`Failed to delete scheduled task: ${e}`);
+                  }
+                }}
               />
             </Grid>
           </Grid>
