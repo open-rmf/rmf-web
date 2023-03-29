@@ -7,11 +7,11 @@ import { TaskState } from 'api-client';
 import React from 'react';
 import { FilterFields, SortFields, TaskDataGridTable, Tasks, Window } from 'react-components';
 import { Subscription } from 'rxjs';
-import { RefreshTaskTableContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
 import { downloadCsvFull, downloadCsvMinimal } from './utils';
+import { AppControllerContext } from '../app-contexts';
 
 export const TasksApp = React.memo(
   React.forwardRef(
@@ -20,7 +20,7 @@ export const TasksApp = React.memo(
       ref: React.Ref<HTMLDivElement>,
     ) => {
       const rmf = React.useContext(RmfAppContext);
-      const { forceRefreshTask, setForceRefreshTask } = React.useContext(RefreshTaskTableContext);
+      const { forceTaskQueueTable, updateTaskQueueTable } = React.useContext(AppControllerContext);
 
       const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -113,7 +113,7 @@ export const TasksApp = React.memo(
           );
         })();
         return () => subs.forEach((s) => s.unsubscribe());
-      }, [rmf, forceRefreshTask, tasksState.page, filterFields.model, sortFields.model]);
+      }, [rmf, forceTaskQueueTable, tasksState.page, filterFields.model, sortFields.model]);
 
       const getAllTasks = async (timestamp: Date) => {
         if (!rmf) {
@@ -210,7 +210,7 @@ export const TasksApp = React.memo(
               <Tooltip title="Refresh" color="inherit" placement="top">
                 <IconButton
                   onClick={() => {
-                    setForceRefreshTask(forceRefreshTask + 1);
+                    updateTaskQueueTable(forceTaskQueueTable + 1);
                   }}
                   aria-label="Refresh"
                 >

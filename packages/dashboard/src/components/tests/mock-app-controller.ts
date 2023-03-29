@@ -5,5 +5,7 @@ export function makeMockAppController(): AppController {
     updateSettings: jest.fn(),
     showAlert: jest.fn(),
     setExtraAppbarIcons: jest.fn(),
+    updateTaskQueueTable: jest.fn(),
+    forceTaskQueueTable: 0,
   };
 }
