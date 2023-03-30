@@ -6,11 +6,8 @@ on:
 jobs:
   build-docker-images:
     name: Push Docker images to GitHub Packages
-    runs-on: self-hosted
+    runs-on: ubuntu-22.04
     steps:
-      - name: Chown user
-        run: |
-          sudo chown -R $USER:$USER $GITHUB_WORKSPACE
       - uses: actions/checkout@v2
       - name: Push e2e image to GitHub Packages
         uses: docker/build-push-action@v1
