@@ -135,7 +135,7 @@ function scheduleToEvents(
     ) {
       events.push({
         start: cur,
-        end: addMinutes(cur, 15),
+        end: addMinutes(cur, 45),
         event_id: getEventId(),
         title: getEventTitle(),
       });
@@ -523,7 +523,7 @@ export const TasksApp = React.memo(
           }
           {...otherProps}
         >
-          <Grid container wrap="nowrap" direction="column" height="100%">
+          <Grid container direction="column">
             <Grid item flexGrow={1}>
               <TableContainer>
                 <TaskDataGridTable
@@ -551,9 +551,19 @@ export const TasksApp = React.memo(
               }}
             >
               <Scheduler
+                // react-scheduler does not support refreshing, workaround by mounting a new instance.
+                key={`scheduler-${forceRefresh}`}
                 view="week"
-                editable={false}
+                week={{
+                  weekDays: [0, 1, 2, 3, 4, 5, 6],
+                  weekStartOn: 1,
+                  startHour: 0,
+                  endHour: 23,
+                  step: 120,
+                }}
                 disableViewNavigator
+                draggable={false}
+                editable={false}
                 getRemoteEvents={getRemoteEvents}
                 onDelete={async (deletedId) => {
                   const task = eventsMap.current[Number(deletedId)];
