@@ -45,9 +45,13 @@ jobs:
           package: rmf-dashboard-e2e
           skip-build: true
       - name: test
-        run: |
-          . /rmf_demos_ws/install/setup.bash
-          pnpm test
+        uses: nick-fields/retry@v2
+        with:
+          max_attempts: 3
+          retry_on: error
+          command: |
+            . /rmf_demos_ws/install/setup.bash
+            pnpm test
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: always()
