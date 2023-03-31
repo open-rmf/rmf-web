@@ -148,10 +148,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   }, []);
 
   React.useEffect(() => {
-    console.log(currentQueueTaskTableValue);
-  }, [currentQueueTaskTableValue]);
-
-  React.useEffect(() => {
     if (!logoResourcesContext) return;
     (async () => {
       setBrandingIconPath(await safeAsync(logoResourcesContext.getHeaderLogoPath(curTheme)));
