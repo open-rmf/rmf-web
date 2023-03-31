@@ -11,7 +11,6 @@ import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
 import { downloadCsvFull, downloadCsvMinimal } from './utils';
-import { AppControllerContext } from '../app-contexts';
 
 export const TasksApp = React.memo(
   React.forwardRef(
@@ -20,7 +19,6 @@ export const TasksApp = React.memo(
       ref: React.Ref<HTMLDivElement>,
     ) => {
       const rmf = React.useContext(RmfAppContext);
-      const { forceTaskQueueTable, updateTaskQueueTable } = React.useContext(AppControllerContext);
 
       const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -35,6 +33,15 @@ export const TasksApp = React.memo(
       const [filterFields, setFilterFields] = React.useState<FilterFields>({ model: undefined });
 
       const [sortFields, setSortFields] = React.useState<SortFields>({ model: undefined });
+
+      const [currentQueueTaskTableValue, setCurrentQueueTaskTableValue] = React.useState(0);
+
+      React.useEffect(() => {
+        const sub = AppEvents.refreshTaskQueueTableCounter.subscribe((currentValue) => {
+          setCurrentQueueTaskTableValue(currentValue);
+        });
+        return () => sub.unsubscribe();
+      }, []);
 
       // TODO: parameterize this variable
       const GET_LIMIT = 10;
@@ -113,7 +120,7 @@ export const TasksApp = React.memo(
           );
         })();
         return () => subs.forEach((s) => s.unsubscribe());
-      }, [rmf, forceTaskQueueTable, tasksState.page, filterFields.model, sortFields.model]);
+      }, [rmf, currentQueueTaskTableValue, tasksState.page, filterFields.model, sortFields.model]);
 
       const getAllTasks = async (timestamp: Date) => {
         if (!rmf) {
@@ -210,7 +217,7 @@ export const TasksApp = React.memo(
               <Tooltip title="Refresh" color="inherit" placement="top">
                 <IconButton
                   onClick={() => {
-                    updateTaskQueueTable(forceTaskQueueTable + 1);
+                    AppEvents.refreshTaskQueueTableCounter.next(currentQueueTaskTableValue + 1);
                   }}
                   aria-label="Refresh"
                 >
