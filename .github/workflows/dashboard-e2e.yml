@@ -39,8 +39,8 @@ jobs:
       - name: test
         uses: nick-fields/retry@v2
         with:
+          timeout_minutes: 20
           max_attempts: 3
-          retry_on: error
           command: |
             . /rmf_demos_ws/install/setup.bash
             pnpm test
