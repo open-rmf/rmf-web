@@ -30,7 +30,6 @@ const defaultTheme = createTheme();
 export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element | null {
   const [settings, setSettings] = React.useState(() => loadSettings());
   const [showAlert, setShowAlert] = React.useState(false);
-  const [forceRefreshTaskTable, setForceRefreshTaskTable] = React.useState(0);
   const [alertSeverity, setAlertSeverity] = React.useState<AlertProps['severity']>('error');
   const [alertMessage, setAlertMessage] = React.useState('');
   const [alertDuration, setAlertDuration] = React.useState(DefaultAlertDuration);
@@ -62,12 +61,8 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
         setAlertDuration(autoHideDuration || DefaultAlertDuration);
       },
       setExtraAppbarIcons,
-      forceTaskQueueTable: forceRefreshTaskTable,
-      updateTaskQueueTable: () => {
-        setForceRefreshTaskTable((prev) => prev + 1);
-      },
     }),
-    [updateSettings, forceRefreshTaskTable],
+    [updateSettings],
   );
 
   return (
