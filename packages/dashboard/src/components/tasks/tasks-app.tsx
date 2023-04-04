@@ -37,7 +37,7 @@ export const TasksApp = React.memo(
       const [currentQueueTaskTableValue, setCurrentQueueTaskTableValue] = React.useState(0);
 
       React.useEffect(() => {
-        const sub = AppEvents.refreshTaskQueueTableCounter.subscribe((currentValue) => {
+        const sub = AppEvents.refreshTaskQueueTableCount.subscribe((currentValue) => {
           setCurrentQueueTaskTableValue(currentValue);
         });
         return () => sub.unsubscribe();
@@ -217,7 +217,7 @@ export const TasksApp = React.memo(
               <Tooltip title="Refresh" color="inherit" placement="top">
                 <IconButton
                   onClick={() => {
-                    AppEvents.refreshTaskQueueTableCounter.next(currentQueueTaskTableValue + 1);
+                    AppEvents.refreshTaskQueueTableCount.next(currentQueueTaskTableValue + 1);
                   }}
                   aria-label="Refresh"
                 >

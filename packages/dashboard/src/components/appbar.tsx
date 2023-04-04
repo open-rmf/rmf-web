@@ -128,7 +128,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [placeNames, setPlaceNames] = React.useState<string[]>([]);
   const [workcells, setWorkcells] = React.useState<string[]>();
   const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
-  const [currentQueueTaskTableValue, setCurrentQueueTaskTableValue] = React.useState(0);
+  const [refreshTaskQueueTableCount, setRefreshTaskQueueTableCount] = React.useState(0);
 
   const curTheme = React.useContext(SettingsContext).themeMode;
 
@@ -141,8 +141,8 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   }
 
   React.useEffect(() => {
-    const sub = AppEvents.refreshTaskQueueTableCounter.subscribe((currentValue) => {
-      setCurrentQueueTaskTableValue(currentValue);
+    const sub = AppEvents.refreshTaskQueueTableCount.subscribe((currentValue) => {
+      setRefreshTaskQueueTableCount(currentValue);
     });
     return () => sub.unsubscribe();
   }, []);
@@ -185,9 +185,9 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           }),
         ),
       );
-      AppEvents.refreshTaskQueueTableCounter.next(currentQueueTaskTableValue + 1);
+      AppEvents.refreshTaskQueueTableCount.next(refreshTaskQueueTableCount + 1);
     },
-    [rmf, currentQueueTaskTableValue],
+    [rmf, refreshTaskQueueTableCount],
   );
 
   const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
@@ -237,7 +237,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     return () => {
       setFavoritesTasks([]);
     };
-  }, [rmf, currentQueueTaskTableValue]);
+  }, [rmf, refreshTaskQueueTableCount]);
 
   const submitFavoriteTask = React.useCallback<Required<CreateTaskFormProps>['submitFavoriteTask']>(
     async (taskFavoriteRequest) => {
@@ -245,9 +245,9 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
         throw new Error('tasks api not available');
       }
       await rmf.tasksApi.postFavoriteTaskFavoriteTasksPost(taskFavoriteRequest);
-      AppEvents.refreshTaskQueueTableCounter.next(currentQueueTaskTableValue + 1);
+      AppEvents.refreshTaskQueueTableCount.next(refreshTaskQueueTableCount + 1);
     },
-    [rmf, currentQueueTaskTableValue],
+    [rmf, refreshTaskQueueTableCount],
   );
 
   const deleteFavoriteTask = React.useCallback<Required<CreateTaskFormProps>['deleteFavoriteTask']>(
@@ -260,11 +260,10 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       }
 
       await rmf.tasksApi.deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(favoriteTask.id);
-      AppEvents.refreshTaskQueueTableCounter.next(currentQueueTaskTableValue + 1);
+      AppEvents.refreshTaskQueueTableCount.next(refreshTaskQueueTableCount + 1);
     },
-    [rmf, currentQueueTaskTableValue],
+    [rmf, refreshTaskQueueTableCount],
   );
-
   //#endregion "Favorite Task"
 
   return (
