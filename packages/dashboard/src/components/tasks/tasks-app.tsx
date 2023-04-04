@@ -34,11 +34,11 @@ export const TasksApp = React.memo(
 
       const [sortFields, setSortFields] = React.useState<SortFields>({ model: undefined });
 
-      const [currentQueueTaskTableValue, setCurrentQueueTaskTableValue] = React.useState(0);
+      const [refreshTaskQueueTableCount, setRefreshTaskQueueTableCount] = React.useState(0);
 
       React.useEffect(() => {
         const sub = AppEvents.refreshTaskQueueTableCount.subscribe((currentValue) => {
-          setCurrentQueueTaskTableValue(currentValue);
+          setRefreshTaskQueueTableCount(currentValue);
         });
         return () => sub.unsubscribe();
       }, []);
@@ -120,7 +120,7 @@ export const TasksApp = React.memo(
           );
         })();
         return () => subs.forEach((s) => s.unsubscribe());
-      }, [rmf, currentQueueTaskTableValue, tasksState.page, filterFields.model, sortFields.model]);
+      }, [rmf, refreshTaskQueueTableCount, tasksState.page, filterFields.model, sortFields.model]);
 
       const getAllTasks = async (timestamp: Date) => {
         if (!rmf) {
@@ -217,7 +217,7 @@ export const TasksApp = React.memo(
               <Tooltip title="Refresh" color="inherit" placement="top">
                 <IconButton
                   onClick={() => {
-                    AppEvents.refreshTaskQueueTableCount.next(currentQueueTaskTableValue + 1);
+                    AppEvents.refreshTaskQueueTableCount.next(refreshTaskQueueTableCount + 1);
                   }}
                   aria-label="Refresh"
                 >
