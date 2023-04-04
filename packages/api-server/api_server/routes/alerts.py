@@ -2,16 +2,24 @@ from datetime import datetime
 from typing import List
 
 from fastapi import Depends, HTTPException
+from rx import operators as rxops
 
 from api_server.authenticator import user_dep
-from api_server.fast_io import FastIORouter
+from api_server.dependencies import sio_user
+from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import User
 from api_server.models import tortoise_models as ttm
+from api_server.rmf_io import alert_events
 
 router = FastIORouter(tags=["Alerts"])
 
 
-@router.get("", response_model=list[ttm.AlertPydantic])
+@router.sub("", response_model=ttm.AlertPydantic)
+async def sub_alerts(req: SubscriptionRequest):
+    return alert_events.alerts.pipe(rxops.filter(lambda x: x is not None))
+
+
+@router.get("", response_model=List[ttm.AlertPydantic])
 async def get_alerts():
     alerts = await ttm.Alert.all()
     return alerts
@@ -26,20 +34,17 @@ async def get_alert(id: str):
 
 
 @router.post("", status_code=201, response_model=ttm.AlertPydantic)
-async def create_alert(details: ttm.AlertDetailsPydantic):
-    alert, created = await ttm.Alert.get_or_create(
+async def create_alert(id: str, category: str):
+    alert, _ = await ttm.Alert.update_or_create(
         {
+            "category": category,
             "created_on": datetime.now(),
-            "detail": ttm.AlertDetails(**details.dict()),
             "acknowledged_by": None,
             "acknowledged_on": None,
         },
-        id=details.id,
+        id=id,
     )
-    if created:
-        return alert
-    else:
-        raise HTTPException(409, f"Duplicated alert ID {id} found.")
+    return alert
 
 
 @router.post("/{id}", status_code=201, response_model=ttm.AlertPydantic)
