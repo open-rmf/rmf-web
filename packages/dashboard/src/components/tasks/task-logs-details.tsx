@@ -2,14 +2,12 @@ import {
   Box,
   Button,
   Dialog,
-  DialogActions,
   DialogContent,
   DialogContentText,
   DialogProps,
   DialogTitle,
   Divider,
   Grid,
-  List,
   Typography,
 } from '@mui/material';
 import { CardContent, useTheme } from '@mui/material';
@@ -22,7 +20,6 @@ import { AppRegistry } from '../app-registry';
 import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
 import { WorkspaceState } from '../workspace';
-import { TestDetailMicroTask } from './test-details';
 import { TaskInfo } from 'react-components';
 import { UserProfileContext } from 'rmf-auth';
 import { Enforcer } from '../permissions';
@@ -196,25 +193,6 @@ export function TaskLogsDetails({ task, open, onClose }: TableDataGridState): JS
                     </CardContent>
                   </Grid>
                 </Grid>
-
-                {/* <TestDetailMicroTask task={task} /> */}
-                {/* {workspaceState.windows.map((w) => {
-                  const MicroApp = AppRegistry[w.appName] || null;
-                  return MicroApp ? (
-                    <MicroApp
-                      key={w.key}
-                      onClose={() => {
-                        setWorkspaceState &&
-                          setWorkspaceState({
-                            layout: workspaceState.layout.filter((l) => l.i !== w.key),
-                            windows: workspaceState.windows.filter((w2) => w2.key !== w.key),
-                          });
-                      }}
-                    />
-                  ) : (
-                    <div></div>
-                  );
-                })} */}
               </Box>
             </DialogContent>
           </Dialog>
