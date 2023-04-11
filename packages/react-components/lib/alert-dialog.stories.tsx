@@ -2,19 +2,19 @@ import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { AlertContent, AlertDialog, DialogAlertProps } from './alert-dialog';
 
-const buildDialogContent = (): AlertContent[] => {
+const buildAlertDialogContent = (): AlertContent[] => {
   return [
     {
-      title: 'Robot Name',
-      value: 'Tiny1',
+      title: 'ID',
+      value: 'testAlertID',
     },
     {
-      title: 'Location',
-      value: 'L1',
+      title: 'Error logs',
+      value: '1/1/1970 00:00:00 - error',
     },
     {
-      title: 'Message',
-      value: 'Robot has arrived at its destination ',
+      title: 'Logs',
+      value: '1/1/1970 00:00:00 - completed',
     },
   ];
 };
@@ -24,15 +24,17 @@ export default {
 } as Meta;
 
 export const AlertDialogComponent: Story<DialogAlertProps> = () => {
-  const [show, setShow] = React.useState(true);
+  const [acknowledged, setAcknowledged] = React.useState(false);
+  const [closed, setClosed] = React.useState(false);
+
   return (
     <AlertDialog
-      stopShowing={() => setShow(false)}
-      dialogTitle={'Robot State'}
-      progress={90}
-      alertContents={buildDialogContent()}
+      dismiss={() => setClosed(true)}
+      acknowledge={() => setAcknowledged(true)}
+      title={'Alert Dialog'}
+      progress={1}
+      alertContents={buildAlertDialogContent()}
       backgroundColor={'ffff'}
-      show={show}
     ></AlertDialog>
   );
 };
