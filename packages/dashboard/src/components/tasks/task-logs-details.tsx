@@ -3,8 +3,6 @@ import {
   Button,
   Dialog,
   DialogContent,
-  DialogContentText,
-  DialogProps,
   DialogTitle,
   Divider,
   Grid,
@@ -16,10 +14,7 @@ import React from 'react';
 import { of, switchMap } from 'rxjs';
 import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
-import { AppRegistry } from '../app-registry';
-import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
-import { WorkspaceState } from '../workspace';
 import { TaskInfo } from 'react-components';
 import { UserProfileContext } from 'rmf-auth';
 import { Enforcer } from '../permissions';
@@ -28,7 +23,7 @@ import { TaskLogs } from './task-logs';
 export interface TableDataGridState {
   task: TaskState | null;
   open: boolean;
-  onClose: (test: boolean) => void;
+  onClose: (close: boolean) => void;
 }
 
 export function TaskLogsDetails({ task, open, onClose }: TableDataGridState): JSX.Element {
@@ -38,7 +33,6 @@ export function TaskLogsDetails({ task, open, onClose }: TableDataGridState): JS
 
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
   const [taskLogs, setTaskLogs] = React.useState<TaskEventLog | null>(null);
-  const [scroll, setScroll] = React.useState<DialogProps['scroll']>('paper');
 
   React.useEffect(() => {
     if (!rmf) {
@@ -51,8 +45,6 @@ export function TaskLogsDetails({ task, open, onClose }: TableDataGridState): JS
         return;
       }
       (async () => {
-        // TODO: Get full logs, then subscribe to log updates for new logs.
-        // Unlike with state events, we can't just subscribe to logs updates.
         try {
           const logs = (
             await rmf.tasksApi.getTaskLogTasksTaskIdLogGet(
@@ -89,15 +81,15 @@ export function TaskLogsDetails({ task, open, onClose }: TableDataGridState): JS
     AppEvents.taskSelect.next(task);
   }, [task]);
 
-  console.log(task);
-
   const profile = React.useContext(UserProfileContext);
+
   const taskCancellable =
     taskState &&
     profile &&
     Enforcer.canCancelTask(profile) &&
     taskState.status &&
     !['canceled', 'killed', 'completed', 'failed'].includes(taskState.status);
+
   const handleCancelTaskClick = React.useCallback<React.MouseEventHandler>(async () => {
     if (!taskState) {
       return;
@@ -120,83 +112,95 @@ export function TaskLogsDetails({ task, open, onClose }: TableDataGridState): JS
   return (
     <>
       <Grid container wrap="nowrap" direction="column" height="100%">
-        <div>
-          <Dialog
-            open={open}
-            onClose={() => onClose(false)}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-            fullWidth
-            maxWidth="md"
-          >
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <DialogTitle id="scroll-dialog-title">
-                  <Typography variant="h5" align="center">
-                    Details
-                  </Typography>
-                  <Typography>Details</Typography>
-                  <Typography>Details</Typography>
-                  <Typography>Details</Typography>
-                </DialogTitle>
+        <Dialog
+          open={open}
+          onClose={() => onClose(false)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          fullWidth
+          maxWidth="md"
+        >
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <DialogTitle id="scroll-dialog-title" align="center">
+                {task?.booking.id}
+              </DialogTitle>
+            </Grid>
+            <Grid container>
+              <Grid item xs={2} ml={7}>
+                <Typography>Status:</Typography>
               </Grid>
-              <Grid item xs={6} alignContent="center" justifyContent="center">
-                <DialogTitle id="scroll-dialog-title" sx={{ textAlign: 'center' }}>
-                  Logs
-                </DialogTitle>
+              <Grid item xs={3}>
+                <Typography align="right">{task?.status}</Typography>
               </Grid>
             </Grid>
-            <DialogContent style={{ height: 700 }} dividers={scroll === 'paper'}>
-              <Box sx={{ position: 'relative' }}>
-                <Grid container direction="row" wrap="nowrap" height="100%">
-                  <Grid item xs={6}>
-                    {taskState ? (
-                      <>
-                        <CardContent sx={{ overflow: 'auto' }}>
-                          <TaskInfo task={taskState} />
-                        </CardContent>
-                        <Grid item paddingLeft={2} paddingRight={2}>
-                          <Button
-                            style={{
-                              marginTop: theme.spacing(1),
-                              marginBottom: theme.spacing(1),
-                            }}
-                            fullWidth
-                            variant="contained"
-                            color="secondary"
-                            aria-label="Cancel Task"
-                            disabled={!taskCancellable}
-                            onClick={handleCancelTaskClick}
-                          >
-                            Cancel Task
-                          </Button>
-                        </Grid>
-                      </>
-                    ) : (
-                      <Grid container wrap="nowrap" alignItems="center" style={{ height: '100%' }}>
-                        <CardContent>
-                          <Typography variant="h6" align="center">
-                            Click on a task to view more information
-                          </Typography>
-                        </CardContent>
+            <Grid container>
+              <Grid item xs={2} ml={7}>
+                <Typography>Start Waypoint:</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography align="right">Start</Typography>
+              </Grid>
+            </Grid>
+            <Grid container>
+              <Grid item xs={2} ml={7}>
+                <Typography>Finish Waypoint:</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography align="right">Finish</Typography>
+              </Grid>
+            </Grid>
+          </Grid>
+          <DialogContent style={{ height: 700 }} dividers={true}>
+            <Box sx={{ position: 'relative' }}>
+              <Grid container direction="row" wrap="nowrap" height="100%">
+                <Grid item xs={6}>
+                  {taskState ? (
+                    <>
+                      <CardContent sx={{ overflow: 'auto' }}>
+                        <TaskInfo task={taskState} title="Details" />
+                      </CardContent>
+                      <Grid item paddingLeft={2} paddingRight={2}>
+                        <Button
+                          style={{
+                            marginTop: theme.spacing(1),
+                            marginBottom: theme.spacing(1),
+                          }}
+                          fullWidth
+                          variant="contained"
+                          color="secondary"
+                          aria-label="Cancel Task"
+                          disabled={!taskCancellable}
+                          onClick={handleCancelTaskClick}
+                        >
+                          Cancel Task
+                        </Button>
                       </Grid>
-                    )}
-                  </Grid>
-                  <Divider
-                    orientation="vertical"
-                    flexItem
-                    style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
-                  />
-                  <Grid item xs={6}>
-                    <CardContent>
-                      <TaskLogs taskLog={taskLogs} taskState={taskState} />
-                    </CardContent>
-                  </Grid>
+                    </>
+                  ) : (
+                    <Grid container wrap="nowrap" alignItems="center" style={{ height: '100%' }}>
+                      <CardContent>
+                        <Typography variant="h6" align="center">
+                          Click on a task to view more information
+                        </Typography>
+                      </CardContent>
+                    </Grid>
+                  )}
                 </Grid>
-              </Box>
-            </DialogContent>
-          </Dialog>
-        </div>
+                <Divider
+                  orientation="vertical"
+                  flexItem
+                  style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
+                />
+                <Grid item xs={6}>
+                  <CardContent>
+                    <TaskLogs taskLog={taskLogs} taskState={taskState} title="Logs" />
+                  </CardContent>
+                </Grid>
+              </Grid>
+            </Box>
+          </DialogContent>
+        </Dialog>
       </Grid>
     </>
   );
