@@ -72,7 +72,7 @@ const buildDialogContent = (robot: RobotState): AlertContent[] => {
     },
     {
       title: 'Message',
-      value: showMessage(robot),
+      value: 'showMessage(robot)',
     },
   ];
 };
@@ -145,21 +145,23 @@ export function RobotAlertComponent({ robots }: AlertStoreProps): JSX.Element {
         statusToAlert(r.robot) && r.show ? (
           <AlertDialog
             key={r.robot.name}
-            stopShowing={() =>
-              setAlertsToDisplay((prev) =>
-                prev.map((obj) => {
-                  if (obj.robot.name === r.robot.name) {
-                    return { ...obj, show: false };
-                  }
-                  return obj;
-                }),
-              )
-            }
-            dialogTitle={'Robot State'}
+            // stopShowing={() =>
+            //   setAlertsToDisplay((prev) =>
+            //     prev.map((obj) => {
+            //       if (obj.robot.name === r.robot.name) {
+            //         return { ...obj, show: false };
+            //       }
+            //       return obj;
+            //     }),
+            //   )
+            // }
+            dismiss={() => {}}
+            acknowledge={() => {}}
+            title={'Robot State'}
             progress={r.robot.battery ? r.robot.battery : -1}
             alertContents={buildDialogContent(r.robot)}
             backgroundColor={setRobotDialogColor(r.robot.status)}
-            show={r.show}
+            // show={r.show}
           />
         ) : null,
       )}

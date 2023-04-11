@@ -1,4 +1,5 @@
 # NOTE: This will eventually replace `gateway.py``
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
@@ -9,7 +10,7 @@ from api_server.models import tortoise_models as ttm
 from api_server.repositories import FleetRepository, TaskRepository
 from api_server.rmf_io import alert_events, fleet_events, task_events
 
-from .alerts import create_alert
+# from .alerts import create_alert
 
 router = APIRouter(tags=["_internal"])
 logger = base_logger.getChild("RmfGatewayApp")
@@ -50,6 +51,20 @@ def robot_log_has_error(robot_logs: List[mdl.LogEntry]) -> bool:
         if log.tier == mdl.Tier.error:
             return True
     return False
+
+
+async def create_alert(id: str, category: str):
+    alert, _ = await ttm.Alert.update_or_create(
+        {
+            "category": category,
+            "created_on": datetime.now(),
+            "acknowledged_by": None,
+            "acknowledged_on": None,
+        },
+        id=id,
+    )
+    alert_pydantic = await ttm.AlertPydantic.from_tortoise_orm(alert)
+    return alert_pydantic
 
 
 async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
