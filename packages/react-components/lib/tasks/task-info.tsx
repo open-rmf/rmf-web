@@ -92,9 +92,10 @@ function InfoValue({ children }: React.PropsWithChildren<unknown>) {
 
 export interface TaskInfoProps {
   task: TaskState;
+  title?: string;
 }
 
-export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
+export function TaskInfo({ task, title }: TaskInfoProps): JSX.Element {
   const theme = useTheme();
   // const taskType = task.category;
   // const detailInfo = (() => {
@@ -113,7 +114,7 @@ export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
   return (
     <StyledDiv>
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
-        {task.booking.id}
+        {title ? title : task.booking.id}
       </Typography>
       <Divider />
       <div style={{ marginBottom: theme.spacing(1) }}></div>
