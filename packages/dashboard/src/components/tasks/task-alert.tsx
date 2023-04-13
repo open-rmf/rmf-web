@@ -191,12 +191,29 @@ export function TaskAlertHandler({ alerts, removeAlert }: TaskAlertHandlerProps)
           (async () => {
             const ackResponse = (await rmf?.alertsApi.acknowledgeAlertAlertsIdPost(alert.task_id))
               .data;
-            if (!ackResponse.acknowledged_by) {
+            if (ackResponse.acknowledged_by && ackResponse.acknowledged_on) {
+              // const ackMillisAgo = new Date() - new Date(ackResponse.acknowledged_on)
+              showAlert(
+                'success',
+                // `User ${ackResponse.acknowledged_by} acknowledged alert ID ${alert.task_id} on ${ackResponse.acknowledged_on}`);
+                `${ackResponse.acknowledged_by} - ${alert.task_id} - ${ackResponse.acknowledged_on}`,
+              );
+            } else {
               console.log(`Failed to acknowledge alert ID ${alert.task_id}`);
               showAlert('error', `Failed to acknowledge alert ID ${alert.task_id}`);
-            } else {
-              showAlert('success', `User acknowledged alert ID ${alert.task_id}`);
             }
+
+            // if (!ackResponse.acknowledged_by) {
+            //   console.log(`Failed to acknowledge alert ID ${alert.task_id}`);
+            //   showAlert('error', `Failed to acknowledge alert ID ${alert.task_id}`);
+            // } else {
+            //   // const ackMillisAgo = new Date() - new Date(ackResponse.acknowledged_on)
+            //   // const now = new Date();
+
+            //   showAlert(
+            //     'success',
+            //     `User ${ackResponse.acknowledged_by} acknowledged alert ID ${alert.task_id} `);
+            // }
           })();
         };
 

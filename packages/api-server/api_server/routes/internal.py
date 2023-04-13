@@ -10,8 +10,6 @@ from api_server.models import tortoise_models as ttm
 from api_server.repositories import FleetRepository, TaskRepository
 from api_server.rmf_io import alert_events, fleet_events, task_events
 
-# from .alerts import create_alert
-
 router = APIRouter(tags=["_internal"])
 logger = base_logger.getChild("RmfGatewayApp")
 user: mdl.User = mdl.User(username="__rmf_internal__", is_admin=True)
@@ -38,28 +36,14 @@ def task_log_has_error(task_log: mdl.TaskEventLog) -> bool:
     return False
 
 
-def fleet_log_has_error(fleet_log: mdl.FleetLog) -> bool:
-    if fleet_log.log:
-        for log in fleet_log.log:
-            if log.tier == mdl.Tier.error:
-                return True
-    return False
-
-
-def robot_log_has_error(robot_logs: List[mdl.LogEntry]) -> bool:
-    for log in robot_logs:
-        if log.tier == mdl.Tier.error:
-            return True
-    return False
-
-
 async def create_alert(id: str, category: str):
     alert, _ = await ttm.Alert.update_or_create(
         {
+            "original_id": id,
             "category": category,
-            "created_on": datetime.now(),
+            "unix_millis_created_time": round(datetime.now().timestamp() * 1e3),
             "acknowledged_by": None,
-            "acknowledged_on": None,
+            "unix_millis_acknowledged_time": None,
         },
         id=id,
     )
@@ -101,21 +85,63 @@ async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
         await fleet_repo.save_fleet_state(fleet_state)
         fleet_events.fleet_states.on_next(fleet_state)
 
+        for name, state in fleet_state.robots.items():
+            alert_id = f"{fleet_state.name}__{name}"
+            alert_exists = ttm.Alert.exists(id=alert_id)
+
+            # If the robot state is an error and the alert does not exist yet,
+            # we create a new alert and pass it on as an event
+            if state.status == mdl.Status2.error and not alert_exists:
+                alert = await create_alert(alert_id, "robot")
+                alert_events.alerts.on_next(alert)
+            # If there is an existing alert and the robot status is not error,
+            # we consider it to have resolved itself, we create a new alert with
+            # id containing the current unix millis, set it to acknowledged,
+            # delete the old alert, pass the acknowledged alert as an event so
+            # the frontend can close any open dialogs
+            elif state.status != mdl.Status2.error and alert_exists:
+                alert = await ttm.Alert.get_or_none(id=alert_id)
+                if alert is not None:
+                    ack_time = datetime.now()
+                    epoch = datetime.datetime.utcfromtimestamp(0)
+                    ack_unix_millis = round((ack_time - epoch).total_seconds() * 1000)
+                    new_id = f"{alert_id}__{ack_unix_millis}"
+
+                    ack_alert = alert.clone(pk=new_id)
+                    ack_alert.update_from_dict(
+                        {
+                            "acknowledged_by": name,
+                            "unix_millis_acknowledged_time": round(
+                                ack_time.timestamp() * 1e3
+                            ),
+                        }
+                    )
+                    await ack_alert.save()
+                    await alert.delete()
+                    ack_alert_pydantic = await ttm.AlertPydantic.from_tortoise_orm(
+                        ack_alert
+                    )
+                    alert_events.alerts.on_next(ack_alert_pydantic)
+
+        # alert when state is error?
+        # buttons should be resolve instead of acknowledged
+        # dismiss keeps the same alert ID, so if robot continues to be in error
+        # it will not trigger another alert
+        # resolve changes the id to have the acknowledgement time, hence
+        # clearing this alert id up for happening again, if the issue was not
+        # resolved
+        # leave it for notification bar to allow users to check back on dismissed
+        # but unresolved problems
+        # unresolve automatically? check that there is an open alert for this robot
+        # if back to normal, resolve it
+        # RobotAlertHandler is the one that keeps track, and perhaps closes the
+        # alert
+        # display robot logs from alert creation time to resolving time
+
     elif payload_type == "fleet_log_update":
         fleet_log = mdl.FleetLog(**msg["data"])
         await fleet_repo.save_fleet_log(fleet_log)
         fleet_events.fleet_logs.on_next(fleet_log)
-
-        if fleet_log_has_error(fleet_log):
-            alert = await create_alert(fleet_log.name, "fleet")
-            alert_events.alerts.on_next(alert)
-        elif fleet_log.robots:
-            for robot, robot_logs in fleet_log.robots.items():
-                if robot_log_has_error(robot_logs):
-                    alert = await create_alert(f"{fleet_log.name}__{robot}", "robot")
-                    alert_events.alerts.on_next(alert)
-        # if errors come in later than the previous
-        # acknowledge time, create new alert
 
 
 @router.websocket("")

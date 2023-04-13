@@ -1,9 +1,7 @@
-from datetime import datetime
 from enum import Enum
-from typing import Optional
 
 from tortoise.contrib.pydantic.creator import pydantic_model_creator
-from tortoise.fields import CharEnumField, CharField, DatetimeField
+from tortoise.fields import BigIntField, CharEnumField, CharField
 from tortoise.models import Model
 
 
@@ -19,10 +17,11 @@ class Alert(Model):
         Robot = "robot"
 
     id = CharField(255, pk=True)
-    category = CharEnumField(Category)
-    created_on = DatetimeField()
-    acknowledged_by = CharField(255, null=True)
-    acknowledged_on: Optional[datetime] = DatetimeField(null=True)
+    original_id = CharField(255, index=True)
+    category = CharEnumField(Category, index=True)
+    unix_millis_created_time = BigIntField(null=False, index=True)
+    acknowledged_by = CharField(255, null=True, index=True)
+    unix_millis_acknowledged_time = BigIntField(null=True, index=True)
 
 
 AlertPydantic = pydantic_model_creator(Alert)
