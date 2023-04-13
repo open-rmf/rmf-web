@@ -33,6 +33,10 @@ export function TaskLogsDetails({ task, open, onClose }: TableDataGridState): JS
 
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
   const [taskLogs, setTaskLogs] = React.useState<TaskEventLog | null>(null);
+  const [waypoint, setWaypoint] = React.useState({
+    start: '',
+    finish: '',
+  });
 
   React.useEffect(() => {
     if (!rmf) {
@@ -53,6 +57,22 @@ export function TaskLogsDetails({ task, open, onClose }: TableDataGridState): JS
             )
           ).data;
           setTaskLogs(logs);
+          const state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(task.booking.id)).data;
+
+          if (state.phases) {
+            const firstPhase = Object.values(state.phases)[0]?.detail;
+            const lastPhase = Object.values(state.phases).pop()?.category;
+
+            // Matches ':' character and everything before it
+            // Remove last character ']'
+            setWaypoint({
+              ...waypoint,
+              start: firstPhase ? firstPhase.toString().replace(/^.+:/, '').replace(/.$/, '') : '',
+              finish: lastPhase ? lastPhase.replace(/^.+:/, '').replace(/.$/, '') : '',
+            });
+
+            console.log(state);
+          }
         } catch {
           console.log(`Failed to fetch task logs for ${task.booking.id}`);
           setTaskLogs(null);
@@ -61,7 +81,7 @@ export function TaskLogsDetails({ task, open, onClose }: TableDataGridState): JS
       })();
     });
     return () => sub.unsubscribe();
-  }, [rmf]);
+  }, [rmf, waypoint]);
 
   React.useEffect(() => {
     if (!rmf) {
@@ -139,7 +159,7 @@ export function TaskLogsDetails({ task, open, onClose }: TableDataGridState): JS
                 <Typography>Start Waypoint:</Typography>
               </Grid>
               <Grid item xs={3}>
-                <Typography align="right">Start</Typography>
+                <Typography align="right">{waypoint.start}</Typography>
               </Grid>
             </Grid>
             <Grid container>
@@ -147,7 +167,7 @@ export function TaskLogsDetails({ task, open, onClose }: TableDataGridState): JS
                 <Typography>Finish Waypoint:</Typography>
               </Grid>
               <Grid item xs={3}>
-                <Typography align="right">Finish</Typography>
+                <Typography align="right">{waypoint.finish}</Typography>
               </Grid>
             </Grid>
           </Grid>
