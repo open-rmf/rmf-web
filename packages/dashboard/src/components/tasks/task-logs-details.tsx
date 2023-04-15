@@ -23,7 +23,7 @@ import { TaskLogs } from './task-logs';
 export interface TableDataGridState {
   task: TaskState | null;
   open: boolean;
-  onClose: (close: boolean) => void;
+  onClose: () => void;
 }
 
 export function TaskLogsDetails({ task, open, onClose }: TableDataGridState): JSX.Element {
@@ -57,11 +57,10 @@ export function TaskLogsDetails({ task, open, onClose }: TableDataGridState): JS
             )
           ).data;
           setTaskLogs(logs);
-          const state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(task.booking.id)).data;
 
-          if (state.phases) {
-            const firstPhase = Object.values(state.phases)[0]?.detail;
-            const lastPhase = Object.values(state.phases).pop()?.category;
+          if (task.phases) {
+            const firstPhase = Object.values(task.phases)[0]?.detail;
+            const lastPhase = Object.values(task.phases).pop()?.category;
 
             // Matches ':' character and everything before it
             // Remove last character ']'
@@ -70,8 +69,6 @@ export function TaskLogsDetails({ task, open, onClose }: TableDataGridState): JS
               start: firstPhase ? firstPhase.toString().replace(/^.+:/, '').replace(/.$/, '') : '',
               finish: lastPhase ? lastPhase.replace(/^.+:/, '').replace(/.$/, '') : '',
             });
-
-            console.log(state);
           }
         } catch {
           console.log(`Failed to fetch task logs for ${task.booking.id}`);
@@ -134,7 +131,7 @@ export function TaskLogsDetails({ task, open, onClose }: TableDataGridState): JS
       <Grid container wrap="nowrap" direction="column" height="100%">
         <Dialog
           open={open}
-          onClose={() => onClose(false)}
+          onClose={onClose}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
           fullWidth
