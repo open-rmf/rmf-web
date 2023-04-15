@@ -11,7 +11,7 @@ import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
 import { downloadCsvFull, downloadCsvMinimal } from './utils';
-import { TaskLogsDetails } from './task-logs-details';
+import { TaskInfoDialog } from './task-info-dialog';
 
 export const TasksApp = React.memo(
   React.forwardRef(
@@ -22,7 +22,7 @@ export const TasksApp = React.memo(
       const rmf = React.useContext(RmfAppContext);
 
       const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
-      const [openLogDialog, setOpenLogDialog] = React.useState(false);
+      const [openTaskInfoDialog, setTaskInfoDialog] = React.useState(false);
       const [task, setTaks] = React.useState<TaskState | null>(null);
 
       const [tasksState, setTasksState] = React.useState<Tasks>({
@@ -238,7 +238,7 @@ export const TasksApp = React.memo(
                   tasks={tasksState}
                   onTaskClick={(_ev, task) => {
                     setTaks(task);
-                    setOpenLogDialog(true);
+                    setTaskInfoDialog(true);
                   }}
                   setFilterFields={setFilterFields}
                   setSortFields={setSortFields}
@@ -253,8 +253,12 @@ export const TasksApp = React.memo(
             </Grid>
           </Grid>
           <input type="file" style={{ display: 'none' }} ref={uploadFileInputRef} />
-          {openLogDialog && (
-            <TaskLogsDetails task={task} open={openLogDialog} onClose={setOpenLogDialog} />
+          {openTaskInfoDialog && (
+            <TaskInfoDialog
+              stopShowing={() => setTaskInfoDialog(!openTaskInfoDialog)}
+              task={task}
+              show={openTaskInfoDialog}
+            />
           )}
           {children}
         </Window>
