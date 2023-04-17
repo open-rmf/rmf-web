@@ -21,20 +21,11 @@ import { TaskInspector } from './task-inspector';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    title: {
-      '&.MuiDialogTitle-root': {
-        padding: theme.spacing(1),
-        textAlign: 'center',
-        fontWeight: 'bold',
-      },
-    },
-    subtitle: {
-      '&.MuiTypography-root': {
-        fontWeight: 'bold',
-      },
-    },
     textField: {
       background: theme.palette.background.default,
+      '&:hover': {
+        backgroundColor: theme.palette.background.default,
+      },
     },
   }),
 );
@@ -130,22 +121,20 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
     return (
       <>
         {contents.map((message, index) => (
-          <Grid key={index} container mb={1} alignItems="center" spacing={1}>
-            <Grid item xs={3}>
-              <Typography className={classes.subtitle}>{message.title}</Typography>
-            </Grid>
-            <Grid item xs={9}>
-              <TextField
-                size="small"
-                value={message.value}
-                multiline
-                InputProps={{
-                  readOnly: true,
-                  className: classes.textField,
-                }}
-              />
-            </Grid>
-          </Grid>
+          <div key={index}>
+            <TextField
+              label={message.title}
+              id="standard-size-small"
+              size="small"
+              variant="filled"
+              InputProps={{ readOnly: true, className: classes.textField }}
+              fullWidth={true}
+              multiline
+              maxRows={4}
+              margin="dense"
+              value={message.value}
+            />
+          </div>
         ))}
       </>
     );
@@ -161,12 +150,13 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
       }}
       open={show}
       onClose={stopShowing}
-      maxWidth="xs"
+      fullWidth
+      maxWidth="sm"
     >
-      <DialogTitle className={classes.title}>Info</DialogTitle>
+      <DialogTitle align="center">Info</DialogTitle>
 
       <Divider />
-      <DialogTitle className={classes.title}>Task State</DialogTitle>
+      <DialogTitle align="center">Task State</DialogTitle>
       <Box sx={{ width: '90%', ml: 3 }}>
         <LinearProgressWithLabel value={getTaskProgress(task)} />
       </Box>
