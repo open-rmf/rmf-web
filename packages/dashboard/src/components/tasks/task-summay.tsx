@@ -17,7 +17,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { makeStyles, createStyles } from '@mui/styles';
 import { Status, TaskState } from 'api-client';
 import { base } from 'react-components';
-import { TaskLogsDetails } from './task-logs-details';
+import { TaskInspector } from './task-inspector';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -90,33 +90,18 @@ const setTaskDialogColor = (taskStatus: Status | undefined) => {
   }
 };
 
-export interface TaskInfoDialogProps {
+export interface TaskSummaryProps {
   stopShowing: () => void;
   task: TaskState | null;
   show: boolean;
 }
 
-export const TaskInfoDialog = React.memo((props: TaskInfoDialogProps) => {
+export const TaskSummary = React.memo((props: TaskSummaryProps) => {
   const classes = useStyles();
 
   const { stopShowing, show, task } = props;
 
   const [openTaskDetailsLogs, setOpenTaskDetailsLogs] = React.useState(false);
-
-  const getRobotLocation = (task: TaskState | null) => {
-    if (!task || !task.phases || !task.active) {
-      return "Can't get robot location";
-    }
-    /**
-     * The active field has the current path traveled by the robot.
-     * The previous value is obtained to get where the robot started.
-     */
-    console.log(task);
-    if (Object.values(task.phases)[task.active - 1]) {
-      const location = Object.values(task.phases)[task.active - 1].category;
-      return location ? location.replace(/^.+:/, '').replace(/.$/, '') : "Can't get robot location";
-    }
-  };
 
   const getTaskMessage = (task: TaskState | null) => {
     if (!task || !task.phases || !task.active) {
@@ -135,10 +120,6 @@ export const TaskInfoDialog = React.memo((props: TaskInfoDialogProps) => {
       {
         title: 'Task',
         value: task ? task.booking.id : '',
-      },
-      {
-        title: 'Location',
-        value: getRobotLocation(task),
       },
       {
         title: 'Message',
@@ -197,11 +178,11 @@ export const TaskInfoDialog = React.memo((props: TaskInfoDialogProps) => {
           onClick={() => setOpenTaskDetailsLogs(true)}
           autoFocus
         >
-          View Logs
+          Inspect
         </Button>
       </DialogActions>
       {openTaskDetailsLogs && (
-        <TaskLogsDetails
+        <TaskInspector
           task={task}
           open={openTaskDetailsLogs}
           onClose={() => setOpenTaskDetailsLogs(!openTaskDetailsLogs)}

@@ -26,7 +26,7 @@ export interface TableDataGridState {
   onClose: () => void;
 }
 
-export function TaskLogsDetails({ task, open, onClose }: TableDataGridState): JSX.Element {
+export function TaskInspector({ task, open, onClose }: TableDataGridState): JSX.Element {
   const theme = useTheme();
   const rmf = React.useContext(RmfAppContext);
   const appController = React.useContext(AppControllerContext);
@@ -59,15 +59,34 @@ export function TaskLogsDetails({ task, open, onClose }: TableDataGridState): JS
           setTaskLogs(logs);
 
           if (task.phases) {
-            const firstPhase = Object.values(task.phases)[0]?.detail;
-            const lastPhase = Object.values(task.phases).pop()?.category;
+            /**
+             * We assumed that phases[index].detail always return 
+             * "Go to " + goal_name_,
+                "Moving the robot from " + start_name + " to " + goal_name_,
+                *estimate); 
 
-            // Matches ':' character and everything before it
-            // Remove last character ']'
+                According with this code
+             * https://github.com/open-rmf/rmf_task/blob/main/rmf_task_sequence/src/rmf_task_sequence/events/GoToPlace.cpp#L252
+             */
+            const firstPhase = Object.values(task.phases)[0]?.detail;
+            const lastPhase = Object.values(task.phases).pop()?.detail;
+
+            if (!firstPhase) {
+              setWaypoint({
+                ...waypoint,
+                start: '',
+                finish: '',
+              });
+              return;
+            }
+
+            const colonIndex = firstPhase.toString().indexOf(':');
+            const closingBracketIndex = firstPhase.toString().indexOf(']');
+
             setWaypoint({
               ...waypoint,
-              start: firstPhase ? firstPhase.toString().replace(/^.+:/, '').replace(/.$/, '') : '',
-              finish: lastPhase ? lastPhase.replace(/^.+:/, '').replace(/.$/, '') : '',
+              start: firstPhase.toString().substring(colonIndex + 1, closingBracketIndex),
+              finish: lastPhase ? lastPhase.toString().replace(/^.+:/, '').replace(/.$/, '') : '',
             });
           }
         } catch {
