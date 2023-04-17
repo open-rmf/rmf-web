@@ -26,70 +26,6 @@ function InfoValue({ children }: React.PropsWithChildren<unknown>) {
   return <span className={classes.infoValue}>{children}</span>;
 }
 
-// interface CleanTaskInfoProps {
-//   task: TaskState;
-// }
-
-// function CleanTaskInfo({ task }: CleanTaskInfoProps) {
-//   return (
-//     <InfoLine>
-//       <span>Start Waypoint:</span>
-//       <span style={{ float: 'right' }}>{parseTaskDetail(task, task?.category).to}</span>
-//     </InfoLine>
-//   );
-// }
-
-// interface LoopTaskInfoProps {
-//   task: TaskState;
-// }
-
-// function LoopTaskInfo({ task }: LoopTaskInfoProps) {
-//   return (
-//     <>
-//       <InfoLine>
-//         <span>Start Waypoint:</span>
-//         <InfoValue>{parseTaskDetail(task, task?.category).from}</InfoValue>
-//       </InfoLine>
-//       <InfoLine>
-//         <span>Finish Waypoint:</span>
-//         <InfoValue>{parseTaskDetail(task, task?.category).to}</InfoValue>
-//       </InfoLine>
-//       <InfoLine>
-//         <span>Num of Loops:</span>
-//         <InfoValue>{task.phases ? Object.keys(task.phases).length / 2 : null}</InfoValue>
-//       </InfoLine>
-//     </>
-//   );
-// }
-
-// interface DeliveryTaskInfoProps {
-//   task: TaskState;
-// }
-
-// function DeliveryTaskInfoProps({ task }: DeliveryTaskInfoProps) {
-//   // TODO - replace all temp values
-//   return (
-//     <>
-//       <InfoLine>
-//         <span>Pickup Location:</span>
-//         <span style={{ float: 'right' }}>{'temp'}</span>
-//       </InfoLine>
-//       <InfoLine>
-//         <span>Pickup Dispenser:</span>
-//         <span style={{ float: 'right' }}>{'temp'}</span>
-//       </InfoLine>
-//       <InfoLine>
-//         <span>Dropoff Location:</span>
-//         <span style={{ float: 'right' }}>{parseTaskDetail(task, task?.category).from}</span>
-//       </InfoLine>
-//       <InfoLine>
-//         <span>Dropoff Ingestor:</span>
-//         <span style={{ float: 'right' }}>{parseTaskDetail(task, task?.category).to}</span>
-//       </InfoLine>
-//     </>
-//   );
-// }
-
 export interface TaskInfoProps {
   task: TaskState;
   title?: string;
@@ -97,19 +33,6 @@ export interface TaskInfoProps {
 
 export function TaskInfo({ task, title }: TaskInfoProps): JSX.Element {
   const theme = useTheme();
-  // const taskType = task.category;
-  // const detailInfo = (() => {
-  //   switch (taskType) {
-  //     case 'Clean':
-  //       return <CleanTaskInfo task={task} />;
-  //     case 'Loop':
-  //       return <LoopTaskInfo task={task} />;
-  //     case 'Delivery':
-  //       return <DeliveryTaskInfoProps task={task} />;
-  //     default:
-  //       return null;
-  //   }
-  // })();
 
   return (
     <StyledDiv>
@@ -122,13 +45,6 @@ export function TaskInfo({ task, title }: TaskInfoProps): JSX.Element {
         <span>State:</span>
         <InfoValue>{task.status || 'unknown'}</InfoValue>
       </InfoLine>
-      {/* {detailInfo} */}
-      {/* <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Typography variant="h6">Progress</Typography>
-        <Button variant="contained" onClick={() => onShowLogs && onShowLogs(!showLogs)}>
-          {showLogs ? 'CLOSE LOGS' : 'SHOW LOGS'}
-        </Button>
-      </div> */}
       <div style={{ padding: '4px' }}>
         <TaskTimeline taskState={task} />
       </div>
