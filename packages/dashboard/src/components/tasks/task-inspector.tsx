@@ -33,10 +33,6 @@ export function TaskInspector({ task, open, onClose }: TableDataGridState): JSX.
 
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
   const [taskLogs, setTaskLogs] = React.useState<TaskEventLog | null>(null);
-  const [waypoint, setWaypoint] = React.useState({
-    start: '',
-    finish: '',
-  });
 
   React.useEffect(() => {
     if (!rmf) {
@@ -57,38 +53,6 @@ export function TaskInspector({ task, open, onClose }: TableDataGridState): JSX.
             )
           ).data;
           setTaskLogs(logs);
-
-          if (task.phases) {
-            /**
-             * We assumed that phases[index].detail always return 
-             * "Go to " + goal_name_,
-                "Moving the robot from " + start_name + " to " + goal_name_,
-                *estimate); 
-
-                According with this code
-             * https://github.com/open-rmf/rmf_task/blob/main/rmf_task_sequence/src/rmf_task_sequence/events/GoToPlace.cpp#L252
-             */
-            const firstPhase = Object.values(task.phases)[0]?.detail;
-            const lastPhase = Object.values(task.phases).pop()?.detail;
-
-            if (!firstPhase) {
-              setWaypoint({
-                ...waypoint,
-                start: '',
-                finish: '',
-              });
-              return;
-            }
-
-            const colonIndex = firstPhase.toString().indexOf(':');
-            const closingBracketIndex = firstPhase.toString().indexOf(']');
-
-            setWaypoint({
-              ...waypoint,
-              start: firstPhase.toString().substring(colonIndex + 1, closingBracketIndex),
-              finish: lastPhase ? lastPhase.toString().replace(/^.+:/, '').replace(/.$/, '') : '',
-            });
-          }
         } catch {
           console.log(`Failed to fetch task logs for ${task.booking.id}`);
           setTaskLogs(null);
@@ -97,7 +61,7 @@ export function TaskInspector({ task, open, onClose }: TableDataGridState): JSX.
       })();
     });
     return () => sub.unsubscribe();
-  }, [rmf, waypoint]);
+  }, [rmf]);
 
   React.useEffect(() => {
     if (!rmf) {
@@ -161,30 +125,6 @@ export function TaskInspector({ task, open, onClose }: TableDataGridState): JSX.
               <DialogTitle id="scroll-dialog-title" align="center">
                 {task?.booking.id}
               </DialogTitle>
-            </Grid>
-            <Grid container>
-              <Grid item xs={2} ml={7}>
-                <Typography>Status:</Typography>
-              </Grid>
-              <Grid item xs={3}>
-                <Typography align="right">{task?.status}</Typography>
-              </Grid>
-            </Grid>
-            <Grid container>
-              <Grid item xs={2} ml={7}>
-                <Typography>Start Waypoint:</Typography>
-              </Grid>
-              <Grid item xs={3}>
-                <Typography align="right">{waypoint.start}</Typography>
-              </Grid>
-            </Grid>
-            <Grid container>
-              <Grid item xs={2} ml={7}>
-                <Typography>Finish Waypoint:</Typography>
-              </Grid>
-              <Grid item xs={3}>
-                <Typography align="right">{waypoint.finish}</Typography>
-              </Grid>
             </Grid>
           </Grid>
           <DialogContent style={{ height: 700 }} dividers={true}>
