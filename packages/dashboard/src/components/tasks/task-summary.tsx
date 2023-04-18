@@ -29,22 +29,6 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const getTaskProgress = (task: TaskState | null): number => {
-  if (!task) {
-    return 0;
-  }
-  if (!task.phases || !task.active) {
-    return 0;
-  }
-  const lastPhase = Object.keys(task.phases).pop();
-
-  if (lastPhase) {
-    return (task.active / parseInt(lastPhase)) * 100;
-  }
-
-  return 0;
-};
-
 const LinearProgressWithLabel = (props: LinearProgressProps & { value: number }) => {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -92,6 +76,34 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
   const { stopShowing, show, task } = props;
 
   const [openTaskDetailsLogs, setOpenTaskDetailsLogs] = React.useState(false);
+
+  const taskProgress = React.useMemo(() => {
+    if (task) {
+      console.log(task.estimate_millis);
+      console.log(task.unix_millis_start_time);
+      console.log(task.unix_millis_finish_time);
+    }
+    if (
+      !task ||
+      !task.estimate_millis ||
+      !task.unix_millis_start_time ||
+      !task.unix_millis_finish_time
+    ) {
+      return undefined;
+    }
+
+    console.log(
+      Math.min(
+        1.0 - task.estimate_millis / (task.unix_millis_finish_time - task.unix_millis_start_time),
+        1,
+      ),
+    );
+
+    return Math.min(
+      1.0 - task.estimate_millis / (task.unix_millis_finish_time - task.unix_millis_start_time),
+      1,
+    );
+  }, [task]);
 
   const getTaskMessage = (task: TaskState | null) => {
     if (!task || !task.phases || !task.active) {
@@ -156,9 +168,11 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
 
       <Divider />
       <DialogTitle align="center">Task State</DialogTitle>
-      <Box sx={{ width: '90%', ml: 3 }}>
-        <LinearProgressWithLabel value={getTaskProgress(task)} />
-      </Box>
+      {taskProgress && (
+        <Box sx={{ width: '90%', ml: 3 }}>
+          <LinearProgressWithLabel value={taskProgress} />
+        </Box>
+      )}
       <DialogContent>{returnDialogContent()}</DialogContent>
       <DialogActions sx={{ justifyContent: 'center' }}>
         <Button
