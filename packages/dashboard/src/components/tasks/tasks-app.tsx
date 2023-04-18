@@ -11,7 +11,7 @@ import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
 import { downloadCsvFull, downloadCsvMinimal } from './utils';
-import { TaskSummary } from './task-summay';
+import { TaskSummary } from './task-summary';
 
 export const TasksApp = React.memo(
   React.forwardRef(
