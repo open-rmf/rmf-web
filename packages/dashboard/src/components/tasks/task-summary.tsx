@@ -87,13 +87,6 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
       return undefined;
     }
 
-    console.log(
-      Math.min(
-        1.0 - task.estimate_millis / (task.unix_millis_finish_time - task.unix_millis_start_time),
-        1,
-      ),
-    );
-
     return Math.min(
       1.0 - task.estimate_millis / (task.unix_millis_finish_time - task.unix_millis_start_time),
       1,
