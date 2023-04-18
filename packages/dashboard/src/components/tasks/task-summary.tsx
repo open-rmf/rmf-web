@@ -17,6 +17,7 @@ import { makeStyles, createStyles } from '@mui/styles';
 import { Status, TaskState } from 'api-client';
 import { base } from 'react-components';
 import { TaskInspector } from './task-inspector';
+import { RmfAppContext } from '../rmf-app';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -72,27 +73,41 @@ export interface TaskSummaryProps {
 
 export const TaskSummary = React.memo((props: TaskSummaryProps) => {
   const classes = useStyles();
+  const rmf = React.useContext(RmfAppContext);
 
   const { onClose, show, task } = props;
 
   const [openTaskDetailsLogs, setOpenTaskDetailsLogs] = React.useState(false);
+  const [taskState, setTaskState] = React.useState<TaskState | null>(null);
 
   const taskProgress = React.useMemo(() => {
     if (
-      !task ||
-      !task.estimate_millis ||
-      !task.unix_millis_start_time ||
-      !task.unix_millis_finish_time
+      !taskState ||
+      !taskState.estimate_millis ||
+      !taskState.unix_millis_start_time ||
+      !taskState.unix_millis_finish_time
     ) {
       console.log(`Can't calculate task progress`);
       return undefined;
     }
 
     return Math.min(
-      1.0 - task.estimate_millis / (task.unix_millis_finish_time - task.unix_millis_start_time),
+      1.0 -
+        taskState.estimate_millis /
+          (taskState.unix_millis_finish_time - taskState.unix_millis_start_time),
       1,
     );
-  }, [task]);
+  }, [taskState]);
+
+  React.useEffect(() => {
+    if (!rmf || !task) {
+      return;
+    }
+    const sub = rmf
+      .getTaskStateObs(task.booking.id)
+      .subscribe((subscribedTask) => setTaskState(subscribedTask));
+    return () => sub.unsubscribe();
+  }, [rmf, task]);
 
   const getTaskPhaseDetails = (task: TaskState | null) => {
     if (!task || !task.phases || !task.active) {
@@ -112,11 +127,11 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
     const contents = [
       {
         title: 'ID',
-        value: task ? task.booking.id : '',
+        value: taskState ? taskState.booking.id : '',
       },
       {
         title: 'Current phase',
-        value: getTaskPhaseDetails(task),
+        value: getTaskPhaseDetails(taskState),
       },
     ];
 
@@ -146,7 +161,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
     <Dialog
       PaperProps={{
         style: {
-          backgroundColor: setTaskDialogColor(task?.status),
+          backgroundColor: setTaskDialogColor(taskState?.status),
           boxShadow: 'none',
         },
       }}
@@ -160,7 +175,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
       <DialogTitle align="center">Task State</DialogTitle>
       {taskProgress && (
         <Box sx={{ width: '90%', ml: 3 }}>
-          <LinearProgressWithLabel value={taskProgress} />
+          <LinearProgressWithLabel value={taskProgress * 100} />
         </Box>
       )}
       <DialogContent>{returnDialogContent()}</DialogContent>
@@ -176,7 +191,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
       </DialogActions>
       {openTaskDetailsLogs && (
         <TaskInspector
-          task={task}
+          task={taskState}
           open={openTaskDetailsLogs}
           onClose={() => setOpenTaskDetailsLogs(!openTaskDetailsLogs)}
         />
