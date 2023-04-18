@@ -11,7 +11,6 @@ import {
 import { CardContent, useTheme } from '@mui/material';
 import { TaskEventLog, TaskState } from 'api-client';
 import React from 'react';
-import { of, switchMap } from 'rxjs';
 import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { RmfAppContext } from '../rmf-app';
@@ -35,47 +34,40 @@ export function TaskInspector({ task, open, onClose }: TableDataGridState): JSX.
   const [taskLogs, setTaskLogs] = React.useState<TaskEventLog | null>(null);
 
   React.useEffect(() => {
-    if (!rmf) {
+    if (!rmf || !task) {
+      setTaskState(null);
+      setTaskLogs(null);
       return;
     }
-    const sub = AppEvents.taskSelect.subscribe((task) => {
-      if (!task) {
-        setTaskState(null);
-        setTaskLogs(null);
-        return;
-      }
+    const sub = rmf.getTaskStateObs(task.booking.id).subscribe((subscribedTask) => {
       (async () => {
         try {
           const logs = (
             await rmf.tasksApi.getTaskLogTasksTaskIdLogGet(
-              task.booking.id,
+              subscribedTask.booking.id,
               `0,${Number.MAX_SAFE_INTEGER}`,
             )
           ).data;
           setTaskLogs(logs);
         } catch {
-          console.log(`Failed to fetch task logs for ${task.booking.id}`);
+          console.log(`Failed to fetch task logs for ${subscribedTask.booking.id}`);
           setTaskLogs(null);
         }
-        setTaskState(task);
+        setTaskState(subscribedTask);
       })();
     });
     return () => sub.unsubscribe();
-  }, [rmf]);
+  }, [rmf, task]);
 
   React.useEffect(() => {
-    if (!rmf) {
+    if (!rmf || !task) {
       return;
     }
-    const sub = AppEvents.taskSelect
-      .pipe(
-        switchMap((selectedTask) =>
-          selectedTask ? rmf.getTaskStateObs(selectedTask.booking.id) : of(null),
-        ),
-      )
-      .subscribe(setTaskState);
+    const sub = rmf
+      .getTaskStateObs(task.booking.id)
+      .subscribe((subscribedTask) => setTaskState(subscribedTask));
     return () => sub.unsubscribe();
-  }, [rmf]);
+  }, [rmf, task]);
 
   React.useEffect(() => {
     AppEvents.taskSelect.next(task);
