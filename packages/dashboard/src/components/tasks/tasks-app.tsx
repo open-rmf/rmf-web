@@ -23,7 +23,7 @@ export const TasksApp = React.memo(
 
       const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
       const [openTaskSummary, setOpenTaskSummary] = React.useState(false);
-      const [task, setTaks] = React.useState<TaskState | null>(null);
+      const [selectedTask, setSelectedTask] = React.useState<TaskState | null>(null);
 
       const [tasksState, setTasksState] = React.useState<Tasks>({
         isLoading: true,
@@ -237,7 +237,7 @@ export const TasksApp = React.memo(
                 <TaskDataGridTable
                   tasks={tasksState}
                   onTaskClick={(_ev, task) => {
-                    setTaks(task);
+                    setSelectedTask(task);
                     setOpenTaskSummary(true);
                   }}
                   setFilterFields={setFilterFields}
@@ -256,7 +256,7 @@ export const TasksApp = React.memo(
           {openTaskSummary && (
             <TaskSummary
               onClose={() => setOpenTaskSummary(!openTaskSummary)}
-              task={task}
+              task={selectedTask}
               show={openTaskSummary}
             />
           )}
