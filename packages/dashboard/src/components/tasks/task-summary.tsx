@@ -65,7 +65,7 @@ const setTaskDialogColor = (taskStatus: Status | undefined) => {
 };
 
 export interface TaskSummaryProps {
-  stopShowing: () => void;
+  onClose: () => void;
   task: TaskState | null;
   show: boolean;
 }
@@ -73,7 +73,7 @@ export interface TaskSummaryProps {
 export const TaskSummary = React.memo((props: TaskSummaryProps) => {
   const classes = useStyles();
 
-  const { stopShowing, show, task } = props;
+  const { onClose, show, task } = props;
 
   const [openTaskDetailsLogs, setOpenTaskDetailsLogs] = React.useState(false);
 
@@ -148,7 +148,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
         },
       }}
       open={show}
-      onClose={stopShowing}
+      onClose={onClose}
       fullWidth
       maxWidth="sm"
     >

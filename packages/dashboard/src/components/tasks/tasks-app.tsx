@@ -255,7 +255,7 @@ export const TasksApp = React.memo(
           <input type="file" style={{ display: 'none' }} ref={uploadFileInputRef} />
           {openTaskSummary && (
             <TaskSummary
-              stopShowing={() => setTaskSummary(!openTaskSummary)}
+              onClose={() => setTaskSummary(!openTaskSummary)}
               task={task}
               show={openTaskSummary}
             />
