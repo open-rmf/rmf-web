@@ -123,7 +123,7 @@ export function TaskInspector({ task, open, onClose }: TableDataGridState): JSX.
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <DialogTitle id="scroll-dialog-title" align="center">
-                {task?.booking.id}
+                Task: {task?.booking.id}
               </DialogTitle>
             </Grid>
           </Grid>
