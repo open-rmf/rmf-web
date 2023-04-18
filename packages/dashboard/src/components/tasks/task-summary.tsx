@@ -120,7 +120,15 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
 
     const message = Object.values(task.phases)[task.active - 1].detail;
 
-    return message ? message : 'Failed to retrieve current task phase';
+    if (message) {
+      return message;
+    }
+
+    return `Failed to retrieve current task phase details of id ${task.booking.id} and category ${
+      Object.values(task.phases)[task.active - 1].category
+        ? Object.values(task.phases)[task.active - 1].category
+        : ''
+    }`;
   };
 
   const returnDialogContent = () => {
