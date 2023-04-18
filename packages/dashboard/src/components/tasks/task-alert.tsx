@@ -191,29 +191,21 @@ export function TaskAlertHandler({ alerts, removeAlert }: TaskAlertHandlerProps)
           (async () => {
             const ackResponse = (await rmf?.alertsApi.acknowledgeAlertAlertsIdPost(alert.task_id))
               .data;
-            if (ackResponse.acknowledged_by && ackResponse.acknowledged_on) {
-              // const ackMillisAgo = new Date() - new Date(ackResponse.acknowledged_on)
-              showAlert(
-                'success',
-                // `User ${ackResponse.acknowledged_by} acknowledged alert ID ${alert.task_id} on ${ackResponse.acknowledged_on}`);
-                `${ackResponse.acknowledged_by} - ${alert.task_id} - ${ackResponse.acknowledged_on}`,
-              );
+            if (ackResponse.id !== ackResponse.original_id) {
+              let showAlertMessage = `Alert ${ackResponse.original_id} acknowledged`;
+              if (ackResponse.acknowledged_by) {
+                showAlertMessage += ` by User ${ackResponse.acknowledged_by}`;
+              }
+              if (ackResponse.unix_millis_acknowledged_time) {
+                const ackSecondsAgo =
+                  (new Date().getTime() - ackResponse.unix_millis_acknowledged_time) / 1000;
+                showAlertMessage += ` ${Math.round(ackSecondsAgo)}s ago`;
+              }
+              showAlert('success', showAlertMessage);
             } else {
               console.log(`Failed to acknowledge alert ID ${alert.task_id}`);
               showAlert('error', `Failed to acknowledge alert ID ${alert.task_id}`);
             }
-
-            // if (!ackResponse.acknowledged_by) {
-            //   console.log(`Failed to acknowledge alert ID ${alert.task_id}`);
-            //   showAlert('error', `Failed to acknowledge alert ID ${alert.task_id}`);
-            // } else {
-            //   // const ackMillisAgo = new Date() - new Date(ackResponse.acknowledged_on)
-            //   // const now = new Date();
-
-            //   showAlert(
-            //     'success',
-            //     `User ${ackResponse.acknowledged_by} acknowledged alert ID ${alert.task_id} `);
-            // }
           })();
         };
 
