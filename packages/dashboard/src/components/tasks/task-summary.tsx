@@ -84,6 +84,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
       !task.unix_millis_start_time ||
       !task.unix_millis_finish_time
     ) {
+      console.log(`Can't calculate task progress`);
       return undefined;
     }
 
