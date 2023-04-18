@@ -78,11 +78,6 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
   const [openTaskDetailsLogs, setOpenTaskDetailsLogs] = React.useState(false);
 
   const taskProgress = React.useMemo(() => {
-    if (task) {
-      console.log(task.estimate_millis);
-      console.log(task.unix_millis_start_time);
-      console.log(task.unix_millis_finish_time);
-    }
     if (
       !task ||
       !task.estimate_millis ||
