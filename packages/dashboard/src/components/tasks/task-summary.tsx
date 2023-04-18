@@ -93,27 +93,29 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
     );
   }, [task]);
 
-  const getTaskMessage = (task: TaskState | null) => {
+  const getTaskPhaseDetails = (task: TaskState | null) => {
     if (!task || !task.phases || !task.active) {
-      return "Can't get task message";
+      return 'Failed to retrieve current task phase';
     }
 
-    if (Object.values(task.phases)[task.active - 1]) {
-      const message = Object.values(task.phases)[task.active - 1].detail;
-
-      return message ? message : "Can't get task message";
+    if (!Object.values(task.phases)[task.active - 1]) {
+      return 'Failed to retrieve current task phase';
     }
+
+    const message = Object.values(task.phases)[task.active - 1].detail;
+
+    return message ? message : 'Failed to retrieve current task phase';
   };
 
   const returnDialogContent = () => {
     const contents = [
       {
-        title: 'Task',
+        title: 'ID',
         value: task ? task.booking.id : '',
       },
       {
-        title: 'Message',
-        value: getTaskMessage(task),
+        title: 'Current phase',
+        value: getTaskPhaseDetails(task),
       },
     ];
 
@@ -152,8 +154,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle align="center">Info</DialogTitle>
-
+      <DialogTitle align="center">Task Summary</DialogTitle>
       <Divider />
       <DialogTitle align="center">Task State</DialogTitle>
       {taskProgress && (
