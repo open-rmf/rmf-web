@@ -22,7 +22,7 @@ export const TasksApp = React.memo(
       const rmf = React.useContext(RmfAppContext);
 
       const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
-      const [openTaskSummary, setTaskSummary] = React.useState(false);
+      const [openTaskSummary, setOpenTaskSummary] = React.useState(false);
       const [task, setTaks] = React.useState<TaskState | null>(null);
 
       const [tasksState, setTasksState] = React.useState<Tasks>({
@@ -238,7 +238,7 @@ export const TasksApp = React.memo(
                   tasks={tasksState}
                   onTaskClick={(_ev, task) => {
                     setTaks(task);
-                    setTaskSummary(true);
+                    setOpenTaskSummary(true);
                   }}
                   setFilterFields={setFilterFields}
                   setSortFields={setSortFields}
@@ -255,7 +255,7 @@ export const TasksApp = React.memo(
           <input type="file" style={{ display: 'none' }} ref={uploadFileInputRef} />
           {openTaskSummary && (
             <TaskSummary
-              onClose={() => setTaskSummary(!openTaskSummary)}
+              onClose={() => setOpenTaskSummary(!openTaskSummary)}
               task={task}
               show={openTaskSummary}
             />
