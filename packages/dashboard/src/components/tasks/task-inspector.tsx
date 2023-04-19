@@ -59,20 +59,6 @@ export function TaskInspector({ task, open, onClose }: TableDataGridState): JSX.
     return () => sub.unsubscribe();
   }, [rmf, task]);
 
-  React.useEffect(() => {
-    if (!rmf || !task) {
-      return;
-    }
-    const sub = rmf
-      .getTaskStateObs(task.booking.id)
-      .subscribe((subscribedTask) => setTaskState(subscribedTask));
-    return () => sub.unsubscribe();
-  }, [rmf, task]);
-
-  React.useEffect(() => {
-    AppEvents.taskSelect.next(task);
-  }, [task]);
-
   const profile = React.useContext(UserProfileContext);
 
   const taskCancellable =
