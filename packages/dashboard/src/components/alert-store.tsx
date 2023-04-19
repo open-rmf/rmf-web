@@ -2,6 +2,7 @@ import { ApiServerModelsTortoiseModelsAlertsAlertLeaf, RobotState, TaskState } f
 import React from 'react';
 import { RmfAppContext } from './rmf-app';
 import { TaskAlertHandler } from './tasks/task-alert';
+import { RobotAlertHandler } from './robots/robot-alert';
 
 type Alert = ApiServerModelsTortoiseModelsAlertsAlertLeaf;
 
@@ -52,15 +53,15 @@ export const AlertStore = React.memo(() => {
     delete taskAlertKey[id];
   };
 
-  // const robotAlertKey: Partial<typeof robotAlerts> = { ...robotAlerts };
-  // const removeRobotAlert = (id: string) => {
-  //   delete robotAlertKey[id];
-  // };
+  const robotAlertKey: Partial<typeof robotAlerts> = { ...robotAlerts };
+  const removeRobotAlert = (id: string) => {
+    delete robotAlertKey[id];
+  };
 
   return (
     <>
       <TaskAlertHandler alerts={Object.values(taskAlerts)} removeAlert={removeTaskAlert} />
-      {/* <RobotAlertHandler alerts={Object.values(robotAlerts)}/> */}
+      <RobotAlertHandler alerts={Object.values(robotAlerts)} removeAlert={removeRobotAlert} />
     </>
   );
 });

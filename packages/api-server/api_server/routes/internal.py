@@ -86,6 +86,9 @@ async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
         fleet_events.fleet_states.on_next(fleet_state)
 
         for name, state in fleet_state.robots.items():
+            # Alert ID is the fleet name and robot name delimited by two
+            # underscores. If this is modified, be sure to change how it is
+            # parsed in the RobotAlertHandler dashboard component
             alert_id = f"{fleet_state.name}__{name}"
             alert_exists = ttm.Alert.exists(id=alert_id)
 
