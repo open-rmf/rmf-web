@@ -109,37 +109,33 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
     return () => sub.unsubscribe();
   }, [rmf, task]);
 
-  const getTaskPhaseDetails = (task: TaskState | null) => {
-    if (!task || !task.phases || !task.active) {
+  const getTaskPhaseDetails = (task: TaskState) => {
+    if (!task.phases || !task.active) {
       return 'Failed to retrieve current task phase';
     }
 
-    if (!Object.values(task.phases)[task.active - 1]) {
-      return 'Failed to retrieve current task phase';
-    }
-
-    const message = Object.values(task.phases)[task.active - 1].detail;
+    const message = Object.values(task.phases)[task.active - 1]?.detail;
 
     if (message) {
       return message;
     }
 
-    return `Failed to retrieve current task phase details of id ${task.booking.id} and category ${
-      Object.values(task.phases)[task.active - 1].category
-        ? Object.values(task.phases)[task.active - 1].category
-        : ''
-    }`;
+    const categoryString = Object.values(task.phases)[task.active - 1]?.category
+      ? ` category ${Object.values(task.phases)[task.active - 1].category}`
+      : '';
+
+    return `Failed to retrieve current task phase details of id ${task.booking.id}${categoryString}`;
   };
 
   const returnDialogContent = () => {
     const contents = [
       {
         title: 'ID',
-        value: taskState ? taskState.booking.id : '',
+        value: taskState ? taskState.booking.id : 'Invalid task state.',
       },
       {
         title: 'Current phase',
-        value: getTaskPhaseDetails(taskState),
+        value: taskState ? getTaskPhaseDetails(taskState) : 'Invalid task state.',
       },
     ];
 
