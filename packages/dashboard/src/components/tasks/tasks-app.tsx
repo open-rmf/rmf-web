@@ -254,11 +254,7 @@ export const TasksApp = React.memo(
           </Grid>
           <input type="file" style={{ display: 'none' }} ref={uploadFileInputRef} />
           {openTaskSummary && (
-            <TaskSummary
-              onClose={() => setOpenTaskSummary(!openTaskSummary)}
-              task={selectedTask}
-              show={openTaskSummary}
-            />
+            <TaskSummary task={selectedTask} onClose={() => setOpenTaskSummary(false)} />
           )}
           {children}
         </Window>

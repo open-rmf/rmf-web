@@ -68,17 +68,17 @@ const setTaskDialogColor = (taskStatus: Status | undefined) => {
 export interface TaskSummaryProps {
   onClose: () => void;
   task: TaskState | null;
-  show: boolean;
 }
 
 export const TaskSummary = React.memo((props: TaskSummaryProps) => {
   const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
 
-  const { onClose, show, task } = props;
+  const { onClose, task } = props;
 
   const [openTaskDetailsLogs, setOpenTaskDetailsLogs] = React.useState(false);
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
+  const [isOpen, setIsOpen] = React.useState(true);
 
   const taskProgress = React.useMemo(() => {
     if (
@@ -169,8 +169,11 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
           boxShadow: 'none',
         },
       }}
-      open={show}
-      onClose={onClose}
+      open={isOpen}
+      onClose={() => {
+        setIsOpen(false);
+        onClose();
+      }}
       fullWidth
       maxWidth="sm"
     >
@@ -194,11 +197,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
         </Button>
       </DialogActions>
       {openTaskDetailsLogs && (
-        <TaskInspector
-          task={taskState}
-          open={openTaskDetailsLogs}
-          onClose={() => setOpenTaskDetailsLogs(!openTaskDetailsLogs)}
-        />
+        <TaskInspector task={taskState} onClose={() => setOpenTaskDetailsLogs(false)} />
       )}
     </Dialog>
   );

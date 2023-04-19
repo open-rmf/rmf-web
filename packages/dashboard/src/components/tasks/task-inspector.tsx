@@ -21,17 +21,17 @@ import { TaskLogs } from './task-logs';
 
 export interface TableDataGridState {
   task: TaskState | null;
-  open: boolean;
   onClose: () => void;
 }
 
-export function TaskInspector({ task, open, onClose }: TableDataGridState): JSX.Element {
+export function TaskInspector({ task, onClose }: TableDataGridState): JSX.Element {
   const theme = useTheme();
   const rmf = React.useContext(RmfAppContext);
   const appController = React.useContext(AppControllerContext);
 
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
   const [taskLogs, setTaskLogs] = React.useState<TaskEventLog | null>(null);
+  const [isOpen, setIsOpen] = React.useState(true);
 
   React.useEffect(() => {
     if (!rmf || !task) {
@@ -91,8 +91,11 @@ export function TaskInspector({ task, open, onClose }: TableDataGridState): JSX.
     <>
       <Grid container wrap="nowrap" direction="column" height="100%">
         <Dialog
-          open={open}
-          onClose={onClose}
+          open={isOpen}
+          onClose={() => {
+            setIsOpen(false);
+            onClose();
+          }}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
           fullWidth
