@@ -12,7 +12,7 @@ router = FastIORouter(tags=["Alerts"])
 
 
 @router.sub("", response_model=ttm.AlertPydantic)
-async def sub_alerts(req: SubscriptionRequest):
+async def sub_alerts(_req: SubscriptionRequest):
     return alert_events.alerts.pipe(rxops.filter(lambda x: x is not None))
 
 
@@ -21,27 +21,29 @@ async def get_alerts(repo: AlertRepository = Depends(alert_repo_dep)):
     return await repo.get_all_alerts()
 
 
-@router.get("/{id}", response_model=ttm.AlertPydantic)
-async def get_alert(id: str, repo: AlertRepository = Depends(alert_repo_dep)):
-    alert = await repo.get_alert(id)
+@router.get("/{alert_id}", response_model=ttm.AlertPydantic)
+async def get_alert(alert_id: str, repo: AlertRepository = Depends(alert_repo_dep)):
+    alert = await repo.get_alert(alert_id)
     if alert is None:
-        raise HTTPException(404, f"Alert with ID {id} not found")
+        raise HTTPException(404, f"Alert with ID {alert_id} not found")
     return alert
 
 
 @router.post("", status_code=201, response_model=ttm.AlertPydantic)
 async def create_alert(
-    id: str, category: str, repo: AlertRepository = Depends(alert_repo_dep)
+    alert_id: str, category: str, repo: AlertRepository = Depends(alert_repo_dep)
 ):
-    alert = await repo.create_alert(id, category)
+    alert = await repo.create_alert(alert_id, category)
     if alert is None:
-        raise HTTPException(404, f"Could not create alert with ID {id}")
+        raise HTTPException(404, f"Could not create alert with ID {alert_id}")
     return alert
 
 
-@router.post("/{id}", status_code=201, response_model=ttm.AlertPydantic)
-async def acknowledge_alert(id: str, repo: AlertRepository = Depends(alert_repo_dep)):
-    alert = await repo.acknowledge_alert(id)
+@router.post("/{alert_id}", status_code=201, response_model=ttm.AlertPydantic)
+async def acknowledge_alert(
+    alert_id: str, repo: AlertRepository = Depends(alert_repo_dep)
+):
+    alert = await repo.acknowledge_alert(alert_id)
     if alert is None:
-        raise HTTPException(404, f"Could acknowledge alert with ID {id}")
+        raise HTTPException(404, f"Could acknowledge alert with ID {alert_id}")
     return alert

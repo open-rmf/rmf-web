@@ -107,7 +107,7 @@ export function RobotAlertHandler({ alerts, removeAlert }: RobotAlertHandlerProp
       const names = parseFleetAndRobotNames(alert.original_id);
       if (!names || names.length !== 2) {
         console.log(`Failed to retrieve fleet and robot name from alert ${alert.original_id}`);
-        return;
+        return null;
       }
 
       const fleet = names[0];

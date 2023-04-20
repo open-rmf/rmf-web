@@ -1,12 +1,10 @@
 # NOTE: This will eventually replace `gateway.py``
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from api_server import models as mdl
 from api_server.logger import logger as base_logger
-from api_server.models import tortoise_models as ttm
 from api_server.repositories import AlertRepository, FleetRepository, TaskRepository
 from api_server.rmf_io import alert_events, fleet_events, task_events
 
@@ -17,6 +15,19 @@ task_repo = TaskRepository(user)
 alert_repo = AlertRepository(user)
 
 
+def log_phase_has_error(phase: mdl.Phases) -> bool:
+    if phase.log:
+        for log in phase.log:
+            if log.tier == mdl.Tier.error:
+                return True
+    if phase.events:
+        for _, event_logs in phase.events.items():
+            for event_log in event_logs:
+                if event_log.tier == mdl.Tier.error:
+                    return True
+    return False
+
+
 def task_log_has_error(task_log: mdl.TaskEventLog) -> bool:
     if task_log.log:
         for log in task_log.log:
@@ -25,15 +36,8 @@ def task_log_has_error(task_log: mdl.TaskEventLog) -> bool:
 
     if task_log.phases:
         for _, phase in task_log.phases.items():
-            if phase.log:
-                for log in phase.log:
-                    if log.tier == mdl.Tier.error:
-                        return True
-            if phase.events:
-                for _, event_logs in phase.events.items():
-                    for event_log in event_logs:
-                        if event_log.tier == mdl.Tier.error:
-                            return True
+            if log_phase_has_error(phase):
+                return True
     return False
 
 

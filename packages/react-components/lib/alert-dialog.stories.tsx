@@ -24,11 +24,15 @@ export default {
 } as Meta;
 
 export const AlertDialogComponent: Story<DialogAlertProps> = () => {
+  const [acknowledged, setAcknowledged] = React.useState(false);
+  const [dismissed, setDismissed] = React.useState(false);
   return (
     <AlertDialog
-      dismiss={() => {}}
-      acknowledge={() => {}}
-      title={'Alert Dialog'}
+      dismiss={() => setDismissed(true)}
+      acknowledge={() => setAcknowledged(true)}
+      title={`${acknowledged ? 'acknowledged!' : 'default'} and ${
+        dismissed ? 'dismissed!' : 'default'
+      }`}
       progress={1}
       alertContents={buildAlertDialogContent()}
       backgroundColor={'ffff'}
