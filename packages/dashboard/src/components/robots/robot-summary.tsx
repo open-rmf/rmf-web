@@ -67,6 +67,7 @@ interface RobotSummaryProps {
   onClose: () => void;
   robot: RobotTableData;
 }
+
 export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) => {
   const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
@@ -172,6 +173,10 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
       maxWidth="sm"
     >
       <DialogTitle align="center">{robotState?.name}</DialogTitle>
+
+      <Typography variant="h6" align="center">{`${
+        robotState?.battery ? (robotState?.battery * 100).toFixed(2) : 0
+      }%`}</Typography>
       <Divider />
       <DialogTitle align="center">Robot State</DialogTitle>
       {taskProgress && (
