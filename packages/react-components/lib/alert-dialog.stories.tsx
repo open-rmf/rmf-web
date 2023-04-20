@@ -28,8 +28,8 @@ export const AlertDialogComponent: Story<DialogAlertProps> = () => {
   const [dismissed, setDismissed] = React.useState(false);
   return (
     <AlertDialog
-      dismiss={() => setDismissed(true)}
-      acknowledge={() => setAcknowledged(true)}
+      onDismiss={() => setDismissed(true)}
+      onAcknowledge={() => setAcknowledged(true)}
       title={`${acknowledged ? 'acknowledged!' : 'default'} and ${
         dismissed ? 'dismissed!' : 'default'
       }`}

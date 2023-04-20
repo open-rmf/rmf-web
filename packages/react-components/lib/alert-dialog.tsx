@@ -30,8 +30,9 @@ export const CloseAlertDialog = React.memo((props: CloseAlertDialogProps) => {
 });
 
 export interface DialogAlertProps {
-  dismiss: () => void;
-  acknowledge: () => void;
+  onDismiss: () => void;
+  onAcknowledge?: () => void;
+  acknowledgedBy?: string;
   title: string;
   progress?: number;
   alertContents: AlertContent[];
@@ -88,10 +89,18 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
     );
   };
 
-  const { dismiss, acknowledge, title, progress, alertContents, backgroundColor } = props;
+  const {
+    onDismiss,
+    onAcknowledge,
+    acknowledgedBy,
+    title,
+    progress,
+    alertContents,
+    backgroundColor,
+  } = props;
   const classes = useStyles();
   const [isOpen, setIsOpen] = React.useState(true);
-  const [acknowledged, setAcknowledged] = React.useState(false);
+  const [acknowledged, setAcknowledged] = React.useState(acknowledgedBy !== undefined);
 
   return (
     <Dialog
@@ -116,9 +125,9 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
       <DialogContent>{returnDialogContent(alertContents)}</DialogContent>
 
       <DialogActions>
-        {acknowledged ? (
+        {acknowledged || onAcknowledge === undefined ? (
           <Button size="small" variant="contained" disabled={true} autoFocus>
-            Acknowledged
+            {acknowledgedBy ? `Acknowledged by ${acknowledgedBy}` : 'Acknowledged'}
           </Button>
         ) : (
           <Button
@@ -126,7 +135,7 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
             variant="contained"
             onClick={() => {
               setAcknowledged(true);
-              acknowledge();
+              onAcknowledge();
             }}
             disabled={false}
             autoFocus
@@ -139,7 +148,7 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
           variant="contained"
           onClick={() => {
             setIsOpen(false);
-            dismiss();
+            onDismiss();
           }}
           autoFocus
         >

@@ -19,6 +19,7 @@ interface TaskAlert extends TaskEventLog {
   progress?: number;
   content: AlertContent[];
   color: string;
+  acknowledgedBy?: string;
 }
 
 export interface TaskAlertHandlerProps {
@@ -152,27 +153,39 @@ export function TaskAlertHandler({ alerts, removeAlert }: TaskAlertHandlerProps)
       (async () => {
         try {
           const logs = (
-            await rmf.tasksApi.getTaskLogTasksTaskIdLogGet(alert.id, `0,${Number.MAX_SAFE_INTEGER}`)
+            await rmf.tasksApi.getTaskLogTasksTaskIdLogGet(
+              alert.original_id,
+              `0,${Number.MAX_SAFE_INTEGER}`,
+            )
           ).data;
-          const state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(alert.id)).data;
+          const state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(alert.original_id))
+            .data;
 
           if (logs && state) {
             const errorLogEntries = getErrorLogEntries(logs);
+            let acknowledgedBy: string | undefined = undefined;
+            if (alert.acknowledged_by) {
+              acknowledgedBy = alert.acknowledged_by;
+            } else if (alert.unix_millis_acknowledged_time) {
+              acknowledgedBy = '-';
+            }
+
             setTaskAlerts((prev) => {
               return {
                 ...prev,
-                [alert.id]: {
+                [alert.original_id]: {
                   title: getAlertTitle(state, errorLogEntries),
                   progress: getTaskProgress(state),
                   content: getAlertContent(state, errorLogEntries),
                   color: getAlertColor(state, errorLogEntries),
+                  acknowledgedBy: acknowledgedBy,
                   ...logs,
                 },
               };
             });
           }
         } catch {
-          console.log(`Failed to fetch task logs for ${alert.id}`);
+          console.log(`Failed to fetch task logs for ${alert.original_id}`);
         }
       })();
     }
@@ -209,11 +222,25 @@ export function TaskAlertHandler({ alerts, removeAlert }: TaskAlertHandlerProps)
           })();
         };
 
+        if (alert.acknowledgedBy) {
+          return (
+            <AlertDialog
+              key={alert.task_id}
+              onDismiss={dismissAlert}
+              acknowledgedBy={alert.acknowledgedBy}
+              title={alert.title}
+              progress={alert.progress}
+              alertContents={alert.content}
+              backgroundColor={alert.color}
+            />
+          );
+        }
+
         return (
           <AlertDialog
             key={alert.task_id}
-            dismiss={dismissAlert}
-            acknowledge={acknowledgeAlert}
+            onDismiss={dismissAlert}
+            onAcknowledge={acknowledgeAlert}
             title={alert.title}
             progress={alert.progress}
             alertContents={alert.content}

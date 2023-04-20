@@ -9,6 +9,7 @@ type Alert = ApiServerModelsTortoiseModelsAlertsAlertLeaf;
 
 interface RobotAlert extends RobotState {
   fleet: string;
+  acknowledgedBy?: string;
   show: boolean;
 }
 
@@ -115,11 +116,18 @@ export function RobotAlertHandler({ alerts, removeAlert }: RobotAlertHandlerProp
       return rmf.getFleetStateObs(fleet).subscribe(async (fleetState) => {
         if (fleetState.robots && fleetState.robots[robot]) {
           const robotState = fleetState.robots[robot];
+          let acknowledgedBy: string | undefined = undefined;
+          if (alert.acknowledged_by) {
+            acknowledgedBy = alert.acknowledged_by;
+          } else if (alert.unix_millis_acknowledged_time) {
+            acknowledgedBy = '-';
+          }
           setRobotAlerts((prev) => {
             return {
               ...prev,
               [alert.original_id]: {
                 fleet: fleet,
+                acknowledgedBy: acknowledgedBy,
                 show: robotState.status && robotState.status === Status2.Error ? true : false,
                 ...robotState,
               },
@@ -163,11 +171,23 @@ export function RobotAlertHandler({ alerts, removeAlert }: RobotAlertHandlerProp
 
         const alert = robotAlerts[alertId];
         if (alert.show) {
+          if (alert.acknowledgedBy) {
+            return (
+              <AlertDialog
+                key={alertId}
+                onDismiss={dismissAlert}
+                acknowledgedBy={alert.acknowledgedBy}
+                title={getAlertTitle(alert)}
+                alertContents={getAlertContent(alert)}
+                backgroundColor={getAlertColor(alert)}
+              />
+            );
+          }
           return (
             <AlertDialog
               key={alertId}
-              dismiss={dismissAlert}
-              acknowledge={acknowledgeAlert}
+              onDismiss={dismissAlert}
+              onAcknowledge={acknowledgeAlert}
               title={getAlertTitle(alert)}
               alertContents={getAlertContent(alert)}
               backgroundColor={getAlertColor(alert)}

@@ -46,4 +46,5 @@ async def acknowledge_alert(
     alert = await repo.acknowledge_alert(alert_id)
     if alert is None:
         raise HTTPException(404, f"Could acknowledge alert with ID {alert_id}")
+    alert_events.alerts.on_next(alert)
     return alert

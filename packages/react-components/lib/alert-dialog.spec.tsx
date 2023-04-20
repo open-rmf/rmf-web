@@ -29,8 +29,8 @@ describe('AcknowledgeAndCloseAlertDialog', () => {
       <ThemeProvider theme={defaultTheme}>
         <AlertDialog
           key={'testAlert'}
-          dismiss={dismiss}
-          acknowledge={acknowledge}
+          onDismiss={dismiss}
+          onAcknowledge={acknowledge}
           title={'alertTitle'}
           progress={1}
           alertContents={buildAlertDialogContent()}
@@ -67,8 +67,8 @@ describe('AcknowledgeAndCloseAlertDialog', () => {
       <ThemeProvider theme={defaultTheme}>
         <AlertDialog
           key={'testAlert'}
-          dismiss={close}
-          acknowledge={acknowledge}
+          onDismiss={close}
+          onAcknowledge={acknowledge}
           title={'alertTitle'}
           progress={1}
           alertContents={buildAlertDialogContent()}

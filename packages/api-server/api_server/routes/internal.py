@@ -95,9 +95,7 @@ async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
             # delete the old alert, pass the acknowledged alert as an event so
             # the frontend can close any open dialogs
             elif state.status != mdl.Status2.error and alert_exists:
-                acknowledged_alert = await alert_repo.acknowledge_alert(alert_id)
-                if acknowledged_alert is not None:
-                    alert_events.alerts.on_next(acknowledged_alert)
+                await alert_repo.acknowledge_alert(alert_id)
 
     elif payload_type == "fleet_log_update":
         fleet_log = mdl.FleetLog(**msg["data"])
