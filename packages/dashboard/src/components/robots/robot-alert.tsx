@@ -1,11 +1,18 @@
 import React from 'react';
-import { ApiServerModelsTortoiseModelsAlertsAlertLeaf, RobotState, Status2 } from 'api-client';
+import {
+  ApiServerModelsTortoiseModelsAlertsAlertLeaf,
+  ApiServerModelsRmfApiFleetStateFleetState,
+  RobotState,
+  Status2,
+} from 'api-client';
 import { RmfAppContext } from '../rmf-app';
 import { AlertContent, AlertDialog, CloseAlertDialog } from 'react-components';
 import { base } from 'react-components';
+import { Subscription } from 'rxjs';
 import { AppControllerContext } from '../app-contexts';
 
 type Alert = ApiServerModelsTortoiseModelsAlertsAlertLeaf;
+type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
 interface RobotAlert extends RobotState {
   fleet: string;
@@ -103,50 +110,33 @@ export function RobotAlertHandler({ alerts, removeAlert }: RobotAlertHandlerProp
     if (!rmf) {
       return;
     }
+    const subs = alerts.map((alert) => {
+      const names = parseFleetAndRobotNames(alert.original_id);
+      if (!names || names.length !== 2) {
+        console.log(`Failed to retrieve fleet and robot name from alert ${alert.original_id}`);
+        return;
+      }
 
-    for (let alert of alerts) {
-      (async () => {
-        const names = parseFleetAndRobotNames(alert.original_id);
-        if (!names || names.length !== 2) {
-          console.log(`Failed to retrieve fleet and robot name from alert ${alert.original_id}`);
-          return;
+      const fleet = names[0];
+      const robot = names[1];
+      return rmf.getFleetStateObs(fleet).subscribe(async (fleetState) => {
+        if (fleetState.robots && fleetState.robots[robot]) {
+          const robotState = fleetState.robots[robot];
+          setRobotAlerts((prev) => {
+            return {
+              ...prev,
+              [alert.original_id]: {
+                fleet: fleet,
+                show: robotState.status && robotState.status === Status2.Error ? true : false,
+                ...robotState,
+              },
+            };
+          });
         }
-
-        try {
-          const fleet = names[0];
-          const states = (await rmf.fleetsApi.getFleetStateFleetsNameStateGet(fleet)).data;
-
-          if (states && states.robots && states.robots[names[1]]) {
-            const robotState = states.robots[names[1]];
-            setRobotAlerts((prev) => {
-              return {
-                ...prev,
-                [alert.original_id]: {
-                  fleet: fleet,
-                  show: robotState.status && robotState.status === Status2.Error ? true : false,
-                  ...robotState,
-                },
-              };
-            });
-          }
-        } catch {
-          console.log(`Failed to fetch robot state for alert ${alert.id}`);
-        }
-      })();
-    }
+      });
+    });
+    return () => subs.forEach((sub) => sub && sub.unsubscribe());
   }, [rmf, alerts]);
-
-  // React.useEffect(() => {
-  //   if (!rmf) {
-  //     return;
-  //   }
-  //   const subs = Object.values(robotAlerts).map((robotAlert) => {
-  //     rmf.getFleetStateObs(robotAlert.fleet).subscribe(async (fleetState) => {
-
-  //     }),
-  //   });
-  //   return () => subs.forEach((sub) => sub.unsubscribe());
-  // }, [rmf, robotAlerts])
 
   return (
     <>
@@ -191,6 +181,7 @@ export function RobotAlertHandler({ alerts, removeAlert }: RobotAlertHandlerProp
             />
           );
         } else {
+          delete robotAlerts[alertId];
           return <CloseAlertDialog key={alertId} title={getAlertTitle(alert)} />;
         }
       })}
