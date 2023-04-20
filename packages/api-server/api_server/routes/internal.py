@@ -90,7 +90,7 @@ async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
             # underscores. If this is modified, be sure to change how it is
             # parsed in the RobotAlertHandler dashboard component
             alert_id = f"{fleet_state.name}__{name}"
-            alert_exists = ttm.Alert.exists(id=alert_id)
+            alert_exists = await ttm.Alert.exists(id=alert_id)
 
             # If the robot state is an error and the alert does not exist yet,
             # we create a new alert and pass it on as an event
@@ -106,11 +106,16 @@ async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
                 alert = await ttm.Alert.get_or_none(id=alert_id)
                 if alert is not None:
                     ack_time = datetime.now()
-                    epoch = datetime.datetime.utcfromtimestamp(0)
+                    epoch = datetime.utcfromtimestamp(0)
                     ack_unix_millis = round((ack_time - epoch).total_seconds() * 1000)
                     new_id = f"{alert_id}__{ack_unix_millis}"
 
                     ack_alert = alert.clone(pk=new_id)
+                    # TODO(aaronchongth): remove the following line once we bump
+                    # tortoise-orm to include
+                    # https://github.com/tortoise/tortoise-orm/pull/1131. This
+                    # is a temporary workaround.
+                    ack_alert._custom_generated_pk = True
                     ack_alert.update_from_dict(
                         {
                             "acknowledged_by": name,
@@ -125,21 +130,6 @@ async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
                         ack_alert
                     )
                     alert_events.alerts.on_next(ack_alert_pydantic)
-
-        # alert when state is error?
-        # buttons should be resolve instead of acknowledged
-        # dismiss keeps the same alert ID, so if robot continues to be in error
-        # it will not trigger another alert
-        # resolve changes the id to have the acknowledgement time, hence
-        # clearing this alert id up for happening again, if the issue was not
-        # resolved
-        # leave it for notification bar to allow users to check back on dismissed
-        # but unresolved problems
-        # unresolve automatically? check that there is an open alert for this robot
-        # if back to normal, resolve it
-        # RobotAlertHandler is the one that keeps track, and perhaps closes the
-        # alert
-        # display robot logs from alert creation time to resolving time
 
     elif payload_type == "fleet_log_update":
         fleet_log = mdl.FleetLog(**msg["data"])

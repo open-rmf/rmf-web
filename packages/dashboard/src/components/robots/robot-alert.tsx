@@ -1,7 +1,7 @@
 import React from 'react';
 import { ApiServerModelsTortoiseModelsAlertsAlertLeaf, RobotState, Status2 } from 'api-client';
 import { RmfAppContext } from '../rmf-app';
-import { AlertContent, AlertDialog } from 'react-components';
+import { AlertContent, AlertDialog, CloseAlertDialog } from 'react-components';
 import { base } from 'react-components';
 import { AppControllerContext } from '../app-contexts';
 
@@ -9,6 +9,7 @@ type Alert = ApiServerModelsTortoiseModelsAlertsAlertLeaf;
 
 interface RobotAlert extends RobotState {
   fleet: string;
+  show: boolean;
 }
 
 export interface RobotAlertHandlerProps {
@@ -105,9 +106,9 @@ export function RobotAlertHandler({ alerts, removeAlert }: RobotAlertHandlerProp
 
     for (let alert of alerts) {
       (async () => {
-        const names = parseFleetAndRobotNames(alert.id);
+        const names = parseFleetAndRobotNames(alert.original_id);
         if (!names || names.length !== 2) {
-          console.log(`Failed to retrieve fleet and robot name from alert ${alert.id}`);
+          console.log(`Failed to retrieve fleet and robot name from alert ${alert.original_id}`);
           return;
         }
 
@@ -120,8 +121,9 @@ export function RobotAlertHandler({ alerts, removeAlert }: RobotAlertHandlerProp
             setRobotAlerts((prev) => {
               return {
                 ...prev,
-                [alert.id]: {
+                [alert.original_id]: {
                   fleet: fleet,
+                  show: robotState.status && robotState.status === Status2.Error ? true : false,
                   ...robotState,
                 },
               };
@@ -135,12 +137,20 @@ export function RobotAlertHandler({ alerts, removeAlert }: RobotAlertHandlerProp
   }, [rmf, alerts]);
 
   // React.useEffect(() => {
-  //   // TODO: subscribe to states and update these guys
+  //   if (!rmf) {
+  //     return;
+  //   }
+  //   const subs = Object.values(robotAlerts).map((robotAlert) => {
+  //     rmf.getFleetStateObs(robotAlert.fleet).subscribe(async (fleetState) => {
+
+  //     }),
+  //   });
+  //   return () => subs.forEach((sub) => sub.unsubscribe());
   // }, [rmf, robotAlerts])
 
   return (
     <>
-      {Object.entries(robotAlerts).map(([alertId, alert]) => {
+      {Object.keys(robotAlerts).map((alertId) => {
         const dismissAlert = () => {
           removeAlert(alertId);
         };
@@ -162,21 +172,27 @@ export function RobotAlertHandler({ alerts, removeAlert }: RobotAlertHandlerProp
               }
               showAlert('success', showAlertMessage);
             } else {
-              console.log(`Failed to acknowledge alert ID ${alert.task_id}`);
-              showAlert('error', `Failed to acknowledge alert ID ${alert.task_id}`);
+              console.log(`Failed to acknowledge alert ID ${alertId}`);
+              showAlert('error', `Failed to acknowledge alert ID ${alertId}`);
             }
           })();
         };
-        return (
-          <AlertDialog
-            key={alertId}
-            dismiss={dismissAlert}
-            acknowledge={acknowledgeAlert}
-            title={getAlertTitle(alert)}
-            alertContents={getAlertContent(alert)}
-            backgroundColor={getAlertColor(alert)}
-          />
-        );
+
+        const alert = robotAlerts[alertId];
+        if (alert.show) {
+          return (
+            <AlertDialog
+              key={alertId}
+              dismiss={dismissAlert}
+              acknowledge={acknowledgeAlert}
+              title={getAlertTitle(alert)}
+              alertContents={getAlertContent(alert)}
+              backgroundColor={getAlertColor(alert)}
+            />
+          );
+        } else {
+          return <CloseAlertDialog key={alertId} title={getAlertTitle(alert)} />;
+        }
       })}
     </>
   );

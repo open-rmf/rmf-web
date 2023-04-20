@@ -21,6 +21,15 @@ export interface AlertContent {
   value: string;
 }
 
+export interface CloseAlertDialogProps {
+  title: string;
+}
+
+export const CloseAlertDialog = React.memo((props: CloseAlertDialogProps) => {
+  const { title } = props;
+  return <Dialog key={title} open={false} />;
+});
+
 export interface DialogAlertProps {
   dismiss: () => void;
   acknowledge: () => void;
