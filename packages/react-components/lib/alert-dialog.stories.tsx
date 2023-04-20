@@ -24,13 +24,10 @@ export default {
 } as Meta;
 
 export const AlertDialogComponent: Story<DialogAlertProps> = () => {
-  const [acknowledged, setAcknowledged] = React.useState(false);
-  const [closed, setClosed] = React.useState(false);
-
   return (
     <AlertDialog
-      dismiss={() => setClosed(true)}
-      acknowledge={() => setAcknowledged(true)}
+      dismiss={() => {}}
+      acknowledge={() => {}}
       title={'Alert Dialog'}
       progress={1}
       alertContents={buildAlertDialogContent()}

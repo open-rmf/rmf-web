@@ -1,18 +1,11 @@
 import React from 'react';
-import {
-  ApiServerModelsTortoiseModelsAlertsAlertLeaf,
-  ApiServerModelsRmfApiFleetStateFleetState,
-  RobotState,
-  Status2,
-} from 'api-client';
+import { ApiServerModelsTortoiseModelsAlertsAlertLeaf, RobotState, Status2 } from 'api-client';
 import { RmfAppContext } from '../rmf-app';
 import { AlertContent, AlertDialog, CloseAlertDialog } from 'react-components';
 import { base } from 'react-components';
-import { Subscription } from 'rxjs';
 import { AppControllerContext } from '../app-contexts';
 
 type Alert = ApiServerModelsTortoiseModelsAlertsAlertLeaf;
-type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
 interface RobotAlert extends RobotState {
   fleet: string;
