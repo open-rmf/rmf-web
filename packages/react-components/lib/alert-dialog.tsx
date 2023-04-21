@@ -44,9 +44,7 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
     createStyles({
       textField: {
         background: theme.palette.background.default,
-        '&:hover': {
-          backgroundColor: theme.palette.background.default,
-        },
+        pointerEvents: 'none',
       },
     }),
   );
