@@ -8,4 +8,6 @@ export const AppEvents = {
   ingestorSelect: new Subject<Ingestor | null>(),
   robotSelect: new Subject<[fleetName: string, robotName: string] | null>(),
   taskSelect: new Subject<TaskState | null>(),
+  refreshTaskQueueTableCount: new Subject<number>(),
+  newScheduleSubmitted: new Subject<number[]>(), // scheduled task id
 };

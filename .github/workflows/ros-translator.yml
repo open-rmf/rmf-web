@@ -14,7 +14,10 @@ jobs:
     name: Unit Tests
     runs-on: ubuntu-22.04
     container:
-      image: ros:humble-ros-base
+      image: ghcr.io/${{ github.repository }}/e2e
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     defaults:
       run:
         shell: bash

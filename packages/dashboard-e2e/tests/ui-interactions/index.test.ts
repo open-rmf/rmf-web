@@ -3,4 +3,5 @@
 describe('ui interactions', async () => {
   await import('./door-controls.test');
   await import('./submit-task.test');
+  await import('./create-task-from-any-tab.test');
 });
