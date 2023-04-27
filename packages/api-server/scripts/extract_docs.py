@@ -24,9 +24,11 @@ def cleanup():
 
 
 atexit.register(cleanup)
-server_proc = subprocess.Popen(("pnpm", "start"), cwd=f"{os.path.dirname(__file__)}/..")
+server_proc = subprocess.Popen(
+    ("pnpm", "start"), cwd=f"{os.path.dirname(__file__)}/..", start_new_session=True
+)
 
-time.sleep(3)  # wait for server to be ready
+time.sleep(5)  # wait for server to be ready
 os.makedirs(args.output, exist_ok=True)
 
 with urlopen("http://127.0.0.1:8000/docs") as resp:
