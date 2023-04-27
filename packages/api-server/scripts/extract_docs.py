@@ -29,12 +29,13 @@ server_proc = subprocess.Popen(
 )
 
 time.sleep(5)  # wait for server to be ready
-os.makedirs(args.output, exist_ok=True)
+outdir = f"{args.output}/docs/api-server/"
+os.makedirs(outdir, exist_ok=True)
 
 with urlopen("http://127.0.0.1:8000/docs") as resp:
     html: bytes = resp.read()
-    html = html.replace(b"/openapi.json", b"/rmf-web/openapi.json")
-    with open(f"{args.output}/index.html", "bw") as f:
+    html = html.replace(b"/openapi.json", b"/rmf-web/docs/api-server/openapi.json")
+    with open(f"{outdir}/index.html", "bw") as f:
         f.write(html)
 
 with urlopen("http://127.0.0.1:8000/openapi.json") as resp:
@@ -45,5 +46,5 @@ with urlopen("http://127.0.0.1:8000/openapi.json") as resp:
             "variables": {"url": {"default": "http://example.com"}},
         }
     ]
-    with open(f"{args.output}/openapi.json", "w") as f:
+    with open(f"{outdir}/openapi.json", "w") as f:
         json.dump(openapi, f)
