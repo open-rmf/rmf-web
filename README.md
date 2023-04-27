@@ -16,7 +16,7 @@ Open-RMF Web is a collection of packages that provide a web-based interface for 
 
 # Getting started
 
-## Prerequisites
+### Prerequisites
 
 We currently support [Ubuntu 22.04](https://releases.ubuntu.com/jammy/), [ROS 2 Humble](https://docs.ros.org/en/humble/index.html) and Open-RMF's [22.09](https://github.com/open-rmf/rmf/releases/tag/22.09) release. Other distributions may work as well, but is not guaranteed.
 
@@ -43,7 +43,7 @@ For Debian/Ubuntu systems, you may need to install `python3-venv` first.
 sudo apt install python3-venv
 ```
 
-## Installing Open-RMF
+### Installing Open-RMF
 
 Refer to the following documentation for either building from source or installing released binaries:
 
@@ -52,7 +52,7 @@ Refer to the following documentation for either building from source or installi
 > **Note**
 > [Simulation demos](https://github.com/open-rmf/rmf_demos) are not part of the released binaries, and therefore a built workspace with at least the demos repository would be required for trying out the web dashboard with simulation.
 
-## Install dependencies
+### Install dependencies
 
 Run
 ```bash
@@ -64,7 +64,7 @@ You may also install dependencies for only a subset of the packages
 pnpm install -w --filter <package>...
 ```
 
-## Launching
+### Launching
 
 Source Open-RMF and launch the dashboard in development mode,
 ```bash
@@ -82,7 +82,7 @@ This starts up the API server which sets up endpoints to communicate with an Ope
 
 If presented with a login screen, use `user=admin password=admin`.
 
-## Optimized build
+### Optimized build
 
 The dashboard can also be built statically for better performance.
 
