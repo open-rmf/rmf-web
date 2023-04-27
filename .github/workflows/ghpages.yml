@@ -3,7 +3,7 @@ name: Deploy docs to Pages
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ["main", "kp/ghpages-docs"]
+    branches: ["main"]
     paths:
       - "packages/api-server/**"
 
