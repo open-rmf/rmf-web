@@ -29,11 +29,11 @@ server_proc = subprocess.Popen(("pnpm", "start"), cwd=f"{os.path.dirname(__file_
 time.sleep(3)  # wait for server to be ready
 os.makedirs(args.output, exist_ok=True)
 
-with urlopen("http://localhost:8000/docs") as resp:
+with urlopen("http://127.0.0.1:8000/docs") as resp:
     with open(f"{args.output}/index.html", "bw") as f:
         f.write(resp.read())
 
-with urlopen("http://localhost:8000/openapi.json") as resp:
+with urlopen("http://127.0.0.1:8000/openapi.json") as resp:
     openapi = json.loads(resp.read())
     openapi["servers"] = [
         {
