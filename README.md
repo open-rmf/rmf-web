@@ -50,7 +50,7 @@ Refer to the following documentation for either building from source or installi
 * [rmf](https://github.com/open-rmf/rmf)
 
 > **Note**
-> [Simulation demos](https://github.com/open-rmf/rmf_demos) are not part of the released binaries, and therefore a built workspace with at least the demos repository would be required for trying out the web dashboard with simulation.
+> Simulation demos are not part of the released binaries, and therefore a built workspace with at least the [demos repository](https://github.com/open-rmf/rmf_demos) would be required for trying out the web dashboard with simulation.
 
 ### Install dependencies
 
