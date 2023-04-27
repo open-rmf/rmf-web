@@ -1,12 +1,26 @@
 [![Nightly](https://github.com/open-rmf/rmf-web/actions/workflows/nightly.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/nightly.yml) [![Dashboard End-to-End](https://github.com/open-rmf/rmf-web/actions/workflows/dashboard-e2e.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/dashboard-e2e.yml) [![react-components](https://github.com/open-rmf/rmf-web/workflows/react-components/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Areact-components+branch%3Amain) [![dashboard](https://github.com/open-rmf/rmf-web/workflows/dashboard/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Adashboard+branch%3Amain) [![api-server](https://github.com/open-rmf/rmf-web/workflows/api-server/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Aapi-server+branch%3Amain) [![rmf-auth](https://github.com/open-rmf/rmf-web/actions/workflows/rmf-auth.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/rmf-auth.yml) [![ros-translator](https://github.com/open-rmf/rmf-web/actions/workflows/ros-translator.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/ros-translator.yml) [![api-client](https://github.com/open-rmf/rmf-web/actions/workflows/api-client.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/api-client.yml) [![codecov](https://codecov.io/gh/open-rmf/rmf-web/branch/main/graph/badge.svg)](https://codecov.io/gh/open-rmf/rmf-web)
 
-# Building the Dashboard
+# RMF Web
+
+![](../media/dashboard_office_world.gif)
+
+Open-RMF Web is a collection of packages that provide a web-based interface for users to visualize and control all aspects of Open-RMF deployments.
+
+- [Getting started](#getting-started)
+- [API server](packages/api-server/README.md)
+- [API client](packages/api-client/README.md)
+- [Dashboard](packages/dashboard/README.md)
+- [Configuration](#configuration)
+- [Contribution guide](#contribution-guide)
+- [Roadmap](https://github.com/open-rmf/rmf-web/wiki/Open-RMF-Web-Dashboard)
+
+# Getting started
 
 ## Prerequisites
 
-### Ubuntu 22.04
+We currently support [Ubuntu 22.04](https://releases.ubuntu.com/jammy/), [ROS 2 Humble](https://docs.ros.org/en/humble/index.html) and Open-RMF's [22.09](https://github.com/open-rmf/rmf/releases/tag/22.09) release. Other distributions may work as well, but is not guaranteed.
 
-Install nodejs
+Install [nodejs](https://nodejs.org/en/download/package-manager/) >= 16,
 ```bash
 sudo apt update && sudo apt install curl
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
@@ -24,25 +38,21 @@ Install pipenv
 pip3 install pipenv
 ```
 
-### Install rmf
-
-Refer to the following documentation:
-
-* [rmf](https://github.com/open-rmf/rmf)
-
-### Others
-
-Refer to the following documentations:
-
-* [nodejs](https://nodejs.org/en/download/package-manager/) >= 16
-* [rmf_demos](https://github.com/open-rmf/rmf_demos)
-
-## Install dependencies
-
 For Debian/Ubuntu systems, you may need to install `python3-venv` first.
 ```bash
 sudo apt install python3-venv
 ```
+
+## Installing Open-RMF
+
+Refer to the following documentation for either building from source or installing released binaries:
+
+* [rmf](https://github.com/open-rmf/rmf)
+
+> **Note**
+> [Simulation demos](https://github.com/open-rmf/rmf_demos) are not part of the released binaries, and therefore a built workspace with at least the demos repository would be required for trying out the web dashboard with simulation.
+
+## Install dependencies
 
 Run
 ```bash
@@ -54,50 +64,58 @@ You may also install dependencies for only a subset of the packages
 pnpm install -w --filter <package>...
 ```
 
-### PostgreSQL
-If you would like to use PostgreSQL, you will also need to install and set it up. The defaults are for PostgreSQL to be listening on 127.0.0.1:5432.
-
-#### Docker
-We can use Docker to quickly bring up a PostgreSQL instance.
-
-Install docker: `https://docs.docker.com/engine/install/ubuntu/`
-Start a a database instance: `docker run -it --rm --name rmf-postgres --network=host -e POSTGRES_PASSWORD=postgres -d postgres`
-
-To stop the instance: `docker kill rmf-postgres`
-
-
-#### Bare Metal
-Alternatively, we can install PostgreSQL 'bare metal'.
-```
-apt install postgresql postgresql-contrib -y
-# Set a default password
-sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"
-
-sudo systemctl restart postgresql
-# interactive prompt
-sudo -i -u postgres
-```
-To manually reset the database:
-```
-sudo -u postgres bash -c "dropdb postgres; createdb postgres"
-```
-
 ## Launching
 
-Before running the commands, make sure that rmf is sourced.
+Source Open-RMF and launch the dashboard in development mode,
 ```bash
+# For binary installation
+source /opt/ros/humble/setup.bash
+
+# For source build
+source /path/to/workspace/install/setup.bash
+
 cd packages/dashboard
 pnpm start
 ```
-When presented with a login screen, use `user=admin password=admin`.
 
-This launches a development server with the office world from `rmf_demos`. The server is useful for development but is obviously not useful for actual usage.
+This starts up the API server which sets up endpoints to communicate with an Open-RMF deployment, as well as begin compilation of the dashboard. Once completed, it can be viewed at [localhost:3000](http://localhost:3000).
 
-## Configuration
+If presented with a login screen, use `user=admin password=admin`.
+
+## Optimized build
+
+The dashboard can also be built statically for better performance.
+
+```bash
+cd packages/dashboard
+pnpm run build
+
+# Once completed
+npm install -g serve
+serve -s build
+```
+
+This only serves the frontend, the API server can be started manually to work with an Open-RMF deployment on another terminal instance,
+
+```bash
+# source Open-RMF before proceeding
+cd packages/api-server
+pnpm start
+```
+
+# Contribution guide
+
+* Follow typescript guidelines, https://basarat.gitbook.io/typescript/styleguide
+*
+- check docs at localhost:8000/docs
+- write tests
+
+# Configuration
 
 See the [rmf-dashboard](packages/dashboard/README.md#configuration) docs.
 
-## Troubleshooting
-First thing to try is to build rmf from source, in order to speed up development, `rmf-web` may use in-development features of rmf. That means that the binary releases may not have the features required, sometimes the features `rmf-web` uses may be so new that not even the rolling releases has it.
+# Troubleshooting
 
-Refer to [rmf_demos](https://github.com/open-rmf/rmf_demos) for instructions to build rmf. You should end up with a colcon workspace with all of rmf packages, remember to source the workspace before running any of the commands.
+* If a feature is missing or is not working, it could be only available in an Open-RMF source build, and not in the binaries. Try building Open-RMF from source and source that new workspace before launching the API server. `rmf-web` may use in-development features of Open-RMF.
+
+* Creating tasks from the web dashboard when running a simulated Open-RMF deployment will require the task start time suit simulation time, which starts from unix millis 0. Try creating the same task with a start date of before the year of 1970.
