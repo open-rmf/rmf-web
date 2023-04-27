@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
+  Grid,
   LinearProgress,
   LinearProgressProps,
   TextField,
@@ -19,6 +20,7 @@ import { RobotTableData, base } from 'react-components';
 import { RobotState, Status2, TaskState } from 'api-client';
 import { EMPTY, combineLatest, mergeMap, of } from 'rxjs';
 import { TaskInspector } from '../tasks/task-inspector';
+import Battery80Icon from '@mui/icons-material/Battery80';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -172,17 +174,29 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle align="center">{robotState?.name}</DialogTitle>
-
-      <Typography variant="h6" align="center">{`${
-        robotState?.battery ? (robotState?.battery * 100).toFixed(2) : 0
-      }%`}</Typography>
+      <Grid container mb={1} alignItems="center" spacing={1}>
+        <Grid item xs={10}>
+          <DialogTitle align="center">Robot Summary: {robotState?.name}</DialogTitle>
+        </Grid>
+        <Grid item xs={2}>
+          <Grid container justifyContent="flex-end">
+            <Typography variant="subtitle1">{`${
+              robotState?.battery ? robotState?.battery * 100 : 0
+            }%`}</Typography>
+            <Battery80Icon />
+          </Grid>
+        </Grid>
+      </Grid>
       <Divider />
-      <DialogTitle align="center">Robot State</DialogTitle>
       {taskProgress && (
-        <Box sx={{ width: '90%', ml: 3 }}>
-          <LinearProgressWithLabel value={taskProgress * 100} />
-        </Box>
+        <>
+          <Typography variant="h6" fontWeight="bold" align="center">
+            Task Progress
+          </Typography>
+          <Box sx={{ width: '90%', ml: 3 }}>
+            <LinearProgressWithLabel value={taskProgress * 100} />
+          </Box>
+        </>
       )}
       <DialogContent>{returnDialogContent()}</DialogContent>
       <DialogActions sx={{ justifyContent: 'center' }}>
