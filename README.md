@@ -105,6 +105,7 @@ pnpm start
 
 # Contribution guide
 
+* For general contribution guidelines, see [CONTRIBUTING](CONTRIBUTING.md).
 * Follow [typescript guidelines](https://basarat.gitbook.io/typescript/styleguide).
 * When introducing a new feature or component in [`react-components`](packages/react-components), write tests and stories.
 * When introducing a new feature in [`dashboard`](packages/dashboard), write tests as well as [e2e](packages/dashboard-e2e) test whenever possible.
