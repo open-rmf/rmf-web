@@ -2,7 +2,7 @@
 
 # RMF Web
 
-![](../media/dashboard_office_world.gif)
+![](https://github.com/open-rmf/rmf-web/blob/media/dashboard_office_world.gif)
 
 Open-RMF Web is a collection of packages that provide a web-based interface for users to visualize and control all aspects of Open-RMF deployments.
 
