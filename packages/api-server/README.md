@@ -62,6 +62,33 @@ postgres://<user>:<password>@<host>/<database>
 
 for more information, see https://tortoise-orm.readthedocs.io/en/latest/databases.html.
 
+### PostgreSQL
+If you would like to use PostgreSQL, you will also need to install and set it up. The defaults are for PostgreSQL to be listening on 127.0.0.1:5432.
+
+#### Docker
+We can use Docker to quickly bring up a PostgreSQL instance.
+
+Install docker: `https://docs.docker.com/engine/install/ubuntu/`
+Start a a database instance: `docker run -it --rm --name rmf-postgres --network=host -e POSTGRES_PASSWORD=postgres -d postgres`
+
+To stop the instance: `docker kill rmf-postgres`
+
+#### Bare Metal
+Alternatively, we can install PostgreSQL 'bare metal'.
+```
+apt install postgresql postgresql-contrib -y
+# Set a default password
+sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"
+
+sudo systemctl restart postgresql
+# interactive prompt
+sudo -i -u postgres
+```
+To manually reset the database:
+```
+sudo -u postgres bash -c "dropdb postgres; createdb postgres"
+```
+
 ## Running behind a proxy
 
 When running behind a reverse proxy like nginx, you need to set the `public_url` option to the url where rmf-server is served on. The reverse proxy also MUST strip the prefix.
