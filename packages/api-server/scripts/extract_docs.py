@@ -43,5 +43,5 @@ with urlopen("http://127.0.0.1:8000/openapi.json") as resp:
             "variables": {"url": {"default": "http://example.com"}},
         }
     ]
-    with open(f"{args.output}/openapi.json", "w") as f:
+    with open(f"{args.output}/rmf-web/openapi.json", "w") as f:
         json.dump(openapi, f)
