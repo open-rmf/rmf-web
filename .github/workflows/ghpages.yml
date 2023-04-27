@@ -53,11 +53,11 @@ jobs:
       - name: Extract docs
         run: |
           . /rmf_demos_ws/install/setup.bash
-          pipenv run python3 scripts/extract_docs.py -o out
+          pipenv run python3 scripts/extract_docs.py -o docs
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: out
+          path: packages/api-server/docs
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
