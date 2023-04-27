@@ -1,3 +1,7 @@
+# Open-RMF API Server
+
+This API server sets up the necessary endpoints with an Open-RMF deployment and enables the use of the web dashboard. The server comes with the capability of logging to databases, as well as handling authentication and permissions.
+
 # Setup
 
 If not already done so, [install dependencies](../../README.md#Install-dependencies), you can use
