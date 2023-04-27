@@ -7,9 +7,9 @@
 Open-RMF Web is a collection of packages that provide a web-based interface for users to visualize and control all aspects of Open-RMF deployments.
 
 - [Getting started](#getting-started)
-- [API server](packages/api-server/README.md)
-- [API client](packages/api-client/README.md)
-- [Dashboard](packages/dashboard/README.md)
+- [API server](packages/api-server)
+- [API client](packages/api-client)
+- [Dashboard](packages/dashboard)
 - [Configuration](#configuration)
 - [Contribution guide](#contribution-guide)
 - [Roadmap](https://github.com/open-rmf/rmf-web/wiki/Open-RMF-Web-Dashboard)
@@ -122,3 +122,5 @@ See the [rmf-dashboard](packages/dashboard/README.md#configuration) docs.
 * If a feature is missing or is not working, it could be only available in an Open-RMF source build, and not in the binaries. Try building Open-RMF from source and source that new workspace before launching the API server. `rmf-web` may use in-development features of Open-RMF.
 
 * Creating tasks from the web dashboard when running a simulated Open-RMF deployment will require the task start time suit simulation time, which starts from unix millis 0. Try creating the same task with a start date of before the year of 1970.
+
+* Check if the issue has already been [reported or fixed](https://github.com/open-rmf/rmf-web/issues).
