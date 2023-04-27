@@ -78,6 +78,8 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
   const [robotState, setRobotState] = React.useState<RobotState | null>(null);
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
   const [openTaskDetailsLogs, setOpenTaskDetailsLogs] = React.useState(false);
+  const [location, setLocation] = React.useState('');
+  const [destination, setDestination] = React.useState('');
 
   React.useEffect(() => {
     if (!rmf) {
@@ -118,15 +120,35 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
     );
   }, [taskState]);
 
+  React.useEffect(() => {
+    if (!taskState || !taskState.phases || !taskState.active) {
+      setLocation('Failed to retrieve current location');
+      setDestination('Failed to retrieve robot destination');
+      return;
+    }
+
+    const message = Object.values(taskState.phases)[taskState.active - 1]?.detail;
+
+    if (message) {
+      const regex = /\[place:(.*?)\]/g;
+
+      let match;
+      const waypoints = [];
+
+      // Iterate over all matches found by the regular expression
+      while ((match = regex.exec(message.toString()))) {
+        waypoints.push(match[1]);
+      }
+      setLocation(waypoints[0]);
+      setDestination(waypoints[1]);
+    }
+  }, [taskState]);
+
   const returnDialogContent = () => {
     const contents = [
       {
         title: 'Assigned Tasks',
         value: taskState ? taskState.booking.id : 'No task',
-      },
-      {
-        title: 'Location',
-        value: robotState ? robotState.location?.map : '',
       },
       {
         title: 'Est. End Time',
@@ -135,6 +157,19 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
           : '-',
       },
     ];
+
+    if (taskState) {
+      contents.push(
+        {
+          title: 'Location',
+          value: location,
+        },
+        {
+          title: 'Destination',
+          value: destination,
+        },
+      );
+    }
 
     return (
       <>
