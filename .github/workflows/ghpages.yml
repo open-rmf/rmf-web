@@ -1,0 +1,62 @@
+name: Deploy docs to Pages
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["main"]
+    paths:
+      - "packages/api-server/**"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Single deploy job since we're just deploying
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    container:
+      image: ghcr.io/${{ github.repository }}/e2e
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/api-server
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: setup python
+        run: apt update && apt install -y python3-venv python-is-python3
+      - name: bootstrap
+        uses: ./.github/actions/bootstrap
+        with:
+          package: api-server
+      - name: Extract docs
+        run: |
+          . /rmf_demos_ws/install/setup.bash
+          pipenv run python3 scripts/extract_docs.py -o docs
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: packages/api-server/docs
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
