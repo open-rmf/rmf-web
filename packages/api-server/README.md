@@ -10,6 +10,10 @@ pnpm install -w --filter api-server...
 ```
 to install dependencies for only this package.
 
+# API
+
+Check out the latest API definitions [here](https://open-rmf.github.io/rmf-web/docs/api-server), or visit `/docs` relative to your running server's url, e.g. `http://localhost:8000/docs`.
+
 # Run the server
 
 ```bash
