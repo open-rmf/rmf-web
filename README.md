@@ -112,7 +112,7 @@ pnpm start
 * When introducing API changes with [`api-server`](packages/api-server),
   * If the new changes are to be used externally (outside of the web packages, with other Open-RMF packages for example), make changes to [`rmf_api_msgs`](https://github.com/open-rmf/rmf_api_msgs), before generating the required models using [this script](packages/api-server/generate-models.sh) with modified commit hashes.
   * Don't forget to update the API client with the newly added changes with [these instructions](packages/api-client/README.md/#generating-rest-api-client).
-* Visit [http://localhost:8000/docs](http://localhost:8000/docs) for the API definition when the API server is running.
+* Check out the latest API definitions [here](https://open-rmf.github.io/rmf-web/docs/api-server), or visit [http://localhost:8000/docs](http://localhost:8000/docs) when the API server is running locally.
 * Develop the frontend without launching any Open-RMF components using [storybook](packages/dashboard/README.md/#storybook).
 
 # Configuration
