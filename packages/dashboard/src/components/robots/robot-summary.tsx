@@ -181,11 +181,11 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
     if (taskState) {
       contents.push(
         {
-          title: 'Location',
+          title: 'Navigation start',
           value: location,
         },
         {
-          title: 'Destination',
+          title: 'Navigation destination',
           value: destination,
         },
       );
