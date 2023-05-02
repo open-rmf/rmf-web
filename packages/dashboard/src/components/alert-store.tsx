@@ -19,6 +19,15 @@ export interface AlertToDisplay extends RobotWithTask {
   show: boolean;
 }
 
+// This needs to match the enums provided for the Alert model, as it is not
+// provided via the api-client since tortoise's pydantic_model_creator is used.
+enum AlertCategory {
+  Default = 'default',
+  Task = 'task',
+  Fleet = 'fleet',
+  Robot = 'robot',
+}
+
 export const AlertStore = React.memo(() => {
   const rmf = React.useContext(RmfAppContext);
   const [taskAlerts, setTaskAlerts] = React.useState<Record<string, Alert>>({});
@@ -30,11 +39,11 @@ export const AlertStore = React.memo(() => {
     }
     const sub = rmf.alertObsStore.subscribe(async (alert) => {
       switch (alert.category) {
-        case 'task':
+        case AlertCategory.Task:
           setTaskAlerts((prev) => ({ ...prev, [alert.id]: alert }));
           break;
-        case 'fleet':
-        case 'robot':
+        case AlertCategory.Fleet:
+        case AlertCategory.Robot:
           setRobotAlerts((prev) => ({ ...prev, [alert.id]: alert }));
           break;
         default:
