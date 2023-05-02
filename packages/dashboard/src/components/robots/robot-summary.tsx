@@ -20,7 +20,10 @@ import { RobotTableData, base } from 'react-components';
 import { RobotState, Status2, TaskState } from 'api-client';
 import { EMPTY, combineLatest, mergeMap, of } from 'rxjs';
 import { TaskInspector } from '../tasks/task-inspector';
-import Battery80Icon from '@mui/icons-material/Battery80';
+import BatteryFullIcon from '@mui/icons-material/BatteryFull';
+import Battery60Icon from '@mui/icons-material/Battery60';
+import Battery20Icon from '@mui/icons-material/Battery20';
+import BatteryChargingFullIcon from '@mui/icons-material/BatteryChargingFull';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -69,6 +72,23 @@ interface RobotSummaryProps {
   onClose: () => void;
   robot: RobotTableData;
 }
+
+const showBatteryIcon = (robot: RobotState, robotBattery: number) => {
+  if (robot.status === Status2.Charging) {
+    return <BatteryChargingFullIcon />;
+  }
+
+  const batteryIcons: Record<string, JSX.Element> = {
+    '100': <BatteryFullIcon />,
+    '80': <Battery60Icon />,
+    '40': <Battery20Icon />,
+    '0': <Battery20Icon />,
+  };
+
+  const key = Object.keys(batteryIcons).find((level) => 40 <= parseInt(level));
+
+  return key ? batteryIcons[key] : null;
+};
 
 export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) => {
   const classes = useStyles();
@@ -218,7 +238,9 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
             <Typography variant="subtitle1">{`${
               robotState?.battery ? robotState?.battery * 100 : 0
             }%`}</Typography>
-            <Battery80Icon />
+            {robotState && (
+              <>{showBatteryIcon(robot, robotState.battery ? robotState?.battery * 100 : 0)}</>
+            )}
           </Grid>
         </Grid>
       </Grid>
