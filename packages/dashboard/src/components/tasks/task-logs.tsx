@@ -6,9 +6,10 @@ interface TaskLogProps {
   taskLog: TaskEventLog | null;
   taskState: TaskState | null;
   fetchTaskLogs?: () => Promise<never[] | undefined>;
+  title?: string;
 }
 
-export function TaskLogs({ taskLog, taskState }: TaskLogProps) {
+export function TaskLogs({ taskLog, taskState, title }: TaskLogProps) {
   const theme = useTheme();
   const phaseIds = taskLog && taskLog.phases ? Object.keys(taskLog.phases) : [];
 
@@ -49,8 +50,8 @@ export function TaskLogs({ taskLog, taskState }: TaskLogProps) {
 
   return (
     <Box>
-      <Typography variant="h5" style={{ textAlign: 'center' }} gutterBottom>
-        {taskState && taskState.booking.id}
+      <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
+        {taskState && (title ? title : taskState.booking.id)}
       </Typography>
       <Divider />
       {phaseIds.length > 0 ? (
