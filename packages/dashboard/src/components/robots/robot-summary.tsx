@@ -85,7 +85,7 @@ const showBatteryIcon = (robot: RobotState, robotBattery: number) => {
     '0': <Battery20Icon />,
   };
 
-  const key = Object.keys(batteryIcons).find((level) => 40 <= parseInt(level));
+  const key = Object.keys(batteryIcons).find((level) => robotBattery <= parseInt(level));
 
   return key ? batteryIcons[key] : null;
 };
