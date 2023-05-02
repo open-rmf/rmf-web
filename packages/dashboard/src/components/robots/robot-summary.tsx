@@ -172,11 +172,11 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
   const returnDialogContent = () => {
     const contents = [
       {
-        title: 'Assigned Tasks',
+        title: 'Assigned tasks',
         value: taskState ? taskState.booking.id : 'No task',
       },
       {
-        title: 'Est. End Time',
+        title: 'Est. end time',
         value: taskState?.unix_millis_finish_time
           ? `${new Date(taskState?.unix_millis_finish_time).toLocaleString()}`
           : '-',
@@ -237,7 +237,7 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
       <Grid container mb={1} alignItems="center" spacing={1}>
         <Grid item xs={2}></Grid>
         <Grid item xs={8}>
-          <DialogTitle align="center">Robot Summary: {robotState?.name}</DialogTitle>
+          <DialogTitle align="center">Robot summary: {robotState?.name}</DialogTitle>
         </Grid>
         <Grid item xs={2}>
           <Grid container justifyContent="flex-end">
@@ -253,10 +253,10 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
       <Divider />
       {taskProgress && (
         <>
-          <Typography variant="h6" fontWeight="bold" align="center">
-            Task Progress
+          <Typography variant="body2" fontWeight="bold" ml={3} mt={1}>
+            Task progress
           </Typography>
-          <Box sx={{ width: '90%', ml: 3 }}>
+          <Box sx={{ width: '95%', ml: 3 }}>
             <LinearProgressWithLabel value={taskProgress * 100} />
           </Box>
         </>
