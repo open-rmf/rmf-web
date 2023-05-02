@@ -29,20 +29,16 @@ export const AlertStore = React.memo(() => {
       return;
     }
     const sub = rmf.alertObsStore.subscribe(async (alert) => {
-      if (alert.category === 'task') {
-        setTaskAlerts((prev) => {
-          return {
-            ...prev,
-            [alert.id]: alert,
-          };
-        });
-      } else if (alert.category === 'fleet' || alert.category === 'robot') {
-        setRobotAlerts((prev) => {
-          return {
-            ...prev,
-            [alert.id]: alert,
-          };
-        });
+      switch (alert.category) {
+        case 'task':
+          setTaskAlerts((prev) => ({ ...prev, [alert.id]: alert }));
+          break;
+        case 'fleet':
+        case 'robot':
+          setRobotAlerts((prev) => ({ ...prev, [alert.id]: alert }));
+          break;
+        default:
+        // do nothing in default case
       }
     });
     return () => sub.unsubscribe();
