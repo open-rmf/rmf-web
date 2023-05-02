@@ -150,7 +150,8 @@ export function RobotAlertHandler({ alerts, removeAlert }: RobotAlertHandlerProp
             throw new Error('alerts api not available');
           }
           (async () => {
-            const ackResponse = (await rmf?.alertsApi.acknowledgeAlertAlertsIdPost(alertId)).data;
+            const ackResponse = (await rmf?.alertsApi.acknowledgeAlertAlertsAlertIdPost(alertId))
+              .data;
             if (ackResponse.id !== ackResponse.original_id) {
               let showAlertMessage = `Alert ${ackResponse.original_id} acknowledged`;
               if (ackResponse.acknowledged_by) {

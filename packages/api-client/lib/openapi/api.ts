@@ -4450,17 +4450,20 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
     /**
      *
      * @summary Acknowledge Alert
-     * @param {string} id
+     * @param {string} alertId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    acknowledgeAlertAlertsIdPost: async (
-      id: string,
+    acknowledgeAlertAlertsAlertIdPost: async (
+      alertId: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'id' is not null or undefined
-      assertParamExists('acknowledgeAlertAlertsIdPost', 'id', id);
-      const localVarPath = `/alerts/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // verify required parameter 'alertId' is not null or undefined
+      assertParamExists('acknowledgeAlertAlertsAlertIdPost', 'alertId', alertId);
+      const localVarPath = `/alerts/{alert_id}`.replace(
+        `{${'alert_id'}}`,
+        encodeURIComponent(String(alertId)),
+      );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -4488,18 +4491,18 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
     /**
      *
      * @summary Create Alert
-     * @param {string} id
+     * @param {string} alertId
      * @param {string} category
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     createAlertAlertsPost: async (
-      id: string,
+      alertId: string,
       category: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'id' is not null or undefined
-      assertParamExists('createAlertAlertsPost', 'id', id);
+      // verify required parameter 'alertId' is not null or undefined
+      assertParamExists('createAlertAlertsPost', 'alertId', alertId);
       // verify required parameter 'category' is not null or undefined
       assertParamExists('createAlertAlertsPost', 'category', category);
       const localVarPath = `/alerts`;
@@ -4514,8 +4517,8 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      if (id !== undefined) {
-        localVarQueryParameter['id'] = id;
+      if (alertId !== undefined) {
+        localVarQueryParameter['alert_id'] = alertId;
       }
 
       if (category !== undefined) {
@@ -4538,17 +4541,20 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
     /**
      *
      * @summary Get Alert
-     * @param {string} id
+     * @param {string} alertId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getAlertAlertsIdGet: async (
-      id: string,
+    getAlertAlertsAlertIdGet: async (
+      alertId: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'id' is not null or undefined
-      assertParamExists('getAlertAlertsIdGet', 'id', id);
-      const localVarPath = `/alerts/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // verify required parameter 'alertId' is not null or undefined
+      assertParamExists('getAlertAlertsAlertIdGet', 'alertId', alertId);
+      const localVarPath = `/alerts/{alert_id}`.replace(
+        `{${'alert_id'}}`,
+        encodeURIComponent(String(alertId)),
+      );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -4618,12 +4624,12 @@ export const AlertsApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Acknowledge Alert
-     * @param {string} id
+     * @param {string} alertId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async acknowledgeAlertAlertsIdPost(
-      id: string,
+    async acknowledgeAlertAlertsAlertIdPost(
+      alertId: string,
       options?: AxiosRequestConfig,
     ): Promise<
       (
@@ -4631,8 +4637,8 @@ export const AlertsApiFp = function (configuration?: Configuration) {
         basePath?: string,
       ) => AxiosPromise<ApiServerModelsTortoiseModelsAlertsAlertLeaf>
     > {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.acknowledgeAlertAlertsIdPost(
-        id,
+      const localVarAxiosArgs = await localVarAxiosParamCreator.acknowledgeAlertAlertsAlertIdPost(
+        alertId,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -4640,13 +4646,13 @@ export const AlertsApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Create Alert
-     * @param {string} id
+     * @param {string} alertId
      * @param {string} category
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async createAlertAlertsPost(
-      id: string,
+      alertId: string,
       category: string,
       options?: AxiosRequestConfig,
     ): Promise<
@@ -4656,7 +4662,7 @@ export const AlertsApiFp = function (configuration?: Configuration) {
       ) => AxiosPromise<ApiServerModelsTortoiseModelsAlertsAlertLeaf>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createAlertAlertsPost(
-        id,
+        alertId,
         category,
         options,
       );
@@ -4665,12 +4671,12 @@ export const AlertsApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Get Alert
-     * @param {string} id
+     * @param {string} alertId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async getAlertAlertsIdGet(
-      id: string,
+    async getAlertAlertsAlertIdGet(
+      alertId: string,
       options?: AxiosRequestConfig,
     ): Promise<
       (
@@ -4678,7 +4684,10 @@ export const AlertsApiFp = function (configuration?: Configuration) {
         basePath?: string,
       ) => AxiosPromise<ApiServerModelsTortoiseModelsAlertsAlertLeaf>
     > {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getAlertAlertsIdGet(id, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getAlertAlertsAlertIdGet(
+        alertId,
+        options,
+      );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -4715,48 +4724,48 @@ export const AlertsApiFactory = function (
     /**
      *
      * @summary Acknowledge Alert
-     * @param {string} id
+     * @param {string} alertId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    acknowledgeAlertAlertsIdPost(
-      id: string,
+    acknowledgeAlertAlertsAlertIdPost(
+      alertId: string,
       options?: any,
     ): AxiosPromise<ApiServerModelsTortoiseModelsAlertsAlertLeaf> {
       return localVarFp
-        .acknowledgeAlertAlertsIdPost(id, options)
+        .acknowledgeAlertAlertsAlertIdPost(alertId, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Create Alert
-     * @param {string} id
+     * @param {string} alertId
      * @param {string} category
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     createAlertAlertsPost(
-      id: string,
+      alertId: string,
       category: string,
       options?: any,
     ): AxiosPromise<ApiServerModelsTortoiseModelsAlertsAlertLeaf> {
       return localVarFp
-        .createAlertAlertsPost(id, category, options)
+        .createAlertAlertsPost(alertId, category, options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
      * @summary Get Alert
-     * @param {string} id
+     * @param {string} alertId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getAlertAlertsIdGet(
-      id: string,
+    getAlertAlertsAlertIdGet(
+      alertId: string,
       options?: any,
     ): AxiosPromise<ApiServerModelsTortoiseModelsAlertsAlertLeaf> {
       return localVarFp
-        .getAlertAlertsIdGet(id, options)
+        .getAlertAlertsAlertIdGet(alertId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -4783,43 +4792,43 @@ export class AlertsApi extends BaseAPI {
   /**
    *
    * @summary Acknowledge Alert
-   * @param {string} id
+   * @param {string} alertId
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AlertsApi
    */
-  public acknowledgeAlertAlertsIdPost(id: string, options?: AxiosRequestConfig) {
+  public acknowledgeAlertAlertsAlertIdPost(alertId: string, options?: AxiosRequestConfig) {
     return AlertsApiFp(this.configuration)
-      .acknowledgeAlertAlertsIdPost(id, options)
+      .acknowledgeAlertAlertsAlertIdPost(alertId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *
    * @summary Create Alert
-   * @param {string} id
+   * @param {string} alertId
    * @param {string} category
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AlertsApi
    */
-  public createAlertAlertsPost(id: string, category: string, options?: AxiosRequestConfig) {
+  public createAlertAlertsPost(alertId: string, category: string, options?: AxiosRequestConfig) {
     return AlertsApiFp(this.configuration)
-      .createAlertAlertsPost(id, category, options)
+      .createAlertAlertsPost(alertId, category, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
   /**
    *
    * @summary Get Alert
-   * @param {string} id
+   * @param {string} alertId
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AlertsApi
    */
-  public getAlertAlertsIdGet(id: string, options?: AxiosRequestConfig) {
+  public getAlertAlertsAlertIdGet(alertId: string, options?: AxiosRequestConfig) {
     return AlertsApiFp(this.configuration)
-      .getAlertAlertsIdGet(id, options)
+      .getAlertAlertsAlertIdGet(alertId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

@@ -94,7 +94,12 @@ export default {
         summary: 'Create Alert',
         operationId: 'create_alert_alerts_post',
         parameters: [
-          { required: true, schema: { title: 'Id', type: 'string' }, name: 'id', in: 'query' },
+          {
+            required: true,
+            schema: { title: 'Alert Id', type: 'string' },
+            name: 'alert_id',
+            in: 'query',
+          },
           {
             required: true,
             schema: { title: 'Category', type: 'string' },
@@ -122,13 +127,18 @@ export default {
         },
       },
     },
-    '/alerts/{id}': {
+    '/alerts/{alert_id}': {
       get: {
         tags: ['Alerts'],
         summary: 'Get Alert',
-        operationId: 'get_alert_alerts__id__get',
+        operationId: 'get_alert_alerts__alert_id__get',
         parameters: [
-          { required: true, schema: { title: 'Id', type: 'string' }, name: 'id', in: 'path' },
+          {
+            required: true,
+            schema: { title: 'Alert Id', type: 'string' },
+            name: 'alert_id',
+            in: 'path',
+          },
         ],
         responses: {
           '200': {
@@ -152,9 +162,14 @@ export default {
       post: {
         tags: ['Alerts'],
         summary: 'Acknowledge Alert',
-        operationId: 'acknowledge_alert_alerts__id__post',
+        operationId: 'acknowledge_alert_alerts__alert_id__post',
         parameters: [
-          { required: true, schema: { title: 'Id', type: 'string' }, name: 'id', in: 'path' },
+          {
+            required: true,
+            schema: { title: 'Alert Id', type: 'string' },
+            name: 'alert_id',
+            in: 'path',
+          },
         ],
         responses: {
           '201': {

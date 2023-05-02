@@ -202,8 +202,9 @@ export function TaskAlertHandler({ alerts, removeAlert }: TaskAlertHandlerProps)
             throw new Error('alerts api not available');
           }
           (async () => {
-            const ackResponse = (await rmf?.alertsApi.acknowledgeAlertAlertsIdPost(alert.task_id))
-              .data;
+            const ackResponse = (
+              await rmf?.alertsApi.acknowledgeAlertAlertsAlertIdPost(alert.task_id)
+            ).data;
             if (ackResponse.id !== ackResponse.original_id) {
               let showAlertMessage = `Alert ${ackResponse.original_id} acknowledged`;
               if (ackResponse.acknowledged_by) {
