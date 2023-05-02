@@ -98,8 +98,8 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
   const [robotState, setRobotState] = React.useState<RobotState | null>(null);
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
   const [openTaskDetailsLogs, setOpenTaskDetailsLogs] = React.useState(false);
-  const [location, setLocation] = React.useState('');
-  const [destination, setDestination] = React.useState('');
+  const [navigationStart, setNavigationStart] = React.useState('-');
+  const [navigationDestination, setNavigationDestination] = React.useState('-');
 
   React.useEffect(() => {
     if (!rmf) {
@@ -142,8 +142,8 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
 
   React.useEffect(() => {
     if (!taskState || !taskState.phases || !taskState.active) {
-      setLocation('Failed to retrieve current location');
-      setDestination('Failed to retrieve robot destination');
+      setNavigationStart('-');
+      setNavigationDestination('-');
       return;
     }
 
@@ -159,8 +159,13 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
       while ((match = regex.exec(message.toString()))) {
         waypoints.push(match[1]);
       }
-      setLocation(waypoints[0]);
-      setDestination(waypoints[1]);
+
+      setNavigationStart(waypoints[0]);
+      setNavigationDestination(waypoints[1]);
+    } else {
+      setNavigationStart('-');
+      setNavigationDestination('-');
+      console.log('Failed to retrieve robot navigation');
     }
   }, [taskState]);
 
@@ -182,11 +187,11 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
       contents.push(
         {
           title: 'Navigation start',
-          value: location,
+          value: navigationStart,
         },
         {
           title: 'Navigation destination',
-          value: destination,
+          value: navigationDestination,
         },
       );
     }
