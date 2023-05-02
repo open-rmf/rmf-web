@@ -230,7 +230,8 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
       maxWidth="sm"
     >
       <Grid container mb={1} alignItems="center" spacing={1}>
-        <Grid item xs={10}>
+        <Grid item xs={2}></Grid>
+        <Grid item xs={8}>
           <DialogTitle align="center">Robot Summary: {robotState?.name}</DialogTitle>
         </Grid>
         <Grid item xs={2}>
