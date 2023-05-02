@@ -15,6 +15,15 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { makeStyles, createStyles } from '@mui/styles';
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    textField: {
+      background: theme.palette.background.default,
+      pointerEvents: 'none',
+    },
+  }),
+);
+
 export interface AlertContent {
   title: string;
   value: string;
@@ -40,15 +49,6 @@ export interface DialogAlertProps {
 }
 
 export const AlertDialog = React.memo((props: DialogAlertProps) => {
-  const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-      textField: {
-        background: theme.palette.background.default,
-        pointerEvents: 'none',
-      },
-    }),
-  );
-
   const LinearProgressWithLabel = (props: LinearProgressProps & { value: number }) => {
     return (
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
