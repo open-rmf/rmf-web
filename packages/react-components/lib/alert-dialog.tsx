@@ -116,9 +116,14 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
       <DialogTitle align="center">{title}</DialogTitle>
       <Divider />
       {progress ? (
-        <Box sx={{ width: '100%' }}>
-          <LinearProgressWithLabel value={progress} />
-        </Box>
+        <>
+          <Typography variant="body2" fontWeight="bold" ml={3} mt={1}>
+            Task progress
+          </Typography>
+          <Box width={0.95} ml={3}>
+            <LinearProgressWithLabel value={progress} />
+          </Box>
+        </>
       ) : null}
       <DialogContent>{returnDialogContent(alertContents)}</DialogContent>
 
