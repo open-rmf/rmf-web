@@ -5,39 +5,88 @@ import React from 'react';
 import { AlertContent, AlertDialog } from './alert-dialog';
 import defaultTheme from '@mui/material/styles/defaultTheme';
 
-describe('CloseAlertDialog', () => {
-  it('calls onClick when OK button is clicked', () => {
-    const buildDialogContent = (): AlertContent[] => {
+describe('AcknowledgeAndCloseAlertDialog', () => {
+  it('dismiss button called', () => {
+    const buildAlertDialogContent = (): AlertContent[] => {
       return [
         {
-          title: 'Robot Name',
-          value: 'Tiny1',
+          title: 'ID',
+          value: 'testAlertID',
         },
         {
-          title: 'Location',
-          value: 'L1',
+          title: 'Error logs',
+          value: '1/1/1970 00:00:00 - error',
         },
         {
-          title: 'Message',
-          value: 'Robot has arrived at its destination ',
+          title: 'Logs',
+          value: '1/1/1970 00:00:00 - completed',
         },
       ];
     };
-    const stopShowing = jasmine.createSpy();
+    const acknowledge = jasmine.createSpy();
+    const dismiss = jasmine.createSpy();
     const root = render(
       <ThemeProvider theme={defaultTheme}>
         <AlertDialog
-          key={'Tinny 1'}
-          stopShowing={stopShowing}
-          dialogTitle={'Robot State'}
-          progress={90}
-          alertContents={buildDialogContent()}
+          key={'testAlert'}
+          onDismiss={dismiss}
+          onAcknowledge={acknowledge}
+          title={'alertTitle'}
+          progress={1}
+          alertContents={buildAlertDialogContent()}
           backgroundColor={'ffff'}
-          show={true}
         />
       </ThemeProvider>,
     );
+    expect(() => root.getByText('Acknowledge')).not.toThrow();
+    expect(() => root.getByText('Dismiss')).not.toThrow();
+    userEvent.click(root.getByText('Dismiss'));
+    expect(dismiss).toHaveBeenCalled();
+  });
+
+  it('acknowledge and close', () => {
+    const buildAlertDialogContent = (): AlertContent[] => {
+      return [
+        {
+          title: 'ID',
+          value: 'testAlertID',
+        },
+        {
+          title: 'Error logs',
+          value: '1/1/1970 00:00:00 - error',
+        },
+        {
+          title: 'Logs',
+          value: '1/1/1970 00:00:00 - completed',
+        },
+      ];
+    };
+    const acknowledge = jasmine.createSpy();
+    const close = jasmine.createSpy();
+    const root = render(
+      <ThemeProvider theme={defaultTheme}>
+        <AlertDialog
+          key={'testAlert'}
+          onDismiss={close}
+          onAcknowledge={acknowledge}
+          title={'alertTitle'}
+          progress={1}
+          alertContents={buildAlertDialogContent()}
+          backgroundColor={'ffff'}
+        />
+      </ThemeProvider>,
+    );
+    expect(() => root.getByText('Acknowledge')).not.toThrow();
+    expect(() => root.getByText('Dismiss')).not.toThrow();
+    userEvent.click(root.getByText('Acknowledge'));
+    expect(acknowledge).toHaveBeenCalled();
+    // acknowledge button turns to acknowledged
+    expect(() => root.getByText('Acknowledge')).toThrow();
+    expect(() => root.getByText('Acknowledged')).not.toThrow();
+    // dismiss button turns to close
+    expect(() => root.getByText('Dismiss')).toThrow();
+    expect(() => root.getByText('Close')).not.toThrow();
     userEvent.click(root.getByText('Close'));
-    expect(stopShowing).toHaveBeenCalled();
+    expect(close).toHaveBeenCalled();
   });
 });

@@ -892,8 +892,8 @@ export function CreateTaskForm({
                     setFavoriteTaskBuffer(favoriteTask);
                     setTaskRequests((prev) => {
                       return [
+                        ...prev,
                         {
-                          ...prev,
                           category: favoriteTask.category,
                           description: favoriteTask.description,
                           unix_millis_earliest_start_time: Date.now(),

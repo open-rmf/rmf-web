@@ -1,4 +1,5 @@
 from .admin import router as admin_router
+from .alerts import router as alerts_router
 from .building_map import router as building_map_router
 from .dispensers import router as dispensers_router
 from .doors import router as doors_router

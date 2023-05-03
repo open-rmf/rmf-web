@@ -1,5 +1,7 @@
 import {
   AdminApi,
+  AlertsApi,
+  ApiServerModelsTortoiseModelsAlertsAlertLeaf,
   BuildingApi,
   BuildingMap,
   Configuration,
@@ -33,6 +35,7 @@ import {
   RobotTrajectoryManager,
 } from '../../managers/robot-trajectory-manager';
 
+type Alert = ApiServerModelsTortoiseModelsAlertsAlertLeaf;
 type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
 export class RmfIngress {
@@ -49,6 +52,7 @@ export class RmfIngress {
   ingestorsApi: IngestorsApi;
   fleetsApi: FleetsApi;
   tasksApi: TasksApi;
+  alertsApi: AlertsApi;
   adminApi: AdminApi;
   negotiationStatusManager: NegotiationStatusManager;
   trajectoryManager: RobotTrajectoryManager;
@@ -100,6 +104,7 @@ export class RmfIngress {
     this.ingestorsApi = new IngestorsApi(apiConfig, undefined, axiosInst);
     this.fleetsApi = new FleetsApi(apiConfig, undefined, axiosInst);
     this.tasksApi = new TasksApi(apiConfig, undefined, axiosInst);
+    this.alertsApi = new AlertsApi(apiConfig, undefined, axiosInst);
     this.adminApi = new AdminApi(apiConfig, undefined, axiosInst);
 
     const ws = new WebSocket(appConfig.trajServerUrl);
@@ -206,4 +211,8 @@ export class RmfIngress {
     }
     return this._taskStateObsStore[taskId];
   }
+
+  alertObsStore: Observable<Alert> = this._convertSioToRxObs((handler) =>
+    this._sioClient.subscribeAlerts(handler),
+  );
 }

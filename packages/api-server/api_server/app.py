@@ -76,6 +76,9 @@ rmf_bookkeeper = RmfBookKeeper(rmf_events, logger=logger.getChild("BookKeeper"))
 
 app.include_router(routes.main_router)
 app.include_router(
+    routes.alerts_router, prefix="/alerts", dependencies=[Depends(user_dep)]
+)
+app.include_router(
     routes.building_map_router, prefix="/building_map", dependencies=[Depends(user_dep)]
 )
 app.include_router(

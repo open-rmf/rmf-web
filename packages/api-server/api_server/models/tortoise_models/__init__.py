@@ -1,3 +1,4 @@
+from .alerts import *
 from .authorization import *
 from .building_map import BuildingMap
 from .dispenser_state import DispenserState
