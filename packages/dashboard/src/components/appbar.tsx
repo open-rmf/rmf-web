@@ -278,9 +278,9 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             onTabClick={() => history.push(DashboardRoute)}
           />
           <AppBarTab
-            label="Robots"
+            label="System Overview"
             value="robots"
-            aria-label="Robots"
+            aria-label="System Overview"
             onTabClick={() => history.push(RobotsRoute)}
           />
           <AppBarTab
