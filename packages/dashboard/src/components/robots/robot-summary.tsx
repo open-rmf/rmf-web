@@ -79,15 +79,20 @@ const showBatteryIcon = (robot: RobotState, robotBattery: number) => {
   }
 
   const batteryIcons: Record<string, JSX.Element> = {
-    '100': <BatteryFullIcon />,
-    '80': <Battery60Icon />,
-    '40': <Battery20Icon />,
     '0': <Battery20Icon />,
+    '40': <Battery20Icon />,
+    '80': <Battery60Icon />,
+    '100': <BatteryFullIcon />,
   };
 
-  const key = Object.keys(batteryIcons).find((level) => robotBattery <= parseInt(level));
+  for (let i = 0; i < Object.keys(batteryIcons).length; i++) {
+    const level = Object.keys(batteryIcons)[i];
+    if (robotBattery <= parseInt(level)) {
+      return batteryIcons[level];
+    }
+  }
 
-  return key ? batteryIcons[key] : null;
+  return null;
 };
 
 export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) => {
@@ -242,7 +247,7 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
         <Grid item xs={2}>
           <Grid container justifyContent="flex-end">
             <Typography variant="subtitle1">{`${
-              robotState?.battery ? robotState?.battery * 100 : 0
+              robotState?.battery ? (robotState.battery * 100).toFixed(0) : 0
             }%`}</Typography>
             {robotState && (
               <>{showBatteryIcon(robot, robotState.battery ? robotState?.battery * 100 : 0)}</>
