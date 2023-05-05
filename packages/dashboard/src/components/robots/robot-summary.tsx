@@ -20,10 +20,18 @@ import { RobotTableData, base } from 'react-components';
 import { RobotState, Status2, TaskState } from 'api-client';
 import { EMPTY, combineLatest, mergeMap, of } from 'rxjs';
 import { TaskInspector } from '../tasks/task-inspector';
-import BatteryFullIcon from '@mui/icons-material/BatteryFull';
-import Battery60Icon from '@mui/icons-material/Battery60';
-import Battery20Icon from '@mui/icons-material/Battery20';
-import BatteryChargingFullIcon from '@mui/icons-material/BatteryChargingFull';
+import {
+  Battery0Bar,
+  Battery1Bar,
+  Battery2Bar,
+  Battery3Bar,
+  Battery4Bar,
+  Battery5Bar,
+  Battery6Bar,
+  BatteryFull,
+  BatteryChargingFull,
+  BatteryUnknown,
+} from '@mui/icons-material';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -75,24 +83,28 @@ interface RobotSummaryProps {
 
 const showBatteryIcon = (robot: RobotState, robotBattery: number) => {
   if (robot.status === Status2.Charging) {
-    return <BatteryChargingFullIcon />;
+    return <BatteryChargingFull />;
   }
 
-  const batteryIcons: Record<string, JSX.Element> = {
-    '0': <Battery20Icon />,
-    '40': <Battery20Icon />,
-    '80': <Battery60Icon />,
-    '100': <BatteryFullIcon />,
+  const batteryIcons: Record<number, JSX.Element> = {
+    0: <Battery0Bar />,
+    16: <Battery1Bar />,
+    32: <Battery2Bar />,
+    48: <Battery3Bar />,
+    64: <Battery4Bar />,
+    80: <Battery5Bar />,
+    96: <Battery6Bar />,
+    100: <BatteryFull />,
   };
 
-  for (let i = 0; i < Object.keys(batteryIcons).length; i++) {
-    const level = Object.keys(batteryIcons)[i];
-    if (robotBattery <= parseInt(level)) {
+  for (const level in batteryIcons) {
+    if (robotBattery >= parseInt(level)) {
+      continue;
+    } else {
       return batteryIcons[level];
     }
   }
-
-  return null;
+  return <BatteryUnknown />;
 };
 
 export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) => {
