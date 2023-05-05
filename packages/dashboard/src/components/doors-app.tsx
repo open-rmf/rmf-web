@@ -64,17 +64,18 @@ const DoorCard = ({ children, ...otherProps }: DoorCardProps) => {
   }, [theme, doorState]);
 
   return (
-    <TableRow key={otherProps.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+    <TableRow key={otherProps.name}>
       <TableCell>{otherProps.name}</TableCell>
       <TableCell>{otherProps.level}</TableCell>
       <TableCell>{doorTypeToString(otherProps.type)}</TableCell>
       <TableCell sx={labelStyle}>
         {doorState ? doorModeToString(doorState.current_mode.value) : -1}
       </TableCell>
-      <TableCell align="right">
+      <TableCell align="center" sx={{ margin: 0, padding: 0 }} colSpan={2}>
         <Button
           variant="contained"
           size="small"
+          sx={{ marginRight: 2 }}
           onClick={() =>
             rmf?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(otherProps.name, {
               mode: RmfDoorMode.MODE_OPEN,
@@ -83,8 +84,6 @@ const DoorCard = ({ children, ...otherProps }: DoorCardProps) => {
         >
           Open
         </Button>
-      </TableCell>
-      <TableCell align="right">
         <Button
           variant="contained"
           size="small"
@@ -114,7 +113,7 @@ export const DoorsApp = createMicroApp('Doors', () => {
   }, [rmf]);
 
   return (
-    <Table stickyHeader size="small" aria-label="door-table">
+    <Table stickyHeader size="small" aria-label="door-table" style={{ tableLayout: 'fixed' }}>
       <TableHead>
         <TableRow>
           <TableCell>Name</TableCell>
