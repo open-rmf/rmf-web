@@ -66,19 +66,18 @@ const LiftCard = ({ children, ...otherProps }: LiftCardProps) => {
   })();
 
   return (
-    <TableRow key={otherProps.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+    <TableRow key={otherProps.name}>
       <TableCell>{otherProps.name}</TableCell>
+      <TableCell>{liftState?.current_floor || '?'}</TableCell>
       <TableCell>{liftState?.destination_floor || 'Unknown'}</TableCell>
       <TableCell sx={doorStateLabelStyle}>{currDoorMotion}</TableCell>
-      <TableCell sx={currMotion === 'Up' ? motionArrowActiveStyle : motionArrowIdleStyle}>
-        <ArrowUpwardIcon />
+      <TableCell align="center">
+        <ArrowUpwardIcon sx={currMotion === 'Up' ? motionArrowActiveStyle : motionArrowIdleStyle} />
+        <ArrowDownwardIcon
+          sx={currMotion === 'Down' ? motionArrowActiveStyle : motionArrowIdleStyle}
+        />
       </TableCell>
-      <TableCell>{liftState?.current_floor || '?'}</TableCell>
-      <TableCell sx={currMotion === 'Down' ? motionArrowActiveStyle : motionArrowIdleStyle}>
-        <ArrowDownwardIcon />
-      </TableCell>
-
-      <TableCell align="right">
+      <TableCell align="center" sx={{ margin: 0, padding: 0 }}>
         <LiftControls
           availableLevels={otherProps.lift.levels}
           currentLevel={liftState?.current_floor}
@@ -110,15 +109,14 @@ export const LiftsApp = createMicroApp('Lifts', () => {
   }, [rmf]);
 
   return (
-    <Table stickyHeader size="small" aria-label="door-table">
+    <Table stickyHeader size="small" aria-label="door-table" style={{ tableLayout: 'fixed' }}>
       <TableHead>
         <TableRow>
           <TableCell>Name</TableCell>
+          <TableCell>Current floor</TableCell>
           <TableCell>Destination floor</TableCell>
           <TableCell>Door state</TableCell>
-          <TableCell>Up</TableCell>
-          <TableCell>Current floor</TableCell>
-          <TableCell>Down</TableCell>
+          <TableCell></TableCell>
           <TableCell></TableCell>
         </TableRow>
       </TableHead>
