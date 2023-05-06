@@ -5,12 +5,15 @@ import { RobotTable, RobotTableData } from 'react-components';
 import { AppEvents } from '../app-events';
 import { createMicroApp } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
+import { RobotSummary } from './robot-summary';
 
 export const RobotsApp = createMicroApp('Robots', () => {
   const rmf = React.useContext(RmfAppContext);
 
   const [fleets, setFleets] = React.useState<string[]>([]);
   const [robots, setRobots] = React.useState<Record<string, RobotTableData[]>>({});
+  const [openRobotSummary, setOpenRobotSummary] = React.useState(false);
+  const [selectedRobot, setSelectedRobot] = React.useState<RobotTableData>();
   React.useEffect(() => {
     if (!rmf) {
       return;
@@ -88,9 +91,15 @@ export const RobotsApp = createMicroApp('Robots', () => {
       <RobotTable
         robots={Object.values(robots).flatMap((r) => r)}
         onRobotClick={(_ev, robot) => {
+          setOpenRobotSummary(true);
           AppEvents.robotSelect.next([robot.fleet, robot.name]);
+          setSelectedRobot(robot);
         }}
       />
+
+      {openRobotSummary && selectedRobot && (
+        <RobotSummary robot={selectedRobot} onClose={() => setOpenRobotSummary(false)} />
+      )}
     </TableContainer>
   );
 });
