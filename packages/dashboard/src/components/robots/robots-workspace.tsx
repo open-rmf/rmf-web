@@ -9,7 +9,6 @@ export const robotsWorkspace: WorkspaceState = {
   ],
   windows: [
     { key: 'robots', appName: 'Robots' },
-    { key: 'robots-info', appName: 'Robot Info' },
     { key: 'map', appName: 'Map' },
     { key: 'doors', appName: 'Doors' },
     { key: 'lifts', appName: 'Lifts' },
