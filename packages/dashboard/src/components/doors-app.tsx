@@ -1,4 +1,4 @@
-import { Button, SxProps, useTheme } from '@mui/material';
+import { Button, SxProps, Typography, useTheme } from '@mui/material';
 import { BuildingMap, DoorState } from 'api-client';
 import React from 'react';
 import {
@@ -35,20 +35,16 @@ const DoorCard = ({ children, ...otherProps }: DoorCardProps) => {
     const mode = current_mode?.value;
 
     const disabled = {
-      backgroundColor: theme.palette.action.disabledBackground,
-      color: theme.palette.action.disabled,
+      color: theme.palette.action.disabledBackground,
     };
     const open = {
-      backgroundColor: theme.palette.success.main,
-      color: theme.palette.success.contrastText,
+      color: theme.palette.success.main,
     };
     const closed = {
-      backgroundColor: theme.palette.error.main,
-      color: theme.palette.error.contrastText,
+      color: theme.palette.error.main,
     };
     const moving = {
-      backgroundColor: theme.palette.warning.main,
-      color: theme.palette.warning.contrastText,
+      color: theme.palette.warning.main,
     };
 
     switch (mode) {
@@ -69,9 +65,17 @@ const DoorCard = ({ children, ...otherProps }: DoorCardProps) => {
       <TableCell>{otherProps.level}</TableCell>
       <TableCell>{doorTypeToString(otherProps.type)}</TableCell>
       <TableCell sx={labelStyle}>
-        {doorState ? doorModeToString(doorState.current_mode.value) : -1}
+        <Typography
+          component="p"
+          sx={{
+            fontWeight: 'bold',
+            fontSize: 14,
+          }}
+        >
+          {doorState ? doorModeToString(doorState.current_mode.value) : -1}
+        </Typography>
       </TableCell>
-      <TableCell align="center" sx={{ margin: 0, padding: 0 }} colSpan={2}>
+      <TableCell align="right" sx={{ margin: 0, padding: 0, paddingRight: 1 }}>
         <Button
           variant="contained"
           size="small"
@@ -120,7 +124,6 @@ export const DoorsApp = createMicroApp('Doors', () => {
           <TableCell>Level</TableCell>
           <TableCell>Type</TableCell>
           <TableCell>Door State</TableCell>
-          <TableCell></TableCell>
           <TableCell></TableCell>
         </TableRow>
       </TableHead>

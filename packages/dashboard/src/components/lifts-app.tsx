@@ -92,7 +92,7 @@ const LiftCard = ({ children, ...otherProps }: LiftCardProps) => {
           sx={currMotion === 'Down' ? motionArrowActiveStyle : motionArrowIdleStyle}
         />
       </TableCell>
-      <TableCell align="right" sx={{ marginRight: 1, paddingRight: 1 }}>
+      <TableCell align="right" sx={{ marginRight: 1, padding: 0, paddingRight: 1 }}>
         <LiftControls
           availableLevels={otherProps.lift.levels}
           currentLevel={liftState?.current_floor}
