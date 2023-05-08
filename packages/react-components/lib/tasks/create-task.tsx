@@ -636,7 +636,9 @@ function defaultTask(): TaskRequest {
     category: 'patrol',
     description: defaultLoopsTask(),
     unix_millis_earliest_start_time: Date.now(),
+    unix_millis_request_time: Date.now(),
     priority: { type: 'binary', value: 0 },
+    initiator: '',
   };
 }
 
@@ -657,6 +659,7 @@ export interface CreateTaskFormProps
   /**
    * Shows extra UI elements suitable for submittng batched tasks. Default to 'false'.
    */
+  user: string;
   allowBatch?: boolean;
   cleaningZones?: string[];
   loopWaypoints?: string[];
@@ -675,6 +678,7 @@ export interface CreateTaskFormProps
 }
 
 export function CreateTaskForm({
+  user,
   cleaningZones = [],
   loopWaypoints = [],
   deliveryWaypoints = [],
@@ -776,6 +780,10 @@ export function CreateTaskForm({
   // no memo because deps would likely change
   const handleSubmit: React.MouseEventHandler = async (ev) => {
     ev.preventDefault();
+    for (const t of taskRequests) {
+      t.initiator = user;
+      t.unix_millis_request_time = Date.now();
+    }
     if (!submitTasks) {
       onSuccess && onSuccess(taskRequests);
       return;
@@ -892,12 +900,14 @@ export function CreateTaskForm({
                     setFavoriteTaskBuffer(favoriteTask);
                     setTaskRequests((prev) => {
                       return [
+                        ...prev,
                         {
-                          ...prev,
                           category: favoriteTask.category,
                           description: favoriteTask.description,
                           unix_millis_earliest_start_time: Date.now(),
+                          unix_millis_request_time: Date.now(),
                           priority: favoriteTask.priority,
+                          initiator: user,
                         },
                       ];
                     });

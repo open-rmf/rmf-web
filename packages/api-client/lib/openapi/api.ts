@@ -214,6 +214,74 @@ export type ApiServerModelsRmfApiTokenResponseSuccess = true;
 /**
  *
  * @export
+ * @interface ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf
+ */
+export interface ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf {
+  /**
+   *
+   * @type {number}
+   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf
+   */
+  id: number;
+  /**
+   *
+   * @type {any}
+   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf
+   */
+  task_request?: any;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf
+   */
+  created_by: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf
+   */
+  last_ran?: string | null;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf
+   */
+  next_run?: string | null;
+}
+/**
+ * The schedules for a scheduled task request.<br/>A scheduled task may have multiple schedules.
+ * @export
+ * @interface ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf
+ */
+export interface ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf {
+  /**
+   *
+   * @type {number}
+   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf
+   */
+  every?: number | null;
+  /**
+   *
+   * @type {number}
+   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf
+   */
+  to?: number | null;
+  /**
+   * Monday: monday<br/>Tuesday: tuesday<br/>Wednesday: wednesday<br/>Thursday: thursday<br/>Friday: friday<br/>Saturday: saturday<br/>Sunday: sunday<br/>Day: day<br/>Hour: hour<br/>Minute: minute
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf
+   */
+  period: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf
+   */
+  at?: string | null;
+}
+/**
+ *
+ * @export
  * @interface ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
  */
 export interface ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf {
@@ -1642,6 +1710,25 @@ export interface PostRoles {
 /**
  *
  * @export
+ * @interface PostScheduledTaskRequest
+ */
+export interface PostScheduledTaskRequest {
+  /**
+   *
+   * @type {TaskRequest}
+   * @memberof PostScheduledTaskRequest
+   */
+  task_request: TaskRequest;
+  /**
+   *
+   * @type {Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf>}
+   * @memberof PostScheduledTaskRequest
+   */
+  schedules: Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf>;
+}
+/**
+ *
+ * @export
  * @interface PostUsers
  */
 export interface PostUsers {
@@ -2369,6 +2456,12 @@ export interface TaskRequest {
    */
   unix_millis_earliest_start_time?: number;
   /**
+   * (Optional) The time that this request was initiated
+   * @type {number}
+   * @memberof TaskRequest
+   */
+  unix_millis_request_time?: number;
+  /**
    * (Optional) The priority of this task. This must match a priority schema supported by a fleet.
    * @type {object}
    * @memberof TaskRequest
@@ -2392,6 +2485,12 @@ export interface TaskRequest {
    * @memberof TaskRequest
    */
   labels?: Array<string>;
+  /**
+   * (Optional) An identifier for the entity that requested this task
+   * @type {string}
+   * @memberof TaskRequest
+   */
+  initiator?: string;
 }
 /**
  *
@@ -3351,8 +3450,8 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
      * @summary Get Users
      * @param {string} [username] filters username that starts with the value
      * @param {boolean} [isAdmin]
-     * @param {number} [limit]
-     * @param {number} [offset]
+     * @param {number} [limit] defaults to 100
+     * @param {number} [offset] defaults to 0
      * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3763,8 +3862,8 @@ export const AdminApiFp = function (configuration?: Configuration) {
      * @summary Get Users
      * @param {string} [username] filters username that starts with the value
      * @param {boolean} [isAdmin]
-     * @param {number} [limit]
-     * @param {number} [offset]
+     * @param {number} [limit] defaults to 100
+     * @param {number} [offset] defaults to 0
      * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -4004,8 +4103,8 @@ export const AdminApiFactory = function (
      * @summary Get Users
      * @param {string} [username] filters username that starts with the value
      * @param {boolean} [isAdmin]
-     * @param {number} [limit]
-     * @param {number} [offset]
+     * @param {number} [limit] defaults to 100
+     * @param {number} [offset] defaults to 0
      * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -4245,8 +4344,8 @@ export class AdminApi extends BaseAPI {
    * @summary Get Users
    * @param {string} [username] filters username that starts with the value
    * @param {boolean} [isAdmin]
-   * @param {number} [limit]
-   * @param {number} [offset]
+   * @param {number} [limit] defaults to 100
+   * @param {number} [offset] defaults to 0
    * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
@@ -6390,6 +6489,47 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
   return {
     /**
      *
+     * @summary Del Scheduled Tasks
+     * @param {number} taskId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    delScheduledTasksScheduledTasksTaskIdDelete: async (
+      taskId: number,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'taskId' is not null or undefined
+      assertParamExists('delScheduledTasksScheduledTasksTaskIdDelete', 'taskId', taskId);
+      const localVarPath = `/scheduled_tasks/{task_id}`.replace(
+        `{${'task_id'}}`,
+        encodeURIComponent(String(taskId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Delete Favorite Task
      * @param {string} favoriteTaskId
      * @param {*} [options] Override http request option.
@@ -6453,6 +6593,99 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get Scheduled Task
+     * @param {number} taskId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getScheduledTaskScheduledTasksTaskIdGet: async (
+      taskId: number,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'taskId' is not null or undefined
+      assertParamExists('getScheduledTaskScheduledTasksTaskIdGet', 'taskId', taskId);
+      const localVarPath = `/scheduled_tasks/{task_id}`.replace(
+        `{${'task_id'}}`,
+        encodeURIComponent(String(taskId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get Scheduled Tasks
+     * @param {number} [limit] defaults to 100
+     * @param {number} [offset] defaults to 0
+     * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getScheduledTasksScheduledTasksGet: async (
+      limit?: number,
+      offset?: number,
+      orderBy?: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/scheduled_tasks`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      if (limit !== undefined) {
+        localVarQueryParameter['limit'] = limit;
+      }
+
+      if (offset !== undefined) {
+        localVarQueryParameter['offset'] = offset;
+      }
+
+      if (orderBy !== undefined) {
+        localVarQueryParameter['order_by'] = orderBy;
+      }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -6989,6 +7222,55 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
+     * Create a scheduled task. Below are some examples of how the schedules are represented. For more examples, check the docs of the underlying library used [here](https://github.com/dbader/schedule/blob/6eb0b5346b1ce35ece5050e65789fa6e44368175/docs/examples.rst).  | every | to | period | at | description | | - | - | - | - | - | | 10 | - | minutes | - | Every 10 minutes | | - | - | hour | - | Every hour | | - | - | day | 10:30 | Every day at 10:30am | | - | - | monday | - | Every monday | | - | - | wednesday | 13:15 | Every wednesday at 01:15pm | | - | - | minute | :17 | Every 17th sec of a mintue | | 5 | 10 | seconds | - | Every 5-10 seconds (randomly) |
+     * @summary Post Scheduled Task
+     * @param {PostScheduledTaskRequest} postScheduledTaskRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postScheduledTaskScheduledTasksPost: async (
+      postScheduledTaskRequest: PostScheduledTaskRequest,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'postScheduledTaskRequest' is not null or undefined
+      assertParamExists(
+        'postScheduledTaskScheduledTasksPost',
+        'postScheduledTaskRequest',
+        postScheduledTaskRequest,
+      );
+      const localVarPath = `/scheduled_tasks`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        postScheduledTaskRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      *
      * @summary Post Skip Phase
      * @param {TaskPhaseSkipRequest} taskPhaseSkipRequest
@@ -7144,8 +7426,8 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string} [status] comma separated list of statuses
      * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
      * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
-     * @param {number} [limit]
-     * @param {number} [offset]
+     * @param {number} [limit] defaults to 100
+     * @param {number} [offset] defaults to 0
      * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -7235,6 +7517,24 @@ export const TasksApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
+     * @summary Del Scheduled Tasks
+     * @param {number} taskId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async delScheduledTasksScheduledTasksTaskIdDelete(
+      taskId: number,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.delScheduledTasksScheduledTasksTaskIdDelete(
+          taskId,
+          options,
+        );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
      * @summary Delete Favorite Task
      * @param {string} favoriteTaskId
      * @param {*} [options] Override http request option.
@@ -7263,6 +7563,54 @@ export const TasksApiFp = function (configuration?: Configuration) {
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskFavoritePydantic>>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getFavoritesTasksFavoriteTasksGet(
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Get Scheduled Task
+     * @param {number} taskId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getScheduledTaskScheduledTasksTaskIdGet(
+      taskId: number,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.getScheduledTaskScheduledTasksTaskIdGet(taskId, options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Get Scheduled Tasks
+     * @param {number} [limit] defaults to 100
+     * @param {number} [offset] defaults to 0
+     * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getScheduledTasksScheduledTasksGet(
+      limit?: number,
+      offset?: number,
+      orderBy?: string,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf>>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getScheduledTasksScheduledTasksGet(
+        limit,
+        offset,
+        orderBy,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -7470,6 +7818,28 @@ export const TasksApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
+     * Create a scheduled task. Below are some examples of how the schedules are represented. For more examples, check the docs of the underlying library used [here](https://github.com/dbader/schedule/blob/6eb0b5346b1ce35ece5050e65789fa6e44368175/docs/examples.rst).  | every | to | period | at | description | | - | - | - | - | - | | 10 | - | minutes | - | Every 10 minutes | | - | - | hour | - | Every hour | | - | - | day | 10:30 | Every day at 10:30am | | - | - | monday | - | Every monday | | - | - | wednesday | 13:15 | Every wednesday at 01:15pm | | - | - | minute | :17 | Every 17th sec of a mintue | | 5 | 10 | seconds | - | Every 5-10 seconds (randomly) |
+     * @summary Post Scheduled Task
+     * @param {PostScheduledTaskRequest} postScheduledTaskRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async postScheduledTaskScheduledTasksPost(
+      postScheduledTaskRequest: PostScheduledTaskRequest,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.postScheduledTaskScheduledTasksPost(
+        postScheduledTaskRequest,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
      *
      * @summary Post Skip Phase
      * @param {TaskPhaseSkipRequest} taskPhaseSkipRequest
@@ -7531,8 +7901,8 @@ export const TasksApiFp = function (configuration?: Configuration) {
      * @param {string} [status] comma separated list of statuses
      * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
      * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
-     * @param {number} [limit]
-     * @param {number} [offset]
+     * @param {number} [limit] defaults to 100
+     * @param {number} [offset] defaults to 0
      * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -7579,6 +7949,18 @@ export const TasksApiFactory = function (
   return {
     /**
      *
+     * @summary Del Scheduled Tasks
+     * @param {number} taskId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    delScheduledTasksScheduledTasksTaskIdDelete(taskId: number, options?: any): AxiosPromise<any> {
+      return localVarFp
+        .delScheduledTasksScheduledTasksTaskIdDelete(taskId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Delete Favorite Task
      * @param {string} favoriteTaskId
      * @param {*} [options] Override http request option.
@@ -7601,6 +7983,40 @@ export const TasksApiFactory = function (
     getFavoritesTasksFavoriteTasksGet(options?: any): AxiosPromise<Array<TaskFavoritePydantic>> {
       return localVarFp
         .getFavoritesTasksFavoriteTasksGet(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get Scheduled Task
+     * @param {number} taskId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getScheduledTaskScheduledTasksTaskIdGet(
+      taskId: number,
+      options?: any,
+    ): AxiosPromise<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf> {
+      return localVarFp
+        .getScheduledTaskScheduledTasksTaskIdGet(taskId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get Scheduled Tasks
+     * @param {number} [limit] defaults to 100
+     * @param {number} [offset] defaults to 0
+     * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getScheduledTasksScheduledTasksGet(
+      limit?: number,
+      offset?: number,
+      orderBy?: string,
+      options?: any,
+    ): AxiosPromise<Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf>> {
+      return localVarFp
+        .getScheduledTasksScheduledTasksGet(limit, offset, orderBy, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -7768,6 +8184,21 @@ export const TasksApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
+     * Create a scheduled task. Below are some examples of how the schedules are represented. For more examples, check the docs of the underlying library used [here](https://github.com/dbader/schedule/blob/6eb0b5346b1ce35ece5050e65789fa6e44368175/docs/examples.rst).  | every | to | period | at | description | | - | - | - | - | - | | 10 | - | minutes | - | Every 10 minutes | | - | - | hour | - | Every hour | | - | - | day | 10:30 | Every day at 10:30am | | - | - | monday | - | Every monday | | - | - | wednesday | 13:15 | Every wednesday at 01:15pm | | - | - | minute | :17 | Every 17th sec of a mintue | | 5 | 10 | seconds | - | Every 5-10 seconds (randomly) |
+     * @summary Post Scheduled Task
+     * @param {PostScheduledTaskRequest} postScheduledTaskRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    postScheduledTaskScheduledTasksPost(
+      postScheduledTaskRequest: PostScheduledTaskRequest,
+      options?: any,
+    ): AxiosPromise<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskLeaf> {
+      return localVarFp
+        .postScheduledTaskScheduledTasksPost(postScheduledTaskRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      *
      * @summary Post Skip Phase
      * @param {TaskPhaseSkipRequest} taskPhaseSkipRequest
@@ -7821,8 +8252,8 @@ export const TasksApiFactory = function (
      * @param {string} [status] comma separated list of statuses
      * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
      * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
-     * @param {number} [limit]
-     * @param {number} [offset]
+     * @param {number} [limit] defaults to 100
+     * @param {number} [offset] defaults to 0
      * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -7866,6 +8297,20 @@ export const TasksApiFactory = function (
 export class TasksApi extends BaseAPI {
   /**
    *
+   * @summary Del Scheduled Tasks
+   * @param {number} taskId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public delScheduledTasksScheduledTasksTaskIdDelete(taskId: number, options?: AxiosRequestConfig) {
+    return TasksApiFp(this.configuration)
+      .delScheduledTasksScheduledTasksTaskIdDelete(taskId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
    * @summary Delete Favorite Task
    * @param {string} favoriteTaskId
    * @param {*} [options] Override http request option.
@@ -7891,6 +8336,41 @@ export class TasksApi extends BaseAPI {
   public getFavoritesTasksFavoriteTasksGet(options?: AxiosRequestConfig) {
     return TasksApiFp(this.configuration)
       .getFavoritesTasksFavoriteTasksGet(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get Scheduled Task
+   * @param {number} taskId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public getScheduledTaskScheduledTasksTaskIdGet(taskId: number, options?: AxiosRequestConfig) {
+    return TasksApiFp(this.configuration)
+      .getScheduledTaskScheduledTasksTaskIdGet(taskId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get Scheduled Tasks
+   * @param {number} [limit] defaults to 100
+   * @param {number} [offset] defaults to 0
+   * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public getScheduledTasksScheduledTasksGet(
+    limit?: number,
+    offset?: number,
+    orderBy?: string,
+    options?: AxiosRequestConfig,
+  ) {
+    return TasksApiFp(this.configuration)
+      .getScheduledTasksScheduledTasksGet(limit, offset, orderBy, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -8081,6 +8561,23 @@ export class TasksApi extends BaseAPI {
   }
 
   /**
+   * Create a scheduled task. Below are some examples of how the schedules are represented. For more examples, check the docs of the underlying library used [here](https://github.com/dbader/schedule/blob/6eb0b5346b1ce35ece5050e65789fa6e44368175/docs/examples.rst).  | every | to | period | at | description | | - | - | - | - | - | | 10 | - | minutes | - | Every 10 minutes | | - | - | hour | - | Every hour | | - | - | day | 10:30 | Every day at 10:30am | | - | - | monday | - | Every monday | | - | - | wednesday | 13:15 | Every wednesday at 01:15pm | | - | - | minute | :17 | Every 17th sec of a mintue | | 5 | 10 | seconds | - | Every 5-10 seconds (randomly) |
+   * @summary Post Scheduled Task
+   * @param {PostScheduledTaskRequest} postScheduledTaskRequest
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public postScheduledTaskScheduledTasksPost(
+    postScheduledTaskRequest: PostScheduledTaskRequest,
+    options?: AxiosRequestConfig,
+  ) {
+    return TasksApiFp(this.configuration)
+      .postScheduledTaskScheduledTasksPost(postScheduledTaskRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
    *
    * @summary Post Skip Phase
    * @param {TaskPhaseSkipRequest} taskPhaseSkipRequest
@@ -8140,8 +8637,8 @@ export class TasksApi extends BaseAPI {
    * @param {string} [status] comma separated list of statuses
    * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
    * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
-   * @param {number} [limit]
-   * @param {number} [offset]
+   * @param {number} [limit] defaults to 100
+   * @param {number} [offset] defaults to 0
    * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}

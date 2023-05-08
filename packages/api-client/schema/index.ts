@@ -380,25 +380,26 @@ export default {
             in: 'query',
           },
           {
+            description: 'defaults to 100',
             required: false,
             schema: {
               title: 'Limit',
-              maximum: 1000000.0,
+              maximum: 1000.0,
               exclusiveMinimum: 0.0,
               type: 'integer',
-              default: 1000000,
+              description: 'defaults to 100',
             },
             name: 'limit',
             in: 'query',
           },
           {
+            description: 'defaults to 0',
             required: false,
             schema: {
               title: 'Offset',
-              maximum: 1000000.0,
               minimum: 0.0,
               type: 'integer',
-              default: 0,
+              description: 'defaults to 0',
             },
             name: 'offset',
             in: 'query',
@@ -834,6 +835,166 @@ export default {
         },
       },
     },
+    '/scheduled_tasks': {
+      get: {
+        tags: ['Tasks'],
+        summary: 'Get Scheduled Tasks',
+        operationId: 'get_scheduled_tasks_scheduled_tasks_get',
+        parameters: [
+          {
+            description: 'defaults to 100',
+            required: false,
+            schema: {
+              title: 'Limit',
+              maximum: 1000.0,
+              exclusiveMinimum: 0.0,
+              type: 'integer',
+              description: 'defaults to 100',
+            },
+            name: 'limit',
+            in: 'query',
+          },
+          {
+            description: 'defaults to 0',
+            required: false,
+            schema: {
+              title: 'Offset',
+              minimum: 0.0,
+              type: 'integer',
+              description: 'defaults to 0',
+            },
+            name: 'offset',
+            in: 'query',
+          },
+          {
+            description:
+              "common separated list of fields to order by, prefix with '-' to sort descendingly.",
+            required: false,
+            schema: {
+              title: 'Order By',
+              type: 'string',
+              description:
+                "common separated list of fields to order by, prefix with '-' to sort descendingly.",
+            },
+            name: 'order_by',
+            in: 'query',
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: {
+              'application/json': {
+                schema: {
+                  title: 'Response Get Scheduled Tasks Scheduled Tasks Get',
+                  type: 'array',
+                  items: {
+                    $ref: '#/components/schemas/api_server.models.tortoise_models.scheduled_task.ScheduledTask.leaf',
+                  },
+                },
+              },
+            },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+      post: {
+        tags: ['Tasks'],
+        summary: 'Post Scheduled Task',
+        description:
+          'Create a scheduled task. Below are some examples of how the schedules are represented.\nFor more examples, check the docs of the underlying library used [here](https://github.com/dbader/schedule/blob/6eb0b5346b1ce35ece5050e65789fa6e44368175/docs/examples.rst).\n\n| every | to | period | at | description |\n| - | - | - | - | - |\n| 10 | - | minutes | - | Every 10 minutes |\n| - | - | hour | - | Every hour |\n| - | - | day | 10:30 | Every day at 10:30am |\n| - | - | monday | - | Every monday |\n| - | - | wednesday | 13:15 | Every wednesday at 01:15pm |\n| - | - | minute | :17 | Every 17th sec of a mintue |\n| 5 | 10 | seconds | - | Every 5-10 seconds (randomly) |',
+        operationId: 'post_scheduled_task_scheduled_tasks_post',
+        requestBody: {
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/PostScheduledTaskRequest' },
+            },
+          },
+          required: true,
+        },
+        responses: {
+          '201': {
+            description: 'Successful Response',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/api_server.models.tortoise_models.scheduled_task.ScheduledTask.leaf',
+                },
+              },
+            },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
+    '/scheduled_tasks/{task_id}': {
+      get: {
+        tags: ['Tasks'],
+        summary: 'Get Scheduled Task',
+        operationId: 'get_scheduled_task_scheduled_tasks__task_id__get',
+        parameters: [
+          {
+            required: true,
+            schema: { title: 'Task Id', type: 'integer' },
+            name: 'task_id',
+            in: 'path',
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/api_server.models.tortoise_models.scheduled_task.ScheduledTask.leaf',
+                },
+              },
+            },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+      delete: {
+        tags: ['Tasks'],
+        summary: 'Del Scheduled Tasks',
+        operationId: 'del_scheduled_tasks_scheduled_tasks__task_id__delete',
+        parameters: [
+          {
+            required: true,
+            schema: { title: 'Task Id', type: 'integer' },
+            name: 'task_id',
+            in: 'path',
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: { 'application/json': { schema: {} } },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
     '/favorite_tasks': {
       get: {
         tags: ['Tasks'],
@@ -1173,25 +1334,26 @@ export default {
             in: 'query',
           },
           {
+            description: 'defaults to 100',
             required: false,
             schema: {
               title: 'Limit',
-              maximum: 1000000.0,
+              maximum: 1000.0,
               exclusiveMinimum: 0.0,
               type: 'integer',
-              default: 1000000,
+              description: 'defaults to 100',
             },
             name: 'limit',
             in: 'query',
           },
           {
+            description: 'defaults to 0',
             required: false,
             schema: {
               title: 'Offset',
-              maximum: 1000000.0,
               minimum: 0.0,
               type: 'integer',
-              default: 0,
+              description: 'defaults to 0',
             },
             name: 'offset',
             in: 'query',
@@ -2482,6 +2644,21 @@ export default {
         type: 'object',
         properties: { name: { title: 'Name', type: 'string' } },
       },
+      PostScheduledTaskRequest: {
+        title: 'PostScheduledTaskRequest',
+        required: ['task_request', 'schedules'],
+        type: 'object',
+        properties: {
+          task_request: { $ref: '#/components/schemas/TaskRequest' },
+          schedules: {
+            title: 'Schedules',
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/api_server.models.tortoise_models.scheduled_task.ScheduledTaskSchedule.leaf',
+            },
+          },
+        },
+      },
       PostUsers: {
         title: 'PostUsers',
         required: ['username'],
@@ -2870,6 +3047,11 @@ export default {
             type: 'integer',
             description: '(Optional) The earliest time that this task may start',
           },
+          unix_millis_request_time: {
+            title: 'Unix Millis Request Time',
+            type: 'integer',
+            description: '(Optional) The time that this request was initiated',
+          },
           priority: {
             title: 'Priority',
             type: 'object',
@@ -2887,6 +3069,11 @@ export default {
             type: 'array',
             items: { type: 'string' },
             description: 'Labels to describe the purpose of the task dispatch request',
+          },
+          initiator: {
+            title: 'Initiator',
+            type: 'string',
+            description: '(Optional) An identifier for the entity that requested this task',
           },
         },
       },
@@ -3164,6 +3351,45 @@ export default {
           msg: { title: 'Message', type: 'string' },
           type: { title: 'Error Type', type: 'string' },
         },
+      },
+      'api_server.models.tortoise_models.scheduled_task.ScheduledTask.leaf': {
+        title: 'ScheduledTask',
+        required: ['id', 'created_by'],
+        type: 'object',
+        properties: {
+          id: { title: 'Id', maximum: 2147483647.0, minimum: 1.0, type: 'integer' },
+          task_request: { title: 'Task Request' },
+          created_by: { title: 'Created By', maxLength: 255, type: 'string' },
+          last_ran: { title: 'Last Ran', type: 'string', format: 'date-time', nullable: true },
+          next_run: { title: 'Next Run', type: 'string', format: 'date-time', nullable: true },
+        },
+        additionalProperties: false,
+      },
+      'api_server.models.tortoise_models.scheduled_task.ScheduledTaskSchedule.leaf': {
+        title: 'ScheduledTaskSchedule',
+        required: ['period'],
+        type: 'object',
+        properties: {
+          every: {
+            title: 'Every',
+            maximum: 32767.0,
+            minimum: -32768.0,
+            type: 'integer',
+            nullable: true,
+          },
+          to: { title: 'To', maximum: 32767.0, minimum: -32768.0, type: 'integer', nullable: true },
+          period: {
+            title: 'Period',
+            maxLength: 9,
+            type: 'string',
+            description:
+              'Monday: monday<br/>Tuesday: tuesday<br/>Wednesday: wednesday<br/>Thursday: thursday<br/>Friday: friday<br/>Saturday: saturday<br/>Sunday: sunday<br/>Day: day<br/>Hour: hour<br/>Minute: minute',
+          },
+          at: { title: 'At', maxLength: 255, type: 'string', nullable: true },
+        },
+        additionalProperties: false,
+        description:
+          'The schedules for a scheduled task request.<br/>A scheduled task may have multiple schedules.',
       },
       'api_server.models.tortoise_models.tasks.TaskFavorite.leaf': {
         title: 'TaskFavorite',

@@ -129,6 +129,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [workcells, setWorkcells] = React.useState<string[]>();
   const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
   const [refreshTaskQueueTableCount, setRefreshTaskQueueTableCount] = React.useState(0);
+  const [username, setUsername] = React.useState<string | null>(null);
 
   const curTheme = React.useContext(SettingsContext).themeMode;
 
@@ -139,6 +140,16 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       console.error(`error logging out: ${(e as Error).message}`);
     }
   }
+
+  React.useEffect(() => {
+    if (!rmf) {
+      return;
+    }
+    (async () => {
+      const user = (await rmf.defaultApi.getUserUserGet()).data;
+      setUsername(user.username);
+    })();
+  }, [rmf]);
 
   React.useEffect(() => {
     const sub = AppEvents.refreshTaskQueueTableCount.subscribe((currentValue) => {
@@ -375,6 +386,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       </Menu>
       {openCreateTaskForm && (
         <CreateTaskForm
+          user={username ? username : 'unknown user'}
           cleaningZones={placeNames}
           loopWaypoints={placeNames}
           deliveryWaypoints={placeNames}
