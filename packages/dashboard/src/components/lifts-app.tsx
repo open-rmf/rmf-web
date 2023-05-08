@@ -1,4 +1,13 @@
-import { SxProps, Table, TableBody, TableCell, TableHead, TableRow, useTheme } from '@mui/material';
+import {
+  SxProps,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import { BuildingMap, LiftState } from 'api-client';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
@@ -44,23 +53,19 @@ const LiftCard = ({ children, ...otherProps }: LiftCardProps) => {
     switch (liftState?.door_state) {
       case LiftStateModel.DOOR_OPEN:
         return {
-          backgroundColor: theme.palette.success.main,
-          color: theme.palette.success.contrastText,
+          color: theme.palette.success.main,
         };
       case LiftStateModel.DOOR_CLOSED:
         return {
-          backgroundColor: theme.palette.error.main,
-          color: theme.palette.error.contrastText,
+          color: theme.palette.error.main,
         };
       case LiftStateModel.DOOR_MOVING:
         return {
-          backgroundColor: theme.palette.warning.main,
-          color: theme.palette.warning.contrastText,
+          color: theme.palette.warning.main,
         };
       default:
         return {
-          backgroundColor: theme.palette.action.disabledBackground,
-          color: theme.palette.action.disabled,
+          color: theme.palette.action.disabledBackground,
         };
     }
   })();
@@ -70,14 +75,24 @@ const LiftCard = ({ children, ...otherProps }: LiftCardProps) => {
       <TableCell>{otherProps.name}</TableCell>
       <TableCell>{liftState?.current_floor || '?'}</TableCell>
       <TableCell>{liftState?.destination_floor || 'Unknown'}</TableCell>
-      <TableCell sx={doorStateLabelStyle}>{currDoorMotion}</TableCell>
-      <TableCell align="center">
+      <TableCell sx={doorStateLabelStyle}>
+        <Typography
+          component="p"
+          sx={{
+            marginRight: liftState?.door_state === LiftStateModel.DOOR_OPEN ? 2 : 0,
+            fontWeight: 'bold',
+            fontSize: 14,
+            display: 'inline-block',
+          }}
+        >
+          {currDoorMotion}
+        </Typography>
         <ArrowUpwardIcon sx={currMotion === 'Up' ? motionArrowActiveStyle : motionArrowIdleStyle} />
         <ArrowDownwardIcon
           sx={currMotion === 'Down' ? motionArrowActiveStyle : motionArrowIdleStyle}
         />
       </TableCell>
-      <TableCell align="center" sx={{ margin: 0, padding: 0 }}>
+      <TableCell align="right" sx={{ marginRight: 1, paddingRight: 1 }}>
         <LiftControls
           availableLevels={otherProps.lift.levels}
           currentLevel={liftState?.current_floor}
@@ -116,7 +131,6 @@ export const LiftsApp = createMicroApp('Lifts', () => {
           <TableCell>Current floor</TableCell>
           <TableCell>Destination floor</TableCell>
           <TableCell>Door state</TableCell>
-          <TableCell></TableCell>
           <TableCell></TableCell>
         </TableRow>
       </TableHead>
