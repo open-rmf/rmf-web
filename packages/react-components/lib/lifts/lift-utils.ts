@@ -25,13 +25,13 @@ export function doorStateToString(doorState?: number): string {
 
   switch (doorState) {
     case RmfLiftState.DOOR_OPEN:
-      return 'Open';
+      return 'OPEN';
     case RmfLiftState.DOOR_CLOSED:
-      return 'Closed';
+      return 'CLOSED';
     case RmfLiftState.DOOR_MOVING:
-      return 'Moving';
+      return 'MOVING';
     default:
-      return `Unknown (${doorState})`;
+      return `UNKNOWN (${doorState})`;
   }
 }
 
