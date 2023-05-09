@@ -638,7 +638,7 @@ function defaultTask(): TaskRequest {
     unix_millis_earliest_start_time: Date.now(),
     unix_millis_request_time: Date.now(),
     priority: { type: 'binary', value: 0 },
-    initiator: '',
+    requester: '',
   };
 }
 
@@ -781,7 +781,7 @@ export function CreateTaskForm({
   const handleSubmit: React.MouseEventHandler = async (ev) => {
     ev.preventDefault();
     for (const t of taskRequests) {
-      t.initiator = user;
+      t.requester = user;
       t.unix_millis_request_time = Date.now();
     }
     if (!submitTasks) {
@@ -907,7 +907,7 @@ export function CreateTaskForm({
                           unix_millis_earliest_start_time: Date.now(),
                           unix_millis_request_time: Date.now(),
                           priority: favoriteTask.priority,
-                          initiator: user,
+                          requester: user,
                         },
                       ];
                     });

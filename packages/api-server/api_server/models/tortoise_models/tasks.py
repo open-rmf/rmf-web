@@ -21,7 +21,7 @@ class TaskState(Model):
     unix_millis_finish_time = DatetimeField(null=True, index=True)
     status = CharField(255, null=True, index=True)
     unix_millis_request_time = DatetimeField(null=True, index=True)
-    initiator = CharField(255, null=True, index=True)
+    requester = CharField(255, null=True, index=True)
 
 
 class TaskEventLog(Model):

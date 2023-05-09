@@ -130,12 +130,12 @@ export function TaskDataGridTable({
       filterable: true,
     },
     {
-      field: 'initiator',
-      headerName: 'Initiator',
+      field: 'requester',
+      headerName: 'Requester',
       width: 150,
       editable: false,
       valueGetter: (params: GridValueGetterParams) =>
-        params.row.booking.initiator ? params.row.booking.initiator : 'unknown',
+        params.row.booking.requester ? params.row.booking.requester : 'unknown',
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,

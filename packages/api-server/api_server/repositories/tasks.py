@@ -46,8 +46,8 @@ class TaskRepository:
                 and datetime.fromtimestamp(
                     task_state.booking.unix_millis_request_time / 1000
                 ),
-                "initiator": task_state.booking.initiator
-                if task_state.booking.initiator
+                "requester": task_state.booking.requester
+                if task_state.booking.requester
                 else None,
             },
             id_=task_state.booking.id,

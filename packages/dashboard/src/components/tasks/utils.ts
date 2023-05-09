@@ -50,7 +50,7 @@ export function downloadCsvMinimal(timestamp: Date, allTasks: TaskState[]) {
   const rowSeparator = '\n';
   const keys = [
     'Date',
-    'Initiator',
+    'Requester',
     'ID',
     'Category',
     'Assignee',
@@ -64,7 +64,7 @@ export function downloadCsvMinimal(timestamp: Date, allTasks: TaskState[]) {
       task.booking.unix_millis_request_time
         ? `${new Date(task.booking.unix_millis_request_time).toLocaleDateString()}`
         : 'unknown',
-      task.booking.initiator ? task.booking.initiator : 'unknown',
+      task.booking.requester ? task.booking.requester : 'unknown',
       task.booking.id,
       task.category ? task.category : 'unknown',
       task.assigned_to ? task.assigned_to.name : 'unknown',
