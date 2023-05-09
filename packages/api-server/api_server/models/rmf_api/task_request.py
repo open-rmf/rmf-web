@@ -27,7 +27,7 @@ class TaskRequest(BaseModel):
     labels: Optional[List[str]] = Field(
         None, description="Labels to describe the purpose of the task dispatch request"
     )
-    initiator: Optional[str] = Field(
+    requester: Optional[str] = Field(
         None,
         description="(Optional) An identifier for the entity that requested this task",
     )

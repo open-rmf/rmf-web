@@ -40,7 +40,10 @@ class Booking(BaseModel):
     labels: Optional[List[str]] = Field(
         None, description="Information about how and why this task was booked"
     )
-    initiator: Optional[str] = Field(None, description="Task initiator")
+    requester: Optional[str] = Field(
+        None,
+        description="(Optional) An identifier for the entity that requested this task",
+    )
 
 
 class Category(BaseModel):
@@ -64,6 +67,12 @@ class Status1(Enum):
 class Assignment(BaseModel):
     fleet_name: Optional[str] = None
     expected_robot_name: Optional[str] = None
+
+
+class Dispatch(BaseModel):
+    status: Status1
+    assignment: Optional[Assignment] = None
+    errors: Optional[List[error.Error]] = None
 
 
 class EstimateMillis(BaseModel):
@@ -145,12 +154,6 @@ class SkipPhaseRequest(BaseModel):
         None,
         description="Information about an undo skip request that applied to this request",
     )
-
-
-class Dispatch(BaseModel):
-    status: Status1
-    assignment: Optional[Assignment] = None
-    errors: Optional[List[error.Error]] = None
 
 
 class Phase(BaseModel):
