@@ -1,100 +1,104 @@
-import React from 'react';
+import * as React from 'react';
 import {
   Box,
   Button,
-  Grid,
   LinearProgress,
   LinearProgressProps,
+  TextField,
   Theme,
   Typography,
   Divider,
-  TextField,
 } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { makeStyles, createStyles } from '@mui/styles';
-import { Detail2 } from 'api-client';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    title: {
-      '&.MuiDialogTitle-root': {
-        padding: theme.spacing(1),
-        textAlign: 'center',
-        fontWeight: 'bold',
-      },
-    },
-    subtitle: {
-      '&.MuiTypography-root': {
-        fontWeight: 'bold',
-      },
-    },
     textField: {
       background: theme.palette.background.default,
+      pointerEvents: 'none',
     },
   }),
 );
 
-const LinearProgressWithLabel = (props: LinearProgressProps & { value: number }) => {
-  return (
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <Box sx={{ width: '100%', mr: 1 }}>
-        <LinearProgress variant="determinate" {...props} />
-      </Box>
-      <Box sx={{ minWidth: 35 }}>
-        <Typography variant="body2" color="text.secondary">{`${Math.round(
-          props.value * 100,
-        )}%`}</Typography>
-      </Box>
-    </Box>
-  );
-};
-
 export interface AlertContent {
   title: string;
-  value: string | Detail2;
+  value: string;
 }
 
+export interface CloseAlertDialogProps {
+  title: string;
+}
+
+export const CloseAlertDialog = React.memo((props: CloseAlertDialogProps) => {
+  const { title } = props;
+  return <Dialog key={title} open={false} />;
+});
+
 export interface DialogAlertProps {
-  stopShowing: () => void;
-  dialogTitle: string;
-  progress: number;
+  onDismiss: () => void;
+  onAcknowledge?: () => void;
+  acknowledgedBy?: string;
+  title: string;
+  progress?: number;
   alertContents: AlertContent[];
   backgroundColor: string;
-  show: boolean;
 }
 
 export const AlertDialog = React.memo((props: DialogAlertProps) => {
-  const classes = useStyles();
+  const LinearProgressWithLabel = (props: LinearProgressProps & { value: number }) => {
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ width: '100%', mr: 1 }}>
+          <LinearProgress variant="determinate" {...props} />
+        </Box>
+        <Box sx={{ minWidth: 35 }}>
+          <Typography variant="body2" color="text.secondary">{`${Math.round(
+            props.value * 100,
+          )}%`}</Typography>
+        </Box>
+      </Box>
+    );
+  };
 
   const returnDialogContent = (alertContents: AlertContent[]) => {
     return (
       <>
         {alertContents.map((message, index) => (
-          <Grid key={index} container mb={1} alignItems="center" spacing={1}>
-            <Grid item xs={3}>
-              <Typography className={classes.subtitle}>{message.title}</Typography>
-            </Grid>
-            <Grid item xs={9}>
-              <TextField
-                size="small"
-                value={message.value}
-                multiline
-                InputProps={{
-                  readOnly: true,
-                  className: classes.textField,
-                }}
-              />
-            </Grid>
-          </Grid>
+          <div key={index}>
+            <TextField
+              label={message.title}
+              id="standard-size-small"
+              size="small"
+              variant="filled"
+              InputProps={{ readOnly: true, className: classes.textField }}
+              fullWidth={true}
+              multiline
+              maxRows={4}
+              margin="dense"
+              value={message.value}
+            />
+          </div>
         ))}
       </>
     );
   };
 
-  const { stopShowing, dialogTitle, progress, alertContents, backgroundColor, show } = props;
+  const {
+    onDismiss,
+    onAcknowledge,
+    acknowledgedBy,
+    title,
+    progress,
+    alertContents,
+    backgroundColor,
+  } = props;
+  const classes = useStyles();
+  const [isOpen, setIsOpen] = React.useState(true);
+  const [acknowledged, setAcknowledged] = React.useState(acknowledgedBy !== undefined);
 
   return (
     <Dialog
@@ -104,19 +108,54 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
           boxShadow: 'none',
         },
       }}
-      open={show}
-      maxWidth="xs"
+      maxWidth="sm"
+      fullWidth={true}
+      open={isOpen}
+      key={title}
     >
-      <DialogTitle className={classes.title}>Alert</DialogTitle>
+      <DialogTitle align="center">{title}</DialogTitle>
       <Divider />
-      <DialogTitle className={classes.title}>{dialogTitle}</DialogTitle>
-      <Box sx={{ width: '100%' }}>
-        <LinearProgressWithLabel value={progress} />
-      </Box>
+      {progress ? (
+        <>
+          <Typography variant="body2" fontWeight="bold" ml={3} mt={1}>
+            Task progress
+          </Typography>
+          <Box width={0.95} ml={3}>
+            <LinearProgressWithLabel value={progress} />
+          </Box>
+        </>
+      ) : null}
       <DialogContent>{returnDialogContent(alertContents)}</DialogContent>
+
       <DialogActions>
-        <Button onClick={stopShowing} autoFocus>
-          Close
+        {acknowledged || onAcknowledge === undefined ? (
+          <Button size="small" variant="contained" disabled={true} autoFocus>
+            {acknowledgedBy ? `Acknowledged by ${acknowledgedBy}` : 'Acknowledged'}
+          </Button>
+        ) : (
+          <Button
+            size="small"
+            variant="contained"
+            onClick={() => {
+              setAcknowledged(true);
+              onAcknowledge();
+            }}
+            disabled={false}
+            autoFocus
+          >
+            Acknowledge
+          </Button>
+        )}
+        <Button
+          size="small"
+          variant="contained"
+          onClick={() => {
+            setIsOpen(false);
+            onDismiss();
+          }}
+          autoFocus
+        >
+          {acknowledged ? 'Close' : 'Dismiss'}
         </Button>
       </DialogActions>
     </Dialog>

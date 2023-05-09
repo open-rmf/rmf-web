@@ -1,6 +1,7 @@
 import Debug from 'debug';
 import { io, Socket } from 'socket.io-client';
 import {
+  ApiServerModelsTortoiseModelsAlertsAlertLeaf,
   BuildingMap,
   DispenserHealth,
   DispenserState,
@@ -15,6 +16,7 @@ import {
   TaskState,
 } from './openapi';
 
+type Alert = ApiServerModelsTortoiseModelsAlertsAlertLeaf;
 type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
 const debug = Debug('rmf-client');
@@ -112,6 +114,10 @@ export class SioClient {
 
   subscribeTaskLogs(taskId: string, listener: Listener<TaskEventLog>): Subscription {
     return this.subscribe<TaskEventLog>(`/tasks/${taskId}/log`, listener);
+  }
+
+  subscribeAlerts(listener: Listener<Alert>): Subscription {
+    return this.subscribe<Alert>(`/alerts`, listener);
   }
 }
 

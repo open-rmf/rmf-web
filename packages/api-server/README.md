@@ -1,3 +1,7 @@
+# Open-RMF API Server
+
+This API server sets up the necessary endpoints with an Open-RMF deployment and enables the use of the web dashboard. The server comes with the capability of logging to databases, as well as handling authentication and permissions.
+
 # Setup
 
 If not already done so, [install dependencies](../../README.md#Install-dependencies), you can use
@@ -5,6 +9,10 @@ If not already done so, [install dependencies](../../README.md#Install-dependenc
 pnpm install -w --filter api-server...
 ```
 to install dependencies for only this package.
+
+# API
+
+Check out the latest API definitions [here](https://open-rmf.github.io/rmf-web/docs/api-server), or visit `/docs` relative to your running server's url, e.g. `http://localhost:8000/docs`.
 
 # Run the server
 
@@ -61,6 +69,33 @@ postgres://<user>:<password>@<host>/<database>
 ```
 
 for more information, see https://tortoise-orm.readthedocs.io/en/latest/databases.html.
+
+### PostgreSQL
+If you would like to use PostgreSQL, you will also need to install and set it up. The defaults are for PostgreSQL to be listening on 127.0.0.1:5432.
+
+#### Docker
+We can use Docker to quickly bring up a PostgreSQL instance.
+
+Install docker: `https://docs.docker.com/engine/install/ubuntu/`
+Start a a database instance: `docker run -it --rm --name rmf-postgres --network=host -e POSTGRES_PASSWORD=postgres -d postgres`
+
+To stop the instance: `docker kill rmf-postgres`
+
+#### Bare Metal
+Alternatively, we can install PostgreSQL 'bare metal'.
+```
+apt install postgresql postgresql-contrib -y
+# Set a default password
+sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"
+
+sudo systemctl restart postgresql
+# interactive prompt
+sudo -i -u postgres
+```
+To manually reset the database:
+```
+sudo -u postgres bash -c "dropdb postgres; createdb postgres"
+```
 
 ## Running behind a proxy
 

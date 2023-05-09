@@ -26,108 +26,66 @@ function InfoValue({ children }: React.PropsWithChildren<unknown>) {
   return <span className={classes.infoValue}>{children}</span>;
 }
 
-// interface CleanTaskInfoProps {
-//   task: TaskState;
-// }
-
-// function CleanTaskInfo({ task }: CleanTaskInfoProps) {
-//   return (
-//     <InfoLine>
-//       <span>Start Waypoint:</span>
-//       <span style={{ float: 'right' }}>{parseTaskDetail(task, task?.category).to}</span>
-//     </InfoLine>
-//   );
-// }
-
-// interface LoopTaskInfoProps {
-//   task: TaskState;
-// }
-
-// function LoopTaskInfo({ task }: LoopTaskInfoProps) {
-//   return (
-//     <>
-//       <InfoLine>
-//         <span>Start Waypoint:</span>
-//         <InfoValue>{parseTaskDetail(task, task?.category).from}</InfoValue>
-//       </InfoLine>
-//       <InfoLine>
-//         <span>Finish Waypoint:</span>
-//         <InfoValue>{parseTaskDetail(task, task?.category).to}</InfoValue>
-//       </InfoLine>
-//       <InfoLine>
-//         <span>Num of Loops:</span>
-//         <InfoValue>{task.phases ? Object.keys(task.phases).length / 2 : null}</InfoValue>
-//       </InfoLine>
-//     </>
-//   );
-// }
-
-// interface DeliveryTaskInfoProps {
-//   task: TaskState;
-// }
-
-// function DeliveryTaskInfoProps({ task }: DeliveryTaskInfoProps) {
-//   // TODO - replace all temp values
-//   return (
-//     <>
-//       <InfoLine>
-//         <span>Pickup Location:</span>
-//         <span style={{ float: 'right' }}>{'temp'}</span>
-//       </InfoLine>
-//       <InfoLine>
-//         <span>Pickup Dispenser:</span>
-//         <span style={{ float: 'right' }}>{'temp'}</span>
-//       </InfoLine>
-//       <InfoLine>
-//         <span>Dropoff Location:</span>
-//         <span style={{ float: 'right' }}>{parseTaskDetail(task, task?.category).from}</span>
-//       </InfoLine>
-//       <InfoLine>
-//         <span>Dropoff Ingestor:</span>
-//         <span style={{ float: 'right' }}>{parseTaskDetail(task, task?.category).to}</span>
-//       </InfoLine>
-//     </>
-//   );
-// }
-
 export interface TaskInfoProps {
   task: TaskState;
+  title?: string;
 }
 
-export function TaskInfo({ task }: TaskInfoProps): JSX.Element {
+export function TaskInfo({ task, title }: TaskInfoProps): JSX.Element {
   const theme = useTheme();
-  // const taskType = task.category;
-  // const detailInfo = (() => {
-  //   switch (taskType) {
-  //     case 'Clean':
-  //       return <CleanTaskInfo task={task} />;
-  //     case 'Loop':
-  //       return <LoopTaskInfo task={task} />;
-  //     case 'Delivery':
-  //       return <DeliveryTaskInfoProps task={task} />;
-  //     default:
-  //       return null;
-  //   }
-  // })();
+
+  const [startWaypoint, setStartWaypoint] = React.useState('');
+  const [finishWaypoint, setFinishWaypoint] = React.useState('');
+
+  React.useEffect(() => {
+    if (task.phases) {
+      /**
+       * We assumed that phases[index].detail always return
+       * "Go to " + goal_name_,
+          "Moving the robot from " + start_name + " to " + goal_name_,
+          *estimate);
+
+          According with this code
+       * https://github.com/open-rmf/rmf_task/blob/main/rmf_task_sequence/src/rmf_task_sequence/events/GoToPlace.cpp#L252
+       */
+      const firstPhase = Object.values(task.phases)[0]?.detail;
+
+      if (!firstPhase) {
+        setStartWaypoint('');
+        return;
+      }
+
+      const colonIndex = firstPhase.toString().indexOf(':');
+      const closingBracketIndex = firstPhase.toString().indexOf(']');
+
+      setStartWaypoint(firstPhase.toString().substring(colonIndex + 1, closingBracketIndex));
+
+      const lastPhase = Object.values(task.phases).pop()?.detail;
+      if (lastPhase) {
+        setFinishWaypoint(lastPhase.toString().replace(/^.+:/, '').replace(/.$/, ''));
+      }
+    }
+  }, [task]);
 
   return (
     <StyledDiv>
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
-        {task.booking.id}
+        {title ? title : task.booking.id}
       </Typography>
       <Divider />
       <div style={{ marginBottom: theme.spacing(1) }}></div>
       <InfoLine>
-        <span>State:</span>
+        <span>Status:</span>
         <InfoValue>{task.status || 'unknown'}</InfoValue>
       </InfoLine>
-      {/* {detailInfo} */}
-      {/* <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Typography variant="h6">Progress</Typography>
-        <Button variant="contained" onClick={() => onShowLogs && onShowLogs(!showLogs)}>
-          {showLogs ? 'CLOSE LOGS' : 'SHOW LOGS'}
-        </Button>
-      </div> */}
+      <InfoLine>
+        <span>Start Waypoint:</span>
+        <InfoValue>{startWaypoint}</InfoValue>
+      </InfoLine>
+      <InfoLine>
+        <span>Finish Waypoint</span>
+        <InfoValue>{finishWaypoint}</InfoValue>
+      </InfoLine>
       <div style={{ padding: '4px' }}>
         <TaskTimeline taskState={task} />
       </div>

@@ -334,7 +334,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             New Task
           </Button>
           <Divider orientation="vertical" sx={{ marginLeft: 1, marginRight: 2 }} />
-          <Typography variant="caption">Powered by OpenRMF</Typography>
+          <Typography variant="caption">Powered by Open-RMF</Typography>
           {extraToolbarItems}
           <IconButton
             id="show-settings-btn"

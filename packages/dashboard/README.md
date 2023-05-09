@@ -1,17 +1,17 @@
-## rmf-dashboard
+# rmf-dashboard
 
-Hello! `rmf-dashboard` is a web application that provides overall visualization and control over the RMF system.
+`rmf-dashboard` is a web application that provides overall visualization and control over the RMF system.
 
-## Building
+# Setup
 
-Follow the build instructions [here](../../README.md#building-the-dashboard).
+Follow the build instructions [here](../../README.md/#launching).
 
 ## Configuration
 
 ### (Optional) Import external resources.
 
 ```bash
-npm run setup
+pnpm run setup
 ```
 
 When executing this command, a prompt will be displayed, and it will guide you through the process.
@@ -45,12 +45,12 @@ Upon completion of the configuration, a file called .resources.json will be crea
 In case you want to modify the source of your resources. You can rerun the command:
 
 ```bash
-npm run setup
+pnpm run setup
 ```
 
 ### Environment Variables
 
-The default launch script with `npm start` launches only the backend servers without any simulation instances from `rmf_demos`. For local development, the launch script `npm run start:sim` launches a headless simulation instance on top of all the backend servers.
+The default launch script with `pnpm start` launches only the backend servers without any simulation instances from `rmf_demos`. For local development, the launch script `pnpm run start:sim` launches a headless simulation instance on top of all the backend servers.
 
 In production, the dashboard would need to be configured so that it knows where to find the various services.
 
