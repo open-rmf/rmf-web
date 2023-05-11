@@ -66,6 +66,7 @@ const DoorCard = ({ children, ...otherProps }: DoorCardProps) => {
       <TableCell>{doorTypeToString(otherProps.type)}</TableCell>
       <TableCell sx={labelStyle}>
         <Typography
+          data-testid="door-state"
           component="p"
           sx={{
             fontWeight: 'bold',
@@ -79,6 +80,7 @@ const DoorCard = ({ children, ...otherProps }: DoorCardProps) => {
         <Button
           variant="contained"
           size="small"
+          aria-label="open"
           sx={{ marginRight: 2 }}
           onClick={() =>
             rmf?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(otherProps.name, {
@@ -91,6 +93,7 @@ const DoorCard = ({ children, ...otherProps }: DoorCardProps) => {
         <Button
           variant="contained"
           size="small"
+          aria-label="close"
           onClick={() =>
             rmf?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(otherProps.name, {
               mode: RmfDoorMode.MODE_CLOSED,
