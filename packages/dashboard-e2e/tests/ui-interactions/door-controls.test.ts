@@ -4,9 +4,7 @@ describe('door controls', () => {
   it('door starts closed', async () => {
     const appBar = await getAppBar();
     await (await appBar.$('button[aria-label="System Overview"]')).click();
-
     const doorState = $('.MuiTableCell-alignLeft:nth-child(4) p');
-
     expect(doorState.getText('CLOSED'));
   });
 
