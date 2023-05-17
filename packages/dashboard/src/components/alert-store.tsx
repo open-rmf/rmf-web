@@ -1,4 +1,5 @@
 import { ApiServerModelsTortoiseModelsAlertsAlertLeaf, RobotState, TaskState } from 'api-client';
+import { AppEvents } from './app-events';
 import React from 'react';
 import { RmfAppContext } from './rmf-app';
 import { TaskAlertHandler } from './tasks/task-alert';
@@ -49,6 +50,7 @@ export const AlertStore = React.memo(() => {
         default:
         // do nothing in default case
       }
+      AppEvents.newAlert.next(alert);
     });
     return () => sub.unsubscribe();
   }, [rmf]);

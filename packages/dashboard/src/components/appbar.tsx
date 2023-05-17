@@ -15,7 +15,11 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import { TaskRequest, TaskFavoritePydantic as TaskFavorite } from 'api-client';
+import {
+  ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
+  TaskRequest,
+  TaskFavoritePydantic as TaskFavorite,
+} from 'api-client';
 import React from 'react';
 import {
   AppBarTab,
@@ -48,6 +52,7 @@ import {
 import { RmfAppContext } from './rmf-app';
 import { parseTasksFile } from './tasks/utils';
 import { AppEvents } from './app-events';
+import { Subscription } from 'rxjs';
 
 export type TabValue = 'infrastructure' | 'robots' | 'tasks' | 'custom1' | 'custom2' | 'admin';
 
@@ -129,6 +134,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
   const [refreshTaskQueueTableCount, setRefreshTaskQueueTableCount] = React.useState(0);
   const [alertListAnchor, setAlertListAnchor] = React.useState<HTMLElement | null>(null);
+  const [unacknowledgedAlertsNum, setUnacknowledgedAlertsNum] = React.useState(0);
 
   const curTheme = React.useContext(SettingsContext).themeMode;
 
@@ -166,10 +172,23 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     if (!rmf) {
       return;
     }
-    const sub = rmf.buildingMapObs.subscribe((map) =>
-      setPlaceNames(getPlaces(map).map((p) => p.vertex.name)),
+
+    const subs: Subscription[] = [];
+    subs.push(
+      rmf.buildingMapObs.subscribe((map) =>
+        setPlaceNames(getPlaces(map).map((p) => p.vertex.name)),
+      ),
     );
-    return () => sub.unsubscribe();
+    subs.push(
+      AppEvents.newAlert.subscribe((_) => {
+        (async () => {
+          const resp = await rmf.alertsApi.getAlertsAlertsGet();
+          const alerts = resp.data as Alert[];
+          setUnacknowledgedAlertsNum(alerts.length);
+        })();
+      }),
+    );
+    return () => subs.forEach((s) => s.unsubscribe());
   }, [rmf]);
 
   const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
@@ -328,7 +347,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             color="inherit"
             onClick={(event) => setAlertListAnchor(event.currentTarget)}
           >
-            <Badge badgeContent={10} color="secondary">
+            <Badge badgeContent={unacknowledgedAlertsNum} color="secondary">
               <Notifications />
             </Badge>
           </IconButton>
