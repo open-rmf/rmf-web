@@ -184,10 +184,23 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
         (async () => {
           const resp = await rmf.alertsApi.getAlertsAlertsGet();
           const alerts = resp.data as Alert[];
-          setUnacknowledgedAlertsNum(alerts.length);
+          setUnacknowledgedAlertsNum(
+            alerts.filter(
+              (alert) => !(alert.acknowledged_by && alert.unix_millis_acknowledged_time),
+            ).length,
+          );
         })();
       }),
     );
+    // Get the initial number of unacknowledged alerts
+    (async () => {
+      const resp = await rmf.alertsApi.getAlertsAlertsGet();
+      const alerts = resp.data as Alert[];
+      setUnacknowledgedAlertsNum(
+        alerts.filter((alert) => !(alert.acknowledged_by && alert.unix_millis_acknowledged_time))
+          .length,
+      );
+    })();
     return () => subs.forEach((s) => s.unsubscribe());
   }, [rmf]);
 
