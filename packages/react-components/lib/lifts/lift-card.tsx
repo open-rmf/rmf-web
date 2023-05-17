@@ -13,10 +13,8 @@ import {
 import React from 'react';
 import { LiftState } from 'rmf-models';
 import { doorStateToString, motionStateToString } from './lift-utils';
-import { Lift } from 'api-client';
 
 export interface LiftCardProps extends CardProps {
-  lift: Lift;
   name: string;
   motionState?: number;
   doorState?: number;
