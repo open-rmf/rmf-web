@@ -1,7 +1,6 @@
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import SettingsIcon from '@mui/icons-material/Settings';
-import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
+import { AccountCircle, AddOutlined, Notifications, Settings } from '@mui/icons-material';
 import {
+  Badge,
   Button,
   CardContent,
   Divider,
@@ -129,6 +128,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [workcells, setWorkcells] = React.useState<string[]>();
   const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
   const [refreshTaskQueueTableCount, setRefreshTaskQueueTableCount] = React.useState(0);
+  const [alertListAnchor, setAlertListAnchor] = React.useState<HTMLElement | null>(null);
 
   const curTheme = React.useContext(SettingsContext).themeMode;
 
@@ -222,7 +222,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   };
   //#endregion CreateTaskForm props
 
-  //#region "Favorite Task"
+  //#region 'Favorite Task'
   React.useEffect(() => {
     if (!rmf) {
       return;
@@ -264,7 +264,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     },
     [rmf, refreshTaskQueueTableCount],
   );
-  //#endregion "Favorite Task"
+  //#endregion 'Favorite Task'
 
   return (
     <>
@@ -319,9 +319,29 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             size="small"
             onClick={() => setOpenCreateTaskForm(true)}
           >
-            <AddOutlinedIcon />
+            <AddOutlined />
             New Task
           </Button>
+          <IconButton
+            id="alert-list-button"
+            aria-label="alert-list-button"
+            color="inherit"
+            onClick={(event) => setAlertListAnchor(event.currentTarget)}
+          >
+            <Badge badgeContent={10} color="secondary">
+              <Notifications />
+            </Badge>
+          </IconButton>
+          <Menu
+            anchorEl={alertListAnchor}
+            open={!!alertListAnchor}
+            onClose={() => setAlertListAnchor(null)}
+          >
+            <MenuItem>one</MenuItem>
+            <MenuItem>two</MenuItem>
+            <MenuItem>three</MenuItem>
+            <MenuItem>four</MenuItem>
+          </Menu>
           <Divider orientation="vertical" sx={{ marginLeft: 1, marginRight: 2 }} />
           <Typography variant="caption">Powered by Open-RMF</Typography>
           {extraToolbarItems}
@@ -331,7 +351,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             color="inherit"
             onClick={(ev) => setSettingsAnchor(ev.currentTarget)}
           >
-            <SettingsIcon />
+            <Settings />
           </IconButton>
           {profile && (
             <>
@@ -341,7 +361,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
                 color="inherit"
                 onClick={(event) => setAnchorEl(event.currentTarget)}
               >
-                <AccountCircleIcon />
+                <AccountCircle />
               </IconButton>
               <Menu
                 anchorEl={anchorEl}
