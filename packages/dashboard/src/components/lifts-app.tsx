@@ -73,7 +73,7 @@ const LiftTableRow = ({ lift }: LiftTableRowProps) => {
         <Typography
           component="p"
           sx={{
-            marginRight: liftState?.door_state === LiftStateModel.DOOR_OPEN ? 2 : 0,
+            marginRight: liftState?.door_state === LiftStateModel.DOOR_OPEN ? 4 : 2,
             fontWeight: 'bold',
             fontSize: 14,
             display: 'inline-block',
