@@ -1,11 +1,7 @@
 import { Button, SxProps, Typography, useTheme } from '@mui/material';
 import { BuildingMap, DoorState } from 'api-client';
 import React from 'react';
-import {
-  DoorCardProps as BaseDoorCardProps,
-  doorModeToString,
-  doorTypeToString,
-} from 'react-components';
+import { doorModeToString, doorTypeToString } from 'react-components';
 import { DoorMode, DoorMode as RmfDoorMode } from 'rmf-models';
 import { createMicroApp } from './micro-app';
 import { RmfAppContext } from './rmf-app';
@@ -15,9 +11,13 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
-type DoorCardProps = Omit<BaseDoorCardProps, 'mode'>;
+interface DoorTableRowProps {
+  doorName: string;
+  levelName: string;
+  doorType: number;
+}
 
-const DoorCard = ({ children, ...otherProps }: DoorCardProps) => {
+const DoorTableRow = ({ doorName, levelName, doorType }: DoorTableRowProps) => {
   const theme = useTheme();
   const rmf = React.useContext(RmfAppContext);
   const [doorState, setDoorState] = React.useState<DoorState | null>(null);
@@ -26,9 +26,9 @@ const DoorCard = ({ children, ...otherProps }: DoorCardProps) => {
     if (!rmf) {
       return;
     }
-    const sub = rmf.getDoorStateObs(otherProps.name).subscribe(setDoorState);
+    const sub = rmf.getDoorStateObs(doorName).subscribe(setDoorState);
     return () => sub.unsubscribe();
-  }, [rmf, otherProps.name]);
+  }, [rmf, doorName]);
 
   const labelStyle = React.useMemo<SxProps>(() => {
     const { current_mode } = doorState ?? {};
@@ -60,10 +60,10 @@ const DoorCard = ({ children, ...otherProps }: DoorCardProps) => {
   }, [theme, doorState]);
 
   return (
-    <TableRow key={otherProps.name}>
-      <TableCell>{otherProps.name}</TableCell>
-      <TableCell>{otherProps.level}</TableCell>
-      <TableCell>{doorTypeToString(otherProps.type)}</TableCell>
+    <TableRow key={doorName}>
+      <TableCell>{doorName}</TableCell>
+      <TableCell>{levelName}</TableCell>
+      <TableCell>{doorTypeToString(doorType)}</TableCell>
       <TableCell sx={labelStyle}>
         <Typography
           data-testid="door-state"
@@ -83,7 +83,7 @@ const DoorCard = ({ children, ...otherProps }: DoorCardProps) => {
           aria-label="open"
           sx={{ marginRight: 2 }}
           onClick={() =>
-            rmf?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(otherProps.name, {
+            rmf?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(doorName, {
               mode: RmfDoorMode.MODE_OPEN,
             })
           }
@@ -95,7 +95,7 @@ const DoorCard = ({ children, ...otherProps }: DoorCardProps) => {
           size="small"
           aria-label="close"
           onClick={() =>
-            rmf?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(otherProps.name, {
+            rmf?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(doorName, {
               mode: RmfDoorMode.MODE_CLOSED,
             })
           }
@@ -134,14 +134,12 @@ export const DoorsApp = createMicroApp('Doors', () => {
         {buildingMap &&
           buildingMap.levels.flatMap((level) =>
             level.doors.map((door) => (
-              <DoorCard
+              <DoorTableRow
                 key={door.name}
-                name={door.name}
-                level={level.name}
-                type={door.door_type}
-                sx={{ width: 200 }}
-                aria-labelledby={`door-cell-${door.name}`}
-              ></DoorCard>
+                doorName={door.name}
+                levelName={level.name}
+                doorType={door.door_type}
+              />
             )),
           )}
       </TableBody>
