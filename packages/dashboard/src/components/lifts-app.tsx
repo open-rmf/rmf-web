@@ -8,35 +8,29 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { BuildingMap, LiftState } from 'api-client';
+import { BuildingMap, Lift, LiftState } from 'api-client';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import React from 'react';
-import {
-  LiftCardProps as BaseLiftCardProps,
-  LiftControls,
-  doorStateToString,
-  motionStateToString,
-} from 'react-components';
+import { LiftControls, doorStateToString, motionStateToString } from 'react-components';
 import { createMicroApp } from './micro-app';
 import { RmfAppContext } from './rmf-app';
 import { LiftState as LiftStateModel } from 'rmf-models';
 
-type LiftCardProps = Omit<
-  BaseLiftCardProps,
-  'motionState' | 'doorState' | 'currentFloor' | 'destinationFloor'
->;
+interface LiftTableRowProps {
+  lift: Lift;
+}
 
-const LiftCard = ({ children, ...otherProps }: LiftCardProps) => {
+const LiftTableRow = ({ lift }: LiftTableRowProps) => {
   const rmf = React.useContext(RmfAppContext);
   const [liftState, setLiftState] = React.useState<LiftState | null>(null);
   React.useEffect(() => {
     if (!rmf) {
       return;
     }
-    const sub = rmf.getLiftStateObs(otherProps.name).subscribe(setLiftState);
+    const sub = rmf.getLiftStateObs(lift.name).subscribe(setLiftState);
     return () => sub.unsubscribe();
-  }, [rmf, otherProps.name]);
+  }, [rmf, lift.name]);
 
   const theme = useTheme();
   const currMotion = motionStateToString(liftState?.motion_state);
@@ -71,8 +65,8 @@ const LiftCard = ({ children, ...otherProps }: LiftCardProps) => {
   })();
 
   return (
-    <TableRow key={otherProps.name}>
-      <TableCell>{otherProps.name}</TableCell>
+    <TableRow key={lift.name}>
+      <TableCell>{lift.name}</TableCell>
       <TableCell>{liftState?.current_floor || '?'}</TableCell>
       <TableCell>{liftState?.destination_floor || 'Unknown'}</TableCell>
       <TableCell sx={doorStateLabelStyle}>
@@ -94,10 +88,10 @@ const LiftCard = ({ children, ...otherProps }: LiftCardProps) => {
       </TableCell>
       <TableCell align="right" sx={{ marginRight: 1, padding: 0, paddingRight: 1 }}>
         <LiftControls
-          availableLevels={otherProps.lift.levels}
+          availableLevels={lift.levels}
           currentLevel={liftState?.current_floor}
           onRequestSubmit={(_ev, doorState, requestType, destination) =>
-            rmf?.liftsApi.postLiftRequestLiftsLiftNameRequestPost(otherProps.lift.name, {
+            rmf?.liftsApi.postLiftRequestLiftsLiftNameRequestPost(lift.name, {
               destination,
               door_mode: doorState,
               request_type: requestType,
@@ -137,7 +131,7 @@ export const LiftsApp = createMicroApp('Lifts', () => {
       <TableBody>
         {buildingMap &&
           buildingMap.lifts.map((lift) => {
-            return <LiftCard key={lift.name} name={lift.name} lift={lift} sx={{ width: 200 }} />;
+            return <LiftTableRow key={lift.name} lift={lift} />;
           })}
       </TableBody>
     </Table>
