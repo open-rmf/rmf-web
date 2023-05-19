@@ -272,15 +272,15 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
         <LogoButton src={brandingIconPath} alt="logo" sx={{ width: logoSize }} />
         <NavigationBar value={tabValue}>
           <AppBarTab
-            label="Infrastructure"
+            label="Map"
             value="infrastructure"
-            aria-label="Infrastructure"
+            aria-label="Map"
             onTabClick={() => history.push(DashboardRoute)}
           />
           <AppBarTab
-            label="Robots"
+            label="System Overview"
             value="robots"
-            aria-label="Robots"
+            aria-label="System Overview"
             onTabClick={() => history.push(RobotsRoute)}
           />
           <AppBarTab
