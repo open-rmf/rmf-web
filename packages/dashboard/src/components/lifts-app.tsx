@@ -76,6 +76,7 @@ const LiftTableRow = ({ lift }: LiftTableRowProps) => {
             marginRight: liftState?.door_state === LiftStateModel.DOOR_OPEN ? 4 : 2,
             fontWeight: 'bold',
             fontSize: 14,
+
             display: 'inline-block',
           }}
         >
