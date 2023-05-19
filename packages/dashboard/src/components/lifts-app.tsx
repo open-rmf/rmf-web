@@ -67,8 +67,8 @@ const LiftTableRow = ({ lift }: LiftTableRowProps) => {
   return (
     <TableRow key={lift.name}>
       <TableCell>{lift.name}</TableCell>
-      <TableCell>{liftState?.current_floor || '?'}</TableCell>
-      <TableCell>{liftState?.destination_floor || 'Unknown'}</TableCell>
+      <TableCell>{liftState?.current_floor || 'N/A'}</TableCell>
+      <TableCell>{liftState?.destination_floor || 'N/A'}</TableCell>
       <TableCell sx={doorStateLabelStyle}>
         <Typography
           component="p"
