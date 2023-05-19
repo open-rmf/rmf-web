@@ -18,5 +18,6 @@ export const AppEvents = {
   robotSelect: new Subject<[fleetName: string, robotName: string] | null>(),
   taskSelect: new Subject<TaskState | null>(),
   refreshTaskQueueTableCount: new Subject<number>(),
-  newAlert: new Subject<Alert | null>(),
+  refreshAlertCount: new Subject<number>(),
+  alertListOpenedAlert: new Subject<Alert | null>(),
 };

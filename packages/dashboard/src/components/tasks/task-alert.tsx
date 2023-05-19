@@ -22,12 +22,12 @@ interface TaskAlert extends TaskEventLog {
   acknowledgedBy?: string;
 }
 
-export interface TaskAlertHandlerProps {
-  alerts: Alert[];
-  removeAlert: (id: string) => void;
+export interface TaskAlertDialogProps {
+  alert: Alert;
+  removeAlert: () => void;
 }
 
-export function TaskAlertHandler({ alerts, removeAlert }: TaskAlertHandlerProps): JSX.Element {
+export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): JSX.Element {
   const getErrorLogEntries = (logs: TaskEventLog) => {
     let errorLogs: LogEntry[] = [];
     if (logs.log) {
@@ -88,7 +88,8 @@ export function TaskAlertHandler({ alerts, removeAlert }: TaskAlertHandlerProps)
       for (let entry of errorLogEntries) {
         consolidatedErrorMessages += `${new Date(entry.unix_millis_time).toLocaleString()} - ${
           entry.text
-        }\n`;
+        }
+          \n`;
       }
 
       content = [
@@ -143,112 +144,103 @@ export function TaskAlertHandler({ alerts, removeAlert }: TaskAlertHandlerProps)
 
   const rmf = React.useContext(RmfAppContext);
   const { showAlert } = React.useContext(AppControllerContext);
-  const [taskAlerts, setTaskAlerts] = React.useState<Record<string, TaskAlert>>({});
+  const [taskAlert, setTaskAlert] = React.useState<TaskAlert | null>(null);
   React.useEffect(() => {
     if (!rmf) {
       return;
     }
 
-    for (let alert of alerts) {
-      (async () => {
-        try {
-          const logs = (
-            await rmf.tasksApi.getTaskLogTasksTaskIdLogGet(
-              alert.original_id,
-              `0,${Number.MAX_SAFE_INTEGER}`,
-            )
-          ).data;
-          const state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(alert.original_id))
-            .data;
+    (async () => {
+      try {
+        const logs = (
+          await rmf.tasksApi.getTaskLogTasksTaskIdLogGet(
+            alert.original_id,
+            `0,${Number.MAX_SAFE_INTEGER}`,
+          )
+        ).data;
+        const state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(alert.original_id)).data;
 
-          if (logs && state) {
-            const errorLogEntries = getErrorLogEntries(logs);
-            let acknowledgedBy: string | undefined = undefined;
-            if (alert.acknowledged_by) {
-              acknowledgedBy = alert.acknowledged_by;
-            } else if (alert.unix_millis_acknowledged_time) {
-              acknowledgedBy = '-';
-            }
-
-            setTaskAlerts((prev) => {
-              return {
-                ...prev,
-                [alert.original_id]: {
-                  title: getAlertTitle(state, errorLogEntries),
-                  progress: getTaskProgress(state),
-                  content: getAlertContent(state, errorLogEntries),
-                  color: getAlertColor(state, errorLogEntries),
-                  acknowledgedBy: acknowledgedBy,
-                  ...logs,
-                },
-              };
-            });
+        if (logs && state) {
+          const errorLogEntries = getErrorLogEntries(logs);
+          let acknowledgedBy: string | undefined = undefined;
+          if (alert.acknowledged_by) {
+            acknowledgedBy = alert.acknowledged_by;
+          } else if (alert.unix_millis_acknowledged_time) {
+            acknowledgedBy = '-';
           }
-        } catch {
-          console.log(`Failed to fetch task logs for ${alert.original_id}`);
+
+          setTaskAlert({
+            title: getAlertTitle(state, errorLogEntries),
+            progress: getTaskProgress(state),
+            content: getAlertContent(state, errorLogEntries),
+            color: getAlertColor(state, errorLogEntries),
+            acknowledgedBy: acknowledgedBy,
+            ...logs,
+          });
         }
-      })();
+      } catch {
+        console.log(`Failed to fetch task logs for ${alert.original_id}`);
+      }
+    })();
+  }, [rmf, alert.original_id, alert.acknowledged_by, alert.unix_millis_acknowledged_time]);
+
+  const acknowledgeAlert = () => {
+    if (!rmf) {
+      throw new Error('alerts api not available');
     }
-  }, [rmf, alerts]);
+    if (!taskAlert) {
+      return;
+    }
+
+    (async () => {
+      const ackResponse = (
+        await rmf?.alertsApi.acknowledgeAlertAlertsAlertIdPost(taskAlert.task_id)
+      ).data;
+      if (ackResponse.id !== ackResponse.original_id) {
+        let showAlertMessage = `Alert ${ackResponse.original_id} acknowledged`;
+        if (ackResponse.acknowledged_by) {
+          showAlertMessage += ` by User ${ackResponse.acknowledged_by}`;
+        }
+        if (ackResponse.unix_millis_acknowledged_time) {
+          const ackSecondsAgo =
+            (new Date().getTime() - ackResponse.unix_millis_acknowledged_time) / 1000;
+          showAlertMessage += ` ${Math.round(ackSecondsAgo)}s ago`;
+        }
+        showAlert('success', showAlertMessage);
+      } else {
+        console.log(`Failed to acknowledge alert ID ${taskAlert.task_id}`);
+        showAlert('error', `Failed to acknowledge alert ID ${taskAlert.task_id}`);
+      }
+    })();
+  };
+
+  if (!taskAlert) {
+    return <></>;
+  }
 
   return (
     <>
-      {Object.values(taskAlerts).map((alert) => {
-        const dismissAlert = () => {
-          removeAlert(alert.task_id);
-        };
-        const acknowledgeAlert = () => {
-          if (!rmf) {
-            throw new Error('alerts api not available');
-          }
-          (async () => {
-            const ackResponse = (
-              await rmf?.alertsApi.acknowledgeAlertAlertsAlertIdPost(alert.task_id)
-            ).data;
-            if (ackResponse.id !== ackResponse.original_id) {
-              let showAlertMessage = `Alert ${ackResponse.original_id} acknowledged`;
-              if (ackResponse.acknowledged_by) {
-                showAlertMessage += ` by User ${ackResponse.acknowledged_by}`;
-              }
-              if (ackResponse.unix_millis_acknowledged_time) {
-                const ackSecondsAgo =
-                  (new Date().getTime() - ackResponse.unix_millis_acknowledged_time) / 1000;
-                showAlertMessage += ` ${Math.round(ackSecondsAgo)}s ago`;
-              }
-              showAlert('success', showAlertMessage);
-            } else {
-              console.log(`Failed to acknowledge alert ID ${alert.task_id}`);
-              showAlert('error', `Failed to acknowledge alert ID ${alert.task_id}`);
-            }
-          })();
-        };
-
-        if (alert.acknowledgedBy) {
-          return (
-            <AlertDialog
-              key={alert.task_id}
-              onDismiss={dismissAlert}
-              acknowledgedBy={alert.acknowledgedBy}
-              title={alert.title}
-              progress={alert.progress}
-              alertContents={alert.content}
-              backgroundColor={alert.color}
-            />
-          );
-        }
-
-        return (
-          <AlertDialog
-            key={alert.task_id}
-            onDismiss={dismissAlert}
-            onAcknowledge={acknowledgeAlert}
-            title={alert.title}
-            progress={alert.progress}
-            alertContents={alert.content}
-            backgroundColor={alert.color}
-          />
-        );
-      })}
+      {taskAlert.acknowledgedBy ? (
+        <AlertDialog
+          key={taskAlert.task_id}
+          onDismiss={removeAlert}
+          acknowledgedBy={taskAlert.acknowledgedBy}
+          title={taskAlert.title}
+          progress={taskAlert.progress}
+          alertContents={taskAlert.content}
+          backgroundColor={taskAlert.color}
+        />
+      ) : (
+        <AlertDialog
+          key={taskAlert.task_id}
+          onDismiss={removeAlert}
+          onAcknowledge={acknowledgeAlert}
+          title={taskAlert.title}
+          progress={taskAlert.progress}
+          alertContents={taskAlert.content}
+          backgroundColor={taskAlert.color}
+        />
+      )}
     </>
   );
 }

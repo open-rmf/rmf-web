@@ -135,6 +135,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [refreshTaskQueueTableCount, setRefreshTaskQueueTableCount] = React.useState(0);
   const [alertListAnchor, setAlertListAnchor] = React.useState<HTMLElement | null>(null);
   const [unacknowledgedAlertsNum, setUnacknowledgedAlertsNum] = React.useState(0);
+  const [alertList, setAlertList] = React.useState<Alert[]>([]);
 
   const curTheme = React.useContext(SettingsContext).themeMode;
 
@@ -180,7 +181,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       ),
     );
     subs.push(
-      AppEvents.newAlert.subscribe((_) => {
+      AppEvents.refreshAlertCount.subscribe((_) => {
         (async () => {
           const resp = await rmf.alertsApi.getAlertsAlertsGet();
           const alerts = resp.data as Alert[];
@@ -298,6 +299,22 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   );
   //#endregion 'Favorite Task'
 
+  const handleOpenAlertList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (!rmf) {
+      return;
+    }
+    (async () => {
+      const resp = await rmf.alertsApi.getAlertsAlertsGet();
+      const alerts = resp.data as Alert[];
+      setAlertList(alerts.reverse());
+    })();
+    setAlertListAnchor(event.currentTarget);
+  };
+
+  const openAlertDialog = (alert: Alert) => {
+    AppEvents.alertListOpenedAlert.next(alert);
+  };
+
   return (
     <>
       <HeaderBar>
@@ -358,7 +375,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             id="alert-list-button"
             aria-label="alert-list-button"
             color="inherit"
-            onClick={(event) => setAlertListAnchor(event.currentTarget)}
+            onClick={handleOpenAlertList}
           >
             <Badge badgeContent={unacknowledgedAlertsNum} color="secondary">
               <Notifications />
@@ -368,11 +385,20 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             anchorEl={alertListAnchor}
             open={!!alertListAnchor}
             onClose={() => setAlertListAnchor(null)}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           >
-            <MenuItem>one</MenuItem>
-            <MenuItem>two</MenuItem>
-            <MenuItem>three</MenuItem>
-            <MenuItem>four</MenuItem>
+            {alertList.map((alert) => (
+              <MenuItem
+                key={alert.id}
+                onClick={() => {
+                  openAlertDialog(alert);
+                  setAlertListAnchor(null);
+                }}
+              >
+                {alert.original_id}
+              </MenuItem>
+            ))}
           </Menu>
           <Divider orientation="vertical" sx={{ marginLeft: 1, marginRight: 2 }} />
           <Typography variant="caption">Powered by Open-RMF</Typography>
