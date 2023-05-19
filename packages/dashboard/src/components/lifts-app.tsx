@@ -24,6 +24,7 @@ interface LiftTableRowProps {
 const LiftTableRow = ({ lift }: LiftTableRowProps) => {
   const rmf = React.useContext(RmfAppContext);
   const [liftState, setLiftState] = React.useState<LiftState | null>(null);
+
   React.useEffect(() => {
     if (!rmf) {
       return;
