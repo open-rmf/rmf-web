@@ -75,27 +75,27 @@ async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
         await fleet_repo.save_fleet_state(fleet_state)
         fleet_events.fleet_states.on_next(fleet_state)
 
-        if fleet_state.robots is None:
-            return
-        for name, state in fleet_state.robots.items():
-            # Alert ID is the fleet name and robot name delimited by two
-            # underscores. If this is modified, be sure to change how it is
-            # parsed in the RobotAlertHandler dashboard component
-            alert_id = f"{fleet_state.name}__{name}"
-            alert_exists = await alert_repo.alert_exists(alert_id)
+        # if fleet_state.robots is None:
+        #     return
+        # for name, state in fleet_state.robots.items():
+        #     # Alert ID is the fleet name and robot name delimited by two
+        #     # underscores. If this is modified, be sure to change how it is
+        #     # parsed in the RobotAlertHandler dashboard component
+        #     alert_id = f"{fleet_state.name}__{name}"
+        #     alert_exists = await alert_repo.alert_exists(alert_id)
 
-            # If the robot state is an error and the alert does not exist yet,
-            # we create a new alert and pass it on as an event
-            if state.status == mdl.Status2.error and not alert_exists:
-                alert = await alert_repo.create_alert(alert_id, "robot")
-                alert_events.alerts.on_next(alert)
-            # If there is an existing alert and the robot status is not error,
-            # we consider it to have resolved itself, we create a new alert with
-            # id containing the current unix millis, set it to acknowledged,
-            # delete the old alert, pass the acknowledged alert as an event so
-            # the frontend can close any open dialogs
-            elif state.status != mdl.Status2.error and alert_exists:
-                await alert_repo.acknowledge_alert(alert_id)
+        #     # If the robot state is an error and the alert does not exist yet,
+        #     # we create a new alert and pass it on as an event
+        #     if state.status == mdl.Status2.error and not alert_exists:
+        #         alert = await alert_repo.create_alert(alert_id, "robot")
+        #         alert_events.alerts.on_next(alert)
+        #     # If there is an existing alert and the robot status is not error,
+        #     # we consider it to have resolved itself, we create a new alert with
+        #     # id containing the current unix millis, set it to acknowledged,
+        #     # delete the old alert, pass the acknowledged alert as an event so
+        #     # the frontend can close any open dialogs
+        #     elif state.status != mdl.Status2.error and alert_exists:
+        #         await alert_repo.acknowledge_alert(alert_id)
 
     elif payload_type == "fleet_log_update":
         fleet_log = mdl.FleetLog(**msg["data"])
