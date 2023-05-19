@@ -76,11 +76,6 @@ export const AlertStore = React.memo(() => {
   React.useEffect(() => {
     const subs: Subscription[] = [];
     subs.push(
-      AppEvents.refreshAlertCount.subscribe((currentValue) => {
-        setRefreshAlertCount(currentValue + 1);
-      }),
-    );
-    subs.push(
       AppEvents.alertListOpenedAlert.subscribe((alert) => {
         if (alert) {
           categorizeAndPushAlerts(alert);
@@ -96,10 +91,14 @@ export const AlertStore = React.memo(() => {
     }
     const sub = rmf.alertObsStore.subscribe(async (alert) => {
       categorizeAndPushAlerts(alert);
-      AppEvents.refreshAlertCount.next(refreshAlertCount + 1);
+      setRefreshAlertCount((prev) => {
+        const newRefreshAlertCount = prev + 1;
+        AppEvents.refreshAlertCount.next(newRefreshAlertCount);
+        return newRefreshAlertCount;
+      });
     });
     return () => sub.unsubscribe();
-  }, [rmf, refreshAlertCount]);
+  }, [rmf]);
 
   const removeTaskAlert = (id: string) => {
     const filteredTaskAlerts: Record<string, Alert> = {};
