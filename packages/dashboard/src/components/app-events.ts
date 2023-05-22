@@ -1,5 +1,5 @@
 import {
-  ApiServerModelsTortoiseModelsAlertsAlertLeaf,
+  ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
   Dispenser,
   Door,
   Ingestor,
@@ -7,8 +7,6 @@ import {
   TaskState,
 } from 'api-client';
 import { Subject } from 'rxjs';
-
-type Alert = ApiServerModelsTortoiseModelsAlertsAlertLeaf;
 
 export const AppEvents = {
   doorSelect: new Subject<Door | null>(),

@@ -307,16 +307,13 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     (async () => {
       const resp = await rmf.alertsApi.getAlertsAlertsGet();
       const alerts = resp.data as Alert[];
-      // const ackList: Alert[] = [];
       const unackList: Alert[] = [];
       for (let alert of alerts) {
         if (alert.acknowledged_by || alert.unix_millis_acknowledged_time) {
-          // ackList.push(alert);
         } else {
           unackList.push(alert);
         }
       }
-      // setAcknowledgedAlertList(ackList.reverse());
       setUnacknowledgedAlertList(unackList.reverse());
     })();
     setAlertListAnchor(event.currentTarget);
@@ -405,10 +402,10 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
               },
             }}
           >
-            {unacknowledgedAlertList.length > 0 ? (
-              <MenuItem dense disabled divider>
-                <Typography variant="body2" sx={{ textDecoration: 'underline' }} noWrap>
-                  Unacknowledged
+            {unacknowledgedAlertList.length === 0 ? (
+              <MenuItem dense disabled>
+                <Typography variant="body2" noWrap>
+                  No unacknowledged alerts
                 </Typography>
               </MenuItem>
             ) : null}
