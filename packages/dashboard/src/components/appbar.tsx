@@ -137,7 +137,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [alertListAnchor, setAlertListAnchor] = React.useState<HTMLElement | null>(null);
   const [unacknowledgedAlertsNum, setUnacknowledgedAlertsNum] = React.useState(0);
   const [unacknowledgedAlertList, setUnacknowledgedAlertList] = React.useState<Alert[]>([]);
-  // const [acknowledgedAlertList, setAcknowledgedAlertList] = React.useState<Alert[]>([]);
 
   const curTheme = React.useContext(SettingsContext).themeMode;
 
@@ -441,50 +440,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
                 </MenuItem>
               </Tooltip>
             ))}
-            {/* <Divider />
-            <MenuItem dense disabled>
-              <Typography
-                variant="body2"
-                sx={{textDecoration: 'underline'}}
-                noWrap
-              >
-                Acknowledged
-              </Typography>
-            </MenuItem>
-            {acknowledgedAlertList.map((alert) => (
-              <Tooltip
-                key={alert.id}
-                title={
-                  <div>
-                    <Typography display="block">ID: {alert.original_id}</Typography>
-                    <Typography display="block">
-                      On:{' '}
-                      {alert.unix_millis_acknowledged_time
-                        ? new Date(alert.unix_millis_acknowledged_time).toLocaleString()
-                        : 'N/A'}
-                    </Typography>
-                    <Typography display="block">By: {alert.acknowledged_by ?? 'N/A'}</Typography>
-                  </div>
-                }
-                placement="right"
-              >
-                <MenuItem
-                  dense
-                  onClick={() => {
-                    openAlertDialog(alert);
-                    setAlertListAnchor(null);
-                  }}
-                >
-                  <HowToReg/>
-                  <Typography variant="body2" mx={2} noWrap>
-                    {new Date(alert.unix_millis_created_time).toLocaleString()}
-                  </Typography>
-                  <Typography variant="body2" noWrap>
-                    {alert.category.toUpperCase()} alert
-                  </Typography>
-                </MenuItem>
-              </Tooltip>
-            ))} */}
           </Menu>
           <Divider orientation="vertical" sx={{ marginLeft: 1, marginRight: 2 }} />
           <Typography variant="caption">Powered by Open-RMF</Typography>
