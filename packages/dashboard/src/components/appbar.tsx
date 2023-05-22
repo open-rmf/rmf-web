@@ -13,6 +13,7 @@ import {
   Radio,
   RadioGroup,
   Toolbar,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import {
@@ -53,6 +54,7 @@ import { RmfAppContext } from './rmf-app';
 import { parseTasksFile } from './tasks/utils';
 import { AppEvents } from './app-events';
 import { Subscription } from 'rxjs';
+import { format } from 'date-fns';
 
 export type TabValue = 'infrastructure' | 'robots' | 'tasks' | 'custom1' | 'custom2' | 'admin';
 
@@ -135,7 +137,8 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [refreshTaskQueueTableCount, setRefreshTaskQueueTableCount] = React.useState(0);
   const [alertListAnchor, setAlertListAnchor] = React.useState<HTMLElement | null>(null);
   const [unacknowledgedAlertsNum, setUnacknowledgedAlertsNum] = React.useState(0);
-  const [alertList, setAlertList] = React.useState<Alert[]>([]);
+  const [unacknowledgedAlertList, setUnacknowledgedAlertList] = React.useState<Alert[]>([]);
+  const [acknowledgedAlertList, setAcknowledgedAlertList] = React.useState<Alert[]>([]);
 
   const curTheme = React.useContext(SettingsContext).themeMode;
 
@@ -306,7 +309,17 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     (async () => {
       const resp = await rmf.alertsApi.getAlertsAlertsGet();
       const alerts = resp.data as Alert[];
-      setAlertList(alerts.reverse());
+      const ackList: Alert[] = [];
+      const unackList: Alert[] = [];
+      for (let alert of alerts) {
+        if (alert.acknowledged_by || alert.unix_millis_acknowledged_time) {
+          ackList.push(alert);
+        } else {
+          unackList.push(alert);
+        }
+      }
+      setAcknowledgedAlertList(ackList.reverse());
+      setUnacknowledgedAlertList(unackList.reverse());
     })();
     setAlertListAnchor(event.currentTarget);
   };
@@ -387,17 +400,82 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             onClose={() => setAlertListAnchor(null)}
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            PaperProps={{
+              style: {
+                maxHeight: '20rem',
+                maxWidth: '30rem',
+              },
+            }}
           >
-            {alertList.map((alert) => (
-              <MenuItem
-                key={alert.id}
-                onClick={() => {
-                  openAlertDialog(alert);
-                  setAlertListAnchor(null);
-                }}
+            <MenuItem dense disabled>
+              <Typography variant="body2" noWrap>
+                Unacknowledged
+              </Typography>
+            </MenuItem>
+            {unacknowledgedAlertList.map((alert) => (
+              <Tooltip
+                title={
+                  <React.Fragment>
+                    <Typography>ID: {alert.original_id}</Typography>
+                  </React.Fragment>
+                }
+                placement="right"
               >
-                {alert.original_id}
-              </MenuItem>
+                <MenuItem
+                  key={alert.id}
+                  dense
+                  onClick={() => {
+                    openAlertDialog(alert);
+                    setAlertListAnchor(null);
+                  }}
+                >
+                  <Typography variant="body2" mr={2} noWrap>
+                    {new Date(alert.unix_millis_created_time).toLocaleString()}
+                  </Typography>
+                  <Typography variant="body2" noWrap>
+                    {alert.category.toUpperCase()} alert
+                  </Typography>
+                </MenuItem>
+              </Tooltip>
+            ))}
+            <Divider />
+            <MenuItem dense disabled>
+              <Typography variant="body2" noWrap>
+                Acknowledged
+              </Typography>
+            </MenuItem>
+            {acknowledgedAlertList.map((alert) => (
+              <Tooltip
+                title={
+                  <div>
+                    <Typography display="block">ID: {alert.original_id}</Typography>
+                    <Typography display="block">
+                      On:{' '}
+                      {alert.unix_millis_acknowledged_time
+                        ? new Date(alert.unix_millis_acknowledged_time).toLocaleString()
+                        : 'N/A'}
+                    </Typography>
+                    <Typography display="block">By: {alert.acknowledged_by ?? 'N/A'}</Typography>
+                  </div>
+                }
+                placement="right"
+              >
+                <MenuItem
+                  key={alert.id}
+                  dense
+                  onClick={() => {
+                    openAlertDialog(alert);
+                    setAlertListAnchor(null);
+                  }}
+                >
+                  <Typography variant="body2" mr={2} noWrap>
+                    {new Date(alert.unix_millis_created_time).toLocaleString()}
+                  </Typography>
+                  <Typography variant="body2" noWrap>
+                    {alert.category.toUpperCase()} alert
+                  </Typography>
+                </MenuItem>
+              </Tooltip>
             ))}
           </Menu>
           <Divider orientation="vertical" sx={{ marginLeft: 1, marginRight: 2 }} />

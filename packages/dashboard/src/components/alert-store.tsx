@@ -8,7 +8,7 @@ import React from 'react';
 import { RmfAppContext } from './rmf-app';
 import { Subscription } from 'rxjs';
 import { TaskAlertDialog } from './tasks/task-alert';
-// import { RobotAlertDialog } from './robots/robot-alert';
+import { RobotAlertDialog } from './robots/robot-alert';
 
 export interface RobotWithTask {
   task?: TaskState;
@@ -35,13 +35,12 @@ enum AlertCategory {
 export const AlertStore = React.memo(() => {
   const rmf = React.useContext(RmfAppContext);
   const [taskAlerts, setTaskAlerts] = React.useState<Record<string, Alert>>({});
-  // const [robotAlerts, setRobotAlerts] =
-  //   React.useState<Record<string, Alert>>({});
+  const [robotAlerts, setRobotAlerts] = React.useState<Record<string, Alert>>({});
   const [refreshAlertCount, setRefreshAlertCount] = React.useState(0);
 
   const categorizeAndPushAlerts = (alert: Alert) => {
-    // Sanitize existing alerts to handle acknowledged alerts, before adding the
-    // new alert
+    // We check if an existing alert has been acknowledged, remove it before
+    // adding the acknowledged alert.
     switch (alert.category) {
       case AlertCategory.Task:
         setTaskAlerts((prev) => {
@@ -55,19 +54,19 @@ export const AlertStore = React.memo(() => {
           return filteredTaskAlerts;
         });
         break;
-      // case AlertCategory.Fleet:
-      // case AlertCategory.Robot:
-      //   setRobotAlerts((prev) => {
-      //     const filteredRobotAlerts: Record<string, Alert> = {};
-      //     for(let key in prev) {
-      //       if (key !== alert.original_id) {
-      //         filteredRobotAlerts[key] = prev[key];
-      //       }
-      //     }
-      //     filteredRobotAlerts[alert.id] = alert;
-      //     return filteredRobotAlerts;
-      //   });
-      //   break;
+      case AlertCategory.Fleet:
+      case AlertCategory.Robot:
+        setRobotAlerts((prev) => {
+          const filteredRobotAlerts: Record<string, Alert> = {};
+          for (let key in prev) {
+            if (key !== alert.original_id) {
+              filteredRobotAlerts[key] = prev[key];
+            }
+          }
+          filteredRobotAlerts[alert.id] = alert;
+          return filteredRobotAlerts;
+        });
+        break;
       default:
       // do nothing in default case
     }
@@ -82,6 +81,11 @@ export const AlertStore = React.memo(() => {
         }
       }),
     );
+    subs.push(
+      AppEvents.refreshAlertCount.subscribe((count) => {
+        setRefreshAlertCount(count);
+      }),
+    );
     return () => subs.forEach((s) => s.unsubscribe());
   }, []);
 
@@ -91,14 +95,10 @@ export const AlertStore = React.memo(() => {
     }
     const sub = rmf.alertObsStore.subscribe(async (alert) => {
       categorizeAndPushAlerts(alert);
-      setRefreshAlertCount((prev) => {
-        const newRefreshAlertCount = prev + 1;
-        AppEvents.refreshAlertCount.next(newRefreshAlertCount);
-        return newRefreshAlertCount;
-      });
+      AppEvents.refreshAlertCount.next(refreshAlertCount + 1);
     });
     return () => sub.unsubscribe();
-  }, [rmf]);
+  }, [rmf, refreshAlertCount]);
 
   const removeTaskAlert = (id: string) => {
     const filteredTaskAlerts: Record<string, Alert> = {};
@@ -110,15 +110,15 @@ export const AlertStore = React.memo(() => {
     setTaskAlerts(filteredTaskAlerts);
   };
 
-  // const removeRobotAlert = (id: string) => {
-  //   const filteredRobotAlerts: Record<string, Alert> = {}
-  //   for(let key in robotAlerts){
-  //       if(key !== id) {
-  //         filteredRobotAlerts[key] = robotAlerts[key];
-  //       }
-  //   }
-  //   setRobotAlerts(filteredRobotAlerts);
-  // };
+  const removeRobotAlert = (id: string) => {
+    const filteredRobotAlerts: Record<string, Alert> = {};
+    for (let key in robotAlerts) {
+      if (key !== id) {
+        filteredRobotAlerts[key] = robotAlerts[key];
+      }
+    }
+    setRobotAlerts(filteredRobotAlerts);
+  };
 
   return (
     <>
@@ -128,20 +128,12 @@ export const AlertStore = React.memo(() => {
         };
         return <TaskAlertDialog key={alert.id} alert={alert} removeAlert={removeThisAlert} />;
       })}
-      {/* {
-        Object.values(robotAlerts).map((alert) => {
-          const removeThisAlert = () => {
-            removeRobotAlert(alert.id);
-          }
-          return (
-            <RobotAlertDialog
-              key={alert.id}
-              alert={alert}
-              removeAlert={removeThisAlert}
-            />
-          );
-        })
-      } */}
+      {Object.values(robotAlerts).map((alert) => {
+        const removeThisAlert = () => {
+          removeRobotAlert(alert.id);
+        };
+        return <RobotAlertDialog key={alert.id} alert={alert} removeAlert={removeThisAlert} />;
+      })}
     </>
   );
 });
