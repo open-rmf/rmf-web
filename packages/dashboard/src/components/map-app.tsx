@@ -182,33 +182,6 @@ export const MapApp = styled(
       };
     }, [trajManager, currentLevel, trajectoryTime, trajectoryAnimScale]);
 
-    // TODO: There is no way to switch to negotiation mode
-    // const { current: negotiationTrajStore } = React.useRef<
-    //   Record<string, NegotiationTrajectoryResponse>
-    // >({});
-    // const [mode, setMode] = React.useState<'normal' | 'negotiation'>('normal');
-    // const negoTrajectories = React.useMemo<TrajectoryData[]>(() => {
-    //   if (mode !== 'negotiation' || !currentLevel) return [];
-    //   const negoTrajs = negotiationTrajStore[currentLevel.name];
-    //   return negoTrajs
-    //     ? negoTrajs.values.map((v) => ({
-    //         trajectory: v,
-    //         color: 'orange',
-    //         animationScale: trajectoryAnimScale,
-    //         loopAnimation: false,
-    //         conflict: false,
-    //       }))
-    //     : [];
-    // }, [mode, negotiationTrajStore, currentLevel, trajectoryAnimScale]);
-    // const renderedTrajectories = React.useMemo(() => {
-    //   switch (mode) {
-    //     case 'normal':
-    //       return trajectories;
-    //     case 'negotiation':
-    //       return negoTrajectories;
-    //   }
-    // }, [mode, trajectories, negoTrajectories]);
-
     React.useEffect(() => {
       if (!rmf) {
         return;
