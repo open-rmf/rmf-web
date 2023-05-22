@@ -438,7 +438,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
                 </MenuItem>
               </Tooltip>
             ))}
-            <Divider />
+            {/* <Divider />
             <MenuItem dense disabled>
               <Typography variant="body2" noWrap>
                 Acknowledged
@@ -476,7 +476,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
                   </Typography>
                 </MenuItem>
               </Tooltip>
-            ))}
+            ))} */}
           </Menu>
           <Divider orientation="vertical" sx={{ marginLeft: 1, marginRight: 2 }} />
           <Typography variant="caption">Powered by Open-RMF</Typography>
