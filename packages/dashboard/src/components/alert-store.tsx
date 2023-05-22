@@ -36,7 +36,7 @@ export const AlertStore = React.memo(() => {
   const rmf = React.useContext(RmfAppContext);
   const [taskAlerts, setTaskAlerts] = React.useState<Record<string, Alert>>({});
   const [robotAlerts, setRobotAlerts] = React.useState<Record<string, Alert>>({});
-  const [refreshAlertCount, setRefreshAlertCount] = React.useState(0);
+  const refreshAlertCount = React.useRef(0);
 
   const categorizeAndPushAlerts = (alert: Alert) => {
     // We check if an existing alert has been acknowledged, remove it before
@@ -81,11 +81,6 @@ export const AlertStore = React.memo(() => {
         }
       }),
     );
-    subs.push(
-      AppEvents.refreshAlertCount.subscribe((count) => {
-        setRefreshAlertCount(count);
-      }),
-    );
     return () => subs.forEach((s) => s.unsubscribe());
   }, []);
 
@@ -95,10 +90,12 @@ export const AlertStore = React.memo(() => {
     }
     const sub = rmf.alertObsStore.subscribe(async (alert) => {
       categorizeAndPushAlerts(alert);
-      AppEvents.refreshAlertCount.next(refreshAlertCount + 1);
+      refreshAlertCount.current += 1;
+      AppEvents.refreshAlertCount.next(refreshAlertCount.current);
+      console.log('alert-store asked for refresh alert count');
     });
     return () => sub.unsubscribe();
-  }, [rmf, refreshAlertCount]);
+  }, [rmf]);
 
   const removeTaskAlert = (id: string) => {
     const filteredTaskAlerts: Record<string, Alert> = {};

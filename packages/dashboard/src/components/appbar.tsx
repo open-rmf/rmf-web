@@ -1,4 +1,4 @@
-import { AccountCircle, AddOutlined, Notifications, Settings } from '@mui/icons-material';
+import { AccountCircle, AddOutlined, Notifications, Report, Settings } from '@mui/icons-material';
 import {
   Badge,
   Button,
@@ -54,7 +54,6 @@ import { RmfAppContext } from './rmf-app';
 import { parseTasksFile } from './tasks/utils';
 import { AppEvents } from './app-events';
 import { Subscription } from 'rxjs';
-import { format } from 'date-fns';
 
 export type TabValue = 'infrastructure' | 'robots' | 'tasks' | 'custom1' | 'custom2' | 'admin';
 
@@ -138,7 +137,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [alertListAnchor, setAlertListAnchor] = React.useState<HTMLElement | null>(null);
   const [unacknowledgedAlertsNum, setUnacknowledgedAlertsNum] = React.useState(0);
   const [unacknowledgedAlertList, setUnacknowledgedAlertList] = React.useState<Alert[]>([]);
-  const [acknowledgedAlertList, setAcknowledgedAlertList] = React.useState<Alert[]>([]);
+  // const [acknowledgedAlertList, setAcknowledgedAlertList] = React.useState<Alert[]>([]);
 
   const curTheme = React.useContext(SettingsContext).themeMode;
 
@@ -309,16 +308,16 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     (async () => {
       const resp = await rmf.alertsApi.getAlertsAlertsGet();
       const alerts = resp.data as Alert[];
-      const ackList: Alert[] = [];
+      // const ackList: Alert[] = [];
       const unackList: Alert[] = [];
       for (let alert of alerts) {
         if (alert.acknowledged_by || alert.unix_millis_acknowledged_time) {
-          ackList.push(alert);
+          // ackList.push(alert);
         } else {
           unackList.push(alert);
         }
       }
-      setAcknowledgedAlertList(ackList.reverse());
+      // setAcknowledgedAlertList(ackList.reverse());
       setUnacknowledgedAlertList(unackList.reverse());
     })();
     setAlertListAnchor(event.currentTarget);
@@ -407,13 +406,16 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
               },
             }}
           >
-            <MenuItem dense disabled>
-              <Typography variant="body2" noWrap>
-                Unacknowledged
-              </Typography>
-            </MenuItem>
+            {unacknowledgedAlertList.length > 0 ? (
+              <MenuItem dense disabled divider>
+                <Typography variant="body2" sx={{ textDecoration: 'underline' }} noWrap>
+                  Unacknowledged
+                </Typography>
+              </MenuItem>
+            ) : null}
             {unacknowledgedAlertList.map((alert) => (
               <Tooltip
+                key={alert.id}
                 title={
                   <React.Fragment>
                     <Typography>ID: {alert.original_id}</Typography>
@@ -422,14 +424,15 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
                 placement="right"
               >
                 <MenuItem
-                  key={alert.id}
                   dense
                   onClick={() => {
                     openAlertDialog(alert);
                     setAlertListAnchor(null);
                   }}
+                  divider
                 >
-                  <Typography variant="body2" mr={2} noWrap>
+                  <Report />
+                  <Typography variant="body2" mx={2} noWrap>
                     {new Date(alert.unix_millis_created_time).toLocaleString()}
                   </Typography>
                   <Typography variant="body2" noWrap>
@@ -440,12 +443,17 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             ))}
             {/* <Divider />
             <MenuItem dense disabled>
-              <Typography variant="body2" noWrap>
+              <Typography
+                variant="body2"
+                sx={{textDecoration: 'underline'}}
+                noWrap
+              >
                 Acknowledged
               </Typography>
             </MenuItem>
             {acknowledgedAlertList.map((alert) => (
               <Tooltip
+                key={alert.id}
                 title={
                   <div>
                     <Typography display="block">ID: {alert.original_id}</Typography>
@@ -461,14 +469,14 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
                 placement="right"
               >
                 <MenuItem
-                  key={alert.id}
                   dense
                   onClick={() => {
                     openAlertDialog(alert);
                     setAlertListAnchor(null);
                   }}
                 >
-                  <Typography variant="body2" mr={2} noWrap>
+                  <HowToReg/>
+                  <Typography variant="body2" mx={2} noWrap>
                     {new Date(alert.unix_millis_created_time).toLocaleString()}
                   </Typography>
                   <Typography variant="body2" noWrap>
