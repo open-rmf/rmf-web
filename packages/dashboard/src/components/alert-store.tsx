@@ -1,27 +1,9 @@
-import {
-  ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
-  RobotState,
-  TaskState,
-} from 'api-client';
+import { ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert } from 'api-client';
 import { AppEvents } from './app-events';
 import React from 'react';
 import { RmfAppContext } from './rmf-app';
 import { Subscription } from 'rxjs';
 import { TaskAlertDialog } from './tasks/task-alert';
-import { RobotAlertDialog } from './robots/robot-alert';
-
-export interface RobotWithTask {
-  task?: TaskState;
-  robot: RobotState;
-}
-
-export interface AlertStoreProps {
-  robots: RobotWithTask[];
-}
-
-export interface AlertToDisplay extends RobotWithTask {
-  show: boolean;
-}
 
 // This needs to match the enums provided for the Alert model, as it is not
 // provided via the api-client since tortoise's pydantic_model_creator is used.
@@ -35,7 +17,6 @@ enum AlertCategory {
 export const AlertStore = React.memo(() => {
   const rmf = React.useContext(RmfAppContext);
   const [taskAlerts, setTaskAlerts] = React.useState<Record<string, Alert>>({});
-  const [robotAlerts, setRobotAlerts] = React.useState<Record<string, Alert>>({});
   const refreshAlertCount = React.useRef(0);
 
   const categorizeAndPushAlerts = (alert: Alert) => {
@@ -52,19 +33,6 @@ export const AlertStore = React.memo(() => {
           }
           filteredTaskAlerts[alert.id] = alert;
           return filteredTaskAlerts;
-        });
-        break;
-      case AlertCategory.Fleet:
-      case AlertCategory.Robot:
-        setRobotAlerts((prev) => {
-          const filteredRobotAlerts: Record<string, Alert> = {};
-          for (let key in prev) {
-            if (key !== alert.original_id) {
-              filteredRobotAlerts[key] = prev[key];
-            }
-          }
-          filteredRobotAlerts[alert.id] = alert;
-          return filteredRobotAlerts;
         });
         break;
       default:
@@ -92,7 +60,6 @@ export const AlertStore = React.memo(() => {
       categorizeAndPushAlerts(alert);
       refreshAlertCount.current += 1;
       AppEvents.refreshAlertCount.next(refreshAlertCount.current);
-      console.log('alert-store asked for refresh alert count');
     });
     return () => sub.unsubscribe();
   }, [rmf]);
@@ -107,16 +74,6 @@ export const AlertStore = React.memo(() => {
     setTaskAlerts(filteredTaskAlerts);
   };
 
-  const removeRobotAlert = (id: string) => {
-    const filteredRobotAlerts: Record<string, Alert> = {};
-    for (let key in robotAlerts) {
-      if (key !== id) {
-        filteredRobotAlerts[key] = robotAlerts[key];
-      }
-    }
-    setRobotAlerts(filteredRobotAlerts);
-  };
-
   return (
     <>
       {Object.values(taskAlerts).map((alert) => {
@@ -124,12 +81,6 @@ export const AlertStore = React.memo(() => {
           removeTaskAlert(alert.id);
         };
         return <TaskAlertDialog key={alert.id} alert={alert} removeAlert={removeThisAlert} />;
-      })}
-      {Object.values(robotAlerts).map((alert) => {
-        const removeThisAlert = () => {
-          removeRobotAlert(alert.id);
-        };
-        return <RobotAlertDialog key={alert.id} alert={alert} removeAlert={removeThisAlert} />;
       })}
     </>
   );
