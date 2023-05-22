@@ -16,6 +16,7 @@ import {
   LMap,
   loadAffineImage,
   Place,
+  RobotTableData,
   TrajectoryTimeControl,
 } from 'react-components';
 import { AttributionControl, ImageOverlay, LayersControl, Pane } from 'react-leaflet';
@@ -31,6 +32,7 @@ import { RobotData, RobotsOverlay } from './robots-overlay';
 import { TrajectoriesOverlay, TrajectoryData } from './trajectories-overlay';
 import { WaypointsOverlay } from './waypoints-overlay';
 import { WorkcellData, WorkcellsOverlay } from './workcells-overlay';
+import { RobotSummary } from './robots/robot-summary';
 
 type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
@@ -56,6 +58,8 @@ export const MapApp = styled(
     const resourceManager = React.useContext(ResourcesContext);
     const [currentLevel, setCurrentLevel] = React.useState<Level | undefined>(undefined);
     const [disabledLayers, setDisabledLayers] = React.useState<Record<string, boolean>>({});
+    const [openRobotSummary, setOpenRobotSummary] = React.useState(false);
+    const [selectedRobot, setSelectedRobot] = React.useState<RobotTableData>();
 
     const [buildingMap, setBuildingMap] = React.useState<BuildingMap | null>(null);
 
@@ -177,33 +181,6 @@ export const MapApp = styled(
         debug(`cleared interval ${interval}`);
       };
     }, [trajManager, currentLevel, trajectoryTime, trajectoryAnimScale]);
-
-    // TODO: There is no way to switch to negotiation mode
-    // const { current: negotiationTrajStore } = React.useRef<
-    //   Record<string, NegotiationTrajectoryResponse>
-    // >({});
-    // const [mode, setMode] = React.useState<'normal' | 'negotiation'>('normal');
-    // const negoTrajectories = React.useMemo<TrajectoryData[]>(() => {
-    //   if (mode !== 'negotiation' || !currentLevel) return [];
-    //   const negoTrajs = negotiationTrajStore[currentLevel.name];
-    //   return negoTrajs
-    //     ? negoTrajs.values.map((v) => ({
-    //         trajectory: v,
-    //         color: 'orange',
-    //         animationScale: trajectoryAnimScale,
-    //         loopAnimation: false,
-    //         conflict: false,
-    //       }))
-    //     : [];
-    // }, [mode, negotiationTrajStore, currentLevel, trajectoryAnimScale]);
-    // const renderedTrajectories = React.useMemo(() => {
-    //   switch (mode) {
-    //     case 'normal':
-    //       return trajectories;
-    //     case 'negotiation':
-    //       return negoTrajectories;
-    //   }
-    // }, [mode, trajectories, negoTrajectories]);
 
     React.useEffect(() => {
       if (!rmf) {
@@ -474,10 +451,17 @@ export const MapApp = styled(
               bounds={bounds}
               robots={robots}
               hideLabels={disabledLayers['Robots']}
-              onRobotClick={(_ev, robot) => AppEvents.robotSelect.next([robot.fleet, robot.name])}
+              onRobotClick={(_ev, robot) => {
+                setOpenRobotSummary(true);
+                AppEvents.robotSelect.next([robot.fleet, robot.name]);
+                setSelectedRobot(robot);
+              }}
             />
           </LayersControl.Overlay>
         </LayersControl>
+        {openRobotSummary && selectedRobot && (
+          <RobotSummary robot={selectedRobot} onClose={() => setOpenRobotSummary(false)} />
+        )}
 
         <TrajectoryTimeControl
           position="topleft"
