@@ -11,6 +11,7 @@ import { AppControllerContext } from '../app-contexts';
 import { RmfAppContext } from '../rmf-app';
 import { AlertContent, AlertDialog } from 'react-components';
 import { base } from 'react-components';
+import { TaskInspector } from './task-inspector';
 
 type Alert = ApiServerModelsTortoiseModelsAlertsAlertLeaf;
 
@@ -145,6 +146,8 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
   const rmf = React.useContext(RmfAppContext);
   const { showAlert } = React.useContext(AppControllerContext);
   const [taskAlert, setTaskAlert] = React.useState<TaskAlert | null>(null);
+  const [openTaskInspector, setOpenTaskInspector] = React.useState(false);
+  const [taskState, setTaskState] = React.useState<TaskState | null>(null);
   React.useEffect(() => {
     if (!rmf) {
       return;
@@ -161,6 +164,8 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
         const state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(alert.original_id)).data;
 
         if (logs && state) {
+          setTaskState(state);
+
           const errorLogEntries = getErrorLogEntries(logs);
           let acknowledgedBy: string | undefined = undefined;
           if (alert.acknowledged_by) {
@@ -225,6 +230,7 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
           key={taskAlert.task_id}
           onDismiss={removeAlert}
           acknowledgedBy={taskAlert.acknowledgedBy}
+          onInspect={() => setOpenTaskInspector(true)}
           title={taskAlert.title}
           progress={taskAlert.progress}
           alertContents={taskAlert.content}
@@ -235,11 +241,15 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
           key={taskAlert.task_id}
           onDismiss={removeAlert}
           onAcknowledge={acknowledgeAlert}
+          onInspect={() => setOpenTaskInspector(true)}
           title={taskAlert.title}
           progress={taskAlert.progress}
           alertContents={taskAlert.content}
           backgroundColor={taskAlert.color}
         />
+      )}
+      {openTaskInspector && (
+        <TaskInspector task={taskState} onClose={() => setOpenTaskInspector(false)} />
       )}
     </>
   );

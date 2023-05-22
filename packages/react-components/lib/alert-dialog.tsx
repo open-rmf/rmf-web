@@ -41,6 +41,7 @@ export const CloseAlertDialog = React.memo((props: CloseAlertDialogProps) => {
 export interface DialogAlertProps {
   onDismiss: () => void;
   onAcknowledge?: () => void;
+  onInspect?: () => void;
   acknowledgedBy?: string;
   title: string;
   progress?: number;
@@ -90,6 +91,7 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
   const {
     onDismiss,
     onAcknowledge,
+    onInspect,
     acknowledgedBy,
     title,
     progress,
@@ -128,6 +130,11 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
       <DialogContent>{returnDialogContent(alertContents)}</DialogContent>
 
       <DialogActions>
+        {onInspect ? (
+          <Button size="small" variant="contained" onClick={onInspect} disabled={false} autoFocus>
+            Inspect
+          </Button>
+        ) : null}
         {acknowledged || onAcknowledge === undefined ? (
           <Button size="small" variant="contained" disabled={true} autoFocus>
             {acknowledgedBy ? `Acknowledged by ${acknowledgedBy}` : 'Acknowledged'}
