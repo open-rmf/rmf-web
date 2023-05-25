@@ -401,35 +401,36 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
                   No unacknowledged alerts
                 </Typography>
               </MenuItem>
-            ) : null}
-            {unacknowledgedAlertList.map((alert) => (
-              <Tooltip
-                key={alert.id}
-                title={
-                  <React.Fragment>
-                    <Typography>ID: {alert.original_id}</Typography>
-                  </React.Fragment>
-                }
-                placement="right"
-              >
-                <MenuItem
-                  dense
-                  onClick={() => {
-                    openAlertDialog(alert);
-                    setAlertListAnchor(null);
-                  }}
-                  divider
+            ) : (
+              unacknowledgedAlertList.map((alert) => (
+                <Tooltip
+                  key={alert.id}
+                  title={
+                    <React.Fragment>
+                      <Typography>ID: {alert.original_id}</Typography>
+                    </React.Fragment>
+                  }
+                  placement="right"
                 >
-                  <Report />
-                  <Typography variant="body2" mx={2} noWrap>
-                    {new Date(alert.unix_millis_created_time).toLocaleString()}
-                  </Typography>
-                  <Typography variant="body2" noWrap>
-                    {alert.category.toUpperCase()} alert
-                  </Typography>
-                </MenuItem>
-              </Tooltip>
-            ))}
+                  <MenuItem
+                    dense
+                    onClick={() => {
+                      openAlertDialog(alert);
+                      setAlertListAnchor(null);
+                    }}
+                    divider
+                  >
+                    <Report />
+                    <Typography variant="body2" mx={2} noWrap>
+                      {new Date(alert.unix_millis_created_time).toLocaleString()}
+                    </Typography>
+                    <Typography variant="body2" noWrap>
+                      {alert.category.toUpperCase()} alert
+                    </Typography>
+                  </MenuItem>
+                </Tooltip>
+              ))
+            )}
           </Menu>
           <Divider orientation="vertical" sx={{ marginLeft: 1, marginRight: 2 }} />
           <Typography variant="caption">Powered by Open-RMF</Typography>
