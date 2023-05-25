@@ -22,21 +22,14 @@ export const AlertStore = React.memo(() => {
   const categorizeAndPushAlerts = (alert: Alert) => {
     // We check if an existing alert has been acknowledged, remove it before
     // adding the acknowledged alert.
-    switch (alert.category) {
-      case AlertCategory.Task:
-        setTaskAlerts((prev) => {
-          const filteredTaskAlerts: Record<string, Alert> = {};
-          for (let key in prev) {
-            if (key !== alert.original_id) {
-              filteredTaskAlerts[key] = prev[key];
-            }
-          }
-          filteredTaskAlerts[alert.id] = alert;
-          return filteredTaskAlerts;
-        });
-        break;
-      default:
-      // do nothing in default case
+    if (alert.category === AlertCategory.Task) {
+      setTaskAlerts((prev) => {
+        const filteredTaskAlerts = Object.fromEntries(
+          Object.entries(prev).filter(([key]) => key !== alert.original_id),
+        );
+        filteredTaskAlerts[alert.id] = alert;
+        return filteredTaskAlerts;
+      });
     }
   };
 
@@ -65,12 +58,9 @@ export const AlertStore = React.memo(() => {
   }, [rmf]);
 
   const removeTaskAlert = (id: string) => {
-    const filteredTaskAlerts: Record<string, Alert> = {};
-    for (let key in taskAlerts) {
-      if (key !== id) {
-        filteredTaskAlerts[key] = taskAlerts[key];
-      }
-    }
+    const filteredTaskAlerts = Object.fromEntries(
+      Object.entries(taskAlerts).filter(([key]) => key !== id),
+    );
     setTaskAlerts(filteredTaskAlerts);
   };
 
