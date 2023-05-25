@@ -54,7 +54,7 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
     return (
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Box sx={{ width: '100%', mr: 1 }}>
-          <LinearProgress variant="determinate" {...props} />
+          <LinearProgress variant="determinate" {...props} value={props.value * 100} />
         </Box>
         <Box sx={{ minWidth: 35 }}>
           <Typography variant="body2" color="text.secondary">{`${Math.round(
