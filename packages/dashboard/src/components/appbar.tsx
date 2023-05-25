@@ -54,6 +54,7 @@ import { RmfAppContext } from './rmf-app';
 import { parseTasksFile } from './tasks/utils';
 import { AppEvents } from './app-events';
 import { Subscription } from 'rxjs';
+import { formatDistance } from 'date-fns';
 
 export type TabValue = 'infrastructure' | 'robots' | 'tasks' | 'custom1' | 'custom2' | 'admin';
 
@@ -316,6 +317,10 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     AppEvents.alertListOpenedAlert.next(alert);
   };
 
+  const timeDistance = (time: number) => {
+    return formatDistance(new Date(), new Date(time));
+  };
+
   return (
     <>
       <HeaderBar>
@@ -407,7 +412,12 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
                   key={alert.id}
                   title={
                     <React.Fragment>
+                      <Typography>Alert</Typography>
                       <Typography>ID: {alert.original_id}</Typography>
+                      <Typography>Type: {alert.category.toUpperCase()}</Typography>
+                      <Typography>
+                        Created: {new Date(alert.unix_millis_created_time).toLocaleString()}
+                      </Typography>
                     </React.Fragment>
                   }
                   placement="right"
@@ -421,11 +431,9 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
                     divider
                   >
                     <Report />
-                    <Typography variant="body2" mx={2} noWrap>
-                      {new Date(alert.unix_millis_created_time).toLocaleString()}
-                    </Typography>
-                    <Typography variant="body2" noWrap>
-                      {alert.category.toUpperCase()} alert
+                    <Typography variant="body2" mx={1} noWrap>
+                      Task {alert.original_id} had an alert{' '}
+                      {timeDistance(alert.unix_millis_created_time)} ago
                     </Typography>
                   </MenuItem>
                 </Tooltip>
