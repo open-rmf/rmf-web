@@ -1,4 +1,11 @@
-import { Dispenser, Door, Ingestor, Lift, TaskState } from 'api-client';
+import {
+  ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
+  Dispenser,
+  Door,
+  Ingestor,
+  Lift,
+  TaskState,
+} from 'api-client';
 import { Subject } from 'rxjs';
 
 export const AppEvents = {
@@ -9,4 +16,6 @@ export const AppEvents = {
   robotSelect: new Subject<[fleetName: string, robotName: string] | null>(),
   taskSelect: new Subject<TaskState | null>(),
   refreshTaskQueueTableCount: new Subject<number>(),
+  refreshAlertCount: new Subject<number>(),
+  alertListOpenedAlert: new Subject<Alert | null>(),
 };
