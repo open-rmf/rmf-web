@@ -20,7 +20,7 @@ import {
   TrajectoryTimeControl,
 } from 'react-components';
 import { AttributionControl, ImageOverlay, LayersControl, Pane } from 'react-leaflet';
-import { EMPTY, merge, Subscription, switchMap } from 'rxjs';
+import { EMPTY, merge, scan, Subscription, switchMap } from 'rxjs';
 import appConfig from '../app-config';
 import { ResourcesContext } from './app-contexts';
 import { AppEvents } from './app-events';
@@ -311,6 +311,16 @@ export const MapApp = styled(
       return () => sub.unsubscribe();
     }, [rmf, robotLocations]);
 
+    //Accumulate values over time to persist between tabs
+    React.useEffect(() => {
+      const sub = AppEvents.disabledLayers
+        .pipe(scan((acc, value) => ({ ...acc, ...value }), {}))
+        .subscribe((layers) => {
+          setDisabledLayers(layers);
+        });
+      return () => sub.unsubscribe();
+    }, []);
+
     // zoom to robot on select
     React.useEffect(() => {
       const sub = AppEvents.robotSelect.subscribe((data) => {
@@ -349,18 +359,17 @@ export const MapApp = styled(
     }, [robotLocations, bounds]);
 
     const registeredLayersHandlers = React.useRef(false);
-
     const ready = buildingMap && currentLevel && bounds;
     return ready ? (
       <LMap
         ref={(cur) => {
           if (registeredLayersHandlers.current || !cur) return;
-          cur.leafletElement.on('overlayadd', (ev: L.LayersControlEvent) =>
-            setDisabledLayers((prev) => ({ ...prev, [ev.name]: false })),
-          );
-          cur.leafletElement.on('overlayremove', (ev: L.LayersControlEvent) =>
-            setDisabledLayers((prev) => ({ ...prev, [ev.name]: true })),
-          );
+          cur.leafletElement.on('overlayadd', (ev: L.LayersControlEvent) => {
+            AppEvents.disabledLayers.next({ [ev.name]: false });
+          });
+          cur.leafletElement.on('overlayremove', (ev: L.LayersControlEvent) => {
+            AppEvents.disabledLayers.next({ [ev.name]: true });
+          });
           registeredLayersHandlers.current = true;
         }}
         attributionControl={false}
