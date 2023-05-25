@@ -198,23 +198,27 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
     }
 
     (async () => {
-      const ackResponse = (
-        await rmf?.alertsApi.acknowledgeAlertAlertsAlertIdPost(taskAlert.task_id)
-      ).data;
-      if (ackResponse.id !== ackResponse.original_id) {
-        let showAlertMessage = `Alert ${ackResponse.original_id} acknowledged`;
-        if (ackResponse.acknowledged_by) {
-          showAlertMessage += ` by User ${ackResponse.acknowledged_by}`;
+      try {
+        const ackResponse = (
+          await rmf?.alertsApi.acknowledgeAlertAlertsAlertIdPost(taskAlert.task_id)
+        ).data;
+        if (ackResponse.id !== ackResponse.original_id) {
+          let showAlertMessage = `Alert ${ackResponse.original_id} acknowledged`;
+          if (ackResponse.acknowledged_by) {
+            showAlertMessage += ` by User ${ackResponse.acknowledged_by}`;
+          }
+          if (ackResponse.unix_millis_acknowledged_time) {
+            const ackSecondsAgo =
+              (new Date().getTime() - ackResponse.unix_millis_acknowledged_time) / 1000;
+            showAlertMessage += ` ${Math.round(ackSecondsAgo)}s ago`;
+          }
+          showAlert('success', showAlertMessage);
+        } else {
+          throw new Error(`Failed to acknowledge alert ID ${taskAlert.task_id}`);
         }
-        if (ackResponse.unix_millis_acknowledged_time) {
-          const ackSecondsAgo =
-            (new Date().getTime() - ackResponse.unix_millis_acknowledged_time) / 1000;
-          showAlertMessage += ` ${Math.round(ackSecondsAgo)}s ago`;
-        }
-        showAlert('success', showAlertMessage);
-      } else {
-        console.log(`Failed to acknowledge alert ID ${taskAlert.task_id}`);
+      } catch (error) {
         showAlert('error', `Failed to acknowledge alert ID ${taskAlert.task_id}`);
+        console.log(error);
       }
     })();
   };
