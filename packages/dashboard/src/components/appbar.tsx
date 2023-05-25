@@ -162,7 +162,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     })();
   }, [logoResourcesContext, safeAsync, curTheme]);
 
-  //#region CreateTaskForm props
   React.useEffect(() => {
     if (!resourceManager?.dispensers) {
       return;
@@ -254,7 +253,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       fileInputEl.click();
     });
   };
-  //#endregion CreateTaskForm props
 
   //#region 'Favorite Task'
   React.useEffect(() => {
