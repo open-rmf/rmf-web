@@ -303,15 +303,10 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       return;
     }
     (async () => {
-      const resp = await rmf.alertsApi.getAlertsAlertsGet();
-      const alerts = resp.data as Alert[];
-      const unackList: Alert[] = [];
-      for (let alert of alerts) {
-        if (alert.acknowledged_by || alert.unix_millis_acknowledged_time) {
-        } else {
-          unackList.push(alert);
-        }
-      }
+      const { data: alerts } = await rmf.alertsApi.getAlertsAlertsGet();
+      const unackList = alerts.filter(
+        (alert) => !alert.acknowledged_by && !alert.unix_millis_acknowledged_time,
+      );
       setUnacknowledgedAlertList(unackList.reverse());
     })();
     setAlertListAnchor(event.currentTarget);
