@@ -229,29 +229,17 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
 
   return (
     <>
-      {taskAlert.acknowledgedBy ? (
-        <AlertDialog
-          key={taskAlert.task_id}
-          onDismiss={removeAlert}
-          acknowledgedBy={taskAlert.acknowledgedBy}
-          onInspect={() => setOpenTaskInspector(true)}
-          title={taskAlert.title}
-          progress={taskAlert.progress}
-          alertContents={taskAlert.content}
-          backgroundColor={taskAlert.color}
-        />
-      ) : (
-        <AlertDialog
-          key={taskAlert.task_id}
-          onDismiss={removeAlert}
-          onAcknowledge={acknowledgeAlert}
-          onInspect={() => setOpenTaskInspector(true)}
-          title={taskAlert.title}
-          progress={taskAlert.progress}
-          alertContents={taskAlert.content}
-          backgroundColor={taskAlert.color}
-        />
-      )}
+      <AlertDialog
+        key={taskAlert.task_id}
+        onDismiss={removeAlert}
+        acknowledgedBy={taskAlert.acknowledgedBy}
+        onAcknowledge={taskAlert.acknowledgedBy ? undefined : acknowledgeAlert}
+        onInspect={() => setOpenTaskInspector(true)}
+        title={taskAlert.title}
+        progress={taskAlert.progress}
+        alertContents={taskAlert.content}
+        backgroundColor={taskAlert.color}
+      />
       {openTaskInspector && (
         <TaskInspector task={taskState} onClose={() => setOpenTaskInspector(false)} />
       )}
