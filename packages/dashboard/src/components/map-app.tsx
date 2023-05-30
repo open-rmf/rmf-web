@@ -484,7 +484,6 @@ export const MapApp = styled(
               hideLabels={disabledLayers['Robots']}
               onRobotClick={(_ev, robot) => {
                 setOpenRobotSummary(true);
-                AppEvents.robotSelect.next([robot.fleet, robot.name]);
                 setSelectedRobot(robot);
               }}
             />
