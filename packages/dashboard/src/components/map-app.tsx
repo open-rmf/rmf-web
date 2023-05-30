@@ -374,8 +374,9 @@ export const MapApp = styled(
     }, [robotLocations, bounds]);
 
     const onViewportChanged = (viewport: Viewport) => {
-      if (viewport.zoom) {
+      if (viewport.zoom && viewport.center) {
         AppEvents.zoom.next(viewport.zoom);
+        AppEvents.mapCenter.next(viewport.center);
       }
     };
 
