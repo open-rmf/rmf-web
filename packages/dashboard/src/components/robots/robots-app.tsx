@@ -1,7 +1,7 @@
 import { TableContainer } from '@mui/material';
 import { TaskState } from 'api-client';
 import React from 'react';
-import { RobotTableDataList, RobotDataGridTable, RobotTableData } from 'react-components';
+import { RobotDataGridTable, RobotTableData, RobotTable } from 'react-components';
 import { AppEvents } from '../app-events';
 import { createMicroApp } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
@@ -14,14 +14,6 @@ export const RobotsApp = createMicroApp('Robots', () => {
   const [robots, setRobots] = React.useState<Record<string, RobotTableData[]>>({});
   const [openRobotSummary, setOpenRobotSummary] = React.useState(false);
   const [selectedRobot, setSelectedRobot] = React.useState<RobotTableData>();
-
-  const [robotTableDataList, setRobotTableDataList] = React.useState<RobotTableDataList>({
-    isLoading: true,
-    records: {},
-    total: 0,
-    page: 1,
-    pageSize: 10,
-  });
 
   React.useEffect(() => {
     if (!rmf) {
@@ -69,76 +61,41 @@ export const RobotsApp = createMicroApp('Robots', () => {
               )
             : {};
 
-        setRobotTableDataList((prev) => {
+        setRobots((prev) => {
           if (!fleet.name) {
             return prev;
           }
           return {
             ...prev,
-            isLoading: false,
-            records: {
-              [fleet.name]: fleet.robots
-                ? Object.entries(fleet.robots).map<RobotTableData>(([name, robot]) => ({
-                    fleet: fleet.name || '',
-                    name,
-                    battery: robot.battery && +robot.battery.toFixed(2),
-                    status: robot.status,
-                    estFinishTime:
-                      robot.task_id && tasks[robot.task_id]
-                        ? tasks[robot.task_id].unix_millis_finish_time
-                        : undefined,
-                    lastUpdateTime: robot.unix_millis_time ? robot.unix_millis_time : undefined,
-                  }))
-                : [],
-            },
-            total:
-              Object.keys(fleet.robots ? fleet.robots : 0).length === 10
-                ? robotTableDataList.page * 10 + 1
-                : robotTableDataList.page * 10 - 9,
+            [fleet.name]: fleet.robots
+              ? Object.entries(fleet.robots).map<RobotTableData>(([name, robot]) => ({
+                  fleet: fleet.name || '',
+                  name,
+                  battery: robot.battery && +robot.battery.toFixed(2),
+                  status: robot.status,
+                  estFinishTime:
+                    robot.task_id && tasks[robot.task_id]
+                      ? tasks[robot.task_id].unix_millis_finish_time
+                      : undefined,
+                  lastUpdateTime: robot.unix_millis_time ? robot.unix_millis_time : undefined,
+                }))
+              : [],
           };
         });
-
-        // setRobots((prev) => {
-        //   if (!fleet.name) {
-        //     return prev;
-        //   }
-        //   return {
-        //     ...prev,
-        //     [fleet.name]: fleet.robots
-        //       ? Object.entries(fleet.robots).map<RobotTableData>(([name, robot]) => ({
-        //         fleet: fleet.name || '',
-        //         name,
-        //         battery: robot.battery && +robot.battery.toFixed(2),
-        //         status: robot.status,
-        //         estFinishTime:
-        //           robot.task_id && tasks[robot.task_id]
-        //             ? tasks[robot.task_id].unix_millis_finish_time
-        //             : undefined,
-        //         lastUpdateTime: robot.unix_millis_time ? robot.unix_millis_time : undefined,
-        //       }))
-        //       : [],
-        //   };
-        // });
       }),
     );
     return () => subs.forEach((sub) => sub.unsubscribe());
-  }, [rmf, fleets, robotTableDataList.page]);
+  }, [rmf, fleets]);
 
   return (
     <TableContainer>
       <RobotDataGridTable
-        robotTableDataList={robotTableDataList}
+        robots={Object.values(robots).flatMap((r) => r)}
         onRobotClick={(_ev, robot) => {
           setOpenRobotSummary(true);
           AppEvents.robotSelect.next([robot.fleet, robot.name]);
           setSelectedRobot(robot);
         }}
-        onPageChange={(newPage: number) =>
-          setRobotTableDataList((old) => ({ ...old, page: newPage + 1 }))
-        }
-        onPageSizeChange={(newPageSize: number) =>
-          setRobotTableDataList((old) => ({ ...old, pageSize: newPageSize }))
-        }
       />
       {/* <RobotTable
         robots={Object.values(robots).flatMap((r) => r)}
