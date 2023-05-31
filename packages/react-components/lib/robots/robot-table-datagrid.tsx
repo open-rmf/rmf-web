@@ -120,7 +120,6 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
         rows={robots}
         pageSize={5}
         rowHeight={38}
-        rowsPerPageOptions={[100]}
         columns={columns}
         onRowClick={handleEvent}
         getCellClassName={(params: GridCellParams<string>) => {
