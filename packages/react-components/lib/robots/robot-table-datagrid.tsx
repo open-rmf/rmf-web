@@ -41,27 +41,12 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   },
 }));
 
-export interface RobotTableDataList {
-  isLoading: boolean;
-  records: Record<string, RobotTableData[]>;
-  total: number;
-  page: number;
-  pageSize: number;
-}
-
 export interface RobotDataGridTableProps {
   onRobotClick?(ev: MuiEvent<React.MouseEvent<HTMLElement>>, robotName: RobotTableData): void;
-  onPageChange: (newPage: number) => void;
-  onPageSizeChange: (newPageSize: number) => void;
-  robotTableDataList: RobotTableDataList;
+  robots: RobotTableData[];
 }
 
-export function RobotDataGridTable({
-  onRobotClick,
-  onPageChange,
-  onPageSizeChange,
-  robotTableDataList,
-}: RobotDataGridTableProps): JSX.Element {
+export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableProps): JSX.Element {
   const handleEvent: GridEventListener<'rowClick'> = (
     params: GridRowParams,
     event: MuiEvent<React.MouseEvent<HTMLElement>>,
@@ -130,19 +115,12 @@ export function RobotDataGridTable({
   return (
     <div style={{ height: '100%', width: '100%' }}>
       <StyledDataGrid
-        autoHeight
+        autoHeight={true}
         getRowId={(r) => r.name}
-        rows={Object.values(robotTableDataList.records).flatMap((r) => r)}
-        rowCount={robotTableDataList.total}
-        loading={robotTableDataList.isLoading}
-        pageSize={robotTableDataList.pageSize}
-        rowsPerPageOptions={[10]}
-        pagination
-        paginationMode="server"
-        filterMode="server"
-        page={robotTableDataList.page - 1}
-        onPageChange={onPageChange}
-        onPageSizeChange={onPageSizeChange}
+        rows={robots}
+        pageSize={5}
+        rowHeight={38}
+        rowsPerPageOptions={[100]}
         columns={columns}
         onRowClick={handleEvent}
         getCellClassName={(params: GridCellParams<string>) => {
