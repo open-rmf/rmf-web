@@ -19,8 +19,8 @@ import {
   RobotTableData,
   TrajectoryTimeControl,
 } from 'react-components';
-import { AttributionControl, ImageOverlay, LayersControl, Pane } from 'react-leaflet';
-import { EMPTY, merge, Subscription, switchMap } from 'rxjs';
+import { AttributionControl, ImageOverlay, LayersControl, Pane, Viewport } from 'react-leaflet';
+import { EMPTY, merge, scan, Subscription, switchMap } from 'rxjs';
 import appConfig from '../app-config';
 import { ResourcesContext } from './app-contexts';
 import { AppEvents } from './app-events';
@@ -215,6 +215,32 @@ export const MapApp = styled(
     const [bounds, setBounds] = React.useState<L.LatLngBoundsLiteral | null>(null);
     const [center, setCenter] = React.useState<L.LatLngTuple>([0, 0]);
     const [zoom, setZoom] = React.useState<number>(5);
+
+    React.useEffect(() => {
+      const sub = AppEvents.zoom.subscribe((currentValue) => {
+        setZoom(currentValue);
+      });
+      return () => sub.unsubscribe();
+    }, []);
+
+    React.useEffect(() => {
+      const sub = AppEvents.mapCenter.subscribe((currentValue) => {
+        setCenter((prev) => {
+          const newCenter: L.LatLngTuple = [...currentValue];
+          // react-leaftlet does not properly update state when the previous LatLng is the same,
+          // even when a new array is passed.
+          if (prev[0] === newCenter[0]) {
+            newCenter[0] += 0.00001;
+          }
+          if (prev[1] === newCenter[1]) {
+            newCenter[1] += 0.00001;
+          }
+          return newCenter;
+        });
+      });
+      return () => sub.unsubscribe();
+    }, []);
+
     React.useEffect(() => {
       if (!currentLevel?.images[0]) {
         setImageUrl(null);
@@ -229,7 +255,6 @@ export const MapApp = styled(
           affineImage.naturalHeight,
         );
         setBounds(bounds);
-        setCenter([(bounds[1][0] - bounds[0][0]) / 2, (bounds[1][1] - bounds[0][1]) / 2]);
         setImageUrl(affineImage.src);
       })();
 
@@ -311,6 +336,16 @@ export const MapApp = styled(
       return () => sub.unsubscribe();
     }, [rmf, robotLocations]);
 
+    //Accumulate values over time to persist between tabs
+    React.useEffect(() => {
+      const sub = AppEvents.disabledLayers
+        .pipe(scan((acc, value) => ({ ...acc, ...value }), {}))
+        .subscribe((layers) => {
+          setDisabledLayers(layers);
+        });
+      return () => sub.unsubscribe();
+    }, []);
+
     // zoom to robot on select
     React.useEffect(() => {
       const sub = AppEvents.robotSelect.subscribe((data) => {
@@ -331,42 +366,39 @@ export const MapApp = styled(
           return;
         }
         const mapCoords = fromRmfCoords(robotLocation);
-        setCenter((prev) => {
-          const newCenter = [mapCoords[1], mapCoords[0]] as L.LatLngTuple;
-          // react-leaftlet does not properly update state when the previous LatLng is the same,
-          // even when a new array is passed.
-          if (prev[0] === newCenter[0]) {
-            newCenter[0] += 0.00001;
-          }
-          if (prev[1] === newCenter[1]) {
-            newCenter[1] += 0.00001;
-          }
-          return newCenter;
-        });
-        setZoom(6);
+        const newCenter: L.LatLngTuple = [mapCoords[1], mapCoords[0]];
+        AppEvents.mapCenter.next(newCenter);
+        AppEvents.zoom.next(6);
       });
       return () => sub.unsubscribe();
     }, [robotLocations, bounds]);
 
-    const registeredLayersHandlers = React.useRef(false);
+    const onViewportChanged = (viewport: Viewport) => {
+      if (viewport.zoom && viewport.center) {
+        AppEvents.zoom.next(viewport.zoom);
+        AppEvents.mapCenter.next(viewport.center);
+      }
+    };
 
+    const registeredLayersHandlers = React.useRef(false);
     const ready = buildingMap && currentLevel && bounds;
     return ready ? (
       <LMap
         ref={(cur) => {
           if (registeredLayersHandlers.current || !cur) return;
-          cur.leafletElement.on('overlayadd', (ev: L.LayersControlEvent) =>
-            setDisabledLayers((prev) => ({ ...prev, [ev.name]: false })),
-          );
-          cur.leafletElement.on('overlayremove', (ev: L.LayersControlEvent) =>
-            setDisabledLayers((prev) => ({ ...prev, [ev.name]: true })),
-          );
+          cur.leafletElement.on('overlayadd', (ev: L.LayersControlEvent) => {
+            AppEvents.disabledLayers.next({ [ev.name]: false });
+          });
+          cur.leafletElement.on('overlayremove', (ev: L.LayersControlEvent) => {
+            AppEvents.disabledLayers.next({ [ev.name]: true });
+          });
           registeredLayersHandlers.current = true;
         }}
         attributionControl={false}
         zoomDelta={0.5}
         zoomSnap={0.5}
         center={center}
+        onViewportChanged={onViewportChanged}
         zoom={zoom}
         bounds={bounds}
         maxBounds={bounds}
@@ -453,7 +485,6 @@ export const MapApp = styled(
               hideLabels={disabledLayers['Robots']}
               onRobotClick={(_ev, robot) => {
                 setOpenRobotSummary(true);
-                AppEvents.robotSelect.next([robot.fleet, robot.name]);
                 setSelectedRobot(robot);
               }}
             />
