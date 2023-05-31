@@ -1,7 +1,7 @@
 import { TableContainer } from '@mui/material';
 import { TaskState } from 'api-client';
 import React from 'react';
-import { RobotDataGridTable, RobotTableData, RobotTable } from 'react-components';
+import { RobotDataGridTable, RobotTableData } from 'react-components';
 import { AppEvents } from '../app-events';
 import { createMicroApp } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
@@ -97,15 +97,6 @@ export const RobotsApp = createMicroApp('Robots', () => {
           setSelectedRobot(robot);
         }}
       />
-      {/* <RobotTable
-        robots={Object.values(robots).flatMap((r) => r)}
-        onRobotClick={(_ev, robot) => {
-          setOpenRobotSummary(true);
-          AppEvents.robotSelect.next([robot.fleet, robot.name]);
-          setSelectedRobot(robot);
-        }}
-      /> */}
-
       {openRobotSummary && selectedRobot && (
         <RobotSummary robot={selectedRobot} onClose={() => setOpenRobotSummary(false)} />
       )}
