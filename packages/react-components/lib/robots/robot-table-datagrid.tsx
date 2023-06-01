@@ -121,6 +121,7 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
         pageSize={5}
         rowHeight={38}
         columns={columns}
+        rowsPerPageOptions={[5]}
         onRowClick={handleEvent}
         getCellClassName={(params: GridCellParams<string>) => {
           if (params.field === 'status') {
