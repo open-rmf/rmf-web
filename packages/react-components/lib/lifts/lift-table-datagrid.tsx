@@ -60,7 +60,7 @@ export interface LiftDataGridTableProps {
 export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Element {
   const theme = useTheme();
 
-  const renderDoorState = (params: GridCellParams): React.ReactNode => {
+  const DoorState = (params: GridCellParams): React.ReactNode => {
     const currDoorMotion = doorStateToString(params.row?.door_state);
     const currMotion = motionStateToString(params.row?.motion_state);
     const motionArrowActiveStyle: SxProps = {
@@ -113,12 +113,12 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
     );
   };
 
-  const renderLiftControl = (params: GridCellParams): React.ReactNode => {
+  const LiftControl = (params: GridCellParams): React.ReactNode => {
     return (
       <LiftControls
         availableLevels={params.row.lift.levels}
         currentLevel={params.row?.current_floor}
-        onRequestSubmit={params.row?.test}
+        onRequestSubmit={params.row?.onRequestSubmit}
       />
     );
   };
@@ -158,7 +158,7 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
       width: 150,
       editable: false,
       flex: 1,
-      renderCell: renderDoorState,
+      renderCell: DoorState,
       filterable: true,
     },
     {
@@ -167,7 +167,7 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
       width: 150,
       editable: false,
       flex: 1,
-      renderCell: renderLiftControl,
+      renderCell: LiftControl,
       filterable: true,
     },
   ];
