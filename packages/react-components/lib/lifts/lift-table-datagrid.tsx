@@ -11,10 +11,10 @@ import { LiftControls } from './lift-controls';
 export interface LiftTableData {
   index: number;
   name: string;
-  current_floor?: string;
-  destination_floor?: string;
-  door_state: number;
-  motion_state: number;
+  currentFloor?: string;
+  destinationFloor?: string;
+  doorState: number;
+  motionState: number;
   lift: Lift;
   onRequestSubmit?(
     event: React.FormEvent,
@@ -32,8 +32,8 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
   const theme = useTheme();
 
   const DoorState = (params: GridCellParams): React.ReactNode => {
-    const currDoorMotion = doorStateToString(params.row?.door_state);
-    const currMotion = motionStateToString(params.row?.motion_state);
+    const currDoorMotion = doorStateToString(params.row?.doorState);
+    const currMotion = motionStateToString(params.row?.motionState);
 
     const motionArrowActiveStyle: SxProps = {
       color: theme.palette.primary.main,
@@ -45,7 +45,7 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
     };
 
     const doorStateLabelStyle: SxProps = (() => {
-      switch (params.row?.door_state) {
+      switch (params.row?.doorState) {
         case LiftStateModel.DOOR_OPEN:
           return {
             color: theme.palette.success.main,
@@ -70,7 +70,7 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
         <Typography
           component="p"
           sx={{
-            marginRight: params.row?.door_state === LiftStateModel.DOOR_OPEN ? 4 : 2,
+            marginRight: params.row?.doorState === LiftStateModel.DOOR_OPEN ? 4 : 2,
             fontWeight: 'bold',
             fontSize: 14,
             display: 'inline-block',
@@ -90,7 +90,7 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
     return (
       <LiftControls
         availableLevels={params.row.lift.levels}
-        currentLevel={params.row?.current_floor}
+        currentLevel={params.row?.currentFloor}
         onRequestSubmit={params.row?.onRequestSubmit}
       />
     );
@@ -106,27 +106,27 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
       filterable: true,
     },
     {
-      field: 'current_floor',
+      field: 'currentFloor',
       headerName: 'Current floor',
       width: 150,
       editable: false,
       valueGetter: (params: GridValueGetterParams) =>
-        params.row.current_floor ? params.row.current_floor : 'N/A',
+        params.row.currentFloor ? params.row.currentFloor : 'N/A',
       flex: 1,
       filterable: true,
     },
     {
-      field: 'destination_floor',
+      field: 'destinationFloor',
       headerName: 'Destination floor',
       width: 150,
       editable: false,
       valueGetter: (params: GridValueGetterParams) =>
-        params.row.destination_floor ? params.row.destination_floor : 'N/A',
+        params.row.destinationFloor ? params.row.destinationFloor : 'N/A',
       flex: 1,
       filterable: true,
     },
     {
-      field: 'door_state',
+      field: 'doorState',
       headerName: 'Door state',
       width: 150,
       editable: false,

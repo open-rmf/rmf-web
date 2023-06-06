@@ -34,10 +34,10 @@ export const LiftsApp = createMicroApp('Lifts', () => {
               {
                 index: i,
                 name: lift.name,
-                current_floor: liftState.current_floor,
-                destination_floor: liftState.destination_floor,
-                door_state: liftState.door_state,
-                motion_state: liftState.motion_state,
+                currentFloor: liftState.current_floor,
+                destinationFloor: liftState.destination_floor,
+                doorState: liftState.door_state,
+                motionState: liftState.motion_state,
                 lift: lift,
                 onRequestSubmit: (_ev, doorState, requestType, destination) => {
                   return rmf?.liftsApi.postLiftRequestLiftsLiftNameRequestPost(lift.name, {
