@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { LiftDataGridTable, LiftTableData } from './lift-table-datagrid';
 import { LiftState as RmfLiftState } from 'rmf-models';
 import { makeLift } from './test-utils.spec';
