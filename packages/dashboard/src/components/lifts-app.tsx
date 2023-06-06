@@ -1,13 +1,13 @@
 import { BuildingMap } from 'api-client';
 import React from 'react';
-import { LiftData, LiftDataGridTable } from 'react-components';
+import { LiftTableData, LiftDataGridTable } from 'react-components';
 import { createMicroApp } from './micro-app';
 import { RmfAppContext } from './rmf-app';
 
 export const LiftsApp = createMicroApp('Lifts', () => {
   const rmf = React.useContext(RmfAppContext);
   const [buildingMap, setBuildingMap] = React.useState<BuildingMap | null>(null);
-  const [data, setData] = React.useState<Record<string, LiftData[]>>({});
+  const [data, setData] = React.useState<Record<string, LiftTableData[]>>({});
 
   React.useEffect(() => {
     if (!rmf) {
@@ -40,7 +40,6 @@ export const LiftsApp = createMicroApp('Lifts', () => {
                 motion_state: liftState.motion_state,
                 lift: lift,
                 onRequestSubmit: (_ev, doorState, requestType, destination) => {
-                  console.log(lift.name);
                   return rmf?.liftsApi.postLiftRequestLiftsLiftNameRequestPost(lift.name, {
                     destination,
                     door_mode: doorState,
