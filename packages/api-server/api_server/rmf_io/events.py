@@ -37,3 +37,11 @@ class FleetEvents:
 
 
 fleet_events = FleetEvents()
+
+
+class AlertEvents:
+    def __init__(self):
+        self.alerts = Subject()  # Alert
+
+
+alert_events = AlertEvents()

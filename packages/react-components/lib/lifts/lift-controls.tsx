@@ -27,7 +27,6 @@ export function LiftControls({
       <Button
         variant="contained"
         color="primary"
-        fullWidth
         size="small"
         onClick={() => {
           setResetForm((prev) => prev + 1);

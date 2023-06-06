@@ -941,218 +941,160 @@ export function CreateTaskForm({
   };
 
   return (
-    <Dialog
-      title="Create Task"
-      maxWidth={taskRequests.length > 1 ? 'lg' : 'md'}
-      fullWidth
-      disableEnforceFocus
-      // PaperProps={{ style: { height: '100%' } }}
-      {...otherProps}
-    >
-      <DialogTitle>
-        <Grid container>
-          <Grid item flexGrow={1}>
-            Create Task
-          </Grid>
-          {!recurring && (
-            <Grid item>
-              <FormToolbar onSelectFileClick={handleSelectFileClick} />
-            </Grid>
-          )}
-        </Grid>
-      </DialogTitle>
-      <DialogContent>
-        {!recurring && (
-          <Grid container flexWrap="nowrap" alignItems="flex-start" maxHeight={600}>
-            <List dense className={classes.taskList} aria-label="Favorites Tasks">
-              <Typography variant="h6" component="div">
-                Favorite tasks
-              </Typography>
-              {favoritesTasks.map((favoriteTask, index) => {
-                return (
-                  <FavoriteTask
-                    listItemText={favoriteTask.name}
-                    key={index}
-                    setFavoriteTask={setFavoriteTaskBuffer}
-                    favoriteTask={favoriteTask}
-                    setCallToDelete={setCallToDeleteFavoriteTask}
-                    setCallToUpdate={setCallToUpdateFavoriteTask}
-                    setOpenDialog={setOpenFavoriteDialog}
-                    listItemClick={() => {
-                      setFavoriteTaskBuffer(favoriteTask);
-                      setTaskRequests((prev) => {
-                        return [
-                          {
-                            ...prev,
-                            category: favoriteTask.category,
-                            description: favoriteTask.description,
-                            unix_millis_earliest_start_time: 0,
-                            priority: favoriteTask.priority,
-                          },
-                        ];
-                      });
-                    }}
-                  />
-                );
-              })}
-            </List>
-
-            <Divider
-              orientation="vertical"
-              flexItem
-              style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
-            />
-
-            <Grid container gap={2} flexGrow={1} flexBasis="60%">
-              <TextField
-                select
-                id="task-type"
-                label="Task Category"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                value={taskRequest.category}
-                onChange={handleTaskTypeChange}
-              >
-                <MenuItem value="clean">Clean</MenuItem>
-                <MenuItem value="patrol">Loop</MenuItem>
-                <MenuItem value="delivery">Delivery</MenuItem>
-              </TextField>
-
-              {renderTaskDescriptionForm()}
-              <Grid container justifyContent="center">
-                <Button
-                  aria-label="Save as a favorite task"
-                  variant="contained"
-                  color="primary"
-                  onClick={() => {
-                    !callToUpdateFavoriteTask &&
-                      setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
-                    setOpenFavoriteDialog(true);
+    <>
+      <StyledConfirmationDialog
+        title="Create Task"
+        submitting={submitting}
+        confirmText={submitText}
+        maxWidth="lg"
+        fullWidth={taskRequests.length > 1}
+        toolbar={<FormToolbar onSelectFileClick={handleSelectFileClick} />}
+        onSubmit={handleSubmit}
+        disableEnforceFocus
+        {...otherProps}
+      >
+        <Grid container direction="row" wrap="nowrap">
+          <List dense className={classes.taskList} aria-label="Favorites Tasks">
+            <Typography variant="h6" component="div">
+              Favorite tasks
+            </Typography>
+            {favoritesTasks.map((favoriteTask, index) => {
+              return (
+                <FavoriteTask
+                  listItemText={favoriteTask.name}
+                  key={index}
+                  setFavoriteTask={setFavoriteTaskBuffer}
+                  favoriteTask={favoriteTask}
+                  setCallToDelete={setCallToDeleteFavoriteTask}
+                  setCallToUpdate={setCallToUpdateFavoriteTask}
+                  setOpenDialog={setOpenFavoriteDialog}
+                  listItemClick={() => {
+                    setFavoriteTaskBuffer(favoriteTask);
+                    setTaskRequests((prev) => {
+                      return [
+                        ...prev,
+                        {
+                          category: favoriteTask.category,
+                          description: favoriteTask.description,
+                          unix_millis_earliest_start_time: Date.now(),
+                          priority: favoriteTask.priority,
+                        },
+                      ];
+                    });
                   }}
-                >
-                  {callToUpdateFavoriteTask ? `Confirm edits` : 'Save as a favorite task'}
-                </Button>
-              </Grid>
-
-              <Grid container justifyContent="space-evenly">
-                <Button
-                  variant="outlined"
-                  disabled={submitting || taskRequests.length > 1}
-                  onClick={() => setRecurring(true)}
-                >
-                  Add to Schedule
-                </Button>
-                <Button
-                  variant="contained"
-                  type="submit"
-                  color="primary"
-                  disabled={submitting}
-                  onClick={handleSubmit}
-                >
-                  <Loading hideChildren loading={submitting} size="1.5em" color="inherit">
-                    Add as Ad-hoc
-                  </Loading>
-                </Button>
-              </Grid>
-            </Grid>
-
-            {taskTitles.length > 1 && (
-              <>
-                <Divider
-                  orientation="vertical"
-                  flexItem
-                  style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
                 />
-                <Grid item flexGrow={1} maxHeight="inherit" overflow="auto">
-                  <List dense className={classes.taskList} aria-label="Tasks List">
-                    {taskTitles.map((title, idx) => (
-                      <ListItem
-                        key={idx}
-                        button
-                        onClick={() => setSelectedTaskIdx(idx)}
-                        className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
-                        role="listitem button"
-                      >
-                        <ListItemText primary={title} />
-                      </ListItem>
-                    ))}
-                  </List>
-                </Grid>
-              </>
-            )}
-          </Grid>
-        )}
+              );
+            })}
+          </List>
 
-        {recurring && (
-          <Grid container gap={2} flexDirection="column" flexWrap="nowrap" marginTop={1}>
-            <Grid container gap={theme.spacing(2)} wrap="nowrap" alignItems="center">
-              <Grid>
-                <DatePicker
-                  value={schedule.startOn}
-                  onChange={(date) =>
-                    date &&
-                    setSchedule((prev) => {
-                      date.setHours(atTime.getHours());
-                      date.setMinutes(atTime.getMinutes());
-                      return { ...prev, startOn: date };
-                    })
+          <Divider
+            orientation="vertical"
+            flexItem
+            style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
+          />
+
+          <Grid>
+            <TextField
+              select
+              id="task-type"
+              label="Task Category"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={taskRequest.category}
+              onChange={handleTaskTypeChange}
+            >
+              <MenuItem value="clean">Clean</MenuItem>
+              <MenuItem value="patrol">Loop</MenuItem>
+              <MenuItem value="delivery">Delivery</MenuItem>
+            </TextField>
+            <Grid container wrap="nowrap">
+              <Grid style={{ flexGrow: 1 }}>
+                <DateTimePicker
+                  inputFormat={'MM/dd/yyyy HH:mm'}
+                  value={
+                    taskRequest.unix_millis_earliest_start_time
+                      ? new Date(taskRequest.unix_millis_earliest_start_time)
+                      : new Date()
                   }
-                  label="Start On"
-                  disabled={!scheduleEnabled || !recurring}
-                  renderInput={(props) => <TextField {...props} />}
-                />
-              </Grid>
-              <Grid>
-                <TimePicker
-                  value={atTime}
                   onChange={(date) => {
                     if (!date) {
                       return;
                     }
-                    setAtTime(date);
-                    if (!isNaN(date.valueOf())) {
-                      setSchedule((prev) => {
-                        const startOn = prev.startOn;
-                        startOn.setHours(date.getHours());
-                        startOn.setMinutes(date.getMinutes());
-                        return { ...prev, startOn };
-                      });
-                    }
+                    taskRequest.unix_millis_earliest_start_time = date.valueOf();
+                    setFavoriteTaskBuffer({
+                      ...favoriteTaskBuffer,
+                      unix_millis_earliest_start_time: date.valueOf(),
+                    });
+                    updateTasks();
                   }}
-                  label="At"
-                  disabled={!scheduleEnabled || !recurring}
+                  label="Start Time"
                   renderInput={(props) => <TextField {...props} />}
                 />
               </Grid>
-            </Grid>
-
-            <DaySelectorSwitch
-              value={schedule.days}
-              disabled={!scheduleEnabled || !recurring}
-              onChange={(days) => setSchedule((prev) => ({ ...prev, days }))}
-            />
-
-            <Grid container justifyContent="space-evenly">
-              <Button variant="outlined" disabled={submitting} onClick={() => setRecurring(false)}>
-                Back
-              </Button>
-              <Button
-                variant="contained"
-                type="submit"
-                color="primary"
-                disabled={submitting}
-                onClick={handleSubmit}
+              <Grid
+                style={{
+                  flex: '0 1 5em',
+                  marginLeft: theme.spacing(2),
+                  marginRight: theme.spacing(2),
+                }}
               >
-                <Loading hideChildren loading={submitting} size="1.5em" color="inherit">
-                  Submit
-                </Loading>
+                <PositiveIntField
+                  id="priority"
+                  label="Priority"
+                  margin="normal"
+                  value={(taskRequest.priority as Record<string, any>)?.value || 0}
+                  onChange={(_ev, val) => {
+                    taskRequest.priority = { type: 'binary', value: val };
+                    setFavoriteTaskBuffer({
+                      ...favoriteTaskBuffer,
+                      priority: { type: 'binary', value: val },
+                    });
+                    updateTasks();
+                  }}
+                />
+              </Grid>
+            </Grid>
+            {renderTaskDescriptionForm()}
+            <Grid container justifyContent="center">
+              <Button
+                aria-label="Save as a favorite task"
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  !callToUpdateFavoriteTask &&
+                    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
+                  setOpenFavoriteDialog(true);
+                }}
+              >
+                {callToUpdateFavoriteTask ? `Confirm edits` : 'Save as a favorite task'}
               </Button>
             </Grid>
           </Grid>
-        )}
-      </DialogContent>
-
+          {taskTitles.length > 1 && (
+            <>
+              <Divider
+                orientation="vertical"
+                flexItem
+                style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
+              />
+              <List dense className={classes.taskList} aria-label="Tasks List">
+                {taskTitles.map((title, idx) => (
+                  <ListItem
+                    key={idx}
+                    button
+                    onClick={() => setSelectedTaskIdx(idx)}
+                    className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
+                    role="listitem button"
+                  >
+                    <ListItemText primary={title} />
+                  </ListItem>
+                ))}
+              </List>
+            </>
+          )}
+        </Grid>
+      </StyledConfirmationDialog>
       {openFavoriteDialog && (
         <ConfirmationDialog
           confirmText={callToDeleteFavoriteTask ? 'Delete' : 'Save'}
@@ -1182,6 +1124,251 @@ export function CreateTaskForm({
           )}
         </ConfirmationDialog>
       )}
-    </Dialog>
+    </>
   );
+
+  // return (
+  //   <Dialog
+  //     title="Create Task"
+  //     maxWidth={taskRequests.length > 1 ? 'lg' : 'md'}
+  //     fullWidth
+  //     disableEnforceFocus
+  //     // PaperProps={{ style: { height: '100%' } }}
+  //     {...otherProps}
+  //   >
+  //     <DialogTitle>
+  //       <Grid container>
+  //         <Grid item flexGrow={1}>
+  //           Create Task
+  //         </Grid>
+  //         {!recurring && (
+  //           <Grid item>
+  //             <FormToolbar onSelectFileClick={handleSelectFileClick} />
+  //           </Grid>
+  //         )}
+  //       </Grid>
+  //     </DialogTitle>
+  //     <DialogContent>
+  //       {!recurring && (
+  //         <Grid container flexWrap="nowrap" alignItems="flex-start" maxHeight={600}>
+  //           <List dense className={classes.taskList} aria-label="Favorites Tasks">
+  //             <Typography variant="h6" component="div">
+  //               Favorite tasks
+  //             </Typography>
+  //             {favoritesTasks.map((favoriteTask, index) => {
+  //               return (
+  //                 <FavoriteTask
+  //                   listItemText={favoriteTask.name}
+  //                   key={index}
+  //                   setFavoriteTask={setFavoriteTaskBuffer}
+  //                   favoriteTask={favoriteTask}
+  //                   setCallToDelete={setCallToDeleteFavoriteTask}
+  //                   setCallToUpdate={setCallToUpdateFavoriteTask}
+  //                   setOpenDialog={setOpenFavoriteDialog}
+  //                   listItemClick={() => {
+  //                     setFavoriteTaskBuffer(favoriteTask);
+  //                     setTaskRequests((prev) => {
+  //                       return [
+  //                         {
+  //                           ...prev,
+  //                           category: favoriteTask.category,
+  //                           description: favoriteTask.description,
+  //                           unix_millis_earliest_start_time: 0,
+  //                           priority: favoriteTask.priority,
+  //                         },
+  //                       ];
+  //                     });
+  //                   }}
+  //                 />
+  //               );
+  //             })}
+  //           </List>
+
+  //           <Divider
+  //             orientation="vertical"
+  //             flexItem
+  //             style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
+  //           />
+
+  //           <Grid container gap={2} flexGrow={1} flexBasis="60%">
+  //             <TextField
+  //               select
+  //               id="task-type"
+  //               label="Task Category"
+  //               variant="outlined"
+  //               fullWidth
+  //               margin="normal"
+  //               value={taskRequest.category}
+  //               onChange={handleTaskTypeChange}
+  //             >
+  //               <MenuItem value="clean">Clean</MenuItem>
+  //               <MenuItem value="patrol">Loop</MenuItem>
+  //               <MenuItem value="delivery">Delivery</MenuItem>
+  //             </TextField>
+
+  //             {renderTaskDescriptionForm()}
+  //             <Grid container justifyContent="center">
+  //               <Button
+  //                 aria-label="Save as a favorite task"
+  //                 variant="contained"
+  //                 color="primary"
+  //                 onClick={() => {
+  //                   !callToUpdateFavoriteTask &&
+  //                     setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
+  //                   setOpenFavoriteDialog(true);
+  //                 }}
+  //               >
+  //                 {callToUpdateFavoriteTask ? `Confirm edits` : 'Save as a favorite task'}
+  //               </Button>
+  //             </Grid>
+
+  //             <Grid container justifyContent="space-evenly">
+  //               <Button
+  //                 variant="outlined"
+  //                 disabled={submitting || taskRequests.length > 1}
+  //                 onClick={() => setRecurring(true)}
+  //               >
+  //                 Add to Schedule
+  //               </Button>
+  //               <Button
+  //                 variant="contained"
+  //                 type="submit"
+  //                 color="primary"
+  //                 disabled={submitting}
+  //                 onClick={handleSubmit}
+  //               >
+  //                 <Loading hideChildren loading={submitting} size="1.5em" color="inherit">
+  //                   Add as Ad-hoc
+  //                 </Loading>
+  //               </Button>
+  //             </Grid>
+  //           </Grid>
+
+  //           {taskTitles.length > 1 && (
+  //             <>
+  //               <Divider
+  //                 orientation="vertical"
+  //                 flexItem
+  //                 style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
+  //               />
+  //               <Grid item flexGrow={1} maxHeight="inherit" overflow="auto">
+  //                 <List dense className={classes.taskList} aria-label="Tasks List">
+  //                   {taskTitles.map((title, idx) => (
+  //                     <ListItem
+  //                       key={idx}
+  //                       button
+  //                       onClick={() => setSelectedTaskIdx(idx)}
+  //                       className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
+  //                       role="listitem button"
+  //                     >
+  //                       <ListItemText primary={title} />
+  //                     </ListItem>
+  //                   ))}
+  //                 </List>
+  //               </Grid>
+  //             </>
+  //           )}
+  //         </Grid>
+  //       )}
+
+  //       {recurring && (
+  //         <Grid container gap={2} flexDirection="column" flexWrap="nowrap" marginTop={1}>
+  //           <Grid container gap={theme.spacing(2)} wrap="nowrap" alignItems="center">
+  //             <Grid>
+  //               <DatePicker
+  //                 value={schedule.startOn}
+  //                 onChange={(date) =>
+  //                   date &&
+  //                   setSchedule((prev) => {
+  //                     date.setHours(atTime.getHours());
+  //                     date.setMinutes(atTime.getMinutes());
+  //                     return { ...prev, startOn: date };
+  //                   })
+  //                 }
+  //                 label="Start On"
+  //                 disabled={!scheduleEnabled || !recurring}
+  //                 renderInput={(props) => <TextField {...props} />}
+  //               />
+  //             </Grid>
+  //             <Grid>
+  //               <TimePicker
+  //                 value={atTime}
+  //                 onChange={(date) => {
+  //                   if (!date) {
+  //                     return;
+  //                   }
+  //                   setAtTime(date);
+  //                   if (!isNaN(date.valueOf())) {
+  //                     setSchedule((prev) => {
+  //                       const startOn = prev.startOn;
+  //                       startOn.setHours(date.getHours());
+  //                       startOn.setMinutes(date.getMinutes());
+  //                       return { ...prev, startOn };
+  //                     });
+  //                   }
+  //                 }}
+  //                 label="At"
+  //                 disabled={!scheduleEnabled || !recurring}
+  //                 renderInput={(props) => <TextField {...props} />}
+  //               />
+  //             </Grid>
+  //           </Grid>
+
+  //           <DaySelectorSwitch
+  //             value={schedule.days}
+  //             disabled={!scheduleEnabled || !recurring}
+  //             onChange={(days) => setSchedule((prev) => ({ ...prev, days }))}
+  //           />
+
+  //           <Grid container justifyContent="space-evenly">
+  //             <Button variant="outlined" disabled={submitting} onClick={() => setRecurring(false)}>
+  //               Back
+  //             </Button>
+  //             <Button
+  //               variant="contained"
+  //               type="submit"
+  //               color="primary"
+  //               disabled={submitting}
+  //               onClick={handleSubmit}
+  //             >
+  //               <Loading hideChildren loading={submitting} size="1.5em" color="inherit">
+  //                 Submit
+  //               </Loading>
+  //             </Button>
+  //           </Grid>
+  //         </Grid>
+  //       )}
+  //     </DialogContent>
+
+  //     {openFavoriteDialog && (
+  //       <ConfirmationDialog
+  //         confirmText={callToDeleteFavoriteTask ? 'Delete' : 'Save'}
+  //         cancelText="Back"
+  //         open={openFavoriteDialog}
+  //         title={callToDeleteFavoriteTask ? 'Confirm Delete' : 'Favorite Task'}
+  //         submitting={callToDeleteFavoriteTask ? deletingFavoriteTask : savingFavoriteTask}
+  //         onClose={() => {
+  //           setOpenFavoriteDialog(false);
+  //           setCallToDeleteFavoriteTask(false);
+  //         }}
+  //         onSubmit={callToDeleteFavoriteTask ? handleDeleteFavoriteTask : handleSubmitFavoriteTask}
+  //       >
+  //         {!callToDeleteFavoriteTask && (
+  //           <TextField
+  //             size="small"
+  //             value={favoriteTaskBuffer.name}
+  //             onChange={(e) =>
+  //               setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: e.target.value })
+  //             }
+  //             helperText="Required"
+  //             error={favoriteTaskTitleError}
+  //           />
+  //         )}
+  //         {callToDeleteFavoriteTask && (
+  //           <Typography>{`Are you sure you want to delete "${favoriteTaskBuffer.name}"?`}</Typography>
+  //         )}
+  //       </ConfirmationDialog>
+  //     )}
+  //   </Dialog>
+  // );
 }

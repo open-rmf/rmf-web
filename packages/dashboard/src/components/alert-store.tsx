@@ -1,106 +1,77 @@
-import { RobotState, TaskState } from 'api-client';
+import { ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert } from 'api-client';
+import { AppEvents } from './app-events';
 import React from 'react';
 import { RmfAppContext } from './rmf-app';
-import { RobotAlertComponent } from './robots/robot-alert';
-import { TaskAlertComponent } from './tasks/task-alert';
+import { Subscription } from 'rxjs';
+import { TaskAlertDialog } from './tasks/task-alert';
 
-export interface RobotWithTask {
-  task?: TaskState;
-  robot: RobotState;
+// This needs to match the enums provided for the Alert model, as it is not
+// provided via the api-client since tortoise's pydantic_model_creator is used.
+enum AlertCategory {
+  Default = 'default',
+  Task = 'task',
+  Fleet = 'fleet',
+  Robot = 'robot',
 }
-
-export interface AlertStoreProps {
-  robots: RobotWithTask[];
-}
-
-export interface AlertToDisplay extends RobotWithTask {
-  show: boolean;
-}
-
-const returnOnlyRobotsWithTask = (value: Record<string, RobotWithTask[]>) => {
-  return Object.values(value)
-    .flatMap((r) => r)
-    .filter((element) => {
-      if (element.task) {
-        return true;
-      }
-      return false;
-    });
-};
 
 export const AlertStore = React.memo(() => {
   const rmf = React.useContext(RmfAppContext);
+  const [taskAlerts, setTaskAlerts] = React.useState<Record<string, Alert>>({});
+  const refreshAlertCount = React.useRef(0);
 
-  const [fleets, setFleets] = React.useState<string[]>([]);
-  const [robotsWithTasks, setRobotsWithTasks] = React.useState<Record<string, RobotWithTask[]>>({});
+  const categorizeAndPushAlerts = (alert: Alert) => {
+    // We check if an existing alert has been acknowledged, remove it before
+    // adding the acknowledged alert.
+    if (alert.category === AlertCategory.Task) {
+      setTaskAlerts((prev) => {
+        const filteredTaskAlerts = Object.fromEntries(
+          Object.entries(prev).filter(([key]) => key !== alert.original_id),
+        );
+        filteredTaskAlerts[alert.id] = alert;
+        return filteredTaskAlerts;
+      });
+    }
+  };
+
+  React.useEffect(() => {
+    const subs: Subscription[] = [];
+    subs.push(
+      AppEvents.alertListOpenedAlert.subscribe((alert) => {
+        if (alert) {
+          categorizeAndPushAlerts(alert);
+        }
+      }),
+    );
+    return () => subs.forEach((s) => s.unsubscribe());
+  }, []);
 
   React.useEffect(() => {
     if (!rmf) {
       return;
     }
-
-    const sub = rmf.fleetsObs.subscribe((fleets) => {
-      setFleets(
-        fleets.reduce<string[]>((acc, f) => {
-          if (f.name) {
-            acc.push(f.name);
-          }
-          return acc;
-        }, []),
-      );
+    const sub = rmf.alertObsStore.subscribe(async (alert) => {
+      categorizeAndPushAlerts(alert);
+      refreshAlertCount.current += 1;
+      AppEvents.refreshAlertCount.next(refreshAlertCount.current);
     });
     return () => sub.unsubscribe();
   }, [rmf]);
 
-  React.useEffect(() => {
-    if (!rmf) {
-      return;
-    }
-    const subs = fleets.map((f) =>
-      rmf.getFleetStateObs(f).subscribe(async (fleet) => {
-        const taskIds = fleet.robots
-          ? Object.values(fleet.robots).reduce<string[]>((acc, robot) => {
-              if (robot.task_id) {
-                acc.push(robot.task_id);
-              }
-              return acc;
-            }, [])
-          : [];
-
-        const tasks =
-          taskIds.length > 0
-            ? (await rmf.tasksApi.queryTaskStatesTasksGet(taskIds.join(','))).data.reduce(
-                (acc, task) => {
-                  acc[task.booking.id] = task;
-                  return acc;
-                },
-                {} as Record<string, TaskState>,
-              )
-            : {};
-
-        setRobotsWithTasks((prev) => {
-          if (!fleet.name) {
-            return prev;
-          }
-          return {
-            ...prev,
-            [fleet.name]: fleet.robots
-              ? Object.entries(fleet.robots).map<RobotWithTask>(([name, robot]) => ({
-                  task: robot.task_id ? tasks[robot.task_id] : undefined,
-                  robot: robot,
-                }))
-              : [],
-          };
-        });
-      }),
+  const removeTaskAlert = (id: string) => {
+    const filteredTaskAlerts = Object.fromEntries(
+      Object.entries(taskAlerts).filter(([key]) => key !== id),
     );
-    return () => subs.forEach((sub) => sub.unsubscribe());
-  }, [rmf, fleets]);
+    setTaskAlerts(filteredTaskAlerts);
+  };
 
   return (
     <>
-      <TaskAlertComponent robots={returnOnlyRobotsWithTask(robotsWithTasks)} />
-      <RobotAlertComponent robots={Object.values(robotsWithTasks).flatMap((r) => r)} />
+      {Object.values(taskAlerts).map((alert) => {
+        const removeThisAlert = () => {
+          removeTaskAlert(alert.id);
+        };
+        return <TaskAlertDialog key={alert.id} alert={alert} removeAlert={removeThisAlert} />;
+      })}
     </>
   );
 });

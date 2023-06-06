@@ -1,7 +1,6 @@
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
-import SettingsIcon from '@mui/icons-material/Settings';
+import { AccountCircle, AddOutlined, Notifications, Report, Settings } from '@mui/icons-material';
 import {
+  Badge,
   Button,
   CardContent,
   Divider,
@@ -14,9 +13,11 @@ import {
   Radio,
   RadioGroup,
   Toolbar,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import {
+  ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
   PostScheduledTaskRequest,
   TaskFavoritePydantic as TaskFavorite,
   TaskRequest,
@@ -54,6 +55,8 @@ import {
 import { AppEvents } from './app-events';
 import { RmfAppContext } from './rmf-app';
 import { parseTasksFile } from './tasks/utils';
+import { Subscription } from 'rxjs';
+import { formatDistance } from 'date-fns';
 
 export type TabValue = 'infrastructure' | 'robots' | 'tasks' | 'custom1' | 'custom2' | 'admin';
 
@@ -155,6 +158,9 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [workcells, setWorkcells] = React.useState<string[]>();
   const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
   const [refreshTaskQueueTableCount, setRefreshTaskQueueTableCount] = React.useState(0);
+  const [alertListAnchor, setAlertListAnchor] = React.useState<HTMLElement | null>(null);
+  const [unacknowledgedAlertsNum, setUnacknowledgedAlertsNum] = React.useState(0);
+  const [unacknowledgedAlertList, setUnacknowledgedAlertList] = React.useState<Alert[]>([]);
 
   const curTheme = React.useContext(SettingsContext).themeMode;
 
@@ -180,7 +186,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     })();
   }, [logoResourcesContext, safeAsync, curTheme]);
 
-  //#region CreateTaskForm props
   React.useEffect(() => {
     if (!resourceManager?.dispensers) {
       return;
@@ -192,10 +197,36 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     if (!rmf) {
       return;
     }
-    const sub = rmf.buildingMapObs.subscribe((map) =>
-      setPlaceNames(getPlaces(map).map((p) => p.vertex.name)),
+
+    const subs: Subscription[] = [];
+    subs.push(
+      rmf.buildingMapObs.subscribe((map) =>
+        setPlaceNames(getPlaces(map).map((p) => p.vertex.name)),
+      ),
     );
-    return () => sub.unsubscribe();
+    subs.push(
+      AppEvents.refreshAlertCount.subscribe((_) => {
+        (async () => {
+          const resp = await rmf.alertsApi.getAlertsAlertsGet();
+          const alerts = resp.data as Alert[];
+          setUnacknowledgedAlertsNum(
+            alerts.filter(
+              (alert) => !(alert.acknowledged_by && alert.unix_millis_acknowledged_time),
+            ).length,
+          );
+        })();
+      }),
+    );
+    // Get the initial number of unacknowledged alerts
+    (async () => {
+      const resp = await rmf.alertsApi.getAlertsAlertsGet();
+      const alerts = resp.data as Alert[];
+      setUnacknowledgedAlertsNum(
+        alerts.filter((alert) => !(alert.acknowledged_by && alert.unix_millis_acknowledged_time))
+          .length,
+      );
+    })();
+    return () => subs.forEach((s) => s.unsubscribe());
   }, [rmf]);
 
   const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
@@ -253,9 +284,8 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       fileInputEl.click();
     });
   };
-  //#endregion CreateTaskForm props
 
-  //#region "Favorite Task"
+  //#region 'Favorite Task'
   React.useEffect(() => {
     if (!rmf) {
       return;
@@ -297,7 +327,29 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     },
     [rmf, refreshTaskQueueTableCount],
   );
-  //#endregion "Favorite Task"
+  //#endregion 'Favorite Task'
+
+  const handleOpenAlertList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (!rmf) {
+      return;
+    }
+    (async () => {
+      const { data: alerts } = await rmf.alertsApi.getAlertsAlertsGet();
+      const unackList = alerts.filter(
+        (alert) => !alert.acknowledged_by && !alert.unix_millis_acknowledged_time,
+      );
+      setUnacknowledgedAlertList(unackList.reverse());
+    })();
+    setAlertListAnchor(event.currentTarget);
+  };
+
+  const openAlertDialog = (alert: Alert) => {
+    AppEvents.alertListOpenedAlert.next(alert);
+  };
+
+  const timeDistance = (time: number) => {
+    return formatDistance(new Date(), new Date(time));
+  };
 
   return (
     <>
@@ -305,15 +357,15 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
         <LogoButton src={brandingIconPath} alt="logo" sx={{ width: logoSize }} />
         <NavigationBar value={tabValue}>
           <AppBarTab
-            label="Infrastructure"
+            label="Map"
             value="infrastructure"
-            aria-label="Infrastructure"
+            aria-label="Map"
             onTabClick={() => history.push(DashboardRoute)}
           />
           <AppBarTab
-            label="Robots"
+            label="System Overview"
             value="robots"
-            aria-label="Robots"
+            aria-label="System Overview"
             onTabClick={() => history.push(RobotsRoute)}
           />
           <AppBarTab
@@ -352,11 +404,74 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             size="small"
             onClick={() => setOpenCreateTaskForm(true)}
           >
-            <AddOutlinedIcon />
+            <AddOutlined />
             New Task
           </Button>
+          <IconButton
+            id="alert-list-button"
+            aria-label="alert-list-button"
+            color="inherit"
+            onClick={handleOpenAlertList}
+          >
+            <Badge badgeContent={unacknowledgedAlertsNum} color="secondary">
+              <Notifications />
+            </Badge>
+          </IconButton>
+          <Menu
+            anchorEl={alertListAnchor}
+            open={!!alertListAnchor}
+            onClose={() => setAlertListAnchor(null)}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            PaperProps={{
+              style: {
+                maxHeight: '20rem',
+                maxWidth: '30rem',
+              },
+            }}
+          >
+            {unacknowledgedAlertList.length === 0 ? (
+              <MenuItem dense disabled>
+                <Typography variant="body2" noWrap>
+                  No unacknowledged alerts
+                </Typography>
+              </MenuItem>
+            ) : (
+              unacknowledgedAlertList.map((alert) => (
+                <Tooltip
+                  key={alert.id}
+                  title={
+                    <React.Fragment>
+                      <Typography>Alert</Typography>
+                      <Typography>ID: {alert.original_id}</Typography>
+                      <Typography>Type: {alert.category.toUpperCase()}</Typography>
+                      <Typography>
+                        Created: {new Date(alert.unix_millis_created_time).toLocaleString()}
+                      </Typography>
+                    </React.Fragment>
+                  }
+                  placement="right"
+                >
+                  <MenuItem
+                    dense
+                    onClick={() => {
+                      openAlertDialog(alert);
+                      setAlertListAnchor(null);
+                    }}
+                    divider
+                  >
+                    <Report />
+                    <Typography variant="body2" mx={1} noWrap>
+                      Task {alert.original_id} had an alert{' '}
+                      {timeDistance(alert.unix_millis_created_time)} ago
+                    </Typography>
+                  </MenuItem>
+                </Tooltip>
+              ))
+            )}
+          </Menu>
           <Divider orientation="vertical" sx={{ marginLeft: 1, marginRight: 2 }} />
-          <Typography variant="caption">Powered by OpenRMF</Typography>
+          <Typography variant="caption">Powered by Open-RMF</Typography>
           {extraToolbarItems}
           <IconButton
             id="show-settings-btn"
@@ -364,7 +479,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             color="inherit"
             onClick={(ev) => setSettingsAnchor(ev.currentTarget)}
           >
-            <SettingsIcon />
+            <Settings />
           </IconButton>
           {profile && (
             <>
@@ -374,7 +489,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
                 color="inherit"
                 onClick={(event) => setAnchorEl(event.currentTarget)}
               >
-                <AccountCircleIcon />
+                <AccountCircle />
               </IconButton>
               <Menu
                 anchorEl={anchorEl}
