@@ -1,5 +1,5 @@
 import { DataGrid, GridColDef, GridValueGetterParams, GridCellParams } from '@mui/x-data-grid';
-import { Box, SxProps, Typography, styled, useTheme } from '@mui/material';
+import { Box, SxProps, Typography, useTheme } from '@mui/material';
 import * as React from 'react';
 import { Lift } from 'api-client';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
@@ -8,36 +8,7 @@ import { LiftState as LiftStateModel } from 'rmf-models';
 import { doorStateToString, motionStateToString } from './lift-utils';
 import { LiftControls } from './lift-controls';
 
-const classes = {
-  robotErrorCell: 'MuiDataGrid-cell-error-cell',
-  robotChargingCell: 'MuiDataGrid-cell-charging-cell',
-  robotWorkingCell: 'MuiDataGrid-cell-working-cell',
-  robotIdleCell: 'MuiDataGrid-cell-idle-cell',
-  robotOfflineCell: 'MuiDataGrid-cell-offline-cell',
-  robotShutdownCell: 'MuiDataGrid-cell-shutdown-cell',
-  robotDefaultCell: 'MuiDataGrid-cell-defautl-cell',
-};
-
-const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
-  [`& .${classes.robotErrorCell}`]: {
-    backgroundColor: theme.palette.error.main,
-    color: theme.palette.getContrastText(theme.palette.success.light),
-  },
-  [`& .${classes.robotChargingCell}`]: {
-    backgroundColor: theme.palette.info.main,
-    color: theme.palette.getContrastText(theme.palette.grey[500]),
-  },
-  [`& .${classes.robotWorkingCell}`]: {
-    backgroundColor: theme.palette.success.main,
-    color: theme.palette.getContrastText(theme.palette.info.light),
-  },
-  [`& .${classes.robotDefaultCell}`]: {
-    backgroundColor: theme.palette.warning.main,
-    color: theme.palette.getContrastText(theme.palette.warning.main),
-  },
-}));
-
-export interface LiftData {
+export interface LiftTableData {
   index: number;
   name: string;
   current_floor?: string;
@@ -54,7 +25,7 @@ export interface LiftData {
 }
 
 export interface LiftDataGridTableProps {
-  lifts: LiftData[];
+  lifts: LiftTableData[];
 }
 
 export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Element {
@@ -63,9 +34,11 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
   const DoorState = (params: GridCellParams): React.ReactNode => {
     const currDoorMotion = doorStateToString(params.row?.door_state);
     const currMotion = motionStateToString(params.row?.motion_state);
+
     const motionArrowActiveStyle: SxProps = {
       color: theme.palette.primary.main,
     };
+
     const motionArrowIdleStyle: SxProps = {
       color: theme.palette.action.disabled,
       opacity: theme.palette.action.disabledOpacity,
@@ -174,7 +147,7 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
-      <StyledDataGrid
+      <DataGrid
         autoHeight={true}
         getRowId={(l) => l.index}
         rows={lifts}
