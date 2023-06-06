@@ -1,5 +1,5 @@
 import { DataGrid, GridColDef, GridValueGetterParams, GridCellParams } from '@mui/x-data-grid';
-import { Box, SxProps, Typography, useTheme } from '@mui/material';
+import { Box, Button, SxProps, Typography, useTheme } from '@mui/material';
 import * as React from 'react';
 import { DoorState } from 'api-client';
 import { DoorMode } from 'rmf-models';
@@ -11,12 +11,8 @@ export interface DoorTableData {
   levelName: string;
   doorType: number;
   doorState?: DoorState;
-  onRequestSubmit?(
-    event: React.FormEvent,
-    doorState: number,
-    requestType: number,
-    destination: string,
-  ): void;
+  onClickOpen?(): void;
+  onClickClose?(): void;
 }
 
 export interface DoorDataGridTableProps {
@@ -25,6 +21,7 @@ export interface DoorDataGridTableProps {
 
 export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Element {
   const theme = useTheme();
+
   const DoorState = (params: GridCellParams): React.ReactNode => {
     const labelStyle: SxProps = React.useMemo<SxProps>(() => {
       const disabled = {
@@ -64,6 +61,30 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
         >
           {params.row.doorState ? doorModeToString(params.row.doorState.current_mode.value) : -1}
         </Typography>
+      </Box>
+    );
+  };
+
+  const OpenCloseButtons = (params: GridCellParams): React.ReactNode => {
+    return (
+      <Box sx={{ margin: 0, padding: 0, paddingRight: 1 }}>
+        <Button
+          variant="contained"
+          size="small"
+          aria-label="open"
+          sx={{ marginRight: 2 }}
+          onClick={params.row.onClickOpen}
+        >
+          Open
+        </Button>
+        <Button
+          variant="contained"
+          size="small"
+          aria-label="close"
+          onClick={params.row.onClickClose}
+        >
+          Close
+        </Button>
       </Box>
     );
   };
@@ -109,6 +130,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
       headerName: '',
       width: 150,
       editable: false,
+      renderCell: OpenCloseButtons,
       flex: 1,
       filterable: true,
     },
