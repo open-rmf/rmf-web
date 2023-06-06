@@ -1,0 +1,130 @@
+import { DataGrid, GridColDef, GridValueGetterParams, GridCellParams } from '@mui/x-data-grid';
+import { Box, SxProps, Typography, useTheme } from '@mui/material';
+import * as React from 'react';
+import { DoorState } from 'api-client';
+import { DoorMode } from 'rmf-models';
+import { doorModeToString, doorTypeToString } from './utils';
+
+export interface DoorTableData {
+  index: number;
+  doorName: string;
+  levelName: string;
+  doorType: number;
+  doorState?: DoorState;
+  onRequestSubmit?(
+    event: React.FormEvent,
+    doorState: number,
+    requestType: number,
+    destination: string,
+  ): void;
+}
+
+export interface DoorDataGridTableProps {
+  doors: DoorTableData[];
+}
+
+export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Element {
+  const theme = useTheme();
+  const DoorState = (params: GridCellParams): React.ReactNode => {
+    const labelStyle: SxProps = React.useMemo<SxProps>(() => {
+      const disabled = {
+        color: theme.palette.action.disabledBackground,
+      };
+      const open = {
+        color: theme.palette.success.main,
+      };
+      const closed = {
+        color: theme.palette.error.main,
+      };
+      const moving = {
+        color: theme.palette.warning.main,
+      };
+
+      switch (params.row.doorState.current_mode.value) {
+        case DoorMode.MODE_OPEN:
+          return open;
+        case DoorMode.MODE_CLOSED:
+          return closed;
+        case DoorMode.MODE_MOVING:
+          return moving;
+        default:
+          return disabled;
+      }
+    }, [params.row.doorState.current_mode.value]);
+
+    return (
+      <Box sx={labelStyle}>
+        <Typography
+          data-testid="door-state"
+          component="p"
+          sx={{
+            fontWeight: 'bold',
+            fontSize: 14,
+          }}
+        >
+          {params.row.doorState ? doorModeToString(params.row.doorState.current_mode.value) : -1}
+        </Typography>
+      </Box>
+    );
+  };
+
+  const columns: GridColDef[] = [
+    {
+      field: 'doorName',
+      headerName: 'Name',
+      width: 90,
+      valueGetter: (params: GridValueGetterParams) => params.row.doorName,
+      flex: 1,
+      filterable: true,
+    },
+    {
+      field: 'levelName',
+      headerName: 'Current floor',
+      width: 150,
+      editable: false,
+      valueGetter: (params: GridValueGetterParams) => params.row.levelName,
+      flex: 1,
+      filterable: true,
+    },
+    {
+      field: 'doorType',
+      headerName: 'Type',
+      width: 150,
+      editable: false,
+      valueGetter: (params: GridValueGetterParams) => doorTypeToString(params.row.doorType),
+      flex: 1,
+      filterable: true,
+    },
+    {
+      field: 'doorState',
+      headerName: 'Door state',
+      width: 150,
+      editable: false,
+      flex: 1,
+      renderCell: DoorState,
+      filterable: true,
+    },
+    {
+      field: '-',
+      headerName: '',
+      width: 150,
+      editable: false,
+      flex: 1,
+      filterable: true,
+    },
+  ];
+
+  return (
+    <div style={{ height: '100%', width: '100%' }}>
+      <DataGrid
+        autoHeight={true}
+        getRowId={(l) => l.index}
+        rows={doors}
+        pageSize={5}
+        rowHeight={38}
+        columns={columns}
+        rowsPerPageOptions={[5]}
+      />
+    </div>
+  );
+}
