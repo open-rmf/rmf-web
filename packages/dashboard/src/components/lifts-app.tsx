@@ -7,7 +7,7 @@ import { RmfAppContext } from './rmf-app';
 export const LiftsApp = createMicroApp('Lifts', () => {
   const rmf = React.useContext(RmfAppContext);
   const [buildingMap, setBuildingMap] = React.useState<BuildingMap | null>(null);
-  const [data, setData] = React.useState<Record<string, LiftTableData[]>>({});
+  const [liftTableData, setLiftTableData] = React.useState<Record<string, LiftTableData[]>>({});
 
   React.useEffect(() => {
     if (!rmf) {
@@ -27,7 +27,7 @@ export const LiftsApp = createMicroApp('Lifts', () => {
 
     buildingMap?.lifts.map((lift, i) => {
       const sub = rmf.getLiftStateObs(lift.name).subscribe((liftState) => {
-        setData((prev) => {
+        setLiftTableData((prev) => {
           return {
             ...prev,
             [lift.name]: [
@@ -55,5 +55,5 @@ export const LiftsApp = createMicroApp('Lifts', () => {
     });
   }, [rmf, buildingMap]);
 
-  return <LiftDataGridTable lifts={Object.values(data).flatMap((r) => r)} />;
+  return <LiftDataGridTable lifts={Object.values(liftTableData).flatMap((r) => r)} />;
 });
