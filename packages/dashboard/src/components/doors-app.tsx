@@ -1,7 +1,12 @@
 import { Button, SxProps, Typography, useTheme } from '@mui/material';
 import { BuildingMap, DoorState } from 'api-client';
 import React from 'react';
-import { doorModeToString, doorTypeToString } from 'react-components';
+import {
+  DoorDataGridTable,
+  DoorTableData,
+  doorModeToString,
+  doorTypeToString,
+} from 'react-components';
 import { DoorMode, DoorMode as RmfDoorMode } from 'rmf-models';
 import { createMicroApp } from './micro-app';
 import { RmfAppContext } from './rmf-app';
@@ -110,6 +115,7 @@ const DoorTableRow = ({ doorName, levelName, doorType }: DoorTableRowProps) => {
 export const DoorsApp = createMicroApp('Doors', () => {
   const rmf = React.useContext(RmfAppContext);
   const [buildingMap, setBuildingMap] = React.useState<BuildingMap | null>(null);
+  const [doorTableData, setDoorTableData] = React.useState<Record<string, DoorTableData[]>>({});
 
   React.useEffect(() => {
     if (!rmf) {
@@ -119,30 +125,60 @@ export const DoorsApp = createMicroApp('Doors', () => {
     return () => sub.unsubscribe();
   }, [rmf]);
 
-  return (
-    <Table stickyHeader size="small" aria-label="door-table" style={{ tableLayout: 'fixed' }}>
-      <TableHead>
-        <TableRow>
-          <TableCell>Name</TableCell>
-          <TableCell>Level</TableCell>
-          <TableCell>Type</TableCell>
-          <TableCell>Door State</TableCell>
-          <TableCell></TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {buildingMap &&
-          buildingMap.levels.flatMap((level) =>
-            level.doors.map((door) => (
-              <DoorTableRow
-                key={door.name}
-                doorName={door.name}
-                levelName={level.name}
-                doorType={door.door_type}
-              />
-            )),
-          )}
-      </TableBody>
-    </Table>
-  );
+  React.useEffect(() => {
+    if (!rmf) {
+      return;
+    }
+
+    buildingMap?.levels.map((level) =>
+      level.doors.map((door, i) => {
+        const sub = rmf.getDoorStateObs(door.name).subscribe((doorState) => {
+          setDoorTableData((prev) => {
+            return {
+              ...prev,
+              [door.name]: [
+                {
+                  index: i,
+                  doorName: door.name,
+                  levelName: level.name,
+                  doorType: door.door_type,
+                  doorState: doorState,
+                },
+              ],
+            };
+          });
+        });
+        return () => sub.unsubscribe();
+      }),
+    );
+  }, [rmf, buildingMap]);
+
+  return <DoorDataGridTable doors={Object.values(doorTableData).flatMap((r) => r)} />;
+
+  // return (
+  //   <Table stickyHeader size="small" aria-label="door-table" style={{ tableLayout: 'fixed' }}>
+  //     <TableHead>
+  //       <TableRow>
+  //         <TableCell>Name</TableCell>
+  //         <TableCell>Level</TableCell>
+  //         <TableCell>Type</TableCell>
+  //         <TableCell>Door State</TableCell>
+  //         <TableCell></TableCell>
+  //       </TableRow>
+  //     </TableHead>
+  //     <TableBody>
+  //       {buildingMap &&
+  //         buildingMap.levels.flatMap((level) =>
+  //           level.doors.map((door) => (
+  //             <DoorTableRow
+  //               key={door.name}
+  //               doorName={door.name}
+  //               levelName={level.name}
+  //               doorType={door.door_type}
+  //             />
+  //           )),
+  //         )}
+  //     </TableBody>
+  //   </Table>
+  // );
 });
