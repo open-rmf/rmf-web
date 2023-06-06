@@ -199,7 +199,7 @@ export const TasksApp = React.memo(
         const sub = AppEvents.newScheduleSubmitted.subscribe(() =>
           setForceRefresh((prev) => ++prev),
         );
-        return sub.unsubscribe;
+        return sub.unsubscribe();
       }, []);
 
       // TODO: parameterize this variable
@@ -258,7 +258,7 @@ export const TasksApp = React.memo(
           const results = resp.data as TaskState[];
           const newTasks = results.slice(0, GET_LIMIT);
 
-          setTasksState((old: Tasks) => ({
+          setTasksState((old) => ({
             ...old,
             isLoading: false,
             data: newTasks,
@@ -273,7 +273,7 @@ export const TasksApp = React.memo(
               rmf
                 .getTaskStateObs(task.booking.id)
                 .subscribe((task) =>
-                  setTasksState((prev: Tasks) => ({ ...prev, [task.booking.id]: task })),
+                  setTasksState((prev) => ({ ...prev, [task.booking.id]: task })),
                 ),
             ),
           );
@@ -332,7 +332,7 @@ export const TasksApp = React.memo(
           if (!rmf) {
             return;
           }
-          const tasks: ScheduledTask[] = (
+          const tasks = (
             await rmf.tasksApi.getScheduledTasksScheduledTasksGet(
               params.end.toISOString(),
               params.start.toISOString(),
@@ -426,7 +426,7 @@ export const TasksApp = React.memo(
         >
           <Tabs value={selectedTabIndex} onChange={handleChange} aria-label="basic tabs example">
             <Tab label="Queue" id={tabId(0)} aria-controls={tabPanelId(0)} />
-            <Tab label="Calendar" id={tabId(0)} aria-controls={tabPanelId(1)} />
+            <Tab label="Calendar" id={tabId(1)} aria-controls={tabPanelId(1)} />
           </Tabs>
           <TabPanel selectedTabIndex={selectedTabIndex} index={0}>
             <TableContainer>
@@ -483,73 +483,6 @@ export const TasksApp = React.memo(
               }}
             />
           </TabPanel>
-
-          {/* <Grid container direction="column">
-            <Grid item flexGrow={1}>
-              <TableContainer>
-                <TaskDataGridTable
-                  tasks={tasksState}
-                  onTaskClick={(_ev, task) => {
-                    setSelectedTask(task);
-                    setOpenTaskSummary(true);
-                  }}
-                  setFilterFields={setFilterFields}
-                  setSortFields={setSortFields}
-                  onPageChange={(newPage: number) =>
-                    setTasksState((old) => ({ ...old, page: newPage + 1 }))
-                  }
-                  onPageSizeChange={(newPageSize: number) =>
-                    setTasksState((old) => ({ ...old, pageSize: newPageSize }))
-                  }
-                />
-              </TableContainer>
-            </Grid>
-
-            <Grid
-              item
-              // react-scheduler does not support disabling clicking calendar to add events.
-              // Workaround by disabling pointer events.
-              sx={{
-                '& .rs__cell': { pointerEvents: 'none' },
-                '& .rs__event__item': { pointerEvents: 'auto' },
-              }}
-            >
-              <Scheduler
-                // react-scheduler does not support refreshing, workaround by mounting a new instance.
-                key={`scheduler-${forceRefresh}`}
-                view="week"
-                week={{
-                  weekDays: [0, 1, 2, 3, 4, 5, 6],
-                  weekStartOn: 1,
-                  startHour: 0,
-                  endHour: 23,
-                  step: 120,
-                }}
-                disableViewNavigator
-                draggable={false}
-                editable={false}
-                getRemoteEvents={getRemoteEvents}
-                onDelete={async (deletedId) => {
-                  const task = eventsMap.current[Number(deletedId)];
-                  if (!task) {
-                    console.error(
-                      `Failed to delete scheduled task: unable to find task for event ${deletedId}`,
-                    );
-                    return;
-                  }
-                  if (!rmf) {
-                    return;
-                  }
-                  try {
-                    await rmf.tasksApi.delScheduledTasksScheduledTasksTaskIdDelete(task.id);
-                    setForceRefresh((prev) => prev + 1);
-                  } catch (e) {
-                    console.error(`Failed to delete scheduled task: ${e}`);
-                  }
-                }}
-              />
-            </Grid>
-          </Grid> */}
           <input type="file" style={{ display: 'none' }} ref={uploadFileInputRef} />
           {openTaskSummary && (
             <TaskSummary task={selectedTask} onClose={() => setOpenTaskSummary(false)} />
