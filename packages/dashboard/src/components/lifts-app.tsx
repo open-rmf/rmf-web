@@ -55,5 +55,5 @@ export const LiftsApp = createMicroApp('Lifts', () => {
     });
   }, [rmf, buildingMap]);
 
-  return <LiftDataGridTable lifts={Object.values(liftTableData).flatMap((r) => r)} />;
+  return <LiftDataGridTable lifts={Object.values(liftTableData).flatMap((l) => l)} />;
 });
