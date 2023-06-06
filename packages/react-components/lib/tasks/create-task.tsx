@@ -23,11 +23,12 @@ import {
   ListItemSecondaryAction,
   ListItemText,
   MenuItem,
+  styled,
   TextField,
   Typography,
   useTheme,
 } from '@mui/material';
-import { DatePicker, TimePicker } from '@mui/x-date-pickers';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import type { TaskFavoritePydantic as TaskFavorite, TaskRequest } from 'api-client';
 import React from 'react';
 import { Loading } from '..';
@@ -70,6 +71,22 @@ const classes = {
   taskList: 'create-task-task-list',
   selectedTask: 'create-task-selected-task',
 };
+const StyledConfirmationDialog = styled((props: ConfirmationDialogProps) => (
+  <ConfirmationDialog {...props} />
+))(({ theme }) => ({
+  [`& .${classes.selectFileBtn}`]: {
+    marginBottom: theme.spacing(1),
+  },
+  [`& .${classes.taskList}`]: {
+    flex: '1 1 auto',
+    minHeight: 400,
+    maxHeight: '50vh',
+    overflow: 'auto',
+  },
+  [`& .${classes.selectedTask}`]: {
+    background: theme.palette.action.focus,
+  },
+}));
 
 function getShortDescription(taskRequest: TaskRequest): string {
   switch (taskRequest.category) {
@@ -939,6 +956,8 @@ export function CreateTaskForm({
       setSelectedTaskIdx(0);
     })();
   };
+
+  const submitText = taskRequests.length > 1 ? 'Submit All' : 'Submit';
 
   return (
     <>

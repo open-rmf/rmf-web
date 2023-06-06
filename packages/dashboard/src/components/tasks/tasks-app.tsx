@@ -2,9 +2,17 @@ import { Scheduler } from '@aldabil/react-scheduler';
 import { ProcessedEvent, SchedulerProps } from '@aldabil/react-scheduler/types';
 import DownloadIcon from '@mui/icons-material/Download';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { Grid, IconButton, TableContainer, Toolbar, Tooltip } from '@mui/material';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import {
+  Box,
+  IconButton,
+  Menu,
+  MenuItem,
+  Tab,
+  Tabs,
+  TableContainer,
+  Toolbar,
+  Tooltip,
+} from '@mui/material';
 import {
   ApiServerModelsTortoiseModelsScheduledTaskScheduledTask as ScheduledTask,
   ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf as ApiSchedule,
@@ -28,13 +36,49 @@ import {
   nextWednesday,
 } from 'date-fns';
 import React from 'react';
-import { FilterFields, SortFields, TaskDataGridTable, Tasks, Window } from 'react-components';
+import {
+  FilterFields,
+  MuiMouseEvent,
+  SortFields,
+  TaskDataGridTable,
+  Tasks,
+  Window,
+} from 'react-components';
 import { Subscription } from 'rxjs';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
 import { TaskSummary } from './task-summary';
 import { downloadCsvFull, downloadCsvMinimal } from './utils';
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  selectedTabIndex: number;
+}
+
+function tabId(index: number): string {
+  return `simple-tab-${index}`;
+}
+
+function tabPanelId(index: number): string {
+  return `simple-tabpanel-${index}`;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, selectedTabIndex, index, ...other } = props;
+  return (
+    <div
+      role="tabpanel"
+      hidden={selectedTabIndex !== index}
+      id={tabPanelId(index)}
+      aria-labelledby={tabId(index)}
+      {...other}
+    >
+      {selectedTabIndex === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </div>
+  );
+}
 
 function scheduleToEvents(
   start: Date,
@@ -48,7 +92,7 @@ function scheduleToEvents(
     return [];
   }
 
-  const [hours, minutes] = schedule.at.split(':').map((s) => Number(s));
+  const [hours, minutes] = schedule.at.split(':').map((s: string) => Number(s));
   let cur = start;
   cur.setHours(hours);
   cur.setMinutes(minutes);
@@ -214,7 +258,7 @@ export const TasksApp = React.memo(
           const results = resp.data as TaskState[];
           const newTasks = results.slice(0, GET_LIMIT);
 
-          setTasksState((old) => ({
+          setTasksState((old: Tasks) => ({
             ...old,
             isLoading: false,
             data: newTasks,
@@ -229,7 +273,7 @@ export const TasksApp = React.memo(
               rmf
                 .getTaskStateObs(task.booking.id)
                 .subscribe((task) =>
-                  setTasksState((prev) => ({ ...prev, [task.booking.id]: task })),
+                  setTasksState((prev: Tasks) => ({ ...prev, [task.booking.id]: task })),
                 ),
             ),
           );
@@ -288,7 +332,7 @@ export const TasksApp = React.memo(
           if (!rmf) {
             return;
           }
-          const tasks = (
+          const tasks: ScheduledTask[] = (
             await rmf.tasksApi.getScheduledTasksScheduledTasksGet(
               params.end.toISOString(),
               params.start.toISOString(),
@@ -299,8 +343,8 @@ export const TasksApp = React.memo(
             return counter++;
           };
           eventsMap.current = {};
-          return tasks.flatMap((t) =>
-            t.schedules.flatMap<ProcessedEvent>((s) => {
+          return tasks.flatMap((t: ScheduledTask) =>
+            t.schedules.flatMap<ProcessedEvent>((s: ApiSchedule) => {
               const events = scheduleToEvents(params.start, params.end, s, getEventId, () =>
                 getScheduledTaskTitle(t),
               );
@@ -313,6 +357,11 @@ export const TasksApp = React.memo(
         },
         [rmf],
       );
+
+      const [selectedTabIndex, setSelectedTabIndex] = React.useState(0);
+      const handleChange = (_: React.SyntheticEvent, newSelectedTabIndex: number) => {
+        setSelectedTabIndex(newSelectedTabIndex);
+      };
 
       return (
         <Window
@@ -375,7 +424,67 @@ export const TasksApp = React.memo(
           }
           {...otherProps}
         >
-          <Grid container direction="column">
+          <Tabs value={selectedTabIndex} onChange={handleChange} aria-label="basic tabs example">
+            <Tab label="Queue" id={tabId(0)} aria-controls={tabPanelId(0)} />
+            <Tab label="Calendar" id={tabId(0)} aria-controls={tabPanelId(1)} />
+          </Tabs>
+          <TabPanel selectedTabIndex={selectedTabIndex} index={0}>
+            <TableContainer>
+              <TaskDataGridTable
+                tasks={tasksState}
+                onTaskClick={(_: MuiMouseEvent, task: TaskState) => {
+                  setSelectedTask(task);
+                  setOpenTaskSummary(true);
+                }}
+                setFilterFields={setFilterFields}
+                setSortFields={setSortFields}
+                onPageChange={(newPage: number) =>
+                  setTasksState((old: Tasks) => ({ ...old, page: newPage + 1 }))
+                }
+                onPageSizeChange={(newPageSize: number) =>
+                  setTasksState((old: Tasks) => ({ ...old, pageSize: newPageSize }))
+                }
+              />
+            </TableContainer>
+          </TabPanel>
+          <TabPanel selectedTabIndex={selectedTabIndex} index={1}>
+            <Scheduler
+              // react-scheduler does not support refreshing, workaround by mounting a new instance.
+              key={`scheduler-${forceRefresh}`}
+              view="week"
+              week={{
+                weekDays: [0, 1, 2, 3, 4, 5, 6],
+                weekStartOn: 1,
+                startHour: 0,
+                endHour: 23,
+                step: 120,
+              }}
+              disableViewNavigator
+              draggable={false}
+              editable={false}
+              getRemoteEvents={getRemoteEvents}
+              onDelete={async (deletedId) => {
+                const task = eventsMap.current[Number(deletedId)];
+                if (!task) {
+                  console.error(
+                    `Failed to delete scheduled task: unable to find task for event ${deletedId}`,
+                  );
+                  return;
+                }
+                if (!rmf) {
+                  return;
+                }
+                try {
+                  await rmf.tasksApi.delScheduledTasksScheduledTasksTaskIdDelete(task.id);
+                  setForceRefresh((prev) => prev + 1);
+                } catch (e) {
+                  console.error(`Failed to delete scheduled task: ${e}`);
+                }
+              }}
+            />
+          </TabPanel>
+
+          {/* <Grid container direction="column">
             <Grid item flexGrow={1}>
               <TableContainer>
                 <TaskDataGridTable
@@ -440,7 +549,7 @@ export const TasksApp = React.memo(
                 }}
               />
             </Grid>
-          </Grid>
+          </Grid> */}
           <input type="file" style={{ display: 'none' }} ref={uploadFileInputRef} />
           {openTaskSummary && (
             <TaskSummary task={selectedTask} onClose={() => setOpenTaskSummary(false)} />
