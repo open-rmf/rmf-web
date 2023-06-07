@@ -107,7 +107,7 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
     },
     {
       field: 'currentFloor',
-      headerName: 'Current floor',
+      headerName: 'Current Floor',
       width: 150,
       editable: false,
       valueGetter: (params: GridValueGetterParams) =>
@@ -117,7 +117,7 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
     },
     {
       field: 'destinationFloor',
-      headerName: 'Destination floor',
+      headerName: 'Destination Floor',
       width: 150,
       editable: false,
       valueGetter: (params: GridValueGetterParams) =>
@@ -127,7 +127,7 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
     },
     {
       field: 'doorState',
-      headerName: 'Door state',
+      headerName: 'Door State',
       width: 150,
       editable: false,
       flex: 1,
@@ -155,6 +155,9 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
         rowHeight={38}
         columns={columns}
         rowsPerPageOptions={[5]}
+        localeText={{
+          noRowsLabel: 'No lifts available.',
+        }}
       />
     </div>
   );
