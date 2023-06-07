@@ -41,8 +41,8 @@ describe('LiftDataGridTable', () => {
   it('shows titles correctly', () => {
     const root = render(<LiftDataGridTable lifts={mockLifts} />);
     expect(root.queryByText('Name')).toBeTruthy();
-    expect(root.queryByText('Current floor')).toBeTruthy();
-    expect(root.queryByText('Destination floor')).toBeTruthy();
-    expect(root.queryByText('Door state')).toBeTruthy();
+    expect(root.queryByText('Current Floor')).toBeTruthy();
+    expect(root.queryByText('Destination Floor')).toBeTruthy();
+    expect(root.queryByText('Door State')).toBeTruthy();
   });
 });
