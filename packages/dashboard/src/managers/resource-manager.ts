@@ -10,12 +10,16 @@ export interface ResourceConfigurationsType {
   robots?: Record<string, RobotResource>; // Record<FleetName, RobotResource>
   dispensers?: Record<string, RawDispenserResource>; // Record<DispenserName, DispenserResource>
   logos?: Record<string, LogoResource>;
+  helpLink?: string;
+  reportIssue?: string;
 }
 
 export default class ResourceManager {
   robots: RobotResourceManager;
   logos: LogoResourceManager;
   dispensers?: DispenserResourceManager;
+  helpLink: string;
+  reportIssue: string;
 
   /**
    * Gets the default resource manager using the embedded resource file (aka "assets/resources/main.json").
@@ -40,6 +44,15 @@ export default class ResourceManager {
     if (resources.dispensers) {
       this.dispensers = new DispenserResourceManager(resources.dispensers);
     }
+    /**
+     * - helLink by default leads to https://osrf.github.io/ros2multirobotbook/rmf-core.html
+          It is configurable in the dashboard resources.
+       - reportIssue default leads to https://github.com/open-rmf/rmf-web/issues
+          It is configurable in dashboard resources.
+       - Both variables are hardcoded for now because the url is public.
+     */
+    this.helpLink = resources.helpLink || 'https://osrf.github.io/ros2multirobotbook/rmf-core.html';
+    this.reportIssue = resources.reportIssue || 'https://github.com/open-rmf/rmf-web/issues';
   }
 }
 
