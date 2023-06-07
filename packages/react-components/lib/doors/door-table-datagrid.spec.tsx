@@ -40,8 +40,8 @@ describe('DoorDataGridTable', () => {
   it('shows titles correctly', () => {
     const root = render(<DoorDataGridTable doors={mockDoors} />);
     expect(root.queryByText('Name')).toBeTruthy();
-    expect(root.queryByText('Current floor')).toBeTruthy();
+    expect(root.queryByText('Current Floor')).toBeTruthy();
     expect(root.queryByText('Type')).toBeTruthy();
-    expect(root.queryByText('Door state')).toBeTruthy();
+    expect(root.queryByText('Door State')).toBeTruthy();
   });
 });
