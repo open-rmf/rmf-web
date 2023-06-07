@@ -100,7 +100,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
     },
     {
       field: 'levelName',
-      headerName: 'Current floor',
+      headerName: 'Current Floor',
       width: 150,
       editable: false,
       valueGetter: (params: GridValueGetterParams) => params.row.levelName,
@@ -118,7 +118,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
     },
     {
       field: 'doorState',
-      headerName: 'Door state',
+      headerName: 'Door State',
       width: 150,
       editable: false,
       flex: 1,
@@ -146,6 +146,9 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
         rowHeight={38}
         columns={columns}
         rowsPerPageOptions={[5]}
+        localeText={{
+          noRowsLabel: 'No doors available.',
+        }}
       />
     </div>
   );
