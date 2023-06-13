@@ -11,6 +11,7 @@ import { LiftControls } from './lift-controls';
 export interface LiftTableData {
   index: number;
   name: string;
+  opMode: string;
   currentFloor?: string;
   destinationFloor?: string;
   doorState: number;
@@ -102,6 +103,14 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
       headerName: 'Name',
       width: 90,
       valueGetter: (params: GridValueGetterParams) => params.row.name,
+      flex: 1,
+      filterable: true,
+    },
+    {
+      field: 'opMode',
+      headerName: 'Op. Mode',
+      width: 90,
+      valueGetter: (params: GridValueGetterParams) => params.row.opMode,
       flex: 1,
       filterable: true,
     },
