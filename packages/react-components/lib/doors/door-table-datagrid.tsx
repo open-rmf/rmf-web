@@ -8,6 +8,7 @@ import { doorModeToString, doorTypeToString } from './utils';
 export interface DoorTableData {
   index: number;
   doorName: string;
+  opMode: string;
   levelName: string;
   doorType: number;
   doorState?: DoorState;
@@ -95,6 +96,15 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
       headerName: 'Name',
       width: 90,
       valueGetter: (params: GridValueGetterParams) => params.row.doorName,
+      flex: 1,
+      filterable: true,
+    },
+    {
+      field: 'opMode',
+      headerName: 'Op. Mode',
+      width: 150,
+      editable: false,
+      valueGetter: (params: GridValueGetterParams) => params.row.opMode,
       flex: 1,
       filterable: true,
     },

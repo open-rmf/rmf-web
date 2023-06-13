@@ -4,6 +4,7 @@ import { DoorDataGridTable, DoorTableData } from 'react-components';
 import { DoorMode as RmfDoorMode } from 'rmf-models';
 import { createMicroApp } from './micro-app';
 import { RmfAppContext } from './rmf-app';
+import { getApiErrorMessage } from './utils';
 
 export const DoorsApp = createMicroApp('Doors', () => {
   const rmf = React.useContext(RmfAppContext);
@@ -24,32 +25,39 @@ export const DoorsApp = createMicroApp('Doors', () => {
     }
 
     buildingMap?.levels.map((level) =>
-      level.doors.map((door, i) => {
-        const sub = rmf.getDoorStateObs(door.name).subscribe((doorState) => {
-          setDoorTableData((prev) => {
-            return {
-              ...prev,
-              [door.name]: [
-                {
-                  index: i,
-                  doorName: door.name,
-                  levelName: level.name,
-                  doorType: door.door_type,
-                  doorState: doorState,
-                  onClickOpen: () =>
-                    rmf?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(door.name, {
-                      mode: RmfDoorMode.MODE_OPEN,
-                    }),
-                  onClickClose: () =>
-                    rmf?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(door.name, {
-                      mode: RmfDoorMode.MODE_CLOSED,
-                    }),
-                },
-              ],
-            };
+      level.doors.map(async (door, i) => {
+        try {
+          const { data } = await rmf.doorsApi.getDoorHealthDoorsDoorNameHealthGet(door.name);
+          const { health_status } = data;
+          const sub = rmf.getDoorStateObs(door.name).subscribe((doorState) => {
+            setDoorTableData((prev) => {
+              return {
+                ...prev,
+                [door.name]: [
+                  {
+                    index: i,
+                    doorName: door.name,
+                    opMode: health_status ? health_status : 'N/A',
+                    levelName: level.name,
+                    doorType: door.door_type,
+                    doorState: doorState,
+                    onClickOpen: () =>
+                      rmf?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(door.name, {
+                        mode: RmfDoorMode.MODE_OPEN,
+                      }),
+                    onClickClose: () =>
+                      rmf?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(door.name, {
+                        mode: RmfDoorMode.MODE_CLOSED,
+                      }),
+                  },
+                ],
+              };
+            });
           });
-        });
-        return () => sub.unsubscribe();
+          return () => sub.unsubscribe();
+        } catch (error) {
+          throw new Error(getApiErrorMessage(error));
+        }
       }),
     );
   }, [rmf, buildingMap]);
