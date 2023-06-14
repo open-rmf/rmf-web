@@ -5,7 +5,12 @@ import { Lift } from 'api-client';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { LiftState as LiftStateModel } from 'rmf-models';
-import { doorStateToString, motionStateToString } from './lift-utils';
+import {
+  HealthStatus,
+  doorStateToString,
+  getHealthStatusDescription,
+  motionStateToString,
+} from './lift-utils';
 import { LiftControls } from './lift-controls';
 
 export interface LiftTableData {
@@ -31,6 +36,50 @@ export interface LiftDataGridTableProps {
 
 export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Element {
   const theme = useTheme();
+
+  const OpModeState = (params: GridCellParams): React.ReactNode => {
+    const theme = useTheme();
+    const opModeStateLabelStyle: SxProps = (() => {
+      const unknown = {
+        color: theme.palette.action.disabledBackground,
+      };
+      const online = {
+        color: theme.palette.success.main,
+      };
+      const unstable = {
+        color: theme.palette.warning.main,
+      };
+      const offline = {
+        color: theme.palette.error.main,
+      };
+
+      switch (params.row.opMode) {
+        case HealthStatus.Healthy:
+          return online;
+        case HealthStatus.Unhealthy:
+          return unstable;
+        case HealthStatus.Dead:
+          return offline;
+        default:
+          return unknown;
+      }
+    })();
+
+    return (
+      <Box sx={opModeStateLabelStyle}>
+        <Typography
+          data-testid="op-mode-state"
+          component="p"
+          sx={{
+            fontWeight: 'bold',
+            fontSize: 14,
+          }}
+        >
+          {getHealthStatusDescription(params.row.opMode)}
+        </Typography>
+      </Box>
+    );
+  };
 
   const DoorState = (params: GridCellParams): React.ReactNode => {
     const currDoorMotion = doorStateToString(params.row?.doorState);
@@ -110,8 +159,8 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
       field: 'opMode',
       headerName: 'Op. Mode',
       width: 90,
-      valueGetter: (params: GridValueGetterParams) => params.row.opMode,
       flex: 1,
+      renderCell: OpModeState,
       filterable: true,
     },
     {

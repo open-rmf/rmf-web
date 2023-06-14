@@ -1,5 +1,12 @@
 import { LiftRequest as RmfLiftRequest, LiftState as RmfLiftState } from 'rmf-models';
 
+// Using an enum because the api client has not generated the HealthStatus
+export enum HealthStatus {
+  Healthy = 'Healthy',
+  Unhealthy = 'Unhealthy',
+  Dead = 'Dead',
+}
+
 export function liftModeToString(liftMode?: number): string {
   if (liftMode === undefined) {
     return `Unknown (${liftMode})`;
@@ -17,6 +24,19 @@ export function liftModeToString(liftMode?: number): string {
       return 'Offline';
     default:
       return `Unknown (${liftMode})`;
+  }
+}
+
+export function getHealthStatusDescription(healthStatus: string): string {
+  switch (healthStatus) {
+    case HealthStatus.Healthy:
+      return 'ONLINE';
+    case HealthStatus.Unhealthy:
+      return 'UNSTABLE';
+    case HealthStatus.Dead:
+      return 'OFFLINE';
+    default:
+      return `Unknown ${healthStatus}`;
   }
 }
 
