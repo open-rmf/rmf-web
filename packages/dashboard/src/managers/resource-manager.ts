@@ -45,7 +45,7 @@ export default class ResourceManager {
       this.dispensers = new DispenserResourceManager(resources.dispensers);
     }
     /**
-     * - helLink by default leads to https://osrf.github.io/ros2multirobotbook/rmf-core.html
+     * - helpLink by default leads to https://osrf.github.io/ros2multirobotbook/rmf-core.html
           It is configurable in the dashboard resources.
        - reportIssue default leads to https://github.com/open-rmf/rmf-web/issues
           It is configurable in dashboard resources.
