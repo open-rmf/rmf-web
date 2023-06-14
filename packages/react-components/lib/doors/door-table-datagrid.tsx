@@ -3,7 +3,12 @@ import { Box, Button, SxProps, Typography, useTheme } from '@mui/material';
 import * as React from 'react';
 import { DoorState } from 'api-client';
 import { DoorMode } from 'rmf-models';
-import { doorModeToString, doorTypeToString } from './utils';
+import {
+  HealthStatus,
+  doorModeToString,
+  doorTypeToString,
+  getHealthStatusDescription,
+} from './utils';
 
 export interface DoorTableData {
   index: number;
@@ -22,6 +27,49 @@ export interface DoorDataGridTableProps {
 
 export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Element {
   const theme = useTheme();
+
+  const OpModeState = (params: GridCellParams): React.ReactNode => {
+    const opModeStateLabelStyle: SxProps = (() => {
+      const unknown = {
+        color: theme.palette.action.disabledBackground,
+      };
+      const online = {
+        color: theme.palette.success.main,
+      };
+      const unstable = {
+        color: theme.palette.warning.main,
+      };
+      const offline = {
+        color: theme.palette.error.main,
+      };
+
+      switch (params.row.opMode) {
+        case HealthStatus.Healthy:
+          return online;
+        case HealthStatus.Unhealthy:
+          return unstable;
+        case HealthStatus.Dead:
+          return offline;
+        default:
+          return unknown;
+      }
+    })();
+
+    return (
+      <Box sx={opModeStateLabelStyle}>
+        <Typography
+          data-testid="op-mode-state"
+          component="p"
+          sx={{
+            fontWeight: 'bold',
+            fontSize: 14,
+          }}
+        >
+          {getHealthStatusDescription(params.row.opMode)}
+        </Typography>
+      </Box>
+    );
+  };
 
   const DoorState = (params: GridCellParams): React.ReactNode => {
     const labelStyle: SxProps = React.useMemo<SxProps>(() => {
@@ -104,8 +152,8 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
       headerName: 'Op. Mode',
       width: 150,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) => params.row.opMode,
       flex: 1,
+      renderCell: OpModeState,
       filterable: true,
     },
     {

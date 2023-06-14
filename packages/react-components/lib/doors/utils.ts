@@ -20,6 +20,13 @@ export enum DoorMode {
   Moving = RmfDoorMode.MODE_MOVING,
 }
 
+// Using an enum because the api client has not generated the HealthStatus
+export enum HealthStatus {
+  Healthy = 'Healthy',
+  Unhealthy = 'Unhealthy',
+  Dead = 'Dead',
+}
+
 export interface DoorData {
   level: string;
   door: RmfDoor;
@@ -57,5 +64,18 @@ export function doorTypeToString(doorType: number): string {
       return 'Single Telescope';
     default:
       return `Unknown (${doorType})`;
+  }
+}
+
+export function getHealthStatusDescription(healthStatus: string): string {
+  switch (healthStatus) {
+    case HealthStatus.Healthy:
+      return 'ONLINE';
+    case HealthStatus.Unhealthy:
+      return 'UNSTABLE';
+    case HealthStatus.Dead:
+      return 'OFFLINE';
+    default:
+      return `Unknown ${healthStatus}`;
   }
 }
