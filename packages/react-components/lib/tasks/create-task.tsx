@@ -12,7 +12,9 @@ import {
   Button,
   ButtonBase,
   Dialog,
+  DialogActions,
   DialogContent,
+  DialogProps,
   DialogTitle,
   Divider,
   Grid,
@@ -28,6 +30,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
+import clsx from 'clsx';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import type { TaskFavoritePydantic as TaskFavorite, TaskRequest } from 'api-client';
 import React from 'react';
@@ -67,13 +70,29 @@ interface CleanTaskDescription {
 type TaskDescription = DeliveryTaskDescription | LoopTaskDescription | CleanTaskDescription;
 
 const classes = {
+  title: 'dialogue-info-value',
   selectFileBtn: 'create-task-selected-file-btn',
   taskList: 'create-task-task-list',
   selectedTask: 'create-task-selected-task',
+  actionBtn: 'dialogue-action-button',
 };
-const StyledConfirmationDialog = styled((props: ConfirmationDialogProps) => (
-  <ConfirmationDialog {...props} />
-))(({ theme }) => ({
+// const StyledConfirmationDialog = styled((props: ConfirmationDialogProps) => (
+//   <ConfirmationDialog {...props} />
+// ))(({ theme }) => ({
+//   [`& .${classes.selectFileBtn}`]: {
+//     marginBottom: theme.spacing(1),
+//   },
+//   [`& .${classes.taskList}`]: {
+//     flex: '1 1 auto',
+//     minHeight: 400,
+//     maxHeight: '50vh',
+//     overflow: 'auto',
+//   },
+//   [`& .${classes.selectedTask}`]: {
+//     background: theme.palette.action.focus,
+//   },
+// }));
+const StyledDialog = styled((props: DialogProps) => <Dialog {...props} />)(({ theme }) => ({
   [`& .${classes.selectFileBtn}`]: {
     marginBottom: theme.spacing(1),
   },
@@ -85,6 +104,12 @@ const StyledConfirmationDialog = styled((props: ConfirmationDialogProps) => (
   },
   [`& .${classes.selectedTask}`]: {
     background: theme.palette.action.focus,
+  },
+  [`& .${classes.title}`]: {
+    flex: '1 1 auto',
+  },
+  [`& .${classes.actionBtn}`]: {
+    minWidth: 80,
   },
 }));
 
@@ -957,163 +982,196 @@ export function CreateTaskForm({
     })();
   };
 
+  const dialogTitle = 'Create Task';
   const submitText = taskRequests.length > 1 ? 'Submit All' : 'Submit';
 
   return (
     <>
-      <StyledConfirmationDialog
+      <StyledDialog
         title="Create Task"
-        submitting={submitting}
-        confirmText={submitText}
         maxWidth="lg"
         fullWidth={taskRequests.length > 1}
-        toolbar={<FormToolbar onSelectFileClick={handleSelectFileClick} />}
-        onSubmit={handleSubmit}
         disableEnforceFocus
         {...otherProps}
       >
-        <Grid container direction="row" wrap="nowrap">
-          <List dense className={classes.taskList} aria-label="Favorites Tasks">
-            <Typography variant="h6" component="div">
-              Favorite tasks
-            </Typography>
-            {favoritesTasks.map((favoriteTask, index) => {
-              return (
-                <FavoriteTask
-                  listItemText={favoriteTask.name}
-                  key={index}
-                  setFavoriteTask={setFavoriteTaskBuffer}
-                  favoriteTask={favoriteTask}
-                  setCallToDelete={setCallToDeleteFavoriteTask}
-                  setCallToUpdate={setCallToUpdateFavoriteTask}
-                  setOpenDialog={setOpenFavoriteDialog}
-                  listItemClick={() => {
-                    setFavoriteTaskBuffer(favoriteTask);
-                    setTaskRequests((prev) => {
-                      return [
-                        ...prev,
-                        {
-                          category: favoriteTask.category,
-                          description: favoriteTask.description,
-                          unix_millis_earliest_start_time: Date.now(),
-                          priority: favoriteTask.priority,
-                        },
-                      ];
-                    });
-                  }}
-                />
-              );
-            })}
-          </List>
-
-          <Divider
-            orientation="vertical"
-            flexItem
-            style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
-          />
-
-          <Grid>
-            <TextField
-              select
-              id="task-type"
-              label="Task Category"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              value={taskRequest.category}
-              onChange={handleTaskTypeChange}
-            >
-              <MenuItem value="clean">Clean</MenuItem>
-              <MenuItem value="patrol">Loop</MenuItem>
-              <MenuItem value="delivery">Delivery</MenuItem>
-            </TextField>
+        <form aria-label={dialogTitle}>
+          <DialogTitle>
             <Grid container wrap="nowrap">
-              <Grid style={{ flexGrow: 1 }}>
-                <DateTimePicker
-                  inputFormat={'MM/dd/yyyy HH:mm'}
-                  value={
-                    taskRequest.unix_millis_earliest_start_time
-                      ? new Date(taskRequest.unix_millis_earliest_start_time)
-                      : new Date()
-                  }
-                  onChange={(date) => {
-                    if (!date) {
-                      return;
-                    }
-                    taskRequest.unix_millis_earliest_start_time = date.valueOf();
-                    setFavoriteTaskBuffer({
-                      ...favoriteTaskBuffer,
-                      unix_millis_earliest_start_time: date.valueOf(),
-                    });
-                    updateTasks();
-                  }}
-                  label="Start Time"
-                  renderInput={(props) => <TextField {...props} />}
-                />
+              <Grid item className={classes.title}>
+                {dialogTitle}
               </Grid>
-              <Grid
-                style={{
-                  flex: '0 1 5em',
-                  marginLeft: theme.spacing(2),
-                  marginRight: theme.spacing(2),
-                }}
-              >
-                <PositiveIntField
-                  id="priority"
-                  label="Priority"
-                  margin="normal"
-                  value={(taskRequest.priority as Record<string, any>)?.value || 0}
-                  onChange={(_ev, val) => {
-                    taskRequest.priority = { type: 'binary', value: val };
-                    setFavoriteTaskBuffer({
-                      ...favoriteTaskBuffer,
-                      priority: { type: 'binary', value: val },
-                    });
-                    updateTasks();
-                  }}
-                />
+              <Grid item>
+                <FormToolbar onSelectFileClick={handleSelectFileClick} />
               </Grid>
             </Grid>
-            {renderTaskDescriptionForm()}
-            <Grid container justifyContent="center">
-              <Button
-                aria-label="Save as a favorite task"
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  !callToUpdateFavoriteTask &&
-                    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
-                  setOpenFavoriteDialog(true);
-                }}
-              >
-                {callToUpdateFavoriteTask ? `Confirm edits` : 'Save as a favorite task'}
-              </Button>
-            </Grid>
-          </Grid>
-          {taskTitles.length > 1 && (
-            <>
+          </DialogTitle>
+          <DialogContent>
+            <Grid container direction="row" wrap="nowrap">
+              <List dense className={classes.taskList} aria-label="Favorites Tasks">
+                <Typography variant="h6" component="div">
+                  Favorite tasks
+                </Typography>
+                {favoritesTasks.map((favoriteTask, index) => {
+                  return (
+                    <FavoriteTask
+                      listItemText={favoriteTask.name}
+                      key={index}
+                      setFavoriteTask={setFavoriteTaskBuffer}
+                      favoriteTask={favoriteTask}
+                      setCallToDelete={setCallToDeleteFavoriteTask}
+                      setCallToUpdate={setCallToUpdateFavoriteTask}
+                      setOpenDialog={setOpenFavoriteDialog}
+                      listItemClick={() => {
+                        setFavoriteTaskBuffer(favoriteTask);
+                        setTaskRequests((prev) => {
+                          return [
+                            ...prev,
+                            {
+                              category: favoriteTask.category,
+                              description: favoriteTask.description,
+                              unix_millis_earliest_start_time: Date.now(),
+                              priority: favoriteTask.priority,
+                            },
+                          ];
+                        });
+                      }}
+                    />
+                  );
+                })}
+              </List>
+
               <Divider
                 orientation="vertical"
                 flexItem
                 style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
               />
-              <List dense className={classes.taskList} aria-label="Tasks List">
-                {taskTitles.map((title, idx) => (
-                  <ListItem
-                    key={idx}
-                    button
-                    onClick={() => setSelectedTaskIdx(idx)}
-                    className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
-                    role="listitem button"
+
+              <Grid>
+                <TextField
+                  select
+                  id="task-type"
+                  label="Task Category"
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
+                  value={taskRequest.category}
+                  onChange={handleTaskTypeChange}
+                >
+                  <MenuItem value="clean">Clean</MenuItem>
+                  <MenuItem value="patrol">Loop</MenuItem>
+                  <MenuItem value="delivery">Delivery</MenuItem>
+                </TextField>
+                <Grid container wrap="nowrap">
+                  <Grid style={{ flexGrow: 1 }}>
+                    <DateTimePicker
+                      inputFormat={'MM/dd/yyyy HH:mm'}
+                      value={
+                        taskRequest.unix_millis_earliest_start_time
+                          ? new Date(taskRequest.unix_millis_earliest_start_time)
+                          : new Date()
+                      }
+                      onChange={(date) => {
+                        if (!date) {
+                          return;
+                        }
+                        taskRequest.unix_millis_earliest_start_time = date.valueOf();
+                        setFavoriteTaskBuffer({
+                          ...favoriteTaskBuffer,
+                          unix_millis_earliest_start_time: date.valueOf(),
+                        });
+                        updateTasks();
+                      }}
+                      label="Start Time"
+                      renderInput={(props) => <TextField {...props} />}
+                    />
+                  </Grid>
+                  <Grid
+                    style={{
+                      flex: '0 1 5em',
+                      marginLeft: theme.spacing(2),
+                      marginRight: theme.spacing(2),
+                    }}
                   >
-                    <ListItemText primary={title} />
-                  </ListItem>
-                ))}
-              </List>
-            </>
-          )}
-        </Grid>
-      </StyledConfirmationDialog>
+                    <PositiveIntField
+                      id="priority"
+                      label="Priority"
+                      margin="normal"
+                      value={(taskRequest.priority as Record<string, any>)?.value || 0}
+                      onChange={(_ev, val) => {
+                        taskRequest.priority = { type: 'binary', value: val };
+                        setFavoriteTaskBuffer({
+                          ...favoriteTaskBuffer,
+                          priority: { type: 'binary', value: val },
+                        });
+                        updateTasks();
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+                {renderTaskDescriptionForm()}
+                <Grid container justifyContent="center">
+                  <Button
+                    aria-label="Save as a favorite task"
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      !callToUpdateFavoriteTask &&
+                        setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
+                      setOpenFavoriteDialog(true);
+                    }}
+                  >
+                    {callToUpdateFavoriteTask ? `Confirm edits` : 'Save as a favorite task'}
+                  </Button>
+                </Grid>
+              </Grid>
+              {taskTitles.length > 1 && (
+                <>
+                  <Divider
+                    orientation="vertical"
+                    flexItem
+                    style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
+                  />
+                  <List dense className={classes.taskList} aria-label="Tasks List">
+                    {taskTitles.map((title, idx) => (
+                      <ListItem
+                        key={idx}
+                        button
+                        onClick={() => setSelectedTaskIdx(idx)}
+                        className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
+                        role="listitem button"
+                      >
+                        <ListItemText primary={title} />
+                      </ListItem>
+                    ))}
+                  </List>
+                </>
+              )}
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              variant="outlined"
+              disabled={submitting}
+              className={classes.actionBtn}
+              onClick={(ev) => onClose && onClose(ev, 'escapeKeyDown')}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              type="submit"
+              color="primary"
+              disabled={submitting}
+              className={classes.actionBtn}
+              onClick={handleSubmit}
+            >
+              <Loading hideChildren loading={submitting} size="1.5em" color="inherit">
+                {submitText}
+              </Loading>
+            </Button>
+          </DialogActions>
+        </form>
+      </StyledDialog>
       {openFavoriteDialog && (
         <ConfirmationDialog
           confirmText={callToDeleteFavoriteTask ? 'Delete' : 'Save'}
