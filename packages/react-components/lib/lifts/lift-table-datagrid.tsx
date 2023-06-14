@@ -38,7 +38,6 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
   const theme = useTheme();
 
   const OpModeState = (params: GridCellParams): React.ReactNode => {
-    const theme = useTheme();
     const opModeStateLabelStyle: SxProps = (() => {
       const unknown = {
         color: theme.palette.action.disabledBackground,
