@@ -76,7 +76,7 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
     );
   };
 
-  const DoorState = (params: GridCellParams): React.ReactNode => {
+  const LiftState = (params: GridCellParams): React.ReactNode => {
     const currDoorMotion = doorStateToString(params.row?.doorState);
     const currMotion = motionStateToString(params.row?.motionState);
 
@@ -179,12 +179,12 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
       filterable: true,
     },
     {
-      field: 'doorState',
-      headerName: 'Door State',
+      field: 'liftState',
+      headerName: 'Lift State',
       width: 150,
       editable: false,
       flex: 1,
-      renderCell: DoorState,
+      renderCell: LiftState,
       filterable: true,
     },
     {
