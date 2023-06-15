@@ -1,4 +1,12 @@
-import { AccountCircle, AddOutlined, Notifications, Report, Settings } from '@mui/icons-material';
+import {
+  AccountCircle,
+  AddOutlined,
+  Help,
+  Notifications,
+  Report,
+  Settings,
+  Warning as Issue,
+} from '@mui/icons-material';
 import {
   Badge,
   Button,
@@ -451,6 +459,26 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           >
             <Settings />
           </IconButton>
+          <Tooltip title="Help">
+            <IconButton
+              id="show-help-btn"
+              aria-label="help"
+              color="inherit"
+              onClick={() => window.open(resourceManager?.helpLink, '_blank')}
+            >
+              <Help />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Report issues">
+            <IconButton
+              id="show-warning-btn"
+              aria-label="warning"
+              color="inherit"
+              onClick={() => window.open(resourceManager?.reportIssue, '_blank')}
+            >
+              <Issue />
+            </IconButton>
+          </Tooltip>
           {profile && (
             <>
               <IconButton
