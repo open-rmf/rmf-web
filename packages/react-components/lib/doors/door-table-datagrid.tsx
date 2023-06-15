@@ -3,12 +3,8 @@ import { Box, Button, SxProps, Typography, useTheme } from '@mui/material';
 import * as React from 'react';
 import { DoorState } from 'api-client';
 import { DoorMode } from 'rmf-models';
-import {
-  HealthStatus,
-  doorModeToString,
-  doorTypeToString,
-  getHealthStatusDescription,
-} from './utils';
+import { doorModeToString, doorTypeToString } from './door-utils';
+import { HealthStatus, healthStatusToOpMode } from '../utils';
 
 export interface DoorTableData {
   index: number;
@@ -65,7 +61,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
             fontSize: 14,
           }}
         >
-          {getHealthStatusDescription(params.row.opMode)}
+          {healthStatusToOpMode(params.row.opMode)}
         </Typography>
       </Box>
     );
