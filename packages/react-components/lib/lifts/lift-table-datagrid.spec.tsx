@@ -43,6 +43,6 @@ describe('LiftDataGridTable', () => {
     expect(root.queryByText('Name')).toBeTruthy();
     expect(root.queryByText('Current Floor')).toBeTruthy();
     expect(root.queryByText('Destination Floor')).toBeTruthy();
-    expect(root.queryByText('Door State')).toBeTruthy();
+    expect(root.queryByText('Lift State')).toBeTruthy();
   });
 });

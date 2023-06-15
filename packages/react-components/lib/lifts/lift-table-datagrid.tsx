@@ -5,12 +5,8 @@ import { Lift } from 'api-client';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { LiftState as LiftStateModel } from 'rmf-models';
-import {
-  HealthStatus,
-  doorStateToString,
-  getHealthStatusDescription,
-  motionStateToString,
-} from './lift-utils';
+import { doorStateToString, motionStateToString } from './lift-utils';
+import { HealthStatus, healthStatusToOpMode } from '../utils';
 import { LiftControls } from './lift-controls';
 
 export interface LiftTableData {
@@ -74,13 +70,13 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
             fontSize: 14,
           }}
         >
-          {getHealthStatusDescription(params.row.opMode)}
+          {healthStatusToOpMode(params.row.opMode)}
         </Typography>
       </Box>
     );
   };
 
-  const DoorState = (params: GridCellParams): React.ReactNode => {
+  const LiftState = (params: GridCellParams): React.ReactNode => {
     const currDoorMotion = doorStateToString(params.row?.doorState);
     const currMotion = motionStateToString(params.row?.motionState);
 
@@ -183,12 +179,12 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
       filterable: true,
     },
     {
-      field: 'doorState',
-      headerName: 'Door State',
+      field: 'liftState',
+      headerName: 'Lift State',
       width: 150,
       editable: false,
       flex: 1,
-      renderCell: DoorState,
+      renderCell: LiftState,
       filterable: true,
     },
     {
