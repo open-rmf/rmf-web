@@ -11,6 +11,7 @@ import {
   Avatar,
   Button,
   ButtonBase,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -30,8 +31,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import clsx from 'clsx';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { DatePicker, TimePicker, DateTimePicker } from '@mui/x-date-pickers';
 import type { TaskFavoritePydantic as TaskFavorite, TaskRequest } from 'api-client';
 import React from 'react';
 import { Loading } from '..';
@@ -76,22 +76,6 @@ const classes = {
   selectedTask: 'create-task-selected-task',
   actionBtn: 'dialogue-action-button',
 };
-// const StyledConfirmationDialog = styled((props: ConfirmationDialogProps) => (
-//   <ConfirmationDialog {...props} />
-// ))(({ theme }) => ({
-//   [`& .${classes.selectFileBtn}`]: {
-//     marginBottom: theme.spacing(1),
-//   },
-//   [`& .${classes.taskList}`]: {
-//     flex: '1 1 auto',
-//     minHeight: 400,
-//     maxHeight: '50vh',
-//     overflow: 'auto',
-//   },
-//   [`& .${classes.selectedTask}`]: {
-//     background: theme.palette.action.focus,
-//   },
-// }));
 const StyledDialog = styled((props: DialogProps) => <Dialog {...props} />)(({ theme }) => ({
   [`& .${classes.selectFileBtn}`]: {
     marginBottom: theme.spacing(1),
@@ -723,35 +707,30 @@ interface DaySelectorSwitchProps {
 
 const DaySelectorSwitch: React.VFC<DaySelectorSwitchProps> = ({ disabled, onChange, value }) => {
   const theme = useTheme();
-  const renderButton = (idx: number, text: string) => (
-    <ButtonBase
-      sx={{ borderRadius: '50%' }}
+  const renderChip = (idx: number, text: string) => (
+    <Chip
+      label={text}
+      color="primary"
+      sx={{ '&:hover': {} }}
+      variant={value[idx] && !disabled ? 'filled' : 'outlined'}
       disabled={disabled}
       onClick={() => {
         value[idx] = !value[idx];
         onChange([...value]);
       }}
-    >
-      <Avatar
-        sx={{
-          bgcolor:
-            value[idx] && !disabled ? theme.palette.primary.main : theme.palette.text.disabled,
-          fontSize: '1rem',
-        }}
-      >
-        {text}
-      </Avatar>
-    </ButtonBase>
+    />
   );
   return (
     <Grid container gap={theme.spacing(1)}>
-      {renderButton(0, 'Mon')}
-      {renderButton(1, 'Tue')}
-      {renderButton(2, 'Wed')}
-      {renderButton(3, 'Thu')}
-      {renderButton(4, 'Fri')}
-      {renderButton(5, 'Sat')}
-      {renderButton(6, 'Sun')}
+      <Grid item xs />
+      {renderChip(0, 'Mon')}
+      {renderChip(1, 'Tue')}
+      {renderChip(2, 'Wed')}
+      {renderChip(3, 'Thu')}
+      {renderChip(4, 'Fri')}
+      {renderChip(5, 'Sat')}
+      {renderChip(6, 'Sun')}
+      <Grid item xs />
     </Grid>
   );
 };
@@ -799,6 +778,7 @@ export function CreateTaskForm({
   favoritesTasks = [],
   submitTasks,
   tasksFromFile,
+  onClose,
   onSuccess,
   onFail,
   onSuccessFavoriteTask,
@@ -828,7 +808,7 @@ export function CreateTaskForm({
   );
   const [submitting, setSubmitting] = React.useState(false);
   const taskRequest = taskRequests[selectedTaskIdx];
-  const [recurring, setRecurring] = React.useState(false);
+  const [openSchedulingDialog, setOpenSchedulingDialog] = React.useState(false);
   const [schedule, setSchedule] = React.useState<Schedule>({
     startOn: new Date(),
     days: [true, true, true, true, true, true, true],
@@ -898,21 +878,30 @@ export function CreateTaskForm({
   };
 
   // no memo because deps would likely change
-  const handleSubmit: React.MouseEventHandler = async (ev) => {
-    ev.preventDefault();
+  const handleSubmit = async () => {
     if (!submitTasks) {
       onSuccess && onSuccess(taskRequests);
       return;
     }
     try {
       setSubmitting(true);
-      await submitTasks(taskRequests, scheduleEnabled && recurring ? schedule : null);
+      await submitTasks(taskRequests, scheduleEnabled ? schedule : null);
       setSubmitting(false);
       onSuccess && onSuccess(taskRequests);
     } catch (e) {
       setSubmitting(false);
       onFail && onFail(e as Error, taskRequests);
     }
+  };
+
+  const handleSubmitButton: React.MouseEventHandler = async (ev) => {
+    ev.preventDefault();
+    await handleSubmit();
+  };
+
+  const handleSubmitForm: React.FormEventHandler = async (ev) => {
+    ev.preventDefault();
+    await handleSubmit;
   };
 
   const handleSubmitFavoriteTask: React.MouseEventHandler = async (ev) => {
@@ -982,7 +971,6 @@ export function CreateTaskForm({
     })();
   };
 
-  const dialogTitle = 'Create Task';
   const submitText = taskRequests.length > 1 ? 'Submit All' : 'Submit';
 
   return (
@@ -994,11 +982,11 @@ export function CreateTaskForm({
         disableEnforceFocus
         {...otherProps}
       >
-        <form aria-label={dialogTitle}>
+        <form aria-label="create-task">
           <DialogTitle>
             <Grid container wrap="nowrap">
               <Grid item className={classes.title}>
-                {dialogTitle}
+                Create Task
               </Grid>
               <Grid item>
                 <FormToolbar onSelectFileClick={handleSelectFileClick} />
@@ -1159,11 +1147,20 @@ export function CreateTaskForm({
             </Button>
             <Button
               variant="contained"
+              color="primary"
+              disabled={submitting}
+              className={classes.actionBtn}
+              onClick={() => setOpenSchedulingDialog(true)}
+            >
+              Add to Schedule
+            </Button>
+            <Button
+              variant="contained"
               type="submit"
               color="primary"
               disabled={submitting}
               className={classes.actionBtn}
-              onClick={handleSubmit}
+              onClick={handleSubmitButton}
             >
               <Loading hideChildren loading={submitting} size="1.5em" color="inherit">
                 {submitText}
@@ -1201,251 +1198,70 @@ export function CreateTaskForm({
           )}
         </ConfirmationDialog>
       )}
+      {openSchedulingDialog && (
+        <ConfirmationDialog
+          confirmText="Schedule"
+          cancelText="Cancel"
+          open={openSchedulingDialog}
+          title="Schedule Task"
+          submitting={false}
+          onClose={() => setOpenSchedulingDialog(false)}
+          onSubmit={(ev) => {
+            handleSubmitForm(ev);
+            setOpenSchedulingDialog(false);
+          }}
+        >
+          <Grid container gap={2} flexDirection="column" flexWrap="nowrap" marginTop={1}>
+            <Grid container gap={theme.spacing(2)} wrap="nowrap" alignItems="center">
+              <Grid>
+                <DatePicker
+                  value={schedule.startOn}
+                  onChange={(date) =>
+                    date &&
+                    setSchedule((prev) => {
+                      date.setHours(atTime.getHours());
+                      date.setMinutes(atTime.getMinutes());
+                      return { ...prev, startOn: date };
+                    })
+                  }
+                  label="Start On"
+                  disabled={!scheduleEnabled}
+                  renderInput={(props) => <TextField {...props} />}
+                />
+              </Grid>
+              <Grid>
+                <TimePicker
+                  value={atTime}
+                  onChange={(date) => {
+                    if (!date) {
+                      return;
+                    }
+                    setAtTime(date);
+                    if (!isNaN(date.valueOf())) {
+                      setSchedule((prev) => {
+                        const startOn = prev.startOn;
+                        startOn.setHours(date.getHours());
+                        startOn.setMinutes(date.getMinutes());
+                        return { ...prev, startOn };
+                      });
+                    }
+                  }}
+                  label="At"
+                  disabled={!scheduleEnabled}
+                  renderInput={(props) => <TextField {...props} />}
+                />
+              </Grid>
+            </Grid>
+            <Grid>
+              <DaySelectorSwitch
+                value={schedule.days}
+                disabled={!scheduleEnabled}
+                onChange={(days) => setSchedule((prev) => ({ ...prev, days }))}
+              />
+            </Grid>
+          </Grid>
+        </ConfirmationDialog>
+      )}
     </>
   );
-
-  // return (
-  //   <Dialog
-  //     title="Create Task"
-  //     maxWidth={taskRequests.length > 1 ? 'lg' : 'md'}
-  //     fullWidth
-  //     disableEnforceFocus
-  //     // PaperProps={{ style: { height: '100%' } }}
-  //     {...otherProps}
-  //   >
-  //     <DialogTitle>
-  //       <Grid container>
-  //         <Grid item flexGrow={1}>
-  //           Create Task
-  //         </Grid>
-  //         {!recurring && (
-  //           <Grid item>
-  //             <FormToolbar onSelectFileClick={handleSelectFileClick} />
-  //           </Grid>
-  //         )}
-  //       </Grid>
-  //     </DialogTitle>
-  //     <DialogContent>
-  //       {!recurring && (
-  //         <Grid container flexWrap="nowrap" alignItems="flex-start" maxHeight={600}>
-  //           <List dense className={classes.taskList} aria-label="Favorites Tasks">
-  //             <Typography variant="h6" component="div">
-  //               Favorite tasks
-  //             </Typography>
-  //             {favoritesTasks.map((favoriteTask, index) => {
-  //               return (
-  //                 <FavoriteTask
-  //                   listItemText={favoriteTask.name}
-  //                   key={index}
-  //                   setFavoriteTask={setFavoriteTaskBuffer}
-  //                   favoriteTask={favoriteTask}
-  //                   setCallToDelete={setCallToDeleteFavoriteTask}
-  //                   setCallToUpdate={setCallToUpdateFavoriteTask}
-  //                   setOpenDialog={setOpenFavoriteDialog}
-  //                   listItemClick={() => {
-  //                     setFavoriteTaskBuffer(favoriteTask);
-  //                     setTaskRequests((prev) => {
-  //                       return [
-  //                         {
-  //                           ...prev,
-  //                           category: favoriteTask.category,
-  //                           description: favoriteTask.description,
-  //                           unix_millis_earliest_start_time: 0,
-  //                           priority: favoriteTask.priority,
-  //                         },
-  //                       ];
-  //                     });
-  //                   }}
-  //                 />
-  //               );
-  //             })}
-  //           </List>
-
-  //           <Divider
-  //             orientation="vertical"
-  //             flexItem
-  //             style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
-  //           />
-
-  //           <Grid container gap={2} flexGrow={1} flexBasis="60%">
-  //             <TextField
-  //               select
-  //               id="task-type"
-  //               label="Task Category"
-  //               variant="outlined"
-  //               fullWidth
-  //               margin="normal"
-  //               value={taskRequest.category}
-  //               onChange={handleTaskTypeChange}
-  //             >
-  //               <MenuItem value="clean">Clean</MenuItem>
-  //               <MenuItem value="patrol">Loop</MenuItem>
-  //               <MenuItem value="delivery">Delivery</MenuItem>
-  //             </TextField>
-
-  //             {renderTaskDescriptionForm()}
-  //             <Grid container justifyContent="center">
-  //               <Button
-  //                 aria-label="Save as a favorite task"
-  //                 variant="contained"
-  //                 color="primary"
-  //                 onClick={() => {
-  //                   !callToUpdateFavoriteTask &&
-  //                     setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
-  //                   setOpenFavoriteDialog(true);
-  //                 }}
-  //               >
-  //                 {callToUpdateFavoriteTask ? `Confirm edits` : 'Save as a favorite task'}
-  //               </Button>
-  //             </Grid>
-
-  //             <Grid container justifyContent="space-evenly">
-  //               <Button
-  //                 variant="outlined"
-  //                 disabled={submitting || taskRequests.length > 1}
-  //                 onClick={() => setRecurring(true)}
-  //               >
-  //                 Add to Schedule
-  //               </Button>
-  //               <Button
-  //                 variant="contained"
-  //                 type="submit"
-  //                 color="primary"
-  //                 disabled={submitting}
-  //                 onClick={handleSubmit}
-  //               >
-  //                 <Loading hideChildren loading={submitting} size="1.5em" color="inherit">
-  //                   Add as Ad-hoc
-  //                 </Loading>
-  //               </Button>
-  //             </Grid>
-  //           </Grid>
-
-  //           {taskTitles.length > 1 && (
-  //             <>
-  //               <Divider
-  //                 orientation="vertical"
-  //                 flexItem
-  //                 style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
-  //               />
-  //               <Grid item flexGrow={1} maxHeight="inherit" overflow="auto">
-  //                 <List dense className={classes.taskList} aria-label="Tasks List">
-  //                   {taskTitles.map((title, idx) => (
-  //                     <ListItem
-  //                       key={idx}
-  //                       button
-  //                       onClick={() => setSelectedTaskIdx(idx)}
-  //                       className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
-  //                       role="listitem button"
-  //                     >
-  //                       <ListItemText primary={title} />
-  //                     </ListItem>
-  //                   ))}
-  //                 </List>
-  //               </Grid>
-  //             </>
-  //           )}
-  //         </Grid>
-  //       )}
-
-  //       {recurring && (
-  //         <Grid container gap={2} flexDirection="column" flexWrap="nowrap" marginTop={1}>
-  //           <Grid container gap={theme.spacing(2)} wrap="nowrap" alignItems="center">
-  //             <Grid>
-  //               <DatePicker
-  //                 value={schedule.startOn}
-  //                 onChange={(date) =>
-  //                   date &&
-  //                   setSchedule((prev) => {
-  //                     date.setHours(atTime.getHours());
-  //                     date.setMinutes(atTime.getMinutes());
-  //                     return { ...prev, startOn: date };
-  //                   })
-  //                 }
-  //                 label="Start On"
-  //                 disabled={!scheduleEnabled || !recurring}
-  //                 renderInput={(props) => <TextField {...props} />}
-  //               />
-  //             </Grid>
-  //             <Grid>
-  //               <TimePicker
-  //                 value={atTime}
-  //                 onChange={(date) => {
-  //                   if (!date) {
-  //                     return;
-  //                   }
-  //                   setAtTime(date);
-  //                   if (!isNaN(date.valueOf())) {
-  //                     setSchedule((prev) => {
-  //                       const startOn = prev.startOn;
-  //                       startOn.setHours(date.getHours());
-  //                       startOn.setMinutes(date.getMinutes());
-  //                       return { ...prev, startOn };
-  //                     });
-  //                   }
-  //                 }}
-  //                 label="At"
-  //                 disabled={!scheduleEnabled || !recurring}
-  //                 renderInput={(props) => <TextField {...props} />}
-  //               />
-  //             </Grid>
-  //           </Grid>
-
-  //           <DaySelectorSwitch
-  //             value={schedule.days}
-  //             disabled={!scheduleEnabled || !recurring}
-  //             onChange={(days) => setSchedule((prev) => ({ ...prev, days }))}
-  //           />
-
-  //           <Grid container justifyContent="space-evenly">
-  //             <Button variant="outlined" disabled={submitting} onClick={() => setRecurring(false)}>
-  //               Back
-  //             </Button>
-  //             <Button
-  //               variant="contained"
-  //               type="submit"
-  //               color="primary"
-  //               disabled={submitting}
-  //               onClick={handleSubmit}
-  //             >
-  //               <Loading hideChildren loading={submitting} size="1.5em" color="inherit">
-  //                 Submit
-  //               </Loading>
-  //             </Button>
-  //           </Grid>
-  //         </Grid>
-  //       )}
-  //     </DialogContent>
-
-  //     {openFavoriteDialog && (
-  //       <ConfirmationDialog
-  //         confirmText={callToDeleteFavoriteTask ? 'Delete' : 'Save'}
-  //         cancelText="Back"
-  //         open={openFavoriteDialog}
-  //         title={callToDeleteFavoriteTask ? 'Confirm Delete' : 'Favorite Task'}
-  //         submitting={callToDeleteFavoriteTask ? deletingFavoriteTask : savingFavoriteTask}
-  //         onClose={() => {
-  //           setOpenFavoriteDialog(false);
-  //           setCallToDeleteFavoriteTask(false);
-  //         }}
-  //         onSubmit={callToDeleteFavoriteTask ? handleDeleteFavoriteTask : handleSubmitFavoriteTask}
-  //       >
-  //         {!callToDeleteFavoriteTask && (
-  //           <TextField
-  //             size="small"
-  //             value={favoriteTaskBuffer.name}
-  //             onChange={(e) =>
-  //               setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: e.target.value })
-  //             }
-  //             helperText="Required"
-  //             error={favoriteTaskTitleError}
-  //           />
-  //         )}
-  //         {callToDeleteFavoriteTask && (
-  //           <Typography>{`Are you sure you want to delete "${favoriteTaskBuffer.name}"?`}</Typography>
-  //         )}
-  //       </ConfirmationDialog>
-  //     )}
-  //   </Dialog>
-  // );
 }
