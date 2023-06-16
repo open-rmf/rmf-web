@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime
 from typing import Dict, List, Optional, Sequence, Tuple, cast
 
@@ -18,6 +19,8 @@ from api_server.models import (
     User,
 )
 from api_server.models import tortoise_models as ttm
+from api_server.models.rmf_api.log_entry import Tier
+from api_server.models.rmf_api.task_state import Category, Id, Phase
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.query import add_pagination
 
@@ -152,6 +155,44 @@ class TaskRepository:
                 tier=log.tier.name,
                 text=log.text,
             )
+
+    async def save_log_acknowledged_task_completion(
+        self, task_id: str, acknowledged_by: str, unix_millis_acknowledged_time: int
+    ) -> None:
+        async with in_transaction():
+            logs = await self.get_task_log(task_id, (0, sys.maxsize))
+
+            next_log_phase_index = str(int(max(logs.phases.keys())) + 1)
+            event = LogEntry(
+                seq=0,
+                tier=Tier.warning,
+                unix_millis_time=unix_millis_acknowledged_time,
+                text=f"Task completion acknowledged by {acknowledged_by}",
+            )
+            logs.phases = {
+                next_log_phase_index: Phases(log=None, events={"0": [event]})
+            }
+
+            await self.save_task_log(logs)
+
+            task = await self.get_task_state(task_id=task_id)
+
+            new_identifier = str(int(max(task.phases.keys())) + 1)
+            new_task_phase = Phase(
+                id=Id(__root__=new_identifier),
+                category=Category(__root__="Task completed"),
+                detail=None,
+                unix_millis_start_time=None,
+                unix_millis_finish_time=None,
+                original_estimate_millis=None,
+                estimate_millis=None,
+                final_event_id=None,
+                events=None,
+                skip_requests=None,
+            )
+            task.phases[new_identifier] = new_task_phase
+
+            await self.save_task_state(task)
 
     async def save_task_log(self, task_log: TaskEventLog) -> None:
         async with in_transaction():
