@@ -178,16 +178,18 @@ export const TasksApp = React.memo(
           toolbar={
             <Toolbar variant="dense">
               <div>
-                <IconButton
-                  id="export-button"
-                  aria-controls={openExportMenu ? 'export-menu' : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={openExportMenu ? 'true' : undefined}
-                  onClick={handleClickExportMenu}
-                  color="inherit"
-                >
-                  <DownloadIcon />
-                </IconButton>
+                <Tooltip title="Download" placement="top">
+                  <IconButton
+                    id="export-button"
+                    aria-controls={openExportMenu ? 'export-menu' : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={openExportMenu ? 'true' : undefined}
+                    onClick={handleClickExportMenu}
+                    color="inherit"
+                  >
+                    <DownloadIcon />
+                  </IconButton>
+                </Tooltip>
                 <Menu
                   id="export-menu"
                   MenuListProps={{

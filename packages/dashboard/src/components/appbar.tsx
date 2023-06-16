@@ -385,16 +385,18 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             <AddOutlined />
             New Task
           </Button>
-          <IconButton
-            id="alert-list-button"
-            aria-label="alert-list-button"
-            color="inherit"
-            onClick={handleOpenAlertList}
-          >
-            <Badge badgeContent={unacknowledgedAlertsNum} color="secondary">
-              <Notifications />
-            </Badge>
-          </IconButton>
+          <Tooltip title="Notifications">
+            <IconButton
+              id="alert-list-button"
+              aria-label="alert-list-button"
+              color="inherit"
+              onClick={handleOpenAlertList}
+            >
+              <Badge badgeContent={unacknowledgedAlertsNum} color="secondary">
+                <Notifications />
+              </Badge>
+            </IconButton>
+          </Tooltip>
           <Menu
             anchorEl={alertListAnchor}
             open={!!alertListAnchor}
@@ -451,14 +453,16 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           <Divider orientation="vertical" sx={{ marginLeft: 1, marginRight: 2 }} />
           <Typography variant="caption">Powered by Open-RMF</Typography>
           {extraToolbarItems}
-          <IconButton
-            id="show-settings-btn"
-            aria-label="settings"
-            color="inherit"
-            onClick={(ev) => setSettingsAnchor(ev.currentTarget)}
-          >
-            <Settings />
-          </IconButton>
+          <Tooltip title="Settings">
+            <IconButton
+              id="show-settings-btn"
+              aria-label="settings"
+              color="inherit"
+              onClick={(ev) => setSettingsAnchor(ev.currentTarget)}
+            >
+              <Settings />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Help">
             <IconButton
               id="show-help-btn"
@@ -481,14 +485,16 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           </Tooltip>
           {profile && (
             <>
-              <IconButton
-                id="user-btn"
-                aria-label={'user-btn'}
-                color="inherit"
-                onClick={(event) => setAnchorEl(event.currentTarget)}
-              >
-                <AccountCircle />
-              </IconButton>
+              <Tooltip title="Profile">
+                <IconButton
+                  id="user-btn"
+                  aria-label={'user-btn'}
+                  color="inherit"
+                  onClick={(event) => setAnchorEl(event.currentTarget)}
+                >
+                  <AccountCircle />
+                </IconButton>
+              </Tooltip>
               <Menu
                 anchorEl={anchorEl}
                 anchorOrigin={{
