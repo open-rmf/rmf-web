@@ -1,12 +1,14 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from fastapi import Depends
 
 from api_server.authenticator import user_dep
+from api_server.dependencies import between_query
 from api_server.logger import logger
 from api_server.models import User
 from api_server.models import tortoise_models as ttm
+from api_server.repositories.tasks import TaskRepository
 
 
 class AlertRepository:
@@ -71,13 +73,22 @@ class AlertRepository:
         # https://github.com/tortoise/tortoise-orm/pull/1131. This is a
         # temporary workaround.
         ack_alert._custom_generated_pk = True  # pylint: disable=W0212
+        unix_millis_acknowledged_time = round(ack_time.timestamp() * 1e3)
         ack_alert.update_from_dict(
             {
                 "acknowledged_by": self.user.username,
-                "unix_millis_acknowledged_time": round(ack_time.timestamp() * 1e3),
+                "unix_millis_acknowledged_time": unix_millis_acknowledged_time,
             }
         )
         await ack_alert.save()
+
+        user = User(username="__rmf_internal__", is_admin=True)
+        task_repo = TaskRepository(user)
+
+        await task_repo.save_log_acknowledged_task_completion(
+            alert.id, self.user.username, unix_millis_acknowledged_time
+        )
+
         await alert.delete()
         ack_alert_pydantic = await ttm.AlertPydantic.from_tortoise_orm(ack_alert)
         return ack_alert_pydantic
