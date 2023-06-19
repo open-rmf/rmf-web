@@ -279,7 +279,7 @@ export const TasksApp = React.memo(
           );
         })();
         return () => subs.forEach((s) => s.unsubscribe());
-      }, [rmf, tasksState.page, filterFields.model, sortFields.model]);
+      }, [rmf, refreshTaskQueueTableCount, tasksState.page, filterFields.model, sortFields.model]);
 
       const getAllTasks = async (timestamp: Date) => {
         if (!rmf) {

@@ -250,8 +250,9 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
         );
         AppEvents.newScheduleSubmitted.next(resps.map((resp) => resp.data.id));
       }
+      AppEvents.refreshTaskQueueTableCount.next(refreshTaskQueueTableCount + 1);
     },
-    [rmf],
+    [rmf, refreshTaskQueueTableCount],
   );
 
   const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
