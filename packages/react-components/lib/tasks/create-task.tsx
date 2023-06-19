@@ -8,9 +8,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import PlaceOutlined from '@mui/icons-material/PlaceOutlined';
 import {
   Autocomplete,
-  Avatar,
   Button,
-  ButtonBase,
   Chip,
   Dialog,
   DialogActions,
@@ -711,7 +709,7 @@ const DaySelectorSwitch: React.VFC<DaySelectorSwitchProps> = ({ disabled, onChan
     <Chip
       label={text}
       color="primary"
-      sx={{ '&:hover': {} }}
+      sx={{ '&:hover': {}, margin: theme.spacing(0.25) }}
       variant={value[idx] && !disabled ? 'filled' : 'outlined'}
       disabled={disabled}
       onClick={() => {
@@ -721,17 +719,24 @@ const DaySelectorSwitch: React.VFC<DaySelectorSwitchProps> = ({ disabled, onChan
     />
   );
   return (
-    <Grid container gap={theme.spacing(1)}>
-      <Grid item xs />
-      {renderChip(0, 'Mon')}
-      {renderChip(1, 'Tue')}
-      {renderChip(2, 'Wed')}
-      {renderChip(3, 'Thu')}
-      {renderChip(4, 'Fri')}
-      {renderChip(5, 'Sat')}
-      {renderChip(6, 'Sun')}
-      <Grid item xs />
-    </Grid>
+    <div>
+      <TextField
+        label="Recurring Every"
+        color="primary"
+        InputProps={{
+          disabled: true,
+          startAdornment: [
+            renderChip(0, 'Mon'),
+            renderChip(1, 'Tue'),
+            renderChip(2, 'Wed'),
+            renderChip(3, 'Thu'),
+            renderChip(4, 'Fri'),
+            renderChip(5, 'Sat'),
+            renderChip(6, 'Sun'),
+          ],
+        }}
+      />
+    </div>
   );
 };
 
@@ -878,14 +883,14 @@ export function CreateTaskForm({
   };
 
   // no memo because deps would likely change
-  const handleSubmit = async () => {
+  const handleSubmit = async (scheduling: boolean) => {
     if (!submitTasks) {
       onSuccess && onSuccess(taskRequests);
       return;
     }
     try {
       setSubmitting(true);
-      await submitTasks(taskRequests, scheduleEnabled ? schedule : null);
+      await submitTasks(taskRequests, scheduling && scheduleEnabled ? schedule : null);
       setSubmitting(false);
       onSuccess && onSuccess(taskRequests);
     } catch (e) {
@@ -894,14 +899,14 @@ export function CreateTaskForm({
     }
   };
 
-  const handleSubmitButton: React.MouseEventHandler = async (ev) => {
+  const handleSubmitNow: React.MouseEventHandler = async (ev) => {
     ev.preventDefault();
-    await handleSubmit();
+    await handleSubmit(false);
   };
 
-  const handleSubmitForm: React.FormEventHandler = async (ev) => {
+  const handleSubmitSchedule: React.FormEventHandler = async (ev) => {
     ev.preventDefault();
-    await handleSubmit;
+    await handleSubmit(true);
   };
 
   const handleSubmitFavoriteTask: React.MouseEventHandler = async (ev) => {
@@ -971,7 +976,7 @@ export function CreateTaskForm({
     })();
   };
 
-  const submitText = taskRequests.length > 1 ? 'Submit All' : 'Submit';
+  const submitText = taskRequests.length > 1 ? 'Submit All Now' : 'Submit Now';
 
   return (
     <>
@@ -1160,7 +1165,7 @@ export function CreateTaskForm({
               color="primary"
               disabled={submitting}
               className={classes.actionBtn}
-              onClick={handleSubmitButton}
+              onClick={handleSubmitNow}
             >
               <Loading hideChildren loading={submitting} size="1.5em" color="inherit">
                 {submitText}
@@ -1207,52 +1212,50 @@ export function CreateTaskForm({
           submitting={false}
           onClose={() => setOpenSchedulingDialog(false)}
           onSubmit={(ev) => {
-            handleSubmitForm(ev);
+            handleSubmitSchedule(ev);
             setOpenSchedulingDialog(false);
           }}
         >
-          <Grid container gap={2} flexDirection="column" flexWrap="nowrap" marginTop={1}>
-            <Grid container gap={theme.spacing(2)} wrap="nowrap" alignItems="center">
-              <Grid>
-                <DatePicker
-                  value={schedule.startOn}
-                  onChange={(date) =>
-                    date &&
-                    setSchedule((prev) => {
-                      date.setHours(atTime.getHours());
-                      date.setMinutes(atTime.getMinutes());
-                      return { ...prev, startOn: date };
-                    })
-                  }
-                  label="Start On"
-                  disabled={!scheduleEnabled}
-                  renderInput={(props) => <TextField {...props} />}
-                />
-              </Grid>
-              <Grid>
-                <TimePicker
-                  value={atTime}
-                  onChange={(date) => {
-                    if (!date) {
-                      return;
-                    }
-                    setAtTime(date);
-                    if (!isNaN(date.valueOf())) {
-                      setSchedule((prev) => {
-                        const startOn = prev.startOn;
-                        startOn.setHours(date.getHours());
-                        startOn.setMinutes(date.getMinutes());
-                        return { ...prev, startOn };
-                      });
-                    }
-                  }}
-                  label="At"
-                  disabled={!scheduleEnabled}
-                  renderInput={(props) => <TextField {...props} />}
-                />
-              </Grid>
+          <Grid container spacing={2} marginTop={1}>
+            <Grid item xs={6}>
+              <DatePicker
+                value={schedule.startOn}
+                onChange={(date) =>
+                  date &&
+                  setSchedule((prev) => {
+                    date.setHours(atTime.getHours());
+                    date.setMinutes(atTime.getMinutes());
+                    return { ...prev, startOn: date };
+                  })
+                }
+                label="Start On"
+                disabled={!scheduleEnabled}
+                renderInput={(props) => <TextField {...props} fullWidth />}
+              />
             </Grid>
-            <Grid>
+            <Grid item xs={6}>
+              <TimePicker
+                value={atTime}
+                onChange={(date) => {
+                  if (!date) {
+                    return;
+                  }
+                  setAtTime(date);
+                  if (!isNaN(date.valueOf())) {
+                    setSchedule((prev) => {
+                      const startOn = prev.startOn;
+                      startOn.setHours(date.getHours());
+                      startOn.setMinutes(date.getMinutes());
+                      return { ...prev, startOn };
+                    });
+                  }
+                }}
+                label="At"
+                disabled={!scheduleEnabled}
+                renderInput={(props) => <TextField {...props} fullWidth />}
+              />
+            </Grid>
+            <Grid item xs={12}>
               <DaySelectorSwitch
                 value={schedule.days}
                 disabled={!scheduleEnabled}
