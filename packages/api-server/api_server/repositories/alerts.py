@@ -85,6 +85,7 @@ class AlertRepository:
         user = User(username="__rmf_internal__", is_admin=True)
         task_repo = TaskRepository(user)
 
+        # Save in logs who was the user that acknowledged the task
         await task_repo.save_log_acknowledged_task_completion(
             alert.id, self.user.username, unix_millis_acknowledged_time
         )
