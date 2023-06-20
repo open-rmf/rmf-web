@@ -23,6 +23,7 @@ from api_server.models.rmf_api.log_entry import Tier
 from api_server.models.rmf_api.task_state import Category, Id, Phase
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.query import add_pagination
+from api_server.rmf_io import task_events
 
 
 class TaskRepository:
@@ -97,12 +98,12 @@ class TaskRepository:
             return None
         phases = {}
         for db_phase in result.phases:
-            phase = {}
-            phase["log"] = [LogEntry(**dict(x)) for x in db_phase.log]
+            phase = Phases(log=None, events=None)
+            phase.log = [LogEntry(**dict(x)) for x in db_phase.log]
             events = {}
             for db_event in db_phase.events:
                 events[db_event.event] = [LogEntry(**dict(x)) for x in db_event.log]
-            phase["events"] = events
+            phase.events = events
             phases[db_phase.phase] = phase
         return TaskEventLog.construct(
             task_id=result.task_id,
@@ -170,29 +171,32 @@ class TaskRepository:
                 text=f"Task completion acknowledged by {acknowledged_by}",
             )
             logs.phases = {
-                next_log_phase_index: Phases(log=None, events={"0": [event]})
+                **logs.phases,
+                next_log_phase_index: Phases(log=[], events={"0": [event]}),
             }
 
             await self.save_task_log(logs)
 
-            task = await self.get_task_state(task_id=task_id)
+            task_state = await self.get_task_state(task_id=task_id)
+            new_task_phase_index = str(int(max(task_state.phases.keys())) + 1)
+            task_state.phases = {
+                **task_state.phases,
+                new_task_phase_index: Phase(
+                    id=Id(__root__=new_task_phase_index),
+                    category=Category(__root__="Task completed"),
+                    detail=None,
+                    unix_millis_start_time=None,
+                    unix_millis_finish_time=None,
+                    original_estimate_millis=None,
+                    estimate_millis=None,
+                    final_event_id=None,
+                    events=None,
+                    skip_requests=None,
+                ),
+            }
 
-            new_identifier = str(int(max(task.phases.keys())) + 1)
-            new_task_phase = Phase(
-                id=Id(__root__=new_identifier),
-                category=Category(__root__="Task completed"),
-                detail=None,
-                unix_millis_start_time=None,
-                unix_millis_finish_time=None,
-                original_estimate_millis=None,
-                estimate_millis=None,
-                final_event_id=None,
-                events=None,
-                skip_requests=None,
-            )
-            task.phases[new_identifier] = new_task_phase
-
-            await self.save_task_state(task)
+            await self.save_task_state(task_state)
+            task_events.task_states.on_next(task_state)
 
     async def save_task_log(self, task_log: TaskEventLog) -> None:
         async with in_transaction():
