@@ -1090,7 +1090,8 @@ export function CreateTaskForm({
                       id="priority"
                       label="Priority"
                       margin="normal"
-                      value={(taskRequest.priority as Record<string, any>)?.value || 0}
+                      // FIXME(AA): The priority object is currently undefined.
+                      value={(taskRequest.priority as Record<string, number>)?.value || 0}
                       onChange={(_ev, val) => {
                         taskRequest.priority = { type: 'binary', value: val };
                         setFavoriteTaskBuffer({
