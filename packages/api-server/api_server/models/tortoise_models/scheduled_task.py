@@ -4,6 +4,7 @@ from typing import Optional
 
 import schedule
 from schedule import Job
+from tortoise import Tortoise
 from tortoise.contrib.pydantic.creator import (
     pydantic_model_creator,
     pydantic_queryset_creator,
@@ -91,8 +92,6 @@ class ScheduledTaskSchedule(Model):
 
         return job
 
-
-from tortoise import Tortoise
 
 Tortoise.init_models(["api_server.models.tortoise_models.scheduled_task"], "models")
 ScheduledTaskPydantic = pydantic_model_creator(ScheduledTask)

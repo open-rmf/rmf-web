@@ -1,5 +1,4 @@
 import asyncio
-from collections.abc import Coroutine
 from datetime import datetime
 
 import schedule
@@ -48,12 +47,12 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
         task.last_ran = datetime.now()
         await task.save()
 
-    def do(start_from: datetime):
+    def do():
         logger.info(f"starting task {task.pk}")
         asyncio.get_event_loop().create_task(run())
 
-    for s, j in jobs:
-        j.do(do, s.start_from)
+    for _, j in jobs:
+        j.do(do)
     logger.info(f"scheduled task [{task.pk}]")
 
 
