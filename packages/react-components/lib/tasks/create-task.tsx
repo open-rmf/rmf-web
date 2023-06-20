@@ -707,6 +707,7 @@ const DaySelectorSwitch: React.VFC<DaySelectorSwitchProps> = ({ disabled, onChan
   const theme = useTheme();
   const renderChip = (idx: number, text: string) => (
     <Chip
+      key={idx}
       label={text}
       color="primary"
       sx={{ '&:hover': {}, margin: theme.spacing(0.25) }}

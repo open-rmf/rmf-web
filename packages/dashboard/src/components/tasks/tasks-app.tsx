@@ -80,6 +80,19 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
+/**
+ * Generates a list of ProcessedEvents to occur within the query start and end,
+ * based on the provided schedule.
+ * @param start The start of the query, which is generally 00:00:00 of the first
+ * day in the calendar view.
+ * @param end The end of the query, which is generally 23:59:59 of the last day
+ * in the calendar view.
+ * @param schedule The current schedule, to be checked if there are any events
+ * between start and end.
+ * @param getEventId Callback function to get the event ID.
+ * @param getEventTitle Callback function to get the event title.
+ * @returns List of ProcessedEvents to occur within the query start and end.
+ */
 function scheduleToEvents(
   start: Date,
   end: Date,
@@ -150,6 +163,10 @@ function scheduleToEvents(
       });
     }
     cur = new Date(cur.valueOf() + period);
+  }
+  console.log('within scheduleToEvents');
+  for (const e of events) {
+    console.log(`start: ${e.start}, end: ${e.end}`);
   }
   return events;
 }
@@ -338,22 +355,94 @@ export const TasksApp = React.memo(
               params.start.toISOString(),
             )
           ).data;
-          let counter = 0;
+          let counter = 2;
           const getEventId = () => {
             return counter++;
           };
           eventsMap.current = {};
-          return tasks.flatMap((t: ScheduledTask) =>
-            t.schedules.flatMap<ProcessedEvent>((s: ApiSchedule) => {
+          let foo: ProcessedEvent[] = [];
+
+          for (const t of tasks) {
+            console.log('foo before getting bar');
+            for (const e of foo) {
+              console.log(`start: ${e.start}, end: ${e.end}`);
+            }
+
+            const bar = t.schedules.flatMap<ProcessedEvent>((s: ApiSchedule) => {
               const events = scheduleToEvents(params.start, params.end, s, getEventId, () =>
                 getScheduledTaskTitle(t),
               );
+              // console.log('after scheduleToEvents');
+              // for (const e of events) {
+              //   console.log(`start: ${e.start}, end: ${e.end}`);
+              // }
+
               events.forEach((ev) => {
                 eventsMap.current[Number(ev.event_id)] = t;
               });
+              // console.log('after setting eventsMap');
+              // for (const e of events) {
+              //   console.log(`start: ${e.start}, end: ${e.end}`);
+              // }
+
               return events;
-            }),
-          );
+            });
+
+            console.log('foo before push');
+            for (const e of foo) {
+              console.log(`start: ${e.start}, end: ${e.end}`);
+            }
+
+            console.log('bar');
+            for (const e of bar) {
+              console.log(`start: ${e.start}, end: ${e.end}`);
+            }
+
+            for (const baz of bar) {
+              foo.push(baz);
+            }
+            console.log('foo after push');
+            for (const e of foo) {
+              console.log(`start: ${e.start}, end: ${e.end}`);
+            }
+          }
+
+          // const foo =  tasks.flatMap((t: ScheduledTask) =>
+          //   t.schedules.flatMap<ProcessedEvent>((s: ApiSchedule) => {
+          //     const events = scheduleToEvents(params.start, params.end, s, getEventId, () =>
+          //       getScheduledTaskTitle(t),
+          //     );
+          //     // console.log('after scheduleToEvents');
+          //     // for (const e of events) {
+          //     //   console.log(`start: ${e.start}, end: ${e.end}`);
+          //     // }
+
+          //     events.forEach((ev) => {
+          //       eventsMap.current[Number(ev.event_id)] = t;
+          //     });
+          //     // console.log('after setting eventsMap');
+          //     // for (const e of events) {
+          //     //   console.log(`start: ${e.start}, end: ${e.end}`);
+          //     // }
+
+          //     return events;
+          //   }),
+          // );
+
+          console.log('after getting foo');
+          for (const e of foo) {
+            console.log(`start: ${e.start}, end: ${e.end}`);
+          }
+
+          let filteredFoo: ProcessedEvent[] = [];
+          for (const f of foo) {
+            if (f.start < f.end) {
+              filteredFoo.push(f);
+            } else {
+              console.log(f);
+            }
+          }
+          return filteredFoo;
         },
         [rmf],
       );
