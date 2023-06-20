@@ -162,8 +162,11 @@ class TaskRepository:
     ) -> None:
         async with in_transaction():
             logs = await self.get_task_log(task_id, (0, sys.maxsize))
+            # The next phase key value matches in both `logs` and `task_state`.
+            #   It is the same whether it is obtained from `logs` or from `task_state`.
+            #   In this case, it is obtained from `logs` and is also used to assign the next phase in `task_state`.
+            next_phase_key = int(list(logs.phases)[-1]) + 1
 
-            next_log_phase_index = str(int(max(logs.phases.keys())) + 1)
             event = LogEntry(
                 seq=0,
                 tier=Tier.warning,
@@ -172,17 +175,16 @@ class TaskRepository:
             )
             logs.phases = {
                 **logs.phases,
-                next_log_phase_index: Phases(log=[], events={"0": [event]}),
+                next_phase_key: Phases(log=[], events={"0": [event]}),
             }
 
             await self.save_task_log(logs)
 
             task_state = await self.get_task_state(task_id=task_id)
-            new_task_phase_index = str(int(max(task_state.phases.keys())) + 1)
             task_state.phases = {
                 **task_state.phases,
-                new_task_phase_index: Phase(
-                    id=Id(__root__=new_task_phase_index),
+                next_phase_key: Phase(
+                    id=Id(__root__=next_phase_key),
                     category=Category(__root__="Task completed"),
                     detail=None,
                     unix_millis_start_time=None,
@@ -196,6 +198,8 @@ class TaskRepository:
             }
 
             await self.save_task_state(task_state)
+            # Notifies observers of the next task_state value to correctly display the title of the
+            #  logs when acknowledged by a user without reloading the page.
             task_events.task_states.on_next(task_state)
 
     async def save_task_log(self, task_log: TaskEventLog) -> None:
