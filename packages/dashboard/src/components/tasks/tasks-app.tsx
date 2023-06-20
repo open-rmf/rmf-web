@@ -20,6 +20,7 @@ import {
 } from 'api-client';
 import {
   addMinutes,
+  endOfMinute,
   isFriday,
   isMonday,
   isSaturday,
@@ -34,6 +35,7 @@ import {
   nextThursday,
   nextTuesday,
   nextWednesday,
+  startOfMinute,
 } from 'date-fns';
 import React from 'react';
 import {
@@ -104,13 +106,13 @@ function scheduleToEvents(
     console.warn('Unable to convert schedule without [at] to an event');
     return [];
   }
-
   const [hours, minutes] = schedule.at.split(':').map((s: string) => Number(s));
   let cur = new Date(start);
   cur.setHours(hours);
   cur.setMinutes(minutes);
-  const scheStartFrom = schedule.start_from ? new Date(schedule.start_from) : null;
-  const scheUntil = schedule.until ? new Date(schedule.until) : null;
+
+  const scheStartFrom = schedule.start_from ? startOfMinute(new Date(schedule.start_from)) : null;
+  const scheUntil = schedule.until ? endOfMinute(new Date(schedule.until)) : null;
 
   let period = 8.64e7; // 1 day
   switch (schedule.period) {
