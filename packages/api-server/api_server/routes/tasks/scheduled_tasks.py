@@ -49,13 +49,6 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
         await task.save()
 
     def do(start_from: datetime):
-        # FIXME(kp): schedule does not support starting from specified time, workaround by
-        # skipping a run when it is before when the task should start.
-        if datetime.now().timestamp() < start_from.timestamp():
-            logger.debug(
-                f"skipping run of task [{task.pk}] because it is before it's [start_from]"
-            )
-            return
         logger.info(f"starting task {task.pk}")
         asyncio.get_event_loop().create_task(run())
 
