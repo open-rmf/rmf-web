@@ -773,6 +773,8 @@ export interface CreateTaskFormProps
   onFailFavoriteTask?(error: Error, favoriteTask: TaskFavorite): void;
   submitFavoriteTask?(favoriteTask: TaskFavorite): Promise<void>;
   deleteFavoriteTask?(favoriteTask: TaskFavorite): Promise<void>;
+  onSuccessScheduling?(): void;
+  onFailScheduling?(error: Error): void;
 }
 
 export function CreateTaskForm({
@@ -791,6 +793,8 @@ export function CreateTaskForm({
   onFailFavoriteTask,
   submitFavoriteTask,
   deleteFavoriteTask,
+  onSuccessScheduling,
+  onFailScheduling,
   ...otherProps
 }: CreateTaskFormProps): JSX.Element {
   const theme = useTheme();
@@ -889,14 +893,25 @@ export function CreateTaskForm({
       onSuccess && onSuccess(taskRequests);
       return;
     }
+
+    const submittingSchedule = scheduling && scheduleEnabled;
     try {
       setSubmitting(true);
-      await submitTasks(taskRequests, scheduling && scheduleEnabled ? schedule : null);
+      await submitTasks(taskRequests, submittingSchedule ? schedule : null);
       setSubmitting(false);
-      onSuccess && onSuccess(taskRequests);
+
+      if (submittingSchedule) {
+        onSuccessScheduling && onSuccessScheduling();
+      } else {
+        onSuccess && onSuccess(taskRequests);
+      }
     } catch (e) {
       setSubmitting(false);
-      onFail && onFail(e as Error, taskRequests);
+      if (submittingSchedule) {
+        onFailScheduling && onFailScheduling(e as Error);
+      } else {
+        onFail && onFail(e as Error, taskRequests);
+      }
     }
   };
 

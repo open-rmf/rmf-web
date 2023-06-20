@@ -15,8 +15,7 @@ export const AppEvents = {
   ingestorSelect: new Subject<Ingestor | null>(),
   robotSelect: new Subject<[fleetName: string, robotName: string] | null>(),
   taskSelect: new Subject<TaskState | null>(),
-  refreshTaskQueueTableCount: new Subject<number>(),
-  newScheduleSubmitted: new Subject<number[]>(), // scheduled task id
+  refreshTaskAppCount: new Subject<number>(),
   refreshAlertCount: new Subject<number>(),
   alertListOpenedAlert: new Subject<Alert | null>(),
   disabledLayers: new ReplaySubject<Record<string, boolean>>(),

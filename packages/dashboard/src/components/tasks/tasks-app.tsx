@@ -183,7 +183,7 @@ export const TasksApp = React.memo(
       ref: React.Ref<HTMLDivElement>,
     ) => {
       const rmf = React.useContext(RmfAppContext);
-      const [forceRefresh, setForceRefresh] = React.useState(0);
+      const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
 
       const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
       const [openTaskSummary, setOpenTaskSummary] = React.useState(false);
@@ -198,23 +198,13 @@ export const TasksApp = React.memo(
       });
 
       const [filterFields, setFilterFields] = React.useState<FilterFields>({ model: undefined });
-
       const [sortFields, setSortFields] = React.useState<SortFields>({ model: undefined });
 
-      const [refreshTaskQueueTableCount, setRefreshTaskQueueTableCount] = React.useState(0);
-
       React.useEffect(() => {
-        const sub = AppEvents.refreshTaskQueueTableCount.subscribe((currentValue) => {
-          setRefreshTaskQueueTableCount(currentValue);
+        const sub = AppEvents.refreshTaskAppCount.subscribe((currentValue) => {
+          setRefreshTaskAppCount(currentValue);
         });
         return () => sub.unsubscribe();
-      }, []);
-
-      React.useEffect(() => {
-        const sub = AppEvents.newScheduleSubmitted.subscribe(() =>
-          setForceRefresh((prev) => ++prev),
-        );
-        return sub.unsubscribe();
       }, []);
 
       // TODO: parameterize this variable
@@ -294,7 +284,7 @@ export const TasksApp = React.memo(
           );
         })();
         return () => subs.forEach((s) => s.unsubscribe());
-      }, [rmf, refreshTaskQueueTableCount, tasksState.page, filterFields.model, sortFields.model]);
+      }, [rmf, refreshTaskAppCount, tasksState.page, filterFields.model, sortFields.model]);
 
       const getAllTasks = async (timestamp: Date) => {
         if (!rmf) {
@@ -428,7 +418,7 @@ export const TasksApp = React.memo(
               <Tooltip title="Refresh" color="inherit" placement="top">
                 <IconButton
                   onClick={() => {
-                    AppEvents.refreshTaskQueueTableCount.next(refreshTaskQueueTableCount + 1);
+                    AppEvents.refreshTaskAppCount.next(refreshTaskAppCount + 1);
                   }}
                   aria-label="Refresh"
                 >
@@ -465,7 +455,7 @@ export const TasksApp = React.memo(
           <TabPanel selectedTabIndex={selectedTabIndex} index={1}>
             <Scheduler
               // react-scheduler does not support refreshing, workaround by mounting a new instance.
-              key={`scheduler-${forceRefresh}`}
+              key={`scheduler-${refreshTaskAppCount}`}
               view="week"
               week={{
                 weekDays: [0, 1, 2, 3, 4, 5, 6],
@@ -491,7 +481,7 @@ export const TasksApp = React.memo(
                 }
                 try {
                   await rmf.tasksApi.delScheduledTasksScheduledTasksTaskIdDelete(task.id);
-                  setForceRefresh((prev) => prev + 1);
+                  AppEvents.refreshTaskAppCount.next(refreshTaskAppCount + 1);
                 } catch (e) {
                   console.error(`Failed to delete scheduled task: ${e}`);
                 }
