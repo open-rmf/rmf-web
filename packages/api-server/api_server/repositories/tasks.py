@@ -161,11 +161,18 @@ class TaskRepository:
         self, task_id: str, acknowledged_by: str, unix_millis_acknowledged_time: int
     ) -> None:
         async with in_transaction():
-            logs = await self.get_task_log(task_id, (0, sys.maxsize))
-            # The next phase key value matches in both `logs` and `task_state`.
-            #   It is the same whether it is obtained from `logs` or from `task_state`.
-            #   In this case, it is obtained from `logs` and is also used to assign the next phase in `task_state`.
-            next_phase_key = int(list(logs.phases)[-1]) + 1
+            task_logs = await self.get_task_log(task_id, (0, sys.maxsize))
+            task_state = await self.get_task_state(task_id=task_id)
+            # A try could be used here to avoid using so many "ands"
+            # but the configured lint suggests comparing that no value is None
+            if task_logs and task_state and task_logs.phases and task_state.phases:
+                # The next phase key value matches in both `task_logs` and `task_state`.
+                #   It is the same whether it is obtained from `task_logs` or from `task_state`.
+                #   In this case, it is obtained from `task_logs` and is also used to assign the next
+                #   phase in `task_state`.
+                next_phase_key = str(int(list(task_logs.phases)[-1]) + 1)
+            else:
+                raise ValueError("Phases can't be null")
 
             event = LogEntry(
                 seq=0,
@@ -173,14 +180,13 @@ class TaskRepository:
                 unix_millis_time=unix_millis_acknowledged_time,
                 text=f"Task completion acknowledged by {acknowledged_by}",
             )
-            logs.phases = {
-                **logs.phases,
+            task_logs.phases = {
+                **task_logs.phases,
                 next_phase_key: Phases(log=[], events={"0": [event]}),
             }
 
-            await self.save_task_log(logs)
+            await self.save_task_log(task_logs)
 
-            task_state = await self.get_task_state(task_id=task_id)
             task_state.phases = {
                 **task_state.phases,
                 next_phase_key: Phase(
