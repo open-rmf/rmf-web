@@ -9,7 +9,7 @@ import {
   TableRow,
   useTheme,
 } from '@mui/material';
-import type { Location2D, RobotState } from 'api-client';
+import type { RobotState } from 'api-client';
 import React from 'react';
 
 type RobotStatus = Required<RobotState>['status'];
