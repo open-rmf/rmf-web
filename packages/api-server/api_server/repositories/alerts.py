@@ -4,7 +4,6 @@ from typing import List, Optional
 from fastapi import Depends
 
 from api_server.authenticator import user_dep
-from api_server.dependencies import between_query
 from api_server.logger import logger
 from api_server.models import User
 from api_server.models import tortoise_models as ttm
