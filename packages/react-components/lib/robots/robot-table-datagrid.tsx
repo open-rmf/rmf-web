@@ -85,6 +85,15 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
       filterable: true,
     },
     {
+      field: 'level',
+      headerName: 'Level',
+      width: 150,
+      editable: false,
+      valueGetter: (params: GridValueGetterParams) => params.row.level,
+      flex: 1,
+      filterable: true,
+    },
+    {
       field: 'battery',
       headerName: 'Battery',
       width: 150,
