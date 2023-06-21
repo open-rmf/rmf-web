@@ -8,7 +8,7 @@ export function robotHash(name: string, fleet: string): string {
   return `${name}__${fleet}`;
 }
 
-export function robotStatusToUpperString(status: Status2): string {
+export function robotStatusToUpperCase(status: Status2): string {
   switch (status) {
     case Status2.Charging:
       return 'CHARGING';

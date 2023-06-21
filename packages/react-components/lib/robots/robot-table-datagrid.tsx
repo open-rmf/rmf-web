@@ -11,7 +11,7 @@ import { Box, SxProps, Typography, useTheme } from '@mui/material';
 import * as React from 'react';
 import { Status2 } from 'api-client';
 import { RobotTableData } from './robot-table';
-import { robotStatusToUpperString } from './utils';
+import { robotStatusToUpperCase } from './utils';
 
 export interface RobotDataGridTableProps {
   onRobotClick?(ev: MuiEvent<React.MouseEvent<HTMLElement>>, robotName: RobotTableData): void;
@@ -66,7 +66,7 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
             fontSize: 14,
           }}
         >
-          {robotStatusToUpperString(params.row.status)}
+          {robotStatusToUpperCase(params.row.status)}
         </Typography>
       </Box>
     );
