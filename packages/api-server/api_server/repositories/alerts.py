@@ -89,7 +89,9 @@ class AlertRepository:
                 alert.id, self.user.username, unix_millis_acknowledged_time
             )
         except Exception as e:
-            raise RuntimeError(f"Error in save_log_acknowledged_task_completion {e}")
+            raise RuntimeError(
+                f"Error in save_log_acknowledged_task_completion {e}"
+            ) from e
 
         await alert.delete()
         ack_alert_pydantic = await ttm.AlertPydantic.from_tortoise_orm(ack_alert)
