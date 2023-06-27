@@ -122,7 +122,7 @@ async def get_scheduled_tasks(
 
 
 @router.get("/{task_id}", response_model=ttm.ScheduledTaskPydantic)
-async def get_scheduled_task(task_id: int):
+async def get_scheduled_task(task_id: int) -> ttm.ScheduledTask:
     task = await ttm.ScheduledTask.get_or_none(id=task_id).prefetch_related("schedules")
     if task is None:
         raise HTTPException(404)
