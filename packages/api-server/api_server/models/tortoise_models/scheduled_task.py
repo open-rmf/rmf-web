@@ -86,7 +86,8 @@ class ScheduledTaskSchedule(Model):
         else:
             raise ValueError("invalid period")
 
-        job: Job
+        # Hashable value in order to tag the job with a unique identifier
+        job.tag(self._id)
         if self.at is not None:
             job = job.at(self.at)
 
