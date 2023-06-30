@@ -5,7 +5,7 @@ describe('submit task', () => {
     const appBar = await getAppBar();
     await (await appBar.$('button[aria-label="System Overview"]')).click();
     await (await appBar.$('button[aria-label="new task"]')).click();
-    await (await $('button=Submit')).click();
+    await (await $('button="Submit Now"')).click();
     await expect($('div=Successfully created task')).toBeDisplayed();
   });
 });

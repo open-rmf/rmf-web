@@ -429,7 +429,7 @@ export const TasksApp = React.memo(
           }
           {...otherProps}
         >
-          <Tabs value={selectedTabIndex} onChange={handleChange} aria-label="basic tabs example">
+          <Tabs value={selectedTabIndex} onChange={handleChange} aria-label="Task App Tabs">
             <Tab label="Queue" id={tabId(0)} aria-controls={tabPanelId(0)} />
             <Tab label="Schedule" id={tabId(1)} aria-controls={tabPanelId(1)} />
           </Tabs>
