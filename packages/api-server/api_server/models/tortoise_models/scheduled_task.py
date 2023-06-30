@@ -48,7 +48,7 @@ class ScheduledTaskSchedule(Model):
         Hour = "hour"
         Minute = "minute"
 
-    _id = IntField(pk=True)
+    _id = IntField(pk=True, source_field="id")
     scheduled_task: ForeignKeyRelation[ScheduledTask] = ForeignKeyField(
         "models.ScheduledTask", related_name="schedules"
     )
@@ -57,6 +57,9 @@ class ScheduledTaskSchedule(Model):
     until = DatetimeField(null=True)
     period = CharEnumField(Period)
     at = CharField(255, null=True)
+
+    def get_id(self) -> IntField:
+        return self._id
 
     def to_job(self) -> Job:
         if self.every is not None:

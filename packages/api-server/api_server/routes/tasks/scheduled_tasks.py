@@ -134,5 +134,5 @@ async def del_scheduled_tasks(task_id: int):
     async with tortoise.transactions.in_transaction():
         task = await get_scheduled_task(task_id)
         for sche in task.schedules:
-            schedule.clear(sche._id)
+            schedule.clear(sche.get_id())
         await task.delete()
