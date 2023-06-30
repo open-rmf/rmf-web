@@ -1182,6 +1182,7 @@ export function CreateTaskForm({
               color="primary"
               disabled={submitting}
               className={classes.actionBtn}
+              aria-label={submitText}
               onClick={handleSubmitNow}
             >
               <Loading hideChildren loading={submitting} size="1.5em" color="inherit">

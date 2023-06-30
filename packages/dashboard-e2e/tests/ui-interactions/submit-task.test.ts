@@ -22,7 +22,7 @@ describe('submit task', () => {
 
     await (await $('#place-input')).setValue('coe');
 
-    await (await $('button="Submit Now"')).click();
+    await (await $('button[aria-label="Submit Now"]')).click();
     await expect($('div=Successfully created task')).toBeDisplayed();
   }).timeout(60000);
 });
