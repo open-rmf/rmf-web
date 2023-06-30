@@ -7,11 +7,11 @@ from api_server.authenticator import user_dep
 from api_server.logger import logger
 from api_server.models import User
 from api_server.models import tortoise_models as ttm
-from api_server.repositories.tasks import TaskRepository
+from api_server.repositories.tasks import TaskRepository, task_repo_dep
 
 
 class AlertRepository:
-    def __init__(self, user: User, task_repo: TaskRepository = None):
+    def __init__(self, user: User, task_repo: Optional[TaskRepository]):
         self.user = user
         self.task_repo = (
             task_repo if task_repo is not None else TaskRepository(self.user)
@@ -99,5 +99,7 @@ class AlertRepository:
         return ack_alert_pydantic
 
 
-def alert_repo_dep(user: User = Depends(user_dep)):
-    return AlertRepository(user)
+def alert_repo_dep(
+    user: User = Depends(user_dep), task_repo: TaskRepository = Depends(task_repo_dep)
+):
+    return AlertRepository(user, task_repo)
