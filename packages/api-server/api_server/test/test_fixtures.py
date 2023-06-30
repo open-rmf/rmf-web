@@ -82,10 +82,6 @@ class AppFixture(unittest.TestCase):
         cls.client = client()
         cls.client.set_user("admin")
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.client.__exit__()
-
     def subscribe_sio(self, room: str, *, user="admin"):
         """
         Subscribes to a socketio room and return a generator of messages
