@@ -11,8 +11,11 @@ from api_server.repositories.tasks import TaskRepository
 
 
 class AlertRepository:
-    def __init__(self, user: User):
+    def __init__(self, user: User, task_repo: TaskRepository = None):
         self.user = user
+        self.task_repo = (
+            task_repo if task_repo is not None else TaskRepository(self.user)
+        )
 
     async def get_all_alerts(self) -> List[ttm.AlertPydantic]:
         alerts = await ttm.Alert.all()
@@ -81,11 +84,9 @@ class AlertRepository:
         )
         await ack_alert.save()
 
-        user = User(username="__rmf_internal__", is_admin=True)
-        task_repo = TaskRepository(user)
         # Save in logs who was the user that acknowledged the task
         try:
-            await task_repo.save_log_acknowledged_task_completion(
+            await self.task_repo.save_log_acknowledged_task_completion(
                 alert.id, self.user.username, unix_millis_acknowledged_time
             )
         except Exception as e:
