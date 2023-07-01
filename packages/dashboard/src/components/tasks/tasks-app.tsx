@@ -1,17 +1,180 @@
+import { Scheduler } from '@aldabil/react-scheduler';
+import { ProcessedEvent, SchedulerProps } from '@aldabil/react-scheduler/types';
 import DownloadIcon from '@mui/icons-material/Download';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import { Grid, IconButton, TableContainer, Toolbar, Tooltip } from '@mui/material';
-import { TaskState } from 'api-client';
+import {
+  Box,
+  IconButton,
+  Menu,
+  MenuItem,
+  Tab,
+  Tabs,
+  TableContainer,
+  Toolbar,
+  Tooltip,
+} from '@mui/material';
+import {
+  ApiServerModelsTortoiseModelsScheduledTaskScheduledTask as ScheduledTask,
+  ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf as ApiSchedule,
+  TaskState,
+} from 'api-client';
+import {
+  addMinutes,
+  endOfMinute,
+  isFriday,
+  isMonday,
+  isSaturday,
+  isSunday,
+  isThursday,
+  isTuesday,
+  isWednesday,
+  nextFriday,
+  nextMonday,
+  nextSaturday,
+  nextSunday,
+  nextThursday,
+  nextTuesday,
+  nextWednesday,
+  startOfMinute,
+} from 'date-fns';
 import React from 'react';
-import { FilterFields, SortFields, TaskDataGridTable, Tasks, Window } from 'react-components';
+import {
+  FilterFields,
+  MuiMouseEvent,
+  SortFields,
+  TaskDataGridTable,
+  Tasks,
+  Window,
+} from 'react-components';
 import { Subscription } from 'rxjs';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
-import { downloadCsvFull, downloadCsvMinimal } from './utils';
 import { TaskSummary } from './task-summary';
+import { downloadCsvFull, downloadCsvMinimal } from './utils';
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  selectedTabIndex: number;
+}
+
+function tabId(index: number): string {
+  return `simple-tab-${index}`;
+}
+
+function tabPanelId(index: number): string {
+  return `simple-tabpanel-${index}`;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, selectedTabIndex, index, ...other } = props;
+  return (
+    <div
+      role="tabpanel"
+      hidden={selectedTabIndex !== index}
+      id={tabPanelId(index)}
+      aria-labelledby={tabId(index)}
+      {...other}
+    >
+      {selectedTabIndex === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </div>
+  );
+}
+
+/**
+ * Generates a list of ProcessedEvents to occur within the query start and end,
+ * based on the provided schedule.
+ * @param start The start of the query, which is generally 00:00:00 of the first
+ * day in the calendar view.
+ * @param end The end of the query, which is generally 23:59:59 of the last day
+ * in the calendar view.
+ * @param schedule The current schedule, to be checked if there are any events
+ * between start and end.
+ * @param getEventId Callback function to get the event ID.
+ * @param getEventTitle Callback function to get the event title.
+ * @returns List of ProcessedEvents to occur within the query start and end.
+ */
+function scheduleToEvents(
+  start: Date,
+  end: Date,
+  schedule: ApiSchedule,
+  getEventId: () => number,
+  getEventTitle: () => string,
+): ProcessedEvent[] {
+  if (!schedule.at) {
+    console.warn('Unable to convert schedule without [at] to an event');
+    return [];
+  }
+  const [hours, minutes] = schedule.at.split(':').map((s: string) => Number(s));
+  let cur = new Date(start);
+  cur.setHours(hours);
+  cur.setMinutes(minutes);
+
+  const scheStartFrom = schedule.start_from ? startOfMinute(new Date(schedule.start_from)) : null;
+  const scheUntil = schedule.until ? endOfMinute(new Date(schedule.until)) : null;
+
+  let period = 8.64e7; // 1 day
+  switch (schedule.period) {
+    case 'day':
+      break;
+    case 'monday':
+      cur = isMonday(cur) ? cur : nextMonday(cur);
+      period *= 7;
+      break;
+    case 'tuesday':
+      cur = isTuesday(cur) ? cur : nextTuesday(cur);
+      period *= 7;
+      break;
+    case 'wednesday':
+      cur = isWednesday(cur) ? cur : nextWednesday(cur);
+      period *= 7;
+      break;
+    case 'thursday':
+      cur = isThursday(cur) ? cur : nextThursday(cur);
+      period *= 7;
+      break;
+    case 'friday':
+      cur = isFriday(cur) ? cur : nextFriday(cur);
+      period *= 7;
+      break;
+    case 'saturday':
+      cur = isSaturday(cur) ? cur : nextSaturday(cur);
+      period *= 7;
+      break;
+    case 'sunday':
+      cur = isSunday(cur) ? cur : nextSunday(cur);
+      period *= 7;
+      break;
+    default:
+      console.warn(`Unable to convert schedule with period [${schedule.period}] to events`);
+      return [];
+  }
+
+  const events: ProcessedEvent[] = [];
+  while (cur <= end) {
+    if (
+      (scheStartFrom == null || scheStartFrom <= cur) &&
+      (scheUntil == null || scheUntil >= cur)
+    ) {
+      events.push({
+        start: cur,
+        end: addMinutes(cur, 45),
+        event_id: getEventId(),
+        title: getEventTitle(),
+      });
+    }
+    cur = new Date(cur.valueOf() + period);
+  }
+  return events;
+}
+
+function getScheduledTaskTitle(task: ScheduledTask): string {
+  if (!task.task_request || !task.task_request.category) {
+    return `[${task.id}] Unknown`;
+  }
+  return `[${task.id}] ${task.task_request.category}`;
+}
 
 export const TasksApp = React.memo(
   React.forwardRef(
@@ -20,6 +183,7 @@ export const TasksApp = React.memo(
       ref: React.Ref<HTMLDivElement>,
     ) => {
       const rmf = React.useContext(RmfAppContext);
+      const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
 
       const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
       const [openTaskSummary, setOpenTaskSummary] = React.useState(false);
@@ -34,14 +198,11 @@ export const TasksApp = React.memo(
       });
 
       const [filterFields, setFilterFields] = React.useState<FilterFields>({ model: undefined });
-
       const [sortFields, setSortFields] = React.useState<SortFields>({ model: undefined });
 
-      const [refreshTaskQueueTableCount, setRefreshTaskQueueTableCount] = React.useState(0);
-
       React.useEffect(() => {
-        const sub = AppEvents.refreshTaskQueueTableCount.subscribe((currentValue) => {
-          setRefreshTaskQueueTableCount(currentValue);
+        const sub = AppEvents.refreshTaskAppCount.subscribe((currentValue) => {
+          setRefreshTaskAppCount(currentValue);
         });
         return () => sub.unsubscribe();
       }, []);
@@ -123,7 +284,7 @@ export const TasksApp = React.memo(
           );
         })();
         return () => subs.forEach((s) => s.unsubscribe());
-      }, [rmf, refreshTaskQueueTableCount, tasksState.page, filterFields.model, sortFields.model]);
+      }, [rmf, refreshTaskAppCount, tasksState.page, filterFields.model, sortFields.model]);
 
       const getAllTasks = async (timestamp: Date) => {
         if (!rmf) {
@@ -168,6 +329,43 @@ export const TasksApp = React.memo(
       };
       const handleCloseExportMenu = () => {
         setAnchorExportElement(null);
+      };
+
+      const eventsMap = React.useRef<Record<number, ScheduledTask>>({});
+      const getRemoteEvents = React.useCallback<NonNullable<SchedulerProps['getRemoteEvents']>>(
+        async (params) => {
+          if (!rmf) {
+            return;
+          }
+          const tasks = (
+            await rmf.tasksApi.getScheduledTasksScheduledTasksGet(
+              params.end.toISOString(),
+              params.start.toISOString(),
+            )
+          ).data;
+          let counter = 0;
+          const getEventId = () => {
+            return counter++;
+          };
+          eventsMap.current = {};
+          return tasks.flatMap((t: ScheduledTask) =>
+            t.schedules.flatMap<ProcessedEvent>((s: ApiSchedule) => {
+              const events = scheduleToEvents(params.start, params.end, s, getEventId, () =>
+                getScheduledTaskTitle(t),
+              );
+              events.forEach((ev) => {
+                eventsMap.current[Number(ev.event_id)] = t;
+              });
+              return events;
+            }),
+          );
+        },
+        [rmf],
+      );
+
+      const [selectedTabIndex, setSelectedTabIndex] = React.useState(0);
+      const handleChange = (_: React.SyntheticEvent, newSelectedTabIndex: number) => {
+        setSelectedTabIndex(newSelectedTabIndex);
       };
 
       return (
@@ -222,7 +420,7 @@ export const TasksApp = React.memo(
               <Tooltip title="Refresh" color="inherit" placement="top">
                 <IconButton
                   onClick={() => {
-                    AppEvents.refreshTaskQueueTableCount.next(refreshTaskQueueTableCount + 1);
+                    AppEvents.refreshTaskAppCount.next(refreshTaskAppCount + 1);
                   }}
                   aria-label="Refresh"
                 >
@@ -233,27 +431,65 @@ export const TasksApp = React.memo(
           }
           {...otherProps}
         >
-          <Grid container wrap="nowrap" direction="column" height="100%">
-            <Grid item flexGrow={1}>
-              <TableContainer>
-                <TaskDataGridTable
-                  tasks={tasksState}
-                  onTaskClick={(_ev, task) => {
-                    setSelectedTask(task);
-                    setOpenTaskSummary(true);
-                  }}
-                  setFilterFields={setFilterFields}
-                  setSortFields={setSortFields}
-                  onPageChange={(newPage: number) =>
-                    setTasksState((old) => ({ ...old, page: newPage + 1 }))
-                  }
-                  onPageSizeChange={(newPageSize: number) =>
-                    setTasksState((old) => ({ ...old, pageSize: newPageSize }))
-                  }
-                />
-              </TableContainer>
-            </Grid>
-          </Grid>
+          <Tabs value={selectedTabIndex} onChange={handleChange} aria-label="Task App Tabs">
+            <Tab label="Queue" id={tabId(0)} aria-controls={tabPanelId(0)} />
+            <Tab label="Schedule" id={tabId(1)} aria-controls={tabPanelId(1)} />
+          </Tabs>
+          <TabPanel selectedTabIndex={selectedTabIndex} index={0}>
+            <TableContainer>
+              <TaskDataGridTable
+                tasks={tasksState}
+                onTaskClick={(_: MuiMouseEvent, task: TaskState) => {
+                  setSelectedTask(task);
+                  setOpenTaskSummary(true);
+                }}
+                setFilterFields={setFilterFields}
+                setSortFields={setSortFields}
+                onPageChange={(newPage: number) =>
+                  setTasksState((old: Tasks) => ({ ...old, page: newPage + 1 }))
+                }
+                onPageSizeChange={(newPageSize: number) =>
+                  setTasksState((old: Tasks) => ({ ...old, pageSize: newPageSize }))
+                }
+              />
+            </TableContainer>
+          </TabPanel>
+          <TabPanel selectedTabIndex={selectedTabIndex} index={1}>
+            <Scheduler
+              // react-scheduler does not support refreshing, workaround by mounting a new instance.
+              key={`scheduler-${refreshTaskAppCount}`}
+              view="week"
+              week={{
+                weekDays: [0, 1, 2, 3, 4, 5, 6],
+                weekStartOn: 1,
+                startHour: 0,
+                endHour: 23,
+                step: 120,
+              }}
+              disableViewNavigator
+              draggable={false}
+              editable={false}
+              getRemoteEvents={getRemoteEvents}
+              onDelete={async (deletedId) => {
+                const task = eventsMap.current[Number(deletedId)];
+                if (!task) {
+                  console.error(
+                    `Failed to delete scheduled task: unable to find task for event ${deletedId}`,
+                  );
+                  return;
+                }
+                if (!rmf) {
+                  return;
+                }
+                try {
+                  await rmf.tasksApi.delScheduledTasksScheduledTasksTaskIdDelete(task.id);
+                  AppEvents.refreshTaskAppCount.next(refreshTaskAppCount + 1);
+                } catch (e) {
+                  console.error(`Failed to delete scheduled task: ${e}`);
+                }
+              }}
+            />
+          </TabPanel>
           <input type="file" style={{ display: 'none' }} ref={uploadFileInputRef} />
           {openTaskSummary && (
             <TaskSummary task={selectedTask} onClose={() => setOpenTaskSummary(false)} />

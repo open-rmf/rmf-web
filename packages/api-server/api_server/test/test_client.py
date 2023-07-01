@@ -65,5 +65,6 @@ def client(user="admin") -> TestClient:
 
 
 def shutdown():
+    global _client
     if _client is not None:
         _client.__exit__()

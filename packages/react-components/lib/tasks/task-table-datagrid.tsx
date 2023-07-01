@@ -68,9 +68,11 @@ export interface SortFields {
   model: GridSortModel | undefined;
 }
 
+export type MuiMouseEvent = MuiEvent<React.MouseEvent<HTMLElement>>;
+
 export interface TableDataGridState {
   tasks: Tasks;
-  onTaskClick?(ev: MuiEvent<React.MouseEvent<HTMLElement>>, task: TaskState): void;
+  onTaskClick?(ev: MuiMouseEvent, task: TaskState): void;
   onPageChange: (newPage: number) => void;
   onPageSizeChange: (newPageSize: number) => void;
   setFilterFields: React.Dispatch<React.SetStateAction<FilterFields>>;
@@ -87,7 +89,7 @@ export function TaskDataGridTable({
 }: TableDataGridState): JSX.Element {
   const handleEvent: GridEventListener<'rowClick'> = (
     params: GridRowParams,
-    event: MuiEvent<React.MouseEvent<HTMLElement>>,
+    event: MuiMouseEvent,
   ) => {
     if (onTaskClick) {
       onTaskClick(event, params.row);

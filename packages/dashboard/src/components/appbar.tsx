@@ -26,8 +26,9 @@ import {
 } from '@mui/material';
 import {
   ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
-  TaskRequest,
+  PostScheduledTaskRequest,
   TaskFavoritePydantic as TaskFavorite,
+  TaskRequest,
 } from 'api-client';
 import React from 'react';
 import {
@@ -38,6 +39,7 @@ import {
   HeaderBar,
   LogoButton,
   NavigationBar,
+  Schedule,
   useAsync,
 } from 'react-components';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -58,9 +60,9 @@ import {
   ResourcesContext,
   SettingsContext,
 } from './app-contexts';
+import { AppEvents } from './app-events';
 import { RmfAppContext } from './rmf-app';
 import { parseTasksFile } from './tasks/utils';
-import { AppEvents } from './app-events';
 import { Subscription } from 'rxjs';
 import { formatDistance } from 'date-fns';
 
@@ -116,6 +118,27 @@ function AppSettings() {
   );
 }
 
+function toApiSchedule(taskRequest: TaskRequest, schedule: Schedule): PostScheduledTaskRequest {
+  const start = schedule.startOn;
+  const apiSchedules: PostScheduledTaskRequest['schedules'] = [];
+  const date = new Date(start);
+  const start_from = start.toISOString();
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const at = `${hours}:${minutes}`;
+  schedule.days[0] && apiSchedules.push({ period: 'monday', start_from, at });
+  schedule.days[1] && apiSchedules.push({ period: 'tuesday', start_from, at });
+  schedule.days[2] && apiSchedules.push({ period: 'wednesday', start_from, at });
+  schedule.days[3] && apiSchedules.push({ period: 'thursday', start_from, at });
+  schedule.days[4] && apiSchedules.push({ period: 'friday', start_from, at });
+  schedule.days[5] && apiSchedules.push({ period: 'saturday', start_from, at });
+  schedule.days[6] && apiSchedules.push({ period: 'sunday', start_from, at });
+  return {
+    task_request: taskRequest,
+    schedules: apiSchedules,
+  };
+}
+
 export interface AppBarProps {
   extraToolbarItems?: React.ReactNode;
 
@@ -142,7 +165,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [placeNames, setPlaceNames] = React.useState<string[]>([]);
   const [workcells, setWorkcells] = React.useState<string[]>();
   const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
-  const [refreshTaskQueueTableCount, setRefreshTaskQueueTableCount] = React.useState(0);
+  const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
   const [alertListAnchor, setAlertListAnchor] = React.useState<HTMLElement | null>(null);
   const [unacknowledgedAlertsNum, setUnacknowledgedAlertsNum] = React.useState(0);
   const [unacknowledgedAlertList, setUnacknowledgedAlertList] = React.useState<Alert[]>([]);
@@ -158,8 +181,8 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   }
 
   React.useEffect(() => {
-    const sub = AppEvents.refreshTaskQueueTableCount.subscribe((currentValue) => {
-      setRefreshTaskQueueTableCount(currentValue);
+    const sub = AppEvents.refreshTaskAppCount.subscribe((currentValue) => {
+      setRefreshTaskAppCount(currentValue);
     });
     return () => sub.unsubscribe();
   }, []);
@@ -215,21 +238,28 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   }, [rmf]);
 
   const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
-    async (taskRequests) => {
+    async (taskRequests, schedule) => {
       if (!rmf) {
         throw new Error('tasks api not available');
       }
-      await Promise.all(
-        taskRequests.map((taskReq) =>
-          rmf.tasksApi.postDispatchTaskTasksDispatchTaskPost({
-            type: 'dispatch_task_request',
-            request: taskReq,
-          }),
-        ),
-      );
-      AppEvents.refreshTaskQueueTableCount.next(refreshTaskQueueTableCount + 1);
+      if (!schedule) {
+        await Promise.all(
+          taskRequests.map((request) =>
+            rmf.tasksApi.postDispatchTaskTasksDispatchTaskPost({
+              type: 'dispatch_task_request',
+              request,
+            }),
+          ),
+        );
+      } else {
+        const scheduleRequests = taskRequests.map((req) => toApiSchedule(req, schedule));
+        await Promise.all(
+          scheduleRequests.map((req) => rmf.tasksApi.postScheduledTaskScheduledTasksPost(req)),
+        );
+      }
+      AppEvents.refreshTaskAppCount.next(refreshTaskAppCount + 1);
     },
-    [rmf, refreshTaskQueueTableCount],
+    [rmf, refreshTaskAppCount],
   );
 
   const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
@@ -278,7 +308,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     return () => {
       setFavoritesTasks([]);
     };
-  }, [rmf, refreshTaskQueueTableCount]);
+  }, [rmf, refreshTaskAppCount]);
 
   const submitFavoriteTask = React.useCallback<Required<CreateTaskFormProps>['submitFavoriteTask']>(
     async (taskFavoriteRequest) => {
@@ -286,9 +316,9 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
         throw new Error('tasks api not available');
       }
       await rmf.tasksApi.postFavoriteTaskFavoriteTasksPost(taskFavoriteRequest);
-      AppEvents.refreshTaskQueueTableCount.next(refreshTaskQueueTableCount + 1);
+      AppEvents.refreshTaskAppCount.next(refreshTaskAppCount + 1);
     },
-    [rmf, refreshTaskQueueTableCount],
+    [rmf, refreshTaskAppCount],
   );
 
   const deleteFavoriteTask = React.useCallback<Required<CreateTaskFormProps>['deleteFavoriteTask']>(
@@ -301,9 +331,9 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       }
 
       await rmf.tasksApi.deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(favoriteTask.id);
-      AppEvents.refreshTaskQueueTableCount.next(refreshTaskQueueTableCount + 1);
+      AppEvents.refreshTaskAppCount.next(refreshTaskAppCount + 1);
     },
-    [rmf, refreshTaskQueueTableCount],
+    [rmf, refreshTaskAppCount],
   );
   //#endregion 'Favorite Task'
 
@@ -551,6 +581,13 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           }}
           onFailFavoriteTask={(e) => {
             showAlert('error', `Failed to create or delete favorite task: ${e.message}`);
+          }}
+          onSuccessScheduling={() => {
+            setOpenCreateTaskForm(false);
+            showAlert('success', 'Successfully created schedule');
+          }}
+          onFailScheduling={(e) => {
+            showAlert('error', `Failed to submit schedule: ${e.message}`);
           }}
         />
       )}

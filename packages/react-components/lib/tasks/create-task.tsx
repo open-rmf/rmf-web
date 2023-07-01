@@ -1,8 +1,20 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/**
+ * FIXME(kp): Make the whole task request system task agnostic.
+ * For that RMF needs to support task discovery and UI schemas https://github.com/open-rmf/rmf_api_msgs/issues/32.
+ */
 
+import UpdateIcon from '@mui/icons-material/Create';
+import DeleteIcon from '@mui/icons-material/Delete';
+import PlaceOutlined from '@mui/icons-material/PlaceOutlined';
 import {
   Autocomplete,
   Button,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogProps,
+  DialogTitle,
   Divider,
   Grid,
   IconButton,
@@ -17,25 +29,52 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import PlaceOutlined from '@mui/icons-material/PlaceOutlined';
-import DeleteIcon from '@mui/icons-material/Delete';
-import UpdateIcon from '@mui/icons-material/Create';
+import { DatePicker, TimePicker, DateTimePicker } from '@mui/x-date-pickers';
 import type { TaskFavoritePydantic as TaskFavorite, TaskRequest } from 'api-client';
 import React from 'react';
+import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
 
-type TaskDescription = Record<string, any>;
+// A bunch of manually defined descriptions to avoid using `any`.
+interface DeliveryTaskDescription {
+  pickup: {
+    place: string;
+    handler: string;
+    payload: {
+      sku: string;
+      quantity: number;
+    };
+  };
+  dropoff: {
+    place: string;
+    handler: string;
+    payload: {
+      sku: string;
+      quantity: number;
+    };
+  };
+}
+
+interface LoopTaskDescription {
+  places: string[];
+  rounds: number;
+}
+
+interface CleanTaskDescription {
+  zone: string;
+}
+
+type TaskDescription = DeliveryTaskDescription | LoopTaskDescription | CleanTaskDescription;
 
 const classes = {
+  title: 'dialogue-info-value',
   selectFileBtn: 'create-task-selected-file-btn',
   taskList: 'create-task-task-list',
   selectedTask: 'create-task-selected-task',
+  actionBtn: 'dialogue-action-button',
 };
-const StyledConfirmationDialog = styled((props: ConfirmationDialogProps) => (
-  <ConfirmationDialog {...props} />
-))(({ theme }) => ({
+const StyledDialog = styled((props: DialogProps) => <Dialog {...props} />)(({ theme }) => ({
   [`& .${classes.selectFileBtn}`]: {
     marginBottom: theme.spacing(1),
   },
@@ -47,6 +86,12 @@ const StyledConfirmationDialog = styled((props: ConfirmationDialogProps) => (
   },
   [`& .${classes.selectedTask}`]: {
     background: theme.palette.action.focus,
+  },
+  [`& .${classes.title}`]: {
+    flex: '1 1 auto',
+  },
+  [`& .${classes.actionBtn}`]: {
+    minWidth: 80,
   },
 }));
 
@@ -85,7 +130,7 @@ function FormToolbar({ onSelectFileClick }: FormToolbarProps) {
 }
 
 interface DeliveryTaskFormProps {
-  taskDesc: TaskDescription;
+  taskDesc: DeliveryTaskDescription;
   deliveryWaypoints: string[];
   dispensers: string[];
   ingestors: string[];
@@ -296,7 +341,7 @@ function DeliveryTaskForm({
                   ...taskDesc.pickup,
                   payload: {
                     ...taskDesc.pickup.payload,
-                    quantity: parseInt(newValue),
+                    quantity: typeof newValue == 'string' ? parseInt(newValue) : newValue,
                   },
                 },
               })
@@ -374,7 +419,7 @@ function DeliveryTaskForm({
                   ...taskDesc.dropoff,
                   payload: {
                     ...taskDesc.dropoff.payload,
-                    quantity: parseInt(newValue),
+                    quantity: typeof newValue == 'string' ? parseInt(newValue) : newValue,
                   },
                 },
               })
@@ -437,9 +482,9 @@ function PlaceList({ places, onClick }: PlaceListProps) {
 }
 
 interface LoopTaskFormProps {
-  taskDesc: any;
+  taskDesc: LoopTaskDescription;
   loopWaypoints: string[];
-  onChange(loopTaskDescription: any): void;
+  onChange(loopTaskDescription: LoopTaskDescription): void;
 }
 
 function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) {
@@ -501,9 +546,9 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
 }
 
 interface CleanTaskFormProps {
-  taskDesc: any;
+  taskDesc: CleanTaskDescription;
   cleaningZones: string[];
-  onChange(cleanTaskDescription: any): void;
+  onChange(cleanTaskDescription: CleanTaskDescription): void;
 }
 
 function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps) {
@@ -589,31 +634,36 @@ function FavoriteTask({
   );
 }
 
-function defaultCleanTask(): Record<string, any> {
+function defaultCleanTask(): CleanTaskDescription {
   return {
     zone: '',
-    type: '',
   };
 }
 
-function defaultLoopsTask(): Record<string, any> {
+function defaultLoopTask(): LoopTaskDescription {
   return {
     places: [],
     rounds: 1,
   };
 }
 
-function defaultDeliveryTask(): Record<string, any> {
+function defaultDeliveryTask(): DeliveryTaskDescription {
   return {
     pickup: {
       place: '',
       handler: '',
-      payload: '',
+      payload: {
+        sku: '',
+        quantity: 1,
+      },
     },
     dropoff: {
       place: '',
       handler: '',
-      payload: '',
+      payload: {
+        sku: '',
+        quantity: 1,
+      },
     },
   };
 }
@@ -623,7 +673,7 @@ function defaultTaskDescription(taskCategory: string): TaskDescription | undefin
     case 'clean':
       return defaultCleanTask();
     case 'patrol':
-      return defaultLoopsTask();
+      return defaultLoopTask();
     case 'delivery':
       return defaultDeliveryTask();
     default:
@@ -634,19 +684,70 @@ function defaultTaskDescription(taskCategory: string): TaskDescription | undefin
 function defaultTask(): TaskRequest {
   return {
     category: 'patrol',
-    description: defaultLoopsTask(),
-    unix_millis_earliest_start_time: Date.now(),
+    description: defaultLoopTask(),
+    unix_millis_earliest_start_time: 0,
     priority: { type: 'binary', value: 0 },
   };
 }
+
+export type RecurringDays = [boolean, boolean, boolean, boolean, boolean, boolean, boolean];
+
+export interface Schedule {
+  startOn: Date;
+  days: RecurringDays;
+}
+
+interface DaySelectorSwitchProps {
+  disabled?: boolean;
+  onChange: (checked: RecurringDays) => void;
+  value: RecurringDays;
+}
+
+const DaySelectorSwitch: React.VFC<DaySelectorSwitchProps> = ({ disabled, onChange, value }) => {
+  const theme = useTheme();
+  const renderChip = (idx: number, text: string) => (
+    <Chip
+      key={idx}
+      label={text}
+      color="primary"
+      sx={{ '&:hover': {}, margin: theme.spacing(0.25) }}
+      variant={value[idx] && !disabled ? 'filled' : 'outlined'}
+      disabled={disabled}
+      onClick={() => {
+        value[idx] = !value[idx];
+        onChange([...value]);
+      }}
+    />
+  );
+  return (
+    <div>
+      <TextField
+        label="Recurring Every"
+        color="primary"
+        InputProps={{
+          disabled: true,
+          startAdornment: [
+            renderChip(0, 'Mon'),
+            renderChip(1, 'Tue'),
+            renderChip(2, 'Wed'),
+            renderChip(3, 'Thu'),
+            renderChip(4, 'Fri'),
+            renderChip(5, 'Sat'),
+            renderChip(6, 'Sun'),
+          ],
+        }}
+      />
+    </div>
+  );
+};
 
 const defaultFavoriteTask = (): TaskFavorite => {
   return {
     id: '',
     name: '',
     category: 'patrol',
-    description: defaultLoopsTask(),
-    unix_millis_earliest_start_time: Date.now(),
+    description: defaultLoopTask(),
+    unix_millis_earliest_start_time: 0,
     priority: { type: 'binary', value: 0 },
     user: '',
   };
@@ -664,14 +765,16 @@ export interface CreateTaskFormProps
   dispensers?: string[];
   ingestors?: string[];
   favoritesTasks: TaskFavorite[];
-  submitTasks?(tasks: TaskRequest[]): Promise<void>;
+  submitTasks?(tasks: TaskRequest[], schedule: Schedule | null): Promise<void>;
   tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
-  onSuccess?(tasks: any[]): void;
-  onFail?(error: Error, tasks: any[]): void;
+  onSuccess?(tasks: TaskRequest[]): void;
+  onFail?(error: Error, tasks: TaskRequest[]): void;
   onSuccessFavoriteTask?(message: string, favoriteTask: TaskFavorite): void;
   onFailFavoriteTask?(error: Error, favoriteTask: TaskFavorite): void;
   submitFavoriteTask?(favoriteTask: TaskFavorite): Promise<void>;
   deleteFavoriteTask?(favoriteTask: TaskFavorite): Promise<void>;
+  onSuccessScheduling?(): void;
+  onFailScheduling?(error: Error): void;
 }
 
 export function CreateTaskForm({
@@ -683,12 +786,15 @@ export function CreateTaskForm({
   favoritesTasks = [],
   submitTasks,
   tasksFromFile,
+  onClose,
   onSuccess,
   onFail,
   onSuccessFavoriteTask,
   onFailFavoriteTask,
   submitFavoriteTask,
   deleteFavoriteTask,
+  onSuccessScheduling,
+  onFailScheduling,
   ...otherProps
 }: CreateTaskFormProps): JSX.Element {
   const theme = useTheme();
@@ -712,6 +818,14 @@ export function CreateTaskForm({
   );
   const [submitting, setSubmitting] = React.useState(false);
   const taskRequest = taskRequests[selectedTaskIdx];
+  const [openSchedulingDialog, setOpenSchedulingDialog] = React.useState(false);
+  const [schedule, setSchedule] = React.useState<Schedule>({
+    startOn: new Date(),
+    days: [true, true, true, true, true, true, true],
+  });
+  const [atTime, setAtTime] = React.useState(new Date());
+  // schedule is not supported with batch upload
+  const scheduleEnabled = taskRequests.length === 1;
 
   const updateTasks = () => {
     setTaskRequests((prev) => {
@@ -732,7 +846,7 @@ export function CreateTaskForm({
       case 'clean':
         return (
           <CleanTaskForm
-            taskDesc={taskRequest.description as any}
+            taskDesc={taskRequest.description as CleanTaskDescription}
             cleaningZones={cleaningZones}
             onChange={(desc) => handleTaskDescriptionChange('clean', desc)}
           />
@@ -740,7 +854,7 @@ export function CreateTaskForm({
       case 'patrol':
         return (
           <LoopTaskForm
-            taskDesc={taskRequest.description as any}
+            taskDesc={taskRequest.description as LoopTaskDescription}
             loopWaypoints={loopWaypoints}
             onChange={(desc) => handleTaskDescriptionChange('patrol', desc)}
           />
@@ -748,7 +862,7 @@ export function CreateTaskForm({
       case 'delivery':
         return (
           <DeliveryTaskForm
-            taskDesc={taskRequest.description as any}
+            taskDesc={taskRequest.description as DeliveryTaskDescription}
             deliveryWaypoints={deliveryWaypoints}
             dispensers={dispensers}
             ingestors={ingestors}
@@ -774,21 +888,41 @@ export function CreateTaskForm({
   };
 
   // no memo because deps would likely change
-  const handleSubmit: React.MouseEventHandler = async (ev) => {
-    ev.preventDefault();
+  const handleSubmit = async (scheduling: boolean) => {
     if (!submitTasks) {
       onSuccess && onSuccess(taskRequests);
       return;
     }
+
+    const submittingSchedule = scheduling && scheduleEnabled;
     try {
       setSubmitting(true);
-      await submitTasks(taskRequests);
+      await submitTasks(taskRequests, submittingSchedule ? schedule : null);
       setSubmitting(false);
-      onSuccess && onSuccess(taskRequests);
+
+      if (submittingSchedule) {
+        onSuccessScheduling && onSuccessScheduling();
+      } else {
+        onSuccess && onSuccess(taskRequests);
+      }
     } catch (e) {
       setSubmitting(false);
-      onFail && onFail(e as Error, taskRequests);
+      if (submittingSchedule) {
+        onFailScheduling && onFailScheduling(e as Error);
+      } else {
+        onFail && onFail(e as Error, taskRequests);
+      }
     }
+  };
+
+  const handleSubmitNow: React.MouseEventHandler = async (ev) => {
+    ev.preventDefault();
+    await handleSubmit(false);
+  };
+
+  const handleSubmitSchedule: React.FormEventHandler = async (ev) => {
+    ev.preventDefault();
+    await handleSubmit(true);
   };
 
   const handleSubmitFavoriteTask: React.MouseEventHandler = async (ev) => {
@@ -858,163 +992,206 @@ export function CreateTaskForm({
     })();
   };
 
-  const submitText = taskRequests.length > 1 ? 'Submit All' : 'Submit';
+  const submitText = taskRequests.length > 1 ? 'Submit All Now' : 'Submit Now';
 
   return (
     <>
-      <StyledConfirmationDialog
+      <StyledDialog
         title="Create Task"
-        submitting={submitting}
-        confirmText={submitText}
         maxWidth="lg"
         fullWidth={taskRequests.length > 1}
-        toolbar={<FormToolbar onSelectFileClick={handleSelectFileClick} />}
-        onSubmit={handleSubmit}
         disableEnforceFocus
         {...otherProps}
       >
-        <Grid container direction="row" wrap="nowrap">
-          <List dense className={classes.taskList} aria-label="Favorites Tasks">
-            <Typography variant="h6" component="div">
-              Favorite tasks
-            </Typography>
-            {favoritesTasks.map((favoriteTask, index) => {
-              return (
-                <FavoriteTask
-                  listItemText={favoriteTask.name}
-                  key={index}
-                  setFavoriteTask={setFavoriteTaskBuffer}
-                  favoriteTask={favoriteTask}
-                  setCallToDelete={setCallToDeleteFavoriteTask}
-                  setCallToUpdate={setCallToUpdateFavoriteTask}
-                  setOpenDialog={setOpenFavoriteDialog}
-                  listItemClick={() => {
-                    setFavoriteTaskBuffer(favoriteTask);
-                    setTaskRequests((prev) => {
-                      return [
-                        ...prev,
-                        {
-                          category: favoriteTask.category,
-                          description: favoriteTask.description,
-                          unix_millis_earliest_start_time: Date.now(),
-                          priority: favoriteTask.priority,
-                        },
-                      ];
-                    });
-                  }}
-                />
-              );
-            })}
-          </List>
-
-          <Divider
-            orientation="vertical"
-            flexItem
-            style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
-          />
-
-          <Grid>
-            <TextField
-              select
-              id="task-type"
-              label="Task Category"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              value={taskRequest.category}
-              onChange={handleTaskTypeChange}
-            >
-              <MenuItem value="clean">Clean</MenuItem>
-              <MenuItem value="patrol">Loop</MenuItem>
-              <MenuItem value="delivery">Delivery</MenuItem>
-            </TextField>
+        <form aria-label="create-task">
+          <DialogTitle>
             <Grid container wrap="nowrap">
-              <Grid style={{ flexGrow: 1 }}>
-                <DateTimePicker
-                  inputFormat={'MM/dd/yyyy HH:mm'}
-                  value={
-                    taskRequest.unix_millis_earliest_start_time
-                      ? new Date(taskRequest.unix_millis_earliest_start_time)
-                      : new Date()
-                  }
-                  onChange={(date) => {
-                    if (!date) {
-                      return;
-                    }
-                    taskRequest.unix_millis_earliest_start_time = date.valueOf();
-                    setFavoriteTaskBuffer({
-                      ...favoriteTaskBuffer,
-                      unix_millis_earliest_start_time: date.valueOf(),
-                    });
-                    updateTasks();
-                  }}
-                  label="Start Time"
-                  renderInput={(props) => <TextField {...props} />}
-                />
+              <Grid item className={classes.title}>
+                Create Task
               </Grid>
-              <Grid
-                style={{
-                  flex: '0 1 5em',
-                  marginLeft: theme.spacing(2),
-                  marginRight: theme.spacing(2),
-                }}
-              >
-                <PositiveIntField
-                  id="priority"
-                  label="Priority"
-                  margin="normal"
-                  value={(taskRequest.priority as Record<string, any>)?.value || 0}
-                  onChange={(_ev, val) => {
-                    taskRequest.priority = { type: 'binary', value: val };
-                    setFavoriteTaskBuffer({
-                      ...favoriteTaskBuffer,
-                      priority: { type: 'binary', value: val },
-                    });
-                    updateTasks();
-                  }}
-                />
+              <Grid item>
+                <FormToolbar onSelectFileClick={handleSelectFileClick} />
               </Grid>
             </Grid>
-            {renderTaskDescriptionForm()}
-            <Grid container justifyContent="center">
-              <Button
-                aria-label="Save as a favorite task"
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  !callToUpdateFavoriteTask &&
-                    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
-                  setOpenFavoriteDialog(true);
-                }}
-              >
-                {callToUpdateFavoriteTask ? `Confirm edits` : 'Save as a favorite task'}
-              </Button>
-            </Grid>
-          </Grid>
-          {taskTitles.length > 1 && (
-            <>
+          </DialogTitle>
+          <DialogContent>
+            <Grid container direction="row" wrap="nowrap">
+              <List dense className={classes.taskList} aria-label="Favorites Tasks">
+                <Typography variant="h6" component="div">
+                  Favorite tasks
+                </Typography>
+                {favoritesTasks.map((favoriteTask, index) => {
+                  return (
+                    <FavoriteTask
+                      listItemText={favoriteTask.name}
+                      key={index}
+                      setFavoriteTask={setFavoriteTaskBuffer}
+                      favoriteTask={favoriteTask}
+                      setCallToDelete={setCallToDeleteFavoriteTask}
+                      setCallToUpdate={setCallToUpdateFavoriteTask}
+                      setOpenDialog={setOpenFavoriteDialog}
+                      listItemClick={() => {
+                        setFavoriteTaskBuffer(favoriteTask);
+                        setTaskRequests((prev) => {
+                          return [
+                            ...prev,
+                            {
+                              category: favoriteTask.category,
+                              description: favoriteTask.description,
+                              unix_millis_earliest_start_time: Date.now(),
+                              priority: favoriteTask.priority,
+                            },
+                          ];
+                        });
+                      }}
+                    />
+                  );
+                })}
+              </List>
+
               <Divider
                 orientation="vertical"
                 flexItem
                 style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
               />
-              <List dense className={classes.taskList} aria-label="Tasks List">
-                {taskTitles.map((title, idx) => (
-                  <ListItem
-                    key={idx}
-                    button
-                    onClick={() => setSelectedTaskIdx(idx)}
-                    className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
-                    role="listitem button"
+
+              <Grid>
+                <TextField
+                  select
+                  id="task-type"
+                  label="Task Category"
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
+                  value={taskRequest.category}
+                  onChange={handleTaskTypeChange}
+                >
+                  <MenuItem value="clean">Clean</MenuItem>
+                  <MenuItem value="patrol">Loop</MenuItem>
+                  <MenuItem value="delivery">Delivery</MenuItem>
+                </TextField>
+                <Grid container wrap="nowrap">
+                  <Grid style={{ flexGrow: 1 }}>
+                    <DateTimePicker
+                      inputFormat={'MM/dd/yyyy HH:mm'}
+                      value={
+                        taskRequest.unix_millis_earliest_start_time
+                          ? new Date(taskRequest.unix_millis_earliest_start_time)
+                          : new Date()
+                      }
+                      onChange={(date) => {
+                        if (!date) {
+                          return;
+                        }
+                        taskRequest.unix_millis_earliest_start_time = date.valueOf();
+                        setFavoriteTaskBuffer({
+                          ...favoriteTaskBuffer,
+                          unix_millis_earliest_start_time: date.valueOf(),
+                        });
+                        updateTasks();
+                      }}
+                      label="Start Time"
+                      renderInput={(props) => <TextField {...props} />}
+                    />
+                  </Grid>
+                  <Grid
+                    style={{
+                      flex: '0 1 5em',
+                      marginLeft: theme.spacing(2),
+                      marginRight: theme.spacing(2),
+                    }}
                   >
-                    <ListItemText primary={title} />
-                  </ListItem>
-                ))}
-              </List>
-            </>
-          )}
-        </Grid>
-      </StyledConfirmationDialog>
+                    <PositiveIntField
+                      id="priority"
+                      label="Priority"
+                      margin="normal"
+                      // FIXME(AA): The priority object is currently undefined.
+                      value={(taskRequest.priority as Record<string, number>)?.value || 0}
+                      onChange={(_ev, val) => {
+                        taskRequest.priority = { type: 'binary', value: val };
+                        setFavoriteTaskBuffer({
+                          ...favoriteTaskBuffer,
+                          priority: { type: 'binary', value: val },
+                        });
+                        updateTasks();
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+                {renderTaskDescriptionForm()}
+                <Grid container justifyContent="center">
+                  <Button
+                    aria-label="Save as a favorite task"
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      !callToUpdateFavoriteTask &&
+                        setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
+                      setOpenFavoriteDialog(true);
+                    }}
+                  >
+                    {callToUpdateFavoriteTask ? `Confirm edits` : 'Save as a favorite task'}
+                  </Button>
+                </Grid>
+              </Grid>
+              {taskTitles.length > 1 && (
+                <>
+                  <Divider
+                    orientation="vertical"
+                    flexItem
+                    style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
+                  />
+                  <List dense className={classes.taskList} aria-label="Tasks List">
+                    {taskTitles.map((title, idx) => (
+                      <ListItem
+                        key={idx}
+                        button
+                        onClick={() => setSelectedTaskIdx(idx)}
+                        className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
+                        role="listitem button"
+                      >
+                        <ListItemText primary={title} />
+                      </ListItem>
+                    ))}
+                  </List>
+                </>
+              )}
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              variant="outlined"
+              disabled={submitting}
+              className={classes.actionBtn}
+              onClick={(ev) => onClose && onClose(ev, 'escapeKeyDown')}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={submitting}
+              className={classes.actionBtn}
+              onClick={() => setOpenSchedulingDialog(true)}
+            >
+              Add to Schedule
+            </Button>
+            <Button
+              variant="contained"
+              type="submit"
+              color="primary"
+              disabled={submitting}
+              className={classes.actionBtn}
+              aria-label={submitText}
+              onClick={handleSubmitNow}
+            >
+              <Loading hideChildren loading={submitting} size="1.5em" color="inherit">
+                {submitText}
+              </Loading>
+            </Button>
+          </DialogActions>
+        </form>
+      </StyledDialog>
       {openFavoriteDialog && (
         <ConfirmationDialog
           confirmText={callToDeleteFavoriteTask ? 'Delete' : 'Save'}
@@ -1042,6 +1219,68 @@ export function CreateTaskForm({
           {callToDeleteFavoriteTask && (
             <Typography>{`Are you sure you want to delete "${favoriteTaskBuffer.name}"?`}</Typography>
           )}
+        </ConfirmationDialog>
+      )}
+      {openSchedulingDialog && (
+        <ConfirmationDialog
+          confirmText="Schedule"
+          cancelText="Cancel"
+          open={openSchedulingDialog}
+          title="Schedule Task"
+          submitting={false}
+          onClose={() => setOpenSchedulingDialog(false)}
+          onSubmit={(ev) => {
+            handleSubmitSchedule(ev);
+            setOpenSchedulingDialog(false);
+          }}
+        >
+          <Grid container spacing={2} marginTop={1}>
+            <Grid item xs={6}>
+              <DatePicker
+                value={schedule.startOn}
+                onChange={(date) =>
+                  date &&
+                  setSchedule((prev) => {
+                    date.setHours(atTime.getHours());
+                    date.setMinutes(atTime.getMinutes());
+                    return { ...prev, startOn: date };
+                  })
+                }
+                label="Start On"
+                disabled={!scheduleEnabled}
+                renderInput={(props) => <TextField {...props} fullWidth />}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TimePicker
+                value={atTime}
+                onChange={(date) => {
+                  if (!date) {
+                    return;
+                  }
+                  setAtTime(date);
+                  if (!isNaN(date.valueOf())) {
+                    setSchedule((prev) => {
+                      const startOn = prev.startOn;
+                      startOn.setHours(date.getHours());
+                      startOn.setMinutes(date.getMinutes());
+                      return { ...prev, startOn };
+                    });
+                  }
+                }}
+                label="At"
+                disabled={!scheduleEnabled}
+                renderInput={(props) => <TextField {...props} fullWidth />}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <DaySelectorSwitch
+                value={schedule.days}
+                disabled={!scheduleEnabled}
+                onChange={(days) => setSchedule((prev) => ({ ...prev, days }))}
+              />
+            </Grid>
+          </Grid>
         </ConfirmationDialog>
       )}
     </>
