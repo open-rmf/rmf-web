@@ -7,11 +7,15 @@ from api_server.authenticator import user_dep
 from api_server.logger import logger
 from api_server.models import User
 from api_server.models import tortoise_models as ttm
+from api_server.repositories.tasks import TaskRepository, task_repo_dep
 
 
 class AlertRepository:
-    def __init__(self, user: User):
+    def __init__(self, user: User, task_repo: Optional[TaskRepository]):
         self.user = user
+        self.task_repo = (
+            task_repo if task_repo is not None else TaskRepository(self.user)
+        )
 
     async def get_all_alerts(self) -> List[ttm.AlertPydantic]:
         alerts = await ttm.Alert.all()
@@ -71,17 +75,31 @@ class AlertRepository:
         # https://github.com/tortoise/tortoise-orm/pull/1131. This is a
         # temporary workaround.
         ack_alert._custom_generated_pk = True  # pylint: disable=W0212
+        unix_millis_acknowledged_time = round(ack_time.timestamp() * 1e3)
         ack_alert.update_from_dict(
             {
                 "acknowledged_by": self.user.username,
-                "unix_millis_acknowledged_time": round(ack_time.timestamp() * 1e3),
+                "unix_millis_acknowledged_time": unix_millis_acknowledged_time,
             }
         )
         await ack_alert.save()
+
+        # Save in logs who was the user that acknowledged the task
+        try:
+            await self.task_repo.save_log_acknowledged_task_completion(
+                alert.id, self.user.username, unix_millis_acknowledged_time
+            )
+        except Exception as e:
+            raise RuntimeError(
+                f"Error in save_log_acknowledged_task_completion {e}"
+            ) from e
+
         await alert.delete()
         ack_alert_pydantic = await ttm.AlertPydantic.from_tortoise_orm(ack_alert)
         return ack_alert_pydantic
 
 
-def alert_repo_dep(user: User = Depends(user_dep)):
-    return AlertRepository(user)
+def alert_repo_dep(
+    user: User = Depends(user_dep), task_repo: TaskRepository = Depends(task_repo_dep)
+):
+    return AlertRepository(user, task_repo)

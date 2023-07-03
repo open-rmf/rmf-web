@@ -12,7 +12,7 @@ router = APIRouter(tags=["_internal"])
 logger = base_logger.getChild("RmfGatewayApp")
 user: mdl.User = mdl.User(username="__rmf_internal__", is_admin=True)
 task_repo = TaskRepository(user)
-alert_repo = AlertRepository(user)
+alert_repo = AlertRepository(user, task_repo)
 
 
 def log_phase_has_error(phase: mdl.Phases) -> bool:
