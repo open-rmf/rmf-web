@@ -12,6 +12,9 @@ class TaskRequest(BaseModel):
     unix_millis_earliest_start_time: Optional[int] = Field(
         None, description="(Optional) The earliest time that this task may start"
     )
+    unix_millis_request_time: Optional[int] = Field(
+        None, description="(Optional) The time that this request was initiated"
+    )
     priority: Optional[Dict[str, Any]] = Field(
         None,
         description="(Optional) The priority of this task. This must match a priority schema supported by a fleet.",
@@ -23,4 +26,8 @@ class TaskRequest(BaseModel):
     )
     labels: Optional[List[str]] = Field(
         None, description="Labels to describe the purpose of the task dispatch request"
+    )
+    requester: Optional[str] = Field(
+        None,
+        description="(Optional) An identifier for the entity that requested this task",
     )

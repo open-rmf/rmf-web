@@ -33,11 +33,16 @@ class Killed(BaseModel):
 class Booking(BaseModel):
     id: str = Field(..., description="The unique identifier for this task")
     unix_millis_earliest_start_time: Optional[int] = None
+    unix_millis_request_time: Optional[int] = None
     priority: Optional[Union[Dict[str, Any], str]] = Field(
         None, description="Priority information about this task"
     )
     labels: Optional[List[str]] = Field(
         None, description="Information about how and why this task was booked"
+    )
+    requester: Optional[str] = Field(
+        None,
+        description="(Optional) An identifier for the entity that requested this task",
     )
 
 
@@ -62,6 +67,12 @@ class Status1(Enum):
 class Assignment(BaseModel):
     fleet_name: Optional[str] = None
     expected_robot_name: Optional[str] = None
+
+
+class Dispatch(BaseModel):
+    status: Status1
+    assignment: Optional[Assignment] = None
+    errors: Optional[List[error.Error]] = None
 
 
 class EstimateMillis(BaseModel):
@@ -143,12 +154,6 @@ class SkipPhaseRequest(BaseModel):
         None,
         description="Information about an undo skip request that applied to this request",
     )
-
-
-class Dispatch(BaseModel):
-    status: Status1
-    assignment: Optional[Assignment] = None
-    errors: Optional[List[error.Error]] = None
 
 
 class Phase(BaseModel):

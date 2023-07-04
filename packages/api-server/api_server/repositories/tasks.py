@@ -31,7 +31,7 @@ class TaskRepository:
         self.user = user
 
     async def save_task_state(self, task_state: TaskState) -> None:
-        await ttm.TaskState.update_or_create(
+        await DbTaskState.update_or_create(
             {
                 "data": task_state.json(),
                 "category": task_state.category.__root__
@@ -45,6 +45,13 @@ class TaskRepository:
                 "unix_millis_finish_time": task_state.unix_millis_finish_time
                 and datetime.fromtimestamp(task_state.unix_millis_finish_time / 1000),
                 "status": task_state.status if task_state.status else None,
+                "unix_millis_request_time": task_state.booking.unix_millis_request_time
+                and datetime.fromtimestamp(
+                    task_state.booking.unix_millis_request_time / 1000
+                ),
+                "requester": task_state.booking.requester
+                if task_state.booking.requester
+                else None,
             },
             id_=task_state.booking.id,
         )

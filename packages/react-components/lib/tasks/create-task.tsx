@@ -686,7 +686,9 @@ function defaultTask(): TaskRequest {
     category: 'patrol',
     description: defaultLoopTask(),
     unix_millis_earliest_start_time: 0,
+    unix_millis_request_time: Date.now(),
     priority: { type: 'binary', value: 0 },
+    requester: '',
   };
 }
 
@@ -758,6 +760,7 @@ export interface CreateTaskFormProps
   /**
    * Shows extra UI elements suitable for submittng batched tasks. Default to 'false'.
    */
+  user: string;
   allowBatch?: boolean;
   cleaningZones?: string[];
   loopWaypoints?: string[];
@@ -778,6 +781,7 @@ export interface CreateTaskFormProps
 }
 
 export function CreateTaskForm({
+  user,
   cleaningZones = [],
   loopWaypoints = [],
   deliveryWaypoints = [],
@@ -892,6 +896,11 @@ export function CreateTaskForm({
     if (!submitTasks) {
       onSuccess && onSuccess(taskRequests);
       return;
+    }
+
+    for (const t of taskRequests) {
+      t.requester = user;
+      t.unix_millis_request_time = Date.now();
     }
 
     const submittingSchedule = scheduling && scheduleEnabled;
