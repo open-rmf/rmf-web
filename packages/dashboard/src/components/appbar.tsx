@@ -186,8 +186,12 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       return;
     }
     (async () => {
-      const user = (await rmf.defaultApi.getUserUserGet()).data;
-      setUsername(user.username);
+      try {
+        const user = (await rmf.defaultApi.getUserUserGet()).data;
+        setUsername(user.username);
+      } catch (e) {
+        console.log(`error getting username: ${(e as Error).message}`);
+      }
     })();
   }, [rmf]);
 
