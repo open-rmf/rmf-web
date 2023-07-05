@@ -491,57 +491,50 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
   const theme = useTheme();
 
   return (
-    <>
-      <Grid container wrap="nowrap">
-        <Grid style={{ flex: '1 1 100%' }}>
-          <Autocomplete
-            id="place-input"
-            freeSolo
-            fullWidth
-            options={loopWaypoints}
-            onChange={(_ev, newValue) =>
-              newValue !== null &&
-              onChange({
-                ...taskDesc,
-                places: taskDesc.places.concat(newValue).filter(
-                  (el: string) => el, // filter null and empty str in places array
-                ),
-              })
-            }
-            renderInput={(params) => <TextField {...params} label="Place Name" margin="normal" />}
-          />
-        </Grid>
-        <Grid
-          style={{
-            flex: '0 1 5em',
-            marginLeft: theme.spacing(2),
-            marginRight: theme.spacing(2),
-          }}
-        >
-          <PositiveIntField
-            id="loops"
-            label="Loops"
-            margin="normal"
-            value={taskDesc.rounds}
-            onChange={(_ev, val) => {
-              onChange({
-                ...taskDesc,
-                rounds: val,
-              });
-            }}
-          />
-        </Grid>
+    <Grid container spacing={2} justifyContent="center" alignItems="center">
+      <Grid item xs={10}>
+        <Autocomplete
+          id="place-input"
+          freeSolo
+          fullWidth
+          options={loopWaypoints}
+          onChange={(_ev, newValue) =>
+            newValue !== null &&
+            onChange({
+              ...taskDesc,
+              places: taskDesc.places.concat(newValue).filter(
+                (el: string) => el, // filter null and empty str in places array
+              ),
+            })
+          }
+          renderInput={(params) => <TextField {...params} label="Place Name" />}
+        />
       </Grid>
-      <PlaceList
-        places={taskDesc && taskDesc.places ? taskDesc.places : []}
-        onClick={(places_index) =>
-          taskDesc.places.splice(places_index, 1) &&
-          onChange({
-            ...taskDesc,
-          })
-        }
-      />
-    </>
+      <Grid item xs={2}>
+        <PositiveIntField
+          id="loops"
+          label="Loops"
+          value={taskDesc.rounds}
+          onChange={(_ev, val) => {
+            onChange({
+              ...taskDesc,
+              rounds: val,
+            });
+          }}
+        />
+      </Grid>
+      <Grid item xs={10}>
+        <PlaceList
+          places={taskDesc && taskDesc.places ? taskDesc.places : []}
+          onClick={(places_index) =>
+            taskDesc.places.splice(places_index, 1) &&
+            onChange({
+              ...taskDesc,
+            })
+          }
+        />
+      </Grid>
+    </Grid>
   );
 }
 
@@ -1065,22 +1058,24 @@ export function CreateTaskForm({
               />
 
               <Grid>
-                <TextField
-                  select
-                  id="task-type"
-                  label="Task Category"
-                  variant="outlined"
-                  fullWidth
-                  margin="normal"
-                  value={taskRequest.category}
-                  onChange={handleTaskTypeChange}
-                >
-                  <MenuItem value="clean">Clean</MenuItem>
-                  <MenuItem value="patrol">Loop</MenuItem>
-                  <MenuItem value="delivery">Delivery</MenuItem>
-                </TextField>
-                <Grid container wrap="nowrap">
-                  <Grid style={{ flexGrow: 1 }}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <TextField
+                      select
+                      id="task-type"
+                      label="Task Category"
+                      variant="outlined"
+                      fullWidth
+                      margin="normal"
+                      value={taskRequest.category}
+                      onChange={handleTaskTypeChange}
+                    >
+                      <MenuItem value="clean">Clean</MenuItem>
+                      <MenuItem value="patrol">Loop</MenuItem>
+                      <MenuItem value="delivery">Delivery</MenuItem>
+                    </TextField>
+                  </Grid>
+                  <Grid item xs={10}>
                     <DateTimePicker
                       inputFormat={'MM/dd/yyyy HH:mm'}
                       value={
@@ -1103,17 +1098,10 @@ export function CreateTaskForm({
                       renderInput={(props) => <TextField {...props} />}
                     />
                   </Grid>
-                  <Grid
-                    style={{
-                      flex: '0 1 5em',
-                      marginLeft: theme.spacing(2),
-                      marginRight: theme.spacing(2),
-                    }}
-                  >
+                  <Grid item xs={2}>
                     <PositiveIntField
                       id="priority"
                       label="Priority"
-                      margin="normal"
                       // FIXME(AA): The priority object is currently undefined.
                       value={(taskRequest.priority as Record<string, number>)?.value || 0}
                       onChange={(_ev, val) => {
@@ -1127,6 +1115,11 @@ export function CreateTaskForm({
                     />
                   </Grid>
                 </Grid>
+                <Divider
+                  orientation="horizontal"
+                  flexItem
+                  style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }}
+                />
                 {renderTaskDescriptionForm()}
                 <Grid container justifyContent="center">
                   <Button
