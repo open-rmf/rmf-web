@@ -1,29 +1,26 @@
-import React from 'react';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Route, Routes, Link, Navigate, useMatch } from 'react-router-dom';
 import { AdminDrawer } from './drawer';
 import { RoleListPage } from './role-list-page';
 import { UserListPage } from './user-list-page';
 import { UserProfilePage } from './user-profile-page';
 
 export function AdminRouter(): JSX.Element {
-  const match = useRouteMatch();
+  const match = useMatch('/admin');
+  console.log(match);
 
   return (
     <>
-      <Switch>
-        <Route path={`${match.path}/users/:user`}>
-          <UserProfilePage />
-        </Route>
-        <Route exact path={`${match.path}/users`}>
-          <UserListPage />
-        </Route>
-        <Route exact path={`${match.path}/roles`}>
+      <Routes>
+        <Route path="/admin/*" element={<Navigate to="/admin" />} />
+        {/* <Route path={':user'} element={<UserProfilePage />} /> */}
+        <Route path={'/admin/users'} element={<UserListPage />} />
+        {/* <Route path={'roles'}>
           <RoleListPage />
         </Route>
         <Route>
-          <Redirect to={`${match.path}/users`} />
-        </Route>
-      </Switch>
+          <Link to={"users"} />
+        </Route> */}
+      </Routes>
       <AdminDrawer />
     </>
   );

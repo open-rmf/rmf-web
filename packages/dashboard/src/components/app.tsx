@@ -4,7 +4,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import React from 'react';
 import 'react-grid-layout/css/styles.css';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Link, Route, Routes, Navigate } from 'react-router-dom';
 import { LoginPage, PrivateRoute } from 'rmf-auth';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
@@ -68,59 +68,84 @@ export default function App(): JSX.Element | null {
     })();
   }, []);
 
-  const loginRedirect = React.useMemo(() => <Redirect to={LoginRoute} />, []);
+  const loginRedirect = React.useMemo(() => <Navigate to={LoginRoute} />, []);
 
   return authInitialized && appReady ? (
     <ResourcesContext.Provider value={resourceManager.current}>
       {user ? (
         <RmfApp>
           <AppBase>
-            <Switch>
-              <Route exact path={LoginRoute}>
-                <Redirect to={DashboardRoute} />
-              </Route>
-              <PrivateRoute
-                exact
+            <Routes>
+              <Route path={LoginRoute} element={<Navigate to={DashboardRoute} />} />
+
+              <Route
                 path={DashboardRoute}
-                unauthorizedComponent={loginRedirect}
-                user={user}
-              >
-                <Workspace key="dashboard" state={dashboardWorkspace} />
-              </PrivateRoute>
-              <PrivateRoute
-                exact
+                element={
+                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
+                    <Workspace key="dashboard" state={dashboardWorkspace} />
+                  </PrivateRoute>
+                }
+              />
+
+              <Route
                 path={RobotsRoute}
-                unauthorizedComponent={loginRedirect}
-                user={user}
-              >
-                <Workspace key="robots" state={robotsWorkspace} />
-              </PrivateRoute>
-              <PrivateRoute
-                exact
+                element={
+                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
+                    <Workspace key="robots" state={robotsWorkspace} />
+                  </PrivateRoute>
+                }
+              />
+
+              <Route
                 path={TasksRoute}
-                unauthorizedComponent={loginRedirect}
-                user={user}
-              >
-                <Workspace key="tasks" state={tasksWorkspace} />
-              </PrivateRoute>
-              <PrivateRoute unauthorizedComponent={loginRedirect} user={user} path={CustomRoute1}>
-                <ManagedWorkspace key="custom1" workspaceId="custom1" />
-              </PrivateRoute>
-              <PrivateRoute unauthorizedComponent={loginRedirect} user={user} path={CustomRoute2}>
-                <ManagedWorkspace key="custom2" workspaceId="custom2" />
-              </PrivateRoute>
-              <PrivateRoute path={AdminRoute} unauthorizedComponent={loginRedirect} user={user}>
-                <AdminRouter />
-              </PrivateRoute>
-              <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-                <Redirect to={DashboardRoute} />
-              </PrivateRoute>
-            </Switch>
+                element={
+                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
+                    <Workspace key="tasks" state={tasksWorkspace} />
+                  </PrivateRoute>
+                }
+              />
+
+              <Route
+                path={CustomRoute1}
+                element={
+                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
+                    <ManagedWorkspace key="custom1" workspaceId="custom1" />
+                  </PrivateRoute>
+                }
+              />
+
+              <Route
+                path={CustomRoute2}
+                element={
+                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
+                    <ManagedWorkspace key="custom2" workspaceId="custom2" />
+                  </PrivateRoute>
+                }
+              />
+
+              <Route
+                path={AdminRoute}
+                element={
+                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
+                    <AdminRouter />
+                  </PrivateRoute>
+                }
+              ></Route>
+
+              <Route
+                path={CustomRoute1}
+                element={
+                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
+                    <Link to={DashboardRoute} />
+                  </PrivateRoute>
+                }
+              ></Route>
+            </Routes>
           </AppBase>
         </RmfApp>
       ) : (
-        <Switch>
-          <Route exact path={LoginRoute}>
+        <Routes>
+          <Route path={LoginRoute}>
             <LoginPage
               title={'Dashboard'}
               logo="assets/defaultLogo.png"
@@ -128,9 +153,9 @@ export default function App(): JSX.Element | null {
             />
           </Route>
           <Route>
-            <Redirect to={LoginRoute} />
+            <Link to={LoginRoute} />
           </Route>
-        </Switch>
+        </Routes>
       )}
     </ResourcesContext.Provider>
   ) : null;

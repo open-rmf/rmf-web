@@ -1,18 +1,17 @@
 import 'leaflet/dist/leaflet.css';
-import React from 'react';
+import ReactDOM from 'react-dom/client';
 import { LocalizationProvider } from 'react-components';
-import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import App from './components/app';
 import * as serviceWorker from './serviceWorker';
 
-ReactDOM.render(
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+root.render(
   <LocalizationProvider>
     <BrowserRouter>
       <App />
     </BrowserRouter>
   </LocalizationProvider>,
-  document.getElementById('root'),
 );
 
 // NOTE: There is no point to have the app work offline as all the data must come from rmf and

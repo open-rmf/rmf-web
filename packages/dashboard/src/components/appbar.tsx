@@ -42,7 +42,7 @@ import {
   Schedule,
   useAsync,
 } from 'react-components';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { UserProfileContext } from 'rmf-auth';
 import { logoSize } from '../managers/resource-manager';
 import { ThemeMode } from '../settings';
@@ -151,7 +151,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const rmf = React.useContext(RmfAppContext);
   const resourceManager = React.useContext(ResourcesContext);
   const { showAlert } = React.useContext(AppControllerContext);
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const tabValue = React.useMemo(() => locationToTabValue(location.pathname), [location]);
   const logoResourcesContext = React.useContext(ResourcesContext)?.logos;
@@ -383,40 +383,40 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             label="Map"
             value="infrastructure"
             aria-label="Map"
-            onTabClick={() => history.push(DashboardRoute)}
+            onTabClick={() => navigate(DashboardRoute)}
           />
           <AppBarTab
             label="System Overview"
             value="robots"
             aria-label="System Overview"
-            onTabClick={() => history.push(RobotsRoute)}
+            onTabClick={() => navigate(RobotsRoute)}
           />
           <AppBarTab
             label="Tasks"
             value="tasks"
             aria-label="Tasks"
-            onTabClick={() => history.push(TasksRoute)}
+            onTabClick={() => navigate(TasksRoute)}
           />
           <AppBarTab
             label="Custom 1"
             value="custom1"
             aria-label="Custom 1"
-            onTabClick={() => history.push(CustomRoute1)}
+            onTabClick={() => navigate(CustomRoute1)}
           />
           <AppBarTab
             label="Custom 2"
             value="custom2"
             aria-label="Custom 2"
-            onTabClick={() => history.push(CustomRoute2)}
+            onTabClick={() => navigate(CustomRoute2)}
           />
-          {profile?.user.is_admin && (
-            <AppBarTab
-              label="Admin"
-              value="admin"
-              aria-label="Admin"
-              onTabClick={() => history.push(AdminRoute)}
-            />
-          )}
+          {/* {profile?.user.is_admin && ( */}
+          <AppBarTab
+            label="Admin"
+            value="admin"
+            aria-label="Admin"
+            onTabClick={() => navigate(AdminRoute)}
+          />
+          {/* )} */}
         </NavigationBar>
         <Toolbar variant="dense" sx={{ textAlign: 'right', flexGrow: -1 }}>
           <Button
