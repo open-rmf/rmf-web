@@ -147,7 +147,7 @@ function DeliveryTaskForm({
   const theme = useTheme();
 
   return (
-    <Grid container spacing={2} justifyContent="center" alignItems="center">
+    <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
       <Grid item xs={8}>
         <Autocomplete
           id="pickup-location"
@@ -453,7 +453,7 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
   const theme = useTheme();
 
   return (
-    <Grid container spacing={2} justifyContent="center" alignItems="center">
+    <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
       <Grid item xs={10}>
         <Autocomplete
           id="place-input"
@@ -1020,7 +1020,7 @@ export function CreateTaskForm({
               />
 
               <Grid>
-                <Grid container spacing={2}>
+                <Grid container spacing={theme.spacing(2)}>
                   <Grid item xs={12}>
                     <TextField
                       select
@@ -1199,7 +1199,7 @@ export function CreateTaskForm({
             setOpenSchedulingDialog(false);
           }}
         >
-          <Grid container spacing={2} marginTop={1}>
+          <Grid container spacing={theme.spacing(2)} marginTop={theme.spacing(1)}>
             <Grid item xs={6}>
               <DatePicker
                 value={schedule.startOn}
