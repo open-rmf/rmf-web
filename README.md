@@ -78,7 +78,7 @@ cd packages/dashboard
 pnpm start
 ```
 
-This starts up the API server which sets up endpoints to communicate with an Open-RMF deployment, as well as begin compilation of the dashboard. Once completed, it can be viewed at [localhost:3000](http://localhost:3000).
+This starts up the API server (by default at port 8000) which sets up endpoints to communicate with an Open-RMF deployment, as well as begin compilation of the dashboard. Once completed, it can be viewed at [localhost:3000](http://localhost:3000).
 
 If presented with a login screen, use `user=admin password=admin`.
 
