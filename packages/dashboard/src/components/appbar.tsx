@@ -75,7 +75,7 @@ function locationToTabValue(pathname: string): TabValue | undefined {
   if (pathname.startsWith(TasksRoute)) return 'tasks';
   if (pathname.startsWith(CustomRoute1)) return 'custom1';
   if (pathname.startsWith(CustomRoute2)) return 'custom2';
-  if (pathname.startsWith(AdminRoute)) return 'admin';
+  if (pathname.startsWith('/admin')) return 'admin';
   return undefined;
 }
 
