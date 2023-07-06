@@ -9,8 +9,8 @@ export function AdminRouter(): JSX.Element {
     <>
       <AdminDrawer />
       <Routes>
-        <Route index element={<UserProfilePage />} />
-        <Route path={':user'} element={<UserProfilePage />} />
+        <Route path={'/*'} element={<UserListPage />} />
+        <Route path={'/users/:username'} element={<UserProfilePage />} />
         <Route path={'users'} element={<UserListPage />} />
         <Route path={'roles'} element={<RoleListPage />} />
         <Route element={<Navigate to={'users'} />} />
