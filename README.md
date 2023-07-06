@@ -82,7 +82,11 @@ This starts up the API server which sets up endpoints to communicate with an Ope
 
 If presented with a login screen, use `user=admin password=admin`.
 
-Ensure that the Open-RMF deployment is configured to use the endpoints of the API server. By default it is `http://localhost:8000/_internal`.
+Ensure that the Open-RMF deployment is configured to use the endpoints of the API server. By default it is `http://localhost:8000/_internal`. Launching a simulation from `rmf_demos` for example, the command would be,
+
+```bash
+ros2 launch rmf_demos_gz office.launch.xml server_uri:="http://localhost:8000/_internal"
+```
 
 ### Optimized build
 
