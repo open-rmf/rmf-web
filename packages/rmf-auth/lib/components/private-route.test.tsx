@@ -1,6 +1,5 @@
 import { render } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
-import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 
 import React from 'react';
 import { Router } from 'react-router-dom';
