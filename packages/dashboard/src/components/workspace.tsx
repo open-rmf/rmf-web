@@ -29,8 +29,6 @@ export function Workspace({
 }: WorkspaceProps): JSX.Element {
   const [addMenuAnchor, setAddMenuAnchor] = React.useState<HTMLElement | null>(null);
 
-  console.log('TEsting');
-
   return (
     <>
       <WindowContainer
