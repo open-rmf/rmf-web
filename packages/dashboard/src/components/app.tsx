@@ -130,8 +130,7 @@ export default function App(): JSX.Element | null {
                     <AdminRouter />
                   </PrivateRoute>
                 }
-              ></Route>
-
+              />
               <Route
                 path={CustomRoute1}
                 element={
@@ -139,7 +138,7 @@ export default function App(): JSX.Element | null {
                     <Link to={DashboardRoute} />
                   </PrivateRoute>
                 }
-              ></Route>
+              />
             </Routes>
           </AppBase>
         </RmfApp>
