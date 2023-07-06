@@ -1,4 +1,4 @@
-import { Route, Routes, Link, Navigate, useMatch, Outlet } from 'react-router-dom';
+import { Route, Routes, Navigate, Outlet } from 'react-router-dom';
 import { AdminDrawer } from './drawer';
 import { RoleListPage } from './role-list-page';
 import { UserListPage } from './user-list-page';
@@ -15,6 +15,7 @@ export function AdminRouter(): JSX.Element {
         <Route path={'roles'} element={<RoleListPage />} />
         <Route element={<Navigate to={'users'} />} />
       </Routes>
+      <Outlet />
     </>
   );
 }
