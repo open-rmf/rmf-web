@@ -68,9 +68,11 @@ export interface SortFields {
   model: GridSortModel | undefined;
 }
 
+export type MuiMouseEvent = MuiEvent<React.MouseEvent<HTMLElement>>;
+
 export interface TableDataGridState {
   tasks: Tasks;
-  onTaskClick?(ev: MuiEvent<React.MouseEvent<HTMLElement>>, task: TaskState): void;
+  onTaskClick?(ev: MuiMouseEvent, task: TaskState): void;
   onPageChange: (newPage: number) => void;
   onPageSizeChange: (newPageSize: number) => void;
   setFilterFields: React.Dispatch<React.SetStateAction<FilterFields>>;
@@ -87,7 +89,7 @@ export function TaskDataGridTable({
 }: TableDataGridState): JSX.Element {
   const handleEvent: GridEventListener<'rowClick'> = (
     params: GridRowParams,
-    event: MuiEvent<React.MouseEvent<HTMLElement>>,
+    event: MuiMouseEvent,
   ) => {
     if (onTaskClick) {
       onTaskClick(event, params.row);
@@ -104,6 +106,42 @@ export function TaskDataGridTable({
   );
 
   const columns: GridColDef[] = [
+    {
+      field: 'unix_millis_request_time',
+      headerName: 'Date',
+      width: 150,
+      editable: false,
+      renderCell: (cellValues) => {
+        return (
+          <TextField
+            variant="standard"
+            value={
+              cellValues.row.booking.unix_millis_request_time
+                ? `${new Date(
+                    cellValues.row.booking.unix_millis_request_time,
+                  ).toLocaleDateString()}`
+                : 'unknown'
+            }
+            InputProps={{ disableUnderline: true }}
+            multiline
+          />
+        );
+      },
+      flex: 1,
+      filterOperators: getMinimalDateOperators,
+      filterable: true,
+    },
+    {
+      field: 'requester',
+      headerName: 'Requester',
+      width: 150,
+      editable: false,
+      valueGetter: (params: GridValueGetterParams) =>
+        params.row.booking.requester ? params.row.booking.requester : 'unknown',
+      flex: 1,
+      filterOperators: getMinimalStringFilterOperators,
+      filterable: true,
+    },
     {
       field: 'id_',
       headerName: 'ID',

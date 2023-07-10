@@ -21,6 +21,7 @@ export interface RobotTableData {
   battery?: number;
   estFinishTime?: number;
   lastUpdateTime?: number;
+  level?: string;
 }
 
 interface RobotRowProps extends RobotTableData {
