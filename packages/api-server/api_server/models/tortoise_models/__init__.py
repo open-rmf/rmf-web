@@ -1,5 +1,6 @@
 from .alerts import *
 from .authorization import *
+from .beacons import *
 from .building_map import BuildingMap
 from .dispenser_state import DispenserState
 from .door_state import DoorState
