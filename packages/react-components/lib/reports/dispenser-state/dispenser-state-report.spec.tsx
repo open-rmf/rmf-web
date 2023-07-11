@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { getDispenserLogs, reportConfigProps } from '../utils.spec';
@@ -31,6 +31,6 @@ it('calls the retrieve log function when the button is clicked', () => {
     wrapper: TestLocalizationProvider,
   });
   expect(screen.getByRole('button', { name: /Retrieve Logs/i })).toBeTruthy();
-  userEvent.click(screen.getByRole('button', { name: /Retrieve Logs/i }));
+  fireEvent.click(screen.getByRole('button', { name: /Retrieve Logs/i }));
   expect(getLogsPromiseMock).toHaveBeenCalled();
 });

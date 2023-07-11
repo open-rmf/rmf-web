@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { WorkcellMarker } from './workcell-marker';
@@ -12,7 +12,7 @@ describe('WorkcellMarker', () => {
         <WorkcellMarker cx={0} cy={0} size={1} onClick={mockOnClick} data-testid="marker" />
       </svg>,
     );
-    userEvent.click(root.getByTestId('marker'));
+    fireEvent.click(root.getByTestId('marker'));
     expect(mockOnClick).toHaveBeenCalled();
   });
 

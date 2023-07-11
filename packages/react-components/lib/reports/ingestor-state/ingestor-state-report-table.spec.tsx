@@ -1,4 +1,4 @@
-import { cleanup, render, RenderResult, screen } from '@testing-library/react';
+import { cleanup, render, RenderResult, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { format } from 'date-fns';
 import React from 'react';
@@ -38,7 +38,7 @@ describe('Ingestor table test', () => {
 
   it('executes the addMoreRows', () => {
     const nextPageButton = screen.queryByTitle('Go to next page');
-    nextPageButton && userEvent.click(nextPageButton);
+    nextPageButton && fireEvent.click(nextPageButton);
     expect(mockAddMoreRows).toHaveBeenCalled();
   });
 });

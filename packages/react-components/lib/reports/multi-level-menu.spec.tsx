@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { ExpandableMultilevelMenuProps, MultiLevelMenu } from './multi-level-menu';
@@ -53,26 +53,26 @@ describe('Multi level menu', () => {
 
   it('triggers an action, if defined, when clicking on a title ', () => {
     render(<MultiLevelMenu menuStructure={buildMenuStructure}></MultiLevelMenu>);
-    userEvent.click(screen.getByText('All logs'));
+    fireEvent.click(screen.getByText('All logs'));
     expect(mockClickAllLogs).toHaveBeenCalledTimes(1);
   });
 
   it('shows the child level after clicking the parent level', () => {
     render(<MultiLevelMenu menuStructure={buildMenuStructure}></MultiLevelMenu>);
-    userEvent.click(screen.getByText('Robots'));
+    fireEvent.click(screen.getByText('Robots'));
     expect(screen.getByText('Robot states')).toBeTruthy();
   });
 
   it('triggers an action, if defined, after clicking on a child level title', () => {
     render(<MultiLevelMenu menuStructure={buildMenuStructure}></MultiLevelMenu>);
-    userEvent.click(screen.getByText('Robots'));
-    userEvent.click(screen.getByText('Robot states'));
+    fireEvent.click(screen.getByText('Robots'));
+    fireEvent.click(screen.getByText('Robot states'));
     expect(mockClickRobotStates).toHaveBeenCalledTimes(1);
   });
 
   it('shows the parent level and the child level titles simultaneously', () => {
     render(<MultiLevelMenu menuStructure={buildMenuStructure}></MultiLevelMenu>);
-    userEvent.click(screen.getByText('Robots'));
+    fireEvent.click(screen.getByText('Robots'));
     screen.getByText('Robot states');
     expect(screen.getByText('Robots')).toBeTruthy();
     expect(screen.getByText('Robot states')).toBeTruthy();
