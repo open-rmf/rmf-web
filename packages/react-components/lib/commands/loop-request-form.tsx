@@ -126,6 +126,7 @@ export const LoopRequestForm = React.forwardRef(
             getOptionLabel={(option) => option}
             onChange={handleTargetFleetNameChange}
             options={fleetNames}
+            data-testid="autocomplete-fleet"
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -157,6 +158,7 @@ export const LoopRequestForm = React.forwardRef(
 
         <div className={commandFormsClasses.divForm}>
           <Autocomplete
+            data-testid="autocomplete-location"
             getOptionLabel={(option) => option}
             onChange={(_, value) => setStartLocation(value || '')}
             options={listOfPlaces ? listOfPlaces : []}
@@ -164,6 +166,7 @@ export const LoopRequestForm = React.forwardRef(
               <TextField
                 {...params}
                 label="Pick Start Location"
+                data-testid="my-wrapper"
                 placeholder="Pick Start Location"
                 variant="outlined"
                 error={!!startLocationError}
