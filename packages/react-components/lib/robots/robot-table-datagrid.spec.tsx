@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Status2 as RobotStatus } from 'api-client';
 import React from 'react';
@@ -42,7 +42,7 @@ describe('RobotTable', () => {
       />,
     );
     const robot = root.getByText('test_robot');
-    userEvent.click(robot);
+    fireEvent.click(robot);
     expect(onRobotClick).toHaveBeenCalled();
   });
 

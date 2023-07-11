@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { TaskTable } from './task-table';
@@ -16,6 +16,6 @@ describe('TaskTable', () => {
     const tasks = [makeTaskState('task_0')];
     const root = render(<TaskTable tasks={tasks} />);
     const elem = root.getByText('task_0');
-    userEvent.click(elem);
+    fireEvent.click(elem);
   });
 });
