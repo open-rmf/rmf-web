@@ -1,5 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { TestLocalizationProvider } from '../../test/locale';
 import { getTaskSummaryLogs, reportConfigProps } from '../utils.spec';
@@ -33,6 +32,6 @@ it('calls the Retrieve Logs function when the button is clicked', async () => {
   });
   const retrieveLogsButton = screen.getByRole('button', { name: /Retrieve Logs/i });
   expect(retrieveLogsButton).toBeTruthy();
-  userEvent.click(retrieveLogsButton);
+  fireEvent.click(retrieveLogsButton);
   expect(getLogsPromiseMock).toHaveBeenCalled();
 });
