@@ -409,14 +409,14 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             aria-label="Custom 2"
             onTabClick={() => navigate(CustomRoute2)}
           />
-          {/* {profile?.user.is_admin && ( */}
-          <AppBarTab
-            label="Admin"
-            value="admin"
-            aria-label="Admin"
-            onTabClick={() => navigate(AdminRoute)}
-          />
-          {/* )} */}
+          {profile?.user.is_admin && (
+            <AppBarTab
+              label="Admin"
+              value="admin"
+              aria-label="Admin"
+              onTabClick={() => navigate(AdminRoute)}
+            />
+          )}
         </NavigationBar>
         <Toolbar variant="dense" sx={{ textAlign: 'right', flexGrow: -1 }}>
           <Button

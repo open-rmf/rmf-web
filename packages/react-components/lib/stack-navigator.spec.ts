@@ -37,8 +37,8 @@ it('reset returns the stack to the initial state', () => {
   act(() => {
     stackDispatch.reset();
   });
-  expect(hookResult.current[0]).toHaveSize(1);
-  expect(hookResult.current[0][0]).toBe(0);
+  expect(current[0]).toHaveSize(1);
+  expect(current[0][0]).toBe(0);
 });
 
 it('home pushes the home view onto the stack', () => {
