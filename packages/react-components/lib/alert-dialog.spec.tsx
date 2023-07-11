@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { AlertContent, AlertDialog } from './alert-dialog';
@@ -40,7 +40,7 @@ describe('AcknowledgeAndCloseAlertDialog', () => {
     );
     expect(() => root.getByText('Acknowledge')).not.toThrow();
     expect(() => root.getByText('Dismiss')).not.toThrow();
-    userEvent.click(root.getByText('Dismiss'));
+    fireEvent.click(root.getByText('Dismiss'));
     expect(dismiss).toHaveBeenCalled();
   });
 
@@ -78,7 +78,7 @@ describe('AcknowledgeAndCloseAlertDialog', () => {
     );
     expect(() => root.getByText('Acknowledge')).not.toThrow();
     expect(() => root.getByText('Dismiss')).not.toThrow();
-    userEvent.click(root.getByText('Acknowledge'));
+    fireEvent.click(root.getByText('Acknowledge'));
     expect(acknowledge).toHaveBeenCalled();
     // acknowledge button turns to acknowledged
     expect(() => root.getByText('Acknowledge')).toThrow();
@@ -86,7 +86,7 @@ describe('AcknowledgeAndCloseAlertDialog', () => {
     // dismiss button turns to close
     expect(() => root.getByText('Dismiss')).toThrow();
     expect(() => root.getByText('Close')).not.toThrow();
-    userEvent.click(root.getByText('Close'));
+    fireEvent.click(root.getByText('Close'));
     expect(close).toHaveBeenCalled();
   });
 });

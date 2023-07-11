@@ -1,4 +1,4 @@
-import { cleanup, render } from '@testing-library/react';
+import { cleanup, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Door as RmfDoor } from 'rmf-models';
@@ -51,7 +51,7 @@ describe('DoorMarker', () => {
         />
       </svg>,
     );
-    userEvent.click(root.getByTestId('marker'));
+    fireEvent.click(root.getByTestId('marker'));
     expect(mockOnClick).toHaveBeenCalled();
   });
 });

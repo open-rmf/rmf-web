@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
@@ -39,7 +39,7 @@ describe('Workcell Panel', () => {
   });
 
   it('layout view should change when view mode button is clicked', () => {
-    userEvent.click(root.getByLabelText('view mode'));
+    fireEvent.click(root.getByLabelText('view mode'));
     expect(root.getAllByLabelText('workcell-table')).toBeTruthy();
   });
 });
