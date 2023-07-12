@@ -220,20 +220,17 @@ importers:
         specifier: ^6.5.8
         version: 6.5.9(@babel/core@7.18.6)(eslint@7.32.0)(react-dom@18.2.0)(react@18.2.0)(require-from-string@2.0.2)(typescript@4.4.4)(webpack-cli@4.10.0)
       '@testing-library/dom':
-        specifier: ^8.20.0
-        version: 8.20.0
+        specifier: ^9.3.1
+        version: 9.3.1
       '@testing-library/jest-dom':
         specifier: ^5.16.5
         version: 5.16.5
       '@testing-library/react':
-        specifier: ^11.2.7
-        version: 11.2.7(react-dom@18.2.0)(react@18.2.0)
-      '@testing-library/react-hooks':
-        specifier: ^5.1.3
-        version: 5.1.3(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^14.0.0
+        version: 14.0.0(react-dom@18.2.0)(react@18.2.0)
       '@testing-library/user-event':
         specifier: ^12.8.3
-        version: 12.8.3(@testing-library/dom@8.20.0)
+        version: 12.8.3(@testing-library/dom@9.3.1)
       '@types/jest':
         specifier: ^26.0.13
         version: 26.0.24
@@ -3413,7 +3410,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.18.6
+      '@babel/runtime': 7.21.0
       '@emotion/react': 11.9.3(@babel/core@7.18.6)(@types/react@18.2.14)(react@18.2.0)
       '@emotion/styled': 11.9.3(@babel/core@7.18.6)(@emotion/react@11.9.3)(@types/react@18.2.14)(react@18.2.0)
       '@mui/private-theming': 5.8.6(@types/react@18.2.14)(react@18.2.0)
@@ -5140,31 +5137,17 @@ packages:
       defer-to-connect: 2.0.1
     dev: true
 
-  /@testing-library/dom@7.31.2:
-    resolution: {integrity: sha512-3UqjCpey6HiTZT92vODYLPxTBWlM8ZOOjr3LX5F37/VRipW2M1kX6I/Cm4VXzteZqfGfagg8yXywpcOgQBlNsQ==}
-    engines: {node: '>=10'}
-    dependencies:
-      '@babel/code-frame': 7.18.6
-      '@babel/runtime': 7.21.0
-      '@types/aria-query': 4.2.2
-      aria-query: 4.2.2
-      chalk: 4.1.2
-      dom-accessibility-api: 0.5.14
-      lz-string: 1.5.0
-      pretty-format: 26.6.2
-    dev: true
-
   /@testing-library/dom@8.20.0:
     resolution: {integrity: sha512-d9ULIT+a4EXLX3UU8FBjauG9NnsZHkHztXoIcTsOKoOw030fyjheN9svkTULjJxtYag9DZz5Jz5qkWZDPxTFwA==}
     engines: {node: '>=12'}
     dependencies:
       '@babel/code-frame': 7.18.6
-      '@babel/runtime': 7.18.6
+      '@babel/runtime': 7.21.0
       '@types/aria-query': 5.0.1
-      aria-query: 5.0.0
+      aria-query: 5.1.3
       chalk: 4.1.2
       dom-accessibility-api: 0.5.14
-      lz-string: 1.4.4
+      lz-string: 1.5.0
       pretty-format: 27.5.1
     dev: true
 
@@ -5197,28 +5180,6 @@ packages:
       redent: 3.0.0
     dev: true
 
-  /@testing-library/react-hooks@5.1.3(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-UdEUtlQapQ579NEcXDAUE275u+KUsPtxW7NmFrNt0bE6lW8lqNCyxDK0RSuECmNZ/S0/fgP00W9RWRhVKO/hRg==}
-    peerDependencies:
-      react: '>=16.9.0'
-      react-dom: '>=16.9.0'
-      react-test-renderer: '>=16.9.0'
-    peerDependenciesMeta:
-      react-dom:
-        optional: true
-      react-test-renderer:
-        optional: true
-    dependencies:
-      '@babel/runtime': 7.18.6
-      '@types/react': 18.2.14
-      '@types/react-dom': 18.2.6
-      '@types/react-test-renderer': 18.0.0
-      filter-console: 0.1.1
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-      react-error-boundary: 3.1.4(react@18.2.0)
-    dev: true
-
   /@testing-library/react-hooks@8.0.1(@types/react@18.2.14)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-Aqhl2IVmLt8IovEVarNDFuJDVWVvhnr9/GCU6UUnrYXwgDFF9h2L2o2P9KBni1AST5sT6riAyoukFLyjQUgD/g==}
     engines: {node: '>=12'}
@@ -5240,19 +5201,6 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-error-boundary: 3.1.4(react@18.2.0)
-    dev: true
-
-  /@testing-library/react@11.2.7(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-tzRNp7pzd5QmbtXNG/mhdcl7Awfu/Iz1RaVHY75zTdOkmHCuzMhRL83gWHSgOAcjS3CCbyfwUHMZgRJb4kAfpA==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      react: '*'
-      react-dom: '*'
-    dependencies:
-      '@babel/runtime': 7.18.6
-      '@testing-library/dom': 7.31.2
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
     dev: true
 
   /@testing-library/react@13.4.0(react-dom@18.2.0)(react@18.2.0):
@@ -5283,14 +5231,14 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: true
 
-  /@testing-library/user-event@12.8.3(@testing-library/dom@8.20.0):
+  /@testing-library/user-event@12.8.3(@testing-library/dom@9.3.1):
     resolution: {integrity: sha512-IR0iWbFkgd56Bu5ZI/ej8yQwrkCv8Qydx6RzwbKz9faXazR/+5tvYKsZQgyXJiwgpcva127YO6JcWy7YlCfofQ==}
     engines: {node: '>=10', npm: '>=6'}
     peerDependencies:
       '@testing-library/dom': '>=7.21.4'
     dependencies:
       '@babel/runtime': 7.18.6
-      '@testing-library/dom': 8.20.0
+      '@testing-library/dom': 9.3.1
     dev: true
 
   /@testing-library/user-event@13.5.0(@testing-library/dom@9.3.1):
@@ -5664,12 +5612,6 @@ packages:
 
   /@types/react-syntax-highlighter@11.0.5:
     resolution: {integrity: sha512-VIOi9i2Oj5XsmWWoB72p3KlZoEbdRAcechJa8Ztebw7bDl2YmR+odxIqhtJGp1q2EozHs02US+gzxJ9nuf56qg==}
-    dependencies:
-      '@types/react': 18.2.14
-    dev: true
-
-  /@types/react-test-renderer@18.0.0:
-    resolution: {integrity: sha512-C7/5FBJ3g3sqUahguGi03O79b8afNeSD6T8/GU50oQrJCU0bVCCGQHaGKUbg2Ce8VQEEqTw8/HiS6lXHHdgkdQ==}
     dependencies:
       '@types/react': 18.2.14
     dev: true
@@ -6699,11 +6641,6 @@ packages:
     dependencies:
       '@babel/runtime': 7.21.0
       '@babel/runtime-corejs3': 7.18.6
-    dev: true
-
-  /aria-query@5.0.0:
-    resolution: {integrity: sha512-V+SM7AbUwJ+EBnB8+DXs0hPZHO0W6pqBcc0dW90OwtVG02PswOu/teuARoLQjdDOH+t9pJgGnW5/Qmouf3gPJg==}
-    engines: {node: '>=6.0'}
     dev: true
 
   /aria-query@5.1.3:
@@ -10816,11 +10753,6 @@ packages:
       to-regex-range: 5.0.1
     dev: true
 
-  /filter-console@0.1.1:
-    resolution: {integrity: sha512-zrXoV1Uaz52DqPs+qEwNJWJFAWZpYJ47UNmpN9q4j+/EYsz85uV0DC9k8tRND5kYmoVzL0W+Y75q4Rg8sRJCdg==}
-    engines: {node: '>=8'}
-    dev: true
-
   /finalhandler@1.1.2:
     resolution: {integrity: sha512-aAWcW57uxVNrQZqFXjITpW3sIUQmHGG3qSb9mUah9MgMC4NeWhNOlNjXEYq3HjRAvL6arUviZGGJsBg6z0zsWA==}
     engines: {node: '>= 0.8'}
@@ -14234,11 +14166,6 @@ packages:
     resolution: {integrity: sha512-BpdYkt9EvGl8OfWHDQPISVpcl5xZthb+XPsbELj5AQXxIC8IriDZIQYjBJPEm5rS420sjZ0TLEzRcq5KdBhYrQ==}
     dependencies:
       es5-ext: 0.10.61
-    dev: true
-
-  /lz-string@1.4.4:
-    resolution: {integrity: sha512-0ckx7ZHRPqb0oUm8zNr+90mtf9DQB60H1wMCjBtfi62Kl3a7JbHob6gA2bC+xRvZoOL+1hzUK8jeuEIQE8svEQ==}
-    hasBin: true
     dev: true
 
   /lz-string@1.5.0:
