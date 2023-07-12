@@ -4,6 +4,22 @@ import { LogManagement } from './log-management';
 import { LogRowsType } from './log-table';
 import { TestLocalizationProvider } from '../../test/locale';
 
+const originalError = console.error;
+beforeAll(() => {
+  // this is just a little hack to silence
+  // Warning: An update to ComponentName inside a test was not wrapped in act(...).
+  console.error = (...args) => {
+    if (/Warning.*not wrapped in act/.test(args[0])) {
+      return;
+    }
+    originalError.call(console, ...args);
+  };
+});
+
+afterAll(() => {
+  console.error = originalError;
+});
+
 const getLogLabels = () => [
   { label: 'Web Server', value: 'web-server' },
   { label: 'RMF core', value: 'rmf-core' },
