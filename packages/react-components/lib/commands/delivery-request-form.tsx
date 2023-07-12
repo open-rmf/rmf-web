@@ -169,6 +169,7 @@ export const DeliveryRequestForm = React.forwardRef(
       <StyledForm ref={ref} className={commandFormsClasses.form} onSubmit={handleSubmit}>
         <div className={commandFormsClasses.divForm}>
           <Autocomplete
+            data-testid="autocomplete Target Fleet"
             getOptionLabel={(option) => option}
             onChange={handleTargetFleetNameChange}
             options={fleetNames}
@@ -188,6 +189,7 @@ export const DeliveryRequestForm = React.forwardRef(
 
         <div className={commandFormsClasses.divForm}>
           <Autocomplete
+            data-testid="autocomplete Start Location"
             getOptionLabel={(option) => option}
             onChange={handlePickupPlaceNameChange}
             options={listOfPlaces ? listOfPlaces : []}
@@ -207,6 +209,7 @@ export const DeliveryRequestForm = React.forwardRef(
 
         <div className={commandFormsClasses.divForm}>
           <Autocomplete
+            data-testid="autocomplete pickup dispenser"
             getOptionLabel={(option) => option}
             onChange={(_, value) => setPickupDispenser(value || '')}
             options={dispensersFromPickUpPlace}
@@ -226,6 +229,7 @@ export const DeliveryRequestForm = React.forwardRef(
 
         <div className={commandFormsClasses.divForm}>
           <Autocomplete
+            data-testid="autocomplete-dispenser"
             getOptionLabel={(option) => option}
             onChange={handleDropOoffPlaceNameChange}
             options={listOfPlaces ? listOfPlaces : []}
