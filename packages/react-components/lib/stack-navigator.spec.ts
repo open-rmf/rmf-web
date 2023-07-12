@@ -1,55 +1,79 @@
-import { act, renderHook, RenderResult } from '@testing-library/react-hooks/dom';
-import { StackNavigatorDispatch, useStackNavigator } from '../lib';
+import { renderHook, act } from '@testing-library/react';
+import { useStackNavigator } from '../lib';
 
-let hookResult: RenderResult<[number[], StackNavigatorDispatch<number>]>;
-let stackDispatch: StackNavigatorDispatch<number>;
+describe('useStackNavigator', () => {
+  it('should initialize with the correct initial state', () => {
+    const initialState: number[] = [1, 2, 3];
+    const homeView = 0;
 
-beforeEach(() => {
-  hookResult = renderHook(() => useStackNavigator([0], 0)).result;
-  stackDispatch = hookResult.current[1];
-});
+    const { result } = renderHook(() => useStackNavigator(initialState, homeView));
 
-it('push', () => {
-  act(() => stackDispatch.push(10));
-  const stack = hookResult.current[0];
-  expect(stack).toHaveSize(2);
-  expect(stack[0]).toBe(0);
-  expect(stack[1]).toBe(10);
-});
-
-it('pop does not remove last item', () => {
-  act(() => {
-    stackDispatch.push(2);
-    stackDispatch.pop();
-    stackDispatch.pop();
+    expect(result.current[0]).toEqual(initialState);
   });
-  const stack = hookResult.current[0];
-  expect(stack).toHaveSize(1);
-  expect(stack[0]).toBe(0);
-});
 
-it('reset returns the stack to the initial state', () => {
-  act(() => {
-    stackDispatch.push(2);
-    stackDispatch.push(3);
-  });
-  expect(hookResult.current[0]).toHaveSize(3);
-  act(() => {
-    stackDispatch.reset();
-  });
-  expect(current[0]).toHaveSize(1);
-  expect(current[0][0]).toBe(0);
-});
+  it('should push a view onto the stack', () => {
+    const initialState: number[] = [1, 2];
+    const homeView = 0;
 
-it('home pushes the home view onto the stack', () => {
-  act(() => {
-    stackDispatch.push(2);
-    stackDispatch.push(3);
+    const { result } = renderHook(() => useStackNavigator(initialState, homeView));
+
+    act(() => {
+      result.current[1].push(3);
+    });
+
+    expect(result.current[0]).toEqual([1, 2, 3]);
   });
-  expect(hookResult.current[0]).toHaveSize(3);
-  act(() => {
-    stackDispatch.home();
+
+  it('should pop a view from the stack', () => {
+    const initialState: number[] = [1, 2, 3];
+    const homeView = 0;
+
+    const { result } = renderHook(() => useStackNavigator(initialState, homeView));
+
+    act(() => {
+      result.current[1].pop();
+    });
+
+    expect(result.current[0]).toEqual([1, 2]);
   });
-  expect(hookResult.current[0]).toHaveSize(4);
-  expect(hookResult.current[0][3]).toBe(0);
+
+  it('should not remove the last view when popping', () => {
+    const initialState: number[] = [1];
+    const homeView = 0;
+
+    const { result } = renderHook(() => useStackNavigator(initialState, homeView));
+
+    act(() => {
+      result.current[1].pop();
+    });
+
+    expect(result.current[0]).toEqual([1]);
+  });
+
+  it('should set the stack to the home view', () => {
+    const initialState: number[] = [1, 2];
+    const homeView = 0;
+
+    const { result } = renderHook(() => useStackNavigator(initialState, homeView));
+
+    act(() => {
+      result.current[1].home();
+    });
+
+    expect(result.current[0]).toEqual([1, 2, 0]);
+  });
+
+  it('should reset the stack to the initial state', () => {
+    const initialState: number[] = [1, 2, 3];
+    const homeView = 0;
+
+    const { result } = renderHook(() => useStackNavigator(initialState, homeView));
+
+    act(() => {
+      result.current[1].push(4);
+      result.current[1].reset();
+    });
+
+    expect(result.current[0]).toEqual(initialState);
+  });
 });
