@@ -68,16 +68,19 @@ import { formatDistance } from 'date-fns';
 
 export type TabValue = 'infrastructure' | 'robots' | 'tasks' | 'custom1' | 'custom2' | 'admin';
 
-function locationToTabValue(pathname: string): TabValue | undefined {
+const locationToTabValue = (pathname: string): TabValue | undefined => {
+  const routes: { prefix: string; tabValue: TabValue }[] = [
+    { prefix: RobotsRoute, tabValue: 'robots' },
+    { prefix: TasksRoute, tabValue: 'tasks' },
+    { prefix: CustomRoute1, tabValue: 'custom1' },
+    { prefix: CustomRoute2, tabValue: 'custom2' },
+    { prefix: AdminRoute.replace(/\*/g, ''), tabValue: 'admin' },
+  ];
+
   // `DashboardRoute` being the root, it is a prefix to all routes, so we need to check exactly.
-  if (pathname === DashboardRoute) return 'infrastructure';
-  if (pathname.startsWith(RobotsRoute)) return 'robots';
-  if (pathname.startsWith(TasksRoute)) return 'tasks';
-  if (pathname.startsWith(CustomRoute1)) return 'custom1';
-  if (pathname.startsWith(CustomRoute2)) return 'custom2';
-  if (pathname.startsWith('/admin')) return 'admin';
-  return undefined;
-}
+  const matchingRoute = routes.find((route) => pathname.startsWith(route.prefix));
+  return pathname === DashboardRoute ? 'infrastructure' : matchingRoute?.tabValue;
+};
 
 function AppSettings() {
   const settings = React.useContext(SettingsContext);
