@@ -21,13 +21,12 @@ describe('useAsync', () => {
     await expectAsync(safeAsync(Promise.reject('test error'))).toBeRejectedWith('test error');
   });
 
-  // Commented due to the change to react 18 and because the hooks are not currently being used.
-  // TODO[CR]: Eliminate before PR
-
-  // it('referentially equal across renders', () => {
-  //   const hook = renderHook(() => useAsync(true));
-  //   hook.rerender();
-  //   expect(hook.result.all.length).toBe(2);
-  //   expect(hook.result.all[0]).toBe(hook.result.all[1]);
-  // });
+  it('referentially equal across renders', async () => {
+    const hook = renderHook(() => useAsync(true));
+    const { rerender } = renderHook((props) => useAsync(props.throwOnUnmounted), {
+      initialProps: { throwOnUnmounted: true },
+    });
+    expect(rerender).toBeDefined();
+    expect(hook.result.current[0]).toBe(hook.result.current[1]);
+  });
 });

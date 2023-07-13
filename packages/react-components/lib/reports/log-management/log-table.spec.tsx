@@ -1,4 +1,4 @@
-import { cleanup, render, RenderResult, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { format } from 'date-fns';
 import React from 'react';
 import { LogLevel } from './log-level';
@@ -25,16 +25,11 @@ for (let i = 0; i < 110; i++) {
 }
 
 describe('Log table test', () => {
-  // beforeEach(() => {
-  //   render(<LogTable rows={rows} />);
-  // });
-
-  afterEach(cleanup);
-
-  // it('formats dates correctly', async () => {
-  //   const tableFirstDateElement = (await root.getAllByTestId('log-table-date'))[0];
-  //   expect(tableFirstDateElement.innerHTML).toBe(format(timestamp, 'MMM dd yyyy hh:mm aaa'));
-  // });
+  it('formats dates correctly', async () => {
+    const { getAllByTestId } = render(<LogTable rows={rows} />);
+    const tableFirstDateElement = (await getAllByTestId('log-table-date'))[0];
+    expect(tableFirstDateElement.innerHTML).toBe(format(timestamp, 'MMM dd yyyy hh:mm aaa'));
+  });
 
   it('shows the correct number of rows', () => {
     const { container } = render(<LogTable rows={rows} />);
@@ -44,12 +39,6 @@ describe('Log table test', () => {
 });
 
 describe('Table footer Pagination', () => {
-  // beforeEach(() => {
-  //   render(<LogTable rows={rows} />);
-  // });
-
-  // afterEach(cleanup);
-
   it('show the correct number of rows per page', () => {
     render(<LogTable rows={rows} />);
     // NOTE: mui v5 is using the unicode char '–', different from '-'!!
