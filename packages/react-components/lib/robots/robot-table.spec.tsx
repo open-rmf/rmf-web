@@ -1,5 +1,4 @@
 import { render, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { Status2 as RobotStatus } from 'api-client';
 import React from 'react';
 import { RobotTable, RobotTableData } from './robot-table';

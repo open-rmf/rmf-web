@@ -1,5 +1,4 @@
 import { cleanup, render, RenderResult, screen, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { format } from 'date-fns';
 import React from 'react';
 import { getFleetLogs } from '../utils.spec';

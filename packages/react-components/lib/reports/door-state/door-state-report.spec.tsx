@@ -1,5 +1,4 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { TestLocalizationProvider } from '../../test/locale';
 import { getDoorLogs, reportConfigProps } from '../utils.spec';

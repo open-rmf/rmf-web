@@ -1,5 +1,4 @@
 import { cleanup, render, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { allLiftModes, allLiftMotion, makeLiftState } from '../lifts/test-utils.spec';
 import { LiftMarker, LiftMarkerProps } from './lift-marker';

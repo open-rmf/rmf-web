@@ -1,5 +1,4 @@
 import { cleanup, render, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Door as RmfDoor } from 'rmf-models';
 import { allDoorModes, allDoorTypes } from '../doors/test-utils.spec';

@@ -1,6 +1,5 @@
 import { ThemeProvider } from '@mui/material';
 import { render, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { AlertContent, AlertDialog } from './alert-dialog';
 import defaultTheme from '@mui/material/styles/defaultTheme';
