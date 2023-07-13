@@ -59,7 +59,8 @@ async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
 
         if task_state.status == mdl.Status.completed:
             alert = await alert_repo.create_alert(task_state.booking.id, "task")
-            alert_events.alerts.on_next(alert)
+            if alert is not None:
+                alert_events.alerts.on_next(alert)
 
     elif payload_type == "task_log_update":
         task_log = mdl.TaskEventLog(**msg["data"])
@@ -68,7 +69,8 @@ async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
 
         if task_log_has_error(task_log):
             alert = await alert_repo.create_alert(task_log.task_id, "task")
-            alert_events.alerts.on_next(alert)
+            if alert is not None:
+                alert_events.alerts.on_next(alert)
 
     elif payload_type == "fleet_state_update":
         fleet_state = mdl.FleetState(**msg["data"])
