@@ -17,8 +17,8 @@ async def sub_beacons(_req: SubscriptionRequest):
 
 @router.get("", response_model=List[ttm.BeaconStatePydantic])
 async def get_beacons():
-    beacon_states = await ttm.BeaconState.all()
-    return [await ttm.BeaconStatePydantic.from_tortoise_orm(a) for a in beacon_States]
+    beacons = await ttm.BeaconState.all()
+    return [await ttm.BeaconStatePydantic.from_tortoise_orm(a) for a in beacons]
 
 
 @router.get("/{id}", response_model=ttm.BeaconStatePydantic)
@@ -37,7 +37,7 @@ async def get_beacon(id: str):
 async def save_beacon_state(
     id: str, online: bool, category: str, activated: bool, level: str
 ):
-    beacon_state = await ttm.BeaconState.update_or_create(
+    beacon_state, _ = await ttm.BeaconState.update_or_create(
         {
             "online": online,
             "category": category,

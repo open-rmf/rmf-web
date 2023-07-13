@@ -79,6 +79,9 @@ app.include_router(
     routes.alerts_router, prefix="/alerts", dependencies=[Depends(user_dep)]
 )
 app.include_router(
+    routes.beacons_router, prefix="/beacons", dependencies=[Depends(user_dep)]
+)
+app.include_router(
     routes.building_map_router, prefix="/building_map", dependencies=[Depends(user_dep)]
 )
 app.include_router(
