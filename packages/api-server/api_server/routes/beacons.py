@@ -52,4 +52,5 @@ async def save_beacon_state(
     beacon_state_pydantic = await ttm.BeaconStatePydantic.from_tortoise_orm(
         beacon_state
     )
+    beacon_events.beacons.on_next(beacon_state_pydantic)
     return beacon_state_pydantic
