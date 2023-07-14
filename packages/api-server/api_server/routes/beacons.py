@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import Depends, HTTPException
+from fastapi import HTTPException
 from rx import operators as rxops
 
 from api_server.fast_io import FastIORouter, SubscriptionRequest
@@ -21,9 +21,9 @@ async def get_beacons():
     return [await ttm.BeaconStatePydantic.from_tortoise_orm(a) for a in beacons]
 
 
-@router.get("/{id}", response_model=ttm.BeaconStatePydantic)
-async def get_beacon(id: str):
-    beacon_state = await ttm.BeaconState.get_or_none(id=id)
+@router.get("/{beacon_id}", response_model=ttm.BeaconStatePydantic)
+async def get_beacon(beacon_id: str):
+    beacon_state = await ttm.BeaconState.get_or_none(id=beacon_id)
     if beacon_state is None:
         raise HTTPException(404, f"Beacon with ID {id} not found")
     beacon_state_pydantic = await ttm.BeaconStatePydantic.from_tortoise_orm(
@@ -34,7 +34,7 @@ async def get_beacon(id: str):
 
 @router.post("", status_code=201, response_model=ttm.BeaconStatePydantic)
 async def save_beacon_state(
-    id: str, online: bool, category: str, activated: bool, level: str
+    beacon_id: str, online: bool, category: str, activated: bool, level: str
 ):
     beacon_state, _ = await ttm.BeaconState.update_or_create(
         {
@@ -43,10 +43,10 @@ async def save_beacon_state(
             "activated": activated,
             "level": level,
         },
-        id=id,
+        id=beacon_id,
     )
     if beacon_state is None:
-        raise HTTPException(404, f"Could not save beacon state with ID {id}")
+        raise HTTPException(404, f"Could not save beacon state with ID {beacon_id}")
     beacon_state_pydantic = await ttm.BeaconStatePydantic.from_tortoise_orm(
         beacon_state
     )
