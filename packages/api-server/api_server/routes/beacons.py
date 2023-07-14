@@ -12,7 +12,7 @@ router = FastIORouter(tags=["Beacons"])
 
 @router.sub("", response_model=ttm.BeaconStatePydantic)
 async def sub_beacons(_req: SubscriptionRequest):
-    return beacon_events.alerts.pipe(rxops.filter(lambda x: x is not None))
+    return beacon_events.beacons.pipe(rxops.filter(lambda x: x is not None))
 
 
 @router.get("", response_model=List[ttm.BeaconStatePydantic])
@@ -25,8 +25,7 @@ async def get_beacons():
 async def get_beacon(id: str):
     beacon_state = await ttm.BeaconState.get_or_none(id=id)
     if beacon_state is None:
-        logger.error(f"No existing beacon with ID {id}")
-        return None
+        raise HTTPException(404, f"Beacon with ID {id} not found")
     beacon_state_pydantic = await ttm.BeaconStatePydantic.from_tortoise_orm(
         beacon_state
     )
@@ -47,8 +46,7 @@ async def save_beacon_state(
         id=id,
     )
     if beacon_state is None:
-        logger.error(f"Failed to save beacon state with ID {id}")
-        return None
+        raise HTTPException(404, f"Could not save beacon state with ID {id}")
     beacon_state_pydantic = await ttm.BeaconStatePydantic.from_tortoise_orm(
         beacon_state
     )
