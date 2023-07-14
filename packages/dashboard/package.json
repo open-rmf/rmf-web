@@ -48,6 +48,8 @@
     "@mui/styles": "^5.8.3",
     "@mui/system": "^5.8.3",
     "@mui/x-date-pickers": "^5.0.20",
+    "@react-three/drei": "^9.78.2",
+    "@react-three/fiber": "^8.13.5",
     "@types/debug": "^4.1.5",
     "@types/leaflet": "^1.5.17",
     "@types/react": "^18.2.14",
