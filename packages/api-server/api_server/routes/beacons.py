@@ -25,7 +25,7 @@ async def get_beacons():
 async def get_beacon(beacon_id: str):
     beacon_state = await ttm.BeaconState.get_or_none(id=beacon_id)
     if beacon_state is None:
-        raise HTTPException(404, f"Beacon with ID {id} not found")
+        raise HTTPException(404, f"Beacon with ID {beacon_id} not found")
     beacon_state_pydantic = await ttm.BeaconStatePydantic.from_tortoise_orm(
         beacon_state
     )
