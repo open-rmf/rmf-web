@@ -45,3 +45,11 @@ class AlertEvents:
 
 
 alert_events = AlertEvents()
+
+
+class BeaconEvents:
+    def __init__(self):
+        self.beacons = Subject()  # Beacons
+
+
+beacon_events = BeaconEvents()
