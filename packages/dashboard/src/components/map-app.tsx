@@ -33,6 +33,17 @@ import { TrajectoriesOverlay, TrajectoryData } from './trajectories-overlay';
 import { WaypointsOverlay } from './waypoints-overlay';
 import { WorkcellData, WorkcellsOverlay } from './workcells-overlay';
 import { RobotSummary } from './robots/robot-summary';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import * as THREE from 'three';
+import {
+  PerspectiveCamera,
+  PositionalAudio,
+  OrbitControls,
+  Environment,
+  Stats,
+  Stage,
+} from '@react-three/drei';
+import { MapConstruction } from './level';
 
 type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
@@ -383,136 +394,132 @@ export const MapApp = styled(
     const registeredLayersHandlers = React.useRef(false);
     const ready = buildingMap && currentLevel && bounds;
     return ready ? (
-      <LMap
-        ref={(cur) => {
-          if (registeredLayersHandlers.current || !cur) return;
-          cur.leafletElement.on('overlayadd', (ev: L.LayersControlEvent) => {
-            AppEvents.disabledLayers.next({ [ev.name]: false });
-          });
-          cur.leafletElement.on('overlayremove', (ev: L.LayersControlEvent) => {
-            AppEvents.disabledLayers.next({ [ev.name]: true });
-          });
-          registeredLayersHandlers.current = true;
-        }}
-        attributionControl={false}
-        zoomDelta={0.5}
-        zoomSnap={0.5}
-        center={center}
-        onViewportChanged={onViewportChanged}
-        zoom={zoom}
-        bounds={bounds}
-        maxBounds={bounds}
-        onbaselayerchange={({ name }: L.LayersControlEvent) => {
-          setCurrentLevel(
-            buildingMap.levels.find((l: Level) => l.name === name) || buildingMap.levels[0],
-          );
-        }}
-      >
-        <AttributionControl position="bottomright" prefix="OSRC-SG" />
-        <LayersControl position="topleft">
-          <Pane name="image" style={{ zIndex: 0 }} />
-          {buildingMap.levels.map((level: Level) =>
-            currentLevel.name === level.name ? (
-              <LayersControl.BaseLayer key={level.name} name={level.name} checked>
-                {currentLevel.images.length > 0 && imageUrl && (
-                  <ImageOverlay bounds={bounds} url={imageUrl} pane="image" />
-                )}
-              </LayersControl.BaseLayer>
-            ) : (
-              <LayersControl.BaseLayer key={level.name} name={level.name}>
-                {currentLevel.images.length > 0 && imageUrl && (
-                  <ImageOverlay bounds={bounds} url={imageUrl} pane="image" />
-                )}
-              </LayersControl.BaseLayer>
-            ),
-          )}
+      // <LMap
+      //   ref={(cur) => {
+      //     if (registeredLayersHandlers.current || !cur) return;
+      //     cur.leafletElement.on('overlayadd', (ev: L.LayersControlEvent) => {
+      //       AppEvents.disabledLayers.next({ [ev.name]: false });
+      //     });
+      //     cur.leafletElement.on('overlayremove', (ev: L.LayersControlEvent) => {
+      //       AppEvents.disabledLayers.next({ [ev.name]: true });
+      //     });
+      //     registeredLayersHandlers.current = true;
+      //   }}
+      //   attributionControl={false}
+      //   zoomDelta={0.5}
+      //   zoomSnap={0.5}
+      //   center={center}
+      //   onViewportChanged={onViewportChanged}
+      //   zoom={zoom}
+      //   bounds={bounds}
+      //   maxBounds={bounds}
+      //   onbaselayerchange={({ name }: L.LayersControlEvent) => {
+      //     setCurrentLevel(
+      //       buildingMap.levels.find((l: Level) => l.name === name) || buildingMap.levels[0],
+      //     );
+      //   }}
+      // >
+      //   <AttributionControl position="bottomright" prefix="OSRC-SG" />
+      //   <LayersControl position="topleft">
+      //     <Pane name="image" style={{ zIndex: 0 }} />
+      //     {buildingMap.levels.map((level: Level) =>
+      //       currentLevel.name === level.name ? (
+      //         <LayersControl.BaseLayer key={level.name} name={level.name} checked>
+      //           {currentLevel.images.length > 0 && imageUrl && (
+      //             <ImageOverlay bounds={bounds} url={imageUrl} pane="image" />
+      //           )}
+      //         </LayersControl.BaseLayer>
+      //       ) : (
+      //         <LayersControl.BaseLayer key={level.name} name={level.name}>
+      //           {currentLevel.images.length > 0 && imageUrl && (
+      //             <ImageOverlay bounds={bounds} url={imageUrl} pane="image" />
+      //           )}
+      //         </LayersControl.BaseLayer>
+      //       ),
+      //     )}
 
-          <LayersControl.Overlay name="Waypoints" checked={!disabledLayers['Waypoints']}>
-            <WaypointsOverlay
-              bounds={bounds}
-              waypoints={waypoints}
-              hideLabels={disabledLayers['Waypoints']}
-            />
-          </LayersControl.Overlay>
+      //     <LayersControl.Overlay name="Waypoints" checked={!disabledLayers['Waypoints']}>
+      //       <WaypointsOverlay
+      //         bounds={bounds}
+      //         waypoints={waypoints}
+      //         hideLabels={disabledLayers['Waypoints']}
+      //       />
+      //     </LayersControl.Overlay>
 
-          <LayersControl.Overlay name="Dispensers" checked={!disabledLayers['Dispensers']}>
-            <WorkcellsOverlay
-              bounds={bounds}
-              workcells={dispensersData}
-              hideLabels={disabledLayers['Dispensers']}
-              onWorkcellClick={(_ev, workcell) =>
-                AppEvents.dispenserSelect.next({ guid: workcell })
-              }
-            />
-          </LayersControl.Overlay>
+      //     <LayersControl.Overlay name="Dispensers" checked={!disabledLayers['Dispensers']}>
+      //       <WorkcellsOverlay
+      //         bounds={bounds}
+      //         workcells={dispensersData}
+      //         hideLabels={disabledLayers['Dispensers']}
+      //         onWorkcellClick={(_ev, workcell) =>
+      //           AppEvents.dispenserSelect.next({ guid: workcell })
+      //         }
+      //       />
+      //     </LayersControl.Overlay>
 
-          <LayersControl.Overlay name="Ingestors" checked={!disabledLayers['Ingestors']}>
-            <WorkcellsOverlay
-              bounds={bounds}
-              workcells={ingestorsData}
-              hideLabels={disabledLayers['Ingestors']}
-              onWorkcellClick={(_ev, workcell) => AppEvents.ingestorSelect.next({ guid: workcell })}
-            />
-          </LayersControl.Overlay>
+      //     <LayersControl.Overlay name="Ingestors" checked={!disabledLayers['Ingestors']}>
+      //       <WorkcellsOverlay
+      //         bounds={bounds}
+      //         workcells={ingestorsData}
+      //         hideLabels={disabledLayers['Ingestors']}
+      //         onWorkcellClick={(_ev, workcell) => AppEvents.ingestorSelect.next({ guid: workcell })}
+      //       />
+      //     </LayersControl.Overlay>
 
-          <LayersControl.Overlay name="Lifts" checked={!disabledLayers['Lifts']}>
-            <LiftsOverlay
-              bounds={bounds}
-              currentLevel={currentLevel.name}
-              lifts={buildingMap.lifts}
-              hideLabels={disabledLayers['Lifts']}
-              onLiftClick={(_ev, lift) => AppEvents.liftSelect.next(lift)}
-            />
-          </LayersControl.Overlay>
+      //     <LayersControl.Overlay name="Lifts" checked={!disabledLayers['Lifts']}>
+      //       <LiftsOverlay
+      //         bounds={bounds}
+      //         currentLevel={currentLevel.name}
+      //         lifts={buildingMap.lifts}
+      //         hideLabels={disabledLayers['Lifts']}
+      //         onLiftClick={(_ev, lift) => AppEvents.liftSelect.next(lift)}
+      //       />
+      //     </LayersControl.Overlay>
 
-          <LayersControl.Overlay name="Doors" checked={!disabledLayers['Doors']}>
-            <DoorsOverlay
-              bounds={bounds}
-              doors={currentLevel.doors}
-              hideLabels={disabledLayers['Doors']}
-              onDoorClick={(_ev, door) => AppEvents.doorSelect.next(door)}
-            />
-          </LayersControl.Overlay>
+      //     <LayersControl.Overlay name="Doors" checked={!disabledLayers['Doors']}>
+      //       <DoorsOverlay
+      //         bounds={bounds}
+      //         doors={currentLevel.doors}
+      //         hideLabels={disabledLayers['Doors']}
+      //         onDoorClick={(_ev, door) => AppEvents.doorSelect.next(door)}
+      //       />
+      //     </LayersControl.Overlay>
 
-          <LayersControl.Overlay name="Trajectories" checked>
-            <TrajectoriesOverlay bounds={bounds} trajectoriesData={trajectories} />
-          </LayersControl.Overlay>
+      //     <LayersControl.Overlay name="Trajectories" checked>
+      //       <TrajectoriesOverlay bounds={bounds} trajectoriesData={trajectories} />
+      //     </LayersControl.Overlay>
 
-          <LayersControl.Overlay name="Robots" checked={!disabledLayers['Robots']}>
-            <RobotsOverlay
-              bounds={bounds}
-              robots={robots}
-              hideLabels={disabledLayers['Robots']}
-              onRobotClick={(_ev, robot) => {
-                setOpenRobotSummary(true);
-                setSelectedRobot(robot);
-              }}
-            />
-          </LayersControl.Overlay>
-        </LayersControl>
-        {openRobotSummary && selectedRobot && (
-          <RobotSummary robot={selectedRobot} onClose={() => setOpenRobotSummary(false)} />
-        )}
+      //     <LayersControl.Overlay name="Robots" checked={!disabledLayers['Robots']}>
+      //       <RobotsOverlay
+      //         bounds={bounds}
+      //         robots={robots}
+      //         hideLabels={disabledLayers['Robots']}
+      //         onRobotClick={(_ev, robot) => {
+      //           setOpenRobotSummary(true);
+      //           setSelectedRobot(robot);
+      //         }}
+      //       />
+      //     </LayersControl.Overlay>
+      //   </LayersControl>
+      //   {openRobotSummary && selectedRobot && (
+      //     <RobotSummary robot={selectedRobot} onClose={() => setOpenRobotSummary(false)} />
+      //   )}
 
-        <TrajectoryTimeControl
-          position="topleft"
-          value={trajectoryTime}
-          min={60000}
-          max={600000}
-          onChange={(_ev, newValue) =>
-            setMapSettings((prev) => {
-              const newSettings = { ...prev, trajectoryTime: newValue };
-              window.localStorage.setItem(SettingsKey, JSON.stringify(newSettings));
-              return newSettings;
-            })
-          }
-        />
-      </LMap>
+      //   <TrajectoryTimeControl
+      //     position="topleft"
+      //     value={trajectoryTime}
+      //     min={60000}
+      //     max={600000}
+      //     onChange={(_ev, newValue) =>
+      //       setMapSettings((prev) => {
+      //         const newSettings = { ...prev, trajectoryTime: newValue };
+      //         window.localStorage.setItem(SettingsKey, JSON.stringify(newSettings));
+      //         return newSettings;
+      //       })
+      //     }
+      //   />
+      // </LMap>
+      <MapConstruction levels={buildingMap.levels} />
     ) : null;
   }),
-)({
-  // This ensures that the resize handle is above the map.
-  '& > .react-resizable-handle': {
-    zIndex: 1001,
-  },
-});
+)();
