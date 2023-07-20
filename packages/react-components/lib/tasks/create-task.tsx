@@ -16,6 +16,9 @@ import {
   DialogProps,
   DialogTitle,
   Divider,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
   Grid,
   IconButton,
   List,
@@ -24,6 +27,8 @@ import {
   ListItemSecondaryAction,
   ListItemText,
   MenuItem,
+  Radio,
+  RadioGroup,
   styled,
   TextField,
   Typography,
@@ -652,6 +657,12 @@ export type RecurringDays = [boolean, boolean, boolean, boolean, boolean, boolea
 export interface Schedule {
   startOn: Date;
   days: RecurringDays;
+  until?: Date;
+}
+
+enum ScheduleUntilValue {
+  NEVER = 'never',
+  ON = 'on',
 }
 
 interface DaySelectorSwitchProps {
@@ -781,8 +792,28 @@ export function CreateTaskForm({
   const [schedule, setSchedule] = React.useState<Schedule>({
     startOn: new Date(),
     days: [true, true, true, true, true, true, true],
+    until: undefined,
   });
   const [atTime, setAtTime] = React.useState(new Date());
+  const [scheduleUntilValue, setScheduleUntilValue] = React.useState<string>(
+    ScheduleUntilValue.NEVER,
+  );
+
+  const handleScheduleUntilValue = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.value === ScheduleUntilValue.ON) {
+      /**
+       * Since the time change is done in the onchange of the Datepicker,
+       * we need a defined time if the user saves the value without calling the onChange event of the datepicker
+       */
+      const date = new Date();
+      date.setHours(23);
+      date.setMinutes(59);
+      setSchedule((prev) => ({ ...prev, until: date }));
+    } else {
+      setSchedule((prev) => ({ ...prev, until: undefined }));
+    }
+    setScheduleUntilValue(event.target.value);
+  };
   // schedule is not supported with batch upload
   const scheduleEnabled = taskRequests.length === 1;
 
@@ -1245,6 +1276,51 @@ export function CreateTaskForm({
                 onChange={(days) => setSchedule((prev) => ({ ...prev, days }))}
               />
             </Grid>
+          </Grid>
+          <Grid container marginTop={theme.spacing(1)} marginLeft={theme.spacing(0)}>
+            <FormControl>
+              <FormLabel id="controlled-radio-buttons-group">Ends</FormLabel>
+              <RadioGroup
+                aria-labelledby="controlled-radio-buttons-group"
+                name="controlled-radio-buttons-group"
+                value={scheduleUntilValue}
+                onChange={handleScheduleUntilValue}
+              >
+                <FormControlLabel
+                  value={ScheduleUntilValue.NEVER}
+                  control={<Radio />}
+                  label="Never"
+                />
+                <Grid container direction="row" alignItems="center" spacing={2}>
+                  <Grid item xs={6}>
+                    <FormControlLabel
+                      value={ScheduleUntilValue.ON}
+                      control={<Radio />}
+                      label="On"
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <DatePicker
+                      value={
+                        scheduleUntilValue === ScheduleUntilValue.NEVER
+                          ? new Date()
+                          : schedule.until
+                      }
+                      onChange={(date) =>
+                        date &&
+                        setSchedule((prev) => {
+                          date.setHours(23);
+                          date.setMinutes(59);
+                          return { ...prev, until: date };
+                        })
+                      }
+                      disabled={scheduleUntilValue !== ScheduleUntilValue.ON}
+                      renderInput={(props) => <TextField {...props} fullWidth />}
+                    />
+                  </Grid>
+                </Grid>
+              </RadioGroup>
+            </FormControl>
           </Grid>
         </ConfirmationDialog>
       )}
