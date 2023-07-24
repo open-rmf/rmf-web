@@ -18,6 +18,7 @@ import {
   Divider,
   FormControl,
   FormControlLabel,
+  FormHelperText,
   FormLabel,
   Grid,
   IconButton,
@@ -1278,46 +1279,41 @@ export function CreateTaskForm({
             </Grid>
           </Grid>
           <Grid container marginTop={theme.spacing(1)} marginLeft={theme.spacing(0)}>
-            <FormControl>
-              <FormLabel id="controlled-radio-buttons-group">Ends</FormLabel>
+            <FormControl fullWidth={true}>
+              <FormHelperText>Ends</FormHelperText>
               <RadioGroup
                 aria-labelledby="controlled-radio-buttons-group"
                 name="controlled-radio-buttons-group"
                 value={scheduleUntilValue}
                 onChange={handleScheduleUntilValue}
+                row
               >
-                <FormControlLabel
-                  value={ScheduleUntilValue.NEVER}
-                  control={<Radio />}
-                  label="Never"
-                />
-                <Grid container direction="row" alignItems="center" spacing={2}>
-                  <Grid item xs={6}>
-                    <FormControlLabel
-                      value={ScheduleUntilValue.ON}
-                      control={<Radio />}
-                      label="On"
-                    />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <DatePicker
-                      value={
-                        scheduleUntilValue === ScheduleUntilValue.NEVER
-                          ? new Date()
-                          : schedule.until
-                      }
-                      onChange={(date) =>
-                        date &&
-                        setSchedule((prev) => {
-                          date.setHours(23);
-                          date.setMinutes(59);
-                          return { ...prev, until: date };
-                        })
-                      }
-                      disabled={scheduleUntilValue !== ScheduleUntilValue.ON}
-                      renderInput={(props) => <TextField {...props} fullWidth />}
-                    />
-                  </Grid>
+                <Grid item xs={6} paddingLeft={theme.spacing(1)}>
+                  <FormControlLabel
+                    value={ScheduleUntilValue.NEVER}
+                    control={<Radio />}
+                    label="Never"
+                  />
+                </Grid>
+                <Grid item xs={2} paddingLeft={theme.spacing(1)}>
+                  <FormControlLabel value={ScheduleUntilValue.ON} control={<Radio />} label="On" />
+                </Grid>
+                <Grid item xs={4}>
+                  <DatePicker
+                    value={
+                      scheduleUntilValue === ScheduleUntilValue.NEVER ? new Date() : schedule.until
+                    }
+                    onChange={(date) =>
+                      date &&
+                      setSchedule((prev) => {
+                        date.setHours(23);
+                        date.setMinutes(59);
+                        return { ...prev, until: date };
+                      })
+                    }
+                    disabled={scheduleUntilValue !== ScheduleUntilValue.ON}
+                    renderInput={(props) => <TextField {...props} fullWidth />}
+                  />
                 </Grid>
               </RadioGroup>
             </FormControl>
