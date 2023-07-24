@@ -117,13 +117,17 @@ const BoundingBox = ({ walls, elevation, opacity }: BoundingBoxProps) => {
       const center = boundingBoxRef.current.getCenter(new THREE.Vector3());
       const size = boundingBoxRef.current.getSize(new THREE.Vector3());
       const maxDim = Math.max(size.x, size.y, size.z);
+      const distance = Math.max(size.x, size.y, size.z) * 0.9;
 
+      // Assuming you have a PerspectiveCamera called 'camera'
+      camera.position.set(center.x, center.y, center.z + distance);
+      camera.lookAt(center);
       // Calculate the zoom level based on the bounding box size
       const fov =
         camera instanceof THREE.PerspectiveCamera
           ? camera.fov * (Math.PI / 180)
           : 45 * (Math.PI / 180);
-      const distance = Math.abs(maxDim / (2 * Math.tan(fov / 2)));
+      // const distance = Math.abs(maxDim / (2 * Math.tan(fov / 2)));
 
       // Calculate the target position for the camera
       // const target = center.clone().add(camera.position.clone().sub(center).normalize().multiplyScalar(distance));
