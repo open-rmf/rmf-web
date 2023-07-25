@@ -4,10 +4,13 @@ import { LogManagement } from './log-management';
 import { LogRowsType } from './log-table';
 import { TestLocalizationProvider } from '../../test/locale';
 
+// TODO(AA): To remove after
+// https://github.com/testing-library/react-testing-library/issues/1216
+// has been resolved.
+// Workaround for "Warning: An update to ComponentName inside a test was not
+// wrapped in act(...)."
 const originalError = console.error;
 beforeAll(() => {
-  // this is just a little hack to silence
-  // Warning: An update to ComponentName inside a test was not wrapped in act(...).
   console.error = (...args) => {
     if (/Warning.*not wrapped in act/.test(args[0])) {
       return;
