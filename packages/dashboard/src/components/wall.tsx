@@ -23,7 +23,7 @@ interface WallSegment {
 const distance = (v1: GraphNode, v2: GraphNode) => Math.hypot(v2.x - v1.x, v2.y - v1.y);
 const midPoint = (v1: GraphNode, v2: GraphNode) => [(v2.x + v1.x) / 2, (v2.y + v1.y) / 2];
 
-const graphToWalls = (graph: Graph, elevation: number) => {
+export const graphToWalls = (graph: Graph, elevation: number) => {
   const walls = [] as WallSegment[];
   const { edges, vertices } = graph;
 
