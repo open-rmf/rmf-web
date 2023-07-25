@@ -68,7 +68,9 @@ class ScheduledTaskSchedule(Model):
             job = schedule.every()
         if self.until is not None:
             # schedule uses `datetime.now()`, which is tz naive
-            job = job.until(datetime.fromtimestamp(self.until.timestamp()))
+            # Assuming self.until is a datetime object with timezone information
+            # Convert the timestamp to datetime without changing the timezone
+            job = job.until(datetime.utcfromtimestamp(self.until.timestamp()))
 
         if self.period in (
             ScheduledTaskSchedule.Period.Monday,
