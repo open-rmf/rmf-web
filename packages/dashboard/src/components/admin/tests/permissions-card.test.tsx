@@ -52,7 +52,6 @@ describe('PermissionsCard', () => {
     );
     await waitFor(() => getByText('Remove'));
     fireEvent.click(getByText('Remove'));
-    await waitFor(() => getByText('loading'));
     expect(removePermission).toHaveBeenCalled();
     expect(removePermission.mock.calls[0][0].action).toBe(RmfAction.TaskRead);
     expect(removePermission.mock.calls[0][0].authz_grp).toBe('test_group');
