@@ -8,7 +8,6 @@ import '@mui/system';
 export * from './appbar-tab';
 export * from './alert-dialog';
 export * from './color-manager';
-export * from './commands';
 export * from './confirmation-dialog';
 export * from './doors';
 export * from './error-overlay';
