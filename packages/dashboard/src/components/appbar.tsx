@@ -70,6 +70,7 @@ export type TabValue = 'infrastructure' | 'robots' | 'tasks' | 'custom1' | 'cust
 
 const locationToTabValue = (pathname: string): TabValue | undefined => {
   const routes: { prefix: string; tabValue: TabValue }[] = [
+    { prefix: DashboardRoute, tabValue: 'infrastructure' },
     { prefix: RobotsRoute, tabValue: 'robots' },
     { prefix: TasksRoute, tabValue: 'tasks' },
     { prefix: CustomRoute1, tabValue: 'custom1' },
@@ -79,7 +80,7 @@ const locationToTabValue = (pathname: string): TabValue | undefined => {
 
   // `DashboardRoute` being the root, it is a prefix to all routes, so we need to check exactly.
   const matchingRoute = routes.find((route) => pathname.startsWith(route.prefix));
-  return pathname === DashboardRoute ? 'infrastructure' : matchingRoute?.tabValue;
+  return matchingRoute?.tabValue;
 };
 
 function AppSettings() {
