@@ -7,7 +7,7 @@ import {
   Level,
 } from 'api-client';
 import Debug from 'debug';
-import React from 'react';
+import React, { Suspense } from 'react';
 import {
   affineImageBounds,
   ColorManager,
@@ -43,7 +43,8 @@ import {
   Stats,
   Stage,
 } from '@react-three/drei';
-import { MapConstruction } from './level';
+import { BuildingCubes, findSceneBoundingBox } from './level';
+import { RobotShape } from './robot-loader';
 
 type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
@@ -393,6 +394,51 @@ export const MapApp = styled(
 
     const registeredLayersHandlers = React.useRef(false);
     const ready = buildingMap && currentLevel && bounds;
+
+    const ref = React.useRef(null);
+    const [lerping, setLerping] = React.useState(false);
+    const [to, setTo] = React.useState();
+    const [target, setTarget] = React.useState();
+    const [selected, setSelected] = React.useState(-1);
+    const [sceneBoundingBox, setSceneBoundingBox] = React.useState<THREE.Box3 | undefined>(
+      undefined,
+    );
+    const [distance, setDistance] = React.useState<number>(0);
+
+    React.useMemo(() => setSceneBoundingBox(findSceneBoundingBox(currentLevel)), [currentLevel]);
+
+    React.useEffect(() => {
+      if (!sceneBoundingBox) {
+        return;
+      }
+
+      const size = sceneBoundingBox.getSize(new THREE.Vector3());
+      setDistance(Math.max(size.x, size.y, size.z) * 0.9);
+    }, [sceneBoundingBox]);
+
+    // const [overallSceneBoundingBox, setOverallSceneBoundingBox] = React.useState<
+    //   THREE.Box3 | undefined
+    // >(undefined);
+
+    // React.useMemo(() => {
+    //   const combinedBoundingBox = new THREE.Box3();
+    //   buildingMap?.levels.forEach((level) => {
+    //     const levelBoundingBox = findSceneBoundingBox(level);
+    //     combinedBoundingBox.expandByPoint(levelBoundingBox.min);
+    //     combinedBoundingBox.expandByPoint(levelBoundingBox.max);
+    //   });
+    //   setOverallSceneBoundingBox(combinedBoundingBox);
+    // }, [buildingMap?.levels]);
+
+    // React.useEffect(() => {
+    //   if (!overallSceneBoundingBox) {
+    //     return;
+    //   }
+
+    //   const size = overallSceneBoundingBox.getSize(new THREE.Vector3());
+    //   setDistance(Math.max(size.x, size.y, size.z) * 0.9);
+    // }, [overallSceneBoundingBox]);
+
     return ready ? (
       // <LMap
       //   ref={(cur) => {
@@ -519,7 +565,65 @@ export const MapApp = styled(
       //     }
       //   />
       // </LMap>
-      <MapConstruction levels={buildingMap.levels} />
+      // <MapConstruction levels={buildingMap.levels} robots={robots} robotLocations={robotLocations} />
+
+      <Suspense fallback={null}>
+        <Canvas
+          onPointerDown={() => setLerping(false)}
+          onWheel={() => setLerping(false)}
+          onCreated={({ camera }) => {
+            if (!sceneBoundingBox) {
+              return;
+            }
+            const center = sceneBoundingBox.getCenter(new THREE.Vector3());
+            camera.position.set(center.x, center.y, center.z + distance);
+            camera.updateProjectionMatrix();
+          }}
+        >
+          {/* <OrbitControls
+          ref={ref}
+          enableZoom
+          enablePan
+          enableRotate
+          target={sceneBoundingBox?.getCenter(new THREE.Vector3())}
+          maxDistance={distance}
+        /> */}
+          <OrbitControls
+            target={sceneBoundingBox?.getCenter(new THREE.Vector3())}
+            ref={ref}
+            enableZoom
+            enablePan
+            enableDamping
+            dampingFactor={0.1}
+          />
+          <BuildingCubes level={currentLevel} />
+          <RobotShape robots={robots} robotLocations={robotLocations} />
+          <ambientLight />
+        </Canvas>
+        <div id="annotationsPanel">
+          <ul>
+            {buildingMap.levels.map((level, i) => {
+              const { name } = level;
+              return (
+                <li key={i}>
+                  <button
+                    className="annotationButton"
+                    name={name}
+                    onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+                      setCurrentLevel(
+                        buildingMap.levels.find((l) => l.name === event.currentTarget?.name) ||
+                          currentLevel,
+                      );
+                    }}
+                  >
+                    {name}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </Suspense>
     ) : null;
   }),
 )();
