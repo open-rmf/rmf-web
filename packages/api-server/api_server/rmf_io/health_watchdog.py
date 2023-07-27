@@ -11,6 +11,7 @@ from rx.core.pipe import pipe
 from rx.core.typing import Disposable
 from rx.scheduler.scheduler import Scheduler
 from rx.subject.behaviorsubject import BehaviorSubject
+from tortoise.exceptions import MultipleObjectsReturned
 
 from api_server.models import (
     BuildingMap,
@@ -121,7 +122,21 @@ class HealthWatchdog:
                 self._combine_most_critical(door_mode_health),
             ).subscribe(self.rmf.door_health.on_next, scheduler=self.scheduler)
 
-        ttm_map = await ttm.BuildingMap.get_or_none()
+        try:
+            ttm_map = await ttm.BuildingMap.get_or_none()
+        except MultipleObjectsReturned:
+            ttm_maps = await ttm.BuildingMap.all()
+            map_names = [BuildingMap.from_tortoise(m).name for m in ttm_maps]
+            self.logger.error(
+                "There appears to be multiple building maps "
+                f"available: {map_names}. Please ensure that "
+                "there is only a single building_map_server "
+                "running in this deployment, start a fresh "
+                "database or remove the rogue map, before "
+                "starting the API server again."
+            )
+            raise
+
         if ttm_map is None:
             doors = []
         else:
