@@ -1,8 +1,3 @@
-import { useGLTF, PerspectiveCamera } from '@react-three/drei';
-import { GLTF } from 'three-stdlib';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { useLoader } from '@react-three/fiber';
-import { Svg } from '@react-three/drei';
 import { RobotData } from './robots-overlay';
 import * as THREE from 'three';
 
