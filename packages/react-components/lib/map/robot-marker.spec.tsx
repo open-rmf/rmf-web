@@ -1,5 +1,11 @@
-import { act, cleanup, render as render_, RenderResult } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import {
+  act,
+  cleanup,
+  render as render_,
+  RenderResult,
+  fireEvent,
+  waitFor,
+} from '@testing-library/react';
 import React from 'react';
 import { RobotMarker } from './robot-marker';
 import { RobotData } from './robots-overlay';
@@ -37,8 +43,11 @@ describe('RobotMarker', () => {
     const root = await render(
       <RobotMarker cx={0} cy={0} r={1} color="#000000" onClick={onClick} data-testid="marker" />,
     );
-    userEvent.click(root.getByTestId('marker'));
-    expect(onClick).toHaveBeenCalled();
+    fireEvent.click(root.getByTestId('marker'));
+
+    await waitFor(() => {
+      expect(onClick).toHaveBeenCalled();
+    });
   });
 
   it('providing iconPath renders an image', async () => {

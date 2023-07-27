@@ -12,13 +12,13 @@ import { SvgIconComponent } from '@mui/icons-material';
 import AccountIcon from '@mui/icons-material/AccountCircle';
 import SecurityIcon from '@mui/icons-material/Security';
 import React from 'react';
-import { matchPath, RouteProps, useHistory, useLocation, useRouteMatch } from 'react-router';
+import { RouteProps, useNavigate, useLocation } from 'react-router';
 
 export type AdminDrawerValues = 'Users' | 'Roles';
 
 const drawerValuesRoutesMap: Record<AdminDrawerValues, RouteProps> = {
-  Users: { path: '/users', exact: true },
-  Roles: { path: '/roles', exact: true },
+  Users: { path: '/users' },
+  Roles: { path: '/roles' },
 };
 
 const prefix = 'drawer';
@@ -48,14 +48,14 @@ const StyledDrawer = styled((props: DrawerProps) => <Drawer {...props} />)(({ th
 
 export function AdminDrawer(): JSX.Element {
   const location = useLocation();
-  const history = useHistory();
-  const match = useRouteMatch();
+  const navigate = useNavigate();
   const activeItem = React.useMemo<AdminDrawerValues>(() => {
-    const matched = Object.entries(drawerValuesRoutesMap).find(([_k, v]) =>
-      matchPath(location.pathname, `${match.path}${v.path}`),
+    const matched = Object.entries(drawerValuesRoutesMap).find(
+      ([_k, v]) => location.pathname === `/admin${v.path}`,
     );
+
     return matched ? (matched[0] as AdminDrawerValues) : 'Users';
-  }, [location.pathname, match.path]);
+  }, [location.pathname]);
 
   const DrawerItem = React.useCallback(
     ({ Icon, text, route }: { Icon: SvgIconComponent; text: AdminDrawerValues; route: string }) => {
@@ -63,7 +63,9 @@ export function AdminDrawer(): JSX.Element {
         <ListItem
           button
           className={activeItem === text ? classes.activeItem : undefined}
-          onClick={() => history.push(route)}
+          onClick={() => {
+            navigate(route);
+          }}
         >
           <ListItemIcon>
             <Icon className={classes.itemIcon} />
@@ -72,7 +74,7 @@ export function AdminDrawer(): JSX.Element {
         </ListItem>
       );
     },
-    [activeItem, history],
+    [activeItem, navigate],
   );
 
   return (
@@ -80,8 +82,8 @@ export function AdminDrawer(): JSX.Element {
       <Toolbar />
       <div className={classes.drawerContainer}>
         <List>
-          <DrawerItem text="Users" route={`${match.path}/users`} Icon={AccountIcon} />
-          <DrawerItem text="Roles" route={`${match.path}/roles`} Icon={SecurityIcon} />
+          <DrawerItem text="Users" route={'users'} Icon={AccountIcon} />
+          <DrawerItem text="Roles" route={'roles'} Icon={SecurityIcon} />
         </List>
       </div>
     </StyledDrawer>

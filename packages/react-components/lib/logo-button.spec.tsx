@@ -1,5 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { cleanup, render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { LogoButton } from './logo-button';
 
@@ -15,7 +14,7 @@ describe('LogoButton', () => {
     );
     expect(screen.getAllByRole('button').length).toBe(1);
     expect(screen.getByAltText('logo')).toBeTruthy();
-    userEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'));
     expect(mockOnClick).toHaveBeenCalled();
     cleanup();
   });

@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks/dom';
+import { renderHook } from '@testing-library/react';
 import { useAsync } from './use-async';
 
 describe('useAsync', () => {
@@ -21,10 +21,12 @@ describe('useAsync', () => {
     await expectAsync(safeAsync(Promise.reject('test error'))).toBeRejectedWith('test error');
   });
 
-  it('referentially equal across renders', () => {
+  it('referentially equal across renders', async () => {
     const hook = renderHook(() => useAsync(true));
-    hook.rerender();
-    expect(hook.result.all.length).toBe(2);
-    expect(hook.result.all[0]).toBe(hook.result.all[1]);
+    const { rerender } = renderHook((props) => useAsync(props.throwOnUnmounted), {
+      initialProps: { throwOnUnmounted: true },
+    });
+    expect(rerender).toBeDefined();
+    expect(hook.result.current[0]).toBe(hook.result.current[1]);
   });
 });

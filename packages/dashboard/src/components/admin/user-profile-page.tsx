@@ -3,7 +3,7 @@ import { User } from 'api-client';
 import { AxiosError } from 'axios';
 import React from 'react';
 import { useAsync } from 'react-components';
-import { useRouteMatch } from 'react-router';
+import { useParams } from 'react-router';
 import { RmfAppContext } from '../rmf-app';
 import { getApiErrorMessage } from '../utils';
 import { ManageRolesCard } from './manage-roles-dialog';
@@ -11,18 +11,17 @@ import { adminPageClasses, AdminPageContainer } from './page-css';
 import { UserProfileCard } from './user-profile';
 
 export function UserProfilePage(): JSX.Element | null {
-  const match = useRouteMatch<{ user: string }>();
-  const userId: string | undefined = match.params.user;
+  const { username } = useParams();
   const safeAsync = useAsync();
   const { adminApi } = React.useContext(RmfAppContext) || {};
   const [user, setUser] = React.useState<User | undefined>(undefined);
   const [notFound, setNotFound] = React.useState(false);
 
   const refresh = React.useCallback(() => {
-    if (!adminApi || !userId) return;
+    if (!adminApi || !username) return;
     (async () => {
       try {
-        setUser((await safeAsync(adminApi.getUserAdminUsersUsernameGet(userId))).data);
+        setUser((await safeAsync(adminApi.getUserAdminUsersUsernameGet(username))).data);
       } catch (e) {
         if ((e as AxiosError).response?.status !== 404) {
           throw new Error(getApiErrorMessage(e));
@@ -30,7 +29,7 @@ export function UserProfilePage(): JSX.Element | null {
         setNotFound(true);
       }
     })();
-  }, [adminApi, safeAsync, userId]);
+  }, [adminApi, safeAsync, username]);
 
   React.useEffect(() => {
     refresh();

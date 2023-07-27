@@ -1,8 +1,27 @@
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { getActionText, RmfAction } from '../../permissions';
 import { PermissionsCard } from '../permissions-card';
+
+// TODO(AA): To remove after
+// https://github.com/testing-library/react-testing-library/issues/1216
+// has been resolved.
+// Workaround for "Warning: An update to ComponentName inside a test was not
+// wrapped in act(...)."
+const originalError = console.error;
+beforeAll(() => {
+  console.error = (...args) => {
+    if (/Warning.*not wrapped in act/.test(args[0])) {
+      return;
+    }
+    originalError.call(console, ...args);
+  };
+});
+
+afterAll(() => {
+  console.error = originalError;
+});
 
 describe('PermissionsCard', () => {
   it('renders permissions', async () => {
@@ -25,15 +44,14 @@ describe('PermissionsCard', () => {
 
   it('calls removePermission when button is clicked', async () => {
     const removePermission = jest.fn();
-    const root = render(
+    const { getByText } = render(
       <PermissionsCard
         getPermissions={() => [{ action: RmfAction.TaskRead, authz_grp: 'test_group' }]}
         removePermission={removePermission}
       />,
     );
-    await waitFor(() => root.getByText('Remove'));
-    userEvent.click(root.getByText('Remove'));
-    await waitFor(() => root.getByLabelText('loading'));
+    await waitFor(() => getByText('Remove'));
+    fireEvent.click(getByText('Remove'));
     expect(removePermission).toHaveBeenCalled();
     expect(removePermission.mock.calls[0][0].action).toBe(RmfAction.TaskRead);
     expect(removePermission.mock.calls[0][0].authz_grp).toBe('test_group');

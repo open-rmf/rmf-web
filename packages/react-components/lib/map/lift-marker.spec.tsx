@@ -1,21 +1,22 @@
-import { cleanup, render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { cleanup, render, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { allLiftModes, allLiftMotion, makeLiftState } from '../lifts/test-utils.spec';
 import { LiftMarker, LiftMarkerProps } from './lift-marker';
 
 describe('LiftMarker', () => {
   it('smoke test with different variants', () => {
-    ([
-      'emergency',
-      'fire',
-      'human',
-      'moving',
-      'offLine',
-      'onCurrentFloor',
-      'unknown',
-      undefined,
-    ] as LiftMarkerProps['variant'][]).forEach((variant) => {
+    (
+      [
+        'emergency',
+        'fire',
+        'human',
+        'moving',
+        'offLine',
+        'onCurrentFloor',
+        'unknown',
+        undefined,
+      ] as LiftMarkerProps['variant'][]
+    ).forEach((variant) => {
       render(
         <svg>
           <LiftMarker
@@ -99,7 +100,7 @@ describe('LiftMarker', () => {
         />
       </svg>,
     );
-    userEvent.click(root.getByTestId('marker'));
+    fireEvent.click(root.getByTestId('marker'));
     expect(mockOnClick).toHaveBeenCalled();
   });
 });

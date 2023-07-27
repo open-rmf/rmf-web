@@ -30,19 +30,21 @@ export const withLabel =
     const labelsPortal = React.useContext(LabelsPortalContext);
     return (
       <g>
-        <Component {...(componentProps as P)} />
-        {!hideLabel &&
-          labelsPortal &&
-          ReactDOM.createPortal(
-            <ScaledNameLabel
-              text={labelText}
-              sourceX={labelSourceX}
-              sourceY={labelSourceY}
-              sourceRadius={labelSourceRadius}
-              arrowLength={labelArrowLength}
-            />,
-            labelsPortal,
-          )}
+        <>
+          <Component {...(componentProps as unknown as P)} />
+          {!hideLabel &&
+            labelsPortal &&
+            ReactDOM.createPortal(
+              <ScaledNameLabel
+                text={labelText}
+                sourceX={labelSourceX}
+                sourceY={labelSourceY}
+                sourceRadius={labelSourceRadius}
+                arrowLength={labelArrowLength}
+              />,
+              labelsPortal,
+            )}
+        </>
       </g>
     );
   };

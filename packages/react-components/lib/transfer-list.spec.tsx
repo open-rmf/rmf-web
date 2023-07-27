@@ -1,5 +1,4 @@
-import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { TransferList } from './transfer-list';
 
@@ -29,8 +28,8 @@ describe('TransferList', () => {
   it('transfers correct items', () => {
     const spy = jasmine.createSpy();
     const root = render(<TransferList leftItems={left} rightItems={right} onTransfer={spy} />);
-    userEvent.click(root.getByText('one'));
-    userEvent.click(root.getByLabelText('move selected right', { selector: 'button' }));
+    fireEvent.click(root.getByText('one'));
+    fireEvent.click(root.getByLabelText('move selected right', { selector: 'button' }));
     const newLeft: string[] = spy.calls.mostRecent().args[0];
     const newRight: string[] = spy.calls.mostRecent().args[1];
     expect(newLeft).toHaveSize(1);

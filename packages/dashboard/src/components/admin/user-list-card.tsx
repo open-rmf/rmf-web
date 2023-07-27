@@ -22,7 +22,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
 import React from 'react';
 import { ConfirmationDialog, Loading, useAsync } from 'react-components';
-import { useHistory, useRouteMatch } from 'react-router';
+import { useNavigate } from 'react-router';
 import { AppControllerContext } from '../app-contexts';
 import { CreateUserDialog, CreateUserDialogProps } from './create-user-dialog';
 
@@ -56,8 +56,7 @@ export function UserListCard({
   createUser,
 }: UserListCardProps): JSX.Element {
   const safeAsync = useAsync();
-  const history = useHistory();
-  const match = useRouteMatch();
+  const navigate = useNavigate();
   const [users, setUsers] = React.useState<string[]>([]);
   const [selectedUser, setSelectedUser] = React.useState<string | null>(null);
   const [search, setSearch] = React.useState('');
@@ -135,11 +134,7 @@ export function UserListCard({
             </TableHead>
             <TableBody>
               {users.map((u) => (
-                <TableRow
-                  key={u}
-                  className={classes.tableRow}
-                  onClick={() => history.push(`${match.path}/${u}`)}
-                >
+                <TableRow key={u} className={classes.tableRow} onClick={() => navigate(`${u}`)}>
                   <TableCell>{u}</TableCell>
                   <TableCell>
                     <Button

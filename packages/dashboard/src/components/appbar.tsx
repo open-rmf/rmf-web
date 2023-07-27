@@ -42,7 +42,7 @@ import {
   Schedule,
   useAsync,
 } from 'react-components';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { UserProfileContext } from 'rmf-auth';
 import { logoSize } from '../managers/resource-manager';
 import { ThemeMode } from '../settings';
@@ -68,16 +68,20 @@ import { formatDistance } from 'date-fns';
 
 export type TabValue = 'infrastructure' | 'robots' | 'tasks' | 'custom1' | 'custom2' | 'admin';
 
-function locationToTabValue(pathname: string): TabValue | undefined {
+const locationToTabValue = (pathname: string): TabValue | undefined => {
+  const routes: { prefix: string; tabValue: TabValue }[] = [
+    { prefix: DashboardRoute, tabValue: 'infrastructure' },
+    { prefix: RobotsRoute, tabValue: 'robots' },
+    { prefix: TasksRoute, tabValue: 'tasks' },
+    { prefix: CustomRoute1, tabValue: 'custom1' },
+    { prefix: CustomRoute2, tabValue: 'custom2' },
+    { prefix: AdminRoute.replace(/\*/g, ''), tabValue: 'admin' },
+  ];
+
   // `DashboardRoute` being the root, it is a prefix to all routes, so we need to check exactly.
-  if (pathname === DashboardRoute) return 'infrastructure';
-  if (pathname.startsWith(RobotsRoute)) return 'robots';
-  if (pathname.startsWith(TasksRoute)) return 'tasks';
-  if (pathname.startsWith(CustomRoute1)) return 'custom1';
-  if (pathname.startsWith(CustomRoute2)) return 'custom2';
-  if (pathname.startsWith(AdminRoute)) return 'admin';
-  return undefined;
-}
+  const matchingRoute = routes.find((route) => pathname.startsWith(route.prefix));
+  return matchingRoute?.tabValue;
+};
 
 function AppSettings() {
   const settings = React.useContext(SettingsContext);
@@ -152,7 +156,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const rmf = React.useContext(RmfAppContext);
   const resourceManager = React.useContext(ResourcesContext);
   const { showAlert } = React.useContext(AppControllerContext);
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const tabValue = React.useMemo(() => locationToTabValue(location.pathname), [location]);
   const logoResourcesContext = React.useContext(ResourcesContext)?.logos;
@@ -384,38 +388,38 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             label="Map"
             value="infrastructure"
             aria-label="Map"
-            onTabClick={() => history.push(DashboardRoute)}
+            onTabClick={() => navigate(DashboardRoute)}
           />
           <AppBarTab
             label="System Overview"
             value="robots"
             aria-label="System Overview"
-            onTabClick={() => history.push(RobotsRoute)}
+            onTabClick={() => navigate(RobotsRoute)}
           />
           <AppBarTab
             label="Tasks"
             value="tasks"
             aria-label="Tasks"
-            onTabClick={() => history.push(TasksRoute)}
+            onTabClick={() => navigate(TasksRoute)}
           />
           <AppBarTab
             label="Custom 1"
             value="custom1"
             aria-label="Custom 1"
-            onTabClick={() => history.push(CustomRoute1)}
+            onTabClick={() => navigate(CustomRoute1)}
           />
           <AppBarTab
             label="Custom 2"
             value="custom2"
             aria-label="Custom 2"
-            onTabClick={() => history.push(CustomRoute2)}
+            onTabClick={() => navigate(CustomRoute2)}
           />
           {profile?.user.is_admin && (
             <AppBarTab
               label="Admin"
               value="admin"
               aria-label="Admin"
-              onTabClick={() => history.push(AdminRoute)}
+              onTabClick={() => navigate(AdminRoute)}
             />
           )}
         </NavigationBar>
