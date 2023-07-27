@@ -128,8 +128,8 @@ class HealthWatchdog:
             ttm_maps = await ttm.BuildingMap.all()
             map_names = [BuildingMap.from_tortoise(m).name for m in ttm_maps]
             self.logger.error(
-                f"There appears to be multiple building maps "
-                "available: {map_names}. Please ensure that "
+                "There appears to be multiple building maps "
+                f"available: {map_names}. Please ensure that "
                 "there is only a single building_map_server "
                 "running in this deployment, start a fresh "
                 "database or remove the rogue map, before "
