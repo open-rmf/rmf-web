@@ -396,10 +396,6 @@ export const MapApp = styled(
     const ready = buildingMap && currentLevel && bounds;
 
     const ref = React.useRef(null);
-    const [lerping, setLerping] = React.useState(false);
-    const [to, setTo] = React.useState();
-    const [target, setTarget] = React.useState();
-    const [selected, setSelected] = React.useState(-1);
     const [sceneBoundingBox, setSceneBoundingBox] = React.useState<THREE.Box3 | undefined>(
       undefined,
     );
@@ -569,8 +565,8 @@ export const MapApp = styled(
 
       <Suspense fallback={null}>
         <Canvas
-          onPointerDown={() => setLerping(false)}
-          onWheel={() => setLerping(false)}
+          // onPointerDown={() => setLerping(false)}
+          // onWheel={() => setLerping(false)}
           onCreated={({ camera }) => {
             if (!sceneBoundingBox) {
               return;
