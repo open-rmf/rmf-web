@@ -11,9 +11,10 @@ import {
   GridFilterModel,
   GridSortModel,
 } from '@mui/x-data-grid';
-import { styled, TextField } from '@mui/material';
+import { styled, TextField, Stack, Typography } from '@mui/material';
 import * as React from 'react';
 import { TaskState, Status } from 'api-client';
+import { InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
 
 const classes = {
   taskActiveCell: 'MuiDataGrid-cell-active-cell',
@@ -134,11 +135,24 @@ export function TaskDataGridTable({
     {
       field: 'requester',
       headerName: 'Requester',
-      width: 150,
+      minWidth: 160,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.booking.requester ? params.row.booking.requester : 'unknown',
-      flex: 1,
+      renderCell: (cellValues) => {
+        return (
+          <Stack direction="row" alignItems="center" gap={1}>
+            {cellValues.row.booking.requester &&
+            cellValues.row.booking.requester.includes('scheduled') ? (
+              <ScheduleIcon />
+            ) : (
+              <UserIcon />
+            )}
+            <Typography variant="body1">
+              {cellValues.row.booking.requester ? cellValues.row.booking.requester : 'unknown'}
+            </Typography>
+          </Stack>
+        );
+      },
+      flex: 2,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,
     },
