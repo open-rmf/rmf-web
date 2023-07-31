@@ -884,8 +884,10 @@ export function CreateTaskForm({
       return;
     }
 
+    const requester = scheduling ? `${user}__scheduled` : user;
+
     for (const t of taskRequests) {
-      t.requester = user;
+      t.requester = requester;
       t.unix_millis_request_time = Date.now();
     }
 
