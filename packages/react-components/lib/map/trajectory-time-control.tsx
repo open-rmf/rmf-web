@@ -5,7 +5,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { MapControl, MapControlProps, withLeaflet } from 'react-leaflet';
 import { PositiveIntField } from '../form-inputs';
-import { createPortal } from 'react-dom';
 
 const classes = {
   root: 'traj-time-control-root',
