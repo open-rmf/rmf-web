@@ -28,6 +28,7 @@ interface SingleDoorProps extends DoorProps {
   opacity: number;
   meshRef: React.Ref<THREE.Mesh>;
   doorState: number | undefined;
+  color: string;
 }
 
 function SingleSwingDoor({
@@ -37,6 +38,7 @@ function SingleSwingDoor({
   height,
   doorState,
   elevation,
+  color,
 }: SingleDoorProps) {
   const { v1_x, v1_y, v2_x, v2_y, door_type, motion_direction, name } = door;
   const thickness = 0.5;
@@ -61,7 +63,7 @@ function SingleSwingDoor({
       position={pos}
       size={[thickness, dist, height]}
       rot={rot}
-      color={'red'}
+      color={color}
     />
   );
 }
@@ -71,14 +73,12 @@ export const Door = React.memo(({ ...doorProps }: DoorProps): JSX.Element => {
   const { door } = doorProps;
   const rmf = React.useContext(RmfAppContext);
   const [doorState, setDoorState] = React.useState<DoorState | null>(null);
+  const [color, setColor] = React.useState<string>('red');
 
   React.useEffect(() => {
     if (!rmf) {
-      // console.log("rmf null")
       return;
     }
-    // console.log("In useEffect door")
-    // console.log(door.name);
     const sub = rmf.getDoorStateObs(door.name).subscribe(setDoorState);
     return () => sub.unsubscribe();
   }, [rmf, door.name]);
@@ -92,26 +92,20 @@ export const Door = React.memo(({ ...doorProps }: DoorProps): JSX.Element => {
   //     }
   //   });
 
-  // switch (doorState?.current_mode.value){
-  //   case DoorMode.MODE_CLOSED:
-  //     return <SingleSwingDoorClosed {...doorVisProps} {...doorState} />
-  //   case DoorMode.MODE_OPEN:
-  //     ref.current.rotateZ(0.5);
-  //     return <SingleSwingDoorOpened {...doorVisProps} {...doorState} />
-  //   default:
-  //     return null;
-  // }
-
-  // switch (doorState?.current_mode.value){
-  //   case DoorMode.MODE_CLOSED:
-  //     break;
-  //   case DoorMode.MODE_OPEN:
-  //     ref.current.rotateZ(0.5);
-  //     break;
-  //   case DoorMode.MODE_MOVING:
-  //     ref.current.rotateY(0.5);
-  //     break;
-  //   }
+  React.useEffect(() => {
+    switch (doorState?.current_mode.value) {
+      case DoorMode.MODE_CLOSED:
+        setColor('red');
+        return;
+      case DoorMode.MODE_MOVING:
+        setColor('orange');
+        return;
+      case DoorMode.MODE_OPEN:
+      default:
+        setColor('green');
+        return;
+    }
+  }, [doorState?.current_mode.value]);
 
   return (
     <SingleSwingDoor
@@ -119,6 +113,7 @@ export const Door = React.memo(({ ...doorProps }: DoorProps): JSX.Element => {
       key={door.name}
       meshRef={ref}
       doorState={doorState?.current_mode.value}
+      color={color}
     />
   );
   // switch (door.door_type) {
