@@ -318,7 +318,7 @@ export const MapApp = styled(
       })();
     }, [fleets, robotsStore, resourceManager, currentLevel]);
 
-    const { current: robotLocations } = React.useRef<Record<string, [number, number]>>({});
+    const { current: robotLocations } = React.useRef<Record<string, [number, number, number]>>({});
     // updates the robot location
     React.useEffect(() => {
       if (!rmf) {
@@ -342,7 +342,11 @@ export const MapApp = styled(
               console.warn(`Map: Fail to update robot location for ${robotId} (missing location)`);
               return;
             }
-            robotLocations[robotId] = [robotState.location.x, robotState.location.y];
+            robotLocations[robotId] = [
+              robotState.location.x,
+              robotState.location.y,
+              robotState.location.yaw,
+            ];
           });
         });
       return () => sub.unsubscribe();
@@ -377,7 +381,8 @@ export const MapApp = styled(
           );
           return;
         }
-        const mapCoords = fromRmfCoords(robotLocation);
+        const mapCoordsLocation: [number, number] = [robotLocation[0], robotLocation[1]];
+        const mapCoords = fromRmfCoords(mapCoordsLocation);
         const newCenter: L.LatLngTuple = [mapCoords[1], mapCoords[0]];
         AppEvents.mapCenter.next(newCenter);
         AppEvents.zoom.next(6);
@@ -593,7 +598,12 @@ export const MapApp = styled(
             dampingFactor={0.1}
           />
           <BuildingCubes level={currentLevel} />
-          <RobotShape robots={robots} robotLocations={robotLocations} />
+          <RobotShape
+            robots={robots}
+            robotLocations={robotLocations}
+            level={currentLevel}
+            trajectories={trajectories}
+          />
           <ambientLight />
         </Canvas>
         <div id="annotationsPanel">
