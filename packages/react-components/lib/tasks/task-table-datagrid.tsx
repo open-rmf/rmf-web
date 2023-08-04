@@ -11,9 +11,10 @@ import {
   GridFilterModel,
   GridSortModel,
 } from '@mui/x-data-grid';
-import { styled, TextField } from '@mui/material';
+import { styled, TextField, Stack, Typography, Tooltip } from '@mui/material';
 import * as React from 'react';
 import { TaskState, Status } from 'api-client';
+import { InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
 
 const classes = {
   taskActiveCell: 'MuiDataGrid-cell-active-cell',
@@ -79,6 +80,37 @@ export interface TableDataGridState {
   setSortFields: React.Dispatch<React.SetStateAction<SortFields>>;
 }
 
+const TaskRequester = (requester: string | null): JSX.Element => {
+  if (!requester) {
+    return <Typography variant="body1">unknown</Typography>;
+  }
+
+  /** When a task is created as scheduled,
+   we save the requester as USERNAME__scheduled.
+   Therefore, we remove the __schedule because the different icon is enough indicator to know
+   if the task was adhoc or scheduled.
+  */
+  return (
+    <Stack direction="row" alignItems="center" gap={1}>
+      {requester.includes('scheduled') ? (
+        <>
+          <Tooltip title="User scheduled">
+            <ScheduleIcon />
+          </Tooltip>
+          <Typography variant="body1">{requester.split('__')[0]}</Typography>
+        </>
+      ) : (
+        <>
+          <Tooltip title="User submitted">
+            <UserIcon />
+          </Tooltip>
+          <Typography variant="body1">{requester}</Typography>
+        </>
+      )}
+    </Stack>
+  );
+};
+
 export function TaskDataGridTable({
   tasks,
   onTaskClick,
@@ -134,11 +166,10 @@ export function TaskDataGridTable({
     {
       field: 'requester',
       headerName: 'Requester',
-      width: 150,
+      minWidth: 160,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.booking.requester ? params.row.booking.requester : 'unknown',
-      flex: 1,
+      renderCell: (cellValues) => TaskRequester(cellValues.row.booking.requester),
+      flex: 2,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,
     },
