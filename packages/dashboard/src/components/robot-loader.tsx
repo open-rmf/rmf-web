@@ -1,19 +1,22 @@
 import { RobotData } from './robots-overlay';
 import React from 'react';
 import { useLoader } from '@react-three/fiber';
-import { Line } from '@react-three/drei';
+import { Box, Line, Text } from '@react-three/drei';
 
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
-import { Level } from 'api-client';
+import { Graph, GraphNode, Level } from 'api-client';
 import { TrajectoryData } from './trajectories-overlay';
+import { Place } from 'react-components';
+import { Cube } from './cube';
 
 interface RobotShapeProps {
   robots: RobotData[];
   robotLocations: Record<string, [number, number, number]>;
   level: Level;
   trajectories: TrajectoryData[];
+  waypoints: Place[];
 }
 
 interface TrajectoryComponentProps {
@@ -23,7 +26,7 @@ interface TrajectoryComponentProps {
 
 const TrajectoryComponent: React.FC<TrajectoryComponentProps> = ({ points, color }) => {
   const ref = React.useRef<THREE.Line>();
-  return <Line points={points} color={color} linewidth={2} />;
+  return <Line points={points} color={color} linewidth={2} renderOrder={1} />;
 };
 interface TrajectoryOverlayProps {
   trajectories: TrajectoryData[];
@@ -35,9 +38,9 @@ const TrajectoryOverlay: React.FC<TrajectoryOverlayProps> = ({ trajectories }) =
       {trajectories.map((trajData) => (
         <TrajectoryComponent
           key={trajData.trajectory.id}
-          points={trajData.trajectory.segments.map(
-            (seg) => new THREE.Vector3(seg.x[0], seg.x[1], seg.x[2]),
-          )}
+          points={trajData.trajectory.segments.map((seg) => {
+            return new THREE.Vector3(seg.x[0], seg.x[1], 5);
+          })}
           color={trajData.color}
         />
       ))}
@@ -62,16 +65,49 @@ function PlaneRobot({ position, color, opacity, scale, elevation, rotation }: an
   });
   return (
     <group position={[position[0], position[1], positionZ[2]]} rotation={rotation} scale={scale}>
-      <primitive object={object} ref={objectRef} />
+      <primitive object={object} ref={objectRef} color={color} opacity={opacity} />
       <primitive object={object.clone()} ref={objectRef} />
     </group>
   );
 }
 
-export function RobotShape({ robots, robotLocations, level, trajectories }: RobotShapeProps) {
+interface WallSegment {
+  position: number[];
+  width: number;
+  height: number;
+  depth: number;
+  rot: THREE.Euler;
+}
+
+interface WaypointProps {
+  place: Place;
+}
+
+const Waypoint = ({ place }: WaypointProps) => {
+  const { vertex, level } = place;
+  return (
+    <group position={[vertex.x, vertex.y, 0]}>
+      <Text position={[0, 0, 3.5]} color="orange" fontSize={0.4} anchorX="center" anchorY="middle">
+        {vertex.name}
+      </Text>
+      {/* <Box position={[0, 0, 3.5]} /> */}
+    </group>
+  );
+};
+
+export function RobotShape({
+  robots,
+  robotLocations,
+  level,
+  trajectories,
+  waypoints,
+}: RobotShapeProps) {
   const { elevation } = level;
   return (
     <>
+      {waypoints.map((place, index) => (
+        <Waypoint key={index} place={place} />
+      ))}
       <TrajectoryOverlay trajectories={trajectories} />
       {robots.map((robot, i) => {
         const robotId = `${robot.fleet}/${robot.name}`;
