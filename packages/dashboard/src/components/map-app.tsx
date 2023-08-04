@@ -33,16 +33,9 @@ import { TrajectoriesOverlay, TrajectoryData } from './trajectories-overlay';
 import { WaypointsOverlay } from './waypoints-overlay';
 import { WorkcellData, WorkcellsOverlay } from './workcells-overlay';
 import { RobotSummary } from './robots/robot-summary';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
 import * as THREE from 'three';
-import {
-  PerspectiveCamera,
-  PositionalAudio,
-  OrbitControls,
-  Environment,
-  Stats,
-  Stage,
-} from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import { BuildingCubes, findSceneBoundingBox } from './level';
 import { RobotShape } from './robot-loader';
 
@@ -603,6 +596,7 @@ export const MapApp = styled(
             robotLocations={robotLocations}
             level={currentLevel}
             trajectories={trajectories}
+            waypoints={waypoints}
           />
           <ambientLight />
         </Canvas>
