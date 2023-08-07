@@ -541,9 +541,6 @@ export const MapApp = styled(
       //       />
       //     </LayersControl.Overlay>
       //   </LayersControl>
-      //   {openRobotSummary && selectedRobot && (
-      //     <RobotSummary robot={selectedRobot} onClose={() => setOpenRobotSummary(false)} />
-      //   )}
 
       //   <TrajectoryTimeControl
       //     position="topleft"
@@ -559,7 +556,6 @@ export const MapApp = styled(
       //     }
       //   />
       // </LMap>
-      // <MapConstruction levels={buildingMap.levels} robots={robots} robotLocations={robotLocations} />
 
       <Suspense fallback={null}>
         <Canvas
@@ -597,9 +593,16 @@ export const MapApp = styled(
             level={currentLevel}
             trajectories={trajectories}
             waypoints={waypoints}
+            onRobotClick={(_ev, robot) => {
+              setOpenRobotSummary(true);
+              setSelectedRobot(robot);
+            }}
           />
           <ambientLight />
         </Canvas>
+        {openRobotSummary && selectedRobot && (
+          <RobotSummary robot={selectedRobot} onClose={() => setOpenRobotSummary(false)} />
+        )}
         <div id="annotationsPanel">
           <ul>
             {buildingMap.levels.map((level, i) => {
