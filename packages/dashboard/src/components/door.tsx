@@ -1,8 +1,6 @@
 import * as THREE from 'three';
-import React, { Ref, useRef, useState } from 'react';
-import { Canvas, useFrame, MeshProps } from '@react-three/fiber';
-import { Euler, StringKeyframeTrack } from 'three';
-import { DoorState, GraphNode } from 'api-client';
+import React from 'react';
+import { DoorState, Lift, LiftState } from 'api-client';
 import { Cube } from './cube';
 import { Door as DoorModel } from 'rmf-models';
 import { RmfAppContext } from './rmf-app';
@@ -21,6 +19,7 @@ interface DoorProps {
   opacity: number;
   height: number;
   elevation: number;
+  lift?: Lift;
 }
 
 interface SingleDoorProps extends DoorProps {
@@ -40,19 +39,12 @@ function SingleSwingDoor({
   elevation,
   color,
 }: SingleDoorProps) {
-  const { v1_x, v1_y, v2_x, v2_y, door_type, motion_direction, name } = door;
+  const { v1_x, v1_y, v2_x, v2_y } = door;
   const thickness = 0.5;
   const v = new THREE.Vector3(v1_x - v2_x, 0, v1_y - v2_y);
   v.normalize();
   const angle = Math.atan2(v1_y - v2_y, v1_x - v2_x) - Math.PI / 2;
   const rot = new THREE.Euler(0, 0, angle);
-  let z = v.angleTo(new THREE.Vector3(0, 0, 1));
-
-  if (doorState === 1) {
-    z += 1;
-  } else if (doorState === 2) {
-    z += 3;
-  }
 
   const pos = midPoint(v1_x, v1_y, v2_x, v2_y).concat(height / 2 + elevation);
   const dist = distance(v1_x, v1_y, v2_x, v2_y);
@@ -68,12 +60,29 @@ function SingleSwingDoor({
   );
 }
 
+function toDoorMode(liftState: LiftState): DoorMode {
+  return { value: liftState.door_state };
+}
+
 export const Door = React.memo(({ ...doorProps }: DoorProps): JSX.Element => {
-  const ref = useRef<THREE.Mesh>(null!);
-  const { door } = doorProps;
+  const ref = React.useRef<THREE.Mesh>(null!);
+  const { door, lift } = doorProps;
   const rmf = React.useContext(RmfAppContext);
   const [doorState, setDoorState] = React.useState<DoorState | null>(null);
+  const [liftState, setLiftState] = React.useState<LiftState | undefined>(undefined);
   const [color, setColor] = React.useState<string>('red');
+
+  React.useEffect(() => {
+    if (!rmf) {
+      return;
+    }
+    if (!lift) {
+      return;
+    }
+
+    const sub = rmf.getLiftStateObs(lift.name).subscribe(setLiftState);
+    return () => sub.unsubscribe();
+  }, [rmf, lift]);
 
   React.useEffect(() => {
     if (!rmf) {
@@ -83,17 +92,12 @@ export const Door = React.memo(({ ...doorProps }: DoorProps): JSX.Element => {
     return () => sub.unsubscribe();
   }, [rmf, door.name]);
 
-  //   console.log(doorState);
-  //   useFrame(() => {
-  //     if (ref.current) {
-  //       if (doorState?.current_mode.value === 1) {
-  //         ref.current.rotation.z += 0.1;
-  //       }
-  //     }
-  //   });
-
   React.useEffect(() => {
-    switch (doorState?.current_mode.value) {
+    let doorStateValue = doorState?.current_mode.value;
+    if (liftState) {
+      doorStateValue = toDoorMode(liftState).value;
+    }
+    switch (doorStateValue) {
       case DoorMode.MODE_CLOSED:
         setColor('red');
         return;
@@ -105,7 +109,7 @@ export const Door = React.memo(({ ...doorProps }: DoorProps): JSX.Element => {
         setColor('green');
         return;
     }
-  }, [doorState?.current_mode.value]);
+  }, [doorState?.current_mode.value, liftState]);
 
   return (
     <SingleSwingDoor
@@ -116,10 +120,4 @@ export const Door = React.memo(({ ...doorProps }: DoorProps): JSX.Element => {
       color={color}
     />
   );
-  // switch (door.door_type) {
-  //   case Door.DOOR_TYPE_DOUBLE_SWING:
-  //     return <SingleSwingDoor {...doorVisProps} />
-  //   default:
-  //     return null;
-  // }
 });
