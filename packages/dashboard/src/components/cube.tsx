@@ -21,7 +21,7 @@ export function Cube({ position, size, rot, color, meshRef }: CubeProps, props: 
     >
       <planeGeometry />
       {/* <boxGeometry /> */}
-      <meshStandardMaterial color={color || 'blue'} opacity={0.2} transparent />
+      <meshStandardMaterial color={color || 'black'} opacity={0.6} transparent />
     </mesh>
   );
 }
