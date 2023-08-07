@@ -26,7 +26,7 @@ interface TrajectoryComponentProps {
 
 const TrajectoryComponent: React.FC<TrajectoryComponentProps> = ({ points, color }) => {
   const ref = React.useRef<THREE.Line>();
-  return <Line points={points} color={color} linewidth={2} renderOrder={1} />;
+  return <Line points={points} color={color} linewidth={10} renderOrder={1} />;
 };
 interface TrajectoryOverlayProps {
   trajectories: TrajectoryData[];
@@ -39,7 +39,7 @@ const TrajectoryOverlay: React.FC<TrajectoryOverlayProps> = ({ trajectories }) =
         <TrajectoryComponent
           key={trajData.trajectory.id}
           points={trajData.trajectory.segments.map((seg) => {
-            return new THREE.Vector3(seg.x[0], seg.x[1], 5);
+            return new THREE.Vector3(seg.x[0], seg.x[1], 4);
           })}
           color={trajData.color}
         />
@@ -87,10 +87,10 @@ const Waypoint = ({ place }: WaypointProps) => {
   const { vertex, level } = place;
   return (
     <group position={[vertex.x, vertex.y, 0]}>
-      <Text position={[0, 0, 3.5]} color="orange" fontSize={0.4} anchorX="center" anchorY="middle">
+      <Text position={[0, 0.3, 4.5]} color="orange" fontSize={0.4}>
         {vertex.name}
       </Text>
-      {/* <Box position={[0, 0, 3.5]} /> */}
+      <Box args={[0.3, 0.3, 0.3]} position={[0, 0, 4]} />
     </group>
   );
 };
