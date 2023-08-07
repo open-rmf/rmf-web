@@ -590,7 +590,7 @@ export const MapApp = styled(
             enableDamping
             dampingFactor={0.1}
           />
-          <BuildingCubes level={currentLevel} />
+          <BuildingCubes level={currentLevel} lifts={buildingMap.lifts} />
           <RobotShape
             robots={robots}
             robotLocations={robotLocations}
