@@ -12,6 +12,19 @@ export const BeaconsApp = createMicroApp('Beacons', () => {
     if (!rmf) {
       return;
     }
+
+    (async () => {
+      const { data } = await rmf.beaconsApi.getBeaconsBeaconsGet();
+      for (const state of data) {
+        setBeacons((prev) => {
+          return {
+            ...prev,
+            [state.id]: state,
+          };
+        });
+      }
+    })();
+
     const sub = rmf.beaconsObsStore.subscribe(async (beaconState) => {
       setBeacons((prev) => {
         return {
