@@ -2,6 +2,7 @@ import Debug from 'debug';
 import { io, Socket } from 'socket.io-client';
 import {
   ApiServerModelsTortoiseModelsAlertsAlertLeaf,
+  ApiServerModelsTortoiseModelsBeaconsBeaconStateLeaf as BeaconState,
   BuildingMap,
   DispenserHealth,
   DispenserState,
@@ -66,6 +67,10 @@ export class SioClient {
       );
     }
     this.sio.off(sub.room, sub.listener);
+  }
+
+  subscribeBeaconState(listener: Listener<BeaconState>): Subscription {
+    return this.subscribe<BeaconState>('/beacons', listener);
   }
 
   subscribeBuildingMap(listener: Listener<BuildingMap>): Subscription {
