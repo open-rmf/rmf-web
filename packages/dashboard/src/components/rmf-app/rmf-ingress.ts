@@ -2,6 +2,8 @@ import {
   AdminApi,
   AlertsApi,
   ApiServerModelsTortoiseModelsAlertsAlertLeaf,
+  ApiServerModelsTortoiseModelsBeaconsBeaconStateLeaf as BeaconState,
+  BeaconsApi,
   BuildingApi,
   BuildingMap,
   Configuration,
@@ -44,6 +46,7 @@ export class RmfIngress {
   // correctly.
   private _sioClient: SioClient;
 
+  beaconsApi: BeaconsApi;
   buildingApi: BuildingApi;
   defaultApi: DefaultApi;
   doorsApi: DoorsApi;
@@ -96,6 +99,7 @@ export class RmfIngress {
       basePath: appConfig.rmfServerUrl,
     });
 
+    this.beaconsApi = new BeaconsApi(apiConfig, undefined, axiosInst);
     this.buildingApi = new BuildingApi(apiConfig, undefined, axiosInst);
     this.defaultApi = new DefaultApi(apiConfig, undefined, axiosInst);
     this.doorsApi = new DoorsApi(apiConfig, undefined, axiosInst);
@@ -123,6 +127,10 @@ export class RmfIngress {
 
   buildingMapObs: Observable<BuildingMap> = this._convertSioToRxObs((handler) =>
     this._sioClient.subscribeBuildingMap(handler),
+  );
+
+  beaconsObsStore: Observable<BeaconState> = this._convertSioToRxObs((handler) =>
+    this._sioClient.subscribeBeaconState(handler),
   );
 
   doorsObs: Observable<Door[]> = this.buildingMapObs.pipe(
