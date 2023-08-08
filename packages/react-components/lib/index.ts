@@ -7,6 +7,7 @@ import '@mui/system';
 
 export * from './appbar-tab';
 export * from './alert-dialog';
+export * from './beacons';
 export * from './color-manager';
 export * from './confirmation-dialog';
 export * from './doors';
