@@ -1,7 +1,7 @@
 import { RobotData } from './robots-overlay';
 import React from 'react';
 import { ThreeEvent, useLoader } from '@react-three/fiber';
-import { Box, Html, Line, Text } from '@react-three/drei';
+import { Line, Text } from '@react-three/drei';
 
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
@@ -25,8 +25,7 @@ interface TrajectoryComponentProps {
 }
 
 const TrajectoryComponent: React.FC<TrajectoryComponentProps> = ({ points, color }) => {
-  const ref = React.useRef<THREE.Line>();
-  return <Line points={points} color={color} linewidth={10} renderOrder={1} />;
+  return <Line points={points} color={color} linewidth={10} />;
 };
 interface TrajectoryOverlayProps {
   trajectories: TrajectoryData[];
@@ -34,6 +33,7 @@ interface TrajectoryOverlayProps {
 
 interface WaypointProps {
   place: Place;
+  elevation: number;
 }
 
 interface PlaneRobotProps {
@@ -47,7 +47,7 @@ interface PlaneRobotProps {
   robot: RobotData;
 }
 
-const TrajectoryOverlay: React.FC<TrajectoryOverlayProps> = ({ trajectories }) => {
+const TrajectoryOverlay = ({ trajectories }: TrajectoryOverlayProps) => {
   return (
     <>
       {trajectories.map((trajData) => (
@@ -72,10 +72,8 @@ function PlaneRobot({
   rotation,
   onRobotClick,
 }: PlaneRobotProps) {
-  const v1 = position[0];
-  const v2 = position[1];
   const height = 8;
-  const positionZ = [(v2 + v1) / 2, (v2 + v1) / 2, height / 2 + elevation];
+  const zPosition = height / 2 + elevation;
 
   const objPath = '/Hatchback/meshes/hatchback.obj';
   const mtlPath = '/Hatchback/meshes/hatchback.mtl';
@@ -88,7 +86,7 @@ function PlaneRobot({
   });
   return (
     <group
-      position={[position[0], position[1], positionZ[2]]}
+      position={[position[0], position[1], zPosition]}
       rotation={rotation}
       scale={scale}
       onClick={onRobotClick}
@@ -99,20 +97,19 @@ function PlaneRobot({
   );
 }
 
-const Waypoint = ({ place }: WaypointProps) => {
+const Waypoint = ({ place, elevation }: WaypointProps) => {
   const { vertex } = place;
+  const height = 8;
+  const zPosition = height / 2 + elevation;
   return (
     <group position={[vertex.x, vertex.y, 0]}>
-      <Text position={[0, 0.3, 4.5]} color="orange" fontSize={0.4}>
+      <Text position={[0, 0.7, zPosition]} color="orange" fontSize={0.3}>
         {vertex.name}
       </Text>
-      <mesh position={[0, 0, 4]} scale={[0.7, 0.7, 0.7]}>
+      <mesh position={[0, 0, zPosition]} scale={[0.7, 0.7, 0.7]}>
         <boxGeometry args={[0.3, 0.3, 0.3]} />
         <meshStandardMaterial color="yellow" opacity={1} />
       </mesh>
-      {/* <Html position={[0, 0.3, 4.5]}>
-        <div style={{ color: 'orange', fontSize: 'rem' }}>{vertex.name}</div>
-      </Html> */}
     </group>
   );
 };
@@ -129,7 +126,7 @@ export function RobotShape({
   return (
     <>
       {waypoints.map((place, index) => (
-        <Waypoint key={index} place={place} />
+        <Waypoint key={index} place={place} elevation={elevation} />
       ))}
       <TrajectoryOverlay trajectories={trajectories} />
       {robots.map((robot, i) => {
