@@ -1,6 +1,6 @@
 import { DataGrid, GridColDef, GridValueGetterParams, GridCellParams } from '@mui/x-data-grid';
 import { Box, Button, SxProps, Typography, useTheme } from '@mui/material';
-import * as React from 'react';
+import React from 'react';
 import { DoorState } from 'api-client';
 import { DoorMode } from 'rmf-models';
 import { doorModeToString, doorTypeToString } from './door-utils';
