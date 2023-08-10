@@ -86,7 +86,7 @@ function PlaneRobot({
   onRobotClick,
 }: PlaneRobotProps) {
   const height = 8;
-  const zPosition = height / 2 + elevation;
+  const zPosition = height / 2 + 0;
 
   const objPath = '/Hatchback/meshes/hatchback.obj';
   const mtlPath = '/Hatchback/meshes/hatchback.mtl';
@@ -113,10 +113,10 @@ function PlaneRobot({
 const Waypoint = ({ place, elevation }: WaypointProps) => {
   const { vertex } = place;
   const height = 8;
-  const zPosition = height / 2 + elevation;
+  const zPosition = height / 2 + 0;
   return (
     <group position={[vertex.x, vertex.y, 0]}>
-      <Text position={[0, 0.7, zPosition]} color="orange" fontSize={0.3}>
+      <Text position={[0, 0.7, zPosition]} color="orange" fontSize={0.6}>
         {vertex.name}
       </Text>
       <mesh position={[0, 0, zPosition]} scale={[0.7, 0.7, 0.7]}>
@@ -130,7 +130,7 @@ const Waypoint = ({ place, elevation }: WaypointProps) => {
 const Ingestor = ({ ingestor, elevation }: IngestorProps) => {
   const { location } = ingestor;
   const height = 8;
-  const zPosition = height / 2 + elevation;
+  const zPosition = height / 2 + 0;
   return (
     <group position={[location[0], location[1], 0]}>
       <mesh position={[0, 0, zPosition]} scale={[0.7, 0.7, 0.7]}>
@@ -144,7 +144,7 @@ const Ingestor = ({ ingestor, elevation }: IngestorProps) => {
 const Dispenser = ({ dispenser, elevation }: DispenserProps) => {
   const { location } = dispenser;
   const height = 8;
-  const zPosition = height / 2 + elevation;
+  const zPosition = height / 2 + 0;
   return (
     <group position={[location[0], location[1], 0]}>
       <mesh position={[0, 0, zPosition]} scale={[0.7, 0.7, 0.7]}>

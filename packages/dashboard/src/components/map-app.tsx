@@ -407,7 +407,7 @@ export const MapApp = styled(
       }
 
       const size = sceneBoundingBox.getSize(new THREE.Vector3());
-      setDistance(Math.max(size.x, size.y, size.z) * 0.9);
+      setDistance(Math.max(size.x, size.y, size.z) * 0.7);
     }, [sceneBoundingBox]);
 
     /*
@@ -574,6 +574,7 @@ export const MapApp = styled(
             }
             const center = sceneBoundingBox.getCenter(new THREE.Vector3());
             camera.position.set(center.x, center.y, center.z + distance);
+            console.log(camera);
             camera.updateProjectionMatrix();
           }}
         >
@@ -587,9 +588,10 @@ export const MapApp = styled(
         /> */}
           <OrbitControls
             target={sceneBoundingBox?.getCenter(new THREE.Vector3())}
-            ref={ref}
-            enableZoom
-            enablePan
+            // ref={ref}
+            // enableZoom
+            // enablePan
+            maxDistance={distance}
           />
           <BuildingCubes level={currentLevel} lifts={buildingMap.lifts} />
           <RobotShape

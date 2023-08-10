@@ -1,10 +1,8 @@
 import * as THREE from 'three';
-import { useRef } from 'react';
 import { MeshProps } from '@react-three/fiber';
 import { Graph } from 'api-client';
 import { GraphNode } from 'rmf-models';
 import { Cube } from './cube';
-import React from 'react';
 
 interface WallProps {
   walls: Graph;
@@ -35,7 +33,7 @@ export const graphToWalls = (graph: Graph, elevation: number) => {
     const midpoint = midPoint(v1, v2);
     const width = 0.3;
     const height = 8;
-    const position = midpoint.concat(height / 2 + elevation);
+    const position = midpoint.concat(height / 2 + 0);
 
     const angle = Math.atan2(v1.y - v2.y, v1.x - v2.x) - Math.PI / 2;
     const rot = new THREE.Euler(0, 0, angle);
@@ -53,7 +51,6 @@ export const graphToWalls = (graph: Graph, elevation: number) => {
 };
 
 export function Wall({ walls, elevation, opacity }: WallProps, props: MeshProps) {
-  const ref = useRef<THREE.Mesh>(null!);
   const walls_ = graphToWalls(walls, elevation);
 
   return (

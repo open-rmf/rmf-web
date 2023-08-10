@@ -46,7 +46,7 @@ function SingleSwingDoor({
   const angle = Math.atan2(v1_y - v2_y, v1_x - v2_x) - Math.PI / 2;
   const rot = new THREE.Euler(0, 0, angle);
 
-  const pos = midPoint(v1_x, v1_y, v2_x, v2_y).concat(height / 2 + elevation);
+  const pos = midPoint(v1_x, v1_y, v2_x, v2_y).concat(height / 2 + 0);
   const dist = distance(v1_x, v1_y, v2_x, v2_y);
   return (
     <Cube
