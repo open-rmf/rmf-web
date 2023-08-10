@@ -1,3 +1,4 @@
+import { BeaconsApp } from './beacons-app';
 import { DoorsApp } from './doors-app';
 import { LiftsApp } from './lifts-app';
 import { MapApp } from './map-app';
@@ -8,6 +9,7 @@ import { TaskLogsApp } from './tasks/task-logs-app';
 import { TasksApp } from './tasks/tasks-app';
 
 export const AppRegistry = {
+  Beacons: BeaconsApp,
   Doors: DoorsApp,
   Lifts: LiftsApp,
   Map: MapApp,
