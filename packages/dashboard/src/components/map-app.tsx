@@ -410,6 +410,13 @@ export const MapApp = styled(
       setDistance(Math.max(size.x, size.y, size.z) * 0.9);
     }, [sceneBoundingBox]);
 
+    /*
+    OrbitControls properties
+    enablePan: determines whether panning (moving) the camera around the scene is enabled or not.
+          If set to true, users can move the camera horizontally and vertically using the mouse or touch gestures.
+    enableDamping: Damping is a smooth deceleration of the camera's movement.
+    dampingFactor: This property controls the speed of the damping effect if enableDamping is set to true. */
+
     // const [overallSceneBoundingBox, setOverallSceneBoundingBox] = React.useState<
     //   THREE.Box3 | undefined
     // >(undefined);
@@ -583,8 +590,6 @@ export const MapApp = styled(
             ref={ref}
             enableZoom
             enablePan
-            enableDamping
-            dampingFactor={0.1}
           />
           <BuildingCubes level={currentLevel} lifts={buildingMap.lifts} />
           <RobotShape
@@ -597,6 +602,8 @@ export const MapApp = styled(
               setOpenRobotSummary(true);
               setSelectedRobot(robot);
             }}
+            ingestors={ingestorsData}
+            dispensers={dispensersData}
           />
           <ambientLight />
         </Canvas>

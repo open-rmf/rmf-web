@@ -9,6 +9,7 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { Level } from 'api-client';
 import { TrajectoryData } from './trajectories-overlay';
 import { Place } from 'react-components';
+import { WorkcellData } from './workcells-overlay';
 
 interface RobotShapeProps {
   robots: RobotData[];
@@ -17,6 +18,8 @@ interface RobotShapeProps {
   trajectories: TrajectoryData[];
   waypoints: Place[];
   onRobotClick?: (ev: ThreeEvent<MouseEvent>, robot: RobotData) => void;
+  ingestors: WorkcellData[];
+  dispensers: WorkcellData[];
 }
 
 interface TrajectoryComponentProps {
@@ -33,6 +36,16 @@ interface TrajectoryOverlayProps {
 
 interface WaypointProps {
   place: Place;
+  elevation: number;
+}
+
+interface IngestorProps {
+  ingestor: WorkcellData;
+  elevation: number;
+}
+
+interface DispenserProps {
+  dispenser: WorkcellData;
   elevation: number;
 }
 
@@ -114,6 +127,34 @@ const Waypoint = ({ place, elevation }: WaypointProps) => {
   );
 };
 
+const Ingestor = ({ ingestor, elevation }: IngestorProps) => {
+  const { location } = ingestor;
+  const height = 8;
+  const zPosition = height / 2 + elevation;
+  return (
+    <group position={[location[0], location[1], 0]}>
+      <mesh position={[0, 0, zPosition]} scale={[0.7, 0.7, 0.7]}>
+        <boxGeometry args={[0.3, 0.3, 0.3]} />
+        <meshStandardMaterial color="red" opacity={1} />
+      </mesh>
+    </group>
+  );
+};
+
+const Dispenser = ({ dispenser, elevation }: DispenserProps) => {
+  const { location } = dispenser;
+  const height = 8;
+  const zPosition = height / 2 + elevation;
+  return (
+    <group position={[location[0], location[1], 0]}>
+      <mesh position={[0, 0, zPosition]} scale={[0.7, 0.7, 0.7]}>
+        <boxGeometry args={[0.3, 0.3, 0.3]} />
+        <meshStandardMaterial color="blue" opacity={1} />
+      </mesh>
+    </group>
+  );
+};
+
 export function RobotShape({
   robots,
   robotLocations,
@@ -121,12 +162,20 @@ export function RobotShape({
   trajectories,
   waypoints,
   onRobotClick,
+  ingestors,
+  dispensers,
 }: RobotShapeProps) {
   const { elevation } = level;
   return (
     <>
       {waypoints.map((place, index) => (
         <Waypoint key={index} place={place} elevation={elevation} />
+      ))}
+      {ingestors.map((ingestor, index) => (
+        <Ingestor key={index} ingestor={ingestor} elevation={elevation} />
+      ))}
+      {dispensers.map((ingestor, index) => (
+        <Dispenser key={index} dispenser={ingestor} elevation={elevation} />
       ))}
       <TrajectoryOverlay trajectories={trajectories} />
       {robots.map((robot, i) => {
