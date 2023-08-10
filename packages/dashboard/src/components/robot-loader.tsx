@@ -1,52 +1,17 @@
 import { RobotData } from './robots-overlay';
 import React from 'react';
 import { ThreeEvent, useLoader } from '@react-three/fiber';
-import { Line, Text } from '@react-three/drei';
 
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { Level } from 'api-client';
-import { TrajectoryData } from './trajectories-overlay';
-import { Place } from 'react-components';
-import { WorkcellData } from './workcells-overlay';
 
-interface RobotShapeProps {
+interface ObjectLoaderProps {
   robots: RobotData[];
   robotLocations: Record<string, [number, number, number]>;
   level: Level;
-  trajectories: TrajectoryData[];
-  waypoints: Place[];
   onRobotClick?: (ev: ThreeEvent<MouseEvent>, robot: RobotData) => void;
-  ingestors: WorkcellData[];
-  dispensers: WorkcellData[];
-}
-
-interface TrajectoryComponentProps {
-  points: THREE.Vector3[];
-  color: string;
-}
-
-const TrajectoryComponent: React.FC<TrajectoryComponentProps> = ({ points, color }) => {
-  return <Line points={points} color={color} linewidth={10} />;
-};
-interface TrajectoryOverlayProps {
-  trajectories: TrajectoryData[];
-}
-
-interface WaypointProps {
-  place: Place;
-  elevation: number;
-}
-
-interface IngestorProps {
-  ingestor: WorkcellData;
-  elevation: number;
-}
-
-interface DispenserProps {
-  dispenser: WorkcellData;
-  elevation: number;
 }
 
 interface PlaneRobotProps {
@@ -59,22 +24,6 @@ interface PlaneRobotProps {
   onRobotClick?: (ev: ThreeEvent<MouseEvent>) => void;
   robot: RobotData;
 }
-
-const TrajectoryOverlay = ({ trajectories }: TrajectoryOverlayProps) => {
-  return (
-    <>
-      {trajectories.map((trajData) => (
-        <TrajectoryComponent
-          key={trajData.trajectory.id}
-          points={trajData.trajectory.segments.map((seg) => {
-            return new THREE.Vector3(seg.x[0], seg.x[1], 4);
-          })}
-          color={trajData.color}
-        />
-      ))}
-    </>
-  );
-};
 
 function PlaneRobot({
   position,
@@ -110,74 +59,10 @@ function PlaneRobot({
   );
 }
 
-const Waypoint = ({ place, elevation }: WaypointProps) => {
-  const { vertex } = place;
-  const height = 8;
-  const zPosition = height / 2 + 0;
-  return (
-    <group position={[vertex.x, vertex.y, 0]}>
-      <Text position={[0, 0.7, zPosition]} color="orange" fontSize={0.6}>
-        {vertex.name}
-      </Text>
-      <mesh position={[0, 0, zPosition]} scale={[0.7, 0.7, 0.7]}>
-        <boxGeometry args={[0.3, 0.3, 0.3]} />
-        <meshStandardMaterial color="yellow" opacity={1} />
-      </mesh>
-    </group>
-  );
-};
-
-const Ingestor = ({ ingestor, elevation }: IngestorProps) => {
-  const { location } = ingestor;
-  const height = 8;
-  const zPosition = height / 2 + 0;
-  return (
-    <group position={[location[0], location[1], 0]}>
-      <mesh position={[0, 0, zPosition]} scale={[0.7, 0.7, 0.7]}>
-        <boxGeometry args={[0.3, 0.3, 0.3]} />
-        <meshStandardMaterial color="red" opacity={1} />
-      </mesh>
-    </group>
-  );
-};
-
-const Dispenser = ({ dispenser, elevation }: DispenserProps) => {
-  const { location } = dispenser;
-  const height = 8;
-  const zPosition = height / 2 + 0;
-  return (
-    <group position={[location[0], location[1], 0]}>
-      <mesh position={[0, 0, zPosition]} scale={[0.7, 0.7, 0.7]}>
-        <boxGeometry args={[0.3, 0.3, 0.3]} />
-        <meshStandardMaterial color="blue" opacity={1} />
-      </mesh>
-    </group>
-  );
-};
-
-export function RobotShape({
-  robots,
-  robotLocations,
-  level,
-  trajectories,
-  waypoints,
-  onRobotClick,
-  ingestors,
-  dispensers,
-}: RobotShapeProps) {
+export function ObjectLoader({ robots, robotLocations, level, onRobotClick }: ObjectLoaderProps) {
   const { elevation } = level;
   return (
     <>
-      {waypoints.map((place, index) => (
-        <Waypoint key={index} place={place} elevation={elevation} />
-      ))}
-      {ingestors.map((ingestor, index) => (
-        <Ingestor key={index} ingestor={ingestor} elevation={elevation} />
-      ))}
-      {dispensers.map((ingestor, index) => (
-        <Dispenser key={index} dispenser={ingestor} elevation={elevation} />
-      ))}
-      <TrajectoryOverlay trajectories={trajectories} />
       {robots.map((robot, i) => {
         const robotId = `${robot.fleet}/${robot.name}`;
         const robotLocation = robotLocations[robotId];

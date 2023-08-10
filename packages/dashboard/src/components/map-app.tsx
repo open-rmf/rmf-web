@@ -37,7 +37,9 @@ import { Canvas } from '@react-three/fiber';
 import * as THREE from 'three';
 import { OrbitControls } from '@react-three/drei';
 import { BuildingCubes, findSceneBoundingBox } from './level';
-import { RobotShape } from './robot-loader';
+import { ObjectLoader } from './robot-loader';
+import { ThreeDObject } from './three-object-render';
+import { TrajectoryComponent } from './three-trajectory-overlay';
 
 type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
@@ -566,8 +568,6 @@ export const MapApp = styled(
 
       <Suspense fallback={null}>
         <Canvas
-          // onPointerDown={() => setLerping(false)}
-          // onWheel={() => setLerping(false)}
           onCreated={({ camera }) => {
             if (!sceneBoundingBox) {
               return;
@@ -578,34 +578,60 @@ export const MapApp = styled(
             camera.updateProjectionMatrix();
           }}
         >
-          {/* <OrbitControls
-          ref={ref}
-          enableZoom
-          enablePan
-          enableRotate
-          target={sceneBoundingBox?.getCenter(new THREE.Vector3())}
-          maxDistance={distance}
-        /> */}
           <OrbitControls
             target={sceneBoundingBox?.getCenter(new THREE.Vector3())}
-            // ref={ref}
-            // enableZoom
-            // enablePan
             maxDistance={distance}
           />
           <BuildingCubes level={currentLevel} lifts={buildingMap.lifts} />
-          <RobotShape
+          {waypoints.map((place, index) => (
+            <ThreeDObject
+              key={index}
+              position={[place.vertex.x, place.vertex.y, 0]}
+              color="yellow"
+              fontSize={0.6}
+              scale={[0.7, 0.7, 0.7]}
+              text={place.vertex.name}
+              elevation={0}
+            />
+          ))}
+          {ingestorsData.map((ingestor, index) => (
+            <ThreeDObject
+              key={index}
+              position={[ingestor.location[0], ingestor.location[1], 0]}
+              color="red"
+              fontSize={0.6}
+              scale={[0.7, 0.7, 0.7]}
+              elevation={0}
+            />
+          ))}
+
+          {dispensersData.map((dispenser, index) => (
+            <ThreeDObject
+              key={index}
+              position={[dispenser.location[0], dispenser.location[1], 0]}
+              color="blue"
+              fontSize={0.6}
+              scale={[0.7, 0.7, 0.7]}
+              elevation={0}
+            />
+          ))}
+          {trajectories.map((trajData) => (
+            <TrajectoryComponent
+              key={trajData.trajectory.id}
+              points={trajData.trajectory.segments.map((seg) => {
+                return new THREE.Vector3(seg.x[0], seg.x[1], 4);
+              })}
+              color={trajData.color}
+            />
+          ))}
+          <ObjectLoader
             robots={robots}
             robotLocations={robotLocations}
             level={currentLevel}
-            trajectories={trajectories}
-            waypoints={waypoints}
             onRobotClick={(_ev, robot) => {
               setOpenRobotSummary(true);
               setSelectedRobot(robot);
             }}
-            ingestors={ingestorsData}
-            dispensers={dispensersData}
           />
           <ambientLight />
         </Canvas>
