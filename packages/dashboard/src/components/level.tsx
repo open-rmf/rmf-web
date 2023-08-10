@@ -23,6 +23,7 @@ export const BuildingCubes = ({ level, lifts }: BuildingMapProps) => {
           <Door key={i} door={door} opacity={0.1} height={8} elevation={elevation} />
         ))}
 
+      {/* liftsDoors */}
       {lifts.length &&
         lifts.map((lift, i) =>
           lift.doors.map((door, i) => (
