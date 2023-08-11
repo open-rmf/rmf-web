@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import schedule
 import tortoise.transactions
@@ -127,6 +127,42 @@ async def get_scheduled_task(task_id: int) -> ttm.ScheduledTask:
     if task is None:
         raise HTTPException(404)
     return task
+
+
+@router.put("/{task_id}")
+async def udpate_scheduled_task(
+    task_id: int,
+    scheduled_task_request: ttm.ScheduledTaskSchedulePydantic,
+    schedule_id: int,
+):
+    task = await get_scheduled_task(task_id)
+    if task is None:
+        raise HTTPException(404)
+
+    schedule = ttm.ScheduledTaskSchedule(
+        _id=schedule_id, scheduled_task=task, **scheduled_task_request.dict()
+    )
+    await schedule.save()
+
+
+def is_same_date(cur: datetime, specific_date: datetime) -> bool:
+    return cur == specific_date
+
+
+@router.put("/{task_id}/clear")
+async def clear_scheduled_task(task_id: int, schedule_id: int):
+    print("Hey!")
+    task = await get_scheduled_task(task_id)
+    if task is None:
+        raise HTTPException(404)
+    new_run_date: datetime | None = task.schedules[schedule_id].except_date + timedelta(
+        days=7
+    )
+    job = task.schedules[schedule_id].to_job()
+
+    job.set_time(new_run_date)
+
+    schedule.add_job(job)
 
 
 @router.delete("/{task_id}")
