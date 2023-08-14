@@ -20,4 +20,8 @@ class BuildingMap(rmf_building_map_msgs.BuildingMap):
         return BuildingMap(**tortoise.data)
 
     async def save(self) -> None:
+        existing_maps = await ttm.BuildingMap.all()
+        for m in existing_maps:
+            if m.id_ != self.name:
+                await m.delete()
         await ttm.BuildingMap.update_or_create({"data": self.dict()}, id_=self.name)
