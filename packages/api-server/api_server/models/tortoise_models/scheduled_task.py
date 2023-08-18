@@ -57,6 +57,7 @@ class ScheduledTaskSchedule(Model):
     until = DatetimeField(null=True)
     period = CharEnumField(Period)
     at = CharField(255, null=True)
+    except_date = DatetimeField(null=True)
 
     def get_id(self) -> IntField:
         return self._id

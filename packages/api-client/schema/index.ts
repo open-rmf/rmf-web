@@ -1224,6 +1224,47 @@ export default {
           },
         },
       },
+      put: {
+        tags: ['Tasks'],
+        summary: 'Udpate Scheduled Task',
+        operationId: 'udpate_scheduled_task_scheduled_tasks__task_id__put',
+        parameters: [
+          {
+            required: true,
+            schema: { title: 'Task Id', type: 'integer' },
+            name: 'task_id',
+            in: 'path',
+          },
+          {
+            required: true,
+            schema: { title: 'Schedule Id', type: 'integer' },
+            name: 'schedule_id',
+            in: 'query',
+          },
+        ],
+        requestBody: {
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/api_server.models.tortoise_models.scheduled_task.ScheduledTaskSchedule.leaf',
+              },
+            },
+          },
+          required: true,
+        },
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: { 'application/json': { schema: {} } },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
       delete: {
         tags: ['Tasks'],
         summary: 'Del Scheduled Tasks',
@@ -1234,6 +1275,39 @@ export default {
             schema: { title: 'Task Id', type: 'integer' },
             name: 'task_id',
             in: 'path',
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: { 'application/json': { schema: {} } },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
+    '/scheduled_tasks/{task_id}/clear': {
+      put: {
+        tags: ['Tasks'],
+        summary: 'Clear Scheduled Task',
+        operationId: 'clear_scheduled_task_scheduled_tasks__task_id__clear_put',
+        parameters: [
+          {
+            required: true,
+            schema: { title: 'Task Id', type: 'integer' },
+            name: 'task_id',
+            in: 'path',
+          },
+          {
+            required: true,
+            schema: { title: 'Schedule Id', type: 'integer' },
+            name: 'schedule_id',
+            in: 'query',
           },
         ],
         responses: {
@@ -3701,6 +3775,12 @@ export default {
               'Monday: monday<br/>Tuesday: tuesday<br/>Wednesday: wednesday<br/>Thursday: thursday<br/>Friday: friday<br/>Saturday: saturday<br/>Sunday: sunday<br/>Day: day<br/>Hour: hour<br/>Minute: minute',
           },
           at: { title: 'At', maxLength: 255, type: 'string', nullable: true },
+          except_date: {
+            title: 'Except Date',
+            type: 'string',
+            format: 'date-time',
+            nullable: true,
+          },
         },
         additionalProperties: false,
         description:

@@ -1,4 +1,5 @@
 import asyncio
+import time
 from datetime import datetime, timedelta
 
 import schedule
@@ -129,40 +130,33 @@ async def get_scheduled_task(task_id: int) -> ttm.ScheduledTask:
     return task
 
 
-@router.put("/{task_id}")
-async def udpate_scheduled_task(
-    task_id: int,
-    scheduled_task_request: ttm.ScheduledTaskSchedulePydantic,
-    schedule_id: int,
-):
-    task = await get_scheduled_task(task_id)
-    if task is None:
-        raise HTTPException(404)
-
-    schedule = ttm.ScheduledTaskSchedule(
-        _id=schedule_id, scheduled_task=task, **scheduled_task_request.dict()
-    )
-    await schedule.save()
-
-
-def is_same_date(cur: datetime, specific_date: datetime) -> bool:
-    return cur == specific_date
-
-
 @router.put("/{task_id}/clear")
 async def clear_scheduled_task(task_id: int, schedule_id: int):
-    print("Hey!")
     task = await get_scheduled_task(task_id)
+    task.schedules[schedule_id].except_date = datetime.now()
+
+    await task.save()
+
     if task is None:
         raise HTTPException(404)
+
     new_run_date: datetime | None = task.schedules[schedule_id].except_date + timedelta(
         days=7
     )
-    job = task.schedules[schedule_id].to_job()
 
-    job.set_time(new_run_date)
+    for sche in task.schedules:
+        if sche.except_date:
+            print("before next change")
+            print(list((job.next_run, job.tags) for job in schedule.jobs))
+            jobs_to_cancel = schedule.get_jobs()
+            for job in jobs_to_cancel:
+                if job.next_run.date() == sche.except_date.date():
+                    job.next_run = new_run_date
+                    # schedule.cancel_job(job)
 
-    schedule.add_job(job)
+    print("After next change")
+    jobsss = schedule.get_jobs()
+    print(list((job.next_run, job.tags) for job in jobsss))
 
 
 @router.delete("/{task_id}")
