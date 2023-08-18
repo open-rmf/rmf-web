@@ -401,7 +401,9 @@ export const MapApp = styled(
     );
     const [distance, setDistance] = React.useState<number>(0);
 
-    React.useMemo(() => setSceneBoundingBox(findSceneBoundingBox(currentLevel)), [currentLevel]);
+    React.useMemo(() => {
+      setSceneBoundingBox(findSceneBoundingBox(currentLevel));
+    }, [currentLevel]);
 
     React.useEffect(() => {
       if (!sceneBoundingBox) {
@@ -574,13 +576,21 @@ export const MapApp = styled(
             }
             const center = sceneBoundingBox.getCenter(new THREE.Vector3());
             camera.position.set(center.x, center.y, center.z + distance);
+            camera.zoom = 20;
             console.log(camera);
             camera.updateProjectionMatrix();
           }}
+          orthographic={true}
         >
           <OrbitControls
-            target={sceneBoundingBox?.getCenter(new THREE.Vector3())}
-            maxDistance={distance}
+            target={new THREE.Vector3(0, 0, -1000)}
+            enableRotate={false}
+            enableDamping={false}
+            mouseButtons={{
+              LEFT: THREE.MOUSE.PAN,
+              MIDDLE: undefined,
+              RIGHT: undefined,
+            }}
           />
           <BuildingCubes level={currentLevel} lifts={buildingMap.lifts} />
           {waypoints.map((place, index) => (
