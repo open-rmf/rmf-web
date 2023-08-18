@@ -472,6 +472,7 @@ export const TasksApp = React.memo(
               getRemoteEvents={getRemoteEvents}
               onDelete={async (deletedId) => {
                 const task = eventsMap.current[Number(deletedId)];
+                task.schedules[Number(deletedId)].except_date = new Date().toISOString();
                 if (!task) {
                   console.error(
                     `Failed to delete scheduled task: unable to find task for event ${deletedId}`,
@@ -482,7 +483,11 @@ export const TasksApp = React.memo(
                   return;
                 }
                 try {
-                  await rmf.tasksApi.delScheduledTasksScheduledTasksTaskIdDelete(task.id);
+                  // await rmf.tasksApi.delScheduledTasksScheduledTasksTaskIdDelete(task.id);
+                  await rmf.tasksApi.clearScheduledTaskScheduledTasksTaskIdClearPut(
+                    task.id,
+                    Number(deletedId),
+                  );
                   AppEvents.refreshTaskAppCount.next(refreshTaskAppCount + 1);
                 } catch (e) {
                   console.error(`Failed to delete scheduled task: ${e}`);
