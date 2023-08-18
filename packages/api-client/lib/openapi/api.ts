@@ -8431,70 +8431,6 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
         options: localVarRequestOptions,
       };
     },
-    /**
-     *
-     * @summary Udpate Scheduled Task
-     * @param {number} taskId
-     * @param {number} scheduleId
-     * @param {ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf} apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    udpateScheduledTaskScheduledTasksTaskIdPut: async (
-      taskId: number,
-      scheduleId: number,
-      apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf: ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf,
-      options: AxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'taskId' is not null or undefined
-      assertParamExists('udpateScheduledTaskScheduledTasksTaskIdPut', 'taskId', taskId);
-      // verify required parameter 'scheduleId' is not null or undefined
-      assertParamExists('udpateScheduledTaskScheduledTasksTaskIdPut', 'scheduleId', scheduleId);
-      // verify required parameter 'apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf' is not null or undefined
-      assertParamExists(
-        'udpateScheduledTaskScheduledTasksTaskIdPut',
-        'apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf',
-        apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf,
-      );
-      const localVarPath = `/scheduled_tasks/{task_id}`.replace(
-        `{${'task_id'}}`,
-        encodeURIComponent(String(taskId)),
-      );
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      if (scheduleId !== undefined) {
-        localVarQueryParameter['schedule_id'] = scheduleId;
-      }
-
-      localVarHeaderParameter['Content-Type'] = 'application/json';
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-      localVarRequestOptions.data = serializeDataIfNeeded(
-        apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf,
-        localVarRequestOptions,
-        configuration,
-      );
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
   };
 };
 
@@ -8950,30 +8886,6 @@ export const TasksApiFp = function (configuration?: Configuration) {
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
-    /**
-     *
-     * @summary Udpate Scheduled Task
-     * @param {number} taskId
-     * @param {number} scheduleId
-     * @param {ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf} apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async udpateScheduledTaskScheduledTasksTaskIdPut(
-      taskId: number,
-      scheduleId: number,
-      apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf: ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.udpateScheduledTaskScheduledTasksTaskIdPut(
-          taskId,
-          scheduleId,
-          apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf,
-          options,
-        );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-    },
   };
 };
 
@@ -9350,30 +9262,6 @@ export const TasksApiFactory = function (
           limit,
           offset,
           orderBy,
-          options,
-        )
-        .then((request) => request(axios, basePath));
-    },
-    /**
-     *
-     * @summary Udpate Scheduled Task
-     * @param {number} taskId
-     * @param {number} scheduleId
-     * @param {ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf} apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    udpateScheduledTaskScheduledTasksTaskIdPut(
-      taskId: number,
-      scheduleId: number,
-      apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf: ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf,
-      options?: any,
-    ): AxiosPromise<any> {
-      return localVarFp
-        .udpateScheduledTaskScheduledTasksTaskIdPut(
-          taskId,
-          scheduleId,
-          apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf,
           options,
         )
         .then((request) => request(axios, basePath));
@@ -9783,32 +9671,6 @@ export class TasksApi extends BaseAPI {
         limit,
         offset,
         orderBy,
-        options,
-      )
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
-   *
-   * @summary Udpate Scheduled Task
-   * @param {number} taskId
-   * @param {number} scheduleId
-   * @param {ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf} apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof TasksApi
-   */
-  public udpateScheduledTaskScheduledTasksTaskIdPut(
-    taskId: number,
-    scheduleId: number,
-    apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf: ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf,
-    options?: AxiosRequestConfig,
-  ) {
-    return TasksApiFp(this.configuration)
-      .udpateScheduledTaskScheduledTasksTaskIdPut(
-        taskId,
-        scheduleId,
-        apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
