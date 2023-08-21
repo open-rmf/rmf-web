@@ -1268,6 +1268,12 @@ export default {
             name: 'schedule_id',
             in: 'query',
           },
+          {
+            required: true,
+            schema: { title: 'Except Date', type: 'string', format: 'date-time' },
+            name: 'except_date',
+            in: 'query',
+          },
         ],
         responses: {
           '200': {

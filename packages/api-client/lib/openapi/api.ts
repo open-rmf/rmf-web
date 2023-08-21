@@ -7351,18 +7351,22 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      * @summary Clear Scheduled Task
      * @param {number} taskId
      * @param {number} scheduleId
+     * @param {string} exceptDate
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     clearScheduledTaskScheduledTasksTaskIdClearPut: async (
       taskId: number,
       scheduleId: number,
+      exceptDate: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskId' is not null or undefined
       assertParamExists('clearScheduledTaskScheduledTasksTaskIdClearPut', 'taskId', taskId);
       // verify required parameter 'scheduleId' is not null or undefined
       assertParamExists('clearScheduledTaskScheduledTasksTaskIdClearPut', 'scheduleId', scheduleId);
+      // verify required parameter 'exceptDate' is not null or undefined
+      assertParamExists('clearScheduledTaskScheduledTasksTaskIdClearPut', 'exceptDate', exceptDate);
       const localVarPath = `/scheduled_tasks/{task_id}/clear`.replace(
         `{${'task_id'}}`,
         encodeURIComponent(String(taskId)),
@@ -7380,6 +7384,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
 
       if (scheduleId !== undefined) {
         localVarQueryParameter['schedule_id'] = scheduleId;
+      }
+
+      if (exceptDate !== undefined) {
+        localVarQueryParameter['except_date'] =
+          (exceptDate as any) instanceof Date ? (exceptDate as any).toISOString() : exceptDate;
       }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -8446,18 +8455,21 @@ export const TasksApiFp = function (configuration?: Configuration) {
      * @summary Clear Scheduled Task
      * @param {number} taskId
      * @param {number} scheduleId
+     * @param {string} exceptDate
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async clearScheduledTaskScheduledTasksTaskIdClearPut(
       taskId: number,
       scheduleId: number,
+      exceptDate: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.clearScheduledTaskScheduledTasksTaskIdClearPut(
           taskId,
           scheduleId,
+          exceptDate,
           options,
         );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -8905,16 +8917,18 @@ export const TasksApiFactory = function (
      * @summary Clear Scheduled Task
      * @param {number} taskId
      * @param {number} scheduleId
+     * @param {string} exceptDate
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     clearScheduledTaskScheduledTasksTaskIdClearPut(
       taskId: number,
       scheduleId: number,
+      exceptDate: string,
       options?: any,
     ): AxiosPromise<any> {
       return localVarFp
-        .clearScheduledTaskScheduledTasksTaskIdClearPut(taskId, scheduleId, options)
+        .clearScheduledTaskScheduledTasksTaskIdClearPut(taskId, scheduleId, exceptDate, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -9281,6 +9295,7 @@ export class TasksApi extends BaseAPI {
    * @summary Clear Scheduled Task
    * @param {number} taskId
    * @param {number} scheduleId
+   * @param {string} exceptDate
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
@@ -9288,10 +9303,11 @@ export class TasksApi extends BaseAPI {
   public clearScheduledTaskScheduledTasksTaskIdClearPut(
     taskId: number,
     scheduleId: number,
+    exceptDate: string,
     options?: AxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .clearScheduledTaskScheduledTasksTaskIdClearPut(taskId, scheduleId, options)
+      .clearScheduledTaskScheduledTasksTaskIdClearPut(taskId, scheduleId, exceptDate, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

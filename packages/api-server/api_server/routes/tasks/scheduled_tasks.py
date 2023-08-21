@@ -1,5 +1,4 @@
 import asyncio
-import time
 from datetime import datetime, timedelta
 
 import schedule
@@ -31,7 +30,17 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
     jobs: list[tuple[ttm.ScheduledTaskSchedule, schedule.Job]] = []
     for sche in task.schedules:
         try:
-            jobs.append((sche, sche.to_job()))
+            # The job is not added with except.
+            # That may cause the job not to run next Monday either
+            # so I would go for changing the value of next_run.
+            # However, I don't know how to get access to schedules that go outside the week range.
+            if sche.except_date == None:
+                jobs.append((sche, sche.to_job()))
+            elif (
+                datetime.now().date() <= sche.except_date.date()
+                and sche.except_date.date() <= datetime.now().date() + timedelta(days=7)
+            ):
+                continue
         except schedule.ScheduleValueError:
             pass
     if len(jobs) == 0:
@@ -131,32 +140,40 @@ async def get_scheduled_task(task_id: int) -> ttm.ScheduledTask:
 
 
 @router.put("/{task_id}/clear")
-async def clear_scheduled_task(task_id: int, schedule_id: int):
+async def clear_scheduled_task(
+    task_id: int,
+    schedule_id: int,
+    except_date: datetime,
+    task_repo: TaskRepository = Depends(task_repo_dep),
+):
     task = await get_scheduled_task(task_id)
-    task.schedules[schedule_id].except_date = datetime.now()
-
-    await task.save()
-
     if task is None:
         raise HTTPException(404)
+    task.schedules[schedule_id].except_date = except_date
+    await task.schedules[schedule_id].save()
 
-    new_run_date: datetime | None = task.schedules[schedule_id].except_date + timedelta(
-        days=7
-    )
+    # TODO: DELETE THIS PRINT TEST
+    print("Before clear job")
+    print(list((job, job.tags) for job in schedule.jobs))
+
+    # ANOTHER WAY TO CANCEL JOB IS CHANING ITS NEXT RUN VALUE.
+    # jobs_to_cancel = schedule.get_jobs()
+    # for job in jobs_to_cancel:
+    #     # TESTING
+    #     # except_date_naive = except_date.replace(tzinfo=None).date()
+    #     # job_next_run_naive = job.next_run.replace(tzinfo=None)
+    #     if job.next_run.date() == except_date.date():
+    #         schedule.next_run()
+    #         job.next_run = job.next_run + timedelta(days=7)
 
     for sche in task.schedules:
-        if sche.except_date:
-            print("before next change")
-            print(list((job.next_run, job.tags) for job in schedule.jobs))
-            jobs_to_cancel = schedule.get_jobs()
-            for job in jobs_to_cancel:
-                if job.next_run.date() == sche.except_date.date():
-                    job.next_run = new_run_date
-                    # schedule.cancel_job(job)
+        schedule.clear(sche.get_id())
 
-    print("After next change")
+    await schedule_task(task, task_repo)
+
+    print("After clear job")
     jobsss = schedule.get_jobs()
-    print(list((job.next_run, job.tags) for job in jobsss))
+    print(list((job, job.tags) for job in jobsss))
 
 
 @router.delete("/{task_id}")
