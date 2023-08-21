@@ -157,13 +157,19 @@ function scheduleToEvents(
       (scheStartFrom == null || scheStartFrom <= cur) &&
       (scheUntil == null || scheUntil >= cur)
     ) {
-      events.push({
-        start: cur,
-        end: addMinutes(cur, 45),
-        event_id: getEventId(),
-        title: getEventTitle(),
-      });
+      const except = schedule.except_date
+        ? new Date(schedule.except_date).toLocaleDateString()
+        : null;
+      if (except !== cur.toLocaleDateString()) {
+        events.push({
+          start: cur,
+          end: addMinutes(cur, 45),
+          event_id: getEventId(),
+          title: getEventTitle(),
+        });
+      }
     }
+
     cur = new Date(cur.valueOf() + period);
   }
   return events;
@@ -188,6 +194,7 @@ export const TasksApp = React.memo(
       const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
       const [openTaskSummary, setOpenTaskSummary] = React.useState(false);
       const [selectedTask, setSelectedTask] = React.useState<TaskState | null>(null);
+      const exceptDateRef = React.useRef<Date>(new Date());
 
       const [tasksState, setTasksState] = React.useState<Tasks>({
         isLoading: true,
@@ -470,9 +477,11 @@ export const TasksApp = React.memo(
               draggable={false}
               editable={false}
               getRemoteEvents={getRemoteEvents}
-              onDelete={async (deletedId) => {
+              onEventClick={(event: ProcessedEvent) => {
+                exceptDateRef.current = event.start;
+              }}
+              onDelete={async (deletedId: number) => {
                 const task = eventsMap.current[Number(deletedId)];
-                task.schedules[Number(deletedId)].except_date = new Date().toISOString();
                 if (!task) {
                   console.error(
                     `Failed to delete scheduled task: unable to find task for event ${deletedId}`,
@@ -487,6 +496,7 @@ export const TasksApp = React.memo(
                   await rmf.tasksApi.clearScheduledTaskScheduledTasksTaskIdClearPut(
                     task.id,
                     Number(deletedId),
+                    exceptDateRef.current.toISOString(),
                   );
                   AppEvents.refreshTaskAppCount.next(refreshTaskAppCount + 1);
                 } catch (e) {
