@@ -30,7 +30,8 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
     jobs: list[tuple[ttm.ScheduledTaskSchedule, schedule.Job]] = []
     for sche in task.schedules:
         try:
-            # The job is not added with except.
+            # The job is not added if sche.except_date has value and is among datetime.now().date() and
+            # datetime.now().date() + timedelta(days=7)
             # That may cause the job not to run next Monday either
             # so I would go for changing the value of next_run.
             # However, I don't know how to get access to schedules that go outside the week range.
