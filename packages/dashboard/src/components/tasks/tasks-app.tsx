@@ -99,6 +99,7 @@ function scheduleToEvents(
   start: Date,
   end: Date,
   schedule: ApiSchedule,
+  task: ScheduledTask,
   getEventId: () => number,
   getEventTitle: () => string,
 ): ProcessedEvent[] {
@@ -157,10 +158,7 @@ function scheduleToEvents(
       (scheStartFrom == null || scheStartFrom <= cur) &&
       (scheUntil == null || scheUntil >= cur)
     ) {
-      const except = schedule.except_date
-        ? new Date(schedule.except_date).toLocaleDateString()
-        : null;
-      if (except !== cur.toLocaleDateString()) {
+      if (!task.except_dates.includes(cur.toLocaleDateString())) {
         events.push({
           start: cur,
           end: addMinutes(cur, 45),
@@ -357,7 +355,7 @@ export const TasksApp = React.memo(
           eventsMap.current = {};
           return tasks.flatMap((t: ScheduledTask) =>
             t.schedules.flatMap<ProcessedEvent>((s: ApiSchedule) => {
-              const events = scheduleToEvents(params.start, params.end, s, getEventId, () =>
+              const events = scheduleToEvents(params.start, params.end, s, t, getEventId, () =>
                 getScheduledTaskTitle(t),
               );
               events.forEach((ev) => {
@@ -493,9 +491,8 @@ export const TasksApp = React.memo(
                 }
                 try {
                   // await rmf.tasksApi.delScheduledTasksScheduledTasksTaskIdDelete(task.id);
-                  await rmf.tasksApi.clearScheduledTaskScheduledTasksTaskIdClearPut(
+                  await rmf.tasksApi.regenerateScheduleByExceptDateScheduledTasksTaskIdClearPut(
                     task.id,
-                    Number(deletedId),
                     exceptDateRef.current.toISOString(),
                   );
                   AppEvents.refreshTaskAppCount.next(refreshTaskAppCount + 1);
