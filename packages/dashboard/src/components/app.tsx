@@ -4,7 +4,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import React from 'react';
 import 'react-grid-layout/css/styles.css';
-import { Link, Route, Routes, Navigate } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import { LoginPage, PrivateRoute } from 'rmf-auth';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
@@ -131,29 +131,24 @@ export default function App(): JSX.Element | null {
                   </PrivateRoute>
                 }
               />
-              <Route
-                path={CustomRoute1}
-                element={
-                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-                    <Link to={DashboardRoute} />
-                  </PrivateRoute>
-                }
-              />
             </Routes>
           </AppBase>
         </RmfApp>
       ) : (
         <Routes>
-          <Route path={LoginRoute}>
-            <LoginPage
-              title={'Dashboard'}
-              logo="assets/defaultLogo.png"
-              onLoginClick={() => authenticator.login(`${window.location.origin}${DashboardRoute}`)}
-            />
-          </Route>
-          <Route>
-            <Link to={LoginRoute} />
-          </Route>
+          <Route
+            path={LoginRoute}
+            element={
+              <LoginPage
+                title={'Dashboard'}
+                logo="assets/defaultLogo.png"
+                onLoginClick={() =>
+                  authenticator.login(`${window.location.origin}${DashboardRoute}`)
+                }
+              />
+            }
+          />
+          <Route path="*" element={<Navigate to={LoginRoute} />} />
         </Routes>
       )}
     </ResourcesContext.Provider>
