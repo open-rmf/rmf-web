@@ -1253,20 +1253,14 @@ export default {
     '/scheduled_tasks/{task_id}/clear': {
       put: {
         tags: ['Tasks'],
-        summary: 'Clear Scheduled Task',
-        operationId: 'clear_scheduled_task_scheduled_tasks__task_id__clear_put',
+        summary: 'Regenerate Schedule By Except Date',
+        operationId: 'regenerate_schedule_by_except_date_scheduled_tasks__task_id__clear_put',
         parameters: [
           {
             required: true,
             schema: { title: 'Task Id', type: 'integer' },
             name: 'task_id',
             in: 'path',
-          },
-          {
-            required: true,
-            schema: { title: 'Schedule Id', type: 'integer' },
-            name: 'schedule_id',
-            in: 'query',
           },
           {
             required: true,
@@ -3708,6 +3702,7 @@ export default {
           task_request: { title: 'Task Request' },
           created_by: { title: 'Created By', maxLength: 255, type: 'string' },
           last_ran: { title: 'Last Ran', type: 'string', format: 'date-time', nullable: true },
+          except_dates: { title: 'Except Dates' },
           schedules: {
             title: 'Schedules',
             type: 'array',
@@ -3740,12 +3735,6 @@ export default {
               'Monday: monday<br/>Tuesday: tuesday<br/>Wednesday: wednesday<br/>Thursday: thursday<br/>Friday: friday<br/>Saturday: saturday<br/>Sunday: sunday<br/>Day: day<br/>Hour: hour<br/>Minute: minute',
           },
           at: { title: 'At', maxLength: 255, type: 'string', nullable: true },
-          except_date: {
-            title: 'Except Date',
-            type: 'string',
-            format: 'date-time',
-            nullable: true,
-          },
         },
         additionalProperties: false,
         description:

@@ -323,6 +323,12 @@ export interface ApiServerModelsTortoiseModelsScheduledTaskScheduledTask {
   last_ran?: string | null;
   /**
    *
+   * @type {any}
+   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTask
+   */
+  except_dates?: any;
+  /**
+   *
    * @type {Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf>}
    * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTask
    */
@@ -364,12 +370,6 @@ export interface ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskSchedule
    * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf
    */
   at?: string | null;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf
-   */
-  except_date?: string | null;
 }
 /**
  *
@@ -7348,64 +7348,6 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
   return {
     /**
      *
-     * @summary Clear Scheduled Task
-     * @param {number} taskId
-     * @param {number} scheduleId
-     * @param {string} exceptDate
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    clearScheduledTaskScheduledTasksTaskIdClearPut: async (
-      taskId: number,
-      scheduleId: number,
-      exceptDate: string,
-      options: AxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'taskId' is not null or undefined
-      assertParamExists('clearScheduledTaskScheduledTasksTaskIdClearPut', 'taskId', taskId);
-      // verify required parameter 'scheduleId' is not null or undefined
-      assertParamExists('clearScheduledTaskScheduledTasksTaskIdClearPut', 'scheduleId', scheduleId);
-      // verify required parameter 'exceptDate' is not null or undefined
-      assertParamExists('clearScheduledTaskScheduledTasksTaskIdClearPut', 'exceptDate', exceptDate);
-      const localVarPath = `/scheduled_tasks/{task_id}/clear`.replace(
-        `{${'task_id'}}`,
-        encodeURIComponent(String(taskId)),
-      );
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      if (scheduleId !== undefined) {
-        localVarQueryParameter['schedule_id'] = scheduleId;
-      }
-
-      if (exceptDate !== undefined) {
-        localVarQueryParameter['except_date'] =
-          (exceptDate as any) instanceof Date ? (exceptDate as any).toISOString() : exceptDate;
-      }
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
-     *
      * @summary Del Scheduled Tasks
      * @param {number} taskId
      * @param {*} [options] Override http request option.
@@ -8440,6 +8382,64 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
         options: localVarRequestOptions,
       };
     },
+    /**
+     *
+     * @summary Regenerate Schedule By Except Date
+     * @param {number} taskId
+     * @param {string} exceptDate
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    regenerateScheduleByExceptDateScheduledTasksTaskIdClearPut: async (
+      taskId: number,
+      exceptDate: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'taskId' is not null or undefined
+      assertParamExists(
+        'regenerateScheduleByExceptDateScheduledTasksTaskIdClearPut',
+        'taskId',
+        taskId,
+      );
+      // verify required parameter 'exceptDate' is not null or undefined
+      assertParamExists(
+        'regenerateScheduleByExceptDateScheduledTasksTaskIdClearPut',
+        'exceptDate',
+        exceptDate,
+      );
+      const localVarPath = `/scheduled_tasks/{task_id}/clear`.replace(
+        `{${'task_id'}}`,
+        encodeURIComponent(String(taskId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      if (exceptDate !== undefined) {
+        localVarQueryParameter['except_date'] =
+          (exceptDate as any) instanceof Date ? (exceptDate as any).toISOString() : exceptDate;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
   };
 };
 
@@ -8450,30 +8450,6 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
 export const TasksApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = TasksApiAxiosParamCreator(configuration);
   return {
-    /**
-     *
-     * @summary Clear Scheduled Task
-     * @param {number} taskId
-     * @param {number} scheduleId
-     * @param {string} exceptDate
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async clearScheduledTaskScheduledTasksTaskIdClearPut(
-      taskId: number,
-      scheduleId: number,
-      exceptDate: string,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.clearScheduledTaskScheduledTasksTaskIdClearPut(
-          taskId,
-          scheduleId,
-          exceptDate,
-          options,
-        );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-    },
     /**
      *
      * @summary Del Scheduled Tasks
@@ -8898,6 +8874,27 @@ export const TasksApiFp = function (configuration?: Configuration) {
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
+    /**
+     *
+     * @summary Regenerate Schedule By Except Date
+     * @param {number} taskId
+     * @param {string} exceptDate
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async regenerateScheduleByExceptDateScheduledTasksTaskIdClearPut(
+      taskId: number,
+      exceptDate: string,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.regenerateScheduleByExceptDateScheduledTasksTaskIdClearPut(
+          taskId,
+          exceptDate,
+          options,
+        );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
   };
 };
 
@@ -8912,25 +8909,6 @@ export const TasksApiFactory = function (
 ) {
   const localVarFp = TasksApiFp(configuration);
   return {
-    /**
-     *
-     * @summary Clear Scheduled Task
-     * @param {number} taskId
-     * @param {number} scheduleId
-     * @param {string} exceptDate
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    clearScheduledTaskScheduledTasksTaskIdClearPut(
-      taskId: number,
-      scheduleId: number,
-      exceptDate: string,
-      options?: any,
-    ): AxiosPromise<any> {
-      return localVarFp
-        .clearScheduledTaskScheduledTasksTaskIdClearPut(taskId, scheduleId, exceptDate, options)
-        .then((request) => request(axios, basePath));
-    },
     /**
      *
      * @summary Del Scheduled Tasks
@@ -9280,6 +9258,23 @@ export const TasksApiFactory = function (
         )
         .then((request) => request(axios, basePath));
     },
+    /**
+     *
+     * @summary Regenerate Schedule By Except Date
+     * @param {number} taskId
+     * @param {string} exceptDate
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    regenerateScheduleByExceptDateScheduledTasksTaskIdClearPut(
+      taskId: number,
+      exceptDate: string,
+      options?: any,
+    ): AxiosPromise<any> {
+      return localVarFp
+        .regenerateScheduleByExceptDateScheduledTasksTaskIdClearPut(taskId, exceptDate, options)
+        .then((request) => request(axios, basePath));
+    },
   };
 };
 
@@ -9290,27 +9285,6 @@ export const TasksApiFactory = function (
  * @extends {BaseAPI}
  */
 export class TasksApi extends BaseAPI {
-  /**
-   *
-   * @summary Clear Scheduled Task
-   * @param {number} taskId
-   * @param {number} scheduleId
-   * @param {string} exceptDate
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof TasksApi
-   */
-  public clearScheduledTaskScheduledTasksTaskIdClearPut(
-    taskId: number,
-    scheduleId: number,
-    exceptDate: string,
-    options?: AxiosRequestConfig,
-  ) {
-    return TasksApiFp(this.configuration)
-      .clearScheduledTaskScheduledTasksTaskIdClearPut(taskId, scheduleId, exceptDate, options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-
   /**
    *
    * @summary Del Scheduled Tasks
@@ -9689,6 +9663,25 @@ export class TasksApi extends BaseAPI {
         orderBy,
         options,
       )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Regenerate Schedule By Except Date
+   * @param {number} taskId
+   * @param {string} exceptDate
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public regenerateScheduleByExceptDateScheduledTasksTaskIdClearPut(
+    taskId: number,
+    exceptDate: string,
+    options?: AxiosRequestConfig,
+  ) {
+    return TasksApiFp(this.configuration)
+      .regenerateScheduleByExceptDateScheduledTasksTaskIdClearPut(taskId, exceptDate, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
