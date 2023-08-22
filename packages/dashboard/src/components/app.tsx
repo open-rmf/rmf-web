@@ -144,13 +144,18 @@ export default function App(): JSX.Element | null {
         </RmfApp>
       ) : (
         <Routes>
-          <Route path={LoginRoute}>
-            <LoginPage
-              title={'Dashboard'}
-              logo="assets/defaultLogo.png"
-              onLoginClick={() => authenticator.login(`${window.location.origin}${DashboardRoute}`)}
-            />
-          </Route>
+          <Route
+            path={LoginRoute}
+            element={
+              <LoginPage
+                title={'Dashboard'}
+                logo="assets/defaultLogo.png"
+                onLoginClick={() =>
+                  authenticator.login(`${window.location.origin}${DashboardRoute}`)
+                }
+              />
+            }
+          />
           <Route>
             <Link to={LoginRoute} />
           </Route>
