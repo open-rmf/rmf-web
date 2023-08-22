@@ -156,9 +156,7 @@ export default function App(): JSX.Element | null {
               />
             }
           />
-          <Route>
-            <Link to={LoginRoute} />
-          </Route>
+          <Route element={<Link to={LoginRoute} />} />
         </Routes>
       )}
     </ResourcesContext.Provider>
