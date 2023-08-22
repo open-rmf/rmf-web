@@ -12,6 +12,10 @@ import {
   TableContainer,
   Toolbar,
   Tooltip,
+  FormControl,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from '@mui/material';
 import {
   ApiServerModelsTortoiseModelsScheduledTaskScheduledTask as ScheduledTask,
@@ -39,6 +43,7 @@ import {
 } from 'date-fns';
 import React from 'react';
 import {
+  ConfirmationDialog,
   FilterFields,
   MuiMouseEvent,
   SortFields,
@@ -57,6 +62,11 @@ interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   selectedTabIndex: number;
+}
+
+enum ScheduleDeleteOptions {
+  ALL = 'all',
+  CURRENT = 'current',
 }
 
 function tabId(index: number): string {
@@ -192,6 +202,12 @@ export const TasksApp = React.memo(
       const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
       const [openTaskSummary, setOpenTaskSummary] = React.useState(false);
       const [selectedTask, setSelectedTask] = React.useState<TaskState | null>(null);
+
+      const [openDeleteScheduleDialog, setOpenDeleteScheduleDialog] = React.useState(false);
+      const [scheduleDeleteValue, setScheduleDeleteValue] = React.useState<string>(
+        ScheduleDeleteOptions.CURRENT,
+      );
+      const [currentEventId, setCurrentEventId] = React.useState<number>(-1);
       const exceptDateRef = React.useRef<Date>(new Date());
 
       const [tasksState, setTasksState] = React.useState<Tasks>({
@@ -373,6 +389,40 @@ export const TasksApp = React.memo(
         setSelectedTabIndex(newSelectedTabIndex);
       };
 
+      const handleSubmitDeleteSchedule: React.MouseEventHandler = async (ev) => {
+        ev.preventDefault();
+        const task = eventsMap.current[Number(currentEventId)];
+        if (!task) {
+          console.error(
+            `Failed to delete scheduled task: unable to find task for event ${currentEventId}`,
+          );
+          return;
+        }
+        if (!rmf) {
+          return;
+        }
+        try {
+          if (scheduleDeleteValue === ScheduleDeleteOptions.CURRENT) {
+            console.log(exceptDateRef.current.toISOString());
+            console.log(exceptDateRef.current);
+            await rmf.tasksApi.regenerateScheduleByExceptDateScheduledTasksTaskIdClearPut(
+              task.id,
+              exceptDateRef.current.toISOString(),
+            );
+          } else {
+            await rmf.tasksApi.delScheduledTasksScheduledTasksTaskIdDelete(task.id);
+          }
+          AppEvents.refreshTaskAppCount.next(refreshTaskAppCount + 1);
+
+          // Set the default values
+          setOpenDeleteScheduleDialog(false);
+          setCurrentEventId(-1);
+          setScheduleDeleteValue(ScheduleDeleteOptions.CURRENT);
+        } catch (e) {
+          console.error(`Failed to delete scheduled task: ${e}`);
+        }
+      };
+
       return (
         <Window
           ref={ref}
@@ -479,32 +529,50 @@ export const TasksApp = React.memo(
                 exceptDateRef.current = event.start;
               }}
               onDelete={async (deletedId: number) => {
-                const task = eventsMap.current[Number(deletedId)];
-                if (!task) {
-                  console.error(
-                    `Failed to delete scheduled task: unable to find task for event ${deletedId}`,
-                  );
-                  return;
-                }
-                if (!rmf) {
-                  return;
-                }
-                try {
-                  // await rmf.tasksApi.delScheduledTasksScheduledTasksTaskIdDelete(task.id);
-                  await rmf.tasksApi.regenerateScheduleByExceptDateScheduledTasksTaskIdClearPut(
-                    task.id,
-                    exceptDateRef.current.toISOString(),
-                  );
-                  AppEvents.refreshTaskAppCount.next(refreshTaskAppCount + 1);
-                } catch (e) {
-                  console.error(`Failed to delete scheduled task: ${e}`);
-                }
+                setCurrentEventId(Number(deletedId));
+                setOpenDeleteScheduleDialog(true);
               }}
             />
           </TabPanel>
           <input type="file" style={{ display: 'none' }} ref={uploadFileInputRef} />
           {openTaskSummary && (
             <TaskSummary task={selectedTask} onClose={() => setOpenTaskSummary(false)} />
+          )}
+          {openDeleteScheduleDialog && (
+            <ConfirmationDialog
+              confirmText={'Ok'}
+              cancelText="Cancel"
+              open={openDeleteScheduleDialog}
+              title={'Delete event'}
+              submitting={undefined}
+              onClose={() => {
+                setOpenDeleteScheduleDialog(false);
+                setScheduleDeleteValue(ScheduleDeleteOptions.CURRENT);
+              }}
+              onSubmit={handleSubmitDeleteSchedule}
+            >
+              <FormControl fullWidth={true}>
+                <RadioGroup
+                  aria-labelledby="schedule-delete-options-radio-buttons-group"
+                  name="schedule-delete-options-radio-buttons-group"
+                  value={scheduleDeleteValue}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                    setScheduleDeleteValue(event.target.value)
+                  }
+                >
+                  <FormControlLabel
+                    value={ScheduleDeleteOptions.CURRENT}
+                    control={<Radio />}
+                    label="This event"
+                  />
+                  <FormControlLabel
+                    value={ScheduleDeleteOptions.ALL}
+                    control={<Radio />}
+                    label="All events"
+                  />
+                </RadioGroup>
+              </FormControl>
+            </ConfirmationDialog>
           )}
           {children}
         </Window>
