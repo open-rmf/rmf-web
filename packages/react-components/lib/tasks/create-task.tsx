@@ -999,8 +999,29 @@ export function CreateTaskForm({
                       value={taskRequest.category}
                       onChange={handleTaskTypeChange}
                     >
-                      <MenuItem value="patrol">Loop</MenuItem>
-                      <MenuItem value="delivery">Delivery</MenuItem>
+                      <MenuItem
+                        value="clean"
+                        disabled={!cleaningZones || cleaningZones.length === 0}
+                      >
+                        Clean
+                      </MenuItem>
+                      <MenuItem
+                        value="patrol"
+                        disabled={!loopWaypoints || loopWaypoints.length === 0}
+                      >
+                        Loop
+                      </MenuItem>
+                      <MenuItem
+                        value="delivery"
+                        disabled={
+                          !pickupWaypoints ||
+                          pickupWaypoints.length === 0 ||
+                          !dropoffWaypoints ||
+                          dropoffWaypoints.length === 0
+                        }
+                      >
+                        Delivery
+                      </MenuItem>
                     </TextField>
                   </Grid>
                   <Grid item xs={10}>
