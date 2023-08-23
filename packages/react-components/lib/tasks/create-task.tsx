@@ -59,7 +59,7 @@ interface DeliveryTaskDescription {
   };
 }
 
-interface LoopTaskDescription {
+interface PatrolTaskDescription {
   places: string[];
   rounds: number;
 }
@@ -68,7 +68,7 @@ interface CleanTaskDescription {
   zone: string;
 }
 
-type TaskDescription = DeliveryTaskDescription | LoopTaskDescription | CleanTaskDescription;
+type TaskDescription = DeliveryTaskDescription | PatrolTaskDescription | CleanTaskDescription;
 
 const classes = {
   title: 'dialogue-info-value',
@@ -386,16 +386,14 @@ function PlaceList({ places, onClick }: PlaceListProps) {
   );
 }
 
-interface LoopTaskFormProps {
-  taskDesc: LoopTaskDescription;
-  loopWaypoints: string[];
-  onChange(loopTaskDescription: LoopTaskDescription): void;
+interface PatrolTaskFormProps {
+  taskDesc: PatrolTaskDescription;
+  patrolWaypoints: string[];
+  onChange(patrolTaskDescription: PatrolTaskDescription): void;
 }
 
-function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) {
+function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange }: PatrolTaskFormProps) {
   const theme = useTheme();
-  // console.log(loopWaypoints);
-
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
       <Grid item xs={10}>
@@ -403,7 +401,7 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
           id="place-input"
           freeSolo
           fullWidth
-          options={loopWaypoints}
+          options={patrolWaypoints}
           onChange={(_ev, newValue) =>
             newValue !== null &&
             onChange({
@@ -539,7 +537,7 @@ function defaultCleanTask(): CleanTaskDescription {
   };
 }
 
-function defaultLoopTask(): LoopTaskDescription {
+function defaultPatrolTask(): PatrolTaskDescription {
   return {
     places: [],
     rounds: 1,
@@ -570,7 +568,7 @@ function defaultTaskDescription(taskCategory: string): TaskDescription | undefin
     case 'clean':
       return defaultCleanTask();
     case 'patrol':
-      return defaultLoopTask();
+      return defaultPatrolTask();
     case 'delivery':
       return defaultDeliveryTask();
     default:
@@ -581,7 +579,7 @@ function defaultTaskDescription(taskCategory: string): TaskDescription | undefin
 function defaultTask(): TaskRequest {
   return {
     category: 'patrol',
-    description: defaultLoopTask(),
+    description: defaultPatrolTask(),
     unix_millis_earliest_start_time: 0,
     unix_millis_request_time: Date.now(),
     priority: { type: 'binary', value: 0 },
@@ -651,7 +649,7 @@ const defaultFavoriteTask = (): TaskFavorite => {
     id: '',
     name: '',
     category: 'patrol',
-    description: defaultLoopTask(),
+    description: defaultPatrolTask(),
     unix_millis_earliest_start_time: 0,
     priority: { type: 'binary', value: 0 },
     user: '',
@@ -666,7 +664,7 @@ export interface CreateTaskFormProps
   user: string;
   allowBatch?: boolean;
   cleaningZones?: string[];
-  loopWaypoints?: string[];
+  patrolWaypoints?: string[];
   pickupWaypoints?: string[];
   dropoffWaypoints?: string[];
   favoritesTasks: TaskFavorite[];
@@ -685,7 +683,7 @@ export interface CreateTaskFormProps
 export function CreateTaskForm({
   user,
   cleaningZones = [],
-  loopWaypoints = [],
+  patrolWaypoints = [],
   pickupWaypoints = [],
   dropoffWaypoints = [],
   favoritesTasks = [],
@@ -778,9 +776,9 @@ export function CreateTaskForm({
         );
       case 'patrol':
         return (
-          <LoopTaskForm
-            taskDesc={taskRequest.description as LoopTaskDescription}
-            loopWaypoints={loopWaypoints}
+          <PatrolTaskForm
+            taskDesc={taskRequest.description as PatrolTaskDescription}
+            patrolWaypoints={patrolWaypoints}
             onChange={(desc) => handleTaskDescriptionChange('patrol', desc)}
           />
         );
@@ -1007,9 +1005,9 @@ export function CreateTaskForm({
                       </MenuItem>
                       <MenuItem
                         value="patrol"
-                        disabled={!loopWaypoints || loopWaypoints.length === 0}
+                        disabled={!patrolWaypoints || patrolWaypoints.length === 0}
                       >
-                        Loop
+                        Patrol
                       </MenuItem>
                       <MenuItem
                         value="delivery"

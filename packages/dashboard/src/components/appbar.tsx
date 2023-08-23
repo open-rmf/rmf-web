@@ -578,7 +578,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
         <CreateTaskForm
           user={username ? username : 'unknown user'}
           cleaningZones={cleaningWaypointNames}
-          loopWaypoints={waypointNames}
+          patrolWaypoints={waypointNames}
           pickupWaypoints={pickupWaypointNames}
           dropoffWaypoints={dropoffWaypointNames}
           favoritesTasks={favoritesTasks}
