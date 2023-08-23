@@ -35,7 +35,7 @@ import {
   AppBarTab,
   CreateTaskForm,
   CreateTaskFormProps,
-  getWaypoints,
+  getWaypointCollection,
   HeaderBar,
   LogoButton,
   NavigationBar,
@@ -168,7 +168,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [settingsAnchor, setSettingsAnchor] = React.useState<HTMLElement | null>(null);
   const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
   const [waypointNames, setWaypointNames] = React.useState<string[]>([]);
-  const [cleanWaypointNames, setCleanWaypointNames] = React.useState<string[]>([]);
+  const [cleaningWaypointNames, setCleaningWaypointNames] = React.useState<string[]>([]);
   const [pickupWaypointNames, setPickupWaypointNames] = React.useState<string[]>([]);
   const [dropoffWaypointNames, setDropoffWaypointNames] = React.useState<string[]>([]);
   const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
@@ -223,9 +223,13 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
 
     const subs: Subscription[] = [];
     subs.push(
-      rmf.buildingMapObs.subscribe((map) =>
-        setWaypointNames(getWaypoints(map).map((w) => w.vertex.name)),
-      ),
+      rmf.buildingMapObs.subscribe((map) => {
+        const waypointCollection = getWaypointCollection(map);
+        setPickupWaypointNames(waypointCollection.pickupWaypoints.map((w) => w.vertex.name));
+        setDropoffWaypointNames(waypointCollection.dropoffWaypoints.map((w) => w.vertex.name));
+        setCleaningWaypointNames(waypointCollection.cleaningWaypoints.map((w) => w.vertex.name));
+        setWaypointNames(waypointCollection.waypoints.map((w) => w.vertex.name));
+      }),
     );
     subs.push(
       AppEvents.refreshAlertCount.subscribe((_) => {
@@ -573,7 +577,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       {openCreateTaskForm && (
         <CreateTaskForm
           user={username ? username : 'unknown user'}
-          cleaningZones={cleanWaypointNames}
+          cleaningZones={cleaningWaypointNames}
           loopWaypoints={waypointNames}
           pickupWaypoints={pickupWaypointNames}
           dropoffWaypoints={dropoffWaypointNames}

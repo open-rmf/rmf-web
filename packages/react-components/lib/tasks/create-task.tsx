@@ -394,6 +394,7 @@ interface LoopTaskFormProps {
 
 function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) {
   const theme = useTheme();
+  // console.log(loopWaypoints);
 
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
@@ -998,7 +999,6 @@ export function CreateTaskForm({
                       value={taskRequest.category}
                       onChange={handleTaskTypeChange}
                     >
-                      <MenuItem value="clean">Clean</MenuItem>
                       <MenuItem value="patrol">Loop</MenuItem>
                       <MenuItem value="delivery">Delivery</MenuItem>
                     </TextField>

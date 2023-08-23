@@ -1,11 +1,11 @@
 import React from 'react';
 import {
   fromRmfCoords,
-  Place,
   SVGOverlay,
   SVGOverlayProps,
   useAutoScale,
   viewBoxFromLeafletBounds,
+  Waypoint,
   WaypointMarker as WaypointMarker_,
   withLabel,
 } from 'react-components';
@@ -14,7 +14,7 @@ import {
 const WaypointMarker = withLabel(WaypointMarker_);
 
 export interface WaypointsOverlayProps extends Omit<SVGOverlayProps, 'viewBox'> {
-  waypoints: Place[];
+  waypoints: Waypoint[];
   hideLabels?: boolean;
 }
 
