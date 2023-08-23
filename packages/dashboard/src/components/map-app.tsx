@@ -12,10 +12,10 @@ import {
   affineImageBounds,
   ColorManager,
   fromRmfCoords,
-  getWaypoints,
+  getPlaces,
   LMap,
   loadAffineImage,
-  Waypoint,
+  Place,
   RobotTableData,
   TrajectoryTimeControl,
 } from 'react-components';
@@ -125,7 +125,7 @@ export const MapApp = styled(
 
     const [fleets, setFleets] = React.useState<FleetState[]>([]);
 
-    const [waypoints, setWaypoints] = React.useState<Waypoint[]>([]);
+    const [waypoints, setWaypoints] = React.useState<Place[]>([]);
 
     const [trajectories, setTrajectories] = React.useState<TrajectoryData[]>([]);
     const [mapSettings, setMapSettings] = React.useState<MapSettings>(() => {
@@ -194,7 +194,7 @@ export const MapApp = styled(
           const currentLevel = newMap.levels[0];
           setCurrentLevel(currentLevel);
           setWaypoints(
-            getWaypoints(newMap).filter(
+            getPlaces(newMap).filter(
               (w) => w.level === currentLevel.name && w.vertex.name.length > 0,
             ),
           );
@@ -260,7 +260,7 @@ export const MapApp = styled(
 
       buildingMap &&
         setWaypoints(
-          getWaypoints(buildingMap).filter(
+          getPlaces(buildingMap).filter(
             (w) => w.level === currentLevel.name && w.vertex.name.length > 0,
           ),
         );

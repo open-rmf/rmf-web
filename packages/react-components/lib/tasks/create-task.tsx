@@ -134,15 +134,15 @@ function FormToolbar({ onSelectFileClick }: FormToolbarProps) {
 
 interface DeliveryTaskFormProps {
   taskDesc: DeliveryTaskDescription;
-  pickupWaypoints: string[];
-  dropoffWaypoints: string[];
+  pickupPoints: string[];
+  dropoffPoints: string[];
   onChange(taskDesc: TaskDescription): void;
 }
 
 function DeliveryTaskForm({
   taskDesc,
-  pickupWaypoints,
-  dropoffWaypoints,
+  pickupPoints,
+  dropoffPoints,
   onChange,
 }: DeliveryTaskFormProps) {
   const theme = useTheme();
@@ -154,7 +154,7 @@ function DeliveryTaskForm({
           id="pickup-location"
           freeSolo
           fullWidth
-          options={pickupWaypoints}
+          options={pickupPoints}
           value={taskDesc.pickup.place}
           onChange={(_ev, newValue) =>
             newValue !== null &&
@@ -253,7 +253,7 @@ function DeliveryTaskForm({
           id="dropoff-location"
           freeSolo
           fullWidth
-          options={dropoffWaypoints}
+          options={dropoffPoints}
           value={taskDesc.dropoff.place}
           onChange={(_ev, newValue) =>
             newValue !== null &&
@@ -665,8 +665,8 @@ export interface CreateTaskFormProps
   allowBatch?: boolean;
   cleaningZones?: string[];
   patrolWaypoints?: string[];
-  pickupWaypoints?: string[];
-  dropoffWaypoints?: string[];
+  pickupPoints?: string[];
+  dropoffPoints?: string[];
   favoritesTasks: TaskFavorite[];
   submitTasks?(tasks: TaskRequest[], schedule: Schedule | null): Promise<void>;
   tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
@@ -684,8 +684,8 @@ export function CreateTaskForm({
   user,
   cleaningZones = [],
   patrolWaypoints = [],
-  pickupWaypoints = [],
-  dropoffWaypoints = [],
+  pickupPoints = [],
+  dropoffPoints = [],
   favoritesTasks = [],
   submitTasks,
   tasksFromFile,
@@ -786,8 +786,8 @@ export function CreateTaskForm({
         return (
           <DeliveryTaskForm
             taskDesc={taskRequest.description as DeliveryTaskDescription}
-            pickupWaypoints={pickupWaypoints}
-            dropoffWaypoints={dropoffWaypoints}
+            pickupPoints={pickupPoints}
+            dropoffPoints={dropoffPoints}
             onChange={(desc) => handleTaskDescriptionChange('delivery', desc)}
           />
         );
@@ -1012,10 +1012,10 @@ export function CreateTaskForm({
                       <MenuItem
                         value="delivery"
                         disabled={
-                          !pickupWaypoints ||
-                          pickupWaypoints.length === 0 ||
-                          !dropoffWaypoints ||
-                          dropoffWaypoints.length === 0
+                          !pickupPoints ||
+                          pickupPoints.length === 0 ||
+                          !dropoffPoints ||
+                          dropoffPoints.length === 0
                         }
                       >
                         Delivery
