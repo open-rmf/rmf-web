@@ -195,7 +195,7 @@ export const MapApp = styled(
           setCurrentLevel(currentLevel);
           setWaypoints(
             getPlaces(newMap).filter(
-              (w) => w.level === currentLevel.name && w.vertex.name.length > 0,
+              (p) => p.level === currentLevel.name && p.vertex.name.length > 0,
             ),
           );
         }),
@@ -261,7 +261,7 @@ export const MapApp = styled(
       buildingMap &&
         setWaypoints(
           getPlaces(buildingMap).filter(
-            (w) => w.level === currentLevel.name && w.vertex.name.length > 0,
+            (p) => p.level === currentLevel.name && p.vertex.name.length > 0,
           ),
         );
     }, [buildingMap, currentLevel]);
