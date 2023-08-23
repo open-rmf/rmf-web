@@ -218,7 +218,7 @@ function DeliveryTaskForm({
           id="pickup_quantity"
           freeSolo
           fullWidth
-          value={taskDesc.pickup.payload.quantity}
+          value={`${taskDesc.pickup.payload.quantity}`}
           options={[]}
           onChange={(_ev, newValue) =>
             newValue !== null &&
@@ -245,7 +245,7 @@ function DeliveryTaskForm({
               },
             })
           }
-          renderInput={(params) => <TextField {...params} label="Pickup Quantity" />}
+          renderInput={(params) => <TextField {...params} label="Quantity" />}
         />
       </Grid>
       <Grid item xs={6}>
@@ -317,7 +317,7 @@ function DeliveryTaskForm({
           id="dropoff_quantity"
           freeSolo
           fullWidth
-          value={taskDesc.dropoff.payload.quantity}
+          value={`${taskDesc.dropoff.payload.quantity}`}
           options={[]}
           onChange={(_ev, newValue) =>
             newValue !== null &&
@@ -344,7 +344,7 @@ function DeliveryTaskForm({
               },
             })
           }
-          renderInput={(params) => <TextField {...params} label="Dropoff Quantity" />}
+          renderInput={(params) => <TextField {...params} label="Quantity" />}
         />
       </Grid>
     </Grid>
