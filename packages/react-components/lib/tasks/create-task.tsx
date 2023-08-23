@@ -45,7 +45,6 @@ import { PositiveIntField } from '../form-inputs';
 interface DeliveryTaskDescription {
   pickup: {
     place: string;
-    handler: string;
     payload: {
       sku: string;
       quantity: number;
@@ -53,7 +52,6 @@ interface DeliveryTaskDescription {
   };
   dropoff: {
     place: string;
-    handler: string;
     payload: {
       sku: string;
       quantity: number;
@@ -136,29 +134,27 @@ function FormToolbar({ onSelectFileClick }: FormToolbarProps) {
 
 interface DeliveryTaskFormProps {
   taskDesc: DeliveryTaskDescription;
-  deliveryWaypoints: string[];
-  dispensers: string[];
-  ingestors: string[];
+  pickupWaypoints: string[];
+  dropoffWaypoints: string[];
   onChange(taskDesc: TaskDescription): void;
 }
 
 function DeliveryTaskForm({
   taskDesc,
-  deliveryWaypoints,
-  dispensers,
-  ingestors,
+  pickupWaypoints,
+  dropoffWaypoints,
   onChange,
 }: DeliveryTaskFormProps) {
   const theme = useTheme();
 
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
-      <Grid item xs={8}>
+      <Grid item xs={6}>
         <Autocomplete
           id="pickup-location"
           freeSolo
           fullWidth
-          options={deliveryWaypoints}
+          options={pickupWaypoints}
           value={taskDesc.pickup.place}
           onChange={(_ev, newValue) =>
             newValue !== null &&
@@ -180,93 +176,6 @@ function DeliveryTaskForm({
             })
           }
           renderInput={(params) => <TextField {...params} label="Pickup Location" />}
-        />
-      </Grid>
-      <Grid item xs={4}>
-        <Autocomplete
-          id="dispenser"
-          freeSolo
-          fullWidth
-          options={dispensers}
-          value={taskDesc.pickup.handler}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            onChange({
-              ...taskDesc,
-              pickup: {
-                ...taskDesc.pickup,
-                handler: newValue,
-              },
-            })
-          }
-          onBlur={(ev) =>
-            onChange({
-              ...taskDesc,
-              pickup: {
-                ...taskDesc.pickup,
-                handler: (ev.target as HTMLInputElement).value,
-              },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Dispenser" />}
-        />
-      </Grid>
-      <Grid item xs={8}>
-        <Autocomplete
-          id="dropoff-location"
-          freeSolo
-          fullWidth
-          options={deliveryWaypoints}
-          value={taskDesc.dropoff.place}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            onChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                place: newValue,
-              },
-            })
-          }
-          onBlur={(ev) =>
-            onChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                place: (ev.target as HTMLInputElement).value,
-              },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Dropoff Location" />}
-        />
-      </Grid>
-      <Grid item xs={4}>
-        <Autocomplete
-          id="ingestor"
-          freeSolo
-          fullWidth
-          options={ingestors}
-          value={taskDesc.dropoff.handler}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            onChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                handler: newValue,
-              },
-            })
-          }
-          onBlur={(ev) =>
-            onChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                handler: (ev.target as HTMLInputElement).value,
-              },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Ingestor" />}
         />
       </Grid>
       <Grid item xs={4}>
@@ -337,6 +246,35 @@ function DeliveryTaskForm({
             })
           }
           renderInput={(params) => <TextField {...params} label="Pickup Quantity" />}
+        />
+      </Grid>
+      <Grid item xs={6}>
+        <Autocomplete
+          id="dropoff-location"
+          freeSolo
+          fullWidth
+          options={dropoffWaypoints}
+          value={taskDesc.dropoff.place}
+          onChange={(_ev, newValue) =>
+            newValue !== null &&
+            onChange({
+              ...taskDesc,
+              dropoff: {
+                ...taskDesc.dropoff,
+                place: newValue,
+              },
+            })
+          }
+          onBlur={(ev) =>
+            onChange({
+              ...taskDesc,
+              dropoff: {
+                ...taskDesc.dropoff,
+                place: (ev.target as HTMLInputElement).value,
+              },
+            })
+          }
+          renderInput={(params) => <TextField {...params} label="Dropoff Location" />}
         />
       </Grid>
       <Grid item xs={4}>
@@ -611,7 +549,6 @@ function defaultDeliveryTask(): DeliveryTaskDescription {
   return {
     pickup: {
       place: '',
-      handler: '',
       payload: {
         sku: '',
         quantity: 1,
@@ -619,7 +556,6 @@ function defaultDeliveryTask(): DeliveryTaskDescription {
     },
     dropoff: {
       place: '',
-      handler: '',
       payload: {
         sku: '',
         quantity: 1,
@@ -730,9 +666,8 @@ export interface CreateTaskFormProps
   allowBatch?: boolean;
   cleaningZones?: string[];
   loopWaypoints?: string[];
-  deliveryWaypoints?: string[];
-  dispensers?: string[];
-  ingestors?: string[];
+  pickupWaypoints?: string[];
+  dropoffWaypoints?: string[];
   favoritesTasks: TaskFavorite[];
   submitTasks?(tasks: TaskRequest[], schedule: Schedule | null): Promise<void>;
   tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
@@ -750,9 +685,8 @@ export function CreateTaskForm({
   user,
   cleaningZones = [],
   loopWaypoints = [],
-  deliveryWaypoints = [],
-  dispensers = [],
-  ingestors = [],
+  pickupWaypoints = [],
+  dropoffWaypoints = [],
   favoritesTasks = [],
   submitTasks,
   tasksFromFile,
@@ -853,9 +787,8 @@ export function CreateTaskForm({
         return (
           <DeliveryTaskForm
             taskDesc={taskRequest.description as DeliveryTaskDescription}
-            deliveryWaypoints={deliveryWaypoints}
-            dispensers={dispensers}
-            ingestors={ingestors}
+            pickupWaypoints={pickupWaypoints}
+            dropoffWaypoints={dropoffWaypoints}
             onChange={(desc) => handleTaskDescriptionChange('delivery', desc)}
           />
         );
