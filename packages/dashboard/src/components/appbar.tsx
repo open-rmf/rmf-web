@@ -35,7 +35,7 @@ import {
   AppBarTab,
   CreateTaskForm,
   CreateTaskFormProps,
-  getPlaces,
+  getWaypoints,
   HeaderBar,
   LogoButton,
   NavigationBar,
@@ -167,8 +167,10 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [brandingIconPath, setBrandingIconPath] = React.useState<string>('');
   const [settingsAnchor, setSettingsAnchor] = React.useState<HTMLElement | null>(null);
   const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
-  const [placeNames, setPlaceNames] = React.useState<string[]>([]);
-  const [workcells, setWorkcells] = React.useState<string[]>();
+  const [waypointNames, setWaypointNames] = React.useState<string[]>([]);
+  const [cleanWaypointNames, setCleanWaypointNames] = React.useState<string[]>([]);
+  const [pickupWaypointNames, setPickupWaypointNames] = React.useState<string[]>([]);
+  const [dropoffWaypointNames, setDropoffWaypointNames] = React.useState<string[]>([]);
   const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
   const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
   const [username, setUsername] = React.useState<string | null>(null);
@@ -215,13 +217,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   }, [logoResourcesContext, safeAsync, curTheme]);
 
   React.useEffect(() => {
-    if (!resourceManager?.dispensers) {
-      return;
-    }
-    setWorkcells(Object.keys(resourceManager.dispensers.dispensers));
-  }, [resourceManager]);
-
-  React.useEffect(() => {
     if (!rmf) {
       return;
     }
@@ -229,7 +224,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     const subs: Subscription[] = [];
     subs.push(
       rmf.buildingMapObs.subscribe((map) =>
-        setPlaceNames(getPlaces(map).map((p) => p.vertex.name)),
+        setWaypointNames(getWaypoints(map).map((w) => w.vertex.name)),
       ),
     );
     subs.push(
@@ -578,11 +573,10 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       {openCreateTaskForm && (
         <CreateTaskForm
           user={username ? username : 'unknown user'}
-          cleaningZones={placeNames}
-          loopWaypoints={placeNames}
-          deliveryWaypoints={placeNames}
-          dispensers={workcells}
-          ingestors={workcells}
+          cleaningZones={cleanWaypointNames}
+          loopWaypoints={waypointNames}
+          pickupWaypoints={pickupWaypointNames}
+          dropoffWaypoints={dropoffWaypointNames}
           favoritesTasks={favoritesTasks}
           open={openCreateTaskForm}
           onClose={() => setOpenCreateTaskForm(false)}
