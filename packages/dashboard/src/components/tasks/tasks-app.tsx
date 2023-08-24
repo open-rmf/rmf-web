@@ -403,8 +403,6 @@ export const TasksApp = React.memo(
         }
         try {
           if (scheduleDeleteValue === ScheduleDeleteOptions.CURRENT) {
-            console.log(exceptDateRef.current.toISOString());
-            console.log(exceptDateRef.current);
             await rmf.tasksApi.regenerateScheduleByExceptDateScheduledTasksTaskIdClearPut(
               task.id,
               exceptDateRef.current.toISOString(),
