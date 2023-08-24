@@ -170,17 +170,17 @@ function DeliveryTaskForm({
               },
             })
           }
-          onBlur={(ev) => {
+          onBlur={(ev) =>
             pickupPoints[(ev.target as HTMLInputElement).value] &&
-              onChange({
-                ...taskDesc,
-                pickup: {
-                  ...taskDesc.pickup,
-                  place: (ev.target as HTMLInputElement).value,
-                  handler: pickupPoints[(ev.target as HTMLInputElement).value],
-                },
-              });
-          }}
+            onChange({
+              ...taskDesc,
+              pickup: {
+                ...taskDesc.pickup,
+                place: (ev.target as HTMLInputElement).value,
+                handler: pickupPoints[(ev.target as HTMLInputElement).value],
+              },
+            })
+          }
           renderInput={(params) => <TextField {...params} label="Pickup Location" />}
         />
       </Grid>
@@ -273,17 +273,17 @@ function DeliveryTaskForm({
               },
             })
           }
-          onBlur={(ev) => {
+          onBlur={(ev) =>
             dropoffPoints[(ev.target as HTMLInputElement).value] &&
-              onChange({
-                ...taskDesc,
-                dropoff: {
-                  ...taskDesc.dropoff,
-                  place: (ev.target as HTMLInputElement).value,
-                  handler: dropoffPoints[(ev.target as HTMLInputElement).value],
-                },
-              });
-          }}
+            onChange({
+              ...taskDesc,
+              dropoff: {
+                ...taskDesc.dropoff,
+                place: (ev.target as HTMLInputElement).value,
+                handler: dropoffPoints[(ev.target as HTMLInputElement).value],
+              },
+            })
+          }
           renderInput={(params) => <TextField {...params} label="Dropoff Location" />}
         />
       </Grid>
