@@ -45,6 +45,7 @@ import { PositiveIntField } from '../form-inputs';
 interface DeliveryTaskDescription {
   pickup: {
     place: string;
+    handler: string;
     payload: {
       sku: string;
       quantity: number;
@@ -52,6 +53,7 @@ interface DeliveryTaskDescription {
   };
   dropoff: {
     place: string;
+    handler: string;
     payload: {
       sku: string;
       quantity: number;
@@ -134,15 +136,15 @@ function FormToolbar({ onSelectFileClick }: FormToolbarProps) {
 
 interface DeliveryTaskFormProps {
   taskDesc: DeliveryTaskDescription;
-  pickupPoints: string[];
-  dropoffPoints: string[];
+  pickupPoints: Record<string, string>;
+  dropoffPoints: Record<string, string>;
   onChange(taskDesc: TaskDescription): void;
 }
 
 function DeliveryTaskForm({
   taskDesc,
-  pickupPoints,
-  dropoffPoints,
+  pickupPoints = {},
+  dropoffPoints = {},
   onChange,
 }: DeliveryTaskFormProps) {
   const theme = useTheme();
@@ -154,24 +156,28 @@ function DeliveryTaskForm({
           id="pickup-location"
           freeSolo
           fullWidth
-          options={pickupPoints}
+          options={Object.keys(pickupPoints)}
           value={taskDesc.pickup.place}
           onChange={(_ev, newValue) =>
             newValue !== null &&
+            pickupPoints[newValue] &&
             onChange({
               ...taskDesc,
               pickup: {
                 ...taskDesc.pickup,
                 place: newValue,
+                handler: pickupPoints[newValue],
               },
             })
           }
           onBlur={(ev) =>
+            pickupPoints[(ev.target as HTMLInputElement).value] &&
             onChange({
               ...taskDesc,
               pickup: {
                 ...taskDesc.pickup,
                 place: (ev.target as HTMLInputElement).value,
+                handler: pickupPoints[(ev.target as HTMLInputElement).value],
               },
             })
           }
@@ -202,7 +208,7 @@ function DeliveryTaskForm({
             onChange({
               ...taskDesc,
               pickup: {
-                ...taskDesc.dropoff,
+                ...taskDesc.pickup,
                 payload: {
                   ...taskDesc.pickup.payload,
                   sku: (ev.target as HTMLInputElement).value,
@@ -253,24 +259,28 @@ function DeliveryTaskForm({
           id="dropoff-location"
           freeSolo
           fullWidth
-          options={dropoffPoints}
+          options={Object.keys(dropoffPoints)}
           value={taskDesc.dropoff.place}
           onChange={(_ev, newValue) =>
             newValue !== null &&
+            dropoffPoints[newValue] &&
             onChange({
               ...taskDesc,
               dropoff: {
                 ...taskDesc.dropoff,
                 place: newValue,
+                handler: dropoffPoints[newValue],
               },
             })
           }
           onBlur={(ev) =>
+            dropoffPoints[(ev.target as HTMLInputElement).value] &&
             onChange({
               ...taskDesc,
               dropoff: {
                 ...taskDesc.dropoff,
                 place: (ev.target as HTMLInputElement).value,
+                handler: dropoffPoints[(ev.target as HTMLInputElement).value],
               },
             })
           }
@@ -548,6 +558,7 @@ function defaultDeliveryTask(): DeliveryTaskDescription {
   return {
     pickup: {
       place: '',
+      handler: '',
       payload: {
         sku: '',
         quantity: 1,
@@ -555,6 +566,7 @@ function defaultDeliveryTask(): DeliveryTaskDescription {
     },
     dropoff: {
       place: '',
+      handler: '',
       payload: {
         sku: '',
         quantity: 1,
@@ -665,8 +677,8 @@ export interface CreateTaskFormProps
   allowBatch?: boolean;
   cleaningZones?: string[];
   patrolWaypoints?: string[];
-  pickupPoints?: string[];
-  dropoffPoints?: string[];
+  pickupPoints?: Record<string, string>;
+  dropoffPoints?: Record<string, string>;
   favoritesTasks: TaskFavorite[];
   submitTasks?(tasks: TaskRequest[], schedule: Schedule | null): Promise<void>;
   tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
@@ -684,8 +696,8 @@ export function CreateTaskForm({
   user,
   cleaningZones = [],
   patrolWaypoints = [],
-  pickupPoints = [],
-  dropoffPoints = [],
+  pickupPoints = {},
+  dropoffPoints = {},
   favoritesTasks = [],
   submitTasks,
   tasksFromFile,
@@ -1012,10 +1024,8 @@ export function CreateTaskForm({
                       <MenuItem
                         value="delivery"
                         disabled={
-                          !pickupPoints ||
-                          pickupPoints.length === 0 ||
-                          !dropoffPoints ||
-                          dropoffPoints.length === 0
+                          Object.keys(pickupPoints).length === 0 ||
+                          Object.keys(dropoffPoints).length === 0
                         }
                       >
                         Delivery
