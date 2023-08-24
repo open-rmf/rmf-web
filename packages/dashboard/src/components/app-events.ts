@@ -19,6 +19,6 @@ export const AppEvents = {
   refreshAlertCount: new Subject<number>(),
   alertListOpenedAlert: new Subject<Alert | null>(),
   disabledLayers: new ReplaySubject<Record<string, boolean>>(),
-  zoom: new BehaviorSubject<number>(5),
+  zoom: new BehaviorSubject<number>(0.5),
   mapCenter: new BehaviorSubject<[number, number]>([0, 0]),
 };
