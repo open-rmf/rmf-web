@@ -391,17 +391,16 @@ export const TasksApp = React.memo(
 
       const handleSubmitDeleteSchedule: React.MouseEventHandler = async (ev) => {
         ev.preventDefault();
-        const task = eventsMap.current[Number(currentEventId)];
-        if (!task) {
-          console.error(
-            `Failed to delete scheduled task: unable to find task for event ${currentEventId}`,
-          );
-          return;
-        }
-        if (!rmf) {
-          return;
-        }
         try {
+          const task = eventsMap.current[Number(currentEventId)];
+
+          if (!task) {
+            throw new Error(`unable to find task for event ${currentEventId}`);
+          }
+          if (!rmf) {
+            throw new Error('tasks api not available');
+          }
+
           if (scheduleDeleteValue === ScheduleDeleteOptions.CURRENT) {
             await rmf.tasksApi.regenerateScheduleByExceptDateScheduledTasksTaskIdClearPut(
               task.id,
