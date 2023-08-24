@@ -22,7 +22,7 @@ function getLiftModeText(liftState: LiftState): string {
   }
 }
 
-function getLiftMotionText(liftState: LiftState): string {
+export function getLiftMotionText(liftState: LiftState): string {
   switch (liftState.motion_state) {
     case RmfLiftState.MOTION_UP:
       return '▲';
