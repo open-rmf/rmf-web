@@ -8,16 +8,7 @@ import { Route, Routes, Navigate } from 'react-router-dom';
 import { LoginPage, PrivateRoute } from 'rmf-auth';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
-import {
-  AdminRoute,
-  CustomRoute1,
-  CustomRoute2,
-  DashboardRoute,
-  LoginRoute,
-  RobotsRoute,
-  TasksRoute,
-} from '../util/url';
-import { AdminRouter } from './admin';
+import { DashboardRoute, LoginRoute, RobotsRoute, TasksRoute } from '../util/url';
 import { AppBase } from './app-base';
 import { ResourcesContext } from './app-contexts';
 import './app.css';
@@ -25,7 +16,7 @@ import { dashboardWorkspace } from './dashboard';
 import { RmfApp } from './rmf-app';
 import { robotsWorkspace } from './robots/robots-workspace';
 import { tasksWorkspace } from './tasks/tasks-workspace';
-import { ManagedWorkspace, Workspace } from './workspace';
+import { Workspace } from './workspace';
 
 export default function App(): JSX.Element | null {
   const authenticator = appConfig.authenticator;
@@ -101,33 +92,6 @@ export default function App(): JSX.Element | null {
                 element={
                   <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
                     <Workspace key="tasks" state={tasksWorkspace} />
-                  </PrivateRoute>
-                }
-              />
-
-              <Route
-                path={CustomRoute1}
-                element={
-                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-                    <ManagedWorkspace key="custom1" workspaceId="custom1" />
-                  </PrivateRoute>
-                }
-              />
-
-              <Route
-                path={CustomRoute2}
-                element={
-                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-                    <ManagedWorkspace key="custom2" workspaceId="custom2" />
-                  </PrivateRoute>
-                }
-              />
-
-              <Route
-                path={AdminRoute}
-                element={
-                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-                    <AdminRouter />
                   </PrivateRoute>
                 }
               />
