@@ -35,7 +35,7 @@ import {
   AppBarTab,
   CreateTaskForm,
   CreateTaskFormProps,
-  getPlaces,
+  getNamedPlaces,
   HeaderBar,
   LogoButton,
   NavigationBar,
@@ -167,8 +167,10 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [brandingIconPath, setBrandingIconPath] = React.useState<string>('');
   const [settingsAnchor, setSettingsAnchor] = React.useState<HTMLElement | null>(null);
   const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
-  const [placeNames, setPlaceNames] = React.useState<string[]>([]);
-  const [workcells, setWorkcells] = React.useState<string[]>();
+  const [waypointNames, setWaypointNames] = React.useState<string[]>([]);
+  const [cleaningZoneNames, setCleaningZoneNames] = React.useState<string[]>([]);
+  const [pickupPointNames, setPickupPointNames] = React.useState<string[]>([]);
+  const [dropoffPointNames, setDropoffPointNames] = React.useState<string[]>([]);
   const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
   const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
   const [username, setUsername] = React.useState<string | null>(null);
@@ -215,22 +217,19 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   }, [logoResourcesContext, safeAsync, curTheme]);
 
   React.useEffect(() => {
-    if (!resourceManager?.dispensers) {
-      return;
-    }
-    setWorkcells(Object.keys(resourceManager.dispensers.dispensers));
-  }, [resourceManager]);
-
-  React.useEffect(() => {
     if (!rmf) {
       return;
     }
 
     const subs: Subscription[] = [];
     subs.push(
-      rmf.buildingMapObs.subscribe((map) =>
-        setPlaceNames(getPlaces(map).map((p) => p.vertex.name)),
-      ),
+      rmf.buildingMapObs.subscribe((map) => {
+        const namedPlaces = getNamedPlaces(map);
+        setPickupPointNames(namedPlaces.pickupPoints.map((w) => w.vertex.name));
+        setDropoffPointNames(namedPlaces.dropoffPoints.map((w) => w.vertex.name));
+        setCleaningZoneNames(namedPlaces.cleaningZones.map((w) => w.vertex.name));
+        setWaypointNames(namedPlaces.places.map((w) => w.vertex.name));
+      }),
     );
     subs.push(
       AppEvents.refreshAlertCount.subscribe((_) => {
@@ -578,11 +577,10 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       {openCreateTaskForm && (
         <CreateTaskForm
           user={username ? username : 'unknown user'}
-          cleaningZones={placeNames}
-          loopWaypoints={placeNames}
-          deliveryWaypoints={placeNames}
-          dispensers={workcells}
-          ingestors={workcells}
+          cleaningZones={cleaningZoneNames}
+          patrolWaypoints={waypointNames}
+          pickupPoints={pickupPointNames}
+          dropoffPoints={dropoffPointNames}
           favoritesTasks={favoritesTasks}
           open={openCreateTaskForm}
           onClose={() => setOpenCreateTaskForm(false)}

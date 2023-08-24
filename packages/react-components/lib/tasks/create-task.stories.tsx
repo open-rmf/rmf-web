@@ -24,8 +24,7 @@ export const CreateTask: Story<CreateTaskFormProps> = (args) => {
 CreateTask.args = {
   submitTasks: async () => new Promise((res) => setTimeout(res, 500)),
   cleaningZones: ['test_zone_0', 'test_zone_1'],
-  loopWaypoints: ['test_waypoint_0', 'test_waypoint_1'],
-  deliveryWaypoints: ['test_waypoint_0', 'test_waypoint_1'],
-  dispensers: ['test_dispenser_0', 'test_dispenser_1'],
-  ingestors: ['test_ingestor_0', 'test_ingestor_1'],
+  patrolWaypoints: ['test_waypoint_0', 'test_waypoint_1'],
+  pickupPoints: ['test_waypoint_0'],
+  dropoffPoints: ['test_waypoint_1'],
 };
