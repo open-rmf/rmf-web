@@ -1021,7 +1021,13 @@ export function CreateTaskForm({
                       >
                         Patrol
                       </MenuItem>
-                      <MenuItem value="delivery" disabled={Object.keys(pickupPoints).length === 0}>
+                      <MenuItem
+                        value="delivery"
+                        disabled={
+                          Object.keys(pickupPoints).length === 0 ||
+                          Object.keys(dropoffPoints).length === 0
+                        }
+                      >
                         Delivery
                       </MenuItem>
                     </TextField>
