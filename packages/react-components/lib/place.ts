@@ -39,21 +39,22 @@ export function getNamedPlaces(buildingMap: BuildingMap): NamedPlaces {
   for (const level of buildingMap.levels) {
     for (const graphs of level.nav_graphs) {
       for (const vertex of graphs.vertices) {
-        if (vertex.name) {
-          const place: Place = { level: level.name, vertex };
-          for (const p of vertex.params) {
-            if (p.name === DEFAULT_PICKUP_POINT_PARAM_NAME) {
-              pickupPoints.set(vertex.name, place);
-            }
-            if (p.name === DEFAULT_DROPOFF_POINT_PARAM_NAME) {
-              dropoffPoints.set(vertex.name, place);
-            }
-            if (p.name === DEFAULT_CLEANING_ZONE_PARAM_NAME) {
-              cleaningZones.set(vertex.name, place);
-            }
-          }
-          places.set(vertex.name, place);
+        if (!vertex.name) {
+          continue;
         }
+        const place: Place = { level: level.name, vertex };
+        for (const p of vertex.params) {
+          if (p.name === DEFAULT_PICKUP_POINT_PARAM_NAME) {
+            pickupPoints.set(vertex.name, place);
+          }
+          if (p.name === DEFAULT_DROPOFF_POINT_PARAM_NAME) {
+            dropoffPoints.set(vertex.name, place);
+          }
+          if (p.name === DEFAULT_CLEANING_ZONE_PARAM_NAME) {
+            cleaningZones.set(vertex.name, place);
+          }
+        }
+        places.set(vertex.name, place);
       }
     }
   }
