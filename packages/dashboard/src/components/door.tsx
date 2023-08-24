@@ -5,6 +5,8 @@ import { Cube } from './cube';
 import { Door as DoorModel } from 'rmf-models';
 import { RmfAppContext } from './rmf-app';
 import { DoorMode } from 'rmf-models';
+import { Text } from '@react-three/drei';
+import { getLiftMotionText } from 'react-components';
 
 function distance(v1_x: number, v1_y: number, v2_x: number, v2_y: number) {
   return Math.hypot(v2_x - v1_x, v2_y - v1_y);
@@ -22,12 +24,36 @@ interface DoorProps {
   lift?: Lift;
 }
 
+interface SquareProps {
+  x: number;
+  y: number;
+  yaw: number;
+  width: number;
+  depth: number;
+  liftState: LiftState;
+}
+
+const Square = ({ x, y, yaw, width, depth, liftState }: SquareProps) => {
+  return (
+    <group position={[x, y, yaw]}>
+      <Text position={[0, 0, 0]} color="black">
+        {getLiftMotionText(liftState)}
+      </Text>
+      <mesh position={[0, 0, 0]} rotation={[0, 0, yaw]}>
+        <boxGeometry args={[width, depth, 0.1]} />
+        <meshStandardMaterial color={'green'} opacity={0.6} transparent />
+      </mesh>
+    </group>
+  );
+};
+
 interface SingleDoorProps extends DoorProps {
   door: DoorModel;
   opacity: number;
   meshRef: React.Ref<THREE.Mesh>;
   doorState: number | undefined;
   color: string;
+  liftSate?: LiftState;
 }
 
 function SingleSwingDoor({
@@ -112,12 +138,24 @@ export const Door = React.memo(({ ...doorProps }: DoorProps): JSX.Element => {
   }, [doorState?.current_mode.value, liftState]);
 
   return (
-    <SingleSwingDoor
-      {...doorProps}
-      key={door.name}
-      meshRef={ref}
-      doorState={doorState?.current_mode.value}
-      color={color}
-    />
+    <>
+      <SingleSwingDoor
+        {...doorProps}
+        key={door.name}
+        meshRef={ref}
+        doorState={doorState?.current_mode.value}
+        color={color}
+      />
+      {lift && liftState && (
+        <Square
+          x={lift.ref_x}
+          y={lift.ref_y}
+          yaw={lift.ref_yaw}
+          width={lift.width}
+          depth={lift.depth}
+          liftState={liftState}
+        />
+      )}
+    </>
   );
 });
