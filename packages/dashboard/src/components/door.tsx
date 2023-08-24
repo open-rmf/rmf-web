@@ -1,20 +1,13 @@
-import * as THREE from 'three';
 import React from 'react';
 import { DoorState, Lift, LiftState } from 'api-client';
 import { Cube } from './cube';
 import { Door as DoorModel } from 'rmf-models';
 import { RmfAppContext } from './rmf-app';
 import { DoorMode } from 'rmf-models';
-import { Text } from '@react-three/drei';
-import { getLiftMotionText } from 'react-components';
-
-function distance(v1_x: number, v1_y: number, v2_x: number, v2_y: number) {
-  return Math.hypot(v2_x - v1_x, v2_y - v1_y);
-}
-
-function midPoint(v1_x: number, v1_y: number, v2_x: number, v2_y: number) {
-  return [(v2_x + v1_x) / 2, (v2_y + v1_y) / 2];
-}
+import { Text, Line } from '@react-three/drei';
+import { getLiftModeText } from 'react-components';
+import { BufferGeometry, BufferAttribute, Vector3, Euler } from 'three';
+import { LiftState as RmfLiftState } from 'rmf-models';
 
 interface DoorProps {
   door: DoorModel;
@@ -33,12 +26,79 @@ interface SquareProps {
   liftState: LiftState;
 }
 
-const Square = ({ x, y, yaw, width, depth, liftState }: SquareProps) => {
+interface LiftShapeMakerProps {
+  motionState: number;
+}
+
+function distance(v1_x: number, v1_y: number, v2_x: number, v2_y: number) {
+  return Math.hypot(v2_x - v1_x, v2_y - v1_y);
+}
+
+function midPoint(v1_x: number, v1_y: number, v2_x: number, v2_y: number) {
+  return [(v2_x + v1_x) / 2, (v2_y + v1_y) / 2];
+}
+
+const LiftShapeMaker = ({ motionState }: LiftShapeMakerProps) => {
+  const vertices = new Float32Array([0, 1, 0, -0.5, -0.5, 0, 0.5, -0.5, 0]);
+
+  const generateTriangleShape = (rotation: Euler) => {
+    const geometry = new BufferGeometry();
+    geometry.setAttribute('position', new BufferAttribute(vertices, 3));
+    return (
+      <mesh geometry={geometry} rotation={rotation}>
+        <meshBasicMaterial color="red" />
+      </mesh>
+    );
+  };
+
+  const generateLineShape = () => {
+    const points = [
+      [-0.5, 0.5, 0],
+      [0.5, 0.5, 0],
+      [0.5, -0.5, 0],
+      [-0.5, -0.5, 0],
+      [-0.5, 0.5, 0],
+    ].map((point) => new Vector3(...point));
+
+    return <Line points={points} color="black" linewidth={1} />;
+  };
+
+  const generateTextShape = () => {
+    return (
+      <Text color="black" fontSize={0.6}>
+        {' '}
+        {'?'}
+      </Text>
+    );
+  };
+
+  let shapeComponent;
+
+  switch (motionState) {
+    case RmfLiftState.MOTION_UP:
+      shapeComponent = generateTriangleShape(new Euler(0, 0, 0));
+      break;
+    case RmfLiftState.MOTION_DOWN:
+      shapeComponent = generateTriangleShape(new Euler(0, 0, Math.PI));
+      break;
+    case RmfLiftState.MOTION_STOPPED:
+      shapeComponent = generateLineShape();
+      break;
+    default:
+      shapeComponent = generateTextShape();
+      break;
+  }
+
+  return shapeComponent;
+};
+
+const ElevatorMaker = ({ x, y, yaw, width, depth, liftState }: SquareProps) => {
   return (
     <group position={[x, y, yaw]}>
-      <Text position={[0, 0, 0]} color="black">
-        {getLiftMotionText(liftState)}
+      <Text position={[0, 0.8, 0.5]} color="black" fontSize={0.6}>
+        {getLiftModeText(liftState)}
       </Text>
+      <LiftShapeMaker motionState={liftState.motion_state} />
       <mesh position={[0, 0, 0]} rotation={[0, 0, yaw]}>
         <boxGeometry args={[width, depth, 0.1]} />
         <meshStandardMaterial color={'green'} opacity={0.6} transparent />
@@ -67,10 +127,10 @@ function SingleSwingDoor({
 }: SingleDoorProps) {
   const { v1_x, v1_y, v2_x, v2_y } = door;
   const thickness = 0.5;
-  const v = new THREE.Vector3(v1_x - v2_x, 0, v1_y - v2_y);
+  const v = new Vector3(v1_x - v2_x, 0, v1_y - v2_y);
   v.normalize();
   const angle = Math.atan2(v1_y - v2_y, v1_x - v2_x) - Math.PI / 2;
-  const rot = new THREE.Euler(0, 0, angle);
+  const rot = new Euler(0, 0, angle);
 
   const pos = midPoint(v1_x, v1_y, v2_x, v2_y).concat(height / 2 + 0);
   const dist = distance(v1_x, v1_y, v2_x, v2_y);
@@ -147,7 +207,7 @@ export const Door = React.memo(({ ...doorProps }: DoorProps): JSX.Element => {
         color={color}
       />
       {lift && liftState && (
-        <Square
+        <ElevatorMaker
           x={lift.ref_x}
           y={lift.ref_y}
           yaw={lift.ref_yaw}
