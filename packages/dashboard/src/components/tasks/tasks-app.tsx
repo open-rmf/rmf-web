@@ -402,7 +402,7 @@ export const TasksApp = React.memo(
           }
 
           if (scheduleDeleteValue === ScheduleDeleteOptions.CURRENT) {
-            await rmf.tasksApi.regenerateScheduleByExceptDateScheduledTasksTaskIdClearPut(
+            await rmf.tasksApi.delScheduledTasksEventScheduledTasksTaskIdClearPut(
               task.id,
               exceptDateRef.current.toISOString(),
             );

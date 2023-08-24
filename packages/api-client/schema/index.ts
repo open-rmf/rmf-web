@@ -1253,8 +1253,8 @@ export default {
     '/scheduled_tasks/{task_id}/clear': {
       put: {
         tags: ['Tasks'],
-        summary: 'Regenerate Schedule By Except Date',
-        operationId: 'regenerate_schedule_by_except_date_scheduled_tasks__task_id__clear_put',
+        summary: 'Del Scheduled Tasks Event',
+        operationId: 'del_scheduled_tasks_event_scheduled_tasks__task_id__clear_put',
         parameters: [
           {
             required: true,
@@ -1264,8 +1264,8 @@ export default {
           },
           {
             required: true,
-            schema: { title: 'Except Date', type: 'string', format: 'date-time' },
-            name: 'except_date',
+            schema: { title: 'Event Date', type: 'string', format: 'date-time' },
+            name: 'event_date',
             in: 'query',
           },
         ],

@@ -136,16 +136,16 @@ async def get_scheduled_task(task_id: int) -> ttm.ScheduledTask:
 
 
 @router.put("/{task_id}/clear")
-async def regenerate_schedule_by_except_date(
+async def del_scheduled_tasks_event(
     task_id: int,
-    except_date: datetime,
+    event_date: datetime,
     task_repo: TaskRepository = Depends(task_repo_dep),
 ):
     task = await get_scheduled_task(task_id)
     if task is None:
         raise HTTPException(404)
 
-    task.except_dates.append(datetime_to_date_format(except_date))
+    task.except_dates.append(datetime_to_date_format(event_date))
     await task.save()
 
     for sche in task.schedules:
