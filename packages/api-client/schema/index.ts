@@ -1250,6 +1250,39 @@ export default {
         },
       },
     },
+    '/scheduled_tasks/{task_id}/clear': {
+      put: {
+        tags: ['Tasks'],
+        summary: 'Del Scheduled Tasks Event',
+        operationId: 'del_scheduled_tasks_event_scheduled_tasks__task_id__clear_put',
+        parameters: [
+          {
+            required: true,
+            schema: { title: 'Task Id', type: 'integer' },
+            name: 'task_id',
+            in: 'path',
+          },
+          {
+            required: true,
+            schema: { title: 'Event Date', type: 'string', format: 'date-time' },
+            name: 'event_date',
+            in: 'query',
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: { 'application/json': { schema: {} } },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
     '/favorite_tasks': {
       get: {
         tags: ['Tasks'],
@@ -3669,6 +3702,7 @@ export default {
           task_request: { title: 'Task Request' },
           created_by: { title: 'Created By', maxLength: 255, type: 'string' },
           last_ran: { title: 'Last Ran', type: 'string', format: 'date-time', nullable: true },
+          except_dates: { title: 'Except Dates' },
           schedules: {
             title: 'Schedules',
             type: 'array',

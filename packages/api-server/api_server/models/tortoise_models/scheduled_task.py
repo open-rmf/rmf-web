@@ -28,6 +28,7 @@ class ScheduledTask(Model):
     created_by = CharField(255)
     schedules: ReverseRelation["ScheduledTaskSchedule"]
     last_ran: Optional[datetime] = DatetimeField(null=True)
+    except_dates = JSONField(null=True, default=list)
 
 
 class ScheduledTaskSchedule(Model):
