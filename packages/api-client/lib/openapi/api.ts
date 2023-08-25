@@ -323,6 +323,12 @@ export interface ApiServerModelsTortoiseModelsScheduledTaskScheduledTask {
   last_ran?: string | null;
   /**
    *
+   * @type {any}
+   * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTask
+   */
+  except_dates?: any;
+  /**
+   *
    * @type {Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf>}
    * @memberof ApiServerModelsTortoiseModelsScheduledTaskScheduledTask
    */
@@ -7342,6 +7348,60 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
   return {
     /**
      *
+     * @summary Del Scheduled Tasks Event
+     * @param {number} taskId
+     * @param {string} eventDate
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    delScheduledTasksEventScheduledTasksTaskIdClearPut: async (
+      taskId: number,
+      eventDate: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'taskId' is not null or undefined
+      assertParamExists('delScheduledTasksEventScheduledTasksTaskIdClearPut', 'taskId', taskId);
+      // verify required parameter 'eventDate' is not null or undefined
+      assertParamExists(
+        'delScheduledTasksEventScheduledTasksTaskIdClearPut',
+        'eventDate',
+        eventDate,
+      );
+      const localVarPath = `/scheduled_tasks/{task_id}/clear`.replace(
+        `{${'task_id'}}`,
+        encodeURIComponent(String(taskId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      if (eventDate !== undefined) {
+        localVarQueryParameter['event_date'] =
+          (eventDate as any) instanceof Date ? (eventDate as any).toISOString() : eventDate;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Del Scheduled Tasks
      * @param {number} taskId
      * @param {*} [options] Override http request option.
@@ -8388,6 +8448,27 @@ export const TasksApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
+     * @summary Del Scheduled Tasks Event
+     * @param {number} taskId
+     * @param {string} eventDate
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async delScheduledTasksEventScheduledTasksTaskIdClearPut(
+      taskId: number,
+      eventDate: string,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.delScheduledTasksEventScheduledTasksTaskIdClearPut(
+          taskId,
+          eventDate,
+          options,
+        );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
      * @summary Del Scheduled Tasks
      * @param {number} taskId
      * @param {*} [options] Override http request option.
@@ -8826,6 +8907,23 @@ export const TasksApiFactory = function (
   return {
     /**
      *
+     * @summary Del Scheduled Tasks Event
+     * @param {number} taskId
+     * @param {string} eventDate
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    delScheduledTasksEventScheduledTasksTaskIdClearPut(
+      taskId: number,
+      eventDate: string,
+      options?: any,
+    ): AxiosPromise<any> {
+      return localVarFp
+        .delScheduledTasksEventScheduledTasksTaskIdClearPut(taskId, eventDate, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Del Scheduled Tasks
      * @param {number} taskId
      * @param {*} [options] Override http request option.
@@ -9183,6 +9281,25 @@ export const TasksApiFactory = function (
  * @extends {BaseAPI}
  */
 export class TasksApi extends BaseAPI {
+  /**
+   *
+   * @summary Del Scheduled Tasks Event
+   * @param {number} taskId
+   * @param {string} eventDate
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public delScheduledTasksEventScheduledTasksTaskIdClearPut(
+    taskId: number,
+    eventDate: string,
+    options?: AxiosRequestConfig,
+  ) {
+    return TasksApiFp(this.configuration)
+      .delScheduledTasksEventScheduledTasksTaskIdClearPut(taskId, eventDate, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
   /**
    *
    * @summary Del Scheduled Tasks

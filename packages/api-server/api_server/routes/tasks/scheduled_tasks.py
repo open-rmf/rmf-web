@@ -25,6 +25,10 @@ class PostScheduledTaskRequest(BaseModel):
     schedules: list[ttm.ScheduledTaskSchedulePydantic]
 
 
+def datetime_to_date_format(date: datetime) -> str:
+    return date.date().strftime("%m/%d/%Y").lstrip("0")
+
+
 async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
     await task.fetch_related("schedules")
     jobs: list[tuple[ttm.ScheduledTaskSchedule, schedule.Job]] = []
@@ -49,6 +53,8 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
 
     def do():
         logger.info(f"starting task {task.pk}")
+        if datetime_to_date_format(datetime.now()) in task.except_dates:
+            return
         asyncio.get_event_loop().create_task(run())
 
     for _, j in jobs:
@@ -127,6 +133,25 @@ async def get_scheduled_task(task_id: int) -> ttm.ScheduledTask:
     if task is None:
         raise HTTPException(404)
     return task
+
+
+@router.put("/{task_id}/clear")
+async def del_scheduled_tasks_event(
+    task_id: int,
+    event_date: datetime,
+    task_repo: TaskRepository = Depends(task_repo_dep),
+):
+    task = await get_scheduled_task(task_id)
+    if task is None:
+        raise HTTPException(404)
+
+    task.except_dates.append(datetime_to_date_format(event_date))
+    await task.save()
+
+    for sche in task.schedules:
+        schedule.clear(sche.get_id())
+
+    await schedule_task(task, task_repo)
 
 
 @router.delete("/{task_id}")

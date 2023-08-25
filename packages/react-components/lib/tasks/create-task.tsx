@@ -61,7 +61,7 @@ interface DeliveryTaskDescription {
   };
 }
 
-interface LoopTaskDescription {
+interface PatrolTaskDescription {
   places: string[];
   rounds: number;
 }
@@ -70,7 +70,7 @@ interface CleanTaskDescription {
   zone: string;
 }
 
-type TaskDescription = DeliveryTaskDescription | LoopTaskDescription | CleanTaskDescription;
+type TaskDescription = DeliveryTaskDescription | PatrolTaskDescription | CleanTaskDescription;
 
 const classes = {
   title: 'dialogue-info-value',
@@ -136,137 +136,52 @@ function FormToolbar({ onSelectFileClick }: FormToolbarProps) {
 
 interface DeliveryTaskFormProps {
   taskDesc: DeliveryTaskDescription;
-  deliveryWaypoints: string[];
-  dispensers: string[];
-  ingestors: string[];
+  pickupPoints: Record<string, string>;
+  dropoffPoints: Record<string, string>;
   onChange(taskDesc: TaskDescription): void;
 }
 
 function DeliveryTaskForm({
   taskDesc,
-  deliveryWaypoints,
-  dispensers,
-  ingestors,
+  pickupPoints = {},
+  dropoffPoints = {},
   onChange,
 }: DeliveryTaskFormProps) {
   const theme = useTheme();
 
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
-      <Grid item xs={8}>
+      <Grid item xs={6}>
         <Autocomplete
           id="pickup-location"
           freeSolo
           fullWidth
-          options={deliveryWaypoints}
+          options={Object.keys(pickupPoints)}
           value={taskDesc.pickup.place}
           onChange={(_ev, newValue) =>
             newValue !== null &&
+            pickupPoints[newValue] &&
             onChange({
               ...taskDesc,
               pickup: {
                 ...taskDesc.pickup,
                 place: newValue,
+                handler: pickupPoints[newValue],
               },
             })
           }
           onBlur={(ev) =>
+            pickupPoints[(ev.target as HTMLInputElement).value] &&
             onChange({
               ...taskDesc,
               pickup: {
                 ...taskDesc.pickup,
                 place: (ev.target as HTMLInputElement).value,
+                handler: pickupPoints[(ev.target as HTMLInputElement).value],
               },
             })
           }
           renderInput={(params) => <TextField {...params} label="Pickup Location" />}
-        />
-      </Grid>
-      <Grid item xs={4}>
-        <Autocomplete
-          id="dispenser"
-          freeSolo
-          fullWidth
-          options={dispensers}
-          value={taskDesc.pickup.handler}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            onChange({
-              ...taskDesc,
-              pickup: {
-                ...taskDesc.pickup,
-                handler: newValue,
-              },
-            })
-          }
-          onBlur={(ev) =>
-            onChange({
-              ...taskDesc,
-              pickup: {
-                ...taskDesc.pickup,
-                handler: (ev.target as HTMLInputElement).value,
-              },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Dispenser" />}
-        />
-      </Grid>
-      <Grid item xs={8}>
-        <Autocomplete
-          id="dropoff-location"
-          freeSolo
-          fullWidth
-          options={deliveryWaypoints}
-          value={taskDesc.dropoff.place}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            onChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                place: newValue,
-              },
-            })
-          }
-          onBlur={(ev) =>
-            onChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                place: (ev.target as HTMLInputElement).value,
-              },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Dropoff Location" />}
-        />
-      </Grid>
-      <Grid item xs={4}>
-        <Autocomplete
-          id="ingestor"
-          freeSolo
-          fullWidth
-          options={ingestors}
-          value={taskDesc.dropoff.handler}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            onChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                handler: newValue,
-              },
-            })
-          }
-          onBlur={(ev) =>
-            onChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                handler: (ev.target as HTMLInputElement).value,
-              },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Ingestor" />}
         />
       </Grid>
       <Grid item xs={4}>
@@ -293,7 +208,7 @@ function DeliveryTaskForm({
             onChange({
               ...taskDesc,
               pickup: {
-                ...taskDesc.dropoff,
+                ...taskDesc.pickup,
                 payload: {
                   ...taskDesc.pickup.payload,
                   sku: (ev.target as HTMLInputElement).value,
@@ -309,7 +224,7 @@ function DeliveryTaskForm({
           id="pickup_quantity"
           freeSolo
           fullWidth
-          value={taskDesc.pickup.payload.quantity}
+          value={`${taskDesc.pickup.payload.quantity}`}
           options={[]}
           onChange={(_ev, newValue) =>
             newValue !== null &&
@@ -336,7 +251,40 @@ function DeliveryTaskForm({
               },
             })
           }
-          renderInput={(params) => <TextField {...params} label="Pickup Quantity" />}
+          renderInput={(params) => <TextField {...params} label="Quantity" />}
+        />
+      </Grid>
+      <Grid item xs={6}>
+        <Autocomplete
+          id="dropoff-location"
+          freeSolo
+          fullWidth
+          options={Object.keys(dropoffPoints)}
+          value={taskDesc.dropoff.place}
+          onChange={(_ev, newValue) =>
+            newValue !== null &&
+            dropoffPoints[newValue] &&
+            onChange({
+              ...taskDesc,
+              dropoff: {
+                ...taskDesc.dropoff,
+                place: newValue,
+                handler: dropoffPoints[newValue],
+              },
+            })
+          }
+          onBlur={(ev) =>
+            dropoffPoints[(ev.target as HTMLInputElement).value] &&
+            onChange({
+              ...taskDesc,
+              dropoff: {
+                ...taskDesc.dropoff,
+                place: (ev.target as HTMLInputElement).value,
+                handler: dropoffPoints[(ev.target as HTMLInputElement).value],
+              },
+            })
+          }
+          renderInput={(params) => <TextField {...params} label="Dropoff Location" />}
         />
       </Grid>
       <Grid item xs={4}>
@@ -379,7 +327,7 @@ function DeliveryTaskForm({
           id="dropoff_quantity"
           freeSolo
           fullWidth
-          value={taskDesc.dropoff.payload.quantity}
+          value={`${taskDesc.dropoff.payload.quantity}`}
           options={[]}
           onChange={(_ev, newValue) =>
             newValue !== null &&
@@ -406,7 +354,7 @@ function DeliveryTaskForm({
               },
             })
           }
-          renderInput={(params) => <TextField {...params} label="Dropoff Quantity" />}
+          renderInput={(params) => <TextField {...params} label="Quantity" />}
         />
       </Grid>
     </Grid>
@@ -448,15 +396,14 @@ function PlaceList({ places, onClick }: PlaceListProps) {
   );
 }
 
-interface LoopTaskFormProps {
-  taskDesc: LoopTaskDescription;
-  loopWaypoints: string[];
-  onChange(loopTaskDescription: LoopTaskDescription): void;
+interface PatrolTaskFormProps {
+  taskDesc: PatrolTaskDescription;
+  patrolWaypoints: string[];
+  onChange(patrolTaskDescription: PatrolTaskDescription): void;
 }
 
-function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) {
+function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange }: PatrolTaskFormProps) {
   const theme = useTheme();
-
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
       <Grid item xs={10}>
@@ -464,7 +411,7 @@ function LoopTaskForm({ taskDesc, loopWaypoints, onChange }: LoopTaskFormProps) 
           id="place-input"
           freeSolo
           fullWidth
-          options={loopWaypoints}
+          options={patrolWaypoints}
           onChange={(_ev, newValue) =>
             newValue !== null &&
             onChange({
@@ -600,7 +547,7 @@ function defaultCleanTask(): CleanTaskDescription {
   };
 }
 
-function defaultLoopTask(): LoopTaskDescription {
+function defaultPatrolTask(): PatrolTaskDescription {
   return {
     places: [],
     rounds: 1,
@@ -633,7 +580,7 @@ function defaultTaskDescription(taskCategory: string): TaskDescription | undefin
     case 'clean':
       return defaultCleanTask();
     case 'patrol':
-      return defaultLoopTask();
+      return defaultPatrolTask();
     case 'delivery':
       return defaultDeliveryTask();
     default:
@@ -644,7 +591,7 @@ function defaultTaskDescription(taskCategory: string): TaskDescription | undefin
 function defaultTask(): TaskRequest {
   return {
     category: 'patrol',
-    description: defaultLoopTask(),
+    description: defaultPatrolTask(),
     unix_millis_earliest_start_time: 0,
     unix_millis_request_time: Date.now(),
     priority: { type: 'binary', value: 0 },
@@ -714,7 +661,7 @@ const defaultFavoriteTask = (): TaskFavorite => {
     id: '',
     name: '',
     category: 'patrol',
-    description: defaultLoopTask(),
+    description: defaultPatrolTask(),
     unix_millis_earliest_start_time: 0,
     priority: { type: 'binary', value: 0 },
     user: '',
@@ -729,10 +676,9 @@ export interface CreateTaskFormProps
   user: string;
   allowBatch?: boolean;
   cleaningZones?: string[];
-  loopWaypoints?: string[];
-  deliveryWaypoints?: string[];
-  dispensers?: string[];
-  ingestors?: string[];
+  patrolWaypoints?: string[];
+  pickupPoints?: Record<string, string>;
+  dropoffPoints?: Record<string, string>;
   favoritesTasks: TaskFavorite[];
   submitTasks?(tasks: TaskRequest[], schedule: Schedule | null): Promise<void>;
   tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
@@ -749,10 +695,9 @@ export interface CreateTaskFormProps
 export function CreateTaskForm({
   user,
   cleaningZones = [],
-  loopWaypoints = [],
-  deliveryWaypoints = [],
-  dispensers = [],
-  ingestors = [],
+  patrolWaypoints = [],
+  pickupPoints = {},
+  dropoffPoints = {},
   favoritesTasks = [],
   submitTasks,
   tasksFromFile,
@@ -843,9 +788,9 @@ export function CreateTaskForm({
         );
       case 'patrol':
         return (
-          <LoopTaskForm
-            taskDesc={taskRequest.description as LoopTaskDescription}
-            loopWaypoints={loopWaypoints}
+          <PatrolTaskForm
+            taskDesc={taskRequest.description as PatrolTaskDescription}
+            patrolWaypoints={patrolWaypoints}
             onChange={(desc) => handleTaskDescriptionChange('patrol', desc)}
           />
         );
@@ -853,9 +798,8 @@ export function CreateTaskForm({
         return (
           <DeliveryTaskForm
             taskDesc={taskRequest.description as DeliveryTaskDescription}
-            deliveryWaypoints={deliveryWaypoints}
-            dispensers={dispensers}
-            ingestors={ingestors}
+            pickupPoints={pickupPoints}
+            dropoffPoints={dropoffPoints}
             onChange={(desc) => handleTaskDescriptionChange('delivery', desc)}
           />
         );
@@ -1065,9 +1009,27 @@ export function CreateTaskForm({
                       value={taskRequest.category}
                       onChange={handleTaskTypeChange}
                     >
-                      <MenuItem value="clean">Clean</MenuItem>
-                      <MenuItem value="patrol">Loop</MenuItem>
-                      <MenuItem value="delivery">Delivery</MenuItem>
+                      <MenuItem
+                        value="clean"
+                        disabled={!cleaningZones || cleaningZones.length === 0}
+                      >
+                        Clean
+                      </MenuItem>
+                      <MenuItem
+                        value="patrol"
+                        disabled={!patrolWaypoints || patrolWaypoints.length === 0}
+                      >
+                        Patrol
+                      </MenuItem>
+                      <MenuItem
+                        value="delivery"
+                        disabled={
+                          Object.keys(pickupPoints).length === 0 ||
+                          Object.keys(dropoffPoints).length === 0
+                        }
+                      >
+                        Delivery
+                      </MenuItem>
                     </TextField>
                   </Grid>
                   <Grid item xs={10}>

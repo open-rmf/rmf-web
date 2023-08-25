@@ -157,8 +157,10 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [brandingIconPath, setBrandingIconPath] = React.useState<string>('');
   const [settingsAnchor, setSettingsAnchor] = React.useState<HTMLElement | null>(null);
   const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
-  const [placeNames, setPlaceNames] = React.useState<string[]>([]);
-  const [workcells, setWorkcells] = React.useState<string[]>();
+  const [waypointNames, setWaypointNames] = React.useState<string[]>([]);
+  const [cleaningZoneNames, setCleaningZoneNames] = React.useState<string[]>([]);
+  const [pickupPoints, setPickupPoints] = React.useState<Record<string, string>>({});
+  const [dropoffPoints, setDropoffPoints] = React.useState<Record<string, string>>({});
   const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
   const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
   const [username, setUsername] = React.useState<string | null>(null);
@@ -205,22 +207,36 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   }, [logoResourcesContext, safeAsync, curTheme]);
 
   React.useEffect(() => {
-    if (!resourceManager?.dispensers) {
-      return;
-    }
-    setWorkcells(Object.keys(resourceManager.dispensers.dispensers));
-  }, [resourceManager]);
-
-  React.useEffect(() => {
     if (!rmf) {
       return;
     }
 
     const subs: Subscription[] = [];
     subs.push(
-      rmf.buildingMapObs.subscribe((map) =>
-        setPlaceNames(getPlaces(map).map((p) => p.vertex.name)),
-      ),
+      rmf.buildingMapObs.subscribe((map) => {
+        const places = getPlaces(map);
+        const waypointNames: string[] = [];
+        const pickupPoints: Record<string, string> = {};
+        const dropoffPoints: Record<string, string> = {};
+        const cleaningZoneNames: string[] = [];
+        for (const p of places) {
+          if (p.pickupHandler !== undefined && p.pickupHandler.length !== 0) {
+            pickupPoints[p.vertex.name] = p.pickupHandler;
+          }
+          if (p.dropoffHandler !== undefined && p.dropoffHandler.length !== 0) {
+            dropoffPoints[p.vertex.name] = p.dropoffHandler;
+          }
+          if (p.cleaningZone !== undefined && p.cleaningZone === true) {
+            cleaningZoneNames.push(p.vertex.name);
+          }
+          waypointNames.push(p.vertex.name);
+        }
+
+        setPickupPoints(pickupPoints);
+        setDropoffPoints(dropoffPoints);
+        setCleaningZoneNames(cleaningZoneNames);
+        setWaypointNames(waypointNames);
+      }),
     );
     subs.push(
       AppEvents.refreshAlertCount.subscribe((_) => {
@@ -548,11 +564,10 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       {openCreateTaskForm && (
         <CreateTaskForm
           user={username ? username : 'unknown user'}
-          cleaningZones={placeNames}
-          loopWaypoints={placeNames}
-          deliveryWaypoints={placeNames}
-          dispensers={workcells}
-          ingestors={workcells}
+          patrolWaypoints={waypointNames}
+          cleaningZones={cleaningZoneNames}
+          pickupPoints={pickupPoints}
+          dropoffPoints={dropoffPoints}
           favoritesTasks={favoritesTasks}
           open={openCreateTaskForm}
           onClose={() => setOpenCreateTaskForm(false)}
