@@ -1,7 +1,7 @@
 import { RobotData } from './robots-overlay';
 import React from 'react';
 import { ThreeEvent, useLoader } from '@react-three/fiber';
-
+import { Line, Circle } from '@react-three/drei';
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
@@ -25,6 +25,10 @@ interface PlaneRobotProps {
   robot: RobotData;
 }
 
+const calculateApproximateRadius = (x: number, y: number): number => {
+  return Math.sqrt(x * x + y * y);
+};
+
 function PlaneRobot({
   position,
   color,
@@ -46,17 +50,39 @@ function PlaneRobot({
     materials.preload();
     loader.setMaterials(materials);
   });
+  const radius = calculateApproximateRadius(position[0], position[1]);
+
+  const scalingFactor = 0.03;
+  const scaledRadius = radius * scalingFactor;
+  const rotationZ = rotation.z;
+
+  const rotatedX = position[0] + scaledRadius * Math.cos(rotationZ - Math.PI / 2);
+  const rotatedY = position[1] + scaledRadius * Math.sin(rotationZ - Math.PI / 2);
   return (
-    <group
-      position={[position[0], position[1], zPosition]}
-      rotation={rotation}
-      scale={scale}
-      onClick={onRobotClick}
-    >
-      <primitive object={object} ref={objectRef} color={color} opacity={opacity} />
-      <primitive object={object.clone()} ref={objectRef} />
-    </group>
+    // <group
+    //   position={[position[0], position[1], zPosition]}
+    //   rotation={rotation}
+    //   scale={scale}
+    //   onClick={onRobotClick}
+    // >
+    <>
+      <Circle
+        args={[scaledRadius, 64]}
+        position={[position[0], position[1], zPosition]}
+        rotation={rotation}
+        onClick={onRobotClick}
+      >
+        <meshBasicMaterial color={color} />
+      </Circle>
+      <Line
+        points={[position[0], position[1], zPosition, rotatedX, rotatedY, zPosition]}
+        color="black"
+        linewidth={2}
+      />
+    </>
   );
+  // </group>
+  // );
 }
 
 export function ObjectLoader({ robots, robotLocations, level, onRobotClick }: ObjectLoaderProps) {
