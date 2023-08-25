@@ -95,6 +95,9 @@ const LiftShapeMaker = ({ motionState }: LiftShapeMakerProps) => {
 const ElevatorMaker = ({ x, y, yaw, width, depth, liftState }: SquareProps) => {
   return (
     <group position={[x, y, yaw]}>
+      <Text color="black" fontSize={0.6}>
+        {liftState.current_floor}
+      </Text>
       <Text position={[0, 0.8, 0.5]} color="black" fontSize={0.6}>
         {getLiftModeText(liftState)}
       </Text>
