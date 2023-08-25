@@ -44,6 +44,8 @@ const TrajectoryUpdateInterval = 2000;
 const SettingsKey = 'mapAppSettings';
 const colorManager = new ColorManager();
 
+const DEFAULT_ZOOM_LEVEL = 0.5;
+
 function getRobotId(fleetName: string, robotName: string): string {
   return `${fleetName}/${robotName}`;
 }
@@ -214,11 +216,11 @@ export const MapApp = styled(
     const [imageUrl, setImageUrl] = React.useState<string | null>(null);
     const [bounds, setBounds] = React.useState<L.LatLngBoundsLiteral | null>(null);
     const [center, setCenter] = React.useState<L.LatLngTuple>([0, 0]);
-    const [zoom, setZoom] = React.useState<number>(0.5);
+    const [zoom, setZoom] = React.useState<number>(DEFAULT_ZOOM_LEVEL);
 
     React.useEffect(() => {
       const sub = AppEvents.zoom.subscribe((currentValue) => {
-        setZoom(currentValue);
+        setZoom(currentValue ?? DEFAULT_ZOOM_LEVEL);
       });
       return () => sub.unsubscribe();
     }, []);

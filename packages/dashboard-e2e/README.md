@@ -52,13 +52,13 @@ browser.overwriteCommand(
 ```
 
 ```ts
-// this will fail depending on the context on which `getLoopOption` is called.
-const getLoopOption = async () => {
-  return $$('[role=option]').find(async (elem) => await elem.getText() === 'Loop');
+// this will fail depending on the context on which `getPatrolOption` is called.
+const getPatrolOption = async () => {
+  return $$('[role=option]').find(async (elem) => await elem.getText() === 'Patrol');
 };
 
-await browser.waitUntil(async () => !!(await getLoopOption)); // ok
-await console.log(await getLoopOption()); // error
+await browser.waitUntil(async () => !!(await getPatrolOption)); // ok
+await console.log(await getPatrolOption()); // error
 ```
 
-Possible reason is because async selectors chaining relies on a "finalizer" or some kind of context to resolve the promises. As a result, when running `getLoopOption` without a wdio await, the chaining does not work. But this is all speculation, the inner workings of async selector chainings are very complex.
+Possible reason is because async selectors chaining relies on a "finalizer" or some kind of context to resolve the promises. As a result, when running `getPatrolOption` without a wdio await, the chaining does not work. But this is all speculation, the inner workings of async selector chainings are very complex.
