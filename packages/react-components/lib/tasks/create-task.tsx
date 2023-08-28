@@ -116,24 +116,6 @@ function getShortDescription(taskRequest: TaskRequest): string {
   }
 }
 
-interface FormToolbarProps {
-  onSelectFileClick?: React.MouseEventHandler<HTMLButtonElement>;
-}
-
-function FormToolbar({ onSelectFileClick }: FormToolbarProps) {
-  return (
-    <Button
-      aria-label="Select File"
-      className={classes.selectFileBtn}
-      variant="contained"
-      color="primary"
-      onClick={onSelectFileClick}
-    >
-      Select File
-    </Button>
-  );
-}
-
 interface DeliveryTaskFormProps {
   taskDesc: DeliveryTaskDescription;
   pickupPoints: Record<string, string>;
@@ -946,12 +928,9 @@ export function CreateTaskForm({
       >
         <form aria-label="create-task">
           <DialogTitle>
-            <Grid container wrap="nowrap">
-              <Grid item className={classes.title}>
+            <Grid container wrap="nowrap" alignItems="center">
+              <Grid item xs className={classes.title} container justifyContent="center">
                 Create Task
-              </Grid>
-              <Grid item>
-                <FormToolbar onSelectFileClick={handleSelectFileClick} />
               </Grid>
             </Grid>
           </DialogTitle>
