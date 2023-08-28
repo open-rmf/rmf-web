@@ -5,7 +5,6 @@
 
 import UpdateIcon from '@mui/icons-material/Create';
 import DeleteIcon from '@mui/icons-material/Delete';
-import PlaceOutlined from '@mui/icons-material/PlaceOutlined';
 import {
   Autocomplete,
   Button,
@@ -23,7 +22,6 @@ import {
   IconButton,
   List,
   ListItem,
-  ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
   MenuItem,
@@ -59,10 +57,6 @@ interface DeliveryTaskDescription {
       quantity: number;
     };
   };
-}
-
-interface CleanTaskDescription {
-  zone: string;
 }
 
 interface PickupActivity {
@@ -163,8 +157,8 @@ function DeliveryTaskForm({
   const theme = useTheme();
 
   return (
-    <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
-      <Grid item xs={6}>
+    <Grid container spacing={theme.spacing(2)} justifyContent="left" alignItems="center">
+      <Grid item xs={8}>
         <Autocomplete
           id="pickup-location"
           freeSolo
@@ -215,6 +209,13 @@ function DeliveryTaskForm({
                   sku: newValue,
                 },
               },
+              dropoff: {
+                ...taskDesc.dropoff,
+                payload: {
+                  ...taskDesc.dropoff.payload,
+                  sku: newValue,
+                },
+              },
             })
           }
           onBlur={(ev) =>
@@ -227,47 +228,19 @@ function DeliveryTaskForm({
                   sku: (ev.target as HTMLInputElement).value,
                 },
               },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Pickup SKU" />}
-        />
-      </Grid>
-      <Grid item xs={2}>
-        <Autocomplete
-          id="pickup_quantity"
-          freeSolo
-          fullWidth
-          value={`${taskDesc.pickup.payload.quantity}`}
-          options={[]}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            onChange({
-              ...taskDesc,
-              pickup: {
-                ...taskDesc.pickup,
+              dropoff: {
+                ...taskDesc.dropoff,
                 payload: {
-                  ...taskDesc.pickup.payload,
-                  quantity: typeof newValue == 'string' ? parseInt(newValue) : newValue,
+                  ...taskDesc.dropoff.payload,
+                  sku: (ev.target as HTMLInputElement).value,
                 },
               },
             })
           }
-          onBlur={(ev) =>
-            onChange({
-              ...taskDesc,
-              pickup: {
-                ...taskDesc.pickup,
-                payload: {
-                  ...taskDesc.pickup.payload,
-                  quantity: parseInt((ev.target as HTMLInputElement).value),
-                },
-              },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Quantity" />}
+          renderInput={(params) => <TextField {...params} label="Cart RFID" />}
         />
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={8}>
         <Autocomplete
           id="dropoff-location"
           freeSolo
@@ -300,112 +273,7 @@ function DeliveryTaskForm({
           renderInput={(params) => <TextField {...params} label="Dropoff Location" />}
         />
       </Grid>
-      <Grid item xs={4}>
-        <Autocomplete
-          id="dropoff_sku"
-          freeSolo
-          fullWidth
-          value={taskDesc.dropoff.payload.sku}
-          options={[]}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            onChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                payload: {
-                  ...taskDesc.dropoff.payload,
-                  sku: newValue,
-                },
-              },
-            })
-          }
-          onBlur={(ev) =>
-            onChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                payload: {
-                  ...taskDesc.dropoff.payload,
-                  sku: (ev.target as HTMLInputElement).value,
-                },
-              },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Dropoff SKU" />}
-        />
-      </Grid>
-      <Grid item xs={2}>
-        <Autocomplete
-          id="dropoff_quantity"
-          freeSolo
-          fullWidth
-          value={`${taskDesc.dropoff.payload.quantity}`}
-          options={[]}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            onChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                payload: {
-                  ...taskDesc.dropoff.payload,
-                  quantity: typeof newValue == 'string' ? parseInt(newValue) : newValue,
-                },
-              },
-            })
-          }
-          onBlur={(ev) =>
-            onChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                payload: {
-                  ...taskDesc.dropoff.payload,
-                  quantity: parseInt((ev.target as HTMLInputElement).value),
-                },
-              },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Quantity" />}
-        />
-      </Grid>
     </Grid>
-  );
-}
-
-interface PlaceListProps {
-  places: string[];
-  onClick(places_index: number): void;
-}
-
-function PlaceList({ places, onClick }: PlaceListProps) {
-  const theme = useTheme();
-  return (
-    <List
-      dense
-      sx={{
-        bgcolor: 'background.paper',
-        marginLeft: theme.spacing(3),
-        marginRight: theme.spacing(3),
-      }}
-    >
-      {places.map((value, index) => (
-        <ListItem
-          key={`${value}-${index}`}
-          secondaryAction={
-            <IconButton edge="end" aria-label="delete" onClick={() => onClick(index)}>
-              <DeleteIcon />
-            </IconButton>
-          }
-        >
-          <ListItemIcon>
-            <PlaceOutlined />
-          </ListItemIcon>
-          <ListItemText primary={`Place Name:   ${value}`} />
-        </ListItem>
-      ))}
-    </List>
   );
 }
 
@@ -432,10 +300,9 @@ function DeliveryHuntingTaskForm({ taskDesc, dropoffPoints = [], onChange }: Del
 
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
-      <Grid item xs={6}>
+      <Grid item xs={4}>
         <TextField
           id="cart_rfid"
-          type="number"
           fullWidth
           label="Cart RFID"
           defaultValue={pickup_activity.description.cart_rfid}
@@ -449,7 +316,7 @@ function DeliveryHuntingTaskForm({ taskDesc, dropoffPoints = [], onChange }: Del
           }}
         />
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={8}>
         <Autocomplete
           id="dropoff-location"
           freeSolo
