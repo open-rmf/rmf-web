@@ -58,6 +58,11 @@ import { RmfAppContext } from './rmf-app';
 import { parseTasksFile } from './tasks/utils';
 import { Subscription } from 'rxjs';
 import { formatDistance } from 'date-fns';
+import { styled } from '@mui/system';
+
+const StyledAppBarTab = styled(AppBarTab)(({ theme }) => ({
+  fontSize: theme.spacing(2.25), // spacing = 8,
+}));
 
 export type TabValue = 'infrastructure' | 'robots' | 'tasks';
 
@@ -390,19 +395,19 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       <HeaderBar>
         <LogoButton src={brandingIconPath} alt="logo" sx={{ width: logoSize }} />
         <NavigationBar value={tabValue}>
-          <AppBarTab
+          <StyledAppBarTab
             label="Map"
             value="infrastructure"
             aria-label="Map"
             onTabClick={() => navigate(DashboardRoute)}
           />
-          <AppBarTab
+          <StyledAppBarTab
             label="System Overview"
             value="robots"
             aria-label="System Overview"
             onTabClick={() => navigate(RobotsRoute)}
           />
-          <AppBarTab
+          <StyledAppBarTab
             label="Tasks"
             value="tasks"
             aria-label="Tasks"
@@ -415,7 +420,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             aria-label="new task"
             color="secondary"
             variant="contained"
-            size="small"
+            size="medium"
             onClick={() => setOpenCreateTaskForm(true)}
           >
             <AddOutlined />
