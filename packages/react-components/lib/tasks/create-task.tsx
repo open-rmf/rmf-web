@@ -61,16 +61,29 @@ interface DeliveryTaskDescription {
   };
 }
 
-interface PatrolTaskDescription {
-  places: string[];
-  rounds: number;
-}
-
 interface CleanTaskDescription {
   zone: string;
 }
 
-type TaskDescription = DeliveryTaskDescription | PatrolTaskDescription | CleanTaskDescription;
+interface PickupActivity {
+  category: string;
+  description: {
+    cart_rfid: number;
+  };
+}
+
+interface DropoffActivity {
+  category: string;
+  description: {
+    dropoff_point: string;
+  };
+}
+
+interface DeliveryHuntingTaskDescription {
+  activities: [pickup_cart: PickupActivity, dropoff_cart: DropoffActivity];
+}
+
+type TaskDescription = DeliveryTaskDescription | DeliveryHuntingTaskDescription;
 
 const classes = {
   title: 'dialogue-info-value',
@@ -102,14 +115,14 @@ const StyledDialog = styled((props: DialogProps) => <Dialog {...props} />)(({ th
 
 function getShortDescription(taskRequest: TaskRequest): string {
   switch (taskRequest.category) {
-    case 'clean': {
-      return `[Clean] zone [${taskRequest.description.zone}]`;
-    }
     case 'delivery': {
       return `[Delivery] from [${taskRequest.description.pickup.place}] to [${taskRequest.description.dropoff.place}]`;
     }
-    case 'patrol': {
-      return `[Patrol] [${taskRequest.description.places[0]}] to [${taskRequest.description.places[1]}]`;
+    case 'delivery_sequential_hunting': {
+      return `[Delivery - Sequential Hunting] payload [${taskRequest.description.payloadId}] from [${taskRequest.description.pickupPlace}] to [${taskRequest.description.dropoffPlace}]`;
+    }
+    case 'delivery_area_hunting': {
+      return `[Delivery - Area Hunting] payload [${taskRequest.description.payloadId}] from [${taskRequest.description.pickupPlace}] to [${taskRequest.description.dropoffPlace}]`;
     }
     default:
       return `[Unknown] type "${taskRequest.category}"`;
@@ -396,86 +409,73 @@ function PlaceList({ places, onClick }: PlaceListProps) {
   );
 }
 
-interface PatrolTaskFormProps {
-  taskDesc: PatrolTaskDescription;
-  patrolWaypoints: string[];
-  onChange(patrolTaskDescription: PatrolTaskDescription): void;
+interface DeliveryHuntingProps {
+  taskDesc: DeliveryHuntingTaskDescription;
+  dropoffPoints: string[];
+  onChange(taskDesc: TaskDescription): void;
 }
 
-function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange }: PatrolTaskFormProps) {
+function DeliveryHuntingTaskForm({ taskDesc, dropoffPoints = [], onChange }: DeliveryHuntingProps) {
   const theme = useTheme();
+  const pickup_activity: PickupActivity = {
+    category: 'perform_action',
+    description: {
+      cart_rfid: 0,
+    },
+  };
+  const dropoff_activity: DropoffActivity = {
+    category: 'perform_action',
+    description: {
+      dropoff_point: '',
+    },
+  };
+
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
-      <Grid item xs={10}>
-        <Autocomplete
-          id="place-input"
-          freeSolo
+      <Grid item xs={6}>
+        <TextField
+          id="cart_rfid"
+          type="number"
           fullWidth
-          options={patrolWaypoints}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
+          label="Cart RFID"
+          defaultValue={pickup_activity.description.cart_rfid}
+          inputProps={{ min: 0 }}
+          onChange={(ev) => {
+            pickup_activity.description.cart_rfid = parseInt(ev.target.value);
             onChange({
               ...taskDesc,
-              places: taskDesc.places.concat(newValue).filter(
-                (el: string) => el, // filter null and empty str in places array
-              ),
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Place Name" />}
-        />
-      </Grid>
-      <Grid item xs={2}>
-        <PositiveIntField
-          id="loops"
-          label="Loops"
-          value={taskDesc.rounds}
-          onChange={(_ev, val) => {
-            onChange({
-              ...taskDesc,
-              rounds: val,
+              activities: [pickup_activity, dropoff_activity],
             });
           }}
         />
       </Grid>
-      <Grid item xs={10}>
-        <PlaceList
-          places={taskDesc && taskDesc.places ? taskDesc.places : []}
-          onClick={(places_index) =>
-            taskDesc.places.splice(places_index, 1) &&
+      <Grid item xs={6}>
+        <Autocomplete
+          id="dropoff-location"
+          freeSolo
+          fullWidth
+          options={dropoffPoints}
+          onChange={(_ev, newValue) => {
+            if (newValue === null) {
+              return;
+            }
+            dropoff_activity.description.dropoff_point = newValue;
             onChange({
               ...taskDesc,
-            })
-          }
+              activities: [pickup_activity, dropoff_activity],
+            });
+          }}
+          onBlur={(ev) => {
+            dropoff_activity.description.dropoff_point = (ev.target as HTMLInputElement).value;
+            onChange({
+              ...taskDesc,
+              activities: [pickup_activity, dropoff_activity],
+            });
+          }}
+          renderInput={(params) => <TextField {...params} label="Dropoff Location" />}
         />
       </Grid>
     </Grid>
-  );
-}
-
-interface CleanTaskFormProps {
-  taskDesc: CleanTaskDescription;
-  cleaningZones: string[];
-  onChange(cleanTaskDescription: CleanTaskDescription): void;
-}
-
-function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps) {
-  return (
-    <Autocomplete
-      id="cleaning-zone"
-      freeSolo
-      fullWidth
-      options={cleaningZones}
-      value={taskDesc.zone}
-      onChange={(_ev, newValue) =>
-        newValue !== null &&
-        onChange({
-          ...taskDesc,
-          zone: newValue,
-        })
-      }
-      onBlur={(ev) => onChange({ ...taskDesc, zone: (ev.target as HTMLInputElement).value })}
-      renderInput={(params) => <TextField {...params} label="Cleaning Zone" />}
-    />
   );
 }
 
@@ -541,19 +541,6 @@ function FavoriteTask({
   );
 }
 
-function defaultCleanTask(): CleanTaskDescription {
-  return {
-    zone: '',
-  };
-}
-
-function defaultPatrolTask(): PatrolTaskDescription {
-  return {
-    places: [],
-    rounds: 1,
-  };
-}
-
 function defaultDeliveryTask(): DeliveryTaskDescription {
   return {
     pickup: {
@@ -575,14 +562,32 @@ function defaultDeliveryTask(): DeliveryTaskDescription {
   };
 }
 
+function defaultDeliveryHuntingTask(): DeliveryHuntingTaskDescription {
+  return {
+    activities: [
+      {
+        category: 'perform_action',
+        description: {
+          cart_rfid: 0,
+        },
+      },
+      {
+        category: 'perform_action',
+        description: {
+          dropoff_point: '',
+        },
+      },
+    ],
+  };
+}
+
 function defaultTaskDescription(taskCategory: string): TaskDescription | undefined {
   switch (taskCategory) {
-    case 'clean':
-      return defaultCleanTask();
-    case 'patrol':
-      return defaultPatrolTask();
     case 'delivery':
       return defaultDeliveryTask();
+    case 'delivery_sequential_hunting':
+    case 'delivery_area_hunting':
+      return defaultDeliveryHuntingTask();
     default:
       return undefined;
   }
@@ -590,8 +595,8 @@ function defaultTaskDescription(taskCategory: string): TaskDescription | undefin
 
 function defaultTask(): TaskRequest {
   return {
-    category: 'patrol',
-    description: defaultPatrolTask(),
+    category: 'delivery',
+    description: defaultDeliveryTask(),
     unix_millis_earliest_start_time: 0,
     unix_millis_request_time: Date.now(),
     priority: { type: 'binary', value: 0 },
@@ -660,8 +665,8 @@ const defaultFavoriteTask = (): TaskFavorite => {
   return {
     id: '',
     name: '',
-    category: 'patrol',
-    description: defaultPatrolTask(),
+    category: 'delivery',
+    description: defaultDeliveryTask(),
     unix_millis_earliest_start_time: 0,
     priority: { type: 'binary', value: 0 },
     user: '',
@@ -778,22 +783,6 @@ export function CreateTaskForm({
 
   const renderTaskDescriptionForm = () => {
     switch (taskRequest.category) {
-      case 'clean':
-        return (
-          <CleanTaskForm
-            taskDesc={taskRequest.description as CleanTaskDescription}
-            cleaningZones={cleaningZones}
-            onChange={(desc) => handleTaskDescriptionChange('clean', desc)}
-          />
-        );
-      case 'patrol':
-        return (
-          <PatrolTaskForm
-            taskDesc={taskRequest.description as PatrolTaskDescription}
-            patrolWaypoints={patrolWaypoints}
-            onChange={(desc) => handleTaskDescriptionChange('patrol', desc)}
-          />
-        );
       case 'delivery':
         return (
           <DeliveryTaskForm
@@ -801,6 +790,22 @@ export function CreateTaskForm({
             pickupPoints={pickupPoints}
             dropoffPoints={dropoffPoints}
             onChange={(desc) => handleTaskDescriptionChange('delivery', desc)}
+          />
+        );
+      case 'delivery_sequential_hunting':
+        return (
+          <DeliveryHuntingTaskForm
+            taskDesc={taskRequest.description as DeliveryHuntingTaskDescription}
+            dropoffPoints={Object.values(dropoffPoints)}
+            onChange={(desc) => handleTaskDescriptionChange('delivery_sequential_hunting', desc)}
+          />
+        );
+      case 'delivery_area_hunting':
+        return (
+          <DeliveryHuntingTaskForm
+            taskDesc={taskRequest.description as DeliveryHuntingTaskDescription}
+            dropoffPoints={Object.values(dropoffPoints)}
+            onChange={(desc) => handleTaskDescriptionChange('delivery_area_hunting', desc)}
           />
         );
       default:
@@ -1010,18 +1015,6 @@ export function CreateTaskForm({
                       onChange={handleTaskTypeChange}
                     >
                       <MenuItem
-                        value="clean"
-                        disabled={!cleaningZones || cleaningZones.length === 0}
-                      >
-                        Clean
-                      </MenuItem>
-                      <MenuItem
-                        value="patrol"
-                        disabled={!patrolWaypoints || patrolWaypoints.length === 0}
-                      >
-                        Patrol
-                      </MenuItem>
-                      <MenuItem
                         value="delivery"
                         disabled={
                           Object.keys(pickupPoints).length === 0 ||
@@ -1029,6 +1022,18 @@ export function CreateTaskForm({
                         }
                       >
                         Delivery
+                      </MenuItem>
+                      <MenuItem
+                        value="delivery_sequential_hunting"
+                        disabled={Object.keys(dropoffPoints).length === 0}
+                      >
+                        Delivery - Sequential hunting
+                      </MenuItem>
+                      <MenuItem
+                        value="delivery_area_hunting"
+                        disabled={Object.keys(dropoffPoints).length === 0}
+                      >
+                        Delivery - Area hunting
                       </MenuItem>
                     </TextField>
                   </Grid>
