@@ -13,7 +13,7 @@ runs:
   steps:
     - uses: pnpm/action-setup@v2.2.2
       with:
-        version: '8.6.12'
+        version: 'latest'
     - uses: actions/setup-node@v2
       with:
         node-version: '16'
