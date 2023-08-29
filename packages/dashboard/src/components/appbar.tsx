@@ -61,7 +61,7 @@ import { formatDistance } from 'date-fns';
 import { styled } from '@mui/system';
 
 const StyledAppBarTab = styled(AppBarTab)(({ theme }) => ({
-  fontSize: theme.spacing(2.25), // spacing = 8,
+  fontSize: theme.spacing(4), // spacing = 8
 }));
 
 export type TabValue = 'infrastructure' | 'robots' | 'tasks';
