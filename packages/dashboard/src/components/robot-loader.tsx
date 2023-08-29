@@ -1,7 +1,7 @@
 import { RobotData } from './robots-overlay';
 import React from 'react';
 import { ThreeEvent, useLoader } from '@react-three/fiber';
-import { Line, Circle } from '@react-three/drei';
+import { Line, Circle, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
@@ -16,6 +16,7 @@ interface ObjectLoaderProps {
 
 interface PlaneRobotProps {
   position: [number, number];
+  name: string;
   color: string;
   opacity: number;
   scale: THREE.Vector3;
@@ -34,6 +35,7 @@ function PlaneRobot({
   color,
   opacity,
   scale,
+  name,
   elevation,
   rotation,
   onRobotClick,
@@ -66,6 +68,9 @@ function PlaneRobot({
     //   onClick={onRobotClick}
     // >
     <>
+      <Text color="black" fontSize={0.5} position={[position[0], position[1], zPosition + 1]}>
+        {name}
+      </Text>
       <Circle
         args={[scaledRadius, 64]}
         position={[position[0], position[1], zPosition]}
@@ -79,10 +84,9 @@ function PlaneRobot({
         color="black"
         linewidth={2}
       />
+      {/* </group> */}
     </>
   );
-  // </group>
-  // );
 }
 
 export function ObjectLoader({ robots, robotLocations, level, onRobotClick }: ObjectLoaderProps) {
@@ -90,12 +94,14 @@ export function ObjectLoader({ robots, robotLocations, level, onRobotClick }: Ob
   return (
     <>
       {robots.map((robot, i) => {
+        console.log(robot);
         const robotId = `${robot.fleet}/${robot.name}`;
         const robotLocation = robotLocations[robotId];
         const scale = new THREE.Vector3(0.007, 0.007, 0.007);
         return (
           <PlaneRobot
             key={i}
+            name={robot.name}
             color={robot.color}
             opacity={1}
             position={[robotLocation[0], robotLocation[1]]}
