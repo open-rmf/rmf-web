@@ -598,10 +598,9 @@ export const MapApp = styled(
               key={index}
               position={[place.vertex.x, place.vertex.y, 0]}
               color="yellow"
-              fontSize={0.6}
-              scale={[0.7, 0.7, 0.7]}
               text={place.vertex.name}
               elevation={0}
+              circleShape={false}
             />
           ))}
           {ingestorsData.map((ingestor, index) => (
@@ -609,9 +608,8 @@ export const MapApp = styled(
               key={index}
               position={[ingestor.location[0], ingestor.location[1], 0]}
               color="red"
-              fontSize={0.6}
-              scale={[0.7, 0.7, 0.7]}
               elevation={0}
+              circleShape={true}
             />
           ))}
 
@@ -619,10 +617,9 @@ export const MapApp = styled(
             <ThreeDObject
               key={index}
               position={[dispenser.location[0], dispenser.location[1], 0]}
-              color="blue"
-              fontSize={0.6}
-              scale={[0.7, 0.7, 0.7]}
+              color="red"
               elevation={0}
+              circleShape={true}
             />
           ))}
           {trajectories.map((trajData) => (
