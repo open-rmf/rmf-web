@@ -1,10 +1,10 @@
-import { RobotData } from './robots-overlay';
-import React from 'react';
+import { Circle, Line, Text } from '@react-three/drei';
 import { ThreeEvent, useLoader } from '@react-three/fiber';
-import { Line, Circle, Text } from '@react-three/drei';
-import * as THREE from 'three';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import React from 'react';
+import { Euler, Vector3 } from 'three';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import { RobotData } from './robots-overlay';
 
 interface CircleShapeProps {
   position: [number, number, number];
@@ -21,6 +21,7 @@ interface ObjectLoaderProps {
   onRobotClick?: (ev: ThreeEvent<MouseEvent>) => void;
   robot: RobotData;
 }
+
 interface RobotLoaderProps {
   robots: RobotData[];
   robotLocations: Record<string, [number, number, number]>;
@@ -73,7 +74,7 @@ const ObjectLoader = ({
   const objPath = '/Hatchback/meshes/hatchback.obj';
   const mtlPath = '/Hatchback/meshes/hatchback.mtl';
   const objectRef = React.useRef<THREE.Object3D>(null);
-  const scale = new THREE.Vector3(0.007, 0.007, 0.007);
+  const scale = new Vector3(0.007, 0.007, 0.007);
 
   const materials = useLoader(MTLLoader, mtlPath);
   const object = useLoader(OBJLoader, objPath, (loader) => {
@@ -92,7 +93,7 @@ export const RobotLoader = ({
   robots,
   robotLocations,
   onRobotClick,
-  objectModel,
+  objectModel, //Object model should be some path of the object to be rendered.
 }: RobotLoaderProps) => {
   const STANDAR_Z_POSITION = 4;
   const CIRCLE_SEGMENT = 64;
@@ -118,7 +119,7 @@ export const RobotLoader = ({
             {objectModel ? (
               <ObjectLoader
                 position={[robotLocation[0], robotLocation[1], STANDAR_Z_POSITION]}
-                rotation={new THREE.Euler(0, 0, rotationZ)}
+                rotation={new Euler(0, 0, rotationZ)}
                 onRobotClick={(ev: ThreeEvent<MouseEvent>) =>
                   onRobotClick && onRobotClick(ev, robot)
                 }
@@ -127,7 +128,7 @@ export const RobotLoader = ({
             ) : (
               <CircleShape
                 position={[robotLocation[0], robotLocation[1], STANDAR_Z_POSITION]}
-                rotation={new THREE.Euler(0, 0, rotationZ)}
+                rotation={new Euler(0, 0, rotationZ)}
                 onRobotClick={(ev: ThreeEvent<MouseEvent>) =>
                   onRobotClick && onRobotClick(ev, robot)
                 }
