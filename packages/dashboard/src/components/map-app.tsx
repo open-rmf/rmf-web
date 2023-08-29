@@ -37,7 +37,7 @@ import { Canvas } from '@react-three/fiber';
 import * as THREE from 'three';
 import { OrbitControls } from '@react-three/drei';
 import { BuildingCubes, findSceneBoundingBox } from './level';
-import { ObjectLoader } from './robot-loader';
+import { RobotLoader } from './robot-loader';
 import { ThreeDObject } from './three-object-render';
 import { TrajectoryComponent } from './three-trajectory-overlay';
 
@@ -631,10 +631,9 @@ export const MapApp = styled(
               color={trajData.color}
             />
           ))}
-          <ObjectLoader
+          <RobotLoader
             robots={robots}
             robotLocations={robotLocations}
-            level={currentLevel}
             onRobotClick={(_ev, robot) => {
               setOpenRobotSummary(true);
               setSelectedRobot(robot);
