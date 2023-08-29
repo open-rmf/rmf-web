@@ -395,7 +395,6 @@ export const MapApp = styled(
     const registeredLayersHandlers = React.useRef(false);
     const ready = buildingMap && currentLevel && bounds;
 
-    const ref = React.useRef(null);
     const [sceneBoundingBox, setSceneBoundingBox] = React.useState<THREE.Box3 | undefined>(
       undefined,
     );
