@@ -58,6 +58,21 @@ import { RmfAppContext } from './rmf-app';
 import { parseTasksFile } from './tasks/utils';
 import { Subscription } from 'rxjs';
 import { formatDistance } from 'date-fns';
+import { styled } from '@mui/system';
+
+const StyledAppBarTab = styled(AppBarTab)(({ theme }) => ({
+  fontSize: theme.spacing(4), // spacing = 8
+}));
+
+const StyledAppBarButton = styled(Button)(({ theme }) => ({
+  fontSize: theme.spacing(4), // spacing = 8
+  paddingTop: 0,
+  paddingBottom: 0,
+}));
+
+const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  fontSize: theme.spacing(4), // spacing = 8
+}));
 
 export type TabValue = 'infrastructure' | 'robots' | 'tasks';
 
@@ -390,19 +405,19 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       <HeaderBar>
         <LogoButton src={brandingIconPath} alt="logo" sx={{ width: logoSize }} />
         <NavigationBar value={tabValue}>
-          <AppBarTab
+          <StyledAppBarTab
             label="Map"
             value="infrastructure"
             aria-label="Map"
             onTabClick={() => navigate(DashboardRoute)}
           />
-          <AppBarTab
+          <StyledAppBarTab
             label="System Overview"
             value="robots"
             aria-label="System Overview"
             onTabClick={() => navigate(RobotsRoute)}
           />
-          <AppBarTab
+          <StyledAppBarTab
             label="Tasks"
             value="tasks"
             aria-label="Tasks"
@@ -410,28 +425,28 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           />
         </NavigationBar>
         <Toolbar variant="dense" sx={{ textAlign: 'right', flexGrow: -1 }}>
-          <Button
+          <StyledAppBarButton
             id="create-new-task-button"
             aria-label="new task"
             color="secondary"
             variant="contained"
-            size="small"
+            size="medium"
             onClick={() => setOpenCreateTaskForm(true)}
           >
             <AddOutlined />
             New Task
-          </Button>
+          </StyledAppBarButton>
           <Tooltip title="Notifications">
-            <IconButton
+            <StyledIconButton
               id="alert-list-button"
               aria-label="alert-list-button"
               color="inherit"
               onClick={handleOpenAlertList}
             >
               <Badge badgeContent={unacknowledgedAlertsNum} color="secondary">
-                <Notifications />
+                <Notifications fontSize="inherit" />
               </Badge>
-            </IconButton>
+            </StyledIconButton>
           </Tooltip>
           <Menu
             anchorEl={alertListAnchor}
@@ -487,49 +502,49 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             )}
           </Menu>
           <Divider orientation="vertical" sx={{ marginLeft: 1, marginRight: 2 }} />
-          <Typography variant="caption">Powered by Open-RMF</Typography>
+          <Typography variant="subtitle1">Powered by Open-RMF</Typography>
           {extraToolbarItems}
           <Tooltip title="Settings">
-            <IconButton
+            <StyledIconButton
               id="show-settings-btn"
               aria-label="settings"
               color="inherit"
               onClick={(ev) => setSettingsAnchor(ev.currentTarget)}
             >
-              <Settings />
-            </IconButton>
+              <Settings fontSize="inherit" />
+            </StyledIconButton>
           </Tooltip>
           <Tooltip title="Help">
-            <IconButton
+            <StyledIconButton
               id="show-help-btn"
               aria-label="help"
               color="inherit"
               onClick={() => window.open(resourceManager?.helpLink, '_blank')}
             >
-              <Help />
-            </IconButton>
+              <Help fontSize="inherit" />
+            </StyledIconButton>
           </Tooltip>
           <Tooltip title="Report issues">
-            <IconButton
+            <StyledIconButton
               id="show-warning-btn"
               aria-label="warning"
               color="inherit"
               onClick={() => window.open(resourceManager?.reportIssue, '_blank')}
             >
-              <Issue />
-            </IconButton>
+              <Issue fontSize="inherit" />
+            </StyledIconButton>
           </Tooltip>
           {profile && (
             <>
               <Tooltip title="Profile">
-                <IconButton
+                <StyledIconButton
                   id="user-btn"
                   aria-label={'user-btn'}
                   color="inherit"
                   onClick={(event) => setAnchorEl(event.currentTarget)}
                 >
-                  <AccountCircle />
-                </IconButton>
+                  <AccountCircle fontSize="inherit" />
+                </StyledIconButton>
               </Tooltip>
               <Menu
                 anchorEl={anchorEl}
