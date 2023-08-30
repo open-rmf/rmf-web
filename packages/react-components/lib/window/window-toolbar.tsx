@@ -9,7 +9,7 @@ export const WindowToolbar: React.FC<WindowToolbarProps> = ({ title, children, .
   return (
     <AppBar position="static" elevation={0} {...otherProps}>
       <Toolbar variant="dense" style={{ paddingRight: 0 }}>
-        <Typography variant="h6" style={{ flexGrow: 1 }}>
+        <Typography variant="h5" style={{ flexGrow: 1 }}>
           {title}
         </Typography>
         {children}
