@@ -307,7 +307,7 @@ function DeliveryHuntingTaskForm({
   };
 
   return (
-    <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
+    <Grid container spacing={theme.spacing(2)} justifyContent="left" alignItems="center">
       <Grid item xs={8}>
         <Autocomplete
           id="pickup-zone"
