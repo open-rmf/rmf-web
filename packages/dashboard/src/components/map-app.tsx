@@ -45,6 +45,7 @@ const SettingsKey = 'mapAppSettings';
 const colorManager = new ColorManager();
 
 const DEFAULT_ZOOM_LEVEL = 5;
+const DEFAULT_ROBOT_ZOOM_LEVEL = 6;
 
 function getRobotId(fleetName: string, robotName: string): string {
   return `${fleetName}/${robotName}`;
@@ -372,10 +373,10 @@ export const MapApp = styled(
         const mapCoords = fromRmfCoords(robotLocation);
         const newCenter: L.LatLngTuple = [mapCoords[1], mapCoords[0]];
         AppEvents.mapCenter.next(newCenter);
-        AppEvents.zoom.next(6);
+        AppEvents.zoom.next(resourceManager?.defaultRobotZoom ?? DEFAULT_ROBOT_ZOOM_LEVEL);
       });
       return () => sub.unsubscribe();
-    }, [robotLocations, bounds]);
+    }, [robotLocations, bounds, resourceManager?.defaultRobotZoom]);
 
     const onViewportChanged = (viewport: Viewport) => {
       if (viewport.zoom && viewport.center) {
