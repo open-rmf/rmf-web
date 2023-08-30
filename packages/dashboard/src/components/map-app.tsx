@@ -225,7 +225,7 @@ export const MapApp = styled(
         setZoom(currentValue || resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL);
       });
       return () => sub.unsubscribe();
-    }, []);
+    }, [resourceManager]);
 
     React.useEffect(() => {
       const sub = AppEvents.mapCenter.subscribe((currentValue) => {
