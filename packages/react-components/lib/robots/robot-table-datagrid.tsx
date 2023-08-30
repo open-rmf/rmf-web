@@ -63,7 +63,7 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: 14,
+            fontSize: 16,
           }}
         >
           {robotStatusToUpperCase(params.row.status)}

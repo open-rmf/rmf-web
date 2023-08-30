@@ -67,7 +67,7 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: 14,
+            fontSize: 16,
           }}
         >
           {healthStatusToOpMode(params.row.opMode)}
@@ -117,7 +117,7 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
           sx={{
             marginRight: params.row?.doorState === LiftStateModel.DOOR_OPEN ? 4 : 2,
             fontWeight: 'bold',
-            fontSize: 14,
+            fontSize: 16,
             display: 'inline-block',
           }}
         >

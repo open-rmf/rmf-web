@@ -29,7 +29,7 @@ export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: 14,
+            fontSize: 16,
           }}
         >
           {params.row.online ? 'ONLINE' : 'OFFLINE'}
@@ -57,7 +57,7 @@ export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: 14,
+            fontSize: 16,
           }}
         >
           {params.row.activated ? 'ON' : 'OFF'}
