@@ -413,7 +413,7 @@ export const MapApp = styled(
           );
         }}
       >
-        <AttributionControl position="bottomright" prefix="OSRC-SG" />
+        <AttributionControl position="bottomright" prefix={resourceManager?.attributionPrefix} />
         <LayersControl position="topleft">
           <Pane name="image" style={{ zIndex: 0 }} />
           {buildingMap.levels.map((level: Level) =>
