@@ -44,7 +44,8 @@ const TrajectoryUpdateInterval = 2000;
 const SettingsKey = 'mapAppSettings';
 const colorManager = new ColorManager();
 
-const DEFAULT_ZOOM_LEVEL = 0.5;
+const DEFAULT_ZOOM_LEVEL = 5;
+const DEFAULT_ROBOT_ZOOM_LEVEL = 6;
 
 function getRobotId(fleetName: string, robotName: string): string {
   return `${fleetName}/${robotName}`;
@@ -216,14 +217,16 @@ export const MapApp = styled(
     const [imageUrl, setImageUrl] = React.useState<string | null>(null);
     const [bounds, setBounds] = React.useState<L.LatLngBoundsLiteral | null>(null);
     const [center, setCenter] = React.useState<L.LatLngTuple>([0, 0]);
-    const [zoom, setZoom] = React.useState<number>(DEFAULT_ZOOM_LEVEL);
+    const [zoom, setZoom] = React.useState<number>(
+      resourceManager?.defaultZoom ?? DEFAULT_ZOOM_LEVEL,
+    );
 
     React.useEffect(() => {
       const sub = AppEvents.zoom.subscribe((currentValue) => {
-        setZoom(currentValue ?? DEFAULT_ZOOM_LEVEL);
+        setZoom(currentValue || resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL);
       });
       return () => sub.unsubscribe();
-    }, []);
+    }, [resourceManager]);
 
     React.useEffect(() => {
       const sub = AppEvents.mapCenter.subscribe((currentValue) => {
@@ -370,10 +373,10 @@ export const MapApp = styled(
         const mapCoords = fromRmfCoords(robotLocation);
         const newCenter: L.LatLngTuple = [mapCoords[1], mapCoords[0]];
         AppEvents.mapCenter.next(newCenter);
-        AppEvents.zoom.next(6);
+        AppEvents.zoom.next(resourceManager?.defaultRobotZoom ?? DEFAULT_ROBOT_ZOOM_LEVEL);
       });
       return () => sub.unsubscribe();
-    }, [robotLocations, bounds]);
+    }, [robotLocations, bounds, resourceManager?.defaultRobotZoom]);
 
     const onViewportChanged = (viewport: Viewport) => {
       if (viewport.zoom && viewport.center) {
@@ -410,7 +413,7 @@ export const MapApp = styled(
           );
         }}
       >
-        <AttributionControl position="bottomright" prefix="OSRC-SG" />
+        <AttributionControl position="bottomright" prefix={resourceManager?.attributionPrefix} />
         <LayersControl position="topleft">
           <Pane name="image" style={{ zIndex: 0 }} />
           {buildingMap.levels.map((level: Level) =>

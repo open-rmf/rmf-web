@@ -13,6 +13,9 @@ export interface ResourceConfigurationsType {
   helpLink?: string;
   reportIssue?: string;
   pickupZones?: string[];
+  defaultZoom?: number;
+  defaultRobotZoom?: number;
+  attributionPrefix?: string;
 }
 
 export default class ResourceManager {
@@ -22,6 +25,9 @@ export default class ResourceManager {
   helpLink: string;
   reportIssue: string;
   pickupZones?: string[];
+  defaultZoom: number;
+  defaultRobotZoom: number;
+  attributionPrefix?: string;
 
   /**
    * Gets the default resource manager using the embedded resource file (aka "assets/resources/main.json").
@@ -56,6 +62,9 @@ export default class ResourceManager {
     this.helpLink = resources.helpLink || 'https://osrf.github.io/ros2multirobotbook/rmf-core.html';
     this.reportIssue = resources.reportIssue || 'https://github.com/open-rmf/rmf-web/issues';
     this.pickupZones = resources.pickupZones || [];
+    this.defaultZoom = resources.defaultZoom ?? 5;
+    this.defaultRobotZoom = resources.defaultRobotZoom ?? 6;
+    this.attributionPrefix = resources.attributionPrefix || 'OSRC-SG';
   }
 }
 
