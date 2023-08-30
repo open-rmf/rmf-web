@@ -1,6 +1,29 @@
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
+}
+
+.leaflet-touch .leaflet-bar a {
+  width: 60px;
+  height: 60px;
+  line-height: 60px;
+}
+
+.leaflet-touch .leaflet-control-zoom-in,
+.leaflet-touch .leaflet-control-zoom-out {
+  font-size: 44px;
+}
+
+.leaflet-touch .leaflet-control-layers-toggle {
+  width: 60px;
+  height: 60px;
+}
+
+.leaflet-control-layers label {
+  display: block;
+  font-size: 2.16em;
 }
