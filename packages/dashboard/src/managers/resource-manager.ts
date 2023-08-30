@@ -14,6 +14,7 @@ export interface ResourceConfigurationsType {
   reportIssue?: string;
   pickupZones?: string[];
   defaultZoom?: number;
+  defaultRobotZoom?: number;
 }
 
 export default class ResourceManager {
@@ -24,6 +25,7 @@ export default class ResourceManager {
   reportIssue: string;
   pickupZones?: string[];
   defaultZoom: number;
+  defaultRobotZoom: number;
 
   /**
    * Gets the default resource manager using the embedded resource file (aka "assets/resources/main.json").
@@ -59,6 +61,7 @@ export default class ResourceManager {
     this.reportIssue = resources.reportIssue || 'https://github.com/open-rmf/rmf-web/issues';
     this.pickupZones = resources.pickupZones || [];
     this.defaultZoom = resources.defaultZoom ?? 5;
+    this.defaultRobotZoom = resources.defaultRobotZoom ?? 6;
   }
 }
 
