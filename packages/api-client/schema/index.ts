@@ -3367,6 +3367,12 @@ export default {
             type: 'string',
             description: '(Optional) An identifier for the entity that requested this task',
           },
+          unix_millis_warn_time: {
+            title: 'Unix Millis Warn Time',
+            type: 'integer',
+            description:
+              '(Optional) The time at which a warning will be issued if the estimated completion time is later than expected',
+          },
         },
       },
       TaskResumeRequest: {

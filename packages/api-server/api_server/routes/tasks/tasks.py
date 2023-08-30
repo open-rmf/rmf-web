@@ -139,14 +139,16 @@ async def post_dispatch_task(
     request: mdl.DispatchTaskRequest = Body(...),
     task_repo: TaskRepository = Depends(task_repo_dep),
 ):
+    task_warn_time = request.request.unix_millis_warn_time
     resp = mdl.TaskDispatchResponse.parse_raw(
         await tasks_service().call(request.json(exclude_none=True))
     )
     if not resp.__root__.success:
         return RawJSONResponse(resp.json(), 400)
-    await task_repo.save_task_state(
-        cast(mdl.TaskDispatchResponseItem, resp.__root__).state
-    )
+    new_state = cast(mdl.TaskDispatchResponseItem, resp.__root__).state
+    if task_warn_time is not None:
+        new_state.unix_millis_warn_time = task_warn_time
+    await task_repo.save_task_state(new_state)
     return resp.__root__
 
 

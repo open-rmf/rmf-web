@@ -212,3 +212,4 @@ class TaskState(BaseModel):
         None,
         description="If the task was killed, this will describe information about the request.",
     )
+    unix_millis_warn_time: Optional[int] = None

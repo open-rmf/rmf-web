@@ -37,7 +37,6 @@ import type { TaskFavoritePydantic as TaskFavorite, TaskRequest } from 'api-clie
 import React from 'react';
 import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
-import { PositiveIntField } from '../form-inputs';
 
 // A bunch of manually defined descriptions to avoid using `any`.
 interface DeliveryTaskDescription {
@@ -923,7 +922,7 @@ export function CreateTaskForm({
                       </MenuItem>
                     </TextField>
                   </Grid>
-                  <Grid item xs={10}>
+                  <Grid item xs={8}>
                     <DateTimePicker
                       inputFormat={'MM/dd/yyyy HH:mm'}
                       value={
@@ -946,20 +945,23 @@ export function CreateTaskForm({
                       renderInput={(props) => <TextField {...props} />}
                     />
                   </Grid>
-                  <Grid item xs={2}>
-                    <PositiveIntField
-                      id="priority"
-                      label="Priority"
-                      // FIXME(AA): The priority object is currently undefined.
-                      value={(taskRequest.priority as Record<string, number>)?.value || 0}
-                      onChange={(_ev, val) => {
-                        taskRequest.priority = { type: 'binary', value: val };
-                        setFavoriteTaskBuffer({
-                          ...favoriteTaskBuffer,
-                          priority: { type: 'binary', value: val },
-                        });
+                  <Grid item xs={4}>
+                    <DateTimePicker
+                      inputFormat={'MM/dd/yyyy HH:mm'}
+                      value={
+                        taskRequest.unix_millis_warn_time
+                          ? new Date(taskRequest.unix_millis_warn_time)
+                          : null
+                      }
+                      onChange={(date) => {
+                        if (!date) {
+                          return;
+                        }
+                        taskRequest.unix_millis_warn_time = date.valueOf();
                         updateTasks();
                       }}
+                      label="Warn Time"
+                      renderInput={(props) => <TextField {...props} />}
                     />
                   </Grid>
                 </Grid>

@@ -2583,6 +2583,12 @@ export interface TaskRequest {
    * @memberof TaskRequest
    */
   requester?: string;
+  /**
+   * (Optional) The time at which a warning will be issued if the estimated completion time is later than expected
+   * @type {number}
+   * @memberof TaskRequest
+   */
+  unix_millis_warn_time?: number;
 }
 /**
  *
