@@ -34,7 +34,9 @@ class TaskRepository:
         db_task_state = await DbTaskState.get_or_none(id_=task_state.booking.id)
         if db_task_state is not None:
             task_state.unix_millis_warn_time = (
-                int(round(db_task_state.unix_millis_warn_time.timestamp())) * 1000
+                (int(round(db_task_state.unix_millis_warn_time.timestamp())) * 1000)
+                if db_task_state.unix_millis_warn_time is not None
+                else None
             )
             db_task_state.update_from_dict(
                 {
