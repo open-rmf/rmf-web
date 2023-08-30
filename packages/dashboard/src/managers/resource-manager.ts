@@ -12,6 +12,7 @@ export interface ResourceConfigurationsType {
   logos?: Record<string, LogoResource>;
   helpLink?: string;
   reportIssue?: string;
+  pickupZones?: string[];
 }
 
 export default class ResourceManager {
@@ -20,6 +21,7 @@ export default class ResourceManager {
   dispensers?: DispenserResourceManager;
   helpLink: string;
   reportIssue: string;
+  pickupZones?: string[];
 
   /**
    * Gets the default resource manager using the embedded resource file (aka "assets/resources/main.json").
@@ -53,6 +55,7 @@ export default class ResourceManager {
      */
     this.helpLink = resources.helpLink || 'https://osrf.github.io/ros2multirobotbook/rmf-core.html';
     this.reportIssue = resources.reportIssue || 'https://github.com/open-rmf/rmf-web/issues';
+    this.pickupZones = resources.pickupZones || [];
   }
 }
 

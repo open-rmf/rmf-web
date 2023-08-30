@@ -62,6 +62,7 @@ interface DeliveryTaskDescription {
 interface PickupActivity {
   category: string;
   description: {
+    pickup_zone: string;
     cart_rfid: number;
   };
 }
@@ -279,15 +280,22 @@ function DeliveryTaskForm({
 
 interface DeliveryHuntingProps {
   taskDesc: DeliveryHuntingTaskDescription;
+  pickupZones: string[];
   dropoffPoints: string[];
   onChange(taskDesc: TaskDescription): void;
 }
 
-function DeliveryHuntingTaskForm({ taskDesc, dropoffPoints = [], onChange }: DeliveryHuntingProps) {
+function DeliveryHuntingTaskForm({
+  taskDesc,
+  pickupZones = [],
+  dropoffPoints = [],
+  onChange,
+}: DeliveryHuntingProps) {
   const theme = useTheme();
   const pickup_activity: PickupActivity = {
     category: 'perform_action',
     description: {
+      pickup_zone: '',
       cart_rfid: 0,
     },
   };
@@ -300,6 +308,32 @@ function DeliveryHuntingTaskForm({ taskDesc, dropoffPoints = [], onChange }: Del
 
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
+      <Grid item xs={8}>
+        <Autocomplete
+          id="pickup-zone"
+          freeSolo
+          fullWidth
+          options={pickupZones}
+          onChange={(_ev, newValue) => {
+            if (newValue === null) {
+              return;
+            }
+            pickup_activity.description.pickup_zone = newValue;
+            onChange({
+              ...taskDesc,
+              activities: [pickup_activity, dropoff_activity],
+            });
+          }}
+          onBlur={(ev) => {
+            pickup_activity.description.pickup_zone = (ev.target as HTMLInputElement).value;
+            onChange({
+              ...taskDesc,
+              activities: [pickup_activity, dropoff_activity],
+            });
+          }}
+          renderInput={(params) => <TextField {...params} label="Pickup Zone" />}
+        />
+      </Grid>
       <Grid item xs={4}>
         <TextField
           id="cart_rfid"
@@ -435,6 +469,7 @@ function defaultDeliveryHuntingTask(): DeliveryHuntingTaskDescription {
       {
         category: 'perform_action',
         description: {
+          pickup_zone: '',
           cart_rfid: 0,
         },
       },
@@ -549,6 +584,7 @@ export interface CreateTaskFormProps
   allowBatch?: boolean;
   cleaningZones?: string[];
   patrolWaypoints?: string[];
+  pickupZones?: string[];
   pickupPoints?: Record<string, string>;
   dropoffPoints?: Record<string, string>;
   favoritesTasks: TaskFavorite[];
@@ -568,6 +604,7 @@ export function CreateTaskForm({
   user,
   cleaningZones = [],
   patrolWaypoints = [],
+  pickupZones = [],
   pickupPoints = {},
   dropoffPoints = {},
   favoritesTasks = [],
@@ -663,6 +700,7 @@ export function CreateTaskForm({
         return (
           <DeliveryHuntingTaskForm
             taskDesc={taskRequest.description as DeliveryHuntingTaskDescription}
+            pickupZones={pickupZones}
             dropoffPoints={Object.values(dropoffPoints)}
             onChange={(desc) => handleTaskDescriptionChange('delivery_sequential_hunting', desc)}
           />
@@ -671,6 +709,7 @@ export function CreateTaskForm({
         return (
           <DeliveryHuntingTaskForm
             taskDesc={taskRequest.description as DeliveryHuntingTaskDescription}
+            pickupZones={pickupZones}
             dropoffPoints={Object.values(dropoffPoints)}
             onChange={(desc) => handleTaskDescriptionChange('delivery_area_hunting', desc)}
           />
@@ -705,6 +744,7 @@ export function CreateTaskForm({
     for (const t of taskRequests) {
       t.requester = requester;
       t.unix_millis_request_time = Date.now();
+      console.log(t);
     }
 
     const submittingSchedule = scheduling && scheduleEnabled;
