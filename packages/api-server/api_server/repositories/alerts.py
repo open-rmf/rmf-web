@@ -25,6 +25,10 @@ class AlertRepository:
         result = await ttm.Alert.exists(id=alert_id)
         return result
 
+    async def alert_original_id_exists(self, original_id: str) -> bool:
+        result = await ttm.Alert.exists(original_id=original_id)
+        return result
+
     async def get_alert(self, alert_id: str) -> Optional[ttm.AlertPydantic]:
         alert = await ttm.Alert.get_or_none(id=alert_id)
         if alert is None:
@@ -85,9 +89,17 @@ class AlertRepository:
         await ack_alert.save()
 
         # Save in logs who was the user that acknowledged the task
+        late_task_alert_substr = "__late"
+        late_task_alert = late_task_alert_substr in alert.id
+        task_id = (
+            alert.id
+            if not late_task_alert
+            else alert.id[: -len(late_task_alert_substr)]
+        )
+        ack_action = "Task complete" if not late_task_alert else "Task delayed"
         try:
             await self.task_repo.save_log_acknowledged_task_completion(
-                alert.id, self.user.username, unix_millis_acknowledged_time
+                task_id, self.user.username, unix_millis_acknowledged_time, ack_action
             )
         except Exception as e:
             raise RuntimeError(

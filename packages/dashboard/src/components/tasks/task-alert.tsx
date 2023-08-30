@@ -21,6 +21,7 @@ interface TaskAlert extends TaskEventLog {
   content: AlertContent[];
   color: string;
   acknowledgedBy?: string;
+  late: boolean;
 }
 
 export interface TaskAlertDialogProps {
@@ -56,6 +57,13 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
     }
     if (errorLogEntries.length !== 0) {
       return 'Task error';
+    }
+    if (
+      state.unix_millis_finish_time &&
+      state.unix_millis_warn_time &&
+      state.unix_millis_finish_time > state.unix_millis_warn_time
+    ) {
+      return 'Task warning';
     }
     return 'Task alert';
   };
@@ -116,6 +124,20 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
           value: `${completionTimeString}Task completed!`,
         },
       ];
+    } else if (
+      state.unix_millis_finish_time &&
+      state.unix_millis_warn_time &&
+      state.unix_millis_finish_time > state.unix_millis_warn_time
+    ) {
+      const completionTimeString = `${new Date(state.unix_millis_finish_time).toLocaleString()}`;
+      const warningTimeString = `${new Date(state.unix_millis_warn_time).toLocaleString()}`;
+      content = [
+        ...content,
+        {
+          title: 'Late',
+          value: `Task is estimated to complete at ${completionTimeString}, later than the expected ${warningTimeString}.`,
+        },
+      ];
     }
 
     return content;
@@ -140,6 +162,14 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
       return base.palette.error.dark;
     }
 
+    if (
+      state.unix_millis_finish_time &&
+      state.unix_millis_warn_time &&
+      state.unix_millis_finish_time > state.unix_millis_warn_time
+    ) {
+      return base.palette.warning.dark;
+    }
+
     return base.palette.background.default;
   };
 
@@ -154,37 +184,59 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
     }
 
     (async () => {
+      // TODO(AC): Move away from using substrings, perhaps delayed tasks will
+      // be its own category.
+      const late_substr = '__late';
+      const task_late = alert.original_id.includes(late_substr);
+      const task_id = task_late
+        ? alert.original_id.substring(0, alert.original_id.length - late_substr.length)
+        : alert.original_id;
+
+      let logs: TaskEventLog | null = null;
       try {
-        const logs = (
-          await rmf.tasksApi.getTaskLogTasksTaskIdLogGet(
-            alert.original_id,
-            `0,${Number.MAX_SAFE_INTEGER}`,
-          )
+        logs = (
+          await rmf.tasksApi.getTaskLogTasksTaskIdLogGet(task_id, `0,${Number.MAX_SAFE_INTEGER}`)
         ).data;
-        const state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(alert.original_id)).data;
-
-        if (logs && state) {
-          setTaskState(state);
-
-          const errorLogEntries = getErrorLogEntries(logs);
-          let acknowledgedBy: string | undefined = undefined;
-          if (alert.acknowledged_by) {
-            acknowledgedBy = alert.acknowledged_by;
-          } else if (alert.unix_millis_acknowledged_time) {
-            acknowledgedBy = '-';
-          }
-
-          setTaskAlert({
-            title: getAlertTitle(state, errorLogEntries),
-            progress: getTaskProgress(state),
-            content: getAlertContent(state, errorLogEntries),
-            color: getAlertColor(state, errorLogEntries),
-            acknowledgedBy: acknowledgedBy,
-            ...logs,
-          });
-        }
       } catch {
         console.log(`Failed to fetch task logs for ${alert.original_id}`);
+      }
+      const errorLogEntries = logs ? getErrorLogEntries(logs) : [];
+
+      let state: TaskState | null = null;
+      try {
+        state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(task_id)).data;
+      } catch {
+        console.log(`Failed to fetch task state for ${alert.original_id}`);
+      }
+      setTaskState(state);
+
+      let acknowledgedBy: string | undefined = undefined;
+      if (alert.acknowledged_by) {
+        acknowledgedBy = alert.acknowledged_by;
+      } else if (alert.unix_millis_acknowledged_time) {
+        acknowledgedBy = '-';
+      }
+
+      if (task_late && state) {
+        setTaskAlert({
+          title: getAlertTitle(state, []),
+          progress: getTaskProgress(state),
+          content: getAlertContent(state, []),
+          color: getAlertColor(state, []),
+          acknowledgedBy: acknowledgedBy,
+          late: task_late,
+          task_id: task_id,
+        });
+      } else if (!task_late && logs && state) {
+        setTaskAlert({
+          title: getAlertTitle(state, errorLogEntries),
+          progress: getTaskProgress(state),
+          content: getAlertContent(state, errorLogEntries),
+          color: getAlertColor(state, errorLogEntries),
+          acknowledgedBy: acknowledgedBy,
+          late: task_late,
+          ...logs,
+        });
       }
     })();
   }, [rmf, alert.original_id, alert.acknowledged_by, alert.unix_millis_acknowledged_time]);
@@ -198,9 +250,10 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
     }
 
     (async () => {
+      const idToAcknowledge = taskAlert.late ? `${taskAlert.task_id}__late` : taskAlert.task_id;
       try {
         const ackResponse = (
-          await rmf?.alertsApi.acknowledgeAlertAlertsAlertIdPost(taskAlert.task_id)
+          await rmf?.alertsApi.acknowledgeAlertAlertsAlertIdPost(idToAcknowledge)
         ).data;
         if (ackResponse.id !== ackResponse.original_id) {
           let showAlertMessage = `Alert ${ackResponse.original_id} acknowledged`;
@@ -214,10 +267,10 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
           }
           showAlert('success', showAlertMessage);
         } else {
-          throw new Error(`Failed to acknowledge alert ID ${taskAlert.task_id}`);
+          throw new Error(`Failed to acknowledge alert ID ${idToAcknowledge}`);
         }
       } catch (error) {
-        showAlert('error', `Failed to acknowledge alert ID ${taskAlert.task_id}`);
+        showAlert('error', `Failed to acknowledge alert ID ${idToAcknowledge}`);
         console.log(error);
       }
     })();

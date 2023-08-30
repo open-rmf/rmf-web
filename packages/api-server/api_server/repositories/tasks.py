@@ -201,7 +201,11 @@ class TaskRepository:
             )
 
     async def save_log_acknowledged_task_completion(
-        self, task_id: str, acknowledged_by: str, unix_millis_acknowledged_time: int
+        self,
+        task_id: str,
+        acknowledged_by: str,
+        unix_millis_acknowledged_time: int,
+        action: str = "Task completion",
     ) -> None:
         async with in_transaction():
             task_logs = await self.get_task_log(task_id, (0, sys.maxsize))
@@ -221,7 +225,7 @@ class TaskRepository:
                 seq=0,
                 tier=Tier.warning,
                 unix_millis_time=unix_millis_acknowledged_time,
-                text=f"Task completion acknowledged by {acknowledged_by}",
+                text=f"{action} acknowledged by {acknowledged_by}",
             )
             task_logs.phases = {
                 **task_logs.phases,
