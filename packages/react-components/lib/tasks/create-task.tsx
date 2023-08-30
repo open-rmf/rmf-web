@@ -584,7 +584,9 @@ export interface CreateTaskFormProps
 
 export function CreateTaskForm({
   user,
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   cleaningZones = [],
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   patrolWaypoints = [],
   pickupZones = [],
   pickupPoints = {},
@@ -818,6 +820,7 @@ export function CreateTaskForm({
     }
   };
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   const handleSelectFileClick: React.MouseEventHandler<HTMLButtonElement> = () => {
     if (!tasksFromFile) {
       return;

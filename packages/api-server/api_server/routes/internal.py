@@ -62,7 +62,8 @@ async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
             if alert is not None:
                 alert_events.alerts.on_next(alert)
         elif (
-            task_state.unix_millis_warn_time
+            task_state.unix_millis_finish_time
+            and task_state.unix_millis_warn_time
             and task_state.unix_millis_finish_time > task_state.unix_millis_warn_time
         ):
             # TODO(AC): Perhaps set a late alert as its own category
