@@ -8,6 +8,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Autocomplete,
   Button,
+  Checkbox,
   Chip,
   Dialog,
   DialogActions,
@@ -652,6 +653,11 @@ export function CreateTaskForm({
   // schedule is not supported with batch upload
   const scheduleEnabled = taskRequests.length === 1;
 
+  const [warnTimeChecked, setWarnTimeChecked] = React.useState(false);
+  const handleWarnTimeCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setWarnTimeChecked(event.target.checked);
+  };
+
   const updateTasks = () => {
     setTaskRequests((prev) => {
       prev.splice(selectedTaskIdx, 1, taskRequest);
@@ -922,7 +928,7 @@ export function CreateTaskForm({
                       </MenuItem>
                     </TextField>
                   </Grid>
-                  <Grid item xs={8}>
+                  <Grid item xs={7}>
                     <DateTimePicker
                       inputFormat={'MM/dd/yyyy HH:mm'}
                       value={
@@ -945,16 +951,25 @@ export function CreateTaskForm({
                       renderInput={(props) => <TextField {...props} />}
                     />
                   </Grid>
+                  <Grid item xs={1}>
+                    <Checkbox
+                      checked={warnTimeChecked}
+                      onChange={handleWarnTimeCheckboxChange}
+                      inputProps={{ 'aria-label': 'controlled' }}
+                      sx={{ '& .MuiSvgIcon-root': { fontSize: 32 } }}
+                    />
+                  </Grid>
                   <Grid item xs={4}>
                     <DateTimePicker
+                      disabled={!warnTimeChecked}
                       inputFormat={'MM/dd/yyyy HH:mm'}
                       value={
                         taskRequest.unix_millis_warn_time
                           ? new Date(taskRequest.unix_millis_warn_time)
-                          : null
+                          : new Date()
                       }
                       onChange={(date) => {
-                        if (!date) {
+                        if (!date || !warnTimeChecked) {
                           return;
                         }
                         taskRequest.unix_millis_warn_time = date.valueOf();
