@@ -15,6 +15,7 @@ export interface ResourceConfigurationsType {
   pickupZones?: string[];
   defaultZoom?: number;
   defaultRobotZoom?: number;
+  attributionPrefix?: string;
 }
 
 export default class ResourceManager {
@@ -26,6 +27,7 @@ export default class ResourceManager {
   pickupZones?: string[];
   defaultZoom: number;
   defaultRobotZoom: number;
+  attributionPrefix?: string;
 
   /**
    * Gets the default resource manager using the embedded resource file (aka "assets/resources/main.json").
@@ -62,6 +64,7 @@ export default class ResourceManager {
     this.pickupZones = resources.pickupZones || [];
     this.defaultZoom = resources.defaultZoom ?? 5;
     this.defaultRobotZoom = resources.defaultRobotZoom ?? 6;
+    this.attributionPrefix = resources.attributionPrefix || 'OSRC-SG';
   }
 }
 
