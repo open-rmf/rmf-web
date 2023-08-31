@@ -875,17 +875,14 @@ export function CreateTaskForm({
                       setOpenDialog={setOpenFavoriteDialog}
                       listItemClick={() => {
                         setFavoriteTaskBuffer(favoriteTask);
-                        setTaskRequests((prev) => {
-                          return [
-                            ...prev,
-                            {
-                              category: favoriteTask.category,
-                              description: favoriteTask.description,
-                              unix_millis_earliest_start_time: Date.now(),
-                              priority: favoriteTask.priority,
-                            },
-                          ];
-                        });
+                        setTaskRequests([
+                          {
+                            category: favoriteTask.category,
+                            description: favoriteTask.description,
+                            unix_millis_earliest_start_time: Date.now(),
+                            priority: favoriteTask.priority,
+                          }]
+                        );
                       }}
                     />
                   );
