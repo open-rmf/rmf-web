@@ -16,7 +16,11 @@ import AppBar from './appbar';
 import { AlertStore } from './alert-store';
 
 const DefaultAlertDuration = 2000;
-const defaultTheme = createTheme();
+const defaultTheme = createTheme({
+  typography: {
+    fontSize: 16,
+  },
+});
 
 /**
  * Contains various components that are essential to the app and provides contexts to control them.

@@ -58,7 +58,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: 14,
+            fontSize: 16,
           }}
         >
           {healthStatusToOpMode(params.row.opMode)}
@@ -101,7 +101,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: 14,
+            fontSize: 16,
           }}
         >
           {params.row.doorState ? doorModeToString(params.row.doorState.current_mode.value) : -1}
