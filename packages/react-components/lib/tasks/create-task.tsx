@@ -690,7 +690,7 @@ export function CreateTaskForm({
           <DeliveryHuntingTaskForm
             taskDesc={taskRequest.description as DeliveryHuntingTaskDescription}
             pickupZones={pickupZones}
-            dropoffPoints={Object.values(dropoffPoints)}
+            dropoffPoints={Object.keys(dropoffPoints)}
             onChange={(desc) => handleTaskDescriptionChange('delivery_sequential_hunting', desc)}
           />
         );
@@ -699,7 +699,7 @@ export function CreateTaskForm({
           <DeliveryHuntingTaskForm
             taskDesc={taskRequest.description as DeliveryHuntingTaskDescription}
             pickupZones={pickupZones}
-            dropoffPoints={Object.values(dropoffPoints)}
+            dropoffPoints={Object.keys(dropoffPoints)}
             onChange={(desc) => handleTaskDescriptionChange('delivery_area_hunting', desc)}
           />
         );
