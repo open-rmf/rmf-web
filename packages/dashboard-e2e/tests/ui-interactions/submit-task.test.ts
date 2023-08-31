@@ -6,21 +6,22 @@ describe('submit task', () => {
     await (await appBar.$('button[aria-label="Tasks"]')).click();
     await (await appBar.$('button[aria-label="new task"]')).click();
     await (await $('#task-type')).click();
-    const getPatrolOption = async () => {
+    const getDeliveryOption = async () => {
       const options = await $$('[role=option]');
       for (const opt of options) {
         const text = await opt.getText();
-        if (text === 'Patrol') {
+        if (text === 'Delivery') {
           return opt;
         }
       }
       return null;
     };
-    await browser.waitUntil(async () => !!(await getPatrolOption()));
-    const patrolOption = (await getPatrolOption())!;
-    await patrolOption.click();
+    await browser.waitUntil(async () => !!(await getDeliveryOption()));
+    const deliveryOption = (await getDeliveryOption())!;
+    await deliveryOption.click();
 
-    await (await $('#place-input')).setValue('coe');
+    await (await $('#pickup-location')).setValue('pantry');
+    await (await $('#dropoff-location')).setValue('coe');
 
     await (await $('button[aria-label="Submit Now"]')).click();
     await expect($('div=Successfully created task')).toBeDisplayed();
