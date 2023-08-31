@@ -61,6 +61,17 @@ async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
             alert = await alert_repo.create_alert(task_state.booking.id, "task")
             if alert is not None:
                 alert_events.alerts.on_next(alert)
+        elif (
+            task_state.unix_millis_finish_time
+            and task_state.unix_millis_warn_time
+            and task_state.unix_millis_finish_time > task_state.unix_millis_warn_time
+        ):
+            # TODO(AC): Perhaps set a late alert as its own category
+            late_alert_id = f"{task_state.booking.id}__late"
+            if not await alert_repo.alert_original_id_exists(late_alert_id):
+                alert = await alert_repo.create_alert(late_alert_id, "task")
+                if alert is not None:
+                    alert_events.alerts.on_next(alert)
 
     elif payload_type == "task_log_update":
         task_log = mdl.TaskEventLog(**msg["data"])

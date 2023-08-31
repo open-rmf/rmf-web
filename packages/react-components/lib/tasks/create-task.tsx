@@ -8,6 +8,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Autocomplete,
   Button,
+  Checkbox,
   Chip,
   Dialog,
   DialogActions,
@@ -37,7 +38,6 @@ import type { TaskFavoritePydantic as TaskFavorite, TaskRequest } from 'api-clie
 import React from 'react';
 import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
-import { PositiveIntField } from '../form-inputs';
 
 // A bunch of manually defined descriptions to avoid using `any`.
 interface DeliveryTaskDescription {
@@ -584,7 +584,9 @@ export interface CreateTaskFormProps
 
 export function CreateTaskForm({
   user,
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   cleaningZones = [],
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   patrolWaypoints = [],
   pickupZones = [],
   pickupPoints = {},
@@ -652,6 +654,11 @@ export function CreateTaskForm({
   };
   // schedule is not supported with batch upload
   const scheduleEnabled = taskRequests.length === 1;
+
+  const [warnTimeChecked, setWarnTimeChecked] = React.useState(false);
+  const handleWarnTimeCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setWarnTimeChecked(event.target.checked);
+  };
 
   const updateTasks = () => {
     setTaskRequests((prev) => {
@@ -813,6 +820,7 @@ export function CreateTaskForm({
     }
   };
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   const handleSelectFileClick: React.MouseEventHandler<HTMLButtonElement> = () => {
     if (!tasksFromFile) {
       return;
@@ -923,7 +931,7 @@ export function CreateTaskForm({
                       </MenuItem>
                     </TextField>
                   </Grid>
-                  <Grid item xs={10}>
+                  <Grid item xs={7}>
                     <DateTimePicker
                       inputFormat={'MM/dd/yyyy HH:mm'}
                       value={
@@ -946,20 +954,32 @@ export function CreateTaskForm({
                       renderInput={(props) => <TextField {...props} />}
                     />
                   </Grid>
-                  <Grid item xs={2}>
-                    <PositiveIntField
-                      id="priority"
-                      label="Priority"
-                      // FIXME(AA): The priority object is currently undefined.
-                      value={(taskRequest.priority as Record<string, number>)?.value || 0}
-                      onChange={(_ev, val) => {
-                        taskRequest.priority = { type: 'binary', value: val };
-                        setFavoriteTaskBuffer({
-                          ...favoriteTaskBuffer,
-                          priority: { type: 'binary', value: val },
-                        });
+                  <Grid item xs={1}>
+                    <Checkbox
+                      checked={warnTimeChecked}
+                      onChange={handleWarnTimeCheckboxChange}
+                      inputProps={{ 'aria-label': 'controlled' }}
+                      sx={{ '& .MuiSvgIcon-root': { fontSize: 32 } }}
+                    />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <DateTimePicker
+                      disabled={!warnTimeChecked}
+                      inputFormat={'MM/dd/yyyy HH:mm'}
+                      value={
+                        taskRequest.unix_millis_warn_time
+                          ? new Date(taskRequest.unix_millis_warn_time)
+                          : new Date()
+                      }
+                      onChange={(date) => {
+                        if (!date || !warnTimeChecked) {
+                          return;
+                        }
+                        taskRequest.unix_millis_warn_time = date.valueOf();
                         updateTasks();
                       }}
+                      label="Warn Time"
+                      renderInput={(props) => <TextField {...props} />}
                     />
                   </Grid>
                 </Grid>
