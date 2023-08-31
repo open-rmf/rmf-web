@@ -114,10 +114,10 @@ function getShortDescription(taskRequest: TaskRequest): string {
       return `[Delivery] from [${taskRequest.description.pickup.place}] to [${taskRequest.description.dropoff.place}]`;
     }
     case 'delivery_sequential_hunting': {
-      return `[Delivery - Sequential Hunting] payload [${taskRequest.description.payloadId}] from [${taskRequest.description.pickupPlace}] to [${taskRequest.description.dropoffPlace}]`;
+      return `[Delivery - Sequential Hunting] payload [${taskRequest.description.activities[0].cart_rfid}] from [${taskRequest.description.activities[0].pickup_zone}] to [${taskRequest.description.activities[1].dropoff_point}]`;
     }
     case 'delivery_area_hunting': {
-      return `[Delivery - Area Hunting] payload [${taskRequest.description.payloadId}] from [${taskRequest.description.pickupPlace}] to [${taskRequest.description.dropoffPlace}]`;
+      return `[Delivery - Area Hunting] payload [${taskRequest.description.activities[0].cart_rfid}] from [${taskRequest.description.activities[0].pickup_zone}] to [${taskRequest.description.activities[1].dropoff_point}]`;
     }
     default:
       return `[Unknown] type "${taskRequest.category}"`;
@@ -296,6 +296,7 @@ function DeliveryHuntingTaskForm({
           freeSolo
           fullWidth
           options={pickupZones}
+          value={taskDesc.activities[0].description.pickup_zone}
           onChange={(_ev, newValue) => {
             if (newValue === null) {
               return;
@@ -322,6 +323,7 @@ function DeliveryHuntingTaskForm({
           fullWidth
           label="Cart RFID"
           defaultValue={pickup_activity.description.cart_rfid}
+          value={taskDesc.activities[0].description.cart_rfid}
           inputProps={{ min: 0 }}
           onChange={(ev) => {
             pickup_activity.description.cart_rfid = parseInt(ev.target.value);
@@ -338,6 +340,7 @@ function DeliveryHuntingTaskForm({
           freeSolo
           fullWidth
           options={dropoffPoints}
+          value={taskDesc.activities[1].description.dropoff_point}
           onChange={(_ev, newValue) => {
             if (newValue === null) {
               return;
