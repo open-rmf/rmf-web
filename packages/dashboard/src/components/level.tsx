@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Level, Lift } from 'api-client';
+import { Level } from 'api-client';
 import { graphToWalls, Wall } from './wall';
 import './temporalStyle.css';
 

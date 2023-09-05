@@ -1,14 +1,11 @@
 import React from 'react';
-import { DoorState, Lift, LiftState } from 'api-client';
-import { Cube } from './cube';
+import { Lift, LiftState } from 'api-client';
 import { Door as DoorModel } from 'rmf-models';
 import { RmfAppContext } from './rmf-app';
-import { DoorMode } from 'rmf-models';
 import { Text, Line } from '@react-three/drei';
 import { getLiftModeText } from 'react-components';
 import { BufferGeometry, BufferAttribute, Vector3, Euler } from 'three';
 import { LiftState as RmfLiftState } from 'rmf-models';
-import { DoorMakerThree } from './door-maker';
 
 interface LiftMakerProps {
   door: DoorModel;
@@ -84,10 +81,6 @@ const LiftShapeMaker = ({ motionState }: LiftShapeMakerProps) => {
   return shapeComponent;
 };
 
-function toDoorMode(liftState: LiftState): DoorMode {
-  return { value: liftState.door_state };
-}
-
 const ElevatorMaker = ({ x, y, yaw, width, depth, liftState }: SquareProps) => {
   return (
     <group position={[x, y, yaw]}>
@@ -110,7 +103,6 @@ export const LiftMaker = React.memo(({ door, lift }: LiftMakerProps): JSX.Elemen
   const rmf = React.useContext(RmfAppContext);
   const [liftState, setLiftState] = React.useState<LiftState | undefined>(undefined);
 
-  const ref = React.useRef<THREE.Mesh>(null!);
   React.useEffect(() => {
     if (!rmf) {
       return;
@@ -125,13 +117,6 @@ export const LiftMaker = React.memo(({ door, lift }: LiftMakerProps): JSX.Elemen
 
   return (
     <>
-      {/* <DoorMakerThree
-                height={8}
-                door={door}
-                key={lift?.name}
-                meshRef={ref}
-                currentMode={liftState && toDoorMode(liftState).value}
-            /> */}
       {lift && liftState && (
         <ElevatorMaker
           x={lift.ref_x}
