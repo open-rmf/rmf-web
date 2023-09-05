@@ -19,43 +19,38 @@ export const CanvasController = ({
   return (
     <>
       <div id="annotationsPanel">
-        <ul>
-          {levels.map((level, i) => {
-            const { name } = level;
-            return (
-              <li key={i}>
-                <FormLabel id="demo-radio-buttons-group-label">Gender</FormLabel>
-                <RadioGroup
-                  aria-labelledby="demo-radio-buttons-group-label"
-                  value={currentLevel.name}
-                  name="radio-buttons-group"
-                  onChange={onClick}
-                >
-                  <FormControlLabel value={name} control={<Radio />} label={name} />
-                </RadioGroup>
-              </li>
-            );
-          })}
-          {Object.keys(disabledLayers).map((layerName) => (
-            <li key={layerName}>
-              <FormGroup key={layerName}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={!disabledLayers[layerName]}
-                      onChange={() => {
-                        const updatedLayers = { ...disabledLayers };
-                        updatedLayers[layerName] = !updatedLayers[layerName];
-                        AppEvents.disabledLayers.next(updatedLayers);
-                      }}
-                    />
-                  }
-                  label={layerName}
+        <FormLabel id="demo-radio-buttons-group-label">Levels</FormLabel>
+        {levels.map((level, i) => {
+          const { name } = level;
+          return (
+            <RadioGroup
+              aria-labelledby="demo-radio-buttons-group-label"
+              value={currentLevel.name}
+              name="radio-buttons-group"
+              onChange={onClick}
+              key={i}
+            >
+              <FormControlLabel value={name} control={<Radio />} label={name} />
+            </RadioGroup>
+          );
+        })}
+        {Object.keys(disabledLayers).map((layerName) => (
+          <FormGroup key={layerName}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={!disabledLayers[layerName]}
+                  onChange={() => {
+                    const updatedLayers = { ...disabledLayers };
+                    updatedLayers[layerName] = !updatedLayers[layerName];
+                    AppEvents.disabledLayers.next(updatedLayers);
+                  }}
                 />
-              </FormGroup>
-            </li>
-          ))}
-        </ul>
+              }
+              label={layerName}
+            />
+          </FormGroup>
+        ))}
       </div>
     </>
   );
