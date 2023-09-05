@@ -7,7 +7,7 @@ import {
   Level,
 } from 'api-client';
 import Debug from 'debug';
-import React, { Suspense } from 'react';
+import React, { ChangeEvent, Suspense } from 'react';
 import {
   affineImageBounds,
   ColorManager,
@@ -41,6 +41,7 @@ import { RobotLoader } from './robot-loader';
 import { ThreeDObject } from './three-object-render';
 import { TrajectoryComponent } from './three-trajectory-overlay';
 import { CanvasController } from './canvas-handler';
+// import ImageThree from "./imageOverlay"
 
 type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
@@ -571,91 +572,102 @@ export const MapApp = styled(
       //     }
       //   />
       // </LMap>
-
       <Suspense fallback={null}>
-        <CanvasController disabledLayers={disabledLayers}>
-          <Canvas
-            onCreated={({ camera }) => {
-              if (!sceneBoundingBox) {
-                return;
-              }
-              const center = sceneBoundingBox.getCenter(new THREE.Vector3());
-              camera.position.set(center.x, center.y, center.z + distance);
-              camera.zoom = 20;
-              console.log(camera);
-              camera.updateProjectionMatrix();
+        <CanvasController
+          disabledLayers={disabledLayers}
+          levels={buildingMap.levels}
+          currentLevel={currentLevel}
+          onClick={(event: ChangeEvent<HTMLInputElement>, value: string) => {
+            setCurrentLevel(
+              buildingMap.levels.find((l) => l.name === event.target.value) || currentLevel,
+            );
+          }}
+        />
+        <Canvas
+          onCreated={({ camera }) => {
+            if (!sceneBoundingBox) {
+              return;
+            }
+            const center = sceneBoundingBox.getCenter(new THREE.Vector3());
+            camera.position.set(center.x, center.y, center.z + distance);
+            camera.zoom = 20;
+            console.log(camera);
+            camera.updateProjectionMatrix();
+          }}
+          orthographic={true}
+        >
+          <OrbitControls
+            target={new THREE.Vector3(0, 0, -1000)}
+            enableRotate={false}
+            enableDamping={false}
+            mouseButtons={{
+              LEFT: THREE.MOUSE.PAN,
+              MIDDLE: undefined,
+              RIGHT: undefined,
             }}
-            orthographic={true}
-          >
-            <OrbitControls
-              target={new THREE.Vector3(0, 0, -1000)}
-              enableRotate={false}
-              enableDamping={false}
-              mouseButtons={{
-                LEFT: THREE.MOUSE.PAN,
-                MIDDLE: undefined,
-                RIGHT: undefined,
-              }}
-            />
-            <BuildingCubes level={currentLevel} lifts={buildingMap.lifts} />
-            {!disabledLayers['Waypoints'] &&
-              waypoints.map((place, index) => (
-                <ThreeDObject
-                  key={index}
-                  position={[place.vertex.x, place.vertex.y, 0]}
-                  color="yellow"
-                  text={place.vertex.name}
-                  elevation={0}
-                  circleShape={false}
-                />
-              ))}
-            {!disabledLayers['Ingestors'] &&
-              ingestorsData.map((ingestor, index) => (
-                <ThreeDObject
-                  key={index}
-                  position={[ingestor.location[0], ingestor.location[1], 0]}
-                  color="red"
-                  elevation={0}
-                  circleShape={true}
-                />
-              ))}
+          />
+          <BuildingCubes level={currentLevel} lifts={buildingMap.lifts} />
 
-            {!disabledLayers['Dispensers'] &&
-              dispensersData.map((dispenser, index) => (
-                <ThreeDObject
-                  key={index}
-                  position={[dispenser.location[0], dispenser.location[1], 0]}
-                  color="red"
-                  elevation={0}
-                  circleShape={true}
-                />
-              ))}
-            {!disabledLayers['Trajectories'] &&
-              trajectories.map((trajData) => (
-                <TrajectoryComponent
-                  key={trajData.trajectory.id}
-                  points={trajData.trajectory.segments.map((seg) => {
-                    return new THREE.Vector3(seg.x[0], seg.x[1], 4);
-                  })}
-                  color={trajData.color}
-                />
-              ))}
+          {/* {imageUrl && <ImageThree level={currentLevel} imageUrl={imageUrl} />} */}
 
-            <RobotLoader
-              robots={robots}
-              robotLocations={robotLocations}
-              onRobotClick={(_ev, robot) => {
-                setOpenRobotSummary(true);
-                setSelectedRobot(robot);
-              }}
-            />
-            <ambientLight />
-          </Canvas>
-        </CanvasController>
+          {!disabledLayers['Waypoints'] &&
+            waypoints.map((place, index) => (
+              <ThreeDObject
+                key={index}
+                position={[place.vertex.x, place.vertex.y, 0]}
+                color="yellow"
+                text={place.vertex.name}
+                elevation={0}
+                circleShape={false}
+              />
+            ))}
+          {!disabledLayers['Ingestors'] &&
+            ingestorsData.map((ingestor, index) => (
+              <ThreeDObject
+                key={index}
+                position={[ingestor.location[0], ingestor.location[1], 0]}
+                color="red"
+                elevation={0}
+                circleShape={true}
+              />
+            ))}
+
+          {!disabledLayers['Dispensers'] &&
+            dispensersData.map((dispenser, index) => (
+              <ThreeDObject
+                key={index}
+                position={[dispenser.location[0], dispenser.location[1], 0]}
+                color="red"
+                elevation={0}
+                circleShape={true}
+              />
+            ))}
+          {!disabledLayers['Trajectories'] &&
+            trajectories.map((trajData) => (
+              <TrajectoryComponent
+                key={trajData.trajectory.id}
+                points={trajData.trajectory.segments.map((seg) => {
+                  return new THREE.Vector3(seg.x[0], seg.x[1], 4);
+                })}
+                color={trajData.color}
+              />
+            ))}
+
+          <RobotLoader
+            robots={robots}
+            robotLocations={robotLocations}
+            onRobotClick={(_ev, robot) => {
+              setOpenRobotSummary(true);
+              setSelectedRobot(robot);
+            }}
+          />
+          <ambientLight />
+        </Canvas>
+        {/* </CanvasController> */}
         {openRobotSummary && selectedRobot && (
           <RobotSummary robot={selectedRobot} onClose={() => setOpenRobotSummary(false)} />
         )}
-        <div id="annotationsPanel">
+        {/* <div id="annotationsPanel">
           <ul>
             {buildingMap.levels.map((level, i) => {
               const { name } = level;
@@ -667,7 +679,7 @@ export const MapApp = styled(
                     onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
                       setCurrentLevel(
                         buildingMap.levels.find((l) => l.name === event.currentTarget?.name) ||
-                          currentLevel,
+                        currentLevel,
                       );
                     }}
                   >
@@ -677,7 +689,7 @@ export const MapApp = styled(
               );
             })}
           </ul>
-        </div>
+        </div> */}
       </Suspense>
     ) : null;
   }),
