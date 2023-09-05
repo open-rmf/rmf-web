@@ -1,35 +1,20 @@
 import * as THREE from 'three';
 import { Level, Lift } from 'api-client';
 import { graphToWalls, Wall } from './wall';
-import { Door } from './door';
 import './temporalStyle.css';
 
 export interface BuildingMapProps {
   level: Level;
-  lifts: Lift[];
 }
 
-export const BuildingCubes = ({ level, lifts }: BuildingMapProps) => {
-  const { doors, elevation } = level;
+export const BuildingCubes = ({ level }: BuildingMapProps) => {
+  const { elevation } = level;
 
   return (
     <>
       {level.wall_graph.edges.length > 0 ? (
         <Wall elevation={elevation} opacity={1} walls={level.wall_graph} />
       ) : null}
-
-      {doors.length &&
-        doors.map((door, i) => (
-          <Door key={i} door={door} opacity={0.1} height={8} elevation={elevation} />
-        ))}
-
-      {/* liftsDoors */}
-      {lifts.length &&
-        lifts.map((lift, i) =>
-          lift.doors.map((door, i) => (
-            <Door key={i} door={door} opacity={0.1} height={8} elevation={elevation} lift={lift} />
-          )),
-        )}
     </>
   );
 };

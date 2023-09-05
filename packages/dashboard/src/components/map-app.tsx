@@ -41,6 +41,8 @@ import { RobotLoader } from './robot-loader';
 import { ThreeDObject } from './three-object-render';
 import { TrajectoryComponent } from './three-trajectory-overlay';
 import { CanvasController } from './canvas-handler';
+import { Door } from './door';
+import { LiftMaker } from './lift-load';
 // import ImageThree from "./imageOverlay"
 
 type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
@@ -68,9 +70,12 @@ export const MapApp = styled(
     const [currentLevel, setCurrentLevel] = React.useState<Level | undefined>(undefined);
     const [disabledLayers, setDisabledLayers] = React.useState<Record<string, boolean>>({
       Waypoints: false,
-      Ingestors: false,
       Dispensers: false,
+      Ingestors: false,
+      Lifts: false,
+      Doors: false,
       Trajectories: false,
+      Robots: false,
     });
     const [openRobotSummary, setOpenRobotSummary] = React.useState(false);
     const [selectedRobot, setSelectedRobot] = React.useState<RobotTableData>();
@@ -591,7 +596,6 @@ export const MapApp = styled(
             const center = sceneBoundingBox.getCenter(new THREE.Vector3());
             camera.position.set(center.x, center.y, center.z + distance);
             camera.zoom = 20;
-            console.log(camera);
             camera.updateProjectionMatrix();
           }}
           orthographic={true}
@@ -606,9 +610,48 @@ export const MapApp = styled(
               RIGHT: undefined,
             }}
           />
-          <BuildingCubes level={currentLevel} lifts={buildingMap.lifts} />
+          <BuildingCubes level={currentLevel} />
+          {!disabledLayers['Doors'] &&
+            currentLevel.doors.length &&
+            currentLevel.doors.map((door, i) => (
+              <Door
+                key={i}
+                door={door}
+                opacity={0.1}
+                height={8}
+                elevation={currentLevel.elevation}
+              />
+            ))}
 
-          {/* {imageUrl && <ImageThree level={currentLevel} imageUrl={imageUrl} />} */}
+          {!disabledLayers['Doors'] &&
+            buildingMap.lifts.length &&
+            buildingMap.lifts.map((lift, i) =>
+              lift.doors.map((door, i) => (
+                <Door
+                  key={i}
+                  door={door}
+                  opacity={0.1}
+                  height={8}
+                  elevation={currentLevel.elevation}
+                  lift={lift}
+                />
+              )),
+            )}
+
+          {!disabledLayers['Lifts'] &&
+            buildingMap.lifts.length &&
+            buildingMap.lifts.map((lift, i) =>
+              lift.doors.map((door, i) => (
+                <LiftMaker
+                  key={i}
+                  door={door}
+                  lift={lift}
+                  height={8}
+                  elevation={currentLevel.elevation}
+                  opacity={0.1}
+                />
+              )),
+            )}
 
           {!disabledLayers['Waypoints'] &&
             waypoints.map((place, index) => (
@@ -652,44 +695,21 @@ export const MapApp = styled(
                 color={trajData.color}
               />
             ))}
-
-          <RobotLoader
-            robots={robots}
-            robotLocations={robotLocations}
-            onRobotClick={(_ev, robot) => {
-              setOpenRobotSummary(true);
-              setSelectedRobot(robot);
-            }}
-          />
+          {!disabledLayers['Robots'] && (
+            <RobotLoader
+              robots={robots}
+              robotLocations={robotLocations}
+              onRobotClick={(_ev, robot) => {
+                setOpenRobotSummary(true);
+                setSelectedRobot(robot);
+              }}
+            />
+          )}
           <ambientLight />
         </Canvas>
-        {/* </CanvasController> */}
         {openRobotSummary && selectedRobot && (
           <RobotSummary robot={selectedRobot} onClose={() => setOpenRobotSummary(false)} />
         )}
-        {/* <div id="annotationsPanel">
-          <ul>
-            {buildingMap.levels.map((level, i) => {
-              const { name } = level;
-              return (
-                <li key={i}>
-                  <button
-                    className="annotationButton"
-                    name={name}
-                    onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
-                      setCurrentLevel(
-                        buildingMap.levels.find((l) => l.name === event.currentTarget?.name) ||
-                        currentLevel,
-                      );
-                    }}
-                  >
-                    {name}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </div> */}
       </Suspense>
     ) : null;
   }),
