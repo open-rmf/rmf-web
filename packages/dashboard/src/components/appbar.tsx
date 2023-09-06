@@ -204,7 +204,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
 
   React.useEffect(() => {
     const sub = AppEvents.refreshTaskApp.subscribe({
-      next: () => setRefreshTaskAppCount((oldValue) => oldValue++),
+      next: () => setRefreshTaskAppCount((oldValue) => ++oldValue),
     });
     return () => sub.unsubscribe();
   }, []);
