@@ -40,7 +40,7 @@ import { BuildingCubes, findSceneBoundingBox } from './level';
 import { RobotLoader } from './robot-loader';
 import { ThreeDObject } from './three-object-render';
 import { TrajectoryComponent } from './three-trajectory-overlay';
-import { CanvasController } from './canvas-handler';
+import { LayersController } from './three-fiber';
 import { Door } from './door';
 import { LiftMaker } from './lift-load';
 // import ImageThree from "./imageOverlay"
@@ -432,28 +432,6 @@ export const MapApp = styled(
     enableDamping: Damping is a smooth deceleration of the camera's movement.
     dampingFactor: This property controls the speed of the damping effect if enableDamping is set to true. */
 
-    // const [overallSceneBoundingBox, setOverallSceneBoundingBox] = React.useState<
-    //   THREE.Box3 | undefined
-    // >(undefined);
-
-    // React.useMemo(() => {
-    //   const combinedBoundingBox = new THREE.Box3();
-    //   buildingMap?.levels.forEach((level) => {
-    //     const levelBoundingBox = findSceneBoundingBox(level);
-    //     combinedBoundingBox.expandByPoint(levelBoundingBox.min);
-    //     combinedBoundingBox.expandByPoint(levelBoundingBox.max);
-    //   });
-    //   setOverallSceneBoundingBox(combinedBoundingBox);
-    // }, [buildingMap?.levels]);
-
-    // React.useEffect(() => {
-    //   if (!overallSceneBoundingBox) {
-    //     return;
-    //   }
-
-    //   const size = overallSceneBoundingBox.getSize(new THREE.Vector3());
-    //   setDistance(Math.max(size.x, size.y, size.z) * 0.9);
-    // }, [overallSceneBoundingBox]);
     return ready ? (
       // <LMap
       //   ref={(cur) => {
@@ -578,11 +556,11 @@ export const MapApp = styled(
       //   />
       // </LMap>
       <Suspense fallback={null}>
-        <CanvasController
+        <LayersController
           disabledLayers={disabledLayers}
           levels={buildingMap.levels}
           currentLevel={currentLevel}
-          onClick={(event: ChangeEvent<HTMLInputElement>, value: string) => {
+          onChange={(event: ChangeEvent<HTMLInputElement>, value: string) => {
             setCurrentLevel(
               buildingMap.levels.find((l) => l.name === event.target.value) || currentLevel,
             );
@@ -622,7 +600,7 @@ export const MapApp = styled(
                 elevation={currentLevel.elevation}
               />
             ))}
-
+          {/* {imageUrl && <ImageThree level={currentLevel} imageUrl={imageUrl} />} */}
           {!disabledLayers['Doors'] &&
             buildingMap.lifts.length &&
             buildingMap.lifts.map((lift, i) =>
