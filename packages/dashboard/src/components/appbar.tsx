@@ -249,18 +249,21 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       }),
     );
     subs.push(
-      AppEvents.refreshAlertCount.subscribe((_) => {
-        (async () => {
-          const resp = await rmf.alertsApi.getAlertsAlertsGet();
-          const alerts = resp.data as Alert[];
-          setUnacknowledgedAlertsNum(
-            alerts.filter(
-              (alert) => !(alert.acknowledged_by && alert.unix_millis_acknowledged_time),
-            ).length,
-          );
-        })();
+      AppEvents.refreshAlert.subscribe({
+        next: () => {
+          (async () => {
+            const resp = await rmf.alertsApi.getAlertsAlertsGet();
+            const alerts = resp.data as Alert[];
+            setUnacknowledgedAlertsNum(
+              alerts.filter(
+                (alert) => !(alert.acknowledged_by && alert.unix_millis_acknowledged_time),
+              ).length,
+            );
+          })();
+        },
       }),
     );
+
     // Get the initial number of unacknowledged alerts
     (async () => {
       const resp = await rmf.alertsApi.getAlertsAlertsGet();

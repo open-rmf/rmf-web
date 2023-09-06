@@ -17,7 +17,6 @@ enum AlertCategory {
 export const AlertStore = React.memo(() => {
   const rmf = React.useContext(RmfAppContext);
   const [taskAlerts, setTaskAlerts] = React.useState<Record<string, Alert>>({});
-  const refreshAlertCount = React.useRef(0);
 
   const categorizeAndPushAlerts = (alert: Alert) => {
     // We check if an existing alert has been acknowledged, remove it before
@@ -51,8 +50,7 @@ export const AlertStore = React.memo(() => {
     }
     const sub = rmf.alertObsStore.subscribe(async (alert) => {
       categorizeAndPushAlerts(alert);
-      refreshAlertCount.current += 1;
-      AppEvents.refreshAlertCount.next(refreshAlertCount.current);
+      AppEvents.refreshAlert.next();
     });
     return () => sub.unsubscribe();
   }, [rmf]);
