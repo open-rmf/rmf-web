@@ -7,7 +7,7 @@ interface WallProps {
   wallGraph: Graph;
 }
 
-export const Wall = ({ wallGraph }: WallProps): JSX.Element => {
+export const WallMaker = ({ wallGraph }: WallProps): JSX.Element => {
   const walls = graphToWalls(wallGraph);
 
   return (
