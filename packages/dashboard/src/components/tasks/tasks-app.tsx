@@ -58,7 +58,7 @@ import { RmfAppContext } from '../rmf-app';
 import { TaskSummary } from './task-summary';
 import { downloadCsvFull, downloadCsvMinimal } from './utils';
 
-const RefreshTaskQueueTableInterval = 3000;
+const RefreshTaskQueueTableInterval = 5000;
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -226,7 +226,6 @@ export const TasksApp = React.memo(
       React.useEffect(() => {
         const sub = AppEvents.refreshTaskApp.subscribe({
           next: () => {
-            console.log('got it!');
             setRefreshTaskAppCount((oldValue) => ++oldValue);
           },
         });
