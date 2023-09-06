@@ -12,7 +12,6 @@ interface CircleShapeProps {
   onRobotClick?: (ev: ThreeEvent<MouseEvent>) => void;
   robot: RobotData;
   segment: number;
-  scalingFactor: number;
 }
 
 interface ObjectLoaderProps {
@@ -29,27 +28,23 @@ interface RobotLoaderProps {
   objectModel?: string;
 }
 
-const calculateApproximateRadius = (x: number, y: number): number => Math.sqrt(x * x + y * y);
-
 const CircleShape = ({
   position,
   rotation,
   onRobotClick,
   robot,
   segment,
-  scalingFactor,
 }: CircleShapeProps): JSX.Element => {
-  const radius = calculateApproximateRadius(position[0], position[1]);
-  const scaledRadius = radius * scalingFactor;
+  const SCALED_RADIUS = 1;
   const rotationZ = rotation.z;
 
-  const rotatedX = position[0] + scaledRadius * Math.cos(rotationZ - Math.PI / 2);
-  const rotatedY = position[1] + scaledRadius * Math.sin(rotationZ - Math.PI / 2);
+  const rotatedX = position[0] + SCALED_RADIUS * Math.cos(rotationZ - Math.PI / 2);
+  const rotatedY = position[1] + SCALED_RADIUS * Math.sin(rotationZ - Math.PI / 2);
 
   return (
     <>
       <Circle
-        args={[scaledRadius, segment]}
+        args={[SCALED_RADIUS, segment]}
         position={position}
         rotation={rotation}
         onClick={onRobotClick}
@@ -97,7 +92,6 @@ export const RobotLoader = ({
 }: RobotLoaderProps) => {
   const STANDAR_Z_POSITION = 4;
   const CIRCLE_SEGMENT = 64;
-  const SCALING_FACTOR = 0.03;
 
   return (
     <>
@@ -134,7 +128,6 @@ export const RobotLoader = ({
                 }
                 robot={robot}
                 segment={CIRCLE_SEGMENT}
-                scalingFactor={SCALING_FACTOR}
               />
             )}
           </React.Fragment>
