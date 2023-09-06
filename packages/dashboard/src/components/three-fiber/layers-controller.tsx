@@ -1,15 +1,15 @@
 import { ChangeEvent } from 'react';
+import { Level } from 'api-client';
 import { AppEvents } from '../app-events';
 import {
+  Box,
   Checkbox,
   FormControlLabel,
   FormGroup,
   FormLabel,
   Radio,
   RadioGroup,
-  Box,
 } from '@mui/material';
-import { Level } from 'api-client';
 
 interface LayersControllerProps {
   disabledLayers: Record<string, boolean>;
@@ -35,26 +35,27 @@ export const LayersController = ({
         height: 'auto',
       }}
     >
-      <FormLabel id="demo-radio-buttons-group-label">Levels</FormLabel>
+      <FormLabel>Levels</FormLabel>
       {levels.map((level, i) => {
         const { name } = level;
         return (
           <RadioGroup
-            aria-labelledby="demo-radio-buttons-group-label"
             value={currentLevel.name}
             name="radio-buttons-group"
             onChange={onChange}
             key={i}
           >
-            <FormControlLabel value={name} control={<Radio />} label={name} />
+            <FormControlLabel value={name} control={<Radio size="small" />} label={name} />
           </RadioGroup>
         );
       })}
+      <FormLabel>Layers</FormLabel>
       {Object.keys(disabledLayers).map((layerName) => (
         <FormGroup key={layerName}>
           <FormControlLabel
             control={
               <Checkbox
+                size="small"
                 checked={!disabledLayers[layerName]}
                 onChange={() => {
                   const updatedLayers = { ...disabledLayers };
