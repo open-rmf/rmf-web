@@ -354,6 +354,12 @@ importers:
       '@mui/x-date-pickers':
         specifier: ^5.0.20
         version: 5.0.20(@emotion/react@11.9.3)(@emotion/styled@11.9.3)(@mui/material@5.8.7)(@mui/system@5.8.7)(date-fns@2.28.0)(react-dom@18.2.0)(react@18.2.0)
+      '@react-three/drei':
+        specifier: ^9.78.2
+        version: 9.78.2(@react-three/fiber@8.13.5)(@types/three@0.154.0)(react-dom@18.2.0)(react@18.2.0)(three@0.154.0)
+      '@react-three/fiber':
+        specifier: ^8.13.5
+        version: 8.13.5(react-dom@18.2.0)(react@18.2.0)(three@0.154.0)
       '@types/crc':
         specifier: ^3.4.0
         version: 3.8.0
@@ -369,6 +375,9 @@ importers:
       '@types/shallowequal':
         specifier: ^1.1.1
         version: 1.1.1
+      '@types/three':
+        specifier: ^0.154.0
+        version: 0.154.0
       api-client:
         specifier: workspace:*
         version: link:../api-client
@@ -414,6 +423,9 @@ importers:
       shallowequal:
         specifier: ^1.1.0
         version: 1.1.0
+      three:
+        specifier: ^0.154.0
+        version: 0.154.0
     devDependencies:
       '@babel/core':
         specifier: ^7.18.6
