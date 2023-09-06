@@ -52,11 +52,11 @@ export interface DialogAlertProps {
 export const AlertDialog = React.memo((props: DialogAlertProps) => {
   const LinearProgressWithLabel = (props: LinearProgressProps & { value: number }) => {
     return (
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <Box sx={{ width: '100%', mr: 1 }}>
+      <Box component="div" sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box component="div" sx={{ width: '100%', mr: 1 }}>
           <LinearProgress variant="determinate" {...props} value={props.value * 100} />
         </Box>
-        <Box sx={{ minWidth: 35 }}>
+        <Box component="div" sx={{ minWidth: 35 }}>
           <Typography variant="body2" color="text.secondary">{`${Math.round(
             props.value * 100,
           )}%`}</Typography>
@@ -122,7 +122,7 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
           <Typography variant="body2" fontWeight="bold" ml={3} mt={1}>
             Task progress
           </Typography>
-          <Box width={0.95} ml={3}>
+          <Box component="div" width={0.95} ml={3}>
             <LinearProgressWithLabel value={progress} />
           </Box>
         </>
