@@ -58,6 +58,8 @@ import { RmfAppContext } from '../rmf-app';
 import { TaskSummary } from './task-summary';
 import { downloadCsvFull, downloadCsvMinimal } from './utils';
 
+const RefreshTaskQueueTableInterval = 3000;
+
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
@@ -222,10 +224,26 @@ export const TasksApp = React.memo(
       const [sortFields, setSortFields] = React.useState<SortFields>({ model: undefined });
 
       React.useEffect(() => {
-        const sub = AppEvents.refreshTaskAppCount.subscribe((currentValue) => {
-          setRefreshTaskAppCount(currentValue);
+        const sub = AppEvents.refreshTaskApp.subscribe({
+          next: () => {
+            console.log('got it!');
+            setRefreshTaskAppCount((oldValue) => ++oldValue);
+          },
         });
         return () => sub.unsubscribe();
+      }, []);
+
+      React.useEffect(() => {
+        const refreshTaskQueueTable = async () => {
+          AppEvents.refreshTaskApp.next();
+        };
+        const refreshInterval = window.setInterval(
+          refreshTaskQueueTable,
+          RefreshTaskQueueTableInterval,
+        );
+        return () => {
+          clearInterval(refreshInterval);
+        };
       }, []);
 
       // TODO: parameterize this variable
@@ -409,7 +427,7 @@ export const TasksApp = React.memo(
           } else {
             await rmf.tasksApi.delScheduledTasksScheduledTasksTaskIdDelete(task.id);
           }
-          AppEvents.refreshTaskAppCount.next(refreshTaskAppCount + 1);
+          AppEvents.refreshTaskApp.next();
 
           // Set the default values
           setOpenDeleteScheduleDialog(false);
@@ -472,7 +490,7 @@ export const TasksApp = React.memo(
               <Tooltip title="Refresh" color="inherit" placement="top">
                 <IconButton
                   onClick={() => {
-                    AppEvents.refreshTaskAppCount.next(refreshTaskAppCount + 1);
+                    AppEvents.refreshTaskApp.next();
                   }}
                   aria-label="Refresh"
                 >
