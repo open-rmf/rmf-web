@@ -3,7 +3,7 @@ import { DoorState, Lift, LiftState } from 'api-client';
 import { Door as DoorModel } from 'rmf-models';
 import { RmfAppContext } from './rmf-app';
 import { DoorMode } from 'rmf-models';
-import { DoorMakerThree } from './door-maker';
+import { DoorThreeMaker } from 'react-components';
 
 interface DoorProps {
   door: DoorModel;
@@ -64,9 +64,5 @@ export const Door = React.memo(({ ...doorProps }: DoorProps): JSX.Element => {
     return () => sub.unsubscribe();
   }, [rmf, door.name]);
 
-  return (
-    <>
-      <DoorMakerThree {...doorProps} height={8} key={door.name} meshRef={ref} color={color} />
-    </>
-  );
+  return <DoorThreeMaker {...doorProps} height={8} key={door.name} meshRef={ref} color={color} />;
 });
