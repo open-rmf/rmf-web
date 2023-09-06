@@ -7,5 +7,5 @@ interface TrajectoryComponentProps {
 }
 
 export const TrajectoryComponent: React.FC<TrajectoryComponentProps> = ({ points, color }) => {
-  return <Line points={points} color={color} linewidth={10} />;
+  return <Line points={points} color={color} linewidth={5} />;
 };
