@@ -18,6 +18,8 @@ import {
   Place,
   RobotTableData,
   TrajectoryTimeControl,
+  WallMaker,
+  findSceneBoundingBoxFromThreeFiber,
 } from 'react-components';
 import { AttributionControl, ImageOverlay, LayersControl, Pane, Viewport } from 'react-leaflet';
 import { EMPTY, merge, scan, Subscription, switchMap } from 'rxjs';
@@ -35,8 +37,7 @@ import { WorkcellData, WorkcellsOverlay } from './workcells-overlay';
 import { RobotSummary } from './robots/robot-summary';
 import { Canvas } from '@react-three/fiber';
 import * as THREE from 'three';
-import { OrbitControls, Html } from '@react-three/drei';
-import { BuildingCubes, findSceneBoundingBox } from './level';
+import { OrbitControls } from '@react-three/drei';
 import { RobotLoader } from './robot-loader';
 import { ThreeDObject } from './three-object-render';
 import { TrajectoryComponent } from './three-trajectory-overlay';
@@ -49,6 +50,7 @@ type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
 const debug = Debug('MapApp');
 
+const DEFAULT_ZOOM = 20;
 const TrajectoryUpdateInterval = 2000;
 // schedule visualizer manages it's own settings so that it doesn't cause a re-render
 // of the whole app when it changes.
@@ -413,7 +415,7 @@ export const MapApp = styled(
     const [distance, setDistance] = React.useState<number>(0);
 
     React.useMemo(() => {
-      setSceneBoundingBox(findSceneBoundingBox(currentLevel));
+      setSceneBoundingBox(findSceneBoundingBoxFromThreeFiber(currentLevel));
     }, [currentLevel]);
 
     React.useEffect(() => {
@@ -573,7 +575,7 @@ export const MapApp = styled(
             }
             const center = sceneBoundingBox.getCenter(new THREE.Vector3());
             camera.position.set(center.x, center.y, center.z + distance);
-            camera.zoom = 20;
+            camera.zoom = DEFAULT_ZOOM;
             camera.updateProjectionMatrix();
           }}
           orthographic={true}
@@ -588,7 +590,9 @@ export const MapApp = styled(
               RIGHT: undefined,
             }}
           />
-          <BuildingCubes level={currentLevel} />
+          {currentLevel.wall_graph.edges.length && (
+            <WallMaker wallGraph={currentLevel.wall_graph} />
+          )}
           {!disabledLayers['Doors'] &&
             currentLevel.doors.length &&
             currentLevel.doors.map((door, i) => (
