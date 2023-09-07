@@ -109,7 +109,7 @@ export function TaskInspector({ task, onClose }: TableDataGridState): JSX.Elemen
             </Grid>
           </Grid>
           <DialogContent style={{ height: 700 }} dividers={true}>
-            <Box sx={{ position: 'relative' }}>
+            <Box component="div" sx={{ position: 'relative' }}>
               <Grid container direction="row" wrap="nowrap" height="100%">
                 <Grid item xs={6}>
                   {taskState ? (
