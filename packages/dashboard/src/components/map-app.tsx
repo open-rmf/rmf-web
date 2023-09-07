@@ -38,12 +38,10 @@ import { RobotSummary } from './robots/robot-summary';
 import { Canvas } from '@react-three/fiber';
 import * as THREE from 'three';
 import { OrbitControls } from '@react-three/drei';
-import { RobotLoader } from './robot-loader';
 import { ThreeDObject } from './three-object-render';
 import { TrajectoryComponent } from './three-trajectory-overlay';
 import { LayersController } from './three-fiber';
-import { Door } from './door';
-import { LiftMaker } from './lift-load';
+import { Lifts, Door, RobotThree } from './three-fiber';
 // import ImageThree from "./imageOverlay"
 
 type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
@@ -622,11 +620,10 @@ export const MapApp = styled(
 
           {!disabledLayers['Lifts'] &&
             buildingMap.lifts.length &&
-            buildingMap.lifts.map((lift, i) =>
-              lift.doors.map((door, i) => (
-                <LiftMaker
-                  key={i}
-                  door={door}
+            buildingMap.lifts.map((lift) =>
+              lift.doors.map(() => (
+                <Lifts
+                  key={lift.name}
                   lift={lift}
                   height={8}
                   elevation={currentLevel.elevation}
@@ -678,7 +675,7 @@ export const MapApp = styled(
               />
             ))}
           {!disabledLayers['Robots'] && (
-            <RobotLoader
+            <RobotThree
               robots={robots}
               robotLocations={robotLocations}
               onRobotClick={(_ev, robot) => {

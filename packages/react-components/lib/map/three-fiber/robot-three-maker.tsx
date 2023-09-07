@@ -4,28 +4,39 @@ import React from 'react';
 import { Euler, Vector3 } from 'three';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
-import { RobotData } from './robots-overlay';
+
+export interface RobotData {
+  fleet: string;
+  name: string;
+  model: string;
+  footprint: number;
+  color: string;
+  inConflict?: boolean;
+  iconPath?: string;
+}
 
 interface CircleShapeProps {
-  position: [number, number, number];
-  rotation: THREE.Euler;
+  position: Vector3;
+  rotation: Euler;
   onRobotClick?: (ev: ThreeEvent<MouseEvent>) => void;
   robot: RobotData;
   segment: number;
 }
 
 interface ObjectLoaderProps {
-  position: [number, number, number];
+  position: Vector3;
   rotation: THREE.Euler;
   onRobotClick?: (ev: ThreeEvent<MouseEvent>) => void;
   robot: RobotData;
 }
 
-interface RobotLoaderProps {
-  robots: RobotData[];
-  robotLocations: Record<string, [number, number, number]>;
+interface RobotThreeMakerProps {
+  robot: RobotData;
+  position: Vector3;
   onRobotClick?: (ev: ThreeEvent<MouseEvent>, robot: RobotData) => void;
   objectModel?: string;
+  rotation: Euler;
+  circleSegment: number;
 }
 
 const CircleShape = ({
@@ -36,10 +47,9 @@ const CircleShape = ({
   segment,
 }: CircleShapeProps): JSX.Element => {
   const SCALED_RADIUS = 1;
-  const rotationZ = rotation.z;
 
-  const rotatedX = position[0] + SCALED_RADIUS * Math.cos(rotationZ - Math.PI / 2);
-  const rotatedY = position[1] + SCALED_RADIUS * Math.sin(rotationZ - Math.PI / 2);
+  const rotatedX = position.x + SCALED_RADIUS * Math.cos(rotation.z - Math.PI / 2);
+  const rotatedY = position.y + SCALED_RADIUS * Math.sin(rotation.z - Math.PI / 2);
 
   return (
     <>
@@ -52,7 +62,7 @@ const CircleShape = ({
         <meshBasicMaterial color={robot.color} />
       </Circle>
       <Line
-        points={[position[0], position[1], position[2], rotatedX, rotatedY, position[2]]}
+        points={[position.x, position.y, position.z, rotatedX, rotatedY, position.z]}
         color="black"
         linewidth={2}
       />
@@ -84,55 +94,36 @@ const ObjectLoader = ({
   );
 };
 
-export const RobotLoader = ({
-  robots,
-  robotLocations,
+export const RobotThreeMaker = ({
+  robot,
+  position,
   onRobotClick,
   objectModel, //Object model should be some path of the object to be rendered.
-}: RobotLoaderProps) => {
-  const STANDAR_Z_POSITION = 4;
-  const CIRCLE_SEGMENT = 64;
-
+  rotation,
+  circleSegment,
+}: RobotThreeMakerProps): JSX.Element => {
   return (
     <>
-      {robots.map((robot) => {
-        const robotId = `${robot.fleet}/${robot.name}`;
-        const robotLocation = robotLocations[robotId];
-        const rotationZ = robotLocation[2] + Math.PI / 2;
+      <Text color="black" fontSize={0.5} position={[position.x, position.y, position.z + 1]}>
+        {robot.name}
+      </Text>
 
-        return (
-          <React.Fragment key={robotId}>
-            <Text
-              color="black"
-              fontSize={0.5}
-              position={[robotLocation[0], robotLocation[1], STANDAR_Z_POSITION + 1]}
-            >
-              {robot.name}
-            </Text>
-
-            {objectModel ? (
-              <ObjectLoader
-                position={[robotLocation[0], robotLocation[1], STANDAR_Z_POSITION]}
-                rotation={new Euler(0, 0, rotationZ)}
-                onRobotClick={(ev: ThreeEvent<MouseEvent>) =>
-                  onRobotClick && onRobotClick(ev, robot)
-                }
-                robot={robot}
-              />
-            ) : (
-              <CircleShape
-                position={[robotLocation[0], robotLocation[1], STANDAR_Z_POSITION]}
-                rotation={new Euler(0, 0, rotationZ)}
-                onRobotClick={(ev: ThreeEvent<MouseEvent>) =>
-                  onRobotClick && onRobotClick(ev, robot)
-                }
-                robot={robot}
-                segment={CIRCLE_SEGMENT}
-              />
-            )}
-          </React.Fragment>
-        );
-      })}
+      {objectModel ? (
+        <ObjectLoader
+          position={position}
+          rotation={rotation}
+          onRobotClick={(ev: ThreeEvent<MouseEvent>) => onRobotClick && onRobotClick(ev, robot)}
+          robot={robot}
+        />
+      ) : (
+        <CircleShape
+          position={position}
+          rotation={rotation}
+          onRobotClick={(ev: ThreeEvent<MouseEvent>) => onRobotClick && onRobotClick(ev, robot)}
+          robot={robot}
+          segment={circleSegment}
+        />
+      )}
     </>
   );
 };

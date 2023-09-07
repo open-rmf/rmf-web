@@ -1,7 +1,7 @@
 import React from 'react';
 import { DoorState, Lift, LiftState } from 'api-client';
 import { Door as DoorModel } from 'rmf-models';
-import { RmfAppContext } from './rmf-app';
+import { RmfAppContext } from '../rmf-app';
 import { DoorMode } from 'rmf-models';
 import { DoorThreeMaker } from 'react-components';
 
