@@ -20,6 +20,7 @@ import {
   TrajectoryTimeControl,
   WallMaker,
   findSceneBoundingBoxFromThreeFiber,
+  ShapeThreeRendering,
 } from 'react-components';
 import { AttributionControl, ImageOverlay, LayersControl, Pane, Viewport } from 'react-leaflet';
 import { EMPTY, merge, scan, Subscription, switchMap } from 'rxjs';
@@ -37,9 +38,7 @@ import { WorkcellData, WorkcellsOverlay } from './workcells-overlay';
 import { RobotSummary } from './robots/robot-summary';
 import { Canvas } from '@react-three/fiber';
 import * as THREE from 'three';
-import { OrbitControls } from '@react-three/drei';
-import { ThreeDObject } from './three-object-render';
-import { TrajectoryComponent } from './three-trajectory-overlay';
+import { OrbitControls, Line } from '@react-three/drei';
 import { LayersController } from './three-fiber';
 import { Lifts, Door, RobotThree } from './three-fiber';
 // import ImageThree from "./imageOverlay"
@@ -634,44 +633,42 @@ export const MapApp = styled(
 
           {!disabledLayers['Waypoints'] &&
             waypoints.map((place, index) => (
-              <ThreeDObject
+              <ShapeThreeRendering
                 key={index}
                 position={[place.vertex.x, place.vertex.y, 0]}
                 color="yellow"
                 text={place.vertex.name}
-                elevation={0}
                 circleShape={false}
               />
             ))}
           {!disabledLayers['Ingestors'] &&
             ingestorsData.map((ingestor, index) => (
-              <ThreeDObject
+              <ShapeThreeRendering
                 key={index}
                 position={[ingestor.location[0], ingestor.location[1], 0]}
                 color="red"
-                elevation={0}
                 circleShape={true}
               />
             ))}
 
           {!disabledLayers['Dispensers'] &&
             dispensersData.map((dispenser, index) => (
-              <ThreeDObject
+              <ShapeThreeRendering
                 key={index}
                 position={[dispenser.location[0], dispenser.location[1], 0]}
                 color="red"
-                elevation={0}
                 circleShape={true}
               />
             ))}
           {!disabledLayers['Trajectories'] &&
             trajectories.map((trajData) => (
-              <TrajectoryComponent
+              <Line
                 key={trajData.trajectory.id}
-                points={trajData.trajectory.segments.map((seg) => {
-                  return new THREE.Vector3(seg.x[0], seg.x[1], 4);
-                })}
+                points={trajData.trajectory.segments.map(
+                  (seg) => new THREE.Vector3(seg.x[0], seg.x[1], 4),
+                )}
                 color={trajData.color}
+                linewidth={5}
               />
             ))}
           {!disabledLayers['Robots'] && (
