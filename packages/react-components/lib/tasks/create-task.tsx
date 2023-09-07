@@ -181,7 +181,9 @@ function DeliveryTaskForm({
               },
             })
           }
-          renderInput={(params) => <TextField {...params} label="Pickup Location" />}
+          renderInput={(params) => (
+            <TextField {...params} label="Pickup Location" required={true} />
+          )}
         />
       </Grid>
       <Grid item xs={4}>
@@ -216,7 +218,7 @@ function DeliveryTaskForm({
               },
             })
           }
-          renderInput={(params) => <TextField {...params} label="Pickup SKU" />}
+          renderInput={(params) => <TextField {...params} label="Pickup SKU" required={true} />}
         />
       </Grid>
       <Grid item xs={2}>
@@ -251,7 +253,7 @@ function DeliveryTaskForm({
               },
             })
           }
-          renderInput={(params) => <TextField {...params} label="Quantity" />}
+          renderInput={(params) => <TextField {...params} label="Quantity" required={true} />}
         />
       </Grid>
       <Grid item xs={6}>
@@ -284,7 +286,9 @@ function DeliveryTaskForm({
               },
             })
           }
-          renderInput={(params) => <TextField {...params} label="Dropoff Location" />}
+          renderInput={(params) => (
+            <TextField {...params} label="Dropoff Location" required={true} />
+          )}
         />
       </Grid>
       <Grid item xs={4}>
@@ -319,7 +323,7 @@ function DeliveryTaskForm({
               },
             })
           }
-          renderInput={(params) => <TextField {...params} label="Dropoff SKU" />}
+          renderInput={(params) => <TextField {...params} label="Dropoff SKU" required={true} />}
         />
       </Grid>
       <Grid item xs={2}>
@@ -354,7 +358,7 @@ function DeliveryTaskForm({
               },
             })
           }
-          renderInput={(params) => <TextField {...params} label="Quantity" />}
+          renderInput={(params) => <TextField {...params} label="Quantity" required={true} />}
         />
       </Grid>
     </Grid>
@@ -421,7 +425,7 @@ function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange }: PatrolTaskFormP
               ),
             })
           }
-          renderInput={(params) => <TextField {...params} label="Place Name" />}
+          renderInput={(params) => <TextField {...params} label="Place Name" required={true} />}
         />
       </Grid>
       <Grid item xs={2}>
@@ -474,7 +478,7 @@ function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps
         })
       }
       onBlur={(ev) => onChange({ ...taskDesc, zone: (ev.target as HTMLInputElement).value })}
-      renderInput={(params) => <TextField {...params} label="Cleaning Zone" />}
+      renderInput={(params) => <TextField {...params} label="Cleaning Zone" required={true} />}
     />
   );
 }
@@ -979,8 +983,8 @@ export function CreateTaskForm({
                             description: favoriteTask.description,
                             unix_millis_earliest_start_time: Date.now(),
                             priority: favoriteTask.priority,
-                          }]
-                        );
+                          },
+                        ]);
                       }}
                     />
                   );
