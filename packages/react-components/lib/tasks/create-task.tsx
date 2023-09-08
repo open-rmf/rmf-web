@@ -42,23 +42,20 @@ import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dia
 import { PositiveIntField } from '../form-inputs';
 
 // A bunch of manually defined descriptions to avoid using `any`.
+interface Payload {
+  sku: string;
+  quantity: number;
+}
+
+interface TaskPlace {
+  place: string;
+  handler: string;
+  payload: Payload;
+}
+
 interface DeliveryTaskDescription {
-  pickup: {
-    place: string;
-    handler: string;
-    payload: {
-      sku: string;
-      quantity: number;
-    };
-  };
-  dropoff: {
-    place: string;
-    handler: string;
-    payload: {
-      sku: string;
-      quantity: number;
-    };
-  };
+  pickup: TaskPlace;
+  dropoff: TaskPlace;
 }
 
 interface PatrolTaskDescription {
@@ -72,17 +69,20 @@ interface CleanTaskDescription {
 
 type TaskDescription = DeliveryTaskDescription | PatrolTaskDescription | CleanTaskDescription;
 
-const isDeliveryTaskDescriptionValid = (taskDescription: DeliveryTaskDescription): boolean => {
+const isNonEmptyString = (value: string): boolean => value.length > 0;
+const isPositiveNumber = (value: number): boolean => value > 0;
+
+const isTaskPlaceValid = (place: TaskPlace): boolean => {
   return (
-    taskDescription.pickup.place.length !== 0 &&
-    taskDescription.pickup.handler.length !== 0 &&
-    taskDescription.pickup.payload.sku.length !== 0 &&
-    taskDescription.pickup.payload.quantity > 0 &&
-    taskDescription.dropoff.place.length !== 0 &&
-    taskDescription.dropoff.handler.length !== 0 &&
-    taskDescription.dropoff.payload.sku.length !== 0 &&
-    taskDescription.dropoff.payload.quantity > 0
+    isNonEmptyString(place.place) &&
+    isNonEmptyString(place.handler) &&
+    isNonEmptyString(place.payload.sku) &&
+    isPositiveNumber(place.payload.quantity)
   );
+};
+
+const isDeliveryTaskDescriptionValid = (taskDescription: DeliveryTaskDescription): boolean => {
+  return isTaskPlaceValid(taskDescription.pickup) && isTaskPlaceValid(taskDescription.dropoff);
 };
 
 const isPatrolTaskDescriptionValid = (taskDescription: PatrolTaskDescription): boolean => {
