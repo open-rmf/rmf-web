@@ -535,7 +535,11 @@ export const TasksApp = React.memo(
                 endHour: 23,
                 step: 120,
               }}
-              disableViewNavigator
+              day={{
+                startHour: 0,
+                endHour: 23,
+                step: 60,
+              }}
               draggable={false}
               editable={false}
               getRemoteEvents={getRemoteEvents}
