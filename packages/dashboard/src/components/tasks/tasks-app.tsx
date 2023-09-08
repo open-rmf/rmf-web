@@ -212,7 +212,6 @@ export const TasksApp = React.memo(
       );
       const [currentEventId, setCurrentEventId] = React.useState<number>(-1);
       const exceptDateRef = React.useRef<Date>(new Date());
-
       const [tasksState, setTasksState] = React.useState<Tasks>({
         isLoading: true,
         data: [],
@@ -227,16 +226,17 @@ export const TasksApp = React.memo(
       React.useEffect(() => {
         const sub = AppEvents.refreshTaskApp.subscribe({
           next: () => {
-            if (!autoRefresh) {
-              return;
-            }
             setRefreshTaskAppCount((oldValue) => ++oldValue);
           },
         });
         return () => sub.unsubscribe();
-      }, [autoRefresh]);
+      }, []);
 
       React.useEffect(() => {
+        if (!autoRefresh) {
+          return;
+        }
+
         const refreshTaskQueueTable = async () => {
           AppEvents.refreshTaskApp.next();
         };
@@ -247,7 +247,7 @@ export const TasksApp = React.memo(
         return () => {
           clearInterval(refreshInterval);
         };
-      }, []);
+      }, [autoRefresh]);
 
       // TODO: parameterize this variable
       const GET_LIMIT = 10;
@@ -405,15 +405,15 @@ export const TasksApp = React.memo(
         [rmf],
       );
 
-      const [selectedTabIndex, setSelectedTabIndex] = React.useState(0);
       enum TaskTablePanel {
         QueueTable = 0,
         Schedule = 1,
       }
-      const handleChange = (_: React.SyntheticEvent, newSelectedTabIndex: number) => {
-        setSelectedTabIndex(newSelectedTabIndex);
 
-        // Only allow auto refresh when viewing the task queue table
+      const [selectedPanelIndex, setSelectedPanelIndex] = React.useState(TaskTablePanel.QueueTable);
+
+      const handleChange = (_: React.SyntheticEvent, newSelectedTabIndex: number) => {
+        setSelectedPanelIndex(newSelectedTabIndex);
         setAutoRefresh(newSelectedTabIndex === TaskTablePanel.QueueTable);
       };
 
@@ -511,7 +511,7 @@ export const TasksApp = React.memo(
           }
           {...otherProps}
         >
-          <Tabs value={selectedTabIndex} onChange={handleChange} aria-label="Task App Tabs">
+          <Tabs value={selectedPanelIndex} onChange={handleChange} aria-label="Task App Tabs">
             <Tab
               label="Queue"
               id={tabId(TaskTablePanel.QueueTable)}
@@ -523,7 +523,7 @@ export const TasksApp = React.memo(
               aria-controls={tabPanelId(TaskTablePanel.Schedule)}
             />
           </Tabs>
-          <TabPanel selectedTabIndex={selectedTabIndex} index={TaskTablePanel.QueueTable}>
+          <TabPanel selectedTabIndex={selectedPanelIndex} index={TaskTablePanel.QueueTable}>
             <TableContainer>
               <TaskDataGridTable
                 tasks={tasksState}
@@ -542,7 +542,7 @@ export const TasksApp = React.memo(
               />
             </TableContainer>
           </TabPanel>
-          <TabPanel selectedTabIndex={selectedTabIndex} index={TaskTablePanel.Schedule}>
+          <TabPanel selectedTabIndex={selectedPanelIndex} index={TaskTablePanel.Schedule}>
             <Scheduler
               // react-scheduler does not support refreshing, workaround by mounting a new instance.
               key={`scheduler-${refreshTaskAppCount}`}
