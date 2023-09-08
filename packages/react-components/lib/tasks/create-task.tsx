@@ -458,13 +458,13 @@ function CleanTaskForm({ taskDesc, cleaningZones, onChange, allowSubmit }: Clean
       fullWidth
       options={cleaningZones}
       value={taskDesc.zone}
-      onChange={(_ev, newValue) =>
-        newValue !== null &&
+      onChange={(_ev, newValue) => {
+        const zone = newValue ?? '';
         onInputChange({
           ...taskDesc,
-          zone: newValue,
-        })
-      }
+          zone: zone,
+        });
+      }}
       onBlur={(ev) => onInputChange({ ...taskDesc, zone: (ev.target as HTMLInputElement).value })}
       renderInput={(params) => <TextField {...params} label="Cleaning Zone" required={true} />}
     />
