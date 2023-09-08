@@ -22,7 +22,8 @@ function browserstackOptions(opts) {
   return {
     projectName: 'rmf-web',
     buildName: `dashboard-e2e:${process.env.BROWSERSTACK_BUILD || 'local'}`,
-    resolution: '1920x1080',
+    // resolution: '1920x1080',
+    resolution: '2560x1600',
     localIdentifier,
     ...opts,
   };
