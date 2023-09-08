@@ -42,23 +42,20 @@ import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dia
 import { PositiveIntField } from '../form-inputs';
 
 // A bunch of manually defined descriptions to avoid using `any`.
+interface Payload {
+  sku: string;
+  quantity: number;
+}
+
+interface TaskPlace {
+  place: string;
+  handler: string;
+  payload: Payload;
+}
+
 interface DeliveryTaskDescription {
-  pickup: {
-    place: string;
-    handler: string;
-    payload: {
-      sku: string;
-      quantity: number;
-    };
-  };
-  dropoff: {
-    place: string;
-    handler: string;
-    payload: {
-      sku: string;
-      quantity: number;
-    };
-  };
+  pickup: TaskPlace;
+  dropoff: TaskPlace;
 }
 
 interface PatrolTaskDescription {
@@ -71,6 +68,38 @@ interface CleanTaskDescription {
 }
 
 type TaskDescription = DeliveryTaskDescription | PatrolTaskDescription | CleanTaskDescription;
+
+const isNonEmptyString = (value: string): boolean => value.length > 0;
+const isPositiveNumber = (value: number): boolean => value > 0;
+
+const isTaskPlaceValid = (place: TaskPlace): boolean => {
+  return (
+    isNonEmptyString(place.place) &&
+    isNonEmptyString(place.handler) &&
+    isNonEmptyString(place.payload.sku) &&
+    isPositiveNumber(place.payload.quantity)
+  );
+};
+
+const isDeliveryTaskDescriptionValid = (taskDescription: DeliveryTaskDescription): boolean => {
+  return isTaskPlaceValid(taskDescription.pickup) && isTaskPlaceValid(taskDescription.dropoff);
+};
+
+const isPatrolTaskDescriptionValid = (taskDescription: PatrolTaskDescription): boolean => {
+  if (taskDescription.places.length === 0) {
+    return false;
+  }
+  for (const place of taskDescription.places) {
+    if (place.length === 0) {
+      return false;
+    }
+  }
+  return taskDescription.rounds > 0;
+};
+
+const isCleanTaskDescriptionValid = (taskDescription: CleanTaskDescription): boolean => {
+  return taskDescription.zone.length !== 0;
+};
 
 const classes = {
   title: 'dialogue-info-value',
@@ -139,6 +168,7 @@ interface DeliveryTaskFormProps {
   pickupPoints: Record<string, string>;
   dropoffPoints: Record<string, string>;
   onChange(taskDesc: TaskDescription): void;
+  allowSubmit(allow: boolean): void;
 }
 
 function DeliveryTaskForm({
@@ -146,8 +176,13 @@ function DeliveryTaskForm({
   pickupPoints = {},
   dropoffPoints = {},
   onChange,
+  allowSubmit,
 }: DeliveryTaskFormProps) {
   const theme = useTheme();
+  const onInputChange = (desc: DeliveryTaskDescription) => {
+    allowSubmit(isDeliveryTaskDescriptionValid(desc));
+    onChange(desc);
+  };
 
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
@@ -158,21 +193,22 @@ function DeliveryTaskForm({
           fullWidth
           options={Object.keys(pickupPoints)}
           value={taskDesc.pickup.place}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            pickupPoints[newValue] &&
-            onChange({
+          onChange={(_ev, newValue) => {
+            const place = newValue ?? '';
+            const handler =
+              newValue !== null && pickupPoints[newValue] ? pickupPoints[newValue] : '';
+            onInputChange({
               ...taskDesc,
               pickup: {
                 ...taskDesc.pickup,
-                place: newValue,
-                handler: pickupPoints[newValue],
+                place: place,
+                handler: handler,
               },
-            })
-          }
+            });
+          }}
           onBlur={(ev) =>
             pickupPoints[(ev.target as HTMLInputElement).value] &&
-            onChange({
+            onInputChange({
               ...taskDesc,
               pickup: {
                 ...taskDesc.pickup,
@@ -181,77 +217,50 @@ function DeliveryTaskForm({
               },
             })
           }
-          renderInput={(params) => <TextField {...params} label="Pickup Location" />}
+          renderInput={(params) => (
+            <TextField {...params} label="Pickup Location" required={true} />
+          )}
         />
       </Grid>
       <Grid item xs={4}>
-        <Autocomplete
+        <TextField
           id="pickup_sku"
-          freeSolo
           fullWidth
+          label="Pickup SKU"
           value={taskDesc.pickup.payload.sku}
-          options={[]}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            onChange({
+          required
+          onChange={(ev) => {
+            onInputChange({
               ...taskDesc,
               pickup: {
                 ...taskDesc.pickup,
                 payload: {
                   ...taskDesc.pickup.payload,
-                  sku: newValue,
+                  sku: ev.target.value,
                 },
               },
-            })
-          }
-          onBlur={(ev) =>
-            onChange({
-              ...taskDesc,
-              pickup: {
-                ...taskDesc.pickup,
-                payload: {
-                  ...taskDesc.pickup.payload,
-                  sku: (ev.target as HTMLInputElement).value,
-                },
-              },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Pickup SKU" />}
+            });
+          }}
         />
       </Grid>
       <Grid item xs={2}>
-        <Autocomplete
+        <PositiveIntField
           id="pickup_quantity"
-          freeSolo
-          fullWidth
-          value={`${taskDesc.pickup.payload.quantity}`}
-          options={[]}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            onChange({
+          label="Quantity"
+          value={taskDesc.pickup.payload.quantity}
+          onChange={(_ev, val) => {
+            console.log(val);
+            onInputChange({
               ...taskDesc,
               pickup: {
                 ...taskDesc.pickup,
                 payload: {
                   ...taskDesc.pickup.payload,
-                  quantity: typeof newValue == 'string' ? parseInt(newValue) : newValue,
+                  quantity: val,
                 },
               },
-            })
-          }
-          onBlur={(ev) =>
-            onChange({
-              ...taskDesc,
-              pickup: {
-                ...taskDesc.pickup,
-                payload: {
-                  ...taskDesc.pickup.payload,
-                  quantity: parseInt((ev.target as HTMLInputElement).value),
-                },
-              },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Quantity" />}
+            });
+          }}
         />
       </Grid>
       <Grid item xs={6}>
@@ -261,21 +270,22 @@ function DeliveryTaskForm({
           fullWidth
           options={Object.keys(dropoffPoints)}
           value={taskDesc.dropoff.place}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            dropoffPoints[newValue] &&
-            onChange({
+          onChange={(_ev, newValue) => {
+            const place = newValue ?? '';
+            const handler =
+              newValue !== null && dropoffPoints[newValue] ? dropoffPoints[newValue] : '';
+            onInputChange({
               ...taskDesc,
               dropoff: {
                 ...taskDesc.dropoff,
-                place: newValue,
-                handler: dropoffPoints[newValue],
+                place: place,
+                handler: handler,
               },
-            })
-          }
+            });
+          }}
           onBlur={(ev) =>
             dropoffPoints[(ev.target as HTMLInputElement).value] &&
-            onChange({
+            onInputChange({
               ...taskDesc,
               dropoff: {
                 ...taskDesc.dropoff,
@@ -284,77 +294,49 @@ function DeliveryTaskForm({
               },
             })
           }
-          renderInput={(params) => <TextField {...params} label="Dropoff Location" />}
+          renderInput={(params) => (
+            <TextField {...params} label="Dropoff Location" required={true} />
+          )}
         />
       </Grid>
       <Grid item xs={4}>
-        <Autocomplete
+        <TextField
           id="dropoff_sku"
-          freeSolo
           fullWidth
+          label="Dropoff SKU"
           value={taskDesc.dropoff.payload.sku}
-          options={[]}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            onChange({
+          required
+          onChange={(ev) => {
+            onInputChange({
               ...taskDesc,
               dropoff: {
                 ...taskDesc.dropoff,
                 payload: {
                   ...taskDesc.dropoff.payload,
-                  sku: newValue,
+                  sku: ev.target.value,
                 },
               },
-            })
-          }
-          onBlur={(ev) =>
-            onChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                payload: {
-                  ...taskDesc.dropoff.payload,
-                  sku: (ev.target as HTMLInputElement).value,
-                },
-              },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Dropoff SKU" />}
+            });
+          }}
         />
       </Grid>
       <Grid item xs={2}>
-        <Autocomplete
+        <PositiveIntField
           id="dropoff_quantity"
-          freeSolo
-          fullWidth
-          value={`${taskDesc.dropoff.payload.quantity}`}
-          options={[]}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            onChange({
+          label="Quantity"
+          value={taskDesc.dropoff.payload.quantity}
+          onChange={(_ev, val) => {
+            onInputChange({
               ...taskDesc,
               dropoff: {
                 ...taskDesc.dropoff,
                 payload: {
                   ...taskDesc.dropoff.payload,
-                  quantity: typeof newValue == 'string' ? parseInt(newValue) : newValue,
+                  quantity: val,
                 },
               },
-            })
-          }
-          onBlur={(ev) =>
-            onChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                payload: {
-                  ...taskDesc.dropoff.payload,
-                  quantity: parseInt((ev.target as HTMLInputElement).value),
-                },
-              },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Quantity" />}
+            });
+          }}
         />
       </Grid>
     </Grid>
@@ -400,10 +382,16 @@ interface PatrolTaskFormProps {
   taskDesc: PatrolTaskDescription;
   patrolWaypoints: string[];
   onChange(patrolTaskDescription: PatrolTaskDescription): void;
+  allowSubmit(allow: boolean): void;
 }
 
-function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange }: PatrolTaskFormProps) {
+function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange, allowSubmit }: PatrolTaskFormProps) {
   const theme = useTheme();
+  const onInputChange = (desc: PatrolTaskDescription) => {
+    allowSubmit(isPatrolTaskDescriptionValid(desc));
+    onChange(desc);
+  };
+
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
       <Grid item xs={10}>
@@ -414,14 +402,12 @@ function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange }: PatrolTaskFormP
           options={patrolWaypoints}
           onChange={(_ev, newValue) =>
             newValue !== null &&
-            onChange({
+            onInputChange({
               ...taskDesc,
-              places: taskDesc.places.concat(newValue).filter(
-                (el: string) => el, // filter null and empty str in places array
-              ),
+              places: taskDesc.places.concat(newValue).filter((el: string) => el),
             })
           }
-          renderInput={(params) => <TextField {...params} label="Place Name" />}
+          renderInput={(params) => <TextField {...params} label="Place Name" required={true} />}
         />
       </Grid>
       <Grid item xs={2}>
@@ -430,7 +416,7 @@ function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange }: PatrolTaskFormP
           label="Loops"
           value={taskDesc.rounds}
           onChange={(_ev, val) => {
-            onChange({
+            onInputChange({
               ...taskDesc,
               rounds: val,
             });
@@ -442,7 +428,7 @@ function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange }: PatrolTaskFormP
           places={taskDesc && taskDesc.places ? taskDesc.places : []}
           onClick={(places_index) =>
             taskDesc.places.splice(places_index, 1) &&
-            onChange({
+            onInputChange({
               ...taskDesc,
             })
           }
@@ -456,9 +442,15 @@ interface CleanTaskFormProps {
   taskDesc: CleanTaskDescription;
   cleaningZones: string[];
   onChange(cleanTaskDescription: CleanTaskDescription): void;
+  allowSubmit(allow: boolean): void;
 }
 
-function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps) {
+function CleanTaskForm({ taskDesc, cleaningZones, onChange, allowSubmit }: CleanTaskFormProps) {
+  const onInputChange = (desc: CleanTaskDescription) => {
+    allowSubmit(isCleanTaskDescriptionValid(desc));
+    onChange(desc);
+  };
+
   return (
     <Autocomplete
       id="cleaning-zone"
@@ -466,15 +458,15 @@ function CleanTaskForm({ taskDesc, cleaningZones, onChange }: CleanTaskFormProps
       fullWidth
       options={cleaningZones}
       value={taskDesc.zone}
-      onChange={(_ev, newValue) =>
-        newValue !== null &&
-        onChange({
+      onChange={(_ev, newValue) => {
+        const zone = newValue ?? '';
+        onInputChange({
           ...taskDesc,
-          zone: newValue,
-        })
-      }
-      onBlur={(ev) => onChange({ ...taskDesc, zone: (ev.target as HTMLInputElement).value })}
-      renderInput={(params) => <TextField {...params} label="Cleaning Zone" />}
+          zone: zone,
+        });
+      }}
+      onBlur={(ev) => onInputChange({ ...taskDesc, zone: (ev.target as HTMLInputElement).value })}
+      renderInput={(params) => <TextField {...params} label="Cleaning Zone" required={true} />}
     />
   );
 }
@@ -732,6 +724,7 @@ export function CreateTaskForm({
     [taskRequests],
   );
   const [submitting, setSubmitting] = React.useState(false);
+  const [formFullyFilled, setFormFullyFilled] = React.useState(false);
   const taskRequest = taskRequests[selectedTaskIdx];
   const [openSchedulingDialog, setOpenSchedulingDialog] = React.useState(false);
   const [schedule, setSchedule] = React.useState<Schedule>({
@@ -776,6 +769,10 @@ export function CreateTaskForm({
     updateTasks();
   };
 
+  const allowSubmit = (allow: boolean) => {
+    setFormFullyFilled(allow);
+  };
+
   const renderTaskDescriptionForm = () => {
     switch (taskRequest.category) {
       case 'clean':
@@ -784,6 +781,7 @@ export function CreateTaskForm({
             taskDesc={taskRequest.description as CleanTaskDescription}
             cleaningZones={cleaningZones}
             onChange={(desc) => handleTaskDescriptionChange('clean', desc)}
+            allowSubmit={allowSubmit}
           />
         );
       case 'patrol':
@@ -792,6 +790,7 @@ export function CreateTaskForm({
             taskDesc={taskRequest.description as PatrolTaskDescription}
             patrolWaypoints={patrolWaypoints}
             onChange={(desc) => handleTaskDescriptionChange('patrol', desc)}
+            allowSubmit={allowSubmit}
           />
         );
       case 'delivery':
@@ -801,6 +800,7 @@ export function CreateTaskForm({
             pickupPoints={pickupPoints}
             dropoffPoints={dropoffPoints}
             onChange={(desc) => handleTaskDescriptionChange('delivery', desc)}
+            allowSubmit={allowSubmit}
           />
         );
       default:
@@ -979,8 +979,8 @@ export function CreateTaskForm({
                             description: favoriteTask.description,
                             unix_millis_earliest_start_time: Date.now(),
                             priority: favoriteTask.priority,
-                          }]
-                        );
+                          },
+                        ]);
                       }}
                     />
                   );
@@ -1127,7 +1127,7 @@ export function CreateTaskForm({
             <Button
               variant="contained"
               color="primary"
-              disabled={submitting}
+              disabled={submitting || !formFullyFilled}
               className={classes.actionBtn}
               onClick={() => setOpenSchedulingDialog(true)}
             >
@@ -1137,7 +1137,7 @@ export function CreateTaskForm({
               variant="contained"
               type="submit"
               color="primary"
-              disabled={submitting}
+              disabled={submitting || !formFullyFilled}
               className={classes.actionBtn}
               aria-label={submitText}
               onClick={handleSubmitNow}
