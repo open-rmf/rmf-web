@@ -26,7 +26,12 @@ class PostScheduledTaskRequest(BaseModel):
 
 
 def datetime_to_date_format(date: datetime) -> str:
-    return date.date().strftime("%m/%d/%Y").lstrip("0")
+    # input 09/08/2023
+    formatted_date = date.date().strftime("%m/%d/%Y").lstrip("0")
+    parts = formatted_date.split("/")
+    parts[1] = parts[1].lstrip("0")
+    # output 9/8/2023
+    return "/".join(parts)
 
 
 async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
