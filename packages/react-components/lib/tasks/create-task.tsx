@@ -193,18 +193,19 @@ function DeliveryTaskForm({
           fullWidth
           options={Object.keys(pickupPoints)}
           value={taskDesc.pickup.place}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            pickupPoints[newValue] &&
+          onChange={(_ev, newValue) => {
+            const place = newValue ?? '';
+            const handler =
+              newValue !== null && pickupPoints[newValue] ? pickupPoints[newValue] : '';
             onInputChange({
               ...taskDesc,
               pickup: {
                 ...taskDesc.pickup,
-                place: newValue,
-                handler: pickupPoints[newValue],
+                place: place,
+                handler: handler,
               },
-            })
-          }
+            });
+          }}
           onBlur={(ev) =>
             pickupPoints[(ev.target as HTMLInputElement).value] &&
             onInputChange({
@@ -222,73 +223,44 @@ function DeliveryTaskForm({
         />
       </Grid>
       <Grid item xs={4}>
-        <Autocomplete
+        <TextField
           id="pickup_sku"
-          freeSolo
           fullWidth
+          label="Pickup SKU"
           value={taskDesc.pickup.payload.sku}
-          options={[]}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
+          required
+          onChange={(ev) => {
             onInputChange({
               ...taskDesc,
               pickup: {
                 ...taskDesc.pickup,
                 payload: {
                   ...taskDesc.pickup.payload,
-                  sku: newValue,
+                  sku: ev.target.value,
                 },
               },
-            })
-          }
-          onBlur={(ev) =>
-            onInputChange({
-              ...taskDesc,
-              pickup: {
-                ...taskDesc.pickup,
-                payload: {
-                  ...taskDesc.pickup.payload,
-                  sku: (ev.target as HTMLInputElement).value,
-                },
-              },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Pickup SKU" required={true} />}
+            });
+          }}
         />
       </Grid>
       <Grid item xs={2}>
-        <Autocomplete
+        <PositiveIntField
           id="pickup_quantity"
-          freeSolo
-          fullWidth
-          value={`${taskDesc.pickup.payload.quantity}`}
-          options={[]}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
+          label="Quantity"
+          value={taskDesc.pickup.payload.quantity}
+          onChange={(_ev, val) => {
+            console.log(val);
             onInputChange({
               ...taskDesc,
               pickup: {
                 ...taskDesc.pickup,
                 payload: {
                   ...taskDesc.pickup.payload,
-                  quantity: typeof newValue == 'string' ? parseInt(newValue) : newValue,
+                  quantity: val,
                 },
               },
-            })
-          }
-          onBlur={(ev) =>
-            onInputChange({
-              ...taskDesc,
-              pickup: {
-                ...taskDesc.pickup,
-                payload: {
-                  ...taskDesc.pickup.payload,
-                  quantity: parseInt((ev.target as HTMLInputElement).value),
-                },
-              },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Quantity" required={true} />}
+            });
+          }}
         />
       </Grid>
       <Grid item xs={6}>
@@ -298,18 +270,19 @@ function DeliveryTaskForm({
           fullWidth
           options={Object.keys(dropoffPoints)}
           value={taskDesc.dropoff.place}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            dropoffPoints[newValue] &&
+          onChange={(_ev, newValue) => {
+            const place = newValue ?? '';
+            const handler =
+              newValue !== null && dropoffPoints[newValue] ? dropoffPoints[newValue] : '';
             onInputChange({
               ...taskDesc,
               dropoff: {
                 ...taskDesc.dropoff,
-                place: newValue,
-                handler: dropoffPoints[newValue],
+                place: place,
+                handler: handler,
               },
-            })
-          }
+            });
+          }}
           onBlur={(ev) =>
             dropoffPoints[(ev.target as HTMLInputElement).value] &&
             onInputChange({
@@ -327,73 +300,43 @@ function DeliveryTaskForm({
         />
       </Grid>
       <Grid item xs={4}>
-        <Autocomplete
+        <TextField
           id="dropoff_sku"
-          freeSolo
           fullWidth
+          label="Dropoff SKU"
           value={taskDesc.dropoff.payload.sku}
-          options={[]}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
+          required
+          onChange={(ev) => {
             onInputChange({
               ...taskDesc,
               dropoff: {
                 ...taskDesc.dropoff,
                 payload: {
                   ...taskDesc.dropoff.payload,
-                  sku: newValue,
+                  sku: ev.target.value,
                 },
               },
-            })
-          }
-          onBlur={(ev) =>
-            onInputChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                payload: {
-                  ...taskDesc.dropoff.payload,
-                  sku: (ev.target as HTMLInputElement).value,
-                },
-              },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Dropoff SKU" required={true} />}
+            });
+          }}
         />
       </Grid>
       <Grid item xs={2}>
-        <Autocomplete
+        <PositiveIntField
           id="dropoff_quantity"
-          freeSolo
-          fullWidth
-          value={`${taskDesc.dropoff.payload.quantity}`}
-          options={[]}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
+          label="Quantity"
+          value={taskDesc.dropoff.payload.quantity}
+          onChange={(_ev, val) => {
             onInputChange({
               ...taskDesc,
               dropoff: {
                 ...taskDesc.dropoff,
                 payload: {
                   ...taskDesc.dropoff.payload,
-                  quantity: typeof newValue == 'string' ? parseInt(newValue) : newValue,
+                  quantity: val,
                 },
               },
-            })
-          }
-          onBlur={(ev) =>
-            onInputChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                payload: {
-                  ...taskDesc.dropoff.payload,
-                  quantity: parseInt((ev.target as HTMLInputElement).value),
-                },
-              },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Quantity" required={true} />}
+            });
+          }}
         />
       </Grid>
     </Grid>
@@ -461,9 +404,7 @@ function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange, allowSubmit }: Pa
             newValue !== null &&
             onInputChange({
               ...taskDesc,
-              places: taskDesc.places.concat(newValue).filter(
-                (el: string) => el, // filter null and empty str in places array
-              ),
+              places: taskDesc.places.concat(newValue).filter((el: string) => el),
             })
           }
           renderInput={(params) => <TextField {...params} label="Place Name" required={true} />}

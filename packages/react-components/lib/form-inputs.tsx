@@ -19,7 +19,7 @@ export function PositiveIntField({ value = 0, onChange, ...props }: PositiveIntF
       {...props}
       type="number"
       value={valueInput}
-      inputProps={{ min: 0 }}
+      inputProps={{ min: 1 }}
       onKeyDown={(ev) => {
         if ('-+.'.indexOf(ev.key) >= 0) {
           ev.preventDefault();
