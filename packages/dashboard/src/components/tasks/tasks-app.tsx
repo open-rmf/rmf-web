@@ -412,7 +412,7 @@ export const TasksApp = React.memo(
 
       const [selectedPanelIndex, setSelectedPanelIndex] = React.useState(TaskTablePanel.QueueTable);
 
-      const handleChange = (_: React.SyntheticEvent, newSelectedTabIndex: number) => {
+      const handlePanelChange = (_: React.SyntheticEvent, newSelectedTabIndex: number) => {
         setSelectedPanelIndex(newSelectedTabIndex);
         setAutoRefresh(newSelectedTabIndex === TaskTablePanel.QueueTable);
       };
@@ -511,7 +511,7 @@ export const TasksApp = React.memo(
           }
           {...otherProps}
         >
-          <Tabs value={selectedPanelIndex} onChange={handleChange} aria-label="Task App Tabs">
+          <Tabs value={selectedPanelIndex} onChange={handlePanelChange} aria-label="Task App Tabs">
             <Tab
               label="Queue"
               id={tabId(TaskTablePanel.QueueTable)}
