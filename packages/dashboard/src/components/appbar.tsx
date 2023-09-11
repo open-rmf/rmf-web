@@ -208,8 +208,8 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   }, [rmf]);
 
   React.useEffect(() => {
-    const sub = AppEvents.refreshTaskAppCount.subscribe((currentValue) => {
-      setRefreshTaskAppCount(currentValue);
+    const sub = AppEvents.refreshTaskApp.subscribe({
+      next: () => setRefreshTaskAppCount((oldValue) => ++oldValue),
     });
     return () => sub.unsubscribe();
   }, []);
@@ -254,18 +254,21 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       }),
     );
     subs.push(
-      AppEvents.refreshAlertCount.subscribe((_) => {
-        (async () => {
-          const resp = await rmf.alertsApi.getAlertsAlertsGet();
-          const alerts = resp.data as Alert[];
-          setUnacknowledgedAlertsNum(
-            alerts.filter(
-              (alert) => !(alert.acknowledged_by && alert.unix_millis_acknowledged_time),
-            ).length,
-          );
-        })();
+      AppEvents.refreshAlert.subscribe({
+        next: () => {
+          (async () => {
+            const resp = await rmf.alertsApi.getAlertsAlertsGet();
+            const alerts = resp.data as Alert[];
+            setUnacknowledgedAlertsNum(
+              alerts.filter(
+                (alert) => !(alert.acknowledged_by && alert.unix_millis_acknowledged_time),
+              ).length,
+            );
+          })();
+        },
       }),
     );
+
     // Get the initial number of unacknowledged alerts
     (async () => {
       const resp = await rmf.alertsApi.getAlertsAlertsGet();
@@ -298,9 +301,9 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           scheduleRequests.map((req) => rmf.tasksApi.postScheduledTaskScheduledTasksPost(req)),
         );
       }
-      AppEvents.refreshTaskAppCount.next(refreshTaskAppCount + 1);
+      AppEvents.refreshTaskApp.next();
     },
-    [rmf, refreshTaskAppCount],
+    [rmf],
   );
 
   const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
@@ -357,9 +360,9 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
         throw new Error('tasks api not available');
       }
       await rmf.tasksApi.postFavoriteTaskFavoriteTasksPost(taskFavoriteRequest);
-      AppEvents.refreshTaskAppCount.next(refreshTaskAppCount + 1);
+      AppEvents.refreshTaskApp.next();
     },
-    [rmf, refreshTaskAppCount],
+    [rmf],
   );
 
   const deleteFavoriteTask = React.useCallback<Required<CreateTaskFormProps>['deleteFavoriteTask']>(
@@ -372,9 +375,9 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       }
 
       await rmf.tasksApi.deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(favoriteTask.id);
-      AppEvents.refreshTaskAppCount.next(refreshTaskAppCount + 1);
+      AppEvents.refreshTaskApp.next();
     },
-    [rmf, refreshTaskAppCount],
+    [rmf],
   );
   //#endregion 'Favorite Task'
 
