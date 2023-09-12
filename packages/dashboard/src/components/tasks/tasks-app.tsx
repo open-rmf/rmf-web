@@ -1,5 +1,5 @@
 import { Scheduler } from '@aldabil/react-scheduler';
-import { ProcessedEvent, SchedulerProps } from '@aldabil/react-scheduler/types';
+import { ProcessedEvent, SchedulerHelpers, SchedulerProps } from '@aldabil/react-scheduler/types';
 import DownloadIcon from '@mui/icons-material/Download';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import {
@@ -44,6 +44,7 @@ import {
 import React from 'react';
 import {
   ConfirmationDialog,
+  EventEditDeletePopup,
   FilterFields,
   MuiMouseEvent,
   SortFields,
@@ -66,7 +67,7 @@ interface TabPanelProps {
   selectedTabIndex: number;
 }
 
-enum ScheduleDeleteOptions {
+enum EventScopes {
   ALL = 'all',
   CURRENT = 'current',
 }
@@ -192,6 +193,12 @@ function getScheduledTaskTitle(task: ScheduledTask): string {
   return `[${task.id}] ${task.task_request.category}`;
 }
 
+interface CustomEditorProps {
+  scheduler: SchedulerHelpers;
+  value: string;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
 export const TasksApp = React.memo(
   React.forwardRef(
     (
@@ -207,9 +214,8 @@ export const TasksApp = React.memo(
       const [selectedTask, setSelectedTask] = React.useState<TaskState | null>(null);
 
       const [openDeleteScheduleDialog, setOpenDeleteScheduleDialog] = React.useState(false);
-      const [scheduleDeleteValue, setScheduleDeleteValue] = React.useState<string>(
-        ScheduleDeleteOptions.CURRENT,
-      );
+      const [openEditScheduleDialog, setOpenEditScheduleDialog] = React.useState(false);
+      const [eventScope, setEventScope] = React.useState<string>(EventScopes.CURRENT);
       const [currentEventId, setCurrentEventId] = React.useState<number>(-1);
       const exceptDateRef = React.useRef<Date>(new Date());
       const [tasksState, setTasksState] = React.useState<Tasks>({
@@ -429,7 +435,7 @@ export const TasksApp = React.memo(
             throw new Error('tasks api not available');
           }
 
-          if (scheduleDeleteValue === ScheduleDeleteOptions.CURRENT) {
+          if (eventScope === EventScopes.CURRENT) {
             await rmf.tasksApi.delScheduledTasksEventScheduledTasksTaskIdClearPut(
               task.id,
               exceptDateRef.current.toISOString(),
@@ -442,10 +448,34 @@ export const TasksApp = React.memo(
           // Set the default values
           setOpenDeleteScheduleDialog(false);
           setCurrentEventId(-1);
-          setScheduleDeleteValue(ScheduleDeleteOptions.CURRENT);
+          setEventScope(EventScopes.CURRENT);
         } catch (e) {
           console.error(`Failed to delete scheduled task: ${e}`);
         }
+      };
+
+      const CustomEditor = ({ scheduler, value, onChange }: CustomEditorProps) => {
+        return (
+          <ConfirmationDialog
+            confirmText={'Ok'}
+            cancelText="Cancel"
+            open={true}
+            title={'Edit recurring task'}
+            submitting={undefined}
+            onClose={() => {
+              scheduler.close();
+            }}
+            onSubmit={() => console.log()}
+          >
+            <EventEditDeletePopup
+              currentValue={EventScopes.CURRENT}
+              allValue={EventScopes.ALL}
+              value={value}
+              deleting={false}
+              onChange={onChange}
+            />
+          </ConfirmationDialog>
+        );
       };
 
       return (
@@ -560,7 +590,7 @@ export const TasksApp = React.memo(
                 step: 60,
               }}
               draggable={false}
-              editable={false}
+              editable={true}
               getRemoteEvents={getRemoteEvents}
               onEventClick={(event: ProcessedEvent) => {
                 exceptDateRef.current = event.start;
@@ -569,12 +599,54 @@ export const TasksApp = React.memo(
                 setCurrentEventId(Number(deletedId));
                 setOpenDeleteScheduleDialog(true);
               }}
+              onConfirm={async (
+                event: ProcessedEvent,
+                action = 'edit',
+              ): Promise<ProcessedEvent> => {
+                console.log(event);
+                if (event.event_id) {
+                  setOpenEditScheduleDialog(true);
+                }
+                return event;
+              }}
+              customEditor={(scheduler) => (
+                <CustomEditor
+                  scheduler={scheduler}
+                  value={eventScope}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                    setEventScope(event.target.value)
+                  }
+                />
+              )}
             />
           </TabPanel>
           <input type="file" style={{ display: 'none' }} ref={uploadFileInputRef} />
           {openTaskSummary && (
             <TaskSummary task={selectedTask} onClose={() => setOpenTaskSummary(false)} />
           )}
+          {/* {openEditScheduleDialog && (
+            <ConfirmationDialog
+              confirmText={'Ok'}
+              cancelText="Cancel"
+              open={openEditScheduleDialog}
+              title={'Edit recurring task'}
+              submitting={undefined}
+              onClose={() => {
+                setOpenEditScheduleDialog(false);
+                setEventScope(EventScopes.CURRENT);
+              }}
+              onSubmit={() => console.log()}
+            >
+              <EventEditDeletePopup
+                currentValue={EventScopes.CURRENT}
+                allValue={EventScopes.ALL}
+                value={eventScope} deleting={false}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                  setEventScope(event.target.value)
+                }
+              />
+            </ConfirmationDialog>
+          )} */}
           {openDeleteScheduleDialog && (
             <ConfirmationDialog
               confirmText={'Ok'}
@@ -584,31 +656,19 @@ export const TasksApp = React.memo(
               submitting={undefined}
               onClose={() => {
                 setOpenDeleteScheduleDialog(false);
-                setScheduleDeleteValue(ScheduleDeleteOptions.CURRENT);
+                setEventScope(EventScopes.CURRENT);
               }}
               onSubmit={handleSubmitDeleteSchedule}
             >
-              <FormControl fullWidth={true}>
-                <RadioGroup
-                  aria-labelledby="schedule-delete-options-radio-buttons-group"
-                  name="schedule-delete-options-radio-buttons-group"
-                  value={scheduleDeleteValue}
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                    setScheduleDeleteValue(event.target.value)
-                  }
-                >
-                  <FormControlLabel
-                    value={ScheduleDeleteOptions.CURRENT}
-                    control={<Radio />}
-                    label="This event"
-                  />
-                  <FormControlLabel
-                    value={ScheduleDeleteOptions.ALL}
-                    control={<Radio />}
-                    label="All events"
-                  />
-                </RadioGroup>
-              </FormControl>
+              <EventEditDeletePopup
+                currentValue={EventScopes.CURRENT}
+                allValue={EventScopes.ALL}
+                value={eventScope}
+                deleting={true}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                  setEventScope(event.target.value)
+                }
+              />
             </ConfirmationDialog>
           )}
           {children}
