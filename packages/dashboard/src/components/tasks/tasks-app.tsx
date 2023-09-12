@@ -1,5 +1,10 @@
 import { Scheduler } from '@aldabil/react-scheduler';
-import { ProcessedEvent, SchedulerHelpers, SchedulerProps } from '@aldabil/react-scheduler/types';
+import {
+  CellRenderedProps,
+  ProcessedEvent,
+  SchedulerHelpers,
+  SchedulerProps,
+} from '@aldabil/react-scheduler/types';
 import DownloadIcon from '@mui/icons-material/Download';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import {
@@ -16,6 +21,7 @@ import {
   TableContainer,
   Toolbar,
   Tooltip,
+  Button,
 } from '@mui/material';
 import {
   ApiServerModelsTortoiseModelsScheduledTaskScheduledTask as ScheduledTask,
@@ -215,6 +221,7 @@ export const TasksApp = React.memo(
 
       const [openDeleteScheduleDialog, setOpenDeleteScheduleDialog] = React.useState(false);
       const [openEditScheduleDialog, setOpenEditScheduleDialog] = React.useState(false);
+      const [events, setEvents] = React.useState<ProcessedEvent[]>([]);
       const [eventScope, setEventScope] = React.useState<string>(EventScopes.CURRENT);
       const [currentEventId, setCurrentEventId] = React.useState<number>(-1);
       const exceptDateRef = React.useRef<Date>(new Date());
@@ -404,6 +411,7 @@ export const TasksApp = React.memo(
               events.forEach((ev) => {
                 eventsMap.current[Number(ev.event_id)] = t;
               });
+              setEvents(events);
               return events;
             }),
           );
@@ -583,6 +591,24 @@ export const TasksApp = React.memo(
                 startHour: 0,
                 endHour: 23,
                 step: 60,
+                cellRenderer: ({ start, ...props }: CellRenderedProps) => {
+                  const filteredEvents = events.filter(
+                    (event) => start.getTime() !== event.start.getTime(),
+                  );
+                  const disabled = filteredEvents.length > 0;
+                  const restProps = disabled ? {} : props;
+                  return (
+                    <Button
+                      style={{
+                        height: '100%',
+                        background: disabled ? '#eee' : 'transparent',
+                        cursor: disabled ? 'not-allowed' : 'pointer',
+                      }}
+                      disableRipple={disabled}
+                      {...restProps}
+                    />
+                  );
+                },
               }}
               day={{
                 startHour: 0,
