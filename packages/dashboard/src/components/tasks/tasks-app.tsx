@@ -9,13 +9,9 @@ import DownloadIcon from '@mui/icons-material/Download';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import {
   Box,
-  FormControl,
-  FormControlLabel,
   IconButton,
   Menu,
   MenuItem,
-  Radio,
-  RadioGroup,
   Tab,
   Tabs,
   TableContainer,
@@ -50,15 +46,21 @@ import {
 import React from 'react';
 import {
   ConfirmationDialog,
+  CreateTaskForm,
+  CreateTaskFormProps,
   EventEditDeletePopup,
   FilterFields,
   MuiMouseEvent,
+  RecurringDays,
+  Schedule,
   SortFields,
   TaskDataGridTable,
   Tasks,
   Window,
 } from 'react-components';
 import { Subscription } from 'rxjs';
+import { useTaskFormData } from '../../hooks/useCreateTaskForm';
+import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
@@ -100,6 +102,27 @@ function TabPanel(props: TabPanelProps) {
     </div>
   );
 }
+
+const apiScheduleToSchedule = (scheduleTask: ApiSchedule[]): Schedule => {
+  const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
+  const daysArray: RecurringDays = [false, false, false, false, false, false, false];
+
+  for (const schedule of scheduleTask) {
+    const dayIndex = daysOfWeek.indexOf(schedule.period.toLowerCase());
+    if (dayIndex === -1) {
+      throw new Error(`Invalid day: ${schedule}`);
+    }
+
+    daysArray[dayIndex] = true;
+  }
+
+  return {
+    startOn: scheduleTask[0].start_from ? new Date(scheduleTask[0].start_from) : new Date(),
+    days: daysArray,
+    until: scheduleTask[0].until ? endOfMinute(new Date(scheduleTask[0].until)) : undefined,
+  };
+};
 
 /**
  * Generates a list of ProcessedEvents to occur within the query start and end,
@@ -212,19 +235,25 @@ export const TasksApp = React.memo(
       ref: React.Ref<HTMLDivElement>,
     ) => {
       const rmf = React.useContext(RmfAppContext);
+      const { showAlert } = React.useContext(AppControllerContext);
       const [autoRefresh, setAutoRefresh] = React.useState(true);
       const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
 
       const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
       const [openTaskSummary, setOpenTaskSummary] = React.useState(false);
       const [selectedTask, setSelectedTask] = React.useState<TaskState | null>(null);
+      const [selectedSchedule, setSelectedSchedule] = React.useState<Schedule>({
+        startOn: new Date(),
+        days: [false, false, false, false, false, false, false],
+        until: undefined,
+      });
 
       const [openDeleteScheduleDialog, setOpenDeleteScheduleDialog] = React.useState(false);
-      const [openEditScheduleDialog, setOpenEditScheduleDialog] = React.useState(false);
       const [events, setEvents] = React.useState<ProcessedEvent[]>([]);
       const [eventScope, setEventScope] = React.useState<string>(EventScopes.CURRENT);
       const [currentEventId, setCurrentEventId] = React.useState<number>(-1);
       const exceptDateRef = React.useRef<Date>(new Date());
+      const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
       const [tasksState, setTasksState] = React.useState<Tasks>({
         isLoading: true,
         data: [],
@@ -403,8 +432,9 @@ export const TasksApp = React.memo(
             return counter++;
           };
           eventsMap.current = {};
-          return tasks.flatMap((t: ScheduledTask) =>
-            t.schedules.flatMap<ProcessedEvent>((s: ApiSchedule) => {
+          return tasks.flatMap((t: ScheduledTask) => {
+            setSelectedSchedule(apiScheduleToSchedule(t.schedules));
+            return t.schedules.flatMap<ProcessedEvent>((s: ApiSchedule) => {
               const events = scheduleToEvents(params.start, params.end, s, t, getEventId, () =>
                 getScheduledTaskTitle(t),
               );
@@ -413,8 +443,8 @@ export const TasksApp = React.memo(
               });
               setEvents(events);
               return events;
-            }),
-          );
+            });
+          });
         },
         [rmf],
       );
@@ -462,6 +492,26 @@ export const TasksApp = React.memo(
         }
       };
 
+      const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
+        async (taskRequests, schedule) => {
+          if (!rmf) {
+            throw new Error('tasks api not available');
+          }
+          if (!schedule) {
+            await Promise.all(
+              taskRequests.map((request) =>
+                rmf.tasksApi.postDispatchTaskTasksDispatchTaskPost({
+                  type: 'dispatch_task_request',
+                  request,
+                }),
+              ),
+            );
+          }
+          AppEvents.refreshTaskApp.next();
+        },
+        [rmf],
+      );
+
       const CustomEditor = ({ scheduler, value, onChange }: CustomEditorProps) => {
         return (
           <ConfirmationDialog
@@ -472,8 +522,12 @@ export const TasksApp = React.memo(
             submitting={undefined}
             onClose={() => {
               scheduler.close();
+              setEventScope(EventScopes.CURRENT);
+              AppEvents.refreshTaskApp.next();
             }}
-            onSubmit={() => console.log()}
+            onSubmit={() => {
+              setOpenCreateTaskForm(true);
+            }}
           >
             <EventEditDeletePopup
               currentValue={EventScopes.CURRENT}
@@ -625,23 +679,15 @@ export const TasksApp = React.memo(
                 setCurrentEventId(Number(deletedId));
                 setOpenDeleteScheduleDialog(true);
               }}
-              onConfirm={async (
-                event: ProcessedEvent,
-                action = 'edit',
-              ): Promise<ProcessedEvent> => {
-                console.log(event);
-                if (event.event_id) {
-                  setOpenEditScheduleDialog(true);
-                }
-                return event;
-              }}
               customEditor={(scheduler) => (
                 <CustomEditor
                   scheduler={scheduler}
                   value={eventScope}
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                    setEventScope(event.target.value)
-                  }
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    console.log(event);
+                    setEventScope(event.target.value);
+                    AppEvents.refreshTaskApp.next();
+                  }}
                 />
               )}
             />
@@ -650,29 +696,30 @@ export const TasksApp = React.memo(
           {openTaskSummary && (
             <TaskSummary task={selectedTask} onClose={() => setOpenTaskSummary(false)} />
           )}
-          {/* {openEditScheduleDialog && (
-            <ConfirmationDialog
-              confirmText={'Ok'}
-              cancelText="Cancel"
-              open={openEditScheduleDialog}
-              title={'Edit recurring task'}
-              submitting={undefined}
-              onClose={() => {
-                setOpenEditScheduleDialog(false);
-                setEventScope(EventScopes.CURRENT);
+          {openCreateTaskForm && (
+            <CreateTaskForm
+              user={'unknown user'}
+              open={openCreateTaskForm}
+              openScheduledDialog={true}
+              currentSchedule={selectedSchedule}
+              onClose={() => setOpenCreateTaskForm(false)}
+              submitTasks={submitTasks}
+              onSuccess={() => {
+                setOpenCreateTaskForm(false);
+                showAlert('success', 'Successfully created task');
               }}
-              onSubmit={() => console.log()}
-            >
-              <EventEditDeletePopup
-                currentValue={EventScopes.CURRENT}
-                allValue={EventScopes.ALL}
-                value={eventScope} deleting={false}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                  setEventScope(event.target.value)
-                }
-              />
-            </ConfirmationDialog>
-          )} */}
+              onFail={(e) => {
+                showAlert('error', `Failed to create task: ${e.message}`);
+              }}
+              onSuccessScheduling={() => {
+                setOpenCreateTaskForm(false);
+                showAlert('success', 'Successfully created schedule');
+              }}
+              onFailScheduling={(e) => {
+                showAlert('error', `Failed to submit schedule: ${e.message}`);
+              }}
+            />
+          )}
           {openDeleteScheduleDialog && (
             <ConfirmationDialog
               confirmText={'Ok'}
