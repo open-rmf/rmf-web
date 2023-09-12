@@ -671,7 +671,9 @@ export interface CreateTaskFormProps
   patrolWaypoints?: string[];
   pickupPoints?: Record<string, string>;
   dropoffPoints?: Record<string, string>;
-  favoritesTasks: TaskFavorite[];
+  favoritesTasks?: TaskFavorite[];
+  openScheduledDialog?: boolean;
+  currentSchedule?: Schedule;
   submitTasks?(tasks: TaskRequest[], schedule: Schedule | null): Promise<void>;
   tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
   onSuccess?(tasks: TaskRequest[]): void;
@@ -691,6 +693,8 @@ export function CreateTaskForm({
   pickupPoints = {},
   dropoffPoints = {},
   favoritesTasks = [],
+  openScheduledDialog,
+  currentSchedule,
   submitTasks,
   tasksFromFile,
   onClose,
@@ -726,12 +730,17 @@ export function CreateTaskForm({
   const [submitting, setSubmitting] = React.useState(false);
   const [formFullyFilled, setFormFullyFilled] = React.useState(false);
   const taskRequest = taskRequests[selectedTaskIdx];
-  const [openSchedulingDialog, setOpenSchedulingDialog] = React.useState(false);
-  const [schedule, setSchedule] = React.useState<Schedule>({
-    startOn: new Date(),
-    days: [true, true, true, true, true, true, true],
-    until: undefined,
-  });
+  const [openSchedulingDialog, setOpenSchedulingDialog] = React.useState(
+    openScheduledDialog ?? false,
+  );
+  console.log(currentSchedule);
+  const [schedule, setSchedule] = React.useState<Schedule>(
+    currentSchedule ?? {
+      startOn: new Date(),
+      days: [true, true, true, true, true, true, true],
+      until: undefined,
+    },
+  );
   const [atTime, setAtTime] = React.useState(new Date());
   const [scheduleUntilValue, setScheduleUntilValue] = React.useState<string>(
     ScheduleUntilValue.NEVER,
