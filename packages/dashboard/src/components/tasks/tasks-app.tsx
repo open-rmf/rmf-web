@@ -22,6 +22,7 @@ import {
 import {
   ApiServerModelsTortoiseModelsScheduledTaskScheduledTask as ScheduledTask,
   ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf as ApiSchedule,
+  PostScheduledTaskRequest,
   TaskState,
 } from 'api-client';
 import {
@@ -101,6 +102,26 @@ function TabPanel(props: TabPanelProps) {
       {selectedTabIndex === index && <Box sx={{ p: 3 }}>{children}</Box>}
     </div>
   );
+}
+
+function toApiSchedule(schedule: Schedule): PostScheduledTaskRequest['schedules'] {
+  const start = schedule.startOn;
+  const apiSchedules: PostScheduledTaskRequest['schedules'] = [];
+  const date = new Date(start);
+  const start_from = start.toISOString();
+  const until = schedule.until?.toISOString();
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const at = `${hours}:${minutes}`;
+  schedule.days[0] && apiSchedules.push({ period: 'monday', start_from, at, until });
+  schedule.days[1] && apiSchedules.push({ period: 'tuesday', start_from, at, until });
+  schedule.days[2] && apiSchedules.push({ period: 'wednesday', start_from, at, until });
+  schedule.days[3] && apiSchedules.push({ period: 'thursday', start_from, at, until });
+  schedule.days[4] && apiSchedules.push({ period: 'friday', start_from, at, until });
+  schedule.days[5] && apiSchedules.push({ period: 'saturday', start_from, at, until });
+  schedule.days[6] && apiSchedules.push({ period: 'sunday', start_from, at, until });
+
+  return apiSchedules;
 }
 
 const apiScheduleToSchedule = (scheduleTask: ApiSchedule[]): Schedule => {
@@ -492,21 +513,17 @@ export const TasksApp = React.memo(
         }
       };
 
-      const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
-        async (taskRequests, schedule) => {
+      const submitUpdateScheduleaTask = React.useCallback<
+        Required<CreateTaskFormProps>['submitUpdateScheduleaTask']
+      >(
+        async (schedule) => {
           if (!rmf) {
             throw new Error('tasks api not available');
           }
-          if (!schedule) {
-            await Promise.all(
-              taskRequests.map((request) =>
-                rmf.tasksApi.postDispatchTaskTasksDispatchTaskPost({
-                  type: 'dispatch_task_request',
-                  request,
-                }),
-              ),
-            );
-          }
+          const scheduleToApi = toApiSchedule(schedule);
+
+          await rmf.tasksApi.updateScheduleTaskScheduledTasksTaskIdUpdatePost(1, scheduleToApi);
+
           AppEvents.refreshTaskApp.next();
         },
         [rmf],
@@ -703,7 +720,7 @@ export const TasksApp = React.memo(
               openScheduledDialog={true}
               currentSchedule={selectedSchedule}
               onClose={() => setOpenCreateTaskForm(false)}
-              submitTasks={submitTasks}
+              submitUpdateScheduleaTask={submitUpdateScheduleaTask}
               onSuccess={() => {
                 setOpenCreateTaskForm(false);
                 showAlert('success', 'Successfully created task');

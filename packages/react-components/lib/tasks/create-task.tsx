@@ -675,6 +675,7 @@ export interface CreateTaskFormProps
   openScheduledDialog?: boolean;
   currentSchedule?: Schedule;
   submitTasks?(tasks: TaskRequest[], schedule: Schedule | null): Promise<void>;
+  submitUpdateScheduleaTask?(schedule: Schedule): Promise<void>;
   tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
   onSuccess?(tasks: TaskRequest[]): void;
   onFail?(error: Error, tasks: TaskRequest[]): void;
@@ -696,6 +697,7 @@ export function CreateTaskForm({
   openScheduledDialog,
   currentSchedule,
   submitTasks,
+  submitUpdateScheduleaTask,
   tasksFromFile,
   onClose,
   onSuccess,
@@ -832,11 +834,6 @@ export function CreateTaskForm({
 
   // no memo because deps would likely change
   const handleSubmit = async (scheduling: boolean) => {
-    if (!submitTasks) {
-      onSuccess && onSuccess(taskRequests);
-      return;
-    }
-
     const requester = scheduling ? `${user}__scheduled` : user;
 
     for (const t of taskRequests) {
@@ -847,7 +844,13 @@ export function CreateTaskForm({
     const submittingSchedule = scheduling && scheduleEnabled;
     try {
       setSubmitting(true);
-      await submitTasks(taskRequests, submittingSchedule ? schedule : null);
+      if (openScheduledDialog && schedule) {
+        submitUpdateScheduleaTask && (await submitUpdateScheduleaTask(schedule));
+      } else {
+        submitTasks
+          ? await submitTasks(taskRequests, submittingSchedule ? schedule : null)
+          : onSuccess && onSuccess(taskRequests);
+      }
       setSubmitting(false);
 
       if (submittingSchedule) {
@@ -1140,7 +1143,7 @@ export function CreateTaskForm({
               className={classes.actionBtn}
               onClick={() => setOpenSchedulingDialog(true)}
             >
-              Add to Schedule
+              {submitUpdateScheduleaTask ? 'Edit schedule' : 'Add to Schedule'}
             </Button>
             <Button
               variant="contained"
