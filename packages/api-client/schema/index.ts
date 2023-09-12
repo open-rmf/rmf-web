@@ -1283,6 +1283,53 @@ export default {
         },
       },
     },
+    '/scheduled_tasks/{task_id}/update': {
+      post: {
+        tags: ['Tasks'],
+        summary: 'Update Schedule Task',
+        operationId: 'update_schedule_task_scheduled_tasks__task_id__update_post',
+        parameters: [
+          {
+            required: true,
+            schema: { title: 'Task Id', type: 'integer' },
+            name: 'task_id',
+            in: 'path',
+          },
+        ],
+        requestBody: {
+          content: {
+            'application/json': {
+              schema: {
+                title: 'Scheduled Request',
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/api_server.models.tortoise_models.scheduled_task.ScheduledTaskSchedule.leaf',
+                },
+              },
+            },
+          },
+          required: true,
+        },
+        responses: {
+          '201': {
+            description: 'Successful Response',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/api_server.models.tortoise_models.scheduled_task.ScheduledTask',
+                },
+              },
+            },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
     '/favorite_tasks': {
       get: {
         tags: ['Tasks'],

@@ -159,6 +159,37 @@ async def del_scheduled_tasks_event(
     await schedule_task(task, task_repo)
 
 
+@router.post(
+    "/{task_id}/update", status_code=201, response_model=ttm.ScheduledTaskPydantic
+)
+async def update_schedule_task(
+    task_id: int,
+    scheduled_request: list[ttm.ScheduledTaskSchedulePydantic],
+    task_repo: TaskRepository = Depends(task_repo_dep),
+):
+    try:
+        task = await get_scheduled_task(task_id)
+        if task is None:
+            raise HTTPException(404)
+
+        async with tortoise.transactions.in_transaction():
+            for sche in task.schedules:
+                schedule.clear(sche.get_id())
+            for sche in task.schedules:
+                await sche.delete()
+
+            schedules = [
+                ttm.ScheduledTaskSchedule(scheduled_task=task, **x.dict())
+                for x in scheduled_request
+            ]
+
+            await ttm.ScheduledTaskSchedule.bulk_create(schedules)
+
+            await schedule_task(task, task_repo)
+    except schedule.ScheduleError as e:
+        raise HTTPException(422, str(e)) from e
+
+
 @router.delete("/{task_id}")
 async def del_scheduled_tasks(task_id: int):
     async with tortoise.transactions.in_transaction():
