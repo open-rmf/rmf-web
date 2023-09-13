@@ -23,6 +23,7 @@ import {
   ApiServerModelsTortoiseModelsScheduledTaskScheduledTask as ScheduledTask,
   ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf as ApiSchedule,
   PostScheduledTaskRequest,
+  TaskRequest,
   TaskState,
 } from 'api-client';
 import {
@@ -60,7 +61,7 @@ import {
   Window,
 } from 'react-components';
 import { Subscription } from 'rxjs';
-import { useTaskFormData } from '../../hooks/useCreateTaskForm';
+import { useCreateTaskFormData } from '../../hooks/useCreateTaskForm';
 import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
@@ -69,6 +70,16 @@ import { TaskSummary } from './task-summary';
 import { downloadCsvFull, downloadCsvMinimal } from './utils';
 
 const RefreshTaskQueueTableInterval = 5000;
+
+/*Scheduling TODOS [CR]: 
+ - Check why the first event returns id -1
+ - Create hooks to return the username [similar to useCreateTaskForm hook]
+ - Create a util file for those repeated functions in appbar and tasks-app
+ - Create logic for editing single instance
+ - Check if variable names makes sense
+ - Clean a little the code 
+
+*/
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -104,7 +115,7 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-function toApiSchedule(schedule: Schedule): PostScheduledTaskRequest['schedules'] {
+function toApiSchedule(taskRequest: TaskRequest, schedule: Schedule): PostScheduledTaskRequest {
   const start = schedule.startOn;
   const apiSchedules: PostScheduledTaskRequest['schedules'] = [];
   const date = new Date(start);
@@ -120,8 +131,10 @@ function toApiSchedule(schedule: Schedule): PostScheduledTaskRequest['schedules'
   schedule.days[4] && apiSchedules.push({ period: 'friday', start_from, at, until });
   schedule.days[5] && apiSchedules.push({ period: 'saturday', start_from, at, until });
   schedule.days[6] && apiSchedules.push({ period: 'sunday', start_from, at, until });
-
-  return apiSchedules;
+  return {
+    task_request: taskRequest,
+    schedules: apiSchedules,
+  };
 }
 
 const apiScheduleToSchedule = (scheduleTask: ApiSchedule[]): Schedule => {
@@ -259,7 +272,9 @@ export const TasksApp = React.memo(
       const { showAlert } = React.useContext(AppControllerContext);
       const [autoRefresh, setAutoRefresh] = React.useState(true);
       const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
-
+      const [currentScheduleTask, currentScheduledTask] = React.useState<ScheduledTask | undefined>(
+        undefined,
+      );
       const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
       const [openTaskSummary, setOpenTaskSummary] = React.useState(false);
       const [selectedTask, setSelectedTask] = React.useState<TaskState | null>(null);
@@ -268,6 +283,9 @@ export const TasksApp = React.memo(
         days: [false, false, false, false, false, false, false],
         until: undefined,
       });
+
+      const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames } =
+        useCreateTaskFormData(rmf);
 
       const [openDeleteScheduleDialog, setOpenDeleteScheduleDialog] = React.useState(false);
       const [events, setEvents] = React.useState<ProcessedEvent[]>([]);
@@ -513,20 +531,32 @@ export const TasksApp = React.memo(
         }
       };
 
-      const submitUpdateScheduleaTask = React.useCallback<
-        Required<CreateTaskFormProps>['submitUpdateScheduleaTask']
-      >(
-        async (schedule) => {
+      const submitTasks = React.useCallback<Required<CreateTaskFormProps>['submitTasks']>(
+        async (taskRequests, schedule) => {
           if (!rmf) {
             throw new Error('tasks api not available');
           }
-          const scheduleToApi = toApiSchedule(schedule);
 
-          await rmf.tasksApi.updateScheduleTaskScheduledTasksTaskIdUpdatePost(1, scheduleToApi);
+          if (!schedule || !currentScheduleTask) {
+            throw new Error('Not schedule or task selected');
+          }
+
+          const scheduleRequests = taskRequests.map((req) =>
+            toApiSchedule(req, schedule && schedule),
+          );
+
+          await Promise.all(
+            scheduleRequests.map((req) =>
+              rmf.tasksApi.updateScheduleTaskScheduledTasksTaskIdUpdatePost(
+                currentScheduleTask.id,
+                req,
+              ),
+            ),
+          );
 
           AppEvents.refreshTaskApp.next();
         },
-        [rmf],
+        [rmf, currentScheduleTask],
       );
 
       const CustomEditor = ({ scheduler, value, onChange }: CustomEditorProps) => {
@@ -544,6 +574,12 @@ export const TasksApp = React.memo(
             }}
             onSubmit={() => {
               setOpenCreateTaskForm(true);
+              const task = scheduler.edited && eventsMap.current[Number(scheduler.edited.event_id)];
+              if (task) {
+                currentScheduledTask(task);
+                AppEvents.refreshTaskApp.next();
+              }
+              scheduler.close();
             }}
           >
             <EventEditDeletePopup
@@ -701,7 +737,6 @@ export const TasksApp = React.memo(
                   scheduler={scheduler}
                   value={eventScope}
                   onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    console.log(event);
                     setEventScope(event.target.value);
                     AppEvents.refreshTaskApp.next();
                   }}
@@ -716,11 +751,16 @@ export const TasksApp = React.memo(
           {openCreateTaskForm && (
             <CreateTaskForm
               user={'unknown user'}
+              patrolWaypoints={waypointNames}
+              cleaningZones={cleaningZoneNames}
+              pickupPoints={pickupPoints}
+              dropoffPoints={dropoffPoints}
               open={openCreateTaskForm}
-              openScheduledDialog={true}
+              scheduleUnderEdition={true}
               currentSchedule={selectedSchedule}
+              requestTask={currentScheduleTask?.task_request}
               onClose={() => setOpenCreateTaskForm(false)}
-              submitUpdateScheduleaTask={submitUpdateScheduleaTask}
+              submitTasks={submitTasks}
               onSuccess={() => {
                 setOpenCreateTaskForm(false);
                 showAlert('success', 'Successfully created task');
