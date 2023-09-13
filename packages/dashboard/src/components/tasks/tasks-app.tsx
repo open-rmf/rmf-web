@@ -62,9 +62,9 @@ const RefreshTaskQueueTableInterval = 5000;
  - Create a util file for those repeated functions in appbar and tasks-app [x]
  - Create hooks to return the username [similar to useCreateTaskForm hook] [x]
  - Block all cells if they have no events. Currently it works only for weeks [x]
+ - Create test for new react components [x]
  - Check why the first event returns id -1 []
  - Check if variable names makes sense []
- - Create test for new react components []
  - Clean a little the code []
 */
 
