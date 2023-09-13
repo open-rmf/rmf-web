@@ -1299,13 +1299,7 @@ export default {
         requestBody: {
           content: {
             'application/json': {
-              schema: {
-                title: 'Scheduled Request',
-                type: 'array',
-                items: {
-                  $ref: '#/components/schemas/api_server.models.tortoise_models.scheduled_task.ScheduledTaskSchedule.leaf',
-                },
-              },
+              schema: { $ref: '#/components/schemas/PostScheduledTaskRequest' },
             },
           },
           required: true,

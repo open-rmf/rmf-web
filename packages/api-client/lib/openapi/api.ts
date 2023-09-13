@@ -8440,22 +8440,22 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      *
      * @summary Update Schedule Task
      * @param {number} taskId
-     * @param {Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf>} apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf
+     * @param {PostScheduledTaskRequest} postScheduledTaskRequest
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     updateScheduleTaskScheduledTasksTaskIdUpdatePost: async (
       taskId: number,
-      apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf: Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf>,
+      postScheduledTaskRequest: PostScheduledTaskRequest,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskId' is not null or undefined
       assertParamExists('updateScheduleTaskScheduledTasksTaskIdUpdatePost', 'taskId', taskId);
-      // verify required parameter 'apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf' is not null or undefined
+      // verify required parameter 'postScheduledTaskRequest' is not null or undefined
       assertParamExists(
         'updateScheduleTaskScheduledTasksTaskIdUpdatePost',
-        'apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf',
-        apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf,
+        'postScheduledTaskRequest',
+        postScheduledTaskRequest,
       );
       const localVarPath = `/scheduled_tasks/{task_id}/update`.replace(
         `{${'task_id'}}`,
@@ -8482,7 +8482,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf,
+        postScheduledTaskRequest,
         localVarRequestOptions,
         configuration,
       );
@@ -8951,13 +8951,13 @@ export const TasksApiFp = function (configuration?: Configuration) {
      *
      * @summary Update Schedule Task
      * @param {number} taskId
-     * @param {Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf>} apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf
+     * @param {PostScheduledTaskRequest} postScheduledTaskRequest
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async updateScheduleTaskScheduledTasksTaskIdUpdatePost(
       taskId: number,
-      apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf: Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf>,
+      postScheduledTaskRequest: PostScheduledTaskRequest,
       options?: AxiosRequestConfig,
     ): Promise<
       (
@@ -8968,7 +8968,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.updateScheduleTaskScheduledTasksTaskIdUpdatePost(
           taskId,
-          apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf,
+          postScheduledTaskRequest,
           options,
         );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -9357,21 +9357,17 @@ export const TasksApiFactory = function (
      *
      * @summary Update Schedule Task
      * @param {number} taskId
-     * @param {Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf>} apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf
+     * @param {PostScheduledTaskRequest} postScheduledTaskRequest
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     updateScheduleTaskScheduledTasksTaskIdUpdatePost(
       taskId: number,
-      apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf: Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf>,
+      postScheduledTaskRequest: PostScheduledTaskRequest,
       options?: any,
     ): AxiosPromise<ApiServerModelsTortoiseModelsScheduledTaskScheduledTask> {
       return localVarFp
-        .updateScheduleTaskScheduledTasksTaskIdUpdatePost(
-          taskId,
-          apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf,
-          options,
-        )
+        .updateScheduleTaskScheduledTasksTaskIdUpdatePost(taskId, postScheduledTaskRequest, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -9788,22 +9784,18 @@ export class TasksApi extends BaseAPI {
    *
    * @summary Update Schedule Task
    * @param {number} taskId
-   * @param {Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf>} apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf
+   * @param {PostScheduledTaskRequest} postScheduledTaskRequest
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
   public updateScheduleTaskScheduledTasksTaskIdUpdatePost(
     taskId: number,
-    apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf: Array<ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf>,
+    postScheduledTaskRequest: PostScheduledTaskRequest,
     options?: AxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .updateScheduleTaskScheduledTasksTaskIdUpdatePost(
-        taskId,
-        apiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf,
-        options,
-      )
+      .updateScheduleTaskScheduledTasksTaskIdUpdatePost(taskId, postScheduledTaskRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
