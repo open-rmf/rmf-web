@@ -744,7 +744,7 @@ export function CreateTaskForm({
   );
   const [atTime, setAtTime] = React.useState(new Date());
   const [scheduleUntilValue, setScheduleUntilValue] = React.useState<string>(
-    ScheduleUntilValue.NEVER,
+    currentSchedule?.until ? ScheduleUntilValue.ON : ScheduleUntilValue.NEVER,
   );
 
   const handleScheduleUntilValue = (event: React.ChangeEvent<HTMLInputElement>) => {
