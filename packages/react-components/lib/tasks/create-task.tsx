@@ -672,10 +672,10 @@ export interface CreateTaskFormProps
   pickupPoints?: Record<string, string>;
   dropoffPoints?: Record<string, string>;
   favoritesTasks?: TaskFavorite[];
-  openScheduledDialog?: boolean;
+  scheduleUnderEdition?: boolean;
   currentSchedule?: Schedule;
+  requestTask?: TaskRequest;
   submitTasks?(tasks: TaskRequest[], schedule: Schedule | null): Promise<void>;
-  submitUpdateScheduleaTask?(schedule: Schedule): Promise<void>;
   tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
   onSuccess?(tasks: TaskRequest[]): void;
   onFail?(error: Error, tasks: TaskRequest[]): void;
@@ -694,10 +694,10 @@ export function CreateTaskForm({
   pickupPoints = {},
   dropoffPoints = {},
   favoritesTasks = [],
-  openScheduledDialog,
+  scheduleUnderEdition,
   currentSchedule,
+  requestTask,
   submitTasks,
-  submitUpdateScheduleaTask,
   tasksFromFile,
   onClose,
   onSuccess,
@@ -723,19 +723,18 @@ export function CreateTaskForm({
   const [favoriteTaskTitleError, setFavoriteTaskTitleError] = React.useState(false);
   const [savingFavoriteTask, setSavingFavoriteTask] = React.useState(false);
 
-  const [taskRequests, setTaskRequests] = React.useState<TaskRequest[]>(() => [defaultTask()]);
+  const [taskRequests, setTaskRequests] = React.useState<TaskRequest[]>(() => [
+    requestTask ?? defaultTask(),
+  ]);
   const [selectedTaskIdx, setSelectedTaskIdx] = React.useState(0);
   const taskTitles = React.useMemo(
     () => taskRequests && taskRequests.map((t, i) => `${i + 1}: ${getShortDescription(t)}`),
     [taskRequests],
   );
   const [submitting, setSubmitting] = React.useState(false);
-  const [formFullyFilled, setFormFullyFilled] = React.useState(false);
+  const [formFullyFilled, setFormFullyFilled] = React.useState(requestTask !== undefined || false);
   const taskRequest = taskRequests[selectedTaskIdx];
-  const [openSchedulingDialog, setOpenSchedulingDialog] = React.useState(
-    openScheduledDialog ?? false,
-  );
-  console.log(currentSchedule);
+  const [openSchedulingDialog, setOpenSchedulingDialog] = React.useState(false);
   const [schedule, setSchedule] = React.useState<Schedule>(
     currentSchedule ?? {
       startOn: new Date(),
@@ -834,6 +833,11 @@ export function CreateTaskForm({
 
   // no memo because deps would likely change
   const handleSubmit = async (scheduling: boolean) => {
+    if (!submitTasks) {
+      onSuccess && onSuccess(taskRequests);
+      return;
+    }
+
     const requester = scheduling ? `${user}__scheduled` : user;
 
     for (const t of taskRequests) {
@@ -844,13 +848,7 @@ export function CreateTaskForm({
     const submittingSchedule = scheduling && scheduleEnabled;
     try {
       setSubmitting(true);
-      if (openScheduledDialog && schedule) {
-        submitUpdateScheduleaTask && (await submitUpdateScheduleaTask(schedule));
-      } else {
-        submitTasks
-          ? await submitTasks(taskRequests, submittingSchedule ? schedule : null)
-          : onSuccess && onSuccess(taskRequests);
-      }
+      await submitTasks(taskRequests, submittingSchedule ? schedule : null);
       setSubmitting(false);
 
       if (submittingSchedule) {
@@ -1143,13 +1141,13 @@ export function CreateTaskForm({
               className={classes.actionBtn}
               onClick={() => setOpenSchedulingDialog(true)}
             >
-              {submitUpdateScheduleaTask ? 'Edit schedule' : 'Add to Schedule'}
+              {scheduleUnderEdition ? 'Edit schedule' : 'Add to Schedule'}
             </Button>
             <Button
               variant="contained"
               type="submit"
               color="primary"
-              disabled={submitting || !formFullyFilled}
+              disabled={submitting || !formFullyFilled || scheduleUnderEdition}
               className={classes.actionBtn}
               aria-label={submitText}
               onClick={handleSubmitNow}
