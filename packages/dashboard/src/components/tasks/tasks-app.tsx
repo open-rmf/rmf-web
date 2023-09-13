@@ -40,6 +40,7 @@ import {
 } from 'react-components';
 import { Subscription } from 'rxjs';
 import { useCreateTaskFormData } from '../../hooks/useCreateTaskForm';
+import useGetUsername from '../../hooks/useFetchUser';
 import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
@@ -59,10 +60,11 @@ const RefreshTaskQueueTableInterval = 5000;
 /*Scheduling TODOS [CR]: 
  - Create logic for editing single instance [x]
  - Create a util file for those repeated functions in appbar and tasks-app [x]
- - Create hooks to return the username [similar to useCreateTaskForm hook] []
+ - Create hooks to return the username [similar to useCreateTaskForm hook] [x]
  - Block all cells if they have no events. Currently it works only for weeks []
  - Check why the first event returns id -1 []
  - Check if variable names makes sense []
+ - Create test for new react components []
  - Clean a little the code []
 */
 
@@ -130,6 +132,7 @@ export const TasksApp = React.memo(
 
       const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames } =
         useCreateTaskFormData(rmf);
+      const username = useGetUsername(rmf);
 
       const [openDeleteScheduleDialog, setOpenDeleteScheduleDialog] = React.useState(false);
       const [events, setEvents] = React.useState<ProcessedEvent[]>([]);
@@ -604,7 +607,7 @@ export const TasksApp = React.memo(
           )}
           {openCreateTaskForm && (
             <CreateTaskForm
-              user={'unknown user'}
+              user={username ? username : 'unknown user'}
               patrolWaypoints={waypointNames}
               cleaningZones={cleaningZoneNames}
               pickupPoints={pickupPoints}

@@ -64,6 +64,7 @@ import { Subscription } from 'rxjs';
 import { formatDistance } from 'date-fns';
 import { useCreateTaskFormData } from '../hooks/useCreateTaskForm';
 import { toApiSchedule } from './utils';
+import useGetUsername from '../hooks/useFetchUser';
 
 export type TabValue = 'infrastructure' | 'robots' | 'tasks' | 'custom1' | 'custom2' | 'admin';
 
@@ -146,7 +147,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
   const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
   const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
-  const [username, setUsername] = React.useState<string | null>(null);
   const [alertListAnchor, setAlertListAnchor] = React.useState<HTMLElement | null>(null);
   const [unacknowledgedAlertsNum, setUnacknowledgedAlertsNum] = React.useState(0);
   const [unacknowledgedAlertList, setUnacknowledgedAlertList] = React.useState<Alert[]>([]);
@@ -154,6 +154,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const curTheme = React.useContext(SettingsContext).themeMode;
   const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames } =
     useCreateTaskFormData(rmf);
+  const username = useGetUsername(rmf);
 
   async function handleLogout(): Promise<void> {
     try {
@@ -162,20 +163,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       console.error(`error logging out: ${(e as Error).message}`);
     }
   }
-
-  React.useEffect(() => {
-    if (!rmf) {
-      return;
-    }
-    (async () => {
-      try {
-        const user = (await rmf.defaultApi.getUserUserGet()).data;
-        setUsername(user.username);
-      } catch (e) {
-        console.log(`error getting username: ${(e as Error).message}`);
-      }
-    })();
-  }, [rmf]);
 
   React.useEffect(() => {
     const sub = AppEvents.refreshTaskApp.subscribe({
