@@ -24,25 +24,6 @@ import {
   ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf as ApiSchedule,
   TaskState,
 } from 'api-client';
-import {
-  addMinutes,
-  endOfMinute,
-  isFriday,
-  isMonday,
-  isSaturday,
-  isSunday,
-  isThursday,
-  isTuesday,
-  isWednesday,
-  nextFriday,
-  nextMonday,
-  nextSaturday,
-  nextSunday,
-  nextThursday,
-  nextTuesday,
-  nextWednesday,
-  startOfMinute,
-} from 'date-fns';
 import React from 'react';
 import {
   ConfirmationDialog,
@@ -51,7 +32,6 @@ import {
   EventEditDeletePopup,
   FilterFields,
   MuiMouseEvent,
-  RecurringDays,
   Schedule,
   SortFields,
   TaskDataGridTable,
@@ -65,19 +45,25 @@ import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
 import { toApiSchedule } from '../utils';
+import {
+  apiScheduleToSchedule,
+  getScheduledTaskTitle,
+  scheduleToEvents,
+  scheduleWithSelectedDay,
+} from './task-schedule-utils';
 import { TaskSummary } from './task-summary';
 import { downloadCsvFull, downloadCsvMinimal } from './utils';
 
 const RefreshTaskQueueTableInterval = 5000;
 
 /*Scheduling TODOS [CR]: 
- - Check why the first event returns id -1 []
- - Create hooks to return the username [similar to useCreateTaskForm hook] []
+ - Create logic for editing single instance [x]
  - Create a util file for those repeated functions in appbar and tasks-app [x]
- - Create logic for editing single instance []
+ - Create hooks to return the username [similar to useCreateTaskForm hook] []
+ - Block all cells if they have no events. Currently it works only for weeks []
+ - Check why the first event returns id -1 []
  - Check if variable names makes sense []
  - Clean a little the code []
-
 */
 
 interface TabPanelProps {
@@ -114,125 +100,6 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-const apiScheduleToSchedule = (scheduleTask: ApiSchedule[]): Schedule => {
-  const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-
-  const daysArray: RecurringDays = [false, false, false, false, false, false, false];
-
-  for (const schedule of scheduleTask) {
-    const dayIndex = daysOfWeek.indexOf(schedule.period.toLowerCase());
-    if (dayIndex === -1) {
-      throw new Error(`Invalid day: ${schedule}`);
-    }
-
-    daysArray[dayIndex] = true;
-  }
-
-  return {
-    startOn: scheduleTask[0].start_from ? new Date(scheduleTask[0].start_from) : new Date(),
-    days: daysArray,
-    until: scheduleTask[0].until ? endOfMinute(new Date(scheduleTask[0].until)) : undefined,
-  };
-};
-
-/**
- * Generates a list of ProcessedEvents to occur within the query start and end,
- * based on the provided schedule.
- * @param start The start of the query, which is generally 00:00:00 of the first
- * day in the calendar view.
- * @param end The end of the query, which is generally 23:59:59 of the last day
- * in the calendar view.
- * @param schedule The current schedule, to be checked if there are any events
- * between start and end.
- * @param getEventId Callback function to get the event ID.
- * @param getEventTitle Callback function to get the event title.
- * @returns List of ProcessedEvents to occur within the query start and end.
- */
-function scheduleToEvents(
-  start: Date,
-  end: Date,
-  schedule: ApiSchedule,
-  task: ScheduledTask,
-  getEventId: () => number,
-  getEventTitle: () => string,
-): ProcessedEvent[] {
-  if (!schedule.at) {
-    console.warn('Unable to convert schedule without [at] to an event');
-    return [];
-  }
-  const [hours, minutes] = schedule.at.split(':').map((s: string) => Number(s));
-  let cur = new Date(start);
-  cur.setHours(hours);
-  cur.setMinutes(minutes);
-
-  const scheStartFrom = schedule.start_from ? startOfMinute(new Date(schedule.start_from)) : null;
-  const scheUntil = schedule.until ? endOfMinute(new Date(schedule.until)) : null;
-
-  let period = 8.64e7; // 1 day
-  switch (schedule.period) {
-    case 'day':
-      break;
-    case 'monday':
-      cur = isMonday(cur) ? cur : nextMonday(cur);
-      period *= 7;
-      break;
-    case 'tuesday':
-      cur = isTuesday(cur) ? cur : nextTuesday(cur);
-      period *= 7;
-      break;
-    case 'wednesday':
-      cur = isWednesday(cur) ? cur : nextWednesday(cur);
-      period *= 7;
-      break;
-    case 'thursday':
-      cur = isThursday(cur) ? cur : nextThursday(cur);
-      period *= 7;
-      break;
-    case 'friday':
-      cur = isFriday(cur) ? cur : nextFriday(cur);
-      period *= 7;
-      break;
-    case 'saturday':
-      cur = isSaturday(cur) ? cur : nextSaturday(cur);
-      period *= 7;
-      break;
-    case 'sunday':
-      cur = isSunday(cur) ? cur : nextSunday(cur);
-      period *= 7;
-      break;
-    default:
-      console.warn(`Unable to convert schedule with period [${schedule.period}] to events`);
-      return [];
-  }
-
-  const events: ProcessedEvent[] = [];
-  while (cur <= end) {
-    if (
-      (scheStartFrom == null || scheStartFrom <= cur) &&
-      (scheUntil == null || scheUntil >= cur)
-    ) {
-      if (!task.except_dates.includes(cur.toLocaleDateString())) {
-        events.push({
-          start: cur,
-          end: addMinutes(cur, 45),
-          event_id: getEventId(),
-          title: getEventTitle(),
-        });
-      }
-    }
-
-    cur = new Date(cur.valueOf() + period);
-  }
-  return events;
-}
-
-function getScheduledTaskTitle(task: ScheduledTask): string {
-  if (!task.task_request || !task.task_request.category) {
-    return `[${task.id}] Unknown`;
-  }
-  return `[${task.id}] ${task.task_request.category}`;
-}
-
 interface CustomEditorProps {
   scheduler: SchedulerHelpers;
   value: string;
@@ -249,9 +116,9 @@ export const TasksApp = React.memo(
       const { showAlert } = React.useContext(AppControllerContext);
       const [autoRefresh, setAutoRefresh] = React.useState(true);
       const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
-      const [currentScheduleTask, currentScheduledTask] = React.useState<ScheduledTask | undefined>(
-        undefined,
-      );
+      const [currentScheduleTask, setCurrentScheduledTask] = React.useState<
+        ScheduledTask | undefined
+      >(undefined);
       const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
       const [openTaskSummary, setOpenTaskSummary] = React.useState(false);
       const [selectedTask, setSelectedTask] = React.useState<TaskState | null>(null);
@@ -522,18 +389,24 @@ export const TasksApp = React.memo(
             toApiSchedule(req, schedule && schedule),
           );
 
+          let exceptDate: string | undefined = undefined;
+          if (eventScope === EventScopes.CURRENT) {
+            exceptDate = exceptDateRef.current.toISOString();
+          }
+
           await Promise.all(
             scheduleRequests.map((req) =>
               rmf.tasksApi.updateScheduleTaskScheduledTasksTaskIdUpdatePost(
                 currentScheduleTask.id,
                 req,
+                exceptDate,
               ),
             ),
           );
 
           AppEvents.refreshTaskApp.next();
         },
-        [rmf, currentScheduleTask],
+        [rmf, currentScheduleTask, eventScope],
       );
 
       const CustomEditor = ({ scheduler, value, onChange }: CustomEditorProps) => {
@@ -552,10 +425,14 @@ export const TasksApp = React.memo(
             onSubmit={() => {
               setOpenCreateTaskForm(true);
               const task = scheduler.edited && eventsMap.current[Number(scheduler.edited.event_id)];
-              if (task) {
-                currentScheduledTask(task);
-                AppEvents.refreshTaskApp.next();
+              if (!task) {
+                throw new Error('No task found');
               }
+              setCurrentScheduledTask(task);
+              if (eventScope === EventScopes.CURRENT) {
+                setSelectedSchedule(scheduleWithSelectedDay(task.schedules, exceptDateRef.current));
+              }
+              AppEvents.refreshTaskApp.next();
               scheduler.close();
             }}
           >
