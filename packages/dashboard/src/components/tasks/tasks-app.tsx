@@ -61,7 +61,7 @@ const RefreshTaskQueueTableInterval = 5000;
  - Create logic for editing single instance [x]
  - Create a util file for those repeated functions in appbar and tasks-app [x]
  - Create hooks to return the username [similar to useCreateTaskForm hook] [x]
- - Block all cells if they have no events. Currently it works only for weeks []
+ - Block all cells if they have no events. Currently it works only for weeks [x]
  - Check why the first event returns id -1 []
  - Check if variable names makes sense []
  - Create test for new react components []
@@ -107,6 +107,26 @@ interface CustomEditorProps {
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
+
+const disablingCellsWithoutEvents = (
+  events: ProcessedEvent[],
+  { start, ...props }: CellRenderedProps,
+): React.ReactElement => {
+  const filteredEvents = events.filter((event) => start.getTime() !== event.start.getTime());
+  const disabled = filteredEvents.length > 0 || events.length === 0;
+  const restProps = disabled ? {} : props;
+  return (
+    <Button
+      style={{
+        height: '100%',
+        background: disabled ? '#eee' : 'transparent',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+      }}
+      disableRipple={disabled}
+      {...restProps}
+    />
+  );
+};
 
 export const TasksApp = React.memo(
   React.forwardRef(
@@ -549,35 +569,29 @@ export const TasksApp = React.memo(
               // react-scheduler does not support refreshing, workaround by mounting a new instance.
               key={`scheduler-${refreshTaskAppCount}`}
               view="week"
+              month={{
+                weekDays: [0, 1, 2, 3, 4, 5, 6],
+                weekStartOn: 1,
+                startHour: 0,
+                endHour: 23,
+                cellRenderer: ({ start, ...props }: CellRenderedProps) =>
+                  disablingCellsWithoutEvents(events, { start, ...props }),
+              }}
               week={{
                 weekDays: [0, 1, 2, 3, 4, 5, 6],
                 weekStartOn: 1,
                 startHour: 0,
                 endHour: 23,
                 step: 60,
-                cellRenderer: ({ start, ...props }: CellRenderedProps) => {
-                  const filteredEvents = events.filter(
-                    (event) => start.getTime() !== event.start.getTime(),
-                  );
-                  const disabled = filteredEvents.length > 0;
-                  const restProps = disabled ? {} : props;
-                  return (
-                    <Button
-                      style={{
-                        height: '100%',
-                        background: disabled ? '#eee' : 'transparent',
-                        cursor: disabled ? 'not-allowed' : 'pointer',
-                      }}
-                      disableRipple={disabled}
-                      {...restProps}
-                    />
-                  );
-                },
+                cellRenderer: ({ start, ...props }: CellRenderedProps) =>
+                  disablingCellsWithoutEvents(events, { start, ...props }),
               }}
               day={{
                 startHour: 0,
                 endHour: 23,
                 step: 60,
+                cellRenderer: ({ start, ...props }: CellRenderedProps) =>
+                  disablingCellsWithoutEvents(events, { start, ...props }),
               }}
               draggable={false}
               editable={true}
