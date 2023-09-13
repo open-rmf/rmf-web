@@ -22,8 +22,6 @@ import {
 import {
   ApiServerModelsTortoiseModelsScheduledTaskScheduledTask as ScheduledTask,
   ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf as ApiSchedule,
-  PostScheduledTaskRequest,
-  TaskRequest,
   TaskState,
 } from 'api-client';
 import {
@@ -66,18 +64,19 @@ import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
+import { toApiSchedule } from '../utils';
 import { TaskSummary } from './task-summary';
 import { downloadCsvFull, downloadCsvMinimal } from './utils';
 
 const RefreshTaskQueueTableInterval = 5000;
 
 /*Scheduling TODOS [CR]: 
- - Check why the first event returns id -1
- - Create hooks to return the username [similar to useCreateTaskForm hook]
- - Create a util file for those repeated functions in appbar and tasks-app
- - Create logic for editing single instance
- - Check if variable names makes sense
- - Clean a little the code 
+ - Check why the first event returns id -1 []
+ - Create hooks to return the username [similar to useCreateTaskForm hook] []
+ - Create a util file for those repeated functions in appbar and tasks-app [x]
+ - Create logic for editing single instance []
+ - Check if variable names makes sense []
+ - Clean a little the code []
 
 */
 
@@ -113,28 +112,6 @@ function TabPanel(props: TabPanelProps) {
       {selectedTabIndex === index && <Box sx={{ p: 3 }}>{children}</Box>}
     </div>
   );
-}
-
-function toApiSchedule(taskRequest: TaskRequest, schedule: Schedule): PostScheduledTaskRequest {
-  const start = schedule.startOn;
-  const apiSchedules: PostScheduledTaskRequest['schedules'] = [];
-  const date = new Date(start);
-  const start_from = start.toISOString();
-  const until = schedule.until?.toISOString();
-  const hours = date.getHours().toString().padStart(2, '0');
-  const minutes = date.getMinutes().toString().padStart(2, '0');
-  const at = `${hours}:${minutes}`;
-  schedule.days[0] && apiSchedules.push({ period: 'monday', start_from, at, until });
-  schedule.days[1] && apiSchedules.push({ period: 'tuesday', start_from, at, until });
-  schedule.days[2] && apiSchedules.push({ period: 'wednesday', start_from, at, until });
-  schedule.days[3] && apiSchedules.push({ period: 'thursday', start_from, at, until });
-  schedule.days[4] && apiSchedules.push({ period: 'friday', start_from, at, until });
-  schedule.days[5] && apiSchedules.push({ period: 'saturday', start_from, at, until });
-  schedule.days[6] && apiSchedules.push({ period: 'sunday', start_from, at, until });
-  return {
-    task_request: taskRequest,
-    schedules: apiSchedules,
-  };
 }
 
 const apiScheduleToSchedule = (scheduleTask: ApiSchedule[]): Schedule => {

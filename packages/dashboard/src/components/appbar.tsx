@@ -26,7 +26,6 @@ import {
 } from '@mui/material';
 import {
   ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
-  PostScheduledTaskRequest,
   TaskFavoritePydantic as TaskFavorite,
   TaskRequest,
 } from 'api-client';
@@ -35,11 +34,9 @@ import {
   AppBarTab,
   CreateTaskForm,
   CreateTaskFormProps,
-  getPlaces,
   HeaderBar,
   LogoButton,
   NavigationBar,
-  Schedule,
   useAsync,
 } from 'react-components';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -66,6 +63,7 @@ import { parseTasksFile } from './tasks/utils';
 import { Subscription } from 'rxjs';
 import { formatDistance } from 'date-fns';
 import { useCreateTaskFormData } from '../hooks/useCreateTaskForm';
+import { toApiSchedule } from './utils';
 
 export type TabValue = 'infrastructure' | 'robots' | 'tasks' | 'custom1' | 'custom2' | 'admin';
 
@@ -121,28 +119,6 @@ function AppSettings() {
       </RadioGroup>
     </FormControl>
   );
-}
-
-function toApiSchedule(taskRequest: TaskRequest, schedule: Schedule): PostScheduledTaskRequest {
-  const start = schedule.startOn;
-  const apiSchedules: PostScheduledTaskRequest['schedules'] = [];
-  const date = new Date(start);
-  const start_from = start.toISOString();
-  const until = schedule.until?.toISOString();
-  const hours = date.getHours().toString().padStart(2, '0');
-  const minutes = date.getMinutes().toString().padStart(2, '0');
-  const at = `${hours}:${minutes}`;
-  schedule.days[0] && apiSchedules.push({ period: 'monday', start_from, at, until });
-  schedule.days[1] && apiSchedules.push({ period: 'tuesday', start_from, at, until });
-  schedule.days[2] && apiSchedules.push({ period: 'wednesday', start_from, at, until });
-  schedule.days[3] && apiSchedules.push({ period: 'thursday', start_from, at, until });
-  schedule.days[4] && apiSchedules.push({ period: 'friday', start_from, at, until });
-  schedule.days[5] && apiSchedules.push({ period: 'saturday', start_from, at, until });
-  schedule.days[6] && apiSchedules.push({ period: 'sunday', start_from, at, until });
-  return {
-    task_request: taskRequest,
-    schedules: apiSchedules,
-  };
 }
 
 export interface AppBarProps {
