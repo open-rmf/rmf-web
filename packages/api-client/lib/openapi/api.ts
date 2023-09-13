@@ -8441,12 +8441,14 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      * @summary Update Schedule Task
      * @param {number} taskId
      * @param {PostScheduledTaskRequest} postScheduledTaskRequest
+     * @param {string} [exceptDate]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     updateScheduleTaskScheduledTasksTaskIdUpdatePost: async (
       taskId: number,
       postScheduledTaskRequest: PostScheduledTaskRequest,
+      exceptDate?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'taskId' is not null or undefined
@@ -8471,6 +8473,11 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      if (exceptDate !== undefined) {
+        localVarQueryParameter['except_date'] =
+          (exceptDate as any) instanceof Date ? (exceptDate as any).toISOString() : exceptDate;
+      }
 
       localVarHeaderParameter['Content-Type'] = 'application/json';
 
@@ -8952,12 +8959,14 @@ export const TasksApiFp = function (configuration?: Configuration) {
      * @summary Update Schedule Task
      * @param {number} taskId
      * @param {PostScheduledTaskRequest} postScheduledTaskRequest
+     * @param {string} [exceptDate]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async updateScheduleTaskScheduledTasksTaskIdUpdatePost(
       taskId: number,
       postScheduledTaskRequest: PostScheduledTaskRequest,
+      exceptDate?: string,
       options?: AxiosRequestConfig,
     ): Promise<
       (
@@ -8969,6 +8978,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
         await localVarAxiosParamCreator.updateScheduleTaskScheduledTasksTaskIdUpdatePost(
           taskId,
           postScheduledTaskRequest,
+          exceptDate,
           options,
         );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -9358,16 +9368,23 @@ export const TasksApiFactory = function (
      * @summary Update Schedule Task
      * @param {number} taskId
      * @param {PostScheduledTaskRequest} postScheduledTaskRequest
+     * @param {string} [exceptDate]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     updateScheduleTaskScheduledTasksTaskIdUpdatePost(
       taskId: number,
       postScheduledTaskRequest: PostScheduledTaskRequest,
+      exceptDate?: string,
       options?: any,
     ): AxiosPromise<ApiServerModelsTortoiseModelsScheduledTaskScheduledTask> {
       return localVarFp
-        .updateScheduleTaskScheduledTasksTaskIdUpdatePost(taskId, postScheduledTaskRequest, options)
+        .updateScheduleTaskScheduledTasksTaskIdUpdatePost(
+          taskId,
+          postScheduledTaskRequest,
+          exceptDate,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
   };
@@ -9785,6 +9802,7 @@ export class TasksApi extends BaseAPI {
    * @summary Update Schedule Task
    * @param {number} taskId
    * @param {PostScheduledTaskRequest} postScheduledTaskRequest
+   * @param {string} [exceptDate]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
@@ -9792,10 +9810,16 @@ export class TasksApi extends BaseAPI {
   public updateScheduleTaskScheduledTasksTaskIdUpdatePost(
     taskId: number,
     postScheduledTaskRequest: PostScheduledTaskRequest,
+    exceptDate?: string,
     options?: AxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .updateScheduleTaskScheduledTasksTaskIdUpdatePost(taskId, postScheduledTaskRequest, options)
+      .updateScheduleTaskScheduledTasksTaskIdUpdatePost(
+        taskId,
+        postScheduledTaskRequest,
+        exceptDate,
+        options,
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 }

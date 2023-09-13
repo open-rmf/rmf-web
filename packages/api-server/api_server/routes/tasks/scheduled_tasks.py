@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime
+from typing import Optional
 
 import schedule
 import tortoise.transactions
@@ -165,6 +166,7 @@ async def del_scheduled_tasks_event(
 async def update_schedule_task(
     task_id: int,
     scheduled_task_request: PostScheduledTaskRequest,
+    except_date: Optional[datetime] = None,
     task_repo: TaskRepository = Depends(task_repo_dep),
 ):
     try:
@@ -172,29 +174,53 @@ async def update_schedule_task(
         if task is None:
             raise HTTPException(404)
 
-        async with tortoise.transactions.in_transaction():
-            task.update_from_dict(
-                {
-                    "task_request": scheduled_task_request.task_request.json(
-                        exclude_none=True
-                    )
-                }
-            )
+        if except_date:
+            task.except_dates.append(datetime_to_date_format(except_date))
+            await task.save()
 
             for sche in task.schedules:
                 schedule.clear(sche.get_id())
-            for sche in task.schedules:
-                await sche.delete()
-
-            await task.save()
-            schedules = [
-                ttm.ScheduledTaskSchedule(scheduled_task=task, **x.dict())
-                for x in scheduled_task_request.schedules
-            ]
-
-            await ttm.ScheduledTaskSchedule.bulk_create(schedules)
 
             await schedule_task(task, task_repo)
+
+            async with tortoise.transactions.in_transaction():
+                scheduled_task = await ttm.ScheduledTask.create(
+                    task_request=scheduled_task_request.task_request.json(
+                        exclude_none=True
+                    ),
+                    created_by=task.created_by,
+                )
+                schedules = [
+                    ttm.ScheduledTaskSchedule(scheduled_task=scheduled_task, **x.dict())
+                    for x in scheduled_task_request.schedules
+                ]
+                await ttm.ScheduledTaskSchedule.bulk_create(schedules)
+
+                await schedule_task(scheduled_task, task_repo)
+        else:
+            async with tortoise.transactions.in_transaction():
+                task.update_from_dict(
+                    {
+                        "task_request": scheduled_task_request.task_request.json(
+                            exclude_none=True
+                        )
+                    }
+                )
+
+                for sche in task.schedules:
+                    schedule.clear(sche.get_id())
+                for sche in task.schedules:
+                    await sche.delete()
+
+                await task.save()
+                schedules = [
+                    ttm.ScheduledTaskSchedule(scheduled_task=task, **x.dict())
+                    for x in scheduled_task_request.schedules
+                ]
+
+                await ttm.ScheduledTaskSchedule.bulk_create(schedules)
+
+                await schedule_task(task, task_repo)
     except schedule.ScheduleError as e:
         raise HTTPException(422, str(e)) from e
 

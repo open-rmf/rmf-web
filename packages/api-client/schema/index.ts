@@ -1295,6 +1295,12 @@ export default {
             name: 'task_id',
             in: 'path',
           },
+          {
+            required: false,
+            schema: { title: 'Except Date', type: 'string', format: 'date-time' },
+            name: 'except_date',
+            in: 'query',
+          },
         ],
         requestBody: {
           content: {
