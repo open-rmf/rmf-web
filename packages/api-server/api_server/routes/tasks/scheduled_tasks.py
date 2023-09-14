@@ -203,7 +203,8 @@ async def update_schedule_task(
                     {
                         "task_request": scheduled_task_request.task_request.json(
                             exclude_none=True
-                        )
+                        ),
+                        "except_dates": [],
                     }
                 )
 
