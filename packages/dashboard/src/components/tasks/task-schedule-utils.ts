@@ -5,6 +5,7 @@ import {
 } from 'api-client';
 import {
   addMinutes,
+  endOfDay,
   endOfMinute,
   isFriday,
   isMonday,
@@ -127,7 +128,7 @@ export const scheduleWithSelectedDay = (scheduleTask: ApiSchedule[], date: Date)
   return {
     startOn: scheduleTask[0].start_from ? new Date(scheduleTask[0].start_from) : new Date(),
     days: daysArray,
-    until: endOfMinute(new Date(date)),
+    until: endOfDay(new Date(date.toISOString())),
   };
 };
 
