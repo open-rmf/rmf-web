@@ -456,6 +456,7 @@ export const TasksApp = React.memo(
               if (eventScope === EventScopes.CURRENT) {
                 setSelectedSchedule(scheduleWithSelectedDay(task.schedules, exceptDateRef.current));
               }
+              setEventScope(EventScopes.CURRENT);
               AppEvents.refreshTaskApp.next();
               scheduler.close();
             }}
