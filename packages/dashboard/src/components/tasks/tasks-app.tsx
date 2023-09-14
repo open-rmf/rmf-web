@@ -63,20 +63,24 @@ const RefreshTaskQueueTableInterval = 5000;
  - Create hooks to return the username [similar to useCreateTaskForm hook] [x]
  - Block all cells if they have no events. Currently it works only for weeks [x]
  - Create test for new react components [x]
- - Check why the first event returns id -1 []
- - Check if variable names makes sense []
+ - Check why the first event returns id -1 [x]
  - Clean a little the code []
 */
+
+enum EventScopes {
+  ALL = 'all',
+  CURRENT = 'current',
+}
+
+enum TaskTablePanel {
+  QueueTable = 0,
+  Schedule = 1,
+}
 
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   selectedTabIndex: number;
-}
-
-enum EventScopes {
-  ALL = 'all',
-  CURRENT = 'current',
 }
 
 function tabId(index: number): string {
@@ -136,30 +140,30 @@ export const TasksApp = React.memo(
     ) => {
       const rmf = React.useContext(RmfAppContext);
       const { showAlert } = React.useContext(AppControllerContext);
+      const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames } =
+        useCreateTaskFormData(rmf);
+      const username = useGetUsername(rmf);
+
       const [autoRefresh, setAutoRefresh] = React.useState(true);
       const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
-      const [currentScheduleTask, setCurrentScheduledTask] = React.useState<
-        ScheduledTask | undefined
-      >(undefined);
+
       const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
       const [openTaskSummary, setOpenTaskSummary] = React.useState(false);
-      const [selectedTask, setSelectedTask] = React.useState<TaskState | null>(null);
+      const [openDeleteScheduleDialog, setOpenDeleteScheduleDialog] = React.useState(false);
+      const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
+
       const [selectedSchedule, setSelectedSchedule] = React.useState<Schedule>({
         startOn: new Date(),
         days: [false, false, false, false, false, false, false],
         until: undefined,
       });
-
-      const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames } =
-        useCreateTaskFormData(rmf);
-      const username = useGetUsername(rmf);
-
-      const [openDeleteScheduleDialog, setOpenDeleteScheduleDialog] = React.useState(false);
+      const [currentScheduleTask, setCurrentScheduledTask] = React.useState<
+        ScheduledTask | undefined
+      >(undefined);
       const [events, setEvents] = React.useState<ProcessedEvent[]>([]);
       const [eventScope, setEventScope] = React.useState<string>(EventScopes.CURRENT);
-      const [currentEventId, setCurrentEventId] = React.useState<number>(-1);
-      const exceptDateRef = React.useRef<Date>(new Date());
-      const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
+
+      const [selectedTask, setSelectedTask] = React.useState<TaskState | null>(null);
       const [tasksState, setTasksState] = React.useState<Tasks>({
         isLoading: true,
         data: [],
@@ -167,9 +171,11 @@ export const TasksApp = React.memo(
         page: 1,
         pageSize: 10,
       });
-
       const [filterFields, setFilterFields] = React.useState<FilterFields>({ model: undefined });
       const [sortFields, setSortFields] = React.useState<SortFields>({ model: undefined });
+
+      const exceptDateRef = React.useRef<Date>(new Date());
+      const currentEventIdRef = React.useRef<number>(-1);
 
       React.useEffect(() => {
         const sub = AppEvents.refreshTaskApp.subscribe({
@@ -355,11 +361,6 @@ export const TasksApp = React.memo(
         [rmf],
       );
 
-      enum TaskTablePanel {
-        QueueTable = 0,
-        Schedule = 1,
-      }
-
       const [selectedPanelIndex, setSelectedPanelIndex] = React.useState(TaskTablePanel.QueueTable);
 
       const handlePanelChange = (_: React.SyntheticEvent, newSelectedTabIndex: number) => {
@@ -370,10 +371,10 @@ export const TasksApp = React.memo(
       const handleSubmitDeleteSchedule: React.MouseEventHandler = async (ev) => {
         ev.preventDefault();
         try {
-          const task = eventsMap.current[Number(currentEventId)];
+          const task = eventsMap.current[Number(currentEventIdRef.current)];
 
           if (!task) {
-            throw new Error(`unable to find task for event ${currentEventId}`);
+            throw new Error(`unable to find task for event ${currentEventIdRef.current}`);
           }
           if (!rmf) {
             throw new Error('tasks api not available');
@@ -391,7 +392,7 @@ export const TasksApp = React.memo(
 
           // Set the default values
           setOpenDeleteScheduleDialog(false);
-          setCurrentEventId(-1);
+          currentEventIdRef.current = -1;
           setEventScope(EventScopes.CURRENT);
         } catch (e) {
           console.error(`Failed to delete scheduled task: ${e}`);
@@ -447,7 +448,7 @@ export const TasksApp = React.memo(
             }}
             onSubmit={() => {
               setOpenCreateTaskForm(true);
-              const task = scheduler.edited && eventsMap.current[Number(scheduler.edited.event_id)];
+              const task = eventsMap.current[Number(currentEventIdRef.current)];
               if (!task) {
                 throw new Error('No task found');
               }
@@ -597,10 +598,11 @@ export const TasksApp = React.memo(
               editable={true}
               getRemoteEvents={getRemoteEvents}
               onEventClick={(event: ProcessedEvent) => {
+                currentEventIdRef.current = Number(event.event_id);
                 exceptDateRef.current = event.start;
               }}
               onDelete={async (deletedId: number) => {
-                setCurrentEventId(Number(deletedId));
+                currentEventIdRef.current = Number(deletedId);
                 setOpenDeleteScheduleDialog(true);
               }}
               customEditor={(scheduler) => (
