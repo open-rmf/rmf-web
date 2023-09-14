@@ -428,6 +428,7 @@ export const TasksApp = React.memo(
             ),
           );
 
+          setEventScope(EventScopes.CURRENT);
           AppEvents.refreshTaskApp.next();
         },
         [rmf, currentScheduleTask, eventScope],
@@ -456,7 +457,6 @@ export const TasksApp = React.memo(
               if (eventScope === EventScopes.CURRENT) {
                 setSelectedSchedule(scheduleWithSelectedDay(task.schedules, exceptDateRef.current));
               }
-              setEventScope(EventScopes.CURRENT);
               AppEvents.refreshTaskApp.next();
               scheduler.close();
             }}
@@ -633,7 +633,11 @@ export const TasksApp = React.memo(
               scheduleUnderEdition={true}
               currentSchedule={selectedSchedule}
               requestTask={currentScheduleTask?.task_request}
-              onClose={() => setOpenCreateTaskForm(false)}
+              onClose={() => {
+                setOpenCreateTaskForm(false);
+                setEventScope(EventScopes.CURRENT);
+                AppEvents.refreshTaskApp.next();
+              }}
               submitTasks={submitTasks}
               onSuccess={() => {
                 setOpenCreateTaskForm(false);
