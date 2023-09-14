@@ -174,16 +174,20 @@ async def update_schedule_task(
         if task is None:
             raise HTTPException(404)
 
-        if except_date:
-            task.except_dates.append(datetime_to_date_format(except_date))
-            await task.save()
+        # If except_date; single event: that event is deleted from the previous task, and a new one is created
+        #   with the data requested in the schedule form [scheduled_task_request.schedules].
+        # Else; entire series: Task is completely deleted and another one is created
+        #   with the changes requested by the user.
+        async with tortoise.transactions.in_transaction():
+            if except_date:
+                task.except_dates.append(datetime_to_date_format(except_date))
+                await task.save()
 
-            for sche in task.schedules:
-                schedule.clear(sche.get_id())
+                for sche in task.schedules:
+                    schedule.clear(sche.get_id())
 
-            await schedule_task(task, task_repo)
+                await schedule_task(task, task_repo)
 
-            async with tortoise.transactions.in_transaction():
                 scheduled_task = await ttm.ScheduledTask.create(
                     task_request=scheduled_task_request.task_request.json(
                         exclude_none=True
@@ -197,8 +201,7 @@ async def update_schedule_task(
                 await ttm.ScheduledTaskSchedule.bulk_create(schedules)
 
                 await schedule_task(scheduled_task, task_repo)
-        else:
-            async with tortoise.transactions.in_transaction():
+            else:
                 task.update_from_dict(
                     {
                         "task_request": scheduled_task_request.task_request.json(
