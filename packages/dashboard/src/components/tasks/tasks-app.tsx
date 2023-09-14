@@ -160,7 +160,7 @@ export const TasksApp = React.memo(
       const [currentScheduleTask, setCurrentScheduledTask] = React.useState<
         ScheduledTask | undefined
       >(undefined);
-      const [events, setEvents] = React.useState<ProcessedEvent[]>([]);
+      const [calendarEvents, setCalendarEvents] = React.useState<ProcessedEvent[]>([]);
       const [eventScope, setEventScope] = React.useState<string>(EventScopes.CURRENT);
 
       const [selectedTask, setSelectedTask] = React.useState<TaskState | null>(null);
@@ -344,19 +344,18 @@ export const TasksApp = React.memo(
             return counter++;
           };
           eventsMap.current = {};
-          return tasks.flatMap((t: ScheduledTask) => {
-            setSelectedSchedule(apiScheduleToSchedule(t.schedules));
-            return t.schedules.flatMap<ProcessedEvent>((s: ApiSchedule) => {
+          return tasks.flatMap((t: ScheduledTask) =>
+            t.schedules.flatMap<ProcessedEvent>((s: ApiSchedule) => {
               const events = scheduleToEvents(params.start, params.end, s, t, getEventId, () =>
                 getScheduledTaskTitle(t),
               );
               events.forEach((ev) => {
                 eventsMap.current[Number(ev.event_id)] = t;
               });
-              setEvents(events);
+              setCalendarEvents(events);
               return events;
-            });
-          });
+            }),
+          );
         },
         [rmf],
       );
@@ -454,6 +453,7 @@ export const TasksApp = React.memo(
                 throw new Error('No task found');
               }
               setCurrentScheduledTask(task);
+              setSelectedSchedule(apiScheduleToSchedule(task.schedules));
               if (eventScope === EventScopes.CURRENT) {
                 setSelectedSchedule(scheduleWithSelectedDay(task.schedules, exceptDateRef.current));
               }
@@ -577,7 +577,7 @@ export const TasksApp = React.memo(
                 startHour: 0,
                 endHour: 23,
                 cellRenderer: ({ start, ...props }: CellRenderedProps) =>
-                  disablingCellsWithoutEvents(events, { start, ...props }),
+                  disablingCellsWithoutEvents(calendarEvents, { start, ...props }),
               }}
               week={{
                 weekDays: [0, 1, 2, 3, 4, 5, 6],
@@ -586,14 +586,14 @@ export const TasksApp = React.memo(
                 endHour: 23,
                 step: 60,
                 cellRenderer: ({ start, ...props }: CellRenderedProps) =>
-                  disablingCellsWithoutEvents(events, { start, ...props }),
+                  disablingCellsWithoutEvents(calendarEvents, { start, ...props }),
               }}
               day={{
                 startHour: 0,
                 endHour: 23,
                 step: 60,
                 cellRenderer: ({ start, ...props }: CellRenderedProps) =>
-                  disablingCellsWithoutEvents(events, { start, ...props }),
+                  disablingCellsWithoutEvents(calendarEvents, { start, ...props }),
               }}
               draggable={false}
               editable={true}
