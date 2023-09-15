@@ -10,7 +10,7 @@ describe('submit task', () => {
       const options = await $$('[role=option]');
       for (const opt of options) {
         const text = await opt.getText();
-        if (text === 'Delivery') {
+        if (text === 'Delivery - 1:1') {
           return opt;
         }
       }
