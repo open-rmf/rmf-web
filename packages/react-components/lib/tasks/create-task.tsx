@@ -183,7 +183,6 @@ function DeliveryTaskForm({
   const onInputChange = (desc: DeliveryTaskDescription) => {
     allowSubmit(isDeliveryTaskDescriptionValid(desc, pickupPoints, dropoffPoints));
     onChange(desc);
-    console.log('onchange called');
   };
 
   return (
@@ -191,6 +190,7 @@ function DeliveryTaskForm({
       <Grid item xs={8}>
         <Autocomplete
           id="pickup-location"
+          freeSolo
           fullWidth
           options={Object.keys(pickupPoints)}
           value={taskDesc.pickup.place}
@@ -240,14 +240,14 @@ function DeliveryTaskForm({
                 ...taskDesc.pickup,
                 payload: {
                   ...taskDesc.pickup.payload,
-                  sku: `${val}`,
+                  sku: val.toString(),
                 },
               },
               dropoff: {
                 ...taskDesc.dropoff,
                 payload: {
                   ...taskDesc.dropoff.payload,
-                  sku: `${val}`,
+                  sku: val.toString(),
                 },
               },
             });
@@ -262,6 +262,7 @@ function DeliveryTaskForm({
       <Grid item xs={8}>
         <Autocomplete
           id="dropoff-location"
+          freeSolo
           fullWidth
           options={Object.keys(dropoffPoints)}
           value={taskDesc.dropoff.place}
@@ -486,7 +487,7 @@ function defaultDeliveryTask(): DeliveryTaskDescription {
       place: '',
       handler: '',
       payload: {
-        sku: '',
+        sku: '0',
         quantity: 1,
       },
     },
@@ -494,7 +495,7 @@ function defaultDeliveryTask(): DeliveryTaskDescription {
       place: '',
       handler: '',
       payload: {
-        sku: '',
+        sku: '0',
         quantity: 1,
       },
     },
