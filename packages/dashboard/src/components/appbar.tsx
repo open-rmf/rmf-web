@@ -235,10 +235,10 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
         const dropoffPoints: Record<string, string> = {};
         const cleaningZoneNames: string[] = [];
         for (const p of places) {
-          if (p.pickupHandler !== undefined && p.pickupHandler.length !== 0) {
+          if (p.pickupHandler !== undefined) {
             pickupPoints[p.vertex.name] = p.pickupHandler;
           }
-          if (p.dropoffHandler !== undefined && p.dropoffHandler.length !== 0) {
+          if (p.dropoffHandler !== undefined) {
             dropoffPoints[p.vertex.name] = p.dropoffHandler;
           }
           if (p.cleaningZone !== undefined && p.cleaningZone === true) {
