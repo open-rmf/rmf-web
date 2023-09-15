@@ -38,25 +38,23 @@ import type { TaskFavoritePydantic as TaskFavorite, TaskRequest } from 'api-clie
 import React from 'react';
 import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
+import { PositiveIntField } from '../form-inputs';
 
 // A bunch of manually defined descriptions to avoid using `any`.
+interface Payload {
+  sku: string;
+  quantity: number;
+}
+
+interface DeliveryPlace {
+  place: string;
+  handler: string;
+  payload: Payload;
+}
+
 interface DeliveryTaskDescription {
-  pickup: {
-    place: string;
-    handler: string;
-    payload: {
-      sku: string;
-      quantity: number;
-    };
-  };
-  dropoff: {
-    place: string;
-    handler: string;
-    payload: {
-      sku: string;
-      quantity: number;
-    };
-  };
+  pickup: DeliveryPlace;
+  dropoff: DeliveryPlace;
 }
 
 interface PickupActivity {
@@ -79,6 +77,48 @@ interface DeliveryCustomTaskDescription {
 }
 
 type TaskDescription = DeliveryTaskDescription | DeliveryCustomTaskDescription;
+
+const isNonEmptyString = (value: string): boolean => value.length > 0;
+const isPositiveNumber = (value: number): boolean => value >= 0;
+
+const isDeliveryPlaceValid = (place: DeliveryPlace, lookupMap: Record<string, string>): boolean => {
+  return (
+    isNonEmptyString(place.place) &&
+    Object.keys(lookupMap).includes(place.place) &&
+    isNonEmptyString(place.handler) &&
+    Object.values(lookupMap).includes(place.handler) &&
+    isNonEmptyString(place.payload.sku) &&
+    isPositiveNumber(place.payload.quantity)
+  );
+};
+
+const isDeliveryTaskDescriptionValid = (
+  taskDescription: DeliveryTaskDescription,
+  pickupPoints: Record<string, string>,
+  dropoffPoints: Record<string, string>,
+): boolean => {
+  return (
+    isDeliveryPlaceValid(taskDescription.pickup, pickupPoints) &&
+    isDeliveryPlaceValid(taskDescription.dropoff, dropoffPoints)
+  );
+};
+
+const isDeliveryCustomTaskDescriptionValid = (
+  taskDescription: DeliveryCustomTaskDescription,
+  pickupZones: string[],
+  dropoffPoints: string[],
+): boolean => {
+  return (
+    taskDescription.activities.length == 2 &&
+    taskDescription.activities[0].category === 'perform_action' &&
+    isNonEmptyString(taskDescription.activities[0].description.pickup_zone) &&
+    pickupZones.includes(taskDescription.activities[0].description.pickup_zone) &&
+    isPositiveNumber(taskDescription.activities[0].description.cart_rfid) &&
+    taskDescription.activities[1].category === 'perform_action' &&
+    isNonEmptyString(taskDescription.activities[1].description.dropoff_point) &&
+    dropoffPoints.includes(taskDescription.activities[1].description.dropoff_point)
+  );
+};
 
 const classes = {
   title: 'dialogue-info-value',
@@ -129,6 +169,7 @@ interface DeliveryTaskFormProps {
   pickupPoints: Record<string, string>;
   dropoffPoints: Record<string, string>;
   onChange(taskDesc: TaskDescription): void;
+  allowSubmit(allow: boolean): void;
 }
 
 function DeliveryTaskForm({
@@ -136,8 +177,13 @@ function DeliveryTaskForm({
   pickupPoints = {},
   dropoffPoints = {},
   onChange,
+  allowSubmit,
 }: DeliveryTaskFormProps) {
   const theme = useTheme();
+  const onInputChange = (desc: DeliveryTaskDescription) => {
+    allowSubmit(isDeliveryTaskDescriptionValid(desc, pickupPoints, dropoffPoints));
+    onChange(desc);
+  };
 
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="left" alignItems="center">
@@ -148,79 +194,69 @@ function DeliveryTaskForm({
           fullWidth
           options={Object.keys(pickupPoints)}
           value={taskDesc.pickup.place}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            pickupPoints[newValue] &&
-            onChange({
+          onInputChange={(_ev, newValue) => {
+            const place = newValue ?? '';
+            const handler =
+              newValue !== null && pickupPoints[newValue] ? pickupPoints[newValue] : '';
+            onInputChange({
               ...taskDesc,
               pickup: {
                 ...taskDesc.pickup,
-                place: newValue,
-                handler: pickupPoints[newValue],
+                place: place,
+                handler: handler,
               },
-            })
-          }
-          onBlur={(ev) =>
-            pickupPoints[(ev.target as HTMLInputElement).value] &&
-            onChange({
+            });
+          }}
+          onBlur={(ev) => {
+            const handler = pickupPoints[(ev.target as HTMLInputElement).value] ?? '';
+            onInputChange({
               ...taskDesc,
               pickup: {
                 ...taskDesc.pickup,
                 place: (ev.target as HTMLInputElement).value,
-                handler: pickupPoints[(ev.target as HTMLInputElement).value],
+                handler: handler,
               },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Pickup Location" />}
+            });
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Pickup Location"
+              required
+              error={!Object.keys(pickupPoints).includes(taskDesc.pickup.place)}
+            />
+          )}
         />
       </Grid>
       <Grid item xs={4}>
-        <Autocomplete
+        <PositiveIntField
           id="pickup_sku"
-          freeSolo
-          fullWidth
-          value={taskDesc.pickup.payload.sku}
-          options={[]}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            onChange({
+          label="Cart RFID"
+          value={parseInt(taskDesc.pickup.payload.sku) ?? 0}
+          onChange={(_ev, val) => {
+            onInputChange({
               ...taskDesc,
               pickup: {
                 ...taskDesc.pickup,
                 payload: {
                   ...taskDesc.pickup.payload,
-                  sku: newValue,
+                  sku: val.toString(),
                 },
               },
               dropoff: {
                 ...taskDesc.dropoff,
                 payload: {
                   ...taskDesc.dropoff.payload,
-                  sku: newValue,
+                  sku: val.toString(),
                 },
               },
-            })
+            });
+          }}
+          required
+          error={
+            Number.isNaN(parseInt(taskDesc.pickup.payload.sku)) ||
+            Number.isNaN(parseInt(taskDesc.dropoff.payload.sku))
           }
-          onBlur={(ev) =>
-            onChange({
-              ...taskDesc,
-              pickup: {
-                ...taskDesc.pickup,
-                payload: {
-                  ...taskDesc.pickup.payload,
-                  sku: (ev.target as HTMLInputElement).value,
-                },
-              },
-              dropoff: {
-                ...taskDesc.dropoff,
-                payload: {
-                  ...taskDesc.dropoff.payload,
-                  sku: (ev.target as HTMLInputElement).value,
-                },
-              },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Cart RFID" />}
         />
       </Grid>
       <Grid item xs={8}>
@@ -230,21 +266,22 @@ function DeliveryTaskForm({
           fullWidth
           options={Object.keys(dropoffPoints)}
           value={taskDesc.dropoff.place}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            dropoffPoints[newValue] &&
-            onChange({
+          onInputChange={(_ev, newValue) => {
+            const place = newValue ?? '';
+            const handler =
+              newValue !== null && dropoffPoints[newValue] ? dropoffPoints[newValue] : '';
+            onInputChange({
               ...taskDesc,
               dropoff: {
                 ...taskDesc.dropoff,
-                place: newValue,
-                handler: dropoffPoints[newValue],
+                place: place,
+                handler: handler,
               },
-            })
-          }
+            });
+          }}
           onBlur={(ev) =>
             dropoffPoints[(ev.target as HTMLInputElement).value] &&
-            onChange({
+            onInputChange({
               ...taskDesc,
               dropoff: {
                 ...taskDesc.dropoff,
@@ -253,7 +290,14 @@ function DeliveryTaskForm({
               },
             })
           }
-          renderInput={(params) => <TextField {...params} label="Dropoff Location" />}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Dropoff Location"
+              required
+              error={!Object.keys(dropoffPoints).includes(taskDesc.dropoff.place)}
+            />
+          )}
         />
       </Grid>
     </Grid>
@@ -265,6 +309,7 @@ interface DeliveryCustomProps {
   pickupZones: string[];
   dropoffPoints: string[];
   onChange(taskDesc: TaskDescription): void;
+  allowSubmit(allow: boolean): void;
 }
 
 function DeliveryCustomTaskForm({
@@ -272,20 +317,12 @@ function DeliveryCustomTaskForm({
   pickupZones = [],
   dropoffPoints = [],
   onChange,
+  allowSubmit,
 }: DeliveryCustomProps) {
   const theme = useTheme();
-  const pickup_activity: PickupActivity = {
-    category: 'perform_action',
-    description: {
-      pickup_zone: '',
-      cart_rfid: 0,
-    },
-  };
-  const dropoff_activity: DropoffActivity = {
-    category: 'perform_action',
-    description: {
-      dropoff_point: '',
-    },
+  const onInputChange = (desc: DeliveryCustomTaskDescription) => {
+    allowSubmit(isDeliveryCustomTaskDescriptionValid(desc, pickupZones, dropoffPoints));
+    onChange(desc);
   };
 
   return (
@@ -297,40 +334,51 @@ function DeliveryCustomTaskForm({
           fullWidth
           options={pickupZones}
           value={taskDesc.activities[0].description.pickup_zone}
-          onChange={(_ev, newValue) => {
+          onInputChange={(_ev, newValue) => {
             if (newValue === null) {
               return;
             }
+            const pickup_activity = taskDesc.activities[0];
             pickup_activity.description.pickup_zone = newValue;
-            onChange({
+            onInputChange({
               ...taskDesc,
-              activities: [pickup_activity, dropoff_activity],
+              activities: [pickup_activity, taskDesc.activities[1]],
             });
           }}
           onBlur={(ev) => {
+            const pickup_activity = taskDesc.activities[0];
             pickup_activity.description.pickup_zone = (ev.target as HTMLInputElement).value;
-            onChange({
+            onInputChange({
               ...taskDesc,
-              activities: [pickup_activity, dropoff_activity],
+              activities: [pickup_activity, taskDesc.activities[1]],
             });
           }}
-          renderInput={(params) => <TextField {...params} label="Pickup Zone" />}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Pickup Zone"
+              required
+              error={!pickupZones.includes(taskDesc.activities[0].description.pickup_zone)}
+            />
+          )}
         />
       </Grid>
       <Grid item xs={4}>
-        <TextField
+        <PositiveIntField
           id="cart_rfid"
           fullWidth
           label="Cart RFID"
           value={taskDesc.activities[0].description.cart_rfid}
-          inputProps={{ min: 0 }}
-          onChange={(ev) => {
-            pickup_activity.description.cart_rfid = parseInt(ev.target.value);
-            onChange({
+          onChange={(_ev, val) => {
+            const pickup_activity = taskDesc.activities[0];
+            pickup_activity.description.cart_rfid = val;
+            onInputChange({
               ...taskDesc,
-              activities: [pickup_activity, dropoff_activity],
+              activities: [pickup_activity, taskDesc.activities[1]],
             });
           }}
+          required
+          error={Number.isNaN(taskDesc.activities[0].description.cart_rfid)}
         />
       </Grid>
       <Grid item xs={8}>
@@ -340,24 +388,33 @@ function DeliveryCustomTaskForm({
           fullWidth
           options={dropoffPoints}
           value={taskDesc.activities[1].description.dropoff_point}
-          onChange={(_ev, newValue) => {
+          onInputChange={(_ev, newValue) => {
             if (newValue === null) {
               return;
             }
+            const dropoff_activity = taskDesc.activities[1];
             dropoff_activity.description.dropoff_point = newValue;
-            onChange({
+            onInputChange({
               ...taskDesc,
-              activities: [pickup_activity, dropoff_activity],
+              activities: [taskDesc.activities[0], dropoff_activity],
             });
           }}
           onBlur={(ev) => {
+            const dropoff_activity = taskDesc.activities[1];
             dropoff_activity.description.dropoff_point = (ev.target as HTMLInputElement).value;
-            onChange({
+            onInputChange({
               ...taskDesc,
-              activities: [pickup_activity, dropoff_activity],
+              activities: [taskDesc.activities[0], dropoff_activity],
             });
           }}
-          renderInput={(params) => <TextField {...params} label="Dropoff Location" />}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Dropoff Location"
+              required
+              error={!dropoffPoints.includes(taskDesc.activities[1].description.dropoff_point)}
+            />
+          )}
         />
       </Grid>
     </Grid>
@@ -432,7 +489,7 @@ function defaultDeliveryTask(): DeliveryTaskDescription {
       place: '',
       handler: '',
       payload: {
-        sku: '',
+        sku: '0',
         quantity: 1,
       },
     },
@@ -440,7 +497,7 @@ function defaultDeliveryTask(): DeliveryTaskDescription {
       place: '',
       handler: '',
       payload: {
-        sku: '',
+        sku: '0',
         quantity: 1,
       },
     },
@@ -627,6 +684,7 @@ export function CreateTaskForm({
     [taskRequests],
   );
   const [submitting, setSubmitting] = React.useState(false);
+  const [formFullyFilled, setFormFullyFilled] = React.useState(false);
   const taskRequest = taskRequests[selectedTaskIdx];
   const [openSchedulingDialog, setOpenSchedulingDialog] = React.useState(false);
   const [schedule, setSchedule] = React.useState<Schedule>({
@@ -685,6 +743,7 @@ export function CreateTaskForm({
             pickupPoints={pickupPoints}
             dropoffPoints={dropoffPoints}
             onChange={(desc) => handleTaskDescriptionChange('delivery', desc)}
+            allowSubmit={allowSubmit}
           />
         );
       case 'delivery_sequential_lot_pick_up':
@@ -695,6 +754,7 @@ export function CreateTaskForm({
             pickupZones={pickupZones}
             dropoffPoints={Object.keys(dropoffPoints)}
             onChange={(desc) => handleTaskDescriptionChange(taskRequest.category, desc)}
+            allowSubmit={allowSubmit}
           />
         );
       default:
@@ -713,6 +773,10 @@ export function CreateTaskForm({
     setFavoriteTaskBuffer({ ...favoriteTaskBuffer, category: newCategory, description: newDesc });
 
     updateTasks();
+  };
+
+  const allowSubmit = (allow: boolean) => {
+    setFormFullyFilled(allow);
   };
 
   // no memo because deps would likely change
@@ -1032,7 +1096,7 @@ export function CreateTaskForm({
             <Button
               variant="contained"
               color="primary"
-              disabled={submitting}
+              disabled={submitting || !formFullyFilled}
               className={classes.actionBtn}
               onClick={() => setOpenSchedulingDialog(true)}
             >
@@ -1042,7 +1106,7 @@ export function CreateTaskForm({
               variant="contained"
               type="submit"
               color="primary"
-              disabled={submitting}
+              disabled={submitting || !formFullyFilled}
               className={classes.actionBtn}
               aria-label={submitText}
               onClick={handleSubmitNow}
