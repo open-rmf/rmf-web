@@ -113,10 +113,10 @@ function getShortDescription(taskRequest: TaskRequest): string {
     case 'delivery': {
       return `[Delivery - 1:1] from [${taskRequest.description.pickup.place}] to [${taskRequest.description.dropoff.place}]`;
     }
-    case 'delivery_sequential_hunting': {
+    case 'delivery_sequential_lot_pick_up': {
       return `[Delivery - Sequential lot pick up] payload [${taskRequest.description.activities[0].cart_rfid}] from [${taskRequest.description.activities[0].pickup_zone}] to [${taskRequest.description.activities[1].dropoff_point}]`;
     }
-    case 'delivery_area_hunting': {
+    case 'delivery_area_pick_up': {
       return `[Delivery - Area pick up] payload [${taskRequest.description.activities[0].cart_rfid}] from [${taskRequest.description.activities[0].pickup_zone}] to [${taskRequest.description.activities[1].dropoff_point}]`;
     }
     default:
@@ -471,8 +471,8 @@ function defaultTaskDescription(taskCategory: string): TaskDescription | undefin
   switch (taskCategory) {
     case 'delivery':
       return defaultDeliveryTask();
-    case 'delivery_sequential_hunting':
-    case 'delivery_area_hunting':
+    case 'delivery_sequential_lot_pick_up':
+    case 'delivery_area_pick_up':
       return defaultDeliveryCustomTask();
     default:
       return undefined;
@@ -687,22 +687,14 @@ export function CreateTaskForm({
             onChange={(desc) => handleTaskDescriptionChange('delivery', desc)}
           />
         );
-      case 'delivery_sequential_hunting':
+      case 'delivery_sequential_lot_pick_up':
+      case 'delivery_area_pick_up':
         return (
           <DeliveryCustomTaskForm
             taskDesc={taskRequest.description as DeliveryCustomTaskDescription}
             pickupZones={pickupZones}
             dropoffPoints={Object.keys(dropoffPoints)}
-            onChange={(desc) => handleTaskDescriptionChange('delivery_sequential_hunting', desc)}
-          />
-        );
-      case 'delivery_area_hunting':
-        return (
-          <DeliveryCustomTaskForm
-            taskDesc={taskRequest.description as DeliveryCustomTaskDescription}
-            pickupZones={pickupZones}
-            dropoffPoints={Object.keys(dropoffPoints)}
-            onChange={(desc) => handleTaskDescriptionChange('delivery_area_hunting', desc)}
+            onChange={(desc) => handleTaskDescriptionChange(taskRequest.category, desc)}
           />
         );
       default:
@@ -917,13 +909,13 @@ export function CreateTaskForm({
                         Delivery - 1:1
                       </MenuItem>
                       <MenuItem
-                        value="delivery_sequential_hunting"
+                        value="delivery_sequential_lot_pick_up"
                         disabled={Object.keys(dropoffPoints).length === 0}
                       >
                         Delivery - Sequential lot pick up
                       </MenuItem>
                       <MenuItem
-                        value="delivery_area_hunting"
+                        value="delivery_area_pick_up"
                         disabled={Object.keys(dropoffPoints).length === 0}
                       >
                         Delivery - Area pick up
