@@ -74,11 +74,11 @@ interface DropoffActivity {
   };
 }
 
-interface DeliveryHuntingTaskDescription {
+interface DeliveryCustomTaskDescription {
   activities: [pickup_cart: PickupActivity, dropoff_cart: DropoffActivity];
 }
 
-type TaskDescription = DeliveryTaskDescription | DeliveryHuntingTaskDescription;
+type TaskDescription = DeliveryTaskDescription | DeliveryCustomTaskDescription;
 
 const classes = {
   title: 'dialogue-info-value',
@@ -111,13 +111,13 @@ const StyledDialog = styled((props: DialogProps) => <Dialog {...props} />)(({ th
 function getShortDescription(taskRequest: TaskRequest): string {
   switch (taskRequest.category) {
     case 'delivery': {
-      return `[Delivery] from [${taskRequest.description.pickup.place}] to [${taskRequest.description.dropoff.place}]`;
+      return `[Delivery - 1:1] from [${taskRequest.description.pickup.place}] to [${taskRequest.description.dropoff.place}]`;
     }
     case 'delivery_sequential_hunting': {
-      return `[Delivery - Sequential Hunting] payload [${taskRequest.description.activities[0].cart_rfid}] from [${taskRequest.description.activities[0].pickup_zone}] to [${taskRequest.description.activities[1].dropoff_point}]`;
+      return `[Delivery - Sequential lot pick up] payload [${taskRequest.description.activities[0].cart_rfid}] from [${taskRequest.description.activities[0].pickup_zone}] to [${taskRequest.description.activities[1].dropoff_point}]`;
     }
     case 'delivery_area_hunting': {
-      return `[Delivery - Area Hunting] payload [${taskRequest.description.activities[0].cart_rfid}] from [${taskRequest.description.activities[0].pickup_zone}] to [${taskRequest.description.activities[1].dropoff_point}]`;
+      return `[Delivery - Area pick up] payload [${taskRequest.description.activities[0].cart_rfid}] from [${taskRequest.description.activities[0].pickup_zone}] to [${taskRequest.description.activities[1].dropoff_point}]`;
     }
     default:
       return `[Unknown] type "${taskRequest.category}"`;
@@ -260,19 +260,19 @@ function DeliveryTaskForm({
   );
 }
 
-interface DeliveryHuntingProps {
-  taskDesc: DeliveryHuntingTaskDescription;
+interface DeliveryCustomProps {
+  taskDesc: DeliveryCustomTaskDescription;
   pickupZones: string[];
   dropoffPoints: string[];
   onChange(taskDesc: TaskDescription): void;
 }
 
-function DeliveryHuntingTaskForm({
+function DeliveryCustomTaskForm({
   taskDesc,
   pickupZones = [],
   dropoffPoints = [],
   onChange,
-}: DeliveryHuntingProps) {
+}: DeliveryCustomProps) {
   const theme = useTheme();
   const pickup_activity: PickupActivity = {
     category: 'perform_action',
@@ -322,7 +322,6 @@ function DeliveryHuntingTaskForm({
           id="cart_rfid"
           fullWidth
           label="Cart RFID"
-          defaultValue={pickup_activity.description.cart_rfid}
           value={taskDesc.activities[0].description.cart_rfid}
           inputProps={{ min: 0 }}
           onChange={(ev) => {
@@ -448,7 +447,7 @@ function defaultDeliveryTask(): DeliveryTaskDescription {
   };
 }
 
-function defaultDeliveryHuntingTask(): DeliveryHuntingTaskDescription {
+function defaultDeliveryCustomTask(): DeliveryCustomTaskDescription {
   return {
     activities: [
       {
@@ -474,7 +473,7 @@ function defaultTaskDescription(taskCategory: string): TaskDescription | undefin
       return defaultDeliveryTask();
     case 'delivery_sequential_hunting':
     case 'delivery_area_hunting':
-      return defaultDeliveryHuntingTask();
+      return defaultDeliveryCustomTask();
     default:
       return undefined;
   }
@@ -690,8 +689,8 @@ export function CreateTaskForm({
         );
       case 'delivery_sequential_hunting':
         return (
-          <DeliveryHuntingTaskForm
-            taskDesc={taskRequest.description as DeliveryHuntingTaskDescription}
+          <DeliveryCustomTaskForm
+            taskDesc={taskRequest.description as DeliveryCustomTaskDescription}
             pickupZones={pickupZones}
             dropoffPoints={Object.keys(dropoffPoints)}
             onChange={(desc) => handleTaskDescriptionChange('delivery_sequential_hunting', desc)}
@@ -699,8 +698,8 @@ export function CreateTaskForm({
         );
       case 'delivery_area_hunting':
         return (
-          <DeliveryHuntingTaskForm
-            taskDesc={taskRequest.description as DeliveryHuntingTaskDescription}
+          <DeliveryCustomTaskForm
+            taskDesc={taskRequest.description as DeliveryCustomTaskDescription}
             pickupZones={pickupZones}
             dropoffPoints={Object.keys(dropoffPoints)}
             onChange={(desc) => handleTaskDescriptionChange('delivery_area_hunting', desc)}
@@ -881,8 +880,8 @@ export function CreateTaskForm({
                             description: favoriteTask.description,
                             unix_millis_earliest_start_time: Date.now(),
                             priority: favoriteTask.priority,
-                          }]
-                        );
+                          },
+                        ]);
                       }}
                     />
                   );
@@ -915,19 +914,19 @@ export function CreateTaskForm({
                           Object.keys(dropoffPoints).length === 0
                         }
                       >
-                        Delivery
+                        Delivery - 1:1
                       </MenuItem>
                       <MenuItem
                         value="delivery_sequential_hunting"
                         disabled={Object.keys(dropoffPoints).length === 0}
                       >
-                        Delivery - Sequential hunting
+                        Delivery - Sequential lot pick up
                       </MenuItem>
                       <MenuItem
                         value="delivery_area_hunting"
                         disabled={Object.keys(dropoffPoints).length === 0}
                       >
-                        Delivery - Area hunting
+                        Delivery - Area pick up
                       </MenuItem>
                     </TextField>
                   </Grid>
