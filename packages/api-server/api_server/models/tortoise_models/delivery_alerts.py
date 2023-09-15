@@ -29,6 +29,7 @@ class DeliveryAlert(Model):
     tier = CharEnumField(Tier, index=True)
     task_id = CharField(255, index=True, null=True)
     action = CharEnumField(Action, index=True)
+    message = CharField(255, null=True)
 
 
 DeliveryAlertPydantic = pydantic_model_creator(DeliveryAlert)

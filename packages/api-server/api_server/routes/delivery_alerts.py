@@ -40,7 +40,7 @@ async def get_delivery_alert(delivery_alert_id: str):
 
 
 @router.post("", status_code=201, response_model=ttm.DeliveryAlertPydantic)
-async def create_delivery_alert(category: str, tier: str, task_id: str):
+async def create_delivery_alert(category: str, tier: str, task_id: str, message: str):
     timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     delivery_alert_id = f"delivery-alert-{timestamp}"
     try:
@@ -50,6 +50,7 @@ async def create_delivery_alert(category: str, tier: str, task_id: str):
             tier=tier,
             task_id=task_id,
             action="waiting",
+            message=message,
         )
     except Exception as e:
         raise HTTPException(400, f"Could not create delivery alert: {e}") from e
