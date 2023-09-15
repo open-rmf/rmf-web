@@ -54,7 +54,7 @@ const disablingCellsWithoutEvents = (
       style={{
         height: '100%',
         background: disabled ? '#eee' : 'transparent',
-        cursor: disabled ? 'not-allowed' : 'pointer',
+        cursor: disabled ? 'default' : 'pointer',
       }}
       disableRipple={disabled}
       {...restProps}
