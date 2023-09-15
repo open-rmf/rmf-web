@@ -5,9 +5,15 @@ export interface PositiveIntField
   extends Omit<TextFieldProps, 'type' | 'value' | 'inputProps' | 'onChange'> {
   value?: number;
   onChange?(ev: React.ChangeEvent, int: number): void;
+  error?: boolean;
 }
 
-export function PositiveIntField({ value = 0, onChange, ...props }: PositiveIntField): JSX.Element {
+export function PositiveIntField({
+  value = 0,
+  onChange,
+  error,
+  ...props
+}: PositiveIntField): JSX.Element {
   const [valueInput, setValueInput] = React.useState(value.toString());
 
   React.useEffect(() => {
@@ -33,6 +39,7 @@ export function PositiveIntField({ value = 0, onChange, ...props }: PositiveIntF
         }
         setValueInput(ev.target.value);
       }}
+      error={error}
     />
   );
 }
