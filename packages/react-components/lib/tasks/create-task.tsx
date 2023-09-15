@@ -330,6 +330,7 @@ function DeliveryCustomTaskForm({
       <Grid item xs={8}>
         <Autocomplete
           id="pickup-zone"
+          freeSolo
           fullWidth
           options={pickupZones}
           value={taskDesc.activities[0].description.pickup_zone}
@@ -383,6 +384,7 @@ function DeliveryCustomTaskForm({
       <Grid item xs={8}>
         <Autocomplete
           id="dropoff-location"
+          freeSolo
           fullWidth
           options={dropoffPoints}
           value={taskDesc.activities[1].description.dropoff_point}
