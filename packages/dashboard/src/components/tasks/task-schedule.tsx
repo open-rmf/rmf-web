@@ -23,7 +23,7 @@ import useGetUsername from '../../hooks/useFetchUser';
 import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { RmfAppContext } from '../rmf-app';
-import { toApiSchedule } from '../utils';
+import { toApiSchedule } from './utils';
 import {
   apiScheduleToSchedule,
   getScheduledTaskTitle,

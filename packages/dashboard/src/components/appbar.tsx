@@ -63,7 +63,7 @@ import { parseTasksFile } from './tasks/utils';
 import { Subscription } from 'rxjs';
 import { formatDistance } from 'date-fns';
 import { useCreateTaskFormData } from '../hooks/useCreateTaskForm';
-import { toApiSchedule } from './utils';
+import { toApiSchedule } from './tasks/utils';
 import useGetUsername from '../hooks/useFetchUser';
 
 export type TabValue = 'infrastructure' | 'robots' | 'tasks' | 'custom1' | 'custom2' | 'admin';
