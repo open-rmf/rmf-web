@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import { EventEditDeletePopup } from './task-scheduled-edit-delete-popup';
+import { EventEditDeletePopup } from './task-schedule-event-edit-delete-popup';
 
 describe('EventEditDeletePopup', () => {
   const currentValue = 'current';
