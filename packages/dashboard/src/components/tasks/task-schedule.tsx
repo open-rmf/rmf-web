@@ -143,7 +143,7 @@ export const TaskSchedule = () => {
           setOpenCreateTaskForm(true);
           const task = eventsMap.current[Number(currentEventIdRef.current)];
           if (!task) {
-            throw new Error('No task found');
+            throw new Error(`unable to find task for event ${currentEventIdRef.current}`);
           }
           setCurrentScheduledTask(task);
           setScheduleToEdit(apiScheduleToSchedule(task.schedules));
@@ -171,10 +171,10 @@ export const TaskSchedule = () => {
       }
 
       if (!schedule || !currentScheduleTask) {
-        throw new Error('Not schedule or task selected');
+        throw new Error('No schedule or task selected for submission.');
       }
 
-      const scheduleRequests = taskRequests.map((req) => toApiSchedule(req, schedule && schedule));
+      const scheduleRequests = taskRequests.map((req) => toApiSchedule(req, schedule));
 
       let exceptDate: string | undefined = undefined;
       if (eventScope === EventScopes.CURRENT) {
@@ -317,7 +317,7 @@ export const TaskSchedule = () => {
           confirmText={'Ok'}
           cancelText="Cancel"
           open={openDeleteScheduleDialog}
-          title={'Delete event'}
+          title={'Delete recurring event'}
           submitting={undefined}
           onClose={() => {
             setOpenDeleteScheduleDialog(false);
