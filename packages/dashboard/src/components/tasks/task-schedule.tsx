@@ -158,7 +158,6 @@ export const SchedulerTask = () => {
           currentValue={EventScopes.CURRENT}
           allValue={EventScopes.ALL}
           value={value}
-          deleting={false}
           onChange={onChange}
         />
       </ConfirmationDialog>
@@ -331,7 +330,6 @@ export const SchedulerTask = () => {
             currentValue={EventScopes.CURRENT}
             allValue={EventScopes.ALL}
             value={eventScope}
-            deleting={true}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
               setEventScope(event.target.value)
             }
