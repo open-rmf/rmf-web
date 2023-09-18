@@ -173,11 +173,12 @@ async def update_schedule_task(
         task = await get_scheduled_task(task_id)
         if task is None:
             raise HTTPException(404)
+        # If "except_date" is provided, it means a single event is being updated.
+        # In this case, we perform the following steps:
+        #   1. Add the "except_date" to the list of exception dates for the task.
+        #   2. Clear all existing schedules associated with the task.
+        #   3. Create a new scheduled task with the requested data from the schedule form.
 
-        # If except_date; single event: that event is deleted from the previous task, and a new one is created
-        #   with the data requested in the schedule form [scheduled_task_request.schedules].
-        # Else; entire series: Task is completely deleted and another one is created
-        #   with the changes requested by the user.
         async with tortoise.transactions.in_transaction():
             if except_date:
                 task.except_dates.append(datetime_to_date_format(except_date))
@@ -202,6 +203,12 @@ async def update_schedule_task(
 
                 await schedule_task(scheduled_task, task_repo)
             else:
+                # If "except_date" is not provided, it means the entire series is being updated.
+                # In this case, we perform the following steps:
+                #   1. Update the task with the requested data from the schedule form and clear exception dates.
+                #   2. Clear all existing schedules associated with the task.
+                #   3. Delete all existing schedules associated with the task.
+                #   4. Create new schedules based on the requested data.
                 task.update_from_dict(
                     {
                         "task_request": scheduled_task_request.task_request.json(
