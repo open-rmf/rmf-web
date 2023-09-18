@@ -123,7 +123,7 @@ export function ManagedWorkspace({ workspaceId }: ManagedWorkspaceProps) {
   }, [appController, designMode, theme]);
 
   return (
-    <Box sx={{ display: 'contents', position: 'relative' }}>
+    <Box component="div" sx={{ display: 'contents', position: 'relative' }}>
       <Workspace
         state={workspaceState}
         onStateChange={(newState) => {
