@@ -672,7 +672,7 @@ export interface CreateTaskFormProps
   pickupPoints?: Record<string, string>;
   dropoffPoints?: Record<string, string>;
   favoritesTasks?: TaskFavorite[];
-  currentSchedule?: Schedule;
+  scheduleToEdit?: Schedule;
   requestTask?: TaskRequest;
   submitTasks?(tasks: TaskRequest[], schedule: Schedule | null): Promise<void>;
   tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
@@ -693,7 +693,7 @@ export function CreateTaskForm({
   pickupPoints = {},
   dropoffPoints = {},
   favoritesTasks = [],
-  currentSchedule,
+  scheduleToEdit,
   requestTask,
   submitTasks,
   tasksFromFile,
@@ -734,7 +734,7 @@ export function CreateTaskForm({
   const taskRequest = taskRequests[selectedTaskIdx];
   const [openSchedulingDialog, setOpenSchedulingDialog] = React.useState(false);
   const [schedule, setSchedule] = React.useState<Schedule>(
-    currentSchedule ?? {
+    scheduleToEdit ?? {
       startOn: new Date(),
       days: [true, true, true, true, true, true, true],
       until: undefined,
@@ -742,7 +742,7 @@ export function CreateTaskForm({
   );
   const [atTime, setAtTime] = React.useState(new Date());
   const [scheduleUntilValue, setScheduleUntilValue] = React.useState<string>(
-    currentSchedule?.until ? ScheduleUntilValue.ON : ScheduleUntilValue.NEVER,
+    scheduleToEdit?.until ? ScheduleUntilValue.ON : ScheduleUntilValue.NEVER,
   );
 
   const handleScheduleUntilValue = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -1139,13 +1139,13 @@ export function CreateTaskForm({
               className={classes.actionBtn}
               onClick={() => setOpenSchedulingDialog(true)}
             >
-              {currentSchedule ? 'Edit schedule' : 'Add to Schedule'}
+              {scheduleToEdit ? 'Edit schedule' : 'Add to Schedule'}
             </Button>
             <Button
               variant="contained"
               type="submit"
               color="primary"
-              disabled={submitting || !formFullyFilled || currentSchedule !== undefined}
+              disabled={submitting || !formFullyFilled || scheduleToEdit !== undefined}
               className={classes.actionBtn}
               aria-label={submitText}
               onClick={handleSubmitNow}

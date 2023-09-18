@@ -78,7 +78,7 @@ export const TaskSchedule = () => {
   const [calendarEvents, setCalendarEvents] = React.useState<ProcessedEvent[]>([]);
   const [openDeleteScheduleDialog, setOpenDeleteScheduleDialog] = React.useState(false);
   const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
-  const [selectedSchedule, setSelectedSchedule] = React.useState<Schedule>({
+  const [scheduleToEdit, setScheduleToEdit] = React.useState<Schedule>({
     startOn: new Date(),
     days: [false, false, false, false, false, false, false],
     until: undefined,
@@ -146,9 +146,9 @@ export const TaskSchedule = () => {
             throw new Error('No task found');
           }
           setCurrentScheduledTask(task);
-          setSelectedSchedule(apiScheduleToSchedule(task.schedules));
+          setScheduleToEdit(apiScheduleToSchedule(task.schedules));
           if (eventScope === EventScopes.CURRENT) {
-            setSelectedSchedule(scheduleWithSelectedDay(task.schedules, exceptDateRef.current));
+            setScheduleToEdit(scheduleWithSelectedDay(task.schedules, exceptDateRef.current));
           }
           AppEvents.refreshTaskApp.next();
           scheduler.close();
@@ -288,7 +288,7 @@ export const TaskSchedule = () => {
           pickupPoints={pickupPoints}
           dropoffPoints={dropoffPoints}
           open={openCreateTaskForm}
-          currentSchedule={selectedSchedule}
+          scheduleToEdit={scheduleToEdit}
           requestTask={currentScheduleTask?.task_request}
           onClose={() => {
             setOpenCreateTaskForm(false);
