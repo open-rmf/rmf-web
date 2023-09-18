@@ -181,7 +181,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
       <Divider />
       <DialogTitle align="center">Task State</DialogTitle>
       {taskProgress && (
-        <Box sx={{ width: '90%', ml: 3 }}>
+        <Box component="div" sx={{ width: '90%', ml: 3 }}>
           <LinearProgressWithLabel value={taskProgress * 100} />
         </Box>
       )}

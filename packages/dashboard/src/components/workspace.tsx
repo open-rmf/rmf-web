@@ -134,6 +134,7 @@ export function ManagedWorkspace({ workspaceId }: ManagedWorkspaceProps) {
       />
       {workspaceState.windows.length === 0 && (
         <Box
+          component="div"
           sx={{
             position: 'absolute',
             top: '50%',
