@@ -62,7 +62,7 @@ const disablingCellsWithoutEvents = (
   );
 };
 
-export const SchedulerTask = () => {
+export const TaskSchedule = () => {
   const rmf = React.useContext(RmfAppContext);
   const { showAlert } = React.useContext(AppControllerContext);
   const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames } =

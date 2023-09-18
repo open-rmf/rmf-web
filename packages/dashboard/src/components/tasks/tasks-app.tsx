@@ -25,7 +25,7 @@ import { Subscription } from 'rxjs';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
-import { SchedulerTask } from './task-schedule';
+import { TaskSchedule } from './task-schedule';
 import { TaskSummary } from './task-summary';
 import { downloadCsvFull, downloadCsvMinimal } from './utils';
 
@@ -340,7 +340,7 @@ export const TasksApp = React.memo(
             </TableContainer>
           </TabPanel>
           <TabPanel selectedTabIndex={selectedPanelIndex} index={TaskTablePanel.Schedule}>
-            <SchedulerTask />
+            <TaskSchedule />
           </TabPanel>
           <input type="file" style={{ display: 'none' }} ref={uploadFileInputRef} />
           {openTaskSummary && (
