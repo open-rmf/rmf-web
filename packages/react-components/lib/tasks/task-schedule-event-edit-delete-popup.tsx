@@ -17,8 +17,8 @@ export function EventEditDeletePopup({
   return (
     <FormControl fullWidth={true}>
       <RadioGroup
-        aria-labelledby="schedule-delete-options-radio-buttons-group"
-        name="schedule-delete-options-radio-buttons-group"
+        aria-labelledby="task-schedule-event-edit-delete-popup-radio-buttons-group"
+        name="task-schedule-event-edit-delete-popup-radio-buttons-group"
         value={value}
         onChange={onChange}
       >
