@@ -13,8 +13,8 @@ export const ImageThree = ({ level, imageUrl }: ImageThreeProps) => {
   const texture = useLoader(TextureLoader, imageUrl);
   const image = level.images[0];
   const scale = image.scale;
-  const x_offset = (texture.image.width * scale) / 2;
-  const y_offset = -(texture.image.height * scale) / 2;
+  const x_offset = (texture.image.width * scale) / 2 + image.x_offset;
+  const y_offset = -(texture.image.height * scale) / 2 + image.y_offset;
 
   // const imageWidth = texture.image.width;
   // const imageHeight = texture.image.height;
