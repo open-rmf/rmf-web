@@ -672,7 +672,6 @@ export interface CreateTaskFormProps
   pickupPoints?: Record<string, string>;
   dropoffPoints?: Record<string, string>;
   favoritesTasks?: TaskFavorite[];
-  scheduleUnderEdition?: boolean;
   currentSchedule?: Schedule;
   requestTask?: TaskRequest;
   submitTasks?(tasks: TaskRequest[], schedule: Schedule | null): Promise<void>;
@@ -694,7 +693,6 @@ export function CreateTaskForm({
   pickupPoints = {},
   dropoffPoints = {},
   favoritesTasks = [],
-  scheduleUnderEdition,
   currentSchedule,
   requestTask,
   submitTasks,
@@ -1141,13 +1139,13 @@ export function CreateTaskForm({
               className={classes.actionBtn}
               onClick={() => setOpenSchedulingDialog(true)}
             >
-              {scheduleUnderEdition ? 'Edit schedule' : 'Add to Schedule'}
+              {currentSchedule ? 'Edit schedule' : 'Add to Schedule'}
             </Button>
             <Button
               variant="contained"
               type="submit"
               color="primary"
-              disabled={submitting || !formFullyFilled || scheduleUnderEdition}
+              disabled={submitting || !formFullyFilled || currentSchedule !== undefined}
               className={classes.actionBtn}
               aria-label={submitText}
               onClick={handleSubmitNow}

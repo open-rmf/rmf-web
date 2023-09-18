@@ -288,7 +288,6 @@ export const TaskSchedule = () => {
           pickupPoints={pickupPoints}
           dropoffPoints={dropoffPoints}
           open={openCreateTaskForm}
-          scheduleUnderEdition={true}
           currentSchedule={selectedSchedule}
           requestTask={currentScheduleTask?.task_request}
           onClose={() => {
