@@ -223,30 +223,11 @@ export const MapApp = styled(
     }, [rmf]);
 
     const [imageUrl, setImageUrl] = React.useState<string | null>(null);
-    const [center, setCenter] = React.useState<L.LatLngTuple>([0, 0]);
     const [zoom, setZoom] = React.useState<number>(DEFAULT_ZOOM_LEVEL);
 
     React.useEffect(() => {
       const sub = AppEvents.zoom.subscribe((currentValue) => {
         setZoom(currentValue ?? DEFAULT_ZOOM_LEVEL);
-      });
-      return () => sub.unsubscribe();
-    }, []);
-
-    React.useEffect(() => {
-      const sub = AppEvents.mapCenter.subscribe((currentValue) => {
-        setCenter((prev) => {
-          const newCenter: L.LatLngTuple = [...currentValue];
-          // react-leaftlet does not properly update state when the previous LatLng is the same,
-          // even when a new array is passed.
-          if (prev[0] === newCenter[0]) {
-            newCenter[0] += 0.00001;
-          }
-          if (prev[1] === newCenter[1]) {
-            newCenter[1] += 0.00001;
-          }
-          return newCenter;
-        });
       });
       return () => sub.unsubscribe();
     }, []);
