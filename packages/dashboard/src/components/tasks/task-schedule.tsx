@@ -82,6 +82,7 @@ export const TaskSchedule = () => {
     startOn: new Date(),
     days: [false, false, false, false, false, false, false],
     until: undefined,
+    at: new Date(),
   });
 
   React.useEffect(() => {

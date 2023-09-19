@@ -129,6 +129,7 @@ export const scheduleWithSelectedDay = (scheduleTask: ApiSchedule[], date: Date)
     startOn: scheduleTask[0].start_from ? new Date(scheduleTask[0].start_from) : new Date(),
     days: daysArray,
     until: endOfDay(new Date(date.toISOString())),
+    at: scheduleTask[0].start_from ? new Date(scheduleTask[0].start_from) : new Date(),
   };
 };
 
@@ -150,6 +151,7 @@ export const apiScheduleToSchedule = (scheduleTask: ApiSchedule[]): Schedule => 
     startOn: scheduleTask[0].start_from ? new Date(scheduleTask[0].start_from) : new Date(),
     days: daysArray,
     until: scheduleTask[0].until ? endOfMinute(new Date(scheduleTask[0].until)) : undefined,
+    at: scheduleTask[0].start_from ? new Date(scheduleTask[0].start_from) : new Date(),
   };
 };
 

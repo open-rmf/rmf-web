@@ -249,7 +249,6 @@ function DeliveryTaskForm({
           label="Quantity"
           value={taskDesc.pickup.payload.quantity}
           onChange={(_ev, val) => {
-            console.log(val);
             onInputChange({
               ...taskDesc,
               pickup: {
@@ -597,6 +596,7 @@ export interface Schedule {
   startOn: Date;
   days: RecurringDays;
   until?: Date;
+  at: Date;
 }
 
 enum ScheduleUntilValue {
@@ -738,9 +738,9 @@ export function CreateTaskForm({
       startOn: new Date(),
       days: [true, true, true, true, true, true, true],
       until: undefined,
+      at: new Date(),
     },
   );
-  const [atTime, setAtTime] = React.useState(new Date());
   const [scheduleUntilValue, setScheduleUntilValue] = React.useState<string>(
     scheduleToEdit?.until ? ScheduleUntilValue.ON : ScheduleUntilValue.NEVER,
   );
@@ -1206,8 +1206,8 @@ export function CreateTaskForm({
                 onChange={(date) =>
                   date &&
                   setSchedule((prev) => {
-                    date.setHours(atTime.getHours());
-                    date.setMinutes(atTime.getMinutes());
+                    date.setHours(schedule.at.getHours());
+                    date.setMinutes(schedule.at.getMinutes());
                     return { ...prev, startOn: date };
                   })
                 }
@@ -1218,12 +1218,12 @@ export function CreateTaskForm({
             </Grid>
             <Grid item xs={6}>
               <TimePicker
-                value={atTime}
+                value={schedule.at}
                 onChange={(date) => {
                   if (!date) {
                     return;
                   }
-                  setAtTime(date);
+                  setSchedule((prev) => ({ ...prev, at: date }));
                   if (!isNaN(date.valueOf())) {
                     setSchedule((prev) => {
                       const startOn = prev.startOn;
