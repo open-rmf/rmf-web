@@ -405,48 +405,48 @@ export const MapApp = styled(
           {currentLevel.wall_graph.edges.length && (
             <WallMaker wallGraph={currentLevel.wall_graph} />
           )}
-          {!disabledLayers['Doors'] &&
-            currentLevel.doors.length &&
-            currentLevel.doors.map((door, i) => (
-              <Door
-                key={i}
-                door={door}
-                opacity={0.1}
-                height={8}
-                elevation={currentLevel.elevation}
-              />
-            ))}
-          {currentLevel.images.length > 0 && imageUrl && (
-            <ReactThreeFiberImageMaker level={currentLevel} imageUrl={imageUrl} />
-          )}
-          {!disabledLayers['Doors'] &&
-            buildingMap.lifts.length &&
-            buildingMap.lifts.map((lift, i) =>
-              lift.doors.map((door, i) => (
+          {!disabledLayers['Doors'] && currentLevel.doors.length > 0
+            ? currentLevel.doors.map((door, i) => (
                 <Door
                   key={i}
                   door={door}
                   opacity={0.1}
                   height={8}
                   elevation={currentLevel.elevation}
-                  lift={lift}
                 />
-              )),
-            )}
+              ))
+            : null}
+          {currentLevel.images.length > 0 && imageUrl && (
+            <ReactThreeFiberImageMaker level={currentLevel} imageUrl={imageUrl} />
+          )}
+          {!disabledLayers['Doors'] && buildingMap.lifts.length > 0
+            ? buildingMap.lifts.map((lift, i) =>
+                lift.doors.map((door, i) => (
+                  <Door
+                    key={i}
+                    door={door}
+                    opacity={0.1}
+                    height={8}
+                    elevation={currentLevel.elevation}
+                    lift={lift}
+                  />
+                )),
+              )
+            : null}
 
-          {!disabledLayers['Lifts'] &&
-            buildingMap.lifts.length &&
-            buildingMap.lifts.map((lift) =>
-              lift.doors.map(() => (
-                <Lifts
-                  key={lift.name}
-                  lift={lift}
-                  height={8}
-                  elevation={currentLevel.elevation}
-                  opacity={0.1}
-                />
-              )),
-            )}
+          {!disabledLayers['Lifts'] && buildingMap.lifts.length > 0
+            ? buildingMap.lifts.map((lift) =>
+                lift.doors.map(() => (
+                  <Lifts
+                    key={lift.name}
+                    lift={lift}
+                    height={8}
+                    elevation={currentLevel.elevation}
+                    opacity={0.1}
+                  />
+                )),
+              )
+            : null}
 
           {!disabledLayers['Waypoints'] &&
             waypoints.map((place, index) => (
