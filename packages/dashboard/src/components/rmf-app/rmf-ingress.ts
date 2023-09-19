@@ -8,6 +8,8 @@ import {
   BuildingMap,
   Configuration,
   DefaultApi,
+  DeliveryAlertsApi,
+  ApiServerModelsTortoiseModelsDeliveryAlertsDeliveryAlertLeaf as DeliveryAlert,
   Dispenser,
   DispensersApi,
   DispenserState,
@@ -57,6 +59,7 @@ export class RmfIngress {
   tasksApi: TasksApi;
   alertsApi: AlertsApi;
   adminApi: AdminApi;
+  deliveryAlertsApi: DeliveryAlertsApi;
   negotiationStatusManager: NegotiationStatusManager;
   trajectoryManager: RobotTrajectoryManager;
 
@@ -110,6 +113,7 @@ export class RmfIngress {
     this.tasksApi = new TasksApi(apiConfig, undefined, axiosInst);
     this.alertsApi = new AlertsApi(apiConfig, undefined, axiosInst);
     this.adminApi = new AdminApi(apiConfig, undefined, axiosInst);
+    this.deliveryAlertsApi = new DeliveryAlertsApi(apiConfig, undefined, axiosInst);
 
     const ws = new WebSocket(appConfig.trajServerUrl);
     this.trajectoryManager = new DefaultTrajectoryManager(ws, authenticator);
@@ -222,5 +226,9 @@ export class RmfIngress {
 
   alertObsStore: Observable<Alert> = this._convertSioToRxObs((handler) =>
     this._sioClient.subscribeAlerts(handler),
+  );
+
+  deliveryAlertObsStore: Observable<DeliveryAlert> = this._convertSioToRxObs((handler) =>
+    this._sioClient.subscribeDeliveryAlerts(handler),
   );
 }
