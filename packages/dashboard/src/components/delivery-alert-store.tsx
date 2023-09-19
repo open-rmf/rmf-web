@@ -273,11 +273,6 @@ export const DeliveryAlertStore = React.memo(() => {
   const [alerts, setAlerts] = React.useState<Record<string, DeliveryAlertData>>({});
   const appController = React.useContext(AppControllerContext);
 
-  // What happens if the user just refreshes?
-  // Run the gets command the first time and publish all the alerts
-  // TODO(ac): Create an endpoint which only gives delivery alerts that have not
-  // been actioned upon, to prevent requesting too many delivery alerts.
-
   const filterAndPushDeliveryAlert = (deliveryAlert: DeliveryAlert, taskState?: TaskState) => {
     // Check if a delivery alert for a task is already open, if so, replace it
     // with this new incoming deliveryAlert.
@@ -289,9 +284,11 @@ export const DeliveryAlertStore = React.memo(() => {
         };
       }
 
+      // TODO(ac): set action to cancelled for delivery alerts that have been
+      // updated.
       const filteredAlerts = Object.fromEntries(
         Object.entries(prev).filter(
-          ([id, alertData]) =>
+          ([_, alertData]) =>
             !alertData.deliveryAlert.task_id ||
             alertData.deliveryAlert.task_id !== deliveryAlert.task_id,
         ),
@@ -308,13 +305,83 @@ export const DeliveryAlertStore = React.memo(() => {
     if (!rmf) {
       return;
     }
+
+    // Initialize with any existing delivery alerts that are still waiting for
+    // action.
+    (async () => {
+      // TODO(ac): Create an endpoint which only gives delivery alerts that have
+      // not been actioned upon, to prevent requesting too many delivery alerts.
+      let deliveryAlerts: DeliveryAlert[] = [];
+      try {
+        deliveryAlerts = (await rmf.deliveryAlertsApi.getDeliveryAlertsDeliveryAlertsGet()).data;
+      } catch (e) {
+        console.error(`Failed to retrieve existing delivery alerts: ${e}`);
+        return;
+      }
+
+      const filteredAlertsMap: Record<string, DeliveryAlertData> = {};
+      const taskIdToAlertsMap: Record<string, DeliveryAlertData> = {};
+      for (const alert of deliveryAlerts) {
+        if (alert.action !== 'waiting') {
+          continue;
+        }
+
+        // No task involved, and still waiting for user action. There should not
+        // be any longstanding delivery alerts that appear after a refresh, only
+        // the delivery alerts that are currently present and have not been
+        // responded to.
+        if (!alert.task_id) {
+          filteredAlertsMap[alert.id] = { deliveryAlert: alert, taskState: undefined };
+          continue;
+        }
+
+        // Tasks that have not been encountered before will go into
+        // taskIdToAlertsMap first, as an error will supercede a warning.
+        if (!Object.keys(taskIdToAlertsMap).includes(alert.task_id)) {
+          let state: TaskState | undefined = undefined;
+          try {
+            state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(alert.task_id)).data;
+          } catch {
+            console.error(
+              `Failed to fetch task state for ${alert.task_id} for delivery alert ${alert.id}`,
+            );
+          }
+          taskIdToAlertsMap[alert.task_id] = {
+            deliveryAlert: alert,
+            taskState: state,
+          };
+          continue;
+        } else if (alert.tier === 'error') {
+          let state: TaskState | undefined = undefined;
+          try {
+            state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(alert.task_id)).data;
+          } catch {
+            console.error(
+              `Failed to fetch task state for ${alert.task_id} for delivery alert ${alert.id}`,
+            );
+          }
+
+          taskIdToAlertsMap[alert.task_id] = {
+            deliveryAlert: alert,
+            taskState: state,
+          };
+        }
+      }
+
+      // Move all up-to-date task related delivery alerts to the filtered map.
+      for (const alertData of Object.values(taskIdToAlertsMap)) {
+        filteredAlertsMap[alertData.deliveryAlert.id] = alertData;
+      }
+      setAlerts(filteredAlertsMap);
+    })();
+
     const sub = rmf.deliveryAlertObsStore.subscribe(async (deliveryAlert) => {
       let state: TaskState | undefined = undefined;
       if (deliveryAlert.task_id) {
         try {
           state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(deliveryAlert.task_id)).data;
         } catch {
-          console.log(`Failed to fetch task state for ${deliveryAlert.task_id}`);
+          console.error(`Failed to fetch task state for ${deliveryAlert.task_id}`);
         }
       }
       filterAndPushDeliveryAlert(deliveryAlert, state);
@@ -416,6 +483,7 @@ export const DeliveryAlertStore = React.memo(() => {
               deliveryAlert={alert.deliveryAlert}
               taskState={alert.taskState}
               onClose={onClose}
+              key={alert.deliveryAlert.id}
             />
           );
         }
@@ -428,6 +496,7 @@ export const DeliveryAlertStore = React.memo(() => {
             onOverride={onOverride}
             onResume={onResume}
             onClose={onClose}
+            key={alert.deliveryAlert.id}
           />
         );
       })}
