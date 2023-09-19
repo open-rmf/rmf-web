@@ -38,25 +38,23 @@ import type { TaskFavoritePydantic as TaskFavorite, TaskRequest } from 'api-clie
 import React from 'react';
 import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
+import { PositiveIntField } from '../form-inputs';
 
 // A bunch of manually defined descriptions to avoid using `any`.
+interface Payload {
+  sku: string;
+  quantity: number;
+}
+
+interface DeliveryPlace {
+  place: string;
+  handler: string;
+  payload: Payload;
+}
+
 interface DeliveryTaskDescription {
-  pickup: {
-    place: string;
-    handler: string;
-    payload: {
-      sku: string;
-      quantity: number;
-    };
-  };
-  dropoff: {
-    place: string;
-    handler: string;
-    payload: {
-      sku: string;
-      quantity: number;
-    };
-  };
+  pickup: DeliveryPlace;
+  dropoff: DeliveryPlace;
 }
 
 interface PickupActivity {
@@ -74,11 +72,53 @@ interface DropoffActivity {
   };
 }
 
-interface DeliveryHuntingTaskDescription {
+interface DeliveryCustomTaskDescription {
   activities: [pickup_cart: PickupActivity, dropoff_cart: DropoffActivity];
 }
 
-type TaskDescription = DeliveryTaskDescription | DeliveryHuntingTaskDescription;
+type TaskDescription = DeliveryTaskDescription | DeliveryCustomTaskDescription;
+
+const isNonEmptyString = (value: string): boolean => value.length > 0;
+const isPositiveNumber = (value: number): boolean => value >= 0;
+
+const isDeliveryPlaceValid = (place: DeliveryPlace, lookupMap: Record<string, string>): boolean => {
+  return (
+    isNonEmptyString(place.place) &&
+    Object.keys(lookupMap).includes(place.place) &&
+    isNonEmptyString(place.handler) &&
+    Object.values(lookupMap).includes(place.handler) &&
+    isNonEmptyString(place.payload.sku) &&
+    isPositiveNumber(place.payload.quantity)
+  );
+};
+
+const isDeliveryTaskDescriptionValid = (
+  taskDescription: DeliveryTaskDescription,
+  pickupPoints: Record<string, string>,
+  dropoffPoints: Record<string, string>,
+): boolean => {
+  return (
+    isDeliveryPlaceValid(taskDescription.pickup, pickupPoints) &&
+    isDeliveryPlaceValid(taskDescription.dropoff, dropoffPoints)
+  );
+};
+
+const isDeliveryCustomTaskDescriptionValid = (
+  taskDescription: DeliveryCustomTaskDescription,
+  pickupZones: string[],
+  dropoffPoints: string[],
+): boolean => {
+  return (
+    taskDescription.activities.length == 2 &&
+    taskDescription.activities[0].category === 'perform_action' &&
+    isNonEmptyString(taskDescription.activities[0].description.pickup_zone) &&
+    pickupZones.includes(taskDescription.activities[0].description.pickup_zone) &&
+    isPositiveNumber(taskDescription.activities[0].description.cart_rfid) &&
+    taskDescription.activities[1].category === 'perform_action' &&
+    isNonEmptyString(taskDescription.activities[1].description.dropoff_point) &&
+    dropoffPoints.includes(taskDescription.activities[1].description.dropoff_point)
+  );
+};
 
 const classes = {
   title: 'dialogue-info-value',
@@ -111,13 +151,13 @@ const StyledDialog = styled((props: DialogProps) => <Dialog {...props} />)(({ th
 function getShortDescription(taskRequest: TaskRequest): string {
   switch (taskRequest.category) {
     case 'delivery': {
-      return `[Delivery] from [${taskRequest.description.pickup.place}] to [${taskRequest.description.dropoff.place}]`;
+      return `[Delivery - 1:1] from [${taskRequest.description.pickup.place}] to [${taskRequest.description.dropoff.place}]`;
     }
-    case 'delivery_sequential_hunting': {
-      return `[Delivery - Sequential Hunting] payload [${taskRequest.description.activities[0].cart_rfid}] from [${taskRequest.description.activities[0].pickup_zone}] to [${taskRequest.description.activities[1].dropoff_point}]`;
+    case 'delivery_sequential_lot_pick_up': {
+      return `[Delivery - Sequential lot pick up] payload [${taskRequest.description.activities[0].cart_rfid}] from [${taskRequest.description.activities[0].pickup_zone}] to [${taskRequest.description.activities[1].dropoff_point}]`;
     }
-    case 'delivery_area_hunting': {
-      return `[Delivery - Area Hunting] payload [${taskRequest.description.activities[0].cart_rfid}] from [${taskRequest.description.activities[0].pickup_zone}] to [${taskRequest.description.activities[1].dropoff_point}]`;
+    case 'delivery_area_pick_up': {
+      return `[Delivery - Area pick up] payload [${taskRequest.description.activities[0].cart_rfid}] from [${taskRequest.description.activities[0].pickup_zone}] to [${taskRequest.description.activities[1].dropoff_point}]`;
     }
     default:
       return `[Unknown] type "${taskRequest.category}"`;
@@ -129,6 +169,7 @@ interface DeliveryTaskFormProps {
   pickupPoints: Record<string, string>;
   dropoffPoints: Record<string, string>;
   onChange(taskDesc: TaskDescription): void;
+  allowSubmit(allow: boolean): void;
 }
 
 function DeliveryTaskForm({
@@ -136,8 +177,13 @@ function DeliveryTaskForm({
   pickupPoints = {},
   dropoffPoints = {},
   onChange,
+  allowSubmit,
 }: DeliveryTaskFormProps) {
   const theme = useTheme();
+  const onInputChange = (desc: DeliveryTaskDescription) => {
+    allowSubmit(isDeliveryTaskDescriptionValid(desc, pickupPoints, dropoffPoints));
+    onChange(desc);
+  };
 
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="left" alignItems="center">
@@ -148,79 +194,69 @@ function DeliveryTaskForm({
           fullWidth
           options={Object.keys(pickupPoints)}
           value={taskDesc.pickup.place}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            pickupPoints[newValue] &&
-            onChange({
+          onInputChange={(_ev, newValue) => {
+            const place = newValue ?? '';
+            const handler =
+              newValue !== null && pickupPoints[newValue] ? pickupPoints[newValue] : '';
+            onInputChange({
               ...taskDesc,
               pickup: {
                 ...taskDesc.pickup,
-                place: newValue,
-                handler: pickupPoints[newValue],
+                place: place,
+                handler: handler,
               },
-            })
-          }
-          onBlur={(ev) =>
-            pickupPoints[(ev.target as HTMLInputElement).value] &&
-            onChange({
+            });
+          }}
+          onBlur={(ev) => {
+            const handler = pickupPoints[(ev.target as HTMLInputElement).value] ?? '';
+            onInputChange({
               ...taskDesc,
               pickup: {
                 ...taskDesc.pickup,
                 place: (ev.target as HTMLInputElement).value,
-                handler: pickupPoints[(ev.target as HTMLInputElement).value],
+                handler: handler,
               },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Pickup Location" />}
+            });
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Pickup Location"
+              required
+              error={!Object.keys(pickupPoints).includes(taskDesc.pickup.place)}
+            />
+          )}
         />
       </Grid>
       <Grid item xs={4}>
-        <Autocomplete
+        <PositiveIntField
           id="pickup_sku"
-          freeSolo
-          fullWidth
-          value={taskDesc.pickup.payload.sku}
-          options={[]}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            onChange({
+          label="Cart RFID"
+          value={parseInt(taskDesc.pickup.payload.sku) ?? 0}
+          onChange={(_ev, val) => {
+            onInputChange({
               ...taskDesc,
               pickup: {
                 ...taskDesc.pickup,
                 payload: {
                   ...taskDesc.pickup.payload,
-                  sku: newValue,
+                  sku: val.toString(),
                 },
               },
               dropoff: {
                 ...taskDesc.dropoff,
                 payload: {
                   ...taskDesc.dropoff.payload,
-                  sku: newValue,
+                  sku: val.toString(),
                 },
               },
-            })
+            });
+          }}
+          required
+          error={
+            Number.isNaN(parseInt(taskDesc.pickup.payload.sku)) ||
+            Number.isNaN(parseInt(taskDesc.dropoff.payload.sku))
           }
-          onBlur={(ev) =>
-            onChange({
-              ...taskDesc,
-              pickup: {
-                ...taskDesc.pickup,
-                payload: {
-                  ...taskDesc.pickup.payload,
-                  sku: (ev.target as HTMLInputElement).value,
-                },
-              },
-              dropoff: {
-                ...taskDesc.dropoff,
-                payload: {
-                  ...taskDesc.dropoff.payload,
-                  sku: (ev.target as HTMLInputElement).value,
-                },
-              },
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Cart RFID" />}
         />
       </Grid>
       <Grid item xs={8}>
@@ -230,21 +266,22 @@ function DeliveryTaskForm({
           fullWidth
           options={Object.keys(dropoffPoints)}
           value={taskDesc.dropoff.place}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            dropoffPoints[newValue] &&
-            onChange({
+          onInputChange={(_ev, newValue) => {
+            const place = newValue ?? '';
+            const handler =
+              newValue !== null && dropoffPoints[newValue] ? dropoffPoints[newValue] : '';
+            onInputChange({
               ...taskDesc,
               dropoff: {
                 ...taskDesc.dropoff,
-                place: newValue,
-                handler: dropoffPoints[newValue],
+                place: place,
+                handler: handler,
               },
-            })
-          }
+            });
+          }}
           onBlur={(ev) =>
             dropoffPoints[(ev.target as HTMLInputElement).value] &&
-            onChange({
+            onInputChange({
               ...taskDesc,
               dropoff: {
                 ...taskDesc.dropoff,
@@ -253,39 +290,39 @@ function DeliveryTaskForm({
               },
             })
           }
-          renderInput={(params) => <TextField {...params} label="Dropoff Location" />}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Dropoff Location"
+              required
+              error={!Object.keys(dropoffPoints).includes(taskDesc.dropoff.place)}
+            />
+          )}
         />
       </Grid>
     </Grid>
   );
 }
 
-interface DeliveryHuntingProps {
-  taskDesc: DeliveryHuntingTaskDescription;
+interface DeliveryCustomProps {
+  taskDesc: DeliveryCustomTaskDescription;
   pickupZones: string[];
   dropoffPoints: string[];
   onChange(taskDesc: TaskDescription): void;
+  allowSubmit(allow: boolean): void;
 }
 
-function DeliveryHuntingTaskForm({
+function DeliveryCustomTaskForm({
   taskDesc,
   pickupZones = [],
   dropoffPoints = [],
   onChange,
-}: DeliveryHuntingProps) {
+  allowSubmit,
+}: DeliveryCustomProps) {
   const theme = useTheme();
-  const pickup_activity: PickupActivity = {
-    category: 'perform_action',
-    description: {
-      pickup_zone: '',
-      cart_rfid: 0,
-    },
-  };
-  const dropoff_activity: DropoffActivity = {
-    category: 'perform_action',
-    description: {
-      dropoff_point: '',
-    },
+  const onInputChange = (desc: DeliveryCustomTaskDescription) => {
+    allowSubmit(isDeliveryCustomTaskDescriptionValid(desc, pickupZones, dropoffPoints));
+    onChange(desc);
   };
 
   return (
@@ -297,41 +334,51 @@ function DeliveryHuntingTaskForm({
           fullWidth
           options={pickupZones}
           value={taskDesc.activities[0].description.pickup_zone}
-          onChange={(_ev, newValue) => {
+          onInputChange={(_ev, newValue) => {
             if (newValue === null) {
               return;
             }
+            const pickup_activity = taskDesc.activities[0];
             pickup_activity.description.pickup_zone = newValue;
-            onChange({
+            onInputChange({
               ...taskDesc,
-              activities: [pickup_activity, dropoff_activity],
+              activities: [pickup_activity, taskDesc.activities[1]],
             });
           }}
           onBlur={(ev) => {
+            const pickup_activity = taskDesc.activities[0];
             pickup_activity.description.pickup_zone = (ev.target as HTMLInputElement).value;
-            onChange({
+            onInputChange({
               ...taskDesc,
-              activities: [pickup_activity, dropoff_activity],
+              activities: [pickup_activity, taskDesc.activities[1]],
             });
           }}
-          renderInput={(params) => <TextField {...params} label="Pickup Zone" />}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Pickup Zone"
+              required
+              error={!pickupZones.includes(taskDesc.activities[0].description.pickup_zone)}
+            />
+          )}
         />
       </Grid>
       <Grid item xs={4}>
-        <TextField
+        <PositiveIntField
           id="cart_rfid"
           fullWidth
           label="Cart RFID"
-          defaultValue={pickup_activity.description.cart_rfid}
           value={taskDesc.activities[0].description.cart_rfid}
-          inputProps={{ min: 0 }}
-          onChange={(ev) => {
-            pickup_activity.description.cart_rfid = parseInt(ev.target.value);
-            onChange({
+          onChange={(_ev, val) => {
+            const pickup_activity = taskDesc.activities[0];
+            pickup_activity.description.cart_rfid = val;
+            onInputChange({
               ...taskDesc,
-              activities: [pickup_activity, dropoff_activity],
+              activities: [pickup_activity, taskDesc.activities[1]],
             });
           }}
+          required
+          error={Number.isNaN(taskDesc.activities[0].description.cart_rfid)}
         />
       </Grid>
       <Grid item xs={8}>
@@ -341,24 +388,33 @@ function DeliveryHuntingTaskForm({
           fullWidth
           options={dropoffPoints}
           value={taskDesc.activities[1].description.dropoff_point}
-          onChange={(_ev, newValue) => {
+          onInputChange={(_ev, newValue) => {
             if (newValue === null) {
               return;
             }
+            const dropoff_activity = taskDesc.activities[1];
             dropoff_activity.description.dropoff_point = newValue;
-            onChange({
+            onInputChange({
               ...taskDesc,
-              activities: [pickup_activity, dropoff_activity],
+              activities: [taskDesc.activities[0], dropoff_activity],
             });
           }}
           onBlur={(ev) => {
+            const dropoff_activity = taskDesc.activities[1];
             dropoff_activity.description.dropoff_point = (ev.target as HTMLInputElement).value;
-            onChange({
+            onInputChange({
               ...taskDesc,
-              activities: [pickup_activity, dropoff_activity],
+              activities: [taskDesc.activities[0], dropoff_activity],
             });
           }}
-          renderInput={(params) => <TextField {...params} label="Dropoff Location" />}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Dropoff Location"
+              required
+              error={!dropoffPoints.includes(taskDesc.activities[1].description.dropoff_point)}
+            />
+          )}
         />
       </Grid>
     </Grid>
@@ -433,7 +489,7 @@ function defaultDeliveryTask(): DeliveryTaskDescription {
       place: '',
       handler: '',
       payload: {
-        sku: '',
+        sku: '0',
         quantity: 1,
       },
     },
@@ -441,14 +497,14 @@ function defaultDeliveryTask(): DeliveryTaskDescription {
       place: '',
       handler: '',
       payload: {
-        sku: '',
+        sku: '0',
         quantity: 1,
       },
     },
   };
 }
 
-function defaultDeliveryHuntingTask(): DeliveryHuntingTaskDescription {
+function defaultDeliveryCustomTask(): DeliveryCustomTaskDescription {
   return {
     activities: [
       {
@@ -472,9 +528,9 @@ function defaultTaskDescription(taskCategory: string): TaskDescription | undefin
   switch (taskCategory) {
     case 'delivery':
       return defaultDeliveryTask();
-    case 'delivery_sequential_hunting':
-    case 'delivery_area_hunting':
-      return defaultDeliveryHuntingTask();
+    case 'delivery_sequential_lot_pick_up':
+    case 'delivery_area_pick_up':
+      return defaultDeliveryCustomTask();
     default:
       return undefined;
   }
@@ -628,6 +684,7 @@ export function CreateTaskForm({
     [taskRequests],
   );
   const [submitting, setSubmitting] = React.useState(false);
+  const [formFullyFilled, setFormFullyFilled] = React.useState(false);
   const taskRequest = taskRequests[selectedTaskIdx];
   const [openSchedulingDialog, setOpenSchedulingDialog] = React.useState(false);
   const [schedule, setSchedule] = React.useState<Schedule>({
@@ -686,24 +743,18 @@ export function CreateTaskForm({
             pickupPoints={pickupPoints}
             dropoffPoints={dropoffPoints}
             onChange={(desc) => handleTaskDescriptionChange('delivery', desc)}
+            allowSubmit={allowSubmit}
           />
         );
-      case 'delivery_sequential_hunting':
+      case 'delivery_sequential_lot_pick_up':
+      case 'delivery_area_pick_up':
         return (
-          <DeliveryHuntingTaskForm
-            taskDesc={taskRequest.description as DeliveryHuntingTaskDescription}
+          <DeliveryCustomTaskForm
+            taskDesc={taskRequest.description as DeliveryCustomTaskDescription}
             pickupZones={pickupZones}
             dropoffPoints={Object.keys(dropoffPoints)}
-            onChange={(desc) => handleTaskDescriptionChange('delivery_sequential_hunting', desc)}
-          />
-        );
-      case 'delivery_area_hunting':
-        return (
-          <DeliveryHuntingTaskForm
-            taskDesc={taskRequest.description as DeliveryHuntingTaskDescription}
-            pickupZones={pickupZones}
-            dropoffPoints={Object.keys(dropoffPoints)}
-            onChange={(desc) => handleTaskDescriptionChange('delivery_area_hunting', desc)}
+            onChange={(desc) => handleTaskDescriptionChange(taskRequest.category, desc)}
+            allowSubmit={allowSubmit}
           />
         );
       default:
@@ -722,6 +773,10 @@ export function CreateTaskForm({
     setFavoriteTaskBuffer({ ...favoriteTaskBuffer, category: newCategory, description: newDesc });
 
     updateTasks();
+  };
+
+  const allowSubmit = (allow: boolean) => {
+    setFormFullyFilled(allow);
   };
 
   // no memo because deps would likely change
@@ -881,8 +936,8 @@ export function CreateTaskForm({
                             description: favoriteTask.description,
                             unix_millis_earliest_start_time: Date.now(),
                             priority: favoriteTask.priority,
-                          }]
-                        );
+                          },
+                        ]);
                       }}
                     />
                   );
@@ -915,19 +970,19 @@ export function CreateTaskForm({
                           Object.keys(dropoffPoints).length === 0
                         }
                       >
-                        Delivery
+                        Delivery - 1:1
                       </MenuItem>
                       <MenuItem
-                        value="delivery_sequential_hunting"
+                        value="delivery_sequential_lot_pick_up"
                         disabled={Object.keys(dropoffPoints).length === 0}
                       >
-                        Delivery - Sequential hunting
+                        Delivery - Sequential lot pick up
                       </MenuItem>
                       <MenuItem
-                        value="delivery_area_hunting"
+                        value="delivery_area_pick_up"
                         disabled={Object.keys(dropoffPoints).length === 0}
                       >
-                        Delivery - Area hunting
+                        Delivery - Area pick up
                       </MenuItem>
                     </TextField>
                   </Grid>
@@ -1041,7 +1096,7 @@ export function CreateTaskForm({
             <Button
               variant="contained"
               color="primary"
-              disabled={submitting}
+              disabled={submitting || !formFullyFilled}
               className={classes.actionBtn}
               onClick={() => setOpenSchedulingDialog(true)}
             >
@@ -1051,7 +1106,7 @@ export function CreateTaskForm({
               variant="contained"
               type="submit"
               color="primary"
-              disabled={submitting}
+              disabled={submitting || !formFullyFilled}
               className={classes.actionBtn}
               aria-label={submitText}
               onClick={handleSubmitNow}
