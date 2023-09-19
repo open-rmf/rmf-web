@@ -33,6 +33,7 @@ export const LayersController = ({
         left: '4px',
         width: 'auto',
         height: 'auto',
+        zIndex: '1',
       }}
     >
       <FormLabel>Levels</FormLabel>
