@@ -26,7 +26,6 @@ import {
 } from '@mui/material';
 import {
   ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
-  PostScheduledTaskRequest,
   TaskFavoritePydantic as TaskFavorite,
   TaskRequest,
 } from 'api-client';
@@ -35,11 +34,9 @@ import {
   AppBarTab,
   CreateTaskForm,
   CreateTaskFormProps,
-  getPlaces,
   HeaderBar,
   LogoButton,
   NavigationBar,
-  Schedule,
   useAsync,
 } from 'react-components';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -65,6 +62,9 @@ import { RmfAppContext } from './rmf-app';
 import { parseTasksFile } from './tasks/utils';
 import { Subscription } from 'rxjs';
 import { formatDistance } from 'date-fns';
+import { useCreateTaskFormData } from '../hooks/useCreateTaskForm';
+import { toApiSchedule } from './tasks/utils';
+import useGetUsername from '../hooks/useFetchUser';
 
 export type TabValue = 'infrastructure' | 'robots' | 'tasks' | 'custom1' | 'custom2' | 'admin';
 
@@ -122,28 +122,6 @@ function AppSettings() {
   );
 }
 
-function toApiSchedule(taskRequest: TaskRequest, schedule: Schedule): PostScheduledTaskRequest {
-  const start = schedule.startOn;
-  const apiSchedules: PostScheduledTaskRequest['schedules'] = [];
-  const date = new Date(start);
-  const start_from = start.toISOString();
-  const until = schedule.until?.toISOString();
-  const hours = date.getHours().toString().padStart(2, '0');
-  const minutes = date.getMinutes().toString().padStart(2, '0');
-  const at = `${hours}:${minutes}`;
-  schedule.days[0] && apiSchedules.push({ period: 'monday', start_from, at, until });
-  schedule.days[1] && apiSchedules.push({ period: 'tuesday', start_from, at, until });
-  schedule.days[2] && apiSchedules.push({ period: 'wednesday', start_from, at, until });
-  schedule.days[3] && apiSchedules.push({ period: 'thursday', start_from, at, until });
-  schedule.days[4] && apiSchedules.push({ period: 'friday', start_from, at, until });
-  schedule.days[5] && apiSchedules.push({ period: 'saturday', start_from, at, until });
-  schedule.days[6] && apiSchedules.push({ period: 'sunday', start_from, at, until });
-  return {
-    task_request: taskRequest,
-    schedules: apiSchedules,
-  };
-}
-
 export interface AppBarProps {
   extraToolbarItems?: React.ReactNode;
 
@@ -167,18 +145,16 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [brandingIconPath, setBrandingIconPath] = React.useState<string>('');
   const [settingsAnchor, setSettingsAnchor] = React.useState<HTMLElement | null>(null);
   const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
-  const [waypointNames, setWaypointNames] = React.useState<string[]>([]);
-  const [cleaningZoneNames, setCleaningZoneNames] = React.useState<string[]>([]);
-  const [pickupPoints, setPickupPoints] = React.useState<Record<string, string>>({});
-  const [dropoffPoints, setDropoffPoints] = React.useState<Record<string, string>>({});
   const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
   const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
-  const [username, setUsername] = React.useState<string | null>(null);
   const [alertListAnchor, setAlertListAnchor] = React.useState<HTMLElement | null>(null);
   const [unacknowledgedAlertsNum, setUnacknowledgedAlertsNum] = React.useState(0);
   const [unacknowledgedAlertList, setUnacknowledgedAlertList] = React.useState<Alert[]>([]);
 
   const curTheme = React.useContext(SettingsContext).themeMode;
+  const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames } =
+    useCreateTaskFormData(rmf);
+  const username = useGetUsername(rmf);
 
   async function handleLogout(): Promise<void> {
     try {
@@ -187,20 +163,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       console.error(`error logging out: ${(e as Error).message}`);
     }
   }
-
-  React.useEffect(() => {
-    if (!rmf) {
-      return;
-    }
-    (async () => {
-      try {
-        const user = (await rmf.defaultApi.getUserUserGet()).data;
-        setUsername(user.username);
-      } catch (e) {
-        console.log(`error getting username: ${(e as Error).message}`);
-      }
-    })();
-  }, [rmf]);
 
   React.useEffect(() => {
     const sub = AppEvents.refreshTaskApp.subscribe({
@@ -222,32 +184,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     }
 
     const subs: Subscription[] = [];
-    subs.push(
-      rmf.buildingMapObs.subscribe((map) => {
-        const places = getPlaces(map);
-        const waypointNames: string[] = [];
-        const pickupPoints: Record<string, string> = {};
-        const dropoffPoints: Record<string, string> = {};
-        const cleaningZoneNames: string[] = [];
-        for (const p of places) {
-          if (p.pickupHandler !== undefined && p.pickupHandler.length !== 0) {
-            pickupPoints[p.vertex.name] = p.pickupHandler;
-          }
-          if (p.dropoffHandler !== undefined && p.dropoffHandler.length !== 0) {
-            dropoffPoints[p.vertex.name] = p.dropoffHandler;
-          }
-          if (p.cleaningZone !== undefined && p.cleaningZone === true) {
-            cleaningZoneNames.push(p.vertex.name);
-          }
-          waypointNames.push(p.vertex.name);
-        }
-
-        setPickupPoints(pickupPoints);
-        setDropoffPoints(dropoffPoints);
-        setCleaningZoneNames(cleaningZoneNames);
-        setWaypointNames(waypointNames);
-      }),
-    );
     subs.push(
       AppEvents.refreshAlert.subscribe({
         next: () => {

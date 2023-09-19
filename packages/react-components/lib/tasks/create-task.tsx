@@ -249,7 +249,6 @@ function DeliveryTaskForm({
           label="Quantity"
           value={taskDesc.pickup.payload.quantity}
           onChange={(_ev, val) => {
-            console.log(val);
             onInputChange({
               ...taskDesc,
               pickup: {
@@ -597,6 +596,7 @@ export interface Schedule {
   startOn: Date;
   days: RecurringDays;
   until?: Date;
+  at: Date;
 }
 
 enum ScheduleUntilValue {
@@ -671,7 +671,9 @@ export interface CreateTaskFormProps
   patrolWaypoints?: string[];
   pickupPoints?: Record<string, string>;
   dropoffPoints?: Record<string, string>;
-  favoritesTasks: TaskFavorite[];
+  favoritesTasks?: TaskFavorite[];
+  scheduleToEdit?: Schedule;
+  requestTask?: TaskRequest;
   submitTasks?(tasks: TaskRequest[], schedule: Schedule | null): Promise<void>;
   tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
   onSuccess?(tasks: TaskRequest[]): void;
@@ -691,6 +693,8 @@ export function CreateTaskForm({
   pickupPoints = {},
   dropoffPoints = {},
   favoritesTasks = [],
+  scheduleToEdit,
+  requestTask,
   submitTasks,
   tasksFromFile,
   onClose,
@@ -717,24 +721,28 @@ export function CreateTaskForm({
   const [favoriteTaskTitleError, setFavoriteTaskTitleError] = React.useState(false);
   const [savingFavoriteTask, setSavingFavoriteTask] = React.useState(false);
 
-  const [taskRequests, setTaskRequests] = React.useState<TaskRequest[]>(() => [defaultTask()]);
+  const [taskRequests, setTaskRequests] = React.useState<TaskRequest[]>(() => [
+    requestTask ?? defaultTask(),
+  ]);
   const [selectedTaskIdx, setSelectedTaskIdx] = React.useState(0);
   const taskTitles = React.useMemo(
     () => taskRequests && taskRequests.map((t, i) => `${i + 1}: ${getShortDescription(t)}`),
     [taskRequests],
   );
   const [submitting, setSubmitting] = React.useState(false);
-  const [formFullyFilled, setFormFullyFilled] = React.useState(false);
+  const [formFullyFilled, setFormFullyFilled] = React.useState(requestTask !== undefined || false);
   const taskRequest = taskRequests[selectedTaskIdx];
   const [openSchedulingDialog, setOpenSchedulingDialog] = React.useState(false);
-  const [schedule, setSchedule] = React.useState<Schedule>({
-    startOn: new Date(),
-    days: [true, true, true, true, true, true, true],
-    until: undefined,
-  });
-  const [atTime, setAtTime] = React.useState(new Date());
+  const [schedule, setSchedule] = React.useState<Schedule>(
+    scheduleToEdit ?? {
+      startOn: new Date(),
+      days: [true, true, true, true, true, true, true],
+      until: undefined,
+      at: new Date(),
+    },
+  );
   const [scheduleUntilValue, setScheduleUntilValue] = React.useState<string>(
-    ScheduleUntilValue.NEVER,
+    scheduleToEdit?.until ? ScheduleUntilValue.ON : ScheduleUntilValue.NEVER,
   );
 
   const handleScheduleUntilValue = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -1131,13 +1139,13 @@ export function CreateTaskForm({
               className={classes.actionBtn}
               onClick={() => setOpenSchedulingDialog(true)}
             >
-              Add to Schedule
+              {scheduleToEdit ? 'Edit schedule' : 'Add to Schedule'}
             </Button>
             <Button
               variant="contained"
               type="submit"
               color="primary"
-              disabled={submitting || !formFullyFilled}
+              disabled={submitting || !formFullyFilled || scheduleToEdit !== undefined}
               className={classes.actionBtn}
               aria-label={submitText}
               onClick={handleSubmitNow}
@@ -1198,8 +1206,8 @@ export function CreateTaskForm({
                 onChange={(date) =>
                   date &&
                   setSchedule((prev) => {
-                    date.setHours(atTime.getHours());
-                    date.setMinutes(atTime.getMinutes());
+                    date.setHours(schedule.at.getHours());
+                    date.setMinutes(schedule.at.getMinutes());
                     return { ...prev, startOn: date };
                   })
                 }
@@ -1210,12 +1218,12 @@ export function CreateTaskForm({
             </Grid>
             <Grid item xs={6}>
               <TimePicker
-                value={atTime}
+                value={schedule.at}
                 onChange={(date) => {
                   if (!date) {
                     return;
                   }
-                  setAtTime(date);
+                  setSchedule((prev) => ({ ...prev, at: date }));
                   if (!isNaN(date.valueOf())) {
                     setSchedule((prev) => {
                       const startOn = prev.startOn;
