@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 
-from fastapi import Depends, HTTPException
+from fastapi import HTTPException
 from rx import operators as rxops
 
 from api_server.fast_io import FastIORouter, SubscriptionRequest
