@@ -169,7 +169,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
 interface DeliveryErrorDialogProps {
   deliveryAlert: DeliveryAlert;
   taskState?: TaskState;
-  onClose: () => void;
+  onClose: (delivery_alert_id: string) => Promise<void>;
 }
 
 const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
@@ -246,7 +246,7 @@ const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
             size="small"
             variant="contained"
             onClick={() => {
-              onClose();
+              onClose(deliveryAlert.id);
               setIsOpen(false);
             }}
             disabled={false}
@@ -321,8 +321,14 @@ export const DeliveryAlertStore = React.memo(() => {
 
       const filteredAlertsMap: Record<string, DeliveryAlertData> = {};
       const taskIdToAlertsMap: Record<string, DeliveryAlertData> = {};
+      const resolvedTaskIds: string[] = [];
       for (const alert of deliveryAlerts) {
         if (alert.action !== 'waiting') {
+          // Keeping track of resolved task delivery alerts to filter any
+          // remaining warning and waiting delivery alerts.
+          if (alert.task_id && alert.tier === 'error') {
+            resolvedTaskIds.push(alert.task_id);
+          }
           continue;
         }
 
@@ -350,7 +356,6 @@ export const DeliveryAlertStore = React.memo(() => {
             deliveryAlert: alert,
             taskState: state,
           };
-          continue;
         } else if (alert.tier === 'error') {
           let state: TaskState | undefined = undefined;
           try {
@@ -368,8 +373,13 @@ export const DeliveryAlertStore = React.memo(() => {
         }
       }
 
-      // Move all up-to-date task related delivery alerts to the filtered map.
-      for (const alertData of Object.values(taskIdToAlertsMap)) {
+      // Move all unresolved and up-to-date task related delivery alerts to the
+      // filtered map.
+      for (const taskId of Object.keys(taskIdToAlertsMap)) {
+        if (resolvedTaskIds.includes(taskId)) {
+          continue;
+        }
+        const alertData = taskIdToAlertsMap[taskId];
         filteredAlertsMap[alertData.deliveryAlert.id] = alertData;
       }
       setAlerts(filteredAlertsMap);
@@ -388,11 +398,6 @@ export const DeliveryAlertStore = React.memo(() => {
     });
     return () => sub.unsubscribe();
   }, [rmf]);
-
-  const removeDeliveryAlertData = (id: string) => {
-    const filteredAlerts = Object.fromEntries(Object.entries(alerts).filter(([key]) => key !== id));
-    setAlerts(filteredAlerts);
-  };
 
   const onCancel = React.useCallback<Required<DeliveryWarningDialogProps>['onCancel']>(
     async (delivery_alert_id, task_id) => {
@@ -470,32 +475,61 @@ export const DeliveryAlertStore = React.memo(() => {
     [rmf, appController],
   );
 
+  // Closing on an error requires the additional step of setting the action
+  // to cancelled, as we want to ensure this error delivery dialog does not show
+  // up anymore when the dashboard is refreshed.
+  const onErrorCloseCancel = React.useCallback<Required<DeliveryErrorDialogProps>['onClose']>(
+    async (delivery_alert_id) => {
+      try {
+        if (!rmf) {
+          throw new Error('delivery alert api not available');
+        }
+        await rmf.deliveryAlertsApi?.updateDeliveryAlertActionDeliveryAlertsDeliveryAlertIdActionPost(
+          delivery_alert_id,
+          'cancelled',
+        );
+      } catch (e) {
+        console.error(
+          `failed to update delivery alert ${delivery_alert_id} to cancelled action: ${
+            (e as Error).message
+          }`,
+        );
+      }
+      setAlerts((prev) =>
+        Object.fromEntries(Object.entries(prev).filter(([key]) => key !== delivery_alert_id)),
+      );
+    },
+    [rmf],
+  );
+
   return (
     <>
       {Object.values(alerts).map((alert) => {
-        const onClose = () => {
-          removeDeliveryAlertData(alert.deliveryAlert.id);
-        };
-
-        if (alert.deliveryAlert.tier === 'error') {
+        if (alert.deliveryAlert.tier === 'warning') {
           return (
-            <DeliveryErrorDialog
+            <DeliveryWarningDialog
               deliveryAlert={alert.deliveryAlert}
               taskState={alert.taskState}
-              onClose={onClose}
+              onCancel={alert.taskState ? onCancel : undefined}
+              onOverride={onOverride}
+              onResume={onResume}
+              onClose={() =>
+                setAlerts((prev) =>
+                  Object.fromEntries(
+                    Object.entries(prev).filter(([key]) => key !== alert.deliveryAlert.id),
+                  ),
+                )
+              }
               key={alert.deliveryAlert.id}
             />
           );
         }
 
         return (
-          <DeliveryWarningDialog
+          <DeliveryErrorDialog
             deliveryAlert={alert.deliveryAlert}
             taskState={alert.taskState}
-            onCancel={alert.taskState ? onCancel : undefined}
-            onOverride={onOverride}
-            onResume={onResume}
-            onClose={onClose}
+            onClose={onErrorCloseCancel}
             key={alert.deliveryAlert.id}
           />
         );
