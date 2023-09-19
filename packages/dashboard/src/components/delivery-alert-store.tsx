@@ -10,6 +10,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { makeStyles, createStyles } from '@mui/styles';
 import { base } from 'react-components';
+import { AppControllerContext } from './app-contexts';
 import { RmfAppContext } from './rmf-app';
 import { TaskInspector } from './tasks/task-inspector';
 
@@ -25,9 +26,9 @@ const useStyles = makeStyles((theme: Theme) =>
 interface DeliveryWarningDialogProps {
   deliveryAlert: DeliveryAlert;
   taskState?: TaskState;
-  onCancel?: () => void;
-  onOverride?: () => void;
-  onResume?: () => void;
+  onCancel?: (delivery_alert_id: string, task_id: string) => Promise<void>;
+  onOverride?: (delivery_alert_id: string, task_id?: string) => Promise<void>;
+  onResume?: (delivery_alert_id: string, task_id?: string) => Promise<void>;
   onClose: () => void;
 }
 
@@ -109,7 +110,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
               disabled={onCancel === undefined || actionTaken}
               onClick={() => {
                 setActionTaken(true);
-                onCancel && onCancel();
+                taskState && onCancel && onCancel(deliveryAlert.id, taskState.booking.id);
               }}
               autoFocus
             >
@@ -123,7 +124,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
               disabled={onOverride === undefined || actionTaken}
               onClick={() => {
                 setActionTaken(true);
-                onOverride && onOverride();
+                onOverride && onOverride(deliveryAlert.id, taskState?.booking.id);
               }}
               autoFocus
             >
@@ -137,7 +138,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
               disabled={onResume === undefined || actionTaken}
               onClick={() => {
                 setActionTaken(true);
-                onResume && onResume();
+                onResume && onResume(deliveryAlert.id, taskState?.booking.id);
               }}
               autoFocus
             >
@@ -270,6 +271,12 @@ interface DeliveryAlertData {
 export const DeliveryAlertStore = React.memo(() => {
   const rmf = React.useContext(RmfAppContext);
   const [alerts, setAlerts] = React.useState<Record<string, DeliveryAlertData>>({});
+  const appController = React.useContext(AppControllerContext);
+
+  // What happens if the user just refreshes?
+  // Run the gets command the first time and publish all the alerts
+  // TODO(ac): Create an endpoint which only gives delivery alerts that have not
+  // been actioned upon, to prevent requesting too many delivery alerts.
 
   const filterAndPushDeliveryAlert = (deliveryAlert: DeliveryAlert, taskState?: TaskState) => {
     // Check if a delivery alert for a task is already open, if so, replace it
@@ -320,6 +327,82 @@ export const DeliveryAlertStore = React.memo(() => {
     setAlerts(filteredAlerts);
   };
 
+  const onCancel = React.useCallback<Required<DeliveryWarningDialogProps>['onCancel']>(
+    async (delivery_alert_id, task_id) => {
+      try {
+        if (!rmf) {
+          throw new Error('tasks and delivery alert api not available');
+        }
+        await rmf.tasksApi?.postCancelTaskTasksCancelTaskPost({
+          type: 'cancel_task_request',
+          task_id: task_id,
+        });
+        await rmf.deliveryAlertsApi?.updateDeliveryAlertActionDeliveryAlertsDeliveryAlertIdActionPost(
+          delivery_alert_id,
+          'cancelled',
+        );
+        appController.showAlert('success', 'Successfully cancelled task');
+      } catch (e) {
+        appController.showAlert('error', `Failed to cancel task: ${(e as Error).message}`);
+      }
+    },
+    [rmf, appController],
+  );
+
+  const onOverride = React.useCallback<Required<DeliveryWarningDialogProps>['onOverride']>(
+    async (delivery_alert_id, task_id) => {
+      try {
+        if (!rmf) {
+          throw new Error('delivery alert api not available');
+        }
+        await rmf.deliveryAlertsApi?.updateDeliveryAlertActionDeliveryAlertsDeliveryAlertIdActionPost(
+          delivery_alert_id,
+          'override',
+        );
+        const taskReferenceText = task_id ? `, continuing with task ${task_id}` : '';
+        appController.showAlert(
+          'success',
+          `Overriding delivery alert ${delivery_alert_id}${taskReferenceText}`,
+        );
+      } catch (e) {
+        const taskReferenceText = task_id ? ` and continue with task ${task_id}` : '';
+        appController.showAlert(
+          'error',
+          `Failed to override delivery alert ${delivery_alert_id}${taskReferenceText}: ${
+            (e as Error).message
+          }`,
+        );
+      }
+    },
+    [rmf, appController],
+  );
+
+  const onResume = React.useCallback<Required<DeliveryWarningDialogProps>['onResume']>(
+    async (delivery_alert_id, task_id) => {
+      try {
+        if (!rmf) {
+          throw new Error('delivery alert api not available');
+        }
+        await rmf.deliveryAlertsApi?.updateDeliveryAlertActionDeliveryAlertsDeliveryAlertIdActionPost(
+          delivery_alert_id,
+          'resume',
+        );
+        const taskReferenceText = task_id ? `, continuing with task ${task_id}` : '';
+        appController.showAlert(
+          'success',
+          `Resuming after delivery alert ${delivery_alert_id}${taskReferenceText}`,
+        );
+      } catch (e) {
+        const taskReferenceText = task_id ? ` ${task_id}` : '';
+        appController.showAlert(
+          'error',
+          `Failed to resume task${taskReferenceText}: ${(e as Error).message}`,
+        );
+      }
+    },
+    [rmf, appController],
+  );
+
   return (
     <>
       {Object.values(alerts).map((alert) => {
@@ -337,15 +420,11 @@ export const DeliveryAlertStore = React.memo(() => {
           );
         }
 
-        const onCancel = () => {};
-        const onOverride = alert.deliveryAlert.category === 'wrong' ? () => {} : undefined;
-        const onResume = () => {};
-
         return (
           <DeliveryWarningDialog
             deliveryAlert={alert.deliveryAlert}
             taskState={alert.taskState}
-            onCancel={onCancel}
+            onCancel={alert.taskState ? onCancel : undefined}
             onOverride={onOverride}
             onResume={onResume}
             onClose={onClose}
