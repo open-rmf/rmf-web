@@ -13,6 +13,7 @@ import {
   findSceneBoundingBoxFromThreeFiber,
   fromRmfCoords,
   getPlaces,
+  loadAffineImage,
   Place,
   ReactThreeFiberImageMaker,
   RobotTableData,
@@ -42,17 +43,12 @@ const debug = Debug('MapApp');
 const TrajectoryUpdateInterval = 2000;
 // schedule visualizer manages it's own settings so that it doesn't cause a re-render
 // of the whole app when it changes.
-const SettingsKey = 'mapAppSettings';
 const colorManager = new ColorManager();
 
 const DEFAULT_ZOOM_LEVEL = 20;
 
 function getRobotId(fleetName: string, robotName: string): string {
   return `${fleetName}/${robotName}`;
-}
-
-interface MapSettings {
-  trajectoryTime: number;
 }
 
 export const MapApp = styled(
@@ -139,11 +135,7 @@ export const MapApp = styled(
     const [waypoints, setWaypoints] = React.useState<Place[]>([]);
 
     const [trajectories, setTrajectories] = React.useState<TrajectoryData[]>([]);
-    const [mapSettings, setMapSettings] = React.useState<MapSettings>(() => {
-      const settings = window.localStorage.getItem(SettingsKey);
-      return settings ? JSON.parse(settings) : { trajectoryTime: 300000 /* 5 min */ };
-    });
-    const trajectoryTime = mapSettings.trajectoryTime;
+    const trajectoryTime = 300000;
     const trajectoryAnimScale = trajectoryTime / (0.9 * TrajectoryUpdateInterval);
     const trajManager = rmf?.trajectoryManager;
     React.useEffect(() => {
@@ -237,6 +229,11 @@ export const MapApp = styled(
         setImageUrl(null);
         return;
       }
+
+      (async () => {
+        const affineImage = await loadAffineImage(currentLevel.images[0]);
+        setImageUrl(affineImage.src);
+      })();
 
       buildingMap &&
         setWaypoints(
