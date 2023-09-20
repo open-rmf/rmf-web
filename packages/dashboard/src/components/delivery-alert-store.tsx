@@ -489,8 +489,8 @@ export const DeliveryAlertStore = React.memo(() => {
             <DeliveryWarningDialog
               deliveryAlert={alert.deliveryAlert}
               taskState={alert.taskState}
-              onCancel={alert.taskState ? onCancel : undefined}
-              onOverride={onOverride}
+              onCancel={alert.deliveryAlert.task_id ? onCancel : undefined}
+              onOverride={alert.deliveryAlert.category === 'wrong' ? onOverride : undefined}
               onResume={onResume}
               onClose={() =>
                 setAlerts((prev) =>
