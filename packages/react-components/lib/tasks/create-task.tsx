@@ -79,7 +79,7 @@ interface DropoffActivity {
   description: {
     unix_millis_action_duration_estimate: number;
     category: string;
-    description: Object;
+    description: {};
   };
 }
 
