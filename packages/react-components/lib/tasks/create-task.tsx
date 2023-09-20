@@ -138,9 +138,10 @@ export function getShortDescription(taskRequest: TaskRequest): string {
       return `[Delivery] from [${taskRequest.description.pickup.place}] to [${taskRequest.description.dropoff.place}]`;
     }
     case 'patrol': {
-      return `[Patrol] [${
-        taskRequest.description.rounds
-      }] rounds, along ${taskRequest.description.places.join(', ')}`;
+      const formattedPlaces = taskRequest.description.places.map((place: string) => `[${place}]`);
+      return `[Patrol] [${taskRequest.description.rounds}] round/s, along ${formattedPlaces.join(
+        ', ',
+      )}`;
     }
     default:
       return `[Unknown] type "${taskRequest.category}"`;
