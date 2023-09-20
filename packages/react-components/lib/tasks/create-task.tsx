@@ -129,7 +129,7 @@ const StyledDialog = styled((props: DialogProps) => <Dialog {...props} />)(({ th
   },
 }));
 
-function getShortDescription(taskRequest: TaskRequest): string {
+export function getShortDescription(taskRequest: TaskRequest): string {
   switch (taskRequest.category) {
     case 'clean': {
       return `[Clean] zone [${taskRequest.description.zone}]`;
@@ -138,7 +138,9 @@ function getShortDescription(taskRequest: TaskRequest): string {
       return `[Delivery] from [${taskRequest.description.pickup.place}] to [${taskRequest.description.dropoff.place}]`;
     }
     case 'patrol': {
-      return `[Patrol] [${taskRequest.description.places[0]}] to [${taskRequest.description.places[1]}]`;
+      return `[Patrol] [${
+        taskRequest.description.rounds
+      }] rounds, along ${taskRequest.description.places.join(', ')}`;
     }
     default:
       return `[Unknown] type "${taskRequest.category}"`;
