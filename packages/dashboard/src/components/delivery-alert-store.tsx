@@ -321,17 +321,7 @@ export const DeliveryAlertStore = React.memo(() => {
 
       const filteredAlertsMap: Record<string, DeliveryAlertData> = {};
       const taskIdToAlertsMap: Record<string, DeliveryAlertData> = {};
-      const resolvedTaskIds: string[] = [];
       for (const alert of deliveryAlerts) {
-        if (alert.action !== 'waiting') {
-          // Keeping track of resolved task delivery alerts to filter any
-          // remaining warning and waiting delivery alerts.
-          if (alert.task_id && alert.tier === 'error') {
-            resolvedTaskIds.push(alert.task_id);
-          }
-          continue;
-        }
-
         // No task involved, and still waiting for user action. There should not
         // be any longstanding delivery alerts that appear after a refresh, only
         // the delivery alerts that are currently present and have not been
@@ -341,44 +331,34 @@ export const DeliveryAlertStore = React.memo(() => {
           continue;
         }
 
-        // Tasks that have not been encountered before will go into
-        // taskIdToAlertsMap first, as an error will supercede a warning.
-        if (!taskIdToAlertsMap[alert.task_id]) {
-          let state: TaskState | undefined = undefined;
-          try {
-            state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(alert.task_id)).data;
-          } catch {
-            console.error(
-              `Failed to fetch task state for ${alert.task_id} for delivery alert ${alert.id}`,
-            );
-          }
-          taskIdToAlertsMap[alert.task_id] = {
-            deliveryAlert: alert,
-            taskState: state,
-          };
-        } else if (alert.tier === 'error') {
-          let state: TaskState | undefined = undefined;
-          try {
-            state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(alert.task_id)).data;
-          } catch {
-            console.error(
-              `Failed to fetch task state for ${alert.task_id} for delivery alert ${alert.id}`,
-            );
-          }
-          taskIdToAlertsMap[alert.task_id] = {
-            deliveryAlert: alert,
-            taskState: state,
-          };
+        // For the same task, ignore older alerts. This is possible as we are
+        // creating delivery alert IDs with timestamps.
+        const prevDeliveryAlert = taskIdToAlertsMap[alert.task_id];
+        if (prevDeliveryAlert && prevDeliveryAlert.deliveryAlert.id > alert.id) {
+          continue;
         }
+
+        // Update map with newer alerts for the same task id.
+        let state: TaskState | undefined = undefined;
+        try {
+          state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(alert.task_id)).data;
+        } catch {
+          console.error(
+            `Failed to fetch task state for ${alert.task_id} for delivery alert ${alert.id}`,
+          );
+        }
+        taskIdToAlertsMap[alert.task_id] = {
+          deliveryAlert: alert,
+          taskState: state,
+        };
       }
 
       // Move all unresolved and up-to-date task related delivery alerts to the
       // filtered map.
-      for (const taskId of Object.keys(taskIdToAlertsMap)) {
-        if (resolvedTaskIds.includes(taskId)) {
+      for (const alertData of Object.values(taskIdToAlertsMap)) {
+        if (alertData.deliveryAlert.action !== 'waiting') {
           continue;
         }
-        const alertData = taskIdToAlertsMap[taskId];
         filteredAlertsMap[alertData.deliveryAlert.id] = alertData;
       }
       setAlerts(filteredAlertsMap);
