@@ -99,7 +99,7 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
             title: 'Message',
             value:
               'To ensure maximum compatibility, please reduce the zoom ' +
-              'level in the browser (Ctrl+Minus) or display settings, ' +
+              'level in the browser (Ctrl-Minus) or display settings, ' +
               'or change to a higher resolution display device.',
           },
         ]}

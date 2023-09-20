@@ -135,11 +135,11 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
             Inspect
           </Button>
         ) : null}
-        {acknowledged || onAcknowledge === undefined ? (
+        {acknowledged ? (
           <Button size="small" variant="contained" disabled={true} autoFocus>
             {acknowledgedBy ? `Acknowledged by ${acknowledgedBy}` : 'Acknowledged'}
           </Button>
-        ) : (
+        ) : onAcknowledge === undefined ? null : (
           <Button
             size="small"
             variant="contained"
