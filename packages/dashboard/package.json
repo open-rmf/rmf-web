@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "pnpm run --filter {.}^... build && concurrently npm:start:rmf-server npm:start:react",
+    "start": "concurrently npm:start:rmf-server npm:start:react",
     "start:sim": "concurrently npm:start:rmf-server npm:start:rmf npm:start:react",
     "start:clinic": "RMF_DASHBOARD_DEMO_MAP=clinic.launch.xml pnpm run start:sim",
     "start:airport": "RMF_DASHBOARD_DEMO_MAP=airport_terminal.launch.xml pnpm run start:sim",
-    "start:react": "react-scripts start",
+    "start:react": "pnpm run --filter {.}^... build && react-scripts start",
     "start:rmf": "node scripts/start-rmf.js",
     "start:rmf-server": "RMF_SERVER_USE_SIM_TIME=true npm --prefix ../api-server start",
     "start:rmf-server:psql": "RMF_SERVER_USE_SIM_TIME=true npm run --prefix ../api-server start:psql",
