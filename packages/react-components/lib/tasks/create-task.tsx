@@ -180,7 +180,7 @@ function getShortDescription(taskRequest: TaskRequest): string {
     case 'delivery': {
       return `[Delivery - 1:1] from [${taskRequest.description.pickup.place}] to [${taskRequest.description.dropoff.place}]`;
     }
-    case 'delivery_sequential_lot_pick_up': {
+    case 'delivery_sequential_lot_pickup': {
       const pickup: PickupActivity =
         taskRequest.description.description.phases[0].activity.description.activities[0];
       const cart_rfid: number = pickup.description.description.cart_rfid;
@@ -190,7 +190,7 @@ function getShortDescription(taskRequest: TaskRequest): string {
       const dropoffPoint: string = goTo.description;
       return `[Delivery - Sequential lot pick up] payload [${cart_rfid}] from [${pickupZone}] to [${dropoffPoint}]`;
     }
-    case 'delivery_area_pick_up': {
+    case 'delivery_area_pickup': {
       const pickup: PickupActivity =
         taskRequest.description.description.phases[0].activity.description.activities[0];
       const cart_rfid: number = pickup.description.description.cart_rfid;
@@ -601,8 +601,8 @@ function defaultTaskDescription(taskCategory: string): TaskDescription | undefin
   switch (taskCategory) {
     case 'delivery':
       return defaultDeliveryTask();
-    case 'delivery_sequential_lot_pick_up':
-    case 'delivery_area_pick_up':
+    case 'delivery_sequential_lot_pickup':
+    case 'delivery_area_pickup':
       return defaultDeliveryCustomTask();
     default:
       return undefined;
@@ -819,8 +819,8 @@ export function CreateTaskForm({
             allowSubmit={allowSubmit}
           />
         );
-      case 'delivery_sequential_lot_pick_up':
-      case 'delivery_area_pick_up':
+      case 'delivery_sequential_lot_pickup':
+      case 'delivery_area_pickup':
         return (
           <DeliveryCustomTaskForm
             taskDesc={taskRequest.description as DeliveryCustomTaskDescription}
@@ -873,8 +873,8 @@ export function CreateTaskForm({
       // Workaround where the task category for custom deliveries, need to be
       // compose.
       if (
-        t.category === 'delivery_sequential_lot_pick_up' ||
-        t.category === 'delivery_area_pick_up'
+        t.category === 'delivery_sequential_lot_pickup' ||
+        t.category === 'delivery_area_pickup'
       ) {
         t.category = 'compose';
       }
@@ -1060,13 +1060,13 @@ export function CreateTaskForm({
                         Delivery - 1:1
                       </MenuItem>
                       <MenuItem
-                        value="delivery_sequential_lot_pick_up"
+                        value="delivery_sequential_lot_pickup"
                         disabled={Object.keys(dropoffPoints).length === 0}
                       >
                         Delivery - Sequential lot pick up
                       </MenuItem>
                       <MenuItem
-                        value="delivery_area_pick_up"
+                        value="delivery_area_pickup"
                         disabled={Object.keys(dropoffPoints).length === 0}
                       >
                         Delivery - Area pick up
