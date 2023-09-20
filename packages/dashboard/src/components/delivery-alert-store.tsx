@@ -343,7 +343,7 @@ export const DeliveryAlertStore = React.memo(() => {
 
         // Tasks that have not been encountered before will go into
         // taskIdToAlertsMap first, as an error will supercede a warning.
-        if (!Object.keys(taskIdToAlertsMap).includes(alert.task_id)) {
+        if (!taskIdToAlertsMap[alert.task_id]) {
           let state: TaskState | undefined = undefined;
           try {
             state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(alert.task_id)).data;
@@ -365,7 +365,6 @@ export const DeliveryAlertStore = React.memo(() => {
               `Failed to fetch task state for ${alert.task_id} for delivery alert ${alert.id}`,
             );
           }
-
           taskIdToAlertsMap[alert.task_id] = {
             deliveryAlert: alert,
             taskState: state,
@@ -405,11 +404,11 @@ export const DeliveryAlertStore = React.memo(() => {
         if (!rmf) {
           throw new Error('tasks and delivery alert api not available');
         }
-        await rmf.tasksApi?.postCancelTaskTasksCancelTaskPost({
+        await rmf.tasksApi.postCancelTaskTasksCancelTaskPost({
           type: 'cancel_task_request',
           task_id: task_id,
         });
-        await rmf.deliveryAlertsApi?.updateDeliveryAlertActionDeliveryAlertsDeliveryAlertIdActionPost(
+        await rmf.deliveryAlertsApi.updateDeliveryAlertActionDeliveryAlertsDeliveryAlertIdActionPost(
           delivery_alert_id,
           'cancelled',
         );
@@ -427,7 +426,7 @@ export const DeliveryAlertStore = React.memo(() => {
         if (!rmf) {
           throw new Error('delivery alert api not available');
         }
-        await rmf.deliveryAlertsApi?.updateDeliveryAlertActionDeliveryAlertsDeliveryAlertIdActionPost(
+        await rmf.deliveryAlertsApi.updateDeliveryAlertActionDeliveryAlertsDeliveryAlertIdActionPost(
           delivery_alert_id,
           'override',
         );
@@ -455,7 +454,7 @@ export const DeliveryAlertStore = React.memo(() => {
         if (!rmf) {
           throw new Error('delivery alert api not available');
         }
-        await rmf.deliveryAlertsApi?.updateDeliveryAlertActionDeliveryAlertsDeliveryAlertIdActionPost(
+        await rmf.deliveryAlertsApi.updateDeliveryAlertActionDeliveryAlertsDeliveryAlertIdActionPost(
           delivery_alert_id,
           'resume',
         );
@@ -484,7 +483,7 @@ export const DeliveryAlertStore = React.memo(() => {
         if (!rmf) {
           throw new Error('delivery alert api not available');
         }
-        await rmf.deliveryAlertsApi?.updateDeliveryAlertActionDeliveryAlertsDeliveryAlertIdActionPost(
+        await rmf.deliveryAlertsApi.updateDeliveryAlertActionDeliveryAlertsDeliveryAlertIdActionPost(
           delivery_alert_id,
           'cancelled',
         );
