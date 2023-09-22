@@ -72,6 +72,8 @@ app.mount(
     StaticFiles(directory="static"),
     name="static",
 )
+
+os.makedirs(app_config.cache_directory, exist_ok=True)
 app.mount(
     "/cache",
     StaticFiles(directory=app_config.cache_directory),
