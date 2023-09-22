@@ -23,7 +23,7 @@ import {
   nextWednesday,
   startOfMinute,
 } from 'date-fns';
-import { RecurringDays, Schedule } from 'react-components';
+import { getShortDescription, RecurringDays, Schedule } from 'react-components';
 
 /**
  * Generates a list of ProcessedEvents to occur within the query start and end,
@@ -159,5 +159,6 @@ export const getScheduledTaskTitle = (task: ScheduledTask): string => {
   if (!task.task_request || !task.task_request.category) {
     return `[${task.id}] Unknown`;
   }
-  return `[${task.id}] ${task.task_request.category}`;
+
+  return `${getShortDescription(task.task_request)}`;
 };

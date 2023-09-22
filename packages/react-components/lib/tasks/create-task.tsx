@@ -148,7 +148,7 @@ const StyledDialog = styled((props: DialogProps) => <Dialog {...props} />)(({ th
   },
 }));
 
-function getShortDescription(taskRequest: TaskRequest): string {
+export function getShortDescription(taskRequest: TaskRequest): string {
   switch (taskRequest.category) {
     case 'delivery': {
       return `[Delivery - 1:1] from [${taskRequest.description.pickup.place}] to [${taskRequest.description.dropoff.place}]`;
