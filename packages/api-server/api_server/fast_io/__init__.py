@@ -154,6 +154,8 @@ class FastIO(FastAPI):
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
+        if self.swagger_ui_oauth2_redirect_url is None:
+            self.swagger_ui_oauth2_redirect_url = "docs/oauth2-redirect"
         self.sio = socketio.AsyncServer(
             async_mode="asgi", cors_allowed_origins=[], serializer=FastIOPacket
         )

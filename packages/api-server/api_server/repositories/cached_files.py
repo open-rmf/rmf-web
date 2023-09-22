@@ -6,7 +6,7 @@ from api_server.app_config import app_config
 from api_server.logger import logger as _logger
 
 
-class StaticFilesRepository:
+class CachedFilesRepository:
     def __init__(
         self,
         base_url: str,
@@ -14,10 +14,10 @@ class StaticFilesRepository:
         logger: Optional[logging.Logger] = None,
     ):
         """
-        :param base_url: base url that static files are served from. When running behind a proxy,
+        :param base_url: base url that cached files are served from. When running behind a proxy,
         this should be the url of the proxy.
         :param directory: location to write the files to.
-        This should be the same directory that a static files server is serving from.
+        This should be the same directory that the cached files server is serving from.
         """
         self.base_url = base_url
         self.directory = directory
@@ -40,8 +40,9 @@ class StaticFilesRepository:
         return urlpath
 
 
-static_files_repo = StaticFilesRepository(
-    f"{app_config.public_url.geturl()}/static",
-    app_config.static_directory,
-    _logger.getChild("static_files"),
+os.makedirs(app_config.cache_directory, exist_ok=True)
+cached_files_repo = CachedFilesRepository(
+    f"{app_config.public_url.geturl()}/cache",
+    app_config.cache_directory,
+    _logger.getChild("cached_files"),
 )

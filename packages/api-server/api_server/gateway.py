@@ -28,18 +28,18 @@ from rosidl_runtime_py.convert import message_to_ordereddict
 
 from .logger import logger as base_logger
 from .models import BuildingMap, DispenserState, DoorState, IngestorState, LiftState
-from .repositories import StaticFilesRepository, static_files_repo
+from .repositories import CachedFilesRepository, cached_files_repo
 from .rmf_io import rmf_events
 from .ros import ros_node
 
 
 def process_building_map(
     rmf_building_map: RmfBuildingMap,
-    static_files: StaticFilesRepository,
+    cached_files: CachedFilesRepository,
 ) -> BuildingMap:
     """
     1. Converts a `BuildingMap` message to an ordered dict.
-    2. Saves the images into `{static_directory}/{map_name}/`.
+    2. Saves the images into `{cache_directory}/{map_name}/`.
     3. Change the `AffineImage` `data` field to the url of the image.
     """
     processed_map = message_to_ordereddict(rmf_building_map)
@@ -53,7 +53,7 @@ def process_building_map(
             sha1_hash.update(image.data)
             fingerprint = base64.b32encode(sha1_hash.digest()).lower().decode()
             relpath = f"{rmf_building_map.name}/{level.name}-{image.name}.{fingerprint}.{image.encoding}"  # pylint: disable=line-too-long
-            urlpath = static_files.add_file(image.data, relpath)
+            urlpath = cached_files.add_file(image.data, relpath)
             processed_map["levels"][i]["images"][j]["data"] = urlpath
     return BuildingMap(**processed_map)
 
@@ -61,7 +61,7 @@ def process_building_map(
 class RmfGateway:
     def __init__(
         self,
-        static_files: StaticFilesRepository,
+        cached_files: CachedFilesRepository,
         *,
         logger: Optional[logging.Logger] = None,
     ):
@@ -74,7 +74,7 @@ class RmfGateway:
         self._submit_task_srv = ros_node().create_client(RmfSubmitTask, "submit_task")
         self._cancel_task_srv = ros_node().create_client(RmfCancelTask, "cancel_task")
 
-        self.static_files = static_files
+        self.cached_files = cached_files
         self.logger = logger or base_logger.getChild(self.__class__.__name__)
         self._subscriptions: List[Subscription] = []
 
@@ -135,7 +135,7 @@ class RmfGateway:
             RmfBuildingMap,
             "map",
             lambda msg: rmf_events.building_map.on_next(
-                process_building_map(msg, self.static_files)
+                process_building_map(msg, self.cached_files)
             ),
             rclpy.qos.QoSProfile(
                 history=rclpy.qos.HistoryPolicy.KEEP_ALL,
@@ -191,5 +191,5 @@ def startup():
     Must be called after the ros node is created and before spinning the it.
     """
     global _rmf_gateway
-    _rmf_gateway = RmfGateway(static_files_repo)
+    _rmf_gateway = RmfGateway(cached_files_repo)
     return _rmf_gateway
