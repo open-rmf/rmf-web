@@ -7,6 +7,11 @@ from typing import Any, Callable, Coroutine, List, Optional, Union
 import schedule
 from fastapi import Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.docs import (
+    get_redoc_html,
+    get_swagger_ui_html,
+    get_swagger_ui_oauth2_redirect_html,
+)
 from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
 
@@ -46,7 +51,12 @@ async def on_sio_connect(sid: str, _environ: dict, auth: Optional[dict] = None):
         return False
 
 
-app = FastIO(title="RMF API Server", socketio_connect=on_sio_connect)
+app = FastIO(
+    title="RMF API Server",
+    socketio_connect=on_sio_connect,
+    docs_url=None,
+    redoc_url=None,
+)
 
 
 app.add_middleware(
@@ -200,6 +210,31 @@ async def on_shutdown():
             cb()
 
     logger.info("shutdown app")
+
+
+@app.get("/docs", include_in_schema=False)
+async def custom_swagger_ui_html():
+    return get_swagger_ui_html(
+        openapi_url=app.openapi_url,
+        title=app.title + " - Swagger UI",
+        oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
+        swagger_js_url="/static/swagger-ui-bundle.js",
+        swagger_css_url="/static/swagger-ui.css",
+    )
+
+
+@app.get(app.swagger_ui_oauth2_redirect_url, include_in_schema=False)
+async def swagger_ui_redirect():
+    return get_swagger_ui_oauth2_redirect_html()
+
+
+@app.get("/redoc", include_in_schema=False)
+async def redoc_html():
+    return get_redoc_html(
+        openapi_url=app.openapi_url,
+        title=app.title + " - ReDoc",
+        redoc_js_url="/static/redoc.standalone.js",
+    )
 
 
 async def _spin_scheduler():
