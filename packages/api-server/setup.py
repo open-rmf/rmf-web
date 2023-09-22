@@ -39,7 +39,7 @@ setup(
         ],
     },
     package_data={
-        "static": ["*"],
+        "api_server.static": ["*.js", "*.css"],
     },
     license="Apache License, Version 2.0",
 )

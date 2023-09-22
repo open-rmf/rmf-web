@@ -67,9 +67,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+print(os.path.join(os.path.dirname(os.path.abspath(__file__)), "static"))
 app.mount(
     "/static",
-    StaticFiles(directory="static"),
+    StaticFiles(
+        directory=os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+    ),
     name="static",
 )
 
