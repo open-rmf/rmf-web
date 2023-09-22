@@ -1,3 +1,8 @@
 from sqlite_local_config import config
 
-config.update({"db_url": "postgres://postgres:postgres@127.0.0.1:5432"})
+config.update(
+    {
+        "db_url": "postgres://postgres:postgres@127.0.0.1:5432",
+        "static_directory": "static",  # The directory where static files should be stored.
+    }
+)
