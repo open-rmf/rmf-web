@@ -32,7 +32,7 @@ from .models import (
     User,
 )
 from .models import tortoise_models as ttm
-from .repositories import StaticFilesRepository, TaskRepository
+from .repositories import TaskRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, rmf_events
 from .types import is_coroutine
 
@@ -66,21 +66,20 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-os.makedirs(app_config.static_directory, exist_ok=True)
+
 app.mount(
     "/static",
-    StaticFiles(directory=app_config.static_directory),
+    StaticFiles(directory="static"),
     name="static",
+)
+app.mount(
+    "/cache",
+    StaticFiles(directory=app_config.cache_directory),
+    name="cache",
 )
 
 # will be called in reverse order on app shutdown
 shutdown_cbs: List[Union[Coroutine[Any, Any, Any], Callable[[], None]]] = []
-
-static_files_repo = StaticFilesRepository(
-    f"{app_config.public_url.geturl()}/static",
-    app_config.static_directory,
-    logger.getChild("static_files"),
-)
 
 rmf_bookkeeper = RmfBookKeeper(rmf_events, logger=logger.getChild("BookKeeper"))
 
