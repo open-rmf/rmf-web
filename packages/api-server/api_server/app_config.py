@@ -13,7 +13,7 @@ class AppConfig:
     port: int
     db_url: str
     public_url: urllib.parse.ParseResult
-    static_directory: str
+    cache_directory: str
     log_level: str
     builtin_admin: str
     jwt_public_key: Optional[str]
