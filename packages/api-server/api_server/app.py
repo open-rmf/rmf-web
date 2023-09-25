@@ -7,6 +7,11 @@ from typing import Any, Callable, Coroutine, List, Optional, Union
 import schedule
 from fastapi import Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.docs import (
+    get_redoc_html,
+    get_swagger_ui_html,
+    get_swagger_ui_oauth2_redirect_html,
+)
 from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
 
@@ -27,7 +32,7 @@ from .models import (
     User,
 )
 from .models import tortoise_models as ttm
-from .repositories import StaticFilesRepository, TaskRepository
+from .repositories import TaskRepository
 from .rmf_io import HealthWatchdog, RmfBookKeeper, rmf_events
 from .types import is_coroutine
 
@@ -46,7 +51,12 @@ async def on_sio_connect(sid: str, _environ: dict, auth: Optional[dict] = None):
         return False
 
 
-app = FastIO(title="RMF API Server", socketio_connect=on_sio_connect)
+app = FastIO(
+    title="RMF API Server",
+    socketio_connect=on_sio_connect,
+    docs_url=None,
+    redoc_url=None,
+)
 
 
 app.add_middleware(
@@ -56,21 +66,24 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-os.makedirs(app_config.static_directory, exist_ok=True)
+
 app.mount(
     "/static",
-    StaticFiles(directory=app_config.static_directory),
+    StaticFiles(
+        directory=os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+    ),
     name="static",
+)
+
+os.makedirs(app_config.cache_directory, exist_ok=True)
+app.mount(
+    "/cache",
+    StaticFiles(directory=app_config.cache_directory),
+    name="cache",
 )
 
 # will be called in reverse order on app shutdown
 shutdown_cbs: List[Union[Coroutine[Any, Any, Any], Callable[[], None]]] = []
-
-static_files_repo = StaticFilesRepository(
-    f"{app_config.public_url.geturl()}/static",
-    app_config.static_directory,
-    logger.getChild("static_files"),
-)
 
 rmf_bookkeeper = RmfBookKeeper(rmf_events, logger=logger.getChild("BookKeeper"))
 
@@ -200,6 +213,33 @@ async def on_shutdown():
             cb()
 
     logger.info("shutdown app")
+
+
+@app.get("/docs", include_in_schema=False)
+async def custom_swagger_ui_html():
+    openapi_url = app.openapi_url if app.openapi_url is not None else "/openapi.json"
+    return get_swagger_ui_html(
+        openapi_url=openapi_url,
+        title=app.title + " - Swagger UI",
+        oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
+        swagger_js_url="/static/swagger-ui-bundle.js",
+        swagger_css_url="/static/swagger-ui.css",
+    )
+
+
+@app.get(app.swagger_ui_oauth2_redirect_url, include_in_schema=False)
+async def swagger_ui_redirect():
+    return get_swagger_ui_oauth2_redirect_html()
+
+
+@app.get("/redoc", include_in_schema=False)
+async def redoc_html():
+    openapi_url = app.openapi_url if app.openapi_url is not None else "/openapi.json"
+    return get_redoc_html(
+        openapi_url=openapi_url,
+        title=app.title + " - ReDoc",
+        redoc_js_url="/static/redoc.standalone.js",
+    )
 
 
 async def _spin_scheduler():
