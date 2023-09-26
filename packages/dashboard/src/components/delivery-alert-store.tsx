@@ -55,6 +55,32 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
     }
     const sub = rmf.getTaskStateObs(taskState.booking.id).subscribe((taskStateUpdate) => {
       setNewTaskState(taskStateUpdate);
+      setCancelling((prev) => {
+        if (
+          prev &&
+          deliveryAlert.action === 'waiting' &&
+          taskStateUpdate.status &&
+          taskStateUpdate.status === 'canceled'
+        ) {
+          setCancelling(false);
+          (async () => {
+            try {
+              await rmf.deliveryAlertsApi.updateDeliveryAlertActionDeliveryAlertsDeliveryAlertIdActionPost(
+                deliveryAlert.id,
+                'cancelled',
+              );
+            } catch (e) {
+              appController.showAlert(
+                'error',
+                `Failed to cancel delivery alert ${deliveryAlert.id}: ${(e as Error).message}`,
+              );
+            }
+            setActionTaken(true);
+          })();
+        }
+        return prev;
+      });
+
       if (
         deliveryAlert.action === 'waiting' &&
         taskStateUpdate.status &&
