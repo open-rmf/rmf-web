@@ -1,5 +1,4 @@
-import { Box, Typography } from '@mui/material';
-import { Circle, Html, Text } from '@react-three/drei';
+import { Html } from '@react-three/drei';
 import React from 'react';
 
 interface TextThreeRenderingProps {
@@ -38,7 +37,6 @@ export const TextThreeRendering = ({ position, text }: TextThreeRenderingProps):
                     fontSize: '0.6rem',
                     transform: `scale(${scaleFactor})`,
                     transition: 'transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)',
-                    // zIndex: isHovered ? 0.1 : 6,
                   }}
                   onPointerOver={handlePointerOver}
                   onPointerOut={handlePointerOut}

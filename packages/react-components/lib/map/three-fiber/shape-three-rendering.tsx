@@ -1,5 +1,4 @@
-import { Box, Typography } from '@mui/material';
-import { Circle, Html, Text } from '@react-three/drei';
+import { Circle, Html } from '@react-three/drei';
 import React from 'react';
 
 interface ShapeThreeRenderingProps {
@@ -45,7 +44,7 @@ export const ShapeThreeRendering = ({
             onPointerOut={handlePointerOut}
           >
             {isHovered && (
-              <Html zIndexRange={[0, 0, 1]}>
+              <Html zIndexRange={[1]}>
                 <div
                   style={{
                     backgroundColor: 'rgba(255, 255, 255, 0.8)',
@@ -54,14 +53,13 @@ export const ShapeThreeRendering = ({
                     fontSize: '0.6rem',
                     transform: `scale(${scaleFactor})`,
                     transition: 'transform 0.3s',
-                    zIndex: isHovered ? 0.1 : 6,
                   }}
                 >
                   {text}
                 </div>
               </Html>
             )}
-            <boxGeometry args={[0.8, 0.8, 0.8]} />
+            <boxGeometry args={[1.3, 1.3, 1.3]} />
             <meshStandardMaterial color={color} opacity={1} />
           </mesh>
         </group>
