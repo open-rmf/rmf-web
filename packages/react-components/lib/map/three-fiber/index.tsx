@@ -5,3 +5,4 @@ export * from './lift-three-maker';
 export * from './robot-three-maker';
 export * from './shape-three-rendering';
 export * from './image-maker';
+export * from './text-maker';
