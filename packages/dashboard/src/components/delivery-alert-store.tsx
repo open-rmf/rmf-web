@@ -43,7 +43,6 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
   const rmf = React.useContext(RmfAppContext);
 
   React.useEffect(() => {
-    console.log('effect triggered');
     if (!rmf) {
       console.error('Tasks api not available.');
       setNewTaskState(null);
