@@ -18,6 +18,7 @@ import {
   ReactThreeFiberImageMaker,
   RobotTableData,
   ShapeThreeRendering,
+  TextThreeRendering,
   WallMaker,
 } from 'react-components';
 import { EMPTY, merge, scan, Subscription, switchMap } from 'rxjs';
@@ -64,6 +65,7 @@ export const MapApp = styled(
       Doors: false,
       Trajectories: false,
       Robots: false,
+      Labels: false,
     });
     const [openRobotSummary, setOpenRobotSummary] = React.useState(false);
     const [selectedRobot, setSelectedRobot] = React.useState<RobotTableData>();
@@ -456,6 +458,15 @@ export const MapApp = styled(
                 color="yellow"
                 text={place.vertex.name}
                 circleShape={false}
+              />
+            ))}
+
+          {!disabledLayers['Labels'] &&
+            waypoints.map((place, index) => (
+              <TextThreeRendering
+                key={index}
+                position={[place.vertex.x, place.vertex.y, 0]}
+                text={place.vertex.name}
               />
             ))}
           {!disabledLayers['Ingestors'] &&
