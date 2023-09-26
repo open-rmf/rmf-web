@@ -1,12 +1,16 @@
-import { Html } from '@react-three/drei';
+import { Box, Typography } from '@mui/material';
+import { Circle, Html, Text } from '@react-three/drei';
 import React from 'react';
 
 interface TextThreeRenderingProps {
   position: [number, number, number];
-  text: string;
+  text?: string;
 }
 
 export const TextThreeRendering = ({ position, text }: TextThreeRenderingProps): JSX.Element => {
+  const HEIGHT = 8;
+  const ELEVATION = 0;
+  const positionZ = HEIGHT / 2 + ELEVATION;
   const [isHovered, setIsHovered] = React.useState(false);
 
   const handlePointerOver = () => {
@@ -21,23 +25,30 @@ export const TextThreeRendering = ({ position, text }: TextThreeRenderingProps):
 
   return (
     <>
-      <mesh position={position} onPointerOver={handlePointerOver} onPointerOut={handlePointerOut}>
-        <Html zIndexRange={[0, 0, 1]}>
+      <mesh position={position}>
+        <mesh position={[-1, 0, positionZ]}>
           {text && (
-            <div
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                padding: '0.2rem 0.5rem',
-                borderRadius: '4px',
-                fontSize: '0.6rem',
-                transform: `scale(${scaleFactor})`,
-                transition: 'transform 0.1s cubic-bezier(0.2, 0.8, 0.2, 1)',
-              }}
-            >
-              {text}
-            </div>
+            <Html zIndexRange={[0, 0, 1]}>
+              {text && (
+                <div
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                    padding: '0.2rem 0.5rem',
+                    borderRadius: '4px',
+                    fontSize: '0.6rem',
+                    transform: `scale(${scaleFactor})`,
+                    transition: 'transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                    // zIndex: isHovered ? 0.1 : 6,
+                  }}
+                  onPointerOver={handlePointerOver}
+                  onPointerOut={handlePointerOut}
+                >
+                  {text}
+                </div>
+              )}
+            </Html>
           )}
-        </Html>
+        </mesh>
       </mesh>
     </>
   );
