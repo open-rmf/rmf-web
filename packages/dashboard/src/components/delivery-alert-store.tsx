@@ -26,18 +26,73 @@ const useStyles = makeStyles((theme: Theme) =>
 interface DeliveryWarningDialogProps {
   deliveryAlert: DeliveryAlert;
   taskState?: TaskState;
-  onCancel?: (delivery_alert_id: string, task_id: string) => Promise<void>;
   onOverride?: (delivery_alert_id: string, task_id?: string) => Promise<void>;
   onResume?: (delivery_alert_id: string, task_id?: string) => Promise<void>;
   onClose: () => void;
 }
 
 const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => {
-  const { deliveryAlert, taskState, onCancel, onOverride, onResume, onClose } = props;
+  const { deliveryAlert, taskState, onOverride, onResume, onClose } = props;
   const classes = useStyles();
   const [isOpen, setIsOpen] = React.useState(true);
-  const [actionTaken, setActionTaken] = React.useState(!onCancel && !onOverride && !onResume);
+  const [actionTaken, setActionTaken] = React.useState(!onOverride && !onResume);
+  const [newTaskState, setNewTaskState] = React.useState<TaskState | null>(null);
   const [openTaskInspector, setOpenTaskInspector] = React.useState(false);
+  const [cancelling, setCancelling] = React.useState(false);
+  const appController = React.useContext(AppControllerContext);
+  const rmf = React.useContext(RmfAppContext);
+
+  React.useEffect(() => {
+    console.log('effect triggered');
+    if (!rmf) {
+      console.error('Tasks api not available.');
+      setNewTaskState(null);
+      return;
+    }
+    if (!taskState) {
+      setNewTaskState(null);
+      return;
+    }
+    const sub = rmf.getTaskStateObs(taskState.booking.id).subscribe((taskStateUpdate) => {
+      setNewTaskState(taskStateUpdate);
+      if (
+        deliveryAlert.action === 'waiting' &&
+        taskStateUpdate.status &&
+        taskStateUpdate.status === 'canceled'
+      ) {
+        setCancelling(false);
+        (async () => {
+          try {
+            await rmf.deliveryAlertsApi.updateDeliveryAlertActionDeliveryAlertsDeliveryAlertIdActionPost(
+              deliveryAlert.id,
+              'cancelled',
+            );
+          } catch (e) {
+            appController.showAlert(
+              'error',
+              `Failed to cancel delivery alert ${deliveryAlert.id}: ${(e as Error).message}`,
+            );
+          }
+          setActionTaken(true);
+        })();
+      }
+    });
+    return () => sub.unsubscribe();
+  }, [rmf, deliveryAlert, taskState, appController]);
+
+  const cancelTask = React.useCallback(
+    async (task_id: string) => {
+      if (!rmf) {
+        console.error('Tasks api not available for task cancellation.');
+        return;
+      }
+      await rmf.tasksApi.postCancelTaskTasksCancelTaskPost({
+        type: 'cancel_task_request',
+        task_id: task_id,
+      });
+    },
+    [rmf],
+  );
 
   return (
     <>
@@ -90,7 +145,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
           />
         </DialogContent>
         <DialogActions>
-          {taskState ? (
+          {newTaskState ? (
             <Tooltip title="Inspects the state and logs of the task.">
               <Button
                 size="small"
@@ -103,20 +158,42 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
               </Button>
             </Tooltip>
           ) : null}
-          <Tooltip title="Cancels the current delivery task.">
-            <Button
-              size="small"
-              variant="contained"
-              disabled={onCancel === undefined || actionTaken}
-              onClick={() => {
-                setActionTaken(true);
-                taskState && onCancel && onCancel(deliveryAlert.id, taskState.booking.id);
-              }}
-              autoFocus
-            >
+          {newTaskState && newTaskState.status && newTaskState.status === 'canceled' ? (
+            <Button size="small" variant="contained" disabled autoFocus>
+              Cancelled
+            </Button>
+          ) : newTaskState ? (
+            <Tooltip title="Cancels the current delivery task.">
+              <Button
+                size="small"
+                variant="contained"
+                disabled={actionTaken || cancelling}
+                onClick={() => {
+                  setCancelling(true);
+                  if (newTaskState) {
+                    const task_id = newTaskState.booking.id;
+                    try {
+                      cancelTask(task_id);
+                      appController.showAlert('success', `Successfully cancelled task ${task_id}`);
+                    } catch (e) {
+                      appController.showAlert(
+                        'error',
+                        `Failed to cancel task ${task_id}: ${(e as Error).message}`,
+                      );
+                      setCancelling(false);
+                    }
+                  }
+                }}
+                autoFocus
+              >
+                {cancelling ? 'Cancelling...' : 'Cancel Delivery'}
+              </Button>
+            </Tooltip>
+          ) : (
+            <Button size="small" variant="contained" disabled autoFocus>
               Cancel Delivery
             </Button>
-          </Tooltip>
+          )}
           <Tooltip title="Overrides the warning, the action will be performed regardless of it.">
             <Button
               size="small"
@@ -124,7 +201,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
               disabled={onOverride === undefined || actionTaken}
               onClick={() => {
                 setActionTaken(true);
-                onOverride && onOverride(deliveryAlert.id, taskState?.booking.id);
+                onOverride && onOverride(deliveryAlert.id, newTaskState?.booking.id);
               }}
               autoFocus
             >
@@ -138,7 +215,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
               disabled={onResume === undefined || actionTaken}
               onClick={() => {
                 setActionTaken(true);
-                onResume && onResume(deliveryAlert.id, taskState?.booking.id);
+                onResume && onResume(deliveryAlert.id, newTaskState?.booking.id);
               }}
               autoFocus
             >
@@ -378,28 +455,6 @@ export const DeliveryAlertStore = React.memo(() => {
     return () => sub.unsubscribe();
   }, [rmf]);
 
-  const onCancel = React.useCallback<Required<DeliveryWarningDialogProps>['onCancel']>(
-    async (delivery_alert_id, task_id) => {
-      try {
-        if (!rmf) {
-          throw new Error('tasks and delivery alert api not available');
-        }
-        await rmf.tasksApi.postCancelTaskTasksCancelTaskPost({
-          type: 'cancel_task_request',
-          task_id: task_id,
-        });
-        await rmf.deliveryAlertsApi.updateDeliveryAlertActionDeliveryAlertsDeliveryAlertIdActionPost(
-          delivery_alert_id,
-          'cancelled',
-        );
-        appController.showAlert('success', 'Successfully cancelled task');
-      } catch (e) {
-        appController.showAlert('error', `Failed to cancel task: ${(e as Error).message}`);
-      }
-    },
-    [rmf, appController],
-  );
-
   const onOverride = React.useCallback<Required<DeliveryWarningDialogProps>['onOverride']>(
     async (delivery_alert_id, task_id) => {
       try {
@@ -489,7 +544,6 @@ export const DeliveryAlertStore = React.memo(() => {
             <DeliveryWarningDialog
               deliveryAlert={alert.deliveryAlert}
               taskState={alert.taskState}
-              onCancel={alert.deliveryAlert.task_id ? onCancel : undefined}
               onOverride={alert.deliveryAlert.category === 'wrong' ? onOverride : undefined}
               onResume={onResume}
               onClose={() =>
