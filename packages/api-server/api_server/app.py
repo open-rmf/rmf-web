@@ -98,6 +98,11 @@ app.include_router(
     routes.building_map_router, prefix="/building_map", dependencies=[Depends(user_dep)]
 )
 app.include_router(
+    routes.delivery_alerts_router,
+    prefix="/delivery_alerts",
+    dependencies=[Depends(user_dep)],
+)
+app.include_router(
     routes.doors_router, prefix="/doors", dependencies=[Depends(user_dep)]
 )
 app.include_router(

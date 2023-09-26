@@ -53,3 +53,11 @@ class BeaconEvents:
 
 
 beacon_events = BeaconEvents()
+
+
+class DeliveryAlertEvents:
+    def __init__(self):
+        self.delivery_alerts = Subject()  # DeliveryAlert
+
+
+delivery_alert_events = DeliveryAlertEvents()
