@@ -8,6 +8,18 @@ interface ShapeThreeRenderingProps {
   circleShape: boolean;
 }
 
+const debounce = <T extends (...args: any[]) => void>(callback: T, delay: number) => {
+  let timeoutId: NodeJS.Timeout | null = null;
+  return (...args: Parameters<T>) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    timeoutId = setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+};
+
 export const ShapeThreeRendering = ({
   position,
   color,
@@ -19,13 +31,13 @@ export const ShapeThreeRendering = ({
   const positionZ = HEIGHT / 2 + ELEVATION;
   const [isHovered, setIsHovered] = React.useState(false);
 
-  const handlePointerOver = () => {
+  const debouncedHandlePointerOver = debounce(() => {
     setIsHovered(true);
-  };
+  }, 300);
 
-  const handlePointerOut = () => {
+  const debouncedHandlePointerOut = debounce(() => {
     setIsHovered(false);
-  };
+  }, 300);
 
   const scaleFactor = isHovered ? 2 : 1.0;
 
@@ -40,8 +52,8 @@ export const ShapeThreeRendering = ({
           <mesh
             position={[0, 0, positionZ]}
             scale={[0.7, 0.7, 0.7]}
-            onPointerOver={handlePointerOver}
-            onPointerOut={handlePointerOut}
+            onPointerOver={debouncedHandlePointerOver}
+            onPointerOut={debouncedHandlePointerOut}
           >
             {isHovered && (
               <Html zIndexRange={[1]}>
