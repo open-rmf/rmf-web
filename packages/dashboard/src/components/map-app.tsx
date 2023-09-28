@@ -19,7 +19,6 @@ import {
   RobotTableData,
   ShapeThreeRendering,
   TextThreeRendering,
-  WallMaker,
 } from 'react-components';
 import { EMPTY, merge, scan, Subscription, switchMap } from 'rxjs';
 import appConfig from '../app-config';
@@ -404,9 +403,6 @@ export const MapApp = styled(
               RIGHT: undefined,
             }}
           />
-          {currentLevel.wall_graph.edges.length && (
-            <WallMaker wallGraph={currentLevel.wall_graph} />
-          )}
           {!disabledLayers['Doors'] && currentLevel.doors.length > 0
             ? currentLevel.doors.map((door, i) => (
                 <Door
