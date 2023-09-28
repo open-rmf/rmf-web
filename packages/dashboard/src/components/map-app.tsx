@@ -13,7 +13,6 @@ import {
   findSceneBoundingBoxFromThreeFiber,
   fromRmfCoords,
   getPlaces,
-  loadAffineImage,
   Place,
   ReactThreeFiberImageMaker,
   RobotTableData,
@@ -30,8 +29,8 @@ import { RobotData } from './robots-overlay';
 import { TrajectoryData } from './trajectories-overlay';
 import { WorkcellData } from './workcells-overlay';
 import { RobotSummary } from './robots/robot-summary';
-import { Box3, MOUSE, Vector3 } from 'three';
-import { Canvas } from '@react-three/fiber';
+import { Box3, MOUSE, TextureLoader, Vector3 } from 'three';
+import { Canvas, useLoader } from '@react-three/fiber';
 import { OrbitControls, Line } from '@react-three/drei';
 import { LayersController } from './three-fiber';
 import { Lifts, Door, RobotThree } from './three-fiber';
@@ -232,8 +231,8 @@ export const MapApp = styled(
       }
 
       (async () => {
-        const affineImage = await loadAffineImage(currentLevel.images[0]);
-        setImageUrl(affineImage.src);
+        useLoader.preload(TextureLoader, currentLevel.images[0].data);
+        setImageUrl(currentLevel.images[0].data);
       })();
 
       buildingMap &&
@@ -376,9 +375,7 @@ export const MapApp = styled(
           levels={buildingMap.levels}
           currentLevel={currentLevel}
           onChange={(event: ChangeEvent<HTMLInputElement>, value: string) => {
-            setCurrentLevel(
-              buildingMap.levels.find((l) => l.name === event.target.value) || currentLevel,
-            );
+            setCurrentLevel(buildingMap.levels.find((l) => l.name === value) || currentLevel);
           }}
         />
         <Canvas
