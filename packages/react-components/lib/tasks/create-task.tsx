@@ -307,6 +307,7 @@ function DeliveryTaskForm({
 interface DeliveryCustomProps {
   taskDesc: DeliveryCustomTaskDescription;
   pickupZones: string[];
+  carIDs: number[];
   dropoffPoints: string[];
   onChange(taskDesc: TaskDescription): void;
   allowSubmit(allow: boolean): void;
@@ -315,6 +316,7 @@ interface DeliveryCustomProps {
 function DeliveryCustomTaskForm({
   taskDesc,
   pickupZones = [],
+  carIDs = [],
   dropoffPoints = [],
   onChange,
   allowSubmit,
@@ -364,21 +366,40 @@ function DeliveryCustomTaskForm({
         />
       </Grid>
       <Grid item xs={4}>
-        <PositiveIntField
+        <Autocomplete
           id="cart_rfid"
+          freeSolo
           fullWidth
-          label="Cart RFID"
-          value={taskDesc.activities[0].description.cart_rfid}
-          onChange={(_ev, val) => {
+          options={carIDs.map(String)}
+          value={String(taskDesc.activities[0].description.cart_rfid)}
+          getOptionLabel={(option) => option}
+          onInputChange={(_ev, newValue) => {
+            if (newValue === null) {
+              return;
+            }
             const pickup_activity = taskDesc.activities[0];
-            pickup_activity.description.cart_rfid = val;
+            pickup_activity.description.cart_rfid = parseInt(newValue);
             onInputChange({
               ...taskDesc,
               activities: [pickup_activity, taskDesc.activities[1]],
             });
           }}
-          required
-          error={Number.isNaN(taskDesc.activities[0].description.cart_rfid)}
+          onBlur={(ev) => {
+            const pickup_activity = taskDesc.activities[0];
+            pickup_activity.description.cart_rfid = parseInt((ev.target as HTMLInputElement).value);
+            onInputChange({
+              ...taskDesc,
+              activities: [pickup_activity, taskDesc.activities[1]],
+            });
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Cart RFID"
+              required
+              error={Number.isNaN(taskDesc.activities[0].description.cart_rfid)}
+            />
+          )}
         />
       </Grid>
       <Grid item xs={8}>
@@ -627,6 +648,7 @@ export interface CreateTaskFormProps
   cleaningZones?: string[];
   patrolWaypoints?: string[];
   pickupZones?: string[];
+  carIDs?: number[];
   pickupPoints?: Record<string, string>;
   dropoffPoints?: Record<string, string>;
   favoritesTasks?: TaskFavorite[];
@@ -651,6 +673,7 @@ export function CreateTaskForm({
   /* eslint-disable @typescript-eslint/no-unused-vars */
   patrolWaypoints = [],
   pickupZones = [],
+  carIDs = [],
   pickupPoints = {},
   dropoffPoints = {},
   favoritesTasks = [],
@@ -761,6 +784,7 @@ export function CreateTaskForm({
           <DeliveryCustomTaskForm
             taskDesc={taskRequest.description as DeliveryCustomTaskDescription}
             pickupZones={pickupZones}
+            carIDs={carIDs}
             dropoffPoints={Object.keys(dropoffPoints)}
             onChange={(desc) => handleTaskDescriptionChange(taskRequest.category, desc)}
             allowSubmit={allowSubmit}
