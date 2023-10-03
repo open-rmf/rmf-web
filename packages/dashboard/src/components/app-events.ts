@@ -3,6 +3,7 @@ import {
   Dispenser,
   Door,
   Ingestor,
+  Level,
   Lift,
   TaskState,
 } from 'api-client';
@@ -21,4 +22,5 @@ export const AppEvents = {
   disabledLayers: new ReplaySubject<Record<string, boolean>>(),
   zoom: new BehaviorSubject<number | null>(null),
   mapCenter: new BehaviorSubject<[number, number]>([0, 0]),
+  levelSelect: new BehaviorSubject<Level | null>(null),
 };
