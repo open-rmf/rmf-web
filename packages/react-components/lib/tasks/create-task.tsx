@@ -231,7 +231,7 @@ function DeliveryTaskForm({
       <Grid item xs={4}>
         <PositiveIntField
           id="pickup_sku"
-          label="Cart RFID"
+          label="Cart ID"
           value={parseInt(taskDesc.pickup.payload.sku) ?? 0}
           onChange={(_ev, val) => {
             onInputChange({
@@ -307,7 +307,7 @@ function DeliveryTaskForm({
 interface DeliveryCustomProps {
   taskDesc: DeliveryCustomTaskDescription;
   pickupZones: string[];
-  carIDs: number[];
+  cartIds: number[];
   dropoffPoints: string[];
   onChange(taskDesc: TaskDescription): void;
   allowSubmit(allow: boolean): void;
@@ -316,7 +316,7 @@ interface DeliveryCustomProps {
 function DeliveryCustomTaskForm({
   taskDesc,
   pickupZones = [],
-  carIDs = [],
+  cartIds = [],
   dropoffPoints = [],
   onChange,
   allowSubmit,
@@ -370,7 +370,7 @@ function DeliveryCustomTaskForm({
           id="cart_rfid"
           freeSolo
           fullWidth
-          options={carIDs.map(String)}
+          options={cartIds.map(String)}
           value={String(taskDesc.activities[0].description.cart_rfid)}
           getOptionLabel={(option) => option}
           onInputChange={(_ev, newValue) => {
@@ -395,7 +395,7 @@ function DeliveryCustomTaskForm({
           renderInput={(params) => (
             <TextField
               {...params}
-              label="Cart RFID"
+              label="Cart ID"
               required
               error={Number.isNaN(taskDesc.activities[0].description.cart_rfid)}
             />
@@ -648,7 +648,7 @@ export interface CreateTaskFormProps
   cleaningZones?: string[];
   patrolWaypoints?: string[];
   pickupZones?: string[];
-  carIDs?: number[];
+  cartIds?: number[];
   pickupPoints?: Record<string, string>;
   dropoffPoints?: Record<string, string>;
   favoritesTasks?: TaskFavorite[];
@@ -673,7 +673,7 @@ export function CreateTaskForm({
   /* eslint-disable @typescript-eslint/no-unused-vars */
   patrolWaypoints = [],
   pickupZones = [],
-  carIDs = [],
+  cartIds = [],
   pickupPoints = {},
   dropoffPoints = {},
   favoritesTasks = [],
@@ -784,7 +784,7 @@ export function CreateTaskForm({
           <DeliveryCustomTaskForm
             taskDesc={taskRequest.description as DeliveryCustomTaskDescription}
             pickupZones={pickupZones}
-            carIDs={carIDs}
+            cartIds={cartIds}
             dropoffPoints={Object.keys(dropoffPoints)}
             onChange={(desc) => handleTaskDescriptionChange(taskRequest.category, desc)}
             allowSubmit={allowSubmit}
