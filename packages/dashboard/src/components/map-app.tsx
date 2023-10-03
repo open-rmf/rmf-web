@@ -225,6 +225,13 @@ export const MapApp = styled(
     }, []);
 
     React.useEffect(() => {
+      const sub = AppEvents.levelSelect.subscribe((currentValue) => {
+        setCurrentLevel(currentValue ?? undefined);
+      });
+      return () => sub.unsubscribe();
+    }, []);
+
+    React.useEffect(() => {
       if (!currentLevel?.images[0]) {
         setImageUrl(null);
         return;
@@ -375,7 +382,9 @@ export const MapApp = styled(
           levels={buildingMap.levels}
           currentLevel={currentLevel}
           onChange={(event: ChangeEvent<HTMLInputElement>, value: string) => {
-            setCurrentLevel(buildingMap.levels.find((l) => l.name === value) || currentLevel);
+            AppEvents.levelSelect.next(
+              buildingMap.levels.find((l: Level) => l.name === value) || buildingMap.levels[0],
+            );
           }}
         />
         <Canvas
