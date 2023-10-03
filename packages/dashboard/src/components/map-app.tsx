@@ -400,31 +400,38 @@ export const MapApp = styled(
               RIGHT: undefined,
             }}
           />
-          {!disabledLayers['Doors'] && currentLevel.doors.length > 0
+          {currentLevel.doors.length > 0
             ? currentLevel.doors.map((door, i) => (
-                <Door
-                  key={i}
-                  door={door}
-                  opacity={0.1}
-                  height={8}
-                  elevation={currentLevel.elevation}
-                />
+                <React.Fragment key={`${door.name}${i}`}>
+                  {!disabledLayers['Labels'] && (
+                    <TextThreeRendering position={[door.v1_x, door.v1_y, 0]} text={door.name} />
+                  )}
+                  {!disabledLayers['Doors'] && (
+                    <Door door={door} opacity={0.1} height={8} elevation={currentLevel.elevation} />
+                  )}
+                </React.Fragment>
               ))
             : null}
           {currentLevel.images.length > 0 && imageUrl && (
             <ReactThreeFiberImageMaker level={currentLevel} imageUrl={imageUrl} />
           )}
-          {!disabledLayers['Doors'] && buildingMap.lifts.length > 0
+          {buildingMap.lifts.length > 0
             ? buildingMap.lifts.map((lift, i) =>
                 lift.doors.map((door, i) => (
-                  <Door
-                    key={i}
-                    door={door}
-                    opacity={0.1}
-                    height={8}
-                    elevation={currentLevel.elevation}
-                    lift={lift}
-                  />
+                  <React.Fragment key={`${door.name}${i}`}>
+                    {!disabledLayers['Labels'] && (
+                      <TextThreeRendering position={[door.v1_x, door.v1_y, 0]} text={door.name} />
+                    )}
+                    {!disabledLayers['Doors'] && (
+                      <Door
+                        door={door}
+                        opacity={0.1}
+                        height={8}
+                        elevation={currentLevel.elevation}
+                        lift={lift}
+                      />
+                    )}
+                  </React.Fragment>
                 )),
               )
             : null}
