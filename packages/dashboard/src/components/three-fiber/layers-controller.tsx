@@ -1,15 +1,17 @@
 import { ChangeEvent } from 'react';
 import { Level } from 'api-client';
 import { AppEvents } from '../app-events';
+import React from 'react';
 import {
   Box,
   Checkbox,
+  FormControl,
   FormControlLabel,
   FormGroup,
-  FormLabel,
-  Radio,
-  RadioGroup,
+  MenuItem,
+  TextField,
 } from '@mui/material';
+import LayersIcon from '@mui/icons-material/Layers';
 
 interface LayersControllerProps {
   disabledLayers: Record<string, boolean>;
@@ -24,6 +26,7 @@ export const LayersController = ({
   levels,
   currentLevel,
 }: LayersControllerProps) => {
+  const [isHovered, setIsHovered] = React.useState(false);
   return (
     <Box
       component="div"
@@ -36,39 +39,51 @@ export const LayersController = ({
         zIndex: '1',
       }}
     >
-      <FormLabel>Levels</FormLabel>
-      {levels.map((level, i) => {
-        const { name } = level;
-        return (
-          <RadioGroup
-            value={currentLevel.name}
-            name="radio-buttons-group"
-            onChange={onChange}
-            key={i}
-          >
-            <FormControlLabel value={name} control={<Radio size="small" />} label={name} />
-          </RadioGroup>
-        );
-      })}
-      <FormLabel>Layers</FormLabel>
-      {Object.keys(disabledLayers).map((layerName) => (
-        <FormGroup key={layerName}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                size="small"
-                checked={!disabledLayers[layerName]}
-                onChange={() => {
-                  const updatedLayers = { ...disabledLayers };
-                  updatedLayers[layerName] = !updatedLayers[layerName];
-                  AppEvents.disabledLayers.next(updatedLayers);
-                }}
-              />
-            }
-            label={layerName}
-          />
-        </FormGroup>
-      ))}
+      <FormControl>
+        <TextField
+          select
+          id="level-select"
+          label="Levels"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={currentLevel.name}
+          size="small"
+          sx={{ width: '80px' }}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e, e.target.value as string)}
+        >
+          {levels.map((level, i) => (
+            <MenuItem key={i} value={level.name}>
+              {level.name}
+            </MenuItem>
+          ))}
+        </TextField>
+      </FormControl>
+      <div onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+        <LayersIcon sx={{ margin: 2, transform: 'scale(1.8)' }} />
+        {isHovered && (
+          <div>
+            {Object.keys(disabledLayers).map((layerName) => (
+              <FormGroup key={layerName}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="small"
+                      checked={!disabledLayers[layerName]}
+                      onChange={() => {
+                        const updatedLayers = { ...disabledLayers };
+                        updatedLayers[layerName] = !updatedLayers[layerName];
+                        AppEvents.disabledLayers.next(updatedLayers);
+                      }}
+                    />
+                  }
+                  label={layerName}
+                />
+              </FormGroup>
+            ))}
+          </div>
+        )}
+      </div>
     </Box>
   );
 };
