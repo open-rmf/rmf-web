@@ -12,6 +12,8 @@ import {
   TextField,
 } from '@mui/material';
 import LayersIcon from '@mui/icons-material/Layers';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 
 interface LayersControllerProps {
   disabledLayers: Record<string, boolean>;
@@ -27,6 +29,7 @@ export const LayersController = ({
   currentLevel,
 }: LayersControllerProps) => {
   const [isHovered, setIsHovered] = React.useState(false);
+
   return (
     <Box
       component="div"
@@ -39,6 +42,12 @@ export const LayersController = ({
         zIndex: '1',
       }}
     >
+      <div>
+        <ZoomInIcon sx={{ margin: 1, transform: 'scale(1.8)', cursor: 'pointer', fontSize: 20 }} />
+      </div>
+      <div>
+        <ZoomOutIcon sx={{ margin: 1, transform: 'scale(1.8)', cursor: 'pointer', fontSize: 20 }} />
+      </div>
       <FormControl>
         <TextField
           select
