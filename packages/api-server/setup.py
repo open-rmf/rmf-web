@@ -38,5 +38,8 @@ setup(
             "rmf_api_server=api_server.__main__:main",
         ],
     },
+    package_data={
+        "api_server.static": ["*.js", "*.css"],
+    },
     license="Apache License, Version 2.0",
 )

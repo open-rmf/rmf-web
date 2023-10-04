@@ -175,7 +175,7 @@ const StyledDialog = styled((props: DialogProps) => <Dialog {...props} />)(({ th
   },
 }));
 
-function getShortDescription(taskRequest: TaskRequest): string {
+export function getShortDescription(taskRequest: TaskRequest): string {
   switch (taskRequest.category) {
     case 'delivery': {
       return `[Delivery - 1:1] from [${taskRequest.description.pickup.place}] to [${taskRequest.description.dropoff.place}]`;
@@ -272,7 +272,7 @@ function DeliveryTaskForm({
       <Grid item xs={4}>
         <PositiveIntField
           id="pickup_sku"
-          label="Cart RFID"
+          label="Cart ID"
           value={parseInt(taskDesc.pickup.payload.sku) ?? 0}
           onChange={(_ev, val) => {
             onInputChange({
@@ -348,6 +348,7 @@ function DeliveryTaskForm({
 interface DeliveryCustomProps {
   taskDesc: DeliveryCustomTaskDescription;
   pickupZones: string[];
+  cartIds: number[];
   dropoffPoints: string[];
   onChange(taskDesc: DeliveryCustomTaskDescription): void;
   allowSubmit(allow: boolean): void;
@@ -356,6 +357,7 @@ interface DeliveryCustomProps {
 function DeliveryCustomTaskForm({
   taskDesc,
   pickupZones = [],
+  cartIds = [],
   dropoffPoints = [],
   onChange,
   allowSubmit,
@@ -409,24 +411,41 @@ function DeliveryCustomTaskForm({
         />
       </Grid>
       <Grid item xs={4}>
-        <PositiveIntField
+        <Autocomplete
           id="cart_rfid"
+          freeSolo
           fullWidth
-          label="Cart RFID"
-          value={
-            taskDesc.description.phases[0].activity.description.activities[0].description
-              .description.cart_rfid
-          }
-          onChange={(_ev, val) => {
-            const newTaskDesc = { ...taskDesc };
-            newTaskDesc.description.phases[0].activity.description.activities[0].description.description.cart_rfid =
-              val;
-            onInputChange(newTaskDesc);
-          }}
-          required
-          error={Number.isNaN(
+          options={cartIds.map(String)}
+          value={String(
             taskDesc.description.phases[0].activity.description.activities[0].description
               .description.cart_rfid,
+          )}
+          getOptionLabel={(option) => option}
+          onInputChange={(_ev, newValue) => {
+            if (newValue === null) {
+              return;
+            }
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.description.phases[0].activity.description.activities[0].description.description.cart_rfid =
+              parseInt(newValue);
+            onInputChange(newTaskDesc);
+          }}
+          onBlur={(ev) => {
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.description.phases[0].activity.description.activities[0].description.description.cart_rfid =
+              parseInt((ev.target as HTMLInputElement).value);
+            onInputChange(newTaskDesc);
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Cart ID"
+              required
+              error={Number.isNaN(
+                taskDesc.description.phases[0].activity.description.activities[0].description
+                  .description.cart_rfid,
+              )}
+            />
           )}
         />
       </Grid>
@@ -626,6 +645,7 @@ export interface Schedule {
   startOn: Date;
   days: RecurringDays;
   until?: Date;
+  at: Date;
 }
 
 enum ScheduleUntilValue {
@@ -699,9 +719,12 @@ export interface CreateTaskFormProps
   cleaningZones?: string[];
   patrolWaypoints?: string[];
   pickupZones?: string[];
+  cartIds?: number[];
   pickupPoints?: Record<string, string>;
   dropoffPoints?: Record<string, string>;
-  favoritesTasks: TaskFavorite[];
+  favoritesTasks?: TaskFavorite[];
+  scheduleToEdit?: Schedule;
+  requestTask?: TaskRequest;
   submitTasks?(tasks: TaskRequest[], schedule: Schedule | null): Promise<void>;
   tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
   onSuccess?(tasks: TaskRequest[]): void;
@@ -721,9 +744,12 @@ export function CreateTaskForm({
   /* eslint-disable @typescript-eslint/no-unused-vars */
   patrolWaypoints = [],
   pickupZones = [],
+  cartIds = [],
   pickupPoints = {},
   dropoffPoints = {},
   favoritesTasks = [],
+  scheduleToEdit,
+  requestTask,
   submitTasks,
   tasksFromFile,
   onClose,
@@ -750,24 +776,28 @@ export function CreateTaskForm({
   const [favoriteTaskTitleError, setFavoriteTaskTitleError] = React.useState(false);
   const [savingFavoriteTask, setSavingFavoriteTask] = React.useState(false);
 
-  const [taskRequests, setTaskRequests] = React.useState<TaskRequest[]>(() => [defaultTask()]);
+  const [taskRequests, setTaskRequests] = React.useState<TaskRequest[]>(() => [
+    requestTask ?? defaultTask(),
+  ]);
   const [selectedTaskIdx, setSelectedTaskIdx] = React.useState(0);
   const taskTitles = React.useMemo(
     () => taskRequests && taskRequests.map((t, i) => `${i + 1}: ${getShortDescription(t)}`),
     [taskRequests],
   );
   const [submitting, setSubmitting] = React.useState(false);
-  const [formFullyFilled, setFormFullyFilled] = React.useState(false);
+  const [formFullyFilled, setFormFullyFilled] = React.useState(requestTask !== undefined || false);
   const taskRequest = taskRequests[selectedTaskIdx];
   const [openSchedulingDialog, setOpenSchedulingDialog] = React.useState(false);
-  const [schedule, setSchedule] = React.useState<Schedule>({
-    startOn: new Date(),
-    days: [true, true, true, true, true, true, true],
-    until: undefined,
-  });
-  const [atTime, setAtTime] = React.useState(new Date());
+  const [schedule, setSchedule] = React.useState<Schedule>(
+    scheduleToEdit ?? {
+      startOn: new Date(),
+      days: [true, true, true, true, true, true, true],
+      until: undefined,
+      at: new Date(),
+    },
+  );
   const [scheduleUntilValue, setScheduleUntilValue] = React.useState<string>(
-    ScheduleUntilValue.NEVER,
+    scheduleToEdit?.until ? ScheduleUntilValue.ON : ScheduleUntilValue.NEVER,
   );
 
   const handleScheduleUntilValue = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -825,6 +855,7 @@ export function CreateTaskForm({
           <DeliveryCustomTaskForm
             taskDesc={taskRequest.description as DeliveryCustomTaskDescription}
             pickupZones={pickupZones}
+            cartIds={cartIds}
             dropoffPoints={Object.keys(dropoffPoints)}
             onChange={(desc) => {
               desc.description.category = taskRequest.category;
@@ -1187,13 +1218,13 @@ export function CreateTaskForm({
               className={classes.actionBtn}
               onClick={() => setOpenSchedulingDialog(true)}
             >
-              Add to Schedule
+              {scheduleToEdit ? 'Edit schedule' : 'Add to Schedule'}
             </Button>
             <Button
               variant="contained"
               type="submit"
               color="primary"
-              disabled={submitting || !formFullyFilled}
+              disabled={submitting || !formFullyFilled || scheduleToEdit !== undefined}
               className={classes.actionBtn}
               aria-label={submitText}
               onClick={handleSubmitNow}
@@ -1254,8 +1285,8 @@ export function CreateTaskForm({
                 onChange={(date) =>
                   date &&
                   setSchedule((prev) => {
-                    date.setHours(atTime.getHours());
-                    date.setMinutes(atTime.getMinutes());
+                    date.setHours(schedule.at.getHours());
+                    date.setMinutes(schedule.at.getMinutes());
                     return { ...prev, startOn: date };
                   })
                 }
@@ -1266,12 +1297,12 @@ export function CreateTaskForm({
             </Grid>
             <Grid item xs={6}>
               <TimePicker
-                value={atTime}
+                value={schedule.at}
                 onChange={(date) => {
                   if (!date) {
                     return;
                   }
-                  setAtTime(date);
+                  setSchedule((prev) => ({ ...prev, at: date }));
                   if (!isNaN(date.valueOf())) {
                     setSchedule((prev) => {
                       const startOn = prev.startOn;

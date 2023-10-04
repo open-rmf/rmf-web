@@ -4,6 +4,7 @@ import {
   ApiServerModelsTortoiseModelsAlertsAlertLeaf,
   ApiServerModelsTortoiseModelsBeaconsBeaconStateLeaf as BeaconState,
   BuildingMap,
+  ApiServerModelsTortoiseModelsDeliveryAlertsDeliveryAlertLeaf as DeliveryAlert,
   DispenserHealth,
   DispenserState,
   DoorHealth,
@@ -123,6 +124,10 @@ export class SioClient {
 
   subscribeAlerts(listener: Listener<Alert>): Subscription {
     return this.subscribe<Alert>(`/alerts`, listener);
+  }
+
+  subscribeDeliveryAlerts(listener: Listener<DeliveryAlert>): Subscription {
+    return this.subscribe<DeliveryAlert>(`/delivery_alerts`, listener);
   }
 }
 
