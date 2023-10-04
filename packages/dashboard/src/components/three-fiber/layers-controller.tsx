@@ -20,6 +20,8 @@ interface LayersControllerProps {
   onChange: (event: ChangeEvent<HTMLInputElement>, value: string) => void;
   levels: Level[];
   currentLevel: Level;
+  handleZoomIn: () => void;
+  handleZoomOut: () => void;
 }
 
 export const LayersController = ({
@@ -27,6 +29,8 @@ export const LayersController = ({
   onChange,
   levels,
   currentLevel,
+  handleZoomIn,
+  handleZoomOut,
 }: LayersControllerProps) => {
   const [isHovered, setIsHovered] = React.useState(false);
 
@@ -43,10 +47,16 @@ export const LayersController = ({
       }}
     >
       <div>
-        <ZoomInIcon sx={{ margin: 1, transform: 'scale(1.8)', cursor: 'pointer', fontSize: 20 }} />
+        <ZoomInIcon
+          sx={{ margin: 1, transform: 'scale(1.8)', cursor: 'pointer', fontSize: 20 }}
+          onClick={handleZoomIn}
+        />
       </div>
       <div>
-        <ZoomOutIcon sx={{ margin: 1, transform: 'scale(1.8)', cursor: 'pointer', fontSize: 20 }} />
+        <ZoomOutIcon
+          sx={{ margin: 1, transform: 'scale(1.8)', cursor: 'pointer', fontSize: 20 }}
+          onClick={handleZoomOut}
+        />
       </div>
       <FormControl>
         <TextField
