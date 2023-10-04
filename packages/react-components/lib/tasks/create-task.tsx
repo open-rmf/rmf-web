@@ -385,12 +385,10 @@ function DeliveryCustomTaskForm({
               .description.pickup_zone
           }
           onInputChange={(_ev, newValue) => {
-            if (newValue === null) {
-              return;
-            }
+            const pickupZone = newValue ?? '';
             const newTaskDesc = { ...taskDesc };
             newTaskDesc.description.phases[0].activity.description.activities[0].description.description.pickup_zone =
-              newValue;
+              pickupZone;
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
@@ -426,12 +424,10 @@ function DeliveryCustomTaskForm({
           )}
           getOptionLabel={(option) => option}
           onInputChange={(_ev, newValue) => {
-            if (newValue === null) {
-              return;
-            }
+            const cartId = newValue ?? '0';
             const newTaskDesc = { ...taskDesc };
             newTaskDesc.description.phases[0].activity.description.activities[0].description.description.cart_id =
-              parseInt(newValue);
+              parseInt(cartId);
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
@@ -461,12 +457,10 @@ function DeliveryCustomTaskForm({
           options={dropoffPoints}
           value={taskDesc.description.phases[0].activity.description.activities[1].description}
           onInputChange={(_ev, newValue) => {
-            if (newValue === null) {
-              return;
-            }
+            const dropoffPoint = newValue ?? '';
             const newTaskDesc = { ...taskDesc };
             newTaskDesc.description.phases[0].activity.description.activities[1].description =
-              newValue;
+              dropoffPoint;
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
