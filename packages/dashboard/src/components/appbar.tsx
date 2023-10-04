@@ -521,6 +521,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           patrolWaypoints={waypointNames}
           cleaningZones={cleaningZoneNames}
           pickupZones={resourceManager?.pickupZones}
+          cartIds={resourceManager?.cartIds}
           pickupPoints={pickupPoints}
           dropoffPoints={dropoffPoints}
           favoritesTasks={favoritesTasks}
