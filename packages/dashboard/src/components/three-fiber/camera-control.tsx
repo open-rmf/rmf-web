@@ -27,8 +27,15 @@ export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
     camera.zoom = zoom;
     camera.updateProjectionMatrix();
 
+    const handleWheel = (event: any) => {
+      console.log(event);
+    };
+
+    gl.domElement.addEventListener('wheel', handleWheel);
+
     return () => {
       controls.dispose();
+      gl.domElement.removeEventListener('wheel', handleWheel);
     };
   }, [camera, gl.domElement, zoom]);
 
