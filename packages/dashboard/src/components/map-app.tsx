@@ -29,10 +29,10 @@ import { RobotData } from './robots-overlay';
 import { TrajectoryData } from './trajectories-overlay';
 import { WorkcellData } from './workcells-overlay';
 import { RobotSummary } from './robots/robot-summary';
-import { Box3, MOUSE, TextureLoader, Vector3 } from 'three';
+import { Box3, TextureLoader, Vector3 } from 'three';
 import { Canvas, useLoader } from '@react-three/fiber';
-import { OrbitControls, Line } from '@react-three/drei';
-import { LayersController } from './three-fiber';
+import { Line } from '@react-three/drei';
+import { CameraControl, LayersController } from './three-fiber';
 import { Lifts, Door, RobotThree } from './three-fiber';
 
 type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
@@ -194,8 +194,10 @@ export const MapApp = styled(
       subs.push(
         rmf.buildingMapObs.subscribe((newMap) => {
           setBuildingMap(newMap);
-          const currentLevel = newMap.levels[0];
-          setCurrentLevel(currentLevel);
+          const currentLevel = AppEvents.levelSelect.value
+            ? AppEvents.levelSelect.value
+            : newMap.levels[0];
+          AppEvents.levelSelect.next(currentLevel);
           setWaypoints(
             getPlaces(newMap).filter(
               (p) => p.level === currentLevel.name && p.vertex.name.length > 0,
@@ -386,6 +388,8 @@ export const MapApp = styled(
               buildingMap.levels.find((l: Level) => l.name === value) || buildingMap.levels[0],
             );
           }}
+          handleZoomIn={() => AppEvents.zoom.next(zoom + 1)}
+          handleZoomOut={() => AppEvents.zoom.next(zoom - 1)}
         />
         <Canvas
           onCreated={({ camera }) => {
@@ -399,16 +403,7 @@ export const MapApp = styled(
           }}
           orthographic={true}
         >
-          <OrbitControls
-            target={new Vector3(0, 0, -1000)}
-            enableRotate={false}
-            enableDamping={false}
-            mouseButtons={{
-              LEFT: MOUSE.PAN,
-              MIDDLE: undefined,
-              RIGHT: undefined,
-            }}
-          />
+          <CameraControl zoom={zoom} />
           {currentLevel.doors.length > 0
             ? currentLevel.doors.map((door, i) => (
                 <React.Fragment key={`${door.name}${i}`}>
