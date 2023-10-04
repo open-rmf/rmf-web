@@ -41,29 +41,25 @@ import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dia
 import { PositiveIntField } from '../form-inputs';
 
 // A bunch of manually defined descriptions to avoid using `any`.
-interface Payload {
-  sku: string;
-  quantity: number;
-}
-
-interface DeliveryPlace {
-  place: string;
-  handler: string;
-  payload: Payload;
-}
-
-interface DeliveryTaskDescription {
-  pickup: DeliveryPlace;
-  dropoff: DeliveryPlace;
-}
-
-interface PickupActivity {
+interface LotPickupActivity {
   category: string;
   description: {
     unix_millis_action_duration_estimate: number;
     category: string;
     description: {
-      cart_rfid: number;
+      cart_id: number;
+      pickup_lot: string;
+    };
+  };
+}
+
+interface ZonePickupActivity {
+  category: string;
+  description: {
+    unix_millis_action_duration_estimate: number;
+    category: string;
+    description: {
+      cart_id: number;
       pickup_zone: string;
     };
   };
@@ -88,7 +84,7 @@ interface DeliveryCustomPhase {
     category: string;
     description: {
       activities: [
-        pickup_cart: PickupActivity,
+        pickup_cart: ZonePickupActivity,
         go_to_place: GoToPlaceActivity,
         dropoff_cart: DropoffActivity,
       ];
@@ -104,30 +100,48 @@ interface DeliveryCustomTaskDescription {
   };
 }
 
+interface DeliveryPhase {
+  activity: {
+    category: string;
+    description: {
+      activities: [
+        go_to_pickup: GoToPlaceActivity,
+        pickup_cart: LotPickupActivity,
+        go_to_dropoff: GoToPlaceActivity,
+        dropoff_cart: DropoffActivity,
+      ];
+    };
+  };
+}
+
+interface DeliveryTaskDescription {
+  category: string;
+  description: {
+    category: string;
+    phases: [deliverySequence: DeliveryPhase];
+  };
+}
+
 type TaskDescription = DeliveryTaskDescription | DeliveryCustomTaskDescription;
 
 const isNonEmptyString = (value: string): boolean => value.length > 0;
 const isPositiveNumber = (value: number): boolean => value >= 0;
-
-const isDeliveryPlaceValid = (place: DeliveryPlace, lookupMap: Record<string, string>): boolean => {
-  return (
-    isNonEmptyString(place.place) &&
-    Object.keys(lookupMap).includes(place.place) &&
-    isNonEmptyString(place.handler) &&
-    Object.values(lookupMap).includes(place.handler) &&
-    isNonEmptyString(place.payload.sku) &&
-    isPositiveNumber(place.payload.quantity)
-  );
-};
 
 const isDeliveryTaskDescriptionValid = (
   taskDescription: DeliveryTaskDescription,
   pickupPoints: Record<string, string>,
   dropoffPoints: Record<string, string>,
 ): boolean => {
+  const goToPickup = taskDescription.description.phases[0].activity.description.activities[0];
+  const pickup = taskDescription.description.phases[0].activity.description.activities[1];
+  const goToDropoff = taskDescription.description.phases[0].activity.description.activities[2];
   return (
-    isDeliveryPlaceValid(taskDescription.pickup, pickupPoints) &&
-    isDeliveryPlaceValid(taskDescription.dropoff, dropoffPoints)
+    isNonEmptyString(goToPickup.description) &&
+    Object.keys(pickupPoints).includes(goToPickup.description) &&
+    pickupPoints[goToPickup.description] === pickup.description.description.pickup_lot &&
+    isPositiveNumber(pickup.description.description.cart_id) &&
+    isNonEmptyString(goToDropoff.description) &&
+    Object.keys(dropoffPoints).includes(goToDropoff.description)
   );
 };
 
@@ -141,7 +155,7 @@ const isDeliveryCustomTaskDescriptionValid = (
   return (
     isNonEmptyString(pickup.description.description.pickup_zone) &&
     pickupZones.includes(pickup.description.description.pickup_zone) &&
-    isPositiveNumber(pickup.description.description.cart_rfid) &&
+    isPositiveNumber(pickup.description.description.cart_id) &&
     isNonEmptyString(goToPlace.description) &&
     dropoffPoints.includes(goToPlace.description)
   );
@@ -178,27 +192,33 @@ const StyledDialog = styled((props: DialogProps) => <Dialog {...props} />)(({ th
 export function getShortDescription(taskRequest: TaskRequest): string {
   switch (taskRequest.category) {
     case 'delivery': {
-      return `[Delivery - 1:1] from [${taskRequest.description.pickup.place}] to [${taskRequest.description.dropoff.place}]`;
+      const goToPickup: GoToPlaceActivity =
+        taskRequest.description.description.phases[0].activity.description.activities[0];
+      const pickup: LotPickupActivity =
+        taskRequest.description.description.phases[0].activity.description.activities[1];
+      const goToDropoff: GoToPlaceActivity =
+        taskRequest.description.description.phases[0].activity.description.activities[2];
+      return `[Delivery - 1:1] [${pickup.description.description.cart_id}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
     }
     case 'delivery_sequential_lot_pickup': {
-      const pickup: PickupActivity =
+      const pickup: ZonePickupActivity =
         taskRequest.description.description.phases[0].activity.description.activities[0];
-      const cart_rfid: number = pickup.description.description.cart_rfid;
+      const cart_id: number = pickup.description.description.cart_id;
       const pickupZone: string = pickup.description.description.pickup_zone;
       const goTo: GoToPlaceActivity =
         taskRequest.description.description.phases[0].activity.description.activities[1];
       const dropoffPoint: string = goTo.description;
-      return `[Delivery - Sequential lot pick up] payload [${cart_rfid}] from [${pickupZone}] to [${dropoffPoint}]`;
+      return `[Delivery - Sequential lot pick up] payload [${cart_id}] from [${pickupZone}] to [${dropoffPoint}]`;
     }
     case 'delivery_area_pickup': {
-      const pickup: PickupActivity =
+      const pickup: ZonePickupActivity =
         taskRequest.description.description.phases[0].activity.description.activities[0];
-      const cart_rfid: number = pickup.description.description.cart_rfid;
+      const cart_id: number = pickup.description.description.cart_id;
       const pickupZone: string = pickup.description.description.pickup_zone;
       const goTo: GoToPlaceActivity =
         taskRequest.description.description.phases[0].activity.description.activities[1];
       const dropoffPoint: string = goTo.description;
-      return `[Delivery - Area pick up] payload [${cart_rfid}] from [${pickupZone}] to [${dropoffPoint}]`;
+      return `[Delivery - Area pick up] payload [${cart_id}] from [${pickupZone}] to [${dropoffPoint}]`;
     }
     default:
       return `[Unknown] type "${taskRequest.category}"`;
@@ -234,37 +254,38 @@ function DeliveryTaskForm({
           freeSolo
           fullWidth
           options={Object.keys(pickupPoints)}
-          value={taskDesc.pickup.place}
+          value={taskDesc.description.phases[0].activity.description.activities[0].description}
           onInputChange={(_ev, newValue) => {
             const place = newValue ?? '';
-            const handler =
+            const pickupLot =
               newValue !== null && pickupPoints[newValue] ? pickupPoints[newValue] : '';
-            onInputChange({
-              ...taskDesc,
-              pickup: {
-                ...taskDesc.pickup,
-                place: place,
-                handler: handler,
-              },
-            });
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.description.phases[0].activity.description.activities[0].description =
+              place;
+            newTaskDesc.description.phases[0].activity.description.activities[1].description.description.pickup_lot =
+              pickupLot;
+            onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
-            const handler = pickupPoints[(ev.target as HTMLInputElement).value] ?? '';
-            onInputChange({
-              ...taskDesc,
-              pickup: {
-                ...taskDesc.pickup,
-                place: (ev.target as HTMLInputElement).value,
-                handler: handler,
-              },
-            });
+            const place = (ev.target as HTMLInputElement).value;
+            const pickupLot = pickupPoints[place] ?? '';
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.description.phases[0].activity.description.activities[0].description =
+              place;
+            newTaskDesc.description.phases[0].activity.description.activities[1].description.description.pickup_lot =
+              pickupLot;
+            onInputChange(newTaskDesc);
           }}
           renderInput={(params) => (
             <TextField
               {...params}
               label="Pickup Location"
               required
-              error={!Object.keys(pickupPoints).includes(taskDesc.pickup.place)}
+              error={
+                !Object.keys(pickupPoints).includes(
+                  taskDesc.description.phases[0].activity.description.activities[0].description,
+                )
+              }
             />
           )}
         />
@@ -273,31 +294,21 @@ function DeliveryTaskForm({
         <PositiveIntField
           id="pickup_sku"
           label="Cart ID"
-          value={parseInt(taskDesc.pickup.payload.sku) ?? 0}
+          value={
+            taskDesc.description.phases[0].activity.description.activities[1].description
+              .description.cart_id
+          }
           onChange={(_ev, val) => {
-            onInputChange({
-              ...taskDesc,
-              pickup: {
-                ...taskDesc.pickup,
-                payload: {
-                  ...taskDesc.pickup.payload,
-                  sku: val.toString(),
-                },
-              },
-              dropoff: {
-                ...taskDesc.dropoff,
-                payload: {
-                  ...taskDesc.dropoff.payload,
-                  sku: val.toString(),
-                },
-              },
-            });
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.description.phases[0].activity.description.activities[1].description.description.cart_id =
+              val;
+            onInputChange(newTaskDesc);
           }}
           required
-          error={
-            Number.isNaN(parseInt(taskDesc.pickup.payload.sku)) ||
-            Number.isNaN(parseInt(taskDesc.dropoff.payload.sku))
-          }
+          error={Number.isNaN(
+            taskDesc.description.phases[0].activity.description.activities[1].description
+              .description.cart_id,
+          )}
         />
       </Grid>
       <Grid item xs={8}>
@@ -306,37 +317,30 @@ function DeliveryTaskForm({
           freeSolo
           fullWidth
           options={Object.keys(dropoffPoints)}
-          value={taskDesc.dropoff.place}
+          value={taskDesc.description.phases[0].activity.description.activities[2].description}
           onInputChange={(_ev, newValue) => {
-            const place = newValue ?? '';
-            const handler =
-              newValue !== null && dropoffPoints[newValue] ? dropoffPoints[newValue] : '';
-            onInputChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                place: place,
-                handler: handler,
-              },
-            });
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.description.phases[0].activity.description.activities[2].description =
+              newValue;
+            onInputChange(newTaskDesc);
           }}
-          onBlur={(ev) =>
-            dropoffPoints[(ev.target as HTMLInputElement).value] &&
-            onInputChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                place: (ev.target as HTMLInputElement).value,
-                handler: dropoffPoints[(ev.target as HTMLInputElement).value],
-              },
-            })
-          }
+          onBlur={(ev) => {
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.description.phases[0].activity.description.activities[2].description = (
+              ev.target as HTMLInputElement
+            ).value;
+            onInputChange(newTaskDesc);
+          }}
           renderInput={(params) => (
             <TextField
               {...params}
               label="Dropoff Location"
               required
-              error={!Object.keys(dropoffPoints).includes(taskDesc.dropoff.place)}
+              error={
+                !Object.keys(dropoffPoints).includes(
+                  taskDesc.description.phases[0].activity.description.activities[2].description,
+                )
+              }
             />
           )}
         />
@@ -412,13 +416,13 @@ function DeliveryCustomTaskForm({
       </Grid>
       <Grid item xs={4}>
         <Autocomplete
-          id="cart_rfid"
+          id="cart_id"
           freeSolo
           fullWidth
           options={cartIds.map(String)}
           value={String(
             taskDesc.description.phases[0].activity.description.activities[0].description
-              .description.cart_rfid,
+              .description.cart_id,
           )}
           getOptionLabel={(option) => option}
           onInputChange={(_ev, newValue) => {
@@ -426,13 +430,13 @@ function DeliveryCustomTaskForm({
               return;
             }
             const newTaskDesc = { ...taskDesc };
-            newTaskDesc.description.phases[0].activity.description.activities[0].description.description.cart_rfid =
+            newTaskDesc.description.phases[0].activity.description.activities[0].description.description.cart_id =
               parseInt(newValue);
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
             const newTaskDesc = { ...taskDesc };
-            newTaskDesc.description.phases[0].activity.description.activities[0].description.description.cart_rfid =
+            newTaskDesc.description.phases[0].activity.description.activities[0].description.description.cart_id =
               parseInt((ev.target as HTMLInputElement).value);
             onInputChange(newTaskDesc);
           }}
@@ -443,7 +447,7 @@ function DeliveryCustomTaskForm({
               required
               error={Number.isNaN(
                 taskDesc.description.phases[0].activity.description.activities[0].description
-                  .description.cart_rfid,
+                  .description.cart_id,
               )}
             />
           )}
@@ -554,21 +558,47 @@ function FavoriteTask({
 
 function defaultDeliveryTask(): DeliveryTaskDescription {
   return {
-    pickup: {
-      place: '',
-      handler: '',
-      payload: {
-        sku: '0',
-        quantity: 1,
-      },
-    },
-    dropoff: {
-      place: '',
-      handler: '',
-      payload: {
-        sku: '0',
-        quantity: 1,
-      },
+    category: 'compose',
+    description: {
+      category: 'delivery_pickup',
+      phases: [
+        {
+          activity: {
+            category: 'sequence',
+            description: {
+              activities: [
+                {
+                  category: 'go_to_place',
+                  description: '',
+                },
+                {
+                  category: 'perform_action',
+                  description: {
+                    unix_millis_action_duration_estimate: 60000,
+                    category: 'delivery_pickup',
+                    description: {
+                      cart_id: 0,
+                      pickup_lot: '',
+                    },
+                  },
+                },
+                {
+                  category: 'go_to_place',
+                  description: '',
+                },
+                {
+                  category: 'perform_action',
+                  description: {
+                    unix_millis_action_duration_estimate: 60000,
+                    category: 'delivery_dropoff',
+                    description: {},
+                  },
+                },
+              ],
+            },
+          },
+        },
+      ],
     },
   };
 }
@@ -590,7 +620,7 @@ function defaultDeliveryCustomTask(): DeliveryCustomTaskDescription {
                     unix_millis_action_duration_estimate: 60000,
                     category: 'delivery_sequential_lot_pickup',
                     description: {
-                      cart_rfid: 0,
+                      cart_id: 0,
                       pickup_zone: '',
                     },
                   },
