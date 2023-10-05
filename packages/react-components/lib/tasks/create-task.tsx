@@ -119,7 +119,6 @@ interface DeliveryTaskDescription {
 type TaskDescription = DeliveryTaskDescription | DeliveryCustomTaskDescription;
 
 const isNonEmptyString = (value: string): boolean => value.length > 0;
-const isPositiveNumber = (value: number): boolean => value >= 0;
 
 const isDeliveryTaskDescriptionValid = (
   taskDescription: DeliveryTaskDescription,
@@ -194,7 +193,8 @@ export function getShortDescription(taskRequest: TaskRequest): string {
   const goToDropoff: GoToPlaceActivity =
     taskRequest.description.phases[0].activity.description.activities[2];
 
-  switch (taskRequest.category) {
+  switch (taskRequest.description.category) {
+    case 'delivery_pickup':
     case 'delivery': {
       return `[Delivery - 1:1] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
     }
@@ -205,7 +205,7 @@ export function getShortDescription(taskRequest: TaskRequest): string {
       return `[Delivery - Area pick up] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
     }
     default:
-      return `[Unknown] type "${taskRequest.category}"`;
+      return `[Unknown] type "${taskRequest.description.category}"`;
   }
 }
 
@@ -629,6 +629,7 @@ function defaultDeliveryCustomTaskDescription(taskCategory: string): DeliveryCus
 
 function defaultTaskDescription(taskCategory: string): TaskDescription | undefined {
   switch (taskCategory) {
+    case 'delivery_pickup':
     case 'delivery':
       return defaultDeliveryTaskDescription();
     case 'delivery_sequential_lot_pickup':
@@ -849,7 +850,8 @@ export function CreateTaskForm({
   };
 
   const renderTaskDescriptionForm = () => {
-    switch (taskRequest.category) {
+    switch (taskRequest.description.category) {
+      case 'delivery_pickup':
       case 'delivery':
         return (
           <DeliveryTaskForm
@@ -1089,7 +1091,11 @@ export function CreateTaskForm({
                       variant="outlined"
                       fullWidth
                       margin="normal"
-                      value={taskRequest.category}
+                      value={
+                        taskRequest.description.category === 'delivery_pickup'
+                          ? 'delivery'
+                          : taskRequest.description.category
+                      }
                       onChange={handleTaskTypeChange}
                     >
                       <MenuItem
