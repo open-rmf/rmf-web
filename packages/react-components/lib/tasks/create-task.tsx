@@ -38,7 +38,6 @@ import type { TaskFavoritePydantic as TaskFavorite, TaskRequest } from 'api-clie
 import React from 'react';
 import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
-import { PositiveIntField } from '../form-inputs';
 
 // A bunch of manually defined descriptions to avoid using `any`.
 interface LotPickupActivity {
@@ -47,7 +46,7 @@ interface LotPickupActivity {
     unix_millis_action_duration_estimate: number;
     category: string;
     description: {
-      cart_id: number;
+      cart_id: string;
       pickup_lot: string;
     };
   };
@@ -59,7 +58,7 @@ interface ZonePickupActivity {
     unix_millis_action_duration_estimate: number;
     category: string;
     description: {
-      cart_id: number;
+      cart_id: string;
       pickup_zone: string;
     };
   };
@@ -134,7 +133,7 @@ const isDeliveryTaskDescriptionValid = (
     isNonEmptyString(goToPickup.description) &&
     Object.keys(pickupPoints).includes(goToPickup.description) &&
     pickupPoints[goToPickup.description] === pickup.description.description.pickup_lot &&
-    isPositiveNumber(pickup.description.description.cart_id) &&
+    isNonEmptyString(pickup.description.description.cart_id) &&
     isNonEmptyString(goToDropoff.description) &&
     Object.keys(dropoffPoints).includes(goToDropoff.description)
   );
@@ -152,7 +151,7 @@ const isDeliveryCustomTaskDescriptionValid = (
     isNonEmptyString(goToPickup.description) &&
     isNonEmptyString(pickup.description.description.pickup_zone) &&
     pickupZones.includes(pickup.description.description.pickup_zone) &&
-    isPositiveNumber(pickup.description.description.cart_id) &&
+    isNonEmptyString(pickup.description.description.cart_id) &&
     isNonEmptyString(goToDropoff.description) &&
     dropoffPoints.includes(goToDropoff.description)
   );
@@ -213,6 +212,7 @@ export function getShortDescription(taskRequest: TaskRequest): string {
 interface DeliveryTaskFormProps {
   taskDesc: DeliveryTaskDescription;
   pickupPoints: Record<string, string>;
+  cartIds: string[];
   dropoffPoints: Record<string, string>;
   onChange(taskDesc: TaskDescription): void;
   allowSubmit(allow: boolean): void;
@@ -221,6 +221,7 @@ interface DeliveryTaskFormProps {
 function DeliveryTaskForm({
   taskDesc,
   pickupPoints = {},
+  cartIds = [],
   dropoffPoints = {},
   onChange,
   allowSubmit,
@@ -272,21 +273,37 @@ function DeliveryTaskForm({
         />
       </Grid>
       <Grid item xs={4}>
-        <PositiveIntField
-          id="pickup_sku"
-          label="Cart ID"
+        <Autocomplete
+          id="cart_id"
+          freeSolo
+          fullWidth
+          options={cartIds}
           value={
             taskDesc.phases[0].activity.description.activities[1].description.description.cart_id
           }
-          onChange={(_ev, val) => {
+          getOptionLabel={(option) => option}
+          onInputChange={(_ev, newValue) => {
             const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[0].activity.description.activities[1].description.description.cart_id =
-              val;
+              newValue;
             onInputChange(newTaskDesc);
           }}
-          required
-          error={Number.isNaN(
-            taskDesc.phases[0].activity.description.activities[1].description.description.cart_id,
+          onBlur={(ev) => {
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[0].activity.description.activities[1].description.description.cart_id =
+              (ev.target as HTMLInputElement).value;
+            onInputChange(newTaskDesc);
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Cart ID"
+              required
+              error={
+                taskDesc.phases[0].activity.description.activities[1].description.description
+                  .cart_id.length === 0
+              }
+            />
           )}
         />
       </Grid>
@@ -330,7 +347,7 @@ function DeliveryTaskForm({
 interface DeliveryCustomProps {
   taskDesc: DeliveryCustomTaskDescription;
   pickupZones: string[];
-  cartIds: number[];
+  cartIds: string[];
   dropoffPoints: string[];
   onChange(taskDesc: DeliveryCustomTaskDescription): void;
   allowSubmit(allow: boolean): void;
@@ -393,35 +410,32 @@ function DeliveryCustomTaskForm({
           id="cart_id"
           freeSolo
           fullWidth
-          options={cartIds.map(String)}
-          value={String(
-            taskDesc.phases[0].activity.description.activities[1].description.description.cart_id,
-          )}
+          options={cartIds}
+          value={
+            taskDesc.phases[0].activity.description.activities[1].description.description.cart_id
+          }
           getOptionLabel={(option) => option}
           onInputChange={(_ev, newValue) => {
-            const cartId = parseInt(newValue);
             const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[0].activity.description.activities[1].description.description.cart_id =
-              cartId;
+              newValue;
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
-            const cartId = parseInt((ev.target as HTMLInputElement).value);
             const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[0].activity.description.activities[1].description.description.cart_id =
-              cartId;
+              (ev.target as HTMLInputElement).value;
             onInputChange(newTaskDesc);
           }}
           renderInput={(params) => (
             <TextField
               {...params}
               label="Cart ID"
-              type="number"
               required
-              error={Number.isNaN(
+              error={
                 taskDesc.phases[0].activity.description.activities[1].description.description
-                  .cart_id,
-              )}
+                  .cart_id.length === 0
+              }
             />
           )}
         />
@@ -544,7 +558,7 @@ function defaultDeliveryTaskDescription(): DeliveryTaskDescription {
                   unix_millis_action_duration_estimate: 60000,
                   category: 'delivery_pickup',
                   description: {
-                    cart_id: 0,
+                    cart_id: '',
                     pickup_lot: '',
                   },
                 },
@@ -588,7 +602,7 @@ function defaultDeliveryCustomTaskDescription(taskCategory: string): DeliveryCus
                   unix_millis_action_duration_estimate: 60000,
                   category: taskCategory,
                   description: {
-                    cart_id: 0,
+                    cart_id: '',
                     pickup_zone: '',
                   },
                 },
@@ -716,7 +730,7 @@ export interface CreateTaskFormProps
   cleaningZones?: string[];
   patrolWaypoints?: string[];
   pickupZones?: string[];
-  cartIds?: number[];
+  cartIds?: string[];
   pickupPoints?: Record<string, string>;
   dropoffPoints?: Record<string, string>;
   favoritesTasks?: TaskFavorite[];
@@ -841,6 +855,7 @@ export function CreateTaskForm({
           <DeliveryTaskForm
             taskDesc={taskRequest.description as DeliveryTaskDescription}
             pickupPoints={pickupPoints}
+            cartIds={cartIds}
             dropoffPoints={dropoffPoints}
             onChange={(desc: DeliveryTaskDescription) => {
               desc.category = 'delivery_pickup';
