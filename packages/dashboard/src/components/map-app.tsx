@@ -32,7 +32,7 @@ import { RobotSummary } from './robots/robot-summary';
 import { Box3, TextureLoader, Vector3 } from 'three';
 import { Canvas, useLoader } from '@react-three/fiber';
 import { Line } from '@react-three/drei';
-import { CameraControl, LayersController } from './three-fiber';
+import { CameraControl, LayersController, updateZoom } from './three-fiber';
 import { Lifts, Door, RobotThree } from './three-fiber';
 
 type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
@@ -388,8 +388,8 @@ export const MapApp = styled(
               buildingMap.levels.find((l: Level) => l.name === value) || buildingMap.levels[0],
             );
           }}
-          handleZoomIn={() => AppEvents.zoom.next(zoom + 1)}
-          handleZoomOut={() => AppEvents.zoom.next(zoom - 1)}
+          handleZoomIn={() => AppEvents.zoom.next(updateZoom(zoom, 2))}
+          handleZoomOut={() => AppEvents.zoom.next(updateZoom(zoom, -2))}
         />
         <Canvas
           onCreated={({ camera }) => {

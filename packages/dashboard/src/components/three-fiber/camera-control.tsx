@@ -9,6 +9,9 @@ interface CameraControlProps {
   zoom: number;
 }
 
+export const updateZoom = (currentZoom: number, increment: number) =>
+  Math.max(0, Math.min(Infinity, currentZoom + increment));
+
 export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
   const { camera, gl } = useThree();
   const controlsRef = useRef<OrbitControls | null>(null);
