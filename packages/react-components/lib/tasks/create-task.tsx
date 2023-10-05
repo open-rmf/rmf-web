@@ -194,8 +194,7 @@ export function getShortDescription(taskRequest: TaskRequest): string {
     taskRequest.description.phases[0].activity.description.activities[2];
 
   switch (taskRequest.description.category) {
-    case 'delivery_pickup':
-    case 'delivery': {
+    case 'delivery_pickup': {
       return `[Delivery - 1:1] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
     }
     case 'delivery_sequential_lot_pickup': {
@@ -407,7 +406,7 @@ function DeliveryCustomTaskForm({
       </Grid>
       <Grid item xs={4}>
         <Autocomplete
-          id="cart_id"
+          id="cart-id"
           freeSolo
           fullWidth
           options={cartIds}
@@ -630,7 +629,6 @@ function defaultDeliveryCustomTaskDescription(taskCategory: string): DeliveryCus
 function defaultTaskDescription(taskCategory: string): TaskDescription | undefined {
   switch (taskCategory) {
     case 'delivery_pickup':
-    case 'delivery':
       return defaultDeliveryTaskDescription();
     case 'delivery_sequential_lot_pickup':
     case 'delivery_area_pickup':
@@ -642,7 +640,7 @@ function defaultTaskDescription(taskCategory: string): TaskDescription | undefin
 
 function defaultTask(): TaskRequest {
   return {
-    category: 'delivery',
+    category: 'compose',
     description: defaultDeliveryTaskDescription(),
     unix_millis_earliest_start_time: 0,
     unix_millis_request_time: Date.now(),
@@ -713,7 +711,7 @@ const defaultFavoriteTask = (): TaskFavorite => {
   return {
     id: '',
     name: '',
-    category: 'delivery',
+    category: 'compose',
     description: defaultDeliveryTaskDescription(),
     unix_millis_earliest_start_time: 0,
     priority: { type: 'binary', value: 0 },
@@ -842,17 +840,16 @@ export function CreateTaskForm({
     });
   };
 
-  const handleTaskDescriptionChange = (newCategory: string, newDesc: TaskDescription) => {
-    taskRequest.category = newCategory;
+  const handleTaskDescriptionChange = (newDesc: TaskDescription) => {
+    taskRequest.category = 'compose';
     taskRequest.description = newDesc;
-    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, description: newDesc, category: newCategory });
+    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, description: newDesc, category: 'compose' });
     updateTasks();
   };
 
   const renderTaskDescriptionForm = () => {
     switch (taskRequest.description.category) {
       case 'delivery_pickup':
-      case 'delivery':
         return (
           <DeliveryTaskForm
             taskDesc={taskRequest.description as DeliveryTaskDescription}
@@ -860,10 +857,10 @@ export function CreateTaskForm({
             cartIds={cartIds}
             dropoffPoints={dropoffPoints}
             onChange={(desc: DeliveryTaskDescription) => {
-              desc.category = 'delivery_pickup';
+              desc.category = taskRequest.description.category;
               desc.phases[0].activity.description.activities[1].description.category =
-                'delivery_pickup';
-              handleTaskDescriptionChange('delivery', desc);
+                taskRequest.description.category;
+              handleTaskDescriptionChange(desc);
             }}
             allowSubmit={allowSubmit}
           />
@@ -877,10 +874,10 @@ export function CreateTaskForm({
             cartIds={cartIds}
             dropoffPoints={Object.keys(dropoffPoints)}
             onChange={(desc) => {
-              desc.category = taskRequest.category;
+              desc.category = taskRequest.description.category;
               desc.phases[0].activity.description.activities[1].description.category =
-                taskRequest.category;
-              handleTaskDescriptionChange(taskRequest.category, desc);
+                taskRequest.description.category;
+              handleTaskDescriptionChange(desc);
             }}
             allowSubmit={allowSubmit}
           />
@@ -896,9 +893,11 @@ export function CreateTaskForm({
       return;
     }
     taskRequest.description = newDesc;
-    taskRequest.category = newCategory;
+    // taskRequest.category = newCategory;
+    taskRequest.category = 'compose';
 
-    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, category: newCategory, description: newDesc });
+    // setFavoriteTaskBuffer({ ...favoriteTaskBuffer, category: newCategory, description: newDesc });
+    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, category: 'compose', description: newDesc });
 
     updateTasks();
   };
@@ -1091,15 +1090,11 @@ export function CreateTaskForm({
                       variant="outlined"
                       fullWidth
                       margin="normal"
-                      value={
-                        taskRequest.description.category === 'delivery_pickup'
-                          ? 'delivery'
-                          : taskRequest.description.category
-                      }
+                      value={taskRequest.description.category}
                       onChange={handleTaskTypeChange}
                     >
                       <MenuItem
-                        value="delivery"
+                        value="delivery_pickup"
                         disabled={
                           Object.keys(pickupPoints).length === 0 ||
                           Object.keys(dropoffPoints).length === 0
