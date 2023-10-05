@@ -179,7 +179,7 @@ export const TaskSchedule = () => {
 
       let exceptDate: string | undefined = undefined;
       if (eventScope === EventScopes.CURRENT) {
-        exceptDate = exceptDateRef.current.toISOString();
+        exceptDate = schedule.at.toISOString();
       }
 
       await Promise.all(
