@@ -8,7 +8,7 @@ interface ShapeThreeRenderingProps {
   circleShape: boolean;
 }
 
-const debounce = <T extends (...args: any[]) => void>(callback: T, delay: number) => {
+export const debounce = <T extends (...args: any[]) => void>(callback: T, delay: number) => {
   let timeoutId: NodeJS.Timeout | null = null;
   return (...args: Parameters<T>) => {
     if (timeoutId) {
