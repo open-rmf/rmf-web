@@ -101,7 +101,9 @@ export const scheduleToEvents = (
       (scheStartFrom == null || scheStartFrom <= cur) &&
       (scheUntil == null || scheUntil >= cur)
     ) {
-      if (!task.except_dates.includes(cur.toLocaleDateString())) {
+      const curToIso = cur.toISOString();
+      const curFormatted = `${curToIso.slice(0, 10)}`;
+      if (!task.except_dates.includes(curFormatted)) {
         events.push({
           start: cur,
           end: addMinutes(cur, 45),
