@@ -151,7 +151,8 @@ async def del_scheduled_tasks_event(
     if task is None:
         raise HTTPException(404)
 
-    task.except_dates.append(datetime_to_date_format(event_date))
+    event_date_str = event_date.isoformat()
+    task.except_dates.append(event_date_str[:10])
     await task.save()
 
     for sche in task.schedules:
