@@ -26,15 +26,6 @@ class PostScheduledTaskRequest(BaseModel):
     schedules: list[ttm.ScheduledTaskSchedulePydantic]
 
 
-def datetime_to_date_format(date: datetime) -> str:
-    # input 09/08/2023
-    formatted_date = date.date().strftime("%m/%d/%Y").lstrip("0")
-    parts = formatted_date.split("/")
-    parts[1] = parts[1].lstrip("0")
-    # output 9/8/2023
-    return "/".join(parts)
-
-
 async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
     await task.fetch_related("schedules")
     jobs: list[tuple[ttm.ScheduledTaskSchedule, schedule.Job]] = []
@@ -59,7 +50,8 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
 
     def do():
         logger.info(f"starting task {task.pk}")
-        if datetime_to_date_format(datetime.now()) in task.except_dates:
+        datetime_to_iso = datetime.now().isoformat()
+        if datetime_to_iso[:10] in task.except_dates:
             return
         asyncio.get_event_loop().create_task(run())
 
@@ -151,7 +143,8 @@ async def del_scheduled_tasks_event(
     if task is None:
         raise HTTPException(404)
 
-    task.except_dates.append(datetime_to_date_format(event_date))
+    event_date_str = event_date.isoformat()
+    task.except_dates.append(event_date_str[:10])
     await task.save()
 
     for sche in task.schedules:
@@ -181,7 +174,8 @@ async def update_schedule_task(
 
         async with tortoise.transactions.in_transaction():
             if except_date:
-                task.except_dates.append(datetime_to_date_format(except_date))
+                event_date_str = except_date.isoformat()
+                task.except_dates.append(event_date_str[:10])
                 await task.save()
 
                 for sche in task.schedules:
