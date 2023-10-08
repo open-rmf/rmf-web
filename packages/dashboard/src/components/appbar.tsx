@@ -546,10 +546,10 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           tasksFromFile={tasksFromFile}
           onSuccess={() => {
             setOpenCreateTaskForm(false);
-            showAlert('success', 'Successfully created task');
+            showAlert('success', 'Successfully dispatched task');
           }}
           onFail={(e) => {
-            showAlert('error', `Failed to create task: ${e.message}`);
+            showAlert('error', `Failed to dispatch task: ${e.message}`);
           }}
           onSuccessFavoriteTask={(message) => {
             showAlert('success', message);
