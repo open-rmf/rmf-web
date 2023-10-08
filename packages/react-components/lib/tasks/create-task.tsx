@@ -893,10 +893,8 @@ export function CreateTaskForm({
       return;
     }
     taskRequest.description = newDesc;
-    // taskRequest.category = newCategory;
     taskRequest.category = 'compose';
 
-    // setFavoriteTaskBuffer({ ...favoriteTaskBuffer, category: newCategory, description: newDesc });
     setFavoriteTaskBuffer({ ...favoriteTaskBuffer, category: 'compose', description: newDesc });
 
     updateTasks();
