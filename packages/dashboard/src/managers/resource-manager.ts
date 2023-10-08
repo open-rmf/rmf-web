@@ -16,7 +16,7 @@ export interface ResourceConfigurationsType {
   defaultZoom?: number;
   defaultRobotZoom?: number;
   attributionPrefix?: string;
-  cartIds?: number[];
+  cartIds?: string[];
 }
 
 export default class ResourceManager {
@@ -29,7 +29,7 @@ export default class ResourceManager {
   defaultZoom: number;
   defaultRobotZoom: number;
   attributionPrefix?: string;
-  cartIds?: number[];
+  cartIds?: string[];
 
   /**
    * Gets the default resource manager using the embedded resource file (aka "assets/resources/main.json").
