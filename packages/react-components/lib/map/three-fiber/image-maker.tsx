@@ -9,12 +9,9 @@ export interface ImageThreeProps {
 }
 
 export const ReactThreeFiberImageMaker = ({ level, imageUrl }: ImageThreeProps): JSX.Element => {
-  let texture: Texture | undefined = undefined;
-  try {
-    texture = useLoader(TextureLoader, imageUrl);
-  } catch (e) {
-    console.error(`Texture loading failed for url ${imageUrl}: ${(e as Error).message}`);
-  }
+  const texture: Texture | undefined = useLoader(TextureLoader, imageUrl, undefined, (err) => {
+    console.error(`Error loading image from ${imageUrl}:`, err);
+  });
 
   if (!texture) {
     console.error(`Failed to create image texture with ${imageUrl}.`);
