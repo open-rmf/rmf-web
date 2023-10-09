@@ -12,8 +12,6 @@ import {
   TextField,
 } from '@mui/material';
 import LayersIcon from '@mui/icons-material/Layers';
-import ZoomInIcon from '@mui/icons-material/ZoomIn';
-import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 
 interface LayersControllerProps {
   disabledLayers: Record<string, boolean>;
@@ -46,7 +44,8 @@ export const LayersController = ({
         zIndex: '1',
       }}
     >
-      <div>
+      {/* Remove the icons for now. Code is left for future implementation. */}
+      {/* <div>
         <ZoomInIcon
           sx={{ margin: 1, transform: 'scale(1.8)', cursor: 'pointer', fontSize: 20 }}
           onClick={handleZoomIn}
@@ -57,7 +56,7 @@ export const LayersController = ({
           sx={{ margin: 1, transform: 'scale(1.8)', cursor: 'pointer', fontSize: 20 }}
           onClick={handleZoomOut}
         />
-      </div>
+      </div> */}
       <FormControl>
         <TextField
           select
