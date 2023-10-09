@@ -161,7 +161,7 @@ export const LiftRequestDialog = ({
       <div className={classes.divForm}>
         <Autocomplete
           getOptionLabel={(option) => requestModeToString(option)}
-          onChange={(_, value) => setRequestType((value as number) || availableRequestTypes[0])}
+          onChange={(_, value) => setRequestType(value as number)}
           options={availableRequestTypes}
           renderInput={(params) => (
             <TextField
