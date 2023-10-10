@@ -8,18 +8,16 @@ interface ShapeThreeRenderingProps {
   circleShape: boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const debounce = <T extends (...args: any[]) => void>(
-  callback: T,
-  delay: number,
-): ((...args: Parameters<T>) => void) => {
+export const debounce = (callback: () => void, delay: number): (() => void) => {
   let timeoutId: NodeJS.Timeout | null = null;
-  return (...args: Parameters<T>) => {
+
+  return () => {
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
+
     timeoutId = setTimeout(() => {
-      callback(...args);
+      callback();
     }, delay);
   };
 };
