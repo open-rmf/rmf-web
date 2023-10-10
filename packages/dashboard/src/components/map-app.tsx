@@ -31,6 +31,7 @@ import { RmfAppContext } from './rmf-app';
 import { RobotData, RobotsOverlay } from './robots-overlay';
 import { TrajectoriesOverlay, TrajectoryData } from './trajectories-overlay';
 import { WaypointsOverlay } from './waypoints-overlay';
+import { LabelsOverlay } from './label-overlay';
 import { WorkcellData, WorkcellsOverlay } from './workcells-overlay';
 import { RobotSummary } from './robots/robot-summary';
 
@@ -433,10 +434,33 @@ export const MapApp = styled(
           )}
 
           <LayersControl.Overlay name="Waypoints" checked={!disabledLayers['Waypoints']}>
-            <WaypointsOverlay
+            <WaypointsOverlay bounds={bounds} waypoints={waypoints} />
+          </LayersControl.Overlay>
+
+          <LayersControl.Overlay name="Labels" checked={!disabledLayers['Labels']}>
+            <LabelsOverlay
               bounds={bounds}
-              waypoints={waypoints}
-              hideLabels={disabledLayers['Waypoints']}
+              waypoints={waypoints.filter(
+                (waypoint) => !waypoint.pickupHandler && !waypoint.dropoffHandler,
+              )}
+              hideLabels={disabledLayers['Labels']}
+            />
+          </LayersControl.Overlay>
+
+          <LayersControl.Overlay name="Pickup label" checked={!disabledLayers['Pickup label']}>
+            <LabelsOverlay
+              bounds={bounds}
+              waypoints={waypoints.filter((waypoint) => waypoint.pickupHandler)}
+              hideLabels={disabledLayers['Pickup label']}
+            />
+          </LayersControl.Overlay>
+
+          <LayersControl.Overlay name="Dropoff label" checked={!disabledLayers['Dropoff label']}>
+            <LabelsOverlay
+              bounds={bounds}
+              waypoints={waypoints.filter((waypoint) => waypoint.dropoffHandler)}
+              hideLabels={disabledLayers['Dropoff label']}
+              pickup={true}
             />
           </LayersControl.Overlay>
 
