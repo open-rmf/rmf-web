@@ -37,7 +37,7 @@ jobs:
           skip-build: true
       - name: unit test
         env:
-          GENERATE_SOURCEMAP: false
+          NODE_OPTIONS: '--max_old_space_size=4096'
         run: . /rmf_demos_ws/install/setup.bash && pnpm run test:coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
