@@ -12,3 +12,4 @@ export * from './utils';
 export * from './waypoint-marker';
 export * from './with-label';
 export * from './workcell-marker';
+export * from './waypoint-label-maker';
