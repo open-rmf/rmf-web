@@ -19,7 +19,7 @@ export interface WaypointsOverlayProps extends Omit<SVGOverlayProps, 'viewBox'> 
 }
 
 export const WaypointsOverlay = React.memo(
-  ({ waypoints, hideLabels = false, ...otherProps }: WaypointsOverlayProps): JSX.Element => {
+  ({ waypoints, hideLabels = true, ...otherProps }: WaypointsOverlayProps): JSX.Element => {
     const viewBox = viewBoxFromLeafletBounds(otherProps.bounds);
     // Set the size of the waypoint. At least for now we don't want for this to change. We left this here in case we want for this to change in the future.
     const size = 0.2;
