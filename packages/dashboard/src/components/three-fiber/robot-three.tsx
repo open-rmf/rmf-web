@@ -8,15 +8,9 @@ interface RobotThreeProps {
   robots: RobotData[];
   robotLocations: Record<string, [number, number, number]>;
   onRobotClick?: (ev: ThreeEvent<MouseEvent>, robot: RobotData) => void;
-  objectModel?: string;
 }
 
-export const RobotThree = ({
-  robots,
-  robotLocations,
-  onRobotClick,
-  objectModel, //Object model should be some path of the object to be rendered.
-}: RobotThreeProps) => {
+export const RobotThree = ({ robots, robotLocations, onRobotClick }: RobotThreeProps) => {
   const STANDAR_Z_POSITION = 4;
   const CIRCLE_SEGMENT = 64;
 
@@ -34,7 +28,6 @@ export const RobotThree = ({
               robot={robot}
               position={position}
               onRobotClick={onRobotClick}
-              objectModel={objectModel}
               rotation={new Euler(0, 0, rotationZ)}
               circleSegment={CIRCLE_SEGMENT}
             />
