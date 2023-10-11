@@ -69,6 +69,9 @@ class RmfGateway:
             RmfDoorRequest, "adapter_door_requests", 10
         )
         self._lift_req = ros_node().create_publisher(
+            RmfLiftRequest, "lift_requests", 10
+        )
+        self._adapter_lift_req = ros_node().create_publisher(
             RmfLiftRequest, "adapter_lift_requests", 10
         )
         self._submit_task_srv = ros_node().create_client(RmfSubmitTask, "submit_task")
@@ -176,6 +179,7 @@ class RmfGateway:
             door_state=door_mode,
         )
         self._lift_req.publish(msg)
+        self._adapter_lift_req.publish(msg)
 
 
 _rmf_gateway: RmfGateway
