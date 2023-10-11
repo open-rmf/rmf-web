@@ -7,32 +7,33 @@ import {
   Level,
 } from 'api-client';
 import Debug from 'debug';
-import React from 'react';
+import React, { ChangeEvent, Suspense } from 'react';
 import {
-  affineImageBounds,
   ColorManager,
+  findSceneBoundingBoxFromThreeFiber,
   fromRmfCoords,
   getPlaces,
-  LMap,
-  loadAffineImage,
   Place,
+  ReactThreeFiberImageMaker,
   RobotTableData,
-  TrajectoryTimeControl,
+  ShapeThreeRendering,
+  TextThreeRendering,
 } from 'react-components';
-import { AttributionControl, ImageOverlay, LayersControl, Pane, Viewport } from 'react-leaflet';
 import { EMPTY, merge, scan, Subscription, switchMap } from 'rxjs';
 import appConfig from '../app-config';
 import { ResourcesContext } from './app-contexts';
 import { AppEvents } from './app-events';
-import { DoorsOverlay } from './doors-overlay';
-import { LiftsOverlay } from './lifts-overlay';
 import { createMicroApp } from './micro-app';
 import { RmfAppContext } from './rmf-app';
-import { RobotData, RobotsOverlay } from './robots-overlay';
-import { TrajectoriesOverlay, TrajectoryData } from './trajectories-overlay';
-import { WaypointsOverlay } from './waypoints-overlay';
-import { WorkcellData, WorkcellsOverlay } from './workcells-overlay';
+import { RobotData } from './robots-overlay';
+import { TrajectoryData } from './trajectories-overlay';
+import { WorkcellData } from './workcells-overlay';
 import { RobotSummary } from './robots/robot-summary';
+import { Box3, TextureLoader, Vector3 } from 'three';
+import { Canvas, useLoader } from '@react-three/fiber';
+import { Line } from '@react-three/drei';
+import { CameraControl, LayersController, updateZoom } from './three-fiber';
+import { Lifts, Door, RobotThree } from './three-fiber';
 
 type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
@@ -41,17 +42,12 @@ const debug = Debug('MapApp');
 const TrajectoryUpdateInterval = 2000;
 // schedule visualizer manages it's own settings so that it doesn't cause a re-render
 // of the whole app when it changes.
-const SettingsKey = 'mapAppSettings';
 const colorManager = new ColorManager();
 
-const DEFAULT_ZOOM_LEVEL = 5;
+const DEFAULT_ZOOM_LEVEL = 20;
 
 function getRobotId(fleetName: string, robotName: string): string {
   return `${fleetName}/${robotName}`;
-}
-
-interface MapSettings {
-  trajectoryTime: number;
 }
 
 export const MapApp = styled(
@@ -59,7 +55,19 @@ export const MapApp = styled(
     const rmf = React.useContext(RmfAppContext);
     const resourceManager = React.useContext(ResourcesContext);
     const [currentLevel, setCurrentLevel] = React.useState<Level | undefined>(undefined);
-    const [disabledLayers, setDisabledLayers] = React.useState<Record<string, boolean>>({});
+    const [disabledLayers, setDisabledLayers] = React.useState<Record<string, boolean>>({
+      Waypoints: false,
+      Dispensers: false,
+      Ingestors: false,
+      Lifts: false,
+      Doors: false,
+      Trajectories: false,
+      Robots: false,
+      Labels: false,
+      'Waypoint labels': false,
+      'Pickup point labels': false,
+      'Dropoff point labels': false,
+    });
     const [openRobotSummary, setOpenRobotSummary] = React.useState(false);
     const [selectedRobot, setSelectedRobot] = React.useState<RobotTableData>();
 
@@ -130,11 +138,7 @@ export const MapApp = styled(
     const [waypoints, setWaypoints] = React.useState<Place[]>([]);
 
     const [trajectories, setTrajectories] = React.useState<TrajectoryData[]>([]);
-    const [mapSettings, setMapSettings] = React.useState<MapSettings>(() => {
-      const settings = window.localStorage.getItem(SettingsKey);
-      return settings ? JSON.parse(settings) : { trajectoryTime: 300000 /* 5 min */ };
-    });
-    const trajectoryTime = mapSettings.trajectoryTime;
+    const trajectoryTime = 300000;
     const trajectoryAnimScale = trajectoryTime / (0.9 * TrajectoryUpdateInterval);
     const trajManager = rmf?.trajectoryManager;
     React.useEffect(() => {
@@ -193,8 +197,10 @@ export const MapApp = styled(
       subs.push(
         rmf.buildingMapObs.subscribe((newMap) => {
           setBuildingMap(newMap);
-          const currentLevel = newMap.levels[0];
-          setCurrentLevel(currentLevel);
+          const currentLevel = AppEvents.levelSelect.value
+            ? AppEvents.levelSelect.value
+            : newMap.levels[0];
+          AppEvents.levelSelect.next(currentLevel);
           setWaypoints(
             getPlaces(newMap).filter(
               (p) => p.level === currentLevel.name && p.vertex.name.length > 0,
@@ -214,8 +220,6 @@ export const MapApp = styled(
     }, [rmf]);
 
     const [imageUrl, setImageUrl] = React.useState<string | null>(null);
-    const [bounds, setBounds] = React.useState<L.LatLngBoundsLiteral | null>(null);
-    const [center, setCenter] = React.useState<L.LatLngTuple>([0, 0]);
     const [zoom, setZoom] = React.useState<number>(DEFAULT_ZOOM_LEVEL);
 
     React.useEffect(() => {
@@ -226,19 +230,8 @@ export const MapApp = styled(
     }, []);
 
     React.useEffect(() => {
-      const sub = AppEvents.mapCenter.subscribe((currentValue) => {
-        setCenter((prev) => {
-          const newCenter: L.LatLngTuple = [...currentValue];
-          // react-leaftlet does not properly update state when the previous LatLng is the same,
-          // even when a new array is passed.
-          if (prev[0] === newCenter[0]) {
-            newCenter[0] += 0.00001;
-          }
-          if (prev[1] === newCenter[1]) {
-            newCenter[1] += 0.00001;
-          }
-          return newCenter;
-        });
+      const sub = AppEvents.levelSelect.subscribe((currentValue) => {
+        setCurrentLevel(currentValue ?? undefined);
       });
       return () => sub.unsubscribe();
     }, []);
@@ -250,14 +243,8 @@ export const MapApp = styled(
       }
 
       (async () => {
-        const affineImage = await loadAffineImage(currentLevel.images[0]);
-        const bounds = affineImageBounds(
-          currentLevel.images[0],
-          affineImage.naturalWidth,
-          affineImage.naturalHeight,
-        );
-        setBounds(bounds);
-        setImageUrl(affineImage.src);
+        useLoader.preload(TextureLoader, currentLevel.images[0].data);
+        setImageUrl(currentLevel.images[0].data);
       })();
 
       buildingMap &&
@@ -308,7 +295,7 @@ export const MapApp = styled(
       })();
     }, [fleets, robotsStore, resourceManager, currentLevel]);
 
-    const { current: robotLocations } = React.useRef<Record<string, [number, number]>>({});
+    const { current: robotLocations } = React.useRef<Record<string, [number, number, number]>>({});
     // updates the robot location
     React.useEffect(() => {
       if (!rmf) {
@@ -332,7 +319,11 @@ export const MapApp = styled(
               console.warn(`Map: Fail to update robot location for ${robotId} (missing location)`);
               return;
             }
-            robotLocations[robotId] = [robotState.location.x, robotState.location.y];
+            robotLocations[robotId] = [
+              robotState.location.x,
+              robotState.location.y,
+              robotState.location.yaw,
+            ];
           });
         });
       return () => sub.unsubscribe();
@@ -361,155 +352,198 @@ export const MapApp = styled(
           console.warn(`Map: Failed to zoom to robot ${robotId} (robot location was not found)`);
           return;
         }
-        if (!bounds) {
-          console.warn(
-            `Map: Fail to zoom to robot ${robotId} (missing bounds, map was not loaded?)`,
-          );
-          return;
-        }
-        const mapCoords = fromRmfCoords(robotLocation);
+
+        const mapCoordsLocation: [number, number] = [robotLocation[0], robotLocation[1]];
+        const mapCoords = fromRmfCoords(mapCoordsLocation);
         const newCenter: L.LatLngTuple = [mapCoords[1], mapCoords[0]];
         AppEvents.mapCenter.next(newCenter);
         AppEvents.zoom.next(6);
       });
       return () => sub.unsubscribe();
-    }, [robotLocations, bounds]);
+    }, [robotLocations]);
 
-    const onViewportChanged = (viewport: Viewport) => {
-      if (viewport.zoom && viewport.center) {
-        AppEvents.zoom.next(viewport.zoom);
-        AppEvents.mapCenter.next(viewport.center);
+    const ready = buildingMap && currentLevel;
+
+    const [sceneBoundingBox, setSceneBoundingBox] = React.useState<Box3 | undefined>(undefined);
+    const [distance, setDistance] = React.useState<number>(0);
+
+    React.useMemo(() => {
+      setSceneBoundingBox(findSceneBoundingBoxFromThreeFiber(currentLevel));
+    }, [currentLevel]);
+
+    React.useEffect(() => {
+      if (!sceneBoundingBox) {
+        return;
       }
-    };
 
-    const registeredLayersHandlers = React.useRef(false);
-    const ready = buildingMap && currentLevel && bounds;
+      const size = sceneBoundingBox.getSize(new Vector3());
+      setDistance(Math.max(size.x, size.y, size.z) * 0.7);
+    }, [sceneBoundingBox]);
+
     return ready ? (
-      <LMap
-        ref={(cur) => {
-          if (registeredLayersHandlers.current || !cur) return;
-          cur.leafletElement.on('overlayadd', (ev: L.LayersControlEvent) => {
-            AppEvents.disabledLayers.next({ [ev.name]: false });
-          });
-          cur.leafletElement.on('overlayremove', (ev: L.LayersControlEvent) => {
-            AppEvents.disabledLayers.next({ [ev.name]: true });
-          });
-          registeredLayersHandlers.current = true;
-        }}
-        attributionControl={false}
-        zoomDelta={0.5}
-        zoomSnap={0.5}
-        center={center}
-        onViewportChanged={onViewportChanged}
-        zoom={zoom}
-        bounds={bounds}
-        maxBounds={bounds}
-        onbaselayerchange={({ name }: L.LayersControlEvent) => {
-          setCurrentLevel(
-            buildingMap.levels.find((l: Level) => l.name === name) || buildingMap.levels[0],
-          );
-        }}
-      >
-        <AttributionControl position="bottomright" prefix="OSRC-SG" />
-        <LayersControl position="topleft">
-          <Pane name="image" style={{ zIndex: 0 }} />
-          {buildingMap.levels.map((level: Level) =>
-            currentLevel.name === level.name ? (
-              <LayersControl.BaseLayer key={level.name} name={level.name} checked>
-                {currentLevel.images.length > 0 && imageUrl && (
-                  <ImageOverlay bounds={bounds} url={imageUrl} pane="image" />
-                )}
-              </LayersControl.BaseLayer>
-            ) : (
-              <LayersControl.BaseLayer key={level.name} name={level.name}>
-                {currentLevel.images.length > 0 && imageUrl && (
-                  <ImageOverlay bounds={bounds} url={imageUrl} pane="image" />
-                )}
-              </LayersControl.BaseLayer>
-            ),
+      <Suspense fallback={null}>
+        <LayersController
+          disabledLayers={disabledLayers}
+          levels={buildingMap.levels}
+          currentLevel={currentLevel}
+          onChange={(event: ChangeEvent<HTMLInputElement>, value: string) => {
+            AppEvents.levelSelect.next(
+              buildingMap.levels.find((l: Level) => l.name === value) || buildingMap.levels[0],
+            );
+          }}
+          handleZoomIn={() => AppEvents.zoom.next(updateZoom(zoom, 2))}
+          handleZoomOut={() => AppEvents.zoom.next(updateZoom(zoom, -2))}
+        />
+        <Canvas
+          onCreated={({ camera }) => {
+            if (!sceneBoundingBox) {
+              return;
+            }
+            const center = sceneBoundingBox.getCenter(new Vector3());
+            camera.position.set(center.x, center.y, center.z + distance);
+            camera.zoom = zoom;
+            camera.updateProjectionMatrix();
+          }}
+          orthographic={true}
+        >
+          <CameraControl zoom={zoom} />
+          {currentLevel.doors.length > 0
+            ? currentLevel.doors.map((door, i) => (
+                <React.Fragment key={`${door.name}${i}`}>
+                  {!disabledLayers['Labels'] && (
+                    <TextThreeRendering position={[door.v1_x, door.v1_y, 0]} text={door.name} />
+                  )}
+                  {!disabledLayers['Doors'] && (
+                    <Door door={door} opacity={0.1} height={8} elevation={currentLevel.elevation} />
+                  )}
+                </React.Fragment>
+              ))
+            : null}
+          {currentLevel.images.length > 0 && imageUrl && (
+            <ReactThreeFiberImageMaker level={currentLevel} imageUrl={imageUrl} />
           )}
+          {buildingMap.lifts.length > 0
+            ? buildingMap.lifts.map((lift, i) =>
+                lift.doors.map((door, i) => (
+                  <React.Fragment key={`${door.name}${i}`}>
+                    {!disabledLayers['Labels'] && (
+                      <TextThreeRendering position={[door.v1_x, door.v1_y, 0]} text={door.name} />
+                    )}
+                    {!disabledLayers['Doors'] && (
+                      <Door
+                        door={door}
+                        opacity={0.1}
+                        height={8}
+                        elevation={currentLevel.elevation}
+                        lift={lift}
+                      />
+                    )}
+                  </React.Fragment>
+                )),
+              )
+            : null}
 
-          <LayersControl.Overlay name="Waypoints" checked={!disabledLayers['Waypoints']}>
-            <WaypointsOverlay
-              bounds={bounds}
-              waypoints={waypoints}
-              hideLabels={disabledLayers['Waypoints']}
-            />
-          </LayersControl.Overlay>
+          {!disabledLayers['Lifts'] && buildingMap.lifts.length > 0
+            ? buildingMap.lifts.map((lift) =>
+                lift.doors.map(() => (
+                  <Lifts
+                    key={lift.name}
+                    lift={lift}
+                    height={8}
+                    elevation={currentLevel.elevation}
+                    opacity={0.1}
+                  />
+                )),
+              )
+            : null}
 
-          <LayersControl.Overlay name="Dispensers" checked={!disabledLayers['Dispensers']}>
-            <WorkcellsOverlay
-              bounds={bounds}
-              workcells={dispensersData}
-              hideLabels={disabledLayers['Dispensers']}
-              onWorkcellClick={(_ev, workcell) =>
-                AppEvents.dispenserSelect.next({ guid: workcell })
-              }
-            />
-          </LayersControl.Overlay>
+          {!disabledLayers['Waypoints'] &&
+            waypoints.map((place, index) => (
+              <ShapeThreeRendering
+                key={index}
+                position={[place.vertex.x, place.vertex.y, 0]}
+                color="yellow"
+                text={place.vertex.name}
+                circleShape={false}
+              />
+            ))}
 
-          <LayersControl.Overlay name="Ingestors" checked={!disabledLayers['Ingestors']}>
-            <WorkcellsOverlay
-              bounds={bounds}
-              workcells={ingestorsData}
-              hideLabels={disabledLayers['Ingestors']}
-              onWorkcellClick={(_ev, workcell) => AppEvents.ingestorSelect.next({ guid: workcell })}
-            />
-          </LayersControl.Overlay>
+          {!disabledLayers['Waypoint labels'] &&
+            waypoints
+              .filter((waypoint) => !waypoint.pickupHandler && !waypoint.dropoffHandler)
+              .map((place, index) => (
+                <TextThreeRendering
+                  key={index}
+                  position={[place.vertex.x, place.vertex.y, 0]}
+                  text={place.vertex.name}
+                />
+              ))}
+          {!disabledLayers['Pickup point labels'] &&
+            waypoints
+              .filter((waypoint) => waypoint.pickupHandler)
+              .map((place, index) => (
+                <TextThreeRendering
+                  key={index}
+                  position={[place.vertex.x, place.vertex.y, 0]}
+                  text={place.vertex.name}
+                />
+              ))}
+          {!disabledLayers['Dropoff point labels'] &&
+            waypoints
+              .filter((waypoint) => waypoint.dropoffHandler)
+              .map((place, index) => (
+                <TextThreeRendering
+                  key={index}
+                  position={[place.vertex.x, place.vertex.y, 0]}
+                  text={place.vertex.name}
+                />
+              ))}
+          {!disabledLayers['Ingestors'] &&
+            ingestorsData.map((ingestor, index) => (
+              <ShapeThreeRendering
+                key={index}
+                position={[ingestor.location[0], ingestor.location[1], 0]}
+                color="red"
+                circleShape={true}
+              />
+            ))}
 
-          <LayersControl.Overlay name="Lifts" checked={!disabledLayers['Lifts']}>
-            <LiftsOverlay
-              bounds={bounds}
-              currentLevel={currentLevel.name}
-              lifts={buildingMap.lifts}
-              hideLabels={disabledLayers['Lifts']}
-              onLiftClick={(_ev, lift) => AppEvents.liftSelect.next(lift)}
-            />
-          </LayersControl.Overlay>
-
-          <LayersControl.Overlay name="Doors" checked={!disabledLayers['Doors']}>
-            <DoorsOverlay
-              bounds={bounds}
-              doors={currentLevel.doors}
-              hideLabels={disabledLayers['Doors']}
-              onDoorClick={(_ev, door) => AppEvents.doorSelect.next(door)}
-            />
-          </LayersControl.Overlay>
-
-          <LayersControl.Overlay name="Trajectories" checked>
-            <TrajectoriesOverlay bounds={bounds} trajectoriesData={trajectories} />
-          </LayersControl.Overlay>
-
-          <LayersControl.Overlay name="Robots" checked={!disabledLayers['Robots']}>
-            <RobotsOverlay
-              bounds={bounds}
+          {!disabledLayers['Dispensers'] &&
+            dispensersData.map((dispenser, index) => (
+              <ShapeThreeRendering
+                key={index}
+                position={[dispenser.location[0], dispenser.location[1], 0]}
+                color="red"
+                circleShape={true}
+              />
+            ))}
+          {!disabledLayers['Trajectories'] &&
+            trajectories.map((trajData) => (
+              <Line
+                key={trajData.trajectory.id}
+                points={trajData.trajectory.segments.map(
+                  (seg) => new Vector3(seg.x[0], seg.x[1], 4),
+                )}
+                color={trajData.color}
+                linewidth={5}
+              />
+            ))}
+          {!disabledLayers['Robots'] && (
+            <RobotThree
               robots={robots}
-              hideLabels={disabledLayers['Robots']}
+              robotLocations={robotLocations}
               onRobotClick={(_ev, robot) => {
                 setOpenRobotSummary(true);
                 setSelectedRobot(robot);
               }}
             />
-          </LayersControl.Overlay>
-        </LayersControl>
+          )}
+          <ambientLight />
+        </Canvas>
         {openRobotSummary && selectedRobot && (
           <RobotSummary robot={selectedRobot} onClose={() => setOpenRobotSummary(false)} />
         )}
-
-        <TrajectoryTimeControl
-          position="topleft"
-          value={trajectoryTime}
-          min={60000}
-          max={600000}
-          onChange={(_ev, newValue) =>
-            setMapSettings((prev) => {
-              const newSettings = { ...prev, trajectoryTime: newValue };
-              window.localStorage.setItem(SettingsKey, JSON.stringify(newSettings));
-              return newSettings;
-            })
-          }
-        />
-      </LMap>
+      </Suspense>
     ) : null;
   }),
 )({

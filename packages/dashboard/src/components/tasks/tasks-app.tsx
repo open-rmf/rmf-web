@@ -60,7 +60,11 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={tabId(index)}
       {...other}
     >
-      {selectedTabIndex === index && <Box sx={{ p: 3 }}>{children}</Box>}
+      {selectedTabIndex === index && (
+        <Box component="div" sx={{ p: 3 }}>
+          {children}
+        </Box>
+      )}
     </div>
   );
 }

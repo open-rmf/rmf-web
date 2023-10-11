@@ -61,7 +61,7 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
     })();
 
     return (
-      <Box sx={opModeStateLabelStyle}>
+      <Box component="div" sx={opModeStateLabelStyle}>
         <Typography
           data-testid="op-mode-state"
           component="p"
@@ -111,7 +111,7 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
     })();
 
     return (
-      <Box sx={doorStateLabelStyle}>
+      <Box component="div" sx={doorStateLabelStyle}>
         <Typography
           component="p"
           sx={{

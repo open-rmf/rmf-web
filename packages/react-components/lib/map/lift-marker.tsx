@@ -6,7 +6,7 @@ import { LiftState as RmfLiftState } from 'rmf-models';
 
 // Gets the text to insert to the lift, the text depend on the current mode, motion state and the
 // current and destination floor of the lift.
-function getLiftModeText(liftState: LiftState): string {
+export const getLiftModeText = (liftState: LiftState): string => {
   if (!liftState.current_mode) {
     return 'UNKNOWN';
   }
@@ -20,7 +20,7 @@ function getLiftModeText(liftState: LiftState): string {
     default:
       return 'NORMAL';
   }
-}
+};
 
 function getLiftMotionText(liftState: LiftState): string {
   switch (liftState.motion_state) {

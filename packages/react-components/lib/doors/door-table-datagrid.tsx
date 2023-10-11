@@ -52,7 +52,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
     })();
 
     return (
-      <Box sx={opModeStateLabelStyle}>
+      <Box component="div" sx={opModeStateLabelStyle}>
         <Typography
           data-testid="op-mode-state"
           component="p"
@@ -95,7 +95,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
     }, [params.row.doorState.current_mode.value]);
 
     return (
-      <Box sx={labelStyle}>
+      <Box component="div" sx={labelStyle}>
         <Typography
           data-testid="door-state"
           component="p"
@@ -112,7 +112,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
 
   const OpenCloseButtons = (params: GridCellParams): React.ReactNode => {
     return (
-      <Box sx={{ margin: 0, padding: 0, paddingRight: 1 }}>
+      <Box component="div" sx={{ margin: 0, padding: 0, paddingRight: 1 }}>
         <Button
           variant="contained"
           size="small"

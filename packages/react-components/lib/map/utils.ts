@@ -2,6 +2,9 @@ import type { AffineImage, Door, Location2D } from 'api-client';
 import L from 'leaflet';
 import { Door as RmfDoor } from 'rmf-models';
 import { fromRmfCoords, fromRmfYaw } from '../utils';
+import { Level, Graph } from 'api-client';
+import { Box3, Vector3, Euler } from 'three';
+import { GraphNode } from 'rmf-models';
 
 export function viewBoxFromLeafletBounds(bounds: L.LatLngBoundsExpression): string {
   const lbounds = bounds instanceof L.LatLngBounds ? bounds : new L.LatLngBounds(bounds);
@@ -60,3 +63,73 @@ export function getDoorCenter(door: Door): [x: number, y: number] {
       throw new Error('unknown door type');
   }
 }
+
+interface WallSegment {
+  position: number[];
+  width: number;
+  height: number;
+  depth: number;
+  rot: THREE.Euler;
+}
+
+const distance = (v1: GraphNode, v2: GraphNode) => Math.hypot(v2.x - v1.x, v2.y - v1.y);
+const midPoint = (v1: GraphNode, v2: GraphNode) => [(v2.x + v1.x) / 2, (v2.y + v1.y) / 2];
+
+export const graphToWalls = (graph: Graph): WallSegment[] => {
+  const walls = [] as WallSegment[];
+  const { edges, vertices } = graph;
+
+  edges.map((edge) => {
+    const v1 = vertices[edge.v1_idx];
+    const v2 = vertices[edge.v2_idx];
+
+    const depth = distance(v1, v2);
+    const midpoint = midPoint(v1, v2);
+    const width = 0.3;
+    const height = 8;
+    const position = midpoint.concat(height / 2 + 0);
+
+    const angle = Math.atan2(v1.y - v2.y, v1.x - v2.x) - Math.PI / 2;
+    const rot = new Euler(0, 0, angle);
+
+    return walls.push({
+      position,
+      width,
+      height,
+      depth,
+      rot,
+    });
+  });
+
+  return walls;
+};
+
+export const findSceneBoundingBoxFromThreeFiber = (
+  level: Level | undefined,
+): THREE.Box3 | undefined => {
+  if (!level) {
+    return;
+  }
+  let minX = Infinity;
+  let minY = Infinity;
+  let minZ = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  let maxZ = -Infinity;
+
+  const walls = graphToWalls(level.wall_graph);
+  walls.forEach((wall) => {
+    const [x, y, z] = wall.position;
+    const width = wall.width;
+    const height = wall.height;
+
+    minX = Math.min(minX, x - width / 2);
+    minY = Math.min(minY, y - width / 2);
+    minZ = Math.min(minZ, z - height / 2);
+    maxX = Math.max(maxX, x + width / 2);
+    maxY = Math.max(maxY, y + width / 2);
+    maxZ = Math.max(maxZ, z + height / 2);
+  });
+
+  return new Box3(new Vector3(minX, minY, minZ), new Vector3(maxX, maxY, maxZ));
+};
