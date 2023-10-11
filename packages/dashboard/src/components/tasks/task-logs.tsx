@@ -49,7 +49,7 @@ export function TaskLogs({ taskLog, taskState, title }: TaskLogProps) {
   }
 
   return (
-    <Box>
+    <Box component="div">
       <Typography variant="h6" style={{ textAlign: 'center' }} gutterBottom>
         {taskState && (title ? title : taskState.booking.id)}
       </Typography>

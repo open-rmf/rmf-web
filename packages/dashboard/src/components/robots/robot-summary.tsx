@@ -63,11 +63,11 @@ const setTaskDialogColor = (robotStatus: Status2 | undefined) => {
 
 const LinearProgressWithLabel = (props: LinearProgressProps & { value: number }) => {
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <Box sx={{ width: '100%', mr: 1 }}>
+    <Box component="div" sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box component="div" sx={{ width: '100%', mr: 1 }}>
         <LinearProgress variant="determinate" {...props} />
       </Box>
-      <Box sx={{ minWidth: 35 }}>
+      <Box component="div" sx={{ minWidth: 35 }}>
         <Typography variant="body2" color="text.secondary">{`${Math.round(
           props.value,
         )}%`}</Typography>
@@ -273,7 +273,7 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
           <Typography variant="body2" fontWeight="bold" ml={3} mt={1}>
             Task progress
           </Typography>
-          <Box sx={{ width: '95%', ml: 3 }}>
+          <Box component="div" sx={{ width: '95%', ml: 3 }}>
             <LinearProgressWithLabel value={taskProgress * 100} />
           </Box>
         </>

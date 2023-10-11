@@ -57,7 +57,7 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
     })();
 
     return (
-      <Box sx={statusLabelStyle}>
+      <Box component="div" sx={statusLabelStyle}>
         <Typography
           data-testid="status"
           component="p"
