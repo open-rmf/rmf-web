@@ -64,6 +64,8 @@ export const MapApp = styled(
       Trajectories: false,
       Robots: false,
       Labels: false,
+      PickupLabel: false,
+      DropoffLabel: false,
     });
     const [openRobotSummary, setOpenRobotSummary] = React.useState(false);
     const [selectedRobot, setSelectedRobot] = React.useState<RobotTableData>();
@@ -466,13 +468,35 @@ export const MapApp = styled(
             ))}
 
           {!disabledLayers['Labels'] &&
-            waypoints.map((place, index) => (
-              <TextThreeRendering
-                key={index}
-                position={[place.vertex.x, place.vertex.y, 0]}
-                text={place.vertex.name}
-              />
-            ))}
+            waypoints
+              .filter((waypoint) => !waypoint.pickupHandler && !waypoint.dropoffHandler)
+              .map((place, index) => (
+                <TextThreeRendering
+                  key={index}
+                  position={[place.vertex.x, place.vertex.y, 0]}
+                  text={place.vertex.name}
+                />
+              ))}
+          {!disabledLayers['PickupLabel'] &&
+            waypoints
+              .filter((waypoint) => waypoint.pickupHandler)
+              .map((place, index) => (
+                <TextThreeRendering
+                  key={index}
+                  position={[place.vertex.x, place.vertex.y, 0]}
+                  text={place.vertex.name}
+                />
+              ))}
+          {!disabledLayers['DropoffLabel'] &&
+            waypoints
+              .filter((waypoint) => waypoint.dropoffHandler)
+              .map((place, index) => (
+                <TextThreeRendering
+                  key={index}
+                  position={[place.vertex.x, place.vertex.y, 0]}
+                  text={place.vertex.name}
+                />
+              ))}
           {!disabledLayers['Ingestors'] &&
             ingestorsData.map((ingestor, index) => (
               <ShapeThreeRendering
