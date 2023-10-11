@@ -64,8 +64,9 @@ export const MapApp = styled(
       Trajectories: false,
       Robots: false,
       Labels: false,
-      PickupLabel: false,
-      DropoffLabel: false,
+      'Waypoint labels': false,
+      'Pickup point labels': false,
+      'Dropoff point labels': false,
     });
     const [openRobotSummary, setOpenRobotSummary] = React.useState(false);
     const [selectedRobot, setSelectedRobot] = React.useState<RobotTableData>();
@@ -467,7 +468,7 @@ export const MapApp = styled(
               />
             ))}
 
-          {!disabledLayers['Labels'] &&
+          {!disabledLayers['Waypoint labels'] &&
             waypoints
               .filter((waypoint) => !waypoint.pickupHandler && !waypoint.dropoffHandler)
               .map((place, index) => (
@@ -477,7 +478,7 @@ export const MapApp = styled(
                   text={place.vertex.name}
                 />
               ))}
-          {!disabledLayers['PickupLabel'] &&
+          {!disabledLayers['Pickup point labels'] &&
             waypoints
               .filter((waypoint) => waypoint.pickupHandler)
               .map((place, index) => (
@@ -487,7 +488,7 @@ export const MapApp = styled(
                   text={place.vertex.name}
                 />
               ))}
-          {!disabledLayers['DropoffLabel'] &&
+          {!disabledLayers['Dropoff point labels'] &&
             waypoints
               .filter((waypoint) => waypoint.dropoffHandler)
               .map((place, index) => (
