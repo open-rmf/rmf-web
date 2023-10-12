@@ -43,15 +43,15 @@ export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
       AppEvents.zoom.next(newZoom * SENSITIVITY);
     };
 
-    window.addEventListener('wheel', handleScroll);
+    gl.domElement.addEventListener('wheel', handleScroll);
 
     return () => {
       for (const sub of subs) {
         sub.unsubscribe();
       }
-      window.removeEventListener('wheel', handleScroll);
+      gl.domElement.removeEventListener('wheel', handleScroll);
     };
-  }, [camera]);
+  }, [camera, gl.domElement]);
 
   useEffect(() => {
     const controls = new OrbitControls(camera, gl.domElement);
@@ -67,6 +67,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
     };
 
     if (AppEvents.cameraPosition.value) {
+      console.log(AppEvents.cameraPosition.value);
       camera.position.set(
         AppEvents.cameraPosition.value.x,
         AppEvents.cameraPosition.value.y,
