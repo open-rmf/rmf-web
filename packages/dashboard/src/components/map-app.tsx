@@ -64,9 +64,9 @@ export const MapApp = styled(
       Doors: false,
       Trajectories: false,
       Robots: false,
-      Labels: false,
-      'Waypoint labels': false,
-      'Pickup point labels': false,
+      'Door and lift labels': true,
+      'Waypoint labels': true,
+      'Pickup point labels': true,
       'Dropoff point labels': false,
     });
     const [openRobotSummary, setOpenRobotSummary] = React.useState(false);
@@ -411,7 +411,7 @@ export const MapApp = styled(
           {currentLevel.doors.length > 0
             ? currentLevel.doors.map((door, i) => (
                 <React.Fragment key={`${door.name}${i}`}>
-                  {!disabledLayers['Labels'] && (
+                  {!disabledLayers['Door and lift labels'] && (
                     <TextThreeRendering position={[door.v1_x, door.v1_y, 0]} text={door.name} />
                   )}
                   {!disabledLayers['Doors'] && (
@@ -427,7 +427,7 @@ export const MapApp = styled(
             ? buildingMap.lifts.map((lift, i) =>
                 lift.doors.map((door, i) => (
                   <React.Fragment key={`${door.name}${i}`}>
-                    {!disabledLayers['Labels'] && (
+                    {!disabledLayers['Door and lift labels'] && (
                       <TextThreeRendering position={[door.v1_x, door.v1_y, 0]} text={door.name} />
                     )}
                     {!disabledLayers['Doors'] && (
