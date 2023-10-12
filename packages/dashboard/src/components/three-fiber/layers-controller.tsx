@@ -8,10 +8,13 @@ import {
   FormControl,
   FormControlLabel,
   FormGroup,
+  IconButton,
   MenuItem,
   TextField,
 } from '@mui/material';
 import LayersIcon from '@mui/icons-material/Layers';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 
 interface LayersControllerProps {
   disabledLayers: Record<string, boolean>;
@@ -44,19 +47,6 @@ export const LayersController = ({
         zIndex: '1',
       }}
     >
-      {/* Remove the icons for now. Code is left for future implementation. */}
-      {/* <div>
-        <ZoomInIcon
-          sx={{ margin: 1, transform: 'scale(1.8)', cursor: 'pointer', fontSize: 20 }}
-          onClick={handleZoomIn}
-        />
-      </div>
-      <div>
-        <ZoomOutIcon
-          sx={{ margin: 1, transform: 'scale(1.8)', cursor: 'pointer', fontSize: 20 }}
-          onClick={handleZoomOut}
-        />
-      </div> */}
       <FormControl>
         <TextField
           select
@@ -77,8 +67,20 @@ export const LayersController = ({
           ))}
         </TextField>
       </FormControl>
+      <div>
+        <IconButton size="small" onClick={handleZoomIn}>
+          <ZoomInIcon fontSize="large" />
+        </IconButton>
+      </div>
+      <div>
+        <IconButton size="small" onClick={handleZoomOut}>
+          <ZoomOutIcon fontSize="large" />
+        </IconButton>
+      </div>
       <div onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-        <LayersIcon sx={{ margin: 2, transform: 'scale(1.8)' }} />
+        <IconButton size="small">
+          <LayersIcon fontSize="large" />
+        </IconButton>
         {isHovered && (
           <div>
             {Object.keys(disabledLayers).map((layerName) => (
