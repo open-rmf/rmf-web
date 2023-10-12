@@ -15,7 +15,6 @@ interface CameraControlProps {
 export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
   const { camera, gl } = useThree();
   const controlsRef = useRef<OrbitControls | null>(null);
-  const [cameraPosition, setCameraPosition] = React.useState<Vector3 | null>(null);
 
   useEffect(() => {
     const subs: Subscription[] = [];
@@ -52,14 +51,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
       }
       window.removeEventListener('wheel', handleScroll);
     };
-  }, [camera, cameraPosition]);
-
-  useEffect(() => {
-    const sub = AppEvents.cameraPosition.subscribe((currentValue) => {
-      setCameraPosition(currentValue);
-    });
-    return () => sub.unsubscribe();
-  }, []);
+  }, [camera]);
 
   useEffect(() => {
     const controls = new OrbitControls(camera, gl.domElement);
