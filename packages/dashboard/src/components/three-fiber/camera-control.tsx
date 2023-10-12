@@ -1,18 +1,39 @@
+import { AppEvents } from '../app-events';
+import { Subscription } from 'rxjs';
 import { useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import React, { useEffect, useRef } from 'react';
 import { MOUSE, Vector3 } from 'three';
 
+const DEFAULT_ZOOM_IN_CONSTANT = 1.2;
+const DEFAULT_ZOOM_OUT_CONSTANT = 0.8;
+
 interface CameraControlProps {
   zoom: number;
 }
 
-export const updateZoom = (currentZoom: number, increment: number) =>
-  Math.max(0, Math.min(Infinity, currentZoom + increment));
-
 export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
   const { camera, gl } = useThree();
   const controlsRef = useRef<OrbitControls | null>(null);
+
+  useEffect(() => {
+    const subs: Subscription[] = [];
+    subs.push(
+      AppEvents.zoomIn.subscribe(() => {
+        camera.zoom = camera.zoom * DEFAULT_ZOOM_IN_CONSTANT;
+      }),
+    );
+    subs.push(
+      AppEvents.zoomOut.subscribe(() => {
+        camera.zoom = camera.zoom * DEFAULT_ZOOM_OUT_CONSTANT;
+      }),
+    );
+    return () => {
+      for (const sub of subs) {
+        sub.unsubscribe();
+      }
+    };
+  }, [camera]);
 
   useEffect(() => {
     const controls = new OrbitControls(camera, gl.domElement);
@@ -28,28 +49,8 @@ export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
 
     controlsRef.current = controls;
 
-    // [CR]: Remove the icons for now. Code is left for future implementation.
-
-    // camera.zoom = zoom;
-    // camera.updateProjectionMatrix();
-
-    // const handleWheel = (event: WheelEvent) => {
-    //   const delta = event.deltaY;
-    //   const sensitivity = 0.1;
-
-    //   setInternalZoom((prevZoom) => {
-    //     const newZoom = prevZoom - delta * sensitivity;
-    //     return Math.max(controls.minZoom, Math.min(controls.maxZoom, newZoom));
-    //   });
-
-    //   updateExternalStateDebounced(internalZoom);
-    // };
-
-    // gl.domElement.addEventListener('wheel', handleWheel);
-
     return () => {
       controls.dispose();
-      // gl.domElement.removeEventListener('wheel', handleWheel);
     };
   }, [camera, gl.domElement, zoom]);
 

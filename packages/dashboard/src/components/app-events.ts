@@ -21,6 +21,8 @@ export const AppEvents = {
   alertListOpenedAlert: new Subject<Alert | null>(),
   disabledLayers: new ReplaySubject<Record<string, boolean>>(),
   zoom: new BehaviorSubject<number | null>(null),
+  zoomIn: new Subject<void>(),
+  zoomOut: new Subject<void>(),
   mapCenter: new BehaviorSubject<[number, number]>([0, 0]),
   levelSelect: new BehaviorSubject<Level | null>(null),
 };
