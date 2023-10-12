@@ -28,6 +28,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
         AppEvents.zoom.next(camera.zoom * DEFAULT_ZOOM_OUT_CONSTANT);
       }),
     );
+
     const handleScroll = (event: WheelEvent) => {
       const SENSITIVITY = 0.9;
       /**
@@ -65,6 +66,14 @@ export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
       RIGHT: undefined,
     };
 
+    if (AppEvents.cameraPosition.value) {
+      camera.position.set(
+        AppEvents.cameraPosition.value.x,
+        AppEvents.cameraPosition.value.y,
+        AppEvents.cameraPosition.value.z,
+      );
+    }
+
     controlsRef.current = controls;
 
     return () => {
@@ -75,6 +84,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
   useFrame(() => {
     if (controlsRef.current) {
       controlsRef.current.update();
+      AppEvents.cameraPosition.next(new Vector3().copy(camera.position));
     }
   });
 
