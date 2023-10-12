@@ -199,7 +199,6 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
         pageSize={5}
         rowHeight={38}
         columns={columns}
-        rowsPerPageOptions={[5]}
         localeText={{
           noRowsLabel: 'No doors available.',
         }}
