@@ -123,7 +123,7 @@ export function ManagedWorkspace({ workspaceId }: ManagedWorkspaceProps) {
   }, [appController, designMode, theme]);
 
   return (
-    <Box sx={{ display: 'contents', position: 'relative' }}>
+    <Box component="div" sx={{ display: 'contents', position: 'relative' }}>
       <Workspace
         state={workspaceState}
         onStateChange={(newState) => {
@@ -134,6 +134,7 @@ export function ManagedWorkspace({ workspaceId }: ManagedWorkspaceProps) {
       />
       {workspaceState.windows.length === 0 && (
         <Box
+          component="div"
           sx={{
             position: 'absolute',
             top: '50%',

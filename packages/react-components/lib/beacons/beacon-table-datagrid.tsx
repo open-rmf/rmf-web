@@ -23,7 +23,7 @@ export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.
     })();
 
     return (
-      <Box sx={opModeStateLabelStyle}>
+      <Box component="div" sx={opModeStateLabelStyle}>
         <Typography
           data-testid="op-mode-state"
           component="p"
@@ -51,7 +51,7 @@ export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.
     })();
 
     return (
-      <Box sx={activatedStateLabelStyle}>
+      <Box component="div" sx={activatedStateLabelStyle}>
         <Typography
           data-testid="activated-state"
           component="p"
