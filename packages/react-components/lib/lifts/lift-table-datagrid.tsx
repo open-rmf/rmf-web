@@ -195,6 +195,7 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
       flex: 1,
       renderCell: LiftControl,
       filterable: true,
+      sortable: false,
     },
   ];
 
@@ -210,6 +211,11 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
         rowsPerPageOptions={[5]}
         localeText={{
           noRowsLabel: 'No lifts available.',
+        }}
+        initialState={{
+          sorting: {
+            sortModel: [{ field: 'name', sort: 'asc' }],
+          },
         }}
       />
     </div>
