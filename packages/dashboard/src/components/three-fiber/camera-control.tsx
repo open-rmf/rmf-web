@@ -67,7 +67,6 @@ export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
     };
 
     if (AppEvents.cameraPosition.value) {
-      console.log(AppEvents.cameraPosition.value);
       camera.position.set(
         AppEvents.cameraPosition.value.x,
         AppEvents.cameraPosition.value.y,
