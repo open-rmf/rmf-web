@@ -148,6 +148,11 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
       columns={columns}
       rowsPerPageOptions={[5]}
       onRowClick={handleEvent}
+      initialState={{
+        sorting: {
+          sortModel: [{ field: 'name', sort: 'asc' }],
+        },
+      }}
     />
   );
 }
