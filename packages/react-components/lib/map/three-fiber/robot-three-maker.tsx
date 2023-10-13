@@ -1,7 +1,8 @@
-import { Circle, Line, Text } from '@react-three/drei';
-import { ThreeEvent } from '@react-three/fiber';
+import { Circle, Line } from '@react-three/drei';
+import { ThreeEvent, useLoader } from '@react-three/fiber';
 import React from 'react';
-import { Euler, Vector3 } from 'three';
+import { Euler, Vector3, Texture, TextureLoader, Color } from 'three';
+import { TextThreeRendering } from '.';
 
 export interface RobotData {
   fleet: string;
@@ -13,20 +14,29 @@ export interface RobotData {
   iconPath?: string;
 }
 
+interface RobotThreeMakerProps {
+  imageUrl?: string;
+  robot: RobotData;
+  position: Vector3;
+  onRobotClick?: (ev: ThreeEvent<MouseEvent>, robot: RobotData) => void;
+  rotation: Euler;
+  circleSegment: number;
+}
+
+interface RobotImageMakerProps {
+  imageUrl: string;
+  robot: RobotData;
+  position: Vector3;
+  onRobotClick?: (ev: ThreeEvent<MouseEvent>, robot: RobotData) => void;
+  rotation: Euler;
+}
+
 interface CircleShapeProps {
   position: Vector3;
   rotation: Euler;
   onRobotClick?: (ev: ThreeEvent<MouseEvent>) => void;
   robot: RobotData;
   segment: number;
-}
-
-interface RobotThreeMakerProps {
-  robot: RobotData;
-  position: Vector3;
-  onRobotClick?: (ev: ThreeEvent<MouseEvent>, robot: RobotData) => void;
-  rotation: Euler;
-  circleSegment: number;
 }
 
 const CircleShape = ({
@@ -60,7 +70,49 @@ const CircleShape = ({
   );
 };
 
+const RobotImageMaker = ({
+  imageUrl,
+  position,
+  rotation,
+  onRobotClick,
+  robot,
+}: RobotImageMakerProps): JSX.Element => {
+  const scale = 0.0031;
+  const alphaTestThreshold = 0.5;
+  const texture: Texture | undefined = useLoader(TextureLoader, imageUrl, undefined, (err) => {
+    console.error(`Error loading image from ${imageUrl}:`, err);
+  });
+
+  if (!texture) {
+    console.error(`Failed to create image texture with ${robot.iconPath}.`);
+    return <></>;
+  }
+
+  return (
+    <>
+      <mesh
+        position={position}
+        rotation={new Euler(0, 0, rotation.z)}
+        onClick={(ev: ThreeEvent<MouseEvent>) => onRobotClick && onRobotClick(ev, robot)}
+      >
+        <planeGeometry
+          attach="geometry"
+          args={[texture.image.width * scale, texture.image.height * scale]}
+        />
+        <meshBasicMaterial
+          attach="material"
+          map={texture}
+          color={new Color(robot.color)}
+          alphaTest={alphaTestThreshold}
+          toneMapped={false}
+        />
+      </mesh>
+    </>
+  );
+};
+
 export const RobotThreeMaker = ({
+  imageUrl,
   robot,
   position,
   onRobotClick,
@@ -69,16 +121,24 @@ export const RobotThreeMaker = ({
 }: RobotThreeMakerProps): JSX.Element => {
   return (
     <>
-      <Text color="black" fontSize={0.5} position={[position.x, position.y, position.z + 1]}>
-        {robot.name}
-      </Text>
-      <CircleShape
-        position={position}
-        rotation={rotation}
-        onRobotClick={(ev: ThreeEvent<MouseEvent>) => onRobotClick && onRobotClick(ev, robot)}
-        robot={robot}
-        segment={circleSegment}
-      />
+      <TextThreeRendering position={[position.x, position.y + 1, position.z]} text={robot.name} />
+      {imageUrl ? (
+        <RobotImageMaker
+          imageUrl={imageUrl}
+          position={position}
+          rotation={rotation}
+          onRobotClick={(ev: ThreeEvent<MouseEvent>) => onRobotClick && onRobotClick(ev, robot)}
+          robot={robot}
+        />
+      ) : (
+        <CircleShape
+          position={position}
+          rotation={rotation}
+          onRobotClick={(ev: ThreeEvent<MouseEvent>) => onRobotClick && onRobotClick(ev, robot)}
+          robot={robot}
+          segment={circleSegment}
+        />
+      )}
     </>
   );
 };

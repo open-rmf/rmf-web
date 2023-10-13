@@ -528,16 +528,18 @@ export const MapApp = styled(
                 linewidth={5}
               />
             ))}
-          {!disabledLayers['Robots'] && (
-            <RobotThree
-              robots={robots}
-              robotLocations={robotLocations}
-              onRobotClick={(_ev, robot) => {
-                setOpenRobotSummary(true);
-                setSelectedRobot(robot);
-              }}
-            />
-          )}
+          {!disabledLayers['Robots'] &&
+            robots.map((robot) => (
+              <RobotThree
+                key={`${robot.name} ${robot.fleet}`}
+                robot={robot}
+                robotLocations={robotLocations}
+                onRobotClick={(_ev, robot) => {
+                  setOpenRobotSummary(true);
+                  setSelectedRobot(robot);
+                }}
+              />
+            ))}
           <ambientLight />
         </Canvas>
         {openRobotSummary && selectedRobot && (
