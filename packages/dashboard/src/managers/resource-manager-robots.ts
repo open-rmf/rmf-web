@@ -5,6 +5,7 @@ const debug = Debug('ResourceManager');
 export interface RobotResource {
   icons: Record<string, string>; // Record<ModelName|FleetName, IconPath>
   places: Record<string, string[]>; // Record<Places, Dispensers[]>
+  scale: number;
 }
 
 export class RobotResourceManager {
@@ -51,6 +52,28 @@ export class RobotResourceManager {
       debug(`failed to load icon for "${fleetName}/${robotModel}" (failed to load icon module)`);
       return null;
     }
+  };
+
+  getRobotIconScale = (fleetName: string, robotModel?: string | undefined): number | null => {
+    if (!this.fleetExists(fleetName)) {
+      debug(`failed to load scale for "${fleetName}/${robotModel}" (fleet not in resources)`);
+      return null;
+    }
+
+    if (!this.robots[fleetName].hasOwnProperty('scale')) {
+      debug(
+        `failed to load scale for "${fleetName}/${robotModel}" (fleet/model does not have an scale)`,
+      );
+      return null;
+    }
+
+    const robotScale = this.robots[fleetName].scale;
+
+    if (!!robotModel && robotScale.hasOwnProperty(robotModel)) {
+      return robotScale;
+    }
+
+    return null;
   };
 
   getDispensersPerFleet = (fleetName: string, placeName: string): string[] | null => {
