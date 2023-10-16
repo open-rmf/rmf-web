@@ -194,19 +194,34 @@ export const MapApp = styled(
         return;
       }
 
+      const handleBuildingMap = (newMap: BuildingMap) => {
+        setBuildingMap(newMap);
+        const currentLevel = AppEvents.levelSelect.value
+          ? AppEvents.levelSelect.value
+          : newMap.levels[0];
+        AppEvents.levelSelect.next(currentLevel);
+        setWaypoints(
+          getPlaces(newMap).filter(
+            (p) => p.level === currentLevel.name && p.vertex.name.length > 0,
+          ),
+        );
+      };
+
+      (async () => {
+        try {
+          const newMap = (await rmf.buildingApi.getBuildingMapBuildingMapGet()).data;
+          handleBuildingMap(newMap);
+        } catch (e) {
+          console.log(`failed to get building map: ${(e as Error).message}`);
+        }
+        console.log('get building map called');
+      })();
+
       const subs: Subscription[] = [];
       subs.push(
         rmf.buildingMapObs.subscribe((newMap) => {
-          setBuildingMap(newMap);
-          const currentLevel = AppEvents.levelSelect.value
-            ? AppEvents.levelSelect.value
-            : newMap.levels[0];
-          AppEvents.levelSelect.next(currentLevel);
-          setWaypoints(
-            getPlaces(newMap).filter(
-              (p) => p.level === currentLevel.name && p.vertex.name.length > 0,
-            ),
-          );
+          console.log('new building map subscribed.');
+          handleBuildingMap(newMap);
         }),
       );
       subs.push(rmf.dispensersObs.subscribe(setDispensers));
