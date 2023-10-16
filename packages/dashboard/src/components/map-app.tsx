@@ -1,4 +1,4 @@
-import { styled, CircularProgress } from '@mui/material';
+import { styled } from '@mui/material';
 import {
   BuildingMap,
   Dispenser,
@@ -402,7 +402,7 @@ export const MapApp = styled(
     // }
 
     return buildingMap && currentLevel && robotLocations ? (
-      <Suspense fallback={<CircularProgress />}>
+      <Suspense fallback={null}>
         <LayersController
           disabledLayers={disabledLayers}
           levels={buildingMap.levels}
@@ -566,14 +566,7 @@ export const MapApp = styled(
           <RobotSummary robot={selectedRobot} onClose={() => setOpenRobotSummary(false)} />
         )}
       </Suspense>
-    ) : // ) : !buildingMap ? (
-    //   <>
-
-    //     <CircularProgress />
-    //   </>
-    // ) : !currentLevel ? (
-    //   <></>
-    null;
+    ) : null;
   }),
 )({
   // This ensures that the resize handle is above the map.
