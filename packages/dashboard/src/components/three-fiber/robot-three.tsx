@@ -20,6 +20,9 @@ export const RobotThree = ({ robots, robotLocations, onRobotClick }: RobotThreeP
         const robotId = `${robot.fleet}/${robot.name}`;
         const robotLocation = robotLocations[robotId];
         if (!robotLocation) {
+          console.log(
+            `RobotThree: Failed to get ${robotId}'s location: robot location was not found`,
+          );
           return null;
         }
         const rotationZ = robotLocation[2] + Math.PI / 2;

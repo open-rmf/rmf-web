@@ -394,13 +394,6 @@ export const MapApp = styled(
       setDistance(Math.max(size.x, size.y, size.z) * 0.7);
     }, [sceneBoundingBox]);
 
-    // if (!buildingMap) {
-    //   console.log('no buildingMap yet');
-    // }
-    // if (!currentLevel) {
-    //   console.log('no currentLevel yet');
-    // }
-
     return buildingMap && currentLevel && robotLocations ? (
       <Suspense fallback={null}>
         <LayersController
