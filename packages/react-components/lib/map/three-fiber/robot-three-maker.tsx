@@ -9,6 +9,7 @@ export interface RobotData {
   name: string;
   model: string;
   footprint: number;
+  scale: number;
   color: string;
   inConflict?: boolean;
   iconPath?: string;
@@ -77,7 +78,6 @@ const RobotImageMaker = ({
   onRobotClick,
   robot,
 }: RobotImageMakerProps): JSX.Element => {
-  const scale = 0.0031;
   const alphaTestThreshold = 0.5;
   const texture: Texture | undefined = useLoader(TextureLoader, imageUrl, undefined, (err) => {
     console.error(`Error loading image from ${imageUrl}:`, err);
@@ -97,7 +97,7 @@ const RobotImageMaker = ({
       >
         <planeGeometry
           attach="geometry"
-          args={[texture.image.width * scale, texture.image.height * scale]}
+          args={[texture.image.width * robot.scale, texture.image.height * robot.scale]}
         />
         <meshBasicMaterial
           attach="material"

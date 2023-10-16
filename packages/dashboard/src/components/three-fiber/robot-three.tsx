@@ -1,8 +1,7 @@
 import { ThreeEvent } from '@react-three/fiber';
 import React from 'react';
-import { RobotThreeMaker } from 'react-components';
+import { RobotThreeMaker, RobotData } from 'react-components';
 import { Euler, Vector3 } from 'three';
-import { RobotData } from '../robots-overlay';
 
 interface RobotThreeProps {
   robot: RobotData;
