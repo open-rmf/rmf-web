@@ -194,19 +194,34 @@ export const MapApp = styled(
         return;
       }
 
+      const handleBuildingMap = (newMap: BuildingMap) => {
+        setBuildingMap(newMap);
+        const currentLevel = AppEvents.levelSelect.value
+          ? AppEvents.levelSelect.value
+          : newMap.levels[0];
+        AppEvents.levelSelect.next(currentLevel);
+        setWaypoints(
+          getPlaces(newMap).filter(
+            (p) => p.level === currentLevel.name && p.vertex.name.length > 0,
+          ),
+        );
+      };
+
+      (async () => {
+        try {
+          const newMap = (await rmf.buildingApi.getBuildingMapBuildingMapGet()).data;
+          handleBuildingMap(newMap);
+        } catch (e) {
+          console.log(`failed to get building map: ${(e as Error).message}`);
+        }
+        console.log('get building map called');
+      })();
+
       const subs: Subscription[] = [];
       subs.push(
         rmf.buildingMapObs.subscribe((newMap) => {
-          setBuildingMap(newMap);
-          const currentLevel = AppEvents.levelSelect.value
-            ? AppEvents.levelSelect.value
-            : newMap.levels[0];
-          AppEvents.levelSelect.next(currentLevel);
-          setWaypoints(
-            getPlaces(newMap).filter(
-              (p) => p.level === currentLevel.name && p.vertex.name.length > 0,
-            ),
-          );
+          console.log('new building map subscribed.');
+          handleBuildingMap(newMap);
         }),
       );
       subs.push(rmf.dispensersObs.subscribe(setDispensers));
@@ -363,8 +378,6 @@ export const MapApp = styled(
       return () => sub.unsubscribe();
     }, [robotLocations, resourceManager?.defaultRobotZoom]);
 
-    const ready = buildingMap && currentLevel;
-
     const [sceneBoundingBox, setSceneBoundingBox] = React.useState<Box3 | undefined>(undefined);
     const [distance, setDistance] = React.useState<number>(0);
 
@@ -381,13 +394,14 @@ export const MapApp = styled(
       setDistance(Math.max(size.x, size.y, size.z) * 0.7);
     }, [sceneBoundingBox]);
 
-    return ready ? (
+    return buildingMap && currentLevel && robotLocations ? (
       <Suspense fallback={null}>
         <LayersController
           disabledLayers={disabledLayers}
           levels={buildingMap.levels}
           currentLevel={currentLevel}
           onChange={(event: ChangeEvent<HTMLInputElement>, value: string) => {
+            console.log('change level triggered');
             AppEvents.levelSelect.next(
               buildingMap.levels.find((l: Level) => l.name === value) || buildingMap.levels[0],
             );
