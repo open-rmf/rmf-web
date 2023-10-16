@@ -1,4 +1,4 @@
-import { styled } from '@mui/material';
+import { styled, CircularProgress } from '@mui/material';
 import {
   BuildingMap,
   Dispenser,
@@ -378,8 +378,6 @@ export const MapApp = styled(
       return () => sub.unsubscribe();
     }, [robotLocations, resourceManager?.defaultRobotZoom]);
 
-    const ready = buildingMap && currentLevel;
-
     const [sceneBoundingBox, setSceneBoundingBox] = React.useState<Box3 | undefined>(undefined);
     const [distance, setDistance] = React.useState<number>(0);
 
@@ -396,13 +394,21 @@ export const MapApp = styled(
       setDistance(Math.max(size.x, size.y, size.z) * 0.7);
     }, [sceneBoundingBox]);
 
-    return ready ? (
-      <Suspense fallback={null}>
+    // if (!buildingMap) {
+    //   console.log('no buildingMap yet');
+    // }
+    // if (!currentLevel) {
+    //   console.log('no currentLevel yet');
+    // }
+
+    return buildingMap && currentLevel && robotLocations ? (
+      <Suspense fallback={<CircularProgress />}>
         <LayersController
           disabledLayers={disabledLayers}
           levels={buildingMap.levels}
           currentLevel={currentLevel}
           onChange={(event: ChangeEvent<HTMLInputElement>, value: string) => {
+            console.log('change level triggered');
             AppEvents.levelSelect.next(
               buildingMap.levels.find((l: Level) => l.name === value) || buildingMap.levels[0],
             );
@@ -560,7 +566,14 @@ export const MapApp = styled(
           <RobotSummary robot={selectedRobot} onClose={() => setOpenRobotSummary(false)} />
         )}
       </Suspense>
-    ) : null;
+    ) : // ) : !buildingMap ? (
+    //   <>
+
+    //     <CircularProgress />
+    //   </>
+    // ) : !currentLevel ? (
+    //   <></>
+    null;
   }),
 )({
   // This ensures that the resize handle is above the map.

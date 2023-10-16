@@ -19,6 +19,9 @@ export const RobotThree = ({ robots, robotLocations, onRobotClick }: RobotThreeP
       {robots.map((robot) => {
         const robotId = `${robot.fleet}/${robot.name}`;
         const robotLocation = robotLocations[robotId];
+        if (!robotLocation) {
+          return null;
+        }
         const rotationZ = robotLocation[2] + Math.PI / 2;
 
         const position = new Vector3(robotLocation[0], robotLocation[1], STANDAR_Z_POSITION);
