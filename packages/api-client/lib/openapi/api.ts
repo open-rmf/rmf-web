@@ -1445,6 +1445,12 @@ export interface LiftRequest {
    * @memberof LiftRequest
    */
   destination: string;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof LiftRequest
+   */
+  session_ids: Array<string>;
 }
 /**
  *

@@ -31,3 +31,4 @@ class LiftRequest(BaseModel):
         description="https://github.com/open-rmf/rmf_internal_msgs/blob/main/rmf_lift_msgs/msg/LiftRequest.msg",  # pylint: disable=line-too-long
     )
     destination: str
+    session_ids: List[str]

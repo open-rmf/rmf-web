@@ -168,7 +168,12 @@ class RmfGateway:
         self._door_req.publish(msg)
 
     def request_lift(
-        self, lift_name: str, destination: str, request_type: int, door_mode: int
+        self,
+        lift_name: str,
+        destination: str,
+        request_type: int,
+        door_mode: int,
+        session_ids: List[str],
     ):
         msg = RmfLiftRequest(
             lift_name=lift_name,
@@ -180,6 +185,11 @@ class RmfGateway:
         )
         self._lift_req.publish(msg)
         self._adapter_lift_req.publish(msg)
+
+        for session_id in session_ids:
+            msg.session_id = session_id
+            self._lift_req.publish(msg)
+            self._adapter_lift_req.publish(msg)
 
 
 _rmf_gateway: RmfGateway

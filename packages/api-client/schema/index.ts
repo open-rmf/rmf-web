@@ -2913,7 +2913,7 @@ export default {
       },
       LiftRequest: {
         title: 'LiftRequest',
-        required: ['request_type', 'door_mode', 'destination'],
+        required: ['request_type', 'door_mode', 'destination', 'session_ids'],
         type: 'object',
         properties: {
           request_type: {
@@ -2929,6 +2929,7 @@ export default {
               'https://github.com/open-rmf/rmf_internal_msgs/blob/main/rmf_lift_msgs/msg/LiftRequest.msg',
           },
           destination: { title: 'Destination', type: 'string' },
+          session_ids: { title: 'Session Ids', type: 'array', items: { type: 'string' } },
         },
       },
       LiftState: {

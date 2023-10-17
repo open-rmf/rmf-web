@@ -49,6 +49,7 @@ export const LiftsApp = createMicroApp('Lifts', () => {
                       destination,
                       door_mode: doorState,
                       request_type: requestType,
+                      session_ids: [],
                     });
                   },
                 },
