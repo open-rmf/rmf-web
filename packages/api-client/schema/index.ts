@@ -2913,7 +2913,7 @@ export default {
       },
       LiftRequest: {
         title: 'LiftRequest',
-        required: ['request_type', 'door_mode', 'destination', 'additional_session_ids'],
+        required: ['request_type', 'door_mode', 'destination'],
         type: 'object',
         properties: {
           request_type: {
@@ -2935,6 +2935,7 @@ export default {
             items: { type: 'string' },
             description:
               'By default the node name of the API server is used, this field allows publishing the same request to additional session IDs',
+            default: [],
           },
         },
       },

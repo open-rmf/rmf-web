@@ -32,6 +32,6 @@ class LiftRequest(BaseModel):
     )
     destination: str
     additional_session_ids: List[str] = Field(
-        ...,
+        default=[],
         description="By default the node name of the API server is used, this field allows publishing the same request to additional session IDs",  # pylint: disable=line-too-long
     )

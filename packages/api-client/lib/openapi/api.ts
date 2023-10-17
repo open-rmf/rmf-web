@@ -1450,7 +1450,7 @@ export interface LiftRequest {
    * @type {Array<string>}
    * @memberof LiftRequest
    */
-  additional_session_ids: Array<string>;
+  additional_session_ids?: Array<string>;
 }
 /**
  *
