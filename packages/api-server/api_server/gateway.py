@@ -173,7 +173,7 @@ class RmfGateway:
         destination: str,
         request_type: int,
         door_mode: int,
-        session_ids: List[str],
+        additional_session_ids: List[str],
     ):
         msg = RmfLiftRequest(
             lift_name=lift_name,
@@ -186,7 +186,7 @@ class RmfGateway:
         self._lift_req.publish(msg)
         self._adapter_lift_req.publish(msg)
 
-        for session_id in session_ids:
+        for session_id in additional_session_ids:
             msg.session_id = session_id
             self._lift_req.publish(msg)
             self._adapter_lift_req.publish(msg)

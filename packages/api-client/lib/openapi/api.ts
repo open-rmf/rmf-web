@@ -1446,11 +1446,11 @@ export interface LiftRequest {
    */
   destination: string;
   /**
-   *
+   * By default the node name of the API server is used, this field allows publishing the same request to additional session IDs
    * @type {Array<string>}
    * @memberof LiftRequest
    */
-  session_ids: Array<string>;
+  additional_session_ids: Array<string>;
 }
 /**
  *

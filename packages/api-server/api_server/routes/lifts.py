@@ -78,5 +78,5 @@ def _post_lift_request(
         lift_request.destination,
         lift_request.request_type,
         lift_request.door_mode,
-        lift_request.session_ids,
+        lift_request.additional_session_ids,
     )
