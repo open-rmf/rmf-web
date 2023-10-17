@@ -1,5 +1,6 @@
 import { BuildingMap } from 'api-client';
 import React from 'react';
+import { LiftRequest as RmfLiftRequest } from 'rmf-models';
 import { LiftTableData, LiftDataGridTable } from 'react-components';
 import { createMicroApp } from './micro-app';
 import { RmfAppContext } from './rmf-app';
@@ -44,11 +45,25 @@ export const LiftsApp = createMicroApp('Lifts', () => {
                   doorState: liftState.door_state,
                   motionState: liftState.motion_state,
                   lift: lift,
-                  onRequestSubmit: (_ev, doorState, requestType, destination) => {
+                  onRequestSubmit: async (_ev, doorState, requestType, destination) => {
+                    let fleet_session_ids: string[] = [];
+                    if (requestType === RmfLiftRequest.REQUEST_END_SESSION) {
+                      const fleets = (await rmf?.fleetsApi.getFleetsFleetsGet()).data;
+                      for (const fleet of fleets) {
+                        if (!fleet.robots) {
+                          continue;
+                        }
+                        for (const robotName of Object.keys(fleet.robots)) {
+                          fleet_session_ids.push(`${fleet.name}/${robotName}`);
+                        }
+                      }
+                    }
+
                     return rmf?.liftsApi.postLiftRequestLiftsLiftNameRequestPost(lift.name, {
                       destination,
                       door_mode: doorState,
                       request_type: requestType,
+                      additional_session_ids: fleet_session_ids,
                     });
                   },
                 },

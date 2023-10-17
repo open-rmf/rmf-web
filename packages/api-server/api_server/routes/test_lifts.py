@@ -44,3 +44,19 @@ class TestLiftsRoute(AppFixture):
             },
         )
         self.assertEqual(resp.status_code, 200)
+
+    def test_request_lift_with_more_session_ids(self):
+        resp = self.client.post(
+            "/lifts/test_lift/request",
+            json={
+                "request_type": RmfLiftRequest.REQUEST_AGV_MODE,
+                "door_mode": RmfLiftRequest.DOOR_OPEN,
+                "destination": "L1",
+                "additional_session_ids": [
+                    "fleet1/robot1",
+                    "fleet1/robot2",
+                    "fleet2/robot1",
+                ],
+            },
+        )
+        self.assertEqual(resp.status_code, 200)

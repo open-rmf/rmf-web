@@ -2929,6 +2929,14 @@ export default {
               'https://github.com/open-rmf/rmf_internal_msgs/blob/main/rmf_lift_msgs/msg/LiftRequest.msg',
           },
           destination: { title: 'Destination', type: 'string' },
+          additional_session_ids: {
+            title: 'Additional Session Ids',
+            type: 'array',
+            items: { type: 'string' },
+            description:
+              'By default the node name of the API server is used, this field allows publishing the same request to additional session IDs',
+            default: [],
+          },
         },
       },
       LiftState: {
