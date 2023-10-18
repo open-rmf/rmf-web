@@ -15,8 +15,8 @@ import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { RmfAppContext } from '../rmf-app';
 import { TaskInfo } from 'react-components';
-import { UserProfileContext } from 'rmf-auth';
-import { Enforcer } from '../permissions';
+// import { UserProfileContext } from 'rmf-auth';
+// import { Enforcer } from '../permissions';
 import { TaskLogs } from './task-logs';
 
 export interface TableDataGridState {
@@ -59,12 +59,12 @@ export function TaskInspector({ task, onClose }: TableDataGridState): JSX.Elemen
     return () => sub.unsubscribe();
   }, [rmf, task]);
 
-  const profile = React.useContext(UserProfileContext);
+  // const profile = React.useContext(UserProfileContext);
 
   const taskCancellable =
     taskState &&
-    profile &&
-    Enforcer.canCancelTask(profile) &&
+    // profile &&
+    // Enforcer.canCancelTask(profile) &&
     taskState.status &&
     !['canceled', 'killed', 'completed', 'failed'].includes(taskState.status);
 
