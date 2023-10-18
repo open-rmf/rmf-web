@@ -985,7 +985,6 @@ export function CreateTaskForm({
     taskRequest.category = newCategory;
     taskRequest.description = newDesc;
     setFavoriteTaskBuffer({ ...favoriteTaskBuffer, description: newDesc, category: newCategory });
-    console.log(taskRequest.category);
     updateTasks();
   };
 
