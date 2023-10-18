@@ -2,12 +2,12 @@ import { Button, CardContent, Grid, Typography, useTheme } from '@mui/material';
 import { TaskState } from 'api-client';
 import React from 'react';
 import { TaskInfo } from 'react-components';
-import { UserProfileContext } from 'rmf-auth';
+// import { UserProfileContext } from 'rmf-auth';
 import { of, switchMap } from 'rxjs';
 import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { createMicroApp } from '../micro-app';
-import { Enforcer } from '../permissions';
+// import { Enforcer } from '../permissions';
 import { RmfAppContext } from '../rmf-app';
 
 export const TaskDetailsApp = createMicroApp('Task Details', () => {
@@ -30,11 +30,11 @@ export const TaskDetailsApp = createMicroApp('Task Details', () => {
     return () => sub.unsubscribe();
   }, [rmf]);
 
-  const profile = React.useContext(UserProfileContext);
+  // const profile = React.useContext(UserProfileContext);
   const taskCancellable =
     taskState &&
-    profile &&
-    Enforcer.canCancelTask(profile) &&
+    // profile &&
+    // Enforcer.canCancelTask(profile) &&
     taskState.status &&
     !['canceled', 'killed', 'completed', 'failed'].includes(taskState.status);
   const handleCancelTaskClick = React.useCallback<React.MouseEventHandler>(async () => {
