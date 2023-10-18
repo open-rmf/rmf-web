@@ -5,6 +5,7 @@
 
 import UpdateIcon from '@mui/icons-material/Create';
 import DeleteIcon from '@mui/icons-material/Delete';
+import PlaceOutlined from '@mui/icons-material/PlaceOutlined';
 import {
   Autocomplete,
   Button,
@@ -23,6 +24,7 @@ import {
   IconButton,
   List,
   ListItem,
+  ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
   MenuItem,
@@ -38,8 +40,14 @@ import type { TaskFavoritePydantic as TaskFavorite, TaskRequest } from 'api-clie
 import React from 'react';
 import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
+import { PositiveIntField } from '../form-inputs';
 
 // A bunch of manually defined descriptions to avoid using `any`.
+interface PatrolTaskDescription {
+  places: string[];
+  rounds: number;
+}
+
 interface LotPickupActivity {
   category: string;
   description: {
@@ -116,7 +124,10 @@ interface DeliveryTaskDescription {
   phases: [deliverySequence: DeliveryPhase];
 }
 
-type TaskDescription = DeliveryTaskDescription | DeliveryCustomTaskDescription;
+type TaskDescription =
+  | DeliveryTaskDescription
+  | DeliveryCustomTaskDescription
+  | PatrolTaskDescription;
 
 const isNonEmptyString = (value: string): boolean => value.length > 0;
 
@@ -156,6 +167,18 @@ const isDeliveryCustomTaskDescriptionValid = (
   );
 };
 
+const isPatrolTaskDescriptionValid = (taskDescription: PatrolTaskDescription): boolean => {
+  if (taskDescription.places.length === 0) {
+    return false;
+  }
+  for (const place of taskDescription.places) {
+    if (place.length === 0) {
+      return false;
+    }
+  }
+  return taskDescription.rounds > 0;
+};
+
 const classes = {
   title: 'dialogue-info-value',
   selectFileBtn: 'create-task-selected-file-btn',
@@ -185,6 +208,13 @@ const StyledDialog = styled((props: DialogProps) => <Dialog {...props} />)(({ th
 }));
 
 export function getShortDescription(taskRequest: TaskRequest): string {
+  if (taskRequest.category === 'patrol') {
+    const formattedPlaces = taskRequest.description.places.map((place: string) => `[${place}]`);
+    return `[Patrol] [${taskRequest.description.rounds}] round/s, along ${formattedPlaces.join(
+      ', ',
+    )}`;
+  }
+
   const goToPickup: GoToPlaceActivity =
     taskRequest.description.phases[0].activity.description.activities[0];
   const pickup: LotPickupActivity =
@@ -476,6 +506,101 @@ function DeliveryCustomTaskForm({
   );
 }
 
+interface PlaceListProps {
+  places: string[];
+  onClick(places_index: number): void;
+}
+
+function PlaceList({ places, onClick }: PlaceListProps) {
+  const theme = useTheme();
+  return (
+    <List
+      dense
+      sx={{
+        bgcolor: 'background.paper',
+        marginLeft: theme.spacing(3),
+        marginRight: theme.spacing(3),
+      }}
+    >
+      {places.map((value, index) => (
+        <ListItem
+          key={`${value}-${index}`}
+          secondaryAction={
+            <IconButton edge="end" aria-label="delete" onClick={() => onClick(index)}>
+              <DeleteIcon />
+            </IconButton>
+          }
+        >
+          <ListItemIcon>
+            <PlaceOutlined />
+          </ListItemIcon>
+          <ListItemText primary={`Place Name:   ${value}`} />
+        </ListItem>
+      ))}
+    </List>
+  );
+}
+
+interface PatrolTaskFormProps {
+  taskDesc: PatrolTaskDescription;
+  patrolWaypoints: string[];
+  onChange(patrolTaskDescription: PatrolTaskDescription): void;
+  allowSubmit(allow: boolean): void;
+}
+
+function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange, allowSubmit }: PatrolTaskFormProps) {
+  const theme = useTheme();
+  const onInputChange = (desc: PatrolTaskDescription) => {
+    allowSubmit(isPatrolTaskDescriptionValid(desc));
+    onChange(desc);
+  };
+
+  return (
+    <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
+      <Grid item xs={10}>
+        <Autocomplete
+          id="place-input"
+          freeSolo
+          fullWidth
+          options={patrolWaypoints}
+          onChange={(_ev, newValue) =>
+            newValue !== null &&
+            onInputChange({
+              ...taskDesc,
+              places: taskDesc.places.concat(newValue).filter((el: string) => el),
+            })
+          }
+          renderInput={(params) => <TextField {...params} label="Place Name" required={true} />}
+        />
+      </Grid>
+      <Grid item xs={2}>
+        <PositiveIntField
+          id="loops"
+          label="Loops"
+          value={taskDesc.rounds}
+          onChange={(_ev, val) => {
+            onInputChange({
+              ...taskDesc,
+              rounds: val,
+            });
+          }}
+        />
+      </Grid>
+      <Grid item xs={10}>
+        <PlaceList
+          places={taskDesc && taskDesc.places ? taskDesc.places : []}
+          onClick={(places_index) =>
+            taskDesc.places.splice(places_index, 1) &&
+            onInputChange({
+              ...taskDesc,
+            })
+          }
+        />
+      </Grid>
+    </Grid>
+  );
+}
+
 interface FavoriteTaskProps {
   listItemText: string;
   listItemClick: () => void;
@@ -626,6 +751,13 @@ function defaultDeliveryCustomTaskDescription(taskCategory: string): DeliveryCus
   };
 }
 
+function defaultPatrolTask(): PatrolTaskDescription {
+  return {
+    places: [],
+    rounds: 1,
+  };
+}
+
 function defaultTaskDescription(taskCategory: string): TaskDescription | undefined {
   switch (taskCategory) {
     case 'delivery_pickup':
@@ -633,6 +765,8 @@ function defaultTaskDescription(taskCategory: string): TaskDescription | undefin
     case 'delivery_sequential_lot_pickup':
     case 'delivery_area_pickup':
       return defaultDeliveryCustomTaskDescription(taskCategory);
+    case 'patrol':
+      return defaultPatrolTask();
     default:
       return undefined;
   }
@@ -847,7 +981,25 @@ export function CreateTaskForm({
     updateTasks();
   };
 
+  const legacyHandleTaskDescriptionChange = (newCategory: string, newDesc: TaskDescription) => {
+    taskRequest.category = newCategory;
+    taskRequest.description = newDesc;
+    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, description: newDesc, category: newCategory });
+    updateTasks();
+  };
+
   const renderTaskDescriptionForm = () => {
+    if (taskRequest.category === 'patrol') {
+      return (
+        <PatrolTaskForm
+          taskDesc={taskRequest.description as PatrolTaskDescription}
+          patrolWaypoints={patrolWaypoints}
+          onChange={(desc) => legacyHandleTaskDescriptionChange('patrol', desc)}
+          allowSubmit={allowSubmit}
+        />
+      );
+    }
+
     switch (taskRequest.description.category) {
       case 'delivery_pickup':
         return (
@@ -893,9 +1045,10 @@ export function CreateTaskForm({
       return;
     }
     taskRequest.description = newDesc;
-    taskRequest.category = 'compose';
+    const category = newCategory === 'patrol' ? 'patrol' : 'compose';
+    taskRequest.category = category;
 
-    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, category: 'compose', description: newDesc });
+    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, category, description: newDesc });
 
     updateTasks();
   };
@@ -918,7 +1071,9 @@ export function CreateTaskForm({
       t.unix_millis_request_time = Date.now();
 
       // Workaround where all the task category need to be compose.
-      t.category = 'compose';
+      if (t.category !== 'patrol') {
+        t.category = 'compose';
+      }
       console.log(t);
     }
 
@@ -1088,7 +1243,11 @@ export function CreateTaskForm({
                       variant="outlined"
                       fullWidth
                       margin="normal"
-                      value={taskRequest.description.category}
+                      value={
+                        taskRequest.category !== 'compose'
+                          ? taskRequest.category
+                          : taskRequest.description.category
+                      }
                       onChange={handleTaskTypeChange}
                     >
                       <MenuItem
@@ -1111,6 +1270,12 @@ export function CreateTaskForm({
                         disabled={Object.keys(dropoffPoints).length === 0}
                       >
                         Delivery - Area pick up
+                      </MenuItem>
+                      <MenuItem
+                        value="patrol"
+                        disabled={!patrolWaypoints || patrolWaypoints.length === 0}
+                      >
+                        Patrol
                       </MenuItem>
                     </TextField>
                   </Grid>
