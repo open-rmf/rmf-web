@@ -68,25 +68,19 @@ class RmfGateway:
         self._door_req = ros_node().create_publisher(
             RmfDoorRequest, "adapter_door_requests", 10
         )
+
+        transient_qos = rclpy.qos.QoSProfile(
+            history=rclpy.qos.HistoryPolicy.KEEP_LAST,
+            depth=100,
+            reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
+            durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
+        )
+
         self._lift_req = ros_node().create_publisher(
-            RmfLiftRequest,
-            "lift_requests",  # 10,
-            rclpy.qos.QoSProfile(
-                history=rclpy.qos.HistoryPolicy.KEEP_ALL,
-                depth=1,
-                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
-                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
-            ),
+            RmfLiftRequest, "lift_requests", transient_qos
         )
         self._adapter_lift_req = ros_node().create_publisher(
-            RmfLiftRequest,
-            "adapter_lift_requests",  # 10,
-            rclpy.qos.QoSProfile(
-                history=rclpy.qos.HistoryPolicy.KEEP_ALL,
-                depth=1,
-                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
-                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
-            ),
+            RmfLiftRequest, "adapter_lift_requests", transient_qos
         )
         self._submit_task_srv = ros_node().create_client(RmfSubmitTask, "submit_task")
         self._cancel_task_srv = ros_node().create_client(RmfCancelTask, "cancel_task")
