@@ -62,12 +62,12 @@ export const MapApp = styled(
       Ingestors: false,
       Lifts: false,
       Doors: false,
-      Trajectories: false,
-      Robots: false,
+      Trajectories: true,
+      Robots: true,
       'Door and lift labels': true,
       'Waypoint labels': true,
       'Pickup point labels': true,
-      'Dropoff point labels': false,
+      'Dropoff point labels': true,
     });
     const [openRobotSummary, setOpenRobotSummary] = React.useState(false);
     const [selectedRobot, setSelectedRobot] = React.useState<RobotTableData>();
