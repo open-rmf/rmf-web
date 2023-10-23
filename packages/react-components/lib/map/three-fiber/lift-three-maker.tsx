@@ -17,9 +17,10 @@ interface LiftMakerProps {
 
 interface LiftShapeMakerProps {
   motionState: number;
+  fontPath?: string;
 }
 
-const LiftShapeMaker = ({ motionState }: LiftShapeMakerProps) => {
+const LiftShapeMaker = ({ motionState, fontPath }: LiftShapeMakerProps) => {
   const vertices = new Float32Array([0, 1, 0, -0.5, -0.5, 0, 0.5, -0.5, 0]);
 
   const generateTriangleShape = (rotation: Euler) => {
@@ -44,9 +45,10 @@ const LiftShapeMaker = ({ motionState }: LiftShapeMakerProps) => {
     return <Line points={points} color="black" linewidth={1} />;
   };
 
-  const generateTextShape = () => {
+  const generateTextShape = (fontPath?: string) => {
+    const fontProps = fontPath && fontPath.length > 0 ? { font: fontPath } : {};
     return (
-      <Text color="black" fontSize={0.6}>
+      <Text color="black" {...fontProps} fontSize={0.6}>
         {' '}
         {'?'}
       </Text>
@@ -66,7 +68,7 @@ const LiftShapeMaker = ({ motionState }: LiftShapeMakerProps) => {
       shapeComponent = generateLineShape();
       break;
     default:
-      shapeComponent = generateTextShape();
+      shapeComponent = generateTextShape(fontPath);
       break;
   }
 
@@ -91,7 +93,7 @@ export const LiftThreeMaker = ({
       <Text position={[0, 0.8, 0.5]} color="black" {...fontProps} fontSize={0.6}>
         {getLiftModeText(liftState)}
       </Text>
-      <LiftShapeMaker motionState={liftState.motion_state} />
+      <LiftShapeMaker motionState={liftState.motion_state} fontPath={fontPath} />
       <mesh position={[0, 0, 0]} rotation={[0, 0, yaw]}>
         <boxGeometry args={[width, depth, 0.1]} />
         <meshStandardMaterial color={'green'} opacity={0.6} transparent />
