@@ -60,7 +60,7 @@ export const MapApp = styled(
       Waypoints: false,
       Dispensers: false,
       Ingestors: false,
-      Lifts: false,
+      Lifts: true,
       Doors: false,
       Trajectories: true,
       Robots: true,
