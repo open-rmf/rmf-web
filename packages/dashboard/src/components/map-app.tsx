@@ -214,16 +214,10 @@ export const MapApp = styled(
         } catch (e) {
           console.log(`failed to get building map: ${(e as Error).message}`);
         }
-        console.log('get building map called');
       })();
 
       const subs: Subscription[] = [];
-      subs.push(
-        rmf.buildingMapObs.subscribe((newMap) => {
-          console.log('new building map subscribed.');
-          handleBuildingMap(newMap);
-        }),
-      );
+      subs.push(rmf.buildingMapObs.subscribe((newMap) => handleBuildingMap(newMap)));
       subs.push(rmf.dispensersObs.subscribe(setDispensers));
       subs.push(rmf.ingestorsObs.subscribe(setIngestors));
       subs.push(rmf.fleetsObs.subscribe(setFleets));
@@ -401,7 +395,6 @@ export const MapApp = styled(
           levels={buildingMap.levels}
           currentLevel={currentLevel}
           onChange={(event: ChangeEvent<HTMLInputElement>, value: string) => {
-            console.log('change level triggered');
             AppEvents.levelSelect.next(
               buildingMap.levels.find((l: Level) => l.name === value) || buildingMap.levels[0],
             );

@@ -12,6 +12,7 @@ interface LiftMakerProps {
   width: number;
   depth: number;
   liftState: LiftState;
+  fontPath?: string;
 }
 
 interface LiftShapeMakerProps {
@@ -79,13 +80,15 @@ export const LiftThreeMaker = ({
   width,
   depth,
   liftState,
+  fontPath,
 }: LiftMakerProps): JSX.Element => {
+  const fontProps = fontPath && fontPath.length > 0 ? { font: fontPath } : {};
   return (
     <group position={[x, y, yaw]}>
-      <Text color="black" fontSize={0.6}>
+      <Text color="black" {...fontProps} fontSize={0.6}>
         {liftState.current_floor}
       </Text>
-      <Text position={[0, 0.8, 0.5]} color="black" fontSize={0.6}>
+      <Text position={[0, 0.8, 0.5]} color="black" {...fontProps} fontSize={0.6}>
         {getLiftModeText(liftState)}
       </Text>
       <LiftShapeMaker motionState={liftState.motion_state} />
