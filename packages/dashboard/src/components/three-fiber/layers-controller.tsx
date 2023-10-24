@@ -68,17 +68,17 @@ export const LayersController = ({
         </TextField>
       </FormControl>
       <div>
-        <IconButton size="small" onClick={handleZoomIn}>
+        <IconButton size="small" onClick={handleZoomIn} data-testid="zoom-in">
           <ZoomInIcon fontSize="large" />
         </IconButton>
       </div>
       <div>
-        <IconButton size="small" onClick={handleZoomOut}>
+        <IconButton size="small" onClick={handleZoomOut} data-testid="zoom-out">
           <ZoomOutIcon fontSize="large" />
         </IconButton>
       </div>
       <div onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-        <IconButton size="small">
+        <IconButton size="small" data-testid="layers">
           <LayersIcon fontSize="large" />
         </IconButton>
         {isHovered && (
