@@ -46,7 +46,11 @@ export const ShapeThreeRendering = ({
   return (
     <>
       {circleShape ? (
-        <Circle args={[0.3, 64]} position={[position[0], position[1], positionZ]}>
+        <Circle
+          args={[0.3, 64]}
+          position={[position[0], position[1], positionZ]}
+          data-testid="circle"
+        >
           <meshBasicMaterial color={color} />
         </Circle>
       ) : (
@@ -74,7 +78,7 @@ export const ShapeThreeRendering = ({
               </Html>
             )}
             <boxGeometry args={[1.3, 1.3, 1.3]} />
-            <meshStandardMaterial color={color} opacity={1} />
+            <meshStandardMaterial color={color} opacity={1} data-testid="non-circle" />
           </mesh>
         </group>
       )}
