@@ -1,8 +1,8 @@
-import { Text } from '@react-three/drei';
 import { ThreeEvent } from '@react-three/fiber';
 import React from 'react';
 import { Euler, Vector3 } from 'three';
 import { CircleShape } from '.';
+import { TextThreeRendering } from './text-maker';
 
 export interface RobotData {
   fleet: string;
@@ -31,14 +31,7 @@ export const RobotThreeMaker = ({
 }: RobotThreeMakerProps): JSX.Element => {
   return (
     <>
-      <Text
-        color="black"
-        fontSize={0.5}
-        position={[position.x, position.y, position.z + 1]}
-        data-testid="robot-name"
-      >
-        {robot.name}
-      </Text>
+      <TextThreeRendering position={[position.x, position.y, position.z + 1]} text={robot.name} />
       <CircleShape
         position={position}
         rotation={rotation}
