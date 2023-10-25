@@ -17,10 +17,9 @@ interface LiftMakerProps {
 
 interface LiftShapeMakerProps {
   motionState: number;
-  fontPath?: string;
 }
 
-const LiftShapeMaker = ({ motionState, fontPath }: LiftShapeMakerProps) => {
+const LiftShapeMaker = ({ motionState }: LiftShapeMakerProps) => {
   const vertices = new Float32Array([0, 1, 0, -0.5, -0.5, 0, 0.5, -0.5, 0]);
 
   const generateTriangleShape = (rotation: Euler) => {
