@@ -1,6 +1,6 @@
 import React from 'react';
 import { LiftState } from 'api-client';
-import { Text, Line } from '@react-three/drei';
+import { Line } from '@react-three/drei';
 import { BufferGeometry, BufferAttribute, Vector3, Euler } from 'three';
 import { LiftState as RmfLiftState } from 'rmf-models';
 import { getLiftModeText } from '../lift-marker';
