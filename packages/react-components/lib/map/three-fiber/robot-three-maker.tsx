@@ -31,11 +31,7 @@ export const RobotThreeMaker = ({
 }: RobotThreeMakerProps): JSX.Element => {
   return (
     <>
-      <TextThreeRendering
-        position={[position.x, position.y, position.z + 1]}
-        text={robot.name}
-        data-testid="robot-name"
-      />
+      <TextThreeRendering position={[position.x, position.y, position.z + 1]} text={robot.name} />
       <CircleShape
         position={position}
         rotation={rotation}

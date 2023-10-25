@@ -1,16 +1,10 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
 import { ShapeThreeRendering } from './shape-three-rendering';
+import ReactThreeTestRenderer from '@react-three/test-renderer';
 
 describe('ShapeThreeRendering', () => {
-  it('renders correctly with circle shape', () => {
-    render(<ShapeThreeRendering position={[0, 0, 0]} color="red" circleShape={true} />);
-
-    expect(screen.getByTestId('circle')).toBeTruthy();
-  });
-
-  it('renders correctly with non-circle shape', () => {
-    render(
+  it('renders correctly with non-circle shape', async () => {
+    const renderer = await ReactThreeTestRenderer.create(
       <ShapeThreeRendering
         position={[0, 0, 0]}
         color="blue"
@@ -19,6 +13,18 @@ describe('ShapeThreeRendering', () => {
       />,
     );
 
-    expect(screen.getByTestId('non-circle')).toBeTruthy();
+    const mesh = renderer.scene.children[0].allChildren;
+
+    expect(mesh.length).toBe(1);
+  });
+
+  it('renders color properly', async () => {
+    const renderer = await ReactThreeTestRenderer.create(
+      <ShapeThreeRendering position={[0, 0, 0]} color="blue" text="Place one" circleShape={true} />,
+    );
+
+    const searchByColor = renderer.scene.findAll((node) => node.props.color === 'blue');
+
+    expect(searchByColor.length).toBe(1);
   });
 });

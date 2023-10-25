@@ -1,11 +1,10 @@
 import React from 'react';
-import { render } from '@testing-library/react';
 import { RobotThreeMaker } from './robot-three-maker';
 import { Euler, Vector3 } from 'three';
-import { Canvas } from '@react-three/fiber';
+import ReactThreeTestRenderer from '@react-three/test-renderer';
 
 describe('RobotThreeMaker', () => {
-  it('renders robot name correctly', () => {
+  it('renders color properly', async () => {
     const robot = {
       fleet: 'Fleet 1',
       name: 'Robot 1',
@@ -14,17 +13,17 @@ describe('RobotThreeMaker', () => {
       color: 'blue',
     };
 
-    const { container } = render(
-      <Canvas>
-        <RobotThreeMaker
-          robot={robot}
-          position={new Vector3(0, 0, 0)}
-          rotation={new Euler(0, 0, 0)}
-          circleSegment={64}
-        />
-      </Canvas>,
+    const renderer = await ReactThreeTestRenderer.create(
+      <RobotThreeMaker
+        robot={robot}
+        position={new Vector3(0, 0, 0)}
+        rotation={new Euler(0, 0, 0)}
+        circleSegment={64}
+      />,
     );
-    const text = container.querySelector('[data-testid="robot-name"]');
-    expect(text).toBeDefined();
+
+    const mesh = renderer.scene.children[0].allChildren;
+
+    expect(mesh.length).toBe(1);
   });
 });
