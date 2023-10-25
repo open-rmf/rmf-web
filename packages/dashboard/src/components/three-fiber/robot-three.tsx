@@ -36,7 +36,6 @@ export const RobotThree = ({ robots, robotLocations, onRobotClick }: RobotThreeP
               onRobotClick={onRobotClick}
               rotation={new Euler(0, 0, rotationZ)}
               circleSegment={CIRCLE_SEGMENT}
-              fontPath={'/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff'}
             />
           </React.Fragment>
         );

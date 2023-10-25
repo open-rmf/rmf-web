@@ -419,7 +419,11 @@ export const MapApp = styled(
             ? currentLevel.doors.map((door, i) => (
                 <React.Fragment key={`${door.name}${i}`}>
                   {!disabledLayers['Door and lift labels'] && (
-                    <TextThreeRendering position={[door.v1_x, door.v1_y, 0]} text={door.name} />
+                    <TextThreeRendering
+                      position={[door.v1_x, door.v1_y, 0]}
+                      text={door.name}
+                      centered={false}
+                    />
                   )}
                   {!disabledLayers['Doors'] && (
                     <Door door={door} opacity={0.1} height={8} elevation={currentLevel.elevation} />
@@ -435,7 +439,11 @@ export const MapApp = styled(
                 lift.doors.map((door, i) => (
                   <React.Fragment key={`${door.name}${i}`}>
                     {!disabledLayers['Door and lift labels'] && (
-                      <TextThreeRendering position={[door.v1_x, door.v1_y, 0]} text={door.name} />
+                      <TextThreeRendering
+                        position={[door.v1_x, door.v1_y, 0]}
+                        text={door.name}
+                        centered={false}
+                      />
                     )}
                     {!disabledLayers['Doors'] && (
                       <Door
@@ -484,6 +492,7 @@ export const MapApp = styled(
                   key={index}
                   position={[place.vertex.x, place.vertex.y, 0]}
                   text={place.vertex.name}
+                  centered={false}
                 />
               ))}
           {!disabledLayers['Pickup point labels'] &&
@@ -494,6 +503,7 @@ export const MapApp = styled(
                   key={index}
                   position={[place.vertex.x, place.vertex.y, 0]}
                   text={place.vertex.name}
+                  centered={false}
                 />
               ))}
           {!disabledLayers['Dropoff point labels'] &&
@@ -504,6 +514,7 @@ export const MapApp = styled(
                   key={index}
                   position={[place.vertex.x, place.vertex.y, 0]}
                   text={place.vertex.name}
+                  centered={false}
                 />
               ))}
           {!disabledLayers['Ingestors'] &&

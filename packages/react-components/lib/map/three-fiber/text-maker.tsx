@@ -4,9 +4,14 @@ import React from 'react';
 interface TextThreeRenderingProps {
   position: [number, number, number];
   text?: string;
+  centered: boolean;
 }
 
-export const TextThreeRendering = ({ position, text }: TextThreeRenderingProps): JSX.Element => {
+export const TextThreeRendering = ({
+  position,
+  text,
+  centered,
+}: TextThreeRenderingProps): JSX.Element => {
   const HEIGHT = 8;
   const ELEVATION = 0;
   const positionZ = HEIGHT / 2 + ELEVATION;
@@ -25,7 +30,7 @@ export const TextThreeRendering = ({ position, text }: TextThreeRenderingProps):
   return (
     <>
       <mesh position={position}>
-        <mesh position={[-1, 0, positionZ]}>
+        <mesh position={[centered ? 0 : -0.25, 0, positionZ]}>
           {text && (
             <Html zIndexRange={[0, 0, 1]}>
               {text && (
@@ -37,6 +42,7 @@ export const TextThreeRendering = ({ position, text }: TextThreeRenderingProps):
                     fontSize: '0.6rem',
                     transform: `scale(${scaleFactor})`,
                     transition: 'transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                    textAlign: 'center',
                   }}
                   onPointerOver={handlePointerOver}
                   onPointerOut={handlePointerOut}

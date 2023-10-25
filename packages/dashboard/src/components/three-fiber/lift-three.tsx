@@ -36,7 +36,6 @@ export const Lifts = React.memo(({ lift }: LiftsProps): JSX.Element => {
           width={lift.width}
           depth={lift.depth}
           liftState={liftState}
-          fontPath={'/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff'}
         />
       )}
     </>

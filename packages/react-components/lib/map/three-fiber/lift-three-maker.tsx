@@ -4,6 +4,7 @@ import { Text, Line } from '@react-three/drei';
 import { BufferGeometry, BufferAttribute, Vector3, Euler } from 'three';
 import { LiftState as RmfLiftState } from 'rmf-models';
 import { getLiftModeText } from '../lift-marker';
+import { TextThreeRendering } from './text-maker';
 
 interface LiftMakerProps {
   x: number;
@@ -12,7 +13,6 @@ interface LiftMakerProps {
   width: number;
   depth: number;
   liftState: LiftState;
-  fontPath?: string;
 }
 
 interface LiftShapeMakerProps {
@@ -45,13 +45,11 @@ const LiftShapeMaker = ({ motionState, fontPath }: LiftShapeMakerProps) => {
     return <Line points={points} color="black" linewidth={1} />;
   };
 
-  const generateTextShape = (fontPath?: string) => {
-    const fontProps = fontPath && fontPath.length > 0 ? { font: fontPath } : {};
+  const generateTextShape = () => {
     return (
-      <Text color="black" {...fontProps} fontSize={0.6}>
-        {' '}
-        {'?'}
-      </Text>
+      <div>
+        <TextThreeRendering position={[0, 0, 0]} text={'N/A - N/A'} centered={true} />
+      </div>
     );
   };
 
@@ -68,7 +66,7 @@ const LiftShapeMaker = ({ motionState, fontPath }: LiftShapeMakerProps) => {
       shapeComponent = generateLineShape();
       break;
     default:
-      shapeComponent = generateTextShape(fontPath);
+      shapeComponent = generateTextShape();
       break;
   }
 
@@ -82,18 +80,15 @@ export const LiftThreeMaker = ({
   width,
   depth,
   liftState,
-  fontPath,
 }: LiftMakerProps): JSX.Element => {
-  const fontProps = fontPath && fontPath.length > 0 ? { font: fontPath } : {};
   return (
     <group position={[x, y, yaw]}>
-      <Text color="black" {...fontProps} fontSize={0.6}>
-        {liftState.current_floor}
-      </Text>
-      <Text position={[0, 0.8, 0.5]} color="black" {...fontProps} fontSize={0.6}>
-        {getLiftModeText(liftState)}
-      </Text>
-      <LiftShapeMaker motionState={liftState.motion_state} fontPath={fontPath} />
+      <TextThreeRendering
+        position={[0, 0, 0]}
+        text={`${getLiftModeText(liftState)}\n${liftState.current_floor}`}
+        centered={true}
+      />
+      <LiftShapeMaker motionState={liftState.motion_state} />
       <mesh position={[0, 0, 0]} rotation={[0, 0, yaw]}>
         <boxGeometry args={[width, depth, 0.1]} />
         <meshStandardMaterial color={'green'} opacity={0.6} transparent />

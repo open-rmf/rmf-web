@@ -1,7 +1,8 @@
-import { Circle, Line, Text } from '@react-three/drei';
+import { Circle, Line } from '@react-three/drei';
 import { ThreeEvent } from '@react-three/fiber';
 import React from 'react';
 import { Euler, Vector3 } from 'three';
+import { TextThreeRendering } from './text-maker';
 
 export interface RobotData {
   fleet: string;
@@ -27,7 +28,6 @@ interface RobotThreeMakerProps {
   onRobotClick?: (ev: ThreeEvent<MouseEvent>, robot: RobotData) => void;
   rotation: Euler;
   circleSegment: number;
-  fontPath?: string;
 }
 
 const CircleShape = ({
@@ -67,19 +67,14 @@ export const RobotThreeMaker = ({
   onRobotClick,
   rotation,
   circleSegment,
-  fontPath,
 }: RobotThreeMakerProps): JSX.Element => {
-  const fontProps = fontPath && fontPath.length > 0 ? { font: fontPath } : {};
   return (
     <>
-      <Text
-        color="black"
-        {...fontProps}
-        fontSize={0.5}
+      <TextThreeRendering
         position={[position.x, position.y, position.z + 1]}
-      >
-        {robot.name}
-      </Text>
+        text={robot.name}
+        centered={true}
+      />
       <CircleShape
         position={position}
         rotation={rotation}
