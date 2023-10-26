@@ -1128,6 +1128,7 @@ export function CreateTaskForm({
           </DialogContent>
           <DialogActions>
             <Button
+              aria-label="Cancel button"
               variant="outlined"
               disabled={submitting}
               className={classes.actionBtn}
@@ -1176,6 +1177,7 @@ export function CreateTaskForm({
           {!callToDeleteFavoriteTask && (
             <TextField
               size="small"
+              id="favorite-input"
               value={favoriteTaskBuffer.name}
               onChange={(e) =>
                 setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: e.target.value })
