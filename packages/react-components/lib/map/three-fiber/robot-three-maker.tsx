@@ -1,4 +1,4 @@
-import { Circle, Line, Text } from '@react-three/drei';
+import { Circle, Line } from '@react-three/drei';
 import { ThreeEvent } from '@react-three/fiber';
 import React from 'react';
 import { Euler, Vector3 } from 'three';
