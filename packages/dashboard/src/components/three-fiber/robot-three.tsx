@@ -13,6 +13,10 @@ interface RobotThreeProps {
 export const RobotThree = ({ robots, robotLocations, onRobotClick }: RobotThreeProps) => {
   const STANDAR_Z_POSITION = 4;
   const CIRCLE_SEGMENT = 64;
+  const fontPath =
+    process.env.PUBLIC_URL && process.env.PUBLIC_URL.length > 0
+      ? `/${process.env.PUBLIC_URL}/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff`
+      : '/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff';
 
   return (
     <>
@@ -36,7 +40,7 @@ export const RobotThree = ({ robots, robotLocations, onRobotClick }: RobotThreeP
               onRobotClick={onRobotClick}
               rotation={new Euler(0, 0, rotationZ)}
               circleSegment={CIRCLE_SEGMENT}
-              fontPath={'/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff'}
+              fontPath={fontPath}
             />
           </React.Fragment>
         );

@@ -26,6 +26,10 @@ export const Lifts = React.memo(({ lift }: LiftsProps): JSX.Element => {
     return () => sub.unsubscribe();
   }, [rmf, lift]);
 
+  const fontPath =
+    process.env.PUBLIC_URL && process.env.PUBLIC_URL.length > 0
+      ? `/${process.env.PUBLIC_URL}/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff`
+      : '/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff';
   return (
     <>
       {lift && liftState && (
@@ -36,7 +40,7 @@ export const Lifts = React.memo(({ lift }: LiftsProps): JSX.Element => {
           width={lift.width}
           depth={lift.depth}
           liftState={liftState}
-          fontPath={'/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff'}
+          fontPath={fontPath}
         />
       )}
     </>
