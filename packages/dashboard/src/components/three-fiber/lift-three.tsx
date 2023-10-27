@@ -10,9 +10,27 @@ interface LiftsProps {
   lift?: Lift;
 }
 
+async function exists(url: string) {
+  const result = await fetch(url, { method: 'HEAD' });
+  return result.ok;
+}
+
 export const Lifts = React.memo(({ lift }: LiftsProps): JSX.Element => {
   const rmf = React.useContext(RmfAppContext);
   const [liftState, setLiftState] = React.useState<LiftState | undefined>(undefined);
+  const [fontPath, setFontPath] = React.useState<string | undefined>(undefined);
+
+  React.useEffect(() => {
+    const newFontPath =
+      process.env.PUBLIC_URL && process.env.PUBLIC_URL.length > 0
+        ? `${process.env.PUBLIC_URL}/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff`
+        : '/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff';
+    (async () => {
+      if (await exists(newFontPath)) {
+        setFontPath(newFontPath);
+      }
+    })();
+  });
 
   React.useEffect(() => {
     if (!rmf) {
@@ -26,10 +44,6 @@ export const Lifts = React.memo(({ lift }: LiftsProps): JSX.Element => {
     return () => sub.unsubscribe();
   }, [rmf, lift]);
 
-  const fontPath =
-    process.env.PUBLIC_URL && process.env.PUBLIC_URL.length > 0
-      ? `/${process.env.PUBLIC_URL}/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff`
-      : '/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff';
   return (
     <>
       {lift && liftState && (

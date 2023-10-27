@@ -10,13 +10,27 @@ interface RobotThreeProps {
   onRobotClick?: (ev: ThreeEvent<MouseEvent>, robot: RobotData) => void;
 }
 
+async function exists(url: string) {
+  const result = await fetch(url, { method: 'HEAD' });
+  return result.ok;
+}
+
 export const RobotThree = ({ robots, robotLocations, onRobotClick }: RobotThreeProps) => {
   const STANDAR_Z_POSITION = 4;
   const CIRCLE_SEGMENT = 64;
-  const fontPath =
-    process.env.PUBLIC_URL && process.env.PUBLIC_URL.length > 0
-      ? `/${process.env.PUBLIC_URL}/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff`
-      : '/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff';
+  const [fontPath, setFontPath] = React.useState<string | undefined>(undefined);
+
+  React.useEffect(() => {
+    const newFontPath =
+      process.env.PUBLIC_URL && process.env.PUBLIC_URL.length > 0
+        ? `${process.env.PUBLIC_URL}/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff`
+        : '/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff';
+    (async () => {
+      if (await exists(newFontPath)) {
+        setFontPath(newFontPath);
+      }
+    })();
+  });
 
   return (
     <>

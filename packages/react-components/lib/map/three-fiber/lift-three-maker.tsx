@@ -46,13 +46,12 @@ const LiftShapeMaker = ({ motionState, fontPath }: LiftShapeMakerProps) => {
   };
 
   const generateTextShape = (fontPath?: string) => {
-    const fontProps = fontPath && fontPath.length > 0 ? { font: fontPath } : {};
-    return (
-      <Text color="black" {...fontProps} fontSize={0.6}>
+    return fontPath && fontPath.length > 0 ? (
+      <Text color="black" font={fontPath} fontSize={0.6}>
         {' '}
         {'?'}
       </Text>
-    );
+    ) : null;
   };
 
   let shapeComponent;
@@ -84,15 +83,18 @@ export const LiftThreeMaker = ({
   liftState,
   fontPath,
 }: LiftMakerProps): JSX.Element => {
-  const fontProps = fontPath && fontPath.length > 0 ? { font: fontPath } : {};
   return (
     <group position={[x, y, yaw]}>
-      <Text color="black" {...fontProps} fontSize={0.6}>
-        {liftState.current_floor}
-      </Text>
-      <Text position={[0, 0.8, 0.5]} color="black" {...fontProps} fontSize={0.6}>
-        {getLiftModeText(liftState)}
-      </Text>
+      {fontPath && fontPath.length > 0 ? (
+        <>
+          <Text color="black" font={fontPath} fontSize={0.6}>
+            {liftState.current_floor}
+          </Text>
+          <Text position={[0, 0.8, 0.5]} color="black" font={fontPath} fontSize={0.6}>
+            {getLiftModeText(liftState)}
+          </Text>
+        </>
+      ) : null}
       <LiftShapeMaker motionState={liftState.motion_state} fontPath={fontPath} />
       <mesh position={[0, 0, 0]} rotation={[0, 0, yaw]}>
         <boxGeometry args={[width, depth, 0.1]} />
