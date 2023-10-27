@@ -19,22 +19,21 @@ describe('submit task', () => {
     await browser.waitUntil(async () => !!(await getPatrolOption()));
     const patrolOption = (await getPatrolOption())!;
     await patrolOption.click();
-
     await (await $('#place-input')).click();
-    const getCoeOption = async () => {
+
+    const getShopOption = async () => {
       const options = await $$('[role=option]');
       for (const opt of options) {
         const text = await opt.getText();
-        if (text === 'coe') {
+        if (text === 'shop') {
           return opt;
         }
       }
       return null;
     };
-    await browser.waitUntil(async () => !!(await getCoeOption()));
-    const coeOption = (await getCoeOption())!;
-    await coeOption.click();
-
+    await browser.waitUntil(async () => !!(await getShopOption()));
+    const shopOption = (await getShopOption())!;
+    await shopOption.click();
     await (await $('button[aria-label="Submit Now"]')).click();
     await expect($('div=Successfully created task')).toBeDisplayed();
   }).timeout(60000);

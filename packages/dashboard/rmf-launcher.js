@@ -46,7 +46,7 @@ exports.LocalLauncher = class {
 
     const headless = !process.env.RMF_DASHBOARD_NO_HEADLESS;
     const demoPkg = process.env.RMF_DASHBOARD_DEMO_PACKAGE || 'rmf_demos_gz';
-    const demoMap = process.env.RMF_DASHBOARD_DEMO_MAP || 'office.launch.xml';
+    const demoMap = process.env.RMF_DASHBOARD_DEMO_MAP || 'hotel.launch.xml';
     const demoArgs = ['launch', demoPkg, demoMap, 'server_uri:=ws://localhost:8000/_internal'];
     if (headless) {
       demoArgs.push('headless:=true');
