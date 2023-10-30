@@ -18,6 +18,7 @@ import {
   RobotTableData,
   ShapeThreeRendering,
   TextThreeRendering,
+  RobotData,
 } from 'react-components';
 import { EMPTY, merge, scan, Subscription, switchMap } from 'rxjs';
 import appConfig from '../app-config';
@@ -25,7 +26,6 @@ import { ResourcesContext } from './app-contexts';
 import { AppEvents } from './app-events';
 import { createMicroApp } from './micro-app';
 import { RmfAppContext } from './rmf-app';
-import { RobotData } from './robots-overlay';
 import { TrajectoryData } from './trajectories-overlay';
 import { WorkcellData } from './workcells-overlay';
 import { RobotSummary } from './robots/robot-summary';
@@ -46,6 +46,7 @@ const colorManager = new ColorManager();
 
 const DEFAULT_ZOOM_LEVEL = 20;
 const DEFAULT_ROBOT_ZOOM_LEVEL = 6;
+const DEFAULT_ROBOT_SCALE = 0.003;
 
 function getRobotId(fleetName: string, robotName: string): string {
   return `${fleetName}/${robotName}`;
@@ -283,6 +284,7 @@ export const MapApp = styled(
               name: r,
               // no model name
               model: '',
+              scale: resourceManager?.robots.getRobotIconScale(fleetName, r) || DEFAULT_ROBOT_SCALE,
               footprint: 0.5,
               color: await colorManager.robotPrimaryColor(fleetName, r, ''),
               iconPath: (await resourceManager?.robots.getIconPath(fleetName, r)) || undefined,
@@ -536,16 +538,18 @@ export const MapApp = styled(
                 linewidth={5}
               />
             ))}
-          {!disabledLayers['Robots'] && (
-            <RobotThree
-              robots={robots}
-              robotLocations={robotLocations}
-              onRobotClick={(_ev, robot) => {
-                setOpenRobotSummary(true);
-                setSelectedRobot(robot);
-              }}
-            />
-          )}
+          {!disabledLayers['Robots'] &&
+            robots.map((robot) => (
+              <RobotThree
+                key={`${robot.name} ${robot.fleet}`}
+                robot={robot}
+                robotLocations={robotLocations}
+                onRobotClick={(_ev, robot) => {
+                  setOpenRobotSummary(true);
+                  setSelectedRobot(robot);
+                }}
+              />
+            ))}
           <ambientLight />
         </Canvas>
         {openRobotSummary && selectedRobot && (

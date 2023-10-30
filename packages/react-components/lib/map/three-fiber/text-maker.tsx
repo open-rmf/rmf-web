@@ -21,11 +21,11 @@ export const TextThreeRendering = ({ position, text }: TextThreeRenderingProps):
   };
 
   const scaleFactor = isHovered ? 2 : 1.0;
-
+  const positionX = text && text.length > 5 ? -2 : -1;
   return (
     <>
       <mesh position={position}>
-        <mesh position={[-1, 0, positionZ]}>
+        <mesh position={[positionX, 0, positionZ]}>
           {text && (
             <Html zIndexRange={[0, 0, 1]}>
               {text && (
