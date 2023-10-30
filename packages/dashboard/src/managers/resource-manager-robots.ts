@@ -69,7 +69,7 @@ export class RobotResourceManager {
 
     const robotScale = this.robots[fleetName].scale;
 
-    if (!!robotModel && robotScale.hasOwnProperty(robotModel)) {
+    if (!!robotModel) {
       return robotScale;
     }
 
