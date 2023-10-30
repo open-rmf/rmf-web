@@ -29,10 +29,12 @@ export default function fakeResources(): ResourceConfigurationsType {
           hardware_1: [],
           station_2: [],
         },
+        scale: 0.01,
       },
       deliveryRobot: {
         icons: { deliveryRobot: '/robots/deliveryRobot/deliveryRobot.png' },
         places: {},
+        scale: 0.01,
       },
     },
     logos: { headerLogo: { icons: { headerLogo: '/logos/header/headerLogo.png' } } },
