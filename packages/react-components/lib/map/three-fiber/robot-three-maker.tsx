@@ -1,8 +1,9 @@
-import { Circle, Line, Text } from '@react-three/drei';
+import { Text } from '@react-three/drei';
 import { ThreeEvent, useLoader } from '@react-three/fiber';
 import React from 'react';
-import { Euler, Vector3, Texture, TextureLoader, Color } from 'three';
-import { TextThreeRendering } from '.';
+import { Color, Euler, Texture, TextureLoader, Vector3 } from 'three';
+import { CircleShape } from './circle-shape';
+import { TextThreeRendering } from './text-maker';
 
 export interface RobotData {
   fleet: string;
@@ -32,45 +33,6 @@ interface RobotImageMakerProps {
   onRobotClick?: (ev: ThreeEvent<MouseEvent>, robot: RobotData) => void;
   rotation: Euler;
 }
-
-interface CircleShapeProps {
-  position: Vector3;
-  rotation: Euler;
-  onRobotClick?: (ev: ThreeEvent<MouseEvent>) => void;
-  robot: RobotData;
-  segment: number;
-}
-
-const CircleShape = ({
-  position,
-  rotation,
-  onRobotClick,
-  robot,
-  segment,
-}: CircleShapeProps): JSX.Element => {
-  const SCALED_RADIUS = 0.7;
-
-  const rotatedX = position.x + SCALED_RADIUS * Math.cos(rotation.z - Math.PI / 2);
-  const rotatedY = position.y + SCALED_RADIUS * Math.sin(rotation.z - Math.PI / 2);
-
-  return (
-    <>
-      <Circle
-        args={[SCALED_RADIUS, segment]}
-        position={position}
-        rotation={rotation}
-        onClick={onRobotClick}
-      >
-        <meshBasicMaterial color={robot.color} />
-      </Circle>
-      <Line
-        points={[position.x, position.y, position.z, rotatedX, rotatedY, position.z]}
-        color="black"
-        linewidth={2}
-      />
-    </>
-  );
-};
 
 const RobotImageMaker = ({
   imageUrl,
