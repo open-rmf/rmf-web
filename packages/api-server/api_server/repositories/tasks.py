@@ -11,6 +11,7 @@ from tortoise.transactions import in_transaction
 from api_server.authenticator import user_dep
 from api_server.logger import format_exception, logger
 from api_server.models import (
+    DispatchTaskRequest,
     LogEntry,
     Pagination,
     Phases,
@@ -21,6 +22,7 @@ from api_server.models import (
 from api_server.models import tortoise_models as ttm
 from api_server.models.rmf_api.log_entry import Tier
 from api_server.models.rmf_api.task_state import Category, Id, Phase
+from api_server.models.tortoise_models import TaskRequest as DbTaskRequest
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.query import add_pagination
 from api_server.rmf_io import task_events
@@ -29,6 +31,17 @@ from api_server.rmf_io import task_events
 class TaskRepository:
     def __init__(self, user: User):
         self.user = user
+
+    async def save_task_request(
+        self, task_id: str, task_request: DispatchTaskRequest
+    ) -> None:
+        await DbTaskRequest.update_or_create(
+            {"request": task_request.json()}, id_=task_id
+        )
+
+    async def get_task_request(self, task_id: str) -> Optional[DbTaskRequest]:
+        result = await DbTaskRequest.get_or_none(id_=task_id)
+        return result
 
     async def save_task_state(self, task_state: TaskState) -> None:
         await DbTaskState.update_or_create(

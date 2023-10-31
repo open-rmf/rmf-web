@@ -26,6 +26,8 @@ from .tasks import (
     TaskEventLogPhasesLog,
     TaskFavorite,
     TaskFavoritePydantic,
+    TaskRequest,
+    TaskRequestPydantic,
     TaskState,
 )
 from .user import *
