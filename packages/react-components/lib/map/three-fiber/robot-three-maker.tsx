@@ -1,7 +1,7 @@
 import { ThreeEvent } from '@react-three/fiber';
 import React from 'react';
 import { Euler, Vector3 } from 'three';
-import { CircleShape } from '.';
+import { CircleShape } from './circle-shape';
 import { TextThreeRendering } from './text-maker';
 
 export interface RobotData {
