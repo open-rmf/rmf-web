@@ -19,6 +19,7 @@ from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
 from rmf_door_msgs.msg import DoorRequest as RmfDoorRequest
 from rmf_door_msgs.msg import DoorState as RmfDoorState
+from rmf_fleet_msgs.msg import BeaconState as RmfBeaconState
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
@@ -27,9 +28,16 @@ from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 from rosidl_runtime_py.convert import message_to_ordereddict
 
 from .logger import logger as base_logger
-from .models import BuildingMap, DispenserState, DoorState, IngestorState, LiftState
+from .models import (
+    BeaconState,
+    BuildingMap,
+    DispenserState,
+    DoorState,
+    IngestorState,
+    LiftState,
+)
 from .repositories import CachedFilesRepository, cached_files_repo
-from .rmf_io import rmf_events
+from .rmf_io import beacon_events, rmf_events
 from .ros import ros_node
 
 
@@ -156,6 +164,23 @@ class RmfGateway:
             ),
         )
         self._subscriptions.append(map_sub)
+
+        def convert_beacon_state(beacon_state: RmfBeaconState):
+            return BeaconState(
+                id=beacon_state.id,
+                online=beacon_state.online,
+                category=beacon_state.category,
+                activated=beacon_state.activated,
+                level=beacon_state.level,
+            )
+
+        beacon_sub = ros_node().create_subscription(
+            RmfBeaconState,
+            "beacon_state",
+            lambda msg: beacon_events.beacons.on_next(convert_beacon_state(msg)),
+            10,
+        )
+        self._subscriptions.append(beacon_sub)
 
     @staticmethod
     def now() -> Optional[RosTime]:

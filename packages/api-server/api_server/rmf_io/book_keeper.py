@@ -8,6 +8,7 @@ from rx.core.typing import Disposable
 from rx.subject.subject import Subject
 
 from api_server.models import (
+    BeaconState,
     BuildingMap,
     DispenserHealth,
     DispenserState,
@@ -19,9 +20,14 @@ from api_server.models import (
     LiftHealth,
     LiftState,
 )
+
+# from api_server.models.tortoise_models import (
+#     BeaconState,
+#     BeaconStatePydantic,
+# )
 from api_server.models.health import BaseBasicHealth
 
-from .events import RmfEvents
+from .events import BeaconEvents, RmfEvents
 
 
 class RmfBookKeeperEvents:
@@ -33,6 +39,7 @@ class RmfBookKeeper:
     _ChildLoggers = namedtuple(
         "_ChildLoggers",
         [
+            "beacon_state",
             "building_map",
             "door_state",
             "door_health",
@@ -51,16 +58,19 @@ class RmfBookKeeper:
     def __init__(
         self,
         rmf_events: RmfEvents,
+        beacon_events: BeaconEvents,
         *,
         logger: Optional[logging.Logger] = None,
     ):
         self.rmf = rmf_events
+        self.beacon_events = beacon_events
         self.bookkeeper_events = RmfBookKeeperEvents()
         self._loop: asyncio.AbstractEventLoop
         self._main_logger = logger or logging.getLogger(self.__class__.__name__)
         self._pending_tasks = set()
 
         self._loggers = self._ChildLoggers(
+            self._main_logger.getChild("beacon_state"),
             self._main_logger.getChild("building_map"),
             self._main_logger.getChild("door_state"),
             self._main_logger.getChild("door_health"),
@@ -75,6 +85,7 @@ class RmfBookKeeper:
             self._main_logger.getChild("task_summary"),
         )
 
+        self._loggers.beacon_state.parent = self._main_logger
         self._loggers.door_state.parent = self._main_logger
         self._loggers.door_health.parent = self._main_logger
         self._loggers.lift_state.parent = self._main_logger
@@ -91,6 +102,7 @@ class RmfBookKeeper:
 
     async def start(self):
         self._loop = asyncio.get_event_loop()
+        self._record_beacon_state()
         self._record_building_map()
         self._record_door_state()
         self._record_door_health()
@@ -122,6 +134,15 @@ class RmfBookKeeper:
             logger.error(message)
         else:
             logger.info(message)
+
+    def _record_beacon_state(self):
+        async def update(beacon_state: BeaconState):
+            await beacon_state.save()
+            self._loggers.beacon_state.info(json.dumps(beacon_state.dict()))
+
+        self._subscriptions.append(
+            self.beacon_events.beacons.subscribe(lambda x: self._create_task(update(x)))
+        )
 
     def _record_building_map(self):
         async def update(building_map: BuildingMap):
