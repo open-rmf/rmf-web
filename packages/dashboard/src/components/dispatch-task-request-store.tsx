@@ -25,6 +25,7 @@ export const DispatchTaskStore = () => {
   const [tasksState, setTasksState] = React.useState<Task>({ data: [] });
   const [tasksIds, setTasksIds] = React.useState<string[]>([]);
   const [enableResumit, setEnableResumit] = React.useState(true);
+  const [dispatched, setDispatched] = React.useState(false);
 
   const GET_LIMIT = 10;
   React.useEffect(() => {
@@ -87,6 +88,7 @@ export const DispatchTaskStore = () => {
         }
       }
 
+      setDispatched(false);
       setEnableResumit(false);
     } catch (e) {
       console.log(e);
@@ -108,6 +110,8 @@ export const DispatchTaskStore = () => {
         });
       }
       showAlert('success', 'Successfully created task');
+      setDispatched(true);
+      setEnableResumit(true);
       setIsOpen(false);
     } catch (e) {
       console.log(e);
@@ -150,7 +154,7 @@ export const DispatchTaskStore = () => {
             disabled={!enableResumit}
             autoFocus
           >
-            Cancel tasks
+            {`${dispatched ? 'Cancelled' : 'Cancel Tasks'} `}
           </Button>
 
           <Button
@@ -160,7 +164,7 @@ export const DispatchTaskStore = () => {
             disabled={enableResumit}
             autoFocus
           >
-            Re-Dispatch
+            {`${dispatched ? 'Dispatched' : 'Re-Dispatch'} `}
           </Button>
 
           <Button
