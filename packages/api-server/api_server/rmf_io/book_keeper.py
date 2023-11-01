@@ -20,11 +20,6 @@ from api_server.models import (
     LiftHealth,
     LiftState,
 )
-
-# from api_server.models.tortoise_models import (
-#     BeaconState,
-#     BeaconStatePydantic,
-# )
 from api_server.models.health import BaseBasicHealth
 
 from .events import BeaconEvents, RmfEvents
