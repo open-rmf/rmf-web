@@ -20,7 +20,7 @@ from rmf_door_msgs.msg import DoorMode as RmfDoorMode
 from rmf_door_msgs.msg import DoorRequest as RmfDoorRequest
 from rmf_door_msgs.msg import DoorState as RmfDoorState
 
-# pylint: disable=no-name-in-module
+# pylint: disable-next=no-name-in-module
 from rmf_fleet_msgs.msg import BeaconState as RmfBeaconState
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
