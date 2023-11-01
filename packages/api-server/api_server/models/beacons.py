@@ -1,9 +1,5 @@
-from pydantic import BaseModel, Field
-
 from . import tortoise_models as ttm
 from .ros_pydantic import rmf_fleet_msgs
-
-BeaconState = rmf_fleet_msgs.BeaconState
 
 
 class BeaconState(rmf_fleet_msgs.BeaconState):
