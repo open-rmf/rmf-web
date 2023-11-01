@@ -10,6 +10,7 @@ import {
 import { TaskState } from 'api-client';
 import React from 'react';
 import { Subscription } from 'rxjs';
+import { AppControllerContext } from './app-contexts';
 import { RmfAppContext } from './rmf-app';
 
 interface Task {
@@ -18,6 +19,7 @@ interface Task {
 
 export const DispatchTaskStore = () => {
   const [isOpen, setIsOpen] = React.useState(false);
+  const { showAlert } = React.useContext(AppControllerContext);
   const rmf = React.useContext(RmfAppContext);
   const [tasksState, setTasksState] = React.useState<Task>({ data: [] });
   const [tasksIds, setTasksIds] = React.useState<string[]>([]);
@@ -96,24 +98,20 @@ export const DispatchTaskStore = () => {
         throw new Error('tasks api not available');
       }
       for (let index = 0; index < tasksIds.length; index++) {
-        try {
-          const request = await rmf.tasksApi.getTaskRequestTasksTaskIdRequestGet(tasksIds[index]);
-          // await rmf.tasksApi.postDispatchTaskTasksDispatchTaskPost({
-          //     type: 'dispatch_task_request',
-          //     request
-          // })
-          // setTasksIds((prevTasksIds) => [...prevTasksIds, tasksState.data[index].booking.id]);
-        } catch (error) {
-          console.error(error);
-        }
+        const request = await (
+          await rmf.tasksApi.getTaskRequestTasksTaskIdRequestGet(tasksIds[index])
+        ).data.request.request;
+        await rmf.tasksApi.postDispatchTaskTasksDispatchTaskPost({
+          type: 'dispatch_task_request',
+          request,
+        });
       }
-
-      setEnableResumit(false);
+      showAlert('success', 'Successfully created task');
       setIsOpen(false);
     } catch (e) {
       console.log(e);
     }
-  }, [rmf, tasksIds]);
+  }, [rmf, tasksIds, showAlert]);
 
   return (
     <>
@@ -141,7 +139,7 @@ export const DispatchTaskStore = () => {
             size="small"
             variant="contained"
             onClick={handleCancelTaskClick}
-            disabled={false}
+            disabled={!enableResumit}
             autoFocus
           >
             Cancel tasks
