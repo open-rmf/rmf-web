@@ -24,7 +24,7 @@ export const DispatchTaskStore = () => {
   const rmf = React.useContext(RmfAppContext);
   const [tasksState, setTasksState] = React.useState<Task>({ data: [] });
   const [tasksIds, setTasksIds] = React.useState<string[]>([]);
-  const [enableResumit, setEnableResumit] = React.useState(true);
+  const [enableSumit, setSumit] = React.useState(true);
   const [dispatched, setDispatched] = React.useState(false);
 
   const GET_LIMIT = 10;
@@ -89,9 +89,9 @@ export const DispatchTaskStore = () => {
       }
 
       setDispatched(false);
-      setEnableResumit(false);
+      setSumit(false);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   }, [rmf, tasksState.data]);
 
@@ -104,6 +104,7 @@ export const DispatchTaskStore = () => {
         const request = await (
           await rmf.tasksApi.getTaskRequestTasksTaskIdRequestGet(tasksIds[index])
         ).data.request.request;
+
         await rmf.tasksApi.postDispatchTaskTasksDispatchTaskPost({
           type: 'dispatch_task_request',
           request,
@@ -111,10 +112,10 @@ export const DispatchTaskStore = () => {
       }
       showAlert('success', 'Successfully created task');
       setDispatched(true);
-      setEnableResumit(true);
+      setSumit(true);
       setIsOpen(false);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   }, [rmf, tasksIds, showAlert]);
 
@@ -151,7 +152,7 @@ export const DispatchTaskStore = () => {
             size="small"
             variant="contained"
             onClick={handleCancelTaskClick}
-            disabled={!enableResumit}
+            disabled={!enableSumit}
             autoFocus
           >
             {`${dispatched ? 'Cancelled' : 'Cancel Tasks'} `}
@@ -161,7 +162,7 @@ export const DispatchTaskStore = () => {
             size="small"
             variant="contained"
             onClick={handleSubmitTask}
-            disabled={enableResumit}
+            disabled={enableSumit}
             autoFocus
           >
             {`${dispatched ? 'Dispatched' : 'Re-Dispatch'} `}
