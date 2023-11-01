@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
+  TextField,
   Typography,
 } from '@mui/material';
 import { TaskState } from 'api-client';
@@ -128,11 +129,18 @@ export const DispatchTaskStore = () => {
         <DialogTitle align="center">Dispatch tasks</DialogTitle>
         <Divider />
         <DialogContent>
-          {tasksState.data.map((task) => (
-            <Typography key={task.booking.id} variant="body1">
-              Task ID: {task.booking.id}
-            </Typography>
-          ))}
+          <Typography variant="h6" gutterBottom>
+            Task IDs:
+          </Typography>
+          <TextField
+            multiline
+            variant="outlined"
+            InputProps={{
+              readOnly: true,
+            }}
+            fullWidth
+            value={tasksState.data.map((task) => `• ${task.booking.id}`).join('\n')}
+          />
         </DialogContent>
         <DialogActions>
           <Button
@@ -152,7 +160,7 @@ export const DispatchTaskStore = () => {
             disabled={enableResumit}
             autoFocus
           >
-            Resubmit
+            Re-Dispatch
           </Button>
 
           <Button
@@ -164,7 +172,7 @@ export const DispatchTaskStore = () => {
             disabled={false}
             autoFocus
           >
-            Close
+            Dismiss
           </Button>
         </DialogActions>
       </Dialog>

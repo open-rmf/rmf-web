@@ -14,6 +14,7 @@ import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
 import { AppController, AppControllerContext, SettingsContext } from './app-contexts';
 import AppBar from './appbar';
 import { AlertStore } from './alert-store';
+import { DispatchTaskStore } from './dispatch-task-request-store';
 
 const DefaultAlertDuration = 2000;
 const defaultTheme = createTheme();
@@ -115,6 +116,7 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
       <SettingsContext.Provider value={settings}>
         <AppControllerContext.Provider value={appController}>
           <AlertStore />
+          <DispatchTaskStore />
           {lowResolutionAlert && lowResolutionDisplayAlert()}
           <Grid
             container
