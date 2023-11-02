@@ -291,6 +291,7 @@ export const MapApp = styled(
             ?.filter(
               (r) =>
                 fleetState.robots &&
+                r in currentLevelOfRobots &&
                 currentLevelOfRobots[r] === currentLevel.name &&
                 `${fleetState.name}/${r}` in robotsStore,
             )
@@ -319,11 +320,6 @@ export const MapApp = styled(
             return;
           }
           Object.entries(fleetState.robots).forEach(([robotName, robotState]) => {
-            setCurrentLevelOfRobots((prevState) => ({
-              ...prevState,
-              [robotName]: robotState.location?.map || 'L1',
-            }));
-
             const robotId = getRobotId(fleetName, robotName);
             if (!robotState.location) {
               console.warn(`Map: Fail to update robot location for ${robotId} (missing location)`);
@@ -334,10 +330,25 @@ export const MapApp = styled(
               robotState.location.y,
               robotState.location.yaw,
             ];
+
+            if (!robotState.location.map) {
+              console.warn(`Map: Fail to update robot level for ${robotId} (missing map)`);
+              if (currentLevelOfRobots.hasOwnProperty(robotName)) {
+                const updatedState = { ...currentLevelOfRobots };
+                delete updatedState[robotName];
+                setCurrentLevelOfRobots(updatedState);
+              }
+              return;
+            }
+
+            setCurrentLevelOfRobots((prevState) => ({
+              ...prevState,
+              [robotName]: robotState.location?.map || '',
+            }));
           });
         });
       return () => sub.unsubscribe();
-    }, [rmf, robotLocations]);
+    }, [rmf, robotLocations, currentLevelOfRobots]);
 
     //Accumulate values over time to persist between tabs
     React.useEffect(() => {
