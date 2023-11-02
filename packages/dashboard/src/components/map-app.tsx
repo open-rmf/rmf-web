@@ -539,17 +539,23 @@ export const MapApp = styled(
               />
             ))}
           {!disabledLayers['Robots'] &&
-            robots.map((robot) => (
-              <RobotThree
-                key={`${robot.name} ${robot.fleet}`}
-                robot={robot}
-                robotLocations={robotLocations}
-                onRobotClick={(_ev, robot) => {
-                  setOpenRobotSummary(true);
-                  setSelectedRobot(robot);
-                }}
-              />
-            ))}
+            robots.map((robot) => {
+              const robotId = `${robot.fleet}/${robot.name}`;
+              if (robotId in robotLocations) {
+                return (
+                  <RobotThree
+                    key={`${robot.name} ${robot.fleet}`}
+                    robot={robot}
+                    robotLocation={robotLocations[robotId]}
+                    onRobotClick={(_ev, robot) => {
+                      setOpenRobotSummary(true);
+                      setSelectedRobot(robot);
+                    }}
+                  />
+                );
+              }
+              return null;
+            })}
           <ambientLight />
         </Canvas>
         {openRobotSummary && selectedRobot && (

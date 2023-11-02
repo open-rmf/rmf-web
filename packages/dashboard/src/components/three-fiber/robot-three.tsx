@@ -5,16 +5,15 @@ import { Euler, Vector3 } from 'three';
 
 interface RobotThreeProps {
   robot: RobotData;
-  robotLocations: Record<string, [number, number, number]>;
+  robotLocation: [number, number, number];
   onRobotClick?: (ev: ThreeEvent<MouseEvent>, robot: RobotData) => void;
 }
 
-export const RobotThree = ({ robot, robotLocations, onRobotClick }: RobotThreeProps) => {
+export const RobotThree = ({ robot, robotLocation, onRobotClick }: RobotThreeProps) => {
   const STANDAR_Z_POSITION = 5;
   const CIRCLE_SEGMENT = 64;
 
   const robotId = `${robot.fleet}/${robot.name}`;
-  const robotLocation = robotLocations[robotId];
   const rotationZ = robotLocation[2] - Math.PI;
 
   const position = new Vector3(robotLocation[0], robotLocation[1], STANDAR_Z_POSITION);
