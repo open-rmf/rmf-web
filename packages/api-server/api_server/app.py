@@ -33,7 +33,7 @@ from .models import (
 )
 from .models import tortoise_models as ttm
 from .repositories import TaskRepository
-from .rmf_io import HealthWatchdog, RmfBookKeeper, rmf_events
+from .rmf_io import HealthWatchdog, RmfBookKeeper, beacon_events, rmf_events
 from .types import is_coroutine
 
 
@@ -85,7 +85,9 @@ app.mount(
 # will be called in reverse order on app shutdown
 shutdown_cbs: List[Union[Coroutine[Any, Any, Any], Callable[[], None]]] = []
 
-rmf_bookkeeper = RmfBookKeeper(rmf_events, logger=logger.getChild("BookKeeper"))
+rmf_bookkeeper = RmfBookKeeper(
+    rmf_events, beacon_events, logger=logger.getChild("BookKeeper")
+)
 
 app.include_router(routes.main_router)
 app.include_router(

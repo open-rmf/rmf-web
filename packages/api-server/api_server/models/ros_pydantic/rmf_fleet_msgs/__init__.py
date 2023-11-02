@@ -1,3 +1,4 @@
+from .BeaconState import BeaconState
 from .ClosedLanes import ClosedLanes
 from .DestinationRequest import DestinationRequest
 from .Dock import Dock
