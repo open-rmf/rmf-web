@@ -137,6 +137,9 @@ export const MapApp = styled(
     const [fleets, setFleets] = React.useState<FleetState[]>([]);
 
     const [waypoints, setWaypoints] = React.useState<Place[]>([]);
+    const [currentLevelOfRobots, setCurrentLevelOfRobots] = React.useState<{
+      [key: string]: string;
+    }>({});
 
     const [trajectories, setTrajectories] = React.useState<TrajectoryData[]>([]);
     const trajectoryTime = 300000;
@@ -288,14 +291,14 @@ export const MapApp = styled(
             ?.filter(
               (r) =>
                 fleetState.robots &&
-                fleetState.robots[r].location?.map === currentLevel.name &&
+                currentLevelOfRobots[r] === currentLevel.name &&
                 `${fleetState.name}/${r}` in robotsStore,
             )
             .map((r) => robotsStore[`${fleetState.name}/${r}`]);
         });
         setRobots(newRobots);
       })();
-    }, [fleets, robotsStore, resourceManager, currentLevel]);
+    }, [fleets, robotsStore, resourceManager, currentLevel, currentLevelOfRobots]);
 
     const { current: robotLocations } = React.useRef<Record<string, [number, number, number]>>({});
     // updates the robot location
@@ -316,6 +319,11 @@ export const MapApp = styled(
             return;
           }
           Object.entries(fleetState.robots).forEach(([robotName, robotState]) => {
+            setCurrentLevelOfRobots((prevState) => ({
+              ...prevState,
+              [robotName]: robotState.location?.map || 'L1',
+            }));
+
             const robotId = getRobotId(fleetName, robotName);
             if (!robotState.location) {
               console.warn(`Map: Fail to update robot location for ${robotId} (missing location)`);
