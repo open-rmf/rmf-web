@@ -138,6 +138,9 @@ export const MapApp = styled(
     const [fleets, setFleets] = React.useState<FleetState[]>([]);
 
     const [waypoints, setWaypoints] = React.useState<Place[]>([]);
+    const [currentLevelOfRobots, setCurrentLevelOfRobots] = React.useState<{
+      [key: string]: string;
+    }>({});
 
     const [trajectories, setTrajectories] = React.useState<TrajectoryData[]>([]);
     const trajectoryTime = 300000;
@@ -298,14 +301,15 @@ export const MapApp = styled(
             ?.filter(
               (r) =>
                 fleetState.robots &&
-                fleetState.robots[r].location?.map === currentLevel.name &&
+                r in currentLevelOfRobots &&
+                currentLevelOfRobots[r] === currentLevel.name &&
                 `${fleetState.name}/${r}` in robotsStore,
             )
             .map((r) => robotsStore[`${fleetState.name}/${r}`]);
         });
         setRobots(newRobots);
       })();
-    }, [fleets, robotsStore, resourceManager, currentLevel]);
+    }, [fleets, robotsStore, resourceManager, currentLevel, currentLevelOfRobots]);
 
     const { current: robotLocations } = React.useRef<Record<string, [number, number, number]>>({});
     // updates the robot location
@@ -336,10 +340,25 @@ export const MapApp = styled(
               robotState.location.y,
               robotState.location.yaw,
             ];
+
+            if (!robotState.location.map) {
+              console.warn(`Map: Fail to update robot level for ${robotId} (missing map)`);
+              if (currentLevelOfRobots.hasOwnProperty(robotName)) {
+                const updatedState = { ...currentLevelOfRobots };
+                delete updatedState[robotName];
+                setCurrentLevelOfRobots(updatedState);
+              }
+              return;
+            }
+
+            setCurrentLevelOfRobots((prevState) => ({
+              ...prevState,
+              [robotName]: robotState.location?.map || '',
+            }));
           });
         });
       return () => sub.unsubscribe();
-    }, [rmf, robotLocations]);
+    }, [rmf, robotLocations, currentLevelOfRobots]);
 
     //Accumulate values over time to persist between tabs
     React.useEffect(() => {
@@ -539,17 +558,23 @@ export const MapApp = styled(
               />
             ))}
           {!disabledLayers['Robots'] &&
-            robots.map((robot) => (
-              <RobotThree
-                key={`${robot.name} ${robot.fleet}`}
-                robot={robot}
-                robotLocations={robotLocations}
-                onRobotClick={(_ev, robot) => {
-                  setOpenRobotSummary(true);
-                  setSelectedRobot(robot);
-                }}
-              />
-            ))}
+            robots.map((robot) => {
+              const robotId = `${robot.fleet}/${robot.name}`;
+              if (robotId in robotLocations) {
+                return (
+                  <RobotThree
+                    key={`${robot.name} ${robot.fleet}`}
+                    robot={robot}
+                    robotLocation={robotLocations[robotId]}
+                    onRobotClick={(_ev, robot) => {
+                      setOpenRobotSummary(true);
+                      setSelectedRobot(robot);
+                    }}
+                  />
+                );
+              }
+              return null;
+            })}
           <ambientLight />
         </Canvas>
         {openRobotSummary && selectedRobot && (
