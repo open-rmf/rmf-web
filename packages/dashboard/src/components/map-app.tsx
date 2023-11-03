@@ -18,6 +18,7 @@ import {
   RobotTableData,
   ShapeThreeRendering,
   TextThreeRendering,
+  RobotData,
 } from 'react-components';
 import { EMPTY, merge, scan, Subscription, switchMap } from 'rxjs';
 import appConfig from '../app-config';
@@ -25,7 +26,6 @@ import { ResourcesContext } from './app-contexts';
 import { AppEvents } from './app-events';
 import { createMicroApp } from './micro-app';
 import { RmfAppContext } from './rmf-app';
-import { RobotData } from './robots-overlay';
 import { TrajectoryData } from './trajectories-overlay';
 import { WorkcellData } from './workcells-overlay';
 import { RobotSummary } from './robots/robot-summary';
@@ -46,6 +46,7 @@ const colorManager = new ColorManager();
 
 const DEFAULT_ZOOM_LEVEL = 20;
 const DEFAULT_ROBOT_ZOOM_LEVEL = 6;
+const DEFAULT_ROBOT_SCALE = 0.003;
 
 function getRobotId(fleetName: string, robotName: string): string {
   return `${fleetName}/${robotName}`;
@@ -137,6 +138,9 @@ export const MapApp = styled(
     const [fleets, setFleets] = React.useState<FleetState[]>([]);
 
     const [waypoints, setWaypoints] = React.useState<Place[]>([]);
+    const [currentLevelOfRobots, setCurrentLevelOfRobots] = React.useState<{
+      [key: string]: string;
+    }>({});
 
     const [trajectories, setTrajectories] = React.useState<TrajectoryData[]>([]);
     const trajectoryTime = 300000;
@@ -283,6 +287,7 @@ export const MapApp = styled(
               name: r,
               // no model name
               model: '',
+              scale: resourceManager?.robots.getRobotIconScale(fleetName, r) || DEFAULT_ROBOT_SCALE,
               footprint: 0.5,
               color: await colorManager.robotPrimaryColor(fleetName, r, ''),
               iconPath: (await resourceManager?.robots.getIconPath(fleetName, r)) || undefined,
@@ -296,14 +301,15 @@ export const MapApp = styled(
             ?.filter(
               (r) =>
                 fleetState.robots &&
-                fleetState.robots[r].location?.map === currentLevel.name &&
+                r in currentLevelOfRobots &&
+                currentLevelOfRobots[r] === currentLevel.name &&
                 `${fleetState.name}/${r}` in robotsStore,
             )
             .map((r) => robotsStore[`${fleetState.name}/${r}`]);
         });
         setRobots(newRobots);
       })();
-    }, [fleets, robotsStore, resourceManager, currentLevel]);
+    }, [fleets, robotsStore, resourceManager, currentLevel, currentLevelOfRobots]);
 
     const { current: robotLocations } = React.useRef<Record<string, [number, number, number]>>({});
     // updates the robot location
@@ -334,6 +340,20 @@ export const MapApp = styled(
               robotState.location.y,
               robotState.location.yaw,
             ];
+
+            setCurrentLevelOfRobots((prevState) => {
+              if (!robotState.location?.map && prevState.hasOwnProperty(robotName)) {
+                console.warn(`Map: Fail to update robot level for ${robotId} (missing map)`);
+                const updatedState = { ...prevState };
+                delete updatedState[robotName];
+                return updatedState;
+              }
+
+              return {
+                ...prevState,
+                [robotName]: robotState.location?.map || '',
+              };
+            });
           });
         });
       return () => sub.unsubscribe();
@@ -536,16 +556,24 @@ export const MapApp = styled(
                 linewidth={5}
               />
             ))}
-          {!disabledLayers['Robots'] && (
-            <RobotThree
-              robots={robots}
-              robotLocations={robotLocations}
-              onRobotClick={(_ev, robot) => {
-                setOpenRobotSummary(true);
-                setSelectedRobot(robot);
-              }}
-            />
-          )}
+          {!disabledLayers['Robots'] &&
+            robots.map((robot) => {
+              const robotId = `${robot.fleet}/${robot.name}`;
+              if (robotId in robotLocations) {
+                return (
+                  <RobotThree
+                    key={`${robot.name} ${robot.fleet}`}
+                    robot={robot}
+                    robotLocation={robotLocations[robotId]}
+                    onRobotClick={(_ev, robot) => {
+                      setOpenRobotSummary(true);
+                      setSelectedRobot(robot);
+                    }}
+                  />
+                );
+              }
+              return null;
+            })}
           <ambientLight />
         </Canvas>
         {openRobotSummary && selectedRobot && (

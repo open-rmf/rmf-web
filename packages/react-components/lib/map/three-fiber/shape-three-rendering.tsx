@@ -53,7 +53,7 @@ export const ShapeThreeRendering = ({
         <group position={position}>
           <mesh
             position={[0, 0, positionZ]}
-            scale={[0.7, 0.7, 0.7]}
+            scale={[0.5, 0.5, 0.5]}
             onPointerOver={debouncedHandlePointerOver}
             onPointerOut={debouncedHandlePointerOut}
           >
@@ -74,7 +74,7 @@ export const ShapeThreeRendering = ({
               </Html>
             )}
             <boxGeometry args={[1.3, 1.3, 1.3]} />
-            <meshStandardMaterial color={color} opacity={1} />
+            <meshStandardMaterial color={color} opacity={0.6} transparent />
           </mesh>
         </group>
       )}
