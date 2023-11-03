@@ -341,24 +341,23 @@ export const MapApp = styled(
               robotState.location.yaw,
             ];
 
-            if (!robotState.location.map) {
-              console.warn(`Map: Fail to update robot level for ${robotId} (missing map)`);
-              if (currentLevelOfRobots.hasOwnProperty(robotName)) {
-                const updatedState = { ...currentLevelOfRobots };
+            setCurrentLevelOfRobots((prevState) => {
+              if (!robotState.location?.map && prevState.hasOwnProperty(robotName)) {
+                console.warn(`Map: Fail to update robot level for ${robotId} (missing map)`);
+                const updatedState = { ...prevState };
                 delete updatedState[robotName];
-                setCurrentLevelOfRobots(updatedState);
+                return updatedState;
               }
-              return;
-            }
 
-            setCurrentLevelOfRobots((prevState) => ({
-              ...prevState,
-              [robotName]: robotState.location?.map || '',
-            }));
+              return {
+                ...prevState,
+                [robotName]: robotState.location?.map || '',
+              };
+            });
           });
         });
       return () => sub.unsubscribe();
-    }, [rmf, robotLocations, currentLevelOfRobots]);
+    }, [rmf, robotLocations]);
 
     //Accumulate values over time to persist between tabs
     React.useEffect(() => {
