@@ -10,7 +10,7 @@ interface LiftsProps {
   lift?: Lift;
 }
 
-async function exists(url: string) {
+async function fontPathExists(url: string) {
   const result = await fetch(url, { method: 'HEAD' });
   return result.ok;
 }
@@ -21,16 +21,23 @@ export const Lifts = React.memo(({ lift }: LiftsProps): JSX.Element => {
   const [fontPath, setFontPath] = React.useState<string | undefined>(undefined);
 
   React.useEffect(() => {
-    const newFontPath =
-      process.env.PUBLIC_URL && process.env.PUBLIC_URL.length > 0
-        ? `${process.env.PUBLIC_URL}/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff`
-        : '/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff';
-    (async () => {
-      if (await exists(newFontPath)) {
-        setFontPath(newFontPath);
+    const loadFont = async () => {
+      try {
+        const newFontPath =
+          process.env.PUBLIC_URL && process.env.PUBLIC_URL.length > 0
+            ? `${process.env.PUBLIC_URL}/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff`
+            : '/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff';
+
+        if (await fontPathExists(newFontPath)) {
+          setFontPath(newFontPath);
+        }
+      } catch (error) {
+        console.error('Error loading font:', error);
       }
-    })();
-  });
+    };
+
+    loadFont();
+  }, []);
 
   React.useEffect(() => {
     if (!rmf) {
