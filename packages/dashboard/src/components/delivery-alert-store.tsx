@@ -470,7 +470,6 @@ export const DeliveryAlertStore = React.memo(() => {
 
     const sub = rmf.deliveryAlertObsStore.subscribe(async (deliveryAlert) => {
       let state: TaskState | undefined = undefined;
-      console.log(deliveryAlert);
       if (deliveryAlert.task_id) {
         try {
           state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(deliveryAlert.task_id)).data;
@@ -567,6 +566,7 @@ export const DeliveryAlertStore = React.memo(() => {
   return (
     <>
       {Object.values(alerts).map((alert) => {
+        console.log(alert);
         if (alert.deliveryAlert.tier === 'warning') {
           return (
             <DeliveryWarningDialog

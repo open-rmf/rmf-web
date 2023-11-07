@@ -8,9 +8,9 @@ from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import rmf_gateway
 from api_server.models import tortoise_models as ttm
 from api_server.models.delivery_alerts import (
-    action_from_tortoise,
-    category_from_tortoise,
-    tier_from_tortoise,
+    action_to_msg,
+    category_to_msg,
+    tier_to_msg,
 )
 from api_server.rmf_io import rmf_events
 
@@ -87,16 +87,12 @@ async def update_delivery_alert_action(delivery_alert_id: str, action: str):
         delivery_alert
     )
 
-    print(f"category is {category_from_tortoise(delivery_alert.category).value}")
-    print(f"tier is {tier_from_tortoise(delivery_alert.tier).value}")
-    print(f"action is {action_from_tortoise(delivery_alert.action).value}")
-
     rmf_gateway().respond_to_delivery_alert(
         id=delivery_alert_pydantic.id,
-        category=category_from_tortoise(delivery_alert.category).value,
-        tier=tier_from_tortoise(delivery_alert.tier).value,
+        category=category_to_msg(delivery_alert_pydantic.category),
+        tier=tier_to_msg(delivery_alert_pydantic.tier),
         task_id=delivery_alert_pydantic.task_id,
-        action=action_from_tortoise(delivery_alert.action).value,
+        action=action_to_msg(delivery_alert_pydantic.action),
         message=delivery_alert_pydantic.message,
     )
 
