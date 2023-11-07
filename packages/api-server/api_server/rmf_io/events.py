@@ -16,6 +16,8 @@ class RmfEvents:
         self.fleet_states = Subject()  # FleetState
         self.robot_health = Subject()  # RobotHealth
         self.building_map = BehaviorSubject(None)  # Optional[BuildingMap]
+        self.beacons = Subject()  # BeaconState
+        self.delivery_alerts = Subject()  # DeliveryAlert
 
 
 rmf_events = RmfEvents()
@@ -45,19 +47,3 @@ class AlertEvents:
 
 
 alert_events = AlertEvents()
-
-
-class BeaconEvents:
-    def __init__(self):
-        self.beacons = Subject()  # Beacons
-
-
-beacon_events = BeaconEvents()
-
-
-class DeliveryAlertEvents:
-    def __init__(self):
-        self.delivery_alerts = Subject()  # DeliveryAlert
-
-
-delivery_alert_events = DeliveryAlertEvents()

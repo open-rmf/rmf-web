@@ -3,8 +3,6 @@ from .events import (
     RmfEvents,
     TaskEvents,
     alert_events,
-    beacon_events,
-    delivery_alert_events,
     fleet_events,
     rmf_events,
     task_events,

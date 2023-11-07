@@ -6,16 +6,14 @@ from rx import operators as rxops
 
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import tortoise_models as ttm
-from api_server.rmf_io import delivery_alert_events
+from api_server.rmf_io import rmf_events
 
 router = FastIORouter(tags=["DeliveryAlerts"])
 
 
 @router.sub("", response_model=ttm.DeliveryAlertPydantic)
 async def sub_delivery_alerts(_req: SubscriptionRequest):
-    return delivery_alert_events.delivery_alerts.pipe(
-        rxops.filter(lambda x: x is not None)
-    )
+    return rmf_events.delivery_alerts.pipe(rxops.filter(lambda x: x is not None))
 
 
 @router.get("", response_model=List[ttm.DeliveryAlertPydantic])
@@ -58,7 +56,7 @@ async def create_delivery_alert(category: str, tier: str, task_id: str, message:
     delivery_alert_pydantic = await ttm.DeliveryAlertPydantic.from_tortoise_orm(
         delivery_alert
     )
-    delivery_alert_events.delivery_alerts.on_next(delivery_alert_pydantic)
+    rmf_events.delivery_alerts.on_next(delivery_alert_pydantic)
     return delivery_alert_pydantic
 
 

@@ -5,14 +5,14 @@ from rx import operators as rxops
 
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import tortoise_models as ttm
-from api_server.rmf_io import beacon_events
+from api_server.rmf_io import rmf_events
 
 router = FastIORouter(tags=["Beacons"])
 
 
 @router.sub("", response_model=ttm.BeaconStatePydantic)
 async def sub_beacons(_req: SubscriptionRequest):
-    return beacon_events.beacons.pipe(rxops.filter(lambda x: x is not None))
+    return rmf_events.beacons.pipe(rxops.filter(lambda x: x is not None))
 
 
 @router.get("", response_model=List[ttm.BeaconStatePydantic])
@@ -50,5 +50,5 @@ async def save_beacon_state(
     beacon_state_pydantic = await ttm.BeaconStatePydantic.from_tortoise_orm(
         beacon_state
     )
-    beacon_events.beacons.on_next(beacon_state_pydantic)
+    rmf_events.beacons.on_next(beacon_state_pydantic)
     return beacon_state_pydantic

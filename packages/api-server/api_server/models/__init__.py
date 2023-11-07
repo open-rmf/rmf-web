@@ -1,6 +1,7 @@
 from .authz import *
 from .beacons import *
 from .building_map import *
+from .delivery_alerts import *
 from .dispensers import *
 from .doors import *
 from .health import *
