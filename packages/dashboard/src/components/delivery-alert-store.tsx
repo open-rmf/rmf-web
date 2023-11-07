@@ -144,7 +144,11 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
             InputProps={{ readOnly: true, className: classes.textField }}
             fullWidth={true}
             margin="dense"
-            value={deliveryAlert.task_id ?? 'n/a'}
+            value={
+              deliveryAlert.task_id && deliveryAlert.task_id.length > 0
+                ? deliveryAlert.task_id
+                : 'n/a'
+            }
           />
           <TextField
             label="Category"

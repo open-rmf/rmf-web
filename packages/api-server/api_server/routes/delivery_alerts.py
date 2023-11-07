@@ -90,7 +90,7 @@ async def update_delivery_alert_action(delivery_alert_id: str, action: str):
     )
 
     rmf_gateway().respond_to_delivery_alert(
-        id=delivery_alert_pydantic.id,
+        alert_id=delivery_alert_pydantic.id,
         category=category_to_msg(delivery_alert_pydantic.category),
         tier=tier_to_msg(delivery_alert_pydantic.tier),
         task_id=delivery_alert_pydantic.task_id,
