@@ -265,10 +265,16 @@ class RmfGateway:
             self._adapter_lift_req.publish(msg)
 
     def respond_to_delivery_alert(
-        self, id: str, category: int, tier: int, task_id: str, action: int, message: str
+        self,
+        alert_id: str,
+        category: int,
+        tier: int,
+        task_id: str,
+        action: int,
+        message: str,
     ):
         msg = RmfDeliveryAlert()
-        msg.id = id
+        msg.id = alert_id
         msg.category = RmfDeliveryAlertCategory(value=category)
         msg.tier = RmfDeliveryAlertTier(value=tier)
         msg.task_id = task_id
