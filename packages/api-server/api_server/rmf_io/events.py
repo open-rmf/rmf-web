@@ -17,7 +17,7 @@ class RmfEvents:
         self.robot_health = Subject()  # RobotHealth
         self.building_map = BehaviorSubject(None)  # Optional[BuildingMap]
         self.beacons = Subject()  # BeaconState
-        self.delivery_alerts = Subject()  # DeliveryAlert
+        self.delivery_alerts = Subject()  # ttm.DeliveryAlertPydantic
 
 
 rmf_events = RmfEvents()

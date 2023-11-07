@@ -202,13 +202,16 @@ class RmfGateway:
         self._subscriptions.append(beacon_sub)
 
         def convert_delivery_alert(delivery_alert: RmfDeliveryAlert):
+            category = category_from_msg(delivery_alert.category.value)
+            tier = tier_from_msg(delivery_alert.tier.value)
+            action = action_from_msg(delivery_alert.action.value)
             return DeliveryAlert(
-                id=delivery_alert.id,
-                category=category_from_msg(delivery_alert.category.value),
-                tier=tier_from_msg(delivery_alert.tier.value),
-                task_id=delivery_alert.task_id,
-                action=action_from_msg(delivery_alert.action.value),
-                message=delivery_alert.message,
+                id=delivery_alert.id,  # pyright: ignore[reportGeneralTypeIssues]
+                category=category,  # pyright: ignore[reportGeneralTypeIssues]
+                tier=tier,  # pyright: ignore[reportGeneralTypeIssues]
+                task_id=delivery_alert.task_id,  # pyright: ignore[reportGeneralTypeIssues]
+                action=action,  # pyright: ignore[reportGeneralTypeIssues]
+                message=delivery_alert.message,  # pyright: ignore[reportGeneralTypeIssues]
             )
 
         delivery_alert_request_sub = ros_node().create_subscription(

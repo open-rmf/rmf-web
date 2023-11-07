@@ -1,4 +1,4 @@
-from typing import cast
+# pyright: reportGeneralTypeIssues=false
 
 from . import tortoise_models as ttm
 

@@ -1,3 +1,5 @@
+# pyright: reportGeneralTypeIssues=false
+
 from datetime import datetime
 from typing import List
 
