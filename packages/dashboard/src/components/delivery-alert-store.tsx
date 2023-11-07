@@ -429,7 +429,9 @@ export const DeliveryAlertStore = React.memo(() => {
         // the delivery alerts that are currently present and have not been
         // responded to.
         if (!alert.task_id) {
-          filteredAlertsMap[alert.id] = { deliveryAlert: alert, taskState: undefined };
+          if (alert.action === 'waiting') {
+            filteredAlertsMap[alert.id] = { deliveryAlert: alert, taskState: undefined };
+          }
           continue;
         }
 
@@ -468,6 +470,7 @@ export const DeliveryAlertStore = React.memo(() => {
 
     const sub = rmf.deliveryAlertObsStore.subscribe(async (deliveryAlert) => {
       let state: TaskState | undefined = undefined;
+      console.log(deliveryAlert);
       if (deliveryAlert.task_id) {
         try {
           state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(deliveryAlert.task_id)).data;
@@ -583,6 +586,7 @@ export const DeliveryAlertStore = React.memo(() => {
           );
         }
 
+        console.log('alert was not a warning somehow');
         return (
           <DeliveryErrorDialog
             deliveryAlert={alert.deliveryAlert}

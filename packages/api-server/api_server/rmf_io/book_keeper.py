@@ -139,7 +139,7 @@ class RmfBookKeeper:
             self._loggers.beacon_state.info(json.dumps(beacon_state.dict()))
 
         self._subscriptions.append(
-            self.rmf_events.beacons.subscribe(lambda x: self._create_task(update(x)))
+            self.rmf.beacons.subscribe(lambda x: self._create_task(update(x)))
         )
 
     def _record_delivery_alert(self):
@@ -148,9 +148,7 @@ class RmfBookKeeper:
             self._loggers.beacon_state.info(json.dumps(delivery_alert.dict()))
 
         self._subscriptions.append(
-            self.rmf_events.delivery_alerts.subscribe(
-                lambda x: self._create_task(update(x))
-            )
+            self.rmf.delivery_alerts.subscribe(lambda x: self._create_task(update(x)))
         )
 
     def _record_building_map(self):
