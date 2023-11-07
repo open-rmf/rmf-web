@@ -442,7 +442,11 @@ export const DeliveryAlertStore = React.memo(() => {
           continue;
         }
 
-        // Update map with newer alerts for the same task id.
+        // Update map with newer alerts for the same task id, if it is still
+        // unresolved.
+        if (alert.action !== 'waiting') {
+          continue;
+        }
         let state: TaskState | undefined = undefined;
         try {
           state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(alert.task_id)).data;
