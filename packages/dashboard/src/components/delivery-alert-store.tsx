@@ -570,7 +570,6 @@ export const DeliveryAlertStore = React.memo(() => {
   return (
     <>
       {Object.values(alerts).map((alert) => {
-        console.log(alert);
         if (alert.deliveryAlert.tier === 'warning') {
           return (
             <DeliveryWarningDialog
@@ -590,7 +589,6 @@ export const DeliveryAlertStore = React.memo(() => {
           );
         }
 
-        console.log('alert was not a warning somehow');
         return (
           <DeliveryErrorDialog
             deliveryAlert={alert.deliveryAlert}
