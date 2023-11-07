@@ -144,7 +144,11 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
             InputProps={{ readOnly: true, className: classes.textField }}
             fullWidth={true}
             margin="dense"
-            value={deliveryAlert.task_id ?? 'n/a'}
+            value={
+              deliveryAlert.task_id && deliveryAlert.task_id.length > 0
+                ? deliveryAlert.task_id
+                : 'n/a'
+            }
           />
           <TextField
             label="Category"
@@ -429,7 +433,9 @@ export const DeliveryAlertStore = React.memo(() => {
         // the delivery alerts that are currently present and have not been
         // responded to.
         if (!alert.task_id) {
-          filteredAlertsMap[alert.id] = { deliveryAlert: alert, taskState: undefined };
+          if (alert.action === 'waiting') {
+            filteredAlertsMap[alert.id] = { deliveryAlert: alert, taskState: undefined };
+          }
           continue;
         }
 
@@ -440,7 +446,11 @@ export const DeliveryAlertStore = React.memo(() => {
           continue;
         }
 
-        // Update map with newer alerts for the same task id.
+        // Update map with newer alerts for the same task id, if it is still
+        // unresolved.
+        if (alert.action !== 'waiting') {
+          continue;
+        }
         let state: TaskState | undefined = undefined;
         try {
           state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(alert.task_id)).data;

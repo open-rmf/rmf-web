@@ -22,6 +22,10 @@ from rmf_door_msgs.msg import DoorState as RmfDoorState
 
 # pylint: disable-next=no-name-in-module
 from rmf_fleet_msgs.msg import BeaconState as RmfBeaconState
+from rmf_fleet_msgs.msg import DeliveryAlert as RmfDeliveryAlert
+from rmf_fleet_msgs.msg import DeliveryAlertAction as RmfDeliveryAlertAction
+from rmf_fleet_msgs.msg import DeliveryAlertCategory as RmfDeliveryAlertCategory
+from rmf_fleet_msgs.msg import DeliveryAlertTier as RmfDeliveryAlertTier
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
@@ -33,13 +37,15 @@ from .logger import logger as base_logger
 from .models import (
     BeaconState,
     BuildingMap,
+    DeliveryAlert,
     DispenserState,
     DoorState,
     IngestorState,
     LiftState,
 )
+from .models.delivery_alerts import action_from_msg, category_from_msg, tier_from_msg
 from .repositories import CachedFilesRepository, cached_files_repo
-from .rmf_io import beacon_events, rmf_events
+from .rmf_io import rmf_events
 from .ros import ros_node
 
 
@@ -94,6 +100,17 @@ class RmfGateway:
         )
         self._submit_task_srv = ros_node().create_client(RmfSubmitTask, "submit_task")
         self._cancel_task_srv = ros_node().create_client(RmfCancelTask, "cancel_task")
+
+        self._delivery_alert_response = ros_node().create_publisher(
+            RmfDeliveryAlert,
+            "delivery_alert_response",
+            rclpy.qos.QoSProfile(
+                history=rclpy.qos.HistoryPolicy.KEEP_LAST,
+                depth=10,
+                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
+                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
+            ),
+        )
 
         self.cached_files = cached_files
         self.logger = logger or base_logger.getChild(self.__class__.__name__)
@@ -179,10 +196,31 @@ class RmfGateway:
         beacon_sub = ros_node().create_subscription(
             RmfBeaconState,
             "beacon_state",
-            lambda msg: beacon_events.beacons.on_next(convert_beacon_state(msg)),
+            lambda msg: rmf_events.beacons.on_next(convert_beacon_state(msg)),
             10,
         )
         self._subscriptions.append(beacon_sub)
+
+        def convert_delivery_alert(delivery_alert: RmfDeliveryAlert):
+            category = category_from_msg(delivery_alert.category.value)
+            tier = tier_from_msg(delivery_alert.tier.value)
+            action = action_from_msg(delivery_alert.action.value)
+            return DeliveryAlert(
+                id=delivery_alert.id,  # pyright: ignore[reportGeneralTypeIssues]
+                category=category,  # pyright: ignore[reportGeneralTypeIssues]
+                tier=tier,  # pyright: ignore[reportGeneralTypeIssues]
+                task_id=delivery_alert.task_id,  # pyright: ignore[reportGeneralTypeIssues]
+                action=action,  # pyright: ignore[reportGeneralTypeIssues]
+                message=delivery_alert.message,  # pyright: ignore[reportGeneralTypeIssues]
+            )
+
+        delivery_alert_request_sub = ros_node().create_subscription(
+            RmfDeliveryAlert,
+            "delivery_alert_request",
+            lambda msg: rmf_events.delivery_alerts.on_next(convert_delivery_alert(msg)),
+            10,
+        )
+        self._subscriptions.append(delivery_alert_request_sub)
 
     @staticmethod
     def now() -> Optional[RosTime]:
@@ -225,6 +263,24 @@ class RmfGateway:
             msg.session_id = session_id
             self._lift_req.publish(msg)
             self._adapter_lift_req.publish(msg)
+
+    def respond_to_delivery_alert(
+        self,
+        alert_id: str,
+        category: int,
+        tier: int,
+        task_id: str,
+        action: int,
+        message: str,
+    ):
+        msg = RmfDeliveryAlert()
+        msg.id = alert_id
+        msg.category = RmfDeliveryAlertCategory(value=category)
+        msg.tier = RmfDeliveryAlertTier(value=tier)
+        msg.task_id = task_id
+        msg.action = RmfDeliveryAlertAction(value=action)
+        msg.message = message
+        self._delivery_alert_response.publish(msg)
 
 
 _rmf_gateway: RmfGateway

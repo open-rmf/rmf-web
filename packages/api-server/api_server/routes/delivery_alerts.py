@@ -1,3 +1,5 @@
+# pyright: reportGeneralTypeIssues=false
+
 from datetime import datetime
 from typing import List
 
@@ -5,17 +7,21 @@ from fastapi import HTTPException
 from rx import operators as rxops
 
 from api_server.fast_io import FastIORouter, SubscriptionRequest
+from api_server.gateway import rmf_gateway
 from api_server.models import tortoise_models as ttm
-from api_server.rmf_io import delivery_alert_events
+from api_server.models.delivery_alerts import (
+    action_to_msg,
+    category_to_msg,
+    tier_to_msg,
+)
+from api_server.rmf_io import rmf_events
 
 router = FastIORouter(tags=["DeliveryAlerts"])
 
 
 @router.sub("", response_model=ttm.DeliveryAlertPydantic)
 async def sub_delivery_alerts(_req: SubscriptionRequest):
-    return delivery_alert_events.delivery_alerts.pipe(
-        rxops.filter(lambda x: x is not None)
-    )
+    return rmf_events.delivery_alerts.pipe(rxops.filter(lambda x: x is not None))
 
 
 @router.get("", response_model=List[ttm.DeliveryAlertPydantic])
@@ -58,7 +64,7 @@ async def create_delivery_alert(category: str, tier: str, task_id: str, message:
     delivery_alert_pydantic = await ttm.DeliveryAlertPydantic.from_tortoise_orm(
         delivery_alert
     )
-    delivery_alert_events.delivery_alerts.on_next(delivery_alert_pydantic)
+    rmf_events.delivery_alerts.on_next(delivery_alert_pydantic)
     return delivery_alert_pydantic
 
 
@@ -82,4 +88,14 @@ async def update_delivery_alert_action(delivery_alert_id: str, action: str):
     delivery_alert_pydantic = await ttm.DeliveryAlertPydantic.from_tortoise_orm(
         delivery_alert
     )
+
+    rmf_gateway().respond_to_delivery_alert(
+        alert_id=delivery_alert_pydantic.id,
+        category=category_to_msg(delivery_alert_pydantic.category),
+        tier=tier_to_msg(delivery_alert_pydantic.tier),
+        task_id=delivery_alert_pydantic.task_id,
+        action=action_to_msg(delivery_alert_pydantic.action),
+        message=delivery_alert_pydantic.message,
+    )
+
     return delivery_alert_pydantic
