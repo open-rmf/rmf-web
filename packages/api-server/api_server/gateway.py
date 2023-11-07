@@ -43,6 +43,11 @@ from .models import (
     IngestorState,
     LiftState,
 )
+from .models.ros_pydantic.rmf_fleet_msgs import (
+    DeliveryAlertAction,
+    DeliveryAlertCategory,
+    DeliveryAlertTier,
+)
 from .repositories import CachedFilesRepository, cached_files_repo
 from .rmf_io import rmf_events
 from .ros import ros_node
@@ -203,10 +208,10 @@ class RmfGateway:
         def convert_delivery_alert(delivery_alert: RmfDeliveryAlert):
             return DeliveryAlert(
                 id=delivery_alert.id,
-                # category=
-                # tier=
+                category=DeliveryAlertCategory(value=delivery_alert.category.value),
+                tier=DeliveryAlertTier(value=delivery_alert.tier.value),
                 task_id=delivery_alert.task_id,
-                # action=
+                action=DeliveryAlertAction(value=delivery_alert.action.value),
                 message=delivery_alert.message,
             )
 
