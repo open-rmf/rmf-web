@@ -80,6 +80,32 @@ describe('submit task', () => {
 
     await expect($('div=Created favorite task successfully')).toBeDisplayed();
 
+    // Check if it controls that the name of the favorite task cannot be duplicated correctly.
+    await (await $('button[aria-label="Save as a favorite task"]')).click();
+    await (await $('#favorite-input')).waitForDisplayed();
+    await (await $('#favorite-input')).setValue('My favorite task');
+    await (await $('button[aria-label="Confirm"]')).click();
+    await expect(
+      $(
+        'div=Failed to create or delete favorite task: The name of the favorite task already exists.',
+      ),
+    ).toBeDisplayed();
+
+    await (await $('#favorite-input')).waitForDisplayed();
+    // Concatenates the name of the previous task and adds "two" to it.
+    await (await $('#favorite-input')).setValue(' two');
+    await (await $('button[aria-label="Confirm"]')).click();
+    await expect($('div=Created favorite task successfully')).toBeDisplayed();
+
+    const favoriteTaskItem = await $(`div=${'My favorite task'}`);
+    await favoriteTaskItem.click();
+
+    const deleteButton = await $('button[aria-label="delete"]');
+    await deleteButton.click();
+
+    const confirmButton = await $('button[aria-label="Confirm"]');
+    await confirmButton.click();
+
     await (await $('button[aria-label="Cancel button"]')).click();
   }).timeout(60000);
 });
