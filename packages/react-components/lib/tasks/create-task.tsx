@@ -891,6 +891,14 @@ export function CreateTaskForm({
       return;
     }
     try {
+      const isNameAlreadyExists = favoritesTasks.some(
+        (task) => task.name === favoriteTaskBuffer.name,
+      );
+
+      if (isNameAlreadyExists) {
+        throw new Error('The name of the favorite task already exists.');
+      }
+
       setSavingFavoriteTask(true);
       await submitFavoriteTask(favoriteTaskBuffer);
       setSavingFavoriteTask(false);
