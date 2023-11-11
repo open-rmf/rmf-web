@@ -27,4 +27,5 @@ export const AppEvents = {
   zoomOut: new Subject<void>(),
   mapCenter: new BehaviorSubject<[number, number]>([0, 0]),
   levelSelect: new BehaviorSubject<Level | null>(null),
+  justLoggedIn: new BehaviorSubject<boolean>(false),
 };
