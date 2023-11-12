@@ -7,7 +7,8 @@ const debug = Debug('authenticator');
 
 export class KeycloakAuthenticator
   extends EventEmitter<AuthenticatorEventType>
-  implements Authenticator {
+  implements Authenticator
+{
   get user(): string | undefined {
     return this._user;
   }
@@ -33,6 +34,16 @@ export class KeycloakAuthenticator
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (this._inst.idTokenParsed as any).preferred_username;
   }
+
+  // private _getRoles(): string {
+  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //   return (this._inst.idTokenParsed as any).realm_roles;
+  // }
+
+  // private _getGroups(): string {
+  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //   return (this._inst.idTokenParsed as any).groups;
+  // }
 
   async init(): Promise<void> {
     if (this._initialized) {
@@ -66,6 +77,9 @@ export class KeycloakAuthenticator
     }
 
     this._user = this._inst.tokenParsed && this._getUser();
+
+    console.log(this._inst.idTokenParsed as any);
+
     this._initialized = true;
   }
 
