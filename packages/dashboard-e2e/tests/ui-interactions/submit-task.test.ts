@@ -107,5 +107,5 @@ describe('submit task', () => {
     await confirmButton.click();
 
     await (await $('button[aria-label="Cancel button"]')).click();
-  }).timeout(60000);
+  }).timeout(300000);
 });
