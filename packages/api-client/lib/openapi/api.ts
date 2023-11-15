@@ -5918,6 +5918,70 @@ export const DeliveryAlertsApiAxiosParamCreator = function (configuration?: Conf
     },
     /**
      *
+     * @summary Query Delivery Alerts
+     * @param {string} [category] comma separated list of alert categories
+     * @param {string} [tier] comma separated of tier
+     * @param {string} [taskId] comma separated list of task_id
+     * @param {string} [action] comma separated list of action
+     * @param {string} [message] comma separated of message
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    queryDeliveryAlertsDeliveryAlertsQueryGet: async (
+      category?: string,
+      tier?: string,
+      taskId?: string,
+      action?: string,
+      message?: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/delivery_alerts/query`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      if (category !== undefined) {
+        localVarQueryParameter['category'] = category;
+      }
+
+      if (tier !== undefined) {
+        localVarQueryParameter['tier'] = tier;
+      }
+
+      if (taskId !== undefined) {
+        localVarQueryParameter['task_id'] = taskId;
+      }
+
+      if (action !== undefined) {
+        localVarQueryParameter['action'] = action;
+      }
+
+      if (message !== undefined) {
+        localVarQueryParameter['message'] = message;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Update Delivery Alert Action
      * @param {string} deliveryAlertId
      * @param {string} action
@@ -6059,6 +6123,41 @@ export const DeliveryAlertsApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Query Delivery Alerts
+     * @param {string} [category] comma separated list of alert categories
+     * @param {string} [tier] comma separated of tier
+     * @param {string} [taskId] comma separated list of task_id
+     * @param {string} [action] comma separated list of action
+     * @param {string} [message] comma separated of message
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async queryDeliveryAlertsDeliveryAlertsQueryGet(
+      category?: string,
+      tier?: string,
+      taskId?: string,
+      action?: string,
+      message?: string,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<Array<ApiServerModelsTortoiseModelsDeliveryAlertsDeliveryAlertLeaf>>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.queryDeliveryAlertsDeliveryAlertsQueryGet(
+          category,
+          tier,
+          taskId,
+          action,
+          message,
+          options,
+        );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
      * @summary Update Delivery Alert Action
      * @param {string} deliveryAlertId
      * @param {string} action
@@ -6148,6 +6247,29 @@ export const DeliveryAlertsApiFactory = function (
     },
     /**
      *
+     * @summary Query Delivery Alerts
+     * @param {string} [category] comma separated list of alert categories
+     * @param {string} [tier] comma separated of tier
+     * @param {string} [taskId] comma separated list of task_id
+     * @param {string} [action] comma separated list of action
+     * @param {string} [message] comma separated of message
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    queryDeliveryAlertsDeliveryAlertsQueryGet(
+      category?: string,
+      tier?: string,
+      taskId?: string,
+      action?: string,
+      message?: string,
+      options?: any,
+    ): AxiosPromise<Array<ApiServerModelsTortoiseModelsDeliveryAlertsDeliveryAlertLeaf>> {
+      return localVarFp
+        .queryDeliveryAlertsDeliveryAlertsQueryGet(category, tier, taskId, action, message, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Update Delivery Alert Action
      * @param {string} deliveryAlertId
      * @param {string} action
@@ -6227,6 +6349,31 @@ export class DeliveryAlertsApi extends BaseAPI {
   public getDeliveryAlertsDeliveryAlertsGet(options?: AxiosRequestConfig) {
     return DeliveryAlertsApiFp(this.configuration)
       .getDeliveryAlertsDeliveryAlertsGet(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Query Delivery Alerts
+   * @param {string} [category] comma separated list of alert categories
+   * @param {string} [tier] comma separated of tier
+   * @param {string} [taskId] comma separated list of task_id
+   * @param {string} [action] comma separated list of action
+   * @param {string} [message] comma separated of message
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DeliveryAlertsApi
+   */
+  public queryDeliveryAlertsDeliveryAlertsQueryGet(
+    category?: string,
+    tier?: string,
+    taskId?: string,
+    action?: string,
+    message?: string,
+    options?: AxiosRequestConfig,
+  ) {
+    return DeliveryAlertsApiFp(this.configuration)
+      .queryDeliveryAlertsDeliveryAlertsQueryGet(category, tier, taskId, action, message, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

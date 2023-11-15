@@ -385,6 +385,84 @@ export default {
         },
       },
     },
+    '/delivery_alerts/query': {
+      get: {
+        tags: ['DeliveryAlerts'],
+        summary: 'Query Delivery Alerts',
+        operationId: 'query_delivery_alerts_delivery_alerts_query_get',
+        parameters: [
+          {
+            description: 'comma separated list of alert categories',
+            required: false,
+            schema: {
+              title: 'Category',
+              type: 'string',
+              description: 'comma separated list of alert categories',
+            },
+            name: 'category',
+            in: 'query',
+          },
+          {
+            description: 'comma separated of tier',
+            required: false,
+            schema: { title: 'Tier', type: 'string', description: 'comma separated of tier' },
+            name: 'tier',
+            in: 'query',
+          },
+          {
+            description: 'comma separated list of task_id',
+            required: false,
+            schema: {
+              title: 'Task Id',
+              type: 'string',
+              description: 'comma separated list of task_id',
+            },
+            name: 'task_id',
+            in: 'query',
+          },
+          {
+            description: 'comma separated list of action',
+            required: false,
+            schema: {
+              title: 'Action',
+              type: 'string',
+              description: 'comma separated list of action',
+            },
+            name: 'action',
+            in: 'query',
+          },
+          {
+            description: 'comma separated of message',
+            required: false,
+            schema: { title: 'Message', type: 'string', description: 'comma separated of message' },
+            name: 'message',
+            in: 'query',
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: {
+              'application/json': {
+                schema: {
+                  title: 'Response Query Delivery Alerts Delivery Alerts Query Get',
+                  type: 'array',
+                  items: {
+                    $ref: '#/components/schemas/api_server.models.tortoise_models.delivery_alerts.DeliveryAlert.leaf',
+                  },
+                },
+              },
+            },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
     '/delivery_alerts/{delivery_alert_id}': {
       get: {
         tags: ['DeliveryAlerts'],
