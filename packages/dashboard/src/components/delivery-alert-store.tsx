@@ -43,6 +43,12 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
   const rmf = React.useContext(RmfAppContext);
 
   React.useEffect(() => {
+    if (deliveryAlert.action !== 'waiting') {
+      setActionTaken(true);
+    }
+  }, [deliveryAlert]);
+
+  React.useEffect(() => {
     if (!rmf) {
       console.error('Tasks api not available.');
       setNewTaskState(null);
