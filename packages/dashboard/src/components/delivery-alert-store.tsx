@@ -415,27 +415,32 @@ export const DeliveryAlertStore = React.memo(() => {
     // Initialize with any existing delivery alerts that are still waiting for
     // action.
     (async () => {
-      // TODO(ac): Create an endpoint which only gives delivery alerts that have
-      // not been actioned upon, to prevent requesting too many delivery alerts.
-      let deliveryAlerts: DeliveryAlert[] = [];
+      let waitingDeliveryAlerts: DeliveryAlert[] = [];
       try {
-        deliveryAlerts = (await rmf.deliveryAlertsApi.getDeliveryAlertsDeliveryAlertsGet()).data;
+        waitingDeliveryAlerts = (
+          await rmf.deliveryAlertsApi.queryDeliveryAlertsDeliveryAlertsQueryGet(
+            undefined,
+            undefined,
+            undefined,
+            'waiting',
+            undefined,
+            undefined,
+          )
+        ).data;
       } catch (e) {
-        console.error(`Failed to retrieve existing delivery alerts: ${e}`);
+        console.error(`Failed to retrieve waiting delivery alerts: ${e}`);
         return;
       }
 
       const filteredAlertsMap: Record<string, DeliveryAlertData> = {};
       const taskIdToAlertsMap: Record<string, DeliveryAlertData> = {};
-      for (const alert of deliveryAlerts) {
+      for (const alert of waitingDeliveryAlerts) {
         // No task involved, and still waiting for user action. There should not
         // be any longstanding delivery alerts that appear after a refresh, only
         // the delivery alerts that are currently present and have not been
         // responded to.
         if (!alert.task_id) {
-          if (alert.action === 'waiting') {
-            filteredAlertsMap[alert.id] = { deliveryAlert: alert, taskState: undefined };
-          }
+          filteredAlertsMap[alert.id] = { deliveryAlert: alert, taskState: undefined };
           continue;
         }
 
@@ -448,9 +453,6 @@ export const DeliveryAlertStore = React.memo(() => {
 
         // Update map with newer alerts for the same task id, if it is still
         // unresolved.
-        if (alert.action !== 'waiting') {
-          continue;
-        }
         let state: TaskState | undefined = undefined;
         try {
           state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(alert.task_id)).data;
@@ -468,9 +470,6 @@ export const DeliveryAlertStore = React.memo(() => {
       // Move all unresolved and up-to-date task related delivery alerts to the
       // filtered map.
       for (const alertData of Object.values(taskIdToAlertsMap)) {
-        if (alertData.deliveryAlert.action !== 'waiting') {
-          continue;
-        }
         filteredAlertsMap[alertData.deliveryAlert.id] = alertData;
       }
       setAlerts(filteredAlertsMap);
