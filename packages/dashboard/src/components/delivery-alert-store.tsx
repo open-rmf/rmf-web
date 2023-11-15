@@ -403,6 +403,7 @@ interface DeliveryAlertData {
 export const DeliveryAlertStore = React.memo(() => {
   const rmf = React.useContext(RmfAppContext);
   const [alerts, setAlerts] = React.useState<Record<string, DeliveryAlertData>>({});
+  const [closedErrorAlertId, setClosedErrorAlertId] = React.useState<string>();
   const appController = React.useContext(AppControllerContext);
 
   const filterAndPushDeliveryAlert = (deliveryAlert: DeliveryAlert, taskState?: TaskState) => {
@@ -437,7 +438,6 @@ export const DeliveryAlertStore = React.memo(() => {
     if (!rmf) {
       return;
     }
-
     // Initialize with any existing delivery alerts that are still waiting for
     // action.
     (async () => {
@@ -500,7 +500,12 @@ export const DeliveryAlertStore = React.memo(() => {
       }
       setAlerts(filteredAlertsMap);
     })();
+  }, [rmf]);
 
+  React.useEffect(() => {
+    if (!rmf) {
+      return;
+    }
     const sub = rmf.deliveryAlertObsStore.subscribe(async (deliveryAlert) => {
       let state: TaskState | undefined = undefined;
       if (deliveryAlert.task_id) {
@@ -510,10 +515,15 @@ export const DeliveryAlertStore = React.memo(() => {
           console.error(`Failed to fetch task state for ${deliveryAlert.task_id}`);
         }
       }
+      // In the event that we are receiving the update of a closed error alert
+      // that this dashboard instance introduced, we don't need to push it
+      if (deliveryAlert.id === closedErrorAlertId) {
+        return;
+      }
       filterAndPushDeliveryAlert(deliveryAlert, state);
     });
     return () => sub.unsubscribe();
-  }, [rmf]);
+  }, [rmf, closedErrorAlertId]);
 
   const onOverride = React.useCallback<Required<DeliveryWarningDialogProps>['onOverride']>(
     async (delivery_alert_id, task_id) => {
@@ -574,6 +584,7 @@ export const DeliveryAlertStore = React.memo(() => {
   // up anymore when the dashboard is refreshed.
   const onErrorCloseCancel = React.useCallback<Required<DeliveryErrorDialogProps>['onClose']>(
     async (delivery_alert_id) => {
+      setClosedErrorAlertId(delivery_alert_id);
       try {
         if (!rmf) {
           throw new Error('delivery alert api not available');
