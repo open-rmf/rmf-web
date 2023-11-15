@@ -11,6 +11,7 @@ from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import rmf_gateway
 from api_server.models import tortoise_models as ttm
 from api_server.models.delivery_alerts import (
+    DeliveryAlert,
     action_to_msg,
     category_to_msg,
     tier_to_msg,
@@ -94,9 +95,7 @@ async def create_delivery_alert(category: str, tier: str, task_id: str, message:
     except Exception as e:
         raise HTTPException(400, f"Could not create delivery alert: {e}") from e
 
-    delivery_alert_pydantic = await ttm.DeliveryAlertPydantic.from_tortoise_orm(
-        delivery_alert
-    )
+    delivery_alert_pydantic = DeliveryAlert.from_tortoise(delivery_alert)
     rmf_events.delivery_alerts.on_next(delivery_alert_pydantic)
     return delivery_alert_pydantic
 
@@ -118,9 +117,7 @@ async def update_delivery_alert_action(delivery_alert_id: str, action: str):
         ) from e
     await delivery_alert.save()
 
-    delivery_alert_pydantic = await ttm.DeliveryAlertPydantic.from_tortoise_orm(
-        delivery_alert
-    )
+    delivery_alert_pydantic = DeliveryAlert.from_tortoise(delivery_alert)
 
     rmf_gateway().respond_to_delivery_alert(
         alert_id=delivery_alert_pydantic.id,
@@ -131,4 +128,5 @@ async def update_delivery_alert_action(delivery_alert_id: str, action: str):
         message=delivery_alert_pydantic.message,
     )
 
+    rmf_events.delivery_alerts.on_next(delivery_alert_pydantic)
     return delivery_alert_pydantic
