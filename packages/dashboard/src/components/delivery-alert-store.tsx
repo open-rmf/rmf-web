@@ -458,41 +458,77 @@ export const DeliveryAlertStore = React.memo(() => {
         return;
       }
 
-      // Query for the same tasks, and if there were later ones, we ignore this
-      let waitingUpToDateDeliveryAlerts: DeliveryAlert[] = [];
-      for (const alert of waitingDeliveryAlerts) {
-        // Alerts without task IDs always need to be handled
-        if (alert.task_id === undefined || alert.task_id === null) {
-          waitingUpToDateDeliveryAlerts.push(alert);
-          continue;
-        }
+      // // Query for the same tasks, and if there were later ones, we ignore this
+      // let waitingUpToDateDeliveryAlerts: DeliveryAlert[] = [];
+      // let task_ids_query: string = '';
+      // for (const alert of waitingDeliveryAlerts) {
+      //   if (alert.task_id !== null && alert.task_id !== undefined) {
+      //     task_ids_query = `${task_ids_query},${alert.task_id}`
+      //   }
+      // }
 
-        let deliveryAlertsWithSameTaskIds: DeliveryAlert[] = [];
-        try {
-          deliveryAlertsWithSameTaskIds = (
-            await rmf.deliveryAlertsApi.queryDeliveryAlertsDeliveryAlertsQueryGet(
-              undefined,
-              undefined,
-              alert.task_id,
-              undefined,
-              undefined,
-              undefined,
-            )
-          ).data;
-        } catch (e) {
-          console.error(`Failed to retrieve waiting delivery alerts: ${e}`);
-          return;
-        }
-        if (deliveryAlertsWithSameTaskIds.length === 1) {
-          waitingUpToDateDeliveryAlerts.push(alert);
-        }
+      // let deliveryAlertsWithSameTaskIds: DeliveryAlert[] = [];
+      // if (task_ids_query.length !== 0) {
+      //   try {
+      //     deliveryAlertsWithSameTaskIds = (
+      //       await rmf.deliveryAlertsApi.queryDeliveryAlertsDeliveryAlertsQueryGet(
+      //         undefined,
+      //         undefined,
+      //         task_ids_query,
+      //         undefined,
+      //         undefined,
+      //         undefined,
+      //       )
+      //     ).data;
+      //   } catch (e) {
+      //     console.error(`Failed to retrieve waiting delivery alerts with the same task IDs: ${e}`);
+      //   }
+      // }
 
-        for (const alertWithSameTaskId of deliveryAlertsWithSameTaskIds) {
-          if (alertWithSameTaskId.id > alert.id) {
-            waitingUpToDateDeliveryAlerts.push(alert);
-          }
-        }
-      }
+      // let taskIdToLatestDeliveryAlert: Record<string, string> = {};
+      // for (const alert in deliveryAlertsWithSameTaskIds) {
+      //   if (alert.task_id)
+      // }
+
+      // for (const alert of waitingDeliveryAlerts) {
+      //   // Alerts without task IDs always need to be handled
+      //   if (alert.task_id === undefined || alert.task_id === null) {
+      //     waitingUpToDateDeliveryAlerts.push(alert);
+      //     continue;
+      //   }
+
+      //   let deliveryAlertsWithSameTaskIds: DeliveryAlert[] = [];
+      //   try {
+      //     deliveryAlertsWithSameTaskIds = (
+      //       await rmf.deliveryAlertsApi.queryDeliveryAlertsDeliveryAlertsQueryGet(
+      //         undefined,
+      //         undefined,
+      //         alert.task_id,
+      //         undefined,
+      //         undefined,
+      //         undefined,
+      //       )
+      //     ).data;
+      //   } catch (e) {
+      //     console.error(`Failed to retrieve waiting delivery alerts: ${e}`);
+      //     return;
+      //   }
+      //   if (deliveryAlertsWithSameTaskIds.length === 1) {
+      //     waitingUpToDateDeliveryAlerts.push(alert);
+      //     continue;
+      //   }
+
+      //   let newerAlertAvailable = false;
+      //   for (const alertWithSameTaskId of deliveryAlertsWithSameTaskIds) {
+      //     if (alertWithSameTaskId.id > alert.id) {
+      //       newerAlertAvailable = true;
+      //     }
+      //   }
+
+      //   if (!newerAlertAvailable) {
+      //     waitingUpToDateDeliveryAlerts.push(alert);
+      //   }
+      // }
 
       const filteredAlertsMap: Record<string, DeliveryAlertData> = {};
       const taskIdToAlertsMap: Record<string, DeliveryAlertData> = {};

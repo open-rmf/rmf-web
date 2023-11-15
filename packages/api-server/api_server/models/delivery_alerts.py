@@ -98,6 +98,11 @@ class DeliveryAlert(ttm.DeliveryAlertPydantic):
         )
 
     async def save(self) -> None:
+        # Get previous delivery alert for this task ID
+        prev_waiting_delivery_alert = await ttm.DeliveryAlert.get_or_none(
+            task_id=self.task_id, action="waiting"
+        )
+
         await ttm.DeliveryAlert.update_or_create(
             {
                 "category": self.category,
@@ -108,3 +113,8 @@ class DeliveryAlert(ttm.DeliveryAlertPydantic):
             },
             id=self.id,
         )
+
+        # If there was a previous delivery alert for this task ID, we cancel it
+        if prev_waiting_delivery_alert is not None:
+            await prev_waiting_delivery_alert.update_from_dict({"action": "cancelled"})
+            await prev_waiting_delivery_alert.save()

@@ -81,6 +81,16 @@ async def get_delivery_alert(delivery_alert_id: str):
 
 @router.post("", status_code=201, response_model=ttm.DeliveryAlertPydantic)
 async def create_delivery_alert(category: str, tier: str, task_id: str, message: str):
+    # Get the previous delivery alert for this task ID
+    prev_waiting_delivery_alert = None
+    if len(task_id) != 0:
+        try:
+            prev_delivery_alerts = await ttm.DeliveryAlert.get_or_none(
+                task_id=task_id, action="waiting"
+            )
+        except FieldError as e:
+            raise HTTPException(422, str(e)) from e
+
     timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     delivery_alert_id = f"delivery-alert-{timestamp}"
     try:
@@ -95,6 +105,13 @@ async def create_delivery_alert(category: str, tier: str, task_id: str, message:
     except Exception as e:
         raise HTTPException(400, f"Could not create delivery alert: {e}") from e
 
+    # After creating a new delivery alert for this task ID, if there was a
+    # previous delivery alert, we cancel it
+    if prev_waiting_delivery_alert is not None:
+        prev_waiting_delivery_alert.update_from_dict({"action": "cancelled"})
+        await prev_waiting_delivery_alert.save()
+
+    # Return the newly created delivery alert
     delivery_alert_pydantic = DeliveryAlert.from_tortoise(delivery_alert)
     rmf_events.delivery_alerts.on_next(delivery_alert_pydantic)
     return delivery_alert_pydantic
