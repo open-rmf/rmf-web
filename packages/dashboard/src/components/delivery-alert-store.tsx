@@ -517,7 +517,7 @@ export const DeliveryAlertStore = React.memo(() => {
       }
       // In the event that we are receiving the update of a closed error alert
       // that this dashboard instance introduced, we don't need to push it
-      if (deliveryAlert.id === closedErrorAlertId) {
+      if (closedErrorAlertId && deliveryAlert.id === closedErrorAlertId) {
         return;
       }
       filterAndPushDeliveryAlert(deliveryAlert, state);
