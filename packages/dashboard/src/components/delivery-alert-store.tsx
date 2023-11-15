@@ -43,6 +43,12 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
   const rmf = React.useContext(RmfAppContext);
 
   React.useEffect(() => {
+    if (deliveryAlert.action !== 'waiting') {
+      setActionTaken(true);
+    }
+  }, [deliveryAlert]);
+
+  React.useEffect(() => {
     if (!rmf) {
       console.error('Tasks api not available.');
       setNewTaskState(null);
@@ -119,6 +125,24 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
     [rmf],
   );
 
+  const titleUpdateText = (action: string) => {
+    switch (action) {
+      case 'override': {
+        return ' - [Overridden]';
+      }
+      case 'resume': {
+        return ' - [Resumed]';
+      }
+      case 'cancel': {
+        return ' - [Cancelled]';
+      }
+      case 'waiting':
+      default: {
+        return '';
+      }
+    }
+  };
+
   return (
     <>
       <Dialog
@@ -133,7 +157,9 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
         open={isOpen}
         key={deliveryAlert.id}
       >
-        <DialogTitle align="center">Delivery - warning!</DialogTitle>
+        <DialogTitle align="center">
+          Delivery - warning!{titleUpdateText(deliveryAlert.action)}
+        </DialogTitle>
         <Divider />
         <DialogContent>
           <TextField
