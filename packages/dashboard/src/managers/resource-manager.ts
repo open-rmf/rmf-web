@@ -17,6 +17,7 @@ export interface ResourceConfigurationsType {
   defaultRobotZoom?: number;
   attributionPrefix?: string;
   cartIds?: string[];
+  loggedInDisplayLevel?: string;
 }
 
 export default class ResourceManager {
@@ -30,6 +31,7 @@ export default class ResourceManager {
   defaultRobotZoom: number;
   attributionPrefix?: string;
   cartIds?: string[];
+  loggedInDisplayLevel?: string;
 
   /**
    * Gets the default resource manager using the embedded resource file (aka "assets/resources/main.json").
@@ -68,6 +70,7 @@ export default class ResourceManager {
     this.defaultRobotZoom = resources.defaultRobotZoom ?? 6;
     this.attributionPrefix = resources.attributionPrefix || 'OSRC-SG';
     this.cartIds = resources.cartIds || [];
+    this.loggedInDisplayLevel = resources.loggedInDisplayLevel;
   }
 }
 

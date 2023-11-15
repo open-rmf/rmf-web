@@ -17,6 +17,7 @@ import { RmfApp } from './rmf-app';
 import { robotsWorkspace } from './robots/robots-workspace';
 import { tasksWorkspace } from './tasks/tasks-workspace';
 import { Workspace } from './workspace';
+import { AppEvents } from './app-events';
 
 export default function App(): JSX.Element | null {
   const authenticator = appConfig.authenticator;
@@ -106,9 +107,10 @@ export default function App(): JSX.Element | null {
               <LoginPage
                 title={'Dashboard'}
                 logo="assets/defaultLogo.png"
-                onLoginClick={() =>
-                  authenticator.login(`${window.location.origin}${DashboardRoute}`)
-                }
+                onLoginClick={() => {
+                  authenticator.login(`${window.location.origin}${DashboardRoute}`);
+                  AppEvents.justLoggedIn.next(true);
+                }}
               />
             }
           />
