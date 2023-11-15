@@ -458,6 +458,42 @@ export const DeliveryAlertStore = React.memo(() => {
         return;
       }
 
+      // Query for the same tasks, and if there were later ones, we ignore this
+      let waitingUpToDateDeliveryAlerts: DeliveryAlert[] = [];
+      for (const alert of waitingDeliveryAlerts) {
+        // Alerts without task IDs always need to be handled
+        if (alert.task_id === undefined || alert.task_id === null) {
+          waitingUpToDateDeliveryAlerts.push(alert);
+          continue;
+        }
+
+        let deliveryAlertsWithSameTaskIds: DeliveryAlert[] = [];
+        try {
+          deliveryAlertsWithSameTaskIds = (
+            await rmf.deliveryAlertsApi.queryDeliveryAlertsDeliveryAlertsQueryGet(
+              undefined,
+              undefined,
+              alert.task_id,
+              undefined,
+              undefined,
+              undefined,
+            )
+          ).data;
+        } catch (e) {
+          console.error(`Failed to retrieve waiting delivery alerts: ${e}`);
+          return;
+        }
+        if (deliveryAlertsWithSameTaskIds.length === 1) {
+          waitingUpToDateDeliveryAlerts.push(alert);
+        }
+
+        for (const alertWithSameTaskId of deliveryAlertsWithSameTaskIds) {
+          if (alertWithSameTaskId.id > alert.id) {
+            waitingUpToDateDeliveryAlerts.push(alert);
+          }
+        }
+      }
+
       const filteredAlertsMap: Record<string, DeliveryAlertData> = {};
       const taskIdToAlertsMap: Record<string, DeliveryAlertData> = {};
       for (const alert of waitingDeliveryAlerts) {
