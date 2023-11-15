@@ -145,7 +145,7 @@ class RmfBookKeeper:
     def _record_delivery_alert(self):
         async def update(delivery_alert: DeliveryAlert):
             await delivery_alert.save()
-            self._loggers.beacon_state.info(json.dumps(delivery_alert.dict()))
+            self._loggers.delivery_alert.info(json.dumps(delivery_alert.dict()))
 
         self._subscriptions.append(
             self.rmf.delivery_alerts.subscribe(lambda x: self._create_task(update(x)))
