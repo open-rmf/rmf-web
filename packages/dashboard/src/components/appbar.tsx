@@ -23,6 +23,7 @@ import {
   Toolbar,
   Tooltip,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 import {
   ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
@@ -59,20 +60,6 @@ import { styled } from '@mui/system';
 import { useCreateTaskFormData } from '../hooks/useCreateTaskForm';
 import { toApiSchedule } from './tasks/utils';
 import useGetUsername from '../hooks/useFetchUser';
-
-const StyledAppBarTab = styled(AppBarTab)(({ theme }) => ({
-  fontSize: theme.spacing(4), // spacing = 8
-}));
-
-const StyledAppBarButton = styled(Button)(({ theme }) => ({
-  fontSize: theme.spacing(4), // spacing = 8
-  paddingTop: 0,
-  paddingBottom: 0,
-}));
-
-const StyledIconButton = styled(IconButton)(({ theme }) => ({
-  fontSize: theme.spacing(4), // spacing = 8
-}));
 
 export type TabValue = 'infrastructure' | 'robots' | 'tasks';
 
@@ -135,7 +122,34 @@ export interface AppBarProps {
   alarmState?: boolean | null;
 }
 
+const FONT_SIZE = 4;
+
+const FONT_SIZE_LARGER_THAN_1000_RES = 2;
+
 export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.ReactElement => {
+  const isScreenSmall = useMediaQuery('(max-width:1000px)');
+
+  const [fontSize, setFontSize] = React.useState(FONT_SIZE);
+
+  const StyledAppBarTab = styled(AppBarTab)(({ theme }) => ({
+    fontSize: theme.spacing(fontSize),
+  }));
+
+  const StyledAppBarButton = styled(Button)(({ theme }) => ({
+    fontSize: theme.spacing(fontSize), // spacing = 8
+    paddingTop: 0,
+    paddingBottom: 0,
+  }));
+
+  const StyledIconButton = styled(IconButton)(({ theme }) => ({
+    fontSize: theme.spacing(fontSize), // spacing = 8
+    marginBottom: theme.spacing(0),
+  }));
+
+  React.useEffect(() => {
+    setFontSize(isScreenSmall ? FONT_SIZE_LARGER_THAN_1000_RES : FONT_SIZE);
+  }, [isScreenSmall]);
+
   const rmf = React.useContext(RmfAppContext);
   const resourceManager = React.useContext(ResourcesContext);
   const { showAlert } = React.useContext(AppControllerContext);
