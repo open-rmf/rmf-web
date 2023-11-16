@@ -122,32 +122,28 @@ export interface AppBarProps {
   alarmState?: boolean | null;
 }
 
-const FONT_SIZE = 4;
-
-const FONT_SIZE_LARGER_THAN_1000_RES = 2;
-
 export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.ReactElement => {
   const isScreenSmall = useMediaQuery('(max-width:1000px)');
 
-  const [fontSize, setFontSize] = React.useState(FONT_SIZE);
+  const [largerResolution, setLargerResolution] = React.useState(false);
 
   const StyledAppBarTab = styled(AppBarTab)(({ theme }) => ({
-    fontSize: theme.spacing(fontSize),
+    fontSize: theme.spacing(largerResolution ? 2 : 4),
   }));
 
   const StyledAppBarButton = styled(Button)(({ theme }) => ({
-    fontSize: theme.spacing(fontSize), // spacing = 8
+    fontSize: theme.spacing(largerResolution ? 1.5 : 4), // spacing = 8
     paddingTop: 0,
     paddingBottom: 0,
   }));
 
   const StyledIconButton = styled(IconButton)(({ theme }) => ({
-    fontSize: theme.spacing(fontSize), // spacing = 8
+    fontSize: theme.spacing(largerResolution ? 2 : 4), // spacing = 8
     marginBottom: theme.spacing(0),
   }));
 
   React.useEffect(() => {
-    setFontSize(isScreenSmall ? FONT_SIZE_LARGER_THAN_1000_RES : FONT_SIZE);
+    setLargerResolution(isScreenSmall);
   }, [isScreenSmall]);
 
   const rmf = React.useContext(RmfAppContext);
@@ -383,10 +379,10 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             aria-label="new task"
             color="secondary"
             variant="contained"
-            size="medium"
+            size={largerResolution ? 'small' : 'medium'}
             onClick={() => setOpenCreateTaskForm(true)}
           >
-            <AddOutlined />
+            <AddOutlined transform={`scale(${largerResolution ? 0.5 : 1})`} />
             New Task
           </StyledAppBarButton>
           <Tooltip title="Notifications">
@@ -455,7 +451,9 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             )}
           </Menu>
           <Divider orientation="vertical" sx={{ marginLeft: 1, marginRight: 2 }} />
-          <Typography variant="subtitle1">Powered by Open-RMF</Typography>
+          <Typography variant="subtitle1" fontSize={largerResolution ? 12 : 16}>
+            Powered by Open-RMF
+          </Typography>
           {extraToolbarItems}
           <Tooltip title="Settings">
             <StyledIconButton
