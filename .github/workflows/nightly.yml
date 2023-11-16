@@ -44,6 +44,8 @@ jobs:
         with:
           package: rmf-dashboard-e2e
           skip-build: true
+      - name: overlay
+        uses: ./.github/actions/overlay
       - name: test
         uses: nick-fields/retry@v2
         with:

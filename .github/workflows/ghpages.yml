@@ -49,6 +49,8 @@ jobs:
         uses: ./.github/actions/bootstrap
         with:
           package: api-server
+      - name: overlay
+        uses: ./.github/actions/overlay
       - name: Extract docs
         run: |
           . /rmf_demos_ws/install/setup.bash

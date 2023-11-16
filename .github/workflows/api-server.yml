@@ -31,6 +31,8 @@ jobs:
         uses: ./.github/actions/bootstrap
         with:
           package: api-server
+      - name: overlay
+        uses: ./.github/actions/overlay
       - name: tests
         run: |
           . /rmf_demos_ws/install/setup.bash
