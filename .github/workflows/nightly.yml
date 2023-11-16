@@ -53,7 +53,7 @@ jobs:
           max_attempts: 3
           command: |
             . /rmf_demos_ws/install/setup.bash
-            . /hammer_overlay_ws/install/setup.bash
+            . ~/hammer_overlay_ws/install/setup.bash
             cd packages/dashboard-e2e
             pnpm test
           shell: bash

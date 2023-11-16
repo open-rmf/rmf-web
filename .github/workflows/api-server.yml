@@ -36,7 +36,7 @@ jobs:
       - name: tests
         run: |
           . /rmf_demos_ws/install/setup.bash
-          . /hammer_overlay_ws/install/setup.bash
+          . ~/hammer_overlay_ws/install/setup.bash
           pnpm run lint
           pnpm run test:cov
           pipenv run python -m coverage xml
