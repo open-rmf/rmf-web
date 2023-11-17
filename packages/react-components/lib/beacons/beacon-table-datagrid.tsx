@@ -116,7 +116,7 @@ export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.
   const isSmallerThan1000 = useMediaQuery('(max-width:1000px)');
 
   return (
-    <div style={{ height: '100%', width: isSmallerThan1000 ? '90%' : '100%' }}>
+    <div style={{ height: '100%', width: '100%' }}>
       <DataGrid
         autoHeight={true}
         getRowId={(l) => l.id}
