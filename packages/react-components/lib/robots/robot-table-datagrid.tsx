@@ -7,7 +7,7 @@ import {
   GridRowParams,
   GridCellParams,
 } from '@mui/x-data-grid';
-import { Box, SxProps, Typography, useTheme } from '@mui/material';
+import { Box, SxProps, Typography, useTheme, useMediaQuery } from '@mui/material';
 import * as React from 'react';
 import { Status2 } from 'api-client';
 import { RobotTableData } from './robot-table';
@@ -138,6 +138,7 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
     },
   ];
 
+  const isSmallerThan1000 = useMediaQuery('(max-width:1000px)');
   return (
     <DataGrid
       autoHeight={true}
@@ -147,6 +148,11 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
       rowHeight={38}
       columns={columns}
       rowsPerPageOptions={[5]}
+      sx={{
+        fontSize: isSmallerThan1000 ? '0.9rem' : 'inherit',
+      }}
+      autoPageSize={isSmallerThan1000}
+      density={isSmallerThan1000 ? 'compact' : 'standard'}
       onRowClick={handleEvent}
       initialState={{
         sorting: {

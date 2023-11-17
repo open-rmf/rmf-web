@@ -1,5 +1,5 @@
 import { DataGrid, GridColDef, GridValueGetterParams, GridCellParams } from '@mui/x-data-grid';
-import { Box, Button, SxProps, Typography, useTheme } from '@mui/material';
+import { Box, Button, SxProps, Typography, useTheme, useMediaQuery } from '@mui/material';
 import React from 'react';
 import { DoorState } from 'api-client';
 import { DoorMode } from 'rmf-models';
@@ -195,16 +195,23 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
     },
   ];
 
+  const isSmallerThan1000 = useMediaQuery('(max-width:1000px)');
   return (
-    <div style={{ height: '100%', width: '100%' }}>
+    <div style={{ height: '100%', width: '100%', overflowX: 'auto' }}>
       <DataGrid
-        autoHeight={true}
+        autoHeight
         getRowId={(l) => l.index}
         rows={doors}
         pageSize={5}
         rowHeight={38}
         columns={columns}
         rowsPerPageOptions={[5]}
+        sx={{
+          fontSize: isSmallerThan1000 ? '0.9rem' : 'inherit',
+          overflowX: 'scroll',
+        }}
+        autoPageSize={isSmallerThan1000}
+        density={isSmallerThan1000 ? 'compact' : 'standard'}
         localeText={{
           noRowsLabel: 'No doors available.',
         }}

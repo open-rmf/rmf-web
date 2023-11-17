@@ -1,6 +1,6 @@
 import { ApiServerModelsTortoiseModelsBeaconsBeaconStateLeaf as BeaconState } from 'api-client';
 import { DataGrid, GridColDef, GridValueGetterParams, GridCellParams } from '@mui/x-data-grid';
-import { Box, SxProps, Typography, useTheme } from '@mui/material';
+import { Box, SxProps, Typography, useTheme, useMediaQuery } from '@mui/material';
 import React from 'react';
 
 export interface BeaconDataGridTableProps {
@@ -113,8 +113,10 @@ export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.
     },
   ];
 
+  const isSmallerThan1000 = useMediaQuery('(max-width:1000px)');
+
   return (
-    <div style={{ height: '100%', width: '100%' }}>
+    <div style={{ height: '100%', width: isSmallerThan1000 ? '90%' : '100%' }}>
       <DataGrid
         autoHeight={true}
         getRowId={(l) => l.id}
@@ -123,6 +125,11 @@ export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.
         rowHeight={38}
         columns={columns}
         rowsPerPageOptions={[5]}
+        sx={{
+          fontSize: isSmallerThan1000 ? '0.9rem' : 'inherit',
+        }}
+        autoPageSize={isSmallerThan1000}
+        density={isSmallerThan1000 ? 'compact' : 'standard'}
         localeText={{
           noRowsLabel: 'No beacons available.',
         }}
