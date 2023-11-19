@@ -7,7 +7,8 @@ const debug = Debug('authenticator');
 
 export class KeycloakAuthenticator
   extends EventEmitter<AuthenticatorEventType>
-  implements Authenticator {
+  implements Authenticator
+{
   get user(): string | undefined {
     return this._user;
   }
@@ -66,6 +67,7 @@ export class KeycloakAuthenticator
     }
 
     this._user = this._inst.tokenParsed && this._getUser();
+    console.log(this._inst.tokenParsed);
     this._initialized = true;
   }
 
