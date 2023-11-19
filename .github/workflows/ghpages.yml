@@ -49,9 +49,12 @@ jobs:
         uses: ./.github/actions/bootstrap
         with:
           package: api-server
+      - name: overlay
+        uses: ./.github/actions/overlay
       - name: Extract docs
         run: |
           . /rmf_demos_ws/install/setup.bash
+          . ~/hammer_overlay_ws/install/setup.bash
           pipenv run python3 scripts/extract_docs.py -o docs
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1

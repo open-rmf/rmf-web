@@ -1,0 +1,21 @@
+name: overlay
+description: hammer deployment overlay
+inputs:
+  skip-build:
+    description: boolean, if true, skip the build step
+    required: false
+    default: "false"
+runs:
+  using: composite
+  steps:
+    - name: Create overlay workspace
+      run: |
+        mkdir -p ~/hammer_overlay_ws/src
+        git clone https://github.com/open-rmf/rmf_internal_msgs -b luca/beacon_state ~/hammer_overlay_ws/src/rmf_internal_msgs
+      shell: bash
+    - name: Build overlay workspace
+      run: |
+        cd ~/hammer_overlay_ws
+        source /opt/ros/$ROS_DISTRO/setup.bash
+        colcon build --packages-select rmf_fleet_msgs
+      shell: bash

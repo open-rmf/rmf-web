@@ -198,17 +198,28 @@ export const MapApp = styled(
         return;
       }
 
+      const levelByName = (map: BuildingMap, levelName?: string) => {
+        if (!levelName) {
+          return null;
+        }
+        const desiredLevels = map.levels.filter((level) => level.name === levelName);
+        return desiredLevels.length > 0 ? desiredLevels[0] : null;
+      };
+
       const handleBuildingMap = (newMap: BuildingMap) => {
         setBuildingMap(newMap);
-        const currentLevel = AppEvents.levelSelect.value
-          ? AppEvents.levelSelect.value
-          : newMap.levels[0];
+        const loggedInDisplayLevel = AppEvents.justLoggedIn.value
+          ? levelByName(newMap, resourceManager?.loggedInDisplayLevel)
+          : undefined;
+        const currentLevel =
+          loggedInDisplayLevel || AppEvents.levelSelect.value || newMap.levels[0];
         AppEvents.levelSelect.next(currentLevel);
         setWaypoints(
           getPlaces(newMap).filter(
             (p) => p.level === currentLevel.name && p.vertex.name.length > 0,
           ),
         );
+        AppEvents.justLoggedIn.next(false);
       };
 
       (async () => {
@@ -231,7 +242,7 @@ export const MapApp = styled(
           sub.unsubscribe();
         }
       };
-    }, [rmf]);
+    }, [rmf, resourceManager]);
 
     const [imageUrl, setImageUrl] = React.useState<string | null>(null);
     const [zoom, setZoom] = React.useState<number>(DEFAULT_ZOOM_LEVEL);
