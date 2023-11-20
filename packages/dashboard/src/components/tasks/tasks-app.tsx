@@ -10,6 +10,7 @@ import {
   TableContainer,
   Toolbar,
   Tooltip,
+  useMediaQuery,
 } from '@mui/material';
 import { TaskState } from 'api-client';
 import React from 'react';
@@ -91,6 +92,8 @@ export const TasksApp = React.memo(
       });
       const [filterFields, setFilterFields] = React.useState<FilterFields>({ model: undefined });
       const [sortFields, setSortFields] = React.useState<SortFields>({ model: undefined });
+
+      const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
 
       React.useEffect(() => {
         const sub = AppEvents.refreshTaskApp.subscribe({
@@ -259,6 +262,7 @@ export const TasksApp = React.memo(
               <div>
                 <Tooltip title="Download" placement="top">
                   <IconButton
+                    sx={{ marginBottom: isScreenHeightLessThan800 ? 1.8 : 0 }}
                     id="export-button"
                     aria-controls={openExportMenu ? 'export-menu' : undefined}
                     aria-haspopup="true"
@@ -266,7 +270,7 @@ export const TasksApp = React.memo(
                     onClick={handleClickExportMenu}
                     color="inherit"
                   >
-                    <DownloadIcon />
+                    <DownloadIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
                   </IconButton>
                 </Tooltip>
                 <Menu
@@ -300,12 +304,13 @@ export const TasksApp = React.memo(
               </div>
               <Tooltip title="Refresh" color="inherit" placement="top">
                 <IconButton
+                  sx={{ marginBottom: isScreenHeightLessThan800 ? 1.8 : 0 }}
                   onClick={() => {
                     AppEvents.refreshTaskApp.next();
                   }}
                   aria-label="Refresh"
                 >
-                  <RefreshIcon />
+                  <RefreshIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
                 </IconButton>
               </Tooltip>
             </Toolbar>
