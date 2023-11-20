@@ -41,6 +41,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
           ? camera.zoom * DEFAULT_ZOOM_OUT_CONSTANT
           : camera.zoom * DEFAULT_ZOOM_IN_CONSTANT;
       AppEvents.zoom.next(newZoom * SENSITIVITY);
+      console.log(AppEvents.zoom.value);
     };
 
     gl.domElement.addEventListener('wheel', handleScroll);
