@@ -14,17 +14,25 @@ class User(BaseModel):
         schema_extra = {"required": ["username", "is_admin", "roles"]}
 
     @staticmethod
-    async def load_or_create_from_db(username: str) -> "User":
+    async def load_or_create_from_db(username: str, is_admin: bool = False) -> "User":
         """
         Loads an user from db, creates the user if it does not exist.
-        NOTE: This should only be called after verifying the username comes from a trusted source (e.g. after verifying the jwt).
+        NOTE: This should only be called after verifying the username comes from
+        a trusted source (e.g. after verifying the jwt).
         """
         user = await User.load_from_db(username)
         if user is None:
             ttm_user, _ = await ttm.User.get_or_create(
-                {"is_admin": False}, username=username
+                {"is_admin": is_admin}, username=username
             )
             return await User.from_db(ttm_user)
+
+        # Update database if admin status is inaccurate
+        if user.is_admin != is_admin:
+            ttm_user = await ttm.User.get_or_none(username=username)
+            ttm_user.update_from_dict({"is_admin": is_admin})
+            await ttm_user.save()
+            user.is_admin = is_admin
         return user
 
     @staticmethod

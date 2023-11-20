@@ -13,6 +13,10 @@ export class KeycloakAuthenticator
     return this._user;
   }
 
+  get isAdmin(): boolean | undefined {
+    return this._isAdmin;
+  }
+
   get token(): string | undefined {
     return this._inst.token;
   }
@@ -33,6 +37,18 @@ export class KeycloakAuthenticator
   private _getUser(): string {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (this._inst.idTokenParsed as any).preferred_username;
+  }
+
+  private _isUserAdmin(): boolean {
+    if (!this._inst.idTokenParsed) {
+      return false;
+    }
+
+    const roles: string[] | undefined = (this._inst.idTokenParsed as any).realm_access?.roles;
+    if (roles && roles.includes('superuser')) {
+      return true;
+    }
+    return false;
   }
 
   async init(): Promise<void> {
@@ -67,6 +83,7 @@ export class KeycloakAuthenticator
     }
 
     this._user = this._inst.tokenParsed && this._getUser();
+    this._isAdmin = this._isUserAdmin();
     console.log(this._inst.tokenParsed);
     this._initialized = true;
   }
@@ -77,6 +94,7 @@ export class KeycloakAuthenticator
       const refreshed = await this._inst.updateToken(5);
       if (refreshed) {
         this._user = this._getUser();
+        this._isAdmin = this._isUserAdmin();
         this.emit('tokenRefresh', null);
       } else {
         debug('token not refreshed');
@@ -101,6 +119,7 @@ export class KeycloakAuthenticator
   private _inst: KeycloakInstance;
   private _silentCheckSsoRedirectUri?: string;
   private _user?: string;
+  private _isAdmin: boolean = false;
 }
 
 export default KeycloakAuthenticator;

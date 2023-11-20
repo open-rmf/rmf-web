@@ -31,9 +31,14 @@ class JwtAuthenticator:
             raise AuthenticationError(
                 "expected 'preferred_username' username claim to be present"
             )
+        is_admin = False
+        if "realm_access" in claims and "roles" in claims["realm_access"]:
+            roles = claims["realm_access"]["roles"]
+            if "superuser" in roles:
+                is_admin = True
 
         username = claims["preferred_username"]
-        return await User.load_or_create_from_db(username)
+        return await User.load_or_create_from_db(username, is_admin)
 
     async def verify_token(self, token: Optional[str]) -> User:
         if not token:
