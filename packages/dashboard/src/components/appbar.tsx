@@ -2,6 +2,7 @@ import {
   AccountCircle,
   AddOutlined,
   Help,
+  Logout,
   Notifications,
   Report,
   Settings,
@@ -16,6 +17,7 @@ import {
   FormControlLabel,
   FormLabel,
   IconButton,
+  ListItemIcon,
   Menu,
   MenuItem,
   Radio,
@@ -498,7 +500,17 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
                 open={!!anchorEl}
                 onClose={() => setAnchorEl(null)}
               >
+                <MenuItem>
+                  <ListItemIcon>
+                    <AccountCircle fontSize="small" />
+                  </ListItemIcon>
+                  {`Logged in as ${username ?? 'unknown user'}`}
+                </MenuItem>
+                <Divider />
                 <MenuItem id="logout-btn" onClick={handleLogout}>
+                  <ListItemIcon>
+                    <Logout fontSize="small" />
+                  </ListItemIcon>
                   Logout
                 </MenuItem>
               </Menu>
