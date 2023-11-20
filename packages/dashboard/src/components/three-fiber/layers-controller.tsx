@@ -11,6 +11,7 @@ import {
   IconButton,
   MenuItem,
   TextField,
+  useMediaQuery,
 } from '@mui/material';
 import LayersIcon from '@mui/icons-material/Layers';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
@@ -34,6 +35,7 @@ export const LayersController = ({
   handleZoomOut,
 }: LayersControllerProps) => {
   const [isHovered, setIsHovered] = React.useState(false);
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
 
   return (
     <Box
@@ -54,7 +56,7 @@ export const LayersController = ({
           label="Levels"
           variant="outlined"
           fullWidth
-          margin="normal"
+          margin="none"
           value={currentLevel.name}
           size="small"
           sx={{ width: '80px' }}
@@ -68,18 +70,41 @@ export const LayersController = ({
         </TextField>
       </FormControl>
       <div>
-        <IconButton size="small" onClick={handleZoomIn} data-testid="zoom-in">
-          <ZoomInIcon fontSize="large" />
+        <IconButton
+          size="small"
+          onClick={handleZoomIn}
+          data-testid="zoom-in"
+          sx={{ padding: isScreenHeightLessThan800 ? 0 : 2 }}
+        >
+          <ZoomInIcon
+            fontSize="large"
+            transform={`scale(${isScreenHeightLessThan800 ? 0.5 : 1})`}
+          />
         </IconButton>
       </div>
       <div>
-        <IconButton size="small" onClick={handleZoomOut} data-testid="zoom-out">
-          <ZoomOutIcon fontSize="large" />
+        <IconButton
+          size="small"
+          onClick={handleZoomOut}
+          data-testid="zoom-out"
+          sx={{ padding: isScreenHeightLessThan800 ? 0 : 2 }}
+        >
+          <ZoomOutIcon
+            fontSize="large"
+            transform={`scale(${isScreenHeightLessThan800 ? 0.5 : 1})`}
+          />
         </IconButton>
       </div>
       <div onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-        <IconButton size="small" data-testid="layers">
-          <LayersIcon fontSize="large" />
+        <IconButton
+          size="small"
+          data-testid="layers"
+          sx={{ padding: isScreenHeightLessThan800 ? 0 : 2 }}
+        >
+          <LayersIcon
+            fontSize="large"
+            transform={`scale(${isScreenHeightLessThan800 ? 0.5 : 1})`}
+          />
         </IconButton>
         {isHovered && (
           <div>
@@ -88,6 +113,7 @@ export const LayersController = ({
                 <FormControlLabel
                   control={
                     <Checkbox
+                      sx={{ padding: isScreenHeightLessThan800 ? 0 : 1.5 }}
                       size="small"
                       checked={!disabledLayers[layerName]}
                       onChange={() => {
@@ -97,7 +123,21 @@ export const LayersController = ({
                       }}
                     />
                   }
-                  label={layerName}
+                  label={
+                    isScreenHeightLessThan800 ? (
+                      <span
+                        style={{
+                          fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+                          marginLeft: isScreenHeightLessThan800 ? '4px' : '0px',
+                        }}
+                      >
+                        {layerName}
+                      </span>
+                    ) : (
+                      layerName
+                    )
+                  }
+                  sx={{ margin: '0' }}
                 />
               </FormGroup>
             ))}
