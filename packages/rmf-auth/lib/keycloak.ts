@@ -44,6 +44,7 @@ export class KeycloakAuthenticator
       return false;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const roles: string[] | undefined = (this._inst.idTokenParsed as any).realm_access?.roles;
     if (roles && roles.includes('superuser')) {
       return true;
@@ -119,7 +120,7 @@ export class KeycloakAuthenticator
   private _inst: KeycloakInstance;
   private _silentCheckSsoRedirectUri?: string;
   private _user?: string;
-  private _isAdmin: boolean = false;
+  private _isAdmin = false;
 }
 
 export default KeycloakAuthenticator;
