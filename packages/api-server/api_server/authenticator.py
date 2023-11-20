@@ -32,10 +32,27 @@ class JwtAuthenticator:
                 "expected 'preferred_username' username claim to be present"
             )
         is_admin = False
-        if "realm_access" in claims and "roles" in claims["realm_access"]:
-            roles = claims["realm_access"]["roles"]
-            if "superuser" in roles:
-                is_admin = True
+        print(claims)
+        if "realm_access" in claims:
+            print("realm_access in claims")
+            if "roles" in claims["realm_access"]:
+                print("roles in realm_access")
+                roles = claims["realm_access"]["roles"]
+                print(roles)
+                if "superuser" in roles:
+                    print("superuser in roles")
+                    is_admin = True
+                else:
+                    print("superuser not in roles")
+            else:
+                print("roles not in realm_access")
+        else:
+            print("realm_access not in claims")
+
+        # if "realm_access" in claims and "roles" in claims["realm_access"]:
+        #     roles = claims["realm_access"]["roles"]
+        #     if "superuser" in roles:
+        #         is_admin = True
 
         username = claims["preferred_username"]
         return await User.load_or_create_from_db(username, is_admin)
