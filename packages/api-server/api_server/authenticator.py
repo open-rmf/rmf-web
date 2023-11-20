@@ -31,31 +31,21 @@ class JwtAuthenticator:
             raise AuthenticationError(
                 "expected 'preferred_username' username claim to be present"
             )
-        is_admin = False
-        print(claims)
-        if "realm_access" in claims:
-            print("realm_access in claims")
-            if "roles" in claims["realm_access"]:
-                print("roles in realm_access")
-                roles = claims["realm_access"]["roles"]
-                print(roles)
-                if "superuser" in roles:
-                    print("superuser in roles")
-                    is_admin = True
-                else:
-                    print("superuser not in roles")
-            else:
-                print("roles not in realm_access")
-        else:
-            print("realm_access not in claims")
-
-        # if "realm_access" in claims and "roles" in claims["realm_access"]:
-        #     roles = claims["realm_access"]["roles"]
-        #     if "superuser" in roles:
-        #         is_admin = True
 
         username = claims["preferred_username"]
-        return await User.load_or_create_from_db(username, is_admin)
+        user = await User.load_or_create_from_db(username)
+
+        is_admin = False
+        if "realm_access" in claims:
+            if "roles" in claims["realm_access"]:
+                roles = claims["realm_access"]["roles"]
+                if "superuser" in roles:
+                    is_admin = True
+
+        if user.is_admin != is_admin:
+            await user.update_admin(is_admin)
+
+        return user
 
     async def verify_token(self, token: Optional[str]) -> User:
         if not token:
@@ -89,7 +79,7 @@ class JwtAuthenticator:
 
 class StubAuthenticator(JwtAuthenticator):
     def __init__(self):  # pylint: disable=super-init-not-called
-        self._user = User(username="stub", is_admin=True)
+        self._user = User(username="stub", is_admin=False)
 
     async def verify_token(self, token: Optional[str]) -> User:
         return self._user

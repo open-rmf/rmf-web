@@ -15,7 +15,7 @@ class User(BaseModel):
         schema_extra = {"required": ["username", "is_admin", "roles"]}
 
     @staticmethod
-    async def load_or_create_from_db(username: str, is_admin: bool = False) -> "User":
+    async def load_or_create_from_db(username: str) -> "User":
         """
         Loads an user from db, creates the user if it does not exist.
         NOTE: This should only be called after verifying the username comes from
@@ -24,18 +24,9 @@ class User(BaseModel):
         user = await User.load_from_db(username)
         if user is None:
             ttm_user, _ = await ttm.User.get_or_create(
-                {"is_admin": is_admin}, username=username
+                {"is_admin": False}, username=username
             )
             return await User.from_db(ttm_user)
-
-        # Update database if admin status is inaccurate
-        if user.is_admin != is_admin:
-            ttm_user = await ttm.User.get_or_none(username=username)
-            if ttm_user is None:
-                raise HTTPException(status_code=404)
-            ttm_user.update_from_dict({"is_admin": is_admin})
-            await ttm_user.save()
-            user.is_admin = is_admin
         return user
 
     @staticmethod
@@ -58,3 +49,12 @@ class User(BaseModel):
             is_admin=db_user.is_admin,
             roles=[r.name for r in db_user.roles],
         )
+
+    async def update_admin(self, is_admin: bool):
+        ttm_user = await ttm.User.get_or_none(username=self.username)
+        if ttm_user is None:
+            raise HTTPException(status_code=404)
+
+        ttm_user.update_from_dict({"is_admin": is_admin})
+        await ttm_user.save()
+        self.is_admin = is_admin
