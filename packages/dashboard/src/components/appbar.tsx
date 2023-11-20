@@ -123,7 +123,7 @@ export interface AppBarProps {
 }
 
 export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.ReactElement => {
-  const isScreenSmall = useMediaQuery('(max-width:1000px)');
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
 
   const [largerResolution, setLargerResolution] = React.useState(false);
 
@@ -143,8 +143,8 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   }));
 
   React.useEffect(() => {
-    setLargerResolution(isScreenSmall);
-  }, [isScreenSmall]);
+    setLargerResolution(isScreenHeightLessThan800);
+  }, [isScreenHeightLessThan800]);
 
   const rmf = React.useContext(RmfAppContext);
   const resourceManager = React.useContext(ResourcesContext);

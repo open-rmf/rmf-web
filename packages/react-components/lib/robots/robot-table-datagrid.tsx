@@ -138,7 +138,7 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
     },
   ];
 
-  const isSmallerThan1000 = useMediaQuery('(max-width:1000px)');
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   return (
     <DataGrid
       autoHeight={true}
@@ -149,10 +149,10 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
       columns={columns}
       rowsPerPageOptions={[5]}
       sx={{
-        fontSize: isSmallerThan1000 ? '0.9rem' : 'inherit',
+        fontSize: isScreenHeightLessThan800 ? '0.9rem' : 'inherit',
       }}
-      autoPageSize={isSmallerThan1000}
-      density={isSmallerThan1000 ? 'compact' : 'standard'}
+      autoPageSize={isScreenHeightLessThan800}
+      density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
       onRowClick={handleEvent}
       initialState={{
         sorting: {

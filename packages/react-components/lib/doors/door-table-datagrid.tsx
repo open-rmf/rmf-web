@@ -195,7 +195,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
     },
   ];
 
-  const isSmallerThan1000 = useMediaQuery('(max-width:1000px)');
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   return (
     <div style={{ height: '100%', width: '100%', overflowX: 'auto' }}>
       <DataGrid
@@ -207,11 +207,11 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
         columns={columns}
         rowsPerPageOptions={[5]}
         sx={{
-          fontSize: isSmallerThan1000 ? '0.9rem' : 'inherit',
+          fontSize: isScreenHeightLessThan800 ? '0.9rem' : 'inherit',
           overflowX: 'scroll',
         }}
-        autoPageSize={isSmallerThan1000}
-        density={isSmallerThan1000 ? 'compact' : 'standard'}
+        autoPageSize={isScreenHeightLessThan800}
+        density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
         localeText={{
           noRowsLabel: 'No doors available.',
         }}

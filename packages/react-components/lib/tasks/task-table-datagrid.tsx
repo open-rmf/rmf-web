@@ -11,7 +11,7 @@ import {
   GridFilterModel,
   GridSortModel,
 } from '@mui/x-data-grid';
-import { styled, TextField, Stack, Typography, Tooltip } from '@mui/material';
+import { styled, TextField, Stack, Typography, Tooltip, useMediaQuery } from '@mui/material';
 import * as React from 'react';
 import { TaskState, Status } from 'api-client';
 import { InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
@@ -284,6 +284,8 @@ export function TaskDataGridTable({
     [setSortFields],
   );
 
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
+
   return (
     <div style={{ height: '100%', width: '100%' }}>
       <StyledDataGrid
@@ -294,6 +296,11 @@ export function TaskDataGridTable({
         loading={tasks.isLoading}
         pageSize={tasks.pageSize}
         rowsPerPageOptions={[10]}
+        sx={{
+          fontSize: isScreenHeightLessThan800 ? '0.9rem' : 'inherit',
+        }}
+        autoPageSize={isScreenHeightLessThan800}
+        density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
         pagination
         paginationMode="server"
         filterMode="server"
