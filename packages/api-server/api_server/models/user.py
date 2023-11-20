@@ -1,5 +1,6 @@
 from typing import List
 
+from fastapi import HTTPException
 from pydantic import BaseModel
 
 from . import tortoise_models as ttm
@@ -30,6 +31,8 @@ class User(BaseModel):
         # Update database if admin status is inaccurate
         if user.is_admin != is_admin:
             ttm_user = await ttm.User.get_or_none(username=username)
+            if ttm_user is None:
+                raise HTTPException(status_code=404)
             ttm_user.update_from_dict({"is_admin": is_admin})
             await ttm_user.save()
             user.is_admin = is_admin
