@@ -33,7 +33,19 @@ class JwtAuthenticator:
             )
 
         username = claims["preferred_username"]
-        return await User.load_or_create_from_db(username)
+        user = await User.load_or_create_from_db(username)
+
+        is_admin = False
+        if "realm_access" in claims:
+            if "roles" in claims["realm_access"]:
+                roles = claims["realm_access"]["roles"]
+                if "superuser" in roles:
+                    is_admin = True
+
+        if user.is_admin != is_admin:
+            await user.update_admin(is_admin)
+
+        return user
 
     async def verify_token(self, token: Optional[str]) -> User:
         if not token:

@@ -201,8 +201,12 @@ export const MapApp = styled(
         if (!levelName) {
           return null;
         }
-        const desiredLevels = map.levels.filter((level) => level.name === levelName);
-        return desiredLevels.length > 0 ? desiredLevels[0] : null;
+        for (const l of map.levels) {
+          if (l.name === levelName) {
+            return l;
+          }
+        }
+        return null;
       };
 
       const handleBuildingMap = (newMap: BuildingMap) => {
