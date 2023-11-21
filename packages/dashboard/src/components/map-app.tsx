@@ -265,7 +265,7 @@ export const MapApp = styled(
           sub.unsubscribe();
         }
       };
-    }, [resourceManager]);
+    }, [resourceManager?.defaultZoom]);
 
     React.useEffect(() => {
       if (!currentLevel?.images[0]) {
