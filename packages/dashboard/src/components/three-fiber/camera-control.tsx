@@ -28,6 +28,13 @@ export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
         AppEvents.zoom.next(camera.zoom * DEFAULT_ZOOM_OUT_CONSTANT);
       }),
     );
+    subs.push(
+      AppEvents.resetCamera.subscribe((data) => {
+        camera.position.set(data[0], data[1], data[2]);
+        camera.zoom = data[3];
+        camera.updateProjectionMatrix();
+      }),
+    );
 
     const handleScroll = (event: WheelEvent) => {
       const SENSITIVITY = 0.9;

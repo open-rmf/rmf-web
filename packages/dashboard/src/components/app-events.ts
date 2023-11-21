@@ -25,7 +25,7 @@ export const AppEvents = {
   cameraPosition: new BehaviorSubject<Vector3 | null>(null),
   zoomIn: new Subject<void>(),
   zoomOut: new Subject<void>(),
-  mapCenter: new BehaviorSubject<[number, number]>([0, 0]),
   levelSelect: new BehaviorSubject<Level | null>(null),
   justLoggedIn: new BehaviorSubject<boolean>(false),
+  resetCamera: new Subject<[x: number, y: number, z: number, zoom: number]>(),
 };
