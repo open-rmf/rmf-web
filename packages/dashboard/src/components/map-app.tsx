@@ -11,7 +11,6 @@ import React, { ChangeEvent, Suspense } from 'react';
 import {
   ColorManager,
   findSceneBoundingBoxFromThreeFiber,
-  fromRmfCoords,
   getPlaces,
   Place,
   ReactThreeFiberImageMaker,
@@ -32,7 +31,7 @@ import { RobotSummary } from './robots/robot-summary';
 import { Box3, TextureLoader, Vector3 } from 'three';
 import { Canvas, useLoader } from '@react-three/fiber';
 import { Line } from '@react-three/drei';
-import { CameraControl, DEFAULT_ZOOM_LEVEL, LayersController } from './three-fiber';
+import { CameraControl, LayersController } from './three-fiber';
 import { Lifts, Door, RobotThree } from './three-fiber';
 
 type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
@@ -44,6 +43,7 @@ const TrajectoryUpdateInterval = 2000;
 // of the whole app when it changes.
 const colorManager = new ColorManager();
 
+const DEFAULT_ZOOM_LEVEL = 20;
 const DEFAULT_ROBOT_ZOOM_LEVEL = 6;
 const DEFAULT_ROBOT_SCALE = 0.003;
 
@@ -247,6 +247,8 @@ export const MapApp = styled(
     const [zoom, setZoom] = React.useState<number>(
       resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL,
     );
+    const [sceneBoundingBox, setSceneBoundingBox] = React.useState<Box3 | undefined>(undefined);
+    const [distance, setDistance] = React.useState<number>(0);
 
     React.useEffect(() => {
       const subs: Subscription[] = [];
@@ -257,8 +259,18 @@ export const MapApp = styled(
       );
       subs.push(
         AppEvents.levelSelect.subscribe((currentValue) => {
+          const newSceneBoundingBox = currentValue
+            ? findSceneBoundingBoxFromThreeFiber(currentValue)
+            : undefined;
+          if (newSceneBoundingBox) {
+            const center = newSceneBoundingBox.getCenter(new Vector3());
+            const size = newSceneBoundingBox.getSize(new Vector3());
+            const distance = Math.max(size.x, size.y, size.z) * 0.7;
+            const newZoom = resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL;
+            AppEvents.resetCamera.next([center.x, center.y, center.z + distance, newZoom]);
+          }
           setCurrentLevel(currentValue ?? undefined);
-          setZoom(resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL);
+          setSceneBoundingBox(newSceneBoundingBox);
         }),
       );
       return () => {
@@ -401,21 +413,14 @@ export const MapApp = styled(
           return;
         }
 
-        const mapCoordsLocation: [number, number] = [robotLocation[0], robotLocation[1]];
-        const mapCoords = fromRmfCoords(mapCoordsLocation);
-        const newCenter: L.LatLngTuple = [mapCoords[1], mapCoords[0]];
-        AppEvents.mapCenter.next(newCenter);
+        // const mapCoordsLocation: [number, number] = [robotLocation[0], robotLocation[1]];
+        // const mapCoords = fromRmfCoords(mapCoordsLocation);
+        // const newCenter: L.LatLngTuple = [mapCoords[1], mapCoords[0]];
+        // AppEvents.mapCenter.next(newCenter);
         AppEvents.zoom.next(resourceManager?.defaultRobotZoom ?? DEFAULT_ROBOT_ZOOM_LEVEL);
       });
       return () => sub.unsubscribe();
     }, [robotLocations, resourceManager?.defaultRobotZoom]);
-
-    const [sceneBoundingBox, setSceneBoundingBox] = React.useState<Box3 | undefined>(undefined);
-    const [distance, setDistance] = React.useState<number>(0);
-
-    React.useMemo(() => {
-      setSceneBoundingBox(findSceneBoundingBoxFromThreeFiber(currentLevel));
-    }, [currentLevel]);
 
     React.useEffect(() => {
       if (!sceneBoundingBox) {

@@ -4,12 +4,9 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import React, { useEffect, useRef } from 'react';
 import { MOUSE, Vector3 } from 'three';
-import { ResourcesContext } from '../app-contexts';
-import { findSceneBoundingBoxFromThreeFiber } from 'react-components';
 
 const DEFAULT_ZOOM_IN_CONSTANT = 1.2;
 const DEFAULT_ZOOM_OUT_CONSTANT = 0.8;
-export const DEFAULT_ZOOM_LEVEL = 20;
 
 interface CameraControlProps {
   zoom: number;
@@ -18,7 +15,6 @@ interface CameraControlProps {
 export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
   const { camera, gl } = useThree();
   const controlsRef = useRef<OrbitControls | null>(null);
-  const resourceManager = React.useContext(ResourcesContext);
 
   useEffect(() => {
     const subs: Subscription[] = [];
@@ -33,19 +29,9 @@ export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
       }),
     );
     subs.push(
-      AppEvents.levelSelect.subscribe((level) => {
-        if (!level) {
-          return;
-        }
-        const sceneBoundingBox = findSceneBoundingBoxFromThreeFiber(level);
-        if (!sceneBoundingBox) {
-          return;
-        }
-        const center = sceneBoundingBox.getCenter(new Vector3());
-        const size = sceneBoundingBox.getSize(new Vector3());
-        const distance = Math.max(size.x, size.y, size.z) * 0.7;
-        camera.position.set(center.x, center.y, center.z + distance);
-        camera.zoom = resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL;
+      AppEvents.resetCamera.subscribe((data) => {
+        camera.position.set(data[0], data[1], data[2]);
+        camera.zoom = data[3];
         camera.updateProjectionMatrix();
       }),
     );
@@ -72,7 +58,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
       }
       gl.domElement.removeEventListener('wheel', handleScroll);
     };
-  }, [camera, resourceManager?.defaultZoom, gl.domElement]);
+  }, [camera, gl.domElement]);
 
   useEffect(() => {
     const controls = new OrbitControls(camera, gl.domElement);
