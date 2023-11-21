@@ -23,6 +23,7 @@ export interface DoorDataGridTableProps {
 
 export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Element {
   const theme = useTheme();
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
 
   const OpModeState = (params: GridCellParams): React.ReactNode => {
     const opModeStateLabelStyle: SxProps = (() => {
@@ -58,7 +59,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: 16,
+            fontSize: isScreenHeightLessThan800 ? 12 : 16,
           }}
         >
           {healthStatusToOpMode(params.row.opMode)}
@@ -101,7 +102,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: 16,
+            fontSize: isScreenHeightLessThan800 ? 12 : 16,
           }}
         >
           {params.row.doorState ? doorModeToString(params.row.doorState.current_mode.value) : -1}
@@ -117,7 +118,11 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
           variant="contained"
           size="small"
           aria-label="open"
-          sx={{ marginRight: 2 }}
+          sx={{
+            minWidth: 'auto',
+            fontSize: isScreenHeightLessThan800 ? 10 : 16,
+            marginRight: isScreenHeightLessThan800 ? 0 : 0,
+          }}
           onClick={params.row.onClickOpen}
         >
           Open
@@ -126,6 +131,11 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
           variant="contained"
           size="small"
           aria-label="close"
+          sx={{
+            minWidth: 'auto',
+            fontSize: isScreenHeightLessThan800 ? 10 : 16,
+            marginRight: isScreenHeightLessThan800 ? 0 : 0,
+          }}
           onClick={params.row.onClickClose}
         >
           Close
@@ -195,7 +205,6 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
     },
   ];
 
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   return (
     <div style={{ height: '100%', width: '100%', overflowX: 'auto' }}>
       <DataGrid
@@ -207,7 +216,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
         columns={columns}
         rowsPerPageOptions={[5]}
         sx={{
-          fontSize: isScreenHeightLessThan800 ? '0.9rem' : 'inherit',
+          fontSize: isScreenHeightLessThan800 ? '0.8rem' : 'inherit',
           overflowX: 'scroll',
         }}
         autoPageSize={isScreenHeightLessThan800}

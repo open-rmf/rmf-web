@@ -32,6 +32,7 @@ export interface LiftDataGridTableProps {
 
 export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Element {
   const theme = useTheme();
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
 
   const OpModeState = (params: GridCellParams): React.ReactNode => {
     const opModeStateLabelStyle: SxProps = (() => {
@@ -67,7 +68,7 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: 16,
+            fontSize: isScreenHeightLessThan800 ? 12 : 16,
           }}
         >
           {healthStatusToOpMode(params.row.opMode)}
@@ -81,10 +82,12 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
     const currMotion = motionStateToString(params.row?.motionState);
 
     const motionArrowActiveStyle: SxProps = {
+      transform: `scale(${isScreenHeightLessThan800 ? 0.8 : 1})`,
       color: theme.palette.primary.main,
     };
 
     const motionArrowIdleStyle: SxProps = {
+      transform: `scale(${isScreenHeightLessThan800 ? 0.8 : 1})`,
       color: theme.palette.action.disabled,
       opacity: theme.palette.action.disabledOpacity,
     };
@@ -115,9 +118,16 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
         <Typography
           component="p"
           sx={{
-            marginRight: params.row?.doorState === LiftStateModel.DOOR_OPEN ? 4 : 2,
+            marginRight:
+              params.row?.doorState === LiftStateModel.DOOR_OPEN
+                ? isScreenHeightLessThan800
+                  ? 2
+                  : 4
+                : isScreenHeightLessThan800
+                ? 0.4
+                : 2,
             fontWeight: 'bold',
-            fontSize: 16,
+            fontSize: isScreenHeightLessThan800 ? 12 : 16,
             display: 'inline-block',
           }}
         >
@@ -199,7 +209,6 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
     },
   ];
 
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   return (
     <div style={{ height: '100%', width: '100%' }}>
       <DataGrid
@@ -211,7 +220,7 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
         columns={columns}
         rowsPerPageOptions={[5]}
         sx={{
-          fontSize: isScreenHeightLessThan800 ? '0.9rem' : 'inherit',
+          fontSize: isScreenHeightLessThan800 ? '0.8rem' : 'inherit',
         }}
         autoPageSize={isScreenHeightLessThan800}
         density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
