@@ -402,7 +402,7 @@ export const MapApp = styled(
     // zoom to robot on select
     React.useEffect(() => {
       const sub = AppEvents.robotSelect.subscribe((data) => {
-        if (!data) {
+        if (!data || !sceneBoundingBox) {
           return;
         }
         const [fleetName, robotName] = data;
@@ -413,14 +413,19 @@ export const MapApp = styled(
           return;
         }
 
-        // const mapCoordsLocation: [number, number] = [robotLocation[0], robotLocation[1]];
-        // const mapCoords = fromRmfCoords(mapCoordsLocation);
-        // const newCenter: L.LatLngTuple = [mapCoords[1], mapCoords[0]];
-        // AppEvents.mapCenter.next(newCenter);
-        AppEvents.zoom.next(resourceManager?.defaultRobotZoom ?? DEFAULT_ROBOT_ZOOM_LEVEL);
+        const center = sceneBoundingBox.getCenter(new Vector3());
+        const size = sceneBoundingBox.getSize(new Vector3());
+        const distance = Math.max(size.x, size.y, size.z) * 0.7;
+        const newZoom = resourceManager?.defaultRobotZoom ?? DEFAULT_ROBOT_ZOOM_LEVEL;
+        AppEvents.resetCamera.next([
+          robotLocation[0],
+          robotLocation[1],
+          robotLocation[2] + distance,
+          newZoom,
+        ]);
       });
       return () => sub.unsubscribe();
-    }, [robotLocations, resourceManager?.defaultRobotZoom]);
+    }, [robotLocations, resourceManager?.defaultRobotZoom, sceneBoundingBox]);
 
     React.useEffect(() => {
       if (!sceneBoundingBox) {
