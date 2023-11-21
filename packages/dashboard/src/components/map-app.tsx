@@ -34,7 +34,6 @@ import { Canvas, useLoader } from '@react-three/fiber';
 import { Line } from '@react-three/drei';
 import { CameraControl, LayersController } from './three-fiber';
 import { Lifts, Door, RobotThree } from './three-fiber';
-import App from './app';
 
 type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
@@ -215,8 +214,6 @@ export const MapApp = styled(
         const currentLevel =
           loggedInDisplayLevel || AppEvents.levelSelect.value || newMap.levels[0];
         AppEvents.levelSelect.next(currentLevel);
-        // console.log(AppEvents.zoom);
-        // console.log(AppEvents.mapCenter);
         setWaypoints(
           getPlaces(newMap).filter(
             (p) => p.level === currentLevel.name && p.vertex.name.length > 0,
@@ -228,7 +225,6 @@ export const MapApp = styled(
       (async () => {
         try {
           const newMap = (await rmf.buildingApi.getBuildingMapBuildingMapGet()).data;
-          // console.log('in get');
           handleBuildingMap(newMap);
         } catch (e) {
           console.log(`failed to get building map: ${(e as Error).message}`);
@@ -252,18 +248,24 @@ export const MapApp = styled(
     const [zoom, setZoom] = React.useState<number>(DEFAULT_ZOOM_LEVEL);
 
     React.useEffect(() => {
-      const sub = AppEvents.zoom.subscribe((currentValue) => {
-        setZoom(currentValue || resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL);
-      });
-      return () => sub.unsubscribe();
+      const subs: Subscription[] = [];
+      subs.push(
+        AppEvents.zoom.subscribe((currentValue) => {
+          setZoom(currentValue || resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL);
+        }),
+      );
+      subs.push(
+        AppEvents.levelSelect.subscribe((currentValue) => {
+          setCurrentLevel(currentValue ?? undefined);
+          setZoom(resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL);
+        }),
+      );
+      return () => {
+        for (const sub of subs) {
+          sub.unsubscribe();
+        }
+      };
     }, [resourceManager]);
-
-    React.useEffect(() => {
-      const sub = AppEvents.levelSelect.subscribe((currentValue) => {
-        setCurrentLevel(currentValue ?? undefined);
-      });
-      return () => sub.unsubscribe();
-    }, []);
 
     React.useEffect(() => {
       if (!currentLevel?.images[0]) {
@@ -433,10 +435,6 @@ export const MapApp = styled(
             AppEvents.levelSelect.next(
               buildingMap.levels.find((l: Level) => l.name === value) || buildingMap.levels[0],
             );
-
-            // Resetting zoom and mapCenter every time a map change happens
-            AppEvents.mapCenter.next([0.0, 0.0]);
-            AppEvents.zoom.next(resourceManager?.defaultRobotZoom ?? DEFAULT_ROBOT_ZOOM_LEVEL);
           }}
           handleZoomIn={() => AppEvents.zoomIn.next()}
           handleZoomOut={() => AppEvents.zoomOut.next()}
