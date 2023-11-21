@@ -202,34 +202,19 @@ export const MapApp = styled(
         if (!levelName) {
           return null;
         }
-        const levelNames: string[] = [];
         for (const l of map.levels) {
-          levelNames.push(l.name);
           if (l.name === levelName) {
-            console.log(`found level named: ${levelName}`);
             return l;
           }
         }
-        console.log(`level names: ${levelNames}`);
         return null;
       };
 
       const handleBuildingMap = (newMap: BuildingMap) => {
         setBuildingMap(newMap);
-        if (AppEvents.justLoggedIn.value) {
-          console.log('just logged in!');
-          console.log(`checking for map: ${resourceManager?.loggedInDisplayLevel}`);
-        } else {
-          console.log('not logged in! not checking for map then');
-        }
         const loggedInDisplayLevel = AppEvents.justLoggedIn.value
           ? levelByName(newMap, resourceManager?.loggedInDisplayLevel)
           : undefined;
-        if (loggedInDisplayLevel) {
-          console.log(`loggedInDisplayLevel is ${loggedInDisplayLevel.name}`);
-        } else {
-          console.log('didnt manage to get loggedInDisplayLevel');
-        }
         const currentLevel =
           loggedInDisplayLevel || AppEvents.levelSelect.value || newMap.levels[0];
         AppEvents.levelSelect.next(currentLevel);
@@ -238,7 +223,6 @@ export const MapApp = styled(
             (p) => p.level === currentLevel.name && p.vertex.name.length > 0,
           ),
         );
-        console.log('triggering justLoggedIn event value back');
         AppEvents.justLoggedIn.next(false);
       };
 
