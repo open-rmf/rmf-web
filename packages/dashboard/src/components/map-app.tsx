@@ -192,18 +192,18 @@ export const MapApp = styled(
       };
     }, [trajManager, currentLevel, trajectoryTime, trajectoryAnimScale]);
 
-    const levelByName = (map: BuildingMap, levelName?: string) => {
-      if (!levelName) {
-        return null;
-      }
-      const desiredLevels = map.levels.filter((level) => level.name === levelName);
-      return desiredLevels.length > 0 ? desiredLevels[0] : null;
-    };
-
     React.useEffect(() => {
       if (!rmf) {
         return;
       }
+
+      const levelByName = (map: BuildingMap, levelName?: string) => {
+        if (!levelName) {
+          return null;
+        }
+        const desiredLevels = map.levels.filter((level) => level.name === levelName);
+        return desiredLevels.length > 0 ? desiredLevels[0] : null;
+      };
 
       const handleBuildingMap = (newMap: BuildingMap) => {
         setBuildingMap(newMap);
@@ -467,6 +467,16 @@ export const MapApp = styled(
             AppEvents.levelSelect.next(
               buildingMap.levels.find((l: Level) => l.name === value) || buildingMap.levels[0],
             );
+          }}
+          handleFullView={() => {
+            if (!sceneBoundingBox) {
+              return;
+            }
+            const center = sceneBoundingBox.getCenter(new Vector3());
+            const size = sceneBoundingBox.getSize(new Vector3());
+            const distance = Math.max(size.x, size.y, size.z) * 0.7;
+            const newZoom = resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL;
+            AppEvents.resetCamera.next([center.x, center.y, center.z + distance, newZoom]);
           }}
           handleZoomIn={() => AppEvents.zoomIn.next()}
           handleZoomOut={() => AppEvents.zoomOut.next()}
