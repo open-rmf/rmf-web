@@ -32,7 +32,7 @@ import { RobotSummary } from './robots/robot-summary';
 import { Box3, TextureLoader, Vector3 } from 'three';
 import { Canvas, useLoader } from '@react-three/fiber';
 import { Line } from '@react-three/drei';
-import { CameraControl, LayersController } from './three-fiber';
+import { CameraControl, DEFAULT_ZOOM_LEVEL, LayersController } from './three-fiber';
 import { Lifts, Door, RobotThree } from './three-fiber';
 
 type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
@@ -44,7 +44,6 @@ const TrajectoryUpdateInterval = 2000;
 // of the whole app when it changes.
 const colorManager = new ColorManager();
 
-const DEFAULT_ZOOM_LEVEL = 20;
 const DEFAULT_ROBOT_ZOOM_LEVEL = 6;
 const DEFAULT_ROBOT_SCALE = 0.003;
 
@@ -245,7 +244,9 @@ export const MapApp = styled(
     }, [rmf, resourceManager]);
 
     const [imageUrl, setImageUrl] = React.useState<string | null>(null);
-    const [zoom, setZoom] = React.useState<number>(DEFAULT_ZOOM_LEVEL);
+    const [zoom, setZoom] = React.useState<number>(
+      resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL,
+    );
 
     React.useEffect(() => {
       const subs: Subscription[] = [];
