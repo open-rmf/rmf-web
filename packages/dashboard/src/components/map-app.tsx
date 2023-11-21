@@ -202,13 +202,26 @@ export const MapApp = styled(
         if (!levelName) {
           return null;
         }
-        const desiredLevels = map.levels.filter((level) => level.name === levelName);
-        return desiredLevels.length > 0 ? desiredLevels[0] : null;
+        const levelNames: string[] = [];
+        for (const l of map.levels) {
+          levelNames.push(l.name);
+          if (l.name === levelName) {
+            console.log(`found level named: ${levelName}`);
+            return l;
+          }
+        }
+        console.log(`level names: ${levelNames}`);
+        return null;
       };
 
       const handleBuildingMap = (newMap: BuildingMap) => {
         setBuildingMap(newMap);
-        console.log('checking justLoggedIn event value');
+        if (AppEvents.justLoggedIn.value) {
+          console.log('just logged in!');
+          console.log(`checking for map: ${resourceManager?.loggedInDisplayLevel}`);
+        } else {
+          console.log('not logged in! not checking for map then');
+        }
         const loggedInDisplayLevel = AppEvents.justLoggedIn.value
           ? levelByName(newMap, resourceManager?.loggedInDisplayLevel)
           : undefined;
