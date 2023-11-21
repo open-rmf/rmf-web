@@ -192,18 +192,18 @@ export const MapApp = styled(
       };
     }, [trajManager, currentLevel, trajectoryTime, trajectoryAnimScale]);
 
+    const levelByName = (map: BuildingMap, levelName?: string) => {
+      if (!levelName) {
+        return null;
+      }
+      const desiredLevels = map.levels.filter((level) => level.name === levelName);
+      return desiredLevels.length > 0 ? desiredLevels[0] : null;
+    };
+
     React.useEffect(() => {
       if (!rmf) {
         return;
       }
-
-      const levelByName = (map: BuildingMap, levelName?: string) => {
-        if (!levelName) {
-          return null;
-        }
-        const desiredLevels = map.levels.filter((level) => level.name === levelName);
-        return desiredLevels.length > 0 ? desiredLevels[0] : null;
-      };
 
       const handleBuildingMap = (newMap: BuildingMap) => {
         setBuildingMap(newMap);
@@ -341,7 +341,9 @@ export const MapApp = styled(
       })();
     }, [fleets, robotsStore, resourceManager, currentLevel, currentLevelOfRobots]);
 
-    const { current: robotLocations } = React.useRef<Record<string, [number, number, number]>>({});
+    const { current: robotLocations } = React.useRef<
+      Record<string, [number, number, number, string]>
+    >({});
     // updates the robot location
     React.useEffect(() => {
       if (!rmf) {
@@ -369,6 +371,7 @@ export const MapApp = styled(
               robotState.location.x,
               robotState.location.y,
               robotState.location.yaw,
+              robotState.location.map,
             ];
 
             setCurrentLevelOfRobots((prevState) => {
@@ -413,8 +416,26 @@ export const MapApp = styled(
           return;
         }
 
-        const center = sceneBoundingBox.getCenter(new Vector3());
-        const size = sceneBoundingBox.getSize(new Vector3());
+        const mapName = robotLocation[3];
+        let newSceneBoundingBox = sceneBoundingBox;
+        if (
+          AppEvents.levelSelect.value &&
+          AppEvents.levelSelect.value.name !== mapName &&
+          buildingMap
+        ) {
+          const robotLevel =
+            buildingMap.levels.find((l: Level) => l.name === mapName) || buildingMap.levels[0];
+          AppEvents.levelSelect.next(robotLevel);
+
+          const robotLevelSceneBoundingBox = findSceneBoundingBoxFromThreeFiber(robotLevel);
+          if (!robotLevelSceneBoundingBox) {
+            return;
+          }
+          newSceneBoundingBox = robotLevelSceneBoundingBox;
+          setSceneBoundingBox(newSceneBoundingBox);
+        }
+
+        const size = newSceneBoundingBox.getSize(new Vector3());
         const distance = Math.max(size.x, size.y, size.z) * 0.7;
         const newZoom = resourceManager?.defaultRobotZoom ?? DEFAULT_ROBOT_ZOOM_LEVEL;
         AppEvents.resetCamera.next([
@@ -425,7 +446,7 @@ export const MapApp = styled(
         ]);
       });
       return () => sub.unsubscribe();
-    }, [robotLocations, resourceManager?.defaultRobotZoom, sceneBoundingBox]);
+    }, [robotLocations, resourceManager?.defaultRobotZoom, sceneBoundingBox, buildingMap]);
 
     React.useEffect(() => {
       if (!sceneBoundingBox) {
@@ -588,11 +609,13 @@ export const MapApp = styled(
             robots.map((robot) => {
               const robotId = `${robot.fleet}/${robot.name}`;
               if (robotId in robotLocations) {
+                const location = robotLocations[robotId];
+                const position: [number, number, number] = [location[0], location[1], location[2]];
                 return (
                   <RobotThree
                     key={`${robot.name} ${robot.fleet}`}
                     robot={robot}
-                    robotLocation={robotLocations[robotId]}
+                    robotLocation={position}
                     onRobotClick={(_ev, robot) => {
                       setOpenRobotSummary(true);
                       setSelectedRobot(robot);
