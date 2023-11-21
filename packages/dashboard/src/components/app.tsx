@@ -109,6 +109,7 @@ export default function App(): JSX.Element | null {
                 logo="assets/defaultLogo.png"
                 onLoginClick={() => {
                   authenticator.login(`${window.location.origin}${DashboardRoute}`);
+                  console.log('triggereing justLoggedIn event');
                   AppEvents.justLoggedIn.next(true);
                 }}
               />
