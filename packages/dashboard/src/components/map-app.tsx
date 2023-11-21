@@ -11,7 +11,6 @@ import React, { ChangeEvent, Suspense } from 'react';
 import {
   ColorManager,
   findSceneBoundingBoxFromThreeFiber,
-  fromRmfCoords,
   getPlaces,
   Place,
   ReactThreeFiberImageMaker,
@@ -202,8 +201,12 @@ export const MapApp = styled(
         if (!levelName) {
           return null;
         }
-        const desiredLevels = map.levels.filter((level) => level.name === levelName);
-        return desiredLevels.length > 0 ? desiredLevels[0] : null;
+        for (const l of map.levels) {
+          if (l.name === levelName) {
+            return l;
+          }
+        }
+        return null;
       };
 
       const handleBuildingMap = (newMap: BuildingMap) => {
@@ -245,21 +248,41 @@ export const MapApp = styled(
     }, [rmf, resourceManager]);
 
     const [imageUrl, setImageUrl] = React.useState<string | null>(null);
-    const [zoom, setZoom] = React.useState<number>(DEFAULT_ZOOM_LEVEL);
+    const [zoom, setZoom] = React.useState<number>(
+      resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL,
+    );
+    const [sceneBoundingBox, setSceneBoundingBox] = React.useState<Box3 | undefined>(undefined);
+    const [distance, setDistance] = React.useState<number>(0);
 
     React.useEffect(() => {
-      const sub = AppEvents.zoom.subscribe((currentValue) => {
-        setZoom(currentValue || resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL);
-      });
-      return () => sub.unsubscribe();
-    }, [resourceManager]);
-
-    React.useEffect(() => {
-      const sub = AppEvents.levelSelect.subscribe((currentValue) => {
-        setCurrentLevel(currentValue ?? undefined);
-      });
-      return () => sub.unsubscribe();
-    }, []);
+      const subs: Subscription[] = [];
+      subs.push(
+        AppEvents.zoom.subscribe((currentValue) => {
+          setZoom(currentValue || resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL);
+        }),
+      );
+      subs.push(
+        AppEvents.levelSelect.subscribe((currentValue) => {
+          const newSceneBoundingBox = currentValue
+            ? findSceneBoundingBoxFromThreeFiber(currentValue)
+            : undefined;
+          if (newSceneBoundingBox) {
+            const center = newSceneBoundingBox.getCenter(new Vector3());
+            const size = newSceneBoundingBox.getSize(new Vector3());
+            const distance = Math.max(size.x, size.y, size.z) * 0.7;
+            const newZoom = resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL;
+            AppEvents.resetCamera.next([center.x, center.y, center.z + distance, newZoom]);
+          }
+          setCurrentLevel(currentValue ?? undefined);
+          setSceneBoundingBox(newSceneBoundingBox);
+        }),
+      );
+      return () => {
+        for (const sub of subs) {
+          sub.unsubscribe();
+        }
+      };
+    }, [resourceManager?.defaultZoom]);
 
     React.useEffect(() => {
       if (!currentLevel?.images[0]) {
@@ -322,7 +345,9 @@ export const MapApp = styled(
       })();
     }, [fleets, robotsStore, resourceManager, currentLevel, currentLevelOfRobots]);
 
-    const { current: robotLocations } = React.useRef<Record<string, [number, number, number]>>({});
+    const { current: robotLocations } = React.useRef<
+      Record<string, [number, number, number, string]>
+    >({});
     // updates the robot location
     React.useEffect(() => {
       if (!rmf) {
@@ -350,6 +375,7 @@ export const MapApp = styled(
               robotState.location.x,
               robotState.location.y,
               robotState.location.yaw,
+              robotState.location.map,
             ];
 
             setCurrentLevelOfRobots((prevState) => {
@@ -383,7 +409,7 @@ export const MapApp = styled(
     // zoom to robot on select
     React.useEffect(() => {
       const sub = AppEvents.robotSelect.subscribe((data) => {
-        if (!data) {
+        if (!data || !sceneBoundingBox) {
           return;
         }
         const [fleetName, robotName] = data;
@@ -394,21 +420,37 @@ export const MapApp = styled(
           return;
         }
 
-        const mapCoordsLocation: [number, number] = [robotLocation[0], robotLocation[1]];
-        const mapCoords = fromRmfCoords(mapCoordsLocation);
-        const newCenter: L.LatLngTuple = [mapCoords[1], mapCoords[0]];
-        AppEvents.mapCenter.next(newCenter);
-        AppEvents.zoom.next(resourceManager?.defaultRobotZoom ?? DEFAULT_ROBOT_ZOOM_LEVEL);
+        const mapName = robotLocation[3];
+        let newSceneBoundingBox = sceneBoundingBox;
+        if (
+          AppEvents.levelSelect.value &&
+          AppEvents.levelSelect.value.name !== mapName &&
+          buildingMap
+        ) {
+          const robotLevel =
+            buildingMap.levels.find((l: Level) => l.name === mapName) || buildingMap.levels[0];
+          AppEvents.levelSelect.next(robotLevel);
+
+          const robotLevelSceneBoundingBox = findSceneBoundingBoxFromThreeFiber(robotLevel);
+          if (!robotLevelSceneBoundingBox) {
+            return;
+          }
+          newSceneBoundingBox = robotLevelSceneBoundingBox;
+          setSceneBoundingBox(newSceneBoundingBox);
+        }
+
+        const size = newSceneBoundingBox.getSize(new Vector3());
+        const distance = Math.max(size.x, size.y, size.z) * 0.7;
+        const newZoom = resourceManager?.defaultRobotZoom ?? DEFAULT_ROBOT_ZOOM_LEVEL;
+        AppEvents.resetCamera.next([
+          robotLocation[0],
+          robotLocation[1],
+          robotLocation[2] + distance,
+          newZoom,
+        ]);
       });
       return () => sub.unsubscribe();
-    }, [robotLocations, resourceManager?.defaultRobotZoom]);
-
-    const [sceneBoundingBox, setSceneBoundingBox] = React.useState<Box3 | undefined>(undefined);
-    const [distance, setDistance] = React.useState<number>(0);
-
-    React.useMemo(() => {
-      setSceneBoundingBox(findSceneBoundingBoxFromThreeFiber(currentLevel));
-    }, [currentLevel]);
+    }, [robotLocations, resourceManager?.defaultRobotZoom, sceneBoundingBox, buildingMap]);
 
     React.useEffect(() => {
       if (!sceneBoundingBox) {
@@ -429,6 +471,16 @@ export const MapApp = styled(
             AppEvents.levelSelect.next(
               buildingMap.levels.find((l: Level) => l.name === value) || buildingMap.levels[0],
             );
+          }}
+          handleFullView={() => {
+            if (!sceneBoundingBox) {
+              return;
+            }
+            const center = sceneBoundingBox.getCenter(new Vector3());
+            const size = sceneBoundingBox.getSize(new Vector3());
+            const distance = Math.max(size.x, size.y, size.z) * 0.7;
+            const newZoom = resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL;
+            AppEvents.resetCamera.next([center.x, center.y, center.z + distance, newZoom]);
           }}
           handleZoomIn={() => AppEvents.zoomIn.next()}
           handleZoomOut={() => AppEvents.zoomOut.next()}
@@ -571,11 +623,13 @@ export const MapApp = styled(
             robots.map((robot) => {
               const robotId = `${robot.fleet}/${robot.name}`;
               if (robotId in robotLocations) {
+                const location = robotLocations[robotId];
+                const position: [number, number, number] = [location[0], location[1], location[2]];
                 return (
                   <RobotThree
                     key={`${robot.name} ${robot.fleet}`}
                     robot={robot}
-                    robotLocation={robotLocations[robotId]}
+                    robotLocation={position}
                     onRobotClick={(_ev, robot) => {
                       setOpenRobotSummary(true);
                       setSelectedRobot(robot);

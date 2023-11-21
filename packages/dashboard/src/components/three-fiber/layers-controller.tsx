@@ -16,12 +16,14 @@ import {
 import LayersIcon from '@mui/icons-material/Layers';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
 
 interface LayersControllerProps {
   disabledLayers: Record<string, boolean>;
   onChange: (event: ChangeEvent<HTMLInputElement>, value: string) => void;
   levels: Level[];
   currentLevel: Level;
+  handleFullView: () => void;
   handleZoomIn: () => void;
   handleZoomOut: () => void;
 }
@@ -31,6 +33,7 @@ export const LayersController = ({
   onChange,
   levels,
   currentLevel,
+  handleFullView,
   handleZoomIn,
   handleZoomOut,
 }: LayersControllerProps) => {
@@ -69,6 +72,11 @@ export const LayersController = ({
           ))}
         </TextField>
       </FormControl>
+      <div>
+        <IconButton size="small" onClick={handleFullView} data-testid="full-view">
+          <FullscreenIcon fontSize="large" />
+        </IconButton>
+      </div>
       <div>
         <IconButton
           size="small"

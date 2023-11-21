@@ -67,7 +67,7 @@ export default class ResourceManager {
     this.reportIssue = resources.reportIssue || 'https://github.com/open-rmf/rmf-web/issues';
     this.pickupZones = resources.pickupZones || [];
     this.defaultZoom = resources.defaultZoom ?? 5;
-    this.defaultRobotZoom = resources.defaultRobotZoom ?? 6;
+    this.defaultRobotZoom = resources.defaultRobotZoom ?? 40;
     this.attributionPrefix = resources.attributionPrefix || 'OSRC-SG';
     this.cartIds = resources.cartIds || [];
     this.loggedInDisplayLevel = resources.loggedInDisplayLevel;

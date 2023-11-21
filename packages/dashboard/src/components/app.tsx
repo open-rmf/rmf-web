@@ -26,7 +26,10 @@ export default function App(): JSX.Element | null {
 
   React.useEffect(() => {
     let cancel = false;
-    const onUserChanged = (newUser: string | null) => setUser(newUser);
+    const onUserChanged = (newUser: string | null) => {
+      setUser(newUser);
+      AppEvents.justLoggedIn.next(true);
+    };
     authenticator.on('userChanged', onUserChanged);
     (async () => {
       await authenticator.init();
@@ -107,10 +110,9 @@ export default function App(): JSX.Element | null {
               <LoginPage
                 title={'Dashboard'}
                 logo="assets/defaultLogo.png"
-                onLoginClick={() => {
-                  authenticator.login(`${window.location.origin}${DashboardRoute}`);
-                  AppEvents.justLoggedIn.next(true);
-                }}
+                onLoginClick={() =>
+                  authenticator.login(`${window.location.origin}${DashboardRoute}`)
+                }
               />
             }
           />
