@@ -65,6 +65,10 @@ import { useCreateTaskFormData } from '../hooks/useCreateTaskForm';
 import { toApiSchedule } from './tasks/utils';
 import useGetUsername from '../hooks/useFetchUser';
 
+const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  fontSize: theme.spacing(4), // spacing = 8
+}));
+
 export type TabValue = 'infrastructure' | 'robots' | 'tasks';
 
 const locationToTabValue = (pathname: string): TabValue | undefined => {
@@ -139,11 +143,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     fontSize: theme.spacing(largerResolution ? 1.5 : 4), // spacing = 8
     paddingTop: 0,
     paddingBottom: 0,
-  }));
-
-  const StyledIconButton = styled(IconButton)(({ theme }) => ({
-    fontSize: theme.spacing(largerResolution ? 2 : 4), // spacing = 8
-    marginBottom: theme.spacing(0),
   }));
 
   React.useEffect(() => {
