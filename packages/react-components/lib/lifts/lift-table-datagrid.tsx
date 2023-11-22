@@ -114,7 +114,7 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
     })();
 
     return (
-      <Box component="div" sx={doorStateLabelStyle}>
+      <Box component="div" sx={{ display: 'flex', alignItems: 'center', ...doorStateLabelStyle }}>
         <Typography
           component="p"
           sx={{
