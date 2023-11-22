@@ -7,7 +7,7 @@ import {
   GridRowParams,
   GridCellParams,
 } from '@mui/x-data-grid';
-import { Box, SxProps, Typography, useTheme } from '@mui/material';
+import { Box, SxProps, Typography, useTheme, useMediaQuery } from '@mui/material';
 import * as React from 'react';
 import { Status2 } from 'api-client';
 import { RobotTableData } from './robot-table';
@@ -19,6 +19,8 @@ export interface RobotDataGridTableProps {
 }
 
 export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableProps): JSX.Element {
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
+
   const handleEvent: GridEventListener<'rowClick'> = (
     params: GridRowParams,
     event: MuiEvent<React.MouseEvent<HTMLElement>>,
@@ -63,7 +65,7 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: 16,
+            fontSize: isScreenHeightLessThan800 ? 12 : 16,
           }}
         >
           {robotStatusToUpperCase(params.row.status)}
@@ -147,6 +149,11 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
       rowHeight={38}
       columns={columns}
       rowsPerPageOptions={[5]}
+      sx={{
+        fontSize: isScreenHeightLessThan800 ? '0.8rem' : 'inherit',
+      }}
+      autoPageSize={isScreenHeightLessThan800}
+      density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
       onRowClick={handleEvent}
       initialState={{
         sorting: {

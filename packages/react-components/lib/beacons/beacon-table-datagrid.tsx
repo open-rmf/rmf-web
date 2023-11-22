@@ -1,6 +1,6 @@
 import { ApiServerModelsTortoiseModelsBeaconsBeaconStateLeaf as BeaconState } from 'api-client';
 import { DataGrid, GridColDef, GridValueGetterParams, GridCellParams } from '@mui/x-data-grid';
-import { Box, SxProps, Typography, useTheme } from '@mui/material';
+import { Box, SxProps, Typography, useTheme, useMediaQuery } from '@mui/material';
 import React from 'react';
 
 export interface BeaconDataGridTableProps {
@@ -9,6 +9,7 @@ export interface BeaconDataGridTableProps {
 
 export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.Element {
   const theme = useTheme();
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
 
   const OpModeState = (params: GridCellParams): React.ReactNode => {
     const opModeStateLabelStyle: SxProps = (() => {
@@ -29,7 +30,7 @@ export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: 16,
+            fontSize: isScreenHeightLessThan800 ? 12 : 16,
           }}
         >
           {params.row.online ? 'ONLINE' : 'OFFLINE'}
@@ -114,19 +115,22 @@ export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.
   ];
 
   return (
-    <div style={{ height: '100%', width: '100%' }}>
-      <DataGrid
-        autoHeight={true}
-        getRowId={(l) => l.id}
-        rows={beacons}
-        pageSize={5}
-        rowHeight={38}
-        columns={columns}
-        rowsPerPageOptions={[5]}
-        localeText={{
-          noRowsLabel: 'No beacons available.',
-        }}
-      />
-    </div>
+    <DataGrid
+      autoHeight={true}
+      getRowId={(l) => l.id}
+      rows={beacons}
+      pageSize={5}
+      rowHeight={38}
+      columns={columns}
+      rowsPerPageOptions={[5]}
+      sx={{
+        fontSize: isScreenHeightLessThan800 ? '0.8rem' : 'inherit',
+      }}
+      autoPageSize={isScreenHeightLessThan800}
+      density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
+      localeText={{
+        noRowsLabel: 'No beacons available.',
+      }}
+    />
   );
 }

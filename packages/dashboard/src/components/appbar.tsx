@@ -27,6 +27,7 @@ import {
   Toolbar,
   Tooltip,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 import {
   ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
@@ -63,20 +64,6 @@ import { styled } from '@mui/system';
 import { useCreateTaskFormData } from '../hooks/useCreateTaskForm';
 import { toApiSchedule } from './tasks/utils';
 import useGetUsername from '../hooks/useFetchUser';
-
-const StyledAppBarTab = styled(AppBarTab)(({ theme }) => ({
-  fontSize: theme.spacing(4), // spacing = 8
-}));
-
-const StyledAppBarButton = styled(Button)(({ theme }) => ({
-  fontSize: theme.spacing(4), // spacing = 8
-  paddingTop: 0,
-  paddingBottom: 0,
-}));
-
-const StyledIconButton = styled(IconButton)(({ theme }) => ({
-  fontSize: theme.spacing(4), // spacing = 8
-}));
 
 export type TabValue = 'infrastructure' | 'robots' | 'tasks';
 
@@ -140,6 +127,29 @@ export interface AppBarProps {
 }
 
 export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.ReactElement => {
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
+
+  const [largerResolution, setLargerResolution] = React.useState(false);
+
+  const StyledAppBarTab = styled(AppBarTab)(({ theme }) => ({
+    fontSize: theme.spacing(largerResolution ? 2 : 4),
+  }));
+
+  const StyledAppBarButton = styled(Button)(({ theme }) => ({
+    fontSize: theme.spacing(largerResolution ? 1.5 : 4), // spacing = 8
+    paddingTop: 0,
+    paddingBottom: 0,
+  }));
+
+  const StyledIconButton = styled(IconButton)(({ theme }) => ({
+    fontSize: theme.spacing(largerResolution ? 2 : 4), // spacing = 8
+    marginBottom: theme.spacing(0),
+  }));
+
+  React.useEffect(() => {
+    setLargerResolution(isScreenHeightLessThan800);
+  }, [isScreenHeightLessThan800]);
+
   const rmf = React.useContext(RmfAppContext);
   const resourceManager = React.useContext(ResourcesContext);
   const { showAlert } = React.useContext(AppControllerContext);
@@ -373,10 +383,10 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             aria-label="new task"
             color="secondary"
             variant="contained"
-            size="medium"
+            size={largerResolution ? 'small' : 'medium'}
             onClick={() => setOpenCreateTaskForm(true)}
           >
-            <AddOutlined />
+            <AddOutlined transform={`scale(${largerResolution ? 0.5 : 1})`} />
             New Task
           </StyledAppBarButton>
           <Tooltip title="Notifications">
@@ -445,7 +455,9 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             )}
           </Menu>
           <Divider orientation="vertical" sx={{ marginLeft: 1, marginRight: 2 }} />
-          <Typography variant="subtitle1">Powered by Open-RMF</Typography>
+          <Typography variant="subtitle1" fontSize={largerResolution ? 12 : 16}>
+            Powered by Open-RMF
+          </Typography>
           {extraToolbarItems}
           <Tooltip title="Settings">
             <StyledIconButton
