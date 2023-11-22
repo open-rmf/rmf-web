@@ -55,7 +55,7 @@ export const DoorsApp = createMicroApp('Doors', () => {
           });
           return () => sub.unsubscribe();
         } catch (error) {
-          throw new Error(getApiErrorMessage(error));
+          console.error(`Failed to get lift health: ${getApiErrorMessage(error)}`);
         }
       }),
     );
