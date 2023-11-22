@@ -73,8 +73,16 @@ export const LayersController = ({
         </TextField>
       </FormControl>
       <div>
-        <IconButton size="small" onClick={handleFullView} data-testid="full-view">
-          <FullscreenIcon fontSize="large" />
+        <IconButton
+          size="small"
+          onClick={handleFullView}
+          data-testid="full-view"
+          sx={{ padding: isScreenHeightLessThan800 ? 0 : 2 }}
+        >
+          <FullscreenIcon
+            fontSize="large"
+            transform={`scale(${isScreenHeightLessThan800 ? 0.5 : 1})`}
+          />
         </IconButton>
       </div>
       <div>
