@@ -1,4 +1,4 @@
-import { styled } from '@mui/material';
+import { styled, useMediaQuery } from '@mui/material';
 import {
   BuildingMap,
   Dispenser,
@@ -53,6 +53,7 @@ function getRobotId(fleetName: string, robotName: string): string {
 
 export const MapApp = styled(
   createMicroApp('Map', () => {
+    const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
     const rmf = React.useContext(RmfAppContext);
     const resourceManager = React.useContext(ResourcesContext);
     const [currentLevel, setCurrentLevel] = React.useState<Level | undefined>(undefined);
@@ -248,9 +249,15 @@ export const MapApp = styled(
     }, [rmf, resourceManager]);
 
     const [imageUrl, setImageUrl] = React.useState<string | null>(null);
-    const [zoom, setZoom] = React.useState<number>(
-      resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL,
-    );
+    // Since the configurable zoom level is for supporting the lowest resolution
+    // settings, we will double it for anything that is operating within modern
+    // resolution settings.
+    const defaultZoom = isScreenHeightLessThan800
+      ? resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL
+      : resourceManager?.defaultZoom
+      ? resourceManager.defaultZoom * 2
+      : DEFAULT_ZOOM_LEVEL;
+    const [zoom, setZoom] = React.useState<number>(defaultZoom);
     const [sceneBoundingBox, setSceneBoundingBox] = React.useState<Box3 | undefined>(undefined);
     const [distance, setDistance] = React.useState<number>(0);
 
@@ -258,7 +265,7 @@ export const MapApp = styled(
       const subs: Subscription[] = [];
       subs.push(
         AppEvents.zoom.subscribe((currentValue) => {
-          setZoom(currentValue || resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL);
+          setZoom(currentValue || defaultZoom);
         }),
       );
       subs.push(
@@ -270,7 +277,7 @@ export const MapApp = styled(
             const center = newSceneBoundingBox.getCenter(new Vector3());
             const size = newSceneBoundingBox.getSize(new Vector3());
             const distance = Math.max(size.x, size.y, size.z) * 0.7;
-            const newZoom = resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL;
+            const newZoom = defaultZoom;
             AppEvents.resetCamera.next([center.x, center.y, center.z + distance, newZoom]);
           }
           setCurrentLevel(currentValue ?? undefined);
@@ -282,7 +289,7 @@ export const MapApp = styled(
           sub.unsubscribe();
         }
       };
-    }, [resourceManager?.defaultZoom]);
+    }, [defaultZoom]);
 
     React.useEffect(() => {
       if (!currentLevel?.images[0]) {
@@ -479,7 +486,7 @@ export const MapApp = styled(
             const center = sceneBoundingBox.getCenter(new Vector3());
             const size = sceneBoundingBox.getSize(new Vector3());
             const distance = Math.max(size.x, size.y, size.z) * 0.7;
-            const newZoom = resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL;
+            const newZoom = defaultZoom || DEFAULT_ZOOM_LEVEL;
             AppEvents.resetCamera.next([center.x, center.y, center.z + distance, newZoom]);
           }}
           handleZoomIn={() => AppEvents.zoomIn.next()}
