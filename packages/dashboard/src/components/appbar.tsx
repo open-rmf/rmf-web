@@ -454,11 +454,11 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             )}
           </Menu>
           <Divider orientation="vertical" sx={{ marginLeft: 1, marginRight: 2 }} />
-          <Typography variant="subtitle1" fontSize={largerResolution ? 12 : 16}>
+          {/* <Typography variant="subtitle1" fontSize={largerResolution ? 12 : 16}>
             Powered by Open-RMF
-          </Typography>
+          </Typography> */}
           {extraToolbarItems}
-          <Tooltip title="Settings">
+          {/* <Tooltip title="Settings">
             <StyledIconButton
               id="show-settings-btn"
               aria-label="settings"
@@ -467,7 +467,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             >
               <Settings fontSize="inherit" />
             </StyledIconButton>
-          </Tooltip>
+          </Tooltip> */}
           <Tooltip title="Help">
             <StyledIconButton
               id="show-help-btn"
