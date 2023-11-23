@@ -53,6 +53,8 @@ function tabPanelId(index: number): string {
 
 function TabPanel(props: TabPanelProps) {
   const { children, selectedTabIndex, index, ...other } = props;
+  // Removing top padding for Schedule as there is too much whitespace after
+  // the day-week-month view has been shifted to the right.
   return (
     <div
       role="tabpanel"
@@ -62,7 +64,10 @@ function TabPanel(props: TabPanelProps) {
       {...other}
     >
       {selectedTabIndex === index && (
-        <Box component="div" sx={{ p: 3 }}>
+        <Box
+          component="div"
+          sx={{ p: 3, pt: selectedTabIndex === TaskTablePanel.Schedule ? 0 : 3 }}
+        >
           {children}
         </Box>
       )}
