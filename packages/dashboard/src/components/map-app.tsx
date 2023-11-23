@@ -1,4 +1,4 @@
-import { styled, useMediaQuery } from '@mui/material';
+import { Box, styled, Typography, useMediaQuery } from '@mui/material';
 import {
   BuildingMap,
   Dispenser,
@@ -492,6 +492,21 @@ export const MapApp = styled(
           handleZoomIn={() => AppEvents.zoomIn.next()}
           handleZoomOut={() => AppEvents.zoomOut.next()}
         />
+        <Box
+          component="div"
+          sx={{
+            position: 'absolute',
+            bottom: '20px',
+            right: '20px',
+            width: 'auto',
+            height: 'auto',
+            zIndex: '1',
+          }}
+        >
+          <Typography variant="caption" display="block">
+            {resourceManager?.attributionPrefix}
+          </Typography>
+        </Box>
         <Canvas
           onCreated={({ camera }) => {
             if (!sceneBoundingBox) {

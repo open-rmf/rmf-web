@@ -5,7 +5,7 @@ import {
   Logout,
   Notifications,
   Report,
-  Settings,
+  // Settings,
   Warning as Issue,
 } from '@mui/icons-material';
 import {
