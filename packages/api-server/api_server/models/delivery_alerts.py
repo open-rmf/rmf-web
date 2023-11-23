@@ -14,6 +14,10 @@ def category_from_msg(category: int) -> str:
             value = ttm.DeliveryAlert.Category.Missing
         case 1:
             value = ttm.DeliveryAlert.Category.Wrong
+        case 2:
+            value = ttm.DeliveryAlert.Category.Obstructed
+        case 3:
+            value = ttm.DeliveryAlert.Category.Cancelled
         case _:
             pass
     return value
@@ -52,6 +56,10 @@ def category_to_msg(category: str) -> int:
             value = 0
         case ttm.DeliveryAlert.Category.Wrong:
             value = 1
+        case ttm.DeliveryAlert.Category.Obstructed:
+            value = 2
+        case ttm.DeliveryAlert.Category.Cancelled:
+            value = 3
         case _:
             pass
     return value

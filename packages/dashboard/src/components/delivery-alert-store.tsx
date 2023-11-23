@@ -23,6 +23,26 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+const categoryToText = (category: string): string => {
+  switch (category) {
+    case 'missing': {
+      return 'No cart detected';
+    }
+    case 'wrong': {
+      return 'Wrong cart detected';
+    }
+    case 'obstructed': {
+      return 'Goal is obstructed';
+    }
+    case 'cancelled': {
+      return 'Task is cancelled';
+    }
+    default: {
+      return '';
+    }
+  }
+};
+
 interface DeliveryWarningDialogProps {
   deliveryAlert: DeliveryAlert;
   taskState?: TaskState;
@@ -184,7 +204,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
             InputProps={{ readOnly: true, className: classes.textField }}
             fullWidth={true}
             margin="dense"
-            value={`${deliveryAlert.category === 'missing' ? 'No' : 'Wrong'} cart detected`}
+            value={categoryToText(deliveryAlert.category)}
           />
           <TextField
             label="Message"
@@ -213,7 +233,8 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
               </Button>
             </Tooltip>
           ) : null}
-          {newTaskState && newTaskState.status && newTaskState.status === 'canceled' ? (
+          {(newTaskState && newTaskState.status && newTaskState.status === 'canceled') ||
+          deliveryAlert.category === 'cancelled' ? (
             <Button size="small" variant="contained" disabled autoFocus>
               Cancelled
             </Button>
@@ -345,7 +366,7 @@ const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
             InputProps={{ readOnly: true, className: classes.textField }}
             fullWidth={true}
             margin="dense"
-            value={`${deliveryAlert.category === 'missing' ? 'No' : 'Wrong'} cart detected`}
+            value={categoryToText(deliveryAlert.category)}
           />
           <TextField
             label="Message"
@@ -632,30 +653,44 @@ export const DeliveryAlertStore = React.memo(() => {
   return (
     <>
       {Object.values(alerts).map((alert) => {
-        if (alert.deliveryAlert.tier === 'warning') {
+        if (alert.deliveryAlert.tier === 'error') {
           return (
-            <DeliveryWarningDialog
+            <DeliveryErrorDialog
               deliveryAlert={alert.deliveryAlert}
               taskState={alert.taskState}
-              onOverride={alert.deliveryAlert.category === 'wrong' ? onOverride : undefined}
-              onResume={onResume}
-              onClose={() =>
-                setAlerts((prev) =>
-                  Object.fromEntries(
-                    Object.entries(prev).filter(([key]) => key !== alert.deliveryAlert.id),
-                  ),
-                )
-              }
+              onClose={onErrorCloseCancel}
+              key={alert.deliveryAlert.id}
+            />
+          );
+        }
+
+        if (alert.deliveryAlert.category === 'cancelled') {
+          console.warn(
+            'Delivery alert with category [cancelled] submitted as a warning, this might be a mistake, alert promoted to an error.',
+          );
+          return (
+            <DeliveryErrorDialog
+              deliveryAlert={alert.deliveryAlert}
+              taskState={alert.taskState}
+              onClose={onErrorCloseCancel}
               key={alert.deliveryAlert.id}
             />
           );
         }
 
         return (
-          <DeliveryErrorDialog
+          <DeliveryWarningDialog
             deliveryAlert={alert.deliveryAlert}
             taskState={alert.taskState}
-            onClose={onErrorCloseCancel}
+            onOverride={alert.deliveryAlert.category === 'wrong' ? onOverride : undefined}
+            onResume={alert.deliveryAlert.category === 'obstructed' ? undefined : onResume}
+            onClose={() =>
+              setAlerts((prev) =>
+                Object.fromEntries(
+                  Object.entries(prev).filter(([key]) => key !== alert.deliveryAlert.id),
+                ),
+              )
+            }
             key={alert.deliveryAlert.id}
           />
         );

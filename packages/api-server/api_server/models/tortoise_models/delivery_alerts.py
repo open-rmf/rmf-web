@@ -13,6 +13,8 @@ class DeliveryAlert(Model):
     class Category(str, Enum):
         Missing = "missing"
         Wrong = "wrong"
+        Obstructed = "obstructed"
+        Cancelled = "cancelled"
 
     class Tier(str, Enum):
         Warning = "warning"
