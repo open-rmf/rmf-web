@@ -92,9 +92,6 @@ class RmfGateway:
             durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
         )
 
-        self._lift_req = ros_node().create_publisher(
-            RmfLiftRequest, "lift_requests", transient_qos
-        )
         self._adapter_lift_req = ros_node().create_publisher(
             RmfLiftRequest, "adapter_lift_requests", transient_qos
         )
@@ -256,12 +253,10 @@ class RmfGateway:
             destination_floor=destination,
             door_state=door_mode,
         )
-        self._lift_req.publish(msg)
         self._adapter_lift_req.publish(msg)
 
         for session_id in additional_session_ids:
             msg.session_id = session_id
-            self._lift_req.publish(msg)
             self._adapter_lift_req.publish(msg)
 
     def respond_to_delivery_alert(
