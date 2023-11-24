@@ -86,9 +86,6 @@ export const RobotThreeMaker = ({
   fontPath,
   robotLabel,
 }: RobotThreeMakerProps): JSX.Element => {
-  const HEIGHT = 8;
-  const ELEVATION = 0;
-  const positionZ = HEIGHT / 2 + ELEVATION;
   const [isHovered, setIsHovered] = React.useState(false);
 
   const debouncedHandlePointerOver = debounce(() => {
