@@ -24,6 +24,7 @@ interface RobotThreeMakerProps {
   rotation: Euler;
   circleSegment: number;
   fontPath?: string;
+  robotLabel: boolean;
 }
 
 interface RobotImageMakerProps {
@@ -82,10 +83,11 @@ export const RobotThreeMaker = ({
   rotation,
   circleSegment,
   fontPath,
+  robotLabel,
 }: RobotThreeMakerProps): JSX.Element => {
   return (
     <>
-      {fontPath && fontPath.length > 0 ? (
+      {robotLabel && fontPath && fontPath.length > 0 ? (
         <Text
           color="black"
           font={fontPath}
@@ -94,9 +96,9 @@ export const RobotThreeMaker = ({
         >
           {robot.name}
         </Text>
-      ) : (
+      ) : robotLabel ? (
         <TextThreeRendering position={[position.x, position.y, position.z + 1]} text={robot.name} />
-      )}
+      ) : null}
       {imageUrl ? (
         <RobotImageMaker
           imageUrl={imageUrl}

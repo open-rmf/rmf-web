@@ -7,6 +7,7 @@ interface RobotThreeProps {
   robot: RobotData;
   robotLocation: [number, number, number];
   onRobotClick?: (ev: ThreeEvent<MouseEvent>, robot: RobotData) => void;
+  robotLabel: boolean;
 }
 
 async function fontPathExists(url: string) {
@@ -14,7 +15,7 @@ async function fontPathExists(url: string) {
   return result.ok;
 }
 
-export const RobotThree = ({ robot, robotLocation, onRobotClick }: RobotThreeProps) => {
+export const RobotThree = ({ robot, robotLocation, onRobotClick, robotLabel }: RobotThreeProps) => {
   const STANDAR_Z_POSITION = 5;
   const CIRCLE_SEGMENT = 64;
   const [fontPath, setFontPath] = React.useState<string | undefined>(undefined);
@@ -53,6 +54,7 @@ export const RobotThree = ({ robot, robotLocation, onRobotClick }: RobotThreePro
         rotation={new Euler(0, 0, rotationZ)}
         circleSegment={CIRCLE_SEGMENT}
         fontPath={fontPath}
+        robotLabel={robotLabel}
       />
     </React.Fragment>
   );

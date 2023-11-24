@@ -1,11 +1,5 @@
 import { Box, styled, Typography, useMediaQuery } from '@mui/material';
-import {
-  BuildingMap,
-  Dispenser,
-  ApiServerModelsRmfApiFleetStateFleetState,
-  Ingestor,
-  Level,
-} from 'api-client';
+import { BuildingMap, ApiServerModelsRmfApiFleetStateFleetState, Level } from 'api-client';
 import Debug from 'debug';
 import React, { ChangeEvent, Suspense } from 'react';
 import {
@@ -26,7 +20,6 @@ import { AppEvents } from './app-events';
 import { createMicroApp } from './micro-app';
 import { RmfAppContext } from './rmf-app';
 import { TrajectoryData } from './trajectories-overlay';
-import { WorkcellData } from './workcells-overlay';
 import { RobotSummary } from './robots/robot-summary';
 import { Box3, TextureLoader, Vector3 } from 'three';
 import { Canvas, useLoader } from '@react-three/fiber';
@@ -58,82 +51,20 @@ export const MapApp = styled(
     const resourceManager = React.useContext(ResourcesContext);
     const [currentLevel, setCurrentLevel] = React.useState<Level | undefined>(undefined);
     const [disabledLayers, setDisabledLayers] = React.useState<Record<string, boolean>>({
-      Waypoints: false,
-      Dispensers: false,
-      Ingestors: false,
-      Lifts: false,
-      Doors: false,
-      Trajectories: false,
-      Robots: false,
-      'Door and lift labels': true,
+      'Pickup & Dropoff waypoints': false,
+      'Pickup & Dropoff labels': true,
+      Waypoints: true,
       'Waypoint labels': true,
-      'Pickup point labels': true,
-      'Dropoff point labels': false,
+      'Doors & Lifts': false,
+      'Doors labels': true,
+      Robots: false,
+      'Robots labels': true,
+      Trajectories: false,
     });
     const [openRobotSummary, setOpenRobotSummary] = React.useState(false);
     const [selectedRobot, setSelectedRobot] = React.useState<RobotTableData>();
 
     const [buildingMap, setBuildingMap] = React.useState<BuildingMap | null>(null);
-
-    const [dispensers, setDispensers] = React.useState<Dispenser[]>([]);
-    const [dispensersData, setDispensersData] = React.useState<WorkcellData[]>([]);
-    React.useEffect(() => {
-      if (!currentLevel) {
-        return;
-      }
-      const dispenserManager = resourceManager?.dispensers;
-      if (!dispenserManager) return;
-      (async () => {
-        const dispenserResources = dispenserManager.dispensers;
-        const availableData = dispensers.filter(
-          (wc) =>
-            wc.guid in dispenserResources &&
-            dispenserResources[wc.guid].location.level_name === currentLevel.name,
-        );
-        const promises = availableData.map((wc) => dispenserManager.getIconPath(wc.guid));
-        const icons = await Promise.all(promises);
-        setDispensersData(
-          availableData.map((wc, i) => ({
-            guid: wc.guid,
-            location: [
-              dispenserResources[wc.guid].location.x,
-              dispenserResources[wc.guid].location.y,
-            ],
-            iconPath: icons[i] || undefined,
-          })),
-        );
-      })();
-    }, [resourceManager?.dispensers, dispensers, currentLevel]);
-
-    const [ingestors, setIngestors] = React.useState<Ingestor[]>([]);
-    const [ingestorsData, setIngestorsData] = React.useState<WorkcellData[]>([]);
-    React.useEffect(() => {
-      if (!currentLevel) {
-        return;
-      }
-      const dispenserManager = resourceManager?.dispensers;
-      if (!dispenserManager) return;
-      (async () => {
-        const dispenserResources = dispenserManager.dispensers;
-        const availableData = ingestors.filter(
-          (wc) =>
-            wc.guid in dispenserResources &&
-            dispenserResources[wc.guid].location.level_name === currentLevel.name,
-        );
-        const promises = availableData.map((wc) => dispenserManager.getIconPath(wc.guid));
-        const icons = await Promise.all(promises);
-        setIngestorsData(
-          availableData.map((wc, i) => ({
-            guid: wc.guid,
-            location: [
-              dispenserResources[wc.guid].location.x,
-              dispenserResources[wc.guid].location.y,
-            ],
-            iconPath: icons[i] || undefined,
-          })),
-        );
-      })();
-    }, [resourceManager?.dispensers, ingestors, currentLevel]);
 
     const [fleets, setFleets] = React.useState<FleetState[]>([]);
 
@@ -237,8 +168,6 @@ export const MapApp = styled(
 
       const subs: Subscription[] = [];
       subs.push(rmf.buildingMapObs.subscribe((newMap) => handleBuildingMap(newMap)));
-      subs.push(rmf.dispensersObs.subscribe(setDispensers));
-      subs.push(rmf.ingestorsObs.subscribe(setIngestors));
       subs.push(rmf.fleetsObs.subscribe(setFleets));
 
       return () => {
@@ -520,29 +449,58 @@ export const MapApp = styled(
           orthographic={true}
         >
           <CameraControl zoom={zoom} />
-          {currentLevel.doors.length > 0
-            ? currentLevel.doors.map((door, i) => (
-                <React.Fragment key={`${door.name}${i}`}>
-                  {!disabledLayers['Door and lift labels'] && (
-                    <TextThreeRendering position={[door.v1_x, door.v1_y, 0]} text={door.name} />
-                  )}
-                  {!disabledLayers['Doors'] && (
-                    <Door door={door} opacity={0.1} height={8} elevation={currentLevel.elevation} />
-                  )}
-                </React.Fragment>
-              ))
-            : null}
-          {currentLevel.images.length > 0 && imageUrl && (
-            <ReactThreeFiberImageMaker level={currentLevel} imageUrl={imageUrl} />
-          )}
+          {!disabledLayers['Pickup & Dropoff waypoints'] &&
+            waypoints
+              .filter((waypoint) => waypoint.pickupHandler || waypoint.dropoffHandler)
+              .map((place, index) => (
+                <ShapeThreeRendering
+                  key={index}
+                  position={[place.vertex.x, place.vertex.y, 0]}
+                  color="yellow"
+                  text={place.vertex.name}
+                  circleShape={false}
+                />
+              ))}
+          {!disabledLayers['Pickup & Dropoff labels'] &&
+            waypoints
+              .filter((waypoint) => waypoint.pickupHandler || waypoint.dropoffHandler)
+              .map((place, index) => (
+                <TextThreeRendering
+                  key={index}
+                  position={[place.vertex.x, place.vertex.y, 0]}
+                  text={place.vertex.name}
+                />
+              ))}
+          {!disabledLayers['Waypoints'] &&
+            waypoints
+              .filter((waypoint) => !waypoint.pickupHandler && !waypoint.dropoffHandler)
+              .map((place, index) => (
+                <ShapeThreeRendering
+                  key={index}
+                  position={[place.vertex.x, place.vertex.y, 0]}
+                  color="yellow"
+                  text={place.vertex.name}
+                  circleShape={false}
+                />
+              ))}
+          {!disabledLayers['Waypoint labels'] &&
+            waypoints
+              .filter((waypoint) => !waypoint.pickupHandler && !waypoint.dropoffHandler)
+              .map((place, index) => (
+                <TextThreeRendering
+                  key={index}
+                  position={[place.vertex.x, place.vertex.y, 0]}
+                  text={place.vertex.name}
+                />
+              ))}
           {buildingMap.lifts.length > 0
             ? buildingMap.lifts.map((lift, i) =>
                 lift.doors.map((door, i) => (
                   <React.Fragment key={`${door.name}${i}`}>
-                    {!disabledLayers['Door and lift labels'] && (
+                    {!disabledLayers['Doors labels'] && (
                       <TextThreeRendering position={[door.v1_x, door.v1_y, 0]} text={door.name} />
                     )}
-                    {!disabledLayers['Doors'] && (
+                    {!disabledLayers['Doors & Lifts'] && (
                       <Door
                         door={door}
                         opacity={0.1}
@@ -555,8 +513,7 @@ export const MapApp = styled(
                 )),
               )
             : null}
-
-          {!disabledLayers['Lifts'] && buildingMap.lifts.length > 0
+          {!disabledLayers['Doors & Lifts'] && buildingMap.lifts.length > 0
             ? buildingMap.lifts.map((lift) =>
                 lift.doors.map(() => (
                   <Lifts
@@ -569,78 +526,21 @@ export const MapApp = styled(
                 )),
               )
             : null}
-
-          {!disabledLayers['Waypoints'] &&
-            waypoints.map((place, index) => (
-              <ShapeThreeRendering
-                key={index}
-                position={[place.vertex.x, place.vertex.y, 0]}
-                color="yellow"
-                text={place.vertex.name}
-                circleShape={false}
-              />
-            ))}
-
-          {!disabledLayers['Waypoint labels'] &&
-            waypoints
-              .filter((waypoint) => !waypoint.pickupHandler && !waypoint.dropoffHandler)
-              .map((place, index) => (
-                <TextThreeRendering
-                  key={index}
-                  position={[place.vertex.x, place.vertex.y, 0]}
-                  text={place.vertex.name}
-                />
-              ))}
-          {!disabledLayers['Pickup point labels'] &&
-            waypoints
-              .filter((waypoint) => waypoint.pickupHandler)
-              .map((place, index) => (
-                <TextThreeRendering
-                  key={index}
-                  position={[place.vertex.x, place.vertex.y, 0]}
-                  text={place.vertex.name}
-                />
-              ))}
-          {!disabledLayers['Dropoff point labels'] &&
-            waypoints
-              .filter((waypoint) => waypoint.dropoffHandler)
-              .map((place, index) => (
-                <TextThreeRendering
-                  key={index}
-                  position={[place.vertex.x, place.vertex.y, 0]}
-                  text={place.vertex.name}
-                />
-              ))}
-          {!disabledLayers['Ingestors'] &&
-            ingestorsData.map((ingestor, index) => (
-              <ShapeThreeRendering
-                key={index}
-                position={[ingestor.location[0], ingestor.location[1], 0]}
-                color="red"
-                circleShape={true}
-              />
-            ))}
-
-          {!disabledLayers['Dispensers'] &&
-            dispensersData.map((dispenser, index) => (
-              <ShapeThreeRendering
-                key={index}
-                position={[dispenser.location[0], dispenser.location[1], 0]}
-                color="red"
-                circleShape={true}
-              />
-            ))}
-          {!disabledLayers['Trajectories'] &&
-            trajectories.map((trajData) => (
-              <Line
-                key={trajData.trajectory.id}
-                points={trajData.trajectory.segments.map(
-                  (seg) => new Vector3(seg.x[0], seg.x[1], 4),
-                )}
-                color={trajData.color}
-                linewidth={5}
-              />
-            ))}
+          {currentLevel.doors.length > 0
+            ? currentLevel.doors.map((door, i) => (
+                <React.Fragment key={`${door.name}${i}`}>
+                  {!disabledLayers['Doors labels'] && (
+                    <TextThreeRendering position={[door.v1_x, door.v1_y, 0]} text={door.name} />
+                  )}
+                  {!disabledLayers['Doors'] && (
+                    <Door door={door} opacity={0.1} height={8} elevation={currentLevel.elevation} />
+                  )}
+                </React.Fragment>
+              ))
+            : null}
+          {currentLevel.images.length > 0 && imageUrl && (
+            <ReactThreeFiberImageMaker level={currentLevel} imageUrl={imageUrl} />
+          )}
           {!disabledLayers['Robots'] &&
             robots.map((robot) => {
               const robotId = `${robot.fleet}/${robot.name}`;
@@ -656,11 +556,23 @@ export const MapApp = styled(
                       setOpenRobotSummary(true);
                       setSelectedRobot(robot);
                     }}
+                    robotLabel={!disabledLayers['Robots labels']}
                   />
                 );
               }
               return null;
             })}
+          {!disabledLayers['Trajectories'] &&
+            trajectories.map((trajData) => (
+              <Line
+                key={trajData.trajectory.id}
+                points={trajData.trajectory.segments.map(
+                  (seg) => new Vector3(seg.x[0], seg.x[1], 4),
+                )}
+                color={trajData.color}
+                linewidth={5}
+              />
+            ))}
           <ambientLight />
         </Canvas>
         {openRobotSummary && selectedRobot && (
