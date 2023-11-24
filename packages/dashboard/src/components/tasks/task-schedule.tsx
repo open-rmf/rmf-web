@@ -1,11 +1,14 @@
 import { Scheduler } from '@aldabil/react-scheduler';
+import { DayProps } from '@aldabil/react-scheduler/views/Day';
+import { MonthProps } from '@aldabil/react-scheduler/views/Month';
+import { WeekProps } from '@aldabil/react-scheduler/views/Week';
 import {
   CellRenderedProps,
   ProcessedEvent,
   SchedulerHelpers,
   SchedulerProps,
 } from '@aldabil/react-scheduler/types';
-import { Button } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import {
   ApiServerModelsTortoiseModelsScheduledTaskScheduledTask as ScheduledTask,
   ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf as ApiSchedule,
@@ -229,36 +232,120 @@ export const TaskSchedule = () => {
     }
   };
 
+  const defaultDaySettings: DayProps = {
+    startHour: 0,
+    endHour: 23,
+    step: 60,
+    cellRenderer: ({ start, ...props }: CellRenderedProps) =>
+      disablingCellsWithoutEvents(calendarEvents, { start, ...props }),
+  };
+  const defaultWeekSettings: WeekProps = {
+    weekDays: [0, 1, 2, 3, 4, 5, 6],
+    weekStartOn: 1,
+    startHour: 0,
+    endHour: 23,
+    step: 60,
+    cellRenderer: ({ start, ...props }: CellRenderedProps) =>
+      disablingCellsWithoutEvents(calendarEvents, { start, ...props }),
+  };
+  const defaultMonthSettings: MonthProps = {
+    weekDays: [0, 1, 2, 3, 4, 5, 6],
+    weekStartOn: 1,
+    startHour: 0,
+    endHour: 23,
+    cellRenderer: ({ start, ...props }: CellRenderedProps) =>
+      disablingCellsWithoutEvents(calendarEvents, { start, ...props }),
+  };
+
+  interface ViewSettings {
+    daySettings: DayProps | null;
+    weekSettings: WeekProps | null;
+    monthSettings: MonthProps | null;
+  }
+
+  const [viewSettings, setViewSettings] = React.useState<ViewSettings>({
+    daySettings: null,
+    weekSettings: defaultWeekSettings,
+    monthSettings: null,
+  });
+
+  const translations = {
+    navigation: {
+      month: 'Month',
+      week: 'Week',
+      day: 'Day',
+      today: 'Go to today',
+    },
+    form: {
+      addTitle: 'Add Event',
+      editTitle: 'Edit Event',
+      confirm: 'Confirm',
+      delete: 'Delete',
+      cancel: 'Cancel',
+    },
+    event: {
+      title: 'Title',
+      start: 'Start',
+      end: 'End',
+      allDay: 'All Day',
+    },
+    moreEvents: 'More...',
+    loading: 'Loading...',
+  };
+
   return (
-    <>
+    <div style={{ height: '100%', width: '100%' }}>
+      <Grid container justifyContent="flex-end">
+        <Button
+          size={'small'}
+          sx={viewSettings.daySettings ? { borderBottom: 2, borderRadius: 0 } : {}}
+          onClick={() => {
+            setViewSettings({
+              daySettings: defaultDaySettings,
+              weekSettings: null,
+              monthSettings: null,
+            });
+            AppEvents.refreshTaskApp.next();
+          }}
+        >
+          Day
+        </Button>
+        <Button
+          size={'small'}
+          sx={viewSettings.weekSettings ? { borderBottom: 2, borderRadius: 0 } : {}}
+          onClick={() => {
+            setViewSettings({
+              daySettings: null,
+              weekSettings: defaultWeekSettings,
+              monthSettings: null,
+            });
+            AppEvents.refreshTaskApp.next();
+          }}
+        >
+          Week
+        </Button>
+        <Button
+          size={'small'}
+          sx={viewSettings.monthSettings ? { borderBottom: 2, borderRadius: 0 } : {}}
+          onClick={() => {
+            setViewSettings({
+              daySettings: null,
+              weekSettings: null,
+              monthSettings: defaultMonthSettings,
+            });
+            AppEvents.refreshTaskApp.next();
+          }}
+        >
+          Month
+        </Button>
+      </Grid>
       <Scheduler
         // react-scheduler does not support refreshing, workaround by mounting a new instance.
         key={`scheduler-${refreshTaskAppCount}`}
         view="week"
-        month={{
-          weekDays: [0, 1, 2, 3, 4, 5, 6],
-          weekStartOn: 1,
-          startHour: 0,
-          endHour: 23,
-          cellRenderer: ({ start, ...props }: CellRenderedProps) =>
-            disablingCellsWithoutEvents(calendarEvents, { start, ...props }),
-        }}
-        week={{
-          weekDays: [0, 1, 2, 3, 4, 5, 6],
-          weekStartOn: 1,
-          startHour: 0,
-          endHour: 23,
-          step: 60,
-          cellRenderer: ({ start, ...props }: CellRenderedProps) =>
-            disablingCellsWithoutEvents(calendarEvents, { start, ...props }),
-        }}
-        day={{
-          startHour: 0,
-          endHour: 23,
-          step: 60,
-          cellRenderer: ({ start, ...props }: CellRenderedProps) =>
-            disablingCellsWithoutEvents(calendarEvents, { start, ...props }),
-        }}
+        day={viewSettings.daySettings}
+        week={viewSettings.weekSettings}
+        month={viewSettings.monthSettings}
         draggable={false}
         editable={true}
         getRemoteEvents={getRemoteEvents}
@@ -280,6 +367,17 @@ export const TaskSchedule = () => {
             }}
           />
         )}
+        translations={{
+          ...translations,
+          navigation: {
+            ...translations.navigation,
+            today: viewSettings.daySettings
+              ? 'Today'
+              : viewSettings.weekSettings
+              ? 'This week'
+              : 'This month',
+          },
+        }}
       />
       {openCreateTaskForm && (
         <CreateTaskForm
@@ -336,6 +434,6 @@ export const TaskSchedule = () => {
           />
         </ConfirmationDialog>
       )}
-    </>
+    </div>
   );
 };
