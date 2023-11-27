@@ -21,6 +21,17 @@ from api_server.rmf_io import task_events, tasks_service
 router = FastIORouter(tags=["Tasks"])
 
 
+@router.get("/{task_id}/request", response_model=mdl.TaskRequest)
+async def get_task_request(
+    task_repo: TaskRepository = Depends(task_repo_dep),
+    task_id: str = Path(..., description="task_id"),
+):
+    result = await task_repo.get_task_request(task_id)
+    if result is None:
+        raise HTTPException(status_code=404)
+    return result
+
+
 @router.get("", response_model=List[mdl.TaskState])
 async def query_task_states(
     task_repo: TaskRepository = Depends(task_repo_dep),
@@ -149,6 +160,7 @@ async def post_dispatch_task(
     if task_warn_time is not None:
         new_state.unix_millis_warn_time = task_warn_time
     await task_repo.save_task_state(new_state)
+    await task_repo.save_task_request(new_state.booking.id, request.request)
     return resp.__root__
 
 
