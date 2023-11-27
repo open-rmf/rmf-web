@@ -538,6 +538,36 @@ export default {
         },
       },
     },
+    '/tasks/{task_id}/request': {
+      get: {
+        tags: ['Tasks'],
+        summary: 'Get Task Request',
+        operationId: 'get_task_request_tasks__task_id__request_get',
+        parameters: [
+          {
+            description: 'task_id',
+            required: true,
+            schema: { title: 'Task Id', type: 'string', description: 'task_id' },
+            name: 'task_id',
+            in: 'path',
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/TaskRequest' } },
+            },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
     '/tasks': {
       get: {
         tags: ['Tasks'],
