@@ -52,7 +52,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
     })();
 
     return (
-      <Box sx={opModeStateLabelStyle}>
+      <Box component="div" sx={opModeStateLabelStyle}>
         <Typography
           data-testid="op-mode-state"
           component="p"
@@ -95,7 +95,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
     }, [params.row.doorState.current_mode.value]);
 
     return (
-      <Box sx={labelStyle}>
+      <Box component="div" sx={labelStyle}>
         <Typography
           data-testid="door-state"
           component="p"
@@ -112,7 +112,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
 
   const OpenCloseButtons = (params: GridCellParams): React.ReactNode => {
     return (
-      <Box sx={{ margin: 0, padding: 0, paddingRight: 1 }}>
+      <Box component="div" sx={{ margin: 0, padding: 0, paddingRight: 1 }}>
         <Button
           variant="contained"
           size="small"
@@ -151,6 +151,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
       flex: 1,
       renderCell: OpModeState,
       filterable: true,
+      sortable: false,
     },
     {
       field: 'levelName',
@@ -160,6 +161,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
       valueGetter: (params: GridValueGetterParams) => params.row.levelName,
       flex: 1,
       filterable: true,
+      sortable: false,
     },
     {
       field: 'doorType',
@@ -169,6 +171,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
       valueGetter: (params: GridValueGetterParams) => doorTypeToString(params.row.doorType),
       flex: 1,
       filterable: true,
+      sortable: false,
     },
     {
       field: 'doorState',
@@ -178,6 +181,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
       flex: 1,
       renderCell: DoorState,
       filterable: true,
+      sortable: false,
     },
     {
       field: '-',
@@ -186,7 +190,8 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
       editable: false,
       renderCell: OpenCloseButtons,
       flex: 1,
-      filterable: true,
+      filterable: false,
+      sortable: false,
     },
   ];
 
@@ -202,6 +207,11 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
         rowsPerPageOptions={[5]}
         localeText={{
           noRowsLabel: 'No doors available.',
+        }}
+        initialState={{
+          sorting: {
+            sortModel: [{ field: 'doorName', sort: 'asc' }],
+          },
         }}
       />
     </div>

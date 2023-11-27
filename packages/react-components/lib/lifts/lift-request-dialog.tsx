@@ -75,8 +75,8 @@ export const LiftRequestDialog = ({
   onRequestSubmit,
   onClose,
 }: LiftRequestDialogProps): JSX.Element => {
-  const [doorState, setDoorState] = React.useState(availableDoorModes[0]);
-  const [requestType, setRequestType] = React.useState(availableRequestTypes[0]);
+  const [doorState, setDoorState] = React.useState<number | null>(availableDoorModes[0]);
+  const [requestType, setRequestType] = React.useState<number | null>(availableRequestTypes[0]);
   const [destination, setDestination] = React.useState(currentLevel);
 
   // Error states
@@ -93,6 +93,14 @@ export const LiftRequestDialog = ({
   const isFormValid = () => {
     let isValid = true;
     cleanUpError();
+    if (requestType === null) {
+      setRequestTypeError('Request type cannot be empty');
+      isValid = false;
+    }
+    if (doorState === null) {
+      setDoorStateError('Door state cannot be empty');
+      isValid = false;
+    }
     if (!destination) {
       setDestinationError('Destination cannot be empty');
       isValid = false;
@@ -104,7 +112,10 @@ export const LiftRequestDialog = ({
   const handleLiftRequest = (event: React.FormEvent) => {
     event.preventDefault();
     if (isFormValid()) {
-      onRequestSubmit && onRequestSubmit(event, doorState, requestType, destination);
+      onRequestSubmit &&
+        doorState !== null &&
+        requestType !== null &&
+        onRequestSubmit(event, doorState, requestType, destination);
       onClose();
     }
   };
@@ -161,7 +172,7 @@ export const LiftRequestDialog = ({
       <div className={classes.divForm}>
         <Autocomplete
           getOptionLabel={(option) => requestModeToString(option)}
-          onChange={(_, value) => setRequestType((value as number) || availableRequestTypes[0])}
+          onChange={(_, value) => setRequestType(value as number)}
           options={availableRequestTypes}
           renderInput={(params) => (
             <TextField

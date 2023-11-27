@@ -71,6 +71,7 @@ export const RobotInfoApp = createMicroApp('Robot Info', () => {
         />
       ) : (
         <Box
+          component="div"
           sx={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center' }}
         >
           <Typography variant="h6" align="center">

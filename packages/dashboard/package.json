@@ -48,6 +48,8 @@
     "@mui/styles": "^5.8.3",
     "@mui/system": "^5.8.3",
     "@mui/x-date-pickers": "^5.0.20",
+    "@react-three/drei": "^9.84.0",
+    "@react-three/fiber": "^8.14.2",
     "@types/debug": "^4.1.5",
     "@types/leaflet": "^1.5.17",
     "@types/react": "^18.2.14",
@@ -56,6 +58,7 @@
     "@types/react-leaflet": "^2.5.2",
     "@types/react-router": "^5.1.20",
     "@types/react-router-dom": "^5.3.3",
+    "@types/three": "^0.156.0",
     "ajv": "^8.10.0",
     "api-client": "workspace:*",
     "axios": "^0.21.1",
@@ -75,7 +78,8 @@
     "react-router-dom": "^6.14.1",
     "rmf-auth": "workspace:*",
     "rmf-models": "workspace:*",
-    "rxjs": "^7.5.5"
+    "rxjs": "^7.5.5",
+    "three": "^0.156.1"
   },
   "devDependencies": {
     "@babel/core": "^7.18.6",

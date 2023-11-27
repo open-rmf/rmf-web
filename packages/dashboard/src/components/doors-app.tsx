@@ -9,7 +9,7 @@ import { getApiErrorMessage } from './utils';
 export const DoorsApp = createMicroApp('Doors', () => {
   const rmf = React.useContext(RmfAppContext);
   const [buildingMap, setBuildingMap] = React.useState<BuildingMap | null>(null);
-  const [doorTableData, setDoorTableData] = React.useState<Record<string, DoorTableData[]>>({});
+  const [doorTableData, setDoorTableData] = React.useState<Record<string, DoorTableData>>({});
 
   React.useEffect(() => {
     if (!rmf) {
@@ -24,6 +24,7 @@ export const DoorsApp = createMicroApp('Doors', () => {
       return;
     }
 
+    let doorIndex = 0;
     buildingMap?.levels.map((level) =>
       level.doors.map(async (door, i) => {
         try {
@@ -33,24 +34,22 @@ export const DoorsApp = createMicroApp('Doors', () => {
             setDoorTableData((prev) => {
               return {
                 ...prev,
-                [door.name]: [
-                  {
-                    index: i,
-                    doorName: door.name,
-                    opMode: health_status ? health_status : 'N/A',
-                    levelName: level.name,
-                    doorType: door.door_type,
-                    doorState: doorState,
-                    onClickOpen: () =>
-                      rmf?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(door.name, {
-                        mode: RmfDoorMode.MODE_OPEN,
-                      }),
-                    onClickClose: () =>
-                      rmf?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(door.name, {
-                        mode: RmfDoorMode.MODE_CLOSED,
-                      }),
-                  },
-                ],
+                [door.name]: {
+                  index: doorIndex++,
+                  doorName: door.name,
+                  opMode: health_status ? health_status : 'N/A',
+                  levelName: level.name,
+                  doorType: door.door_type,
+                  doorState: doorState,
+                  onClickOpen: () =>
+                    rmf?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(door.name, {
+                      mode: RmfDoorMode.MODE_OPEN,
+                    }),
+                  onClickClose: () =>
+                    rmf?.doorsApi.postDoorRequestDoorsDoorNameRequestPost(door.name, {
+                      mode: RmfDoorMode.MODE_CLOSED,
+                    }),
+                },
               };
             });
           });
@@ -62,5 +61,5 @@ export const DoorsApp = createMicroApp('Doors', () => {
     );
   }, [rmf, buildingMap]);
 
-  return <DoorDataGridTable doors={Object.values(doorTableData).flatMap((d) => d)} />;
+  return <DoorDataGridTable doors={Object.values(doorTableData)} />;
 });

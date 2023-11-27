@@ -3,10 +3,12 @@ import {
   Dispenser,
   Door,
   Ingestor,
+  Level,
   Lift,
   TaskState,
 } from 'api-client';
 import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs';
+import { Vector3 } from 'three';
 
 export const AppEvents = {
   doorSelect: new Subject<Door | null>(),
@@ -20,5 +22,9 @@ export const AppEvents = {
   alertListOpenedAlert: new Subject<Alert | null>(),
   disabledLayers: new ReplaySubject<Record<string, boolean>>(),
   zoom: new BehaviorSubject<number | null>(null),
+  cameraPosition: new BehaviorSubject<Vector3 | null>(null),
+  zoomIn: new Subject<void>(),
+  zoomOut: new Subject<void>(),
   mapCenter: new BehaviorSubject<[number, number]>([0, 0]),
+  levelSelect: new BehaviorSubject<Level | null>(null),
 };
