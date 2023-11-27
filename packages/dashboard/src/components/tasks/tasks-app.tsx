@@ -12,7 +12,7 @@ import {
   Tooltip,
   useMediaQuery,
 } from '@mui/material';
-import { TaskState } from 'api-client';
+import { TaskRequest, TaskState } from 'api-client';
 import React from 'react';
 import {
   FilterFields,
@@ -91,6 +91,7 @@ export const TasksApp = React.memo(
       const [tasksState, setTasksState] = React.useState<Tasks>({
         isLoading: true,
         data: [],
+        requests: {},
         total: 0,
         page: 1,
         pageSize: 10,
@@ -182,10 +183,13 @@ export const TasksApp = React.memo(
           const results = resp.data as TaskState[];
           const newTasks = results.slice(0, GET_LIMIT);
 
+          const requests: Record<string, TaskRequest> = {};
+
           setTasksState((old) => ({
             ...old,
             isLoading: false,
             data: newTasks,
+            requests: {},
             total:
               results.length === GET_LIMIT
                 ? tasksState.page * GET_LIMIT + 1

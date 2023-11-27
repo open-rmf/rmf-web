@@ -13,7 +13,7 @@ import {
 } from '@mui/x-data-grid';
 import { styled, TextField, Stack, Typography, Tooltip, useMediaQuery } from '@mui/material';
 import * as React from 'react';
-import { TaskState, Status } from 'api-client';
+import { TaskState, TaskRequest, Status } from 'api-client';
 import { InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
 
 const classes = {
@@ -56,6 +56,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 export interface Tasks {
   isLoading: boolean;
   data: TaskState[];
+  requests: Record<string, TaskRequest>;
   total: number;
   page: number;
   pageSize: number;
@@ -133,6 +134,11 @@ export function TaskDataGridTable({
     (operator) => operator.value === 'equals',
   );
 
+  const getPickup = (state: TaskState): string => {
+    // console.log(state);
+    return 'N/A';
+  };
+
   const getMinimalDateOperators = getGridDateOperators(true).filter(
     (operator) => operator.value === 'onOrAfter' || operator.value === 'onOrBefore',
   );
@@ -144,15 +150,15 @@ export function TaskDataGridTable({
       width: 150,
       editable: false,
       renderCell: (cellValues) => {
+        const date = new Date(cellValues.row.booking.unix_millis_request_time);
+        const day = date.toLocaleDateString(undefined, { day: 'numeric' });
+        const month = date.toLocaleDateString(undefined, { month: 'short' });
+        const year = date.toLocaleDateString(undefined, { year: 'numeric' });
         return (
           <TextField
             variant="standard"
             value={
-              cellValues.row.booking.unix_millis_request_time
-                ? `${new Date(
-                    cellValues.row.booking.unix_millis_request_time,
-                  ).toLocaleDateString()}`
-                : 'unknown'
+              cellValues.row.booking.unix_millis_request_time ? `${day} ${month} ${year}` : 'N/A'
             }
             InputProps={{ disableUnderline: true }}
             multiline
@@ -174,17 +180,17 @@ export function TaskDataGridTable({
       filterable: true,
     },
     {
-      field: 'id_',
-      headerName: 'ID',
+      field: 'pickup',
+      headerName: 'Pickup',
       width: 90,
-      valueGetter: (params: GridValueGetterParams) => params.row.booking.id,
+      valueGetter: (params: GridValueGetterParams) => getPickup(params.row),
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,
     },
     {
-      field: 'category',
-      headerName: 'Category',
+      field: 'destination',
+      headerName: 'Destination',
       width: 150,
       editable: false,
       valueGetter: (params: GridValueGetterParams) =>
@@ -195,7 +201,7 @@ export function TaskDataGridTable({
     },
     {
       field: 'assigned_to',
-      headerName: 'Assignee',
+      headerName: 'Robot',
       width: 150,
       editable: false,
       valueGetter: (params: GridValueGetterParams) =>
