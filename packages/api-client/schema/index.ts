@@ -538,6 +538,40 @@ export default {
         },
       },
     },
+    '/tasks/{task_id}/request': {
+      get: {
+        tags: ['Tasks'],
+        summary: 'Get Task Request',
+        operationId: 'get_task_request_tasks__task_id__request_get',
+        parameters: [
+          {
+            description: 'task_id',
+            required: true,
+            schema: { title: 'Task Id', type: 'string', description: 'task_id' },
+            name: 'task_id',
+            in: 'path',
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/api_server.models.tortoise_models.tasks.TaskRequest.leaf',
+                },
+              },
+            },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
     '/tasks': {
       get: {
         tags: ['Tasks'],
@@ -3811,6 +3845,16 @@ export default {
           category: { title: 'Category', maxLength: 255, type: 'string' },
           description: { title: 'Description' },
           user: { title: 'User', maxLength: 255, type: 'string' },
+        },
+        additionalProperties: false,
+      },
+      'api_server.models.tortoise_models.tasks.TaskRequest.leaf': {
+        title: 'TaskRequest',
+        required: ['id_'],
+        type: 'object',
+        properties: {
+          id_: { title: 'Id ', maxLength: 255, type: 'string' },
+          request: { title: 'Request' },
         },
         additionalProperties: false,
       },

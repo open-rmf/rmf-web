@@ -421,6 +421,25 @@ export interface ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf {
   user: string;
 }
 /**
+ *
+ * @export
+ * @interface ApiServerModelsTortoiseModelsTasksTaskRequestLeaf
+ */
+export interface ApiServerModelsTortoiseModelsTasksTaskRequestLeaf {
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskRequestLeaf
+   */
+  id_: string;
+  /**
+   *
+   * @type {any}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskRequestLeaf
+   */
+  request?: any;
+}
+/**
  * Which agent (robot) is the task assigned to
  * @export
  * @interface AssignedTo
@@ -7679,6 +7698,47 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
+     *
+     * @summary Get Task Request
+     * @param {string} taskId task_id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getTaskRequestTasksTaskIdRequestGet: async (
+      taskId: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'taskId' is not null or undefined
+      assertParamExists('getTaskRequestTasksTaskIdRequestGet', 'taskId', taskId);
+      const localVarPath = `/tasks/{task_id}/request`.replace(
+        `{${'task_id'}}`,
+        encodeURIComponent(String(taskId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Available in socket.io
      * @summary Get Task State
      * @param {string} taskId task_id
@@ -8657,6 +8717,28 @@ export const TasksApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
+     *
+     * @summary Get Task Request
+     * @param {string} taskId task_id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getTaskRequestTasksTaskIdRequestGet(
+      taskId: string,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ApiServerModelsTortoiseModelsTasksTaskRequestLeaf>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getTaskRequestTasksTaskIdRequestGet(
+        taskId,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
      * Available in socket.io
      * @summary Get Task State
      * @param {string} taskId task_id
@@ -9115,6 +9197,21 @@ export const TasksApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
+     *
+     * @summary Get Task Request
+     * @param {string} taskId task_id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getTaskRequestTasksTaskIdRequestGet(
+      taskId: string,
+      options?: any,
+    ): AxiosPromise<ApiServerModelsTortoiseModelsTasksTaskRequestLeaf> {
+      return localVarFp
+        .getTaskRequestTasksTaskIdRequestGet(taskId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      * Available in socket.io
      * @summary Get Task State
      * @param {string} taskId task_id
@@ -9515,6 +9612,20 @@ export class TasksApi extends BaseAPI {
   ) {
     return TasksApiFp(this.configuration)
       .getTaskLogTasksTaskIdLogGet(taskId, between, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get Task Request
+   * @param {string} taskId task_id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public getTaskRequestTasksTaskIdRequestGet(taskId: string, options?: AxiosRequestConfig) {
+    return TasksApiFp(this.configuration)
+      .getTaskRequestTasksTaskIdRequestGet(taskId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
