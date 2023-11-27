@@ -785,6 +785,46 @@ export default {
         },
       },
     },
+    '/tasks/requests': {
+      get: {
+        tags: ['Tasks'],
+        summary: 'Query Task Requests',
+        operationId: 'query_task_requests_tasks_requests_get',
+        parameters: [
+          {
+            description: 'comma separated list of task ids',
+            required: false,
+            schema: {
+              title: 'Task Ids',
+              type: 'string',
+              description: 'comma separated list of task ids',
+            },
+            name: 'task_ids',
+            in: 'query',
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: {
+              'application/json': {
+                schema: {
+                  title: 'Response Query Task Requests Tasks Requests Get',
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/TaskRequest' },
+                },
+              },
+            },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
     '/tasks': {
       get: {
         tags: ['Tasks'],

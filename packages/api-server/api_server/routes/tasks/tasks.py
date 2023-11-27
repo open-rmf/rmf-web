@@ -13,6 +13,7 @@ from api_server.dependencies import (
     start_time_between_query,
 )
 from api_server.fast_io import FastIORouter, SubscriptionRequest
+from api_server.models.tortoise_models import TaskRequest as DbTaskRequest
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.repositories import TaskRepository, task_repo_dep
 from api_server.response import RawJSONResponse
@@ -30,6 +31,31 @@ async def get_task_request(
     if result is None:
         raise HTTPException(status_code=404)
     return result
+
+
+@router.get("/requests", response_model=List[Optional[mdl.TaskRequest]])
+async def query_task_requests(
+    task_repo: TaskRepository = Depends(task_repo_dep),
+    task_ids: Optional[str] = Query(
+        None, description="comma separated list of task ids"
+    ),
+):
+    task_id_splits = []
+    if task_ids is not None:
+        task_id_splits = task_ids.split(",")
+    valid_task_requests = await task_repo.query_task_requests(task_id_splits)
+
+    valid_task_request_map = {}
+    for valid_req in valid_task_requests:
+        valid_task_request_map[valid_req.id_] = mdl.TaskRequest(**valid_req.request)
+
+    return_requests = []
+    for id_query in task_id_splits:
+        if id_query in valid_task_request_map:
+            return_requests.append(valid_task_request_map[id_query])
+        else:
+            return_requests.append(None)
+    return return_requests
 
 
 @router.get("", response_model=List[mdl.TaskState])
