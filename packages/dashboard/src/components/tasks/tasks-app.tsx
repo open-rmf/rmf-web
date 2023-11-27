@@ -183,7 +183,14 @@ export const TasksApp = React.memo(
           const results = resp.data as TaskState[];
           const newTasks = results.slice(0, GET_LIMIT);
 
-          const requests: Record<string, TaskRequest> = {};
+          let taskIdsQuery = '';
+          for (const newTask of newTasks) {
+            taskIdsQuery += `${newTask.booking.id},`;
+          }
+          if (taskIdsQuery.length !== 0) {
+            taskIdsQuery = taskIdsQuery.slice(0, -1);
+          }
+          const taskRequests = await rmf.tasksApi.queryTaskRequestsTasksRequestsGet(taskIdsQuery);
 
           setTasksState((old) => ({
             ...old,
