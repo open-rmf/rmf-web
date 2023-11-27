@@ -43,6 +43,13 @@ class TaskRepository:
             return None
         return TaskRequest(**result.request)
 
+    async def query_task_requests(self, task_ids: List[str]) -> List[DbTaskRequest]:
+        filters = {"id___in": task_ids}
+        try:
+            return await DbTaskRequest.filter(**filters)
+        except FieldError as e:
+            raise HTTPException(422, str(e)) from e
+
     async def save_task_state(self, task_state: TaskState) -> None:
         db_task_state = await DbTaskState.get_or_none(id_=task_state.booking.id)
         if db_task_state is not None:

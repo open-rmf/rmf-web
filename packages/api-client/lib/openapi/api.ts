@@ -9088,6 +9088,46 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     },
     /**
      *
+     * @summary Query Task Requests
+     * @param {string} [taskIds] comma separated list of task ids
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    queryTaskRequestsTasksRequestsGet: async (
+      taskIds?: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/tasks/requests`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      if (taskIds !== undefined) {
+        localVarQueryParameter['task_ids'] = taskIds;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Query Task States
      * @param {string} [taskId] comma separated list of task ids
      * @param {string} [category] comma separated list of task categories
@@ -9670,6 +9710,23 @@ export const TasksApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Query Task Requests
+     * @param {string} [taskIds] comma separated list of task ids
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async queryTaskRequestsTasksRequestsGet(
+      taskIds?: string,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskRequest>>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.queryTaskRequestsTasksRequestsGet(
+        taskIds,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
      * @summary Query Task States
      * @param {string} [taskId] comma separated list of task ids
      * @param {string} [category] comma separated list of task categories
@@ -10086,6 +10143,21 @@ export const TasksApiFactory = function (
     ): AxiosPromise<UndoPhaseSkipResponse> {
       return localVarFp
         .postUndoSkipPhaseTasksUndoSkipPhasePost(undoPhaseSkipRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Query Task Requests
+     * @param {string} [taskIds] comma separated list of task ids
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    queryTaskRequestsTasksRequestsGet(
+      taskIds?: string,
+      options?: any,
+    ): AxiosPromise<Array<TaskRequest>> {
+      return localVarFp
+        .queryTaskRequestsTasksRequestsGet(taskIds, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -10531,6 +10603,20 @@ export class TasksApi extends BaseAPI {
   ) {
     return TasksApiFp(this.configuration)
       .postUndoSkipPhaseTasksUndoSkipPhasePost(undoPhaseSkipRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Query Task Requests
+   * @param {string} [taskIds] comma separated list of task ids
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public queryTaskRequestsTasksRequestsGet(taskIds?: string, options?: AxiosRequestConfig) {
+    return TasksApiFp(this.configuration)
+      .queryTaskRequestsTasksRequestsGet(taskIds, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
