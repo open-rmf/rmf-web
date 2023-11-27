@@ -13,9 +13,6 @@ from api_server.dependencies import (
     start_time_between_query,
 )
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.models.tortoise_models import (
-    TaskRequestPydantic as DbTaskRequestPydantic,
-)
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.repositories import TaskRepository, task_repo_dep
 from api_server.response import RawJSONResponse
@@ -24,7 +21,7 @@ from api_server.rmf_io import task_events, tasks_service
 router = FastIORouter(tags=["Tasks"])
 
 
-@router.get("/{task_id}/request", response_model=DbTaskRequestPydantic)
+@router.get("/{task_id}/request", response_model=mdl.TaskRequest)
 async def get_task_request(
     task_repo: TaskRepository = Depends(task_repo_dep),
     task_id: str = Path(..., description="task_id"),
@@ -160,7 +157,7 @@ async def post_dispatch_task(
         return RawJSONResponse(resp.json(), 400)
     task_state = cast(mdl.TaskDispatchResponseItem, resp.__root__).state
     await task_repo.save_task_state(task_state)
-    await task_repo.save_task_request(task_state.booking.id, request)
+    await task_repo.save_task_request(task_state.booking.id, request.request)
     return resp.__root__
 
 

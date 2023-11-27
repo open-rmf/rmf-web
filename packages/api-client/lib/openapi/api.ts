@@ -421,25 +421,6 @@ export interface ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf {
   user: string;
 }
 /**
- *
- * @export
- * @interface ApiServerModelsTortoiseModelsTasksTaskRequestLeaf
- */
-export interface ApiServerModelsTortoiseModelsTasksTaskRequestLeaf {
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsTasksTaskRequestLeaf
-   */
-  id_: string;
-  /**
-   *
-   * @type {any}
-   * @memberof ApiServerModelsTortoiseModelsTasksTaskRequestLeaf
-   */
-  request?: any;
-}
-/**
  * Which agent (robot) is the task assigned to
  * @export
  * @interface AssignedTo
@@ -8726,12 +8707,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
     async getTaskRequestTasksTaskIdRequestGet(
       taskId: string,
       options?: AxiosRequestConfig,
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string,
-      ) => AxiosPromise<ApiServerModelsTortoiseModelsTasksTaskRequestLeaf>
-    > {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskRequest>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getTaskRequestTasksTaskIdRequestGet(
         taskId,
         options,
@@ -9203,10 +9179,7 @@ export const TasksApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getTaskRequestTasksTaskIdRequestGet(
-      taskId: string,
-      options?: any,
-    ): AxiosPromise<ApiServerModelsTortoiseModelsTasksTaskRequestLeaf> {
+    getTaskRequestTasksTaskIdRequestGet(taskId: string, options?: any): AxiosPromise<TaskRequest> {
       return localVarFp
         .getTaskRequestTasksTaskIdRequestGet(taskId, options)
         .then((request) => request(axios, basePath));

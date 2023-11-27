@@ -11,11 +11,11 @@ from tortoise.transactions import in_transaction
 from api_server.authenticator import user_dep
 from api_server.logger import format_exception, logger
 from api_server.models import (
-    DispatchTaskRequest,
     LogEntry,
     Pagination,
     Phases,
     TaskEventLog,
+    TaskRequest,
     TaskState,
     User,
 )
@@ -32,16 +32,16 @@ class TaskRepository:
     def __init__(self, user: User):
         self.user = user
 
-    async def save_task_request(
-        self, task_id: str, task_request: DispatchTaskRequest
-    ) -> None:
+    async def save_task_request(self, task_id: str, task_request: TaskRequest) -> None:
         await DbTaskRequest.update_or_create(
             {"request": task_request.json()}, id_=task_id
         )
 
-    async def get_task_request(self, task_id: str) -> Optional[DbTaskRequest]:
+    async def get_task_request(self, task_id: str) -> Optional[TaskRequest]:
         result = await DbTaskRequest.get_or_none(id_=task_id)
-        return result
+        if result is None:
+            return None
+        return TaskRequest(**result.request)
 
     async def save_task_state(self, task_state: TaskState) -> None:
         await DbTaskState.update_or_create(

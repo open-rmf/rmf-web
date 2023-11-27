@@ -556,11 +556,7 @@ export default {
           '200': {
             description: 'Successful Response',
             content: {
-              'application/json': {
-                schema: {
-                  $ref: '#/components/schemas/api_server.models.tortoise_models.tasks.TaskRequest.leaf',
-                },
-              },
+              'application/json': { schema: { $ref: '#/components/schemas/TaskRequest' } },
             },
           },
           '422': {
@@ -3845,16 +3841,6 @@ export default {
           category: { title: 'Category', maxLength: 255, type: 'string' },
           description: { title: 'Description' },
           user: { title: 'User', maxLength: 255, type: 'string' },
-        },
-        additionalProperties: false,
-      },
-      'api_server.models.tortoise_models.tasks.TaskRequest.leaf': {
-        title: 'TaskRequest',
-        required: ['id_'],
-        type: 'object',
-        properties: {
-          id_: { title: 'Id ', maxLength: 255, type: 'string' },
-          request: { title: 'Request' },
         },
         additionalProperties: false,
       },
