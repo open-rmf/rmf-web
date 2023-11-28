@@ -13,7 +13,6 @@ import { base } from 'react-components';
 import { AppControllerContext } from './app-contexts';
 import { RmfAppContext } from './rmf-app';
 import { TaskInspector } from './tasks/task-inspector';
-import { UserProfileContext } from 'rmf-auth';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -62,7 +61,6 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
   const [cancelling, setCancelling] = React.useState(false);
   const appController = React.useContext(AppControllerContext);
   const rmf = React.useContext(RmfAppContext);
-  const profile = React.useContext(UserProfileContext);
 
   React.useEffect(() => {
     if (deliveryAlert.action !== 'waiting') {
@@ -222,19 +220,6 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
           />
         </DialogContent>
         <DialogActions>
-          {newTaskState && profile && profile.user.is_admin ? (
-            <Tooltip title="Inspects the state and logs of the task.">
-              <Button
-                size="small"
-                variant="contained"
-                onClick={() => setOpenTaskInspector(true)}
-                disabled={false}
-                autoFocus
-              >
-                Inspect
-              </Button>
-            </Tooltip>
-          ) : null}
           {(newTaskState && newTaskState.status && newTaskState.status === 'canceled') ||
           deliveryAlert.category === 'cancelled' ? (
             <Button size="small" variant="contained" disabled autoFocus>
