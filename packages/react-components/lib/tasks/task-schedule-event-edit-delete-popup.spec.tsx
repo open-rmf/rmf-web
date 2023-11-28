@@ -14,6 +14,7 @@ describe('EventEditDeletePopup', () => {
         currentValue={currentValue}
         allValue={allValue}
         value={value}
+        isAdmin={true}
         onChange={onChange}
       />,
     );
@@ -23,5 +24,20 @@ describe('EventEditDeletePopup', () => {
 
     // Check if the onChange function was called with the correct value
     expect(onChange).toHaveBeenCalled();
+  });
+
+  it('all events change disabled for non-admin', () => {
+    const { getByLabelText } = render(
+      <EventEditDeletePopup
+        currentValue={currentValue}
+        allValue={allValue}
+        value={value}
+        isAdmin={false}
+        onChange={onChange}
+      />,
+    );
+
+    // Check that changing all events is disabled for non-admins
+    expect(getByLabelText('All events in this schedule').toHaveAttribute('disabled'));
   });
 });
