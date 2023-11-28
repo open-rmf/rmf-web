@@ -127,27 +127,6 @@ export const TasksApp = React.memo(
         };
       }, [autoRefresh]);
 
-      const getAllTaskRequests = async (tasks: TaskState[]) => {
-        if (!rmf) {
-          return {};
-        }
-
-        const taskIds: string[] = tasks.map((task) => task.booking.id);
-        const taskIdsQuery = taskIds.join(',');
-        const taskRequests = (await rmf.tasksApi.queryTaskRequestsTasksRequestsGet(taskIdsQuery))
-          .data;
-
-        const taskRequestMap: Record<string, TaskRequest> = {};
-        let requestIndex = 0;
-        for (const id of taskIds) {
-          if (requestIndex < taskRequests.length && taskRequests[requestIndex]) {
-            taskRequestMap[id] = taskRequests[requestIndex];
-          }
-          ++requestIndex;
-        }
-        return taskRequestMap;
-      };
-
       // TODO: parameterize this variable
       const GET_LIMIT = 10;
       React.useEffect(() => {
@@ -203,7 +182,20 @@ export const TasksApp = React.memo(
           );
           const results = resp.data as TaskState[];
           const newTasks = results.slice(0, GET_LIMIT);
-          const taskRequestMap = await getAllTaskRequests(newTasks);
+
+          const taskIds: string[] = newTasks.map((task) => task.booking.id);
+          const taskIdsQuery = taskIds.join(',');
+          const taskRequests = (await rmf.tasksApi.queryTaskRequestsTasksRequestsGet(taskIdsQuery))
+            .data;
+
+          const taskRequestMap: Record<string, TaskRequest> = {};
+          let requestIndex = 0;
+          for (const id of taskIds) {
+            if (requestIndex < taskRequests.length && taskRequests[requestIndex]) {
+              taskRequestMap[id] = taskRequests[requestIndex];
+            }
+            ++requestIndex;
+          }
 
           setTasksState((old) => ({
             ...old,
@@ -248,6 +240,27 @@ export const TasksApp = React.memo(
         );
         const allTasks = resp.data as TaskState[];
         return allTasks;
+      };
+
+      const getAllTaskRequests = async (tasks: TaskState[]) => {
+        if (!rmf) {
+          return {};
+        }
+
+        const taskIds: string[] = tasks.map((task) => task.booking.id);
+        const taskIdsQuery = taskIds.join(',');
+        const taskRequests = (await rmf.tasksApi.queryTaskRequestsTasksRequestsGet(taskIdsQuery))
+          .data;
+
+        const taskRequestMap: Record<string, TaskRequest> = {};
+        let requestIndex = 0;
+        for (const id of taskIds) {
+          if (requestIndex < taskRequests.length && taskRequests[requestIndex]) {
+            taskRequestMap[id] = taskRequests[requestIndex];
+          }
+          ++requestIndex;
+        }
+        return taskRequestMap;
       };
 
       const exportTasksToCsv = async (minimal: boolean) => {
