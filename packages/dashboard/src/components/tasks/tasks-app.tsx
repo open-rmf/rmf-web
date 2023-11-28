@@ -380,6 +380,9 @@ export const TasksApp = React.memo(
                 tasks={tasksState}
                 onTaskClick={(_: MuiMouseEvent, task: TaskState) => {
                   setSelectedTask(task);
+                  if (task.assigned_to) {
+                    AppEvents.robotSelect.next([task.assigned_to.group, task.assigned_to.name]);
+                  }
                   setOpenTaskSummary(true);
                 }}
                 setFilterFields={setFilterFields}
