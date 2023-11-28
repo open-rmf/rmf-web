@@ -242,14 +242,36 @@ export const TasksApp = React.memo(
         return allTasks;
       };
 
+      const getAllTaskRequests = async (tasks: TaskState[]) => {
+        if (!rmf) {
+          return {};
+        }
+
+        const taskIds: string[] = tasks.map((task) => task.booking.id);
+        const taskIdsQuery = taskIds.join(',');
+        const taskRequests = (await rmf.tasksApi.queryTaskRequestsTasksRequestsGet(taskIdsQuery))
+          .data;
+
+        const taskRequestMap: Record<string, TaskRequest> = {};
+        let requestIndex = 0;
+        for (const id of taskIds) {
+          if (requestIndex < taskRequests.length && taskRequests[requestIndex]) {
+            taskRequestMap[id] = taskRequests[requestIndex];
+          }
+          ++requestIndex;
+        }
+        return taskRequestMap;
+      };
+
       const exportTasksToCsv = async (minimal: boolean) => {
         const now = new Date();
         const allTasks = await getAllTasks(now);
+        const allTaskRequests = await getAllTaskRequests(allTasks);
         if (!allTasks || !allTasks.length) {
           return;
         }
         if (minimal) {
-          downloadCsvMinimal(now, allTasks);
+          downloadCsvMinimal(now, allTasks, allTaskRequests);
         } else {
           downloadCsvFull(now, allTasks);
         }

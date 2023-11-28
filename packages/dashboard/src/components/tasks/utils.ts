@@ -1,5 +1,5 @@
 import { PostScheduledTaskRequest, TaskRequest, TaskState } from 'api-client';
-import { Schedule } from 'react-components';
+import { Schedule, parsePickup, parseDestination } from 'react-components';
 import schema from 'api-client/dist/schema';
 import { ajv } from '../utils';
 
@@ -46,40 +46,56 @@ export function downloadCsvFull(timestamp: Date, allTasks: TaskState[]) {
   });
 }
 
-export function downloadCsvMinimal(timestamp: Date, allTasks: TaskState[]) {
+export function downloadCsvMinimal(
+  timestamp: Date,
+  allTasks: TaskState[],
+  taskRequestMap: Record<string, TaskRequest>,
+) {
   const columnSeparator = ';';
   const rowSeparator = '\n';
   const keys = [
     'Date',
     'Requester',
-    'ID',
     'Category',
-    'Assignee',
+    'Pickup',
+    'Destination',
+    'Robot',
     'Start Time',
     'End Time',
     'State',
   ];
   let csvContent = keys.join(columnSeparator) + rowSeparator;
   allTasks.forEach((task) => {
+    const request: TaskRequest | undefined = taskRequestMap[task.booking.id];
     const values = [
+      // Date
       task.booking.unix_millis_request_time
         ? `${new Date(task.booking.unix_millis_request_time).toLocaleDateString()}`
-        : 'unknown',
-      task.booking.requester ? task.booking.requester : 'unknown',
-      task.booking.id,
-      task.category ? task.category : 'unknown',
-      task.assigned_to ? task.assigned_to.name : 'unknown',
+        : 'n/a',
+      // Requester
+      task.booking.requester ? task.booking.requester : 'n/a',
+      // Category
+      task.category ? task.category : 'n/a',
+      // Pickup
+      parsePickup(task, request),
+      // Destination
+      parseDestination(task, request),
+      // Robot
+      task.assigned_to ? task.assigned_to.name : 'n/a',
+      // Start Time
       task.unix_millis_start_time
         ? `${new Date(task.unix_millis_start_time).toLocaleDateString()} ${new Date(
             task.unix_millis_start_time,
           ).toLocaleTimeString()}`
-        : 'unknown',
+        : 'n/a',
+      // End Time
       task.unix_millis_finish_time
         ? `${new Date(task.unix_millis_finish_time).toLocaleDateString()} ${new Date(
             task.unix_millis_finish_time,
           ).toLocaleTimeString()}`
-        : 'unknown',
-      task.status ? task.status : 'unknown',
+        : 'n/a',
+      // State
+      task.status ? task.status : 'n/a',
     ];
     csvContent += values.join(columnSeparator) + rowSeparator;
   });
