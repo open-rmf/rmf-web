@@ -184,7 +184,7 @@ export function TaskDataGridTable({
       editable: false,
       valueGetter: (params: GridValueGetterParams) => {
         const request: TaskRequest | undefined = tasks.requests[params.row.booking.id];
-        return parsePickup(params.row, request);
+        return parsePickup(request);
       },
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
