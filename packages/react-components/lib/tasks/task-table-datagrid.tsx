@@ -83,7 +83,7 @@ export interface TableDataGridState {
 
 const TaskRequester = (requester: string | null): JSX.Element => {
   if (!requester) {
-    return <Typography variant="body1">unknown</Typography>;
+    return <Typography variant="body1">n/a</Typography>;
   }
 
   /** When a task is created as scheduled,
@@ -272,17 +272,29 @@ export function TaskDataGridTable({
     {
       field: 'requester',
       headerName: 'Requester',
-      minWidth: 160,
+      minWidth: 150,
       editable: false,
       renderCell: (cellValues) => TaskRequester(cellValues.row.booking.requester),
-      flex: 2,
+      flex: 1,
+      filterOperators: getMinimalStringFilterOperators,
+      filterable: true,
+    },
+    {
+      field: 'category',
+      headerName: 'Category',
+      minWidth: 150,
+      editable: false,
+      valueGetter: (params: GridValueGetterParams) =>
+        params.row.category ? params.row.category : 'n/a',
+      flex: 1,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,
     },
     {
       field: 'pickup',
       headerName: 'Pickup',
-      width: 90,
+      width: 150,
+      editable: false,
       valueGetter: (params: GridValueGetterParams) => getPickup(params.row),
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
@@ -301,10 +313,10 @@ export function TaskDataGridTable({
     {
       field: 'assigned_to',
       headerName: 'Robot',
-      width: 150,
+      width: 100,
       editable: false,
       valueGetter: (params: GridValueGetterParams) =>
-        params.row.assigned_to ? params.row.assigned_to.name : 'unknown',
+        params.row.assigned_to ? params.row.assigned_to.name : 'n/a',
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,
@@ -320,12 +332,8 @@ export function TaskDataGridTable({
             variant="standard"
             value={
               cellValues.row.unix_millis_start_time
-                ? `${new Date(
-                    cellValues.row.unix_millis_start_time,
-                  ).toLocaleDateString()} ${new Date(
-                    cellValues.row.unix_millis_start_time,
-                  ).toLocaleTimeString()}`
-                : 'unknown'
+                ? `${new Date(cellValues.row.unix_millis_start_time).toLocaleTimeString()}`
+                : 'n/a'
             }
             InputProps={{ disableUnderline: true }}
             multiline
@@ -347,12 +355,8 @@ export function TaskDataGridTable({
             variant="standard"
             value={
               cellValues.row.unix_millis_finish_time
-                ? `${new Date(
-                    cellValues.row.unix_millis_finish_time,
-                  ).toLocaleDateString()} ${new Date(
-                    cellValues.row.unix_millis_finish_time,
-                  ).toLocaleTimeString()}`
-                : 'unknown'
+                ? `${new Date(cellValues.row.unix_millis_finish_time).toLocaleTimeString()}`
+                : 'n/a'
             }
             InputProps={{ disableUnderline: true }}
             multiline
