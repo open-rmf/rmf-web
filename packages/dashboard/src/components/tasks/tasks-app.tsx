@@ -12,7 +12,7 @@ import {
   Tooltip,
   useMediaQuery,
 } from '@mui/material';
-import { TaskState } from 'api-client';
+import { TaskRequest, TaskState } from 'api-client';
 import React from 'react';
 import {
   FilterFields,
@@ -91,6 +91,7 @@ export const TasksApp = React.memo(
       const [tasksState, setTasksState] = React.useState<Tasks>({
         isLoading: true,
         data: [],
+        requests: {},
         total: 0,
         page: 1,
         pageSize: 10,
@@ -182,10 +183,27 @@ export const TasksApp = React.memo(
           const results = resp.data as TaskState[];
           const newTasks = results.slice(0, GET_LIMIT);
 
+          // NOTE(ac): we are not using getAllTaskRequests here to prevent
+          // adding it into the dependency list.
+          const taskIds: string[] = newTasks.map((task) => task.booking.id);
+          const taskIdsQuery = taskIds.join(',');
+          const taskRequests = (await rmf.tasksApi.queryTaskRequestsTasksRequestsGet(taskIdsQuery))
+            .data;
+
+          const taskRequestMap: Record<string, TaskRequest> = {};
+          let requestIndex = 0;
+          for (const id of taskIds) {
+            if (requestIndex < taskRequests.length && taskRequests[requestIndex]) {
+              taskRequestMap[id] = taskRequests[requestIndex];
+            }
+            ++requestIndex;
+          }
+
           setTasksState((old) => ({
             ...old,
             isLoading: false,
             data: newTasks,
+            requests: taskRequestMap,
             total:
               results.length === GET_LIMIT
                 ? tasksState.page * GET_LIMIT + 1
@@ -226,14 +244,36 @@ export const TasksApp = React.memo(
         return allTasks;
       };
 
+      const getAllTaskRequests = async (tasks: TaskState[]) => {
+        if (!rmf) {
+          return {};
+        }
+
+        const taskIds: string[] = tasks.map((task) => task.booking.id);
+        const taskIdsQuery = taskIds.join(',');
+        const taskRequests = (await rmf.tasksApi.queryTaskRequestsTasksRequestsGet(taskIdsQuery))
+          .data;
+
+        const taskRequestMap: Record<string, TaskRequest> = {};
+        let requestIndex = 0;
+        for (const id of taskIds) {
+          if (requestIndex < taskRequests.length && taskRequests[requestIndex]) {
+            taskRequestMap[id] = taskRequests[requestIndex];
+          }
+          ++requestIndex;
+        }
+        return taskRequestMap;
+      };
+
       const exportTasksToCsv = async (minimal: boolean) => {
         const now = new Date();
         const allTasks = await getAllTasks(now);
+        const allTaskRequests = await getAllTaskRequests(allTasks);
         if (!allTasks || !allTasks.length) {
           return;
         }
         if (minimal) {
-          downloadCsvMinimal(now, allTasks);
+          downloadCsvMinimal(now, allTasks, allTaskRequests);
         } else {
           downloadCsvFull(now, allTasks);
         }

@@ -7,6 +7,7 @@ describe('Tasks table', () => {
   const tasks: Tasks = {
     isLoading: false,
     data: [],
+    requests: {},
     total: 0,
     page: 1,
     pageSize: 10,
@@ -40,9 +41,11 @@ describe('Tasks table', () => {
   });
 
   it('shows titles correctly', () => {
-    expect(screen.queryByText('ID')).toBeTruthy();
-    expect(screen.queryByText('Category')).toBeTruthy();
-    expect(screen.queryByText('Assignee')).toBeTruthy();
+    expect(screen.queryByText('Date')).toBeTruthy();
+    expect(screen.queryByText('Requester')).toBeTruthy();
+    expect(screen.queryByText('Pickup')).toBeTruthy();
+    expect(screen.queryByText('Destination')).toBeTruthy();
+    expect(screen.queryByText('Robot')).toBeTruthy();
     expect(screen.queryByText('Start Time')).toBeTruthy();
     expect(screen.queryByText('End Time')).toBeTruthy();
     expect(screen.queryByText('State')).toBeTruthy();

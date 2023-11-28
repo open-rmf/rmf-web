@@ -13,8 +13,9 @@ import {
 } from '@mui/x-data-grid';
 import { styled, TextField, Stack, Typography, Tooltip, useMediaQuery } from '@mui/material';
 import * as React from 'react';
-import { TaskState, Status } from 'api-client';
+import { TaskState, TaskRequest, Status } from 'api-client';
 import { InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
+import { parsePickup, parseDestination } from './utils';
 
 const classes = {
   taskActiveCell: 'MuiDataGrid-cell-active-cell',
@@ -56,6 +57,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 export interface Tasks {
   isLoading: boolean;
   data: TaskState[];
+  requests: Record<string, TaskRequest>;
   total: number;
   page: number;
   pageSize: number;
@@ -82,7 +84,7 @@ export interface TableDataGridState {
 
 const TaskRequester = (requester: string | null): JSX.Element => {
   if (!requester) {
-    return <Typography variant="body1">unknown</Typography>;
+    return <Typography variant="body1">n/a</Typography>;
   }
 
   /** When a task is created as scheduled,
@@ -144,15 +146,15 @@ export function TaskDataGridTable({
       width: 150,
       editable: false,
       renderCell: (cellValues) => {
+        const date = new Date(cellValues.row.booking.unix_millis_request_time);
+        const day = date.toLocaleDateString(undefined, { day: 'numeric' });
+        const month = date.toLocaleDateString(undefined, { month: 'short' });
+        const year = date.toLocaleDateString(undefined, { year: 'numeric' });
         return (
           <TextField
             variant="standard"
             value={
-              cellValues.row.booking.unix_millis_request_time
-                ? `${new Date(
-                    cellValues.row.booking.unix_millis_request_time,
-                  ).toLocaleDateString()}`
-                : 'unknown'
+              cellValues.row.booking.unix_millis_request_time ? `${day} ${month} ${year}` : 'n/a'
             }
             InputProps={{ disableUnderline: true }}
             multiline
@@ -161,45 +163,55 @@ export function TaskDataGridTable({
       },
       flex: 1,
       filterOperators: getMinimalDateOperators,
-      filterable: true,
+      sortable: false,
+      filterable: false,
     },
     {
       field: 'requester',
       headerName: 'Requester',
-      minWidth: 160,
+      minWidth: 150,
       editable: false,
       renderCell: (cellValues) => TaskRequester(cellValues.row.booking.requester),
-      flex: 2,
-      filterOperators: getMinimalStringFilterOperators,
-      filterable: true,
-    },
-    {
-      field: 'id_',
-      headerName: 'ID',
-      width: 90,
-      valueGetter: (params: GridValueGetterParams) => params.row.booking.id,
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
-      filterable: true,
+      sortable: false,
+      filterable: false,
     },
     {
-      field: 'category',
-      headerName: 'Category',
+      field: 'pickup',
+      headerName: 'Pickup',
       width: 150,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.category ? params.row.category : 'unknown',
+      valueGetter: (params: GridValueGetterParams) => {
+        const request: TaskRequest | undefined = tasks.requests[params.row.booking.id];
+        return parsePickup(params.row, request);
+      },
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
-      filterable: true,
+      sortable: false,
+      filterable: false,
+    },
+    {
+      field: 'destination',
+      headerName: 'Destination',
+      width: 150,
+      editable: false,
+      valueGetter: (params: GridValueGetterParams) => {
+        const request: TaskRequest | undefined = tasks.requests[params.row.booking.id];
+        return parseDestination(params.row, request);
+      },
+      flex: 1,
+      filterOperators: getMinimalStringFilterOperators,
+      sortable: false,
+      filterable: false,
     },
     {
       field: 'assigned_to',
-      headerName: 'Assignee',
-      width: 150,
+      headerName: 'Robot',
+      width: 100,
       editable: false,
       valueGetter: (params: GridValueGetterParams) =>
-        params.row.assigned_to ? params.row.assigned_to.name : 'unknown',
+        params.row.assigned_to ? params.row.assigned_to.name : 'n/a',
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,
@@ -215,12 +227,8 @@ export function TaskDataGridTable({
             variant="standard"
             value={
               cellValues.row.unix_millis_start_time
-                ? `${new Date(
-                    cellValues.row.unix_millis_start_time,
-                  ).toLocaleDateString()} ${new Date(
-                    cellValues.row.unix_millis_start_time,
-                  ).toLocaleTimeString()}`
-                : 'unknown'
+                ? `${new Date(cellValues.row.unix_millis_start_time).toLocaleTimeString()}`
+                : 'n/a'
             }
             InputProps={{ disableUnderline: true }}
             multiline
@@ -242,12 +250,8 @@ export function TaskDataGridTable({
             variant="standard"
             value={
               cellValues.row.unix_millis_finish_time
-                ? `${new Date(
-                    cellValues.row.unix_millis_finish_time,
-                  ).toLocaleDateString()} ${new Date(
-                    cellValues.row.unix_millis_finish_time,
-                  ).toLocaleTimeString()}`
-                : 'unknown'
+                ? `${new Date(cellValues.row.unix_millis_finish_time).toLocaleTimeString()}`
+                : 'n/a'
             }
             InputProps={{ disableUnderline: true }}
             multiline
