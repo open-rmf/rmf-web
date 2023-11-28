@@ -163,8 +163,7 @@ export function TaskDataGridTable({
       },
       flex: 1,
       filterOperators: getMinimalDateOperators,
-      sortable: false,
-      filterable: false,
+      filterable: true,
     },
     {
       field: 'requester',
@@ -174,8 +173,7 @@ export function TaskDataGridTable({
       renderCell: (cellValues) => TaskRequester(cellValues.row.booking.requester),
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
-      sortable: false,
-      filterable: false,
+      filterable: true,
     },
     {
       field: 'pickup',
@@ -188,8 +186,7 @@ export function TaskDataGridTable({
       },
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
-      sortable: false,
-      filterable: false,
+      filterable: true,
     },
     {
       field: 'destination',
@@ -202,8 +199,7 @@ export function TaskDataGridTable({
       },
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
-      sortable: false,
-      filterable: false,
+      filterable: true,
     },
     {
       field: 'assigned_to',

@@ -854,6 +854,39 @@ export default {
             in: 'query',
           },
           {
+            description: 'comma separated list of requester names',
+            required: false,
+            schema: {
+              title: 'Requester',
+              type: 'string',
+              description: 'comma separated list of requester names',
+            },
+            name: 'requester',
+            in: 'query',
+          },
+          {
+            description: 'comma separated list of pickup names',
+            required: false,
+            schema: {
+              title: 'Pickup',
+              type: 'string',
+              description: 'comma separated list of pickup names',
+            },
+            name: 'pickup',
+            in: 'query',
+          },
+          {
+            description: 'comma separated list of destination names',
+            required: false,
+            schema: {
+              title: 'Destination',
+              type: 'string',
+              description: 'comma separated list of destination names',
+            },
+            name: 'destination',
+            in: 'query',
+          },
+          {
             description: 'comma separated list of assigned robot names',
             required: false,
             schema: {
@@ -873,6 +906,19 @@ export default {
               description: 'comma separated list of statuses',
             },
             name: 'status',
+            in: 'query',
+          },
+          {
+            description:
+              '\n        The period of request time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n        ',
+            required: false,
+            schema: {
+              title: 'Request Time Between',
+              type: 'string',
+              description:
+                '\n        The period of request time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n        ',
+            },
+            name: 'request_time_between',
             in: 'query',
           },
           {

@@ -51,6 +51,37 @@ def between_query(
     return period
 
 
+def request_time_between_query(
+    request_time_between: str = Query(
+        None,
+        description="""
+        The period of request time to fetch, in unix millis.
+
+        This must be a comma separated string, 'X,Y' to fetch between X millis and Y millis inclusive.
+
+        Example:
+            "1000,2000" - Fetches logs between unix millis 1000 and 2000.
+        """,
+    ),
+    now: int = Depends(clock.now),
+) -> Tuple[datetime, datetime] | None:
+    if request_time_between is None:
+        return None
+    if request_time_between.startswith("-"):
+        # Cap at 0 millis
+        period = (
+            datetime.fromtimestamp(0),
+            datetime.fromtimestamp(now / 1000),
+        )
+    else:
+        parts = request_time_between.split(",")
+        period = (
+            datetime.fromtimestamp(int(parts[0]) / 1000),
+            datetime.fromtimestamp(int(parts[1]) / 1000),
+        )
+    return period
+
+
 def start_time_between_query(
     start_time_between: str = Query(
         None,
