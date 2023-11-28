@@ -137,7 +137,6 @@ export function parseCartId(request?: TaskRequest): string {
 
   // TODO(ac): use schemas
   try {
-    const deliveryType: string = request.description['category'];
     const perform_action_description =
       request.description['phases'][0]['activity']['description']['activities'][1]['description'][
         'description'
