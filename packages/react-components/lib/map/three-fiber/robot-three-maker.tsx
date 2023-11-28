@@ -1,9 +1,10 @@
-import { Text } from '@react-three/drei';
+import { Html, Text } from '@react-three/drei';
 import { ThreeEvent, useLoader } from '@react-three/fiber';
 import React from 'react';
 import { Color, Euler, Texture, TextureLoader, Vector3 } from 'three';
 import { CircleShape } from './circle-shape';
 import { TextThreeRendering } from './text-maker';
+import { debounce } from './shape-three-rendering';
 
 export interface RobotData {
   fleet: string;
@@ -24,6 +25,7 @@ interface RobotThreeMakerProps {
   rotation: Euler;
   circleSegment: number;
   fontPath?: string;
+  robotLabel: boolean;
 }
 
 interface RobotImageMakerProps {
@@ -82,38 +84,69 @@ export const RobotThreeMaker = ({
   rotation,
   circleSegment,
   fontPath,
+  robotLabel,
 }: RobotThreeMakerProps): JSX.Element => {
+  const [isHovered, setIsHovered] = React.useState(false);
+
+  const debouncedHandlePointerOver = debounce(() => {
+    setIsHovered(true);
+  }, 300);
+
+  const debouncedHandlePointerOut = debounce(() => {
+    setIsHovered(false);
+  }, 300);
+
+  const scaleFactor = isHovered ? 2 : 1.0;
+
   return (
     <>
-      {fontPath && fontPath.length > 0 ? (
-        <Text
-          color="black"
-          font={fontPath}
-          fontSize={0.5}
-          position={[position.x, position.y, position.z + 1]}
-        >
-          {robot.name}
-        </Text>
-      ) : (
-        <TextThreeRendering position={[position.x, position.y, position.z + 1]} text={robot.name} />
-      )}
-      {imageUrl ? (
-        <RobotImageMaker
-          imageUrl={imageUrl}
-          position={position}
-          rotation={rotation}
-          onRobotClick={(ev: ThreeEvent<MouseEvent>) => onRobotClick && onRobotClick(ev, robot)}
-          robot={robot}
-        />
-      ) : (
-        <CircleShape
-          position={position}
-          rotation={rotation}
-          onRobotClick={(ev: ThreeEvent<MouseEvent>) => onRobotClick && onRobotClick(ev, robot)}
-          robot={robot}
-          segment={circleSegment}
-        />
-      )}
+      <mesh
+        position={position}
+        scale={[0.5, 0.5, 0.5]}
+        onPointerOver={debouncedHandlePointerOver}
+        onPointerOut={debouncedHandlePointerOut}
+      >
+        {isHovered && (
+          <Html zIndexRange={[1]}>
+            <div
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                padding: '0.2rem 0.5rem',
+                borderRadius: '4px',
+                fontSize: '0.6rem',
+                transform: `scale(${scaleFactor})`,
+                transition: 'transform 0.3s',
+              }}
+            >
+              {robot.name}
+            </div>
+          </Html>
+        )}
+        {robotLabel && fontPath && fontPath.length > 0 ? (
+          <Text color="black" font={fontPath} fontSize={0.5} position={[0, 0, 1]}>
+            {robot.name}
+          </Text>
+        ) : robotLabel ? (
+          <TextThreeRendering position={[0, 0, 1]} text={robot.name} />
+        ) : null}
+        {imageUrl ? (
+          <RobotImageMaker
+            imageUrl={imageUrl}
+            position={new Vector3()}
+            rotation={rotation}
+            onRobotClick={(ev: ThreeEvent<MouseEvent>) => onRobotClick && onRobotClick(ev, robot)}
+            robot={robot}
+          />
+        ) : (
+          <CircleShape
+            position={new Vector3()}
+            rotation={rotation}
+            onRobotClick={(ev: ThreeEvent<MouseEvent>) => onRobotClick && onRobotClick(ev, robot)}
+            robot={robot}
+            segment={circleSegment}
+          />
+        )}
+      </mesh>
     </>
   );
 };
