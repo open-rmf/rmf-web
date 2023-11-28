@@ -1,23 +1,11 @@
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  Grid,
-  Typography,
-} from '@mui/material';
+import { Box, Dialog, DialogContent, DialogTitle, Divider, Grid, Typography } from '@mui/material';
 import { CardContent, useTheme } from '@mui/material';
 import { TaskEventLog, TaskState } from 'api-client';
 import React from 'react';
-import { AppControllerContext } from '../app-contexts';
-import { AppEvents } from '../app-events';
 import { RmfAppContext } from '../rmf-app';
 import { TaskInfo } from 'react-components';
-// import { UserProfileContext } from 'rmf-auth';
-// import { Enforcer } from '../permissions';
 import { TaskLogs } from './task-logs';
+import { TaskCancelButton } from './task-cancellation';
 
 export interface TableDataGridState {
   task: TaskState | null;
@@ -27,7 +15,6 @@ export interface TableDataGridState {
 export function TaskInspector({ task, onClose }: TableDataGridState): JSX.Element {
   const theme = useTheme();
   const rmf = React.useContext(RmfAppContext);
-  const appController = React.useContext(AppControllerContext);
 
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
   const [taskLogs, setTaskLogs] = React.useState<TaskEventLog | null>(null);
@@ -58,34 +45,6 @@ export function TaskInspector({ task, onClose }: TableDataGridState): JSX.Elemen
     });
     return () => sub.unsubscribe();
   }, [rmf, task]);
-
-  // const profile = React.useContext(UserProfileContext);
-
-  const taskCancellable =
-    taskState &&
-    // profile &&
-    // Enforcer.canCancelTask(profile) &&
-    taskState.status &&
-    !['canceled', 'killed', 'completed', 'failed'].includes(taskState.status);
-
-  const handleCancelTaskClick = React.useCallback<React.MouseEventHandler>(async () => {
-    if (!taskState) {
-      return;
-    }
-    try {
-      if (!rmf) {
-        throw new Error('tasks api not available');
-      }
-      await rmf.tasksApi?.postCancelTaskTasksCancelTaskPost({
-        type: 'cancel_task_request',
-        task_id: taskState.booking.id,
-      });
-      appController.showAlert('success', 'Successfully cancelled task');
-      AppEvents.taskSelect.next(null);
-    } catch (e) {
-      appController.showAlert('error', `Failed to cancel task: ${(e as Error).message}`);
-    }
-  }, [appController, taskState, rmf]);
 
   return (
     <>
@@ -118,7 +77,8 @@ export function TaskInspector({ task, onClose }: TableDataGridState): JSX.Elemen
                         <TaskInfo task={taskState} title="Details" />
                       </CardContent>
                       <Grid item paddingLeft={2} paddingRight={2}>
-                        <Button
+                        <TaskCancelButton
+                          taskId={taskState ? taskState.booking.id : null}
                           style={{
                             marginTop: theme.spacing(1),
                             marginBottom: theme.spacing(1),
@@ -127,11 +87,7 @@ export function TaskInspector({ task, onClose }: TableDataGridState): JSX.Elemen
                           variant="contained"
                           color="secondary"
                           aria-label="Cancel Task"
-                          disabled={!taskCancellable}
-                          onClick={handleCancelTaskClick}
-                        >
-                          Cancel Task
-                        </Button>
+                        />
                       </Grid>
                     </>
                   ) : (

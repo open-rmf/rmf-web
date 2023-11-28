@@ -32,6 +32,8 @@ import {
   BatteryChargingFull,
   BatteryUnknown,
 } from '@mui/icons-material';
+import { UserProfileContext } from 'rmf-auth';
+import { TaskCancelButton } from '../tasks/task-cancellation';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -110,6 +112,7 @@ const showBatteryIcon = (robot: RobotState, robotBattery: number) => {
 export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) => {
   const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
+  const profile = React.useContext(UserProfileContext);
 
   const [isOpen, setIsOpen] = React.useState(true);
   const [robotState, setRobotState] = React.useState<RobotState | null>(null);
@@ -280,15 +283,22 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
       )}
       <DialogContent>{returnDialogContent()}</DialogContent>
       <DialogActions sx={{ justifyContent: 'center' }}>
-        <Button
+        {profile && profile.user.is_admin ? (
+          <Button
+            size="small"
+            variant="contained"
+            onClick={() => setOpenTaskDetailsLogs(true)}
+            autoFocus
+            disabled={taskState === null}
+          >
+            Inspect Task
+          </Button>
+        ) : null}
+        <TaskCancelButton
+          taskId={taskState ? taskState.booking.id : null}
           size="small"
           variant="contained"
-          onClick={() => setOpenTaskDetailsLogs(true)}
-          autoFocus
-          disabled={taskState === null}
-        >
-          Inspect Task
-        </Button>
+        />
       </DialogActions>
       {openTaskDetailsLogs && taskState && (
         <TaskInspector task={taskState} onClose={() => setOpenTaskDetailsLogs(false)} />

@@ -79,7 +79,7 @@ class JwtAuthenticator:
 
 class StubAuthenticator(JwtAuthenticator):
     def __init__(self):  # pylint: disable=super-init-not-called
-        self._user = User(username="stub", is_admin=False)
+        self._user = User(username="stub", is_admin=True)
 
     async def verify_token(self, token: Optional[str]) -> User:
         return self._user

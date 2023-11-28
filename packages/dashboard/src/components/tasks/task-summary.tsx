@@ -18,6 +18,8 @@ import { Status, TaskState } from 'api-client';
 import { base } from 'react-components';
 import { TaskInspector } from './task-inspector';
 import { RmfAppContext } from '../rmf-app';
+import { UserProfileContext } from 'rmf-auth';
+import { TaskCancelButton } from './task-cancellation';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -73,6 +75,7 @@ export interface TaskSummaryProps {
 export const TaskSummary = React.memo((props: TaskSummaryProps) => {
   const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
+  const profile = React.useContext(UserProfileContext);
 
   const { onClose, task } = props;
 
@@ -187,14 +190,21 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
       )}
       <DialogContent>{returnDialogContent()}</DialogContent>
       <DialogActions sx={{ justifyContent: 'center' }}>
-        <Button
+        {profile && profile.user.is_admin ? (
+          <Button
+            size="small"
+            variant="contained"
+            onClick={() => setOpenTaskDetailsLogs(true)}
+            autoFocus
+          >
+            Inspect
+          </Button>
+        ) : null}
+        <TaskCancelButton
+          taskId={taskState ? taskState.booking.id : null}
           size="small"
           variant="contained"
-          onClick={() => setOpenTaskDetailsLogs(true)}
-          autoFocus
-        >
-          Inspect
-        </Button>
+        />
       </DialogActions>
       {openTaskDetailsLogs && (
         <TaskInspector task={taskState} onClose={() => setOpenTaskDetailsLogs(false)} />
