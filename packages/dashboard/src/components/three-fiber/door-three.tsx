@@ -4,6 +4,7 @@ import { Door as DoorModel } from 'rmf-models';
 import { RmfAppContext } from '../rmf-app';
 import { DoorMode } from 'rmf-models';
 import { DoorThreeMaker } from 'react-components';
+import { ThreeEvent } from '@react-three/fiber';
 
 interface DoorProps {
   door: DoorModel;
@@ -11,6 +12,7 @@ interface DoorProps {
   height: number;
   elevation: number;
   lift?: Lift;
+  onDoorClick?: (ev: ThreeEvent<MouseEvent>, door: DoorModel) => void;
 }
 
 function toDoorMode(liftState: LiftState): DoorMode {
@@ -19,7 +21,7 @@ function toDoorMode(liftState: LiftState): DoorMode {
 
 export const Door = React.memo(({ ...doorProps }: DoorProps): JSX.Element => {
   const ref = React.useRef<THREE.Mesh>(null!);
-  const { door, lift } = doorProps;
+  const { door, lift, onDoorClick } = doorProps;
   const rmf = React.useContext(RmfAppContext);
   const [doorState, setDoorState] = React.useState<DoorState | null>(null);
   const [liftState, setLiftState] = React.useState<LiftState | undefined>(undefined);
@@ -64,5 +66,14 @@ export const Door = React.memo(({ ...doorProps }: DoorProps): JSX.Element => {
     return () => sub.unsubscribe();
   }, [rmf, door.name]);
 
-  return <DoorThreeMaker {...doorProps} height={8} key={door.name} meshRef={ref} color={color} />;
+  return (
+    <DoorThreeMaker
+      {...doorProps}
+      height={8}
+      key={door.name}
+      meshRef={ref}
+      color={color}
+      onDoorClick={(ev: ThreeEvent<MouseEvent>) => onDoorClick && onDoorClick(ev, door)}
+    />
+  );
 });
