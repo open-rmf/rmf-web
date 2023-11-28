@@ -254,6 +254,19 @@ class TestDispatchTask(AppFixture):
         self.assertEqual(200, resp.status_code, resp.content)
         self.assertEqual(task_id, resp.json()["booking"]["id"])
 
+    def test_task_request_exist(self):
+        task_id = str(uuid4())
+        with patch.object(tasks_service(), "call") as mock:
+            mock.return_value = f'{{ "success": true, "state": {{ "booking": {{ "id": "{task_id}" }} }} }}'
+            resp = self.post_task_request()
+            self.assertEqual(200, resp.status_code, resp.content)
+
+        # check that the task request is in the database
+        resp = self.client.get(f"/tasks/{task_id}/request")
+        self.assertEqual(200, resp.status_code, resp.content)
+        self.assertEqual("test", resp.json()["category"])
+        self.assertEqual("description", resp.json()["description"])
+
     def test_fail_with_multiple_errors(self):
         # fails with multiple errors
         with patch.object(tasks_service(), "call") as mock:

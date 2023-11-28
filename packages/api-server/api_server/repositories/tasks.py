@@ -15,12 +15,14 @@ from api_server.models import (
     Pagination,
     Phases,
     TaskEventLog,
+    TaskRequest,
     TaskState,
     User,
 )
 from api_server.models import tortoise_models as ttm
 from api_server.models.rmf_api.log_entry import Tier
 from api_server.models.rmf_api.task_state import Category, Id, Phase
+from api_server.models.tortoise_models import TaskRequest as DbTaskRequest
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.query import add_pagination
 from api_server.rmf_io import task_events
@@ -29,6 +31,24 @@ from api_server.rmf_io import task_events
 class TaskRepository:
     def __init__(self, user: User):
         self.user = user
+
+    async def save_task_request(self, task_id: str, task_request: TaskRequest) -> None:
+        await DbTaskRequest.update_or_create(
+            {"request": task_request.json()}, id_=task_id
+        )
+
+    async def get_task_request(self, task_id: str) -> Optional[TaskRequest]:
+        result = await DbTaskRequest.get_or_none(id_=task_id)
+        if result is None:
+            return None
+        return TaskRequest(**result.request)
+
+    async def query_task_requests(self, task_ids: List[str]) -> List[DbTaskRequest]:
+        filters = {"id___in": task_ids}
+        try:
+            return await DbTaskRequest.filter(**filters)
+        except FieldError as e:
+            raise HTTPException(422, str(e)) from e
 
     async def save_task_state(self, task_state: TaskState) -> None:
         db_task_state = await DbTaskState.get_or_none(id_=task_state.booking.id)

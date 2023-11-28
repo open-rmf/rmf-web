@@ -12,6 +12,11 @@ from tortoise.models import Model
 from .log import LogMixin
 
 
+class TaskRequest(Model):
+    id_ = CharField(255, pk=True, source_field="id")
+    request = JSONField()
+
+
 class TaskState(Model):
     id_ = CharField(255, pk=True, source_field="id")
     data = JSONField()
