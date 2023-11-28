@@ -183,6 +183,8 @@ export const TasksApp = React.memo(
           const results = resp.data as TaskState[];
           const newTasks = results.slice(0, GET_LIMIT);
 
+          // NOTE(ac): we are not using getAllTaskRequests here to prevent
+          // adding it into the dependency list.
           const taskIds: string[] = newTasks.map((task) => task.booking.id);
           const taskIdsQuery = taskIds.join(',');
           const taskRequests = (await rmf.tasksApi.queryTaskRequestsTasksRequestsGet(taskIdsQuery))
