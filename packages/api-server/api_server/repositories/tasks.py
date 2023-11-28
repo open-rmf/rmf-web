@@ -52,9 +52,9 @@ def parse_pickup(task_request: TaskRequest) -> Optional[str]:
         ]["activities"][1]["description"]["description"]
         if category == "delivery_pickup":
             return perform_action_description["pickup_lot"]
-        else:
-            return perform_action_description["pickup_zone"]
-    except:
+        return perform_action_description["pickup_zone"]
+    except Exception as e:  # pylint: disable=W0703
+        logger.error(format_exception(e))
         logger.error(f"Failed to parse pickup for task of category {category}")
     return None
 
@@ -70,7 +70,8 @@ def parse_destination(
             and len(task_request.description["places"]) > 0
         ):
             return task_request.description["places"][-1]
-    except:
+    except Exception as e:  # pylint: disable=W0703
+        logger.error(format_exception(e))
         logger.error("Failed to parse destination for patrol")
         return None
 
@@ -92,7 +93,8 @@ def parse_destination(
             "activities"
         ][2]["description"]
         return destination
-    except:
+    except Exception as e:  # pylint: disable=W0703
+        logger.error(format_exception(e))
         logger.error(
             f"Failed to parse destination from task request of category {category}"
         )
@@ -100,11 +102,21 @@ def parse_destination(
     # automated tasks that can only be parsed with state
     if task_state.category is not None and task_state.category == "Charge Battery":
         try:
+            if (
+                task_state.phases is None
+                or "1" not in task_state.phases
+                or task_state.phases["1"].events is None
+                or "1" not in task_state.phases["1"].events
+                or task_state.phases["1"].events["1"].name is None
+            ):
+                raise ValueError
+
             charge_event_name = task_state.phases["1"].events["1"].name
             charge_place_split = charge_event_name.split("[place:")[1]
             charge_place = charge_place_split.split("]")[0]
             return charge_place
-        except:
+        except Exception as e:  # pylint: disable=W0703
+            logger.error(format_exception(e))
             logger.error(
                 f"Failed to parse charging point from task state of id {task_state.booking.id}"
             )
