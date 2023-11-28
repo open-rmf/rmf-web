@@ -183,20 +183,25 @@ export const TasksApp = React.memo(
           const results = resp.data as TaskState[];
           const newTasks = results.slice(0, GET_LIMIT);
 
-          let taskIdsQuery = '';
-          for (const newTask of newTasks) {
-            taskIdsQuery += `${newTask.booking.id},`;
+          const taskIds: string[] = newTasks.map((task) => task.booking.id);
+          const taskIdsQuery = taskIds.join(',');
+          const taskRequests = (await rmf.tasksApi.queryTaskRequestsTasksRequestsGet(taskIdsQuery))
+            .data;
+
+          const taskRequestMap: Record<string, TaskRequest> = {};
+          let requestIndex = 0;
+          for (const id of taskIds) {
+            if (requestIndex < taskRequests.length && taskRequests[requestIndex]) {
+              taskRequestMap[id] = taskRequests[requestIndex];
+            }
+            ++requestIndex;
           }
-          if (taskIdsQuery.length !== 0) {
-            taskIdsQuery = taskIdsQuery.slice(0, -1);
-          }
-          const taskRequests = await rmf.tasksApi.queryTaskRequestsTasksRequestsGet(taskIdsQuery);
 
           setTasksState((old) => ({
             ...old,
             isLoading: false,
             data: newTasks,
-            requests: {},
+            requests: taskRequestMap,
             total:
               results.length === GET_LIMIT
                 ? tasksState.page * GET_LIMIT + 1

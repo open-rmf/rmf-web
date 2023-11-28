@@ -135,8 +135,88 @@ export function TaskDataGridTable({
   );
 
   const getPickup = (state: TaskState): string => {
-    // console.log(state);
-    return 'N/A';
+    const request: TaskRequest | undefined = tasks.requests[state.booking.id];
+    if (request === undefined || request.category === 'patrol') {
+      return 'n/a';
+    }
+
+    // custom deliveries
+    const supportedDeliveries = [
+      'delivery_pickup',
+      'delivery_sequential_lot_pickup',
+      'delivery_area_pickup',
+    ];
+    if (
+      !request.description['category'] ||
+      !supportedDeliveries.includes(request.description['category'])
+    ) {
+      return 'n/a';
+    }
+
+    // TODO(ac): use schemas
+    try {
+      const deliveryType: string = request.description['category'];
+      const perform_action_description =
+        request.description['phases'][0]['activity']['description']['activities'][1]['description'][
+          'description'
+        ];
+
+      switch (deliveryType) {
+        case 'delivery_pickup':
+          const pickup_lot: string = perform_action_description['pickup_lot'];
+          return pickup_lot;
+        case 'delivery_sequential_lot_pickup':
+        case 'delivery_area_pickup':
+          const pickup_zone: string = perform_action_description['pickup_zone'];
+          return pickup_zone;
+        default:
+          return 'n/a';
+      }
+    } catch (e) {
+      console.error(`Failed to parse pickup lot/zone from task request: ${(e as Error).message}`);
+    }
+
+    return 'n/a';
+  };
+
+  const getDestination = (state: TaskState): string => {
+    const request: TaskRequest | undefined = tasks.requests[state.booking.id];
+    if (request === undefined) {
+      return 'n/a';
+    }
+
+    // patrol
+    if (
+      request.category === 'patrol' &&
+      request.description['places'] !== undefined &&
+      request.description['places'].length > 0
+    ) {
+      return request.description['places'].at(-1);
+    }
+
+    // custom deliveries
+    const supportedDeliveries = [
+      'delivery_pickup',
+      'delivery_sequential_lot_pickup',
+      'delivery_area_pickup',
+    ];
+    if (
+      !request.description['category'] ||
+      !supportedDeliveries.includes(request.description['category'])
+    ) {
+      return 'n/a';
+    }
+
+    // TODO(ac): use schemas
+    try {
+      const destination =
+        request.description['phases'][0]['activity']['description']['activities'][2]['description'];
+      return destination;
+    } catch (e) {
+      console.error(`Failed to parse destination from task request: ${(e as Error).message}`);
+    }
+
+    return 'n/a';
   };
 
   const getMinimalDateOperators = getGridDateOperators(true).filter(
@@ -158,7 +238,7 @@ export function TaskDataGridTable({
           <TextField
             variant="standard"
             value={
-              cellValues.row.booking.unix_millis_request_time ? `${day} ${month} ${year}` : 'N/A'
+              cellValues.row.booking.unix_millis_request_time ? `${day} ${month} ${year}` : 'n/a'
             }
             InputProps={{ disableUnderline: true }}
             multiline
@@ -193,8 +273,7 @@ export function TaskDataGridTable({
       headerName: 'Destination',
       width: 150,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.category ? params.row.category : 'unknown',
+      valueGetter: (params: GridValueGetterParams) => getDestination(params.row),
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,
