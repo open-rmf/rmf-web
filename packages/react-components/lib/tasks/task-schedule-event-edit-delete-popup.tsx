@@ -27,7 +27,7 @@ export function EventEditDeletePopup({
         <FormControlLabel value={currentValue} control={<Radio />} label={'This event'} />
         <FormControlLabel
           value={allValue}
-          disabled={isAdmin}
+          disabled={!isAdmin}
           control={<Radio />}
           label={'All events in this schedule'}
         />

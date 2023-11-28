@@ -37,7 +37,10 @@ describe('EventEditDeletePopup', () => {
       />,
     );
 
-    // Check that changing all events is disabled for non-admins
-    expect(getByLabelText('All events in this schedule').toHaveAttribute('disabled'));
+    // Simulate a change event by clicking on a radio button
+    fireEvent.click(getByLabelText('All events in this schedule'));
+
+    // Check that onChange was not called since the button is disabled
+    expect(onChange).not.toHaveBeenCalled();
   });
 });
