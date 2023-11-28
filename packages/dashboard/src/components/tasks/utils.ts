@@ -56,7 +56,6 @@ export function downloadCsvMinimal(
   const keys = [
     'Date',
     'Requester',
-    'Category',
     'Pickup',
     'Destination',
     'Robot',
@@ -74,8 +73,6 @@ export function downloadCsvMinimal(
         : 'n/a',
       // Requester
       task.booking.requester ? task.booking.requester : 'n/a',
-      // Category
-      task.category ? task.category : 'n/a',
       // Pickup
       parsePickup(task, request),
       // Destination

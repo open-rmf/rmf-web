@@ -178,17 +178,6 @@ export function TaskDataGridTable({
       filterable: false,
     },
     {
-      field: 'category',
-      headerName: 'Category',
-      minWidth: 150,
-      editable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.category ? params.row.category : 'n/a',
-      flex: 1,
-      filterOperators: getMinimalStringFilterOperators,
-      filterable: true,
-    },
-    {
       field: 'pickup',
       headerName: 'Pickup',
       width: 150,
