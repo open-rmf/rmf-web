@@ -2,12 +2,14 @@ import React from 'react';
 import { Lift, LiftState } from 'api-client';
 import { RmfAppContext } from '../rmf-app';
 import { LiftThreeMaker } from 'react-components';
+import { ThreeEvent } from '@react-three/fiber';
 
 interface LiftsProps {
   opacity: number;
   height: number;
   elevation: number;
   lift?: Lift;
+  onLiftClick?: (ev: ThreeEvent<MouseEvent>, lift: Lift) => void;
 }
 
 async function fontPathExists(url: string) {
@@ -15,7 +17,7 @@ async function fontPathExists(url: string) {
   return result.ok;
 }
 
-export const Lifts = React.memo(({ lift }: LiftsProps): JSX.Element => {
+export const Lifts = React.memo(({ lift, onLiftClick }: LiftsProps): JSX.Element => {
   const rmf = React.useContext(RmfAppContext);
   const [liftState, setLiftState] = React.useState<LiftState | undefined>(undefined);
   const [fontPath, setFontPath] = React.useState<string | undefined>(undefined);
@@ -62,6 +64,7 @@ export const Lifts = React.memo(({ lift }: LiftsProps): JSX.Element => {
           depth={lift.depth}
           liftState={liftState}
           fontPath={fontPath}
+          onLiftClick={(ev: ThreeEvent<MouseEvent>) => onLiftClick && onLiftClick(ev, lift)}
         />
       )}
     </>

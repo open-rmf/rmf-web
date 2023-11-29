@@ -4,6 +4,7 @@ import { Text, Line } from '@react-three/drei';
 import { BufferGeometry, BufferAttribute, Vector3, Euler } from 'three';
 import { LiftState as RmfLiftState } from 'rmf-models';
 import { getLiftModeText } from '../lift-marker';
+import { ThreeEvent } from '@react-three/fiber';
 
 interface LiftMakerProps {
   x: number;
@@ -13,6 +14,7 @@ interface LiftMakerProps {
   depth: number;
   liftState: LiftState;
   fontPath?: string;
+  onLiftClick?: (ev: ThreeEvent<MouseEvent>) => void;
 }
 
 interface LiftShapeMakerProps {
@@ -82,6 +84,7 @@ export const LiftThreeMaker = ({
   depth,
   liftState,
   fontPath,
+  onLiftClick,
 }: LiftMakerProps): JSX.Element => {
   return (
     <group position={[x, y, yaw]}>
@@ -96,7 +99,11 @@ export const LiftThreeMaker = ({
         </>
       ) : null}
       <LiftShapeMaker motionState={liftState.motion_state} fontPath={fontPath} />
-      <mesh position={[0, 0, 0]} rotation={[0, 0, yaw]}>
+      <mesh
+        position={[0, 0, 0]}
+        rotation={[0, 0, yaw]}
+        onClick={(ev: ThreeEvent<MouseEvent>) => onLiftClick && onLiftClick(ev)}
+      >
         <boxGeometry args={[width, depth, 0.1]} />
         <meshStandardMaterial color={'green'} opacity={0.6} transparent />
       </mesh>

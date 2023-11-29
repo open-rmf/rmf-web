@@ -533,6 +533,10 @@ export const MapApp = styled(
                     height={8}
                     elevation={currentLevel.elevation}
                     opacity={0.1}
+                    onLiftClick={(_ev, lift) => {
+                      setOpenLiftSummary(true);
+                      setSelectedLift(lift);
+                    }}
                   />
                 )),
               )
