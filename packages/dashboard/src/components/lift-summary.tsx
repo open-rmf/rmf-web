@@ -18,15 +18,15 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-interface LiftDoorSummaryProps {
+interface LiftSummaryProps {
   onClose: () => void;
   lift: Lift;
 }
 
-export const LiftDoorSummary = ({ onClose, lift }: LiftDoorSummaryProps): JSX.Element => {
+export const LiftSummary = ({ onClose, lift }: LiftSummaryProps): JSX.Element => {
   const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
-  const [liftDoorData, setLiftDoorData] = React.useState<LiftTableData>({
+  const [liftData, setLiftData] = React.useState<LiftTableData>({
     index: 0,
     name: '',
     opMode: '',
@@ -47,7 +47,7 @@ export const LiftDoorSummary = ({ onClose, lift }: LiftDoorSummaryProps): JSX.El
         const { data } = await rmf.liftsApi.getLiftHealthLiftsLiftNameHealthGet(lift.name);
         const { health_status } = data;
         const sub = rmf.getLiftStateObs(lift.name).subscribe((liftState) => {
-          setLiftDoorData({
+          setLiftData({
             index: -1,
             name: lift.name,
             opMode: health_status ? health_status : 'N/A',
@@ -87,7 +87,7 @@ export const LiftDoorSummary = ({ onClose, lift }: LiftDoorSummaryProps): JSX.El
       <DialogTitle align="center">Lift summary</DialogTitle>
       <Divider />
       <DialogContent>
-        {Object.entries(liftDoorData).map(([key, value]) => {
+        {Object.entries(liftData).map(([key, value]) => {
           if (key === 'index' || key === 'motionState' || key === 'lift') {
             return <></>;
           }
@@ -115,7 +115,7 @@ export const LiftDoorSummary = ({ onClose, lift }: LiftDoorSummaryProps): JSX.El
               break;
           }
           return (
-            <div key={liftDoorData.name + key}>
+            <div key={liftData.name + key}>
               <TextField
                 label={displayLabel}
                 id="standard-size-small"

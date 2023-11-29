@@ -28,7 +28,7 @@ import { Line } from '@react-three/drei';
 import { CameraControl, LayersController } from './three-fiber';
 import { Lifts, Door, RobotThree } from './three-fiber';
 import { DoorSummary } from './door-summary';
-import { LiftDoorSummary } from './lift-door-summary';
+import { LiftSummary } from './lift-summary';
 
 type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
@@ -66,7 +66,7 @@ export const MapApp = styled(
     });
     const [openRobotSummary, setOpenRobotSummary] = React.useState(false);
     const [openDoorSummary, setOpenDoorSummary] = React.useState(false);
-    const [openLiftDoorSummary, setOpenLiftDoorSummary] = React.useState(false);
+    const [openLiftSummary, setOpenLiftSummary] = React.useState(false);
     const [selectedRobot, setSelectedRobot] = React.useState<RobotTableData>();
     const [selectedDoor, setSelectedDoor] = React.useState<DoorModel>();
     const [selectedLift, setSelectedLift] = React.useState<Lift>();
@@ -515,7 +515,7 @@ export const MapApp = styled(
                         elevation={currentLevel.elevation}
                         lift={lift}
                         onDoorClick={(_ev, door) => {
-                          setOpenLiftDoorSummary(true);
+                          setOpenLiftSummary(true);
                           setSelectedLift(lift);
                         }}
                       />
@@ -606,8 +606,8 @@ export const MapApp = styled(
           />
         )}
 
-        {openLiftDoorSummary && selectedLift && (
-          <LiftDoorSummary onClose={() => setOpenLiftDoorSummary(false)} lift={selectedLift} />
+        {openLiftSummary && selectedLift && (
+          <LiftSummary onClose={() => setOpenLiftSummary(false)} lift={selectedLift} />
         )}
       </Suspense>
     ) : null;
