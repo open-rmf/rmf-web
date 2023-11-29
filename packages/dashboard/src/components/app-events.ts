@@ -11,7 +11,7 @@ import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs';
 import { Vector3 } from 'three';
 
 export const AppEvents = {
-  doorSelect: new Subject<Door | null>(),
+  doorSelect: new Subject<[levelName: string, door: Door] | null>(),
   liftSelect: new Subject<Lift | null>(),
   dispenserSelect: new Subject<Dispenser | null>(),
   ingestorSelect: new Subject<Ingestor | null>(),
