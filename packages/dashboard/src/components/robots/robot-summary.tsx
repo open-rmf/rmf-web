@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -32,6 +31,7 @@ import {
   BatteryChargingFull,
   BatteryUnknown,
 } from '@mui/icons-material';
+import { TaskCancelButton } from '../tasks/task-cancellation';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -280,15 +280,11 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
       )}
       <DialogContent>{returnDialogContent()}</DialogContent>
       <DialogActions sx={{ justifyContent: 'center' }}>
-        <Button
+        <TaskCancelButton
+          taskId={taskState ? taskState.booking.id : null}
           size="small"
           variant="contained"
-          onClick={() => setOpenTaskDetailsLogs(true)}
-          autoFocus
-          disabled={taskState === null}
-        >
-          Inspect Task
-        </Button>
+        />
       </DialogActions>
       {openTaskDetailsLogs && taskState && (
         <TaskInspector task={taskState} onClose={() => setOpenTaskDetailsLogs(false)} />

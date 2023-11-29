@@ -287,7 +287,6 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
         onDismiss={removeAlert}
         acknowledgedBy={taskAlert.acknowledgedBy}
         onAcknowledge={taskAlert.acknowledgedBy ? undefined : acknowledgeAlert}
-        onInspect={() => setOpenTaskInspector(true)}
         title={taskAlert.title}
         progress={taskAlert.progress}
         alertContents={taskAlert.content}

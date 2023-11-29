@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Box,
-  Button,
   LinearProgress,
   LinearProgressProps,
   Theme,
@@ -18,6 +17,7 @@ import { Status, TaskState } from 'api-client';
 import { base } from 'react-components';
 import { TaskInspector } from './task-inspector';
 import { RmfAppContext } from '../rmf-app';
+import { TaskCancelButton } from './task-cancellation';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -187,14 +187,11 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
       )}
       <DialogContent>{returnDialogContent()}</DialogContent>
       <DialogActions sx={{ justifyContent: 'center' }}>
-        <Button
+        <TaskCancelButton
+          taskId={taskState ? taskState.booking.id : null}
           size="small"
           variant="contained"
-          onClick={() => setOpenTaskDetailsLogs(true)}
-          autoFocus
-        >
-          Inspect
-        </Button>
+        />
       </DialogActions>
       {openTaskDetailsLogs && (
         <TaskInspector task={taskState} onClose={() => setOpenTaskDetailsLogs(false)} />

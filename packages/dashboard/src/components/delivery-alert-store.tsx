@@ -220,19 +220,6 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
           />
         </DialogContent>
         <DialogActions>
-          {newTaskState ? (
-            <Tooltip title="Inspects the state and logs of the task.">
-              <Button
-                size="small"
-                variant="contained"
-                onClick={() => setOpenTaskInspector(true)}
-                disabled={false}
-                autoFocus
-              >
-                Inspect
-              </Button>
-            </Tooltip>
-          ) : null}
           {(newTaskState && newTaskState.status && newTaskState.status === 'canceled') ||
           deliveryAlert.category === 'cancelled' ? (
             <Button size="small" variant="contained" disabled autoFocus>
