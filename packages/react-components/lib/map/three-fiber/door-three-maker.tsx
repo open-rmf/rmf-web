@@ -2,6 +2,7 @@ import React from 'react';
 import { CubeMaker } from './cube-maker';
 import { Door as DoorModel } from 'rmf-models';
 import { Euler } from 'three';
+import { ThreeEvent } from '@react-three/fiber';
 
 const distance = (v1_x: number, v1_y: number, v2_x: number, v2_y: number) =>
   Math.hypot(v2_x - v1_x, v2_y - v1_y);
@@ -15,6 +16,7 @@ interface DoorThreeMakerProps {
   door: DoorModel;
   height: number;
   color: string;
+  onDoorClick?: (ev: ThreeEvent<MouseEvent>) => void;
 }
 
 export const DoorThreeMaker = ({
@@ -22,6 +24,7 @@ export const DoorThreeMaker = ({
   door,
   height,
   color,
+  onDoorClick,
 }: DoorThreeMakerProps): JSX.Element => {
   const THICKNESS = 0.5;
   const ELEVATION = 0;
@@ -32,13 +35,16 @@ export const DoorThreeMaker = ({
   const pos = midPoint(v1_x, v1_y, v2_x, v2_y).concat(height / 2 + ELEVATION);
   const dist = distance(v1_x, v1_y, v2_x, v2_y);
   return (
-    <CubeMaker
-      meshRef={meshRef}
-      key={door.name}
-      position={pos}
-      size={[THICKNESS, dist, height]}
-      rot={rot}
-      color={color}
-    />
+    <>
+      <CubeMaker
+        meshRef={meshRef}
+        key={door.name}
+        position={pos}
+        size={[THICKNESS, dist, height]}
+        rot={rot}
+        color={color}
+        onDoorClick={(ev: ThreeEvent<MouseEvent>) => onDoorClick && onDoorClick(ev)}
+      />
+    </>
   );
 };

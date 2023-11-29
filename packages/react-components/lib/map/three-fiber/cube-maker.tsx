@@ -1,6 +1,6 @@
 import { Euler, Mesh } from 'three';
 import React from 'react';
-import { MeshProps } from '@react-three/fiber';
+import { MeshProps, ThreeEvent } from '@react-three/fiber';
 
 export interface CubeProps {
   position: number[];
@@ -8,10 +8,11 @@ export interface CubeProps {
   size: number[];
   meshRef?: React.Ref<Mesh>;
   color?: string;
+  onDoorClick?: (ev: ThreeEvent<MouseEvent>) => void;
 }
 
 export const CubeMaker = (
-  { position, size, rot, color, meshRef }: CubeProps,
+  { position, size, rot, color, meshRef, onDoorClick }: CubeProps,
   props: MeshProps,
 ): JSX.Element => {
   return (
@@ -21,6 +22,7 @@ export const CubeMaker = (
       rotation={rot}
       scale={[size[0], size[1], size[2]]}
       ref={meshRef || null}
+      onClick={(ev: ThreeEvent<MouseEvent>) => onDoorClick && onDoorClick(ev)}
     >
       <planeGeometry />
       <meshStandardMaterial color={color || 'black'} opacity={0.6} transparent />

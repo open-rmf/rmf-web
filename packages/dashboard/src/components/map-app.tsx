@@ -1,5 +1,6 @@
 import { Box, styled, Typography, useMediaQuery } from '@mui/material';
-import { BuildingMap, ApiServerModelsRmfApiFleetStateFleetState, Level } from 'api-client';
+import { BuildingMap, ApiServerModelsRmfApiFleetStateFleetState, Level, Lift } from 'api-client';
+import { Door as DoorModel } from 'rmf-models';
 import Debug from 'debug';
 import React, { ChangeEvent, Suspense } from 'react';
 import {
@@ -26,6 +27,8 @@ import { Canvas, useLoader } from '@react-three/fiber';
 import { Line } from '@react-three/drei';
 import { CameraControl, LayersController } from './three-fiber';
 import { Lifts, Door, RobotThree } from './three-fiber';
+import { DoorSummary } from './door-summary';
+import { LiftSummary } from './lift-summary';
 
 type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
@@ -62,7 +65,11 @@ export const MapApp = styled(
       Trajectories: false,
     });
     const [openRobotSummary, setOpenRobotSummary] = React.useState(false);
+    const [openDoorSummary, setOpenDoorSummary] = React.useState(false);
+    const [openLiftSummary, setOpenLiftSummary] = React.useState(false);
     const [selectedRobot, setSelectedRobot] = React.useState<RobotTableData>();
+    const [selectedDoor, setSelectedDoor] = React.useState<DoorModel>();
+    const [selectedLift, setSelectedLift] = React.useState<Lift>();
 
     const [buildingMap, setBuildingMap] = React.useState<BuildingMap | null>(null);
 
@@ -507,6 +514,10 @@ export const MapApp = styled(
                         height={8}
                         elevation={currentLevel.elevation}
                         lift={lift}
+                        onDoorClick={(_ev, door) => {
+                          setOpenLiftSummary(true);
+                          setSelectedLift(lift);
+                        }}
                       />
                     )}
                   </React.Fragment>
@@ -522,6 +533,10 @@ export const MapApp = styled(
                     height={8}
                     elevation={currentLevel.elevation}
                     opacity={0.1}
+                    onLiftClick={(_ev, lift) => {
+                      setOpenLiftSummary(true);
+                      setSelectedLift(lift);
+                    }}
                   />
                 )),
               )
@@ -533,7 +548,16 @@ export const MapApp = styled(
                     <TextThreeRendering position={[door.v1_x, door.v1_y, 0]} text={door.name} />
                   )}
                   {!disabledLayers['Doors'] && (
-                    <Door door={door} opacity={0.1} height={8} elevation={currentLevel.elevation} />
+                    <Door
+                      door={door}
+                      opacity={0.1}
+                      height={8}
+                      elevation={currentLevel.elevation}
+                      onDoorClick={(_ev, door) => {
+                        setOpenDoorSummary(true);
+                        setSelectedDoor(door);
+                      }}
+                    />
                   )}
                 </React.Fragment>
               ))
@@ -577,6 +601,17 @@ export const MapApp = styled(
         </Canvas>
         {openRobotSummary && selectedRobot && (
           <RobotSummary robot={selectedRobot} onClose={() => setOpenRobotSummary(false)} />
+        )}
+        {openDoorSummary && selectedDoor && (
+          <DoorSummary
+            onClose={() => setOpenDoorSummary(false)}
+            door={selectedDoor}
+            level={currentLevel}
+          />
+        )}
+
+        {openLiftSummary && selectedLift && (
+          <LiftSummary onClose={() => setOpenLiftSummary(false)} lift={selectedLift} />
         )}
       </Suspense>
     ) : null;
