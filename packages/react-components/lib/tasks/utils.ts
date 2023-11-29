@@ -47,7 +47,31 @@ export function parseTaskDetail(
   }
 }
 
-export function parsePickup(state: TaskState, request?: TaskRequest): string {
+export function parseCategory(state?: TaskState, request?: TaskRequest): string {
+  if (request && request.category.toLowerCase() === 'patrol') {
+    return 'Patrol';
+  }
+
+  const supportedDeliveries = [
+    'delivery_pickup',
+    'delivery_sequential_lot_pickup',
+    'delivery_area_pickup',
+  ];
+  if (
+    request &&
+    request.description['category'] &&
+    supportedDeliveries.includes(request.description['category'])
+  ) {
+    return request.description['category'];
+  }
+
+  if (state && state.category) {
+    return state.category;
+  }
+  return 'n/a';
+}
+
+export function parsePickup(request?: TaskRequest): string {
   if (request === undefined || request.category.toLowerCase() === 'patrol') {
     return 'n/a';
   }
@@ -93,13 +117,47 @@ export function parsePickup(state: TaskState, request?: TaskRequest): string {
   return 'n/a';
 }
 
-export function parseDestination(state: TaskState, request: TaskRequest): string {
-  if (request === undefined) {
+export function parseCartId(request?: TaskRequest): string {
+  if (request === undefined || request.category.toLowerCase() === 'patrol') {
+    return 'n/a';
+  }
+
+  // custom deliveries
+  const supportedDeliveries = [
+    'delivery_pickup',
+    'delivery_sequential_lot_pickup',
+    'delivery_area_pickup',
+  ];
+  if (
+    !request.description['category'] ||
+    !supportedDeliveries.includes(request.description['category'])
+  ) {
+    return 'n/a';
+  }
+
+  // TODO(ac): use schemas
+  try {
+    const perform_action_description =
+      request.description['phases'][0]['activity']['description']['activities'][1]['description'][
+        'description'
+      ];
+    const cartId: string = perform_action_description['cart_id'];
+    return cartId;
+  } catch (e) {
+    console.error(`Failed to parse cart ID from task request: ${(e as Error).message}`);
+  }
+
+  return 'n/a';
+}
+
+export function parseDestination(state?: TaskState, request?: TaskRequest): string {
+  if (!state && !request) {
     return 'n/a';
   }
 
   // patrol
   if (
+    request &&
     request.category.toLowerCase() === 'patrol' &&
     request.description['places'] !== undefined &&
     request.description['places'].length > 0
@@ -114,6 +172,7 @@ export function parseDestination(state: TaskState, request: TaskRequest): string
     'delivery_area_pickup',
   ];
   if (
+    !request ||
     !request.description['category'] ||
     !supportedDeliveries.includes((request.description['category'] as string).toLowerCase())
   ) {
@@ -130,7 +189,7 @@ export function parseDestination(state: TaskState, request: TaskRequest): string
   }
 
   // automated tasks that can only be parsed with state
-  if (state.category && state.category === 'Charge Battery') {
+  if (state && state.category && state.category === 'Charge Battery') {
     try {
       const charge_phase = state['phases'] ? state['phases']['1'] : undefined;
       const charge_events = charge_phase ? charge_phase.events : undefined;

@@ -74,7 +74,7 @@ export function downloadCsvMinimal(
       // Requester
       task.booking.requester ? task.booking.requester : 'n/a',
       // Pickup
-      parsePickup(task, request),
+      parsePickup(request),
       // Destination
       parseDestination(task, request),
       // Robot

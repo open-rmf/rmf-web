@@ -13,8 +13,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { makeStyles, createStyles } from '@mui/styles';
-import { Status, TaskState } from 'api-client';
-import { base } from 'react-components';
+import { Status, TaskRequest, TaskState } from 'api-client';
+import { base, parseCartId, parseCategory, parseDestination, parsePickup } from 'react-components';
 import { TaskInspector } from './task-inspector';
 import { RmfAppContext } from '../rmf-app';
 import { TaskCancelButton } from './task-cancellation';
@@ -67,14 +67,15 @@ const setTaskDialogColor = (taskStatus: Status | undefined) => {
 
 export interface TaskSummaryProps {
   onClose: () => void;
-  task: TaskState | null;
+  task?: TaskState;
+  request?: TaskRequest;
 }
 
 export const TaskSummary = React.memo((props: TaskSummaryProps) => {
   const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
 
-  const { onClose, task } = props;
+  const { onClose, task, request } = props;
 
   const [openTaskDetailsLogs, setOpenTaskDetailsLogs] = React.useState(false);
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
@@ -109,33 +110,34 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
     return () => sub.unsubscribe();
   }, [rmf, task]);
 
-  const getTaskPhaseDetails = (task: TaskState) => {
-    if (!task.phases || !task.active) {
-      return 'Failed to retrieve current task phase';
-    }
-
-    const message = Object.values(task.phases)[task.active - 1]?.detail;
-
-    if (message) {
-      return message;
-    }
-
-    const categoryString = Object.values(task.phases)[task.active - 1]?.category
-      ? ` category ${Object.values(task.phases)[task.active - 1].category}`
-      : '';
-
-    return `Failed to retrieve current task phase details of id ${task.booking.id}${categoryString}`;
-  };
-
   const returnDialogContent = () => {
     const contents = [
       {
         title: 'ID',
-        value: taskState ? taskState.booking.id : 'Invalid task state.',
+        value: taskState ? taskState.booking.id : 'n/a.',
       },
       {
-        title: 'Current phase',
-        value: taskState ? getTaskPhaseDetails(taskState) : 'Invalid task state.',
+        title: 'Category',
+        value: parseCategory(task, request),
+      },
+      {
+        title: 'Pickup',
+        value: parsePickup(request),
+      },
+      {
+        title: 'Cart ID',
+        value: parseCartId(request),
+      },
+      {
+        title: 'Dropoff',
+        value: parseDestination(task, request),
+      },
+      {
+        title: 'Est. end time',
+        value:
+          taskState && taskState.unix_millis_finish_time
+            ? `${new Date(taskState.unix_millis_finish_time).toLocaleTimeString()}`
+            : 'n/a',
       },
     ];
 

@@ -401,7 +401,11 @@ export const TasksApp = React.memo(
           </TabPanel>
           <input type="file" style={{ display: 'none' }} ref={uploadFileInputRef} />
           {openTaskSummary && (
-            <TaskSummary task={selectedTask} onClose={() => setOpenTaskSummary(false)} />
+            <TaskSummary
+              onClose={() => setOpenTaskSummary(false)}
+              task={selectedTask ?? undefined}
+              request={selectedTask ? tasksState.requests[selectedTask.booking.id] : undefined}
+            />
           )}
           {children}
         </Window>
