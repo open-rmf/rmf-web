@@ -87,52 +87,50 @@ export const LiftDoorSummary = ({ onClose, lift }: LiftDoorSummaryProps): JSX.El
       <DialogTitle align="center">Lift summary</DialogTitle>
       <Divider />
       <DialogContent>
-        <DialogContent>
-          {Object.entries(liftDoorData).map(([key, value]) => {
-            if (key === 'index' || key === 'motionState' || key === 'lift') {
-              return <></>;
-            }
-            let displayValue = value;
-            let displayLabel = key;
-            switch (key) {
-              case 'name':
-                displayLabel = 'Name';
-                break;
-              case 'opMode':
-                displayValue = healthStatusToOpMode(value);
-                displayLabel = 'Op. Mode';
-                break;
-              case 'currentFloor':
-                displayLabel = 'Current Floor';
-                break;
-              case 'destinationFloor':
-                displayLabel = 'Destination Floor';
-                break;
-              case 'doorState':
-                displayValue = doorStateToString(value);
-                displayLabel = 'State';
-                break;
-              default:
-                break;
-            }
-            return (
-              <div key={liftDoorData.name + key}>
-                <TextField
-                  label={displayLabel}
-                  id="standard-size-small"
-                  size="small"
-                  variant="filled"
-                  InputProps={{ readOnly: true, className: classes.textField }}
-                  fullWidth={true}
-                  multiline
-                  maxRows={4}
-                  margin="dense"
-                  value={displayValue}
-                />
-              </div>
-            );
-          })}
-        </DialogContent>
+        {Object.entries(liftDoorData).map(([key, value]) => {
+          if (key === 'index' || key === 'motionState' || key === 'lift') {
+            return <></>;
+          }
+          let displayValue = value;
+          let displayLabel = key;
+          switch (key) {
+            case 'name':
+              displayLabel = 'Name';
+              break;
+            case 'opMode':
+              displayValue = healthStatusToOpMode(value);
+              displayLabel = 'Op. Mode';
+              break;
+            case 'currentFloor':
+              displayLabel = 'Current Floor';
+              break;
+            case 'destinationFloor':
+              displayLabel = 'Destination Floor';
+              break;
+            case 'doorState':
+              displayValue = doorStateToString(value);
+              displayLabel = 'State';
+              break;
+            default:
+              break;
+          }
+          return (
+            <div key={liftDoorData.name + key}>
+              <TextField
+                label={displayLabel}
+                id="standard-size-small"
+                size="small"
+                variant="filled"
+                InputProps={{ readOnly: true, className: classes.textField }}
+                fullWidth={true}
+                multiline
+                maxRows={4}
+                margin="dense"
+                value={displayValue}
+              />
+            </div>
+          );
+        })}
       </DialogContent>
     </Dialog>
   );
