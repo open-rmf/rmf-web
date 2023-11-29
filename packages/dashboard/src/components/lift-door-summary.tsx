@@ -1,10 +1,22 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogTitle, Divider, Typography } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { Dialog, DialogContent, DialogTitle, Divider, TextField } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 import { RmfAppContext } from './rmf-app';
 import { getApiErrorMessage } from './utils';
-import { doorStateToString, healthStatusToOpMode, LiftTableData } from 'react-components';
+import { doorStateToString, healthStatusToOpMode, LiftTableData, base } from 'react-components';
 import { Lift } from 'api-client';
+import { makeStyles, createStyles } from '@mui/styles';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    textField: {
+      background: theme.palette.background.default,
+      '&:hover': {
+        backgroundColor: theme.palette.background.default,
+      },
+    },
+  }),
+);
 
 interface LiftDoorSummaryProps {
   onClose: () => void;
@@ -12,7 +24,7 @@ interface LiftDoorSummaryProps {
 }
 
 export const LiftDoorSummary = ({ onClose, lift }: LiftDoorSummaryProps): JSX.Element => {
-  const theme = useTheme();
+  const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
   const [liftDoorData, setLiftDoorData] = React.useState<LiftTableData>({
     index: 0,
@@ -61,7 +73,7 @@ export const LiftDoorSummary = ({ onClose, lift }: LiftDoorSummaryProps): JSX.El
       PaperProps={{
         style: {
           boxShadow: 'none',
-          background: theme.palette.background.paper,
+          background: base.palette.info.main,
         },
       }}
       open={isOpen}
@@ -75,13 +87,52 @@ export const LiftDoorSummary = ({ onClose, lift }: LiftDoorSummaryProps): JSX.El
       <DialogTitle align="center">Lift summary</DialogTitle>
       <Divider />
       <DialogContent>
-        <Typography variant="body1">Name: {liftDoorData.name}</Typography>
-        <Typography variant="body1">
-          Op. Mode: {healthStatusToOpMode(liftDoorData.opMode)}
-        </Typography>
-        <Typography variant="body1">Current Floor: {liftDoorData.currentFloor}</Typography>
-        <Typography variant="body1">Destination Floor: {liftDoorData.destinationFloor}</Typography>
-        <Typography variant="body1">State: {doorStateToString(liftDoorData.doorState)}</Typography>
+        <DialogContent>
+          {Object.entries(liftDoorData).map(([key, value]) => {
+            if (key === 'index' || key === 'motionState' || key === 'lift') {
+              return <></>;
+            }
+            let displayValue = value;
+            let displayLabel = key;
+            switch (key) {
+              case 'name':
+                displayLabel = 'Name';
+                break;
+              case 'opMode':
+                displayValue = healthStatusToOpMode(value);
+                displayLabel = 'Op. Mode';
+                break;
+              case 'currentFloor':
+                displayLabel = 'Current Floor';
+                break;
+              case 'destinationFloor':
+                displayLabel = 'Destination Floor';
+                break;
+              case 'doorState':
+                displayValue = doorStateToString(value);
+                displayLabel = 'State';
+                break;
+              default:
+                break;
+            }
+            return (
+              <div key={liftDoorData.name + key}>
+                <TextField
+                  label={displayLabel}
+                  id="standard-size-small"
+                  size="small"
+                  variant="filled"
+                  InputProps={{ readOnly: true, className: classes.textField }}
+                  fullWidth={true}
+                  multiline
+                  maxRows={4}
+                  margin="dense"
+                  value={displayValue}
+                />
+              </div>
+            );
+          })}
+        </DialogContent>
       </DialogContent>
     </Dialog>
   );

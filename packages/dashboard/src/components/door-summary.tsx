@@ -1,6 +1,6 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogTitle, Divider, Typography } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { Dialog, DialogContent, DialogTitle, Divider, TextField } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 import { Door as DoorModel } from 'rmf-models';
 import { RmfAppContext } from './rmf-app';
 import { getApiErrorMessage } from './utils';
@@ -9,8 +9,21 @@ import {
   DoorTableData,
   doorTypeToString,
   healthStatusToOpMode,
+  base,
 } from 'react-components';
 import { Level } from 'api-client';
+import { makeStyles, createStyles } from '@mui/styles';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    textField: {
+      background: theme.palette.background.default,
+      '&:hover': {
+        backgroundColor: theme.palette.background.default,
+      },
+    },
+  }),
+);
 
 interface DoorSummaryProps {
   onClose: () => void;
@@ -19,7 +32,7 @@ interface DoorSummaryProps {
 }
 
 export const DoorSummary = ({ onClose, door, level }: DoorSummaryProps): JSX.Element => {
-  const theme = useTheme();
+  const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
   const [doorData, setDoorData] = React.useState<DoorTableData>({
     index: 0,
@@ -64,7 +77,7 @@ export const DoorSummary = ({ onClose, door, level }: DoorSummaryProps): JSX.Ele
       PaperProps={{
         style: {
           boxShadow: 'none',
-          background: theme.palette.background.paper,
+          background: base.palette.info.main,
         },
       }}
       open={isOpen}
@@ -78,22 +91,51 @@ export const DoorSummary = ({ onClose, door, level }: DoorSummaryProps): JSX.Ele
       <DialogTitle align="center">Door summary</DialogTitle>
       <Divider />
       <DialogContent>
-        <Typography variant="body1">
-          <strong>Name:</strong> {doorData.doorName}
-        </Typography>
-        <Typography variant="body1">
-          <strong>Op. Mode:</strong> {healthStatusToOpMode(doorData.opMode)}
-        </Typography>
-        <Typography variant="body1">
-          <strong>Current Floor:</strong> {doorData.levelName}
-        </Typography>
-        <Typography variant="body1">
-          <strong>Type:</strong> {doorTypeToString(door.door_type)}
-        </Typography>
-        <Typography variant="body1">
-          <strong>State:</strong>{' '}
-          {doorData.doorState ? doorModeToString(doorData.doorState.current_mode.value) : -1}
-        </Typography>
+        {Object.entries(doorData).map(([key, value]) => {
+          if (key === 'index') {
+            return <></>;
+          }
+          let displayValue = value;
+          let displayLabel = key;
+          switch (key) {
+            case 'doorName':
+              displayLabel = 'Name';
+              break;
+            case 'opMode':
+              displayValue = healthStatusToOpMode(value);
+              displayLabel = 'Op. Mode';
+              break;
+            case 'levelName':
+              displayLabel = 'Current Floor';
+              break;
+            case 'doorType':
+              displayValue = doorTypeToString(value);
+              displayLabel = 'Type';
+              break;
+            case 'doorState':
+              displayValue = value ? doorModeToString(value.current_mode.value) : -1;
+              displayLabel = 'State';
+              break;
+            default:
+              break;
+          }
+          return (
+            <div key={doorData.doorName + key}>
+              <TextField
+                label={displayLabel}
+                id="standard-size-small"
+                size="small"
+                variant="filled"
+                InputProps={{ readOnly: true, className: classes.textField }}
+                fullWidth={true}
+                multiline
+                maxRows={4}
+                margin="dense"
+                value={displayValue}
+              />
+            </div>
+          );
+        })}
       </DialogContent>
     </Dialog>
   );
