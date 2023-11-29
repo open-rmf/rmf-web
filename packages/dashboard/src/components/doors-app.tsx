@@ -75,6 +75,7 @@ export const DoorsApp = createMicroApp('Doors', () => {
           for (const door of level.doors) {
             if (door.name === doorData.doorName) {
               AppEvents.doorSelect.next([level.name, door]);
+              return;
             }
           }
         }

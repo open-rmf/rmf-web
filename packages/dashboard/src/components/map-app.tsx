@@ -438,6 +438,18 @@ export const MapApp = styled(
       );
 
       // Centering on lift
+      subs.push(
+        AppEvents.liftSelect.subscribe((lift) => {
+          if (!lift || !sceneBoundingBox) {
+            return;
+          }
+
+          const size = sceneBoundingBox.getSize(new Vector3());
+          const distance = Math.max(size.x, size.y, size.z) * 0.7;
+          const newZoom = resourceManager?.defaultRobotZoom ?? DEFAULT_ROBOT_ZOOM_LEVEL;
+          AppEvents.resetCamera.next([lift.ref_x, lift.ref_y, distance, newZoom]);
+        }),
+      );
 
       return () => {
         for (const sub of subs) {
