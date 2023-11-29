@@ -9,6 +9,7 @@ from api_server.dependencies import (
     between_query,
     finish_time_between_query,
     pagination_query,
+    request_time_between_query,
     sio_user,
     start_time_between_query,
 )
@@ -66,6 +67,18 @@ async def query_task_states(
     category: Optional[str] = Query(
         None, description="comma separated list of task categories"
     ),
+    request_time_between: Optional[Tuple[datetime, datetime]] = Depends(
+        request_time_between_query
+    ),
+    requester: Optional[str] = Query(
+        None, description="comma separated list of requester names"
+    ),
+    pickup: Optional[str] = Query(
+        None, description="comma separated list of pickup names"
+    ),
+    destination: Optional[str] = Query(
+        None, description="comma separated list of destination names"
+    ),
     assigned_to: Optional[str] = Query(
         None, description="comma separated list of assigned robot names"
     ),
@@ -83,6 +96,15 @@ async def query_task_states(
         filters["id___in"] = task_id.split(",")
     if category is not None:
         filters["category__in"] = category.split(",")
+    if request_time_between is not None:
+        filters["unix_millis_request_time__gte"] = request_time_between[0]
+        filters["unix_millis_request_time__lte"] = request_time_between[1]
+    if requester is not None:
+        filters["requester__in"] = requester.split(",")
+    if pickup is not None:
+        filters["pickup__in"] = pickup.split(",")
+    if destination is not None:
+        filters["destination__in"] = destination.split(",")
     if assigned_to is not None:
         filters["assigned_to__in"] = assigned_to.split(",")
     if start_time_between is not None:
@@ -185,7 +207,7 @@ async def post_dispatch_task(
     if task_warn_time is not None:
         new_state.unix_millis_warn_time = task_warn_time
     await task_repo.save_task_state(new_state)
-    await task_repo.save_task_request(new_state.booking.id, request.request)
+    await task_repo.save_task_request(new_state, request.request)
     return resp.__root__
 
 

@@ -28,14 +28,125 @@ from api_server.query import add_pagination
 from api_server.rmf_io import task_events
 
 
+def parse_pickup(task_request: TaskRequest) -> Optional[str]:
+    # patrol
+    if task_request.category.lower() == "patrol":
+        return None
+
+    # custom deliveries
+    supportedDeliveries = [
+        "delivery_pickup",
+        "delivery_sequential_lot_pickup",
+        "delivery_area_pickup",
+    ]
+    if (
+        "category" not in task_request.description
+        or task_request.description["category"] not in supportedDeliveries
+    ):
+        return None
+
+    category = task_request.description["category"]
+    try:
+        perform_action_description = task_request.description["phases"][0]["activity"][
+            "description"
+        ]["activities"][1]["description"]["description"]
+        if category == "delivery_pickup":
+            return perform_action_description["pickup_lot"]
+        return perform_action_description["pickup_zone"]
+    except Exception as e:  # pylint: disable=W0703
+        logger.error(format_exception(e))
+        logger.error(f"Failed to parse pickup for task of category {category}")
+    return None
+
+
+def parse_destination(
+    task_state: TaskState, task_request: TaskRequest
+) -> Optional[str]:
+    # patrol
+    try:
+        if (
+            task_request.category.lower() == "patrol"
+            and task_request.description["places"] is not None
+            and len(task_request.description["places"]) > 0
+        ):
+            return task_request.description["places"][-1]
+    except Exception as e:  # pylint: disable=W0703
+        logger.error(format_exception(e))
+        logger.error("Failed to parse destination for patrol")
+        return None
+
+    # custom deliveries
+    supportedDeliveries = [
+        "delivery_pickup",
+        "delivery_sequential_lot_pickup",
+        "delivery_area_pickup",
+    ]
+    if (
+        "category" not in task_request.description
+        or task_request.description["category"] not in supportedDeliveries
+    ):
+        return None
+
+    category = task_request.description["category"]
+    try:
+        destination = task_request.description["phases"][0]["activity"]["description"][
+            "activities"
+        ][2]["description"]
+        return destination
+    except Exception as e:  # pylint: disable=W0703
+        logger.error(format_exception(e))
+        logger.error(
+            f"Failed to parse destination from task request of category {category}"
+        )
+
+    # automated tasks that can only be parsed with state
+    if task_state.category is not None and task_state.category == "Charge Battery":
+        try:
+            if (
+                task_state.phases is None
+                or "1" not in task_state.phases
+                or task_state.phases["1"].events is None
+                or "1" not in task_state.phases["1"].events
+                or task_state.phases["1"].events["1"].name is None
+            ):
+                raise ValueError
+
+            charge_event_name = task_state.phases["1"].events["1"].name
+            charge_place_split = charge_event_name.split("[place:")[1]
+            charge_place = charge_place_split.split("]")[0]
+            return charge_place
+        except Exception as e:  # pylint: disable=W0703
+            logger.error(format_exception(e))
+            logger.error(
+                f"Failed to parse charging point from task state of id {task_state.booking.id}"
+            )
+        return None
+    return None
+
+
 class TaskRepository:
     def __init__(self, user: User):
         self.user = user
 
-    async def save_task_request(self, task_id: str, task_request: TaskRequest) -> None:
+    async def save_task_request(
+        self, task_state: TaskState, task_request: TaskRequest
+    ) -> None:
         await DbTaskRequest.update_or_create(
-            {"request": task_request.json()}, id_=task_id
+            {"request": task_request.json()}, id_=task_state.booking.id
         )
+
+        # Add pickup and destination to task state model for filter and sort
+        pickup = parse_pickup(task_request)
+        destination = parse_destination(task_state, task_request)
+        db_task_state = await DbTaskState.get_or_none(id_=task_state.booking.id)
+        if db_task_state is not None:
+            db_task_state.update_from_dict(
+                {
+                    "pickup": pickup,
+                    "destination": destination,
+                }
+            )
+            await db_task_state.save()
 
     async def get_task_request(self, task_id: str) -> Optional[TaskRequest]:
         result = await DbTaskRequest.get_or_none(id_=task_id)

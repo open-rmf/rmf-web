@@ -9131,8 +9131,12 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      * @summary Query Task States
      * @param {string} [taskId] comma separated list of task ids
      * @param {string} [category] comma separated list of task categories
+     * @param {string} [requester] comma separated list of requester names
+     * @param {string} [pickup] comma separated list of pickup names
+     * @param {string} [destination] comma separated list of destination names
      * @param {string} [assignedTo] comma separated list of assigned robot names
      * @param {string} [status] comma separated list of statuses
+     * @param {string} [requestTimeBetween]          The period of request time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
      * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
      * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
      * @param {number} [limit] defaults to 100
@@ -9144,8 +9148,12 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     queryTaskStatesTasksGet: async (
       taskId?: string,
       category?: string,
+      requester?: string,
+      pickup?: string,
+      destination?: string,
       assignedTo?: string,
       status?: string,
+      requestTimeBetween?: string,
       startTimeBetween?: string,
       finishTimeBetween?: string,
       limit?: number,
@@ -9173,12 +9181,28 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
         localVarQueryParameter['category'] = category;
       }
 
+      if (requester !== undefined) {
+        localVarQueryParameter['requester'] = requester;
+      }
+
+      if (pickup !== undefined) {
+        localVarQueryParameter['pickup'] = pickup;
+      }
+
+      if (destination !== undefined) {
+        localVarQueryParameter['destination'] = destination;
+      }
+
       if (assignedTo !== undefined) {
         localVarQueryParameter['assigned_to'] = assignedTo;
       }
 
       if (status !== undefined) {
         localVarQueryParameter['status'] = status;
+      }
+
+      if (requestTimeBetween !== undefined) {
+        localVarQueryParameter['request_time_between'] = requestTimeBetween;
       }
 
       if (startTimeBetween !== undefined) {
@@ -9730,8 +9754,12 @@ export const TasksApiFp = function (configuration?: Configuration) {
      * @summary Query Task States
      * @param {string} [taskId] comma separated list of task ids
      * @param {string} [category] comma separated list of task categories
+     * @param {string} [requester] comma separated list of requester names
+     * @param {string} [pickup] comma separated list of pickup names
+     * @param {string} [destination] comma separated list of destination names
      * @param {string} [assignedTo] comma separated list of assigned robot names
      * @param {string} [status] comma separated list of statuses
+     * @param {string} [requestTimeBetween]          The period of request time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
      * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
      * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
      * @param {number} [limit] defaults to 100
@@ -9743,8 +9771,12 @@ export const TasksApiFp = function (configuration?: Configuration) {
     async queryTaskStatesTasksGet(
       taskId?: string,
       category?: string,
+      requester?: string,
+      pickup?: string,
+      destination?: string,
       assignedTo?: string,
       status?: string,
+      requestTimeBetween?: string,
       startTimeBetween?: string,
       finishTimeBetween?: string,
       limit?: number,
@@ -9755,8 +9787,12 @@ export const TasksApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs = await localVarAxiosParamCreator.queryTaskStatesTasksGet(
         taskId,
         category,
+        requester,
+        pickup,
+        destination,
         assignedTo,
         status,
+        requestTimeBetween,
         startTimeBetween,
         finishTimeBetween,
         limit,
@@ -10165,8 +10201,12 @@ export const TasksApiFactory = function (
      * @summary Query Task States
      * @param {string} [taskId] comma separated list of task ids
      * @param {string} [category] comma separated list of task categories
+     * @param {string} [requester] comma separated list of requester names
+     * @param {string} [pickup] comma separated list of pickup names
+     * @param {string} [destination] comma separated list of destination names
      * @param {string} [assignedTo] comma separated list of assigned robot names
      * @param {string} [status] comma separated list of statuses
+     * @param {string} [requestTimeBetween]          The period of request time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
      * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
      * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
      * @param {number} [limit] defaults to 100
@@ -10178,8 +10218,12 @@ export const TasksApiFactory = function (
     queryTaskStatesTasksGet(
       taskId?: string,
       category?: string,
+      requester?: string,
+      pickup?: string,
+      destination?: string,
       assignedTo?: string,
       status?: string,
+      requestTimeBetween?: string,
       startTimeBetween?: string,
       finishTimeBetween?: string,
       limit?: number,
@@ -10191,8 +10235,12 @@ export const TasksApiFactory = function (
         .queryTaskStatesTasksGet(
           taskId,
           category,
+          requester,
+          pickup,
+          destination,
           assignedTo,
           status,
+          requestTimeBetween,
           startTimeBetween,
           finishTimeBetween,
           limit,
@@ -10625,8 +10673,12 @@ export class TasksApi extends BaseAPI {
    * @summary Query Task States
    * @param {string} [taskId] comma separated list of task ids
    * @param {string} [category] comma separated list of task categories
+   * @param {string} [requester] comma separated list of requester names
+   * @param {string} [pickup] comma separated list of pickup names
+   * @param {string} [destination] comma separated list of destination names
    * @param {string} [assignedTo] comma separated list of assigned robot names
    * @param {string} [status] comma separated list of statuses
+   * @param {string} [requestTimeBetween]          The period of request time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
    * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
    * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
    * @param {number} [limit] defaults to 100
@@ -10639,8 +10691,12 @@ export class TasksApi extends BaseAPI {
   public queryTaskStatesTasksGet(
     taskId?: string,
     category?: string,
+    requester?: string,
+    pickup?: string,
+    destination?: string,
     assignedTo?: string,
     status?: string,
+    requestTimeBetween?: string,
     startTimeBetween?: string,
     finishTimeBetween?: string,
     limit?: number,
@@ -10652,8 +10708,12 @@ export class TasksApi extends BaseAPI {
       .queryTaskStatesTasksGet(
         taskId,
         category,
+        requester,
+        pickup,
+        destination,
         assignedTo,
         status,
+        requestTimeBetween,
         startTimeBetween,
         finishTimeBetween,
         limit,
