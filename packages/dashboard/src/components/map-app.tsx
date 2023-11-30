@@ -109,15 +109,26 @@ export const MapApp = styled(
         const flatConflicts = resp.conflicts.flatMap((c) => c);
 
         debug('set trajectories');
-        setTrajectories(
-          resp.values.map((v) => ({
-            trajectory: v,
-            color: 'green',
-            conflict: flatConflicts.includes(v.id),
-            animationScale: trajectoryAnimScale,
-            loopAnimation: false,
-          })),
-        );
+        const trajectories = resp.values.map((v) => ({
+          trajectory: v,
+          color: 'green',
+          conflict: flatConflicts.includes(v.id),
+          animationScale: trajectoryAnimScale,
+          loopAnimation: false,
+        }));
+
+        // Filter trajectory due to https://github.com/open-rmf/rmf_visualization/issues/65
+        for (const t of trajectories) {
+          if (t.trajectory.segments.length === 0) {
+            continue;
+          }
+
+          const knot = t.trajectory.segments[0];
+          if ((knot.x[0] < 1e-9 && knot.x[0] > -1e-9) || (knot.x[1] < 1e-9 && knot.x[1] > -1e-9)) {
+            t.trajectory.segments.shift();
+          }
+        }
+        setTrajectories(trajectories);
       };
 
       updateTrajectory();
