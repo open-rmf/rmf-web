@@ -257,6 +257,7 @@ function DeliveryTaskForm({
   allowSubmit,
 }: DeliveryTaskFormProps) {
   const theme = useTheme();
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const onInputChange = (desc: DeliveryTaskDescription) => {
     allowSubmit(isDeliveryTaskDescriptionValid(desc, pickupPoints, dropoffPoints));
     onChange(desc);
@@ -288,11 +289,18 @@ function DeliveryTaskForm({
               pickupLot;
             onInputChange(newTaskDesc);
           }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
+              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+            },
+          }}
           renderInput={(params) => (
             <TextField
               {...params}
               label="Pickup Location"
               required
+              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
               error={
                 !Object.keys(pickupPoints).includes(
                   taskDesc.phases[0].activity.description.activities[0].description,
@@ -324,11 +332,18 @@ function DeliveryTaskForm({
               (ev.target as HTMLInputElement).value;
             onInputChange(newTaskDesc);
           }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
+              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+            },
+          }}
           renderInput={(params) => (
             <TextField
               {...params}
               label="Cart ID"
               required
+              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
               error={
                 taskDesc.phases[0].activity.description.activities[1].description.description
                   .cart_id.length === 0
@@ -356,11 +371,18 @@ function DeliveryTaskForm({
             ).value;
             onInputChange(newTaskDesc);
           }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
+              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+            },
+          }}
           renderInput={(params) => (
             <TextField
               {...params}
               label="Dropoff Location"
               required
+              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
               error={
                 !Object.keys(dropoffPoints).includes(
                   taskDesc.phases[0].activity.description.activities[2].description,
@@ -392,6 +414,7 @@ function DeliveryCustomTaskForm({
   allowSubmit,
 }: DeliveryCustomProps) {
   const theme = useTheme();
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const onInputChange = (desc: DeliveryCustomTaskDescription) => {
     allowSubmit(isDeliveryCustomTaskDescriptionValid(desc, pickupZones, dropoffPoints));
     onChange(desc);
@@ -421,11 +444,18 @@ function DeliveryCustomTaskForm({
               zone;
             onInputChange(newTaskDesc);
           }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
+              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+            },
+          }}
           renderInput={(params) => (
             <TextField
               {...params}
               label="Pickup Zone"
               required
+              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
               error={
                 !pickupZones.includes(
                   taskDesc.phases[0].activity.description.activities[0].description,
@@ -457,11 +487,18 @@ function DeliveryCustomTaskForm({
               (ev.target as HTMLInputElement).value;
             onInputChange(newTaskDesc);
           }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
+              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+            },
+          }}
           renderInput={(params) => (
             <TextField
               {...params}
               label="Cart ID"
               required
+              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
               error={
                 taskDesc.phases[0].activity.description.activities[1].description.description
                   .cart_id.length === 0
@@ -489,11 +526,18 @@ function DeliveryCustomTaskForm({
             ).value;
             onInputChange(newTaskDesc);
           }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
+              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+            },
+          }}
           renderInput={(params) => (
             <TextField
               {...params}
               label="Dropoff Location"
               required
+              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
               error={
                 !dropoffPoints.includes(
                   taskDesc.phases[0].activity.description.activities[2].description,
@@ -551,6 +595,7 @@ interface PatrolTaskFormProps {
 
 function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange, allowSubmit }: PatrolTaskFormProps) {
   const theme = useTheme();
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const onInputChange = (desc: PatrolTaskDescription) => {
     allowSubmit(isPatrolTaskDescriptionValid(desc));
     onChange(desc);
@@ -558,7 +603,7 @@ function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange, allowSubmit }: Pa
 
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
-      <Grid item xs={10}>
+      <Grid item xs={isScreenHeightLessThan800 ? 8 : 10}>
         <Autocomplete
           id="place-input"
           freeSolo
@@ -571,13 +616,32 @@ function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange, allowSubmit }: Pa
               places: taskDesc.places.concat(newValue).filter((el: string) => el),
             })
           }
-          renderInput={(params) => <TextField {...params} label="Place Name" required={true} />}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
+              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+            },
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Place Name"
+              required={true}
+              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
+            />
+          )}
         />
       </Grid>
-      <Grid item xs={2}>
+      <Grid item xs={isScreenHeightLessThan800 ? 4 : 2}>
         <PositiveIntField
           id="loops"
           label="Loops"
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
+              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+            },
+          }}
           value={taskDesc.rounds}
           onChange={(_ev, val) => {
             onInputChange({
@@ -622,7 +686,7 @@ function FavoriteTask({
   setCallToUpdate,
 }: FavoriteTaskProps) {
   const theme = useTheme();
-
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   return (
     <>
       <ListItem
@@ -635,7 +699,14 @@ function FavoriteTask({
         button
         divider={true}
       >
-        <ListItemText primary={listItemText} />
+        <ListItemText
+          primary={listItemText}
+          primaryTypographyProps={{
+            style: {
+              fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+            },
+          }}
+        />
         <ListItemSecondaryAction>
           <IconButton
             edge="end"
@@ -645,7 +716,7 @@ function FavoriteTask({
               listItemClick();
             }}
           >
-            <UpdateIcon />
+            <UpdateIcon transform={`scale(${isScreenHeightLessThan800 ? 0.7 : 1})`} />
           </IconButton>
           <IconButton
             edge="end"
@@ -656,7 +727,7 @@ function FavoriteTask({
               setCallToDelete(true);
             }}
           >
-            <DeleteIcon />
+            <DeleteIcon transform={`scale(${isScreenHeightLessThan800 ? 0.7 : 1})`} />
           </IconButton>
         </ListItemSecondaryAction>
       </ListItem>
@@ -1202,7 +1273,7 @@ export function CreateTaskForm({
           >
             <Grid container direction="row" wrap="nowrap">
               <List dense className={classes.taskList} aria-label="Favorites Tasks">
-                <Typography variant="h6" component="div">
+                <Typography fontSize={isScreenHeightLessThan800 ? 18 : 20} component="div">
                   Favorite tasks
                 </Typography>
                 {favoritesTasks.map((favoriteTask, index) => {
@@ -1256,7 +1327,7 @@ export function CreateTaskForm({
                       sx={{
                         '& .MuiInputBase-input': {
                           fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                          height: isScreenHeightLessThan800 ? '1.5rem' : '4rem',
+                          height: isScreenHeightLessThan800 ? '1.5rem' : '3.5rem',
                         },
                       }}
                       InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
