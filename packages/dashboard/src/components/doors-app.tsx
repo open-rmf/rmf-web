@@ -1,6 +1,7 @@
 import { BuildingMap } from 'api-client';
 import React from 'react';
 import { DoorDataGridTable, DoorTableData } from 'react-components';
+import { AppEvents } from './app-events';
 import { DoorMode as RmfDoorMode } from 'rmf-models';
 import { createMicroApp } from './micro-app';
 import { RmfAppContext } from './rmf-app';
@@ -61,5 +62,24 @@ export const DoorsApp = createMicroApp('Doors', () => {
     );
   }, [rmf, buildingMap]);
 
-  return <DoorDataGridTable doors={Object.values(doorTableData)} />;
+  return (
+    <DoorDataGridTable
+      doors={Object.values(doorTableData)}
+      onDoorClick={(_ev, doorData) => {
+        if (!buildingMap) {
+          AppEvents.doorSelect.next(null);
+          return;
+        }
+
+        for (const level of buildingMap.levels) {
+          for (const door of level.doors) {
+            if (door.name === doorData.doorName) {
+              AppEvents.doorSelect.next([level.name, door]);
+              return;
+            }
+          }
+        }
+      }}
+    />
+  );
 });

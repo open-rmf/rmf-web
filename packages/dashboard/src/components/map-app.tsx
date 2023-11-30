@@ -351,48 +351,111 @@ export const MapApp = styled(
 
     // zoom to robot on select
     React.useEffect(() => {
-      const sub = AppEvents.robotSelect.subscribe((data) => {
-        if (!data || !sceneBoundingBox) {
-          return;
-        }
-        const [fleetName, robotName] = data;
-        const robotId = getRobotId(fleetName, robotName);
-        const robotLocation = robotLocations[robotId];
-        if (!robotLocation) {
-          console.warn(`Map: Failed to zoom to robot ${robotId} (robot location was not found)`);
-          return;
-        }
+      const subs: Subscription[] = [];
 
-        const mapName = robotLocation[3];
-        let newSceneBoundingBox = sceneBoundingBox;
-        if (
-          AppEvents.levelSelect.value &&
-          AppEvents.levelSelect.value.name !== mapName &&
-          buildingMap
-        ) {
-          const robotLevel =
-            buildingMap.levels.find((l: Level) => l.name === mapName) || buildingMap.levels[0];
-          AppEvents.levelSelect.next(robotLevel);
-
-          const robotLevelSceneBoundingBox = findSceneBoundingBoxFromThreeFiber(robotLevel);
-          if (!robotLevelSceneBoundingBox) {
+      // Centering on robot
+      subs.push(
+        AppEvents.robotSelect.subscribe((data) => {
+          if (!data || !sceneBoundingBox) {
             return;
           }
-          newSceneBoundingBox = robotLevelSceneBoundingBox;
-          setSceneBoundingBox(newSceneBoundingBox);
-        }
+          const [fleetName, robotName] = data;
+          const robotId = getRobotId(fleetName, robotName);
+          const robotLocation = robotLocations[robotId];
+          if (!robotLocation) {
+            console.warn(`Map: Failed to zoom to robot ${robotId} (robot location was not found)`);
+            return;
+          }
 
-        const size = newSceneBoundingBox.getSize(new Vector3());
-        const distance = Math.max(size.x, size.y, size.z) * 0.7;
-        const newZoom = resourceManager?.defaultRobotZoom ?? DEFAULT_ROBOT_ZOOM_LEVEL;
-        AppEvents.resetCamera.next([
-          robotLocation[0],
-          robotLocation[1],
-          robotLocation[2] + distance,
-          newZoom,
-        ]);
-      });
-      return () => sub.unsubscribe();
+          const mapName = robotLocation[3];
+          let newSceneBoundingBox = sceneBoundingBox;
+          if (
+            AppEvents.levelSelect.value &&
+            AppEvents.levelSelect.value.name !== mapName &&
+            buildingMap
+          ) {
+            const robotLevel =
+              buildingMap.levels.find((l: Level) => l.name === mapName) || buildingMap.levels[0];
+            AppEvents.levelSelect.next(robotLevel);
+
+            const robotLevelSceneBoundingBox = findSceneBoundingBoxFromThreeFiber(robotLevel);
+            if (!robotLevelSceneBoundingBox) {
+              return;
+            }
+            newSceneBoundingBox = robotLevelSceneBoundingBox;
+            setSceneBoundingBox(newSceneBoundingBox);
+          }
+
+          const size = newSceneBoundingBox.getSize(new Vector3());
+          const distance = Math.max(size.x, size.y, size.z) * 0.7;
+          const newZoom = resourceManager?.defaultRobotZoom ?? DEFAULT_ROBOT_ZOOM_LEVEL;
+          AppEvents.resetCamera.next([
+            robotLocation[0],
+            robotLocation[1],
+            robotLocation[2] + distance,
+            newZoom,
+          ]);
+        }),
+      );
+
+      // Centering on door
+      subs.push(
+        AppEvents.doorSelect.subscribe((door) => {
+          if (!door || !sceneBoundingBox) {
+            return;
+          }
+
+          const [mapName, doorInfo] = door;
+
+          let newSceneBoundingBox = sceneBoundingBox;
+          if (
+            AppEvents.levelSelect.value &&
+            AppEvents.levelSelect.value.name !== mapName &&
+            buildingMap
+          ) {
+            const doorLevel =
+              buildingMap.levels.find((l: Level) => l.name === mapName) || buildingMap.levels[0];
+            AppEvents.levelSelect.next(doorLevel);
+
+            const doorLevelSceneBoundingBox = findSceneBoundingBoxFromThreeFiber(doorLevel);
+            if (!doorLevelSceneBoundingBox) {
+              return;
+            }
+            newSceneBoundingBox = doorLevelSceneBoundingBox;
+            setSceneBoundingBox(newSceneBoundingBox);
+          }
+
+          const size = newSceneBoundingBox.getSize(new Vector3());
+          const distance = Math.max(size.x, size.y, size.z) * 0.7;
+          const newZoom = resourceManager?.defaultRobotZoom ?? DEFAULT_ROBOT_ZOOM_LEVEL;
+          AppEvents.resetCamera.next([
+            (doorInfo.v1_x + doorInfo.v2_x) / 2,
+            (doorInfo.v1_y + doorInfo.v2_y) / 2,
+            distance,
+            newZoom,
+          ]);
+        }),
+      );
+
+      // Centering on lift
+      subs.push(
+        AppEvents.liftSelect.subscribe((lift) => {
+          if (!lift || !sceneBoundingBox) {
+            return;
+          }
+
+          const size = sceneBoundingBox.getSize(new Vector3());
+          const distance = Math.max(size.x, size.y, size.z) * 0.7;
+          const newZoom = resourceManager?.defaultRobotZoom ?? DEFAULT_ROBOT_ZOOM_LEVEL;
+          AppEvents.resetCamera.next([lift.ref_x, lift.ref_y, distance, newZoom]);
+        }),
+      );
+
+      return () => {
+        for (const sub of subs) {
+          sub.unsubscribe();
+        }
+      };
     }, [robotLocations, resourceManager?.defaultRobotZoom, sceneBoundingBox, buildingMap]);
 
     React.useEffect(() => {

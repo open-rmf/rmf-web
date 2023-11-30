@@ -2,6 +2,7 @@ import { BuildingMap } from 'api-client';
 import React from 'react';
 import { LiftRequest as RmfLiftRequest } from 'rmf-models';
 import { LiftTableData, LiftDataGridTable } from 'react-components';
+import { AppEvents } from './app-events';
 import { createMicroApp } from './micro-app';
 import { RmfAppContext } from './rmf-app';
 import { getApiErrorMessage } from './utils';
@@ -78,5 +79,22 @@ export const LiftsApp = createMicroApp('Lifts', () => {
     });
   }, [rmf, buildingMap]);
 
-  return <LiftDataGridTable lifts={Object.values(liftTableData).flatMap((l) => l)} />;
+  return (
+    <LiftDataGridTable
+      lifts={Object.values(liftTableData).flatMap((l) => l)}
+      onLiftClick={(_ev, liftData) => {
+        if (!buildingMap) {
+          AppEvents.liftSelect.next(null);
+          return;
+        }
+
+        for (const lift of buildingMap.lifts) {
+          if (lift.name === liftData.name) {
+            AppEvents.liftSelect.next(lift);
+            return;
+          }
+        }
+      }}
+    />
+  );
 });

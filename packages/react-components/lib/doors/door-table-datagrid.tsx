@@ -1,4 +1,12 @@
-import { DataGrid, GridColDef, GridValueGetterParams, GridCellParams } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridColDef,
+  GridEventListener,
+  GridRowParams,
+  GridValueGetterParams,
+  GridCellParams,
+  MuiEvent,
+} from '@mui/x-data-grid';
 import { Box, Button, SxProps, Typography, useTheme, useMediaQuery } from '@mui/material';
 import React from 'react';
 import { DoorState } from 'api-client';
@@ -19,11 +27,21 @@ export interface DoorTableData {
 
 export interface DoorDataGridTableProps {
   doors: DoorTableData[];
+  onDoorClick?(ev: MuiEvent<React.MouseEvent<HTMLElement>>, doorData: DoorTableData): void;
 }
 
-export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Element {
+export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps): JSX.Element {
   const theme = useTheme();
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
+
+  const handleEvent: GridEventListener<'rowClick'> = (
+    params: GridRowParams,
+    event: MuiEvent<React.MouseEvent<HTMLElement>>,
+  ) => {
+    if (onDoorClick) {
+      onDoorClick(event, params.row);
+    }
+  };
 
   const OpModeState = (params: GridCellParams): React.ReactNode => {
     const opModeStateLabelStyle: SxProps = (() => {
@@ -224,6 +242,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
         localeText={{
           noRowsLabel: 'No doors available.',
         }}
+        onRowClick={handleEvent}
         initialState={{
           sorting: {
             sortModel: [{ field: 'doorName', sort: 'asc' }],

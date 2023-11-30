@@ -1,4 +1,12 @@
-import { DataGrid, GridColDef, GridValueGetterParams, GridCellParams } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridColDef,
+  GridEventListener,
+  GridRowParams,
+  GridValueGetterParams,
+  GridCellParams,
+  MuiEvent,
+} from '@mui/x-data-grid';
 import { Box, SxProps, Typography, useTheme, useMediaQuery } from '@mui/material';
 import React from 'react';
 import { Lift } from 'api-client';
@@ -28,11 +36,21 @@ export interface LiftTableData {
 
 export interface LiftDataGridTableProps {
   lifts: LiftTableData[];
+  onLiftClick?(ev: MuiEvent<React.MouseEvent<HTMLElement>>, liftData: LiftTableData): void;
 }
 
-export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Element {
+export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps): JSX.Element {
   const theme = useTheme();
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
+
+  const handleEvent: GridEventListener<'rowClick'> = (
+    params: GridRowParams,
+    event: MuiEvent<React.MouseEvent<HTMLElement>>,
+  ) => {
+    if (onLiftClick) {
+      onLiftClick(event, params.row);
+    }
+  };
 
   const OpModeState = (params: GridCellParams): React.ReactNode => {
     const opModeStateLabelStyle: SxProps = (() => {
@@ -227,6 +245,7 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
         localeText={{
           noRowsLabel: 'No lifts available.',
         }}
+        onRowClick={handleEvent}
         initialState={{
           sorting: {
             sortModel: [{ field: 'name', sort: 'asc' }],
