@@ -397,6 +397,13 @@ const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
             id="standard-size-small"
             size="small"
             variant="filled"
+            sx={{
+              '& .MuiFilledInput-root': {
+                fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                height: isScreenHeightLessThan800 ? '2.2rem' : '3rem',
+              },
+            }}
+            InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
             InputProps={{ readOnly: true, className: classes.textField }}
             fullWidth={true}
             margin="dense"
