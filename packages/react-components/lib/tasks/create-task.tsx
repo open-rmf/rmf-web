@@ -8,6 +8,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import PlaceOutlined from '@mui/icons-material/PlaceOutlined';
 import {
   Autocomplete,
+  Box,
   Button,
   Checkbox,
   Chip,
@@ -877,12 +878,17 @@ interface DaySelectorSwitchProps {
 
 const DaySelectorSwitch: React.VFC<DaySelectorSwitchProps> = ({ disabled, onChange, value }) => {
   const theme = useTheme();
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const renderChip = (idx: number, text: string) => (
     <Chip
       key={idx}
       label={text}
       color="primary"
-      sx={{ '&:hover': {}, margin: theme.spacing(0.25) }}
+      sx={{
+        '&:hover': {},
+        margin: theme.spacing(0.25),
+        fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+      }}
       variant={value[idx] && !disabled ? 'filled' : 'outlined'}
       disabled={disabled}
       onClick={() => {
@@ -1273,7 +1279,7 @@ export function CreateTaskForm({
           >
             <Grid container direction="row" wrap="nowrap">
               <List dense className={classes.taskList} aria-label="Favorites Tasks">
-                <Typography fontSize={isScreenHeightLessThan800 ? 18 : 20} component="div">
+                <Typography fontSize={isScreenHeightLessThan800 ? 16 : 20} component="div">
                   Favorite tasks
                 </Typography>
                 {favoritesTasks.map((favoriteTask, index) => {
@@ -1589,7 +1595,18 @@ export function CreateTaskForm({
                 }
                 label="Start On"
                 disabled={!scheduleEnabled}
-                renderInput={(props) => <TextField {...props} fullWidth />}
+                renderInput={(props) => (
+                  <TextField
+                    {...props}
+                    size="small"
+                    fullWidth
+                    sx={{
+                      '& .MuiInputBase-input': {
+                        fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                      },
+                    }}
+                  />
+                )}
               />
             </Grid>
             <Grid item xs={6}>
@@ -1611,7 +1628,18 @@ export function CreateTaskForm({
                 }}
                 label="At"
                 disabled={!scheduleEnabled}
-                renderInput={(props) => <TextField {...props} fullWidth />}
+                renderInput={(props) => (
+                  <TextField
+                    {...props}
+                    fullWidth
+                    size="small"
+                    sx={{
+                      '& .MuiInputBase-input': {
+                        fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                      },
+                    }}
+                  />
+                )}
               />
             </Grid>
             <Grid item xs={12}>
@@ -1635,12 +1663,25 @@ export function CreateTaskForm({
                 <Grid item xs={6} paddingLeft={theme.spacing(1)}>
                   <FormControlLabel
                     value={ScheduleUntilValue.NEVER}
-                    control={<Radio />}
-                    label="Never"
+                    control={<Radio size={isScreenHeightLessThan800 ? 'small' : 'medium'} />}
+                    label={
+                      <Box component="div" fontSize={isScreenHeightLessThan800 ? '0.8rem' : '1rem'}>
+                        Never
+                      </Box>
+                    }
+                    sx={{ fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem' }}
                   />
                 </Grid>
                 <Grid item xs={2} paddingLeft={theme.spacing(1)}>
-                  <FormControlLabel value={ScheduleUntilValue.ON} control={<Radio />} label="On" />
+                  <FormControlLabel
+                    value={ScheduleUntilValue.ON}
+                    control={<Radio size={isScreenHeightLessThan800 ? 'small' : 'medium'} />}
+                    label={
+                      <Box component="div" fontSize={isScreenHeightLessThan800 ? '0.8rem' : '1rem'}>
+                        On
+                      </Box>
+                    }
+                  />
                 </Grid>
                 <Grid item xs={4}>
                   <DatePicker
@@ -1656,7 +1697,17 @@ export function CreateTaskForm({
                       })
                     }
                     disabled={scheduleUntilValue !== ScheduleUntilValue.ON}
-                    renderInput={(props) => <TextField {...props} fullWidth />}
+                    renderInput={(props) => (
+                      <TextField
+                        {...props}
+                        fullWidth
+                        sx={{
+                          '& .MuiInputBase-input': {
+                            fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                          },
+                        }}
+                      />
+                    )}
                   />
                 </Grid>
               </RadioGroup>
