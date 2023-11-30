@@ -33,6 +33,7 @@ import {
   styled,
   TextField,
   Typography,
+  useMediaQuery,
   useTheme,
 } from '@mui/material';
 import { DatePicker, TimePicker, DateTimePicker } from '@mui/x-date-pickers';
@@ -914,6 +915,8 @@ export function CreateTaskForm({
   const [callToUpdateFavoriteTask, setCallToUpdateFavoriteTask] = React.useState(false);
   const [deletingFavoriteTask, setDeletingFavoriteTask] = React.useState(false);
 
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
+
   const [favoriteTaskBuffer, setFavoriteTaskBuffer] = React.useState<TaskFavorite>(
     defaultFavoriteTask(),
   );
@@ -1074,7 +1077,6 @@ export function CreateTaskForm({
       if (t.category !== 'patrol') {
         t.category = 'compose';
       }
-      console.log(t);
     }
 
     const submittingSchedule = scheduling && scheduleEnabled;
@@ -1182,7 +1184,7 @@ export function CreateTaskForm({
     <>
       <StyledDialog
         title="Create Task"
-        maxWidth="lg"
+        maxWidth={isScreenHeightLessThan800 ? 'sm' : 'lg'}
         fullWidth={taskRequests.length > 1}
         disableEnforceFocus
         {...otherProps}
@@ -1195,7 +1197,9 @@ export function CreateTaskForm({
               </Grid>
             </Grid>
           </DialogTitle>
-          <DialogContent>
+          <DialogContent
+            sx={{ padding: isScreenHeightLessThan800 ? '0px 1.5rem' : '1.25rem 1.5rem' }}
+          >
             <Grid container direction="row" wrap="nowrap">
               <List dense className={classes.taskList} aria-label="Favorites Tasks">
                 <Typography variant="h6" component="div">
@@ -1249,6 +1253,13 @@ export function CreateTaskForm({
                           : taskRequest.description.category
                       }
                       onChange={handleTaskTypeChange}
+                      sx={{
+                        '& .MuiInputBase-input': {
+                          fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                          height: isScreenHeightLessThan800 ? '1.5rem' : '4rem',
+                        },
+                      }}
+                      InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
                     >
                       <MenuItem
                         value="delivery_pickup"
@@ -1256,6 +1267,11 @@ export function CreateTaskForm({
                           Object.keys(pickupPoints).length === 0 ||
                           Object.keys(dropoffPoints).length === 0
                         }
+                        sx={{
+                          '& .MuiMenu-list': {
+                            fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                          },
+                        }}
                       >
                         Delivery - 1:1
                       </MenuItem>
@@ -1279,7 +1295,7 @@ export function CreateTaskForm({
                       </MenuItem>
                     </TextField>
                   </Grid>
-                  <Grid item xs={7}>
+                  <Grid item xs={isScreenHeightLessThan800 ? 6 : 7}>
                     <DateTimePicker
                       inputFormat={'MM/dd/yyyy HH:mm'}
                       value={
@@ -1299,7 +1315,19 @@ export function CreateTaskForm({
                         updateTasks();
                       }}
                       label="Start Time"
-                      renderInput={(props) => <TextField {...props} />}
+                      renderInput={(props) => (
+                        <TextField
+                          {...props}
+                          InputLabelProps={{
+                            style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 },
+                          }}
+                          sx={{
+                            '& .MuiInputBase-input': {
+                              fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                            },
+                          }}
+                        />
+                      )}
                     />
                   </Grid>
                   <Grid item xs={1}>
@@ -1307,10 +1335,12 @@ export function CreateTaskForm({
                       checked={warnTimeChecked}
                       onChange={handleWarnTimeCheckboxChange}
                       inputProps={{ 'aria-label': 'controlled' }}
-                      sx={{ '& .MuiSvgIcon-root': { fontSize: 32 } }}
+                      sx={{
+                        '& .MuiSvgIcon-root': { fontSize: isScreenHeightLessThan800 ? 22 : 32 },
+                      }}
                     />
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid item xs={isScreenHeightLessThan800 ? 5 : 4}>
                     <DateTimePicker
                       disabled={!warnTimeChecked}
                       inputFormat={'MM/dd/yyyy HH:mm'}
@@ -1327,7 +1357,19 @@ export function CreateTaskForm({
                         updateTasks();
                       }}
                       label="Warn Time"
-                      renderInput={(props) => <TextField {...props} />}
+                      renderInput={(props) => (
+                        <TextField
+                          {...props}
+                          InputLabelProps={{
+                            style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 },
+                          }}
+                          sx={{
+                            '& .MuiInputBase-input': {
+                              fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                            },
+                          }}
+                        />
+                      )}
                     />
                   </Grid>
                 </Grid>
@@ -1342,6 +1384,7 @@ export function CreateTaskForm({
                     aria-label="Save as a favorite task"
                     variant="contained"
                     color="primary"
+                    size={isScreenHeightLessThan800 ? 'small' : 'medium'}
                     onClick={() => {
                       !callToUpdateFavoriteTask &&
                         setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
@@ -1383,6 +1426,7 @@ export function CreateTaskForm({
               disabled={submitting}
               className={classes.actionBtn}
               onClick={(ev) => onClose && onClose(ev, 'escapeKeyDown')}
+              size={isScreenHeightLessThan800 ? 'small' : 'medium'}
             >
               Cancel
             </Button>
@@ -1392,6 +1436,7 @@ export function CreateTaskForm({
               disabled={submitting || !formFullyFilled}
               className={classes.actionBtn}
               onClick={() => setOpenSchedulingDialog(true)}
+              size={isScreenHeightLessThan800 ? 'small' : 'medium'}
             >
               {scheduleToEdit ? 'Edit schedule' : 'Add to Schedule'}
             </Button>
@@ -1403,8 +1448,14 @@ export function CreateTaskForm({
               className={classes.actionBtn}
               aria-label={submitText}
               onClick={handleSubmitNow}
+              size={isScreenHeightLessThan800 ? 'small' : 'medium'}
             >
-              <Loading hideChildren loading={submitting} size="1.5em" color="inherit">
+              <Loading
+                hideChildren
+                loading={submitting}
+                size={isScreenHeightLessThan800 ? '0.8em' : '1.5em'}
+                color="inherit"
+              >
                 {submitText}
               </Loading>
             </Button>
