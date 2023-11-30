@@ -116,7 +116,7 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
       headerName: 'Battery',
       width: 150,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) => `${params.row.battery * 100}%`,
+      valueGetter: (params: GridValueGetterParams) => `${(params.row.battery * 100).toFixed(2)}%`,
       flex: 1,
       filterable: true,
     },
