@@ -83,7 +83,6 @@ export interface TableDataGridState {
 }
 
 const TaskRequester = (requester: string | null, sx: SxProps<Theme>): JSX.Element => {
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   if (!requester) {
     return (
       <Typography variant="body1" sx={sx}>

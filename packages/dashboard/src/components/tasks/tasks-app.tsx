@@ -375,11 +375,17 @@ export const TasksApp = React.memo(
               label="Queue"
               id={tabId(TaskTablePanel.QueueTable)}
               aria-controls={tabPanelId(TaskTablePanel.QueueTable)}
+              sx={{
+                fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
+              }}
             />
             <Tab
               label="Schedule"
               id={tabId(TaskTablePanel.Schedule)}
               aria-controls={tabPanelId(TaskTablePanel.Schedule)}
+              sx={{
+                fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
+              }}
             />
           </Tabs>
           <TabPanel selectedTabIndex={selectedPanelIndex} index={TaskTablePanel.QueueTable}>
