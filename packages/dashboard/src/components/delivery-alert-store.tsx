@@ -3,7 +3,7 @@ import {
   TaskState,
 } from 'api-client';
 import React from 'react';
-import { Button, TextField, Tooltip, Theme, Divider } from '@mui/material';
+import { Button, TextField, Tooltip, Theme, Divider, useMediaQuery } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -61,6 +61,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
   const [cancelling, setCancelling] = React.useState(false);
   const appController = React.useContext(AppControllerContext);
   const rmf = React.useContext(RmfAppContext);
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
 
   React.useEffect(() => {
     if (deliveryAlert.action !== 'waiting') {
@@ -172,7 +173,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
             boxShadow: 'none',
           },
         }}
-        maxWidth="sm"
+        maxWidth={isScreenHeightLessThan800 ? 'xs' : 'sm'}
         fullWidth={true}
         open={isOpen}
         key={deliveryAlert.id}
@@ -187,6 +188,13 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
             id="standard-size-small"
             size="small"
             variant="filled"
+            sx={{
+              '& .MuiFilledInput-root': {
+                fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                height: isScreenHeightLessThan800 ? '2.2rem' : '3rem',
+              },
+            }}
+            InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
             InputProps={{ readOnly: true, className: classes.textField }}
             fullWidth={true}
             margin="dense"
@@ -201,6 +209,13 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
             id="standard-size-small"
             size="small"
             variant="filled"
+            sx={{
+              '& .MuiFilledInput-root': {
+                fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                height: isScreenHeightLessThan800 ? '2.2rem' : '3rem',
+              },
+            }}
+            InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
             InputProps={{ readOnly: true, className: classes.textField }}
             fullWidth={true}
             margin="dense"
@@ -211,6 +226,13 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
             id="standard-size-small"
             size="small"
             variant="filled"
+            sx={{
+              '& .MuiFilledInput-root': {
+                fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                height: isScreenHeightLessThan800 ? '2.2rem' : '3rem',
+              },
+            }}
+            InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
             InputProps={{ readOnly: true, className: classes.textField }}
             fullWidth={true}
             multiline
@@ -222,7 +244,16 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
         <DialogActions>
           {(newTaskState && newTaskState.status && newTaskState.status === 'canceled') ||
           deliveryAlert.category === 'cancelled' ? (
-            <Button size="small" variant="contained" disabled autoFocus>
+            <Button
+              size="small"
+              variant="contained"
+              disabled
+              autoFocus
+              sx={{
+                fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+                padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+              }}
+            >
               Cancelled
             </Button>
           ) : newTaskState ? (
@@ -231,6 +262,10 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
                 size="small"
                 variant="contained"
                 disabled={actionTaken || cancelling}
+                sx={{
+                  fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+                  padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+                }}
                 onClick={() => {
                   setCancelling(true);
                   if (newTaskState) {
@@ -253,7 +288,16 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
               </Button>
             </Tooltip>
           ) : (
-            <Button size="small" variant="contained" disabled autoFocus>
+            <Button
+              size="small"
+              variant="contained"
+              disabled
+              autoFocus
+              sx={{
+                fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+                padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+              }}
+            >
               Cancel Delivery
             </Button>
           )}
@@ -267,6 +311,10 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
                 onOverride && onOverride(deliveryAlert.id, newTaskState?.booking.id);
               }}
               autoFocus
+              sx={{
+                fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+                padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+              }}
             >
               Override!
             </Button>
@@ -281,6 +329,10 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
                 onResume && onResume(deliveryAlert.id, newTaskState?.booking.id);
               }}
               autoFocus
+              sx={{
+                fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+                padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+              }}
             >
               Resume {'>>'}
             </Button>
@@ -294,6 +346,10 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
               setIsOpen(false);
             }}
             autoFocus
+            sx={{
+              fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+              padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+            }}
           >
             Close
           </Button>
@@ -317,6 +373,7 @@ const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
   const classes = useStyles();
   const [isOpen, setIsOpen] = React.useState(true);
   const [openTaskInspector, setOpenTaskInspector] = React.useState(false);
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
 
   return (
     <>
@@ -327,7 +384,7 @@ const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
             boxShadow: 'none',
           },
         }}
-        maxWidth="sm"
+        maxWidth={isScreenHeightLessThan800 ? 'xs' : 'sm'}
         fullWidth={true}
         open={isOpen}
         key={deliveryAlert.id}
@@ -340,6 +397,13 @@ const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
             id="standard-size-small"
             size="small"
             variant="filled"
+            sx={{
+              '& .MuiFilledInput-root': {
+                fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                height: isScreenHeightLessThan800 ? '2.2rem' : '3rem',
+              },
+            }}
+            InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
             InputProps={{ readOnly: true, className: classes.textField }}
             fullWidth={true}
             margin="dense"
@@ -350,6 +414,13 @@ const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
             id="standard-size-small"
             size="small"
             variant="filled"
+            sx={{
+              '& .MuiFilledInput-root': {
+                fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                height: isScreenHeightLessThan800 ? '2.2rem' : '3rem',
+              },
+            }}
+            InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
             InputProps={{ readOnly: true, className: classes.textField }}
             fullWidth={true}
             margin="dense"
@@ -360,6 +431,13 @@ const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
             id="standard-size-small"
             size="small"
             variant="filled"
+            sx={{
+              '& .MuiFilledInput-root': {
+                fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                height: isScreenHeightLessThan800 ? '2.2rem' : '3rem',
+              },
+            }}
+            InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
             InputProps={{ readOnly: true, className: classes.textField }}
             fullWidth={true}
             multiline
@@ -377,6 +455,10 @@ const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
                 onClick={() => setOpenTaskInspector(true)}
                 disabled={false}
                 autoFocus
+                sx={{
+                  fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+                  padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+                }}
               >
                 Inspect
               </Button>
@@ -391,6 +473,10 @@ const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
             }}
             disabled={false}
             autoFocus
+            sx={{
+              fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+              padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+            }}
           >
             Close
           </Button>
