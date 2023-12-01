@@ -8,6 +8,7 @@ import {
   DialogTitle,
   Grid,
   styled,
+  useMediaQuery,
 } from '@mui/material';
 import clsx from 'clsx';
 import React from 'react';
@@ -49,8 +50,20 @@ export function ConfirmationDialog({
   children,
   ...otherProps
 }: ConfirmationDialogProps): JSX.Element {
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   return (
-    <StyledDialog onClose={onClose} {...otherProps}>
+    <StyledDialog
+      onClose={onClose}
+      {...otherProps}
+      PaperProps={{
+        sx: {
+          maxWidth: isScreenHeightLessThan800 ? '31.25rem' : '37.5rem',
+          width: '100%',
+          // Automatic width on smaller screens
+          ...(isScreenHeightLessThan800 ? { width: 'auto' } : {}),
+        },
+      }}
+    >
       <form
         onSubmit={(ev) => {
           ev.preventDefault();
@@ -73,6 +86,7 @@ export function ConfirmationDialog({
             onClick={(ev) => onClose && onClose(ev, 'escapeKeyDown')}
             disabled={submitting}
             className={clsx(dialogClasses.actionBtn, classes?.button)}
+            size={isScreenHeightLessThan800 ? 'small' : 'medium'}
           >
             {cancelText}
           </Button>
@@ -82,6 +96,7 @@ export function ConfirmationDialog({
             color="primary"
             disabled={submitting}
             className={clsx(dialogClasses.actionBtn, classes?.button)}
+            size={isScreenHeightLessThan800 ? 'small' : 'medium'}
           >
             <Loading hideChildren loading={submitting} size="1.5em" color="inherit">
               {confirmText}
