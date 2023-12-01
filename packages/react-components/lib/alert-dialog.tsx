@@ -145,12 +145,31 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
 
       <DialogActions>
         {onInspect ? (
-          <Button size="small" variant="contained" onClick={onInspect} disabled={false} autoFocus>
+          <Button
+            size="small"
+            variant="contained"
+            onClick={onInspect}
+            disabled={false}
+            autoFocus
+            sx={{
+              fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+              padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+            }}
+          >
             Inspect
           </Button>
         ) : null}
         {acknowledged ? (
-          <Button size="small" variant="contained" disabled={true} autoFocus>
+          <Button
+            size="small"
+            variant="contained"
+            disabled={true}
+            autoFocus
+            sx={{
+              fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+              padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+            }}
+          >
             {acknowledgedBy ? `Acknowledged by ${acknowledgedBy}` : 'Acknowledged'}
           </Button>
         ) : onAcknowledge === undefined ? null : (
