@@ -7,6 +7,7 @@ import { RmfAppContext } from '../rmf-app';
 import { UserProfileContext } from 'rmf-auth';
 import { Enforcer } from '../permissions';
 import { makeStyles, createStyles } from '@mui/styles';
+import { ConfirmationDialog } from 'react-components';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,6 +30,7 @@ export function TaskCancelButton({ taskId, ...otherProps }: TaskCancelButtonProp
   const profile = React.useContext(UserProfileContext);
 
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
+  const [openConfirmDialog, setOpenConfirmDialog] = React.useState(false);
 
   React.useEffect(() => {
     if (!rmf || !taskId) {
@@ -65,29 +67,47 @@ export function TaskCancelButton({ taskId, ...otherProps }: TaskCancelButtonProp
     } catch (e) {
       appController.showAlert('error', `Failed to cancel task: ${(e as Error).message}`);
     }
+    setOpenConfirmDialog(false);
   }, [appController, taskState, rmf]);
 
-  return taskCancellable && userCanCancelTask ? (
-    <Button onClick={handleCancelTaskClick} autoFocus {...otherProps}>
-      Cancel Task
-    </Button>
-  ) : taskCancellable && !userCanCancelTask ? (
-    <Tooltip title="You don't have permission to cancel tasks.">
-      <Button disabled className={classes['enableHover']} {...otherProps}>
-        Cancel Task
-      </Button>
-    </Tooltip>
-  ) : (
-    <Tooltip
-      title={
-        taskState && taskState.status
-          ? `${capitalizeFirstLetter(taskState.status)} task cannot be cancelled.`
-          : `Task cannot be cancelled.`
-      }
-    >
-      <Button disabled className={classes['enableHover']} {...otherProps}>
-        Cancel Task
-      </Button>
-    </Tooltip>
+  return (
+    <>
+      {taskCancellable && userCanCancelTask ? (
+        <Button onClick={() => setOpenConfirmDialog(true)} autoFocus {...otherProps}>
+          Cancel Task
+        </Button>
+      ) : taskCancellable && !userCanCancelTask ? (
+        <Tooltip title="You don't have permission to cancel tasks.">
+          <Button disabled className={classes['enableHover']} {...otherProps}>
+            Cancel Task
+          </Button>
+        </Tooltip>
+      ) : (
+        <Tooltip
+          title={
+            taskState && taskState.status
+              ? `${capitalizeFirstLetter(taskState.status)} task cannot be cancelled.`
+              : `Task cannot be cancelled.`
+          }
+        >
+          <Button disabled className={classes['enableHover']} {...otherProps}>
+            Cancel Task
+          </Button>
+        </Tooltip>
+      )}
+      {openConfirmDialog && (
+        <ConfirmationDialog
+          confirmText={'Ok'}
+          cancelText="Cancel"
+          open={openConfirmDialog}
+          title={'Delete task'}
+          submitting={undefined}
+          onClose={() => {
+            setOpenConfirmDialog(false);
+          }}
+          onSubmit={handleCancelTaskClick}
+        />
+      )}
+    </>
   );
 }
