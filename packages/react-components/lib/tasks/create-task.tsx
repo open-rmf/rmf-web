@@ -1261,7 +1261,7 @@ export function CreateTaskForm({
     <>
       <StyledDialog
         title="Create Task"
-        maxWidth={isScreenHeightLessThan800 ? 'sm' : 'lg'}
+        maxWidth={isScreenHeightLessThan800 ? 'md' : 'lg'}
         fullWidth={taskRequests.length > 1}
         disableEnforceFocus
         {...otherProps}
