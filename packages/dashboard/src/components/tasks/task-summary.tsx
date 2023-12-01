@@ -193,6 +193,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
           taskId={taskState ? taskState.booking.id : null}
           size="small"
           variant="contained"
+          color="secondary"
         />
       </DialogActions>
       {openTaskDetailsLogs && (

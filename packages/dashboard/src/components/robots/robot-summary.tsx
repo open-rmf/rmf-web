@@ -284,6 +284,7 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
           taskId={taskState ? taskState.booking.id : null}
           size="small"
           variant="contained"
+          color="secondary"
         />
       </DialogActions>
       {openTaskDetailsLogs && taskState && (
