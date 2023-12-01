@@ -515,6 +515,11 @@ export const DeliveryAlertStore = React.memo(() => {
       return;
     }
     const sub = rmf.deliveryAlertObsStore.subscribe(async (deliveryAlert) => {
+      // DEBUG
+      console.log(
+        `Got a delivery alert [${deliveryAlert.id}] with action [${deliveryAlert.action}]`,
+      );
+
       let state: TaskState | undefined = undefined;
       if (deliveryAlert.task_id) {
         try {
