@@ -124,7 +124,7 @@ export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.
       columns={columns}
       rowsPerPageOptions={[5]}
       sx={{
-        fontSize: isScreenHeightLessThan800 ? '0.8rem' : 'inherit',
+        fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
       }}
       autoPageSize={isScreenHeightLessThan800}
       density={isScreenHeightLessThan800 ? 'compact' : 'standard'}

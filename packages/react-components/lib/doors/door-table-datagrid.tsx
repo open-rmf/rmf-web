@@ -77,7 +77,7 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: isScreenHeightLessThan800 ? 12 : 16,
+            fontSize: isScreenHeightLessThan800 ? 10 : 16,
           }}
         >
           {healthStatusToOpMode(params.row.opMode)}
@@ -120,7 +120,7 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: isScreenHeightLessThan800 ? 12 : 16,
+            fontSize: isScreenHeightLessThan800 ? 10 : 16,
           }}
         >
           {params.row.doorState ? doorModeToString(params.row.doorState.current_mode.value) : -1}
@@ -234,7 +234,7 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
         columns={columns}
         rowsPerPageOptions={[5]}
         sx={{
-          fontSize: isScreenHeightLessThan800 ? '0.8rem' : 'inherit',
+          fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
           overflowX: 'scroll',
         }}
         autoPageSize={isScreenHeightLessThan800}
