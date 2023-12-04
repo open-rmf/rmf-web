@@ -97,7 +97,7 @@ export function TaskCancelButton({ taskId, ...otherProps }: TaskCancelButtonProp
       )}
       {openConfirmDialog && (
         <ConfirmationDialog
-          confirmText={'Ok'}
+          confirmText="Confirm"
           cancelText="Cancel"
           open={openConfirmDialog}
           title={`Cancel task [${taskState?.booking.id || 'n/a'}]`}
