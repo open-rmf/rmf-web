@@ -32,7 +32,9 @@ import {
   Radio,
   RadioGroup,
   styled,
+  SxProps,
   TextField,
+  Theme,
   Typography,
   useMediaQuery,
   useTheme,
@@ -43,6 +45,13 @@ import React from 'react';
 import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
+
+const lowResolutionSxProps: SxProps<Theme> = {
+  fontSize: { xs: '0.7rem', sm: '1rem' },
+  '& .MuiOutlinedInput-root': {
+    fontSize: { xs: '0.7rem', sm: '1rem' },
+  },
+};
 
 // A bunch of manually defined descriptions to avoid using `any`.
 interface PatrolTaskDescription {
@@ -596,7 +605,6 @@ interface PatrolTaskFormProps {
 
 function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange, allowSubmit }: PatrolTaskFormProps) {
   const theme = useTheme();
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const onInputChange = (desc: PatrolTaskDescription) => {
     allowSubmit(isPatrolTaskDescriptionValid(desc));
     onChange(desc);
@@ -604,7 +612,7 @@ function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange, allowSubmit }: Pa
 
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
-      <Grid item xs={isScreenHeightLessThan800 ? 8 : 10}>
+      <Grid item xs={10}>
         <Autocomplete
           id="place-input"
           freeSolo
@@ -617,32 +625,25 @@ function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange, allowSubmit }: Pa
               places: taskDesc.places.concat(newValue).filter((el: string) => el),
             })
           }
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
-              fontSize: isScreenHeightLessThan800 ? 14 : 20,
-            },
-          }}
+          sx={lowResolutionSxProps}
           renderInput={(params) => (
             <TextField
               {...params}
               label="Place Name"
               required={true}
-              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
+              InputLabelProps={{
+                sx: lowResolutionSxProps,
+              }}
+              sx={lowResolutionSxProps}
             />
           )}
         />
       </Grid>
-      <Grid item xs={isScreenHeightLessThan800 ? 4 : 2}>
+      <Grid item xs={2}>
         <PositiveIntField
           id="loops"
           label="Loops"
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
-              fontSize: isScreenHeightLessThan800 ? 14 : 20,
-            },
-          }}
+          sx={lowResolutionSxProps}
           value={taskDesc.rounds}
           onChange={(_ev, val) => {
             onInputChange({
@@ -1261,7 +1262,6 @@ export function CreateTaskForm({
     <>
       <StyledDialog
         title="Create Task"
-        maxWidth={isScreenHeightLessThan800 ? 'md' : 'lg'}
         fullWidth={taskRequests.length > 1}
         disableEnforceFocus
         {...otherProps}

@@ -11,7 +11,7 @@ import {
   GridFilterModel,
   GridSortModel,
 } from '@mui/x-data-grid';
-import { styled, Stack, Typography, Tooltip, useMediaQuery, SxProps, Theme } from '@mui/material';
+import { Box, styled, Stack, Typography, Tooltip, useMediaQuery } from '@mui/material';
 import * as React from 'react';
 import { TaskState, TaskRequest, Status } from 'api-client';
 import { InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
@@ -82,13 +82,9 @@ export interface TableDataGridState {
   setSortFields: React.Dispatch<React.SetStateAction<SortFields>>;
 }
 
-const TaskRequester = (requester: string | null, sx: SxProps<Theme>): JSX.Element => {
+const TaskRequester = (requester: string | null): JSX.Element => {
   if (!requester) {
-    return (
-      <Typography variant="body1" sx={sx}>
-        n/a
-      </Typography>
-    );
+    return <Typography variant="body1">n/a</Typography>;
   }
 
   /** When a task is created as scheduled,
@@ -100,21 +96,17 @@ const TaskRequester = (requester: string | null, sx: SxProps<Theme>): JSX.Elemen
     <Stack direction="row" alignItems="center" gap={1}>
       {requester.includes('scheduled') ? (
         <>
-          <Tooltip title="User scheduled" sx={sx}>
+          <Tooltip title="User scheduled">
             <ScheduleIcon />
           </Tooltip>
-          <Typography variant="body1" sx={sx}>
-            {requester.split('__')[0]}
-          </Typography>
+          <Typography variant="body1">{requester.split('__')[0]}</Typography>
         </>
       ) : (
         <>
-          <Tooltip title="User submitted" sx={sx}>
+          <Tooltip title="User submitted">
             <UserIcon />
           </Tooltip>
-          <Typography variant="body1" sx={sx}>
-            {requester}
-          </Typography>
+          <Typography variant="body1">{requester}</Typography>
         </>
       )}
     </Stack>
@@ -129,10 +121,7 @@ export function TaskDataGridTable({
   setFilterFields,
   setSortFields,
 }: TableDataGridState): JSX.Element {
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
-  const sxProp: SxProps<Theme> = {
-    fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-  };
+  const isScreenWidthLessThan1600 = useMediaQuery('(max-width:1600px)');
 
   const handleEvent: GridEventListener<'rowClick'> = (
     params: GridRowParams,
@@ -158,99 +147,137 @@ export function TaskDataGridTable({
       headerName: 'Date',
       width: 150,
       editable: false,
-      renderCell: (cellValues) => {
+      renderCell: (cellValues: GridCellParams): React.ReactNode => {
         const date = new Date(cellValues.row.booking.unix_millis_request_time);
         const day = date.toLocaleDateString(undefined, { day: 'numeric' });
         const month = date.toLocaleDateString(undefined, { month: 'short' });
         const year = date.toLocaleDateString(undefined, { year: 'numeric' });
-        return cellValues.row.booking.unix_millis_request_time ? `${day} ${month} ${year}` : 'n/a';
+        return (
+          <Box component="div">
+            <Typography>
+              {cellValues.row.booking.unix_millis_request_time ? `${day} ${month} ${year}` : 'n/a'}
+            </Typography>
+          </Box>
+        );
       },
       flex: 1,
       filterOperators: getMinimalDateOperators,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'requester',
       headerName: 'Requester',
       width: 150,
       editable: false,
-      renderCell: (cellValues) => TaskRequester(cellValues.row.booking.requester, sxProp),
+      renderCell: (cellValues) => TaskRequester(cellValues.row.booking.requester),
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'pickup',
       headerName: 'Pickup',
       width: 150,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) => {
+      renderCell: (params: GridCellParams): React.ReactNode => {
         const request: TaskRequest | undefined = tasks.requests[params.row.booking.id];
-        return parsePickup(request);
+        return (
+          <Box component="div">
+            <Typography>{parsePickup(request)}</Typography>
+          </Box>
+        );
       },
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'destination',
       headerName: 'Destination',
       width: 150,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) => {
+      renderCell: (params: GridCellParams): React.ReactNode => {
         const request: TaskRequest | undefined = tasks.requests[params.row.booking.id];
-        return parseDestination(params.row, request);
+        return (
+          <Box component="div">
+            <Typography>{parseDestination(params.row, request)}</Typography>
+          </Box>
+        );
       },
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'assigned_to',
       headerName: 'Robot',
       width: 100,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.assigned_to ? params.row.assigned_to.name : 'n/a',
+      renderCell: (params: GridCellParams): React.ReactNode => (
+        <Box component="div">
+          <Typography>{params.row.assigned_to ? params.row.assigned_to.name : 'n/a'}</Typography>
+        </Box>
+      ),
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'unix_millis_start_time',
       headerName: 'Start Time',
       width: 150,
       editable: false,
-      renderCell: (cellValues) =>
-        cellValues.row.unix_millis_start_time
-          ? `${new Date(cellValues.row.unix_millis_start_time).toLocaleTimeString()}`
-          : 'n/a',
+      renderCell: (cellValues: GridCellParams): React.ReactNode => (
+        <Box component="div">
+          <Typography>
+            {cellValues.row.unix_millis_start_time
+              ? `${new Date(cellValues.row.unix_millis_start_time).toLocaleTimeString()}`
+              : 'n/a'}
+          </Typography>
+        </Box>
+      ),
       flex: 1,
       filterOperators: getMinimalDateOperators,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'unix_millis_finish_time',
       headerName: 'End Time',
       width: 150,
       editable: false,
-      renderCell: (cellValues) =>
-        cellValues.row.unix_millis_finish_time
-          ? `${new Date(cellValues.row.unix_millis_finish_time).toLocaleTimeString()}`
-          : 'n/a',
+      renderCell: (cellValues: GridCellParams): React.ReactNode => (
+        <Box component="div">
+          <Typography>
+            {cellValues.row.unix_millis_finish_time
+              ? `${new Date(cellValues.row.unix_millis_finish_time).toLocaleTimeString()}`
+              : 'n/a'}
+          </Typography>
+        </Box>
+      ),
       flex: 1,
       filterOperators: getMinimalDateOperators,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'status',
       headerName: 'State',
       editable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.status ? params.row.status : 'unknown',
+      renderCell: (params: GridCellParams): React.ReactNode => (
+        <Box component="div">
+          <Typography>{params.row.status ? params.row.status : 'unknown'}</Typography>
+        </Box>
+      ),
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
   ];
 
@@ -269,7 +296,14 @@ export function TaskDataGridTable({
   );
 
   return (
-    <div style={{ height: '100%', width: '100%' }}>
+    <Box
+      component="div"
+      sx={{
+        '& .datagrid-header': {
+          fontSize: isScreenWidthLessThan1600 ? '0.7rem' : 'inherit',
+        },
+      }}
+    >
       <StyledDataGrid
         autoHeight
         getRowId={(r) => r.booking.id}
@@ -278,9 +312,8 @@ export function TaskDataGridTable({
         loading={tasks.isLoading}
         pageSize={tasks.pageSize}
         rowsPerPageOptions={[10]}
-        sx={sxProp}
-        autoPageSize={isScreenHeightLessThan800}
-        density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
+        autoPageSize={isScreenWidthLessThan1600}
+        density={isScreenWidthLessThan1600 ? 'compact' : 'standard'}
         pagination
         paginationMode="server"
         filterMode="server"
@@ -311,7 +344,13 @@ export function TaskDataGridTable({
           }
           return '';
         }}
+        sx={{
+          '& .MuiDataGrid-menuIcon': {
+            visibility: 'visible',
+            width: 'auto',
+          },
+        }}
       />
-    </div>
+    </Box>
   );
 }
