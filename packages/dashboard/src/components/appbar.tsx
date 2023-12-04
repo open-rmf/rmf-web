@@ -27,7 +27,6 @@ import {
   Toolbar,
   Tooltip,
   Typography,
-  useMediaQuery,
 } from '@mui/material';
 import {
   ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
@@ -131,24 +130,6 @@ export interface AppBarProps {
 }
 
 export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.ReactElement => {
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
-
-  const [largerResolution, setLargerResolution] = React.useState(false);
-
-  const StyledAppBarTab = styled(AppBarTab)(({ theme }) => ({
-    fontSize: theme.spacing(largerResolution ? 2 : 4),
-  }));
-
-  const StyledAppBarButton = styled(Button)(({ theme }) => ({
-    fontSize: theme.spacing(largerResolution ? 1.5 : 4), // spacing = 8
-    paddingTop: 0,
-    paddingBottom: 0,
-  }));
-
-  React.useEffect(() => {
-    setLargerResolution(isScreenHeightLessThan800);
-  }, [isScreenHeightLessThan800]);
-
   const rmf = React.useContext(RmfAppContext);
   const resourceManager = React.useContext(ResourcesContext);
   const { showAlert } = React.useContext(AppControllerContext);
@@ -357,37 +338,36 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       <HeaderBar>
         <LogoButton src={brandingIconPath} alt="logo" sx={{ width: logoSize }} />
         <NavigationBar value={tabValue}>
-          <StyledAppBarTab
-            label="Map"
+          <AppBarTab
+            label={<Typography variant="h4">Map</Typography>}
             value="infrastructure"
             aria-label="Map"
             onTabClick={() => navigate(DashboardRoute)}
           />
-          <StyledAppBarTab
-            label="System Overview"
+          <AppBarTab
+            label={<Typography variant="h4">System Overview</Typography>}
             value="robots"
             aria-label="System Overview"
             onTabClick={() => navigate(RobotsRoute)}
           />
-          <StyledAppBarTab
-            label="Tasks"
+          <AppBarTab
+            label={<Typography variant="h4">Tasks</Typography>}
             value="tasks"
             aria-label="Tasks"
             onTabClick={() => navigate(TasksRoute)}
           />
         </NavigationBar>
         <Toolbar variant="dense" sx={{ textAlign: 'right', flexGrow: -1 }}>
-          <StyledAppBarButton
+          <Button
             id="create-new-task-button"
             aria-label="new task"
             color="secondary"
             variant="contained"
-            size={largerResolution ? 'small' : 'medium'}
             onClick={() => setOpenCreateTaskForm(true)}
           >
-            <AddOutlined transform={`scale(${largerResolution ? 0.5 : 1})`} />
-            New Task
-          </StyledAppBarButton>
+            <AddOutlined />
+            <Typography variant="h4">New Task</Typography>
+          </Button>
           <Tooltip title="Notifications">
             <StyledIconButton
               id="alert-list-button"

@@ -7,7 +7,7 @@ import {
   Grid,
   Snackbar,
 } from '@mui/material';
-import { ThemeProvider } from '@mui/material/styles';
+import { responsiveFontSizes, ThemeProvider } from '@mui/material/styles';
 import React from 'react';
 import { rmfDark, rmfDarkLeaflet, rmfLight, AlertDialog } from 'react-components';
 import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
@@ -17,11 +17,32 @@ import { AlertStore } from './alert-store';
 import { DeliveryAlertStore } from './delivery-alert-store';
 
 const DefaultAlertDuration = 2000;
-const defaultTheme = createTheme({
+let defaultTheme = createTheme({
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 1600,
+      md: 1920,
+      lg: 2560,
+      xl: 3840,
+    },
+  },
   typography: {
-    fontSize: 16,
+    // body1: {
+    //   fontSize: '1rem',
+    //   '@media (max-width:1600px)': {
+    //     fontSize: '0.7rem',
+    //   },
+    // },
+    // h3: {
+    //   fontSize: '1rem',
+    //   '@media (max-width:1600px)': {
+    //     fontSize: '0.7rem',
+    //   },
+    // },
   },
 });
+defaultTheme = responsiveFontSizes(defaultTheme);
 
 /**
  * Contains various components that are essential to the app and provides contexts to control them.

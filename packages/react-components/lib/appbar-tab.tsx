@@ -11,7 +11,7 @@ const StyledTab = styled((props: TabProps) => <Tab {...props} />)(({ theme }) =>
 }));
 
 export interface TabPanelProps extends TabProps {
-  label: string;
+  label: React.ReactNode;
   value: string;
   onTabClick?: () => void;
 }
