@@ -11,6 +11,7 @@ import {
   TextField,
   Theme,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 import { makeStyles, createStyles } from '@mui/styles';
 import React from 'react';
@@ -108,6 +109,7 @@ const showBatteryIcon = (robot: RobotState, robotBattery: number) => {
 };
 
 export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) => {
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
 
@@ -228,6 +230,11 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
               maxRows={4}
               margin="dense"
               value={message.value}
+              sx={{
+                '& .MuiFilledInput-root': {
+                  fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                },
+              }}
             />
           </div>
         ))}
@@ -249,12 +256,17 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
         onClose();
       }}
       fullWidth
-      maxWidth="sm"
+      maxWidth={isScreenHeightLessThan800 ? 'xs' : 'sm'}
     >
       <Grid container mb={1} alignItems="center" spacing={1}>
         <Grid item xs={2}></Grid>
         <Grid item xs={8}>
-          <DialogTitle align="center">Robot summary: {robotState?.name}</DialogTitle>
+          <DialogTitle
+            align="center"
+            sx={{ fontSize: isScreenHeightLessThan800 ? '1.2rem' : '1.5rem' }}
+          >
+            Robot summary: {robotState?.name}
+          </DialogTitle>
         </Grid>
         <Grid item xs={2}>
           <Grid container justifyContent="flex-end">
@@ -285,6 +297,10 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
           size="small"
           variant="contained"
           color="secondary"
+          sx={{
+            fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+            padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+          }}
         />
       </DialogActions>
       {openTaskDetailsLogs && taskState && (

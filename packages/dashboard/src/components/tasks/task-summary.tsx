@@ -7,6 +7,7 @@ import {
   Typography,
   Divider,
   TextField,
+  useMediaQuery,
 } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -72,6 +73,7 @@ export interface TaskSummaryProps {
 }
 
 export const TaskSummary = React.memo((props: TaskSummaryProps) => {
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
 
@@ -156,6 +158,11 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
               maxRows={4}
               margin="dense"
               value={message.value}
+              sx={{
+                '& .MuiFilledInput-root': {
+                  fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                },
+              }}
             />
           </div>
         ))}
@@ -177,11 +184,15 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
         onClose();
       }}
       fullWidth
-      maxWidth="sm"
+      maxWidth={isScreenHeightLessThan800 ? 'xs' : 'sm'}
     >
-      <DialogTitle align="center">Task Summary</DialogTitle>
+      <DialogTitle
+        align="center"
+        sx={{ fontSize: isScreenHeightLessThan800 ? '1.2rem' : '1.5rem' }}
+      >
+        Task Summary
+      </DialogTitle>
       <Divider />
-      <DialogTitle align="center">Task State</DialogTitle>
       {taskProgress && (
         <Box component="div" sx={{ width: '90%', ml: 3 }}>
           <LinearProgressWithLabel value={taskProgress * 100} />
@@ -194,6 +205,10 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
           size="small"
           variant="contained"
           color="secondary"
+          sx={{
+            fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+            padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+          }}
         />
       </DialogActions>
       {openTaskDetailsLogs && (
