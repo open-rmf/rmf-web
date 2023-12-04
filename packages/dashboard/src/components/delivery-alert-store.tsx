@@ -150,7 +150,6 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
             sx={{
               '& .MuiFilledInput-root': {
                 fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                height: isScreenHeightLessThan800 ? '2.2rem' : '3rem',
               },
             }}
             InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
@@ -171,7 +170,6 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
             sx={{
               '& .MuiFilledInput-root': {
                 fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                height: isScreenHeightLessThan800 ? '2.2rem' : '3rem',
               },
             }}
             InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
@@ -188,7 +186,6 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
             sx={{
               '& .MuiFilledInput-root': {
                 fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                height: isScreenHeightLessThan800 ? '2.2rem' : '3rem',
               },
             }}
             InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
@@ -224,6 +221,10 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
                 color="secondary"
                 disabled={actionTaken}
                 buttonText={'Cancel Delivery'}
+                sx={{
+                  fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+                  padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+                }}
               />
             </Tooltip>
           ) : (
@@ -339,7 +340,6 @@ const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
             sx={{
               '& .MuiFilledInput-root': {
                 fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                height: isScreenHeightLessThan800 ? '2.2rem' : '3rem',
               },
             }}
             InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
@@ -356,7 +356,6 @@ const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
             sx={{
               '& .MuiFilledInput-root': {
                 fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                height: isScreenHeightLessThan800 ? '2.2rem' : '3rem',
               },
             }}
             InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
@@ -373,7 +372,6 @@ const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
             sx={{
               '& .MuiFilledInput-root': {
                 fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                height: isScreenHeightLessThan800 ? '2.2rem' : '3rem',
               },
             }}
             InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}

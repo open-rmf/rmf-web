@@ -79,7 +79,6 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
               sx={{
                 '& .MuiFilledInput-root': {
                   fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                  height: isScreenHeightLessThan800 ? '2.2rem' : '3rem',
                 },
               }}
               InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
