@@ -32,7 +32,7 @@ export interface DoorDataGridTableProps {
 
 export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps): JSX.Element {
   const theme = useTheme();
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
+  const isScreenWidthLessThan1600 = useMediaQuery('(max-width:1600px)');
 
   const handleEvent: GridEventListener<'rowClick'> = (
     params: GridRowParams,
@@ -77,7 +77,6 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: isScreenHeightLessThan800 ? 10 : 16,
           }}
         >
           {healthStatusToOpMode(params.row.opMode)}
@@ -120,7 +119,6 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: isScreenHeightLessThan800 ? 10 : 16,
           }}
         >
           {params.row.doorState ? doorModeToString(params.row.doorState.current_mode.value) : -1}
@@ -138,12 +136,10 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
           aria-label="open"
           sx={{
             minWidth: 'auto',
-            fontSize: isScreenHeightLessThan800 ? 10 : 16,
-            marginRight: isScreenHeightLessThan800 ? 0 : 0,
           }}
           onClick={params.row.onClickOpen}
         >
-          Open
+          <Typography>Open</Typography>
         </Button>
         <Button
           variant="contained"
@@ -151,12 +147,10 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
           aria-label="close"
           sx={{
             minWidth: 'auto',
-            fontSize: isScreenHeightLessThan800 ? 10 : 16,
-            marginRight: isScreenHeightLessThan800 ? 0 : 0,
           }}
           onClick={params.row.onClickClose}
         >
-          Close
+          <Typography>Close</Typography>
         </Button>
       </Box>
     );
@@ -167,9 +161,14 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
       field: 'doorName',
       headerName: 'Name',
       width: 90,
-      valueGetter: (params: GridValueGetterParams) => params.row.doorName,
+      renderCell: (params: GridCellParams): React.ReactNode => (
+        <Box component="div">
+          <Typography>{params.row.doorName}</Typography>
+        </Box>
+      ),
       flex: 1,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'opMode',
@@ -180,26 +179,37 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
       renderCell: OpModeState,
       filterable: true,
       sortable: false,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'levelName',
       headerName: 'Current Floor',
       width: 150,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) => params.row.levelName,
+      renderCell: (params: GridCellParams): React.ReactNode => (
+        <Box component="div">
+          <Typography>{params.row.levelName}</Typography>
+        </Box>
+      ),
       flex: 1,
       filterable: true,
       sortable: false,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'doorType',
       headerName: 'Type',
       width: 150,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) => doorTypeToString(params.row.doorType),
+      renderCell: (params: GridCellParams): React.ReactNode => (
+        <Box component="div">
+          <Typography>{doorTypeToString(params.row.doorType)}</Typography>
+        </Box>
+      ),
       flex: 1,
       filterable: true,
       sortable: false,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'doorState',
@@ -210,6 +220,7 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
       renderCell: DoorState,
       filterable: true,
       sortable: false,
+      headerClassName: 'datagrid-header',
     },
     {
       field: '-',
@@ -220,11 +231,19 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
       flex: 1,
       filterable: false,
       sortable: false,
+      headerClassName: 'datagrid-header',
     },
   ];
 
   return (
-    <div style={{ height: '100%', width: '100%', overflowX: 'auto' }}>
+    <Box
+      component="div"
+      sx={{
+        '& .datagrid-header': {
+          fontSize: isScreenWidthLessThan1600 ? '0.7rem' : 'inherit',
+        },
+      }}
+    >
       <DataGrid
         autoHeight
         getRowId={(l) => l.index}
@@ -233,12 +252,8 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
         rowHeight={38}
         columns={columns}
         rowsPerPageOptions={[5]}
-        sx={{
-          fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-          overflowX: 'scroll',
-        }}
-        autoPageSize={isScreenHeightLessThan800}
-        density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
+        autoPageSize={isScreenWidthLessThan1600}
+        density={isScreenWidthLessThan1600 ? 'compact' : 'standard'}
         localeText={{
           noRowsLabel: 'No doors available.',
         }}
@@ -248,7 +263,14 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
             sortModel: [{ field: 'doorName', sort: 'asc' }],
           },
         }}
+        sx={{
+          '& .MuiDataGrid-menuIcon': {
+            visibility: 'visible',
+            width: 'auto',
+          },
+          overflowX: 'scroll',
+        }}
       />
-    </div>
+    </Box>
   );
 }

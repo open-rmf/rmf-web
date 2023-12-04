@@ -9,7 +9,7 @@ export interface BeaconDataGridTableProps {
 
 export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.Element {
   const theme = useTheme();
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
+  const isScreenWidthLessThan1600 = useMediaQuery('(max-width:1600px)');
 
   const OpModeState = (params: GridCellParams): React.ReactNode => {
     const opModeStateLabelStyle: SxProps = (() => {
@@ -30,7 +30,6 @@ export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: isScreenHeightLessThan800 ? 12 : 16,
           }}
         >
           {params.row.online ? 'ONLINE' : 'OFFLINE'}
@@ -58,7 +57,6 @@ export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: 16,
           }}
         >
           {params.row.activated ? 'ON' : 'OFF'}
@@ -72,9 +70,14 @@ export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.
       field: 'beaconName',
       headerName: 'Name',
       width: 90,
-      valueGetter: (params: GridValueGetterParams) => params.row.id,
+      renderCell: (params: GridCellParams): React.ReactNode => (
+        <Box component="div">
+          <Typography>{params.row.id}</Typography>
+        </Box>
+      ),
       flex: 1,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'opMode',
@@ -84,24 +87,35 @@ export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.
       flex: 1,
       renderCell: OpModeState,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'levelName',
       headerName: 'Level',
       width: 150,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) => params.row.level ?? 'N/A',
+      renderCell: (params: GridCellParams): React.ReactNode => (
+        <Box component="div">
+          <Typography>{params.row.level ?? 'n/a'}</Typography>
+        </Box>
+      ),
       flex: 1,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'beaconCategory',
       headerName: 'Type',
       width: 150,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) => params.row.category ?? 'N/A',
+      renderCell: (params: GridCellParams): React.ReactNode => (
+        <Box component="div">
+          <Typography>{params.row.category ?? 'n/a'}</Typography>
+        </Box>
+      ),
       flex: 1,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'beaconState',
@@ -111,26 +125,39 @@ export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.
       flex: 1,
       renderCell: ActivatedState,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
   ];
 
   return (
-    <DataGrid
-      autoHeight={true}
-      getRowId={(l) => l.id}
-      rows={beacons}
-      pageSize={5}
-      rowHeight={38}
-      columns={columns}
-      rowsPerPageOptions={[5]}
+    <Box
+      component="div"
       sx={{
-        fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
+        '& .datagrid-header': {
+          fontSize: isScreenWidthLessThan1600 ? '0.7rem' : 'inherit',
+        },
       }}
-      autoPageSize={isScreenHeightLessThan800}
-      density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
-      localeText={{
-        noRowsLabel: 'No beacons available.',
-      }}
-    />
+    >
+      <DataGrid
+        autoHeight={true}
+        getRowId={(l) => l.id}
+        rows={beacons}
+        pageSize={5}
+        rowHeight={38}
+        columns={columns}
+        rowsPerPageOptions={[5]}
+        autoPageSize={isScreenWidthLessThan1600}
+        density={isScreenWidthLessThan1600 ? 'compact' : 'standard'}
+        localeText={{
+          noRowsLabel: 'No beacons available.',
+        }}
+        sx={{
+          '& .MuiDataGrid-menuIcon': {
+            visibility: 'visible',
+            width: 'auto',
+          },
+        }}
+      />
+    </Box>
   );
 }

@@ -3,7 +3,6 @@ import {
   GridColDef,
   GridEventListener,
   GridRowParams,
-  GridValueGetterParams,
   GridCellParams,
   MuiEvent,
 } from '@mui/x-data-grid';
@@ -41,7 +40,7 @@ export interface LiftDataGridTableProps {
 
 export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps): JSX.Element {
   const theme = useTheme();
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
+  const isScreenWidthLessThan1600 = useMediaQuery('(max-width:1600px)');
 
   const handleEvent: GridEventListener<'rowClick'> = (
     params: GridRowParams,
@@ -86,7 +85,6 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: isScreenHeightLessThan800 ? 10 : 16,
           }}
         >
           {healthStatusToOpMode(params.row.opMode)}
@@ -100,12 +98,12 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
     const currMotion = motionStateToString(params.row?.motionState);
 
     const motionArrowActiveStyle: SxProps = {
-      transform: `scale(${isScreenHeightLessThan800 ? 0.8 : 1})`,
+      transform: `scale(${isScreenWidthLessThan1600 ? 0.8 : 1})`,
       color: theme.palette.primary.main,
     };
 
     const motionArrowIdleStyle: SxProps = {
-      transform: `scale(${isScreenHeightLessThan800 ? 0.8 : 1})`,
+      transform: `scale(${isScreenWidthLessThan1600 ? 0.8 : 1})`,
       color: theme.palette.action.disabled,
       opacity: theme.palette.action.disabledOpacity,
     };
@@ -138,14 +136,13 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
           sx={{
             marginRight:
               params.row?.doorState === LiftStateModel.DOOR_OPEN
-                ? isScreenHeightLessThan800
+                ? isScreenWidthLessThan1600
                   ? 2
                   : 4
-                : isScreenHeightLessThan800
+                : isScreenWidthLessThan1600
                 ? 0.4
                 : 2,
             fontWeight: 'bold',
-            fontSize: isScreenHeightLessThan800 ? 10 : 16,
             display: 'inline-block',
           }}
         >
@@ -174,9 +171,14 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
       field: 'name',
       headerName: 'Name',
       width: 90,
-      valueGetter: (params: GridValueGetterParams) => params.row.name,
+      renderCell: (params: GridCellParams): React.ReactNode => (
+        <Box component="div">
+          <Typography>{params.row.name}</Typography>
+        </Box>
+      ),
       flex: 1,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'opMode',
@@ -185,26 +187,37 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
       flex: 1,
       renderCell: OpModeState,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'currentFloor',
       headerName: 'Current Floor',
       width: 150,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.currentFloor ? params.row.currentFloor : 'N/A',
+      renderCell: (params: GridCellParams): React.ReactNode => (
+        <Box component="div">
+          <Typography>{params.row.currentFloor ? params.row.currentFloor : 'n/a'}</Typography>
+        </Box>
+      ),
       flex: 1,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'destinationFloor',
       headerName: 'Destination Floor',
       width: 150,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.destinationFloor ? params.row.destinationFloor : 'N/A',
+      renderCell: (params: GridCellParams): React.ReactNode => (
+        <Box component="div">
+          <Typography>
+            {params.row.destinationFloor ? params.row.destinationFloor : 'n/a'}
+          </Typography>
+        </Box>
+      ),
       flex: 1,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'liftState',
@@ -214,6 +227,7 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
       flex: 1,
       renderCell: LiftState,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: '-',
@@ -224,11 +238,19 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
       renderCell: LiftControl,
       filterable: true,
       sortable: false,
+      headerClassName: 'datagrid-header',
     },
   ];
 
   return (
-    <div style={{ height: '100%', width: '100%' }}>
+    <Box
+      component="div"
+      sx={{
+        '& .datagrid-header': {
+          fontSize: isScreenWidthLessThan1600 ? '0.7rem' : 'inherit',
+        },
+      }}
+    >
       <DataGrid
         autoHeight={true}
         getRowId={(l) => l.index}
@@ -237,11 +259,8 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
         rowHeight={38}
         columns={columns}
         rowsPerPageOptions={[5]}
-        sx={{
-          fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-        }}
-        autoPageSize={isScreenHeightLessThan800}
-        density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
+        autoPageSize={isScreenWidthLessThan1600}
+        density={isScreenWidthLessThan1600 ? 'compact' : 'standard'}
         localeText={{
           noRowsLabel: 'No lifts available.',
         }}
@@ -251,7 +270,13 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
             sortModel: [{ field: 'name', sort: 'asc' }],
           },
         }}
+        sx={{
+          '& .MuiDataGrid-menuIcon': {
+            visibility: 'visible',
+            width: 'auto',
+          },
+        }}
       />
-    </div>
+    </Box>
   );
 }

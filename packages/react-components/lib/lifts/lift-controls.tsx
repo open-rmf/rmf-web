@@ -1,4 +1,4 @@
-import { Button, useMediaQuery } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import React from 'react';
 import { LiftRequestDialog, LiftRequestDialogProps } from './lift-request-dialog';
 import { requestDoorModes, requestModes } from './lift-utils';
@@ -17,7 +17,6 @@ export function LiftControls({
   onClose,
   ...otherProps
 }: LiftControlsProps): JSX.Element {
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const [showDialog, setShowDialog] = React.useState(false);
   // Doing `{showDialog && <Form .../>}` will unomunt it before the animations are done.
   // Instead we give a `key` to the form to make react spawn a new instance.
@@ -35,10 +34,9 @@ export function LiftControls({
         }}
         sx={{
           minWidth: 'auto',
-          fontSize: isScreenHeightLessThan800 ? 10 : 16,
         }}
       >
-        Request
+        <Typography>Request</Typography>
       </Button>
       <LiftRequestDialog
         key={resetForm}
