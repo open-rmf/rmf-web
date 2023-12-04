@@ -65,7 +65,7 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: isScreenHeightLessThan800 ? 12 : 16,
+            fontSize: isScreenHeightLessThan800 ? 10 : 16,
           }}
         >
           {robotStatusToUpperCase(params.row.status)}
@@ -150,7 +150,7 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
       columns={columns}
       rowsPerPageOptions={[5]}
       sx={{
-        fontSize: isScreenHeightLessThan800 ? '0.8rem' : 'inherit',
+        fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
       }}
       autoPageSize={isScreenHeightLessThan800}
       density={isScreenHeightLessThan800 ? 'compact' : 'standard'}

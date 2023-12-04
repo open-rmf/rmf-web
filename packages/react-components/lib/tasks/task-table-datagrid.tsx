@@ -11,7 +11,7 @@ import {
   GridFilterModel,
   GridSortModel,
 } from '@mui/x-data-grid';
-import { styled, TextField, Stack, Typography, Tooltip, useMediaQuery } from '@mui/material';
+import { styled, Stack, Typography, Tooltip, useMediaQuery, SxProps, Theme } from '@mui/material';
 import * as React from 'react';
 import { TaskState, TaskRequest, Status } from 'api-client';
 import { InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
@@ -82,9 +82,13 @@ export interface TableDataGridState {
   setSortFields: React.Dispatch<React.SetStateAction<SortFields>>;
 }
 
-const TaskRequester = (requester: string | null): JSX.Element => {
+const TaskRequester = (requester: string | null, sx: SxProps<Theme>): JSX.Element => {
   if (!requester) {
-    return <Typography variant="body1">n/a</Typography>;
+    return (
+      <Typography variant="body1" sx={sx}>
+        n/a
+      </Typography>
+    );
   }
 
   /** When a task is created as scheduled,
@@ -96,17 +100,21 @@ const TaskRequester = (requester: string | null): JSX.Element => {
     <Stack direction="row" alignItems="center" gap={1}>
       {requester.includes('scheduled') ? (
         <>
-          <Tooltip title="User scheduled">
+          <Tooltip title="User scheduled" sx={sx}>
             <ScheduleIcon />
           </Tooltip>
-          <Typography variant="body1">{requester.split('__')[0]}</Typography>
+          <Typography variant="body1" sx={sx}>
+            {requester.split('__')[0]}
+          </Typography>
         </>
       ) : (
         <>
-          <Tooltip title="User submitted">
+          <Tooltip title="User submitted" sx={sx}>
             <UserIcon />
           </Tooltip>
-          <Typography variant="body1">{requester}</Typography>
+          <Typography variant="body1" sx={sx}>
+            {requester}
+          </Typography>
         </>
       )}
     </Stack>
@@ -121,6 +129,11 @@ export function TaskDataGridTable({
   setFilterFields,
   setSortFields,
 }: TableDataGridState): JSX.Element {
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
+  const sxProp: SxProps<Theme> = {
+    fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
+  };
+
   const handleEvent: GridEventListener<'rowClick'> = (
     params: GridRowParams,
     event: MuiMouseEvent,
@@ -150,16 +163,7 @@ export function TaskDataGridTable({
         const day = date.toLocaleDateString(undefined, { day: 'numeric' });
         const month = date.toLocaleDateString(undefined, { month: 'short' });
         const year = date.toLocaleDateString(undefined, { year: 'numeric' });
-        return (
-          <TextField
-            variant="standard"
-            value={
-              cellValues.row.booking.unix_millis_request_time ? `${day} ${month} ${year}` : 'n/a'
-            }
-            InputProps={{ disableUnderline: true }}
-            multiline
-          />
-        );
+        return cellValues.row.booking.unix_millis_request_time ? `${day} ${month} ${year}` : 'n/a';
       },
       flex: 1,
       filterOperators: getMinimalDateOperators,
@@ -168,9 +172,9 @@ export function TaskDataGridTable({
     {
       field: 'requester',
       headerName: 'Requester',
-      minWidth: 150,
+      width: 150,
       editable: false,
-      renderCell: (cellValues) => TaskRequester(cellValues.row.booking.requester),
+      renderCell: (cellValues) => TaskRequester(cellValues.row.booking.requester, sxProp),
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,
@@ -217,20 +221,10 @@ export function TaskDataGridTable({
       headerName: 'Start Time',
       width: 150,
       editable: false,
-      renderCell: (cellValues) => {
-        return (
-          <TextField
-            variant="standard"
-            value={
-              cellValues.row.unix_millis_start_time
-                ? `${new Date(cellValues.row.unix_millis_start_time).toLocaleTimeString()}`
-                : 'n/a'
-            }
-            InputProps={{ disableUnderline: true }}
-            multiline
-          />
-        );
-      },
+      renderCell: (cellValues) =>
+        cellValues.row.unix_millis_start_time
+          ? `${new Date(cellValues.row.unix_millis_start_time).toLocaleTimeString()}`
+          : 'n/a',
       flex: 1,
       filterOperators: getMinimalDateOperators,
       filterable: true,
@@ -240,20 +234,10 @@ export function TaskDataGridTable({
       headerName: 'End Time',
       width: 150,
       editable: false,
-      renderCell: (cellValues) => {
-        return (
-          <TextField
-            variant="standard"
-            value={
-              cellValues.row.unix_millis_finish_time
-                ? `${new Date(cellValues.row.unix_millis_finish_time).toLocaleTimeString()}`
-                : 'n/a'
-            }
-            InputProps={{ disableUnderline: true }}
-            multiline
-          />
-        );
-      },
+      renderCell: (cellValues) =>
+        cellValues.row.unix_millis_finish_time
+          ? `${new Date(cellValues.row.unix_millis_finish_time).toLocaleTimeString()}`
+          : 'n/a',
       flex: 1,
       filterOperators: getMinimalDateOperators,
       filterable: true,
@@ -284,8 +268,6 @@ export function TaskDataGridTable({
     [setSortFields],
   );
 
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
-
   return (
     <div style={{ height: '100%', width: '100%' }}>
       <StyledDataGrid
@@ -296,9 +278,7 @@ export function TaskDataGridTable({
         loading={tasks.isLoading}
         pageSize={tasks.pageSize}
         rowsPerPageOptions={[10]}
-        sx={{
-          fontSize: isScreenHeightLessThan800 ? '0.9rem' : 'inherit',
-        }}
+        sx={sxProp}
         autoPageSize={isScreenHeightLessThan800}
         density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
         pagination

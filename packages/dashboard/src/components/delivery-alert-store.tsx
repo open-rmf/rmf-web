@@ -13,6 +13,7 @@ import { base } from 'react-components';
 import { AppControllerContext } from './app-contexts';
 import { RmfAppContext } from './rmf-app';
 import { TaskInspector } from './tasks/task-inspector';
+import { TaskCancelButton } from './tasks/task-cancellation';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -58,7 +59,6 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
   const [actionTaken, setActionTaken] = React.useState(!onOverride && !onResume);
   const [newTaskState, setNewTaskState] = React.useState<TaskState | null>(null);
   const [openTaskInspector, setOpenTaskInspector] = React.useState(false);
-  const [cancelling, setCancelling] = React.useState(false);
   const appController = React.useContext(AppControllerContext);
   const rmf = React.useContext(RmfAppContext);
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
@@ -81,38 +81,11 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
     }
     const sub = rmf.getTaskStateObs(taskState.booking.id).subscribe((taskStateUpdate) => {
       setNewTaskState(taskStateUpdate);
-      setCancelling((prev) => {
-        if (
-          prev &&
-          deliveryAlert.action === 'waiting' &&
-          taskStateUpdate.status &&
-          taskStateUpdate.status === 'canceled'
-        ) {
-          setCancelling(false);
-          (async () => {
-            try {
-              await rmf.deliveryAlertsApi.updateDeliveryAlertActionDeliveryAlertsDeliveryAlertIdActionPost(
-                deliveryAlert.id,
-                'cancelled',
-              );
-            } catch (e) {
-              appController.showAlert(
-                'error',
-                `Failed to cancel delivery alert ${deliveryAlert.id}: ${(e as Error).message}`,
-              );
-            }
-            setActionTaken(true);
-          })();
-        }
-        return prev;
-      });
-
       if (
         deliveryAlert.action === 'waiting' &&
         taskStateUpdate.status &&
         taskStateUpdate.status === 'canceled'
       ) {
-        setCancelling(false);
         (async () => {
           try {
             await rmf.deliveryAlertsApi.updateDeliveryAlertActionDeliveryAlertsDeliveryAlertIdActionPost(
@@ -131,20 +104,6 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
     });
     return () => sub.unsubscribe();
   }, [rmf, deliveryAlert, taskState, appController]);
-
-  const cancelTask = React.useCallback(
-    async (task_id: string) => {
-      if (!rmf) {
-        console.error('Tasks api not available for task cancellation.');
-        return;
-      }
-      await rmf.tasksApi.postCancelTaskTasksCancelTaskPost({
-        type: 'cancel_task_request',
-        task_id: task_id,
-      });
-    },
-    [rmf],
-  );
 
   const titleUpdateText = (action: string) => {
     switch (action) {
@@ -191,7 +150,6 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
             sx={{
               '& .MuiFilledInput-root': {
                 fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                height: isScreenHeightLessThan800 ? '2.2rem' : '3rem',
               },
             }}
             InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
@@ -212,7 +170,6 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
             sx={{
               '& .MuiFilledInput-root': {
                 fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                height: isScreenHeightLessThan800 ? '2.2rem' : '3rem',
               },
             }}
             InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
@@ -229,7 +186,6 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
             sx={{
               '& .MuiFilledInput-root': {
                 fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                height: isScreenHeightLessThan800 ? '2.2rem' : '3rem',
               },
             }}
             InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
@@ -258,34 +214,18 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
             </Button>
           ) : newTaskState ? (
             <Tooltip title="Cancels the current delivery task.">
-              <Button
+              <TaskCancelButton
+                taskId={newTaskState.booking.id}
                 size="small"
                 variant="contained"
-                disabled={actionTaken || cancelling}
+                color="secondary"
+                disabled={actionTaken}
+                buttonText={'Cancel Delivery'}
                 sx={{
                   fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
                   padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
                 }}
-                onClick={() => {
-                  setCancelling(true);
-                  if (newTaskState) {
-                    const task_id = newTaskState.booking.id;
-                    try {
-                      cancelTask(task_id);
-                      appController.showAlert('success', `Successfully cancelled task ${task_id}`);
-                    } catch (e) {
-                      appController.showAlert(
-                        'error',
-                        `Failed to cancel task ${task_id}: ${(e as Error).message}`,
-                      );
-                      setCancelling(false);
-                    }
-                  }
-                }}
-                autoFocus
-              >
-                {cancelling ? 'Cancelling...' : 'Cancel Delivery'}
-              </Button>
+              />
             </Tooltip>
           ) : (
             <Button
@@ -400,7 +340,6 @@ const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
             sx={{
               '& .MuiFilledInput-root': {
                 fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                height: isScreenHeightLessThan800 ? '2.2rem' : '3rem',
               },
             }}
             InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
@@ -417,7 +356,6 @@ const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
             sx={{
               '& .MuiFilledInput-root': {
                 fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                height: isScreenHeightLessThan800 ? '2.2rem' : '3rem',
               },
             }}
             InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
@@ -434,7 +372,6 @@ const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
             sx={{
               '& .MuiFilledInput-root': {
                 fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                height: isScreenHeightLessThan800 ? '2.2rem' : '3rem',
               },
             }}
             InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
@@ -601,6 +538,11 @@ export const DeliveryAlertStore = React.memo(() => {
       return;
     }
     const sub = rmf.deliveryAlertObsStore.subscribe(async (deliveryAlert) => {
+      // DEBUG
+      console.log(
+        `Got a delivery alert [${deliveryAlert.id}] with action [${deliveryAlert.action}]`,
+      );
+
       let state: TaskState | undefined = undefined;
       if (deliveryAlert.task_id) {
         try {

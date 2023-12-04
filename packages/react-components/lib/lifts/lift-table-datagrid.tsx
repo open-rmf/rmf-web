@@ -86,7 +86,7 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: isScreenHeightLessThan800 ? 12 : 16,
+            fontSize: isScreenHeightLessThan800 ? 10 : 16,
           }}
         >
           {healthStatusToOpMode(params.row.opMode)}
@@ -145,7 +145,7 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
                 ? 0.4
                 : 2,
             fontWeight: 'bold',
-            fontSize: isScreenHeightLessThan800 ? 12 : 16,
+            fontSize: isScreenHeightLessThan800 ? 10 : 16,
             display: 'inline-block',
           }}
         >
@@ -238,7 +238,7 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
         columns={columns}
         rowsPerPageOptions={[5]}
         sx={{
-          fontSize: isScreenHeightLessThan800 ? '0.8rem' : 'inherit',
+          fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
         }}
         autoPageSize={isScreenHeightLessThan800}
         density={isScreenHeightLessThan800 ? 'compact' : 'standard'}

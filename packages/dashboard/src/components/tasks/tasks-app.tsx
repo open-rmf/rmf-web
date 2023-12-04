@@ -5,6 +5,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  styled,
   Tab,
   Tabs,
   TableContainer,
@@ -100,6 +101,18 @@ export const TasksApp = React.memo(
       const [sortFields, setSortFields] = React.useState<SortFields>({ model: undefined });
 
       const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
+      const classes = {
+        typography: 'MuiTypography-root',
+        button: 'MuiButton-text',
+      };
+      const StyledDiv = styled('div')(({ theme }) => ({
+        [`& .${classes.typography}`]: {
+          fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
+        },
+        [`& .${classes.button}`]: {
+          fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
+        },
+      }));
 
       React.useEffect(() => {
         const sub = AppEvents.refreshTaskApp.subscribe({
@@ -375,11 +388,17 @@ export const TasksApp = React.memo(
               label="Queue"
               id={tabId(TaskTablePanel.QueueTable)}
               aria-controls={tabPanelId(TaskTablePanel.QueueTable)}
+              sx={{
+                fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
+              }}
             />
             <Tab
               label="Schedule"
               id={tabId(TaskTablePanel.Schedule)}
               aria-controls={tabPanelId(TaskTablePanel.Schedule)}
+              sx={{
+                fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
+              }}
             />
           </Tabs>
           <TabPanel selectedTabIndex={selectedPanelIndex} index={TaskTablePanel.QueueTable}>
@@ -405,7 +424,9 @@ export const TasksApp = React.memo(
             </TableContainer>
           </TabPanel>
           <TabPanel selectedTabIndex={selectedPanelIndex} index={TaskTablePanel.Schedule}>
-            <TaskSchedule />
+            <StyledDiv>
+              <TaskSchedule />
+            </StyledDiv>
           </TabPanel>
           <input type="file" style={{ display: 'none' }} ref={uploadFileInputRef} />
           {openTaskSummary && (
