@@ -196,6 +196,12 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
             sortModel: [{ field: 'name', sort: 'asc' }],
           },
         }}
+        sx={{
+          '& .MuiDataGrid-menuIcon': {
+            visibility: 'visible',
+            width: 'auto',
+          },
+        }}
       />
     </Box>
   );
