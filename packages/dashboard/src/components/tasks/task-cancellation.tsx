@@ -21,9 +21,14 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export interface TaskCancelButtonProp extends ButtonProps {
   taskId: string | null;
+  buttonText?: string;
 }
 
-export function TaskCancelButton({ taskId, ...otherProps }: TaskCancelButtonProp): JSX.Element {
+export function TaskCancelButton({
+  taskId,
+  buttonText,
+  ...otherProps
+}: TaskCancelButtonProp): JSX.Element {
   const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
   const appController = React.useContext(AppControllerContext);
@@ -74,12 +79,12 @@ export function TaskCancelButton({ taskId, ...otherProps }: TaskCancelButtonProp
     <>
       {taskCancellable && userCanCancelTask ? (
         <Button onClick={() => setOpenConfirmDialog(true)} autoFocus {...otherProps}>
-          Cancel Task
+          {buttonText ?? 'Cancel Task'}
         </Button>
       ) : taskCancellable && !userCanCancelTask ? (
         <Tooltip title="You don't have permission to cancel tasks.">
           <Button disabled className={classes['enableHover']} {...otherProps}>
-            Cancel Task
+            {buttonText ?? 'Cancel Task'}
           </Button>
         </Tooltip>
       ) : (
@@ -91,7 +96,7 @@ export function TaskCancelButton({ taskId, ...otherProps }: TaskCancelButtonProp
           }
         >
           <Button disabled className={classes['enableHover']} {...otherProps}>
-            Cancel Task
+            {buttonText ?? 'Cancel Task'}
           </Button>
         </Tooltip>
       )}
