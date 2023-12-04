@@ -1,10 +1,10 @@
 import { Circle, Line } from '@react-three/drei';
-import { ThreeEvent } from '@react-three/fiber';
+import { MeshProps, ThreeEvent } from '@react-three/fiber';
 import React from 'react';
 import { Euler, Vector3 } from 'three';
 import { RobotData } from './robot-three-maker';
 
-interface CircleShapeProps {
+interface CircleShapeProps extends MeshProps {
   position: Vector3;
   rotation: Euler;
   onRobotClick?: (ev: ThreeEvent<MouseEvent>) => void;
@@ -18,6 +18,8 @@ export const CircleShape = ({
   onRobotClick,
   robot,
   segment,
+  onPointerOver,
+  onPointerOut,
 }: CircleShapeProps): JSX.Element => {
   const SCALED_RADIUS = 0.7;
 
@@ -31,6 +33,8 @@ export const CircleShape = ({
         position={position}
         rotation={rotation}
         onClick={onRobotClick}
+        onPointerOver={onPointerOver}
+        onPointerOut={onPointerOut}
       >
         <meshBasicMaterial color={robot.color} />
       </Circle>
