@@ -15,11 +15,7 @@ export const WindowToolbar: React.FC<WindowToolbarProps> = ({ title, children, .
       {...otherProps}
     >
       <Toolbar variant="dense" style={{ paddingRight: 0 }}>
-        <Typography
-          fontSize={`${isScreenHeightLessThan800 ? '1rem' : '1.7rem'}`}
-          style={{ flexGrow: 1 }}
-          mb={isScreenHeightLessThan800 ? 2 : 0}
-        >
+        <Typography style={{ flexGrow: 1 }} mb={isScreenHeightLessThan800 ? 2 : 0} variant="h6">
           {title}
         </Typography>
         {children}
