@@ -1,4 +1,4 @@
-import { Button, ButtonProps, Theme, Tooltip } from '@mui/material';
+import { Button, ButtonProps, Theme, Tooltip, Typography } from '@mui/material';
 import { TaskState } from 'api-client';
 import React from 'react';
 import { AppControllerContext } from '../app-contexts';
@@ -100,13 +100,15 @@ export function TaskCancelButton({ taskId, ...otherProps }: TaskCancelButtonProp
           confirmText={'Ok'}
           cancelText="Cancel"
           open={openConfirmDialog}
-          title={'Delete task'}
+          title={`Cancel task [${taskState?.booking.id || 'n/a'}]`}
           submitting={undefined}
           onClose={() => {
             setOpenConfirmDialog(false);
           }}
           onSubmit={handleCancelTaskClick}
-        />
+        >
+          <Typography>Are you sure you would like to cancel task?</Typography>
+        </ConfirmationDialog>
       )}
     </>
   );
