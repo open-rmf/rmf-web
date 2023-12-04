@@ -28,18 +28,24 @@ let defaultTheme = createTheme({
     },
   },
   typography: {
-    // body1: {
-    //   fontSize: '1rem',
-    //   '@media (max-width:1600px)': {
-    //     fontSize: '0.7rem',
-    //   },
-    // },
-    // h3: {
-    //   fontSize: '1rem',
-    //   '@media (max-width:1600px)': {
-    //     fontSize: '0.7rem',
-    //   },
-    // },
+    body1: {
+      fontSize: '1rem',
+      '@media (max-width:1600px)': {
+        fontSize: '0.7rem',
+      },
+    },
+  },
+  components: {
+    MuiToolbar: {
+      styleOverrides: {
+        root: {
+          maxHeight: 50,
+          '@media (max-width:1600px)': {
+            maxHeight: 30,
+          },
+        },
+      },
+    },
   },
 });
 defaultTheme = responsiveFontSizes(defaultTheme);

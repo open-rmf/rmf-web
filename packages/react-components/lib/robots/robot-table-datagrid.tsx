@@ -2,7 +2,6 @@ import {
   DataGrid,
   GridColDef,
   GridEventListener,
-  GridValueGetterParams,
   MuiEvent,
   GridRowParams,
   GridCellParams,
@@ -19,7 +18,7 @@ export interface RobotDataGridTableProps {
 }
 
 export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableProps): JSX.Element {
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
+  const isScreenWidthLessThan1600 = useMediaQuery('(max-width:1600px)');
 
   const handleEvent: GridEventListener<'rowClick'> = (
     params: GridRowParams,
@@ -65,7 +64,6 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
           component="p"
           sx={{
             fontWeight: 'bold',
-            fontSize: isScreenHeightLessThan800 ? 10 : 16,
           }}
         >
           {robotStatusToUpperCase(params.row.status)}
@@ -80,55 +78,87 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
       headerName: 'Name',
       width: 150,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) => params.row.name,
+      renderCell: (params: GridCellParams): React.ReactNode => (
+        <Box component="div">
+          <Typography>{params.row.name}</Typography>
+        </Box>
+      ),
       flex: 1,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'fleet',
       headerName: 'Fleet',
       width: 90,
-      valueGetter: (params: GridValueGetterParams) => params.row.fleet,
+      renderCell: (params: GridCellParams): React.ReactNode => (
+        <Box component="div">
+          <Typography>{params.row.fleet}</Typography>
+        </Box>
+      ),
       flex: 1,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'estFinishTime',
       headerName: 'Est. Task Finish Time',
       width: 150,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.estFinishTime ? new Date(params.row.estFinishTime).toLocaleString() : '-',
+      renderCell: (params: GridCellParams): React.ReactNode => (
+        <Box component="div">
+          <Typography>
+            {params.row.estFinishTime ? new Date(params.row.estFinishTime).toLocaleString() : '-'}
+          </Typography>
+        </Box>
+      ),
       flex: 1,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'level',
       headerName: 'Level',
       width: 150,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) => params.row.level,
+      renderCell: (params: GridCellParams): React.ReactNode => (
+        <Box component="div">
+          <Typography>{params.row.level}</Typography>
+        </Box>
+      ),
       flex: 1,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'battery',
       headerName: 'Battery',
       width: 150,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) => `${(params.row.battery * 100).toFixed(2)}%`,
+      renderCell: (params: GridCellParams): React.ReactNode => (
+        <Box component="div">
+          <Typography>{`${(params.row.battery * 100).toFixed(2)}%`}</Typography>
+        </Box>
+      ),
       flex: 1,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'lastUpdateTime',
       headerName: 'Last Updated',
       width: 150,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.lastUpdateTime ? new Date(params.row.lastUpdateTime).toLocaleString() : '-',
+      renderCell: (params: GridCellParams): React.ReactNode => (
+        <Box component="div">
+          <Typography>
+            {params.row.lastUpdateTime ? new Date(params.row.lastUpdateTime).toLocaleString() : '-'}
+          </Typography>
+        </Box>
+      ),
       flex: 1,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
     {
       field: 'status',
@@ -137,29 +167,36 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
       flex: 1,
       renderCell: Status,
       filterable: true,
+      headerClassName: 'datagrid-header',
     },
   ];
 
   return (
-    <DataGrid
-      autoHeight={true}
-      getRowId={(r) => r.name}
-      rows={robots}
-      pageSize={5}
-      rowHeight={38}
-      columns={columns}
-      rowsPerPageOptions={[5]}
+    <Box
+      component="div"
       sx={{
-        fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-      }}
-      autoPageSize={isScreenHeightLessThan800}
-      density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
-      onRowClick={handleEvent}
-      initialState={{
-        sorting: {
-          sortModel: [{ field: 'name', sort: 'asc' }],
+        '& .datagrid-header': {
+          fontSize: isScreenWidthLessThan1600 ? '0.7rem' : 'inherit',
         },
       }}
-    />
+    >
+      <DataGrid
+        autoHeight={true}
+        getRowId={(r) => r.name}
+        rows={robots}
+        pageSize={5}
+        rowHeight={38}
+        columns={columns}
+        rowsPerPageOptions={[5]}
+        autoPageSize={isScreenWidthLessThan1600}
+        density={isScreenWidthLessThan1600 ? 'compact' : 'standard'}
+        onRowClick={handleEvent}
+        initialState={{
+          sorting: {
+            sortModel: [{ field: 'name', sort: 'asc' }],
+          },
+        }}
+      />
+    </Box>
   );
 }
