@@ -994,9 +994,8 @@ export function CreateTaskForm({
 
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
 
-  const [favoriteTaskBuffer, setFavoriteTaskBuffer] = React.useState<TaskFavorite>(
-    defaultFavoriteTask(),
-  );
+  const [favoriteTaskBuffer, setFavoriteTaskBuffer] =
+    React.useState<TaskFavorite>(defaultFavoriteTask());
   const [favoriteTaskTitleError, setFavoriteTaskTitleError] = React.useState(false);
   const [savingFavoriteTask, setSavingFavoriteTask] = React.useState(false);
 
@@ -1374,7 +1373,7 @@ export function CreateTaskForm({
                   </Grid>
                   <Grid item xs={isScreenHeightLessThan800 ? 6 : 7}>
                     <DateTimePicker
-                      inputFormat={'MM/dd/yyyy HH:mm'}
+                      views={['year', 'month', 'day', 'hours', 'minutes']}
                       value={
                         taskRequest.unix_millis_earliest_start_time
                           ? new Date(taskRequest.unix_millis_earliest_start_time)
@@ -1392,19 +1391,19 @@ export function CreateTaskForm({
                         updateTasks();
                       }}
                       label="Start Time"
-                      renderInput={(props) => (
-                        <TextField
-                          {...props}
-                          InputLabelProps={{
-                            style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 },
-                          }}
-                          sx={{
-                            '& .MuiInputBase-input': {
-                              fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                            },
-                          }}
-                        />
-                      )}
+                      // renderInput={(props) => (
+                      //   <TextField
+                      //     {...props}
+                      //     InputLabelProps={{
+                      //       style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 },
+                      //     }}
+                      //     sx={{
+                      //       '& .MuiInputBase-input': {
+                      //         fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                      //       },
+                      //     }}
+                      //   />
+                      // )}
                     />
                   </Grid>
                   <Grid item xs={1}>
@@ -1420,7 +1419,7 @@ export function CreateTaskForm({
                   <Grid item xs={isScreenHeightLessThan800 ? 5 : 4}>
                     <DateTimePicker
                       disabled={!warnTimeChecked}
-                      inputFormat={'MM/dd/yyyy HH:mm'}
+                      views={['year', 'month', 'day', 'hours', 'minutes']}
                       value={
                         taskRequest.unix_millis_warn_time
                           ? new Date(taskRequest.unix_millis_warn_time)
@@ -1434,19 +1433,19 @@ export function CreateTaskForm({
                         updateTasks();
                       }}
                       label="Warn Time"
-                      renderInput={(props) => (
-                        <TextField
-                          {...props}
-                          InputLabelProps={{
-                            style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 },
-                          }}
-                          sx={{
-                            '& .MuiInputBase-input': {
-                              fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                            },
-                          }}
-                        />
-                      )}
+                      // renderInput={(props) => (
+                      //   <TextField
+                      //     {...props}
+                      //     InputLabelProps={{
+                      //       style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 },
+                      //     }}
+                      //     sx={{
+                      //       '& .MuiInputBase-input': {
+                      //         fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                      //       },
+                      //     }}
+                      //   />
+                      // )}
                     />
                   </Grid>
                 </Grid>
@@ -1595,18 +1594,18 @@ export function CreateTaskForm({
                 }
                 label="Start On"
                 disabled={!scheduleEnabled}
-                renderInput={(props) => (
-                  <TextField
-                    {...props}
-                    size="small"
-                    fullWidth
-                    sx={{
-                      '& .MuiInputBase-input': {
-                        fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                      },
-                    }}
-                  />
-                )}
+                // renderInput={(props) => (
+                //   <TextField
+                //     {...props}
+                //     size="small"
+                //     fullWidth
+                //     sx={{
+                //       '& .MuiInputBase-input': {
+                //         fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                //       },
+                //     }}
+                //   />
+                // )}
               />
             </Grid>
             <Grid item xs={6}>
@@ -1628,18 +1627,18 @@ export function CreateTaskForm({
                 }}
                 label="At"
                 disabled={!scheduleEnabled}
-                renderInput={(props) => (
-                  <TextField
-                    {...props}
-                    fullWidth
-                    size="small"
-                    sx={{
-                      '& .MuiInputBase-input': {
-                        fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                      },
-                    }}
-                  />
-                )}
+                // renderInput={(props) => (
+                //   <TextField
+                //     {...props}
+                //     fullWidth
+                //     size="small"
+                //     sx={{
+                //       '& .MuiInputBase-input': {
+                //         fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                //       },
+                //     }}
+                //   />
+                // )}
               />
             </Grid>
             <Grid item xs={12}>
@@ -1697,17 +1696,17 @@ export function CreateTaskForm({
                       })
                     }
                     disabled={scheduleUntilValue !== ScheduleUntilValue.ON}
-                    renderInput={(props) => (
-                      <TextField
-                        {...props}
-                        fullWidth
-                        sx={{
-                          '& .MuiInputBase-input': {
-                            fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                          },
-                        }}
-                      />
-                    )}
+                    // renderInput={(props) => (
+                    //   <TextField
+                    //     {...props}
+                    //     fullWidth
+                    //     sx={{
+                    //       '& .MuiInputBase-input': {
+                    //         fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                    //       },
+                    //     }}
+                    //   />
+                    // )}
                   />
                 </Grid>
               </RadioGroup>
