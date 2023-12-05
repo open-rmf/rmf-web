@@ -1,5 +1,4 @@
 import { waitFor } from '@testing-library/react';
-import { act } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { StubAuthenticator, UserProfile, UserProfileContext } from 'rmf-auth';
@@ -86,7 +85,14 @@ describe('AppBar', () => {
     const robotResourcesMgr = new RobotResourceManager({});
     const logoResourcesMgr = new LogoResourceManager({});
     logoResourcesMgr.getHeaderLogoPath = () => Promise.resolve('/test-logo.png');
-    const resourceMgr: ResourceManager = { robots: robotResourcesMgr, logos: logoResourcesMgr };
+    const resourceMgr: ResourceManager = {
+      robots: robotResourcesMgr,
+      logos: logoResourcesMgr,
+      helpLink: 'test-help-link',
+      reportIssue: 'test-report-issue',
+      defaultZoom: 5,
+      defaultRobotZoom: 30,
+    };
 
     const root = render(
       <ResourcesContext.Provider value={resourceMgr}>
