@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 importers:
 
   .:
@@ -167,9 +171,6 @@ importers:
       keycloak-js:
         specifier: ^23.0.1
         version: 23.0.1
-      leaflet:
-        specifier: ^1.9.4
-        version: 1.9.4
       node-vibrant:
         specifier: 3.2.1-alpha.1
         version: 3.2.1-alpha.1
@@ -188,9 +189,6 @@ importers:
       react-grid-layout:
         specifier: ^1.4.4
         version: 1.4.4(react-dom@18.2.0)(react@18.2.0)
-      react-leaflet:
-        specifier: ^4.2.1
-        version: 4.2.1(leaflet@1.9.4)(react-dom@18.2.0)(react@18.2.0)
       react-router:
         specifier: ^6.20.1
         version: 6.20.1(react@18.2.0)
@@ -411,9 +409,6 @@ importers:
       react-grid-layout:
         specifier: ^1.4.4
         version: 1.4.4(react-dom@18.2.0)(react@18.2.0)
-      react-leaflet:
-        specifier: ^4.2.1
-        version: 4.2.1(leaflet@1.9.4)(react-dom@18.2.0)(react@18.2.0)
       react-virtualized-auto-sizer:
         specifier: ^1.0.20
         version: 1.0.20(react-dom@18.2.0)(react@18.2.0)
@@ -541,9 +536,6 @@ importers:
       karma-webpack:
         specifier: ^5.0.0
         version: 5.0.0(webpack@5.89.0)
-      leaflet:
-        specifier: ^1.9.4
-        version: 1.9.4
       process:
         specifier: 0.11.10
         version: 0.11.10
@@ -3947,6 +3939,45 @@ packages:
       webpack-dev-server: 4.15.1(debug@4.3.4)(webpack@5.89.0)
     dev: true
 
+  /@pmmmwh/react-refresh-webpack-plugin@0.5.11(react-refresh@0.14.0)(webpack@5.89.0):
+    resolution: {integrity: sha512-7j/6vdTym0+qZ6u4XbSAxrWBGYSdCfTzySkj7WAFgDLmSyWlOrWvpyzxlFh5jtw9dn0oL/jtW+06XfFiisN3JQ==}
+    engines: {node: '>= 10.13'}
+    peerDependencies:
+      '@types/webpack': 4.x || 5.x
+      react-refresh: '>=0.10.0 <1.0.0'
+      sockjs-client: ^1.4.0
+      type-fest: '>=0.17.0 <5.0.0'
+      webpack: '>=4.43.0 <6.0.0'
+      webpack-dev-server: 3.x || 4.x
+      webpack-hot-middleware: 2.x
+      webpack-plugin-serve: 0.x || 1.x
+    peerDependenciesMeta:
+      '@types/webpack':
+        optional: true
+      sockjs-client:
+        optional: true
+      type-fest:
+        optional: true
+      webpack-dev-server:
+        optional: true
+      webpack-hot-middleware:
+        optional: true
+      webpack-plugin-serve:
+        optional: true
+    dependencies:
+      ansi-html-community: 0.0.8
+      common-path-prefix: 3.0.0
+      core-js-pure: 3.33.3
+      error-stack-parser: 2.1.4
+      find-up: 5.0.0
+      html-entities: 2.4.0
+      loader-utils: 2.0.4
+      react-refresh: 0.14.0
+      schema-utils: 3.3.0
+      source-map: 0.7.4
+      webpack: 5.89.0(esbuild@0.18.20)(webpack-cli@5.1.4)
+    dev: true
+
   /@popperjs/core@2.11.8:
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
 
@@ -5169,7 +5200,7 @@ packages:
       react-scripts: '>=5.0.0'
     dependencies:
       '@babel/core': 7.23.5
-      '@pmmmwh/react-refresh-webpack-plugin': 0.5.11(react-refresh@0.11.0)(webpack-dev-server@4.15.1)(webpack@5.89.0)
+      '@pmmmwh/react-refresh-webpack-plugin': 0.5.11(react-refresh@0.14.0)(webpack@5.89.0)
       '@storybook/react-docgen-typescript-plugin': 1.0.6--canary.9.0c3f3b7.0(typescript@5.3.2)(webpack@5.89.0)
       '@storybook/types': 7.6.3
       '@types/babel__core': 7.20.5
@@ -13385,6 +13416,7 @@ packages:
 
   /leaflet@1.9.4:
     resolution: {integrity: sha512-nxS1ynzJOmOlHp+iL3FyWqK89GtNL8U8rvlMOsQdTTssxZwCXh8N2NB3GDQOL+YR3XnWyZAxwQixURb+FA74PA==}
+    dev: false
 
   /leven@3.1.0:
     resolution: {integrity: sha512-qsda+H8jTaUaN/x5vzW2rzc+8Rw4TAQ/4KjB46IwK5VH+IlVeeeje/EoZRpiXvIqjFgK84QffqPztGI3VBLG1A==}
@@ -19653,5 +19685,4 @@ packages:
   file:packages/api-server:
     resolution: {directory: packages/api-server, type: directory}
     name: api-server
-    version: 0.0.0
     dev: true
