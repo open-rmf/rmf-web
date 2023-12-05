@@ -35,4 +35,3 @@ export * from './transfer-list';
 export * from './use-async';
 export * from './utils';
 export * from './window';
-export * from './workcells';

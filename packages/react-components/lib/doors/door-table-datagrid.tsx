@@ -229,10 +229,9 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
         autoHeight
         getRowId={(l) => l.index}
         rows={doors}
-        pageSize={5}
+        paginationModel={{ page: 0, pageSize: 5 }}
         rowHeight={38}
         columns={columns}
-        rowsPerPageOptions={[5]}
         sx={{
           fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
           overflowX: 'scroll',
