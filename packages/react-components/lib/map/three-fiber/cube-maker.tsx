@@ -15,6 +15,9 @@ export const CubeMaker = (
   { position, size, rot, color, meshRef, onDoorClick }: CubeProps,
   props: MeshProps,
 ): JSX.Element => {
+  {
+    /* eslint-disable react/no-unknown-property */
+  }
   return (
     <mesh
       {...props}
@@ -28,4 +31,7 @@ export const CubeMaker = (
       <meshStandardMaterial color={color || 'black'} opacity={0.6} transparent />
     </mesh>
   );
+  {
+    /* eslint-enable react/no-unknown-property */
+  }
 };

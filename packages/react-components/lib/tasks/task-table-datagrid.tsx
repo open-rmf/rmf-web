@@ -7,7 +7,6 @@ import {
   GridValueGetterParams,
   MuiEvent,
   GridRowParams,
-  GridCallbackDetails,
   GridCellParams,
   GridFilterModel,
   GridSortModel,
@@ -288,7 +287,8 @@ export function TaskDataGridTable({
         sortingMode="server"
         onSortModelChange={handleSortModelChange}
         paginationModel={{ page: tasks.page - 1, pageSize: tasks.pageSize }}
-        onPaginationModelChange={(model: GridPaginationModel, _: GridCallbackDetails) => {
+        onPaginationModelChange={(model: GridPaginationModel) => {
+          onPageSizeChange(model.pageSize);
           onPageChange(model.page);
         }}
         columns={columns}

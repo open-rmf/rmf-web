@@ -22,7 +22,6 @@ export * from './map';
 export * from './navigation-bar';
 export * from './place';
 export * from './robots';
-export * from './simple-filter';
 export * from './simple-info';
 export * from './spotlight-accordion';
 export * from './stack-navigator';

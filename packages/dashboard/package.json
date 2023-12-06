@@ -65,7 +65,7 @@
     "debug": "^4.3.4",
     "eventemitter3": "^5.0.1",
     "keycloak-js": "^23.0.1",
-    "node-vibrant": "3.2.1-alpha.1",
+    "node-vibrant": "3.1.6",
     "react": "^18.2.0",
     "react-components": "workspace:*",
     "react-customizable-progressbar": "^1.2.0",

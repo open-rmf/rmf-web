@@ -7,8 +7,10 @@ describe('PositiveIntField', () => {
   it('does not allow negative numbers to be typed', async () => {
     const root = render(<PositiveIntField id="test" label="test" />);
     const inputEl = root.getByLabelText('test') as HTMLInputElement;
-    userEvent.clear(inputEl);
-    userEvent.type(inputEl, '-1');
+    const user = userEvent.setup();
+    user.clear(inputEl);
+    expect(inputEl.value).toBe('');
+    await user.type(inputEl, '-1');
     // '-' char should get "eaten", so should end up with "1".
     expect(inputEl.value).toBe('1');
   });
