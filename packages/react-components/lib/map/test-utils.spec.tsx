@@ -158,6 +158,7 @@ export const officeMap: BuildingMap = {
                 },
               ],
             },
+            // eslint-disable-next-line @typescript-eslint/no-loss-of-precision
             { x: 18.729019165039062, y: -3.895981550216675, name: '', params: [] },
             {
               x: 19.89569854736328,
