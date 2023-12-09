@@ -8,7 +8,7 @@ import {
   SchedulerHelpers,
   SchedulerProps,
 } from '@aldabil/react-scheduler/types';
-import { Button, Grid } from '@mui/material';
+import { Button } from '@mui/material';
 import {
   ApiServerModelsTortoiseModelsScheduledTaskScheduledTask as ScheduledTask,
   ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf as ApiSchedule,
@@ -95,6 +95,7 @@ export const TaskSchedule = () => {
     const sub = AppEvents.refreshTaskApp.subscribe({
       next: () => {
         setRefreshTaskAppCount((oldValue) => ++oldValue);
+        console.log('refresh called');
       },
     });
     return () => sub.unsubscribe();
@@ -261,95 +262,15 @@ export const TaskSchedule = () => {
       disablingCellsWithoutEvents(calendarEvents, { start, ...props }),
   };
 
-  interface ViewSettings {
-    daySettings: DayProps | null;
-    weekSettings: WeekProps | null;
-    monthSettings: MonthProps | null;
-  }
-
-  const [viewSettings, setViewSettings] = React.useState<ViewSettings>({
-    daySettings: null,
-    weekSettings: defaultWeekSettings,
-    monthSettings: null,
-  });
-
-  const translations = {
-    navigation: {
-      month: 'Month',
-      week: 'Week',
-      day: 'Day',
-      today: 'Go to today',
-    },
-    form: {
-      addTitle: 'Add Event',
-      editTitle: 'Edit Event',
-      confirm: 'Confirm',
-      delete: 'Delete',
-      cancel: 'Cancel',
-    },
-    event: {
-      title: 'Title',
-      start: 'Start',
-      end: 'End',
-      allDay: 'All Day',
-    },
-    moreEvents: 'More...',
-    loading: 'Loading...',
-  };
-
   return (
     <div style={{ height: '100%', width: '100%' }}>
-      <Grid container justifyContent="flex-end">
-        <Button
-          size={'small'}
-          sx={viewSettings.daySettings ? { borderBottom: 2, borderRadius: 0 } : {}}
-          onClick={() => {
-            setViewSettings({
-              daySettings: defaultDaySettings,
-              weekSettings: null,
-              monthSettings: null,
-            });
-            AppEvents.refreshTaskApp.next();
-          }}
-        >
-          Day
-        </Button>
-        <Button
-          size={'small'}
-          sx={viewSettings.weekSettings ? { borderBottom: 2, borderRadius: 0 } : {}}
-          onClick={() => {
-            setViewSettings({
-              daySettings: null,
-              weekSettings: defaultWeekSettings,
-              monthSettings: null,
-            });
-            AppEvents.refreshTaskApp.next();
-          }}
-        >
-          Week
-        </Button>
-        <Button
-          size={'small'}
-          sx={viewSettings.monthSettings ? { borderBottom: 2, borderRadius: 0 } : {}}
-          onClick={() => {
-            setViewSettings({
-              daySettings: null,
-              weekSettings: null,
-              monthSettings: defaultMonthSettings,
-            });
-            AppEvents.refreshTaskApp.next();
-          }}
-        >
-          Month
-        </Button>
-      </Grid>
       <Scheduler
         // react-scheduler does not support refreshing, workaround by mounting a new instance.
         key={`scheduler-${refreshTaskAppCount}`}
         view="week"
-        day={viewSettings.daySettings}
-        week={viewSettings.weekSettings}
-        month={viewSettings.monthSettings}
+        day={defaultDaySettings}
+        week={defaultWeekSettings}
+        month={defaultMonthSettings}
         draggable={false}
         editable={true}
         getRemoteEvents={getRemoteEvents}
@@ -371,17 +292,6 @@ export const TaskSchedule = () => {
             }}
           />
         )}
-        translations={{
-          ...translations,
-          navigation: {
-            ...translations.navigation,
-            today: viewSettings.daySettings
-              ? 'Today'
-              : viewSettings.weekSettings
-              ? 'This week'
-              : 'This month',
-          },
-        }}
       />
       {openCreateTaskForm && (
         <CreateTaskForm
