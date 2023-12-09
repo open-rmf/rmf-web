@@ -95,7 +95,6 @@ export const TaskSchedule = () => {
     const sub = AppEvents.refreshTaskApp.subscribe({
       next: () => {
         setRefreshTaskAppCount((oldValue) => ++oldValue);
-        console.log('refresh called');
       },
     });
     return () => sub.unsubscribe();
