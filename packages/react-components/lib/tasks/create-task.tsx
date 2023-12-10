@@ -271,7 +271,7 @@ function DeliveryTaskForm({
           id="pickup-location"
           freeSolo
           fullWidth
-          options={Object.keys(pickupPoints)}
+          options={Object.keys(pickupPoints).sort()}
           value={taskDesc.phases[0].activity.description.activities[0].description}
           onInputChange={(_ev, newValue) => {
             const pickupLot = pickupPoints[newValue] ?? '';
@@ -358,7 +358,7 @@ function DeliveryTaskForm({
           id="dropoff-location"
           freeSolo
           fullWidth
-          options={Object.keys(dropoffPoints)}
+          options={Object.keys(dropoffPoints).sort()}
           value={taskDesc.phases[0].activity.description.activities[2].description}
           onInputChange={(_ev, newValue) => {
             const newTaskDesc = { ...taskDesc };
@@ -428,7 +428,7 @@ function DeliveryCustomTaskForm({
           id="pickup-zone"
           freeSolo
           fullWidth
-          options={pickupZones}
+          options={pickupZones.sort()}
           value={taskDesc.phases[0].activity.description.activities[0].description}
           onInputChange={(_ev, newValue) => {
             const newTaskDesc = { ...taskDesc };
@@ -513,7 +513,7 @@ function DeliveryCustomTaskForm({
           id="dropoff-location"
           freeSolo
           fullWidth
-          options={dropoffPoints}
+          options={dropoffPoints.sort()}
           value={taskDesc.phases[0].activity.description.activities[2].description}
           onInputChange={(_ev, newValue) => {
             const newTaskDesc = { ...taskDesc };
@@ -609,7 +609,7 @@ function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange, allowSubmit }: Pa
           id="place-input"
           freeSolo
           fullWidth
-          options={patrolWaypoints}
+          options={patrolWaypoints.sort()}
           onChange={(_ev, newValue) =>
             newValue !== null &&
             onInputChange({

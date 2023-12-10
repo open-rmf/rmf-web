@@ -693,12 +693,19 @@ export const DeliveryAlertStore = React.memo(() => {
           );
         }
 
+        // Allow resume if the obstruction is related to a latching problem.
         return (
           <DeliveryWarningDialog
             deliveryAlert={alert.deliveryAlert}
             taskState={alert.taskState}
             onOverride={alert.deliveryAlert.category === 'wrong' ? onOverride : undefined}
-            onResume={alert.deliveryAlert.category === 'obstructed' ? undefined : onResume}
+            onResume={
+              alert.deliveryAlert.category !== 'obstructed'
+                ? onResume
+                : alert.deliveryAlert.message && alert.deliveryAlert.message.includes(' latch ')
+                ? onResume
+                : undefined
+            }
             onClose={() =>
               setAlerts((prev) =>
                 Object.fromEntries(
