@@ -203,7 +203,7 @@ async def on_startup():
         try:
             await routes.scheduled_tasks.schedule_task(t, task_repo)
             scheduled += 1
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-except
             logger.warning(f"Unable to schedule task requested by {t.created_by}: {e}")
             logger.warning(f"Skipping request: [{t.task_request}]")
     logger.info(

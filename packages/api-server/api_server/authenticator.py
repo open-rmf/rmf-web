@@ -81,18 +81,18 @@ class StubAuthenticator(JwtAuthenticator):
     def __init__(self):  # pylint: disable=super-init-not-called
         self._user = None
 
-    async def _get_user(self) -> User:
+    async def _get_user(self, claims: dict) -> User:
         if self._user is None:
             self._user = await User.load_or_create_from_db("stub")
             await self._user.update_admin(True)
         return self._user
 
     async def verify_token(self, token: Optional[str]) -> User:
-        return await self._get_user()
+        return await self._get_user({})
 
     def fastapi_dep(self) -> Callable[..., Union[Coroutine[Any, Any, User], User]]:
         async def dep():
-            return await self._get_user()
+            return await self._get_user({})
 
         return dep
 
