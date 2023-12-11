@@ -1,6 +1,8 @@
+import os
+
 from sqlite_local_config import config
 
-here = dirname(__file__)
+here = os.path.dirname(__file__)
 run_dir = f"{here}/run"
 
 config.update(
