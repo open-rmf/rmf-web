@@ -1,11 +1,13 @@
+import os
+
 from sqlite_local_config import config
 
-here = dirname(__file__)
+here = os.path.dirname(__file__)
 run_dir = f"{here}/run"
 
 config.update(
     {
-        "db_url": "postgres://postgres:postgres@127.0.0.1:5432",
+        "db_url": "postgres://postgres:postgres@127.0.0.1:5432/rmf-web-rmf-server",
         "cache_directory": f"{run_dir}/cache",  # The directory where cached files should be stored.
     }
 )

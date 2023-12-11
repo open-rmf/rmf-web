@@ -150,7 +150,10 @@ async def del_scheduled_tasks_event(
     for sche in task.schedules:
         schedule.clear(sche.get_id())
 
-    await schedule_task(task, task_repo)
+    try:
+        await schedule_task(task, task_repo)
+    except schedule.ScheduleError as e:
+        raise HTTPException(422, str(e)) from e
 
 
 @router.post(

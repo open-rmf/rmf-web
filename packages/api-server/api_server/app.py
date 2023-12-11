@@ -199,10 +199,14 @@ async def on_startup():
             logger.warning(f"user [{t.created_by}] does not exist")
             continue
         task_repo = TaskRepository(user)
-        await routes.scheduled_tasks.schedule_task(t, task_repo)
-        scheduled += 1
-    logger.info(f"loaded {scheduled} tasks")
-    logger.info("successfully started scheduler")
+        try:
+            await routes.scheduled_tasks.schedule_task(t, task_repo)
+            scheduled += 1
+        except Exception as e:
+            logger.warning(
+                f"Unable to schedule task request with id [{t.id}] by {t.created_by}: {e}"
+            )
+            logger.warning(f"Skipping request: [{t.task_request}]")
 
     ros.spin_background()
     logger.info("started app")
