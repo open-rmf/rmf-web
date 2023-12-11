@@ -204,9 +204,7 @@ async def on_startup():
             await routes.scheduled_tasks.schedule_task(t, task_repo)
             scheduled += 1
         except Exception as e:
-            logger.warning(
-                f"Unable to schedule task request with id [{t.id}] by {t.created_by}: {e}"
-            )
+            logger.warning(f"Unable to schedule task requested by {t.created_by}: {e}")
             logger.warning(f"Skipping request: [{t.task_request}]")
     logger.info(
         f"Retrieved {len(scheduled_tasks)} scheduled tasks, scheduled {scheduled} tasks"
