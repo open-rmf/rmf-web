@@ -196,7 +196,8 @@ async def on_startup():
     for t in scheduled_tasks:
         user = await User.load_from_db(t.created_by)
         if user is None:
-            logger.warning(f"user [{t.created_by}] does not exist")
+            logger.warning(f"User who scheduled task, [{t.created_by}] does not exist")
+            logger.warning(f"Skipping request: [{t.task_request}]")
             continue
         task_repo = TaskRepository(user)
         try:
@@ -207,6 +208,9 @@ async def on_startup():
                 f"Unable to schedule task request with id [{t.id}] by {t.created_by}: {e}"
             )
             logger.warning(f"Skipping request: [{t.task_request}]")
+    logger.info(
+        f"Retrieved {len(scheduled_tasks)} scheduled tasks, scheduled {scheduled} tasks"
+    )
 
     ros.spin_background()
     logger.info("started app")
