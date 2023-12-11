@@ -54,6 +54,7 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
         if datetime_to_iso[:10] in task.except_dates:
             return
         asyncio.get_event_loop().create_task(run())
+        logger.warning(f"schedule has {len(schedule.get_jobs())} jobs left")
 
     for _, j in jobs:
         j.do(do)
