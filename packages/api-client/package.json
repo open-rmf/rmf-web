@@ -22,7 +22,7 @@
     "@types/jasmine": "^5.1.4",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
-    "axios": "^1.6.2",
+    "axios": "^0.21.1",
     "eslint": "^8.55.0",
     "jasmine": "^5.1.0",
     "ts-node": "^10.9.1",
