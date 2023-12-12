@@ -24,9 +24,10 @@ describe('UserProfileCard', () => {
         makeAdmin={makeAdmin}
       />,
     );
+    const user = userEvent.setup();
 
-    userEvent.click(root.getByLabelText('more actions'));
-    userEvent.click(root.getByRole('menuitem', { name: 'Admin' }));
+    await user.click(root.getByLabelText('more actions'));
+    await user.click(root.getByRole('menuitem', { name: 'Admin' }));
     await waitFor(() => true); // let async effects run
     expect(makeAdmin).toHaveBeenCalledWith(true);
   });

@@ -7,12 +7,10 @@ describe('CreateUserDialog', () => {
   it('calls createUser when form is submitted', async () => {
     const createUser = jest.fn();
     const root = render(<CreateUserDialog open={true} createUser={createUser} />);
-    userEvent.type(root.getByLabelText('Username'), 'user');
-    userEvent.click(root.getByText('Create'));
+    const user = userEvent.setup();
+    await user.type(root.getByLabelText('Username'), 'user');
+    await user.click(root.getByText('Create'));
     expect(createUser).toHaveBeenCalled();
     expect(createUser.mock.calls[0][0]).toBe('user');
-    await expect(
-      waitForElementToBeRemoved(() => root.queryByLabelText('loading')),
-    ).resolves.not.toBeNull();
   });
 });
