@@ -28,8 +28,8 @@ jobs:
         uses: ./.github/actions/bootstrap
         with:
           package: react-components
-      - name: build storybook
-        run: pnpm run build:storybook
+      - name: run storybook in dev ci mode
+        run: pnpm run start:ci
       - name: lint
         run: pnpm run lint
       - name: test

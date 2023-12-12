@@ -11,6 +11,7 @@
     "lint": "eslint --max-warnings 0 --ext ts,tsx, lib",
     "prepack": "pnpm run clean && pnpm run lint && pnpm run --filter {.}... build && pnpm run test",
     "start": "pnpm run --filter {.}^... build && sb dev -p 6006 -s test-data",
+    "start:ci": "pnpm run --filter {.}^... build && sb dev -p 6006 -s test-data --ci",
     "test": "karma start karma.conf.js",
     "test:coverage": "karma start karma.conf.js --coverage"
   },
