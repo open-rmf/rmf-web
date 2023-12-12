@@ -1,9 +1,9 @@
 import Ajv from 'ajv';
 import schema from 'api-client/schema';
-import { AxiosError, isAxiosError } from 'axios';
+import axios, { AxiosError } from 'axios';
 
 export function getApiErrorMessage(error: unknown): string {
-  if (!isAxiosError(error)) {
+  if (!axios.isAxiosError(error)) {
     return '';
   }
 
