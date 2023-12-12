@@ -2,9 +2,6 @@
 
 const webpack = require('webpack');
 
-// const supportedLocales = ["en-US"];
-const supportedLocales = ['en-US', 'de', 'pl', 'it'];
-
 /**
  * Webpack configuration
  *
@@ -65,9 +62,6 @@ module.exports = (options) => {
           use: ['style-loader', 'css-loader'],
         },
       ],
-      // loaders: [
-      //   { test: /\.flow$/, loader: 'ignore-loader' }
-      // ]
     },
 
     /**
@@ -82,27 +76,9 @@ module.exports = (options) => {
 
     // https://stackoverflow.com/questions/65018431/webpack-5-uncaught-referenceerror-process-is-not-defined
     plugins: [
-      // new ContextReplacementPlugin(/moment[\/\\]locale$/, /en/),
       new webpack.ProvidePlugin({
         process: 'process/browser',
       }),
-      // new webpack.IgnorePlugin({
-      //   resourceRegExp: /\.js\.flow|\.md/,
-      //   contextRegExp: /date\-fns[\/\\]/
-      // })
-      // new webpack.ContextReplacementPlugin(
-      //   /date\-fns[\/\\]/,
-      //   new RegExp(`[/\\\\\](${supportedLocales.join('|')})[/\\\\\]index\.js$`)
-      // ),
-      // new webpack.ContextReplacementPlugin(
-      //   resourceRegExp: RegExp,
-      //   newContentResource: string,
-      //   newContentCreateContextMap: object // mapping runtime-request (userRequest) to compile-time-request (request)
-      // ),
-      // new webpack.ContextReplacementPlugin(
-      //   /^date-fns[/\\]locale$/,
-      //   new RegExp(`\\.[/\\\\](${supportedLocales.join('|')})[/\\\\]index\\.js$`)
-      // ),
     ],
 
     externals: {

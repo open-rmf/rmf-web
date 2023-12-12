@@ -15,36 +15,36 @@ export const parameters = {
   s: { argTypesRegex: '^on[A-Z].*' },
 };
 
-// const getTheme = (themeName: string): Theme => {
-//   switch (themeName) {
-//     case 'rmf-light':
-//       return rmfLight;
-//     case 'rmf-dark':
-//       return rmfDark;
-//     default:
-//       return defaultTheme;
-//   }
-// };
+const getTheme = (themeName: string): Theme => {
+  switch (themeName) {
+    case 'rmf-light':
+      return rmfLight;
+    case 'rmf-dark':
+      return rmfDark;
+    default:
+      return defaultTheme;
+  }
+};
 
-// const withThemeProvider: DecoratorFn = (Story, context) => {
-//   const theme = getTheme(context.globals.theme);
-//   return (
-//     <ThemeProvider theme={theme}>
-//       <CssBaseline />
-//       <Story {...context} />
-//     </ThemeProvider>
-//   );
-// };
+const withThemeProvider: DecoratorFn = (Story, context) => {
+  const theme = getTheme(context.globals.theme);
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Story {...context} />
+    </ThemeProvider>
+  );
+};
 
-// const withLocalization: DecoratorFn = (Story, context) => {
-//   return (
-//     <LocalizationProvider>
-//       <Story {...context} />
-//     </LocalizationProvider>
-//   );
-// };
+const withLocalization: DecoratorFn = (Story, context) => {
+  return (
+    <LocalizationProvider>
+      <Story {...context} />
+    </LocalizationProvider>
+  );
+};
 
-// export const decorators = [withThemeProvider, withLocalization];
+export const decorators = [withThemeProvider, withLocalization];
 
 export const globalTypes = {
   theme: {
