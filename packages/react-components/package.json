@@ -93,7 +93,7 @@
     "jasmine": "^5.1.0",
     "karma": "^6.4.2",
     "karma-browserstack-launcher": "^1.6.0",
-    "karma-chrome-launcher": "^3.2.0",
+    "karma-chrome-launcher": "^3.1.0",
     "karma-coverage": "^2.2.1",
     "karma-jasmine": "^5.1.0",
     "karma-source-map-support": "^1.4.0",
