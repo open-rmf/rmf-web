@@ -59,7 +59,17 @@ class JwtAuthenticator:
                 issuer=self.iss,
             )
             return await self._get_user(claims)
+        except jwt.InvalidSignatureError as e:
+            logger.error("JWT invalid signature error")
+            raise AuthenticationError(str(e)) from e
+        except jwt.DecodeError as e:
+            logger.error("JWT decode error")
+            raise AuthenticationError(str(e)) from e
+        except jwt.ExpiredSignatureError as e:
+            logger.error("JWT expired signature error")
+            raise AuthenticationError(str(e)) from e
         except jwt.InvalidTokenError as e:
+            logger.error("JWT invalid token error")
             raise AuthenticationError(str(e)) from e
 
     def fastapi_dep(self) -> Callable[..., Union[Coroutine[Any, Any, User], User]]:
@@ -72,6 +82,7 @@ class JwtAuthenticator:
             try:
                 return await self.verify_token(parts[1])
             except AuthenticationError as e:
+                logger.error("Failed to verify token")
                 raise HTTPException(401, str(e)) from e
 
         return dep

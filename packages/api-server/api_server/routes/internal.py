@@ -103,4 +103,4 @@ async def rmf_gateway(websocket: WebSocket):
             msg: Dict[str, Any] = await websocket.receive_json()
             await process_msg(msg, fleet_repo)
     except WebSocketDisconnect:
-        pass
+        logger.warn("Client websocket disconnected")
