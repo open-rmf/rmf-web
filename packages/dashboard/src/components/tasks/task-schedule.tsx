@@ -8,7 +8,7 @@ import {
   SchedulerHelpers,
   SchedulerProps,
 } from '@aldabil/react-scheduler/types';
-import { Button, Grid } from '@mui/material';
+import { Button } from '@mui/material';
 import {
   ApiServerModelsTortoiseModelsScheduledTaskScheduledTask as ScheduledTask,
   ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf as ApiSchedule,
@@ -75,7 +75,7 @@ export const TaskSchedule = () => {
     useCreateTaskFormData(rmf);
   const username = useGetUsername(rmf);
   const [eventScope, setEventScope] = React.useState<string>(EventScopes.CURRENT);
-  const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
+  const [refreshTaskScheduleCount, setRefreshTaskScheduleCount] = React.useState(0);
   const exceptDateRef = React.useRef<Date>(new Date());
   const currentEventIdRef = React.useRef<number>(-1);
   const [currentScheduleTask, setCurrentScheduledTask] = React.useState<ScheduledTask | undefined>(
@@ -92,9 +92,9 @@ export const TaskSchedule = () => {
   });
 
   React.useEffect(() => {
-    const sub = AppEvents.refreshTaskApp.subscribe({
+    const sub = AppEvents.refreshTaskSchedule.subscribe({
       next: () => {
-        setRefreshTaskAppCount((oldValue) => ++oldValue);
+        setRefreshTaskScheduleCount((oldValue) => ++oldValue);
       },
     });
     return () => sub.unsubscribe();
@@ -144,7 +144,7 @@ export const TaskSchedule = () => {
         onClose={() => {
           scheduler.close();
           setEventScope(EventScopes.CURRENT);
-          AppEvents.refreshTaskApp.next();
+          AppEvents.refreshTaskSchedule.next();
         }}
         onSubmit={() => {
           setOpenCreateTaskForm(true);
@@ -157,7 +157,7 @@ export const TaskSchedule = () => {
           if (eventScope === EventScopes.CURRENT) {
             setScheduleToEdit(scheduleWithSelectedDay(task.schedules, exceptDateRef.current));
           }
-          AppEvents.refreshTaskApp.next();
+          AppEvents.refreshTaskSchedule.next();
           scheduler.close();
         }}
       >
@@ -200,7 +200,7 @@ export const TaskSchedule = () => {
       );
 
       setEventScope(EventScopes.CURRENT);
-      AppEvents.refreshTaskApp.next();
+      AppEvents.refreshTaskSchedule.next();
     },
     [rmf, currentScheduleTask, eventScope],
   );
@@ -225,7 +225,7 @@ export const TaskSchedule = () => {
       } else {
         await rmf.tasksApi.delScheduledTasksScheduledTasksTaskIdDelete(task.id);
       }
-      AppEvents.refreshTaskApp.next();
+      AppEvents.refreshTaskSchedule.next();
 
       // Set the default values
       setOpenDeleteScheduleDialog(false);
@@ -261,95 +261,15 @@ export const TaskSchedule = () => {
       disablingCellsWithoutEvents(calendarEvents, { start, ...props }),
   };
 
-  interface ViewSettings {
-    daySettings: DayProps | null;
-    weekSettings: WeekProps | null;
-    monthSettings: MonthProps | null;
-  }
-
-  const [viewSettings, setViewSettings] = React.useState<ViewSettings>({
-    daySettings: null,
-    weekSettings: defaultWeekSettings,
-    monthSettings: null,
-  });
-
-  const translations = {
-    navigation: {
-      month: 'Month',
-      week: 'Week',
-      day: 'Day',
-      today: 'Go to today',
-    },
-    form: {
-      addTitle: 'Add Event',
-      editTitle: 'Edit Event',
-      confirm: 'Confirm',
-      delete: 'Delete',
-      cancel: 'Cancel',
-    },
-    event: {
-      title: 'Title',
-      start: 'Start',
-      end: 'End',
-      allDay: 'All Day',
-    },
-    moreEvents: 'More...',
-    loading: 'Loading...',
-  };
-
   return (
     <div style={{ height: '100%', width: '100%' }}>
-      <Grid container justifyContent="flex-end">
-        <Button
-          size={'small'}
-          sx={viewSettings.daySettings ? { borderBottom: 2, borderRadius: 0 } : {}}
-          onClick={() => {
-            setViewSettings({
-              daySettings: defaultDaySettings,
-              weekSettings: null,
-              monthSettings: null,
-            });
-            AppEvents.refreshTaskApp.next();
-          }}
-        >
-          Day
-        </Button>
-        <Button
-          size={'small'}
-          sx={viewSettings.weekSettings ? { borderBottom: 2, borderRadius: 0 } : {}}
-          onClick={() => {
-            setViewSettings({
-              daySettings: null,
-              weekSettings: defaultWeekSettings,
-              monthSettings: null,
-            });
-            AppEvents.refreshTaskApp.next();
-          }}
-        >
-          Week
-        </Button>
-        <Button
-          size={'small'}
-          sx={viewSettings.monthSettings ? { borderBottom: 2, borderRadius: 0 } : {}}
-          onClick={() => {
-            setViewSettings({
-              daySettings: null,
-              weekSettings: null,
-              monthSettings: defaultMonthSettings,
-            });
-            AppEvents.refreshTaskApp.next();
-          }}
-        >
-          Month
-        </Button>
-      </Grid>
       <Scheduler
         // react-scheduler does not support refreshing, workaround by mounting a new instance.
-        key={`scheduler-${refreshTaskAppCount}`}
+        key={`scheduler-${refreshTaskScheduleCount}`}
         view="week"
-        day={viewSettings.daySettings}
-        week={viewSettings.weekSettings}
-        month={viewSettings.monthSettings}
+        day={defaultDaySettings}
+        week={defaultWeekSettings}
+        month={defaultMonthSettings}
         draggable={false}
         editable={true}
         getRemoteEvents={getRemoteEvents}
@@ -367,21 +287,10 @@ export const TaskSchedule = () => {
             value={eventScope}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setEventScope(event.target.value);
-              AppEvents.refreshTaskApp.next();
+              AppEvents.refreshTaskSchedule.next();
             }}
           />
         )}
-        translations={{
-          ...translations,
-          navigation: {
-            ...translations.navigation,
-            today: viewSettings.daySettings
-              ? 'Today'
-              : viewSettings.weekSettings
-              ? 'This week'
-              : 'This month',
-          },
-        }}
       />
       {openCreateTaskForm && (
         <CreateTaskForm
@@ -396,7 +305,7 @@ export const TaskSchedule = () => {
           onClose={() => {
             setOpenCreateTaskForm(false);
             setEventScope(EventScopes.CURRENT);
-            AppEvents.refreshTaskApp.next();
+            AppEvents.refreshTaskSchedule.next();
           }}
           submitTasks={submitTasks}
           onSuccess={() => {

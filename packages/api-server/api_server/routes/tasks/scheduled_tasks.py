@@ -54,6 +54,7 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
         if datetime_to_iso[:10] in task.except_dates:
             return
         asyncio.get_event_loop().create_task(run())
+        logger.warning(f"schedule has {len(schedule.get_jobs())} jobs left")
 
     for _, j in jobs:
         j.do(do)
@@ -150,7 +151,10 @@ async def del_scheduled_tasks_event(
     for sche in task.schedules:
         schedule.clear(sche.get_id())
 
-    await schedule_task(task, task_repo)
+    try:
+        await schedule_task(task, task_repo)
+    except schedule.ScheduleError as e:
+        raise HTTPException(422, str(e)) from e
 
 
 @router.post(

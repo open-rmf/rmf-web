@@ -18,6 +18,7 @@ export const AppEvents = {
   robotSelect: new Subject<[fleetName: string, robotName: string] | null>(),
   taskSelect: new Subject<TaskState | null>(),
   refreshTaskApp: new Subject<void>(),
+  refreshTaskSchedule: new Subject<void>(),
   refreshAlert: new Subject<void>(),
   alertListOpenedAlert: new Subject<Alert | null>(),
   disabledLayers: new ReplaySubject<Record<string, boolean>>(),
