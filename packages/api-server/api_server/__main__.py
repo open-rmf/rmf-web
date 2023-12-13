@@ -1,6 +1,7 @@
 import os
 
 import uvicorn
+from uvicorn.config import LOGGING_CONFIG
 
 from .app import app
 from .app_config import app_config, load_config
@@ -16,6 +17,9 @@ TORTOISE_ORM = app_config.get_tortoise_orm_config()
 
 
 def main():
+    LOGGING_CONFIG["formatters"]["access"][
+        "fmt"
+    ] = '%(asctime)s %(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s'
     uvicorn.run(
         app,
         host=app_config.host,
