@@ -51,7 +51,6 @@ class JwtAuthenticator:
         if not token:
             raise AuthenticationError("authentication required")
         try:
-            logger.info("Decoding JWT token")
             claims = jwt.decode(
                 token,
                 self._public_key,
@@ -59,8 +58,16 @@ class JwtAuthenticator:
                 audience=self.aud,
                 issuer=self.iss,
             )
-            logger.info("JWT token decoded, getting user")
             return await self._get_user(claims)
+        except jwt.InvalidSignatureError as e:
+            logger.error("JWT invalid signature error")
+            raise AuthenticationError(str(e)) from e
+        except jwt.DecodeError as e:
+            logger.error("JWT decode error")
+            raise AuthenticationError(str(e)) from e
+        except jwt.ExpiredSignatureError as e:
+            logger.error("JWT expired signature error")
+            raise AuthenticationError(str(e)) from e
         except jwt.InvalidTokenError as e:
             logger.error("JWT invalid token error")
             raise AuthenticationError(str(e)) from e
@@ -73,10 +80,6 @@ class JwtAuthenticator:
             if len(parts) != 2 or parts[0].lower() != "bearer":
                 raise HTTPException(401, "invalid bearer format")
             try:
-                if parts[1] is not None:
-                    logger.info(f"Verifying: {parts[1]}")
-                else:
-                    logger.error("Verifying invalid token")
                 return await self.verify_token(parts[1])
             except AuthenticationError as e:
                 logger.error("Failed to verify token")
