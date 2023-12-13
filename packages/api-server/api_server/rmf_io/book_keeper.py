@@ -136,7 +136,7 @@ class RmfBookKeeper:
     def _record_beacon_state(self):
         async def update(beacon_state: BeaconState):
             await beacon_state.save()
-            self._loggers.beacon_state.info(json.dumps(beacon_state.dict()))
+            self._loggers.beacon_state.debug(json.dumps(beacon_state.dict()))
 
         self._subscriptions.append(
             self.rmf.beacons.subscribe(lambda x: self._create_task(update(x)))
@@ -165,7 +165,7 @@ class RmfBookKeeper:
     def _record_door_state(self):
         async def update(door_state: DoorState):
             await door_state.save()
-            self._loggers.door_state.info(json.dumps(door_state.dict()))
+            self._loggers.door_state.debug(json.dumps(door_state.dict()))
 
         self._subscriptions.append(
             self.rmf.door_states.subscribe(lambda x: self._create_task(update(x)))
@@ -183,7 +183,7 @@ class RmfBookKeeper:
     def _record_lift_state(self):
         async def update(lift_state: LiftState):
             await lift_state.save()
-            self._loggers.lift_state.info(lift_state.json())
+            self._loggers.lift_state.debug(lift_state.json())
 
         self._subscriptions.append(
             self.rmf.lift_states.subscribe(lambda x: self._create_task(update(x)))

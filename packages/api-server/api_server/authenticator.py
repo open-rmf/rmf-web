@@ -76,10 +76,10 @@ class JwtAuthenticator:
                 if parts[1] is not None:
                     logger.info(f"Verifying: {parts[1]}")
                 else:
-                    logger.error(f"Verifying invalid token")
+                    logger.error("Verifying invalid token")
                 return await self.verify_token(parts[1])
             except AuthenticationError as e:
-                logger.error(f"Failed to verify token")
+                logger.error("Failed to verify token")
                 raise HTTPException(401, str(e)) from e
 
         return dep
