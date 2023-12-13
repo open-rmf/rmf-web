@@ -540,7 +540,7 @@ importers:
         specifier: ^1.6.0
         version: 1.6.0(karma@6.4.2)
       karma-chrome-launcher:
-        specifier: ^3.2.0
+        specifier: ^3.1.0
         version: 3.2.0
       karma-coverage:
         specifier: ^2.2.1
