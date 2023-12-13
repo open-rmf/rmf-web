@@ -201,7 +201,7 @@ class RmfBookKeeper:
     def _record_dispenser_state(self):
         async def update(dispenser_state: DispenserState):
             await dispenser_state.save()
-            self._loggers.dispenser_state.info(dispenser_state.json())
+            self._loggers.dispenser_state.debug(dispenser_state.json())
 
         self._subscriptions.append(
             self.rmf.dispenser_states.subscribe(lambda x: self._create_task(update(x)))
@@ -219,7 +219,7 @@ class RmfBookKeeper:
     def _record_ingestor_state(self):
         async def update(ingestor_state: IngestorState):
             await ingestor_state.save()
-            self._loggers.ingestor_state.info(ingestor_state.json())
+            self._loggers.ingestor_state.debug(ingestor_state.json())
 
         self._subscriptions.append(
             self.rmf.ingestor_states.subscribe(lambda x: self._create_task(update(x)))
