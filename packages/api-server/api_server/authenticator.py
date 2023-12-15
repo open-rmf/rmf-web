@@ -64,7 +64,7 @@ class JwtAuthenticator:
             logger.error("public_key:")
             logger.error(self._public_key)
             logger.error("aud:")
-            logger.errror(self.aud)
+            logger.error(self.aud)
             logger.error("iss:")
             logger.error(self.iss)
             raise AuthenticationError(str(e)) from e
