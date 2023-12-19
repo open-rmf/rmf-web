@@ -97,6 +97,14 @@ export class RmfIngress {
       req.headers['Authorization'] = `Bearer ${token}`;
       return req;
     });
+    axiosInst.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response.status === 401) {
+          window.location.href = '/';
+        }
+      },
+    );
     const apiConfig = new Configuration({
       accessToken: authenticator.token,
       basePath: appConfig.rmfServerUrl,
