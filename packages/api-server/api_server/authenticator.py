@@ -49,6 +49,7 @@ class JwtAuthenticator:
 
     async def verify_token(self, token: Optional[str]) -> User:
         if not token:
+            logger.error("No token provided")
             raise AuthenticationError("authentication required")
         try:
             claims = jwt.decode(
@@ -61,15 +62,19 @@ class JwtAuthenticator:
             return await self._get_user(claims)
         except jwt.InvalidSignatureError as e:
             logger.error("JWT invalid signature error")
+            logger.error(f"Token: {token}")
             raise AuthenticationError(str(e)) from e
         except jwt.DecodeError as e:
             logger.error("JWT decode error")
+            logger.error(f"Token: {token}")
             raise AuthenticationError(str(e)) from e
         except jwt.ExpiredSignatureError as e:
             logger.error("JWT expired signature error")
+            logger.error(f"Token: {token}")
             raise AuthenticationError(str(e)) from e
         except jwt.InvalidTokenError as e:
             logger.error("JWT invalid token error")
+            logger.error(f"Token: {token}")
             raise AuthenticationError(str(e)) from e
 
     def fastapi_dep(self) -> Callable[..., Union[Coroutine[Any, Any, User], User]]:
