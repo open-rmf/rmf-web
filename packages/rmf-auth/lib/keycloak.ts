@@ -83,10 +83,10 @@ export class KeycloakAuthenticator
     try {
       const refreshed = await this._inst.updateToken(30);
       refreshed && debug('token refreshed');
-      console.log(`${new Date().toLocaleTimeString()}: token refreshed 30`);
+      console.log(`${new Date().toLocaleTimeString()}: initToken token refreshed 30`);
     } catch {
       debug('token not refreshed');
-      console.log(`${new Date().toLocaleTimeString()}: token not refreshed 30`);
+      console.log(`${new Date().toLocaleTimeString()}: initToken token not refreshed 30`);
     }
 
     this._user = this._inst.tokenParsed && this._getUser();
@@ -96,17 +96,17 @@ export class KeycloakAuthenticator
   }
 
   async refreshToken(): Promise<void> {
-    // check and update the token 5 seconds prior to expiry
+    // check and update the token 30 seconds prior to expiry
     if (this._initialized) {
-      const refreshed = await this._inst.updateToken(5);
+      const refreshed = await this._inst.updateToken(30);
       if (refreshed) {
         this._user = this._getUser();
         this._isAdmin = this._isUserAdmin();
         this.emit('tokenRefresh', null);
-        console.log(`${new Date().toLocaleTimeString()}: token refreshed 5`);
+        console.log(`${new Date().toLocaleTimeString()}: refreshToken token refreshed 30`);
       } else {
         debug('token not refreshed');
-        console.error(`${new Date().toLocaleTimeString()}: token not refreshed 5`);
+        console.error(`${new Date().toLocaleTimeString()}: refreshToken token not refreshed 30`);
       }
     }
     return;
