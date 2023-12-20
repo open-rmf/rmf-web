@@ -88,18 +88,24 @@ export class RmfIngress {
     // the axios swagger generator is bugged, it does not properly attach the token so we have
     // to manually add them.
     const axiosInst = axios.create();
-    axiosInst.interceptors.request.use(async (req) => {
-      await authenticator.refreshToken();
-      const token = authenticator.token;
-      if (!token) {
+    axiosInst.interceptors.request.use(
+      async (req) => {
+        await authenticator.refreshToken();
+        const token = authenticator.token;
+        if (!token) {
+          return req;
+        }
+        req.headers['Authorization'] = `Bearer ${token}`;
         return req;
-      }
-      req.headers['Authorization'] = `Bearer ${token}`;
-      return req;
-    });
+      },
+      (error) => {
+        console.error(`Axios request error: ${error}`);
+      },
+    );
     axiosInst.interceptors.response.use(
       (response) => response,
       (error) => {
+        console.error(`Axios response error: ${error}`);
         if (error.response.status === 401) {
           window.location.href = '/';
         }
