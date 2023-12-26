@@ -942,6 +942,7 @@ export interface CreateTaskFormProps
   patrolWaypoints?: string[];
   pickupZones?: string[];
   cartIds?: string[];
+  emergencyLots?: string[];
   pickupPoints?: Record<string, string>;
   dropoffPoints?: Record<string, string>;
   favoritesTasks?: TaskFavorite[];
@@ -967,6 +968,7 @@ export function CreateTaskForm({
   patrolWaypoints = [],
   pickupZones = [],
   cartIds = [],
+  emergencyLots = [],
   pickupPoints = {},
   dropoffPoints = {},
   favoritesTasks = [],
