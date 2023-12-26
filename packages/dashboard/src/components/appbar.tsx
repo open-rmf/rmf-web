@@ -164,7 +164,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [settingsAnchor, setSettingsAnchor] = React.useState<HTMLElement | null>(null);
   const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
   const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
-  const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
   const [alertListAnchor, setAlertListAnchor] = React.useState<HTMLElement | null>(null);
   const [unacknowledgedAlertsNum, setUnacknowledgedAlertsNum] = React.useState(0);
   const [unacknowledgedAlertList, setUnacknowledgedAlertList] = React.useState<Alert[]>([]);
@@ -181,13 +180,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       console.error(`error logging out: ${(e as Error).message}`);
     }
   }
-
-  React.useEffect(() => {
-    const sub = AppEvents.refreshTaskApp.subscribe({
-      next: () => setRefreshTaskAppCount((oldValue) => ++oldValue),
-    });
-    return () => sub.unsubscribe();
-  }, []);
 
   React.useEffect(() => {
     if (!logoResourcesContext) return;
@@ -291,17 +283,17 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     if (!rmf) {
       return;
     }
-    (async () => {
-      const resp = await rmf.tasksApi.getFavoritesTasksFavoriteTasksGet();
 
+    const getFavoriteTasks = async () => {
+      const resp = await rmf.tasksApi.getFavoritesTasksFavoriteTasksGet();
       const results = resp.data as TaskFavorite[];
       setFavoritesTasks(results);
-    })();
-
-    return () => {
-      setFavoritesTasks([]);
     };
-  }, [rmf, refreshTaskAppCount]);
+    getFavoriteTasks();
+
+    const sub = AppEvents.refreshFavoriteTasks.subscribe({ next: getFavoriteTasks });
+    return () => sub.unsubscribe();
+  }, [rmf]);
 
   const submitFavoriteTask = React.useCallback<Required<CreateTaskFormProps>['submitFavoriteTask']>(
     async (taskFavoriteRequest) => {
@@ -309,7 +301,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
         throw new Error('tasks api not available');
       }
       await rmf.tasksApi.postFavoriteTaskFavoriteTasksPost(taskFavoriteRequest);
-      AppEvents.refreshTaskApp.next();
+      AppEvents.refreshFavoriteTasks.next();
     },
     [rmf],
   );
@@ -324,7 +316,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       }
 
       await rmf.tasksApi.deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(favoriteTask.id);
-      AppEvents.refreshTaskApp.next();
+      AppEvents.refreshFavoriteTasks.next();
     },
     [rmf],
   );
