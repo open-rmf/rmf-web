@@ -3,6 +3,7 @@ import TextField from '@mui/material/TextField';
 import React from 'react';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { requestDoorModeToString, requestModeToString } from './lift-utils';
+import { LiftRequest as RmfLiftRequest } from 'rmf-models';
 
 const classes = {
   closeButton: 'lift-request-close-button',
@@ -136,6 +137,7 @@ export const LiftRequestDialog = ({
           getOptionLabel={(option) => option}
           onChange={(_, value) => setDestination(value || '')}
           options={availableLevels}
+          disabled={requestType === RmfLiftRequest.REQUEST_END_SESSION}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -155,6 +157,7 @@ export const LiftRequestDialog = ({
           getOptionLabel={(option) => requestDoorModeToString(option)}
           onChange={(_, value) => setDoorState(value as number)}
           options={availableDoorModes}
+          disabled={requestType === RmfLiftRequest.REQUEST_END_SESSION}
           renderInput={(params) => (
             <TextField
               {...params}
