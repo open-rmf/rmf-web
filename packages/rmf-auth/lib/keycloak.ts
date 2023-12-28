@@ -55,19 +55,23 @@ export class KeycloakAuthenticator
   async init(): Promise<void> {
     if (this._initialized) {
       debug('already initialized');
+      console.log('already initialized');
       return;
     }
 
     debug('initializing authenticator');
+    console.log('initializing authenticator');
 
     this._inst.onAuthSuccess = async () => {
       this._user = this._getUser();
       debug('authenticated as', this._user);
+      console.log('authenticated as', this._user);
       this.emit('userChanged', this._user);
     };
 
     this._inst.onAuthLogout = () => {
       debug('logout');
+      console.log('logout');
       this._user = undefined;
       this.emit('userChanged', null);
     };
@@ -79,8 +83,10 @@ export class KeycloakAuthenticator
     try {
       const refreshed = await this._inst.updateToken(30);
       refreshed && debug('token refreshed');
+      console.log('token refreshed 30');
     } catch {
       debug('token not refreshed');
+      console.log('token not refreshed 30');
     }
 
     this._user = this._inst.tokenParsed && this._getUser();
@@ -90,15 +96,17 @@ export class KeycloakAuthenticator
   }
 
   async refreshToken(): Promise<void> {
-    // check and update the token 5 seconds prior to expiry
+    // check and update the token 30 seconds prior to expiry
     if (this._initialized) {
-      const refreshed = await this._inst.updateToken(5);
+      const refreshed = await this._inst.updateToken(30);
       if (refreshed) {
         this._user = this._getUser();
         this._isAdmin = this._isUserAdmin();
         this.emit('tokenRefresh', null);
+        console.log('refreshToken: token refreshed');
       } else {
-        debug('token not refreshed');
+        console.error('refreshToken: token not refreshed');
+        // debug('token not refreshed');
       }
     }
     return;
