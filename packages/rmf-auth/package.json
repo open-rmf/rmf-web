@@ -5,12 +5,12 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc --build",
-    "build:storybook": "build-storybook -s test-data",
+    "build:storybook": "sb build -s test-data",
     "build:watch": "pnpm run build -- --watch",
     "clean": "tsc --build --clean",
     "lint": "eslint --max-warnings 0 --ext ts,tsx, lib",
     "prepack": "pnpm run clean && pnpm run lint && pnpm run --filter {.}... build && pnpm test",
-    "start": "start-storybook -p 6006 -s test-data",
+    "start": "sb dev -p 6006 -s test-data",
     "test": "jest --watch",
     "test:coverage": "jest --coverage"
   },
@@ -36,6 +36,7 @@
     "@storybook/addon-actions": "^7.6.3",
     "@storybook/addon-essentials": "^7.6.3",
     "@storybook/addon-links": "^7.6.3",
+    "@storybook/cli": "^7.6.3",
     "@storybook/react": "^7.6.3",
     "@testing-library/dom": "^9.3.3",
     "@testing-library/jest-dom": "^6.1.5",
