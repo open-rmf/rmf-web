@@ -18,7 +18,6 @@ import { makeStyles, createStyles } from '@mui/styles';
 const useStyles = makeStyles(() =>
   createStyles({
     textField: {
-      // background: theme.palette.background.default,
       pointerEvents: 'none',
     },
   }),

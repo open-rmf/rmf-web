@@ -1391,19 +1391,6 @@ export function CreateTaskForm({
                         updateTasks();
                       }}
                       label="Start Time"
-                      // renderInput={(props) => (
-                      //   <TextField
-                      //     {...props}
-                      //     InputLabelProps={{
-                      //       style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 },
-                      //     }}
-                      //     sx={{
-                      //       '& .MuiInputBase-input': {
-                      //         fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                      //       },
-                      //     }}
-                      //   />
-                      // )}
                     />
                   </Grid>
                   <Grid item xs={1}>
@@ -1433,19 +1420,6 @@ export function CreateTaskForm({
                         updateTasks();
                       }}
                       label="Warn Time"
-                      // renderInput={(props) => (
-                      //   <TextField
-                      //     {...props}
-                      //     InputLabelProps={{
-                      //       style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 },
-                      //     }}
-                      //     sx={{
-                      //       '& .MuiInputBase-input': {
-                      //         fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                      //       },
-                      //     }}
-                      //   />
-                      // )}
                     />
                   </Grid>
                 </Grid>
@@ -1594,18 +1568,6 @@ export function CreateTaskForm({
                 }
                 label="Start On"
                 disabled={!scheduleEnabled}
-                // renderInput={(props) => (
-                //   <TextField
-                //     {...props}
-                //     size="small"
-                //     fullWidth
-                //     sx={{
-                //       '& .MuiInputBase-input': {
-                //         fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                //       },
-                //     }}
-                //   />
-                // )}
               />
             </Grid>
             <Grid item xs={6}>
@@ -1627,18 +1589,6 @@ export function CreateTaskForm({
                 }}
                 label="At"
                 disabled={!scheduleEnabled}
-                // renderInput={(props) => (
-                //   <TextField
-                //     {...props}
-                //     fullWidth
-                //     size="small"
-                //     sx={{
-                //       '& .MuiInputBase-input': {
-                //         fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                //       },
-                //     }}
-                //   />
-                // )}
               />
             </Grid>
             <Grid item xs={12}>
@@ -1696,17 +1646,6 @@ export function CreateTaskForm({
                       })
                     }
                     disabled={scheduleUntilValue !== ScheduleUntilValue.ON}
-                    // renderInput={(props) => (
-                    //   <TextField
-                    //     {...props}
-                    //     fullWidth
-                    //     sx={{
-                    //       '& .MuiInputBase-input': {
-                    //         fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                    //       },
-                    //     }}
-                    //   />
-                    // )}
                   />
                 </Grid>
               </RadioGroup>
