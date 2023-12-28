@@ -33,13 +33,7 @@ jobs:
       - name: lint
         run: pnpm run lint
       - name: test
-        uses: nick-fields/retry@v2
-        with:
-          timeout_minutes: 20
-          max_attempts: 3
-          command: |
-            cd packages/react-components
-            pnpm run test:coverage
+        run: pnpm run test:coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
