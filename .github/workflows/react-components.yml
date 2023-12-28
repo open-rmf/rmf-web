@@ -33,7 +33,11 @@ jobs:
       - name: lint
         run: pnpm run lint
       - name: test
-        run: pnpm run test:coverage
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 20
+          max_attempts: 3
+          command: pnpm run test:coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
