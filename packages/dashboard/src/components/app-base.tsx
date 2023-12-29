@@ -35,7 +35,7 @@ const defaultTheme = createTheme({
 export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element | null {
   const [settings, setSettings] = React.useState(() => loadSettings());
   const [showAlert, setShowAlert] = React.useState(false);
-  const [lowResolutionAlert, setLowResolutionAlert] = React.useState(false);
+  // const [lowResolutionAlert, setLowResolutionAlert] = React.useState(false);
   const [alertSeverity, setAlertSeverity] = React.useState<AlertProps['severity']>('error');
   const [alertMessage, setAlertMessage] = React.useState('');
   const [alertDuration, setAlertDuration] = React.useState(DefaultAlertDuration);
@@ -71,47 +71,47 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
     [updateSettings],
   );
 
-  React.useEffect(() => {
-    const checkSize = () => {
-      if (window.innerHeight < 1080 || window.innerWidth < 1080) {
-        setLowResolutionAlert(true);
-      }
-    };
-    checkSize();
-    window.addEventListener('resize', checkSize);
-  }, []);
+  // React.useEffect(() => {
+  //   const checkSize = () => {
+  //     if (window.innerHeight < 1080 || window.innerWidth < 1080) {
+  //       setLowResolutionAlert(true);
+  //     }
+  //   };
+  //   checkSize();
+  //   window.addEventListener('resize', checkSize);
+  // }, []);
 
-  const dismissDisplayAlert = () => {
-    setLowResolutionAlert(false);
-  };
+  // const dismissDisplayAlert = () => {
+  //   setLowResolutionAlert(false);
+  // };
 
-  const lowResolutionDisplayAlert = () => {
-    return (
-      <AlertDialog
-        key="display-alert"
-        onDismiss={dismissDisplayAlert}
-        title="Low display resolution detected"
-        alertContents={[
-          {
-            title: 'Current resolution',
-            value: `${window.innerWidth} x ${window.innerHeight}`,
-          },
-          {
-            title: 'Minimum recommended resolution',
-            value: '1920 x 1080',
-          },
-          {
-            title: 'Message',
-            value:
-              'To ensure maximum compatibility, please reduce the zoom ' +
-              'level in the browser (Ctrl-Minus) or display settings, ' +
-              'or change to a higher resolution display device.',
-          },
-        ]}
-        backgroundColor={theme.palette.background.default}
-      />
-    );
-  };
+  // const lowResolutionDisplayAlert = () => {
+  //   return (
+  //     <AlertDialog
+  //       key="display-alert"
+  //       onDismiss={dismissDisplayAlert}
+  //       title="Low display resolution detected"
+  //       alertContents={[
+  //         {
+  //           title: 'Current resolution',
+  //           value: `${window.innerWidth} x ${window.innerHeight}`,
+  //         },
+  //         {
+  //           title: 'Minimum recommended resolution',
+  //           value: '1920 x 1080',
+  //         },
+  //         {
+  //           title: 'Message',
+  //           value:
+  //             'To ensure maximum compatibility, please reduce the zoom ' +
+  //             'level in the browser (Ctrl-Minus) or display settings, ' +
+  //             'or change to a higher resolution display device.',
+  //         },
+  //       ]}
+  //       backgroundColor={theme.palette.background.default}
+  //     />
+  //   );
+  // };
 
   return (
     <ThemeProvider theme={theme}>
@@ -121,7 +121,7 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
         <AppControllerContext.Provider value={appController}>
           <AlertStore />
           <DeliveryAlertStore />
-          {lowResolutionAlert && lowResolutionDisplayAlert()}
+          {/* {lowResolutionAlert && lowResolutionDisplayAlert()} */}
           <Grid
             container
             direction="column"
