@@ -6,36 +6,21 @@ describe('submit task', () => {
     await (await appBar.$('button[aria-label="Tasks"]')).click();
     await (await appBar.$('button[aria-label="new task"]')).click();
     await (await $('#task-type')).click();
-    const getDeliveryOption = async () => {
+    const getPatrolOption = async () => {
       const options = await $$('[role=option]');
       for (const opt of options) {
         const text = await opt.getText();
-        if (text === 'Delivery - 1:1') {
+        if (text === 'Patrol') {
           return opt;
         }
       }
       return null;
     };
-    await browser.waitUntil(async () => !!(await getDeliveryOption()));
-    const deliveryOption = (await getDeliveryOption())!;
-    await deliveryOption.click();
+    await browser.waitUntil(async () => !!(await getPatrolOption()));
+    const patrolOption = (await getPatrolOption())!;
+    await patrolOption.click();
 
-    await (await $('#pickup-location')).click();
-    const getPantryOption = async () => {
-      const options = await $$('[role=option]');
-      for (const opt of options) {
-        const text = await opt.getText();
-        if (text === 'pantry') {
-          return opt;
-        }
-      }
-      return null;
-    };
-    await browser.waitUntil(async () => !!(await getPantryOption()));
-    const pantryOption = (await getPantryOption())!;
-    await pantryOption.click();
-
-    await (await $('#dropoff-location')).click();
+    await (await $('#place-input')).click();
     const getCoeOption = async () => {
       const options = await $$('[role=option]');
       for (const opt of options) {
