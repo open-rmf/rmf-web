@@ -36,9 +36,8 @@ jobs:
         with:
           package: rmf-dashboard-e2e
           skip-build: true
-      # Somehow this step is not needed
-      # - name: overlay
-      #   uses: ./.github/actions/overlay
+      - name: overlay
+        uses: ./.github/actions/overlay
       - name: test
         uses: nick-fields/retry@v2
         with:
