@@ -30,12 +30,12 @@ jobs:
           package: react-components
       # - name: run storybook in dev ci mode
       #   run: pnpm run start:ci
-      - name: build
-        run: pnpm run --filter {.}^... build
       - name: lint
         run: pnpm run lint
       - name: test
-        run: pnpm run test:coverage
+        run: |
+          pnpm install && node node_modules/puppeteer/install.js
+          pnpm run test:coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
