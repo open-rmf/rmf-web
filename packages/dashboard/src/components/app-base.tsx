@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import React from 'react';
-import { rmfDark, rmfDarkLeaflet, rmfLight, AlertDialog } from 'react-components';
+import { rmfDark, rmfDarkLeaflet, rmfLight } from 'react-components';
 import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
 import { AppController, AppControllerContext, SettingsContext } from './app-contexts';
 import AppBar from './appbar';
