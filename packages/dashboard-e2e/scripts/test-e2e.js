@@ -13,11 +13,16 @@ const wdioArgs = process.argv
   .map((arg) => `"${arg}"`)
   .join(' ');
 
-concurrently([...services, `wdio ${wdioArgs}`], {
+const { result } = concurrently([...services, `wdio ${wdioArgs}`], {
   killOthers: ['success', 'failure'],
   successCondition: 'first',
   prefix: 'none',
-}).catch((e) => {
-  console.error(e);
-  process.exitCode = -1;
 });
+
+result.then(
+  () => {},
+  () => {
+    console.error('End-to-end test failed.');
+    process.exitCode = -1;
+  },
+);
