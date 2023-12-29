@@ -34,7 +34,8 @@ jobs:
         run: pnpm run lint
       - name: test
         run: |
-          pnpm install && node node_modules/puppeteer/install.js
+          pnpm run --filter {.}^... build
+          pnpm run build
           pnpm run test:coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
