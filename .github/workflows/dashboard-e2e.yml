@@ -36,6 +36,8 @@ jobs:
         with:
           package: rmf-dashboard-e2e
           skip-build: true
+      - name: build test
+        run: pnpm run build:test
       - name: test
         uses: nick-fields/retry@v2
         with:
@@ -44,7 +46,7 @@ jobs:
           command: |
             . /rmf_demos_ws/install/setup.bash
             cd packages/dashboard-e2e
-            pnpm test
+            pnpm run start:test
           shell: bash
       - name: upload artifacts
         uses: actions/upload-artifact@v2

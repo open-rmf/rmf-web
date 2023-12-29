@@ -8,7 +8,8 @@
   "scripts": {
     "start": "node scripts/start.js",
     "start:rmf-server": "pnpm --prefix ../api-server start",
-    "test": "node scripts/test-e2e.js",
+    "build:test": "node scripts/build.js",
+    "start:test": "node scripts/test-e2e.js",
     "test:dev": "E2E_DASHBOARD_URL=http://localhost:3000 RMF_LAUNCH_MODE=none wdio"
   },
   "devDependencies": {
