@@ -5,6 +5,7 @@ import {
   LinearProgress,
   LinearProgressProps,
   TextField,
+  Theme,
   Typography,
   Divider,
   useMediaQuery,
@@ -15,9 +16,10 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { makeStyles, createStyles } from '@mui/styles';
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     textField: {
+      background: theme.palette.background.default,
       pointerEvents: 'none',
     },
   }),
