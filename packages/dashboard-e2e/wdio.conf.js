@@ -149,6 +149,22 @@ exports.config = {
               osVersion: '11',
             }),
           },
+          {
+            browserName: 'firefox',
+            browserVersion: 'latest',
+            'bstack:options': browserstackOptions({
+              os: 'Windows',
+              osVersion: '10',
+            }),
+          },
+          {
+            browserName: 'firefox',
+            browserVersion: 'latest',
+            'bstack:options': browserstackOptions({
+              os: 'Windows',
+              osVersion: '11',
+            }),
+          },
           // {
           //   browserName: 'safari',
           //   browserVersion: 'latest',
