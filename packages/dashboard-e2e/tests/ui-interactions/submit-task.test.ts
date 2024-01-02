@@ -37,5 +37,5 @@ describe('submit task', () => {
 
     await (await $('button[aria-label="Submit Now"]')).click();
     await expect($('div=Successfully created task')).toBeDisplayed();
-  }).timeout(60000);
+  });
 });
