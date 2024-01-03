@@ -74,9 +74,12 @@ class ScheduledTaskSchedule(Model):
             print(f"to_job until: {self.until}")
             print(f"to_job until timestamp: {self.until.timestamp()}")
             print(
-                f"to_job until timestamp utc: {datetime.utcfromtimestamp(self.until.timestamp())}"
+                f"to_job until utcfromtimestamp: {datetime.utcfromtimestamp(self.until.timestamp())}"
             )
-            job = job.until(datetime.utcfromtimestamp(self.until.timestamp()))
+            print(
+                f"to_job until fromtimestamp: {datetime.fromtimestamp(self.until.timestamp())}"
+            )
+            job = job.until(datetime.fromtimestamp(self.until.timestamp()))
 
         if self.period in (
             ScheduledTaskSchedule.Period.Monday,
@@ -100,7 +103,7 @@ class ScheduledTaskSchedule(Model):
         # Hashable value in order to tag the job with a unique identifier
         job.tag(self._id)
         if self.at is not None:
-            print(self.at)
+            print(f"setting at {self.at}")
             job = job.at(self.at)
 
         return job
