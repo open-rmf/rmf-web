@@ -71,6 +71,11 @@ class ScheduledTaskSchedule(Model):
             # schedule uses `datetime.now()`, which is tz naive
             # Assuming self.until is a datetime object with timezone information
             # Convert the timestamp to datetime without changing the timezone
+            print(f"to_job until: {self.until}")
+            print(f"to_job until timestamp: {self.until.timestamp()}")
+            print(
+                f"to_job until timestamp utc: {datetime.utcfromtimestamp(self.until.timestamp())}"
+            )
             job = job.until(datetime.utcfromtimestamp(self.until.timestamp()))
 
         if self.period in (
@@ -95,6 +100,7 @@ class ScheduledTaskSchedule(Model):
         # Hashable value in order to tag the job with a unique identifier
         job.tag(self._id)
         if self.at is not None:
+            print(self.at)
             job = job.at(self.at)
 
         return job
