@@ -49,7 +49,7 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
         await task.save()
 
     def do():
-        logger.info(f"starting task {task.pk}")
+        logger.info(f"schedule starting task {task.pk}")
         datetime_to_iso = datetime.now().isoformat()
         if datetime_to_iso[:10] in task.except_dates:
             return
