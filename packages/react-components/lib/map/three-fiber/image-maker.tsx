@@ -23,6 +23,9 @@ export const ReactThreeFiberImageMaker = ({ level, imageUrl }: ImageThreeProps):
   const x_offset = (texture.image.width * scale) / 2 + image.x_offset;
   const y_offset = -(texture.image.height * scale) / 2 + image.y_offset;
 
+  {
+    /* eslint-disable react/no-unknown-property */
+  }
   return (
     <mesh position={[x_offset, y_offset, 0]}>
       <planeGeometry
@@ -32,4 +35,7 @@ export const ReactThreeFiberImageMaker = ({ level, imageUrl }: ImageThreeProps):
       <meshBasicMaterial attach="material" map={texture} toneMapped={false} />
     </mesh>
   );
+  {
+    /* eslint-enable react/no-unknown-property */
+  }
 };

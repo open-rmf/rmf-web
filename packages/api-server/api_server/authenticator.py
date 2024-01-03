@@ -62,6 +62,12 @@ class JwtAuthenticator:
             return await self._get_user(claims)
         except jwt.InvalidSignatureError as e:
             logger.error("JWT invalid signature error")
+            logger.error("public_key:")
+            logger.error(self._public_key)
+            logger.error("aud:")
+            logger.error(self.aud)
+            logger.error("iss:")
+            logger.error(self.iss)
             logger.error(f"Token: {token}")
             raise AuthenticationError(str(e)) from e
         except jwt.DecodeError as e:
@@ -88,6 +94,10 @@ class JwtAuthenticator:
                 return await self.verify_token(parts[1])
             except AuthenticationError as e:
                 logger.error("Failed to verify token")
+                logger.error("auth header:")
+                logger.error(auth_header)
+                logger.error("parts[1]:")
+                logger.error(parts[1])
                 raise HTTPException(401, str(e)) from e
 
         return dep

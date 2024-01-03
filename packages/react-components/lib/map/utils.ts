@@ -1,32 +1,9 @@
 import type { AffineImage, Door, Location2D } from 'api-client';
-import L from 'leaflet';
 import { Door as RmfDoor } from 'rmf-models';
 import { fromRmfCoords, fromRmfYaw } from '../utils';
 import { Level, Graph } from 'api-client';
 import { Box3, Vector3, Euler } from 'three';
 import { GraphNode } from 'rmf-models';
-
-export function viewBoxFromLeafletBounds(bounds: L.LatLngBoundsExpression): string {
-  const lbounds = bounds instanceof L.LatLngBounds ? bounds : new L.LatLngBounds(bounds);
-  const width = lbounds.getEast() - lbounds.getWest();
-  const height = lbounds.getNorth() - lbounds.getSouth();
-  return `${lbounds.getWest()} ${lbounds.getNorth()} ${width} ${height}`;
-}
-
-export function affineImageBounds(
-  image: AffineImage,
-  width: number,
-  height: number,
-): L.LatLngBoundsLiteral {
-  // FIXME: This assumes that the origin is at the top left.
-  // RMF does not provide enough information to determine the origin. We need at least 2
-  // points to draw a rectangle, but RMF only provides x, y, width. height. Width and height
-  // cannot find the end points because they are absolute values.
-  return [
-    [image.y_offset, image.x_offset],
-    [-(height * image.scale + image.y_offset), width * image.scale + image.x_offset],
-  ];
-}
 
 export function loadAffineImage(image: AffineImage): Promise<HTMLImageElement> {
   const imageElement = new Image();

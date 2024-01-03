@@ -4,7 +4,7 @@ import schema from 'api-client/dist/schema';
 import { ajv } from '../utils';
 
 export function parseTasksFile(contents: string): TaskRequest[] {
-  const obj = JSON.parse(contents) as unknown[];
+  const obj = JSON.parse(contents) as TaskRequest[];
   if (!Array.isArray(obj)) {
     throw new Error('Expected an array of tasks');
   }

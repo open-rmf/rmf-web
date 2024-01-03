@@ -36,9 +36,6 @@ jobs:
         with:
           package: rmf-dashboard-e2e
           skip-build: true
-      # Somehow this step is not needed
-      # - name: overlay
-      #   uses: ./.github/actions/overlay
       - name: test
         uses: nick-fields/retry@v2
         with:
@@ -46,7 +43,6 @@ jobs:
           max_attempts: 3
           command: |
             . /rmf_demos_ws/install/setup.bash
-            . ~/hammer_overlay_ws/install/setup.bash
             cd packages/dashboard-e2e
             pnpm test
           shell: bash

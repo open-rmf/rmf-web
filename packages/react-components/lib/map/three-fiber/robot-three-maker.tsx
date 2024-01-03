@@ -55,6 +55,7 @@ const RobotImageMaker = ({
   }
 
   return (
+    /* eslint-disable react/no-unknown-property */
     <>
       <mesh
         position={position}
@@ -75,6 +76,7 @@ const RobotImageMaker = ({
         />
       </mesh>
     </>
+    /* eslint-enable react/no-unknown-property */
   );
 };
 
@@ -103,6 +105,7 @@ export const RobotThreeMaker = ({
   return (
     <>
       {isHovered && (
+        // eslint-disable-next-line react/no-unknown-property
         <mesh position={position} scale={[0.5, 0.5, 0.5]}>
           <Html zIndexRange={[1]}>
             <div

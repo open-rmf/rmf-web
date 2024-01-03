@@ -145,10 +145,9 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
       autoHeight={true}
       getRowId={(r) => r.name}
       rows={robots}
-      pageSize={5}
+      paginationModel={{ page: 0, pageSize: 5 }}
       rowHeight={38}
       columns={columns}
-      rowsPerPageOptions={[5]}
       sx={{
         fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
       }}

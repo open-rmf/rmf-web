@@ -50,8 +50,10 @@ export const ShapeThreeRendering = ({
           <meshBasicMaterial color={color} />
         </Circle>
       ) : (
+        // eslint-disable-next-line react/no-unknown-property
         <group position={position}>
           <mesh
+            // eslint-disable-next-line react/no-unknown-property
             position={[0, 0, positionZ]}
             scale={[0.5, 0.5, 0.5]}
             onPointerOver={debouncedHandlePointerOver}
@@ -73,7 +75,9 @@ export const ShapeThreeRendering = ({
                 </div>
               </Html>
             )}
+            {/* eslint-disable-next-line react/no-unknown-property */}
             <boxGeometry args={[1.3, 1.3, 1.3]} />
+            {/* eslint-disable-next-line react/no-unknown-property */}
             <meshStandardMaterial color={color} opacity={0.6} transparent />
           </mesh>
         </group>

@@ -142,8 +142,8 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
                   ? 2
                   : 4
                 : isScreenHeightLessThan800
-                ? 0.4
-                : 2,
+                  ? 0.4
+                  : 2,
             fontWeight: 'bold',
             fontSize: isScreenHeightLessThan800 ? 10 : 16,
             display: 'inline-block',
@@ -233,10 +233,9 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
         autoHeight={true}
         getRowId={(l) => l.index}
         rows={lifts}
-        pageSize={5}
+        paginationModel={{ page: 0, pageSize: 5 }}
         rowHeight={38}
         columns={columns}
-        rowsPerPageOptions={[5]}
         sx={{
           fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
         }}

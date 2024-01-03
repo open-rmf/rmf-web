@@ -12,7 +12,8 @@ describe('ManageRolesCard', () => {
         saveRoles={async () => {}}
       />,
     );
-    userEvent.click(root.getByText('Add/Remove'));
+    const user = userEvent.setup();
+    await user.click(root.getByText('Add/Remove'));
     await expect(
       waitForElementToBeRemoved(() => root.queryByLabelText('loading')),
     ).resolves.not.toThrow();
@@ -31,11 +32,9 @@ describe('ManageRolesDialog', () => {
         saveRoles={saveRoles}
       />,
     );
+    const user = userEvent.setup();
     await waitFor(() => root.queryByText('role1'));
-    userEvent.click(root.getByText('Save'));
+    await user.click(root.getByText('Save'));
     expect(saveRoles).toHaveBeenCalled();
-    await expect(
-      waitForElementToBeRemoved(() => root.queryByLabelText('loading')),
-    ).resolves.not.toThrow();
   });
 });

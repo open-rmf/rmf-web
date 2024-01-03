@@ -36,9 +36,10 @@ describe('PermissionsCard', () => {
     await expect(waitFor(() => root.getByText('test_group'))).resolves.not.toThrow();
   });
 
-  it('opens add permission dialog when button is clicked', () => {
+  it('opens add permission dialog when button is clicked', async () => {
     const root = render(<PermissionsCard />);
-    userEvent.click(root.getByLabelText('add permission'));
+    const user = userEvent.setup();
+    await user.click(root.getByLabelText('add permission'));
     expect(() => root.getByText('Add Permission')).not.toThrow();
   });
 

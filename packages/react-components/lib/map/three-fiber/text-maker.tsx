@@ -22,9 +22,12 @@ export const TextThreeRendering = ({ position, text }: TextThreeRenderingProps):
 
   const scaleFactor = isHovered ? 2 : 1.0;
   const positionX = text && text.length > 5 ? -2 : -1;
+
   return (
     <>
+      {/* eslint-disable-next-line react/no-unknown-property */}
       <mesh position={position}>
+        {/* eslint-disable-next-line react/no-unknown-property */}
         <mesh position={[positionX, 0, positionZ]}>
           {text && (
             <Html zIndexRange={[0, 0, 1]}>

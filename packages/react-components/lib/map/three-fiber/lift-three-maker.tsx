@@ -29,6 +29,7 @@ const LiftShapeMaker = ({ motionState, fontPath }: LiftShapeMakerProps) => {
     const geometry = new BufferGeometry();
     geometry.setAttribute('position', new BufferAttribute(vertices, 3));
     return (
+      // eslint-disable-next-line react/no-unknown-property
       <mesh geometry={geometry} rotation={rotation}>
         <meshBasicMaterial color="red" />
       </mesh>
@@ -87,6 +88,7 @@ export const LiftThreeMaker = ({
   onLiftClick,
 }: LiftMakerProps): JSX.Element => {
   return (
+    // eslint-disable-next-line react/no-unknown-property
     <group position={[x, y, yaw]}>
       {fontPath && fontPath.length > 0 ? (
         <>
@@ -99,6 +101,7 @@ export const LiftThreeMaker = ({
         </>
       ) : null}
       <LiftShapeMaker motionState={liftState.motion_state} fontPath={fontPath} />
+      {/* eslint-disable react/no-unknown-property */}
       <mesh
         position={[0, 0, 0]}
         rotation={[0, 0, yaw]}
@@ -107,6 +110,7 @@ export const LiftThreeMaker = ({
         <boxGeometry args={[width, depth, 0.1]} />
         <meshStandardMaterial color={'green'} opacity={0.6} transparent />
       </mesh>
+      {/* eslint-enable react/no-unknown-property */}
     </group>
   );
 };

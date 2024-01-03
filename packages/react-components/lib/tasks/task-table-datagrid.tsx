@@ -10,6 +10,7 @@ import {
   GridCellParams,
   GridFilterModel,
   GridSortModel,
+  GridPaginationModel,
 } from '@mui/x-data-grid';
 import { styled, Stack, Typography, Tooltip, useMediaQuery, SxProps, Theme } from '@mui/material';
 import * as React from 'react';
@@ -276,8 +277,6 @@ export function TaskDataGridTable({
         rows={tasks.data}
         rowCount={tasks.total}
         loading={tasks.isLoading}
-        pageSize={tasks.pageSize}
-        rowsPerPageOptions={[10]}
         sx={sxProp}
         autoPageSize={isScreenHeightLessThan800}
         density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
@@ -287,12 +286,14 @@ export function TaskDataGridTable({
         onFilterModelChange={handleFilterModelChange}
         sortingMode="server"
         onSortModelChange={handleSortModelChange}
-        page={tasks.page - 1}
-        onPageChange={onPageChange}
-        onPageSizeChange={onPageSizeChange}
+        paginationModel={{ page: tasks.page - 1, pageSize: tasks.pageSize }}
+        onPaginationModelChange={(model: GridPaginationModel) => {
+          onPageSizeChange(model.pageSize);
+          onPageChange(model.page);
+        }}
         columns={columns}
         onRowClick={handleEvent}
-        getCellClassName={(params: GridCellParams<string>) => {
+        getCellClassName={(params: GridCellParams): string => {
           if (params.field === 'status') {
             switch (params.value) {
               case Status.Underway:

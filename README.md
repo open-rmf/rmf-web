@@ -20,17 +20,20 @@ Open-RMF Web is a collection of packages that provide a web-based interface for 
 
 We currently support [Ubuntu 22.04](https://releases.ubuntu.com/jammy/), [ROS 2 Humble](https://docs.ros.org/en/humble/index.html) and Open-RMF's [22.09](https://github.com/open-rmf/rmf/releases/tag/22.09) release. Other distributions may work as well, but is not guaranteed.
 
-Install [nodejs](https://nodejs.org/en/download/package-manager/) >= 16,
+Install [nodejs](https://nodejs.org/en/download/package-manager/) >= 18,
 ```bash
 sudo apt update && sudo apt install curl
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
-nvm install 16
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+nvm install 18
 ```
 
 Install pnpm and nodejs
 ```bash
 curl -fsSL https://get.pnpm.io/install.sh | bash -
-pnpm env use --global 16
+pnpm env use --global 18
+
+# if you were previously on node 16, it might fail, run the step below before trying again
+# pnpm i -g pnpm
 ```
 
 Install pipenv

@@ -154,7 +154,11 @@ export function RoleListCard({
         titleTypographyProps={{ variant: 'h5' }}
         avatar={<SecurityIcon />}
         action={
-          <IconButton onClick={() => setOpenDialog(true)} aria-label="create role">
+          <IconButton
+            onClick={() => setOpenDialog(true)}
+            aria-label="create role"
+            data-testid="create-role"
+          >
             <AddIcon fontSize="large" />
           </IconButton>
         }

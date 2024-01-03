@@ -1,9 +1,17 @@
 import Ajv from 'ajv';
 import schema from 'api-client/schema';
-import { AxiosError } from 'axios';
+import axios, { AxiosError } from 'axios';
 
 export function getApiErrorMessage(error: unknown): string {
-  return (error as AxiosError).response?.data.detail || '';
+  if (!axios.isAxiosError(error)) {
+    return '';
+  }
+
+  const response = (error as AxiosError<string>).response;
+  if (!response) {
+    return '';
+  }
+  return `${response.data}`;
 }
 
 export const ajv = new Ajv();
