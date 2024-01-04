@@ -3,6 +3,7 @@ from enum import Enum
 from typing import Optional
 
 import schedule
+from pytz import timezone
 from schedule import Job
 from tortoise import Tortoise
 from tortoise.contrib.pydantic.creator import (
@@ -104,7 +105,9 @@ class ScheduledTaskSchedule(Model):
         job.tag(self._id)
         if self.at is not None:
             print(f"setting at {self.at}")
-            job = job.at(self.at)
+            # job = job.at(self.at)
+            # TODO(ac): not hardcode this timezone
+            job = job.at(self.at, timezone("Singapore"))
 
         return job
 
