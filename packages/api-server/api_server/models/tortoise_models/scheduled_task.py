@@ -107,7 +107,7 @@ class ScheduledTaskSchedule(Model):
             print(f"setting at {self.at}")
             # job = job.at(self.at)
             # TODO(ac): not hardcode this timezone
-            job = job.at(self.at, timezone("Singapore"))
+            job = job.at(self.at, timezone("Asia/Singapore"))
 
         return job
 
