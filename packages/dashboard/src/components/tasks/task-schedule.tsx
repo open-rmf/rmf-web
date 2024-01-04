@@ -106,6 +106,8 @@ export const TaskSchedule = () => {
       if (!rmf) {
         return;
       }
+      console.log(`end: ${params.end.toISOString()}`);
+      console.log(`start: ${params.start.toISOString()}`);
       const tasks = (
         await rmf.tasksApi.getScheduledTasksScheduledTasksGet(
           params.end.toISOString(),
