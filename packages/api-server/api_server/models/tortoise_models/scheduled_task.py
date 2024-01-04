@@ -104,9 +104,8 @@ class ScheduledTaskSchedule(Model):
             print(f"setting at {self.at}")
             # job = job.at(self.at)
             # TODO(ac): not hardcode this timezone
-            job = job.at(
-                self.at, timezone("Asia/Singapore")
-            )  # pyright: ignore[reportGeneralTypeIssues]
+            tz = timezone("Asia/Singapore")  # pyright: ignore[reportGeneralTypeIssues]
+            job = job.at(self.at, tz)
 
         return job
 
