@@ -75,9 +75,6 @@ class ScheduledTaskSchedule(Model):
             print(f"to_job until: {self.until}")
             print(f"to_job until timestamp: {self.until.timestamp()}")
             print(
-                f"to_job until utcfromtimestamp: {datetime.utcfromtimestamp(self.until.timestamp())}"
-            )
-            print(
                 f"to_job until fromtimestamp: {datetime.fromtimestamp(self.until.timestamp())}"
             )
             job = job.until(datetime.fromtimestamp(self.until.timestamp()))
@@ -107,7 +104,9 @@ class ScheduledTaskSchedule(Model):
             print(f"setting at {self.at}")
             # job = job.at(self.at)
             # TODO(ac): not hardcode this timezone
-            job = job.at(self.at, timezone("Asia/Singapore"))
+            job = job.at(
+                self.at, timezone("Asia/Singapore")
+            )  # pyright: ignore[reportGeneralTypeIssues]
 
         return job
 
