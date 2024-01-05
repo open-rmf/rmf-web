@@ -1,3 +1,4 @@
+import 'leaflet/dist/leaflet.css';
 import ReactDOM from 'react-dom/client';
 import { LocalizationProvider } from 'react-components';
 import { BrowserRouter } from 'react-router-dom';

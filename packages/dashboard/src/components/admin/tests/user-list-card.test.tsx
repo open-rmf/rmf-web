@@ -9,16 +9,14 @@ const render = (component: React.ReactNode) => render_(<MemoryRouter>{component}
 describe('UserListCard', () => {
   it('opens delete dialog when button is clicked', async () => {
     const root = render(<UserListCard searchUsers={() => ['user1']} />);
-    const user = userEvent.setup();
     await waitFor(() => root.getByText('Delete'));
-    await user.click(root.getByText('Delete'));
+    userEvent.click(root.getByText('Delete'));
     expect(() => root.getByText('Confirm Delete')).not.toThrow();
   });
 
   it('opens create user dialog when button is clicked', async () => {
     const root = render(<UserListCard />);
-    const user = userEvent.setup();
-    await user.click(root.getByLabelText('create user'));
+    userEvent.click(root.getByLabelText('create user'));
     expect(() => root.getByText('Create User')).not.toThrow();
   });
 

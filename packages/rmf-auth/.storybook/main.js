@@ -1,19 +1,19 @@
 module.exports = {
-  framework: {
-    name: '@storybook/react-webpack5',
-    options: { fastRefresh: true },
+  typescript: {
+    check: true,
   },
-  features: {
-    storyStoreV7: false,
-  },
-  stories: ['../lib/**/*.stories.@(js|jsx|ts|tsx)'],
-  core: {
-    builder: {
-      name: '@storybook/builder-webpack5',
-      options: {
-        fsCache: true,
-        lazyCompilation: true,
+  stories: ['../lib/**/*.stories.mdx', '../lib/**/*.stories.@(js|jsx|ts|tsx)'],
+  addons: ['@storybook/addon-links', '@storybook/addon-essentials'],
+  webpackFinal: async (config) => {
+    return {
+      ...config,
+      resolve: {
+        ...config.resolve,
+        extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.cjs'],
+        alias: {
+          ...config.resolve.alias,
+        },
       },
-    },
+    };
   },
 };

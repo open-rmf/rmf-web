@@ -88,7 +88,7 @@ export const ActivityDiscoveryRequestTypeEnum = {
 } as const;
 
 export type ActivityDiscoveryRequestTypeEnum =
-  (typeof ActivityDiscoveryRequestTypeEnum)[keyof typeof ActivityDiscoveryRequestTypeEnum];
+  typeof ActivityDiscoveryRequestTypeEnum[keyof typeof ActivityDiscoveryRequestTypeEnum];
 
 /**
  *
@@ -600,7 +600,7 @@ export const CancelTaskRequestTypeEnum = {
 } as const;
 
 export type CancelTaskRequestTypeEnum =
-  (typeof CancelTaskRequestTypeEnum)[keyof typeof CancelTaskRequestTypeEnum];
+  typeof CancelTaskRequestTypeEnum[keyof typeof CancelTaskRequestTypeEnum];
 
 /**
  *
@@ -759,7 +759,7 @@ export const DispatchTaskRequestTypeEnum = {
 } as const;
 
 export type DispatchTaskRequestTypeEnum =
-  (typeof DispatchTaskRequestTypeEnum)[keyof typeof DispatchTaskRequestTypeEnum];
+  typeof DispatchTaskRequestTypeEnum[keyof typeof DispatchTaskRequestTypeEnum];
 
 /**
  *
@@ -2022,7 +2022,7 @@ export const RobotTaskResponseSuccessEnum = {
 } as const;
 
 export type RobotTaskResponseSuccessEnum =
-  (typeof RobotTaskResponseSuccessEnum)[keyof typeof RobotTaskResponseSuccessEnum];
+  typeof RobotTaskResponseSuccessEnum[keyof typeof RobotTaskResponseSuccessEnum];
 
 /**
  * Template for defining a response message that only indicates success and describes any errors
@@ -2146,7 +2146,7 @@ export const Status = {
   Completed: 'completed',
 } as const;
 
-export type Status = (typeof Status)[keyof typeof Status];
+export type Status = typeof Status[keyof typeof Status];
 
 /**
  * An enumeration.
@@ -2162,7 +2162,7 @@ export const Status1 = {
   CanceledInFlight: 'canceled_in_flight',
 } as const;
 
-export type Status1 = (typeof Status1)[keyof typeof Status1];
+export type Status1 = typeof Status1[keyof typeof Status1];
 
 /**
  * An enumeration.
@@ -2180,7 +2180,7 @@ export const Status2 = {
   Error: 'error',
 } as const;
 
-export type Status2 = (typeof Status2)[keyof typeof Status2];
+export type Status2 = typeof Status2[keyof typeof Status2];
 
 /**
  *
@@ -2251,7 +2251,7 @@ export const TaskDiscoveryTypeEnum = {
 } as const;
 
 export type TaskDiscoveryTypeEnum =
-  (typeof TaskDiscoveryTypeEnum)[keyof typeof TaskDiscoveryTypeEnum];
+  typeof TaskDiscoveryTypeEnum[keyof typeof TaskDiscoveryTypeEnum];
 
 /**
  *
@@ -2272,7 +2272,7 @@ export const TaskDiscoveryRequestTypeEnum = {
 } as const;
 
 export type TaskDiscoveryRequestTypeEnum =
-  (typeof TaskDiscoveryRequestTypeEnum)[keyof typeof TaskDiscoveryRequestTypeEnum];
+  typeof TaskDiscoveryRequestTypeEnum[keyof typeof TaskDiscoveryRequestTypeEnum];
 
 /**
  * Response to a task dispatch request
@@ -2305,7 +2305,7 @@ export const TaskDispatchResponseSuccessEnum = {
 } as const;
 
 export type TaskDispatchResponseSuccessEnum =
-  (typeof TaskDispatchResponseSuccessEnum)[keyof typeof TaskDispatchResponseSuccessEnum];
+  typeof TaskDispatchResponseSuccessEnum[keyof typeof TaskDispatchResponseSuccessEnum];
 
 /**
  *
@@ -2332,7 +2332,7 @@ export const TaskDispatchResponseItemSuccessEnum = {
 } as const;
 
 export type TaskDispatchResponseItemSuccessEnum =
-  (typeof TaskDispatchResponseItemSuccessEnum)[keyof typeof TaskDispatchResponseItemSuccessEnum];
+  typeof TaskDispatchResponseItemSuccessEnum[keyof typeof TaskDispatchResponseItemSuccessEnum];
 
 /**
  *
@@ -2359,7 +2359,7 @@ export const TaskDispatchResponseItem1SuccessEnum = {
 } as const;
 
 export type TaskDispatchResponseItem1SuccessEnum =
-  (typeof TaskDispatchResponseItem1SuccessEnum)[keyof typeof TaskDispatchResponseItem1SuccessEnum];
+  typeof TaskDispatchResponseItem1SuccessEnum[keyof typeof TaskDispatchResponseItem1SuccessEnum];
 
 /**
  *
@@ -2466,7 +2466,7 @@ export const TaskInterruptionRequestTypeEnum = {
 } as const;
 
 export type TaskInterruptionRequestTypeEnum =
-  (typeof TaskInterruptionRequestTypeEnum)[keyof typeof TaskInterruptionRequestTypeEnum];
+  typeof TaskInterruptionRequestTypeEnum[keyof typeof TaskInterruptionRequestTypeEnum];
 
 /**
  * Response to a request for a task to be interrupted
@@ -2524,7 +2524,7 @@ export const TaskKillRequestTypeEnum = {
 } as const;
 
 export type TaskKillRequestTypeEnum =
-  (typeof TaskKillRequestTypeEnum)[keyof typeof TaskKillRequestTypeEnum];
+  typeof TaskKillRequestTypeEnum[keyof typeof TaskKillRequestTypeEnum];
 
 /**
  * Response to a request to kill a task
@@ -2582,7 +2582,7 @@ export const TaskPhaseSkipRequestTypeEnum = {
 } as const;
 
 export type TaskPhaseSkipRequestTypeEnum =
-  (typeof TaskPhaseSkipRequestTypeEnum)[keyof typeof TaskPhaseSkipRequestTypeEnum];
+  typeof TaskPhaseSkipRequestTypeEnum[keyof typeof TaskPhaseSkipRequestTypeEnum];
 
 /**
  *
@@ -2676,7 +2676,7 @@ export const TaskResumeRequestTypeEnum = {
 } as const;
 
 export type TaskResumeRequestTypeEnum =
-  (typeof TaskResumeRequestTypeEnum)[keyof typeof TaskResumeRequestTypeEnum];
+  typeof TaskResumeRequestTypeEnum[keyof typeof TaskResumeRequestTypeEnum];
 
 /**
  * Response to a request to resume a task
@@ -2728,7 +2728,7 @@ export const TaskRewindRequestTypeEnum = {
 } as const;
 
 export type TaskRewindRequestTypeEnum =
-  (typeof TaskRewindRequestTypeEnum)[keyof typeof TaskRewindRequestTypeEnum];
+  typeof TaskRewindRequestTypeEnum[keyof typeof TaskRewindRequestTypeEnum];
 
 /**
  * Response to a request to rewind a task
@@ -2877,7 +2877,7 @@ export const Tier = {
   Error: 'error',
 } as const;
 
-export type Tier = (typeof Tier)[keyof typeof Tier];
+export type Tier = typeof Tier[keyof typeof Tier];
 
 /**
  *
@@ -3055,7 +3055,7 @@ export const UndoPhaseSkipRequestTypeEnum = {
 } as const;
 
 export type UndoPhaseSkipRequestTypeEnum =
-  (typeof UndoPhaseSkipRequestTypeEnum)[keyof typeof UndoPhaseSkipRequestTypeEnum];
+  typeof UndoPhaseSkipRequestTypeEnum[keyof typeof UndoPhaseSkipRequestTypeEnum];
 
 /**
  * Response to an undo phase skip request
@@ -5401,8 +5401,9 @@ export const BuildingApiFp = function (configuration?: Configuration) {
     async getBuildingMapBuildingMapGet(
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BuildingMap>> {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getBuildingMapBuildingMapGet(options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getBuildingMapBuildingMapGet(
+        options,
+      );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
   };
@@ -6115,8 +6116,9 @@ export const DeliveryAlertsApiFp = function (configuration?: Configuration) {
         basePath?: string,
       ) => AxiosPromise<Array<ApiServerModelsTortoiseModelsDeliveryAlertsDeliveryAlertLeaf>>
     > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getDeliveryAlertsDeliveryAlertsGet(options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getDeliveryAlertsDeliveryAlertsGet(
+        options,
+      );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -9377,8 +9379,9 @@ export const TasksApiFp = function (configuration?: Configuration) {
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskFavoritePydantic>>
     > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getFavoritesTasksFavoriteTasksGet(options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getFavoritesTasksFavoriteTasksGet(
+        options,
+      );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**

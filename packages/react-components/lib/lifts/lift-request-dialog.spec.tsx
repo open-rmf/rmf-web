@@ -10,7 +10,7 @@ describe('Lift request form', () => {
     const mockOnClose = jasmine.createSpy();
     const lift = makeLift();
     const liftState = makeLiftState();
-    const root = render(
+    render(
       <LiftRequestDialog
         currentLevel={liftState.current_floor}
         availableLevels={lift.levels}
@@ -20,11 +20,8 @@ describe('Lift request form', () => {
         onClose={mockOnClose}
       />,
     );
-    const inputEl = root.getByLabelText('Pick a Destination') as HTMLInputElement;
-    const user = userEvent.setup();
-    user.clear(inputEl);
-    expect(inputEl.value).toBe('');
+    userEvent.type(screen.getByPlaceholderText('Pick a Destination'), '{selectall}{backspace}');
     fireEvent.click(screen.getByText('Request'));
-    expect(root.getByText('Destination cannot be empty')).toBeTruthy();
+    expect(screen.getByText('Destination cannot be empty')).toBeTruthy();
   });
 });

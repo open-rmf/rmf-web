@@ -54,7 +54,6 @@ export function CreateRoleDialog({
       submitting={creating}
       onSubmit={submitForm}
       onClose={() => setOpen && setOpen(false)}
-      data-testid="create-role-dialog"
     >
       <TextField
         id="role"

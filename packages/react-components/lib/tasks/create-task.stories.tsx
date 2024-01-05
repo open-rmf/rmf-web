@@ -22,7 +22,6 @@ export const CreateTask: Story<CreateTaskFormProps> = (args) => {
 };
 
 CreateTask.args = {
-  user: 'stub',
   submitTasks: async () => new Promise((res) => setTimeout(res, 500)),
   cleaningZones: ['test_zone_0', 'test_zone_1'],
   patrolWaypoints: ['test_waypoint_0', 'test_waypoint_1'],
