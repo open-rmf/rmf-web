@@ -10,8 +10,8 @@ const mode =
   process.env.BROWSERSTACK_USERNAME && process.env.BROWSERSTACK_ACCESS_KEY
     ? 'browserstack'
     : process.env.CI
-      ? 'localHeadless'
-      : 'local';
+    ? 'localHeadless'
+    : 'local';
 
 const localIdentifier = `${Date.now().toString()}+${Math.random()}`;
 
@@ -94,7 +94,7 @@ exports.config = {
   // https://docs.saucelabs.com/reference/platforms-configurator
   //
   capabilities: [
-    ...(mode === 'localHeadless' || mode === 'local'
+    ...(mode === 'local'
       ? [
           {
             // maxInstances can get overwritten per capability. So if you have an in-house Selenium
@@ -126,29 +126,13 @@ exports.config = {
             }),
           },
           {
-            browserName: 'edge',
+            browserName: 'safari',
             browserVersion: 'latest',
             'bstack:options': browserstackOptions({
-              os: 'Windows',
-              osVersion: '10',
+              os: 'OS X',
+              osVersion: 'Big Sur',
             }),
           },
-          {
-            browserName: 'firefox',
-            browserVersion: 'latest',
-            'bstack:options': browserstackOptions({
-              os: 'Windows',
-              osVersion: '10',
-            }),
-          },
-          // {
-          //   browserName: 'safari',
-          //   browserVersion: 'latest',
-          //   'bstack:options': browserstackOptions({
-          //     os: 'OS X',
-          //     osVersion: 'Big Sur',
-          //   }),
-          // },
         ]
       : []),
   ],

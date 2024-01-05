@@ -150,10 +150,10 @@ export const TasksApp = React.memo(
         let filterColumn: string | undefined = undefined;
         let filterValue: string | undefined = undefined;
         if (filterFields.model && filterFields.model.items.length >= 1) {
-          filterColumn = filterFields.model.items[0].field;
+          filterColumn = filterFields.model.items[0].columnField;
           filterValue = filterFields.model.items[0].value;
 
-          const filterOperator: string | undefined = filterFields.model.items[0].operator;
+          const filterOperator: string | undefined = filterFields.model.items[0].operatorValue;
           if (
             (filterColumn === 'unix_millis_start_time' ||
               filterColumn === 'unix_millis_finish_time') &&

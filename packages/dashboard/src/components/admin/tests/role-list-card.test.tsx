@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { RoleListCard } from '../role-list-card';
@@ -10,10 +10,9 @@ describe('Role List', () => {
     await expect(waitFor(() => root.getByText('role2'))).resolves.not.toThrow();
   });
 
-  it('opens create role dialog when button is clicked', async () => {
+  it('opens create role dialog when button is clicked', () => {
     const root = render(<RoleListCard />);
-    const user = userEvent.setup();
-    await user.click(screen.getByTestId('create-role'));
-    expect(() => screen.getByTestId('create-role-dialog')).not.toThrow();
+    userEvent.click(root.getByLabelText('create role'));
+    expect(() => root.getByText('Create Role')).not.toThrow();
   });
 });

@@ -119,9 +119,10 @@ export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.
       autoHeight={true}
       getRowId={(l) => l.id}
       rows={beacons}
-      paginationModel={{ page: 0, pageSize: 5 }}
+      pageSize={5}
       rowHeight={38}
       columns={columns}
+      rowsPerPageOptions={[5]}
       sx={{
         fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
       }}
