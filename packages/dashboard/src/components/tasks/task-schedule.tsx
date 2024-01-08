@@ -8,7 +8,7 @@ import {
   SchedulerHelpers,
   SchedulerProps,
 } from '@aldabil/react-scheduler/types';
-import { Button } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import {
   ApiServerModelsTortoiseModelsScheduledTaskScheduledTask as ScheduledTask,
   ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf as ApiSchedule,
@@ -291,6 +291,9 @@ export const TaskSchedule = () => {
             }}
           />
         )}
+        viewerExtraComponent={(fields, event) => {
+          return <Typography variant="caption">{event.title}</Typography>;
+        }}
       />
       {openCreateTaskForm && (
         <CreateTaskForm
