@@ -85,6 +85,7 @@ export const TasksApp = React.memo(
       const rmf = React.useContext(RmfAppContext);
       const [autoRefresh, setAutoRefresh] = React.useState(true);
       const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
+      const [selectedPanelIndex, setSelectedPanelIndex] = React.useState(TaskTablePanel.QueueTable);
 
       const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
       const [openTaskSummary, setOpenTaskSummary] = React.useState(false);
@@ -144,6 +145,11 @@ export const TasksApp = React.memo(
       const GET_LIMIT = 10;
       React.useEffect(() => {
         if (!rmf) {
+          return;
+        }
+
+        if (selectedPanelIndex !== TaskTablePanel.QueueTable) {
+          console.debug('Stop subscribing to task queue updates when viewing schedule tab');
           return;
         }
 
@@ -238,7 +244,14 @@ export const TasksApp = React.memo(
           );
         })();
         return () => subs.forEach((s) => s.unsubscribe());
-      }, [rmf, refreshTaskAppCount, tasksState.page, filterFields.model, sortFields.model]);
+      }, [
+        rmf,
+        refreshTaskAppCount,
+        tasksState.page,
+        filterFields.model,
+        sortFields.model,
+        selectedPanelIndex,
+      ]);
 
       const getAllTasks = async (timestamp: Date) => {
         if (!rmf) {
@@ -310,8 +323,6 @@ export const TasksApp = React.memo(
       const handleCloseExportMenu = () => {
         setAnchorExportElement(null);
       };
-
-      const [selectedPanelIndex, setSelectedPanelIndex] = React.useState(TaskTablePanel.QueueTable);
 
       const handlePanelChange = (_: React.SyntheticEvent, newSelectedTabIndex: number) => {
         setSelectedPanelIndex(newSelectedTabIndex);
