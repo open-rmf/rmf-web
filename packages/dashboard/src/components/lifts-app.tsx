@@ -30,8 +30,6 @@ export const LiftsApp = createMicroApp('Lifts', () => {
 
     buildingMap?.lifts.map(async (lift, i) => {
       try {
-        const { data } = await rmf.liftsApi.getLiftHealthLiftsLiftNameHealthGet(lift.name);
-        const { health_status } = data;
         const sub = rmf.getLiftStateObs(lift.name).subscribe((liftState) => {
           setLiftTableData((prev) => {
             return {
@@ -40,7 +38,7 @@ export const LiftsApp = createMicroApp('Lifts', () => {
                 {
                   index: i,
                   name: lift.name,
-                  opMode: health_status ? health_status : 'N/A',
+                  mode: liftState.current_mode,
                   currentFloor: liftState.current_floor,
                   destinationFloor: liftState.destination_floor,
                   doorState: liftState.door_state,
@@ -74,7 +72,7 @@ export const LiftsApp = createMicroApp('Lifts', () => {
         });
         return () => sub.unsubscribe();
       } catch (error) {
-        console.error(`Failed to get lift health: ${getApiErrorMessage(error)}`);
+        console.error(`Failed to get lift state: ${getApiErrorMessage(error)}`);
       }
     });
   }, [rmf, buildingMap]);

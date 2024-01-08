@@ -13,14 +13,13 @@ import { Lift } from 'api-client';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { LiftState as LiftStateModel } from 'rmf-models';
-import { doorStateToString, motionStateToString } from './lift-utils';
-import { HealthStatus, healthStatusToOpMode } from '../utils';
+import { doorStateToString, liftModeToString, motionStateToString } from './lift-utils';
 import { LiftControls } from './lift-controls';
 
 export interface LiftTableData {
   index: number;
   name: string;
-  opMode: string;
+  mode: number;
   currentFloor?: string;
   destinationFloor?: string;
   doorState: number;
@@ -52,44 +51,47 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
     }
   };
 
-  const OpModeState = (params: GridCellParams): React.ReactNode => {
-    const opModeStateLabelStyle: SxProps = (() => {
+  const modeState = (params: GridCellParams): React.ReactNode => {
+    const modeStateLabelStyle: SxProps = (() => {
       const unknown = {
         color: theme.palette.action.disabledBackground,
       };
-      const online = {
+      const agv = {
         color: theme.palette.success.main,
       };
       const unstable = {
         color: theme.palette.warning.main,
       };
-      const offline = {
+      const human = {
         color: theme.palette.error.main,
       };
 
-      switch (params.row.opMode) {
-        case HealthStatus.Healthy:
-          return online;
-        case HealthStatus.Unhealthy:
+      switch (params.row.mode) {
+        case LiftStateModel.MODE_AGV:
+          return agv;
+        case LiftStateModel.MODE_HUMAN:
+          return human;
+        case LiftStateModel.MODE_FIRE:
+        case LiftStateModel.MODE_OFFLINE:
+        case LiftStateModel.MODE_EMERGENCY:
           return unstable;
-        case HealthStatus.Dead:
-          return offline;
+        case LiftStateModel.MODE_UNKNOWN:
         default:
           return unknown;
       }
     })();
 
     return (
-      <Box component="div" sx={opModeStateLabelStyle}>
+      <Box component="div" sx={modeStateLabelStyle}>
         <Typography
-          data-testid="op-mode-state"
+          data-testid="mode-state"
           component="p"
           sx={{
             fontWeight: 'bold',
             fontSize: isScreenHeightLessThan800 ? 10 : 16,
           }}
         >
-          {healthStatusToOpMode(params.row.opMode)}
+          {liftModeToString(params.row.mode).toUpperCase()}
         </Typography>
       </Box>
     );
@@ -179,11 +181,11 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
       filterable: true,
     },
     {
-      field: 'opMode',
-      headerName: 'Op. Mode',
+      field: 'mode',
+      headerName: 'Mode',
       width: 90,
       flex: 1,
-      renderCell: OpModeState,
+      renderCell: modeState,
       filterable: true,
     },
     {

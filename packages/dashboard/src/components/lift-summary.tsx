@@ -3,8 +3,9 @@ import { Dialog, DialogContent, DialogTitle, Divider, TextField } from '@mui/mat
 import { Theme } from '@mui/material/styles';
 import { RmfAppContext } from './rmf-app';
 import { getApiErrorMessage } from './utils';
-import { doorStateToString, healthStatusToOpMode, LiftTableData, base } from 'react-components';
+import { doorStateToString, liftModeToString, LiftTableData, base } from 'react-components';
 import { Lift } from 'api-client';
+import { LiftState as RmfLiftState } from 'rmf-models';
 import { makeStyles, createStyles } from '@mui/styles';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -29,7 +30,7 @@ export const LiftSummary = ({ onClose, lift }: LiftSummaryProps): JSX.Element =>
   const [liftData, setLiftData] = React.useState<LiftTableData>({
     index: 0,
     name: '',
-    opMode: '',
+    mode: RmfLiftState.MODE_UNKNOWN,
     currentFloor: '',
     destinationFloor: '',
     doorState: 0,
@@ -44,13 +45,11 @@ export const LiftSummary = ({ onClose, lift }: LiftSummaryProps): JSX.Element =>
 
     const fetchDataForLift = async () => {
       try {
-        const { data } = await rmf.liftsApi.getLiftHealthLiftsLiftNameHealthGet(lift.name);
-        const { health_status } = data;
         const sub = rmf.getLiftStateObs(lift.name).subscribe((liftState) => {
           setLiftData({
             index: -1,
             name: lift.name,
-            opMode: health_status ? health_status : 'N/A',
+            mode: liftState.current_mode,
             currentFloor: liftState.current_floor,
             destinationFloor: liftState.destination_floor,
             doorState: liftState.door_state,
@@ -97,9 +96,9 @@ export const LiftSummary = ({ onClose, lift }: LiftSummaryProps): JSX.Element =>
             case 'name':
               displayLabel = 'Name';
               break;
-            case 'opMode':
-              displayValue = healthStatusToOpMode(value);
-              displayLabel = 'Op. Mode';
+            case 'mode':
+              displayValue = liftModeToString(value);
+              displayLabel = 'Mode';
               break;
             case 'currentFloor':
               displayLabel = 'Current Floor';
