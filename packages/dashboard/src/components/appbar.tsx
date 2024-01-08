@@ -230,7 +230,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       if (!schedule) {
         await Promise.all(
           taskRequests.map((request) => {
-            console.log(`submitTask: ${request}`);
+            console.debug(`submitTask: ${request}`);
             return rmf.tasksApi.postDispatchTaskTasksDispatchTaskPost({
               type: 'dispatch_task_request',
               request,
@@ -239,9 +239,9 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
         );
       } else {
         const scheduleRequests = taskRequests.map((req) => {
-          console.log('schedule task:');
-          console.log(req);
-          console.log(schedule);
+          console.debug('schedule task:');
+          console.debug(req);
+          console.debug(schedule);
           return toApiSchedule(req, schedule);
         });
         await Promise.all(

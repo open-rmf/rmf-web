@@ -1587,14 +1587,14 @@ export function CreateTaskForm({
                 value={schedule.startOn}
                 onChange={(date) => {
                   if (!date) {
-                    console.log('DatePicker: invalid date');
+                    console.error('DatePicker: invalid date');
                     return;
                   }
-                  console.log(`DatePicker: ${date}`);
+                  console.debug(`DatePicker: ${date}`);
                   setSchedule((prev) => {
                     date.setHours(schedule.at.getHours());
                     date.setMinutes(schedule.at.getMinutes());
-                    console.log(`DatePicker setSchedule: ${date}`);
+                    console.debug(`DatePicker setSchedule: ${date}`);
                     return { ...prev, startOn: date };
                   });
                 }}
@@ -1622,13 +1622,13 @@ export function CreateTaskForm({
                     console.error('TimePicker: invalid date');
                     return;
                   }
-                  console.error(`TimePicker: ${date}`);
+                  console.debug(`TimePicker: ${date}`);
                   if (!isNaN(date.valueOf())) {
                     setSchedule((prev) => {
                       const startOn = prev.startOn;
                       startOn.setHours(date.getHours());
                       startOn.setMinutes(date.getMinutes());
-                      console.log(`TimePicker setSchedule: ${date}`);
+                      console.debug(`TimePicker setSchedule: ${date}`);
                       return { ...prev, at: date, startOn };
                     });
                   }
@@ -1700,11 +1700,11 @@ export function CreateTaskForm({
                         console.error('Until DatePicker: invalid date');
                         return;
                       }
-                      console.log(`Until DatePicker: ${date}`);
+                      console.debug(`Until DatePicker: ${date}`);
                       setSchedule((prev) => {
                         date.setHours(23);
                         date.setMinutes(59);
-                        console.log(`Until DatePicker setSchedule: ${date}`);
+                        console.debug(`Until DatePicker setSchedule: ${date}`);
                         return { ...prev, until: date };
                       });
                     }}

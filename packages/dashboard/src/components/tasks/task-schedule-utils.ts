@@ -50,18 +50,10 @@ export const scheduleToEvents = (
     console.warn('Unable to convert schedule without [at] to an event');
     return [];
   }
-  console.log('Schedule to Event');
-  console.log(`start: ${start}`);
-  console.log(`end: ${end}`);
-
   const [hours, minutes] = schedule.at.split(':').map((s: string) => Number(s));
-  console.log(`hours: ${hours}`);
-  console.log(`minutes: ${minutes}`);
   let cur = new Date(start);
-  console.log(`cur before set: ${cur}`);
   cur.setHours(hours);
   cur.setMinutes(minutes);
-  console.log(`cur after set: ${cur}`);
 
   const scheStartFrom = schedule.start_from ? startOfMinute(new Date(schedule.start_from)) : null;
   const scheUntil = schedule.until ? endOfMinute(new Date(schedule.until)) : null;
