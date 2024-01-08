@@ -1405,6 +1405,7 @@ export function CreateTaskForm({
                           }}
                         />
                       )}
+                      disabled
                     />
                   </Grid>
                   <Grid item xs={1}>
