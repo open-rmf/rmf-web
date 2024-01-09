@@ -1405,6 +1405,7 @@ export function CreateTaskForm({
                           }}
                         />
                       )}
+                      disabled
                     />
                   </Grid>
                   <Grid item xs={1}>
@@ -1585,14 +1586,19 @@ export function CreateTaskForm({
             <Grid item xs={6}>
               <DatePicker
                 value={schedule.startOn}
-                onChange={(date) =>
-                  date &&
+                onChange={(date) => {
+                  if (!date) {
+                    console.error('DatePicker: invalid date');
+                    return;
+                  }
+                  console.debug(`DatePicker: ${date}`);
                   setSchedule((prev) => {
                     date.setHours(schedule.at.getHours());
                     date.setMinutes(schedule.at.getMinutes());
+                    console.debug(`DatePicker setSchedule: ${date}`);
                     return { ...prev, startOn: date };
-                  })
-                }
+                  });
+                }}
                 label="Start On"
                 disabled={!scheduleEnabled}
                 renderInput={(props) => (
@@ -1614,15 +1620,17 @@ export function CreateTaskForm({
                 value={schedule.at}
                 onChange={(date) => {
                   if (!date) {
+                    console.error('TimePicker: invalid date');
                     return;
                   }
-                  setSchedule((prev) => ({ ...prev, at: date }));
+                  console.debug(`TimePicker: ${date}`);
                   if (!isNaN(date.valueOf())) {
                     setSchedule((prev) => {
                       const startOn = prev.startOn;
                       startOn.setHours(date.getHours());
                       startOn.setMinutes(date.getMinutes());
-                      return { ...prev, startOn };
+                      console.debug(`TimePicker setSchedule: ${date}`);
+                      return { ...prev, at: date, startOn };
                     });
                   }
                 }}
@@ -1688,14 +1696,19 @@ export function CreateTaskForm({
                     value={
                       scheduleUntilValue === ScheduleUntilValue.NEVER ? new Date() : schedule.until
                     }
-                    onChange={(date) =>
-                      date &&
+                    onChange={(date) => {
+                      if (!date) {
+                        console.error('Until DatePicker: invalid date');
+                        return;
+                      }
+                      console.debug(`Until DatePicker: ${date}`);
                       setSchedule((prev) => {
                         date.setHours(23);
                         date.setMinutes(59);
+                        console.debug(`Until DatePicker setSchedule: ${date}`);
                         return { ...prev, until: date };
-                      })
-                    }
+                      });
+                    }}
                     disabled={scheduleUntilValue !== ScheduleUntilValue.ON}
                     renderInput={(props) => (
                       <TextField

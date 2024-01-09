@@ -8,6 +8,7 @@ from fastapi import Depends, HTTPException, Query
 from pydantic import BaseModel
 from tortoise.expressions import Q
 
+from api_server.app_config import app_config
 from api_server.authenticator import user_dep
 from api_server.dependencies import pagination_query
 from api_server.fast_io import FastIORouter
@@ -31,7 +32,7 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
     jobs: list[tuple[ttm.ScheduledTaskSchedule, schedule.Job]] = []
     for sche in task.schedules:
         try:
-            jobs.append((sche, sche.to_job()))
+            jobs.append((sche, sche.to_job(app_config.timezone)))
         except schedule.ScheduleValueError:
             pass
     if len(jobs) == 0:

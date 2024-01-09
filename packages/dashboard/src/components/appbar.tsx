@@ -229,15 +229,21 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       }
       if (!schedule) {
         await Promise.all(
-          taskRequests.map((request) =>
-            rmf.tasksApi.postDispatchTaskTasksDispatchTaskPost({
+          taskRequests.map((request) => {
+            console.debug(`submitTask: ${request}`);
+            return rmf.tasksApi.postDispatchTaskTasksDispatchTaskPost({
               type: 'dispatch_task_request',
               request,
-            }),
-          ),
+            });
+          }),
         );
       } else {
-        const scheduleRequests = taskRequests.map((req) => toApiSchedule(req, schedule));
+        const scheduleRequests = taskRequests.map((req) => {
+          console.debug('schedule task:');
+          console.debug(req);
+          console.debug(schedule);
+          return toApiSchedule(req, schedule);
+        });
         await Promise.all(
           scheduleRequests.map((req) => rmf.tasksApi.postScheduledTaskScheduledTasksPost(req)),
         );
