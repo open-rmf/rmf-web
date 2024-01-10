@@ -20,8 +20,9 @@ export function parseTasksFile(contents: string): TaskRequest[] {
 export function downloadCsvFull(timestamp: Date, allTasks: TaskState[]) {
   const columnSeparator = ';';
   const rowSeparator = '\n';
+  let csvContent = `sep=${columnSeparator}` + rowSeparator;
   const keys = Object.keys(allTasks[0]);
-  let csvContent = keys.join(columnSeparator) + rowSeparator;
+  csvContent += keys.join(columnSeparator) + rowSeparator;
   allTasks.forEach((task) => {
     keys.forEach((k) => {
       type TaskStateKey = keyof typeof task;
@@ -53,6 +54,7 @@ export function downloadCsvMinimal(
 ) {
   const columnSeparator = ';';
   const rowSeparator = '\n';
+  let csvContent = `sep=${columnSeparator}` + rowSeparator;
   const keys = [
     'Date',
     'Requester',
@@ -63,7 +65,7 @@ export function downloadCsvMinimal(
     'End Time',
     'State',
   ];
-  let csvContent = keys.join(columnSeparator) + rowSeparator;
+  csvContent += keys.join(columnSeparator) + rowSeparator;
   allTasks.forEach((task) => {
     const request: TaskRequest | undefined = taskRequestMap[task.booking.id];
     const values = [
