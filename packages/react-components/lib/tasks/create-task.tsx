@@ -88,6 +88,32 @@ interface DropoffActivity {
   };
 }
 
+interface OneOfWaypoint {
+  waypoint: string;
+}
+
+interface GoToOneOfThePlacesActivity {
+  category: string;
+  description: {
+    one_of: OneOfWaypoint[];
+    constraints: [
+      {
+        category: string;
+        description: string;
+      },
+    ];
+  };
+}
+
+interface OnCancelDropoff {
+  category: string;
+  description: [
+    dropoff_if_carrying_payload: DropoffActivity,
+    go_to_one_of_the_places: GoToOneOfThePlacesActivity,
+    delivery_dropoff: DropoffActivity,
+  ];
+}
+
 interface DeliveryCustomPhase {
   activity: {
     category: string;
@@ -100,6 +126,7 @@ interface DeliveryCustomPhase {
       ];
     };
   };
+  on_cancel: OnCancelDropoff[];
 }
 
 interface DeliveryCustomTaskDescription {
@@ -119,6 +146,7 @@ interface DeliveryPhase {
       ];
     };
   };
+  on_cancel: OnCancelDropoff[];
 }
 
 interface DeliveryTaskDescription {
@@ -775,6 +803,7 @@ function defaultDeliveryTaskDescription(): DeliveryTaskDescription {
             ],
           },
         },
+        on_cancel: [],
       },
     ],
   };
@@ -819,6 +848,7 @@ function defaultDeliveryCustomTaskDescription(taskCategory: string): DeliveryCus
             ],
           },
         },
+        on_cancel: [],
       },
     ],
   };
@@ -942,6 +972,7 @@ export interface CreateTaskFormProps
   patrolWaypoints?: string[];
   pickupZones?: string[];
   cartIds?: string[];
+  emergencyLots?: string[];
   pickupPoints?: Record<string, string>;
   dropoffPoints?: Record<string, string>;
   favoritesTasks?: TaskFavorite[];
@@ -967,6 +998,7 @@ export function CreateTaskForm({
   patrolWaypoints = [],
   pickupZones = [],
   cartIds = [],
+  emergencyLots = [],
   pickupPoints = {},
   dropoffPoints = {},
   favoritesTasks = [],
@@ -1153,6 +1185,44 @@ export function CreateTaskForm({
       // Workaround where all the task category need to be compose.
       if (t.category !== 'patrol') {
         t.category = 'compose';
+
+        const dropoffIfCarryingPayload: DropoffActivity = {
+          category: 'perform_action',
+          description: {
+            unix_millis_action_duration_estimate: 60000,
+            category: 'dropoff_if_carrying_payload',
+            description: {},
+          },
+        };
+        const goToOneOfThePlaces: GoToOneOfThePlacesActivity = {
+          category: 'go_to_place',
+          description: {
+            one_of: emergencyLots.map((placeName) => {
+              return {
+                waypoint: placeName,
+              };
+            }),
+            constraints: [
+              {
+                category: 'prefer_same_map',
+                description: '',
+              },
+            ],
+          },
+        };
+        const deliveryDropoff: DropoffActivity = {
+          category: 'perform_action',
+          description: {
+            unix_millis_action_duration_estimate: 60000,
+            category: 'delivery_dropoff',
+            description: {},
+          },
+        };
+        const onCancelDropoff: OnCancelDropoff = {
+          category: 'sequence',
+          description: [dropoffIfCarryingPayload, goToOneOfThePlaces, deliveryDropoff],
+        };
+        taskRequest.description.phases[0].on_cancel = [onCancelDropoff];
       }
     }
 
