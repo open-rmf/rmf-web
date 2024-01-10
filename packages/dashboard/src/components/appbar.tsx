@@ -227,9 +227,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       if (!rmf) {
         throw new Error('tasks api not available');
       }
-
-      console.log(taskRequests);
-
       if (!schedule) {
         await Promise.all(
           taskRequests.map((request) => {
