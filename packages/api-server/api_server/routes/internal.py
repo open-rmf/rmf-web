@@ -1,4 +1,6 @@
 # NOTE: This will eventually replace `gateway.py``
+import asyncio
+import os
 from typing import Any, Dict
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
@@ -97,10 +99,16 @@ async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
 @router.websocket("")
 async def rmf_gateway(websocket: WebSocket):
     await websocket.accept()
-    fleet_repo = FleetRepository(user)
-    try:
-        while True:
-            msg: Dict[str, Any] = await websocket.receive_json()
-            await process_msg(msg, fleet_repo)
-    except WebSocketDisconnect:
-        logger.warn("Client websocket disconnected")
+    print("before sleeping")
+    await asyncio.sleep(20)
+    print("after sleep")
+    os._exit(1)
+
+    # await websocket.accept()
+    # fleet_repo = FleetRepository(user)
+    # try:
+    #     while True:
+    #         msg: Dict[str, Any] = await websocket.receive_json()
+    #         await process_msg(msg, fleet_repo)
+    # except WebSocketDisconnect:
+    #     logger.warn("Client websocket disconnected")
