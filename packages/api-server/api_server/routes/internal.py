@@ -1,6 +1,5 @@
 # NOTE: This will eventually replace `gateway.py``
 import os
-from collections import deque
 from datetime import datetime
 from typing import Any, Dict
 
@@ -20,17 +19,36 @@ alert_repo = AlertRepository(user, task_repo)
 
 class WebSocketHealthManager:
     def __init__(self):
-        self.disconnects = deque()
+        self.disconnects = []
 
     def disconnected(self):
-        self.disconnects.appendleft(datetime.now())
-        # If there are more than 5 disconnects, and the last 5 occurred within
-        # 2 minutes, restart
+        self.disconnects.append(datetime.now())
+
+        # Clean up if the past disconnection is more than 2 minutes ago
+        if len(self.disconnects) > 2:
+            seconds_since_last_disconnect = (
+                self.disconnects[-1] - self.disconnects[-2]
+            ).seconds
+            logger.warn(
+                f"Previous Web Socket disconnection was {seconds_since_last_disconnect} seconds ago"
+            )
+            if seconds_since_last_disconnect > 120:
+                logger.info(
+                    f"Previous Web Socket disconnection was more than 2 minutes ago, cleaning up"
+                )
+                self.disconnects = [datetime.now()]
+
+        # If there are more than 5 disconnects that occurred within 2 minutes, shut down the server
         if len(self.disconnects) > 5:
-            for i in range(5):
-                if (self.disconnects[0] - self.disconnects[4]).seconds > 120:
-                    logger.error("Web Socket connections unhealthy, closing server")
-                    os._exit(1)
+            unhealthy_period_seconds = (
+                self.disconnects[-1] - self.disconnects[-5]
+            ).seconds
+            if unhealthy_period_seconds < 120:
+                logger.error(
+                    f"Web Sockets had 5 disconnections within {unhealthy_period_seconds} seconds"
+                )
+                logger.error("Shutting down server")
+                os._exit(1)
 
 
 health_manager = WebSocketHealthManager()
