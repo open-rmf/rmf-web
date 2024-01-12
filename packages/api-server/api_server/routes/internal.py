@@ -1,6 +1,7 @@
 # NOTE: This will eventually replace `gateway.py``
-import asyncio
 import os
+from collections import deque
+from datetime import datetime
 from typing import Any, Dict
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
@@ -15,6 +16,24 @@ logger = base_logger.getChild("RmfGatewayApp")
 user: mdl.User = mdl.User(username="__rmf_internal__", is_admin=True)
 task_repo = TaskRepository(user)
 alert_repo = AlertRepository(user, task_repo)
+
+
+class WebSocketHealthManager:
+    def __init__(self):
+        self.disconnects = deque()
+
+    def disconnected(self):
+        self.disconnects.appendleft(datetime.now())
+        # If there are more than 5 disconnects, and the last 5 occurred within
+        # 2 minutes, restart
+        if len(self.disconnects) > 5:
+            for i in range(5):
+                if (self.disconnects[0] - self.disconnects[4]).seconds > 120:
+                    logger.error("Web Socket connections unhealthy, closing server")
+                    os._exit(1)
+
+
+health_manager = WebSocketHealthManager()
 
 
 def log_phase_has_error(phase: mdl.Phases) -> bool:
@@ -105,4 +124,5 @@ async def rmf_gateway(websocket: WebSocket):
             msg: Dict[str, Any] = await websocket.receive_json()
             await process_msg(msg, fleet_repo)
     except WebSocketDisconnect:
+        health_manager.disconnected()
         logger.warn("Client websocket disconnected")
