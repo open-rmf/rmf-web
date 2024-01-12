@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import os
 from collections import namedtuple
 from typing import Coroutine, List, Optional
 
@@ -157,6 +158,11 @@ class RmfBookKeeper:
                 return
             await building_map.save()
             self._loggers.building_map.debug(json.dumps(building_map.dict()))
+
+            print("before sleeping")
+            await asyncio.sleep(20)
+            print("after sleep")
+            os._exit(1)
 
         self._subscriptions.append(
             self.rmf.building_map.subscribe(lambda x: self._create_task(update(x)))

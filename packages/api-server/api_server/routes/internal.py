@@ -99,16 +99,10 @@ async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
 @router.websocket("")
 async def rmf_gateway(websocket: WebSocket):
     await websocket.accept()
-    print("before sleeping")
-    await asyncio.sleep(20)
-    print("after sleep")
-    os._exit(1)
-
-    # await websocket.accept()
-    # fleet_repo = FleetRepository(user)
-    # try:
-    #     while True:
-    #         msg: Dict[str, Any] = await websocket.receive_json()
-    #         await process_msg(msg, fleet_repo)
-    # except WebSocketDisconnect:
-    #     logger.warn("Client websocket disconnected")
+    fleet_repo = FleetRepository(user)
+    try:
+        while True:
+            msg: Dict[str, Any] = await websocket.receive_json()
+            await process_msg(msg, fleet_repo)
+    except WebSocketDisconnect:
+        logger.warn("Client websocket disconnected")
