@@ -54,24 +54,20 @@ export class KeycloakAuthenticator
 
   async init(): Promise<void> {
     if (this._initialized) {
-      debug('already initialized');
-      console.log(`${new Date().toLocaleTimeString()}: already initialized`);
+      debug(`${new Date().toLocaleTimeString()}: already initialized`);
       return;
     }
 
     debug('initializing authenticator');
-    console.log('initializing authenticator');
 
     this._inst.onAuthSuccess = async () => {
       this._user = this._getUser();
-      debug('authenticated as', this._user);
-      console.log(`${new Date().toLocaleTimeString()}: authenticated as ${this._user}`);
+      debug(`${new Date().toLocaleTimeString()}: authenticated as ${this._user}`);
       this.emit('userChanged', this._user);
     };
 
     this._inst.onAuthLogout = () => {
-      debug('logout');
-      console.log(`${new Date().toLocaleTimeString()}: logout`);
+      debug(`${new Date().toLocaleTimeString()}: logout`);
       this._user = undefined;
       this.emit('userChanged', null);
     };
@@ -82,11 +78,9 @@ export class KeycloakAuthenticator
     });
     try {
       const refreshed = await this._inst.updateToken(30);
-      refreshed && debug('token refreshed');
-      console.log(`${new Date().toLocaleTimeString()}: initToken token refreshed 30`);
+      refreshed && debug(`${new Date().toLocaleTimeString()}: initToken token refreshed`);
     } catch {
-      debug('token not refreshed');
-      console.log(`${new Date().toLocaleTimeString()}: initToken token not refreshed 30`);
+      debug(`${new Date().toLocaleTimeString()}: initToken token not refreshed`);
     }
 
     this._user = this._inst.tokenParsed && this._getUser();
@@ -103,10 +97,8 @@ export class KeycloakAuthenticator
         this._user = this._getUser();
         this._isAdmin = this._isUserAdmin();
         this.emit('tokenRefresh', null);
-        console.log(`${new Date().toLocaleTimeString()}: refreshToken token refreshed 30`);
       } else {
-        debug('token not refreshed');
-        console.error(`${new Date().toLocaleTimeString()}: refreshToken token not refreshed 30`);
+        debug(`${new Date().toLocaleTimeString()}: refreshToken token not refreshed`);
       }
     }
     return;
