@@ -34,7 +34,7 @@ class WebSocketHealthManager:
             )
             if seconds_since_last_disconnect > 120:
                 logger.info(
-                    f"Previous Web Socket disconnection was more than 2 minutes ago, cleaning up"
+                    "Previous Web Socket disconnection was more than 2 minutes ago, cleaning up"
                 )
                 self.disconnects = [datetime.now()]
 
@@ -48,7 +48,7 @@ class WebSocketHealthManager:
                     f"Web Sockets had 5 disconnections within {unhealthy_period_seconds} seconds"
                 )
                 logger.error("Shutting down server")
-                os._exit(1)
+                os._exit(1)  # pylint: disable=protected-access
 
 
 health_manager = WebSocketHealthManager()
