@@ -1,4 +1,6 @@
 # NOTE: This will eventually replace `gateway.py``
+import os
+from datetime import datetime
 from typing import Any, Dict
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
@@ -13,6 +15,43 @@ logger = base_logger.getChild("RmfGatewayApp")
 user: mdl.User = mdl.User(username="__rmf_internal__", is_admin=True)
 task_repo = TaskRepository(user)
 alert_repo = AlertRepository(user, task_repo)
+
+
+class WebSocketHealthManager:
+    def __init__(self):
+        self.disconnects = []
+
+    def disconnected(self):
+        self.disconnects.append(datetime.now())
+
+        # Clean up if the past disconnection is more than 2 minutes ago
+        if len(self.disconnects) > 2:
+            seconds_since_last_disconnect = (
+                self.disconnects[-1] - self.disconnects[-2]
+            ).seconds
+            logger.warn(
+                f"Previous Web Socket disconnection was {seconds_since_last_disconnect} seconds ago"
+            )
+            if seconds_since_last_disconnect > 120:
+                logger.info(
+                    "Previous Web Socket disconnection was more than 2 minutes ago, cleaning up"
+                )
+                self.disconnects = [datetime.now()]
+
+        # If there are more than 5 disconnects that occurred within 2 minutes, shut down the server
+        if len(self.disconnects) > 5:
+            unhealthy_period_seconds = (
+                self.disconnects[-1] - self.disconnects[-5]
+            ).seconds
+            if unhealthy_period_seconds < 120:
+                logger.error(
+                    f"Web Sockets had 5 disconnections within {unhealthy_period_seconds} seconds"
+                )
+                logger.error("Shutting down server")
+                os._exit(1)  # pylint: disable=protected-access
+
+
+health_manager = WebSocketHealthManager()
 
 
 def log_phase_has_error(phase: mdl.Phases) -> bool:
@@ -103,4 +142,5 @@ async def rmf_gateway(websocket: WebSocket):
             msg: Dict[str, Any] = await websocket.receive_json()
             await process_msg(msg, fleet_repo)
     except WebSocketDisconnect:
+        health_manager.disconnected()
         logger.warn("Client websocket disconnected")

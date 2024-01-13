@@ -156,7 +156,7 @@ class RmfBookKeeper:
             if not building_map:
                 return
             await building_map.save()
-            self._loggers.building_map.info(json.dumps(building_map.dict()))
+            self._loggers.building_map.debug(json.dumps(building_map.dict()))
 
         self._subscriptions.append(
             self.rmf.building_map.subscribe(lambda x: self._create_task(update(x)))
