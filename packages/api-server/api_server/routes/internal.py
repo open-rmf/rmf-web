@@ -1,4 +1,5 @@
 # NOTE: This will eventually replace `gateway.py``
+import asyncio
 import os
 from datetime import datetime
 from typing import Any, Dict
@@ -139,8 +140,12 @@ async def rmf_gateway(websocket: WebSocket):
     fleet_repo = FleetRepository(user)
     try:
         while True:
-            msg: Dict[str, Any] = await websocket.receive_json()
+            msg: Dict[str, Any] = await asyncio.wait_for(
+                websocket.receive_json(), timeout=2.0
+            )
             await process_msg(msg, fleet_repo)
+    except asyncio.exceptions.TimeoutError:
+        logger.error("Client websocket timed out waiting to receive json")
     except WebSocketDisconnect:
         health_manager.disconnected()
         logger.warn("Client websocket disconnected")
