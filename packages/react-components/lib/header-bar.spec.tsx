@@ -20,7 +20,7 @@ describe('Header Bar', () => {
           <Tab key={'robots-tab'} label={'Robots'} value={'robots'} aria-label={`building-tab`} />
         </NavigationBar>
         <Toolbar variant="dense">
-          <Typography variant="caption">Powered by Open-RMF</Typography>
+          {/* <Typography variant="caption">Powered by Open-RMF</Typography> */}
           <IconButton id="user-btn" aria-label={'user-btn'} color="inherit">
             <AccountCircleIcon />
           </IconButton>
@@ -29,7 +29,7 @@ describe('Header Bar', () => {
     );
     expect(screen.getByText('Building')).toBeTruthy();
     expect(screen.getByText('Robots')).toBeTruthy();
-    expect(screen.getByText('Powered by Open-RMF')).toBeTruthy();
+    // expect(screen.getByText('Powered by Open-RMF')).toBeTruthy();
     expect(screen.getByLabelText('user-btn')).toBeTruthy();
     cleanup();
   });

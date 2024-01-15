@@ -99,7 +99,7 @@ export const FullHeaderBar: Story = () => {
             />
           </NavigationBar>
           <Toolbar variant="dense" className={classes.toolbar}>
-            <Typography variant="caption">Powered by Open-RMF</Typography>
+            {/* <Typography variant="caption">Powered by Open-RMF</Typography> */}
             <IconButton id="user-btn" aria-label={'user-btn'} color="inherit">
               <AccountCircleIcon />
             </IconButton>

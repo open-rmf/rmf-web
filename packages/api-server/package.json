@@ -6,7 +6,7 @@
   "scripts": {
     "prepack": "../../scripts/pipenv run python setup.py bdist_wheel",
     "restart": "RMF_API_SERVER_CONFIG=sqlite_local_config.py ../../scripts/pipenv run python -m api_server",
-    "start": "rm -rf run && mkdir -p run/cache && RMF_API_SERVER_CONFIG=sqlite_local_config.py ../../scripts/pipenv run python -m api_server",
+    "start": "rm -rf run && mkdir -p run && ../../scripts/pipenv run python -m api_server",
     "start:psql": "rm -rf run && mkdir -p run/cache && RMF_API_SERVER_CONFIG=psql_local_config.py ../../scripts/pipenv run python -m api_server",
     "test": "../../scripts/pipenv run python scripts/test.py",
     "test:cov": "../../scripts/pipenv run python -m coverage run scripts/test.py",

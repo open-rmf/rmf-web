@@ -10,8 +10,8 @@ import { TasksApp } from './tasks/tasks-app';
 
 export const AppRegistry = {
   Beacons: BeaconsApp,
-  Doors: DoorsApp,
-  Lifts: LiftsApp,
+  // Doors: DoorsApp,
+  // Lifts: LiftsApp,
   Map: MapApp,
   Tasks: TasksApp,
   'Task Details': TaskDetailsApp,

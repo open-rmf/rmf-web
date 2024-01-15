@@ -337,7 +337,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   return (
     <>
       <HeaderBar>
-        <LogoButton src={brandingIconPath} alt="logo" sx={{ width: logoSize }} />
+        {/* <LogoButton src={brandingIconPath} alt="logo" sx={{ width: logoSize }} /> */}
         <NavigationBar value={tabValue}>
           <AppBarTab
             label="Map"
@@ -456,7 +456,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             )}
           </Menu>
           <Divider orientation="vertical" sx={{ marginLeft: 1, marginRight: 2 }} />
-          <Typography variant="caption">Powered by Open-RMF</Typography>
+          {/* <Typography variant="caption">Powered by Open-RMF</Typography> */}
           {extraToolbarItems}
           <Tooltip title="Settings">
             <IconButton
