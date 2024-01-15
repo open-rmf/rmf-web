@@ -23,7 +23,6 @@ import {
   Tasks,
   Window,
 } from 'react-components';
-import { Subscription } from 'rxjs';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
@@ -185,7 +184,6 @@ export const TasksApp = React.memo(
               : sortFields.model[0].field;
         }
 
-        const subs: Subscription[] = [];
         (async () => {
           const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
             filterColumn && filterColumn === 'id_' ? filterValue : undefined,
@@ -232,18 +230,7 @@ export const TasksApp = React.memo(
                 ? tasksState.page * GET_LIMIT + 1
                 : tasksState.page * GET_LIMIT - 9,
           }));
-
-          subs.push(
-            ...newTasks.map((task) =>
-              rmf
-                .getTaskStateObs(task.booking.id)
-                .subscribe((task) =>
-                  setTasksState((prev) => ({ ...prev, [task.booking.id]: task })),
-                ),
-            ),
-          );
         })();
-        return () => subs.forEach((s) => s.unsubscribe());
       }, [
         rmf,
         refreshTaskAppCount,
