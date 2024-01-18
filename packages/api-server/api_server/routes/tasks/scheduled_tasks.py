@@ -49,10 +49,10 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
         task.last_ran = datetime.now()
         await task.save()
 
-    def do(start_from: datetime):
+    def do(start_from: Optional[datetime]):
         logger.info(f"Checking if scheduled task [{task.pk}] needs to run")
         datetime_now = datetime.now()
-        if datetime_now < start_from:
+        if start_from is not None and datetime_now < start_from:
             logger.info(
                 f"Scheduled task [{task.pk}] is due to start from [{start_from}], skipping current execution"
             )
@@ -70,7 +70,10 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
         logger.warning(f"Schedule has {len(schedule.get_jobs())} jobs left")
 
     for sched, j in jobs:
-        j.do(do, start_from=datetime.fromtimestamp(sched.start_from.timestamp()))
+        start_from_datetime = None
+        if sched.start_from is not None:
+            start_from_datetime = datetime.fromtimestamp(sched.start_from.timestamp())
+        j.do(do, start_from=start_from_datetime)
     logger.info(f"scheduled task [{task.pk}]")
 
 
