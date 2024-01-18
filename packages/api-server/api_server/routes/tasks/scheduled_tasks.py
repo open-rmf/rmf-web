@@ -49,16 +49,31 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
         task.last_ran = datetime.now()
         await task.save()
 
-    def do():
-        logger.info(f"starting task {task.pk}")
-        datetime_to_iso = datetime.now().isoformat()
-        if datetime_to_iso[:10] in task.except_dates:
+    def do(start_from: Optional[datetime]):
+        logger.info(f"Checking if scheduled task [{task.pk}] needs to run")
+        datetime_now = datetime.now()
+        if start_from is not None and datetime_now < start_from:
+            logger.info(
+                f"Scheduled task [{task.pk}] is due to start from [{start_from}], skipping current execution"
+            )
             return
-        asyncio.get_event_loop().create_task(run())
-        logger.warning(f"schedule has {len(schedule.get_jobs())} jobs left")
 
-    for _, j in jobs:
-        j.do(do)
+        datetime_to_iso = datetime_now.isoformat()
+        if datetime_to_iso[:10] in task.except_dates:
+            logger.info(
+                f"The current date [{datetime_to_iso}] is exempted for scheduled task [{task.pk}], skipping current execution"
+            )
+            return
+
+        logger.info(f"Starting task {task.pk}")
+        asyncio.get_event_loop().create_task(run())
+        logger.warning(f"Schedule has {len(schedule.get_jobs())} jobs left")
+
+    for sched, j in jobs:
+        start_from_datetime = None
+        if sched.start_from is not None:
+            start_from_datetime = datetime.fromtimestamp(sched.start_from.timestamp())
+        j.do(do, start_from=start_from_datetime)
     logger.info(f"scheduled task [{task.pk}]")
 
 

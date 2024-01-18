@@ -30,7 +30,7 @@ import { TaskSchedule } from './task-schedule';
 import { TaskSummary } from './task-summary';
 import { downloadCsvFull, downloadCsvMinimal } from './utils';
 
-const RefreshTaskQueueTableInterval = 5000;
+const RefreshTaskQueueTableInterval = 30000;
 
 enum TaskTablePanel {
   QueueTable = 0,
