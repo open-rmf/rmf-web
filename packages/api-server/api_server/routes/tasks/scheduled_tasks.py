@@ -54,20 +54,20 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
         datetime_now = datetime.now()
         if datetime_now < start_from:
             logger.info(
-                f"this is before the starting date {start_from} of scheduled task {task.pk}, skipping execution"
+                f"Scheduled task [{task.pk}] is due to start from [{start_from}], skipping current execution"
             )
             return
 
         datetime_to_iso = datetime_now.isoformat()
         if datetime_to_iso[:10] in task.except_dates:
             logger.info(
-                f"scheduled task {task.pk} is in exception dates, skipping execution"
+                f"The current date [{datetime_to_iso}] is exempted for scheduled task [{task.pk}], skipping current execution"
             )
             return
 
-        logger.info(f"starting task {task.pk}")
+        logger.info(f"Starting task {task.pk}")
         asyncio.get_event_loop().create_task(run())
-        logger.warning(f"schedule has {len(schedule.get_jobs())} jobs left")
+        logger.warning(f"Schedule has {len(schedule.get_jobs())} jobs left")
 
     for sched, j in jobs:
         j.do(do, start_from=datetime.fromtimestamp(sched.start_from.timestamp()))
