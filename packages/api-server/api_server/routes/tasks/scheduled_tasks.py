@@ -50,7 +50,7 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
         await task.save()
 
     def do(start_from: datetime):
-        logger.info(f"checking scheduled task {task.pk}")
+        logger.info(f"Checking if scheduled task [{task.pk}] needs to run")
         datetime_now = datetime.now()
         if datetime_now < start_from:
             logger.info(
