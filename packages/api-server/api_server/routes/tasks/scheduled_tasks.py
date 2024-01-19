@@ -161,7 +161,7 @@ async def del_scheduled_tasks_event(
     if task is None:
         raise HTTPException(404)
 
-    tz = ZoneInfo(app_config.timezone) or None
+    tz = ZoneInfo(app_config.timezone) if app_config.timezone else None
     event_date_str = event_date.replace(tzinfo=tz).isoformat()
     task.except_dates.append(event_date_str[:10])
     await task.save()
