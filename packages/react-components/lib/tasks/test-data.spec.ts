@@ -1,4 +1,9 @@
-import type { TaskEventLog, TaskRequest, TaskState } from 'api-client';
+import type {
+  TaskEventLog,
+  ApiServerModelsTortoiseModelsTasksTaskQueueEntryLeaf as TaskQueueEntry,
+  TaskRequest,
+  TaskState,
+} from 'api-client';
 
 export function makeTaskState(taskId: string): TaskState {
   const state = JSON.parse(`{
@@ -553,5 +558,20 @@ export function makeTaskRequest(): TaskRequest {
     priority: { value: 0 },
     unix_millis_earliest_start_time: Date.now(),
     description: { places: ['a', 'b'], rounds: 10 },
+  };
+}
+
+export function makeTaskQueueEntry(taskId: string): TaskQueueEntry {
+  return {
+    id_: taskId,
+    category: 'patrol',
+    assigned_to: 'robot1',
+    unix_millis_start_time: Date.now().toLocaleString(),
+    unix_millis_finish_time: Date.now().toLocaleString(),
+    status: 'underway',
+    unix_millis_request_time: Date.now().toLocaleString(),
+    requester: 'admin',
+    pickup: 'place1',
+    destination: 'place2',
   };
 }
