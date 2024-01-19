@@ -58,6 +58,19 @@ async def query_task_requests(
     return return_requests
 
 
+@router.get("", response_model=List[mdl.TaskState])
+async def query_task_states(
+    task_repo: TaskRepository = Depends(task_repo_dep),
+    task_id: Optional[str] = Query(
+        None, description="comma separated list of task ids"
+    ),
+):
+    filters = {}
+    if task_id is not None:
+        filters["id___in"] = task_id.split(",")
+    return await task_repo.query_task_states(filters)
+
+
 @router.get("/{task_id}/state", response_model=mdl.TaskState)
 async def get_task_state(
     task_repo: TaskRepository = Depends(task_repo_dep),
@@ -70,6 +83,11 @@ async def get_task_state(
     if result is None:
         raise HTTPException(status_code=404)
     return result
+
+
+@router.get("/states", response_model=List[mdl.TaskState])
+async def get_task_states(task_repo: TaskRepository = Depends(task_repo_dep)):
+    return await task_repo.get_task_states()
 
 
 @router.sub("/{task_id}/state", response_model=mdl.TaskState)
@@ -131,15 +149,12 @@ async def post_dispatch_task(
     request: mdl.DispatchTaskRequest = Body(...),
     task_repo: TaskRepository = Depends(task_repo_dep),
 ):
-    task_warn_time = request.request.unix_millis_warn_time
     resp = mdl.TaskDispatchResponse.parse_raw(
         await tasks_service().call(request.json(exclude_none=True))
     )
     if not resp.__root__.success:
         return RawJSONResponse(resp.json(), 400)
     new_state = cast(mdl.TaskDispatchResponseItem, resp.__root__).state
-    if task_warn_time is not None:
-        new_state.unix_millis_warn_time = task_warn_time
     await task_repo.save_task_state(new_state)
     await task_repo.save_task_request(new_state, request.request)
     return resp.__root__

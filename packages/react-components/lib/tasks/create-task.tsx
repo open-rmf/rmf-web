@@ -1074,11 +1074,6 @@ export function CreateTaskForm({
   // schedule is not supported with batch upload
   const scheduleEnabled = taskRequests.length === 1;
 
-  const [warnTimeChecked, setWarnTimeChecked] = React.useState(false);
-  const handleWarnTimeCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setWarnTimeChecked(event.target.checked);
-  };
-
   const updateTasks = () => {
     setTaskRequests((prev) => {
       prev.splice(selectedTaskIdx, 1, taskRequest);
@@ -1476,48 +1471,6 @@ export function CreateTaskForm({
                         />
                       )}
                       disabled
-                    />
-                  </Grid>
-                  <Grid item xs={1}>
-                    <Checkbox
-                      checked={warnTimeChecked}
-                      onChange={handleWarnTimeCheckboxChange}
-                      inputProps={{ 'aria-label': 'controlled' }}
-                      sx={{
-                        '& .MuiSvgIcon-root': { fontSize: isScreenHeightLessThan800 ? 22 : 32 },
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={isScreenHeightLessThan800 ? 5 : 4}>
-                    <DateTimePicker
-                      disabled={!warnTimeChecked}
-                      inputFormat={'MM/dd/yyyy HH:mm'}
-                      value={
-                        taskRequest.unix_millis_warn_time
-                          ? new Date(taskRequest.unix_millis_warn_time)
-                          : new Date()
-                      }
-                      onChange={(date) => {
-                        if (!date || !warnTimeChecked) {
-                          return;
-                        }
-                        taskRequest.unix_millis_warn_time = date.valueOf();
-                        updateTasks();
-                      }}
-                      label="Warn Time"
-                      renderInput={(props) => (
-                        <TextField
-                          {...props}
-                          InputLabelProps={{
-                            style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 },
-                          }}
-                          sx={{
-                            '& .MuiInputBase-input': {
-                              fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                            },
-                          }}
-                        />
-                      )}
                     />
                   </Grid>
                 </Grid>

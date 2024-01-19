@@ -172,12 +172,25 @@ class TaskRepository:
         )
         await self._save_task_queue_entry(task_state)
 
+    async def query_task_states(self, filters: dict) -> List[TaskState]:
+        try:
+            # TODO: enforce with authz
+            query = DbTaskState.filter(**filters)
+            results = await query.values_list("data", flat=True)
+            return [TaskState(**r) for r in results]
+        except FieldError as e:
+            raise HTTPException(422, str(e)) from e
+
     async def get_task_state(self, task_id: str) -> Optional[TaskState]:
         # TODO: enforce with authz
         result = await DbTaskState.get_or_none(id_=task_id)
         if result is None:
             return None
         return TaskState(**result.data)
+
+    async def get_task_states(self) -> List[TaskState]:
+        # TODO: enforce with authz
+        return await DbTaskState.all()
 
     async def get_task_log(
         self, task_id: str, between: Tuple[int, int]
@@ -349,7 +362,7 @@ class TaskRepository:
                 and datetime.fromtimestamp(task_state.unix_millis_start_time / 1000),
                 "unix_millis_finish_time": task_state.unix_millis_finish_time
                 and datetime.fromtimestamp(task_state.unix_millis_finish_time / 1000),
-                "status": task_state.status if task_state.status else None,
+                "status": task_state.status.value if task_state.status.value else None,
                 "unix_millis_request_time": task_state.booking.unix_millis_request_time
                 and datetime.fromtimestamp(
                     task_state.booking.unix_millis_request_time / 1000
@@ -375,10 +388,14 @@ class TaskRepository:
     ) -> List[TaskQueueEntryPydantic]:
         # TODO: enforce with authz
         try:
-            query = await DbTaskQueueEntry.filter(**filters)
             if pagination:
-                query = add_pagination(query, pagination)
-            return [await TaskQueueEntryPydantic.from_tortoise_orm(a) for a in query]
+                entries = await add_pagination(
+                    DbTaskQueueEntry.filter(**filters), pagination
+                )
+            else:
+                entries = await DbTaskQueueEntry.filter(**filters)
+            entries = cast(List[DbTaskQueueEntry], entries)
+            return [await TaskQueueEntryPydantic.from_tortoise_orm(a) for a in entries]
         except FieldError as e:
             raise HTTPException(422, str(e)) from e
 
