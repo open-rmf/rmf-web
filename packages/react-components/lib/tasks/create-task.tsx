@@ -10,7 +10,6 @@ import {
   Autocomplete,
   Box,
   Button,
-  Checkbox,
   Chip,
   Dialog,
   DialogActions,

@@ -314,7 +314,12 @@ async def sub_task_queue_entry(req: SubscriptionRequest, task_id: str):
     user = sio_user(req)
     task_repo = TaskRepository(user)
     obs = task_events.task_queue_entries.pipe(
-        rxops.filter(lambda x: cast(TaskQueueEntryPydantic, x).id_ == task_id)
+        rxops.filter(
+            lambda x: cast(
+                TaskQueueEntryPydantic, x
+            ).id_  # pyright: ignore[reportGeneralTypeIssues]
+            == task_id
+        )
     )
     current_task_queue_entry = await get_task_queue_entry(task_repo, task_id)
     if current_task_queue_entry:

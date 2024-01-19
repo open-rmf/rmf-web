@@ -5,7 +5,6 @@ from typing import Dict, List, Optional, Sequence, Tuple, cast
 from fastapi import Depends, HTTPException
 from tortoise.exceptions import FieldError, IntegrityError
 from tortoise.query_utils import Prefetch
-from tortoise.queryset import QuerySet
 from tortoise.transactions import in_transaction
 
 from api_server.authenticator import user_dep
@@ -190,7 +189,10 @@ class TaskRepository:
 
     async def get_task_states(self) -> List[TaskState]:
         # TODO: enforce with authz
-        return await DbTaskState.all()
+        states = await DbTaskState.all().values_list("data", flat=True)
+        if states is None:
+            return []
+        return [TaskState(**r) for r in states]
 
     async def get_task_log(
         self, task_id: str, between: Tuple[int, int]
@@ -362,7 +364,9 @@ class TaskRepository:
                 and datetime.fromtimestamp(task_state.unix_millis_start_time / 1000),
                 "unix_millis_finish_time": task_state.unix_millis_finish_time
                 and datetime.fromtimestamp(task_state.unix_millis_finish_time / 1000),
-                "status": task_state.status.value if task_state.status.value else None,
+                "status": task_state.status.value
+                if task_state.status and task_state.status.value
+                else None,
                 "unix_millis_request_time": task_state.booking.unix_millis_request_time
                 and datetime.fromtimestamp(
                     task_state.booking.unix_millis_request_time / 1000
