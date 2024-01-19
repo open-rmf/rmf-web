@@ -1,6 +1,7 @@
 import asyncio
 from datetime import datetime
 from typing import Optional
+from zoneinfo import ZoneInfo
 
 import schedule
 import tortoise.transactions
@@ -160,7 +161,8 @@ async def del_scheduled_tasks_event(
     if task is None:
         raise HTTPException(404)
 
-    event_date_str = event_date.isoformat()
+    tz = ZoneInfo(app_config.timezone) if app_config.timezone else None
+    event_date_str = event_date.replace(tzinfo=tz).isoformat()
     task.except_dates.append(event_date_str[:10])
     await task.save()
 
