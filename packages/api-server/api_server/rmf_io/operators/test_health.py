@@ -11,7 +11,7 @@ from api_server.models import BaseBasicHealth, HealthStatus
 from .health import most_critical
 
 
-class TestHealth(BaseBasicHealth):
+class TestHealth(BaseBasicHealthModel):
     @staticmethod
     async def from_tortoise(_tortoise):
         raise NotImplementedError()

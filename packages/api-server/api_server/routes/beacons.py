@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi import HTTPException
-from rx import operators as rxops
+from reactivex import operators as rxops
 
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import tortoise_models as ttm

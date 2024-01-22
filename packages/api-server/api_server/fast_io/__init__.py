@@ -1,18 +1,7 @@
 import asyncio
 from dataclasses import dataclass
 from re import Match
-from typing import (
-    Any,
-    Callable,
-    Coroutine,
-    Dict,
-    List,
-    Optional,
-    Tuple,
-    Type,
-    Union,
-    cast,
-)
+from typing import Any, Awaitable, Callable, Coroutine, Dict, Union, cast
 from urllib.parse import unquote as url_unquote
 
 import pydantic
@@ -21,7 +10,7 @@ import socketio.packet
 from fastapi import APIRouter, FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.routing import APIRoute
-from rx.core.observable.observable import Observable
+from reactivex import Observable
 from starlette.routing import compile_path
 
 from api_server.logger import logger
@@ -50,14 +39,14 @@ class SubRoute:
             [SubscriptionRequest], Union[Observable, Coroutine[Any, Any, Observable]]
         ],
         *,
-        response_model: Optional[Type[pydantic.BaseModel]] = None,
+        response_model: type[pydantic.BaseModel] | None = None,
     ):
         self.path = path
         self.endpoint = endpoint
         self.path_regex, self.path_format, self.param_convertors = compile_path(path)
         self.response_model = response_model
 
-    def matches(self, path: str) -> Optional[Match]:
+    def matches(self, path: str) -> Match | None:
         return self.path_regex.match(path)
 
 
@@ -71,8 +60,8 @@ class FastIORouter(APIRouter):
 
     .. code-block::
         import uvicorn
-        from rx import operators as rxops
-        from rx.subject.subject import Subject
+        from reactivex import operators as rxops
+        from reactivex.subject.subject import Subject
 
         from api_server.fast_io import FastIORouter, SubscriptionRequest
 
@@ -100,7 +89,7 @@ class FastIORouter(APIRouter):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.sub_routes: List[SubRoute] = []
+        self.sub_routes: list[SubRoute] = []
 
     def include_router(self, router: "FastIORouter", **kwargs):
         super().include_router(router, **kwargs)
@@ -114,9 +103,7 @@ class FastIORouter(APIRouter):
                 )
             )
 
-    def sub(
-        self, path: str, *, response_model: Optional[Type[pydantic.BaseModel]] = None
-    ):
+    def sub(self, path: str, *, response_model: type[pydantic.BaseModel] | None = None):
         """
         Registers a socket.io endpoint which handles subscriptions.
         """
@@ -130,7 +117,7 @@ class FastIORouter(APIRouter):
 
 class FastIOPacket(socketio.packet.Packet):
     class PacketData(pydantic.BaseModel):
-        __root__: Tuple[str, pydantic.BaseModel]
+        __root__: tuple[str, pydantic.BaseModel]
 
     def encode(self):
         if (
@@ -148,9 +135,8 @@ class FastIO(FastAPI):
         self,
         *args,
         socketio_path: str = "/socket.io",
-        socketio_connect: Optional[
-            Callable[[str, dict, Optional[dict]], Coroutine[Any, Any, bool]]
-        ] = None,
+        socketio_connect: Callable[[str, dict, dict | None], Awaitable[bool]]
+        | None = None,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
@@ -163,7 +149,7 @@ class FastIO(FastAPI):
         self.sio.on("subscribe", self._on_subscribe)
         self.sio.on("unsubscribe", self._on_unsubscribe)
         self.sio.on("disconnect", self._on_disconnect)
-        self._sub_routes: List[SubRoute] = []
+        self._sub_routes: list[SubRoute] = []
 
         self._sio_route = APIRoute(
             socketio_path,
@@ -243,7 +229,7 @@ The message must be of the form:
 
     def _match_routes(
         self, sub_data: SubscriptionData
-    ) -> Optional[Tuple[Match, SubRoute]]:
+    ) -> tuple[Match, SubRoute] | None:
         for r in self._sub_routes:
             match = r.matches(sub_data.room)
             if match:

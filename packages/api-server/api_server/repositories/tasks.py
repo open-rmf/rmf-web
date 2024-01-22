@@ -76,8 +76,8 @@ class TaskRepository:
             if pagination:
                 query = add_pagination(query, pagination)
             # TODO: enforce with authz
-            results = await query.values_list("data", flat=True)
-            return [TaskState(**r) for r in results]
+            results = await query.values_list("data")
+            return [TaskState(**r[0]) for r in results]
         except FieldError as e:
             raise HTTPException(422, str(e)) from e
 

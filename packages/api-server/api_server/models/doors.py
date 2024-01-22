@@ -1,12 +1,18 @@
 from pydantic import BaseModel, Field
+from tortoise.contrib.pydantic.base import PydanticModel
+from tortoise.contrib.pydantic.creator import pydantic_model_creator
+from tortoise.models import Model
 
 from . import tortoise_models as ttm
-from .health import basic_health_model
+from .health import BaseBasicHealthModel
 from .ros_pydantic import rmf_building_map_msgs, rmf_door_msgs
 
 Door = rmf_building_map_msgs.Door
 DoorMode = rmf_door_msgs.DoorMode
-DoorHealth = basic_health_model(ttm.DoorHealth)
+
+
+class DoorHealth(pydantic_model_creator(ttm.LiftHealth), BaseBasicHealthModel):
+    pass
 
 
 class DoorState(rmf_door_msgs.DoorState):

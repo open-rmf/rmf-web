@@ -1,7 +1,10 @@
+from typing import Any, cast
+
 from tortoise.contrib.pydantic.creator import pydantic_model_creator
 from tortoise.fields import (
     CharField,
     DatetimeField,
+    Field,
     ForeignKeyField,
     ForeignKeyRelation,
     JSONField,
@@ -14,12 +17,12 @@ from .log import LogMixin
 
 class TaskRequest(Model):
     id_ = CharField(255, pk=True, source_field="id")
-    request = JSONField()
+    request = cast(Field[dict[str, Any]], JSONField())
 
 
 class TaskState(Model):
     id_ = CharField(255, pk=True, source_field="id")
-    data = JSONField()
+    data = cast(Field[dict[str, Any]], JSONField())
     category = CharField(255, null=True, index=True)
     assigned_to = CharField(255, null=True, index=True)
     unix_millis_start_time = DatetimeField(null=True, index=True)

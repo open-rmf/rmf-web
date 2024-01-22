@@ -1,7 +1,7 @@
 from typing import List, cast
 
 from fastapi import Depends, HTTPException
-from rx import operators as rxops
+from reactivex import operators as rxops
 
 from api_server.dependencies import sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
@@ -59,9 +59,7 @@ async def get_lift_health(
 @router.sub("/{lift_name}/health", response_model=LiftHealth)
 async def sub_lift_health(req: SubscriptionRequest, lift_name: str):
     user = sio_user(req)
-    obs = rmf_events.lift_health.pipe(
-        rxops.filter(lambda x: cast(LiftHealth, x).id_ == lift_name)
-    )
+    obs = rmf_events.lift_health.pipe(rxops.filter(lambda x: x.id_ == lift_name))
     health = await get_lift_health(lift_name, RmfRepository(user))
     if health:
         return obs.pipe(rxops.start_with(health))

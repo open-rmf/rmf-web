@@ -1,6 +1,5 @@
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
 import schedule
 from schedule import Job
@@ -13,6 +12,7 @@ from tortoise.fields import (
     CharEnumField,
     CharField,
     DatetimeField,
+    Field,
     ForeignKeyField,
     ForeignKeyRelation,
     IntField,
@@ -27,8 +27,8 @@ class ScheduledTask(Model):
     task_request = JSONField()
     created_by = CharField(255)
     schedules: ReverseRelation["ScheduledTaskSchedule"]
-    last_ran: Optional[datetime] = DatetimeField(null=True)
-    except_dates = JSONField(null=True, default=list)
+    last_ran: Field[datetime] | None = DatetimeField(null=True)
+    except_dates: Field[dict | list] | None = JSONField(null=True, default=list)
 
 
 class ScheduledTaskSchedule(Model):
@@ -59,7 +59,7 @@ class ScheduledTaskSchedule(Model):
     period = CharEnumField(Period)
     at = CharField(255, null=True)
 
-    def get_id(self) -> IntField:
+    def get_id(self) -> int:
         return self._id
 
     def to_job(self) -> Job:

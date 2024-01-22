@@ -1,7 +1,7 @@
 from typing import List, cast
 
 from fastapi import Depends, HTTPException
-from rx import operators as rxops
+from reactivex import operators as rxops
 
 from api_server.dependencies import sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
@@ -59,9 +59,7 @@ async def get_door_health(
 @router.sub("/{door_name}/health", response_model=DoorHealth)
 async def sub_door_health(req: SubscriptionRequest, door_name: str):
     user = sio_user(req)
-    obs = rmf_events.door_health.pipe(
-        rxops.filter(lambda x: cast(DoorHealth, x).id_ == door_name)
-    )
+    obs = rmf_events.door_health.pipe(rxops.filter(lambda x: x.id_ == door_name))
     health = await get_door_health(door_name, RmfRepository(user))
     if health:
         return obs.pipe(rxops.start_with(health))

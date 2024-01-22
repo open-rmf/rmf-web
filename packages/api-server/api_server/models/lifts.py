@@ -1,17 +1,19 @@
-from typing import List
-
 from pydantic import BaseModel, Field
+from tortoise.contrib.pydantic.creator import pydantic_model_creator
 
 from . import tortoise_models as ttm
-from .health import basic_health_model
+from .health import BaseBasicHealthModel
 from .ros_pydantic import rmf_building_map_msgs, rmf_lift_msgs
 
 Lift = rmf_building_map_msgs.Lift
-LiftHealth = basic_health_model(ttm.LiftHealth)
+
+
+class LiftHealth(pydantic_model_creator(ttm.LiftHealth), BaseBasicHealthModel):
+    pass
 
 
 class LiftState(rmf_lift_msgs.LiftState):
-    available_modes: List[int]
+    available_modes: list[int]
 
     @staticmethod
     def from_tortoise(tortoise: ttm.LiftState) -> "LiftState":

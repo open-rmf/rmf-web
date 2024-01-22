@@ -1,5 +1,8 @@
+from typing import Any, cast
+
 from tortoise.fields import (
     CharField,
+    Field,
     ForeignKeyField,
     ForeignKeyRelation,
     JSONField,
@@ -12,7 +15,7 @@ from .log import LogMixin
 
 class FleetState(Model):
     name = CharField(255, pk=True)
-    data = JSONField()
+    data = cast(Field[dict[str, Any]], JSONField())
 
 
 class FleetLog(Model):
