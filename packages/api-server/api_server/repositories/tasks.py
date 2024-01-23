@@ -5,7 +5,6 @@ from typing import Dict, List, Optional, Sequence, Tuple, cast
 from fastapi import Depends, HTTPException
 from tortoise.exceptions import FieldError, IntegrityError
 from tortoise.query_utils import Prefetch
-from tortoise.queryset import QuerySet
 from tortoise.transactions import in_transaction
 
 from api_server.authenticator import user_dep
@@ -22,6 +21,8 @@ from api_server.models import (
 from api_server.models import tortoise_models as ttm
 from api_server.models.rmf_api.log_entry import Tier
 from api_server.models.rmf_api.task_state import Category, Id, Phase
+from api_server.models.tortoise_models import TaskQueueEntry as DbTaskQueueEntry
+from api_server.models.tortoise_models import TaskQueueEntryPydantic
 from api_server.models.tortoise_models import TaskRequest as DbTaskRequest
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.query import add_pagination
@@ -162,74 +163,18 @@ class TaskRepository:
             raise HTTPException(422, str(e)) from e
 
     async def save_task_state(self, task_state: TaskState) -> None:
-        db_task_state = await DbTaskState.get_or_none(id_=task_state.booking.id)
-        if db_task_state is not None:
-            task_state.unix_millis_warn_time = (
-                (int(round(db_task_state.unix_millis_warn_time.timestamp())) * 1000)
-                if db_task_state.unix_millis_warn_time is not None
-                else None
-            )
-            db_task_state.update_from_dict(
-                {
-                    "data": task_state.json(),
-                    "category": task_state.category.__root__
-                    if task_state.category
-                    else None,
-                    "assigned_to": task_state.assigned_to.name
-                    if task_state.assigned_to
-                    else None,
-                    "unix_millis_start_time": task_state.unix_millis_start_time
-                    and datetime.fromtimestamp(
-                        task_state.unix_millis_start_time / 1000
-                    ),
-                    "unix_millis_finish_time": task_state.unix_millis_finish_time
-                    and datetime.fromtimestamp(
-                        task_state.unix_millis_finish_time / 1000
-                    ),
-                    "status": task_state.status if task_state.status else None,
-                    "unix_millis_request_time": task_state.booking.unix_millis_request_time
-                    and datetime.fromtimestamp(
-                        task_state.booking.unix_millis_request_time / 1000
-                    ),
-                    "requester": task_state.booking.requester
-                    if task_state.booking.requester
-                    else None,
-                    "unix_millis_warn_time": task_state.unix_millis_warn_time
-                    and datetime.fromtimestamp(task_state.unix_millis_warn_time / 1000),
-                }
-            )
-            await db_task_state.save()
-        else:
-            await ttm.TaskState.create(
-                id_=task_state.booking.id,
-                data=task_state.json(),
-                category=task_state.category.__root__ if task_state.category else None,
-                assigned_to=task_state.assigned_to.name
-                if task_state.assigned_to
-                else None,
-                unix_millis_start_time=task_state.unix_millis_start_time
-                and datetime.fromtimestamp(task_state.unix_millis_start_time / 1000),
-                unix_millis_finish_time=task_state.unix_millis_finish_time
-                and datetime.fromtimestamp(task_state.unix_millis_finish_time / 1000),
-                status=task_state.status if task_state.status else None,
-                unix_millis_request_time=task_state.booking.unix_millis_request_time
-                and datetime.fromtimestamp(
-                    task_state.booking.unix_millis_request_time / 1000
-                ),
-                requester=task_state.booking.requester
-                if task_state.booking.requester
-                else None,
-                unix_millis_warn_time=task_state.unix_millis_warn_time
-                and datetime.fromtimestamp(task_state.unix_millis_warn_time / 1000),
-            )
+        await ttm.TaskState.update_or_create(
+            {
+                "data": task_state.json(),
+            },
+            id_=task_state.booking.id,
+        )
+        await self._save_task_queue_entry(task_state)
 
-    async def query_task_states(
-        self, query: QuerySet[DbTaskState], pagination: Optional[Pagination] = None
-    ) -> List[TaskState]:
+    async def query_task_states(self, filters: dict) -> List[TaskState]:
         try:
-            if pagination:
-                query = add_pagination(query, pagination)
             # TODO: enforce with authz
+            query = DbTaskState.filter(**filters)
             results = await query.values_list("data", flat=True)
             return [TaskState(**r) for r in results]
         except FieldError as e:
@@ -241,6 +186,13 @@ class TaskRepository:
         if result is None:
             return None
         return TaskState(**result.data)
+
+    async def get_task_states(self) -> List[TaskState]:
+        # TODO: enforce with authz
+        states = await DbTaskState.all().values_list("data", flat=True)
+        if states is None:
+            return []
+        return [TaskState(**r) for r in states]
 
     async def get_task_log(
         self, task_id: str, between: Tuple[int, int]
@@ -398,6 +350,58 @@ class TaskRepository:
                     await self._savePhaseLogs(db_task_log, task_log.phases)
             except IntegrityError as e:
                 logger.error(format_exception(e))
+
+    async def _save_task_queue_entry(self, task_state: TaskState) -> None:
+        await DbTaskQueueEntry.update_or_create(
+            {
+                "category": task_state.category.__root__
+                if task_state.category
+                else None,
+                "assigned_to": task_state.assigned_to.name
+                if task_state.assigned_to
+                else None,
+                "unix_millis_start_time": task_state.unix_millis_start_time
+                and datetime.fromtimestamp(task_state.unix_millis_start_time / 1000),
+                "unix_millis_finish_time": task_state.unix_millis_finish_time
+                and datetime.fromtimestamp(task_state.unix_millis_finish_time / 1000),
+                "status": task_state.status.value
+                if task_state.status and task_state.status.value
+                else None,
+                "unix_millis_request_time": task_state.booking.unix_millis_request_time
+                and datetime.fromtimestamp(
+                    task_state.booking.unix_millis_request_time / 1000
+                ),
+                "requester": task_state.booking.requester
+                if task_state.booking.requester
+                else None,
+            },
+            id_=task_state.booking.id,
+        )
+
+    async def get_task_queue_entry(
+        self, task_id: str
+    ) -> Optional[TaskQueueEntryPydantic]:
+        # TODO: enforce with authz
+        result = await DbTaskQueueEntry.get_or_none(id_=task_id)
+        if result is None:
+            return None
+        return await TaskQueueEntryPydantic.from_tortoise_orm(result)
+
+    async def query_task_queue_entry(
+        self, filters: dict, pagination: Optional[Pagination] = None
+    ) -> List[TaskQueueEntryPydantic]:
+        # TODO: enforce with authz
+        try:
+            if pagination:
+                entries = await add_pagination(
+                    DbTaskQueueEntry.filter(**filters), pagination
+                )
+            else:
+                entries = await DbTaskQueueEntry.filter(**filters)
+            entries = cast(List[DbTaskQueueEntry], entries)
+            return [await TaskQueueEntryPydantic.from_tortoise_orm(a) for a in entries]
+        except FieldError as e:
+            raise HTTPException(422, str(e)) from e
 
 
 def task_repo_dep(user: User = Depends(user_dep)):

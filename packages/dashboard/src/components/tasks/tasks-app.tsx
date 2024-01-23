@@ -13,7 +13,11 @@ import {
   Tooltip,
   useMediaQuery,
 } from '@mui/material';
-import { TaskRequest, TaskState } from 'api-client';
+import {
+  ApiServerModelsTortoiseModelsTasksTaskQueueEntryLeaf as TaskQueueEntry,
+  TaskRequest,
+  TaskState,
+} from 'api-client';
 import React from 'react';
 import {
   FilterFields,
@@ -88,10 +92,11 @@ export const TasksApp = React.memo(
 
       const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
       const [openTaskSummary, setOpenTaskSummary] = React.useState(false);
-      const [selectedTask, setSelectedTask] = React.useState<TaskState | null>(null);
-      const [tasksState, setTasksState] = React.useState<Tasks>({
+      const [selectedTask, setSelectedTask] = React.useState<TaskQueueEntry | null>(null);
+      const [selectedTaskState, setSelectedTaskState] = React.useState<TaskState | null>(null);
+      const [tasks, setTasks] = React.useState<Tasks>({
         isLoading: true,
-        data: [],
+        entries: [],
         requests: {},
         total: 0,
         page: 1,
@@ -185,7 +190,7 @@ export const TasksApp = React.memo(
         }
 
         (async () => {
-          const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
+          const resp = await rmf.tasksApi.queryTaskQueueEntryTasksQueueEntryGet(
             filterColumn && filterColumn === 'id_' ? filterValue : undefined,
             filterColumn && filterColumn === 'category' ? filterValue : undefined,
             filterColumn && filterColumn === 'requester' ? filterValue : undefined,
@@ -197,16 +202,16 @@ export const TasksApp = React.memo(
             filterColumn && filterColumn === 'unix_millis_start_time' ? filterValue : undefined,
             filterColumn && filterColumn === 'unix_millis_finish_time' ? filterValue : undefined,
             GET_LIMIT,
-            (tasksState.page - 1) * GET_LIMIT, // Datagrid component need to start in page 1. Otherwise works wrong
+            (tasks.page - 1) * GET_LIMIT, // Datagrid component need to start in page 1. Otherwise works wrong
             orderBy,
             undefined,
           );
-          const results = resp.data as TaskState[];
-          const newTasks = results.slice(0, GET_LIMIT);
+          const results = resp.data as TaskQueueEntry[];
+          const newTaskQueueEntries = results.slice(0, GET_LIMIT);
 
           // NOTE(ac): we are not using getAllTaskRequests here to prevent
           // adding it into the dependency list.
-          const taskIds: string[] = newTasks.map((task) => task.booking.id);
+          const taskIds: string[] = newTaskQueueEntries.map((task) => task.id_);
           const taskIdsQuery = taskIds.join(',');
           const taskRequests = (await rmf.tasksApi.queryTaskRequestsTasksRequestsGet(taskIdsQuery))
             .data;
@@ -220,47 +225,58 @@ export const TasksApp = React.memo(
             ++requestIndex;
           }
 
-          setTasksState((old) => ({
+          setTasks((old) => ({
             ...old,
             isLoading: false,
-            data: newTasks,
+            entries: newTaskQueueEntries,
             requests: taskRequestMap,
             total:
               results.length === GET_LIMIT
-                ? tasksState.page * GET_LIMIT + 1
-                : tasksState.page * GET_LIMIT - 9,
+                ? tasks.page * GET_LIMIT + 1
+                : tasks.page * GET_LIMIT - 9,
           }));
         })();
       }, [
         rmf,
         refreshTaskAppCount,
-        tasksState.page,
+        tasks.page,
         filterFields.model,
         sortFields.model,
         selectedPanelIndex,
       ]);
+
+      React.useEffect(() => {
+        if (!rmf) {
+          return;
+        }
+
+        (async () => {
+          if (!selectedTask) {
+            AppEvents.robotSelect.next(null);
+            setSelectedTaskState(null);
+            return;
+          }
+
+          try {
+            const taskState = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(selectedTask.id_))
+              .data;
+            setSelectedTaskState(taskState);
+            if (taskState.assigned_to) {
+              AppEvents.robotSelect.next([taskState.assigned_to.group, taskState.assigned_to.name]);
+            }
+          } catch {
+            console.error(`Failed to fetch task state for ${selectedTask.id_}`);
+            return;
+          }
+        })();
+      }, [rmf, selectedTask]);
 
       const getAllTasks = async (timestamp: Date) => {
         if (!rmf) {
           return [];
         }
 
-        const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          `0,${timestamp.getTime()}`,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          '-unix_millis_start_time',
-          undefined,
-        );
+        const resp = await rmf.tasksApi.getTaskStatesTasksStatesGet();
         const allTasks = resp.data as TaskState[];
         return allTasks;
       };
@@ -402,21 +418,18 @@ export const TasksApp = React.memo(
           <TabPanel selectedTabIndex={selectedPanelIndex} index={TaskTablePanel.QueueTable}>
             <TableContainer>
               <TaskDataGridTable
-                tasks={tasksState}
-                onTaskClick={(_: MuiMouseEvent, task: TaskState) => {
+                tasks={tasks}
+                onTaskClick={(_: MuiMouseEvent, task: TaskQueueEntry) => {
                   setSelectedTask(task);
-                  if (task.assigned_to) {
-                    AppEvents.robotSelect.next([task.assigned_to.group, task.assigned_to.name]);
-                  }
                   setOpenTaskSummary(true);
                 }}
                 setFilterFields={setFilterFields}
                 setSortFields={setSortFields}
                 onPageChange={(newPage: number) =>
-                  setTasksState((old: Tasks) => ({ ...old, page: newPage + 1 }))
+                  setTasks((old: Tasks) => ({ ...old, page: newPage + 1 }))
                 }
                 onPageSizeChange={(newPageSize: number) =>
-                  setTasksState((old: Tasks) => ({ ...old, pageSize: newPageSize }))
+                  setTasks((old: Tasks) => ({ ...old, pageSize: newPageSize }))
                 }
               />
             </TableContainer>
@@ -430,8 +443,8 @@ export const TasksApp = React.memo(
           {openTaskSummary && (
             <TaskSummary
               onClose={() => setOpenTaskSummary(false)}
-              task={selectedTask ?? undefined}
-              request={selectedTask ? tasksState.requests[selectedTask.booking.id] : undefined}
+              task={selectedTaskState ?? undefined}
+              request={selectedTask ? tasks.requests[selectedTask.id_] : undefined}
             />
           )}
           {children}

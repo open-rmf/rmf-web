@@ -1,20 +1,21 @@
 import { cleanup, render, RenderResult, screen } from '@testing-library/react';
 import React from 'react';
-import { TaskDataGridTable, Tasks, FilterFields } from './task-table-datagrid';
-import { makeTaskState } from './test-data.spec';
+import { TaskDataGridTable, Tasks, FilterFields, SortFields } from './task-table-datagrid';
+import { makeTaskQueueEntry } from './test-data.spec';
 
 describe('Tasks table', () => {
   const tasks: Tasks = {
     isLoading: false,
-    data: [],
+    entries: [],
     requests: {},
     total: 0,
     page: 1,
     pageSize: 10,
   };
 
-  tasks.data = [makeTaskState('task_0'), makeTaskState('task_1')];
+  tasks.entries = [makeTaskQueueEntry('task_0'), makeTaskQueueEntry('task_1')];
   let root: RenderResult;
+  let mockRowClick: ReturnType<typeof jasmine.createSpy>;
   let mockAddMoreRows: ReturnType<typeof jasmine.createSpy>;
 
   beforeEach(() => {
@@ -22,13 +23,19 @@ describe('Tasks table', () => {
       model: undefined,
     };
 
+    const setSortFields: SortFields = {
+      model: undefined,
+    };
+
     mockAddMoreRows = jasmine.createSpy();
     root = render(
       <TaskDataGridTable
         tasks={tasks}
+        onTaskClick={mockRowClick}
         onPageChange={mockAddMoreRows}
         onPageSizeChange={mockAddMoreRows}
         setFilterFields={() => setFilterFields}
+        setSortFields={() => setSortFields}
       />,
     );
   });

@@ -27,6 +27,7 @@ class TaskEvents:
     def __init__(self):
         self.task_states = Subject()  # TaskState
         self.task_event_logs = Subject()  # TaskEventLog
+        self.task_queue_entries = Subject()  # TaskQueueEntry
 
 
 task_events = TaskEvents()

@@ -20,16 +20,6 @@ class TaskRequest(Model):
 class TaskState(Model):
     id_ = CharField(255, pk=True, source_field="id")
     data = JSONField()
-    category = CharField(255, null=True, index=True)
-    assigned_to = CharField(255, null=True, index=True)
-    unix_millis_start_time = DatetimeField(null=True, index=True)
-    unix_millis_finish_time = DatetimeField(null=True, index=True)
-    status = CharField(255, null=True, index=True)
-    unix_millis_request_time = DatetimeField(null=True, index=True)
-    requester = CharField(255, null=True, index=True)
-    unix_millis_warn_time = DatetimeField(null=True, index=True)
-    pickup = CharField(255, null=True, index=True)
-    destination = CharField(255, null=True, index=True)
 
 
 class TaskEventLog(Model):
@@ -82,4 +72,18 @@ class TaskFavorite(Model):
     user = CharField(255, null=False, index=True)
 
 
+class TaskQueueEntry(Model):
+    id_ = CharField(255, pk=True, source_field="id")
+    category = CharField(255, null=True, index=True)
+    assigned_to = CharField(255, null=True, index=True)
+    unix_millis_start_time = DatetimeField(null=True, index=True)
+    unix_millis_finish_time = DatetimeField(null=True, index=True)
+    status = CharField(255, null=True, index=True)
+    unix_millis_request_time = DatetimeField(null=True, index=True)
+    requester = CharField(255, null=True, index=True)
+    pickup = CharField(255, null=True, index=True)
+    destination = CharField(255, null=True, index=True)
+
+
 TaskFavoritePydantic = pydantic_model_creator(TaskFavorite)
+TaskQueueEntryPydantic = pydantic_model_creator(TaskQueueEntry)
