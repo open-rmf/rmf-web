@@ -264,7 +264,6 @@ class TaskRepository:
             )
             entries = []
             for r in results:
-                print(r["assigned_to"])
                 status = r["status"]
                 if "Status." in status:
                     r["status"] = r["status"].split("Status.")[1]
