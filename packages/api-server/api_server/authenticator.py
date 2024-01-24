@@ -30,6 +30,7 @@ class JwtAuthenticator(Authenticator):
         a "token" key.
         :param pem_file: path to a pem encoded certificate used to verify a token.
         """
+        super().__init__()
         self.aud = aud
         self.iss = iss
         self.oidc_url = oidc_url

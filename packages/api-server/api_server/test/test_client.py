@@ -5,7 +5,6 @@ import jwt
 from fastapi.testclient import TestClient as BaseTestClient
 
 from api_server.app import app
-from api_server.models import User
 
 here = os.path.dirname(__file__)
 

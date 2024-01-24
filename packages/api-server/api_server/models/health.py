@@ -3,7 +3,7 @@ from enum import Enum
 from pydantic import BaseModel
 
 
-class HealthStatus(Enum):
+class HealthStatus(str, Enum):
     HEALTHY = "Healthy"
     UNHEALTHY = "Unhealthy"
     DEAD = "Dead"

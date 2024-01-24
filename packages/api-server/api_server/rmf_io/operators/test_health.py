@@ -1,13 +1,12 @@
 import unittest
 from datetime import datetime
-from typing import Optional, cast
+from typing import Any, Optional, cast
 
-import rx
-from rx import operators as ops
-from rx.scheduler.historicalscheduler import HistoricalScheduler
+import reactivex as rx
+from reactivex import operators as ops
+from reactivex.scheduler.historicalscheduler import HistoricalScheduler
 
-from api_server.models import BasicHealth, HealthStatus
-
+from ...models import BasicHealth, HealthStatus
 from .health import most_critical
 
 
@@ -38,7 +37,9 @@ class TestMostCritical(unittest.TestCase):
             nonlocal result
             result = v
 
-        obs_a.pipe(ops.combine_latest(obs_b), most_critical()).subscribe(assign)
+        obs_a.pipe(cast(Any, ops.combine_latest(obs_b)), most_critical()).subscribe(
+            assign
+        )
         self.assertIsNotNone(result)
         result = cast(TestHealth, result)
         self.assertEqual(result.health_status, HealthStatus.DEAD)
@@ -69,7 +70,9 @@ class TestMostCritical(unittest.TestCase):
             nonlocal result
             result = v
 
-        obs_a.pipe(ops.combine_latest(obs_b), most_critical()).subscribe(assign)
+        obs_a.pipe(cast(Any, ops.combine_latest(obs_b)), most_critical()).subscribe(
+            assign
+        )
         self.assertIsNotNone(result)
         result = cast(TestHealth, result)
         self.assertEqual(result.health_status, HealthStatus.DEAD)
@@ -95,7 +98,9 @@ class TestMostCritical(unittest.TestCase):
             nonlocal result
             result = v
 
-        obs_a.pipe(ops.combine_latest(obs_b), most_critical()).subscribe(assign)
+        obs_a.pipe(cast(Any, ops.combine_latest(obs_b)), most_critical()).subscribe(
+            assign
+        )
         self.assertIsNotNone(result)
         result = cast(TestHealth, result)
         self.assertEqual(result.health_status, HealthStatus.HEALTHY)

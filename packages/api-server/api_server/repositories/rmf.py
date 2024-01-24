@@ -1,7 +1,4 @@
-from typing import List, cast
-
 from fastapi import Depends
-from tortoise.contrib.pydantic.base import PydanticModel
 
 from api_server.authenticator import user_dep
 from api_server.models import (

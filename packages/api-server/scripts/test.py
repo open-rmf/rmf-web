@@ -1,4 +1,7 @@
+import asyncio
 import os
+
+from tortoise import Tortoise
 
 os.environ[
     "RMF_API_SERVER_CONFIG"
@@ -6,9 +9,6 @@ os.environ[
 
 import unittest
 
-from api_server.test import test_client
-
-test_client.client()
 result = unittest.main(module=None, exit=False)
-test_client.shutdown()
+asyncio.run(Tortoise.close_connections())
 exit(1 if not result.result.wasSuccessful() else 0)

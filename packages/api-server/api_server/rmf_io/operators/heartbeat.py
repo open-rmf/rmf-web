@@ -1,4 +1,4 @@
-from typing import Any, Callable
+from typing import Callable
 
 from reactivex import Observable, compose
 from reactivex.operators import buffer_with_time_or_count, distinct_until_changed

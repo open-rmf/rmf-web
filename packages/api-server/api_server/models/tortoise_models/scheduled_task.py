@@ -1,6 +1,5 @@
 from datetime import datetime
 from enum import Enum
-from typing import cast
 
 import schedule
 from schedule import Job
@@ -13,7 +12,6 @@ from tortoise.fields import (
     CharEnumField,
     CharField,
     DatetimeField,
-    Field,
     ForeignKeyField,
     ForeignKeyRelation,
     IntField,

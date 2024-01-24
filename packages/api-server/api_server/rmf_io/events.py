@@ -2,7 +2,6 @@ from reactivex.subject import BehaviorSubject, Subject
 from tortoise.contrib.pydantic.base import PydanticModel
 
 from api_server import models as mdl
-from api_server.models import tortoise_models as ttm
 
 
 class RmfEvents:

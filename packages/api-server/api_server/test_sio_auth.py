@@ -8,6 +8,7 @@ from .test.test_fixtures import AppFixture
 
 
 class TestSioAuth(AppFixture):
+    # pylint: disable=no-self-use
     def test_token_is_verified(self):
         with patch.object(
             authenticator, "verify_token"

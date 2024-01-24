@@ -17,7 +17,7 @@ class ResourcePermission(Model):
     # This has no foreign key because resources can be given any arbitrary group, sometimes even dynamically.
     authz_grp: str = CharField(255, index=True)  # type: ignore
     # "sub" in casbin speak
-    role = ForeignKeyField("models.Role")
+    role: ForeignKeyRelation[Role] = ForeignKeyField("models.Role")
     action: str = CharField(255)  # type: ignore
 
 

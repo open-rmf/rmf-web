@@ -1,8 +1,3 @@
-from abc import ABC, abstractmethod
-from typing import Generic, Protocol, TypeVar
-
-from pydantic import BaseModel
-from tortoise.contrib.pydantic.creator import pydantic_model_creator
 from tortoise.fields import CharField, TextField
 from tortoise.models import Model
 

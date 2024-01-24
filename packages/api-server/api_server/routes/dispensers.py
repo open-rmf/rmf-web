@@ -2,7 +2,6 @@ from typing import List
 
 from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
-from tortoise.contrib.pydantic.base import PydanticModel
 
 from api_server.dependencies import sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest

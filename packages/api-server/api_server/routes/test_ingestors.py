@@ -3,7 +3,6 @@ from typing import List, cast
 from uuid import uuid4
 
 from api_server.models import IngestorState
-from api_server.rmf_io import rmf_events
 from api_server.test import AppFixture, make_ingestor_state
 
 

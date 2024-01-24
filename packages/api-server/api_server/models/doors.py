@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 
 from . import tortoise_models as ttm
-from .health import BasicHealth
+from .health import BasicHealth, HealthStatus
 from .ros_pydantic import rmf_building_map_msgs, rmf_door_msgs
 
 Door = rmf_building_map_msgs.Door
@@ -13,7 +13,7 @@ class DoorHealth(BasicHealth):
     async def from_tortoise_orm(cls, obj: ttm.DoorHealth) -> "DoorHealth":
         return DoorHealth(
             id_=obj.id_,
-            health_status=obj.health_status,
+            health_status=HealthStatus(obj.health_status),
             health_message=obj.health_message,
         )
 
