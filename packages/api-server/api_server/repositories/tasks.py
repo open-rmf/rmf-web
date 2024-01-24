@@ -14,6 +14,7 @@ from api_server.models import (
     LogEntry,
     Pagination,
     Phases,
+    Status,
     TaskEventLog,
     TaskRequest,
     TaskState,
@@ -22,6 +23,7 @@ from api_server.models import (
 from api_server.models import tortoise_models as ttm
 from api_server.models.rmf_api.log_entry import Tier
 from api_server.models.rmf_api.task_state import Category, Id, Phase
+from api_server.models.tortoise_models import TaskQueueEntryPydantic
 from api_server.models.tortoise_models import TaskRequest as DbTaskRequest
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.query import add_pagination
@@ -241,6 +243,58 @@ class TaskRepository:
         if result is None:
             return None
         return TaskState(**result.data)
+
+    async def query_task_queue_entry(
+        self, query: QuerySet[DbTaskState], pagination: Optional[Pagination] = None
+    ) -> List[TaskQueueEntryPydantic]:
+        try:
+            if pagination:
+                query = add_pagination(query, pagination)
+            # TODO: enforce with authz
+            results = await query.values(
+                "id_",
+                "assigned_to",
+                "unix_millis_start_time",
+                "unix_millis_finish_time",
+                "status",
+                "unix_millis_request_time",
+                "requester",
+                "pickup",
+                "destination",
+            )
+            entries = []
+            for r in results:
+                print(r["assigned_to"])
+                status = r["status"]
+                if "Status." in status:
+                    r["status"] = r["status"].split("Status.")[1]
+                entries.append(TaskQueueEntryPydantic(**r))
+            return entries
+        except FieldError as e:
+            raise HTTPException(422, str(e)) from e
+
+    async def get_task_queue_entry(
+        self, task_id: str
+    ) -> Optional[TaskQueueEntryPydantic]:
+        # TODO: enforce with authz
+        result = await DbTaskState.get_or_none(id_=task_id).values(
+            "id_",
+            "assigned_to",
+            "unix_millis_start_time",
+            "unix_millis_finish_time",
+            "status",
+            "unix_millis_request_time",
+            "requester",
+            "pickup",
+            "destination",
+        )
+        if result is None:
+            return None
+
+        status = result["status"]
+        if status is not None and "Status." in status:
+            result["status"] = result["status"].split("Status.")[1]
+        return TaskQueueEntryPydantic(**result)
 
     async def get_task_log(
         self, task_id: str, between: Tuple[int, int]

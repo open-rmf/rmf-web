@@ -13,7 +13,12 @@ import {
 } from '@mui/x-data-grid';
 import { styled, Stack, Typography, Tooltip, useMediaQuery, SxProps, Theme } from '@mui/material';
 import * as React from 'react';
-import { TaskState, TaskRequest, Status } from 'api-client';
+import {
+  ApiServerModelsTortoiseModelsTasksTaskStateLeaf as TaskQueueEntry,
+  TaskState,
+  TaskRequest,
+  Status,
+} from 'api-client';
 import { InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
 import { parsePickup, parseDestination } from './utils';
 
@@ -56,7 +61,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 
 export interface Tasks {
   isLoading: boolean;
-  data: TaskState[];
+  entries: TaskQueueEntry[];
   requests: Record<string, TaskRequest>;
   total: number;
   page: number;
@@ -75,7 +80,7 @@ export type MuiMouseEvent = MuiEvent<React.MouseEvent<HTMLElement>>;
 
 export interface TableDataGridState {
   tasks: Tasks;
-  onTaskClick?(ev: MuiMouseEvent, task: TaskState): void;
+  onTaskClick?(ev: MuiMouseEvent, task: TaskQueueEntry): void;
   onPageChange: (newPage: number) => void;
   onPageSizeChange: (newPageSize: number) => void;
   setFilterFields: React.Dispatch<React.SetStateAction<FilterFields>>;
@@ -159,11 +164,11 @@ export function TaskDataGridTable({
       width: 150,
       editable: false,
       renderCell: (cellValues) => {
-        const date = new Date(cellValues.row.booking.unix_millis_request_time);
+        const date = new Date(cellValues.row.unix_millis_request_time);
         const day = date.toLocaleDateString(undefined, { day: 'numeric' });
         const month = date.toLocaleDateString(undefined, { month: 'short' });
         const year = date.toLocaleDateString(undefined, { year: 'numeric' });
-        return cellValues.row.booking.unix_millis_request_time ? `${day} ${month} ${year}` : 'n/a';
+        return cellValues.row.unix_millis_request_time ? `${day} ${month} ${year}` : 'n/a';
       },
       flex: 1,
       filterOperators: getMinimalDateOperators,
@@ -174,7 +179,7 @@ export function TaskDataGridTable({
       headerName: 'Requester',
       width: 150,
       editable: false,
-      renderCell: (cellValues) => TaskRequester(cellValues.row.booking.requester, sxProp),
+      renderCell: (cellValues) => TaskRequester(cellValues.row.requester, sxProp),
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,
@@ -185,7 +190,7 @@ export function TaskDataGridTable({
       width: 150,
       editable: false,
       valueGetter: (params: GridValueGetterParams) => {
-        const request: TaskRequest | undefined = tasks.requests[params.row.booking.id];
+        const request: TaskRequest | undefined = tasks.requests[params.row.id_];
         return parsePickup(request);
       },
       flex: 1,
@@ -198,7 +203,7 @@ export function TaskDataGridTable({
       width: 150,
       editable: false,
       valueGetter: (params: GridValueGetterParams) => {
-        const request: TaskRequest | undefined = tasks.requests[params.row.booking.id];
+        const request: TaskRequest | undefined = tasks.requests[params.row.id_];
         return parseDestination(params.row, request);
       },
       flex: 1,
@@ -211,7 +216,7 @@ export function TaskDataGridTable({
       width: 100,
       editable: false,
       valueGetter: (params: GridValueGetterParams) =>
-        params.row.assigned_to ? params.row.assigned_to.name : 'n/a',
+        params.row.assigned_to ? params.row.assigned_to : 'n/a',
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,
@@ -272,8 +277,8 @@ export function TaskDataGridTable({
     <div style={{ height: '100%', width: '100%' }}>
       <StyledDataGrid
         autoHeight
-        getRowId={(r) => r.booking.id}
-        rows={tasks.data}
+        getRowId={(r) => r.id_}
+        rows={tasks.entries}
         rowCount={tasks.total}
         loading={tasks.isLoading}
         pageSize={tasks.pageSize}

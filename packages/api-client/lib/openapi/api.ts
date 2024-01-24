@@ -464,6 +464,67 @@ export interface ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf {
   user: string;
 }
 /**
+ *
+ * @export
+ * @interface ApiServerModelsTortoiseModelsTasksTaskStateLeaf
+ */
+export interface ApiServerModelsTortoiseModelsTasksTaskStateLeaf {
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskStateLeaf
+   */
+  id_: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskStateLeaf
+   */
+  assigned_to?: string | null;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskStateLeaf
+   */
+  unix_millis_start_time?: string | null;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskStateLeaf
+   */
+  unix_millis_finish_time?: string | null;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskStateLeaf
+   */
+  status?: string | null;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskStateLeaf
+   */
+  unix_millis_request_time?: string | null;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskStateLeaf
+   */
+  requester?: string | null;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskStateLeaf
+   */
+  pickup?: string | null;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiServerModelsTortoiseModelsTasksTaskStateLeaf
+   */
+  destination?: string | null;
+}
+/**
  * Which agent (robot) is the task assigned to
  * @export
  * @interface AssignedTo
@@ -8376,6 +8437,47 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
+     * Available in socket.io
+     * @summary Get Task Queue Entry
+     * @param {string} taskId task_id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getTaskQueueEntryTasksTaskIdQueueEntryGet: async (
+      taskId: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'taskId' is not null or undefined
+      assertParamExists('getTaskQueueEntryTasksTaskIdQueueEntryGet', 'taskId', taskId);
+      const localVarPath = `/tasks/{task_id}/queue_entry`.replace(
+        `{${'task_id'}}`,
+        encodeURIComponent(String(taskId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      *
      * @summary Get Task Request
      * @param {string} taskId task_id
@@ -9088,6 +9190,118 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     },
     /**
      *
+     * @summary Query Task Queue Entry
+     * @param {string} [taskId] comma separated list of task ids
+     * @param {string} [category] comma separated list of task categories
+     * @param {string} [requester] comma separated list of requester names
+     * @param {string} [pickup] comma separated list of pickup names
+     * @param {string} [destination] comma separated list of destination names
+     * @param {string} [assignedTo] comma separated list of assigned robot names
+     * @param {string} [status] comma separated list of statuses
+     * @param {string} [requestTimeBetween]          The period of request time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
+     * @param {number} [limit] defaults to 100
+     * @param {number} [offset] defaults to 0
+     * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    queryTaskQueueEntryTasksQueueEntryGet: async (
+      taskId?: string,
+      category?: string,
+      requester?: string,
+      pickup?: string,
+      destination?: string,
+      assignedTo?: string,
+      status?: string,
+      requestTimeBetween?: string,
+      startTimeBetween?: string,
+      finishTimeBetween?: string,
+      limit?: number,
+      offset?: number,
+      orderBy?: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/tasks/queue_entry`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      if (taskId !== undefined) {
+        localVarQueryParameter['task_id'] = taskId;
+      }
+
+      if (category !== undefined) {
+        localVarQueryParameter['category'] = category;
+      }
+
+      if (requester !== undefined) {
+        localVarQueryParameter['requester'] = requester;
+      }
+
+      if (pickup !== undefined) {
+        localVarQueryParameter['pickup'] = pickup;
+      }
+
+      if (destination !== undefined) {
+        localVarQueryParameter['destination'] = destination;
+      }
+
+      if (assignedTo !== undefined) {
+        localVarQueryParameter['assigned_to'] = assignedTo;
+      }
+
+      if (status !== undefined) {
+        localVarQueryParameter['status'] = status;
+      }
+
+      if (requestTimeBetween !== undefined) {
+        localVarQueryParameter['request_time_between'] = requestTimeBetween;
+      }
+
+      if (startTimeBetween !== undefined) {
+        localVarQueryParameter['start_time_between'] = startTimeBetween;
+      }
+
+      if (finishTimeBetween !== undefined) {
+        localVarQueryParameter['finish_time_between'] = finishTimeBetween;
+      }
+
+      if (limit !== undefined) {
+        localVarQueryParameter['limit'] = limit;
+      }
+
+      if (offset !== undefined) {
+        localVarQueryParameter['offset'] = offset;
+      }
+
+      if (orderBy !== undefined) {
+        localVarQueryParameter['order_by'] = orderBy;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Query Task Requests
      * @param {string} [taskIds] comma separated list of task ids
      * @param {*} [options] Override http request option.
@@ -9459,6 +9673,26 @@ export const TasksApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
+     * Available in socket.io
+     * @summary Get Task Queue Entry
+     * @param {string} taskId task_id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getTaskQueueEntryTasksTaskIdQueueEntryGet(
+      taskId: string,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ApiServerModelsTortoiseModelsTasksTaskStateLeaf>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.getTaskQueueEntryTasksTaskIdQueueEntryGet(taskId, options);
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
      *
      * @summary Get Task Request
      * @param {string} taskId task_id
@@ -9734,6 +9968,65 @@ export const TasksApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Query Task Queue Entry
+     * @param {string} [taskId] comma separated list of task ids
+     * @param {string} [category] comma separated list of task categories
+     * @param {string} [requester] comma separated list of requester names
+     * @param {string} [pickup] comma separated list of pickup names
+     * @param {string} [destination] comma separated list of destination names
+     * @param {string} [assignedTo] comma separated list of assigned robot names
+     * @param {string} [status] comma separated list of statuses
+     * @param {string} [requestTimeBetween]          The period of request time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
+     * @param {number} [limit] defaults to 100
+     * @param {number} [offset] defaults to 0
+     * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async queryTaskQueueEntryTasksQueueEntryGet(
+      taskId?: string,
+      category?: string,
+      requester?: string,
+      pickup?: string,
+      destination?: string,
+      assignedTo?: string,
+      status?: string,
+      requestTimeBetween?: string,
+      startTimeBetween?: string,
+      finishTimeBetween?: string,
+      limit?: number,
+      offset?: number,
+      orderBy?: string,
+      options?: AxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<Array<ApiServerModelsTortoiseModelsTasksTaskStateLeaf>>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.queryTaskQueueEntryTasksQueueEntryGet(
+          taskId,
+          category,
+          requester,
+          pickup,
+          destination,
+          assignedTo,
+          status,
+          requestTimeBetween,
+          startTimeBetween,
+          finishTimeBetween,
+          limit,
+          offset,
+          orderBy,
+          options,
+        );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
      * @summary Query Task Requests
      * @param {string} [taskIds] comma separated list of task ids
      * @param {*} [options] Override http request option.
@@ -9963,6 +10256,21 @@ export const TasksApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
+     * Available in socket.io
+     * @summary Get Task Queue Entry
+     * @param {string} taskId task_id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getTaskQueueEntryTasksTaskIdQueueEntryGet(
+      taskId: string,
+      options?: any,
+    ): AxiosPromise<ApiServerModelsTortoiseModelsTasksTaskStateLeaf> {
+      return localVarFp
+        .getTaskQueueEntryTasksTaskIdQueueEntryGet(taskId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      *
      * @summary Get Task Request
      * @param {string} taskId task_id
@@ -10179,6 +10487,60 @@ export const TasksApiFactory = function (
     ): AxiosPromise<UndoPhaseSkipResponse> {
       return localVarFp
         .postUndoSkipPhaseTasksUndoSkipPhasePost(undoPhaseSkipRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Query Task Queue Entry
+     * @param {string} [taskId] comma separated list of task ids
+     * @param {string} [category] comma separated list of task categories
+     * @param {string} [requester] comma separated list of requester names
+     * @param {string} [pickup] comma separated list of pickup names
+     * @param {string} [destination] comma separated list of destination names
+     * @param {string} [assignedTo] comma separated list of assigned robot names
+     * @param {string} [status] comma separated list of statuses
+     * @param {string} [requestTimeBetween]          The period of request time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
+     * @param {number} [limit] defaults to 100
+     * @param {number} [offset] defaults to 0
+     * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    queryTaskQueueEntryTasksQueueEntryGet(
+      taskId?: string,
+      category?: string,
+      requester?: string,
+      pickup?: string,
+      destination?: string,
+      assignedTo?: string,
+      status?: string,
+      requestTimeBetween?: string,
+      startTimeBetween?: string,
+      finishTimeBetween?: string,
+      limit?: number,
+      offset?: number,
+      orderBy?: string,
+      options?: any,
+    ): AxiosPromise<Array<ApiServerModelsTortoiseModelsTasksTaskStateLeaf>> {
+      return localVarFp
+        .queryTaskQueueEntryTasksQueueEntryGet(
+          taskId,
+          category,
+          requester,
+          pickup,
+          destination,
+          assignedTo,
+          status,
+          requestTimeBetween,
+          startTimeBetween,
+          finishTimeBetween,
+          limit,
+          offset,
+          orderBy,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
@@ -10402,6 +10764,20 @@ export class TasksApi extends BaseAPI {
   ) {
     return TasksApiFp(this.configuration)
       .getTaskLogTasksTaskIdLogGet(taskId, between, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Available in socket.io
+   * @summary Get Task Queue Entry
+   * @param {string} taskId task_id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public getTaskQueueEntryTasksTaskIdQueueEntryGet(taskId: string, options?: AxiosRequestConfig) {
+    return TasksApiFp(this.configuration)
+      .getTaskQueueEntryTasksTaskIdQueueEntryGet(taskId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -10651,6 +11027,62 @@ export class TasksApi extends BaseAPI {
   ) {
     return TasksApiFp(this.configuration)
       .postUndoSkipPhaseTasksUndoSkipPhasePost(undoPhaseSkipRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Query Task Queue Entry
+   * @param {string} [taskId] comma separated list of task ids
+   * @param {string} [category] comma separated list of task categories
+   * @param {string} [requester] comma separated list of requester names
+   * @param {string} [pickup] comma separated list of pickup names
+   * @param {string} [destination] comma separated list of destination names
+   * @param {string} [assignedTo] comma separated list of assigned robot names
+   * @param {string} [status] comma separated list of statuses
+   * @param {string} [requestTimeBetween]          The period of request time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+   * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+   * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
+   * @param {number} [limit] defaults to 100
+   * @param {number} [offset] defaults to 0
+   * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public queryTaskQueueEntryTasksQueueEntryGet(
+    taskId?: string,
+    category?: string,
+    requester?: string,
+    pickup?: string,
+    destination?: string,
+    assignedTo?: string,
+    status?: string,
+    requestTimeBetween?: string,
+    startTimeBetween?: string,
+    finishTimeBetween?: string,
+    limit?: number,
+    offset?: number,
+    orderBy?: string,
+    options?: AxiosRequestConfig,
+  ) {
+    return TasksApiFp(this.configuration)
+      .queryTaskQueueEntryTasksQueueEntryGet(
+        taskId,
+        category,
+        requester,
+        pickup,
+        destination,
+        assignedTo,
+        status,
+        requestTimeBetween,
+        startTimeBetween,
+        finishTimeBetween,
+        limit,
+        offset,
+        orderBy,
+        options,
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 
