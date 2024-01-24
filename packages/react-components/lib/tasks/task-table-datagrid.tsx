@@ -15,7 +15,6 @@ import { styled, Stack, Typography, Tooltip, useMediaQuery, SxProps, Theme } fro
 import * as React from 'react';
 import {
   ApiServerModelsTortoiseModelsTasksTaskStateLeaf as TaskQueueEntry,
-  TaskState,
   TaskRequest,
   Status,
 } from 'api-client';

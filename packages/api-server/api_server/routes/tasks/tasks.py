@@ -207,20 +207,6 @@ async def query_task_queue_entry(
     )
 
 
-@router.get("/{task_id}/queue_entry", response_model=TaskQueueEntryPydantic)
-async def get_task_queue_entry(
-    task_repo: TaskRepository = Depends(task_repo_dep),
-    task_id: str = Path(..., description="task_id"),
-):
-    """
-    Available in socket.io
-    """
-    result = await task_repo.get_task_queue_entry(task_id)
-    if result is None:
-        raise HTTPException(status_code=404)
-    return result
-
-
 @router.sub("/{task_id}/state", response_model=mdl.TaskState)
 async def sub_task_state(req: SubscriptionRequest, task_id: str):
     user = sio_user(req)

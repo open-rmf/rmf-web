@@ -1222,41 +1222,6 @@ export default {
         },
       },
     },
-    '/tasks/{task_id}/queue_entry': {
-      get: {
-        tags: ['Tasks'],
-        summary: 'Get Task Queue Entry',
-        description: 'Available in socket.io',
-        operationId: 'get_task_queue_entry_tasks__task_id__queue_entry_get',
-        parameters: [
-          {
-            description: 'task_id',
-            required: true,
-            schema: { title: 'Task Id', type: 'string', description: 'task_id' },
-            name: 'task_id',
-            in: 'path',
-          },
-        ],
-        responses: {
-          '200': {
-            description: 'Successful Response',
-            content: {
-              'application/json': {
-                schema: {
-                  $ref: '#/components/schemas/api_server.models.tortoise_models.tasks.TaskState.leaf',
-                },
-              },
-            },
-          },
-          '422': {
-            description: 'Validation Error',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
-            },
-          },
-        },
-      },
-    },
     '/tasks/{task_id}/log': {
       get: {
         tags: ['Tasks'],

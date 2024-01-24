@@ -8437,47 +8437,6 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
-     * Available in socket.io
-     * @summary Get Task Queue Entry
-     * @param {string} taskId task_id
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getTaskQueueEntryTasksTaskIdQueueEntryGet: async (
-      taskId: string,
-      options: AxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'taskId' is not null or undefined
-      assertParamExists('getTaskQueueEntryTasksTaskIdQueueEntryGet', 'taskId', taskId);
-      const localVarPath = `/tasks/{task_id}/queue_entry`.replace(
-        `{${'task_id'}}`,
-        encodeURIComponent(String(taskId)),
-      );
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
      *
      * @summary Get Task Request
      * @param {string} taskId task_id
@@ -9673,26 +9632,6 @@ export const TasksApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
-     * Available in socket.io
-     * @summary Get Task Queue Entry
-     * @param {string} taskId task_id
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async getTaskQueueEntryTasksTaskIdQueueEntryGet(
-      taskId: string,
-      options?: AxiosRequestConfig,
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string,
-      ) => AxiosPromise<ApiServerModelsTortoiseModelsTasksTaskStateLeaf>
-    > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getTaskQueueEntryTasksTaskIdQueueEntryGet(taskId, options);
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-    },
-    /**
      *
      * @summary Get Task Request
      * @param {string} taskId task_id
@@ -10256,21 +10195,6 @@ export const TasksApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     * Available in socket.io
-     * @summary Get Task Queue Entry
-     * @param {string} taskId task_id
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getTaskQueueEntryTasksTaskIdQueueEntryGet(
-      taskId: string,
-      options?: any,
-    ): AxiosPromise<ApiServerModelsTortoiseModelsTasksTaskStateLeaf> {
-      return localVarFp
-        .getTaskQueueEntryTasksTaskIdQueueEntryGet(taskId, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
      *
      * @summary Get Task Request
      * @param {string} taskId task_id
@@ -10764,20 +10688,6 @@ export class TasksApi extends BaseAPI {
   ) {
     return TasksApiFp(this.configuration)
       .getTaskLogTasksTaskIdLogGet(taskId, between, options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
-   * Available in socket.io
-   * @summary Get Task Queue Entry
-   * @param {string} taskId task_id
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof TasksApi
-   */
-  public getTaskQueueEntryTasksTaskIdQueueEntryGet(taskId: string, options?: AxiosRequestConfig) {
-    return TasksApiFp(this.configuration)
-      .getTaskQueueEntryTasksTaskIdQueueEntryGet(taskId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
