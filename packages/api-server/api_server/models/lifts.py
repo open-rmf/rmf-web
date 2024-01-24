@@ -1,15 +1,20 @@
 from pydantic import BaseModel, Field
-from tortoise.contrib.pydantic.creator import pydantic_model_creator
 
 from . import tortoise_models as ttm
-from .health import BaseBasicHealthModel
+from .health import BasicHealth
 from .ros_pydantic import rmf_building_map_msgs, rmf_lift_msgs
 
 Lift = rmf_building_map_msgs.Lift
 
 
-class LiftHealth(pydantic_model_creator(ttm.LiftHealth), BaseBasicHealthModel):
-    pass
+class LiftHealth(BasicHealth):
+    @classmethod
+    async def from_tortoise_orm(cls, obj: ttm.LiftHealth) -> "LiftHealth":
+        return LiftHealth(
+            id_=obj.id_,
+            health_status=obj.health_status,
+            health_message=obj.health_message,
+        )
 
 
 class LiftState(rmf_lift_msgs.LiftState):

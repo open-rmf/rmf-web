@@ -1,13 +1,15 @@
+from enum import Enum
+
 from pydantic import BaseModel
 
 
-class HealthStatus:
+class HealthStatus(Enum):
     HEALTHY = "Healthy"
     UNHEALTHY = "Unhealthy"
     DEAD = "Dead"
 
 
-class BaseBasicHealthModel(BaseModel):
+class BasicHealth(BaseModel):
     id_: str
-    health_status: str
+    health_status: HealthStatus
     health_message: str | None

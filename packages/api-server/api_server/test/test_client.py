@@ -5,6 +5,7 @@ import jwt
 from fastapi.testclient import TestClient as BaseTestClient
 
 from api_server.app import app
+from api_server.models import User
 
 here = os.path.dirname(__file__)
 
@@ -33,38 +34,15 @@ def _generate_token(username: str):
 
 
 class TestClient(BaseTestClient):
-    _admin_token: Optional[str] = None
-
     def __init__(self):
         super().__init__(app)
+        self.current_user: str
+        self.set_user("admin")
 
     @classmethod
     def token(cls, username: str) -> str:
-        if username == "admin":
-            if cls._admin_token is None:
-                cls._admin_token = _generate_token("admin")
-            return cls._admin_token
-
         return _generate_token(username)
 
-    def set_user(self, user):
+    def set_user(self, user: str):
+        self.current_user = user
         self.headers["Authorization"] = f"bearer {self.token(user)}"
-
-
-_client: Optional[TestClient] = None
-
-
-def client(user="admin") -> TestClient:
-    global _client
-    if _client is None:
-        _client = TestClient()
-        _client.__enter__()
-    _client.headers["Content-Type"] = "application/json"
-    _client.set_user(user)
-    return _client
-
-
-def shutdown():
-    global _client
-    if _client is not None:
-        _client.__exit__()

@@ -1,15 +1,18 @@
 from pydantic import BaseModel
-from tortoise.contrib.pydantic.creator import pydantic_model_creator
 
 from . import tortoise_models as ttm
-from .health import BaseBasicHealthModel
+from .health import BasicHealth
 from .ros_pydantic import rmf_dispenser_msgs
 
 
-class DispenserHealth(
-    pydantic_model_creator(ttm.DispenserHealth), BaseBasicHealthModel
-):
-    pass
+class DispenserHealth(BasicHealth):
+    @classmethod
+    async def from_tortoise_orm(cls, obj: ttm.DispenserHealth) -> "DispenserHealth":
+        return DispenserHealth(
+            id_=obj.id_,
+            health_status=obj.health_status,
+            health_message=obj.health_message,
+        )
 
 
 class Dispenser(BaseModel):

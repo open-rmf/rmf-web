@@ -1,18 +1,21 @@
 from pydantic import BaseModel, Field
-from tortoise.contrib.pydantic.base import PydanticModel
-from tortoise.contrib.pydantic.creator import pydantic_model_creator
-from tortoise.models import Model
 
 from . import tortoise_models as ttm
-from .health import BaseBasicHealthModel
+from .health import BasicHealth
 from .ros_pydantic import rmf_building_map_msgs, rmf_door_msgs
 
 Door = rmf_building_map_msgs.Door
 DoorMode = rmf_door_msgs.DoorMode
 
 
-class DoorHealth(pydantic_model_creator(ttm.LiftHealth), BaseBasicHealthModel):
-    pass
+class DoorHealth(BasicHealth):
+    @classmethod
+    async def from_tortoise_orm(cls, obj: ttm.DoorHealth) -> "DoorHealth":
+        return DoorHealth(
+            id_=obj.id_,
+            health_status=obj.health_status,
+            health_message=obj.health_message,
+        )
 
 
 class DoorState(rmf_door_msgs.DoorState):

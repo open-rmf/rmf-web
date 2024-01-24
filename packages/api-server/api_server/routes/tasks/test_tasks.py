@@ -1,8 +1,12 @@
+import asyncio
+from typing import cast
 from unittest.mock import patch
 from uuid import uuid4
 
 from api_server import models as mdl
-from api_server.rmf_io import tasks_service
+from api_server.models import TaskEventLog, TaskState
+from api_server.repositories import TaskRepository
+from api_server.rmf_io import task_events, tasks_service
 from api_server.test import AppFixture, make_task_log, make_task_state
 
 
@@ -14,15 +18,11 @@ class TestTasksRoute(AppFixture):
         cls.task_states = [make_task_state(task_id=f"test_{x}") for x in task_ids]
         cls.task_logs = [make_task_log(task_id=f"test_{x}") for x in task_ids]
 
-        with cls.client.websocket_connect("/_internal") as ws:
-            for x in cls.task_states:
-                ws.send_text(
-                    mdl.TaskStateUpdate(type="task_state_update", data=x).json()
-                )
-            for x in cls.task_logs:
-                ws.send_text(
-                    mdl.TaskEventLogUpdate(type="task_log_update", data=x).json()
-                )
+        repo = TaskRepository(cls.admin_user)
+        for x in cls.task_states:
+            asyncio.run(repo.save_task_state(x))
+        for x in cls.task_logs:
+            asyncio.run(repo.save_task_log(x))
 
     def test_get_task_state(self):
         resp = self.client.get(f"/tasks/{self.task_states[0].booking.id}/state")
@@ -42,14 +42,9 @@ class TestTasksRoute(AppFixture):
     def test_sub_task_state(self):
         task_id = self.task_states[0].booking.id
         gen = self.subscribe_sio(f"/tasks/{task_id}/state")
-        with self.client.websocket_connect("/_internal") as ws:
-            ws.send_text(
-                mdl.TaskStateUpdate(
-                    type="task_state_update", data=self.task_states[0]
-                ).json()
-            )
+        task_events.task_states.on_next(self.task_states[0])
         state = next(gen)
-        self.assertEqual(task_id, state.booking.id)  # type: ignore
+        self.assertEqual(task_id, cast(TaskState, state).booking.id)
 
     def test_get_task_log(self):
         resp = self.client.get(
@@ -129,15 +124,15 @@ class TestTasksRoute(AppFixture):
                 ).json()
             )
         log = next(gen)
-        self.assertEqual(task_id, log.task_id)  # type: ignore
+        self.assertEqual(task_id, cast(TaskEventLog, log).task_id)
 
     def test_activity_discovery(self):
         with patch.object(tasks_service(), "call") as mock:
             mock.return_value = "{}"
             resp = self.client.post(
                 "/tasks/activity_discovery",
-                data=mdl.ActivityDiscoveryRequest(
-                    type="activitiy_discovery_request"
+                content=mdl.ActivityDiscoveryRequest(
+                    type="activitiy_discovery_request",
                 ).json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
@@ -147,7 +142,7 @@ class TestTasksRoute(AppFixture):
             mock.return_value = '{ "success": true }'
             resp = self.client.post(
                 "/tasks/activity_discovery",
-                data=mdl.ActivityDiscoveryRequest(
+                content=mdl.ActivityDiscoveryRequest(
                     type="activitiy_discovery_request"
                 ).json(exclude_none=True),
             )
@@ -158,8 +153,8 @@ class TestTasksRoute(AppFixture):
             mock.return_value = '{ "success": True, "token": "token" }'
             resp = self.client.post(
                 "/tasks/interrupt_task",
-                data=mdl.TaskInterruptionRequest(  # type: ignore
-                    type="interrupt_task_request", task_id="task_id"
+                content=mdl.TaskInterruptionRequest(
+                    type="interrupt_task_request", task_id="task_id", labels=None
                 ).json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
@@ -169,8 +164,8 @@ class TestTasksRoute(AppFixture):
             mock.return_value = '{ "success": true }'
             resp = self.client.post(
                 "/tasks/kill_task",
-                data=mdl.TaskKillRequest(  # type: ignore
-                    type="kill_task_request", task_id="task_id"
+                content=mdl.TaskKillRequest(
+                    type="kill_task_request", task_id="task_id", labels=None
                 ).json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
@@ -180,7 +175,9 @@ class TestTasksRoute(AppFixture):
             mock.return_value = '{ "success": true }'
             resp = self.client.post(
                 "/tasks/resume_task",
-                data=mdl.TaskResumeRequest().json(exclude_none=True),  # type: ignore
+                content=mdl.TaskResumeRequest(
+                    type=None, for_task=None, for_tokens=None, labels=None
+                ).json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
@@ -189,11 +186,9 @@ class TestTasksRoute(AppFixture):
             mock.return_value = '{ "success": true }'
             resp = self.client.post(
                 "/tasks/rewind_task",
-                data=mdl.TaskRewindRequest(
+                content=mdl.TaskRewindRequest(
                     type="rewind_task_request", task_id="task_id", phase_id=0
-                ).json(
-                    exclude_none=True
-                ),  # type: ignore
+                ).json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
@@ -202,8 +197,11 @@ class TestTasksRoute(AppFixture):
             mock.return_value = '{ "success": True, "token": "token" }'
             resp = self.client.post(
                 "/tasks/skip_phase",
-                data=mdl.TaskPhaseSkipRequest(  # type: ignore
-                    type="skip_phase_request", task_id="task_id", phase_id=0
+                content=mdl.TaskPhaseSkipRequest(
+                    type="skip_phase_request",
+                    task_id="task_id",
+                    phase_id=0,
+                    labels=None,
                 ).json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
@@ -213,7 +211,7 @@ class TestTasksRoute(AppFixture):
             mock.return_value = "{}"
             resp = self.client.post(
                 "/tasks/task_discovery",
-                data=mdl.TaskDiscoveryRequest(type="task_discovery_request").json(
+                content=mdl.TaskDiscoveryRequest(type="task_discovery_request").json(
                     exclude_none=True
                 ),
             )
@@ -224,7 +222,12 @@ class TestTasksRoute(AppFixture):
             mock.return_value = '{ "success": True }'
             resp = self.client.post(
                 "/tasks/undo_skip_phase",
-                data=mdl.UndoPhaseSkipRequest(type="undo_phase_skip_request").json(exclude_none=True),  # type: ignore
+                content=mdl.UndoPhaseSkipRequest(
+                    type="undo_phase_skip_request",
+                    for_task=None,
+                    for_tokens=None,
+                    labels=None,
+                ).json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
@@ -233,12 +236,17 @@ class TestDispatchTask(AppFixture):
     def post_task_request(self):
         return self.client.post(
             "/tasks/dispatch_task",
-            data=mdl.DispatchTaskRequest(
+            content=mdl.DispatchTaskRequest(
                 type="dispatch_task_request",
                 request=mdl.TaskRequest(
                     category="test",
                     description="description",
-                ),  # type: ignore
+                    unix_millis_earliest_start_time=None,
+                    unix_millis_request_time=None,
+                    labels=None,
+                    priority=None,
+                    requester=None,
+                ),
             ).json(exclude_none=True),
         )
 

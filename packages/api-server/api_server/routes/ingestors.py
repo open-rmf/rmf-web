@@ -1,4 +1,4 @@
-from typing import List, cast
+from typing import List
 
 from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
@@ -33,9 +33,7 @@ async def get_ingestor_state(
 @router.sub("/{guid}/state", response_model=IngestorState)
 async def sub_ingestor_state(req: SubscriptionRequest, guid: str):
     user = sio_user(req)
-    obs = rmf_events.ingestor_states.pipe(
-        rxops.filter(lambda x: cast(IngestorState, x).guid == guid)
-    )
+    obs = rmf_events.ingestor_states.pipe(rxops.filter(lambda x: x.guid == guid))
     ingestor_state = await get_ingestor_state(guid, RmfRepository(user))
     if ingestor_state:
         return obs.pipe(rxops.start_with(ingestor_state))

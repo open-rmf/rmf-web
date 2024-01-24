@@ -2,7 +2,7 @@ import asyncio
 import os
 import signal
 import threading
-from typing import Any, Awaitable, Callable, Coroutine, Union
+from typing import Any, Callable, Coroutine, Union
 
 import schedule
 from fastapi import Depends
@@ -37,7 +37,7 @@ from .rmf_io import HealthWatchdog, RmfBookKeeper, rmf_events
 from .types import is_coroutine
 
 
-async def on_sio_connect(sid: str, _environ: dict, auth: dict | None = None):
+async def on_sio_connect(sid: str, _environ: dict, auth: dict | None = None) -> bool:
     session = await app.sio.get_session(sid)
     token = None
     if auth:
@@ -260,7 +260,7 @@ async def _load_states():
         await DoorHealth.from_tortoise_orm(x) for x in await ttm.DoorHealth.all()
     ]
     for health in door_health:
-        rmf_events.door_health.on_next(await DoorHealth.from_tortoise_orm(health))  # type: ignore
+        rmf_events.door_health.on_next(health)
     logger.info(f"loaded {len(door_health)} door health")
 
     lift_states = [LiftState.from_tortoise(x) for x in await ttm.LiftState.all()]
@@ -272,7 +272,7 @@ async def _load_states():
         await LiftHealth.from_tortoise_orm(x) for x in await ttm.LiftHealth.all()
     ]
     for health in lift_health:
-        rmf_events.lift_health.on_next(await LiftHealth.from_tortoise_orm(health))  # type: ignore
+        rmf_events.lift_health.on_next(health)
     logger.info(f"loaded {len(lift_health)} lift health")
 
     dispenser_states = [
@@ -287,7 +287,7 @@ async def _load_states():
         for x in await ttm.DispenserHealth.all()
     ]
     for health in dispenser_health:
-        rmf_events.dispenser_health.on_next(await DispenserHealth.from_tortoise_orm(health))  # type: ignore
+        rmf_events.dispenser_health.on_next(health)
     logger.info(f"loaded {len(dispenser_health)} dispenser health")
 
     ingestor_states = [
@@ -302,5 +302,5 @@ async def _load_states():
         for x in await ttm.IngestorHealth.all()
     ]
     for health in ingestor_health:
-        rmf_events.ingestor_health.on_next(await IngestorHealth.from_tortoise_orm(health))  # type: ignore
+        rmf_events.ingestor_health.on_next(health)
     logger.info(f"loaded {len(ingestor_health)} ingestor health")

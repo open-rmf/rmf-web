@@ -1,4 +1,4 @@
-from typing import List, cast
+from typing import List
 
 from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
@@ -34,9 +34,7 @@ async def get_lift_state(
 @router.sub("/{lift_name}/state", response_model=LiftState)
 async def sub_lift_state(req: SubscriptionRequest, lift_name: str):
     user = sio_user(req)
-    obs = rmf_events.lift_states.pipe(
-        rxops.filter(lambda x: cast(LiftState, x).lift_name == lift_name)
-    )
+    obs = rmf_events.lift_states.pipe(rxops.filter(lambda x: x.lift_name == lift_name))
     lift_state = await get_lift_state(lift_name, RmfRepository(user))
     if lift_state:
         return obs.pipe(rxops.start_with(lift_state))

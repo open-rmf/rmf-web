@@ -1,4 +1,4 @@
-from typing import List, Optional, Sequence, Tuple, cast
+from typing import List, Optional, Sequence, Tuple
 
 from fastapi import Depends
 from tortoise.exceptions import IntegrityError
@@ -36,17 +36,12 @@ class FleetRepository:
             "unix_millis_time__gte": between[0],
             "unix_millis_time__lte": between[1],
         }
-        result = cast(
-            Optional[ttm.FleetLog],
-            await ttm.FleetLog.get_or_none(name=name).prefetch_related(
-                Prefetch(
-                    "log",
-                    ttm.FleetLogLog.filter(**between_filters),
-                ),
-                Prefetch(
-                    "robots__log", ttm.FleetLogRobotsLog.filter(**between_filters)
-                ),
+        result = await ttm.FleetLog.get_or_none(name=name).prefetch_related(
+            Prefetch(
+                "log",
+                ttm.FleetLogLog.filter(**between_filters),
             ),
+            Prefetch("robots__log", ttm.FleetLogRobotsLog.filter(**between_filters)),
         )
         if result is None:
             return None

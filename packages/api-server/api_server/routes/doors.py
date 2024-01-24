@@ -1,4 +1,4 @@
-from typing import List, cast
+from typing import List
 
 from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
@@ -34,9 +34,7 @@ async def get_door_state(
 @router.sub("/{door_name}/state", response_model=DoorState)
 async def sub_door_state(req: SubscriptionRequest, door_name: str):
     user = sio_user(req)
-    obs = rmf_events.door_states.pipe(
-        rxops.filter(lambda x: cast(DoorState, x).door_name == door_name)
-    )
+    obs = rmf_events.door_states.pipe(rxops.filter(lambda x: x.door_name == door_name))
     door_state = await get_door_state(door_name, RmfRepository(user))
     if door_state:
         return obs.pipe(rxops.start_with(door_state))

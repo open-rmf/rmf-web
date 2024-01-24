@@ -1,19 +1,18 @@
 import logging
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, Callable, Dict, Optional, TypeVar, cast
 
+from reactivex import Observable, compose
+from reactivex import operators as ops
+from reactivex.scheduler.scheduler import Scheduler
+from reactivex.subject.behaviorsubject import BehaviorSubject
 from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
-from rx import operators as ops
-from rx.core.observable.observable import Observable
-from rx.core.pipe import pipe
-from rx.core.typing import Disposable
-from rx.scheduler.scheduler import Scheduler
-from rx.subject.behaviorsubject import BehaviorSubject
 from tortoise.exceptions import MultipleObjectsReturned
 
 from api_server.models import (
+    BasicHealth,
     BuildingMap,
     Dispenser,
     DispenserHealth,
@@ -30,7 +29,9 @@ from api_server.models import (
 from api_server.models import tortoise_models as ttm
 
 from .events import RmfEvents
-from .operators import heartbeat, most_critical
+from .operators import filter_not_none, heartbeat, most_critical
+
+T = TypeVar("T", bound=BasicHealth)
 
 
 class HealthWatchdog:
@@ -46,7 +47,6 @@ class HealthWatchdog:
         self.rmf = rmf_events
         self.scheduler = scheduler
         self.logger = logger or logging.getLogger(self.__class__.__name__)
-        self._building_watchers: List[Disposable] = []
 
     async def start(self):
         await self._watch_door_health()
@@ -55,19 +55,20 @@ class HealthWatchdog:
         await self._watch_ingestor_health()
 
     @staticmethod
-    def _combine_most_critical(*obs: Observable):
+    def _combine_most_critical(
+        *obs: Observable[T | None],
+    ) -> Callable[[Observable[T]], Observable[T]]:
         """
         Combines an observable sequence of an observable sequence of BasicHealthModel to an
         observable sequence of BasicHealthModel with the most critical health status. If there
         are multiple BasicHealthModel with the same criticality, the most recent item is
         chosen.
-
-        :param obs: Sequence[rx.Observable[BasicHealthModel]]
         """
-        return pipe(
+        return compose(
             ops.timestamp(),
-            ops.combine_latest(*[x.pipe(ops.timestamp()) for x in obs]),
+            cast(Any, ops.combine_latest(*[x.pipe(ops.timestamp()) for x in obs])),
             most_critical(),
+            filter_not_none,
         )
 
     @staticmethod
@@ -111,14 +112,12 @@ class HealthWatchdog:
 
         def watch(id_: str, obs: Observable):
             door_mode_health = obs.pipe(
-                ops.map(cast(Any, self.door_mode_to_health)),
+                ops.map(self.door_mode_to_health),
                 ops.distinct_until_changed(),
             )
             obs.pipe(
                 heartbeat(self.LIVELINESS),
-                ops.map(
-                    cast(Any, lambda has_heartbeat: to_door_health(id_, has_heartbeat))
-                ),
+                ops.map(lambda has_heartbeat: to_door_health(id_, has_heartbeat)),
                 self._combine_most_critical(door_mode_health),
             ).subscribe(self.rmf.door_health.on_next, scheduler=self.scheduler)
 
@@ -207,14 +206,12 @@ class HealthWatchdog:
 
         def watch(id_: str, obs: Observable):
             lift_mode_health = obs.pipe(
-                ops.map(cast(Any, self.lift_mode_to_health)),
+                ops.map(self.lift_mode_to_health),
                 ops.distinct_until_changed(),
             )
             obs.pipe(
                 heartbeat(self.LIVELINESS),
-                ops.map(
-                    cast(Any, lambda has_heartbeat: to_lift_health(id_, has_heartbeat))
-                ),
+                ops.map(lambda has_heartbeat: to_lift_health(id_, has_heartbeat)),
                 self._combine_most_critical(lift_mode_health),
             ).subscribe(self.rmf.lift_health.on_next, scheduler=self.scheduler)
 
@@ -282,16 +279,13 @@ class HealthWatchdog:
 
         def watch(id_: str, obs: Observable):
             dispenser_mode_health = obs.pipe(
-                ops.map(cast(Any, self.dispenser_mode_to_health)),
+                ops.map(self.dispenser_mode_to_health),
                 ops.distinct_until_changed(),
             )
             obs.pipe(
                 heartbeat(self.LIVELINESS),
                 ops.map(
-                    cast(
-                        Any,
-                        lambda has_heartbeat: to_dispenser_health(id_, has_heartbeat),
-                    )
+                    lambda has_heartbeat: to_dispenser_health(id_, has_heartbeat),
                 ),
                 self._combine_most_critical(dispenser_mode_health),
             ).subscribe(self.rmf.dispenser_health.on_next, scheduler=self.scheduler)
@@ -356,16 +350,13 @@ class HealthWatchdog:
 
         def watch(id_: str, obs: Observable):
             ingestor_mode_health = obs.pipe(
-                ops.map(cast(Any, self.ingestor_mode_to_health)),
+                ops.map(self.ingestor_mode_to_health),
                 ops.distinct_until_changed(),
             )
             obs.pipe(
                 heartbeat(self.LIVELINESS),
                 ops.map(
-                    cast(
-                        Any,
-                        lambda has_heartbeat: to_ingestor_health(id_, has_heartbeat),
-                    )
+                    lambda has_heartbeat: to_ingestor_health(id_, has_heartbeat),
                 ),
                 self._combine_most_critical(ingestor_mode_health),
             ).subscribe(self.rmf.ingestor_health.on_next, scheduler=self.scheduler)

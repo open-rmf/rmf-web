@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import Enum
+from typing import cast
 
 import schedule
 from schedule import Job
@@ -24,11 +25,11 @@ from tortoise.models import Model
 
 
 class ScheduledTask(Model):
-    task_request = JSONField()
-    created_by = CharField(255)
+    task_request: dict = JSONField()  # type: ignore
+    created_by: str = CharField(255)  # type: ignore
     schedules: ReverseRelation["ScheduledTaskSchedule"]
-    last_ran: Field[datetime] | None = DatetimeField(null=True)
-    except_dates: Field[dict | list] | None = JSONField(null=True, default=list)
+    last_ran: datetime | None = DatetimeField(null=True)  # type: ignore
+    except_dates: list[str] = JSONField(null=True)  # type: ignore
 
 
 class ScheduledTaskSchedule(Model):
@@ -49,15 +50,15 @@ class ScheduledTaskSchedule(Model):
         Hour = "hour"
         Minute = "minute"
 
-    _id = IntField(pk=True, source_field="id")
+    _id: int = IntField(pk=True, source_field="id")  # type: ignore
     scheduled_task: ForeignKeyRelation[ScheduledTask] = ForeignKeyField(
         "models.ScheduledTask", related_name="schedules"
     )
-    every = SmallIntField(null=True)
-    start_from = DatetimeField(null=True)
-    until = DatetimeField(null=True)
+    every: int | None = SmallIntField(null=True)  # type: ignore
+    start_from: datetime | None = DatetimeField(null=True)  # type: ignore
+    until: datetime | None = DatetimeField(null=True)  # type: ignore
     period = CharEnumField(Period)
-    at = CharField(255, null=True)
+    at: str | None = CharField(255, null=True)  # type: ignore
 
     def get_id(self) -> int:
         return self._id

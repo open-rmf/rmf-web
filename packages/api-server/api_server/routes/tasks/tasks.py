@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List, Optional, Tuple, cast
 
 from fastapi import Body, Depends, HTTPException, Path, Query
-from rx import operators as rxops
+from reactivex import operators as rxops
 
 from api_server import models as mdl
 from api_server.dependencies import (
@@ -95,9 +95,7 @@ async def get_task_state(
 async def sub_task_state(req: SubscriptionRequest, task_id: str):
     user = sio_user(req)
     task_repo = TaskRepository(user)
-    obs = task_events.task_states.pipe(
-        rxops.filter(lambda x: cast(mdl.TaskState, x).booking.id == task_id)
-    )
+    obs = task_events.task_states.pipe(rxops.filter(lambda x: x.booking.id == task_id))
     current_state = await get_task_state(task_repo, task_id)
     if current_state:
         return obs.pipe(rxops.start_with(current_state))
@@ -123,7 +121,7 @@ async def get_task_log(
 @router.sub("/{task_id}/log", response_model=mdl.TaskEventLog)
 async def sub_task_log(_req: SubscriptionRequest, task_id: str):
     return task_events.task_event_logs.pipe(
-        rxops.filter(lambda x: cast(mdl.TaskEventLog, x).task_id == task_id)
+        rxops.filter(lambda x: x.task_id == task_id)
     )
 
 

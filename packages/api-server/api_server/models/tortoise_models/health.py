@@ -1,11 +1,19 @@
-from tortoise.fields.data import CharField
+from abc import ABC, abstractmethod
+from typing import Generic, Protocol, TypeVar
+
+from pydantic import BaseModel
+from tortoise.contrib.pydantic.creator import pydantic_model_creator
+from tortoise.fields import CharField, TextField
 from tortoise.models import Model
 
-from .health_status_mixin import HealthStatusMixin
 
+class BasicHealthModel(Model):
+    id_: str = CharField(255, pk=True, source_field="id")  # type: ignore
+    health_status: str = CharField(max_length=255, null=True)  # type: ignore
+    health_message: str = TextField(null=True)  # type: ignore
 
-class BasicHealthModel(Model, HealthStatusMixin):
-    id_ = CharField(255, pk=True, source_field="id")
+    class Meta:
+        abstract = True
 
 
 class DoorHealth(BasicHealthModel):

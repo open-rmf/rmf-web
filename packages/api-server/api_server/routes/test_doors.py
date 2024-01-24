@@ -1,8 +1,10 @@
+import asyncio
+from typing import cast
 from uuid import uuid4
 
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
 
-from api_server.rmf_io import rmf_events
+from api_server.models import DoorState
 from api_server.test import AppFixture, make_building_map, make_door_state
 
 
@@ -11,11 +13,12 @@ class TestDoorsRoute(AppFixture):
     def setUpClass(cls):
         super().setUpClass()
         cls.building_map = make_building_map()
+        asyncio.run(cls.building_map.save())
+
         cls.door_states = [make_door_state(f"test_{uuid4()}")]
 
-        rmf_events.building_map.on_next(cls.building_map)
         for x in cls.door_states:
-            rmf_events.door_states.on_next(x)
+            asyncio.run(x.save())
 
     def test_get_doors(self):
         resp = self.client.get("/doors")
@@ -32,7 +35,7 @@ class TestDoorsRoute(AppFixture):
 
     def test_sub_door_state(self):
         msg = next(self.subscribe_sio(f"/doors/{self.door_states[0].door_name}/state"))
-        self.assertEqual(self.door_states[0].door_name, msg.door_name)  # type: ignore
+        self.assertEqual(self.door_states[0].door_name, cast(DoorState, msg).door_name)
 
     def test_post_door_request(self):
         resp = self.client.post(

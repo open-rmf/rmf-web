@@ -1,4 +1,4 @@
-from typing import List, cast
+from typing import List
 
 from fastapi import Depends, HTTPException
 from reactivex import operators as rxops

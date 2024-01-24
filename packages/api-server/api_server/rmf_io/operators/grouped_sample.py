@@ -1,5 +1,5 @@
 from datetime import timedelta
-from typing import Any, Callable, TypeVar, Union, cast
+from typing import Any, Callable, TypeVar, Union
 
 from rx import operators as ops
 from rx.core.observable.observable import Observable
@@ -18,8 +18,6 @@ def grouped_sample(
     and flatten it into a single observable sequence.
     """
     return pipe(
-        ops.group_by(cast(Any, key_mapper)),
-        ops.flat_map(
-            cast(Any, lambda x: (cast(Observable, x).pipe(ops.sample(sampler))))
-        ),
+        ops.group_by(key_mapper),
+        ops.flat_map(lambda x: x.pipe(ops.sample(sampler))),
     )

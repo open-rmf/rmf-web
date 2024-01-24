@@ -8,7 +8,7 @@ from reactivex.abc import DisposableBase
 from reactivex.subject import Subject
 
 from api_server.models import (
-    BaseBasicHealthModel,
+    BasicHealth,
     BuildingMap,
     DispenserHealth,
     DispenserState,
@@ -88,7 +88,7 @@ class RmfBookKeeper:
         self._loggers.robot_health.parent = self._main_logger
         self._loggers.task_summary.parent = self._main_logger
 
-        self._subscriptions: list[DisposableBase] = []
+        self._subscriptions: List[DisposableBase] = []
 
     async def start(self):
         self._loop = asyncio.get_event_loop()
@@ -115,7 +115,7 @@ class RmfBookKeeper:
         self._pending_tasks.add(task)
 
     @staticmethod
-    def _report_health(health: BaseBasicHealthModel, logger: logging.Logger):
+    def _report_health(health: BasicHealth, logger: logging.Logger):
         message = health.json()
         if health.health_status == HealthStatus.UNHEALTHY:
             logger.warning(message)

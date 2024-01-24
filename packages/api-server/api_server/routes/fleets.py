@@ -1,4 +1,4 @@
-from typing import List, Tuple, cast
+from typing import List, Tuple
 
 from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
@@ -34,9 +34,7 @@ async def get_fleet_state(name: str, repo: FleetRepository = Depends(fleet_repo_
 async def sub_fleet_state(req: SubscriptionRequest, name: str):
     user = sio_user(req)
     repo = FleetRepository(user)
-    obs = fleet_events.fleet_states.pipe(
-        rxops.filter(lambda x: cast(FleetState, x).name == name)
-    )
+    obs = fleet_events.fleet_states.pipe(rxops.filter(lambda x: x.name == name))
     fleet_state = await repo.get_fleet_state(name)
     if fleet_state:
         return obs.pipe(rxops.start_with(fleet_state))
@@ -60,6 +58,4 @@ async def get_fleet_log(
 
 @router.sub("/{name}/log", response_model=FleetLog)
 async def sub_fleet_log(_req: SubscriptionRequest, name: str):
-    return fleet_events.fleet_logs.pipe(
-        rxops.filter(lambda x: cast(FleetLog, x).name == name)
-    )
+    return fleet_events.fleet_logs.pipe(rxops.filter(lambda x: x.name == name))

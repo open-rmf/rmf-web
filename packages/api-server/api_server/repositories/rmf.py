@@ -1,4 +1,4 @@
-from typing import cast
+from typing import List, cast
 
 from fastapi import Depends
 from tortoise.contrib.pydantic.base import PydanticModel
@@ -55,7 +55,7 @@ class RmfRepository:
             return None
         return DoorState(**door_state.data)
 
-    async def get_door_health(self, door_name: str) -> PydanticModel | None:
+    async def get_door_health(self, door_name: str) -> DoorHealth | None:
         door_health = await ttm.DoorHealth.get_or_none(id_=door_name)
         if door_health is None:
             return None
@@ -73,7 +73,7 @@ class RmfRepository:
             return None
         return LiftState(**lift_state.data)
 
-    async def get_lift_health(self, lift_name: str) -> PydanticModel | None:
+    async def get_lift_health(self, lift_name: str) -> LiftHealth | None:
         lift_health = await ttm.LiftHealth.get_or_none(id_=lift_name)
         if lift_health is None:
             return None
@@ -89,11 +89,11 @@ class RmfRepository:
             return None
         return DispenserState(**dispenser_state.data)
 
-    async def get_dispenser_health(self, guid: str) -> PydanticModel | None:
+    async def get_dispenser_health(self, guid: str) -> DispenserHealth | None:
         dispenser_health = await ttm.DispenserHealth.get_or_none(id_=guid)
         if dispenser_health is None:
             return None
-        return await DispenserHealth.from_tortoise(dispenser_health)
+        return await DispenserHealth.from_tortoise_orm(dispenser_health)
 
     async def get_ingestors(self) -> list[Ingestor]:
         states = await ttm.IngestorState.all()
@@ -105,7 +105,7 @@ class RmfRepository:
             return None
         return IngestorState(**ingestor_state.data)
 
-    async def get_ingestor_health(self, guid: str) -> PydanticModel | None:
+    async def get_ingestor_health(self, guid: str) -> IngestorHealth | None:
         ingestor_health = await ttm.IngestorHealth.get_or_none(id_=guid)
         if ingestor_health is None:
             return None
@@ -117,19 +117,17 @@ class RmfRepository:
         *,
         username: str | None = None,
         is_admin: bool | None = None,
-    ) -> list[str]:
+    ) -> tuple[str]:
         filter_params = {}
         if username is not None:
             filter_params["username__istartswith"] = username
         if is_admin is not None:
             filter_params["is_admin"] = is_admin
-        return cast(
-            list[str],
+        return (
             await add_pagination(
-                ttm.User.filter(**filter_params),
-                pagination,
-            ).values_list("username", flat=True),
-        )
+                ttm.User.filter(**filter_params), pagination
+            ).values_list("username")
+        )[0]
 
 
 def rmf_repo_dep(user: User = Depends(user_dep)):

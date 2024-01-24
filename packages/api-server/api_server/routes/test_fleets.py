@@ -1,4 +1,6 @@
-from api_server.models import FleetLogUpdate, FleetStateUpdate
+from typing import cast
+
+from api_server.models import FleetLog, FleetLogUpdate, FleetState, FleetStateUpdate
 from api_server.test import AppFixture, make_fleet_log, make_fleet_state
 
 
@@ -14,7 +16,7 @@ class TestFleetsRoute(AppFixture):
             )
 
         msg = next(gen)
-        self.assertEqual(fleet_state.name, msg.name)  # type: ignore
+        self.assertEqual(fleet_state.name, cast(FleetState, msg).name)
 
         # get fleet state
         resp = self.client.get(f"/fleets/{fleet_state.name}/state")
@@ -37,7 +39,7 @@ class TestFleetsRoute(AppFixture):
             ws.send_text(FleetLogUpdate(type="fleet_log_update", data=fleet_log).json())
 
         msg = next(gen)
-        self.assertEqual(fleet_log.name, msg.name)  # type: ignore
+        self.assertEqual(fleet_log.name, cast(FleetLog, msg).name)
 
         # Since there are no sample fleet logs, we cannot check the log contents
         resp = self.client.get(f"/fleets/{fleet_log.name}/log")

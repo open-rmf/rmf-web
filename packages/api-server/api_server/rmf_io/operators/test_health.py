@@ -6,17 +6,14 @@ import rx
 from rx import operators as ops
 from rx.scheduler.historicalscheduler import HistoricalScheduler
 
-from api_server.models import BaseBasicHealth, HealthStatus
+from api_server.models import BasicHealth, HealthStatus
 
 from .health import most_critical
 
 
-class TestHealth(BaseBasicHealthModel):
+class TestHealth(BasicHealth):
     @staticmethod
-    async def from_tortoise(_tortoise):
-        raise NotImplementedError()
-
-    async def save(self):
+    async def from_tortoise_orm(_tortoise):
         raise NotImplementedError()
 
 
@@ -35,7 +32,7 @@ class TestMostCritical(unittest.TestCase):
             ops.timestamp(scheduler=HistoricalScheduler(datetime.fromtimestamp(2)))
         )
 
-        result: Optional[TestHealth] = None
+        result: TestHealth | None = None
 
         def assign(v):
             nonlocal result
