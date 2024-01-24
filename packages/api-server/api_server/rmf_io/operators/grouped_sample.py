@@ -1,9 +1,8 @@
 from datetime import timedelta
 from typing import Any, Callable, TypeVar, Union
 
-from rx import operators as ops
-from rx.core.observable.observable import Observable
-from rx.core.pipe import pipe
+from reactivex import Observable, compose
+from reactivex import operators as ops
 
 T = TypeVar("T")
 
@@ -17,7 +16,7 @@ def grouped_sample(
     "key_mapper" function, maps the resulting observable sequences with the "sample" operator
     and flatten it into a single observable sequence.
     """
-    return pipe(
+    return compose(
         ops.group_by(key_mapper),
         ops.flat_map(lambda x: x.pipe(ops.sample(sampler))),
     )
