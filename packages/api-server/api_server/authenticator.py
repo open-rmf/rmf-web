@@ -94,7 +94,7 @@ class StubAuthenticator(Authenticator):
         return await User.load_or_create_from_db(username)
 
     def fastapi_dep(self):
-        async def dep(authorization: str | None = Header()):
+        async def dep(authorization: str | None = Header(None)):
             if not authorization:
                 return await self.verify_token(None)
             token = authorization.split(" ")[1]

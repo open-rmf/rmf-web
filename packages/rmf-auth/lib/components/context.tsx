@@ -41,7 +41,8 @@ export function UserProfileProvider({
           basePath,
           baseOptions: {
             headers: {
-              Authorization: token && `Bearer ${token}`,
+              // using spread operator to avoid `Authorization: undefined` if no token is available.
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
             },
           },
         }),
