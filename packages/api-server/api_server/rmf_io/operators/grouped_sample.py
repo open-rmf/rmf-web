@@ -18,5 +18,5 @@ def grouped_sample(
     """
     return compose(
         ops.group_by(key_mapper),
-        ops.flat_map(lambda x: x.pipe(ops.sample(sampler))),
+        ops.flat_map(lambda x: x.pipe(ops.sample(sampler))),  # type: ignore
     )
