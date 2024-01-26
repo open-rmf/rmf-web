@@ -146,7 +146,9 @@ class RmfBookKeeper:
 
     def _record_door_health(self):
         async def update(health: DoorHealth):
-            await ttm.DoorHealth.update_or_create(health.dict())
+            await ttm.DoorHealth.update_or_create(
+                health.dict(exclude={"id_"}), id_=health.id_
+            )
             self._report_health(health, self._loggers.door_health)
 
         self._subscriptions.append(
@@ -164,7 +166,9 @@ class RmfBookKeeper:
 
     def _record_lift_health(self):
         async def update(health: LiftHealth):
-            await ttm.LiftHealth.update_or_create(health.dict())
+            await ttm.LiftHealth.update_or_create(
+                health.dict(exclude={"id_"}), id_=health.id_
+            )
             self._report_health(health, self._loggers.lift_health)
 
         self._subscriptions.append(
@@ -182,7 +186,9 @@ class RmfBookKeeper:
 
     def _record_dispenser_health(self):
         async def update(health: DispenserHealth):
-            await ttm.DispenserHealth.update_or_create(health.dict())
+            await ttm.DispenserHealth.update_or_create(
+                health.dict(exclude={"id_"}), id_=health.id_
+            )
             self._report_health(health, self._loggers.dispenser_health)
 
         self._subscriptions.append(
@@ -200,7 +206,9 @@ class RmfBookKeeper:
 
     def _record_ingestor_health(self):
         async def update(health: IngestorHealth):
-            await ttm.IngestorHealth.update_or_create(health.dict())
+            await ttm.IngestorHealth.update_or_create(
+                health.dict(exclude={"id_"}), id_=health.id_
+            )
             self._report_health(health, self._loggers.ingestor_health)
 
         self._subscriptions.append(
