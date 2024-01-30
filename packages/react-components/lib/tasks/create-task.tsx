@@ -1214,12 +1214,15 @@ export function CreateTaskForm({
   const [formFullyFilled, setFormFullyFilled] = React.useState(requestTask !== undefined || false);
   const taskRequest = taskRequests[selectedTaskIdx];
   const [openSchedulingDialog, setOpenSchedulingDialog] = React.useState(false);
+  const defaultScheduleDate = new Date();
+  defaultScheduleDate.setSeconds(0);
+  defaultScheduleDate.setMilliseconds(0);
   const [schedule, setSchedule] = React.useState<Schedule>(
     scheduleToEdit ?? {
-      startOn: new Date(),
+      startOn: defaultScheduleDate,
       days: [true, true, true, true, true, true, true],
       until: undefined,
-      at: new Date(),
+      at: defaultScheduleDate,
     },
   );
   const [scheduleUntilValue, setScheduleUntilValue] = React.useState<string>(
@@ -1827,6 +1830,8 @@ export function CreateTaskForm({
                   setSchedule((prev) => {
                     date.setHours(schedule.at.getHours());
                     date.setMinutes(schedule.at.getMinutes());
+                    date.setSeconds(0);
+                    date.setMilliseconds(0);
                     console.debug(`DatePicker setSchedule: ${date}`);
                     return { ...prev, startOn: date };
                   });
@@ -1861,6 +1866,8 @@ export function CreateTaskForm({
                       const startOn = prev.startOn;
                       startOn.setHours(date.getHours());
                       startOn.setMinutes(date.getMinutes());
+                      startOn.setSeconds(0);
+                      startOn.setMilliseconds(0);
                       console.debug(`TimePicker setSchedule: ${date}`);
                       return { ...prev, at: date, startOn };
                     });

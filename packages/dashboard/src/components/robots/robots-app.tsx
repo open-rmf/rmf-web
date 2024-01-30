@@ -7,39 +7,24 @@ import { createMicroApp } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
 import { RobotSummary } from './robot-summary';
 
+const RefreshRobotTableInterval = 10000;
+
 export const RobotsApp = createMicroApp('Robots', () => {
   const rmf = React.useContext(RmfAppContext);
 
-  const [fleets, setFleets] = React.useState<string[]>([]);
   const [robots, setRobots] = React.useState<Record<string, RobotTableData[]>>({});
   const [openRobotSummary, setOpenRobotSummary] = React.useState(false);
   const [selectedRobot, setSelectedRobot] = React.useState<RobotTableData>();
 
   React.useEffect(() => {
     if (!rmf) {
+      console.error('Unable to get latest robot information, fleets API unavailable');
       return;
     }
 
-    const sub = rmf.fleetsObs.subscribe((fleets) => {
-      setFleets(
-        fleets.reduce<string[]>((acc, f) => {
-          if (f.name) {
-            acc.push(f.name);
-          }
-          return acc;
-        }, []),
-      );
-      setRobots({});
-    });
-    return () => sub.unsubscribe();
-  }, [rmf]);
-
-  React.useEffect(() => {
-    if (!rmf) {
-      return;
-    }
-    const subs = fleets.map((f) =>
-      rmf.getFleetStateObs(f).subscribe(async (fleet) => {
+    const refreshRobotTable = async () => {
+      const fleets = (await rmf.fleetsApi.getFleetsFleetsGet()).data;
+      for (const fleet of fleets) {
         // fetch active tasks
         const taskIds = fleet.robots
           ? Object.values(fleet.robots).reduce<string[]>((acc, robot) => {
@@ -83,10 +68,20 @@ export const RobotsApp = createMicroApp('Robots', () => {
               : [],
           };
         });
-      }),
-    );
-    return () => subs.forEach((sub) => sub.unsubscribe());
-  }, [rmf, fleets]);
+      }
+    };
+
+    // Initialize table
+    (async () => {
+      await refreshRobotTable();
+    })();
+
+    // Set up regular interval to refresh table
+    const refreshInterval = window.setInterval(refreshRobotTable, RefreshRobotTableInterval);
+    return () => {
+      clearInterval(refreshInterval);
+    };
+  }, [rmf]);
 
   return (
     <TableContainer>
