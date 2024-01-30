@@ -14,6 +14,7 @@ from api_server.dependencies import (
     start_time_between_query,
 )
 from api_server.fast_io import FastIORouter, SubscriptionRequest
+from api_server.logger import logger
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.repositories import TaskRepository, task_repo_dep
 from api_server.response import RawJSONResponse
@@ -201,6 +202,7 @@ async def post_dispatch_task(
     resp = mdl.TaskDispatchResponse.parse_raw(
         await tasks_service().call(request.json(exclude_none=True))
     )
+    logger.info(resp)
     if not resp.__root__.success:
         return RawJSONResponse(resp.json(), 400)
     new_state = cast(mdl.TaskDispatchResponseItem, resp.__root__).state

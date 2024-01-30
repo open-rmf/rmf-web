@@ -3,6 +3,7 @@ import {
   ApiServerModelsTortoiseModelsAlertsAlertLeaf,
   LogEntry,
   Status,
+  Status1,
   TaskEventLog,
   TaskState,
   Tier,
@@ -55,6 +56,9 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
     if (state.status && state.status === Status.Completed) {
       return 'Task completed';
     }
+    if (state.status && state.status === Status.Failed) {
+      return 'Task failed';
+    }
     if (errorLogEntries.length !== 0) {
       return 'Task error';
     }
@@ -91,7 +95,24 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
       },
     ];
 
-    // Second field would be any errors found
+    // Second field would be any dispatch errors
+    if (state.dispatch && state.dispatch.status === Status1.FailedToAssign) {
+      let errors = '';
+      if (state.dispatch.errors) {
+        for (const error of state.dispatch.errors) {
+          errors += `${JSON.stringify(error)}\n`;
+        }
+      }
+      content = [
+        ...content,
+        {
+          title: 'Dispatch failure',
+          value: errors.length !== 0 ? errors : 'n/a',
+        },
+      ];
+    }
+
+    // Third field would be any errors found
     if (errorLogEntries.length !== 0) {
       let consolidatedErrorMessages = '';
       for (let entry of errorLogEntries) {
@@ -236,6 +257,16 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
           acknowledgedBy: acknowledgedBy,
           late: task_late,
           ...logs,
+        });
+      } else if (state) {
+        setTaskAlert({
+          title: getAlertTitle(state, []),
+          progress: getTaskProgress(state),
+          content: getAlertContent(state, []),
+          color: getAlertColor(state, []),
+          acknowledgedBy: acknowledgedBy,
+          late: task_late,
+          task_id: state.booking.id,
         });
       }
     })();

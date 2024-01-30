@@ -85,7 +85,7 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
               InputProps={{ readOnly: true, className: classes.textField }}
               fullWidth={true}
               multiline
-              maxRows={isScreenHeightLessThan800 ? 2 : 4}
+              maxRows={isScreenHeightLessThan800 ? 5 : 10}
               margin="dense"
               value={message.value}
             />
