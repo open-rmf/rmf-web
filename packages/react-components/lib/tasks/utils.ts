@@ -182,7 +182,7 @@ export function parseDestination(state?: TaskState, request?: TaskRequest): stri
   // TODO(ac): use schemas
   try {
     const destination =
-      request.description['phases'][0]['activity']['description']['activities'][2]['description'];
+      request.description['phases'][1]['activity']['description']['activities'][0]['description'];
     return destination;
   } catch (e) {
     console.error(`Failed to parse destination from task request: ${(e as Error).message}`);
