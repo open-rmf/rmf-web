@@ -265,7 +265,7 @@ export function getShortDescription(taskRequest: TaskRequest): string {
     taskRequest.description.phases[0].activity.description.activities[1];
   const cartId = pickup.description.description.cart_id;
   const goToDropoff: GoToPlaceActivity =
-    taskRequest.description.phases[0].activity.description.activities[2];
+    taskRequest.description.phases[1].activity.description.activities[0];
 
   switch (taskRequest.description.category) {
     case 'delivery_pickup': {
