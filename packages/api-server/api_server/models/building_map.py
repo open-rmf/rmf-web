@@ -1,5 +1,3 @@
-from typing import List
-
 from . import tortoise_models as ttm
 from .ros_pydantic import rmf_building_map_msgs
 
@@ -9,11 +7,11 @@ class AffineImage(rmf_building_map_msgs.AffineImage):
 
 
 class Level(rmf_building_map_msgs.Level):
-    images: List[AffineImage]
+    images: list[AffineImage]
 
 
 class BuildingMap(rmf_building_map_msgs.BuildingMap):
-    levels: List[Level]
+    levels: list[Level]
 
     @staticmethod
     def from_tortoise(tortoise: ttm.BuildingMap) -> "BuildingMap":

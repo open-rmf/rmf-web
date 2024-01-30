@@ -4,7 +4,7 @@ import sys
 import urllib.parse
 from dataclasses import dataclass
 from importlib.abc import Loader
-from typing import Any, List, Optional, cast
+from typing import List, Optional, cast
 
 
 @dataclass
@@ -47,7 +47,7 @@ def load_config(config_file: str) -> AppConfig:
         raise RuntimeError("unable to load module")
     sys.path.append(os.path.dirname(config_file))
     loader.exec_module(module)
-    config = AppConfig(**cast(Any, module).config)
+    config = AppConfig(**module.config)
     if "RMF_API_SERVER_LOG_LEVEL" in os.environ:
         config.log_level = os.environ["RMF_API_SERVER_LOG_LEVEL"]
     return config

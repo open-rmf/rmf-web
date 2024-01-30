@@ -1,7 +1,8 @@
-from typing import List
+import asyncio
+from typing import List, cast
 from uuid import uuid4
 
-from api_server.rmf_io import rmf_events
+from api_server.models import IngestorState
 from api_server.test import AppFixture, make_ingestor_state
 
 
@@ -12,7 +13,7 @@ class TestIngestorsRoute(AppFixture):
         cls.ingestor_states = [make_ingestor_state(f"test_{uuid4()}")]
 
         for x in cls.ingestor_states:
-            rmf_events.ingestor_states.on_next(x)
+            asyncio.run(x.save())
 
     def test_get_ingestors(self):
         resp = self.client.get("/ingestors")
@@ -34,4 +35,4 @@ class TestIngestorsRoute(AppFixture):
         msg = next(
             self.subscribe_sio(f"/ingestors/{self.ingestor_states[0].guid}/state")
         )
-        self.assertEqual(self.ingestor_states[0].guid, msg.guid)  # type: ignore
+        self.assertEqual(self.ingestor_states[0].guid, cast(IngestorState, msg).guid)

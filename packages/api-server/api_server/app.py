@@ -2,7 +2,7 @@ import asyncio
 import os
 import signal
 import threading
-from typing import Any, Callable, Coroutine, List, Optional, Union
+from typing import Any, Callable, Coroutine, Union
 
 import schedule
 from fastapi import Depends
@@ -37,7 +37,7 @@ from .rmf_io import HealthWatchdog, RmfBookKeeper, rmf_events
 from .types import is_coroutine
 
 
-async def on_sio_connect(sid: str, _environ: dict, auth: Optional[dict] = None):
+async def on_sio_connect(sid: str, _environ: dict, auth: dict | None = None) -> bool:
     session = await app.sio.get_session(sid)
     token = None
     if auth:
@@ -83,7 +83,7 @@ app.mount(
 )
 
 # will be called in reverse order on app shutdown
-shutdown_cbs: List[Union[Coroutine[Any, Any, Any], Callable[[], None]]] = []
+shutdown_cbs: list[Union[Coroutine[Any, Any, Any], Callable[[], None]]] = []
 
 rmf_bookkeeper = RmfBookKeeper(rmf_events, logger=logger.getChild("BookKeeper"))
 
@@ -257,7 +257,7 @@ async def _load_states():
     logger.info(f"loaded {len(door_states)} door states")
 
     door_health = [
-        await DoorHealth.from_tortoise(x) for x in await ttm.DoorHealth.all()
+        await DoorHealth.from_tortoise_orm(x) for x in await ttm.DoorHealth.all()
     ]
     for health in door_health:
         rmf_events.door_health.on_next(health)
@@ -269,7 +269,7 @@ async def _load_states():
     logger.info(f"loaded {len(lift_states)} lift states")
 
     lift_health = [
-        await LiftHealth.from_tortoise(x) for x in await ttm.LiftHealth.all()
+        await LiftHealth.from_tortoise_orm(x) for x in await ttm.LiftHealth.all()
     ]
     for health in lift_health:
         rmf_events.lift_health.on_next(health)
@@ -283,7 +283,8 @@ async def _load_states():
     logger.info(f"loaded {len(dispenser_states)} dispenser states")
 
     dispenser_health = [
-        await DispenserHealth.from_tortoise(x) for x in await ttm.DispenserHealth.all()
+        await DispenserHealth.from_tortoise_orm(x)
+        for x in await ttm.DispenserHealth.all()
     ]
     for health in dispenser_health:
         rmf_events.dispenser_health.on_next(health)
@@ -297,7 +298,8 @@ async def _load_states():
     logger.info(f"loaded {len(ingestor_states)} ingestor states")
 
     ingestor_health = [
-        await IngestorHealth.from_tortoise(x) for x in await ttm.IngestorHealth.all()
+        await IngestorHealth.from_tortoise_orm(x)
+        for x in await ttm.IngestorHealth.all()
     ]
     for health in ingestor_health:
         rmf_events.ingestor_health.on_next(health)

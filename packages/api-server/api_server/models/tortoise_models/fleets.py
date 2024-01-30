@@ -12,7 +12,7 @@ from .log import LogMixin
 
 class FleetState(Model):
     name = CharField(255, pk=True)
-    data = JSONField()
+    data: dict = JSONField()  # type: ignore
 
 
 class FleetLog(Model):
@@ -22,20 +22,26 @@ class FleetLog(Model):
 
 
 class FleetLogLog(Model, LogMixin):
-    fleet: ForeignKeyRelation[FleetLog] = ForeignKeyField("models.FleetLog", related_name="log")  # type: ignore
+    fleet: ForeignKeyRelation[FleetLog] = ForeignKeyField(
+        "models.FleetLog", related_name="log"
+    )
 
     class Meta:
         unique_together = ("fleet", "seq")
 
 
 class FleetLogRobots(Model):
-    fleet: ForeignKeyRelation[FleetLog] = ForeignKeyField("models.FleetLog", related_name="robots")  # type: ignore
+    fleet: ForeignKeyRelation[FleetLog] = ForeignKeyField(
+        "models.FleetLog", related_name="robots"
+    )
     name = CharField(255)
     log: ReverseRelation["FleetLogRobotsLog"]
 
 
 class FleetLogRobotsLog(Model, LogMixin):
-    robot: ForeignKeyRelation[FleetLogRobots] = ForeignKeyField("models.FleetLogRobots", related_name="log")  # type: ignore
+    robot: ForeignKeyRelation[FleetLogRobots] = ForeignKeyField(
+        "models.FleetLogRobots", related_name="log"
+    )
 
     class Meta:
         unique_together = ("id", "seq")

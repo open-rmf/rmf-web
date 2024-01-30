@@ -9,9 +9,11 @@ from typing import Awaitable, Callable, Optional, TypeVar, Union
 from uuid import uuid4
 
 from api_server.app import app, on_sio_connect
+from api_server.models import User
+from api_server.routes.admin import PostUsers
 
 from .mocks import patch_sio
-from .test_client import client
+from .test_client import TestClient
 
 T = TypeVar("T")
 
@@ -79,8 +81,14 @@ with open(f"{here}/../../scripts/test.key", "br") as f:
 class AppFixture(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.client = client()
-        cls.client.set_user("admin")
+        cls.admin_user = User(username="admin", is_admin=True)
+        cls.client = TestClient()
+        cls.client.headers["Content-Type"] = "application/json"
+        cls.client.__enter__()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.client.__exit__()
 
     def subscribe_sio(self, room: str, *, user="admin"):
         """
@@ -137,9 +145,10 @@ class AppFixture(unittest.TestCase):
 
     def create_user(self, admin: bool = False):
         username = f"user_{uuid4().hex}"
+        user = PostUsers(username=username, is_admin=admin)
         resp = self.client.post(
             "/admin/users",
-            json={"username": username, "is_admin": admin},
+            content=user.json(),
         )
         self.assertEqual(200, resp.status_code)
         return username

@@ -1,7 +1,7 @@
-from typing import List, cast
+from typing import List
 
 from fastapi import Depends, HTTPException
-from rx import operators as rxops
+from reactivex import operators as rxops
 
 from api_server.dependencies import sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
@@ -33,9 +33,7 @@ async def get_ingestor_state(
 @router.sub("/{guid}/state", response_model=IngestorState)
 async def sub_ingestor_state(req: SubscriptionRequest, guid: str):
     user = sio_user(req)
-    obs = rmf_events.ingestor_states.pipe(
-        rxops.filter(lambda x: cast(IngestorState, x).guid == guid)
-    )
+    obs = rmf_events.ingestor_states.pipe(rxops.filter(lambda x: x.guid == guid))
     ingestor_state = await get_ingestor_state(guid, RmfRepository(user))
     if ingestor_state:
         return obs.pipe(rxops.start_with(ingestor_state))
@@ -58,9 +56,7 @@ async def get_ingestor_health(
 @router.sub("/{guid}/health", response_model=IngestorHealth)
 async def sub_ingestor_health(req: SubscriptionRequest, guid: str):
     user = sio_user(req)
-    obs = rmf_events.ingestor_health.pipe(
-        rxops.filter(lambda x: cast(IngestorHealth, x).id_ == guid)
-    )
+    obs = rmf_events.ingestor_health.pipe(rxops.filter(lambda x: x.id_ == guid))
     health = await get_ingestor_health(guid, RmfRepository(user))
     if health:
         return obs.pipe(rxops.start_with(health))

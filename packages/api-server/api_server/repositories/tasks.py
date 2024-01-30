@@ -1,6 +1,6 @@
 import sys
 from datetime import datetime
-from typing import Dict, List, Optional, Sequence, Tuple, cast
+from typing import Dict, List, Optional, Sequence, Tuple
 
 from fastapi import Depends, HTTPException
 from tortoise.exceptions import FieldError, IntegrityError
@@ -76,8 +76,8 @@ class TaskRepository:
             if pagination:
                 query = add_pagination(query, pagination)
             # TODO: enforce with authz
-            results = await query.values_list("data", flat=True)
-            return [TaskState(**r) for r in results]
+            results = await query.values_list("data")
+            return [TaskState(**r[0]) for r in results]
         except FieldError as e:
             raise HTTPException(422, str(e)) from e
 
@@ -98,20 +98,17 @@ class TaskRepository:
             "unix_millis_time__gte": between[0],
             "unix_millis_time__lte": between[1],
         }
-        result = cast(
-            Optional[ttm.TaskEventLog],
-            await ttm.TaskEventLog.get_or_none(task_id=task_id).prefetch_related(
-                Prefetch(
-                    "log",
-                    ttm.TaskEventLogLog.filter(**between_filters),
-                ),
-                Prefetch(
-                    "phases__log", ttm.TaskEventLogPhasesLog.filter(**between_filters)
-                ),
-                Prefetch(
-                    "phases__events__log",
-                    ttm.TaskEventLogPhasesEventsLog.filter(**between_filters),
-                ),
+        result = await ttm.TaskEventLog.get_or_none(task_id=task_id).prefetch_related(
+            Prefetch(
+                "log",
+                ttm.TaskEventLogLog.filter(**between_filters),
+            ),
+            Prefetch(
+                "phases__log", ttm.TaskEventLogPhasesLog.filter(**between_filters)
+            ),
+            Prefetch(
+                "phases__events__log",
+                ttm.TaskEventLogPhasesEventsLog.filter(**between_filters),
             ),
         )
         if result is None:

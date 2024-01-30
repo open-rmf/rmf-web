@@ -1,4 +1,4 @@
-from typing import List, Optional, Sequence, Tuple, cast
+from typing import List, Optional, Sequence, Tuple
 
 from fastapi import Depends
 from tortoise.exceptions import IntegrityError
@@ -16,8 +16,8 @@ class FleetRepository:
         self.user = user
 
     async def get_all_fleets(self) -> List[FleetState]:
-        db_states = await ttm.FleetState.all().values_list("data", flat=True)
-        return [FleetState(**s) for s in db_states]
+        db_states = await ttm.FleetState.all().values_list("data")
+        return [FleetState(**s[0]) for s in db_states]
 
     async def get_fleet_state(self, name: str) -> Optional[FleetState]:
         # TODO: enforce with authz
@@ -36,17 +36,12 @@ class FleetRepository:
             "unix_millis_time__gte": between[0],
             "unix_millis_time__lte": between[1],
         }
-        result = cast(
-            Optional[ttm.FleetLog],
-            await ttm.FleetLog.get_or_none(name=name).prefetch_related(
-                Prefetch(
-                    "log",
-                    ttm.FleetLogLog.filter(**between_filters),
-                ),
-                Prefetch(
-                    "robots__log", ttm.FleetLogRobotsLog.filter(**between_filters)
-                ),
+        result = await ttm.FleetLog.get_or_none(name=name).prefetch_related(
+            Prefetch(
+                "log",
+                ttm.FleetLogLog.filter(**between_filters),
             ),
+            Prefetch("robots__log", ttm.FleetLogRobotsLog.filter(**between_filters)),
         )
         if result is None:
             return None

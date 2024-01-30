@@ -1,10 +1,18 @@
 from pydantic import BaseModel
 
 from . import tortoise_models as ttm
-from .health import basic_health_model
+from .health import BasicHealth, HealthStatus
 from .ros_pydantic import rmf_ingestor_msgs
 
-IngestorHealth = basic_health_model(ttm.IngestorHealth)
+
+class IngestorHealth(BasicHealth):
+    @classmethod
+    async def from_tortoise_orm(cls, obj: ttm.IngestorHealth) -> "IngestorHealth":
+        return IngestorHealth(
+            id_=obj.id_,
+            health_status=HealthStatus(obj.health_status),
+            health_message=obj.health_message,
+        )
 
 
 class Ingestor(BaseModel):

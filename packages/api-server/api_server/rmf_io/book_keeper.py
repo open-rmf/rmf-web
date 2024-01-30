@@ -4,10 +4,11 @@ import logging
 from collections import namedtuple
 from typing import Coroutine, List, Optional
 
-from rx.core.typing import Disposable
-from rx.subject.subject import Subject
+from reactivex.abc import DisposableBase
+from reactivex.subject import Subject
 
 from api_server.models import (
+    BasicHealth,
     BuildingMap,
     DispenserHealth,
     DispenserState,
@@ -19,7 +20,7 @@ from api_server.models import (
     LiftHealth,
     LiftState,
 )
-from api_server.models.health import BaseBasicHealth
+from api_server.models import tortoise_models as ttm
 
 from .events import RmfEvents
 
@@ -87,7 +88,7 @@ class RmfBookKeeper:
         self._loggers.robot_health.parent = self._main_logger
         self._loggers.task_summary.parent = self._main_logger
 
-        self._subscriptions: List[Disposable] = []
+        self._subscriptions: List[DisposableBase] = []
 
     async def start(self):
         self._loop = asyncio.get_event_loop()
@@ -114,7 +115,7 @@ class RmfBookKeeper:
         self._pending_tasks.add(task)
 
     @staticmethod
-    def _report_health(health: BaseBasicHealth, logger: logging.Logger):
+    def _report_health(health: BasicHealth, logger: logging.Logger):
         message = health.json()
         if health.health_status == HealthStatus.UNHEALTHY:
             logger.warning(message)
@@ -124,7 +125,7 @@ class RmfBookKeeper:
             logger.info(message)
 
     def _record_building_map(self):
-        async def update(building_map: BuildingMap):
+        async def update(building_map: BuildingMap | None):
             if not building_map:
                 return
             await building_map.save()
@@ -145,7 +146,9 @@ class RmfBookKeeper:
 
     def _record_door_health(self):
         async def update(health: DoorHealth):
-            await health.save()
+            await ttm.DoorHealth.update_or_create(
+                health.dict(exclude={"id_"}), id_=health.id_
+            )
             self._report_health(health, self._loggers.door_health)
 
         self._subscriptions.append(
@@ -163,7 +166,9 @@ class RmfBookKeeper:
 
     def _record_lift_health(self):
         async def update(health: LiftHealth):
-            await health.save()
+            await ttm.LiftHealth.update_or_create(
+                health.dict(exclude={"id_"}), id_=health.id_
+            )
             self._report_health(health, self._loggers.lift_health)
 
         self._subscriptions.append(
@@ -181,7 +186,9 @@ class RmfBookKeeper:
 
     def _record_dispenser_health(self):
         async def update(health: DispenserHealth):
-            await health.save()
+            await ttm.DispenserHealth.update_or_create(
+                health.dict(exclude={"id_"}), id_=health.id_
+            )
             self._report_health(health, self._loggers.dispenser_health)
 
         self._subscriptions.append(
@@ -199,7 +206,9 @@ class RmfBookKeeper:
 
     def _record_ingestor_health(self):
         async def update(health: IngestorHealth):
-            await health.save()
+            await ttm.IngestorHealth.update_or_create(
+                health.dict(exclude={"id_"}), id_=health.id_
+            )
             self._report_health(health, self._loggers.ingestor_health)
 
         self._subscriptions.append(

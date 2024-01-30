@@ -21,7 +21,7 @@ import socketio.packet
 from fastapi import APIRouter, FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.routing import APIRoute
-from rx.core.observable.observable import Observable
+from reactivex import Observable
 from starlette.routing import compile_path
 
 from api_server.logger import logger

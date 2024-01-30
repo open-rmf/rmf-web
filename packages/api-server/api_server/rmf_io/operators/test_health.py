@@ -1,22 +1,18 @@
 import unittest
 from datetime import datetime
-from typing import Optional, cast
+from typing import Any, Optional, cast
 
-import rx
-from rx import operators as ops
-from rx.scheduler.historicalscheduler import HistoricalScheduler
+import reactivex as rx
+from reactivex import operators as ops
+from reactivex.scheduler.historicalscheduler import HistoricalScheduler
 
-from api_server.models import BaseBasicHealth, HealthStatus
-
+from ...models import BasicHealth, HealthStatus
 from .health import most_critical
 
 
-class TestHealth(BaseBasicHealth):
+class TestHealth(BasicHealth):
     @staticmethod
-    async def from_tortoise(_tortoise):
-        raise NotImplementedError()
-
-    async def save(self):
+    async def from_tortoise_orm(_tortoise):
         raise NotImplementedError()
 
 
@@ -35,13 +31,15 @@ class TestMostCritical(unittest.TestCase):
             ops.timestamp(scheduler=HistoricalScheduler(datetime.fromtimestamp(2)))
         )
 
-        result: Optional[TestHealth] = None
+        result: TestHealth | None = None
 
         def assign(v):
             nonlocal result
             result = v
 
-        obs_a.pipe(ops.combine_latest(obs_b), most_critical()).subscribe(assign)
+        obs_a.pipe(cast(Any, ops.combine_latest(obs_b)), most_critical()).subscribe(
+            assign
+        )
         self.assertIsNotNone(result)
         result = cast(TestHealth, result)
         self.assertEqual(result.health_status, HealthStatus.DEAD)
@@ -72,7 +70,9 @@ class TestMostCritical(unittest.TestCase):
             nonlocal result
             result = v
 
-        obs_a.pipe(ops.combine_latest(obs_b), most_critical()).subscribe(assign)
+        obs_a.pipe(cast(Any, ops.combine_latest(obs_b)), most_critical()).subscribe(
+            assign
+        )
         self.assertIsNotNone(result)
         result = cast(TestHealth, result)
         self.assertEqual(result.health_status, HealthStatus.DEAD)
@@ -98,7 +98,9 @@ class TestMostCritical(unittest.TestCase):
             nonlocal result
             result = v
 
-        obs_a.pipe(ops.combine_latest(obs_b), most_critical()).subscribe(assign)
+        obs_a.pipe(cast(Any, ops.combine_latest(obs_b)), most_critical()).subscribe(
+            assign
+        )
         self.assertIsNotNone(result)
         result = cast(TestHealth, result)
         self.assertEqual(result.health_status, HealthStatus.HEALTHY)

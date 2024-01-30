@@ -24,7 +24,7 @@ class TaskFavoritePydantic(BaseModel):
     user: str
 
 
-@router.post("", response_model=ttm.TaskFavoritePydantic)
+@router.post("", response_model=None)
 async def post_favorite_task(
     request: TaskFavoritePydantic,
     user: User = Depends(user_dep),
