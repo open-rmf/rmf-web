@@ -202,6 +202,8 @@ async def on_startup():
         task_repo = TaskRepository(user)
         try:
             await routes.scheduled_tasks.schedule_task(t, task_repo)
+            logger.info(f"Scheduling task created by [{t.created_by}]")
+            logger.info(f"{t.task_request}")
             scheduled += 1
         except Exception as e:  # pylint: disable=broad-except
             logger.warning(f"Unable to schedule task requested by {t.created_by}: {e}")
