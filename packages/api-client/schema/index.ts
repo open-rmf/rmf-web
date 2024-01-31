@@ -1041,6 +1041,8 @@ export default {
       get: {
         tags: ['Tasks'],
         summary: 'Query Task Queue Entry',
+        description:
+          "Returns a list of TaskQueueEntry corresponding to the queries, which\ncontains just the basic information of a task's state, excluding fields with\npotentially large amounts of data, e.g. phases.",
         operationId: 'query_task_queue_entry_tasks_queue_entry_get',
         parameters: [
           {

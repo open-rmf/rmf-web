@@ -9148,7 +9148,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
-     *
+     * Returns a list of TaskQueueEntry corresponding to the queries, which contains just the basic information of a task\'s state, excluding fields with potentially large amounts of data, e.g. phases.
      * @summary Query Task Queue Entry
      * @param {string} [taskId] comma separated list of task ids
      * @param {string} [category] comma separated list of task categories
@@ -9906,7 +9906,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
-     *
+     * Returns a list of TaskQueueEntry corresponding to the queries, which contains just the basic information of a task\'s state, excluding fields with potentially large amounts of data, e.g. phases.
      * @summary Query Task Queue Entry
      * @param {string} [taskId] comma separated list of task ids
      * @param {string} [category] comma separated list of task categories
@@ -10409,7 +10409,7 @@ export const TasksApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     * Returns a list of TaskQueueEntry corresponding to the queries, which contains just the basic information of a task\'s state, excluding fields with potentially large amounts of data, e.g. phases.
      * @summary Query Task Queue Entry
      * @param {string} [taskId] comma separated list of task ids
      * @param {string} [category] comma separated list of task categories
@@ -10936,7 +10936,7 @@ export class TasksApi extends BaseAPI {
   }
 
   /**
-   *
+   * Returns a list of TaskQueueEntry corresponding to the queries, which contains just the basic information of a task\'s state, excluding fields with potentially large amounts of data, e.g. phases.
    * @summary Query Task Queue Entry
    * @param {string} [taskId] comma separated list of task ids
    * @param {string} [category] comma separated list of task categories
