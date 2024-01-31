@@ -68,6 +68,7 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
             return
 
         logger.info(f"Starting task {task.pk}")
+        logger.info(f"{task.task_request}")
         asyncio.get_event_loop().create_task(run())
         logger.warning(f"Schedule has {len(schedule.get_jobs())} jobs left")
 

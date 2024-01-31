@@ -45,7 +45,7 @@ import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dia
 import { PositiveIntField } from '../form-inputs';
 
 // A bunch of manually defined descriptions to avoid using `any`.
-interface PatrolTaskDescription {
+export interface PatrolTaskDescription {
   places: string[];
   rounds: number;
 }
@@ -79,6 +79,24 @@ interface GoToPlaceActivity {
   description: string;
 }
 
+interface CartCustomPickupPhase {
+  activity: {
+    category: string;
+    description: {
+      activities: [go_to_pickup: GoToPlaceActivity, pickup_cart: ZonePickupActivity];
+    };
+  };
+}
+
+interface CartPickupPhase {
+  activity: {
+    category: string;
+    description: {
+      activities: [go_to_pickup: GoToPlaceActivity, pickup_cart: LotPickupActivity];
+    };
+  };
+}
+
 interface DropoffActivity {
   category: string;
   description: {
@@ -108,50 +126,46 @@ interface GoToOneOfThePlacesActivity {
 interface OnCancelDropoff {
   category: string;
   description: [
-    dropoff_if_carrying_payload: DropoffActivity,
     go_to_one_of_the_places: GoToOneOfThePlacesActivity,
     delivery_dropoff: DropoffActivity,
   ];
 }
 
-interface DeliveryCustomPhase {
+interface DeliveryWithCancellationPhase {
   activity: {
     category: string;
     description: {
-      activities: [
-        go_to_pickup: GoToPlaceActivity,
-        pickup_cart: ZonePickupActivity,
-        go_to_place: GoToPlaceActivity,
-        dropoff_cart: DropoffActivity,
-      ];
+      activities: [go_to_place: GoToPlaceActivity];
     };
   };
   on_cancel: OnCancelDropoff[];
 }
 
-interface DeliveryCustomTaskDescription {
-  category: string;
-  phases: [deliverySequence: DeliveryCustomPhase];
-}
-
-interface DeliveryPhase {
+interface CartDropoffPhase {
   activity: {
     category: string;
     description: {
-      activities: [
-        go_to_pickup: GoToPlaceActivity,
-        pickup_cart: LotPickupActivity,
-        go_to_dropoff: GoToPlaceActivity,
-        dropoff_cart: DropoffActivity,
-      ];
+      activities: [delivery_dropoff: DropoffActivity];
     };
   };
-  on_cancel: OnCancelDropoff[];
 }
 
-interface DeliveryTaskDescription {
+export interface DeliveryCustomTaskDescription {
   category: string;
-  phases: [deliverySequence: DeliveryPhase];
+  phases: [
+    pickup_phase: CartCustomPickupPhase,
+    delivery_phase: DeliveryWithCancellationPhase,
+    dropoff_phase: CartDropoffPhase,
+  ];
+}
+
+export interface DeliveryTaskDescription {
+  category: string;
+  phases: [
+    pickup_phase: CartPickupPhase,
+    delivery_phase: DeliveryWithCancellationPhase,
+    dropoff_phase: CartDropoffPhase,
+  ];
 }
 
 type TaskDescription =
@@ -168,7 +182,7 @@ const isDeliveryTaskDescriptionValid = (
 ): boolean => {
   const goToPickup = taskDescription.phases[0].activity.description.activities[0];
   const pickup = taskDescription.phases[0].activity.description.activities[1];
-  const goToDropoff = taskDescription.phases[0].activity.description.activities[2];
+  const goToDropoff = taskDescription.phases[1].activity.description.activities[0];
   return (
     isNonEmptyString(goToPickup.description) &&
     Object.keys(pickupPoints).includes(goToPickup.description) &&
@@ -186,7 +200,7 @@ const isDeliveryCustomTaskDescriptionValid = (
 ): boolean => {
   const goToPickup = taskDescription.phases[0].activity.description.activities[0];
   const pickup = taskDescription.phases[0].activity.description.activities[1];
-  const goToDropoff = taskDescription.phases[0].activity.description.activities[2];
+  const goToDropoff = taskDescription.phases[1].activity.description.activities[0];
   return (
     isNonEmptyString(goToPickup.description) &&
     isNonEmptyString(pickup.description.description.pickup_zone) &&
@@ -251,7 +265,7 @@ export function getShortDescription(taskRequest: TaskRequest): string {
     taskRequest.description.phases[0].activity.description.activities[1];
   const cartId = pickup.description.description.cart_id;
   const goToDropoff: GoToPlaceActivity =
-    taskRequest.description.phases[0].activity.description.activities[2];
+    taskRequest.description.phases[1].activity.description.activities[0];
 
   switch (taskRequest.description.category) {
     case 'delivery_pickup': {
@@ -266,6 +280,70 @@ export function getShortDescription(taskRequest: TaskRequest): string {
     default:
       return `[Unknown] type "${taskRequest.description.category}"`;
   }
+}
+
+export function deliveryInsertPickup(
+  taskDescription: DeliveryTaskDescription,
+  pickupPlace: string,
+  pickupLot: string,
+): DeliveryTaskDescription {
+  taskDescription.phases[0].activity.description.activities[0].description = pickupPlace;
+  taskDescription.phases[0].activity.description.activities[1].description.description.pickup_lot =
+    pickupLot;
+  return taskDescription;
+}
+
+export function deliveryInsertCartId(
+  taskDescription: DeliveryTaskDescription,
+  cartId: string,
+): DeliveryTaskDescription {
+  taskDescription.phases[0].activity.description.activities[1].description.description.cart_id =
+    cartId;
+  return taskDescription;
+}
+
+export function deliveryInsertDropoff(
+  taskDescription: DeliveryTaskDescription,
+  dropoffPlace: string,
+): DeliveryTaskDescription {
+  taskDescription.phases[1].activity.description.activities[0].description = dropoffPlace;
+  return taskDescription;
+}
+
+export function deliveryInsertOnCancel(
+  taskDescription: DeliveryTaskDescription,
+  onCancelPlaces: string[],
+): DeliveryTaskDescription {
+  const goToOneOfThePlaces: GoToOneOfThePlacesActivity = {
+    category: 'go_to_place',
+    description: {
+      one_of: onCancelPlaces.map((placeName) => {
+        return {
+          waypoint: placeName,
+        };
+      }),
+      constraints: [
+        {
+          category: 'prefer_same_map',
+          description: '',
+        },
+      ],
+    },
+  };
+  const deliveryDropoff: DropoffActivity = {
+    category: 'perform_action',
+    description: {
+      unix_millis_action_duration_estimate: 60000,
+      category: 'delivery_dropoff',
+      description: {},
+    },
+  };
+  const onCancelDropoff: OnCancelDropoff = {
+    category: 'sequence',
+    description: [goToOneOfThePlaces, deliveryDropoff],
+  };
+  taskDescription.phases[1].on_cancel = [onCancelDropoff];
+  return taskDescription;
 }
 
 interface DeliveryTaskFormProps {
@@ -303,19 +381,15 @@ function DeliveryTaskForm({
           value={taskDesc.phases[0].activity.description.activities[0].description}
           onInputChange={(_ev, newValue) => {
             const pickupLot = pickupPoints[newValue] ?? '';
-            const newTaskDesc = { ...taskDesc };
-            newTaskDesc.phases[0].activity.description.activities[0].description = newValue;
-            newTaskDesc.phases[0].activity.description.activities[1].description.description.pickup_lot =
-              pickupLot;
+            let newTaskDesc = { ...taskDesc };
+            newTaskDesc = deliveryInsertPickup(newTaskDesc, newValue, pickupLot);
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
             const place = (ev.target as HTMLInputElement).value;
             const pickupLot = pickupPoints[place] ?? '';
-            const newTaskDesc = { ...taskDesc };
-            newTaskDesc.phases[0].activity.description.activities[0].description = place;
-            newTaskDesc.phases[0].activity.description.activities[1].description.description.pickup_lot =
-              pickupLot;
+            let newTaskDesc = { ...taskDesc };
+            newTaskDesc = deliveryInsertPickup(newTaskDesc, place, pickupLot);
             onInputChange(newTaskDesc);
           }}
           sx={{
@@ -350,15 +424,13 @@ function DeliveryTaskForm({
           }
           getOptionLabel={(option) => option}
           onInputChange={(_ev, newValue) => {
-            const newTaskDesc = { ...taskDesc };
-            newTaskDesc.phases[0].activity.description.activities[1].description.description.cart_id =
-              newValue;
+            let newTaskDesc = { ...taskDesc };
+            newTaskDesc = deliveryInsertCartId(newTaskDesc, newValue);
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
-            const newTaskDesc = { ...taskDesc };
-            newTaskDesc.phases[0].activity.description.activities[1].description.description.cart_id =
-              (ev.target as HTMLInputElement).value;
+            let newTaskDesc = { ...taskDesc };
+            newTaskDesc = deliveryInsertCartId(newTaskDesc, (ev.target as HTMLInputElement).value);
             onInputChange(newTaskDesc);
           }}
           sx={{
@@ -387,17 +459,15 @@ function DeliveryTaskForm({
           freeSolo
           fullWidth
           options={Object.keys(dropoffPoints).sort()}
-          value={taskDesc.phases[0].activity.description.activities[2].description}
+          value={taskDesc.phases[1].activity.description.activities[0].description}
           onInputChange={(_ev, newValue) => {
-            const newTaskDesc = { ...taskDesc };
-            newTaskDesc.phases[0].activity.description.activities[2].description = newValue;
+            let newTaskDesc = { ...taskDesc };
+            newTaskDesc = deliveryInsertDropoff(newTaskDesc, newValue);
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
-            const newTaskDesc = { ...taskDesc };
-            newTaskDesc.phases[0].activity.description.activities[2].description = (
-              ev.target as HTMLInputElement
-            ).value;
+            let newTaskDesc = { ...taskDesc };
+            newTaskDesc = deliveryInsertDropoff(newTaskDesc, (ev.target as HTMLInputElement).value);
             onInputChange(newTaskDesc);
           }}
           sx={{
@@ -414,7 +484,7 @@ function DeliveryTaskForm({
               InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
               error={
                 !Object.keys(dropoffPoints).includes(
-                  taskDesc.phases[0].activity.description.activities[2].description,
+                  taskDesc.phases[1].activity.description.activities[0].description,
                 )
               }
             />
@@ -423,6 +493,70 @@ function DeliveryTaskForm({
       </Grid>
     </Grid>
   );
+}
+
+export function deliveryCustomInsertPickup(
+  taskDescription: DeliveryCustomTaskDescription,
+  pickupPlace: string,
+  pickupZone: string,
+): DeliveryCustomTaskDescription {
+  taskDescription.phases[0].activity.description.activities[0].description = pickupPlace;
+  taskDescription.phases[0].activity.description.activities[1].description.description.pickup_zone =
+    pickupZone;
+  return taskDescription;
+}
+
+export function deliveryCustomInsertCartId(
+  taskDescription: DeliveryCustomTaskDescription,
+  cartId: string,
+): DeliveryCustomTaskDescription {
+  taskDescription.phases[0].activity.description.activities[1].description.description.cart_id =
+    cartId;
+  return taskDescription;
+}
+
+export function deliveryCustomInsertDropoff(
+  taskDescription: DeliveryCustomTaskDescription,
+  dropoffPlace: string,
+): DeliveryCustomTaskDescription {
+  taskDescription.phases[1].activity.description.activities[0].description = dropoffPlace;
+  return taskDescription;
+}
+
+export function deliveryCustomInsertOnCancel(
+  taskDescription: DeliveryCustomTaskDescription,
+  onCancelPlaces: string[],
+): DeliveryCustomTaskDescription {
+  const goToOneOfThePlaces: GoToOneOfThePlacesActivity = {
+    category: 'go_to_place',
+    description: {
+      one_of: onCancelPlaces.map((placeName) => {
+        return {
+          waypoint: placeName,
+        };
+      }),
+      constraints: [
+        {
+          category: 'prefer_same_map',
+          description: '',
+        },
+      ],
+    },
+  };
+  const deliveryDropoff: DropoffActivity = {
+    category: 'perform_action',
+    description: {
+      unix_millis_action_duration_estimate: 60000,
+      category: 'delivery_dropoff',
+      description: {},
+    },
+  };
+  const onCancelDropoff: OnCancelDropoff = {
+    category: 'sequence',
+    description: [goToOneOfThePlaces, deliveryDropoff],
+  };
+  taskDescription.phases[1].on_cancel = [onCancelDropoff];
+  return taskDescription;
 }
 
 interface DeliveryCustomProps {
@@ -459,18 +593,14 @@ function DeliveryCustomTaskForm({
           options={pickupZones.sort()}
           value={taskDesc.phases[0].activity.description.activities[0].description}
           onInputChange={(_ev, newValue) => {
-            const newTaskDesc = { ...taskDesc };
-            newTaskDesc.phases[0].activity.description.activities[0].description = newValue;
-            newTaskDesc.phases[0].activity.description.activities[1].description.description.pickup_zone =
-              newValue;
+            let newTaskDesc = { ...taskDesc };
+            newTaskDesc = deliveryCustomInsertPickup(newTaskDesc, newValue, newValue);
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
             const zone = (ev.target as HTMLInputElement).value;
-            const newTaskDesc = { ...taskDesc };
-            newTaskDesc.phases[0].activity.description.activities[0].description = zone;
-            newTaskDesc.phases[0].activity.description.activities[1].description.description.pickup_zone =
-              zone;
+            let newTaskDesc = { ...taskDesc };
+            newTaskDesc = deliveryCustomInsertPickup(newTaskDesc, zone, zone);
             onInputChange(newTaskDesc);
           }}
           sx={{
@@ -505,15 +635,16 @@ function DeliveryCustomTaskForm({
           }
           getOptionLabel={(option) => option}
           onInputChange={(_ev, newValue) => {
-            const newTaskDesc = { ...taskDesc };
-            newTaskDesc.phases[0].activity.description.activities[1].description.description.cart_id =
-              newValue;
+            let newTaskDesc = { ...taskDesc };
+            newTaskDesc = deliveryCustomInsertCartId(newTaskDesc, newValue);
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
-            const newTaskDesc = { ...taskDesc };
-            newTaskDesc.phases[0].activity.description.activities[1].description.description.cart_id =
-              (ev.target as HTMLInputElement).value;
+            let newTaskDesc = { ...taskDesc };
+            newTaskDesc = deliveryCustomInsertCartId(
+              newTaskDesc,
+              (ev.target as HTMLInputElement).value,
+            );
             onInputChange(newTaskDesc);
           }}
           sx={{
@@ -542,17 +673,18 @@ function DeliveryCustomTaskForm({
           freeSolo
           fullWidth
           options={dropoffPoints.sort()}
-          value={taskDesc.phases[0].activity.description.activities[2].description}
+          value={taskDesc.phases[1].activity.description.activities[0].description}
           onInputChange={(_ev, newValue) => {
-            const newTaskDesc = { ...taskDesc };
-            newTaskDesc.phases[0].activity.description.activities[2].description = newValue;
+            let newTaskDesc = { ...taskDesc };
+            newTaskDesc = deliveryCustomInsertDropoff(newTaskDesc, newValue);
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
-            const newTaskDesc = { ...taskDesc };
-            newTaskDesc.phases[0].activity.description.activities[2].description = (
-              ev.target as HTMLInputElement
-            ).value;
+            let newTaskDesc = { ...taskDesc };
+            newTaskDesc = deliveryCustomInsertDropoff(
+              newTaskDesc,
+              (ev.target as HTMLInputElement).value,
+            );
             onInputChange(newTaskDesc);
           }}
           sx={{
@@ -569,7 +701,7 @@ function DeliveryCustomTaskForm({
               InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
               error={
                 !dropoffPoints.includes(
-                  taskDesc.phases[0].activity.description.activities[2].description,
+                  taskDesc.phases[1].activity.description.activities[0].description,
                 )
               }
             />
@@ -764,7 +896,7 @@ function FavoriteTask({
   );
 }
 
-function defaultDeliveryTaskDescription(): DeliveryTaskDescription {
+export function defaultDeliveryTaskDescription(): DeliveryTaskDescription {
   return {
     category: 'delivery_pickup',
     phases: [
@@ -788,10 +920,29 @@ function defaultDeliveryTaskDescription(): DeliveryTaskDescription {
                   },
                 },
               },
+            ],
+          },
+        },
+      },
+      {
+        activity: {
+          category: 'sequence',
+          description: {
+            activities: [
               {
                 category: 'go_to_place',
                 description: '',
               },
+            ],
+          },
+        },
+        on_cancel: [],
+      },
+      {
+        activity: {
+          category: 'sequence',
+          description: {
+            activities: [
               {
                 category: 'perform_action',
                 description: {
@@ -803,13 +954,14 @@ function defaultDeliveryTaskDescription(): DeliveryTaskDescription {
             ],
           },
         },
-        on_cancel: [],
       },
     ],
   };
 }
 
-function defaultDeliveryCustomTaskDescription(taskCategory: string): DeliveryCustomTaskDescription {
+export function defaultDeliveryCustomTaskDescription(
+  taskCategory: string,
+): DeliveryCustomTaskDescription {
   return {
     category: taskCategory,
     phases: [
@@ -833,10 +985,29 @@ function defaultDeliveryCustomTaskDescription(taskCategory: string): DeliveryCus
                   },
                 },
               },
+            ],
+          },
+        },
+      },
+      {
+        activity: {
+          category: 'sequence',
+          description: {
+            activities: [
               {
                 category: 'go_to_place',
                 description: '',
               },
+            ],
+          },
+        },
+        on_cancel: [],
+      },
+      {
+        activity: {
+          category: 'sequence',
+          description: {
+            activities: [
               {
                 category: 'perform_action',
                 description: {
@@ -848,13 +1019,12 @@ function defaultDeliveryCustomTaskDescription(taskCategory: string): DeliveryCus
             ],
           },
         },
-        on_cancel: [],
       },
     ],
   };
 }
 
-function defaultPatrolTask(): PatrolTaskDescription {
+export function defaultPatrolTask(): PatrolTaskDescription {
   return {
     places: [],
     rounds: 1,
@@ -1044,12 +1214,15 @@ export function CreateTaskForm({
   const [formFullyFilled, setFormFullyFilled] = React.useState(requestTask !== undefined || false);
   const taskRequest = taskRequests[selectedTaskIdx];
   const [openSchedulingDialog, setOpenSchedulingDialog] = React.useState(false);
+  const defaultScheduleDate = new Date();
+  defaultScheduleDate.setSeconds(0);
+  defaultScheduleDate.setMilliseconds(0);
   const [schedule, setSchedule] = React.useState<Schedule>(
     scheduleToEdit ?? {
-      startOn: new Date(),
+      startOn: defaultScheduleDate,
       days: [true, true, true, true, true, true, true],
       until: undefined,
-      at: new Date(),
+      at: defaultScheduleDate,
     },
   );
   const [scheduleUntilValue, setScheduleUntilValue] = React.useState<string>(
@@ -1186,14 +1359,6 @@ export function CreateTaskForm({
       if (t.category !== 'patrol') {
         t.category = 'compose';
 
-        const dropoffIfCarryingPayload: DropoffActivity = {
-          category: 'perform_action',
-          description: {
-            unix_millis_action_duration_estimate: 60000,
-            category: 'dropoff_if_carrying_payload',
-            description: {},
-          },
-        };
         const goToOneOfThePlaces: GoToOneOfThePlacesActivity = {
           category: 'go_to_place',
           description: {
@@ -1220,9 +1385,9 @@ export function CreateTaskForm({
         };
         const onCancelDropoff: OnCancelDropoff = {
           category: 'sequence',
-          description: [dropoffIfCarryingPayload, goToOneOfThePlaces, deliveryDropoff],
+          description: [goToOneOfThePlaces, deliveryDropoff],
         };
-        taskRequest.description.phases[0].on_cancel = [onCancelDropoff];
+        taskRequest.description.phases[1].on_cancel = [onCancelDropoff];
       }
     }
 
@@ -1665,6 +1830,8 @@ export function CreateTaskForm({
                   setSchedule((prev) => {
                     date.setHours(schedule.at.getHours());
                     date.setMinutes(schedule.at.getMinutes());
+                    date.setSeconds(0);
+                    date.setMilliseconds(0);
                     console.debug(`DatePicker setSchedule: ${date}`);
                     return { ...prev, startOn: date };
                   });
@@ -1699,6 +1866,8 @@ export function CreateTaskForm({
                       const startOn = prev.startOn;
                       startOn.setHours(date.getHours());
                       startOn.setMinutes(date.getMinutes());
+                      startOn.setSeconds(0);
+                      startOn.setMilliseconds(0);
                       console.debug(`TimePicker setSchedule: ${date}`);
                       return { ...prev, at: date, startOn };
                     });

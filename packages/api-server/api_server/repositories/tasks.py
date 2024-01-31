@@ -90,9 +90,9 @@ def parse_destination(
 
     category = task_request.description["category"]
     try:
-        destination = task_request.description["phases"][0]["activity"]["description"][
+        destination = task_request.description["phases"][1]["activity"]["description"][
             "activities"
-        ][2]["description"]
+        ][0]["description"]
         return destination
     except Exception as e:  # pylint: disable=W0703
         logger.error(format_exception(e))
