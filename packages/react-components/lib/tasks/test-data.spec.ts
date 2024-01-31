@@ -1,9 +1,4 @@
-import type {
-  ApiServerModelsTortoiseModelsTasksTaskStateLeaf as TaskQueueEntry,
-  TaskEventLog,
-  TaskRequest,
-  TaskState,
-} from 'api-client';
+import type { TaskQueueEntry, TaskEventLog, TaskRequest, TaskState } from 'api-client';
 
 export function makeTaskState(taskId: string): TaskState {
   const state = JSON.parse(`{
@@ -563,12 +558,12 @@ export function makeTaskRequest(): TaskRequest {
 
 export function makeTaskQueueEntry(taskId: string): TaskQueueEntry {
   return {
-    id_: taskId,
+    id: taskId,
     assigned_to: 'test_robot',
-    unix_millis_start_time: null,
-    unix_millis_finish_time: null,
+    unix_millis_start_time: undefined,
+    unix_millis_finish_time: undefined,
     status: 'completed',
-    unix_millis_request_time: null,
+    unix_millis_request_time: undefined,
     requester: 'test_requester',
     pickup: 'test_pickup',
     destination: 'test_destination',

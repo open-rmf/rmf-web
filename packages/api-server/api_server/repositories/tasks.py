@@ -267,19 +267,19 @@ class TaskRepository:
                     TaskQueueEntry(
                         id=r["id_"],
                         assigned_to=r["assigned_to"],
-                        unix_millis_start_time=datetime.timestamp(
-                            r["unix_millis_start_time"]
+                        unix_millis_start_time=round(
+                            datetime.timestamp(r["unix_millis_start_time"]) * 1000
                         )
                         if r["unix_millis_start_time"]
                         else None,
-                        unix_millis_finish_time=datetime.timestamp(
-                            r["unix_millis_finish_time"]
+                        unix_millis_finish_time=round(
+                            datetime.timestamp(r["unix_millis_finish_time"]) * 1000
                         )
                         if r["unix_millis_finish_time"]
                         else None,
                         status=r["status"],
-                        unix_millis_request_time=datetime.timestamp(
-                            r["unix_millis_request_time"]
+                        unix_millis_request_time=round(
+                            datetime.timestamp(r["unix_millis_request_time"]) * 1000
                         )
                         if r["unix_millis_request_time"]
                         else None,
