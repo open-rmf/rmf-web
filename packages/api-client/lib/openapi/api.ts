@@ -464,67 +464,6 @@ export interface ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf {
   user: string;
 }
 /**
- *
- * @export
- * @interface ApiServerModelsTortoiseModelsTasksTaskStateLeaf
- */
-export interface ApiServerModelsTortoiseModelsTasksTaskStateLeaf {
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsTasksTaskStateLeaf
-   */
-  id_: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsTasksTaskStateLeaf
-   */
-  assigned_to?: string | null;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsTasksTaskStateLeaf
-   */
-  unix_millis_start_time?: string | null;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsTasksTaskStateLeaf
-   */
-  unix_millis_finish_time?: string | null;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsTasksTaskStateLeaf
-   */
-  status?: string | null;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsTasksTaskStateLeaf
-   */
-  unix_millis_request_time?: string | null;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsTasksTaskStateLeaf
-   */
-  requester?: string | null;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsTasksTaskStateLeaf
-   */
-  pickup?: string | null;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsTasksTaskStateLeaf
-   */
-  destination?: string | null;
-}
-/**
  * Which agent (robot) is the task assigned to
  * @export
  * @interface AssignedTo
@@ -2645,6 +2584,73 @@ export const TaskPhaseSkipRequestTypeEnum = {
 export type TaskPhaseSkipRequestTypeEnum =
   typeof TaskPhaseSkipRequestTypeEnum[keyof typeof TaskPhaseSkipRequestTypeEnum];
 
+/**
+ *
+ * @export
+ * @interface TaskQueueEntry
+ */
+export interface TaskQueueEntry {
+  /**
+   *
+   * @type {string}
+   * @memberof TaskQueueEntry
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskQueueEntry
+   */
+  assigned_to: string;
+  /**
+   *
+   * @type {number}
+   * @memberof TaskQueueEntry
+   */
+  unix_millis_start_time?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof TaskQueueEntry
+   */
+  unix_millis_finish_time?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskQueueEntry
+   */
+  status?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof TaskQueueEntry
+   */
+  unix_millis_request_time?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskQueueEntry
+   */
+  requester?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof TaskQueueEntry
+   */
+  unix_millis_warn_time?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskQueueEntry
+   */
+  pickup?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskQueueEntry
+   */
+  destination?: string;
+}
 /**
  *
  * @export
@@ -9939,12 +9945,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
       offset?: number,
       orderBy?: string,
       options?: AxiosRequestConfig,
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string,
-      ) => AxiosPromise<Array<ApiServerModelsTortoiseModelsTasksTaskStateLeaf>>
-    > {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskQueueEntry>>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.queryTaskQueueEntryTasksQueueEntryGet(
           taskId,
@@ -10447,7 +10448,7 @@ export const TasksApiFactory = function (
       offset?: number,
       orderBy?: string,
       options?: any,
-    ): AxiosPromise<Array<ApiServerModelsTortoiseModelsTasksTaskStateLeaf>> {
+    ): AxiosPromise<Array<TaskQueueEntry>> {
       return localVarFp
         .queryTaskQueueEntryTasksQueueEntryGet(
           taskId,

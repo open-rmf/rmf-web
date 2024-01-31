@@ -14,7 +14,6 @@ from api_server.dependencies import (
     start_time_between_query,
 )
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.models.tortoise_models import TaskQueueEntryPydantic
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.repositories import TaskRepository, task_repo_dep
 from api_server.response import RawJSONResponse
@@ -139,7 +138,7 @@ async def get_task_state(
     return result
 
 
-@router.get("/queue_entry", response_model=List[TaskQueueEntryPydantic])
+@router.get("/queue_entry", response_model=List[mdl.TaskQueueEntry])
 async def query_task_queue_entry(
     task_repo: TaskRepository = Depends(task_repo_dep),
     task_id: Optional[str] = Query(

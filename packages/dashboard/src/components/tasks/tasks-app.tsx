@@ -13,11 +13,7 @@ import {
   Tooltip,
   useMediaQuery,
 } from '@mui/material';
-import {
-  ApiServerModelsTortoiseModelsTasksTaskStateLeaf as TaskQueueEntry,
-  TaskRequest,
-  TaskState,
-} from 'api-client';
+import { TaskQueueEntry, TaskRequest, TaskState } from 'api-client';
 import React from 'react';
 import {
   FilterFields,
@@ -210,7 +206,7 @@ export const TasksApp = React.memo(
 
           // NOTE(ac): we are not using getAllTaskRequests here to prevent
           // adding it into the dependency list.
-          const taskIds: string[] = newTasks.map((task) => task.id_);
+          const taskIds: string[] = newTasks.map((task) => task.id);
           const taskIdsQuery = taskIds.join(',');
           const taskRequests = (await rmf.tasksApi.queryTaskRequestsTasksRequestsGet(taskIdsQuery))
             .data;
@@ -412,7 +408,7 @@ export const TasksApp = React.memo(
                     console.error('Task API not available');
                     return;
                   }
-                  const state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(task.id_)).data;
+                  const state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(task.id)).data;
                   setSelectedTask(state);
                   if (state.assigned_to) {
                     AppEvents.robotSelect.next([state.assigned_to.group, state.assigned_to.name]);

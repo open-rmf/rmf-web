@@ -15,6 +15,7 @@ from api_server.models import (
     Pagination,
     Phases,
     TaskEventLog,
+    TaskQueueEntry,
     TaskRequest,
     TaskState,
     User,
@@ -22,7 +23,6 @@ from api_server.models import (
 from api_server.models import tortoise_models as ttm
 from api_server.models.rmf_api.log_entry import Tier
 from api_server.models.rmf_api.task_state import Category, Id, Phase
-from api_server.models.tortoise_models import TaskQueueEntryPydantic
 from api_server.models.tortoise_models import TaskRequest as DbTaskRequest
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.query import add_pagination
@@ -245,7 +245,7 @@ class TaskRepository:
 
     async def query_task_queue_entry(
         self, query: QuerySet[DbTaskState], pagination: Optional[Pagination] = None
-    ) -> List[TaskQueueEntryPydantic]:
+    ) -> List[TaskQueueEntry]:
         try:
             if pagination:
                 query = add_pagination(query, pagination)
@@ -263,13 +263,36 @@ class TaskRepository:
             )
             entries = []
             for r in results:
-                status = r["status"]
-                if "Status." in status:
-                    r["status"] = r["status"].split("Status.")[1]
-                entries.append(TaskQueueEntryPydantic(**r))
-            return entries
+                print(r)
+                print(type(r["unix_millis_start_time"]))
+                print(type(r["destination"]))
+                entries.append(
+                    TaskQueueEntry(
+                        id=r["id_"],
+                        assigned_to=r["assigned_to"],
+                        unix_millis_start_time=datetime.timestamp(
+                            r["unix_millis_start_time"]
+                        ),
+                        unix_millis_finish_time=datetime.timestamp(
+                            r["unix_millis_finish_time"]
+                        ),
+                        status=r["status"],
+                        unix_millis_request_time=datetime.timestamp(
+                            r["unix_millis_request_time"]
+                        ),
+                        requester=r["requester"],
+                        pickup=r["pickup"],
+                        destination=r["destination"],
+                    )
+                )
+        #         status = r["status"]
+        #         if "Status." in status:
+        #             r["status"] = r["status"].split("Status.")[1]
+        #         entries.append(TaskQueueEntry(**r))
+        #     return entries
         except FieldError as e:
             raise HTTPException(422, str(e)) from e
+        return entries
 
     async def get_task_log(
         self, task_id: str, between: Tuple[int, int]

@@ -82,7 +82,4 @@ class TaskFavorite(Model):
     user = CharField(255, null=False, index=True)
 
 
-TaskQueueEntryPydantic = pydantic_model_creator(
-    TaskState, exclude=("data", "category", "unix_millis_warn_time")
-)
 TaskFavoritePydantic = pydantic_model_creator(TaskFavorite)

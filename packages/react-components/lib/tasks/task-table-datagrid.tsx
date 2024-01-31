@@ -13,11 +13,7 @@ import {
 } from '@mui/x-data-grid';
 import { styled, Stack, Typography, Tooltip, useMediaQuery, SxProps, Theme } from '@mui/material';
 import * as React from 'react';
-import {
-  ApiServerModelsTortoiseModelsTasksTaskStateLeaf as TaskQueueEntry,
-  TaskRequest,
-  Status,
-} from 'api-client';
+import { TaskQueueEntry, TaskRequest, Status } from 'api-client';
 import { InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
 import { parsePickup, parseDestination } from './utils';
 
@@ -276,7 +272,7 @@ export function TaskDataGridTable({
     <div style={{ height: '100%', width: '100%' }}>
       <StyledDataGrid
         autoHeight
-        getRowId={(r) => r.id_}
+        getRowId={(r) => r.id}
         rows={tasks.entries}
         rowCount={tasks.total}
         loading={tasks.isLoading}
