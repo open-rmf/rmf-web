@@ -172,6 +172,11 @@ async def query_task_queue_entry(
     status: Optional[str] = Query(None, description="comma separated list of statuses"),
     pagination: mdl.Pagination = Depends(pagination_query),
 ):
+    """
+    Returns a list of TaskQueueEntry corresponding to the queries, which
+    contains just the basic information of a task's state, excluding fields with
+    potentially large amounts of data, e.g. phases.
+    """
     filters = {}
     if task_id is not None:
         filters["id___in"] = task_id.split(",")
