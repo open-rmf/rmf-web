@@ -2601,7 +2601,7 @@ export interface TaskQueueEntry {
    * @type {string}
    * @memberof TaskQueueEntry
    */
-  assigned_to: string;
+  assigned_to?: string;
   /**
    *
    * @type {number}
@@ -2632,12 +2632,6 @@ export interface TaskQueueEntry {
    * @memberof TaskQueueEntry
    */
   requester?: string;
-  /**
-   *
-   * @type {number}
-   * @memberof TaskQueueEntry
-   */
-  unix_millis_warn_time?: number;
   /**
    *
    * @type {string}

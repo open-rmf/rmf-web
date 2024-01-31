@@ -263,33 +263,31 @@ class TaskRepository:
             )
             entries = []
             for r in results:
-                print(r)
-                print(type(r["unix_millis_start_time"]))
-                print(type(r["destination"]))
                 entries.append(
                     TaskQueueEntry(
                         id=r["id_"],
                         assigned_to=r["assigned_to"],
                         unix_millis_start_time=datetime.timestamp(
                             r["unix_millis_start_time"]
-                        ),
+                        )
+                        if r["unix_millis_start_time"]
+                        else None,
                         unix_millis_finish_time=datetime.timestamp(
                             r["unix_millis_finish_time"]
-                        ),
+                        )
+                        if r["unix_millis_finish_time"]
+                        else None,
                         status=r["status"],
                         unix_millis_request_time=datetime.timestamp(
                             r["unix_millis_request_time"]
-                        ),
+                        )
+                        if r["unix_millis_request_time"]
+                        else None,
                         requester=r["requester"],
                         pickup=r["pickup"],
                         destination=r["destination"],
                     )
                 )
-        #         status = r["status"]
-        #         if "Status." in status:
-        #             r["status"] = r["status"].split("Status.")[1]
-        #         entries.append(TaskQueueEntry(**r))
-        #     return entries
         except FieldError as e:
             raise HTTPException(422, str(e)) from e
         return entries

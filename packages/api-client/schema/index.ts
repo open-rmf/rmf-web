@@ -3902,7 +3902,7 @@ export default {
       },
       TaskQueueEntry: {
         title: 'TaskQueueEntry',
-        required: ['id', 'assigned_to'],
+        required: ['id'],
         type: 'object',
         properties: {
           id: { title: 'Id', type: 'string' },
@@ -3912,7 +3912,6 @@ export default {
           status: { title: 'Status', type: 'string' },
           unix_millis_request_time: { title: 'Unix Millis Request Time', type: 'integer' },
           requester: { title: 'Requester', type: 'string' },
-          unix_millis_warn_time: { title: 'Unix Millis Warn Time', type: 'integer' },
           pickup: { title: 'Pickup', type: 'string' },
           destination: { title: 'Destination', type: 'string' },
         },

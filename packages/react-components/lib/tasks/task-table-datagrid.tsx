@@ -185,7 +185,7 @@ export function TaskDataGridTable({
       width: 150,
       editable: false,
       valueGetter: (params: GridValueGetterParams) => {
-        const request: TaskRequest | undefined = tasks.requests[params.row.id_];
+        const request: TaskRequest | undefined = tasks.requests[params.row.id];
         return parsePickup(request);
       },
       flex: 1,
@@ -198,7 +198,7 @@ export function TaskDataGridTable({
       width: 150,
       editable: false,
       valueGetter: (params: GridValueGetterParams) => {
-        const request: TaskRequest | undefined = tasks.requests[params.row.id_];
+        const request: TaskRequest | undefined = tasks.requests[params.row.id];
         return parseDestination(params.row, request);
       },
       flex: 1,
@@ -246,8 +246,12 @@ export function TaskDataGridTable({
       field: 'status',
       headerName: 'State',
       editable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.status ? params.row.status : 'unknown',
+      valueGetter: (params: GridValueGetterParams) => {
+        if (params.row.status && params.row.status.startsWith('Status.')) {
+          return params.row.status.substring(7);
+        }
+        return 'unknown';
+      },
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,
