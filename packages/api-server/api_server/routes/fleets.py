@@ -5,7 +5,7 @@ from rx import operators as rxops
 
 from api_server.dependencies import between_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.models import FleetLog, FleetState
+from api_server.models import FleetLog, FleetState, Location2D, RobotState, Status2
 from api_server.repositories import FleetRepository, fleet_repo_dep
 from api_server.rmf_io import fleet_events
 
@@ -16,7 +16,20 @@ router = FastIORouter(tags=["Fleets"])
 async def get_fleets(
     repo: FleetRepository = Depends(fleet_repo_dep),
 ):
-    return await repo.get_all_fleets()
+    # return await repo.get_all_fleets()
+
+    location = Location2D(map="test_map", x=0.123, y=0.321, yaw=0.0)
+    robot_state = RobotState(
+        name=f"test_fleet_test_robot",
+        status=Status2.working,
+        task_id="test_task_id",
+        unix_millis_time=1706775443672,
+        location=location,
+        battery=0.7,
+        issues=None,
+    )
+    fleet_states = [FleetState(name="test_fleet", robots={"test_robot": robot_state})]
+    return fleet_states
 
 
 @router.get("/{name}/state", response_model=FleetState)
@@ -24,9 +37,24 @@ async def get_fleet_state(name: str, repo: FleetRepository = Depends(fleet_repo_
     """
     Available in socket.io
     """
-    fleet_state = await repo.get_fleet_state(name)
-    if fleet_state is None:
+    # fleet_state = await repo.get_fleet_state(name)
+    # if fleet_state is None:
+    #     raise HTTPException(status_code=404)
+
+    if name != "test_fleet":
         raise HTTPException(status_code=404)
+
+    location = Location2D(map="test_map", x=0.123, y=0.321, yaw=0.0)
+    robot_state = RobotState(
+        name="test_robot",
+        status=Status2.working,
+        task_id="test_task_id",
+        unix_millis_time=1706775443672,
+        location=location,
+        battery=0.7,
+        issues=None,
+    )
+    fleet_state = FleetState(name=name, robots={"test_robot": robot_state})
     return fleet_state
 
 

@@ -23,6 +23,20 @@ from api_server.rmf_io import task_events, tasks_service
 router = FastIORouter(tags=["Tasks"])
 
 
+@router.get("/{task_id}/delivery", response_model=Optional[mdl.Delivery])
+async def get_delivery(
+    task_repo: TaskRepository = Depends(task_repo_dep),
+    task_id: str = Path(..., description="task_id"),
+):
+    result = mdl.Delivery(
+        id=task_id,
+        fleet_name="test_fleet",
+        robot_name="test_robot",
+        destinations=["dropoff1", "dropoff2", "dropoff3"],
+    )
+    return result
+
+
 @router.get("/{task_id}/request", response_model=mdl.TaskRequest)
 async def get_task_request(
     task_repo: TaskRepository = Depends(task_repo_dep),

@@ -1,6 +1,7 @@
 from .authz import *
 from .beacons import *
 from .building_map import *
+from .delivery import *
 from .delivery_alerts import *
 from .dispensers import *
 from .doors import *
@@ -24,12 +25,13 @@ from .rmf_api.interrupt_task_request import TaskInterruptionRequest
 from .rmf_api.interrupt_task_response import TaskInterruptionResponse
 from .rmf_api.kill_task_request import TaskKillRequest
 from .rmf_api.kill_task_response import TaskKillResponse
+from .rmf_api.location_2D import Location2D
 from .rmf_api.log_entry import LogEntry, Tier
 from .rmf_api.resume_task_request import TaskResumeRequest
 from .rmf_api.resume_task_response import TaskResumeResponse
 from .rmf_api.rewind_task_request import TaskRewindRequest
 from .rmf_api.rewind_task_response import TaskRewindResponse
-from .rmf_api.robot_state import Status2
+from .rmf_api.robot_state import RobotState, Status2
 from .rmf_api.robot_task_request import RobotTaskRequest
 from .rmf_api.robot_task_response import *
 from .rmf_api.skip_phase_request import TaskPhaseSkipRequest
