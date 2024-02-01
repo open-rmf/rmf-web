@@ -62,9 +62,15 @@ class ConnectionManager:
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         self.active_connections.append(websocket)
+        logger.info(
+            f"ConnectionManager: {len(self.active_connections)} websocket connections still alive"
+        )
 
     def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)
+        logger.info(
+            f"ConnectionManager: {len(self.active_connections)} websocket connections still alive"
+        )
 
 
 connection_manager = ConnectionManager()
