@@ -1,10 +1,10 @@
 # NOTE: This will eventually replace `gateway.py``
-import asyncio
 import os
 from datetime import datetime
 from typing import Any, Dict
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from websockets.exceptions import ConnectionClosed
 
 from api_server import models as mdl
 from api_server.logger import logger as base_logger
@@ -53,6 +53,21 @@ class WebSocketHealthManager:
 
 
 health_manager = WebSocketHealthManager()
+
+
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: list[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+
+connection_manager = ConnectionManager()
 
 
 def log_phase_has_error(phase: mdl.Phases) -> bool:
@@ -139,16 +154,13 @@ async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
 
 @router.websocket("")
 async def rmf_gateway(websocket: WebSocket):
-    await websocket.accept()
+    await connection_manager.connect(websocket)
     fleet_repo = FleetRepository(user)
     try:
         while True:
-            msg: Dict[str, Any] = await asyncio.wait_for(
-                websocket.receive_json(), timeout=2.0
-            )
+            msg: Dict[str, Any] = await websocket.receive_json()
             await process_msg(msg, fleet_repo)
-    except asyncio.exceptions.TimeoutError:
-        logger.error("Client websocket timed out waiting to receive json")
-    except WebSocketDisconnect:
+    except (WebSocketDisconnect, ConnectionClosed):
+        connection_manager.disconnect(websocket)
         health_manager.disconnected()
         logger.warn("Client websocket disconnected")
