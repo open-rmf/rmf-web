@@ -18,48 +18,48 @@ jobs:
           repository: ${{ github.repository }}/e2e
           tags: latest
           path: docker
-  # dashboard-e2e:
-  #   strategy:
-  #     matrix:
-  #       npm: ['latest']
-  #     fail-fast: false
-  #   needs: build-docker-images
-  #   name: Dashboard e2e
-  #   runs-on: self-hosted
-  #   container:
-  #     image: ghcr.io/${{ github.repository }}/e2e
-  #     options: --privileged --ipc=host
-  #   defaults:
-  #     run:
-  #       shell: bash
-  #       working-directory: packages/dashboard-e2e
-  #   env:
-  #     BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-  #     BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-  #     BROWSERSTACK_BUILD: ${{ github.head_ref }}:${{ github.event.number }}
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: bootstrap
-  #       uses: ./.github/actions/bootstrap
-  #       with:
-  #         package: rmf-dashboard-e2e
-  #         skip-build: true
-  #     - name: overlay
-  #       uses: ./.github/actions/overlay
-  #     - name: test
-  #       uses: nick-fields/retry@v2
-  #       with:
-  #         timeout_minutes: 20
-  #         max_attempts: 3
-  #         command: |
-  #           . /rmf_demos_ws/install/setup.bash
-  #           . ~/hammer_overlay_ws/install/setup.bash
-  #           cd packages/dashboard-e2e
-  #           pnpm test
-  #         shell: bash
-  #     - name: upload artifacts
-  #       uses: actions/upload-artifact@v2
-  #       if: always()
-  #       with:
-  #         name: artifacts
-  #         path: packages/dashboard-e2e/artifacts
+  dashboard-e2e:
+    strategy:
+      matrix:
+        npm: ['latest']
+      fail-fast: false
+    needs: build-docker-images
+    name: Dashboard e2e
+    runs-on: ubuntu-22.04
+    container:
+      image: ghcr.io/${{ github.repository }}/e2e
+      options: --privileged --ipc=host
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/dashboard-e2e
+    env:
+      BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+      BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+      BROWSERSTACK_BUILD: ${{ github.head_ref }}:${{ github.event.number }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: bootstrap
+        uses: ./.github/actions/bootstrap
+        with:
+          package: rmf-dashboard-e2e
+          skip-build: true
+      - name: overlay
+        uses: ./.github/actions/overlay
+      - name: test
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 20
+          max_attempts: 3
+          command: |
+            . /rmf_demos_ws/install/setup.bash
+            . ~/hammer_overlay_ws/install/setup.bash
+            cd packages/dashboard-e2e
+            pnpm test
+          shell: bash
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: artifacts
+          path: packages/dashboard-e2e/artifacts
