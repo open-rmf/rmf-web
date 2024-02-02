@@ -69,7 +69,14 @@ class RmfGateway:
             RmfDoorRequest, "adapter_door_requests", 10
         )
         self._lift_req = ros_node().create_publisher(
-            RmfLiftRequest, "adapter_lift_requests", 10
+            RmfLiftRequest,
+            "adapter_lift_requests",
+            rclpy.qos.QoSProfile(
+                history=rclpy.qos.HistoryPolicy.KEEP_ALL,
+                depth=10,
+                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
+                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
+            ),
         )
         self._submit_task_srv = ros_node().create_client(RmfSubmitTask, "submit_task")
         self._cancel_task_srv = ros_node().create_client(RmfCancelTask, "cancel_task")
