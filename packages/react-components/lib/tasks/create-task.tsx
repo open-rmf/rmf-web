@@ -5,9 +5,7 @@
 
 import UpdateIcon from '@mui/icons-material/Create';
 import DeleteIcon from '@mui/icons-material/Delete';
-import PlaceOutlined from '@mui/icons-material/PlaceOutlined';
 import {
-  Autocomplete,
   Button,
   Chip,
   Dialog,
@@ -23,7 +21,6 @@ import {
   IconButton,
   List,
   ListItem,
-  ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
   MenuItem,
@@ -40,66 +37,24 @@ import React from 'react';
 import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
+import {
+  CleanTaskDescription,
+  CleanTaskForm,
+  makeDefaultCleanTaskDescription,
+} from './descriptions/clean';
+import {
+  DeliveryTaskDescription,
+  DeliveryTaskForm,
+  makeDefaultDeliveryTaskDescription,
+} from './descriptions/delivery';
+import {
+  PatrolTaskDescription,
+  PatrolTaskForm,
+  makeDefaultPatrolTaskDescription,
+} from './descriptions/patrol';
 
 // A bunch of manually defined descriptions to avoid using `any`.
-interface Payload {
-  sku: string;
-  quantity: number;
-}
-
-interface TaskPlace {
-  place: string;
-  handler: string;
-  payload: Payload;
-}
-
-interface DeliveryTaskDescription {
-  pickup: TaskPlace;
-  dropoff: TaskPlace;
-}
-
-interface PatrolTaskDescription {
-  places: string[];
-  rounds: number;
-}
-
-interface CleanTaskDescription {
-  zone: string;
-}
-
 type TaskDescription = DeliveryTaskDescription | PatrolTaskDescription | CleanTaskDescription;
-
-const isNonEmptyString = (value: string): boolean => value.length > 0;
-const isPositiveNumber = (value: number): boolean => value > 0;
-
-const isTaskPlaceValid = (place: TaskPlace): boolean => {
-  return (
-    isNonEmptyString(place.place) &&
-    isNonEmptyString(place.handler) &&
-    isNonEmptyString(place.payload.sku) &&
-    isPositiveNumber(place.payload.quantity)
-  );
-};
-
-const isDeliveryTaskDescriptionValid = (taskDescription: DeliveryTaskDescription): boolean => {
-  return isTaskPlaceValid(taskDescription.pickup) && isTaskPlaceValid(taskDescription.dropoff);
-};
-
-const isPatrolTaskDescriptionValid = (taskDescription: PatrolTaskDescription): boolean => {
-  if (taskDescription.places.length === 0) {
-    return false;
-  }
-  for (const place of taskDescription.places) {
-    if (place.length === 0) {
-      return false;
-    }
-  }
-  return taskDescription.rounds > 0;
-};
-
-const isCleanTaskDescriptionValid = (taskDescription: CleanTaskDescription): boolean => {
-  return taskDescription.zone.length !== 0;
-};
 
 const classes = {
   title: 'dialogue-info-value',
@@ -130,21 +85,23 @@ const StyledDialog = styled((props: DialogProps) => <Dialog {...props} />)(({ th
 }));
 
 export function getShortDescription(taskRequest: TaskRequest): string {
-  switch (taskRequest.category) {
+  const category = taskRequest.description.category;
+  switch (category) {
     case 'clean': {
-      return `[Clean] zone [${taskRequest.description.zone}]`;
+      const cleanActivity = taskRequest.description.phases[0].activity.description.activities[1];
+      return `[Clean] zone [${cleanActivity.description.zone}]`;
     }
     case 'delivery': {
-      return `[Delivery] from [${taskRequest.description.pickup.place}] to [${taskRequest.description.dropoff.place}]`;
+      const deliveryActivity = taskRequest.description.phases[0].activity.description.activities[0];
+      return `[Delivery] from [${deliveryActivity.pickup.place}] to [${deliveryActivity.dropoff.place}]`;
     }
     case 'patrol': {
-      const formattedPlaces = taskRequest.description.places.map((place: string) => `[${place}]`);
-      return `[Patrol] [${taskRequest.description.rounds}] round/s, along ${formattedPlaces.join(
-        ', ',
-      )}`;
+      const patrolActivity = taskRequest.description.phases[0].activity.description.activities[0];
+      const formattedPlaces = patrolActivity.places.map((place: string) => `[${place}]`);
+      return `[Patrol] [${patrolActivity.rounds}] round/s, along ${formattedPlaces.join(', ')}`;
     }
     default:
-      return `[Unknown] type "${taskRequest.category}"`;
+      return `[Unknown] type "${category}"`;
   }
 }
 
@@ -163,313 +120,6 @@ function FormToolbar({ onSelectFileClick }: FormToolbarProps) {
     >
       Select File
     </Button>
-  );
-}
-
-interface DeliveryTaskFormProps {
-  taskDesc: DeliveryTaskDescription;
-  pickupPoints: Record<string, string>;
-  dropoffPoints: Record<string, string>;
-  onChange(taskDesc: TaskDescription): void;
-  allowSubmit(allow: boolean): void;
-}
-
-function DeliveryTaskForm({
-  taskDesc,
-  pickupPoints = {},
-  dropoffPoints = {},
-  onChange,
-  allowSubmit,
-}: DeliveryTaskFormProps) {
-  const theme = useTheme();
-  const onInputChange = (desc: DeliveryTaskDescription) => {
-    allowSubmit(isDeliveryTaskDescriptionValid(desc));
-    onChange(desc);
-  };
-
-  return (
-    <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
-      <Grid item xs={6}>
-        <Autocomplete
-          id="pickup-location"
-          freeSolo
-          fullWidth
-          options={Object.keys(pickupPoints)}
-          value={taskDesc.pickup.place}
-          onChange={(_ev, newValue) => {
-            const place = newValue ?? '';
-            const handler =
-              newValue !== null && pickupPoints[newValue] ? pickupPoints[newValue] : '';
-            onInputChange({
-              ...taskDesc,
-              pickup: {
-                ...taskDesc.pickup,
-                place: place,
-                handler: handler,
-              },
-            });
-          }}
-          onBlur={(ev) =>
-            pickupPoints[(ev.target as HTMLInputElement).value] &&
-            onInputChange({
-              ...taskDesc,
-              pickup: {
-                ...taskDesc.pickup,
-                place: (ev.target as HTMLInputElement).value,
-                handler: pickupPoints[(ev.target as HTMLInputElement).value],
-              },
-            })
-          }
-          renderInput={(params) => (
-            <TextField {...params} label="Pickup Location" required={true} />
-          )}
-        />
-      </Grid>
-      <Grid item xs={4}>
-        <TextField
-          id="pickup_sku"
-          fullWidth
-          label="Pickup SKU"
-          value={taskDesc.pickup.payload.sku}
-          required
-          onChange={(ev) => {
-            onInputChange({
-              ...taskDesc,
-              pickup: {
-                ...taskDesc.pickup,
-                payload: {
-                  ...taskDesc.pickup.payload,
-                  sku: ev.target.value,
-                },
-              },
-            });
-          }}
-        />
-      </Grid>
-      <Grid item xs={2}>
-        <PositiveIntField
-          id="pickup_quantity"
-          label="Quantity"
-          value={taskDesc.pickup.payload.quantity}
-          onChange={(_ev, val) => {
-            onInputChange({
-              ...taskDesc,
-              pickup: {
-                ...taskDesc.pickup,
-                payload: {
-                  ...taskDesc.pickup.payload,
-                  quantity: val,
-                },
-              },
-            });
-          }}
-        />
-      </Grid>
-      <Grid item xs={6}>
-        <Autocomplete
-          id="dropoff-location"
-          freeSolo
-          fullWidth
-          options={Object.keys(dropoffPoints)}
-          value={taskDesc.dropoff.place}
-          onChange={(_ev, newValue) => {
-            const place = newValue ?? '';
-            const handler =
-              newValue !== null && dropoffPoints[newValue] ? dropoffPoints[newValue] : '';
-            onInputChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                place: place,
-                handler: handler,
-              },
-            });
-          }}
-          onBlur={(ev) =>
-            dropoffPoints[(ev.target as HTMLInputElement).value] &&
-            onInputChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                place: (ev.target as HTMLInputElement).value,
-                handler: dropoffPoints[(ev.target as HTMLInputElement).value],
-              },
-            })
-          }
-          renderInput={(params) => (
-            <TextField {...params} label="Dropoff Location" required={true} />
-          )}
-        />
-      </Grid>
-      <Grid item xs={4}>
-        <TextField
-          id="dropoff_sku"
-          fullWidth
-          label="Dropoff SKU"
-          value={taskDesc.dropoff.payload.sku}
-          required
-          onChange={(ev) => {
-            onInputChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                payload: {
-                  ...taskDesc.dropoff.payload,
-                  sku: ev.target.value,
-                },
-              },
-            });
-          }}
-        />
-      </Grid>
-      <Grid item xs={2}>
-        <PositiveIntField
-          id="dropoff_quantity"
-          label="Quantity"
-          value={taskDesc.dropoff.payload.quantity}
-          onChange={(_ev, val) => {
-            onInputChange({
-              ...taskDesc,
-              dropoff: {
-                ...taskDesc.dropoff,
-                payload: {
-                  ...taskDesc.dropoff.payload,
-                  quantity: val,
-                },
-              },
-            });
-          }}
-        />
-      </Grid>
-    </Grid>
-  );
-}
-
-interface PlaceListProps {
-  places: string[];
-  onClick(places_index: number): void;
-}
-
-function PlaceList({ places, onClick }: PlaceListProps) {
-  const theme = useTheme();
-  return (
-    <List
-      dense
-      sx={{
-        bgcolor: 'background.paper',
-        marginLeft: theme.spacing(3),
-        marginRight: theme.spacing(3),
-      }}
-    >
-      {places.map((value, index) => (
-        <ListItem
-          key={`${value}-${index}`}
-          secondaryAction={
-            <IconButton edge="end" aria-label="delete" onClick={() => onClick(index)}>
-              <DeleteIcon />
-            </IconButton>
-          }
-        >
-          <ListItemIcon>
-            <PlaceOutlined />
-          </ListItemIcon>
-          <ListItemText primary={`Place Name:   ${value}`} />
-        </ListItem>
-      ))}
-    </List>
-  );
-}
-
-interface PatrolTaskFormProps {
-  taskDesc: PatrolTaskDescription;
-  patrolWaypoints: string[];
-  onChange(patrolTaskDescription: PatrolTaskDescription): void;
-  allowSubmit(allow: boolean): void;
-}
-
-function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange, allowSubmit }: PatrolTaskFormProps) {
-  const theme = useTheme();
-  const onInputChange = (desc: PatrolTaskDescription) => {
-    allowSubmit(isPatrolTaskDescriptionValid(desc));
-    onChange(desc);
-  };
-
-  return (
-    <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
-      <Grid item xs={10}>
-        <Autocomplete
-          id="place-input"
-          freeSolo
-          fullWidth
-          options={patrolWaypoints}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            onInputChange({
-              ...taskDesc,
-              places: taskDesc.places.concat(newValue).filter((el: string) => el),
-            })
-          }
-          renderInput={(params) => <TextField {...params} label="Place Name" required={true} />}
-        />
-      </Grid>
-      <Grid item xs={2}>
-        <PositiveIntField
-          id="loops"
-          label="Loops"
-          value={taskDesc.rounds}
-          onChange={(_ev, val) => {
-            onInputChange({
-              ...taskDesc,
-              rounds: val,
-            });
-          }}
-        />
-      </Grid>
-      <Grid item xs={10}>
-        <PlaceList
-          places={taskDesc && taskDesc.places ? taskDesc.places : []}
-          onClick={(places_index) =>
-            taskDesc.places.splice(places_index, 1) &&
-            onInputChange({
-              ...taskDesc,
-            })
-          }
-        />
-      </Grid>
-    </Grid>
-  );
-}
-
-interface CleanTaskFormProps {
-  taskDesc: CleanTaskDescription;
-  cleaningZones: string[];
-  onChange(cleanTaskDescription: CleanTaskDescription): void;
-  allowSubmit(allow: boolean): void;
-}
-
-function CleanTaskForm({ taskDesc, cleaningZones, onChange, allowSubmit }: CleanTaskFormProps) {
-  const onInputChange = (desc: CleanTaskDescription) => {
-    allowSubmit(isCleanTaskDescriptionValid(desc));
-    onChange(desc);
-  };
-
-  return (
-    <Autocomplete
-      id="cleaning-zone"
-      freeSolo
-      fullWidth
-      options={cleaningZones}
-      value={taskDesc.zone}
-      onChange={(_ev, newValue) => {
-        const zone = newValue ?? '';
-        onInputChange({
-          ...taskDesc,
-          zone: zone,
-        });
-      }}
-      onBlur={(ev) => onInputChange({ ...taskDesc, zone: (ev.target as HTMLInputElement).value })}
-      renderInput={(params) => <TextField {...params} label="Cleaning Zone" required={true} />}
-    />
   );
 }
 
@@ -535,48 +185,14 @@ function FavoriteTask({
   );
 }
 
-function defaultCleanTask(): CleanTaskDescription {
-  return {
-    zone: '',
-  };
-}
-
-function defaultPatrolTask(): PatrolTaskDescription {
-  return {
-    places: [],
-    rounds: 1,
-  };
-}
-
-function defaultDeliveryTask(): DeliveryTaskDescription {
-  return {
-    pickup: {
-      place: '',
-      handler: '',
-      payload: {
-        sku: '',
-        quantity: 1,
-      },
-    },
-    dropoff: {
-      place: '',
-      handler: '',
-      payload: {
-        sku: '',
-        quantity: 1,
-      },
-    },
-  };
-}
-
 function defaultTaskDescription(taskCategory: string): TaskDescription | undefined {
   switch (taskCategory) {
     case 'clean':
-      return defaultCleanTask();
+      return makeDefaultCleanTaskDescription();
     case 'patrol':
-      return defaultPatrolTask();
+      return makeDefaultPatrolTaskDescription();
     case 'delivery':
-      return defaultDeliveryTask();
+      return makeDefaultDeliveryTaskDescription();
     default:
       return undefined;
   }
@@ -585,7 +201,7 @@ function defaultTaskDescription(taskCategory: string): TaskDescription | undefin
 function defaultTask(): TaskRequest {
   return {
     category: 'patrol',
-    description: defaultPatrolTask(),
+    description: makeDefaultPatrolTaskDescription(),
     unix_millis_earliest_start_time: 0,
     unix_millis_request_time: Date.now(),
     priority: { type: 'binary', value: 0 },
@@ -656,7 +272,7 @@ const defaultFavoriteTask = (): TaskFavorite => {
     id: '',
     name: '',
     category: 'patrol',
-    description: defaultPatrolTask(),
+    description: makeDefaultPatrolTaskDescription(),
     unix_millis_earliest_start_time: 0,
     priority: { type: 'binary', value: 0 },
     user: '',
@@ -774,13 +390,16 @@ export function CreateTaskForm({
   };
 
   const handleTaskDescriptionChange = (newCategory: string, newDesc: TaskDescription) => {
-    taskRequest.category = newCategory;
+    console.log(newDesc);
+    taskRequest.category = 'compose';
     taskRequest.description = newDesc;
     setFavoriteTaskBuffer({ ...favoriteTaskBuffer, description: newDesc, category: newCategory });
     updateTasks();
   };
 
   const allowSubmit = (allow: boolean) => {
+    console.log('allow submit');
+    console.log(allow);
     setFormFullyFilled(allow);
   };
 
