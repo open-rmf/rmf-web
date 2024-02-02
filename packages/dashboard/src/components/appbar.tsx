@@ -219,12 +219,18 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       }
       if (!schedule) {
         await Promise.all(
-          taskRequests.map((request) =>
-            rmf.tasksApi.postDispatchTaskTasksDispatchTaskPost({
+          taskRequests.map((request) => {
+            // Note(AC): Workaround since the cleaning tasks use the compose
+            // category now.
+            if (request.category === 'clean') {
+              request.category = 'compose';
+            }
+
+            return rmf.tasksApi.postDispatchTaskTasksDispatchTaskPost({
               type: 'dispatch_task_request',
               request,
-            }),
-          ),
+            });
+          }),
         );
       } else {
         const scheduleRequests = taskRequests.map((req) => toApiSchedule(req, schedule));

@@ -390,16 +390,13 @@ export function CreateTaskForm({
   };
 
   const handleTaskDescriptionChange = (newCategory: string, newDesc: TaskDescription) => {
-    console.log(newDesc);
-    taskRequest.category = 'compose';
+    taskRequest.category = newCategory;
     taskRequest.description = newDesc;
     setFavoriteTaskBuffer({ ...favoriteTaskBuffer, description: newDesc, category: newCategory });
     updateTasks();
   };
 
   const allowSubmit = (allow: boolean) => {
-    console.log('allow submit');
-    console.log(allow);
     setFormFullyFilled(allow);
   };
 

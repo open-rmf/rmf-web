@@ -13,22 +13,8 @@ interface TaskPlace {
 }
 
 export interface DeliveryTaskDescription {
-  category: string;
-  phases: [
-    deliveryPhase: {
-      activity: {
-        category: string;
-        description: {
-          activities: [
-            deliveryActivity: {
-              pickup: TaskPlace;
-              dropoff: TaskPlace;
-            },
-          ];
-        };
-      };
-    },
-  ];
+  pickup: TaskPlace;
+  dropoff: TaskPlace;
 }
 
 function isTaskPlaceValid(place: TaskPlace): boolean {
@@ -40,43 +26,28 @@ function isTaskPlaceValid(place: TaskPlace): boolean {
   );
 }
 
-const isDeliveryTaskDescriptionValid = (taskDescription: DeliveryTaskDescription): boolean => {
-  const deliveryActivity = taskDescription.phases[0].activity.description.activities[0];
-  return isTaskPlaceValid(deliveryActivity.pickup) && isTaskPlaceValid(deliveryActivity.dropoff);
-};
+function isDeliveryTaskDescriptionValid(taskDescription: DeliveryTaskDescription): boolean {
+  return isTaskPlaceValid(taskDescription.pickup) && isTaskPlaceValid(taskDescription.dropoff);
+}
 
 export function makeDefaultDeliveryTaskDescription(): DeliveryTaskDescription {
   return {
-    category: 'delivery',
-    phases: [
-      {
-        activity: {
-          category: 'sequence',
-          description: {
-            activities: [
-              {
-                pickup: {
-                  place: '',
-                  handler: '',
-                  payload: {
-                    sku: '',
-                    quantity: 1,
-                  },
-                },
-                dropoff: {
-                  place: '',
-                  handler: '',
-                  payload: {
-                    sku: '',
-                    quantity: 1,
-                  },
-                },
-              },
-            ],
-          },
-        },
+    pickup: {
+      place: '',
+      handler: '',
+      payload: {
+        sku: '',
+        quantity: 1,
       },
-    ],
+    },
+    dropoff: {
+      place: '',
+      handler: '',
+      payload: {
+        sku: '',
+        quantity: 1,
+      },
+    },
   };
 }
 
@@ -109,26 +80,31 @@ export function DeliveryTaskForm({
           freeSolo
           fullWidth
           options={Object.keys(pickupPoints)}
-          value={taskDesc.phases[0].activity.description.activities[0].pickup.place}
+          value={taskDesc.pickup.place}
           onChange={(_ev, newValue) => {
             const place = newValue ?? '';
             const handler =
               newValue !== null && pickupPoints[newValue] ? pickupPoints[newValue] : '';
-            taskDesc.phases[0].activity.description.activities[0].pickup.place = place;
-            taskDesc.phases[0].activity.description.activities[0].pickup.handler = handler;
-            onInputChange(taskDesc);
+            onInputChange({
+              ...taskDesc,
+              pickup: {
+                ...taskDesc.pickup,
+                place: place,
+                handler: handler,
+              },
+            });
           }}
-          onBlur={(ev) => {
-            if (!pickupPoints[(ev.target as HTMLInputElement).value]) {
-              return;
-            }
-            taskDesc.phases[0].activity.description.activities[0].pickup.place = (
-              ev.target as HTMLInputElement
-            ).value;
-            taskDesc.phases[0].activity.description.activities[0].pickup.handler =
-              pickupPoints[(ev.target as HTMLInputElement).value];
-            onInputChange(taskDesc);
-          }}
+          onBlur={(ev) =>
+            pickupPoints[(ev.target as HTMLInputElement).value] &&
+            onInputChange({
+              ...taskDesc,
+              pickup: {
+                ...taskDesc.pickup,
+                place: (ev.target as HTMLInputElement).value,
+                handler: pickupPoints[(ev.target as HTMLInputElement).value],
+              },
+            })
+          }
           renderInput={(params) => (
             <TextField {...params} label="Pickup Location" required={true} />
           )}
@@ -139,12 +115,19 @@ export function DeliveryTaskForm({
           id="pickup_sku"
           fullWidth
           label="Pickup SKU"
-          value={taskDesc.phases[0].activity.description.activities[0].pickup.payload.sku}
+          value={taskDesc.pickup.payload.sku}
           required
           onChange={(ev) => {
-            taskDesc.phases[0].activity.description.activities[0].pickup.payload.sku =
-              ev.target.value;
-            onInputChange(taskDesc);
+            onInputChange({
+              ...taskDesc,
+              pickup: {
+                ...taskDesc.pickup,
+                payload: {
+                  ...taskDesc.pickup.payload,
+                  sku: ev.target.value,
+                },
+              },
+            });
           }}
         />
       </Grid>
@@ -152,10 +135,18 @@ export function DeliveryTaskForm({
         <PositiveIntField
           id="pickup_quantity"
           label="Quantity"
-          value={taskDesc.phases[0].activity.description.activities[0].pickup.payload.quantity}
+          value={taskDesc.pickup.payload.quantity}
           onChange={(_ev, val) => {
-            taskDesc.phases[0].activity.description.activities[0].pickup.payload.quantity = val;
-            onInputChange(taskDesc);
+            onInputChange({
+              ...taskDesc,
+              pickup: {
+                ...taskDesc.pickup,
+                payload: {
+                  ...taskDesc.pickup.payload,
+                  quantity: val,
+                },
+              },
+            });
           }}
         />
       </Grid>
@@ -165,26 +156,31 @@ export function DeliveryTaskForm({
           freeSolo
           fullWidth
           options={Object.keys(dropoffPoints)}
-          value={taskDesc.phases[0].activity.description.activities[0].dropoff.place}
+          value={taskDesc.dropoff.place}
           onChange={(_ev, newValue) => {
             const place = newValue ?? '';
             const handler =
               newValue !== null && dropoffPoints[newValue] ? dropoffPoints[newValue] : '';
-            taskDesc.phases[0].activity.description.activities[0].dropoff.place = place;
-            taskDesc.phases[0].activity.description.activities[0].dropoff.handler = handler;
-            onInputChange(taskDesc);
+            onInputChange({
+              ...taskDesc,
+              dropoff: {
+                ...taskDesc.dropoff,
+                place: place,
+                handler: handler,
+              },
+            });
           }}
-          onBlur={(ev) => {
-            if (!dropoffPoints[(ev.target as HTMLInputElement).value]) {
-              return;
-            }
-            taskDesc.phases[0].activity.description.activities[0].dropoff.place = (
-              ev.target as HTMLInputElement
-            ).value;
-            taskDesc.phases[0].activity.description.activities[0].dropoff.handler =
-              dropoffPoints[(ev.target as HTMLInputElement).value];
-            onInputChange(taskDesc);
-          }}
+          onBlur={(ev) =>
+            dropoffPoints[(ev.target as HTMLInputElement).value] &&
+            onInputChange({
+              ...taskDesc,
+              dropoff: {
+                ...taskDesc.dropoff,
+                place: (ev.target as HTMLInputElement).value,
+                handler: dropoffPoints[(ev.target as HTMLInputElement).value],
+              },
+            })
+          }
           renderInput={(params) => (
             <TextField {...params} label="Dropoff Location" required={true} />
           )}
@@ -195,12 +191,19 @@ export function DeliveryTaskForm({
           id="dropoff_sku"
           fullWidth
           label="Dropoff SKU"
-          value={taskDesc.phases[0].activity.description.activities[0].dropoff.payload.sku}
+          value={taskDesc.dropoff.payload.sku}
           required
           onChange={(ev) => {
-            taskDesc.phases[0].activity.description.activities[0].dropoff.payload.sku =
-              ev.target.value;
-            onInputChange(taskDesc);
+            onInputChange({
+              ...taskDesc,
+              dropoff: {
+                ...taskDesc.dropoff,
+                payload: {
+                  ...taskDesc.dropoff.payload,
+                  sku: ev.target.value,
+                },
+              },
+            });
           }}
         />
       </Grid>
@@ -208,10 +211,18 @@ export function DeliveryTaskForm({
         <PositiveIntField
           id="dropoff_quantity"
           label="Quantity"
-          value={taskDesc.phases[0].activity.description.activities[0].dropoff.payload.quantity}
+          value={taskDesc.dropoff.payload.quantity}
           onChange={(_ev, val) => {
-            taskDesc.phases[0].activity.description.activities[0].dropoff.payload.quantity = val;
-            onInputChange(taskDesc);
+            onInputChange({
+              ...taskDesc,
+              dropoff: {
+                ...taskDesc.dropoff,
+                payload: {
+                  ...taskDesc.dropoff.payload,
+                  quantity: val,
+                },
+              },
+            });
           }}
         />
       </Grid>

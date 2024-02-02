@@ -15,55 +15,26 @@ import {
 } from '@mui/material';
 
 export interface PatrolTaskDescription {
-  category: string;
-  phases: [
-    patrolPhase: {
-      activity: {
-        category: string;
-        description: {
-          activities: [
-            patrolActivity: {
-              places: string[];
-              rounds: number;
-            },
-          ];
-        };
-      };
-    },
-  ];
+  places: string[];
+  rounds: number;
 }
 
-export function isPatrolTaskDescriptionValid(taskDescription: PatrolTaskDescription): boolean {
-  const patrolActivity = taskDescription.phases[0].activity.description.activities[0];
-  if (patrolActivity.places.length === 0) {
+function isPatrolTaskDescriptionValid(taskDescription: PatrolTaskDescription): boolean {
+  if (taskDescription.places.length === 0) {
     return false;
   }
-  for (const place of patrolActivity.places) {
+  for (const place of taskDescription.places) {
     if (place.length === 0) {
       return false;
     }
   }
-  return patrolActivity.rounds > 0;
+  return taskDescription.rounds > 0;
 }
 
 export function makeDefaultPatrolTaskDescription(): PatrolTaskDescription {
   return {
-    category: 'patrol',
-    phases: [
-      {
-        activity: {
-          category: 'sequence',
-          description: {
-            activities: [
-              {
-                places: [],
-                rounds: 1,
-              },
-            ],
-          },
-        },
-      },
-    ],
+    places: [],
+    rounds: 1,
   };
 }
 
@@ -129,13 +100,13 @@ export function PatrolTaskForm({
           freeSolo
           fullWidth
           options={patrolWaypoints}
-          onChange={(_ev, newValue) => {
-            if (!newValue) {
-              return;
-            }
-            taskDesc.phases[0].activity.description.activities[0].places.push(newValue);
-            onInputChange(taskDesc);
-          }}
+          onChange={(_ev, newValue) =>
+            newValue !== null &&
+            onInputChange({
+              ...taskDesc,
+              places: taskDesc.places.concat(newValue).filter((el: string) => el),
+            })
+          }
           renderInput={(params) => <TextField {...params} label="Place Name" required={true} />}
         />
       </Grid>
@@ -143,18 +114,20 @@ export function PatrolTaskForm({
         <PositiveIntField
           id="loops"
           label="Loops"
-          value={taskDesc.phases[0].activity.description.activities[0].rounds}
+          value={taskDesc.rounds}
           onChange={(_ev, val) => {
-            taskDesc.phases[0].activity.description.activities[0].rounds = val;
-            onInputChange(taskDesc);
+            onInputChange({
+              ...taskDesc,
+              rounds: val,
+            });
           }}
         />
       </Grid>
       <Grid item xs={10}>
         <PlaceList
-          places={taskDesc.phases[0].activity.description.activities[0].places}
+          places={taskDesc && taskDesc.places ? taskDesc.places : []}
           onClick={(places_index) =>
-            taskDesc.phases[0].activity.description.activities[0].places.splice(places_index, 1) &&
+            taskDesc.places.splice(places_index, 1) &&
             onInputChange({
               ...taskDesc,
             })
