@@ -38,7 +38,7 @@
     ]
   },
   "dependencies": {
-    "@aldabil/react-scheduler": "^2.7.8",
+    "@aldabil/react-scheduler": "^2.6.7",
     "@fontsource/roboto": "^4.3.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
     "@fortawesome/free-solid-svg-icons": "^5.14.0",

@@ -2,7 +2,6 @@ import { Scheduler } from '@aldabil/react-scheduler';
 import { DayProps } from '@aldabil/react-scheduler/views/Day';
 import { MonthProps } from '@aldabil/react-scheduler/views/Month';
 import { WeekProps } from '@aldabil/react-scheduler/views/Week';
-import { View } from '@aldabil/react-scheduler/components/nav/Navigation';
 import {
   CellRenderedProps,
   ProcessedEvent,
@@ -91,7 +90,6 @@ export const TaskSchedule = () => {
     until: undefined,
     at: new Date(),
   });
-  const [view, setView] = React.useState<View>('week');
 
   React.useEffect(() => {
     const sub = AppEvents.refreshTaskSchedule.subscribe({
@@ -268,7 +266,7 @@ export const TaskSchedule = () => {
       <Scheduler
         // react-scheduler does not support refreshing, workaround by mounting a new instance.
         key={`scheduler-${refreshTaskScheduleCount}`}
-        view={view}
+        view="week"
         day={defaultDaySettings}
         week={defaultWeekSettings}
         month={defaultMonthSettings}
@@ -295,10 +293,6 @@ export const TaskSchedule = () => {
         )}
         viewerExtraComponent={(fields, event) => {
           return <Typography variant="caption">{event.title}</Typography>;
-        }}
-        onViewChange={(view) => {
-          console.log(view);
-          setView(view);
         }}
       />
       {openCreateTaskForm && (
