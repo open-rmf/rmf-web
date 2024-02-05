@@ -127,11 +127,13 @@ export const scheduleWithSelectedDay = (scheduleTask: ApiSchedule[], date: Date)
 
   daysArray[adjustedIndex - 1] = true;
 
+  // The startOn date should be this exact event's date, to prevent adding
+  // events to the weeks/days leading up to this edit.
   return {
-    startOn: scheduleTask[0].start_from ? new Date(scheduleTask[0].start_from) : new Date(),
+    startOn: date,
     days: daysArray,
     until: endOfDay(new Date(date.toISOString())),
-    at: scheduleTask[0].start_from ? new Date(scheduleTask[0].start_from) : new Date(),
+    at: scheduleTask[0].at ? new Date(scheduleTask[0].at) : new Date(),
   };
 };
 

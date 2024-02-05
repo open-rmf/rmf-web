@@ -90,6 +90,16 @@ export const TaskSchedule = () => {
     until: undefined,
     at: new Date(),
   });
+  type ViewEvent = {
+    start: Date;
+    end: Date;
+    view: 'day' | 'week' | 'month';
+  };
+  const [currentView, setCurrentView] = React.useState<ViewEvent>({
+    start: new Date(),
+    end: new Date(),
+    view: 'week',
+  });
 
   React.useEffect(() => {
     const sub = AppEvents.refreshTaskSchedule.subscribe({
@@ -103,6 +113,10 @@ export const TaskSchedule = () => {
   const eventsMap = React.useRef<Record<number, ScheduledTask>>({});
   const getRemoteEvents = React.useCallback<NonNullable<SchedulerProps['getRemoteEvents']>>(
     async (params) => {
+      // Keep track of current view so users can retain the same view after
+      // deleting or editing schedules.
+      setCurrentView(params);
+
       if (!rmf) {
         return;
       }
@@ -153,9 +167,10 @@ export const TaskSchedule = () => {
             throw new Error(`unable to find task for event ${currentEventIdRef.current}`);
           }
           setCurrentScheduledTask(task);
-          setScheduleToEdit(apiScheduleToSchedule(task.schedules));
           if (eventScope === EventScopes.CURRENT) {
             setScheduleToEdit(scheduleWithSelectedDay(task.schedules, exceptDateRef.current));
+          } else {
+            setScheduleToEdit(apiScheduleToSchedule(task.schedules));
           }
           AppEvents.refreshTaskSchedule.next();
           scheduler.close();
@@ -266,7 +281,8 @@ export const TaskSchedule = () => {
       <Scheduler
         // react-scheduler does not support refreshing, workaround by mounting a new instance.
         key={`scheduler-${refreshTaskScheduleCount}`}
-        view="week"
+        selectedDate={currentView.start}
+        view={currentView.view}
         day={defaultDaySettings}
         week={defaultWeekSettings}
         month={defaultMonthSettings}
