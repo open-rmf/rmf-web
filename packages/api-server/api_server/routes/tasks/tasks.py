@@ -139,6 +139,79 @@ async def get_task_state(
     return result
 
 
+@router.get("/queue_entry", response_model=List[mdl.TaskQueueEntry])
+async def query_task_queue_entry(
+    task_repo: TaskRepository = Depends(task_repo_dep),
+    task_id: Optional[str] = Query(
+        None, description="comma separated list of task ids"
+    ),
+    category: Optional[str] = Query(
+        None, description="comma separated list of task categories"
+    ),
+    request_time_between: Optional[Tuple[datetime, datetime]] = Depends(
+        request_time_between_query
+    ),
+    requester: Optional[str] = Query(
+        None, description="comma separated list of requester names"
+    ),
+    pickup: Optional[str] = Query(
+        None, description="comma separated list of pickup names"
+    ),
+    destination: Optional[str] = Query(
+        None, description="comma separated list of destination names"
+    ),
+    assigned_to: Optional[str] = Query(
+        None, description="comma separated list of assigned robot names"
+    ),
+    start_time_between: Optional[Tuple[datetime, datetime]] = Depends(
+        start_time_between_query
+    ),
+    finish_time_between: Optional[Tuple[datetime, datetime]] = Depends(
+        finish_time_between_query
+    ),
+    status: Optional[str] = Query(None, description="comma separated list of statuses"),
+    pagination: mdl.Pagination = Depends(pagination_query),
+):
+    """
+    Returns a list of TaskQueueEntry corresponding to the queries, which
+    contains just the basic information of a task's state, excluding fields with
+    potentially large amounts of data, e.g. phases.
+    """
+    filters = {}
+    if task_id is not None:
+        filters["id___in"] = task_id.split(",")
+    if category is not None:
+        filters["category__in"] = category.split(",")
+    if request_time_between is not None:
+        filters["unix_millis_request_time__gte"] = request_time_between[0]
+        filters["unix_millis_request_time__lte"] = request_time_between[1]
+    if requester is not None:
+        filters["requester__in"] = requester.split(",")
+    if pickup is not None:
+        filters["pickup__in"] = pickup.split(",")
+    if destination is not None:
+        filters["destination__in"] = destination.split(",")
+    if assigned_to is not None:
+        filters["assigned_to__in"] = assigned_to.split(",")
+    if start_time_between is not None:
+        filters["unix_millis_start_time__gte"] = start_time_between[0]
+        filters["unix_millis_start_time__lte"] = start_time_between[1]
+    if finish_time_between is not None:
+        filters["unix_millis_finish_time__gte"] = finish_time_between[0]
+        filters["unix_millis_finish_time__lte"] = finish_time_between[1]
+    if status is not None:
+        valid_values = [member.value for member in mdl.Status]
+        filters["status__in"] = []
+        for status_string in status.split(","):
+            if status_string not in valid_values:
+                continue
+            filters["status__in"].append(mdl.Status(status_string))
+
+    return await task_repo.query_task_queue_entry(
+        DbTaskState.filter(**filters), pagination
+    )
+
+
 @router.sub("/{task_id}/state", response_model=mdl.TaskState)
 async def sub_task_state(req: SubscriptionRequest, task_id: str):
     user = sio_user(req)

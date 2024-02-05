@@ -39,6 +39,15 @@ class TestTasksRoute(AppFixture):
         self.assertEqual(1, len(results))
         self.assertEqual(self.task_states[0].booking.id, results[0]["booking"]["id"])
 
+    def test_query_task_queue_entry(self):
+        resp = self.client.get(
+            f"/tasks/queue_entry?task_id={self.task_states[0].booking.id}"
+        )
+        self.assertEqual(200, resp.status_code)
+        results = resp.json()
+        self.assertEqual(1, len(results))
+        self.assertEqual(self.task_states[0].booking.id, results[0]["id"])
+
     def test_sub_task_state(self):
         task_id = self.task_states[0].booking.id
         gen = self.subscribe_sio(f"/tasks/{task_id}/state")

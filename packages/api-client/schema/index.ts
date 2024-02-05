@@ -1037,6 +1037,191 @@ export default {
         },
       },
     },
+    '/tasks/queue_entry': {
+      get: {
+        tags: ['Tasks'],
+        summary: 'Query Task Queue Entry',
+        description:
+          "Returns a list of TaskQueueEntry corresponding to the queries, which\ncontains just the basic information of a task's state, excluding fields with\npotentially large amounts of data, e.g. phases.",
+        operationId: 'query_task_queue_entry_tasks_queue_entry_get',
+        parameters: [
+          {
+            description: 'comma separated list of task ids',
+            required: false,
+            schema: {
+              title: 'Task Id',
+              type: 'string',
+              description: 'comma separated list of task ids',
+            },
+            name: 'task_id',
+            in: 'query',
+          },
+          {
+            description: 'comma separated list of task categories',
+            required: false,
+            schema: {
+              title: 'Category',
+              type: 'string',
+              description: 'comma separated list of task categories',
+            },
+            name: 'category',
+            in: 'query',
+          },
+          {
+            description: 'comma separated list of requester names',
+            required: false,
+            schema: {
+              title: 'Requester',
+              type: 'string',
+              description: 'comma separated list of requester names',
+            },
+            name: 'requester',
+            in: 'query',
+          },
+          {
+            description: 'comma separated list of pickup names',
+            required: false,
+            schema: {
+              title: 'Pickup',
+              type: 'string',
+              description: 'comma separated list of pickup names',
+            },
+            name: 'pickup',
+            in: 'query',
+          },
+          {
+            description: 'comma separated list of destination names',
+            required: false,
+            schema: {
+              title: 'Destination',
+              type: 'string',
+              description: 'comma separated list of destination names',
+            },
+            name: 'destination',
+            in: 'query',
+          },
+          {
+            description: 'comma separated list of assigned robot names',
+            required: false,
+            schema: {
+              title: 'Assigned To',
+              type: 'string',
+              description: 'comma separated list of assigned robot names',
+            },
+            name: 'assigned_to',
+            in: 'query',
+          },
+          {
+            description: 'comma separated list of statuses',
+            required: false,
+            schema: {
+              title: 'Status',
+              type: 'string',
+              description: 'comma separated list of statuses',
+            },
+            name: 'status',
+            in: 'query',
+          },
+          {
+            description:
+              '\n        The period of request time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n        ',
+            required: false,
+            schema: {
+              title: 'Request Time Between',
+              type: 'string',
+              description:
+                '\n        The period of request time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n        ',
+            },
+            name: 'request_time_between',
+            in: 'query',
+          },
+          {
+            description:
+              '\n        The period of starting time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n        ',
+            required: false,
+            schema: {
+              title: 'Start Time Between',
+              type: 'string',
+              description:
+                '\n        The period of starting time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n        ',
+            },
+            name: 'start_time_between',
+            in: 'query',
+          },
+          {
+            description:
+              '\n        The period of finishing time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            "-60000" - Fetches logs in the last minute.\n        ',
+            required: false,
+            schema: {
+              title: 'Finish Time Between',
+              type: 'string',
+              description:
+                '\n        The period of finishing time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            "-60000" - Fetches logs in the last minute.\n        ',
+            },
+            name: 'finish_time_between',
+            in: 'query',
+          },
+          {
+            description: 'defaults to 100',
+            required: false,
+            schema: {
+              title: 'Limit',
+              maximum: 1000.0,
+              exclusiveMinimum: 0.0,
+              type: 'integer',
+              description: 'defaults to 100',
+            },
+            name: 'limit',
+            in: 'query',
+          },
+          {
+            description: 'defaults to 0',
+            required: false,
+            schema: {
+              title: 'Offset',
+              minimum: 0.0,
+              type: 'integer',
+              description: 'defaults to 0',
+            },
+            name: 'offset',
+            in: 'query',
+          },
+          {
+            description:
+              "common separated list of fields to order by, prefix with '-' to sort descendingly.",
+            required: false,
+            schema: {
+              title: 'Order By',
+              type: 'string',
+              description:
+                "common separated list of fields to order by, prefix with '-' to sort descendingly.",
+            },
+            name: 'order_by',
+            in: 'query',
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: {
+              'application/json': {
+                schema: {
+                  title: 'Response Query Task Queue Entry Tasks Queue Entry Get',
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/TaskQueueEntry' },
+                },
+              },
+            },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
     '/tasks/{task_id}/log': {
       get: {
         tags: ['Tasks'],
@@ -3715,6 +3900,22 @@ export default {
             items: { type: 'string' },
             description: 'Labels to describe the purpose of the skip',
           },
+        },
+      },
+      TaskQueueEntry: {
+        title: 'TaskQueueEntry',
+        required: ['id'],
+        type: 'object',
+        properties: {
+          id: { title: 'Id', type: 'string' },
+          assigned_to: { title: 'Assigned To', type: 'string' },
+          unix_millis_start_time: { title: 'Unix Millis Start Time', type: 'integer' },
+          unix_millis_finish_time: { title: 'Unix Millis Finish Time', type: 'integer' },
+          status: { title: 'Status', type: 'string' },
+          unix_millis_request_time: { title: 'Unix Millis Request Time', type: 'integer' },
+          requester: { title: 'Requester', type: 'string' },
+          pickup: { title: 'Pickup', type: 'string' },
+          destination: { title: 'Destination', type: 'string' },
         },
       },
       TaskRequest: {

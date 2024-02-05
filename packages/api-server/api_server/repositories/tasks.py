@@ -15,6 +15,7 @@ from api_server.models import (
     Pagination,
     Phases,
     TaskEventLog,
+    TaskQueueEntry,
     TaskRequest,
     TaskState,
     User,
@@ -207,6 +208,55 @@ class TaskRepository:
         if result is None:
             return None
         return TaskState(**result.data)
+
+    async def query_task_queue_entry(
+        self, query: QuerySet[DbTaskState], pagination: Optional[Pagination] = None
+    ) -> List[TaskQueueEntry]:
+        try:
+            if pagination:
+                query = add_pagination(query, pagination)
+            # TODO: enforce with authz
+            results = await query.values(
+                "id_",
+                "assigned_to",
+                "unix_millis_start_time",
+                "unix_millis_finish_time",
+                "status",
+                "unix_millis_request_time",
+                "requester",
+                "pickup",
+                "destination",
+            )
+            entries = []
+            for r in results:
+                entries.append(
+                    TaskQueueEntry(
+                        id=r["id_"],
+                        assigned_to=r["assigned_to"],
+                        unix_millis_start_time=round(
+                            datetime.timestamp(r["unix_millis_start_time"]) * 1000
+                        )
+                        if r["unix_millis_start_time"]
+                        else None,
+                        unix_millis_finish_time=round(
+                            datetime.timestamp(r["unix_millis_finish_time"]) * 1000
+                        )
+                        if r["unix_millis_finish_time"]
+                        else None,
+                        status=r["status"],
+                        unix_millis_request_time=round(
+                            datetime.timestamp(r["unix_millis_request_time"]) * 1000
+                        )
+                        if r["unix_millis_request_time"]
+                        else None,
+                        requester=r["requester"],
+                        pickup=r["pickup"],
+                        destination=r["destination"],
+                    )
+                )
+        except FieldError as e:
+            raise HTTPException(422, str(e)) from e
+        return entries
 
     async def get_task_log(
         self, task_id: str, between: Tuple[int, int]
