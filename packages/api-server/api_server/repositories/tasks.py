@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Dict, List, Optional, Sequence, Tuple, cast
 
 from fastapi import Depends, HTTPException
-from tortoise.exceptions import FieldError, IntegrityError
+from tortoise.exceptions import FieldError, IntegrityError, TransactionManagementError
 from tortoise.query_utils import Prefetch
 from tortoise.queryset import QuerySet
 from tortoise.transactions import in_transaction
@@ -187,7 +187,16 @@ class TaskRepository:
                 task_state.unix_millis_warn_time / 1000
             )
 
-        await ttm.TaskState.update_or_create(task_state_dict, id_=task_state.booking.id)
+        # Note(AA): This try-except is to catch issues arising with update_or_create
+        # as there are documented issues with this method during asynchronous
+        # operations, https://github.com/tortoise/tortoise-orm/issues?q=update_or_create
+        try:
+            await ttm.TaskState.update_or_create(
+                task_state_dict, id_=task_state.booking.id
+            )
+        except Exception as e:  # pylint: disable=W0703
+            logger.error(format_exception(e))
+            logger.error(f"Failed to update task state with ID {task_state.booking.id}")
 
     async def query_task_states(
         self, query: QuerySet[DbTaskState], pagination: Optional[Pagination] = None
