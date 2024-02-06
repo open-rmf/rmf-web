@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Dict, List, Optional, Sequence, Tuple, cast
 
 from fastapi import Depends, HTTPException
-from tortoise.exceptions import FieldError, IntegrityError, TransactionManagementError
+from tortoise.exceptions import FieldError, IntegrityError
 from tortoise.query_utils import Prefetch
 from tortoise.queryset import QuerySet
 from tortoise.transactions import in_transaction
