@@ -7,6 +7,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from websockets.exceptions import ConnectionClosed
 
 from api_server import models as mdl
+from api_server.app_config import app_config
 from api_server.logger import logger as base_logger
 from api_server.repositories import AlertRepository, FleetRepository, TaskRepository
 from api_server.rmf_io import alert_events, fleet_events, task_events
@@ -20,59 +21,29 @@ alert_repo = AlertRepository(user, task_repo)
 
 class WebSocketHealthManager:
     def __init__(self):
-        self.connects = []
-        self.disconnects = []
+        self.events = []
 
-    def connected(self):
-        self.connects.append(datetime.now())
+    def add_event(self):
+        self.events.append(datetime.now())
 
-        # Clean up if the past connection is more than 2 minutes ago
-        if len(self.connects) > 2:
-            seconds_since_last_connect = (self.connects[-1] - self.connects[-2]).seconds
+        # Clean up if the past event was more than 2 minutes ago
+        if len(self.events) > 2:
+            seconds_since_last_event = (self.events[-1] - self.events[-2]).seconds
             logger.warn(
-                f"Previous Web Socket connections/re-connections was {seconds_since_last_connect} seconds ago"
+                f"Previous Web Socket connection/re-connection/disconnection event was {seconds_since_last_event} seconds ago"
             )
-            if seconds_since_last_connect > 120:
+            if seconds_since_last_event > 120:
                 logger.info(
-                    "Previous Web Socket connections/re-connections was more than 2 minutes ago, cleaning up"
+                    "Previous Web Socket connection/re-connection/disconnection event was more than 2 minutes ago, cleaning up"
                 )
-                self.connects = [datetime.now()]
+                self.events = [datetime.now()]
 
-        # If there are more than 5 connects that occurred within 2 minutes, shut down the server
-        if len(self.connects) > 5:
-            unhealthy_period_seconds = (self.connects[-1] - self.connects[-5]).seconds
+        # If there are more than app_config.websocket_unhealthy_connections_limit events that occurred within 2 minutes, shut down the server
+        if len(self.events) > app_config.websocket_unhealthy_connections_limit:
+            unhealthy_period_seconds = (self.events[-1] - self.events[-3]).seconds
             if unhealthy_period_seconds < 120:
                 logger.error(
-                    f"Web Sockets had 5 connections/re-connections within {unhealthy_period_seconds} seconds"
-                )
-                logger.error("Shutting down server")
-                os._exit(1)  # pylint: disable=protected-access
-
-    def disconnected(self):
-        self.disconnects.append(datetime.now())
-
-        # Clean up if the past disconnection is more than 2 minutes ago
-        if len(self.disconnects) > 2:
-            seconds_since_last_disconnect = (
-                self.disconnects[-1] - self.disconnects[-2]
-            ).seconds
-            logger.warn(
-                f"Previous Web Socket disconnection was {seconds_since_last_disconnect} seconds ago"
-            )
-            if seconds_since_last_disconnect > 120:
-                logger.info(
-                    "Previous Web Socket disconnection was more than 2 minutes ago, cleaning up"
-                )
-                self.disconnects = [datetime.now()]
-
-        # If there are more than 5 disconnects that occurred within 2 minutes, shut down the server
-        if len(self.disconnects) > 5:
-            unhealthy_period_seconds = (
-                self.disconnects[-1] - self.disconnects[-5]
-            ).seconds
-            if unhealthy_period_seconds < 120:
-                logger.error(
-                    f"Web Sockets had 5 disconnections within {unhealthy_period_seconds} seconds"
+                    f"Web Sockets had {app_config.websocket_unhealthy_connections_limit} connection/re-connection/disconnection events within {unhealthy_period_seconds} seconds"
                 )
                 logger.error("Shutting down server")
                 os._exit(1)  # pylint: disable=protected-access
@@ -187,7 +158,7 @@ async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
 @router.websocket("")
 async def rmf_gateway(websocket: WebSocket):
     await connection_manager.connect(websocket)
-    health_manager.connected()
+    health_manager.add_event()
     fleet_repo = FleetRepository(user)
     try:
         while True:
@@ -195,5 +166,5 @@ async def rmf_gateway(websocket: WebSocket):
             await process_msg(msg, fleet_repo)
     except (WebSocketDisconnect, ConnectionClosed):
         connection_manager.disconnect(websocket)
-        health_manager.disconnected()
+        health_manager.add_event()
         logger.warn("Client websocket disconnected")

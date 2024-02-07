@@ -36,4 +36,5 @@ config = {
     # as the system timezone, as well as the client UI timezone. Cross-timezone
     # scheduling is currently not supported.
     "timezone": None,
+    "websocket_unhealthy_connections_limit": 5,
 }
