@@ -29,7 +29,7 @@ class WebSocketHealthManager:
         # Clean up if the past event was more than 2 minutes ago
         if len(self.events) > 2:
             seconds_since_last_event = (self.events[-1] - self.events[-2]).seconds
-            logger.warn(
+            logger.warning(
                 f"Previous Web Socket connection/re-connection/disconnection event was {seconds_since_last_event} seconds ago"
             )
             if seconds_since_last_event > 120:
@@ -101,12 +101,12 @@ def task_log_has_error(task_log: mdl.TaskEventLog) -> bool:
 
 async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
     if "type" not in msg:
-        logger.warn(msg)
-        logger.warn("Ignoring message, 'type' must include in msg field")
+        logger.warning(msg)
+        logger.warning("Ignoring message, 'type' must include in msg field")
         return
     payload_type: str = msg["type"]
     if not isinstance(payload_type, str):
-        logger.warn("error processing message, 'type' must be a string")
+        logger.warning("error processing message, 'type' must be a string")
         return
     logger.debug(msg)
 
@@ -167,4 +167,4 @@ async def rmf_gateway(websocket: WebSocket):
     except (WebSocketDisconnect, ConnectionClosed):
         connection_manager.disconnect(websocket)
         health_manager.add_event()
-        logger.warn("Client websocket disconnected")
+        logger.warning("Client websocket disconnected")
