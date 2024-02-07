@@ -39,7 +39,10 @@ class WebSocketHealthManager:
                 self.events = [datetime.now()]
 
         # If there are more than app_config.websocket_unhealthy_connections_limit events that occurred within 2 minutes, shut down the server
-        if len(self.events) > app_config.websocket_unhealthy_connections_limit:
+        if (
+            app_config.websocket_unhealthy_connections_limit is not None
+            and len(self.events) > app_config.websocket_unhealthy_connections_limit
+        ):
             unhealthy_period_seconds = (self.events[-1] - self.events[-3]).seconds
             if unhealthy_period_seconds < 120:
                 logger.error(
