@@ -20,7 +20,33 @@ alert_repo = AlertRepository(user, task_repo)
 
 class WebSocketHealthManager:
     def __init__(self):
+        self.connects = []
         self.disconnects = []
+
+    def connected(self):
+        self.connects.append(datetime.now())
+
+        # Clean up if the past connection is more than 2 minutes ago
+        if len(self.connects) > 2:
+            seconds_since_last_connect = (self.connects[-1] - self.connects[-2]).seconds
+            logger.warn(
+                f"Previous Web Socket connections/re-connections was {seconds_since_last_connect} seconds ago"
+            )
+            if seconds_since_last_connect > 120:
+                logger.info(
+                    "Previous Web Socket connections/re-connections was more than 2 minutes ago, cleaning up"
+                )
+                self.connects = [datetime.now()]
+
+        # If there are more than 5 connects that occurred within 2 minutes, shut down the server
+        if len(self.connects) > 5:
+            unhealthy_period_seconds = (self.connects[-1] - self.connects[-5]).seconds
+            if unhealthy_period_seconds < 120:
+                logger.error(
+                    f"Web Sockets had 5 connections/re-connections within {unhealthy_period_seconds} seconds"
+                )
+                logger.error("Shutting down server")
+                os._exit(1)  # pylint: disable=protected-access
 
     def disconnected(self):
         self.disconnects.append(datetime.now())
@@ -161,6 +187,7 @@ async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
 @router.websocket("")
 async def rmf_gateway(websocket: WebSocket):
     await connection_manager.connect(websocket)
+    health_manager.connected()
     fleet_repo = FleetRepository(user)
     try:
         while True:
