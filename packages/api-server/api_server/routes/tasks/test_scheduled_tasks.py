@@ -158,11 +158,8 @@ class TestScheduledTasksRoute(AppFixture):
         tasks = {x["id"]: x for x in resp.json()}
         self.assertIn(task["id"], tasks)
 
-    def test_delete_scheduled_task_event_at_eight_am(self):
-        # assuming the server operates in GMT+8, while all the dates are
-        # transmitted to the server using UTC.
-
-        # 0800 GMT+8 10th February 2024, is 0000 UTC 10th February 2024
+    def test_delete_scheduled_task(self):
+        schedule_date_str = "2024-02-10T10:00:00.000Z"
         scheduled_task_description = {
             "task_request": {
                 "category": "test",
@@ -171,7 +168,53 @@ class TestScheduledTasksRoute(AppFixture):
             "schedules": [
                 {
                     "period": "day",
-                    "start_from": "2024-02-10T00:00:00.000Z",
+                    "start_from": schedule_date_str,
+                    "at": "18:00",
+                },
+            ],
+        }
+        resp = self.client.post("/scheduled_tasks", json=scheduled_task_description)
+        self.assertEqual(201, resp.status_code, resp.json())
+        scheduled_task = resp.json()
+        self.assertEqual(len(scheduled_task["schedules"]), 1, scheduled_task)
+
+        # we can find this scheduled task by querying
+        resp = self.client.get(
+            f"/scheduled_tasks?start_before={schedule_date_str}&until_after={schedule_date_str}"
+        )
+        self.assertEqual(200, resp.status_code, resp.json())
+        tasks = resp.json()
+        self.assertEqual(len(tasks), 1, tasks)
+        scheduled_task = tasks[0]
+        self.assertEqual(len(scheduled_task["schedules"]), 1, scheduled_task)
+
+        # delete scheduled task
+        schedule_task_id = scheduled_task["id"]
+        self.client.delete(f"/scheduled_tasks/{schedule_task_id}")
+
+        # the scheduled task is no more
+        resp = self.client.get(
+            f"/scheduled_tasks?start_before={schedule_date_str}&until_after={schedule_date_str}"
+        )
+        self.assertEqual(200, resp.status_code, resp.json())
+        tasks = resp.json()
+        self.assertEqual(len(tasks), 0, tasks)
+
+    def test_delete_scheduled_task_event_at_eight_am(self):
+        # assuming the server operates in GMT+8, while all the dates are
+        # transmitted to the server using UTC.
+
+        # 0800 GMT+8 10th February 2024, is 0000 UTC 10th February 2024
+        scheduled_date_str = "2024-02-10T00:00:00.000Z"
+        scheduled_task_description = {
+            "task_request": {
+                "category": "test",
+                "description": "test",
+            },
+            "schedules": [
+                {
+                    "period": "day",
+                    "start_from": scheduled_date_str,
                     "at": "08:00",
                 },
             ],
@@ -189,9 +232,8 @@ class TestScheduledTasksRoute(AppFixture):
         )
 
         # we can find this scheduled task by querying
-        query_date_str = "2024-02-10T00:00:00.000Z"
         resp = self.client.get(
-            f"/scheduled_tasks?start_before={query_date_str}&until_after={query_date_str}"
+            f"/scheduled_tasks?start_before={scheduled_date_str}&until_after={scheduled_date_str}"
         )
         self.assertEqual(200, resp.status_code, resp.json())
         tasks = resp.json()
@@ -205,12 +247,15 @@ class TestScheduledTasksRoute(AppFixture):
             scheduled_task["except_dates"][0], "2024-02-11", scheduled_task
         )
 
+        # cleanup
+        self.client.delete(f"/scheduled_tasks/{schedule_task_id}")
+
     def test_delete_scheduled_task_event_after_eight_am(self):
         # assuming the server operates in GMT+8, while all the dates are
         # transmitted to the server using UTC.
 
         # 0801 GMT+8 10th February 2024, is 0001 UTC 10th February 2024
-        # 0900 GMT+8 10th February 2024, is 0100 UTC 10th February 2024
+        scheduled_date_str = "2024-02-10T00:01:00.000Z"
         scheduled_task_description = {
             "task_request": {
                 "category": "test",
@@ -219,7 +264,7 @@ class TestScheduledTasksRoute(AppFixture):
             "schedules": [
                 {
                     "period": "day",
-                    "start_from": "2024-02-10T00:01:00.000Z",
+                    "start_from": scheduled_date_str,
                     "at": "08:01",
                 },
             ],
@@ -237,9 +282,8 @@ class TestScheduledTasksRoute(AppFixture):
         )
 
         # we can find this scheduled task by querying
-        query_date_str = "2024-02-10T00:01:00.000Z"
         resp = self.client.get(
-            f"/scheduled_tasks?start_before={query_date_str}&until_after={query_date_str}"
+            f"/scheduled_tasks?start_before={scheduled_date_str}&until_after={scheduled_date_str}"
         )
         self.assertEqual(200, resp.status_code, resp.json())
         tasks = resp.json()
@@ -253,12 +297,16 @@ class TestScheduledTasksRoute(AppFixture):
             scheduled_task["except_dates"][0], "2024-02-11", scheduled_task
         )
 
+        # cleanup
+        self.client.delete(f"/scheduled_tasks/{schedule_task_id}")
+
     def test_delete_scheduled_task_event_before_eight_am(self):
         # assuming the server operates in GMT+8, all the dates are transmitted
         # to the server using UTC.
 
         # every day at 0759 GMT+8 starting from 10th February 2024,
         # which is 2359 UTC 9th February 2024.
+        scheduled_date_str = "2024-02-09T23:59:00.000Z"
         scheduled_task_description = {
             "task_request": {
                 "category": "test",
@@ -267,7 +315,7 @@ class TestScheduledTasksRoute(AppFixture):
             "schedules": [
                 {
                     "period": "day",
-                    "start_from": "2024-02-09T23:59:00.000Z",
+                    "start_from": scheduled_date_str,
                     "at": "07:59",
                 }
             ],
@@ -286,9 +334,8 @@ class TestScheduledTasksRoute(AppFixture):
 
         # we can find this scheduled task by querying starting before 23:59 UTC
         # 9th February 2024
-        query_date_str = "2024-02-09T23:59:00.000Z"
         resp = self.client.get(
-            f"/scheduled_tasks?start_before={query_date_str}&until_after={query_date_str}"
+            f"/scheduled_tasks?start_before={scheduled_date_str}&until_after={scheduled_date_str}"
         )
         self.assertEqual(200, resp.status_code, resp.json())
         tasks = resp.json()
@@ -302,3 +349,59 @@ class TestScheduledTasksRoute(AppFixture):
         self.assertEqual(
             scheduled_task["except_dates"][0], "2024-02-11", scheduled_task
         )
+
+        # cleanup
+        self.client.delete(f"/scheduled_tasks/{schedule_task_id}")
+
+    def test_delete_scheduled_task_event_at_local_midnight(self):
+        # assuming the server operates in GMT+8, all the dates are transmitted
+        # to the server using UTC.
+
+        # every day at 0000 GMT+8 starting from 12th February 2024,
+        # which is 1600 UTC 11th February 2024.
+        scheduled_date_str = "2024-02-11T16:00:00.000Z"
+        scheduled_task_description = {
+            "task_request": {
+                "category": "test",
+                "description": "test",
+            },
+            "schedules": [
+                {
+                    "period": "day",
+                    "start_from": scheduled_date_str,
+                    "at": "00:00",
+                }
+            ],
+        }
+        resp = self.client.post("/scheduled_tasks", json=scheduled_task_description)
+        self.assertEqual(201, resp.status_code, resp.json())
+        scheduled_task = resp.json()
+        self.assertEqual(len(scheduled_task["schedules"]), 1, scheduled_task)
+
+        # delete a single event from this schedule, for 0000 GMT+8 13th February 2024,
+        # which is 1600 UTC 12th February 2024.
+        schedule_task_id = scheduled_task["id"]
+        self.client.put(
+            f"/scheduled_tasks/{schedule_task_id}/clear?event_date=2024-02-12T16:00:00.000Z"
+        )
+
+        # we can find this scheduled task by querying starting before 16:00 UTC
+        # 11th February 2024
+        resp = self.client.get(
+            f"/scheduled_tasks?start_before={scheduled_date_str}&until_after={scheduled_date_str}"
+        )
+        self.assertEqual(200, resp.status_code, resp.json())
+        tasks = resp.json()
+        self.assertEqual(len(tasks), 1, tasks)
+        scheduled_task = tasks[0]
+        self.assertEqual(len(scheduled_task["schedules"]), 1, scheduled_task)
+
+        # since the server is operating in GMT+8, the except_date should be
+        # 11th February 2024, and not 10th February 2024
+        self.assertEqual(len(scheduled_task["except_dates"]), 1, scheduled_task)
+        self.assertEqual(
+            scheduled_task["except_dates"][0], "2024-02-13", scheduled_task
+        )
+
+        # cleanup
+        self.client.delete(f"/scheduled_tasks/{schedule_task_id}")
