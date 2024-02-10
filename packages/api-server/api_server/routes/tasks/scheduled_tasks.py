@@ -163,8 +163,15 @@ async def del_scheduled_tasks_event(
     if task is None:
         raise HTTPException(404)
 
-    tz = ZoneInfo(app_config.timezone) if app_config.timezone else None
-    event_date_str = event_date.replace(tzinfo=tz).isoformat()
+    utctz = ZoneInfo("UTC")
+    localtz = ZoneInfo(app_config.timezone) if app_config.timezone else None
+
+    event_date_str = event_date.replace(tzinfo=utctz).isoformat()
+    if localtz is not None:
+        event_date_utc = event_date.replace(tzinfo=utctz)
+        event_date_local = event_date_utc.astimezone(localtz)
+        event_date_str = event_date_local.isoformat()
+
     task.except_dates.append(event_date_str[:10])
     await task.save()
 
@@ -175,37 +182,6 @@ async def del_scheduled_tasks_event(
         await schedule_task(task, task_repo)
     except schedule.ScheduleError as e:
         raise HTTPException(422, str(e)) from e
-
-
-# @router.put("/{task_id}/clear")
-# async def del_scheduled_tasks_event(
-#     task_id: int,
-#     event_date: datetime,
-#     task_repo: TaskRepository = Depends(task_repo_dep),
-# ):
-#     task = await get_scheduled_task(task_id)
-#     if task is None:
-#         raise HTTPException(404)
-
-#     utctz = ZoneInfo('UTC')
-#     localtz = ZoneInfo(app_config.timezone) if app_config.timezone else None
-
-#     event_date_str = event_date.replace(tzinfo=utctz).isoformat()
-#     if localtz is not None:
-#         event_date_utc = event_date.replace(tzinfo=utctz)
-#         event_date_local = event_date_utc.astimezone(localtz)
-#         event_date_str = event_date_local.isoformat()
-
-#     task.except_dates.append(event_date_str[:10])
-#     await task.save()
-
-#     for sche in task.schedules:
-#         schedule.clear(sche.get_id())
-
-#     try:
-#         await schedule_task(task, task_repo)
-#     except schedule.ScheduleError as e:
-#         raise HTTPException(422, str(e)) from e
 
 
 @router.post(
