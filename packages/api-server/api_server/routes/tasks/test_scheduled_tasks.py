@@ -405,3 +405,18 @@ class TestScheduledTasksRoute(AppFixture):
 
         # cleanup
         self.client.delete(f"/scheduled_tasks/{schedule_task_id}")
+
+    # def test_edit_scheduled_task(self):
+    #     raise NotImplementedError
+
+    # def test_edit_scheduled_task_event_at_eight_am(self):
+    #     raise NotImplementedError
+
+    # def test_edit_scheduled_task_event_after_eight_am(self):
+    #     raise NotImplementedError
+
+    # def test_edit_scheduled_task_event_before_eight_am(self):
+    #     raise NotImplementedError
+
+    # def test_edit_scheduled_task_event_at_local_midnight(self):
+    #     raise NotImplementedError
