@@ -22,6 +22,7 @@ class AppConfig:
     iss: Optional[str]
     ros_args: List[str]
     timezone: Optional[str]
+    max_internal_websocket_connections: Optional[int]
 
     def __post_init__(self):
         self.public_url = urllib.parse.urlparse(cast(str, self.public_url))
