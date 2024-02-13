@@ -101,8 +101,15 @@ export const scheduleToEvents = (
       (scheStartFrom == null || scheStartFrom <= cur) &&
       (scheUntil == null || scheUntil >= cur)
     ) {
-      const curToIso = cur.toISOString();
-      const curFormatted = `${curToIso.slice(0, 10)}`;
+      // cur is provided in the dashboard's and server's timezone, therefore
+      // cur should be formatted accordingly and checked against except_dates
+      // without converting to ISO (this will be UTC).
+      const numberToPaddedStr = (num: number): string => {
+        return num >= 10 ? num.toString() : `0${num}`;
+      };
+      const curFormatted = `${cur.getFullYear()}-${numberToPaddedStr(
+        cur.getMonth() + 1,
+      )}-${numberToPaddedStr(cur.getDate())}`;
       if (!task.except_dates.includes(curFormatted)) {
         events.push({
           start: cur,
