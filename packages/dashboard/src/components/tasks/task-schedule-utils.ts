@@ -173,3 +173,33 @@ export const getScheduledTaskTitle = (task: ScheduledTask): string => {
 
   return `${getShortDescription(task.task_request)}`;
 };
+
+// Pad a number to 2 digits
+function pad(n: number): string {
+  return `${Math.floor(Math.abs(n))}`.padStart(2, '0');
+}
+
+// Get timezone offset in ISO format (+hh:mm or -hh:mm)
+function getTimezoneOffset(date: Date): string {
+  const tzOffset = -date.getTimezoneOffset();
+  const diff = tzOffset >= 0 ? '+' : '-';
+  return diff + pad(tzOffset / 60) + ':' + pad(tzOffset % 60);
+}
+
+// Convert Date to ISO string that contains timezone information
+export function toISOStringWithTimezone(date: Date): string {
+  return (
+    date.getFullYear() +
+    '-' +
+    pad(date.getMonth() + 1) +
+    '-' +
+    pad(date.getDate()) +
+    'T' +
+    pad(date.getHours()) +
+    ':' +
+    pad(date.getMinutes()) +
+    ':' +
+    pad(date.getSeconds()) +
+    getTimezoneOffset(date)
+  );
+}

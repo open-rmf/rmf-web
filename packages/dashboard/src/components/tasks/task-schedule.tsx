@@ -33,6 +33,7 @@ import {
   getScheduledTaskTitle,
   scheduleToEvents,
   scheduleWithSelectedDay,
+  toISOStringWithTimezone,
 } from './task-schedule-utils';
 
 enum EventScopes {
@@ -235,7 +236,7 @@ export const TaskSchedule = () => {
       if (eventScope === EventScopes.CURRENT) {
         await rmf.tasksApi.delScheduledTasksEventScheduledTasksTaskIdClearPut(
           task.id,
-          exceptDateRef.current.toISOString(),
+          toISOStringWithTimezone(exceptDateRef.current),
         );
       } else {
         await rmf.tasksApi.delScheduledTasksScheduledTasksTaskIdDelete(task.id);
