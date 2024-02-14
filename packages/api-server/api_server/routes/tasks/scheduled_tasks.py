@@ -170,11 +170,11 @@ async def del_scheduled_tasks_event(
 
     # If the event date has time zone information, we check if it is in the same
     # time zone as the server
-    if event_date.tzinfo is not None:
-        event_tz_utc_offset_seconds = round(event_date.utcoffset().total_seconds())
-        server_tz_utc_offset_seconds = round(
-            datetime.now(tz=server_tz_info).utcoffset().total_seconds()
-        )
+    event_date_utc_offset = event_date.utcoffset()
+    server_time_utc_offset = datetime.now(tz=server_tz_info).utcoffset()
+    if event_date_utc_offset is not None and server_time_utc_offset is not None:
+        event_tz_utc_offset_seconds = round(event_date_utc_offset.total_seconds())
+        server_tz_utc_offset_seconds = round(server_time_utc_offset.total_seconds())
         # if the time zones are the same, we can extract the date directly
         if event_tz_utc_offset_seconds == server_tz_utc_offset_seconds:
             event_date_str = event_date.isoformat()

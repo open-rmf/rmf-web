@@ -1,5 +1,5 @@
-import urllib
 from datetime import datetime, timedelta
+from urllib.parse import urlencode
 
 from api_server.test import AppFixture
 
@@ -216,7 +216,7 @@ class TestScheduledTasksRoute(AppFixture):
         schedule_task_id = scheduled_task["id"]
         params = {"event_date": "2024-02-11T00:00:00+00:00"}
         self.client.put(
-            f"/scheduled_tasks/{schedule_task_id}/clear?{urllib.parse.urlencode(params)}"
+            f"/scheduled_tasks/{schedule_task_id}/clear?{urlencode(params)}"
         )
 
         # check the same scheduled task
@@ -235,7 +235,7 @@ class TestScheduledTasksRoute(AppFixture):
         schedule_task_id = scheduled_task["id"]
         params = {"event_date": "2024-02-12T08:00:00+08:00"}
         self.client.put(
-            f"/scheduled_tasks/{schedule_task_id}/clear?{urllib.parse.urlencode(params)}"
+            f"/scheduled_tasks/{schedule_task_id}/clear?{urlencode(params)}"
         )
 
         # check the same scheduled task
@@ -281,7 +281,7 @@ class TestScheduledTasksRoute(AppFixture):
         schedule_task_id = scheduled_task["id"]
         params = {"event_date": "2024-02-11T00:01:00+00:00"}
         self.client.put(
-            f"/scheduled_tasks/{schedule_task_id}/clear?{urllib.parse.urlencode(params)}"
+            f"/scheduled_tasks/{schedule_task_id}/clear?{urlencode(params)}"
         )
 
         # check the same scheduled task
@@ -300,7 +300,7 @@ class TestScheduledTasksRoute(AppFixture):
         schedule_task_id = scheduled_task["id"]
         params = {"event_date": "2024-02-12T08:01:00+08:00"}
         self.client.put(
-            f"/scheduled_tasks/{schedule_task_id}/clear?{urllib.parse.urlencode(params)}"
+            f"/scheduled_tasks/{schedule_task_id}/clear?{urlencode(params)}"
         )
 
         # check the same scheduled task
@@ -347,7 +347,7 @@ class TestScheduledTasksRoute(AppFixture):
         schedule_task_id = scheduled_task["id"]
         params = {"event_date": "2024-02-10T23:59:00+00:00"}
         self.client.put(
-            f"/scheduled_tasks/{schedule_task_id}/clear?{urllib.parse.urlencode(params)}"
+            f"/scheduled_tasks/{schedule_task_id}/clear?{urlencode(params)}"
         )
 
         # check the same scheduled task
@@ -367,7 +367,7 @@ class TestScheduledTasksRoute(AppFixture):
         schedule_task_id = scheduled_task["id"]
         params = {"event_date": "2024-02-12T07:59:00+08:00"}
         self.client.put(
-            f"/scheduled_tasks/{schedule_task_id}/clear?{urllib.parse.urlencode(params)}"
+            f"/scheduled_tasks/{schedule_task_id}/clear?{urlencode(params)}"
         )
 
         # check the same scheduled task
@@ -415,7 +415,7 @@ class TestScheduledTasksRoute(AppFixture):
         schedule_task_id = scheduled_task["id"]
         params = {"event_date": "2024-02-12T16:00:00+00:00"}
         self.client.put(
-            f"/scheduled_tasks/{schedule_task_id}/clear?{urllib.parse.urlencode(params)}"
+            f"/scheduled_tasks/{schedule_task_id}/clear?{urlencode(params)}"
         )
 
         # check the same scheduled task
@@ -435,7 +435,7 @@ class TestScheduledTasksRoute(AppFixture):
         schedule_task_id = scheduled_task["id"]
         params = {"event_date": "2024-02-14T00:00:00+08:00"}
         self.client.put(
-            f"/scheduled_tasks/{schedule_task_id}/clear?{urllib.parse.urlencode(params)}"
+            f"/scheduled_tasks/{schedule_task_id}/clear?{urlencode(params)}"
         )
 
         # check the same scheduled task
