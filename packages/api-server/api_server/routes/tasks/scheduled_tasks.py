@@ -163,14 +163,28 @@ async def del_scheduled_tasks_event(
     if task is None:
         raise HTTPException(404)
 
-    utctz = ZoneInfo("UTC")
-    localtz = ZoneInfo(app_config.timezone) if app_config.timezone else None
+    # Server time zone, if not defined to use UTC
+    server_tz_info = (
+        ZoneInfo(app_config.timezone) if app_config.timezone else ZoneInfo("UTC")
+    )
 
-    event_date_str = event_date.replace(tzinfo=utctz).isoformat()
-    if localtz is not None:
-        event_date_utc = event_date.replace(tzinfo=utctz)
-        event_date_local = event_date_utc.astimezone(localtz)
-        event_date_str = event_date_local.isoformat()
+    # If the event date has time zone information, we check if it is in the same
+    # time zone as the server
+    if event_date.tzinfo is not None:
+        event_tz_utc_offset_seconds = round(event_date.utcoffset().total_seconds())
+        server_tz_utc_offset_seconds = round(
+            datetime.now(tz=server_tz_info).utcoffset().total_seconds()
+        )
+        # if the time zones are the same, we can extract the date directly
+        if event_tz_utc_offset_seconds == server_tz_utc_offset_seconds:
+            event_date_str = event_date.isoformat()
+        # otherwise, we convert the date before extracting the date
+        else:
+            event_date_local = event_date.astimezone(server_tz_info)
+            event_date_str = event_date_local.isoformat()
+    # Without any time zone information, we assume it is the same as the server
+    else:
+        event_date_str = event_date.replace(tzinfo=server_tz_info).isoformat()
 
     task.except_dates.append(event_date_str[:10])
     await task.save()
