@@ -186,7 +186,7 @@ function getTimezoneOffset(date: Date): string {
   return diff + pad(tzOffset / 60) + ':' + pad(tzOffset % 60);
 }
 
-// Convert Date to ISO string that contains timezone information
+// Convert Date to local time zone ISO string that contains timezone information
 export function toISOStringWithTimezone(date: Date): string {
   return (
     date.getFullYear() +
