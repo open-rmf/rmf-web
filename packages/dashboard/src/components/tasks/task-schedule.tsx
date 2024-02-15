@@ -234,11 +234,11 @@ export const TaskSchedule = () => {
       }
 
       if (eventScope === EventScopes.CURRENT) {
-        await rmf.tasksApi.delScheduledTasksEventScheduledTasksTaskIdClearPut(
-          task.id,
-          toISOStringWithTimezone(exceptDateRef.current),
-        );
+        const eventDate = toISOStringWithTimezone(exceptDateRef.current);
+        console.debug(`Deleting schedule id ${task.id}, event date ${eventDate}`);
+        await rmf.tasksApi.delScheduledTasksEventScheduledTasksTaskIdClearPut(task.id, eventDate);
       } else {
+        console.debug(`Deleting schedule with id ${task.id}`);
         await rmf.tasksApi.delScheduledTasksScheduledTasksTaskIdDelete(task.id);
       }
       AppEvents.refreshTaskSchedule.next();

@@ -159,14 +159,18 @@ async def del_scheduled_tasks_event(
     event_date: datetime,
     task_repo: TaskRepository = Depends(task_repo_dep),
 ):
+    logger.info(f"Deleting task with schedule id {task_id}, event date {event_date}")
+
     task = await get_scheduled_task(task_id)
     if task is None:
+        logger.error(f"Task with scehdule id {task_id} not found")
         raise HTTPException(404)
 
     # Server time zone, if not defined to use UTC
     server_tz_info = (
         ZoneInfo(app_config.timezone) if app_config.timezone else ZoneInfo("UTC")
     )
+    logger.info(f"Server tz: {server_tz_info}")
 
     # If the event date has time zone information, we check if it is in the same
     # time zone as the server
@@ -175,23 +179,34 @@ async def del_scheduled_tasks_event(
     if event_date_utc_offset is not None and server_time_utc_offset is not None:
         event_tz_utc_offset_seconds = round(event_date_utc_offset.total_seconds())
         server_tz_utc_offset_seconds = round(server_time_utc_offset.total_seconds())
+        logger.info(
+            f"Event tz utc offset: {event_tz_utc_offset_seconds}, server tz utc offset: {server_tz_utc_offset_seconds}"
+        )
+
         # if the time zones are the same, we can extract the date directly
         if event_tz_utc_offset_seconds == server_tz_utc_offset_seconds:
+            logger.info("Event and server are in the same timezone")
             event_date_str = event_date.isoformat()
         # otherwise, we convert the date before extracting the date
         else:
+            logger.info("Event and server are not in the same timezone")
             event_date_local = event_date.astimezone(server_tz_info)
             event_date_str = event_date_local.isoformat()
     # Without any time zone information, we assume it is the same as the server
     else:
+        logger.info("Event date does not contain any tz information, using server tz")
         event_date_str = event_date.replace(tzinfo=server_tz_info).isoformat()
 
+    logger.info(f"Deleting event with iso format date: {event_date_str}")
     task.except_dates.append(event_date_str[:10])
     await task.save()
 
     for sche in task.schedules:
+        logger.info(f"Clearing schedule: {sche.get_id()}")
         schedule.clear(sche.get_id())
 
+    pydantic_schedule_task = await ttm.ScheduledTaskPydantic.from_tortoise_orm(task)
+    logger.info(f"Re-scheduling task: {pydantic_schedule_task}")
     try:
         await schedule_task(task, task_repo)
     except schedule.ScheduleError as e:
