@@ -174,6 +174,8 @@ async def del_scheduled_tasks_event(
 
     # If the event date has time zone information, we check if it is in the same
     # time zone as the server
+    # FIXME This solution breaks if users change the time zone of the server
+    # after creating schedules.
     event_date_utc_offset = event_date.utcoffset()
     server_time_utc_offset = datetime.now(tz=server_tz_info).utcoffset()
     if event_date_utc_offset is not None and server_time_utc_offset is not None:
