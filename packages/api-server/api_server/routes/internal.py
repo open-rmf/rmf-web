@@ -1,12 +1,12 @@
 # NOTE: This will eventually replace `gateway.py``
 import os
-from datetime import datetime
 from typing import Any, Dict
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from websockets.exceptions import ConnectionClosed
 
 from api_server import models as mdl
+from api_server.app_config import app_config
 from api_server.logger import logger as base_logger
 from api_server.repositories import AlertRepository, FleetRepository, TaskRepository
 from api_server.rmf_io import alert_events, fleet_events, task_events
@@ -16,43 +16,6 @@ logger = base_logger.getChild("RmfGatewayApp")
 user: mdl.User = mdl.User(username="__rmf_internal__", is_admin=True)
 task_repo = TaskRepository(user)
 alert_repo = AlertRepository(user, task_repo)
-
-
-class WebSocketHealthManager:
-    def __init__(self):
-        self.disconnects = []
-
-    def disconnected(self):
-        self.disconnects.append(datetime.now())
-
-        # Clean up if the past disconnection is more than 2 minutes ago
-        if len(self.disconnects) > 2:
-            seconds_since_last_disconnect = (
-                self.disconnects[-1] - self.disconnects[-2]
-            ).seconds
-            logger.warn(
-                f"Previous Web Socket disconnection was {seconds_since_last_disconnect} seconds ago"
-            )
-            if seconds_since_last_disconnect > 120:
-                logger.info(
-                    "Previous Web Socket disconnection was more than 2 minutes ago, cleaning up"
-                )
-                self.disconnects = [datetime.now()]
-
-        # If there are more than 5 disconnects that occurred within 2 minutes, shut down the server
-        if len(self.disconnects) > 5:
-            unhealthy_period_seconds = (
-                self.disconnects[-1] - self.disconnects[-5]
-            ).seconds
-            if unhealthy_period_seconds < 120:
-                logger.error(
-                    f"Web Sockets had 5 disconnections within {unhealthy_period_seconds} seconds"
-                )
-                logger.error("Shutting down server")
-                os._exit(1)  # pylint: disable=protected-access
-
-
-health_manager = WebSocketHealthManager()
 
 
 class ConnectionManager:
@@ -65,6 +28,18 @@ class ConnectionManager:
         logger.info(
             f"ConnectionManager: {len(self.active_connections)} websocket connections still alive"
         )
+
+        # Temporary fix for https://github.com/open-rmf/rmf-web/issues/897
+        if (
+            app_config.max_internal_websocket_connections is not None
+            and len(self.active_connections)
+            > app_config.max_internal_websocket_connections
+        ):
+            logger.error(
+                f"ConnectionManager: exceeded maximum allowed internal websocket connections [{app_config.max_internal_websocket_connections}]"
+            )
+            logger.error("ConnectionManager: Shutting down server")
+            os._exit(1)  # pylint: disable=protected-access
 
     def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)
@@ -168,5 +143,4 @@ async def rmf_gateway(websocket: WebSocket):
             await process_msg(msg, fleet_repo)
     except (WebSocketDisconnect, ConnectionClosed):
         connection_manager.disconnect(websocket)
-        health_manager.disconnected()
         logger.warn("Client websocket disconnected")

@@ -67,8 +67,9 @@ export function TaskCancelButton({
         type: 'cancel_task_request',
         task_id: taskState.booking.id,
       });
-      appController.showAlert('success', 'Successfully cancelled task');
+      appController.showAlert('success', 'Task cancellation requested');
       AppEvents.taskSelect.next(null);
+      AppEvents.refreshTaskApp.next();
     } catch (e) {
       appController.showAlert('error', `Failed to cancel task: ${(e as Error).message}`);
     }

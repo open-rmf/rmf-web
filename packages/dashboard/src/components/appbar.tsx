@@ -562,13 +562,13 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           deleteFavoriteTask={deleteFavoriteTask}
           tasksFromFile={tasksFromFile}
           onSuccess={() => {
-            console.log('Successfully created task');
+            console.log('Dispatch task requested');
             setOpenCreateTaskForm(false);
-            showAlert('success', 'Successfully created task');
+            showAlert('success', 'Dispatch task requested');
           }}
           onFail={(e) => {
-            console.error(`Failed to create task: ${e.message}`);
-            showAlert('error', `Failed to create task: ${e.message}`);
+            console.error(`Failed to dispatch task: ${e.message}`);
+            showAlert('error', `Failed to dispatch task: ${e.message}`);
           }}
           onSuccessFavoriteTask={(message) => {
             console.log(`Created favorite task: ${message}`);
@@ -579,9 +579,9 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             showAlert('error', `Failed to create or delete favorite task: ${e.message}`);
           }}
           onSuccessScheduling={() => {
-            console.log('Successfully created schedule');
+            console.log('Create schedule requested');
             setOpenCreateTaskForm(false);
-            showAlert('success', 'Successfully created schedule');
+            showAlert('success', 'Create schedule requested');
           }}
           onFailScheduling={(e) => {
             console.error(`Failed to create schedule: ${e.message}`);
