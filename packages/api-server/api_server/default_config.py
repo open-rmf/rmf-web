@@ -35,5 +35,5 @@ config = {
     # Timezone at which the scheduler will operate in. This must be the same
     # as the system timezone, as well as the client UI timezone. Cross-timezone
     # scheduling is currently not supported.
-    "timezone": None,
+    "timezone": "UTC",
 }

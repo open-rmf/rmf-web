@@ -166,10 +166,8 @@ async def del_scheduled_tasks_event(
         logger.error(f"Task with scehdule id {task_id} not found")
         raise HTTPException(404)
 
-    # Server time zone, if not defined to use UTC
-    server_tz_info = (
-        ZoneInfo(app_config.timezone) if app_config.timezone else ZoneInfo("UTC")
-    )
+    # Server time zone
+    server_tz_info = ZoneInfo(app_config.timezone)
     logger.info(f"Server tz: {server_tz_info}")
 
     # If the event date has time zone information, we check if it is in the same
