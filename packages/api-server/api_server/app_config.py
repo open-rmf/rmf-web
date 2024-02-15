@@ -21,7 +21,7 @@ class AppConfig:
     aud: str
     iss: Optional[str]
     ros_args: List[str]
-    timezone: Optional[str]
+    timezone: str
     max_internal_websocket_connections: Optional[int]
 
     def __post_init__(self):

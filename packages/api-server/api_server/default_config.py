@@ -35,7 +35,7 @@ config = {
     # Timezone at which the scheduler will operate in. This must be the same
     # as the system timezone, as well as the client UI timezone. Cross-timezone
     # scheduling is currently not supported.
-    "timezone": None,
+    "timezone": "UTC",
     # FIXME Maximum number of allowed internal websocket connections. This is a
     # temporary solution to https://github.com/open-rmf/rmf-web/issues/897. If
     # it goes beyond this number, the server will shut down. If not defined,

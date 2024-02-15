@@ -101,8 +101,15 @@ export const scheduleToEvents = (
       (scheStartFrom == null || scheStartFrom <= cur) &&
       (scheUntil == null || scheUntil >= cur)
     ) {
-      const curToIso = cur.toISOString();
-      const curFormatted = `${curToIso.slice(0, 10)}`;
+      // cur is provided in the dashboard's and server's timezone, therefore
+      // cur should be formatted accordingly and checked against except_dates
+      // without converting to ISO (this will be UTC).
+      const numberToPaddedStr = (num: number): string => {
+        return num >= 10 ? num.toString() : `0${num}`;
+      };
+      const curFormatted = `${cur.getFullYear()}-${numberToPaddedStr(
+        cur.getMonth() + 1,
+      )}-${numberToPaddedStr(cur.getDate())}`;
       if (!task.except_dates.includes(curFormatted)) {
         events.push({
           start: cur,
@@ -166,3 +173,33 @@ export const getScheduledTaskTitle = (task: ScheduledTask): string => {
 
   return `${getShortDescription(task.task_request)}`;
 };
+
+// Pad a number to 2 digits
+function pad(n: number): string {
+  return `${Math.floor(Math.abs(n))}`.padStart(2, '0');
+}
+
+// Get timezone offset in ISO format (+hh:mm or -hh:mm)
+function getTimezoneOffset(date: Date): string {
+  const tzOffset = -date.getTimezoneOffset();
+  const diff = tzOffset >= 0 ? '+' : '-';
+  return diff + pad(tzOffset / 60) + ':' + pad(tzOffset % 60);
+}
+
+// Convert Date to local time zone ISO string that contains timezone information
+export function toISOStringWithTimezone(date: Date): string {
+  return (
+    date.getFullYear() +
+    '-' +
+    pad(date.getMonth() + 1) +
+    '-' +
+    pad(date.getDate()) +
+    'T' +
+    pad(date.getHours()) +
+    ':' +
+    pad(date.getMinutes()) +
+    ':' +
+    pad(date.getSeconds()) +
+    getTimezoneOffset(date)
+  );
+}
