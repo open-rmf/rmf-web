@@ -69,6 +69,7 @@ export function TaskCancelButton({
       });
       appController.showAlert('success', 'Successfully cancelled task');
       AppEvents.taskSelect.next(null);
+      AppEvents.refreshTaskApp.next();
     } catch (e) {
       appController.showAlert('error', `Failed to cancel task: ${(e as Error).message}`);
     }
