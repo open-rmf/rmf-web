@@ -80,6 +80,40 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
     logger.info(f"scheduled task [{task.pk}]")
 
 
+def convert_date_server_timezone_iso_str(date: datetime) -> str:
+    # Server time zone
+    server_tz_info = ZoneInfo(app_config.timezone)
+    logger.info(f"Server tz: {server_tz_info}")
+
+    # If the event date has time zone information, we check if it is in the same
+    # time zone as the server
+    # FIXME This solution breaks if users change the time zone of the server
+    # after creating schedules.
+    event_date_utc_offset = date.utcoffset()
+    server_time_utc_offset = datetime.now(tz=server_tz_info).utcoffset()
+    if event_date_utc_offset is not None and server_time_utc_offset is not None:
+        event_tz_utc_offset_seconds = round(event_date_utc_offset.total_seconds())
+        server_tz_utc_offset_seconds = round(server_time_utc_offset.total_seconds())
+        logger.info(
+            f"Event tz utc offset: {event_tz_utc_offset_seconds}, server tz utc offset: {server_tz_utc_offset_seconds}"
+        )
+
+        # if the time zones are the same, we can extract the date directly
+        if event_tz_utc_offset_seconds == server_tz_utc_offset_seconds:
+            logger.info("Event and server are in the same timezone")
+            date_str = date.isoformat()
+        # otherwise, we convert the date before extracting the date
+        else:
+            logger.info("Event and server are not in the same timezone")
+            event_date_local = date.astimezone(server_tz_info)
+            date_str = event_date_local.isoformat()
+    # Without any time zone information, we assume it is the same as the server
+    else:
+        logger.info("Event date does not contain any tz information, using server tz")
+        date_str = date.replace(tzinfo=server_tz_info).isoformat()
+    return date_str
+
+
 @router.post("", status_code=201, response_model=ttm.ScheduledTaskPydantic)
 async def post_scheduled_task(
     scheduled_task_request: PostScheduledTaskRequest,
@@ -166,36 +200,7 @@ async def del_scheduled_tasks_event(
         logger.error(f"Task with scehdule id {task_id} not found")
         raise HTTPException(404)
 
-    # Server time zone
-    server_tz_info = ZoneInfo(app_config.timezone)
-    logger.info(f"Server tz: {server_tz_info}")
-
-    # If the event date has time zone information, we check if it is in the same
-    # time zone as the server
-    # FIXME This solution breaks if users change the time zone of the server
-    # after creating schedules.
-    event_date_utc_offset = event_date.utcoffset()
-    server_time_utc_offset = datetime.now(tz=server_tz_info).utcoffset()
-    if event_date_utc_offset is not None and server_time_utc_offset is not None:
-        event_tz_utc_offset_seconds = round(event_date_utc_offset.total_seconds())
-        server_tz_utc_offset_seconds = round(server_time_utc_offset.total_seconds())
-        logger.info(
-            f"Event tz utc offset: {event_tz_utc_offset_seconds}, server tz utc offset: {server_tz_utc_offset_seconds}"
-        )
-
-        # if the time zones are the same, we can extract the date directly
-        if event_tz_utc_offset_seconds == server_tz_utc_offset_seconds:
-            logger.info("Event and server are in the same timezone")
-            event_date_str = event_date.isoformat()
-        # otherwise, we convert the date before extracting the date
-        else:
-            logger.info("Event and server are not in the same timezone")
-            event_date_local = event_date.astimezone(server_tz_info)
-            event_date_str = event_date_local.isoformat()
-    # Without any time zone information, we assume it is the same as the server
-    else:
-        logger.info("Event date does not contain any tz information, using server tz")
-        event_date_str = event_date.replace(tzinfo=server_tz_info).isoformat()
+    event_date_str = convert_date_server_timezone_iso_str(event_date)
 
     logger.info(f"Deleting event with iso format date: {event_date_str}")
     task.except_dates.append(event_date_str[:10])
@@ -234,7 +239,8 @@ async def update_schedule_task(
 
         async with tortoise.transactions.in_transaction():
             if except_date:
-                event_date_str = except_date.isoformat()
+                event_date_str = convert_date_server_timezone_iso_str(except_date)
+                logger.info(f"Updating event with iso format date: {event_date_str}")
                 task.except_dates.append(event_date_str[:10])
                 await task.save()
 
