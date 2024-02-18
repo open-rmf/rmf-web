@@ -231,7 +231,7 @@ const isCustomTaskDescriptionValid = (taskDescription: string): boolean => {
   }
 
   try {
-    const obj = JSON.parse(taskDescription);
+    JSON.parse(taskDescription);
   } catch (e) {
     return false;
   }
@@ -1681,7 +1681,7 @@ export function CreateTaskForm({
                     <DateTimePicker
                       inputFormat={'MM/dd/yyyy HH:mm'}
                       value={new Date()}
-                      onChange={() => {}}
+                      onChange={() => 0}
                       label="Start Time"
                       renderInput={(props) => (
                         <TextField
