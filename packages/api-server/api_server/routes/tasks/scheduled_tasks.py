@@ -228,6 +228,7 @@ async def update_schedule_task(
     task_repo: TaskRepository = Depends(task_repo_dep),
 ):
     try:
+        logger.info(f"Updating scheduled task [{task_id}]")
         task = await get_scheduled_task(task_id)
         if task is None:
             raise HTTPException(404)
@@ -245,8 +246,13 @@ async def update_schedule_task(
                 await task.save()
 
                 for sche in task.schedules:
+                    logger.info(f"Clearing schedule: {sche.get_id()}")
                     schedule.clear(sche.get_id())
 
+                pydantic_schedule_task = (
+                    await ttm.ScheduledTaskPydantic.from_tortoise_orm(task)
+                )
+                logger.info(f"Re-scheduling task: {pydantic_schedule_task}")
                 await schedule_task(task, task_repo)
 
                 scheduled_task = await ttm.ScheduledTask.create(
@@ -261,6 +267,12 @@ async def update_schedule_task(
                 ]
                 await ttm.ScheduledTaskSchedule.bulk_create(schedules)
 
+                pydantic_schedule_single_event_task = (
+                    await ttm.ScheduledTaskPydantic.from_tortoise_orm(scheduled_task)
+                )
+                logger.info(
+                    f"Scheduling single event task: {pydantic_schedule_single_event_task}"
+                )
                 await schedule_task(scheduled_task, task_repo)
             else:
                 # If "except_date" is not provided, it means the entire series is being updated.
@@ -279,6 +291,7 @@ async def update_schedule_task(
                 )
 
                 for sche in task.schedules:
+                    logger.info(f"Clearing schedule: {sche.get_id()}")
                     schedule.clear(sche.get_id())
                 for sche in task.schedules:
                     await sche.delete()
@@ -291,6 +304,10 @@ async def update_schedule_task(
 
                 await ttm.ScheduledTaskSchedule.bulk_create(schedules)
 
+                pydantic_schedule_task = (
+                    await ttm.ScheduledTaskPydantic.from_tortoise_orm(task)
+                )
+                logger.info(f"Re-scheduling task: {pydantic_schedule_task}")
                 await schedule_task(task, task_repo)
     except schedule.ScheduleError as e:
         raise HTTPException(422, str(e)) from e
