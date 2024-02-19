@@ -14,6 +14,7 @@ import {
   TextThreeRendering,
   RobotData,
 } from 'react-components';
+import { ErrorBoundary } from 'react-error-boundary';
 import { EMPTY, merge, scan, Subscription, switchMap } from 'rxjs';
 import appConfig from '../app-config';
 import { ResourcesContext } from './app-contexts';
@@ -637,7 +638,9 @@ export const MapApp = styled(
               ))
             : null}
           {currentLevel.images.length > 0 && imageUrl && (
-            <ReactThreeFiberImageMaker level={currentLevel} imageUrl={imageUrl} />
+            <ErrorBoundary fallback={<></>}>
+              <ReactThreeFiberImageMaker level={currentLevel} imageUrl={imageUrl} />
+            </ErrorBoundary>
           )}
           {!disabledLayers['Robots'] &&
             robots.map((robot) => {
