@@ -17,7 +17,7 @@ import {
 import { ErrorBoundary } from 'react-error-boundary';
 import { EMPTY, merge, scan, Subscription, switchMap } from 'rxjs';
 import appConfig from '../app-config';
-import { ResourcesContext } from './app-contexts';
+import { AppControllerContext, ResourcesContext } from './app-contexts';
 import { AppEvents } from './app-events';
 import { createMicroApp } from './micro-app';
 import { RmfAppContext } from './rmf-app';
@@ -53,6 +53,7 @@ export const MapApp = styled(
     const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
     const rmf = React.useContext(RmfAppContext);
     const resourceManager = React.useContext(ResourcesContext);
+    const { showAlert } = React.useContext(AppControllerContext);
     const [currentLevel, setCurrentLevel] = React.useState<Level | undefined>(undefined);
     const [disabledLayers, setDisabledLayers] = React.useState<Record<string, boolean>>({
       'Pickup & Dropoff waypoints': false,
@@ -638,7 +639,18 @@ export const MapApp = styled(
               ))
             : null}
           {currentLevel.images.length > 0 && imageUrl && (
-            <ErrorBoundary fallback={<></>}>
+            <ErrorBoundary
+              fallback={<></>}
+              onError={(error, info) => {
+                console.error(error);
+                console.log(info);
+                showAlert(
+                  'error',
+                  'Unable to retrieve building map images. Please ensure that the building map server is operational and without issues.',
+                  20000,
+                );
+              }}
+            >
               <ReactThreeFiberImageMaker level={currentLevel} imageUrl={imageUrl} />
             </ErrorBoundary>
           )}
