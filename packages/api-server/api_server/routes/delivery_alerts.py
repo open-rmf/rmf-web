@@ -9,6 +9,7 @@ from tortoise.exceptions import FieldError
 
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import rmf_gateway
+from api_server.models import FleetState
 from api_server.models import tortoise_models as ttm
 from api_server.models.delivery_alerts import (
     DeliveryAlert,
@@ -58,10 +59,39 @@ async def query_delivery_alerts(
 
     try:
         delivery_alerts = await ttm.DeliveryAlert.filter(**filters)
-        return [
+        delivery_alerts_pydantic = [
             await ttm.DeliveryAlertPydantic.from_tortoise_orm(a)
             for a in delivery_alerts
         ]
+        ongoing_delivery_alerts = []
+
+        # Check for dangling delivery alerts, where none of the fleets are still
+        # performing the task
+        current_task_ids = []
+        db_states = await ttm.FleetState.all().values_list("data", flat=True)
+        fleets = [FleetState(**s) for s in db_states]
+        print(fleets)
+        for f in fleets:
+            for robot in f.robots.values():
+                if robot.task_id is not None and len(robot.task_id) != 0:
+                    current_task_ids.append(robot.task_id)
+        print(current_task_ids)
+        for d in delivery_alerts_pydantic:
+            if (
+                d.task_id is not None
+                and len(d.task_id) != 0
+                and d.task_id not in current_task_ids
+            ):
+                print(f"found a dangling alert: {d.task_id}")
+                print(d)
+                print("updating it to resume")
+                # do something about it
+                dangling_alert = await ttm.DeliveryAlert.get_or_none(id=d.id)
+                dangling_alert.update_from_dict({"action": "resume"})
+                await dangling_alert.save()
+            else:
+                ongoing_delivery_alerts.append(d)
+        return ongoing_delivery_alerts
     except FieldError as e:
         raise HTTPException(422, str(e)) from e
 
