@@ -25,7 +25,7 @@ import { TrajectoryData } from './trajectories-overlay';
 import { RobotSummary } from './robots/robot-summary';
 import { Box3, TextureLoader, Vector3 } from 'three';
 import { Canvas, useLoader } from '@react-three/fiber';
-import { Line } from '@react-three/drei';
+import { Line, Text } from '@react-three/drei';
 import { CameraControl, LayersController } from './three-fiber';
 import { Lifts, Door, RobotThree } from './three-fiber';
 import { DoorSummary } from './door-summary';
@@ -640,7 +640,17 @@ export const MapApp = styled(
             : null}
           {currentLevel.images.length > 0 && imageUrl && (
             <ErrorBoundary
-              fallback={<></>}
+              fallback={
+                <Text
+                  color="red"
+                  fontSize={5}
+                  position={sceneBoundingBox?.getCenter(new Vector3()) || new Vector3()}
+                >
+                  {
+                    'Error: Unable to retrieve building map images.\nPlease ensure that the building map server\nis operational and without issues.'
+                  }
+                </Text>
+              }
               onError={(error, info) => {
                 console.error(error);
                 console.log(info);
