@@ -75,6 +75,8 @@ async def query_delivery_alerts(
         db_states = await ttm.FleetState.all().values_list("data", flat=True)
         fleets = [FleetState(**s) for s in db_states]
         for f in fleets:
+            if f.robots is None:
+                continue
             for robot in f.robots.values():
                 if robot.task_id is not None and len(robot.task_id) != 0:
                     current_task_ids.append(robot.task_id)
@@ -92,6 +94,9 @@ async def query_delivery_alerts(
             logger.info(f"Found a dangling alert: {d}")
             try:
                 dangling_alert = await ttm.DeliveryAlert.get_or_none(id=d.id)
+                if dangling_alert is None:
+                    logger.error(f"Failed to retrieve dangling alert {d.id}")
+                    continue
                 dangling_alert.update_from_dict({"action": "resume"})
                 await dangling_alert.save()
             except Exception as e:  # pylint: disable=broad-except
@@ -107,6 +112,7 @@ async def query_delivery_alerts(
 
 @router.get("/{delivery_alert_id}", response_model=ttm.DeliveryAlertPydantic)
 async def get_delivery_alert(delivery_alert_id: str):
+
     delivery_alert = await ttm.DeliveryAlert.get_or_none(id=delivery_alert_id)
     if delivery_alert is None:
         raise HTTPException(
