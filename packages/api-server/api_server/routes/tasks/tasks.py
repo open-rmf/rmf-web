@@ -214,6 +214,26 @@ async def post_dispatch_task(
 
 
 @router.post(
+    "/dispatch_task_with_warning_time",
+    response_model=mdl.TaskDispatchResponseItem,
+    responses={400: {"model": mdl.TaskDispatchResponseItem1}},
+)
+async def post_dispatch_task_with_warning_time(
+    request: mdl.DispatchTaskRequest = Body(...),
+    task_warn_time: Optional[datetime] = None,
+    task_repo: TaskRepository = Depends(task_repo_dep),
+):
+    response = await post_dispatch_task(request, task_repo)
+
+    if task_warn_time is None:
+        return response
+
+    # get the task ID
+    # task warn time with task ID
+    raise NotImplementedError
+
+
+@router.post(
     "/robot_task",
     response_model=mdl.RobotTaskResponse,
     responses={400: {"model": mdl.RobotTaskResponse}},

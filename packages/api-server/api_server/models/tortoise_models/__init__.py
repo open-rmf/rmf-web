@@ -29,5 +29,6 @@ from .tasks import (
     TaskFavoritePydantic,
     TaskRequest,
     TaskState,
+    TaskWarningTime,
 )
 from .user import *
