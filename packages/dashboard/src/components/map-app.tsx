@@ -1,4 +1,4 @@
-import { Box, styled, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, styled, Typography, useMediaQuery } from '@mui/material';
 import { BuildingMap, ApiServerModelsRmfApiFleetStateFleetState, Level, Lift } from 'api-client';
 import { Door as DoorModel } from 'rmf-models';
 import Debug from 'debug';
@@ -17,7 +17,7 @@ import {
 import { ErrorBoundary } from 'react-error-boundary';
 import { EMPTY, merge, scan, Subscription, switchMap } from 'rxjs';
 import appConfig from '../app-config';
-import { ResourcesContext } from './app-contexts';
+import { AppControllerContext, ResourcesContext } from './app-contexts';
 import { AppEvents } from './app-events';
 import { createMicroApp } from './micro-app';
 import { RmfAppContext } from './rmf-app';
@@ -25,7 +25,7 @@ import { TrajectoryData } from './trajectories-overlay';
 import { RobotSummary } from './robots/robot-summary';
 import { Box3, TextureLoader, Vector3 } from 'three';
 import { Canvas, useLoader } from '@react-three/fiber';
-import { Line, Text } from '@react-three/drei';
+import { Line } from '@react-three/drei';
 import { CameraControl, LayersController } from './three-fiber';
 import { Lifts, Door, RobotThree } from './three-fiber';
 import { DoorSummary } from './door-summary';
@@ -50,10 +50,10 @@ function getRobotId(fleetName: string, robotName: string): string {
 
 export const MapApp = styled(
   createMicroApp('Map', () => {
-    const theme = useTheme();
     const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
     const rmf = React.useContext(RmfAppContext);
     const resourceManager = React.useContext(ResourcesContext);
+    const { showAlert } = React.useContext(AppControllerContext);
     const [currentLevel, setCurrentLevel] = React.useState<Level | undefined>(undefined);
     const [disabledLayers, setDisabledLayers] = React.useState<Record<string, boolean>>({
       'Pickup & Dropoff waypoints': false,
@@ -198,35 +198,6 @@ export const MapApp = styled(
     }, [rmf, resourceManager]);
 
     const [imageUrl, setImageUrl] = React.useState<string | null>(null);
-
-    // Loading a static font is required for network airgapped environments
-    const [fontPath, setFontPath] = React.useState<string | undefined>(undefined);
-
-    async function fontPathExists(url: string) {
-      const result = await fetch(url, { method: 'HEAD' });
-      return result.ok;
-    }
-
-    React.useEffect(() => {
-      const loadFont = async () => {
-        try {
-          // FIXME: parameterize font file name.
-          const newFontPath =
-            process.env.PUBLIC_URL && process.env.PUBLIC_URL.length > 0
-              ? `${process.env.PUBLIC_URL}/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff`
-              : '/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff';
-
-          if (await fontPathExists(newFontPath)) {
-            setFontPath(newFontPath);
-          }
-        } catch (error) {
-          console.error('Error loading font:', error);
-        }
-      };
-
-      loadFont();
-    }, []);
-
     // Since the configurable zoom level is for supporting the lowest resolution
     // settings, we will double it for anything that is operating within modern
     // resolution settings.
@@ -669,19 +640,15 @@ export const MapApp = styled(
             : null}
           {currentLevel.images.length > 0 && imageUrl && (
             <ErrorBoundary
-              fallback={
-                <Text
-                  color={theme.palette.error.main}
-                  fontSize={5}
-                  font={fontPath}
-                  position={sceneBoundingBox?.getCenter(new Vector3()) || new Vector3()}
-                >
-                  {'Failed to load building map. Error 404.'}
-                </Text>
-              }
+              fallback={<></>}
               onError={(error, info) => {
                 console.error(error);
                 console.log(info);
+                showAlert(
+                  'error',
+                  'Unable to retrieve building map images. Please ensure that the building map server is operational and without issues.',
+                  20000,
+                );
               }}
             >
               <ReactThreeFiberImageMaker level={currentLevel} imageUrl={imageUrl} />
