@@ -438,7 +438,6 @@ interface DeliveryAlertData {
 export const DeliveryAlertStore = React.memo(() => {
   const rmf = React.useContext(RmfAppContext);
   const [alerts, setAlerts] = React.useState<Record<string, DeliveryAlertData>>({});
-  const [closedErrorAlertId, setClosedErrorAlertId] = React.useState<string>();
   const appController = React.useContext(AppControllerContext);
 
   const filterAndPushDeliveryAlert = (deliveryAlert: DeliveryAlert, taskState?: TaskState) => {
@@ -487,15 +486,10 @@ export const DeliveryAlertStore = React.memo(() => {
           console.error(`Failed to fetch task state for ${deliveryAlert.task_id}`);
         }
       }
-      // In the event that we are receiving the update of a closed error alert
-      // that this dashboard instance introduced, we don't need to push it
-      if (closedErrorAlertId && deliveryAlert.id === closedErrorAlertId) {
-        return;
-      }
       filterAndPushDeliveryAlert(deliveryAlert, state);
     });
     return () => sub.unsubscribe();
-  }, [rmf, closedErrorAlertId]);
+  }, [rmf]);
 
   const onOverride = React.useCallback<Required<DeliveryWarningDialogProps>['onOverride']>(
     async (delivery_alert) => {
