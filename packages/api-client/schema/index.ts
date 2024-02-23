@@ -535,6 +535,58 @@ export default {
         },
       },
     },
+    '/delivery_alerts/{delivery_alert_id}/response': {
+      post: {
+        tags: ['DeliveryAlerts'],
+        summary: 'Respond To Delivery Alert',
+        operationId: 'respond_to_delivery_alert_delivery_alerts__delivery_alert_id__response_post',
+        parameters: [
+          {
+            required: true,
+            schema: { title: 'Delivery Alert Id', type: 'string' },
+            name: 'delivery_alert_id',
+            in: 'path',
+          },
+          {
+            required: true,
+            schema: { title: 'Category', type: 'string' },
+            name: 'category',
+            in: 'query',
+          },
+          { required: true, schema: { title: 'Tier', type: 'string' }, name: 'tier', in: 'query' },
+          {
+            required: true,
+            schema: { title: 'Task Id', type: 'string' },
+            name: 'task_id',
+            in: 'query',
+          },
+          {
+            required: true,
+            schema: { title: 'Action', type: 'string' },
+            name: 'action',
+            in: 'query',
+          },
+          {
+            required: true,
+            schema: { title: 'Message', type: 'string' },
+            name: 'message',
+            in: 'query',
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: { 'application/json': { schema: {} } },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
     '/doors': {
       get: {
         tags: ['Doors'],

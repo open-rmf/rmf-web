@@ -5982,6 +5982,111 @@ export const DeliveryAlertsApiAxiosParamCreator = function (configuration?: Conf
     },
     /**
      *
+     * @summary Respond To Delivery Alert
+     * @param {string} deliveryAlertId
+     * @param {string} category
+     * @param {string} tier
+     * @param {string} taskId
+     * @param {string} action
+     * @param {string} message
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost: async (
+      deliveryAlertId: string,
+      category: string,
+      tier: string,
+      taskId: string,
+      action: string,
+      message: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'deliveryAlertId' is not null or undefined
+      assertParamExists(
+        'respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost',
+        'deliveryAlertId',
+        deliveryAlertId,
+      );
+      // verify required parameter 'category' is not null or undefined
+      assertParamExists(
+        'respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost',
+        'category',
+        category,
+      );
+      // verify required parameter 'tier' is not null or undefined
+      assertParamExists(
+        'respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost',
+        'tier',
+        tier,
+      );
+      // verify required parameter 'taskId' is not null or undefined
+      assertParamExists(
+        'respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost',
+        'taskId',
+        taskId,
+      );
+      // verify required parameter 'action' is not null or undefined
+      assertParamExists(
+        'respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost',
+        'action',
+        action,
+      );
+      // verify required parameter 'message' is not null or undefined
+      assertParamExists(
+        'respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost',
+        'message',
+        message,
+      );
+      const localVarPath = `/delivery_alerts/{delivery_alert_id}/response`.replace(
+        `{${'delivery_alert_id'}}`,
+        encodeURIComponent(String(deliveryAlertId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      if (category !== undefined) {
+        localVarQueryParameter['category'] = category;
+      }
+
+      if (tier !== undefined) {
+        localVarQueryParameter['tier'] = tier;
+      }
+
+      if (taskId !== undefined) {
+        localVarQueryParameter['task_id'] = taskId;
+      }
+
+      if (action !== undefined) {
+        localVarQueryParameter['action'] = action;
+      }
+
+      if (message !== undefined) {
+        localVarQueryParameter['message'] = message;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Update Delivery Alert Action
      * @param {string} deliveryAlertId
      * @param {string} action
@@ -6158,6 +6263,39 @@ export const DeliveryAlertsApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Respond To Delivery Alert
+     * @param {string} deliveryAlertId
+     * @param {string} category
+     * @param {string} tier
+     * @param {string} taskId
+     * @param {string} action
+     * @param {string} message
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
+      deliveryAlertId: string,
+      category: string,
+      tier: string,
+      taskId: string,
+      action: string,
+      message: string,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
+          deliveryAlertId,
+          category,
+          tier,
+          taskId,
+          action,
+          message,
+          options,
+        );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
      * @summary Update Delivery Alert Action
      * @param {string} deliveryAlertId
      * @param {string} action
@@ -6270,6 +6408,39 @@ export const DeliveryAlertsApiFactory = function (
     },
     /**
      *
+     * @summary Respond To Delivery Alert
+     * @param {string} deliveryAlertId
+     * @param {string} category
+     * @param {string} tier
+     * @param {string} taskId
+     * @param {string} action
+     * @param {string} message
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
+      deliveryAlertId: string,
+      category: string,
+      tier: string,
+      taskId: string,
+      action: string,
+      message: string,
+      options?: any,
+    ): AxiosPromise<any> {
+      return localVarFp
+        .respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
+          deliveryAlertId,
+          category,
+          tier,
+          taskId,
+          action,
+          message,
+          options,
+        )
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Update Delivery Alert Action
      * @param {string} deliveryAlertId
      * @param {string} action
@@ -6374,6 +6545,41 @@ export class DeliveryAlertsApi extends BaseAPI {
   ) {
     return DeliveryAlertsApiFp(this.configuration)
       .queryDeliveryAlertsDeliveryAlertsQueryGet(category, tier, taskId, action, message, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Respond To Delivery Alert
+   * @param {string} deliveryAlertId
+   * @param {string} category
+   * @param {string} tier
+   * @param {string} taskId
+   * @param {string} action
+   * @param {string} message
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DeliveryAlertsApi
+   */
+  public respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
+    deliveryAlertId: string,
+    category: string,
+    tier: string,
+    taskId: string,
+    action: string,
+    message: string,
+    options?: AxiosRequestConfig,
+  ) {
+    return DeliveryAlertsApiFp(this.configuration)
+      .respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
+        deliveryAlertId,
+        category,
+        tier,
+        taskId,
+        action,
+        message,
+        options,
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 

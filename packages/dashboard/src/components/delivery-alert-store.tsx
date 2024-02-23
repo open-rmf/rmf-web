@@ -47,8 +47,8 @@ const categoryToText = (category: string): string => {
 interface DeliveryWarningDialogProps {
   deliveryAlert: DeliveryAlert;
   taskState?: TaskState;
-  onOverride?: (delivery_alert_id: string, task_id?: string) => Promise<void>;
-  onResume?: (delivery_alert_id: string, task_id?: string) => Promise<void>;
+  onOverride?: (deliveryAlert: DeliveryAlert) => Promise<void>;
+  onResume?: (deliveryAlert: DeliveryAlert) => Promise<void>;
   onClose: () => void;
 }
 
@@ -88,9 +88,13 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
       ) {
         (async () => {
           try {
-            await rmf.deliveryAlertsApi.updateDeliveryAlertActionDeliveryAlertsDeliveryAlertIdActionPost(
+            await rmf.deliveryAlertsApi.respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
               deliveryAlert.id,
+              deliveryAlert.category,
+              deliveryAlert.tier,
+              deliveryAlert.task_id ?? '',
               'cancelled',
+              deliveryAlert.message ?? '',
             );
           } catch (e) {
             appController.showAlert(
@@ -248,7 +252,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
               disabled={onOverride === undefined || actionTaken}
               onClick={() => {
                 setActionTaken(true);
-                onOverride && onOverride(deliveryAlert.id, newTaskState?.booking.id);
+                onOverride && onOverride(deliveryAlert);
               }}
               autoFocus
               sx={{
@@ -266,7 +270,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
               disabled={onResume === undefined || actionTaken}
               onClick={() => {
                 setActionTaken(true);
-                onResume && onResume(deliveryAlert.id, newTaskState?.booking.id);
+                onResume && onResume(deliveryAlert);
               }}
               autoFocus
               sx={{
@@ -469,74 +473,6 @@ export const DeliveryAlertStore = React.memo(() => {
     if (!rmf) {
       return;
     }
-    // Initialize with any existing delivery alerts that are still waiting for
-    // action.
-    (async () => {
-      let waitingDeliveryAlerts: DeliveryAlert[] = [];
-      try {
-        waitingDeliveryAlerts = (
-          await rmf.deliveryAlertsApi.queryDeliveryAlertsDeliveryAlertsQueryGet(
-            undefined,
-            undefined,
-            undefined,
-            'waiting',
-            undefined,
-            undefined,
-          )
-        ).data;
-      } catch (e) {
-        console.error(`Failed to retrieve waiting delivery alerts: ${e}`);
-        return;
-      }
-
-      const filteredAlertsMap: Record<string, DeliveryAlertData> = {};
-      const taskIdToAlertsMap: Record<string, DeliveryAlertData> = {};
-      for (const alert of waitingDeliveryAlerts) {
-        // No task involved, and still waiting for user action. There should not
-        // be any longstanding delivery alerts that appear after a refresh, only
-        // the delivery alerts that are currently present and have not been
-        // responded to.
-        if (!alert.task_id) {
-          filteredAlertsMap[alert.id] = { deliveryAlert: alert, taskState: undefined };
-          continue;
-        }
-
-        // For the same task, ignore older alerts. This is possible as we are
-        // creating delivery alert IDs with timestamps.
-        const prevDeliveryAlert = taskIdToAlertsMap[alert.task_id];
-        if (prevDeliveryAlert && prevDeliveryAlert.deliveryAlert.id > alert.id) {
-          continue;
-        }
-
-        // Update map with newer alerts for the same task id, if it is still
-        // unresolved.
-        let state: TaskState | undefined = undefined;
-        try {
-          state = (await rmf.tasksApi.getTaskStateTasksTaskIdStateGet(alert.task_id)).data;
-        } catch {
-          console.error(
-            `Failed to fetch task state for ${alert.task_id} for delivery alert ${alert.id}`,
-          );
-        }
-        taskIdToAlertsMap[alert.task_id] = {
-          deliveryAlert: alert,
-          taskState: state,
-        };
-      }
-
-      // Move all unresolved and up-to-date task related delivery alerts to the
-      // filtered map.
-      for (const alertData of Object.values(taskIdToAlertsMap)) {
-        filteredAlertsMap[alertData.deliveryAlert.id] = alertData;
-      }
-      setAlerts(filteredAlertsMap);
-    })();
-  }, [rmf]);
-
-  React.useEffect(() => {
-    if (!rmf) {
-      return;
-    }
     const sub = rmf.deliveryAlertObsStore.subscribe(async (deliveryAlert) => {
       // DEBUG
       console.log(
@@ -562,25 +498,33 @@ export const DeliveryAlertStore = React.memo(() => {
   }, [rmf, closedErrorAlertId]);
 
   const onOverride = React.useCallback<Required<DeliveryWarningDialogProps>['onOverride']>(
-    async (delivery_alert_id, task_id) => {
+    async (delivery_alert) => {
       try {
         if (!rmf) {
           throw new Error('delivery alert api not available');
         }
-        await rmf.deliveryAlertsApi.updateDeliveryAlertActionDeliveryAlertsDeliveryAlertIdActionPost(
-          delivery_alert_id,
+        await rmf.deliveryAlertsApi.respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
+          delivery_alert.id,
+          delivery_alert.category,
+          delivery_alert.tier,
+          delivery_alert.task_id ?? '',
           'override',
+          delivery_alert.message ?? '',
         );
-        const taskReferenceText = task_id ? `, continuing with task ${task_id}` : '';
+        const taskReferenceText = delivery_alert.task_id
+          ? `, continuing with task ${delivery_alert.task_id}`
+          : '';
         appController.showAlert(
           'success',
-          `Overriding delivery alert ${delivery_alert_id}${taskReferenceText}`,
+          `Overriding delivery alert ${delivery_alert.id}${taskReferenceText}`,
         );
       } catch (e) {
-        const taskReferenceText = task_id ? ` and continue with task ${task_id}` : '';
+        const taskReferenceText = delivery_alert.task_id
+          ? ` and continue with task ${delivery_alert.task_id}`
+          : '';
         appController.showAlert(
           'error',
-          `Failed to override delivery alert ${delivery_alert_id}${taskReferenceText}: ${
+          `Failed to override delivery alert ${delivery_alert.id}${taskReferenceText}: ${
             (e as Error).message
           }`,
         );
@@ -590,22 +534,28 @@ export const DeliveryAlertStore = React.memo(() => {
   );
 
   const onResume = React.useCallback<Required<DeliveryWarningDialogProps>['onResume']>(
-    async (delivery_alert_id, task_id) => {
+    async (delivery_alert) => {
       try {
         if (!rmf) {
           throw new Error('delivery alert api not available');
         }
-        await rmf.deliveryAlertsApi.updateDeliveryAlertActionDeliveryAlertsDeliveryAlertIdActionPost(
-          delivery_alert_id,
+        await rmf.deliveryAlertsApi.respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
+          delivery_alert.id,
+          delivery_alert.category,
+          delivery_alert.tier,
+          delivery_alert.task_id ?? '',
           'resume',
+          delivery_alert.message ?? '',
         );
-        const taskReferenceText = task_id ? `, continuing with task ${task_id}` : '';
+        const taskReferenceText = delivery_alert.task_id
+          ? `, continuing with task ${delivery_alert.task_id}`
+          : '';
         appController.showAlert(
           'success',
-          `Resuming after delivery alert ${delivery_alert_id}${taskReferenceText}`,
+          `Resuming after delivery alert ${delivery_alert.id}${taskReferenceText}`,
         );
       } catch (e) {
-        const taskReferenceText = task_id ? ` ${task_id}` : '';
+        const taskReferenceText = delivery_alert.task_id ? ` ${delivery_alert.task_id}` : '';
         appController.showAlert(
           'error',
           `Failed to resume task${taskReferenceText}: ${(e as Error).message}`,

@@ -9,8 +9,6 @@ from tortoise.exceptions import FieldError
 
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import rmf_gateway
-from api_server.logger import logger
-from api_server.models import FleetState
 from api_server.models import tortoise_models as ttm
 from api_server.models.delivery_alerts import (
     DeliveryAlert,
@@ -60,59 +58,16 @@ async def query_delivery_alerts(
 
     try:
         delivery_alerts = await ttm.DeliveryAlert.filter(**filters)
-        delivery_alerts_pydantic = [
+        return [
             await ttm.DeliveryAlertPydantic.from_tortoise_orm(a)
             for a in delivery_alerts
         ]
     except FieldError as e:
         raise HTTPException(422, str(e)) from e
 
-    ongoing_delivery_alerts = []
-    # Check for dangling delivery alerts, where none of the fleets are still
-    # performing the task
-    current_task_ids = []
-    try:
-        db_states = await ttm.FleetState.all().values_list("data", flat=True)
-        fleets = [FleetState(**s) for s in db_states]
-        for f in fleets:
-            if f.robots is None:
-                continue
-            for robot in f.robots.values():
-                if robot.task_id is not None and len(robot.task_id) != 0:
-                    current_task_ids.append(robot.task_id)
-    except Exception as e:  # pylint: disable=broad-except
-        logger.error(f"Failed to retrieve current running task IDs: {e}")
-        return []
-
-    logger.info(f"Current running task IDs: {current_task_ids}")
-    for d in delivery_alerts_pydantic:
-        if (
-            d.task_id is not None
-            and len(d.task_id) != 0
-            and d.task_id not in current_task_ids
-        ):
-            logger.info(f"Found a dangling alert: {d}")
-            try:
-                dangling_alert = await ttm.DeliveryAlert.get_or_none(id=d.id)
-                if dangling_alert is None:
-                    logger.error(f"Failed to retrieve dangling alert {d.id}")
-                    continue
-                dangling_alert.update_from_dict({"action": "resume"})
-                await dangling_alert.save()
-            except Exception as e:  # pylint: disable=broad-except
-                logger.error(f"Failed to resolve dangling alert ID {d.id}: {e}")
-                continue
-            logger.info(
-                f"Resolved dangling alert ID {d.id} by updating action to resume"
-            )
-        else:
-            ongoing_delivery_alerts.append(d)
-    return ongoing_delivery_alerts
-
 
 @router.get("/{delivery_alert_id}", response_model=ttm.DeliveryAlertPydantic)
 async def get_delivery_alert(delivery_alert_id: str):
-
     delivery_alert = await ttm.DeliveryAlert.get_or_none(id=delivery_alert_id)
     if delivery_alert is None:
         raise HTTPException(
@@ -173,3 +128,31 @@ async def update_delivery_alert_action(delivery_alert_id: str, action: str):
 
     rmf_events.delivery_alerts.on_next(delivery_alert_pydantic)
     return delivery_alert_pydantic
+
+
+@router.post("/{delivery_alert_id}/response")
+async def respond_to_delivery_alert(
+    delivery_alert_id: str,
+    category: str,
+    tier: str,
+    task_id: str,
+    action: str,
+    message: str,
+):
+    delivery_alert = DeliveryAlert(
+        id=delivery_alert_id,
+        category=category,
+        tier=tier,
+        action=action,
+        task_id=task_id,
+        message=message,
+    )
+    rmf_gateway().respond_to_delivery_alert(
+        alert_id=delivery_alert.id,
+        category=category_to_msg(delivery_alert.category),
+        tier=tier_to_msg(delivery_alert.tier),
+        task_id=delivery_alert.task_id,
+        action=action_to_msg(delivery_alert.action),
+        message=delivery_alert.message,
+    )
+    rmf_events.delivery_alerts.on_next(delivery_alert)
