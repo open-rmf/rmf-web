@@ -309,7 +309,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
 interface DeliveryErrorDialogProps {
   deliveryAlert: DeliveryAlert;
   taskState?: TaskState;
-  onClose: (delivery_alert_id: string) => Promise<void>;
+  onClose: () => void;
 }
 
 const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
@@ -409,7 +409,7 @@ const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
             size="small"
             variant="contained"
             onClick={() => {
-              onClose(deliveryAlert.id);
+              onClose();
               setIsOpen(false);
             }}
             disabled={false}
@@ -565,56 +565,6 @@ export const DeliveryAlertStore = React.memo(() => {
     [rmf, appController],
   );
 
-  // Closing on an error requires the additional step of setting the action
-  // to cancelled, as we want to ensure this error delivery dialog does not show
-  // up anymore when the dashboard is refreshed.
-  const onErrorCloseCancel = React.useCallback<Required<DeliveryErrorDialogProps>['onClose']>(
-    async (delivery_alert_id) => {
-      setClosedErrorAlertId(delivery_alert_id);
-
-      // Check upstream alert action
-      let alert: DeliveryAlert | undefined = undefined;
-      try {
-        if (!rmf) {
-          throw new Error('delivery alert api not available');
-        }
-        alert = (
-          await rmf.deliveryAlertsApi.getDeliveryAlertDeliveryAlertsDeliveryAlertIdGet(
-            delivery_alert_id,
-          )
-        ).data;
-      } catch (e) {
-        console.error(`Failed to retrieve waiting delivery alerts: ${e}`);
-        return;
-      }
-
-      // If alert is still waiting, we cancel it
-      if (alert !== undefined && alert.action === 'waiting') {
-        try {
-          if (!rmf) {
-            throw new Error('delivery alert api not available');
-          }
-          await rmf.deliveryAlertsApi.updateDeliveryAlertActionDeliveryAlertsDeliveryAlertIdActionPost(
-            delivery_alert_id,
-            'cancelled',
-          );
-        } catch (e) {
-          console.error(
-            `failed to update delivery alert ${delivery_alert_id} to cancelled action: ${
-              (e as Error).message
-            }`,
-          );
-        }
-      }
-
-      // Remove alert dialog from display
-      setAlerts((prev) =>
-        Object.fromEntries(Object.entries(prev).filter(([key]) => key !== delivery_alert_id)),
-      );
-    },
-    [rmf],
-  );
-
   return (
     <>
       {Object.values(alerts).map((alert) => {
@@ -623,7 +573,13 @@ export const DeliveryAlertStore = React.memo(() => {
             <DeliveryErrorDialog
               deliveryAlert={alert.deliveryAlert}
               taskState={alert.taskState}
-              onClose={onErrorCloseCancel}
+              onClose={() =>
+                setAlerts((prev) =>
+                  Object.fromEntries(
+                    Object.entries(prev).filter(([key]) => key !== alert.deliveryAlert.id),
+                  ),
+                )
+              }
               key={alert.deliveryAlert.id}
             />
           );
@@ -637,7 +593,13 @@ export const DeliveryAlertStore = React.memo(() => {
             <DeliveryErrorDialog
               deliveryAlert={alert.deliveryAlert}
               taskState={alert.taskState}
-              onClose={onErrorCloseCancel}
+              onClose={() =>
+                setAlerts((prev) =>
+                  Object.fromEntries(
+                    Object.entries(prev).filter(([key]) => key !== alert.deliveryAlert.id),
+                  ),
+                )
+              }
               key={alert.deliveryAlert.id}
             />
           );
