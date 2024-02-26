@@ -9,7 +9,7 @@ import {
   Configuration,
   DefaultApi,
   DeliveryAlertsApi,
-  ApiServerModelsTortoiseModelsDeliveryAlertsDeliveryAlertLeaf as DeliveryAlert,
+  DeliveryAlert,
   Dispenser,
   DispensersApi,
   DispenserState,

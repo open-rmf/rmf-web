@@ -1,5 +1,8 @@
 import {
-  ApiServerModelsTortoiseModelsDeliveryAlertsDeliveryAlertLeaf as DeliveryAlert,
+  Action as DeliveryAlertAction,
+  ApiServerModelsDeliveryAlertsDeliveryAlertCategory as DeliveryAlertCategory,
+  ApiServerModelsDeliveryAlertsDeliveryAlertTier as DeliveryAlertTier,
+  DeliveryAlert,
   TaskState,
 } from 'api-client';
 import React from 'react';
@@ -24,18 +27,18 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const categoryToText = (category: string): string => {
+const categoryToText = (category: DeliveryAlertCategory): string => {
   switch (category) {
-    case 'missing': {
+    case DeliveryAlertCategory.Missing: {
       return 'No cart detected';
     }
-    case 'wrong': {
+    case DeliveryAlertCategory.Wrong: {
       return 'Wrong cart detected';
     }
-    case 'obstructed': {
+    case DeliveryAlertCategory.Obstructed: {
       return 'Goal is obstructed';
     }
-    case 'cancelled': {
+    case DeliveryAlertCategory.Cancelled: {
       return 'Task is cancelled';
     }
     default: {
@@ -64,7 +67,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
 
   React.useEffect(() => {
-    if (deliveryAlert.action !== 'waiting') {
+    if (deliveryAlert.action !== DeliveryAlertAction.Waiting) {
       setActionTaken(true);
     }
   }, [deliveryAlert]);
@@ -82,7 +85,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
     const sub = rmf.getTaskStateObs(taskState.booking.id).subscribe((taskStateUpdate) => {
       setNewTaskState(taskStateUpdate);
       if (
-        deliveryAlert.action === 'waiting' &&
+        deliveryAlert.action === DeliveryAlertAction.Waiting &&
         taskStateUpdate.status &&
         taskStateUpdate.status === 'canceled'
       ) {
@@ -93,7 +96,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
               deliveryAlert.category,
               deliveryAlert.tier,
               deliveryAlert.task_id ?? '',
-              'cancelled',
+              DeliveryAlertAction.Cancelled,
               deliveryAlert.message ?? '',
             );
           } catch (e) {
@@ -109,18 +112,18 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
     return () => sub.unsubscribe();
   }, [rmf, deliveryAlert, taskState, appController]);
 
-  const titleUpdateText = (action: string) => {
+  const titleUpdateText = (action: DeliveryAlertAction) => {
     switch (action) {
-      case 'override': {
+      case DeliveryAlertAction.Override: {
         return ' - [Overridden]';
       }
-      case 'resume': {
+      case DeliveryAlertAction.Resume: {
         return ' - [Resumed]';
       }
-      case 'cancel': {
+      case DeliveryAlertAction.Cancelled: {
         return ' - [Cancelled]';
       }
-      case 'waiting':
+      case DeliveryAlertAction.Waiting:
       default: {
         return '';
       }
@@ -203,7 +206,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
         </DialogContent>
         <DialogActions>
           {(newTaskState && newTaskState.status && newTaskState.status === 'canceled') ||
-          deliveryAlert.category === 'cancelled' ? (
+          deliveryAlert.category === DeliveryAlertCategory.Cancelled ? (
             <Button
               size="small"
               variant="contained"
@@ -502,7 +505,7 @@ export const DeliveryAlertStore = React.memo(() => {
           delivery_alert.category,
           delivery_alert.tier,
           delivery_alert.task_id ?? '',
-          'override',
+          DeliveryAlertAction.Override,
           delivery_alert.message ?? '',
         );
         const taskReferenceText = delivery_alert.task_id
@@ -538,7 +541,7 @@ export const DeliveryAlertStore = React.memo(() => {
           delivery_alert.category,
           delivery_alert.tier,
           delivery_alert.task_id ?? '',
-          'resume',
+          DeliveryAlertAction.Resume,
           delivery_alert.message ?? '',
         );
         const taskReferenceText = delivery_alert.task_id
@@ -562,7 +565,7 @@ export const DeliveryAlertStore = React.memo(() => {
   return (
     <>
       {Object.values(alerts).map((alert) => {
-        if (alert.deliveryAlert.tier === 'error') {
+        if (alert.deliveryAlert.tier === DeliveryAlertTier.Error) {
           return (
             <DeliveryErrorDialog
               deliveryAlert={alert.deliveryAlert}
@@ -579,7 +582,7 @@ export const DeliveryAlertStore = React.memo(() => {
           );
         }
 
-        if (alert.deliveryAlert.category === 'cancelled') {
+        if (alert.deliveryAlert.category === DeliveryAlertCategory.Cancelled) {
           console.warn(
             'Delivery alert with category [cancelled] submitted as a warning, this might be a mistake, alert promoted to an error.',
           );
@@ -604,9 +607,11 @@ export const DeliveryAlertStore = React.memo(() => {
           <DeliveryWarningDialog
             deliveryAlert={alert.deliveryAlert}
             taskState={alert.taskState}
-            onOverride={alert.deliveryAlert.category === 'wrong' ? onOverride : undefined}
+            onOverride={
+              alert.deliveryAlert.category === DeliveryAlertCategory.Wrong ? onOverride : undefined
+            }
             onResume={
-              alert.deliveryAlert.category !== 'obstructed'
+              alert.deliveryAlert.category !== DeliveryAlertCategory.Obstructed
                 ? onResume
                 : alert.deliveryAlert.message && alert.deliveryAlert.message.includes(' latch ')
                 ? onResume

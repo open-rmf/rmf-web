@@ -1,12 +1,12 @@
 import React from 'react';
 import {
+  ApiServerModelsRmfApiLogEntryTier as Tier,
   ApiServerModelsTortoiseModelsAlertsAlertLeaf,
   LogEntry,
   Status,
   Status1,
   TaskEventLog,
   TaskState,
-  Tier,
 } from 'api-client';
 import { AppControllerContext } from '../app-contexts';
 import { RmfAppContext } from '../rmf-app';

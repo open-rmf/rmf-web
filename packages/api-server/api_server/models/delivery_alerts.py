@@ -1,64 +1,64 @@
-# pyright: reportGeneralTypeIssues=false
+from enum import Enum
 
-from . import tortoise_models as ttm
+from pydantic import BaseModel
 
-# TODO(AC): These conversions need to exactly match the enum values defined
+# NOTE: These conversions need to exactly match the enum values defined
 # in rmf_fleet_msgs::msgs::DeliveryAlert* messages. Any changes to them will
 # require these conversions to be modified.
 
 
 def category_from_msg(category: int) -> str:
-    value = ttm.DeliveryAlert.Category.Wrong
+    value = DeliveryAlert.Category.Wrong
     match (category):
         case 0:
-            value = ttm.DeliveryAlert.Category.Missing
+            value = DeliveryAlert.Category.Missing
         case 1:
-            value = ttm.DeliveryAlert.Category.Wrong
+            value = DeliveryAlert.Category.Wrong
         case 2:
-            value = ttm.DeliveryAlert.Category.Obstructed
+            value = DeliveryAlert.Category.Obstructed
         case 3:
-            value = ttm.DeliveryAlert.Category.Cancelled
+            value = DeliveryAlert.Category.Cancelled
         case _:
             pass
     return value
 
 
 def tier_from_msg(tier: int) -> str:
-    value = ttm.DeliveryAlert.Tier.Error
+    value = DeliveryAlert.Tier.Error
     match (tier):
         case 0:
-            value = ttm.DeliveryAlert.Tier.Warning
+            value = DeliveryAlert.Tier.Warning
         case 1:
-            value = ttm.DeliveryAlert.Tier.Error
+            value = DeliveryAlert.Tier.Error
         case _:
             pass
     return value
 
 
 def action_from_msg(action: int) -> str:
-    value = ttm.DeliveryAlert.Action.Waiting
+    value = DeliveryAlert.Action.Waiting
     match (action):
         case 0:
-            value = ttm.DeliveryAlert.Action.Waiting
+            value = DeliveryAlert.Action.Waiting
         case 1:
-            value = ttm.DeliveryAlert.Action.Cancel
+            value = DeliveryAlert.Action.Cancel
         case 2:
-            value = ttm.DeliveryAlert.Action.Override
+            value = DeliveryAlert.Action.Override
         case 3:
-            value = ttm.DeliveryAlert.Action.Resume
+            value = DeliveryAlert.Action.Resume
     return value
 
 
 def category_to_msg(category: str) -> int:
     value = 1
     match (category):
-        case ttm.DeliveryAlert.Category.Missing:
+        case DeliveryAlert.Category.Missing:
             value = 0
-        case ttm.DeliveryAlert.Category.Wrong:
+        case DeliveryAlert.Category.Wrong:
             value = 1
-        case ttm.DeliveryAlert.Category.Obstructed:
+        case DeliveryAlert.Category.Obstructed:
             value = 2
-        case ttm.DeliveryAlert.Category.Cancelled:
+        case DeliveryAlert.Category.Cancelled:
             value = 3
         case _:
             pass
@@ -68,9 +68,9 @@ def category_to_msg(category: str) -> int:
 def tier_to_msg(tier: str) -> int:
     value = 1
     match (tier):
-        case ttm.DeliveryAlert.Tier.Warning:
+        case DeliveryAlert.Tier.Warning:
             value = 0
-        case ttm.DeliveryAlert.Tier.Error:
+        case DeliveryAlert.Tier.Error:
             value = 1
         case _:
             pass
@@ -80,49 +80,39 @@ def tier_to_msg(tier: str) -> int:
 def action_to_msg(action: str) -> int:
     value = 0
     match (action):
-        case ttm.DeliveryAlert.Action.Waiting:
+        case DeliveryAlert.Action.Waiting:
             value = 0
-        case ttm.DeliveryAlert.Action.Cancel:
+        case DeliveryAlert.Action.Cancel:
             value = 1
-        case ttm.DeliveryAlert.Action.Override:
+        case DeliveryAlert.Action.Override:
             value = 2
-        case ttm.DeliveryAlert.Action.Resume:
+        case DeliveryAlert.Action.Resume:
             value = 3
         case _:
             pass
     return value
 
 
-class DeliveryAlert(ttm.DeliveryAlertPydantic):
-    @staticmethod
-    def from_tortoise(tortoise: ttm.DeliveryAlert) -> "DeliveryAlert":
-        return DeliveryAlert(
-            id=tortoise.id,
-            category=tortoise.category,
-            tier=tortoise.tier,
-            action=tortoise.action,
-            task_id=tortoise.task_id,
-            message=tortoise.message,
-        )
+class DeliveryAlert(BaseModel):
+    class Category(str, Enum):
+        Missing = "missing"
+        Wrong = "wrong"
+        Obstructed = "obstructed"
+        Cancelled = "cancelled"
 
-    async def save(self) -> None:
-        # Get previous delivery alert for this task ID
-        prev_waiting_delivery_alert = await ttm.DeliveryAlert.get_or_none(
-            task_id=self.task_id, action="waiting"
-        )
+    class Tier(str, Enum):
+        Warning = "warning"
+        Error = "error"
 
-        await ttm.DeliveryAlert.update_or_create(
-            {
-                "category": self.category,
-                "tier": self.tier,
-                "task_id": self.task_id,
-                "action": self.action,
-                "message": self.message,
-            },
-            id=self.id,
-        )
+    class Action(str, Enum):
+        Waiting = "waiting"
+        Cancel = "cancelled"
+        Override = "override"
+        Resume = "resume"
 
-        # If there was a previous delivery alert for this task ID, we cancel it
-        if prev_waiting_delivery_alert is not None:
-            await prev_waiting_delivery_alert.update_from_dict({"action": "cancelled"})
-            await prev_waiting_delivery_alert.save()
+    id: str
+    category: Category
+    tier: Tier
+    action: Action
+    task_id: str
+    message: str
