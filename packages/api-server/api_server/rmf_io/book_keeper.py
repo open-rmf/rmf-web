@@ -10,7 +10,6 @@ from rx.subject.subject import Subject
 from api_server.models import (
     BeaconState,
     BuildingMap,
-    DeliveryAlert,
     DispenserHealth,
     DispenserState,
     DoorHealth,
@@ -37,7 +36,6 @@ class RmfBookKeeper:
         [
             "beacon_state",
             "building_map",
-            "delivery_alert",
             "door_state",
             "door_health",
             "lift_state",
@@ -67,7 +65,6 @@ class RmfBookKeeper:
         self._loggers = self._ChildLoggers(
             self._main_logger.getChild("beacon_state"),
             self._main_logger.getChild("building_map"),
-            self._main_logger.getChild("delivery_alert"),
             self._main_logger.getChild("door_state"),
             self._main_logger.getChild("door_health"),
             self._main_logger.getChild("lift_state"),
@@ -82,7 +79,6 @@ class RmfBookKeeper:
         )
 
         self._loggers.beacon_state.parent = self._main_logger
-        self._loggers.delivery_alert.parent = self._main_logger
         self._loggers.door_state.parent = self._main_logger
         self._loggers.door_health.parent = self._main_logger
         self._loggers.lift_state.parent = self._main_logger
@@ -100,7 +96,6 @@ class RmfBookKeeper:
     async def start(self):
         self._loop = asyncio.get_event_loop()
         self._record_beacon_state()
-        self._record_delivery_alert()
         self._record_building_map()
         self._record_door_state()
         self._record_door_health()
@@ -140,15 +135,6 @@ class RmfBookKeeper:
 
         self._subscriptions.append(
             self.rmf.beacons.subscribe(lambda x: self._create_task(update(x)))
-        )
-
-    def _record_delivery_alert(self):
-        async def update(delivery_alert: DeliveryAlert):
-            await delivery_alert.save()
-            self._loggers.delivery_alert.info(json.dumps(delivery_alert.dict()))
-
-        self._subscriptions.append(
-            self.rmf.delivery_alerts.subscribe(lambda x: self._create_task(update(x)))
         )
 
     def _record_building_map(self):
