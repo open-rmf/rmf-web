@@ -25,19 +25,22 @@ def cleanup():
 
 atexit.register(cleanup)
 server_proc = subprocess.Popen(
-    ("pnpm", "start"), cwd=f"{os.path.dirname(__file__)}/..", start_new_session=True
+    ("python", "-m", "api_server"),
+    cwd=f"{os.path.dirname(__file__)}/..",
+    start_new_session=True,
 )
 
 time.sleep(5)  # wait for server to be ready
 outdir = f"{args.output}"
 os.makedirs(outdir, exist_ok=True)
 
-with urlopen("http://localhost:8000/docs") as resp:
+base_url = "http://localhost:8000/rmf-web"
+with urlopen(f"{base_url}/docs") as resp:
     html: bytes = resp.read()
     with open(f"{outdir}/index.html", "bw") as f:
         f.write(html)
 
-with urlopen("http://localhost:8000/openapi.json") as resp:
+with urlopen(f"{base_url}/openapi.json") as resp:
     openapi = json.loads(resp.read())
     openapi["servers"] = [
         {
@@ -54,7 +57,7 @@ files_to_download = [
 ]
 
 for p in files_to_download:
-    with urlopen(f"http://localhost:8000{p}") as resp:
+    with urlopen(f"{base_url}{p}") as resp:
         fp = f"{outdir}{p}"
         os.makedirs(os.path.dirname(fp), exist_ok=True)
         with open(fp, "bw") as f:
