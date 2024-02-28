@@ -256,7 +256,7 @@ export const TasksApp = React.memo(
           `0,${timestamp.getTime()}`,
           undefined,
           undefined,
-          1000,
+          5000,
           undefined,
           '-unix_millis_start_time',
           undefined,

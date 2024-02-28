@@ -798,7 +798,7 @@ export default {
             required: false,
             schema: {
               title: 'Limit',
-              maximum: 1000.0,
+              maximum: 5000.0,
               exclusiveMinimum: 0.0,
               type: 'integer',
               description: 'defaults to 100',
@@ -1284,7 +1284,7 @@ export default {
             required: false,
             schema: {
               title: 'Limit',
-              maximum: 1000.0,
+              maximum: 5000.0,
               exclusiveMinimum: 0.0,
               type: 'integer',
               description: 'defaults to 100',
@@ -1852,7 +1852,7 @@ export default {
             required: false,
             schema: {
               title: 'Limit',
-              maximum: 1000.0,
+              maximum: 5000.0,
               exclusiveMinimum: 0.0,
               type: 'integer',
               description: 'defaults to 100',
