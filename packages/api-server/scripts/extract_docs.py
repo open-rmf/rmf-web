@@ -29,16 +29,15 @@ server_proc = subprocess.Popen(
 )
 
 time.sleep(5)  # wait for server to be ready
-outdir = f"{args.output}/docs/api-server/"
+outdir = f"{args.output}"
 os.makedirs(outdir, exist_ok=True)
 
-with urlopen("http://127.0.0.1:8000/docs") as resp:
+with urlopen("http://localhost:8000/docs") as resp:
     html: bytes = resp.read()
-    html = html.replace(b"/openapi.json", b"/rmf-web/docs/api-server/openapi.json")
     with open(f"{outdir}/index.html", "bw") as f:
         f.write(html)
 
-with urlopen("http://127.0.0.1:8000/openapi.json") as resp:
+with urlopen("http://localhost:8000/openapi.json") as resp:
     openapi = json.loads(resp.read())
     openapi["servers"] = [
         {
@@ -48,3 +47,15 @@ with urlopen("http://127.0.0.1:8000/openapi.json") as resp:
     ]
     with open(f"{outdir}/openapi.json", "w") as f:
         json.dump(openapi, f)
+
+files_to_download = [
+    "/static/swagger-ui-bundle.js",
+    "/static/swagger-ui.css",
+]
+
+for p in files_to_download:
+    with urlopen(f"http://localhost:8000{p}") as resp:
+        fp = f"{outdir}{p}"
+        os.makedirs(os.path.dirname(fp), exist_ok=True)
+        with open(fp, "bw") as f:
+            f.write(resp.read())
