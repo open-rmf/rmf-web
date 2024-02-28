@@ -217,11 +217,7 @@ async def on_shutdown():
 
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
-    openapi_url = (
-        app.openapi_url
-        if app.openapi_url is not None
-        else f"{app_config.public_url.geturl()}/openapi.json"
-    )
+    openapi_url = f"{app_config.public_url.geturl()}{app.openapi_url}"
     return get_swagger_ui_html(
         openapi_url=openapi_url,
         title=app.title + " - Swagger UI",
@@ -238,7 +234,7 @@ async def swagger_ui_redirect():
 
 @app.get("/redoc", include_in_schema=False)
 async def redoc_html():
-    openapi_url = app.openapi_url if app.openapi_url is not None else "/openapi.json"
+    openapi_url = f"{app_config.public_url.geturl()}{app.openapi_url}"
     return get_redoc_html(
         openapi_url=openapi_url,
         title=app.title + " - ReDoc",
