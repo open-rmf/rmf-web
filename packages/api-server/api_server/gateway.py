@@ -215,7 +215,12 @@ class RmfGateway:
             RmfDeliveryAlert,
             "delivery_alert_request",
             lambda msg: rmf_events.delivery_alerts.on_next(convert_delivery_alert(msg)),
-            10,
+            rclpy.qos.QoSProfile(
+                history=rclpy.qos.HistoryPolicy.KEEP_LAST,
+                depth=10,
+                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
+                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
+            ),
         )
         self._subscriptions.append(delivery_alert_request_sub)
 

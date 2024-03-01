@@ -4,7 +4,7 @@ import {
   ApiServerModelsTortoiseModelsAlertsAlertLeaf,
   ApiServerModelsTortoiseModelsBeaconsBeaconStateLeaf as BeaconState,
   BuildingMap,
-  ApiServerModelsTortoiseModelsDeliveryAlertsDeliveryAlertLeaf as DeliveryAlert,
+  DeliveryAlert,
   DispenserHealth,
   DispenserState,
   DoorHealth,

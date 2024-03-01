@@ -202,7 +202,10 @@ export const TaskSchedule = () => {
 
       let exceptDate: string | undefined = undefined;
       if (eventScope === EventScopes.CURRENT) {
-        exceptDate = exceptDateRef.current.toISOString();
+        exceptDate = toISOStringWithTimezone(exceptDateRef.current);
+        console.debug(`Editing schedule id ${currentScheduleTask.id}, event date ${exceptDate}`);
+      } else {
+        console.debug(`Editing schedule id ${currentScheduleTask.id}`);
       }
 
       await Promise.all(

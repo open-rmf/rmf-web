@@ -87,25 +87,6 @@ class AlertRepository:
             }
         )
         await ack_alert.save()
-
-        # Save in logs who was the user that acknowledged the task
-        late_task_alert_substr = "__late"
-        late_task_alert = late_task_alert_substr in alert.id
-        task_id = (
-            alert.id
-            if not late_task_alert
-            else alert.id[: -len(late_task_alert_substr)]
-        )
-        ack_action = "Task complete" if not late_task_alert else "Task delayed"
-        try:
-            await self.task_repo.save_log_acknowledged_task_completion(
-                task_id, self.user.username, unix_millis_acknowledged_time, ack_action
-            )
-        except Exception as e:
-            raise RuntimeError(
-                f"Error in save_log_acknowledged_task_completion {e}"
-            ) from e
-
         await alert.delete()
         ack_alert_pydantic = await ttm.AlertPydantic.from_tortoise_orm(ack_alert)
         return ack_alert_pydantic
