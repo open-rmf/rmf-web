@@ -587,7 +587,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             console.error(`Failed to create schedule: ${e.message}`);
             showAlert('error', `Failed to submit schedule: ${e.message}`);
           }}
-          allowCustomTask={resourceManager?.allowCustomTask}
         />
       )}
     </>

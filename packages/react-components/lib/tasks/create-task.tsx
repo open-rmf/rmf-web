@@ -781,6 +781,7 @@ function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange, allowSubmit }: Pa
     allowSubmit(isPatrolTaskDescriptionValid(desc));
     onChange(desc);
   };
+  allowSubmit(isPatrolTaskDescriptionValid(taskDesc));
 
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
@@ -1200,7 +1201,6 @@ export interface CreateTaskFormProps
   scheduleToEdit?: Schedule;
   // requestTask is provided only when editing a schedule
   requestTask?: TaskRequest;
-  allowCustomTask?: boolean;
   submitTasks?(tasks: TaskRequest[], schedule: Schedule | null): Promise<void>;
   tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
   onSuccess?(tasks: TaskRequest[]): void;
@@ -1227,7 +1227,6 @@ export function CreateTaskForm({
   favoritesTasks = [],
   scheduleToEdit,
   requestTask,
-  allowCustomTask,
   submitTasks,
   tasksFromFile,
   onClose,
@@ -1669,12 +1668,7 @@ export function CreateTaskForm({
                       >
                         Patrol
                       </MenuItem>
-                      <MenuItem
-                        value="custom"
-                        disabled={allowCustomTask === undefined || !allowCustomTask}
-                      >
-                        Custom Task
-                      </MenuItem>
+                      <MenuItem value="custom">Custom Task</MenuItem>
                     </TextField>
                   </Grid>
                   <Grid item xs={isScreenHeightLessThan800 ? 6 : 7}>

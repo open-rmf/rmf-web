@@ -19,7 +19,6 @@ export interface ResourceConfigurationsType {
   cartIds?: string[];
   loggedInDisplayLevel?: string;
   emergencyLots?: string[];
-  allowCustomTask?: boolean;
 }
 
 export default class ResourceManager {
@@ -35,7 +34,6 @@ export default class ResourceManager {
   cartIds?: string[];
   loggedInDisplayLevel?: string;
   emergencyLots?: string[];
-  allowCustomTask?: boolean;
 
   /**
    * Gets the default resource manager using the embedded resource file (aka "assets/resources/main.json").
@@ -76,7 +74,6 @@ export default class ResourceManager {
     this.cartIds = resources.cartIds || [];
     this.loggedInDisplayLevel = resources.loggedInDisplayLevel;
     this.emergencyLots = resources.emergencyLots || [];
-    this.allowCustomTask = resources.allowCustomTask ?? false;
   }
 }
 
