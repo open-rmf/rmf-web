@@ -275,6 +275,7 @@ export function getShortDescription(taskRequest: TaskRequest): string {
     )}`;
   }
 
+  // This section is only valid for custom delivery types
   try {
     const goToPickup: GoToPlaceActivity =
       taskRequest.description.phases[0].activity.description.activities[0];
@@ -298,7 +299,12 @@ export function getShortDescription(taskRequest: TaskRequest): string {
         return `[Unknown] type "${taskRequest.description.category}"`;
     }
   } catch (e) {
-    return '[Unknown] type';
+    if (e instanceof TypeError) {
+      console.error(`Failed to parse custom delivery: ${e.message}`);
+    } else {
+      console.error(`Failed to generate short description from task: ${(e as Error).message}`);
+    }
+    return `[Unknown] type`;
   }
 }
 
