@@ -1306,18 +1306,7 @@ export function CreateTaskForm({
     setWarnTimeChecked(event.target.checked);
   };
 
-  const handleTaskDescriptionChange = (newDesc: TaskDescription) => {
-    setTaskRequest((prev) => {
-      return {
-        ...prev,
-        category: 'compose',
-        description: newDesc,
-      };
-    });
-    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, description: newDesc, category: 'compose' });
-  };
-
-  const legacyHandleTaskDescriptionChange = (newCategory: string, newDesc: TaskDescription) => {
+  const handleTaskDescriptionChange = (newCategory: string, newDesc: TaskDescription) => {
     setTaskRequest((prev) => {
       return {
         ...prev,
@@ -1328,6 +1317,9 @@ export function CreateTaskForm({
     setFavoriteTaskBuffer({ ...favoriteTaskBuffer, description: newDesc, category: newCategory });
   };
 
+  // FIXME: Custom task descriptions are currently not allowed to be saved as
+  // favorite tasks. This will probably require a re-write of FavoriteTask's
+  // pydantic model with better typing.
   const handleCustomTaskDescriptionChange = (newDesc: CustomTaskDescription) => {
     setTaskRequest((prev) => {
       return {
@@ -1344,7 +1336,7 @@ export function CreateTaskForm({
         <PatrolTaskForm
           taskDesc={taskRequest.description as PatrolTaskDescription}
           patrolWaypoints={patrolWaypoints}
-          onChange={(desc) => legacyHandleTaskDescriptionChange('patrol', desc)}
+          onChange={(desc) => handleTaskDescriptionChange('patrol', desc)}
           allowSubmit={allowSubmit}
         />
       );
@@ -1372,7 +1364,7 @@ export function CreateTaskForm({
               desc.category = taskRequest.description.category;
               desc.phases[0].activity.description.activities[1].description.category =
                 taskRequest.description.category;
-              handleTaskDescriptionChange(desc);
+              handleTaskDescriptionChange('compose', desc);
             }}
             allowSubmit={allowSubmit}
           />
@@ -1389,7 +1381,7 @@ export function CreateTaskForm({
               desc.category = taskRequest.description.category;
               desc.phases[0].activity.description.activities[1].description.category =
                 taskRequest.description.category;
-              handleTaskDescriptionChange(desc);
+              handleTaskDescriptionChange('compose', desc);
             }}
             allowSubmit={allowSubmit}
           />
