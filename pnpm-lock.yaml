@@ -88,8 +88,8 @@ importers:
   packages/dashboard:
     dependencies:
       '@aldabil/react-scheduler':
-        specifier: ^2.6.7
-        version: 2.6.13(@mui/icons-material@5.8.4)(@mui/material@5.8.7)(@mui/x-date-pickers@5.0.20)(date-fns@2.28.0)(react@18.2.0)
+        specifier: ^2.7.8
+        version: 2.7.8(@mui/icons-material@5.8.4)(@mui/material@5.8.7)(@mui/x-date-pickers@5.0.20)(date-fns@2.28.0)(react@18.2.0)
       '@fontsource/roboto':
         specifier: ^4.3.0
         version: 4.5.7
@@ -765,12 +765,12 @@ packages:
     resolution: {integrity: sha512-E09FiIft46CmH5Qnjb0wsW54/YQd69LsxeKUOWawmws1XWvyFGURnAChH0mlr7YPFR1ofwvUQfcL0J3lMxXqPA==}
     dev: true
 
-  /@aldabil/react-scheduler@2.6.13(@mui/icons-material@5.8.4)(@mui/material@5.8.7)(@mui/x-date-pickers@5.0.20)(date-fns@2.28.0)(react@18.2.0):
-    resolution: {integrity: sha512-VLuV+nnLwBqBRLZgrSX0sEyF3+DHAbEjsWdQRnG+uDcekz51ajy9W+oSPYTGejBDriyDoIjKLDP2eOHz5i2c5g==}
+  /@aldabil/react-scheduler@2.7.8(@mui/icons-material@5.8.4)(@mui/material@5.8.7)(@mui/x-date-pickers@5.0.20)(date-fns@2.28.0)(react@18.2.0):
+    resolution: {integrity: sha512-FpF1PM5mlNAY19E8Afal0dp17ppFK+US9wYMVY292QlMtZBTbAlAvjxJptoeXLqGu1NkvzzGee/sFJtLumRS5Q==}
     peerDependencies:
       '@mui/icons-material': '>=5.0.0'
       '@mui/material': '>=5.0.0'
-      '@mui/x-date-pickers': '>=5.0.0-alpha'
+      '@mui/x-date-pickers': '>=6.0.0-alpha'
       date-fns: '>=2.2'
       react: '>=17.0.0'
     dependencies:
@@ -6033,8 +6033,8 @@ packages:
       '@types/yargs-parser': 21.0.0
     dev: true
 
-  /@types/yauzl@2.10.0:
-    resolution: {integrity: sha512-Cn6WYCm0tXv8p6k+A8PvbDG763EDpBoTzHdA+Q/MF6H3sapGjCm9NzoaJncJS9tUKSuCoDs9XHxYYsQDgxR6kw==}
+  /@types/yauzl@2.10.3:
+    resolution: {integrity: sha512-oJoftv0LSuaDZE3Le4DbKX+KS9G36NzOeSap90UIK0yMA/NhKJhqlSGtNDORNRaIbQfzjXDrQa0ytJ6mNRGz/Q==}
     requiresBuild: true
     dependencies:
       '@types/node': 18.0.3
@@ -8305,8 +8305,25 @@ packages:
       normalize-path: 3.0.0
       readdirp: 3.6.0
     optionalDependencies:
-      fsevents: 2.3.2
+      fsevents: 2.3.3
     dev: true
+
+  /chokidar@3.6.0:
+    resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}
+    engines: {node: '>= 8.10.0'}
+    requiresBuild: true
+    dependencies:
+      anymatch: 3.1.2
+      braces: 3.0.2
+      glob-parent: 5.1.2
+      is-binary-path: 2.1.0
+      is-glob: 4.0.3
+      normalize-path: 3.0.0
+      readdirp: 3.6.0
+    optionalDependencies:
+      fsevents: 2.3.3
+    dev: true
+    optional: true
 
   /chownr@1.1.4:
     resolution: {integrity: sha512-jJ0bqzaylmJtVnNgzTeSOs8DPavpbYgEr/b0YL8/2GO3xJEhInFmhKMUnEJQjZumK7KXGFhUy89PrsJWlakBVg==}
@@ -10908,7 +10925,7 @@ packages:
       get-stream: 5.2.0
       yauzl: 2.10.0
     optionalDependencies:
-      '@types/yauzl': 2.10.0
+      '@types/yauzl': 2.10.3
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -11443,12 +11460,12 @@ packages:
     requiresBuild: true
     dependencies:
       bindings: 1.5.0
-      nan: 2.17.0
+      nan: 2.18.0
     dev: true
     optional: true
 
-  /fsevents@2.3.2:
-    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
+  /fsevents@2.3.3:
+    resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     requiresBuild: true
@@ -13399,7 +13416,7 @@ packages:
       sane: 4.1.0
       walker: 1.0.8
     optionalDependencies:
-      fsevents: 2.3.2
+      fsevents: 2.3.3
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -15262,8 +15279,8 @@ packages:
     requiresBuild: true
     dev: true
 
-  /nan@2.17.0:
-    resolution: {integrity: sha512-2ZTgtl0nJsO0KQCjEpxcIr5D+Yv90plTitZt9JBfQvVJDS5seMl3FOvsh3+9CoYWXf/1l5OaZzzF6nDm4cagaQ==}
+  /nan@2.18.0:
+    resolution: {integrity: sha512-W7tfG7vMOGtD30sHoZSSc/JVYiyDPEyQVso/Zz+/uQd0B0L46gtC+pHha5FFMRpil6fm/AoEcRWyOVi4+E/f8w==}
     requiresBuild: true
     dev: true
     optional: true
@@ -17786,7 +17803,7 @@ packages:
       webpack-manifest-plugin: 2.2.0(webpack@4.44.2)
       workbox-webpack-plugin: 5.1.4(webpack@4.44.2)
     optionalDependencies:
-      fsevents: 2.3.2
+      fsevents: 2.3.3
     transitivePeerDependencies:
       - '@types/webpack'
       - bluebird
@@ -20789,7 +20806,7 @@ packages:
       graceful-fs: 4.2.10
       neo-async: 2.6.2
     optionalDependencies:
-      chokidar: 3.5.3
+      chokidar: 3.6.0
       watchpack-chokidar2: 2.0.1
     transitivePeerDependencies:
       - supports-color
