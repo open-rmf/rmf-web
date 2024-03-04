@@ -168,7 +168,7 @@ export interface DeliveryTaskDescription {
   ];
 }
 
-type CustomTaskDescription = string;
+type CustomComposeTaskDescription = string;
 
 type TaskDescription =
   | DeliveryTaskDescription
@@ -302,9 +302,14 @@ export function getShortDescription(taskRequest: TaskRequest): string {
     if (e instanceof TypeError) {
       console.error(`Failed to parse custom delivery: ${e.message}`);
     } else {
-      console.error(`Failed to generate short description from task: ${(e as Error).message}`);
+      console.error(
+        `Failed to generate short description from task of category: ${taskRequest.category}: ${
+          (e as Error).message
+        }`,
+      );
     }
-    return `[Unknown] type`;
+    console.error(JSON.stringify(taskRequest.description));
+    return JSON.stringify(taskRequest.description);
   }
 }
 
@@ -854,15 +859,15 @@ function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange, allowSubmit }: Pa
   );
 }
 
-interface CustomTaskFormProps {
-  taskDesc: CustomTaskDescription;
-  onChange(customTaskDescription: CustomTaskDescription): void;
+interface CustomComposeTaskFormProps {
+  taskDesc: CustomComposeTaskDescription;
+  onChange(customComposeTaskDescription: CustomComposeTaskDescription): void;
   allowSubmit(allow: boolean): void;
 }
 
-function CustomTaskForm({ taskDesc, onChange, allowSubmit }: CustomTaskFormProps) {
+function CustomComposeTaskForm({ taskDesc, onChange, allowSubmit }: CustomComposeTaskFormProps) {
   const theme = useTheme();
-  const onInputChange = (desc: CustomTaskDescription) => {
+  const onInputChange = (desc: CustomComposeTaskDescription) => {
     allowSubmit(isCustomTaskDescriptionValid(desc));
     onChange(desc);
   };
@@ -1317,14 +1322,14 @@ export function CreateTaskForm({
     setFavoriteTaskBuffer({ ...favoriteTaskBuffer, description: newDesc, category: newCategory });
   };
 
-  // FIXME: Custom task descriptions are currently not allowed to be saved as
-  // favorite tasks. This will probably require a re-write of FavoriteTask's
-  // pydantic model with better typing.
-  const handleCustomTaskDescriptionChange = (newDesc: CustomTaskDescription) => {
+  // FIXME: Custom compose task descriptions are currently not allowed to be
+  // saved as favorite tasks. This will probably require a re-write of
+  // FavoriteTask's pydantic model with better typing.
+  const handleCustomComposeTaskDescriptionChange = (newDesc: CustomComposeTaskDescription) => {
     setTaskRequest((prev) => {
       return {
         ...prev,
-        category: 'custom',
+        category: 'custom_compose',
         description: newDesc,
       };
     });
@@ -1340,12 +1345,12 @@ export function CreateTaskForm({
           allowSubmit={allowSubmit}
         />
       );
-    } else if (taskRequest.category === 'custom') {
+    } else if (taskRequest.category === 'custom_compose') {
       return (
-        <CustomTaskForm
-          taskDesc={taskRequest.description as CustomTaskDescription}
+        <CustomComposeTaskForm
+          taskDesc={taskRequest.description as CustomComposeTaskDescription}
           onChange={(desc) => {
-            handleCustomTaskDescriptionChange(desc);
+            handleCustomComposeTaskDescriptionChange(desc);
           }}
           allowSubmit={allowSubmit}
         />
@@ -1394,8 +1399,8 @@ export function CreateTaskForm({
     const newType = ev.target.value;
     setTaskType(newType);
 
-    if (newType === 'custom') {
-      taskRequest.category = 'custom';
+    if (newType === 'custom_compose') {
+      taskRequest.category = 'custom_compose';
       taskRequest.description = '';
     } else {
       const newDesc = defaultTaskDescription(newType);
@@ -1461,13 +1466,13 @@ export function CreateTaskForm({
         description: [goToOneOfThePlaces, deliveryDropoff],
       };
       request.description.phases[1].on_cancel = [onCancelDropoff];
-    } else if (taskType === 'custom') {
+    } else if (taskType === 'custom_compose') {
       try {
         const obj = JSON.parse(request.description);
         request.category = 'compose';
         request.description = obj;
       } catch (e) {
-        console.error('Invalid custom task description');
+        console.error('Invalid custom compose task description');
         onFail && onFail(e as Error, [request]);
         return;
       }
@@ -1666,7 +1671,7 @@ export function CreateTaskForm({
                       >
                         Patrol
                       </MenuItem>
-                      <MenuItem value="custom">Custom Task</MenuItem>
+                      <MenuItem value="custom_compose">Custom Compose Task</MenuItem>
                     </TextField>
                   </Grid>
                   <Grid item xs={isScreenHeightLessThan800 ? 6 : 7}>
@@ -1757,7 +1762,7 @@ export function CreateTaskForm({
                       setOpenFavoriteDialog(true);
                     }}
                     style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }}
-                    disabled={taskType === 'custom'}
+                    disabled={taskType === 'custom_compose'}
                   >
                     {callToUpdateFavoriteTask ? `Confirm edits` : 'Save as a favorite task'}
                   </Button>
