@@ -1,16 +1,7 @@
-import {
-  Alert,
-  AlertProps,
-  createTheme,
-  CssBaseline,
-  GlobalStyles,
-  Grid,
-  Snackbar,
-} from '@mui/material';
+import { Alert, AlertProps, createTheme, CssBaseline, Grid, Snackbar } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import React from 'react';
-import { rmfDark, rmfDarkLeaflet, rmfLight } from 'react-components';
-import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
+import { loadSettings, saveSettings, Settings } from '../settings';
 import { AppController, AppControllerContext, SettingsContext } from './app-contexts';
 import AppBar from './appbar';
 import { AlertStore } from './alert-store';
@@ -40,17 +31,6 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
   const [alertDuration, setAlertDuration] = React.useState(DefaultAlertDuration);
   const [extraAppbarIcons, setExtraAppbarIcons] = React.useState<React.ReactNode>(null);
 
-  const theme = React.useMemo(() => {
-    switch (settings.themeMode) {
-      case ThemeMode.RmfLight:
-        return rmfLight;
-      case ThemeMode.RmfDark:
-        return rmfDark;
-      default:
-        return defaultTheme;
-    }
-  }, [settings.themeMode]);
-
   const updateSettings = React.useCallback((newSettings: Settings) => {
     saveSettings(newSettings);
     setSettings(newSettings);
@@ -71,9 +51,8 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
   );
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={defaultTheme}>
       <CssBaseline />
-      {settings.themeMode === ThemeMode.RmfDark && <GlobalStyles styles={rmfDarkLeaflet} />}
       <SettingsContext.Provider value={settings}>
         <AppControllerContext.Provider value={appController}>
           <AlertStore />
