@@ -308,7 +308,6 @@ export const TaskSchedule = () => {
             value={eventScope}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setEventScope(event.target.value);
-              AppEvents.refreshTaskSchedule.next();
             }}
           />
         )}
