@@ -101,6 +101,7 @@ export const TaskSchedule = () => {
     end: new Date(),
     view: 'week',
   });
+  const [selectedDate, setSelectedDate] = React.useState<Date>(new Date());
 
   React.useEffect(() => {
     const sub = AppEvents.refreshTaskSchedule.subscribe({
@@ -285,7 +286,7 @@ export const TaskSchedule = () => {
       <Scheduler
         // react-scheduler does not support refreshing, workaround by mounting a new instance.
         key={`scheduler-${refreshTaskScheduleCount}`}
-        selectedDate={currentView.start}
+        selectedDate={selectedDate}
         view={currentView.view}
         day={defaultDaySettings}
         week={defaultWeekSettings}
@@ -314,6 +315,7 @@ export const TaskSchedule = () => {
         viewerExtraComponent={(fields, event) => {
           return <Typography variant="caption">{event.title}</Typography>;
         }}
+        onSelectedDateChange={setSelectedDate}
       />
       {openCreateTaskForm && (
         <CreateTaskForm
