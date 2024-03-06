@@ -267,7 +267,7 @@ const StyledDialog = styled((props: DialogProps) => <Dialog {...props} />)(({ th
   },
 }));
 
-export function getShortDescription(taskRequest: TaskRequest): string {
+export function getShortDescription(taskRequest: TaskRequest): string | undefined {
   if (taskRequest.category === 'patrol') {
     const formattedPlaces = taskRequest.description.places.map((place: string) => `[${place}]`);
     return `[Patrol] [${taskRequest.description.rounds}] round/s, along ${formattedPlaces.join(
@@ -276,6 +276,12 @@ export function getShortDescription(taskRequest: TaskRequest): string {
   }
 
   // This section is only valid for custom delivery types
+  // FIXME: This block looks like it makes assumptions about the structure of
+  // the task description in order to parse it, but it is following the
+  // statically defined description (object) at the top of this file. The
+  // descriptions should be replaced by a schema in general, however the better
+  // approach now should be to make each task description testable and in charge
+  // of their own short descriptions.
   try {
     const goToPickup: GoToPlaceActivity =
       taskRequest.description.phases[0].activity.description.activities[0];
@@ -308,8 +314,19 @@ export function getShortDescription(taskRequest: TaskRequest): string {
         }`,
       );
     }
-    console.error(JSON.stringify(taskRequest.description));
-    return JSON.stringify(taskRequest.description);
+
+    try {
+      const descriptionString = JSON.stringify(taskRequest.description);
+      console.error(descriptionString);
+      return descriptionString;
+    } catch (e) {
+      console.error(
+        `Failed to parse description of task of category: ${taskRequest.category}: ${
+          (e as Error).message
+        }`,
+      );
+      return undefined;
+    }
   }
 }
 
@@ -1453,6 +1470,9 @@ export function CreateTaskForm({
           ],
         },
       };
+
+      // FIXME: there should not be any statically defined duration estimates as
+      // it makes assumptions of the deployments.
       const deliveryDropoff: DropoffActivity = {
         category: 'perform_action',
         description: {
