@@ -671,6 +671,23 @@ export default {
         },
       },
     },
+    '/tasks/count': {
+      get: {
+        tags: ['Tasks'],
+        summary: 'Task States Count',
+        operationId: 'task_states_count_tasks_count_get',
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: {
+              'application/json': {
+                schema: { title: 'Response Task States Count Tasks Count Get', type: 'integer' },
+              },
+            },
+          },
+        },
+      },
+    },
     '/tasks': {
       get: {
         tags: ['Tasks'],

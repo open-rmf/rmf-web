@@ -8897,6 +8897,40 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     },
     /**
      *
+     * @summary Task States Count
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    taskStatesCountTasksCountGet: async (
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/tasks/count`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Update Schedule Task
      * @param {number} taskId
      * @param {PostScheduledTaskRequest} postScheduledTaskRequest
@@ -9461,6 +9495,20 @@ export const TasksApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Task States Count
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async taskStatesCountTasksCountGet(
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<number>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.taskStatesCountTasksCountGet(
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
      * @summary Update Schedule Task
      * @param {number} taskId
      * @param {PostScheduledTaskRequest} postScheduledTaskRequest
@@ -9905,6 +9953,17 @@ export const TasksApiFactory = function (
           orderBy,
           options,
         )
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Task States Count
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    taskStatesCountTasksCountGet(options?: any): AxiosPromise<number> {
+      return localVarFp
+        .taskStatesCountTasksCountGet(options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -10378,6 +10437,19 @@ export class TasksApi extends BaseAPI {
         orderBy,
         options,
       )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Task States Count
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public taskStatesCountTasksCountGet(options?: AxiosRequestConfig) {
+    return TasksApiFp(this.configuration)
+      .taskStatesCountTasksCountGet(options)
       .then((request) => request(this.axios, this.basePath));
   }
 

@@ -3,6 +3,6 @@ import { version as rmfModelVer } from 'rmf-models';
 
 export const version = {
   rmfModels: rmfModelVer,
-  rmfServer: '32eb4ad7afceb49e48d5c299633c1488ba41072a',
+  rmfServer: 'f40b701e1843a78e9e57bb4d2de337c20e75fecd',
   openapiGenerator: '6.2.1',
 };

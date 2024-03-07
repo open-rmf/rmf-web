@@ -59,6 +59,11 @@ async def query_task_requests(
     return return_requests
 
 
+@router.get("/count", response_model=int)
+async def task_states_count(task_repo: TaskRepository = Depends(task_repo_dep)):
+    return await task_repo.task_states_count()
+
+
 @router.get("", response_model=List[mdl.TaskState])
 async def query_task_states(
     task_repo: TaskRepository = Depends(task_repo_dep),

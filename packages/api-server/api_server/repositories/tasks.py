@@ -189,6 +189,11 @@ class TaskRepository:
 
         await ttm.TaskState.update_or_create(task_state_dict, id_=task_state.booking.id)
 
+    async def task_states_count(self) -> int:
+        # TODO: enforce with authz
+        all_queries = DbTaskState.all()
+        return await all_queries.count()
+
     async def query_task_states(
         self, query: QuerySet[DbTaskState], pagination: Optional[Pagination] = None
     ) -> List[TaskState]:
