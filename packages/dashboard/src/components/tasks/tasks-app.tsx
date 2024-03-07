@@ -1,7 +1,9 @@
 import DownloadIcon from '@mui/icons-material/Download';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import {
+  Backdrop,
   Box,
+  CircularProgress,
   IconButton,
   Menu,
   MenuItem,
@@ -83,6 +85,7 @@ export const TasksApp = React.memo(
     ) => {
       const rmf = React.useContext(RmfAppContext);
       const [autoRefresh, setAutoRefresh] = React.useState(true);
+      const [openLoadingBackdrop, setOpenLoadingBackdrop] = React.useState(false);
       const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
       const [selectedPanelIndex, setSelectedPanelIndex] = React.useState(TaskTablePanel.QueueTable);
 
@@ -245,23 +248,48 @@ export const TasksApp = React.memo(
           return [];
         }
 
-        const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          `0,${timestamp.getTime()}`,
-          undefined,
-          undefined,
-          5000,
-          undefined,
-          '-unix_millis_start_time',
-          undefined,
-        );
-        const allTasks = resp.data as TaskState[];
+        const taskStateCount = (await rmf.tasksApi.taskStatesCountTasksCountGet()).data;
+        const QUERY_LIMIT = 100;
+        const queriesRequired = Math.ceil(taskStateCount / QUERY_LIMIT);
+        const allTasks: TaskState[] = [];
+        for (let i = 0; i < queriesRequired; i++) {
+          console.log(`Querying task state bunch of index ${i}`);
+          const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            `0,${timestamp.getTime()}`,
+            undefined,
+            undefined,
+            QUERY_LIMIT,
+            i * QUERY_LIMIT,
+            '-unix_millis_start_time',
+            undefined,
+          );
+          allTasks.push(...resp.data);
+        }
+
+        // const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
+        //   undefined,
+        //   undefined,
+        //   undefined,
+        //   undefined,
+        //   undefined,
+        //   undefined,
+        //   undefined,
+        //   `0,${timestamp.getTime()}`,
+        //   undefined,
+        //   undefined,
+        //   5000,
+        //   undefined,
+        //   '-unix_millis_start_time',
+        //   undefined,
+        // );
+        // const allTasks = resp.data as TaskState[];
         return allTasks;
       };
 
@@ -349,7 +377,11 @@ export const TasksApp = React.memo(
                   <MenuItem
                     onClick={() => {
                       handleCloseExportMenu();
+                      console.log('starting minimal export');
+                      setOpenLoadingBackdrop(true);
                       exportTasksToCsv(true);
+                      console.log('ending minimal export');
+                      setOpenLoadingBackdrop(false);
                     }}
                     disableRipple
                   >
@@ -358,7 +390,11 @@ export const TasksApp = React.memo(
                   <MenuItem
                     onClick={() => {
                       handleCloseExportMenu();
+                      console.log('starting full export');
+                      setOpenLoadingBackdrop(true);
                       exportTasksToCsv(false);
+                      console.log('ending full export');
+                      setOpenLoadingBackdrop(false);
                     }}
                     disableRipple
                   >
@@ -435,6 +471,15 @@ export const TasksApp = React.memo(
             />
           )}
           {children}
+          <Backdrop
+            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={openLoadingBackdrop}
+            // onClick={() => {
+            //   setOpenLoadingBackdrop(false);
+            // }}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </Window>
       );
     },
