@@ -12,7 +12,6 @@ import {
   Toolbar,
   Tooltip,
   useMediaQuery,
-  Typography,
 } from '@mui/material';
 import { TaskRequest, TaskState } from 'api-client';
 import React from 'react';
