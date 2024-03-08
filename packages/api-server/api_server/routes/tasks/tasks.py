@@ -3,7 +3,6 @@ from typing import List, Optional, Tuple, cast
 
 from fastapi import Body, Depends, HTTPException, Path, Query
 from rx import operators as rxops
-from tortoise.queryset import QuerySet
 
 from api_server import models as mdl
 from api_server.dependencies import (
@@ -122,6 +121,7 @@ async def query_task_states(
             if status_string not in valid_values:
                 continue
             filters["status__in"].append(mdl.Status(status_string))
+
     return await task_repo.query_task_states(DbTaskState.filter(**filters), pagination)
 
 
