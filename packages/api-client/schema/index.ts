@@ -671,147 +671,6 @@ export default {
         },
       },
     },
-    '/tasks/count': {
-      get: {
-        tags: ['Tasks'],
-        summary: 'Task States Count',
-        operationId: 'task_states_count_tasks_count_get',
-        parameters: [
-          {
-            description: 'comma separated list of task ids',
-            required: false,
-            schema: {
-              title: 'Task Id',
-              type: 'string',
-              description: 'comma separated list of task ids',
-            },
-            name: 'task_id',
-            in: 'query',
-          },
-          {
-            description: 'comma separated list of task categories',
-            required: false,
-            schema: {
-              title: 'Category',
-              type: 'string',
-              description: 'comma separated list of task categories',
-            },
-            name: 'category',
-            in: 'query',
-          },
-          {
-            description: 'comma separated list of requester names',
-            required: false,
-            schema: {
-              title: 'Requester',
-              type: 'string',
-              description: 'comma separated list of requester names',
-            },
-            name: 'requester',
-            in: 'query',
-          },
-          {
-            description: 'comma separated list of pickup names',
-            required: false,
-            schema: {
-              title: 'Pickup',
-              type: 'string',
-              description: 'comma separated list of pickup names',
-            },
-            name: 'pickup',
-            in: 'query',
-          },
-          {
-            description: 'comma separated list of destination names',
-            required: false,
-            schema: {
-              title: 'Destination',
-              type: 'string',
-              description: 'comma separated list of destination names',
-            },
-            name: 'destination',
-            in: 'query',
-          },
-          {
-            description: 'comma separated list of assigned robot names',
-            required: false,
-            schema: {
-              title: 'Assigned To',
-              type: 'string',
-              description: 'comma separated list of assigned robot names',
-            },
-            name: 'assigned_to',
-            in: 'query',
-          },
-          {
-            description: 'comma separated list of statuses',
-            required: false,
-            schema: {
-              title: 'Status',
-              type: 'string',
-              description: 'comma separated list of statuses',
-            },
-            name: 'status',
-            in: 'query',
-          },
-          {
-            description:
-              '\n        The period of request time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n        ',
-            required: false,
-            schema: {
-              title: 'Request Time Between',
-              type: 'string',
-              description:
-                '\n        The period of request time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n        ',
-            },
-            name: 'request_time_between',
-            in: 'query',
-          },
-          {
-            description:
-              '\n        The period of starting time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n        ',
-            required: false,
-            schema: {
-              title: 'Start Time Between',
-              type: 'string',
-              description:
-                '\n        The period of starting time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n        ',
-            },
-            name: 'start_time_between',
-            in: 'query',
-          },
-          {
-            description:
-              '\n        The period of finishing time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            "-60000" - Fetches logs in the last minute.\n        ',
-            required: false,
-            schema: {
-              title: 'Finish Time Between',
-              type: 'string',
-              description:
-                '\n        The period of finishing time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            "-60000" - Fetches logs in the last minute.\n        ',
-            },
-            name: 'finish_time_between',
-            in: 'query',
-          },
-        ],
-        responses: {
-          '200': {
-            description: 'Successful Response',
-            content: {
-              'application/json': {
-                schema: { title: 'Response Task States Count Tasks Count Get', type: 'integer' },
-              },
-            },
-          },
-          '422': {
-            description: 'Validation Error',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
-            },
-          },
-        },
-      },
-    },
     '/tasks': {
       get: {
         tags: ['Tasks'],
@@ -939,7 +798,7 @@ export default {
             required: false,
             schema: {
               title: 'Limit',
-              maximum: 5000.0,
+              maximum: 1000.0,
               exclusiveMinimum: 0.0,
               type: 'integer',
               description: 'defaults to 100',
@@ -1425,7 +1284,7 @@ export default {
             required: false,
             schema: {
               title: 'Limit',
-              maximum: 5000.0,
+              maximum: 1000.0,
               exclusiveMinimum: 0.0,
               type: 'integer',
               description: 'defaults to 100',
@@ -1993,7 +1852,7 @@ export default {
             required: false,
             schema: {
               title: 'Limit',
-              maximum: 5000.0,
+              maximum: 1000.0,
               exclusiveMinimum: 0.0,
               type: 'integer',
               description: 'defaults to 100',

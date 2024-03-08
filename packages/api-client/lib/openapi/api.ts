@@ -8897,100 +8897,6 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     },
     /**
      *
-     * @summary Task States Count
-     * @param {string} [taskId] comma separated list of task ids
-     * @param {string} [category] comma separated list of task categories
-     * @param {string} [requester] comma separated list of requester names
-     * @param {string} [pickup] comma separated list of pickup names
-     * @param {string} [destination] comma separated list of destination names
-     * @param {string} [assignedTo] comma separated list of assigned robot names
-     * @param {string} [status] comma separated list of statuses
-     * @param {string} [requestTimeBetween]          The period of request time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
-     * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
-     * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    taskStatesCountTasksCountGet: async (
-      taskId?: string,
-      category?: string,
-      requester?: string,
-      pickup?: string,
-      destination?: string,
-      assignedTo?: string,
-      status?: string,
-      requestTimeBetween?: string,
-      startTimeBetween?: string,
-      finishTimeBetween?: string,
-      options: AxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
-      const localVarPath = `/tasks/count`;
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      if (taskId !== undefined) {
-        localVarQueryParameter['task_id'] = taskId;
-      }
-
-      if (category !== undefined) {
-        localVarQueryParameter['category'] = category;
-      }
-
-      if (requester !== undefined) {
-        localVarQueryParameter['requester'] = requester;
-      }
-
-      if (pickup !== undefined) {
-        localVarQueryParameter['pickup'] = pickup;
-      }
-
-      if (destination !== undefined) {
-        localVarQueryParameter['destination'] = destination;
-      }
-
-      if (assignedTo !== undefined) {
-        localVarQueryParameter['assigned_to'] = assignedTo;
-      }
-
-      if (status !== undefined) {
-        localVarQueryParameter['status'] = status;
-      }
-
-      if (requestTimeBetween !== undefined) {
-        localVarQueryParameter['request_time_between'] = requestTimeBetween;
-      }
-
-      if (startTimeBetween !== undefined) {
-        localVarQueryParameter['start_time_between'] = startTimeBetween;
-      }
-
-      if (finishTimeBetween !== undefined) {
-        localVarQueryParameter['finish_time_between'] = finishTimeBetween;
-      }
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
-     *
      * @summary Update Schedule Task
      * @param {number} taskId
      * @param {PostScheduledTaskRequest} postScheduledTaskRequest
@@ -9555,50 +9461,6 @@ export const TasksApiFp = function (configuration?: Configuration) {
     },
     /**
      *
-     * @summary Task States Count
-     * @param {string} [taskId] comma separated list of task ids
-     * @param {string} [category] comma separated list of task categories
-     * @param {string} [requester] comma separated list of requester names
-     * @param {string} [pickup] comma separated list of pickup names
-     * @param {string} [destination] comma separated list of destination names
-     * @param {string} [assignedTo] comma separated list of assigned robot names
-     * @param {string} [status] comma separated list of statuses
-     * @param {string} [requestTimeBetween]          The period of request time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
-     * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
-     * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async taskStatesCountTasksCountGet(
-      taskId?: string,
-      category?: string,
-      requester?: string,
-      pickup?: string,
-      destination?: string,
-      assignedTo?: string,
-      status?: string,
-      requestTimeBetween?: string,
-      startTimeBetween?: string,
-      finishTimeBetween?: string,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<number>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.taskStatesCountTasksCountGet(
-        taskId,
-        category,
-        requester,
-        pickup,
-        destination,
-        assignedTo,
-        status,
-        requestTimeBetween,
-        startTimeBetween,
-        finishTimeBetween,
-        options,
-      );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-    },
-    /**
-     *
      * @summary Update Schedule Task
      * @param {number} taskId
      * @param {PostScheduledTaskRequest} postScheduledTaskRequest
@@ -10041,51 +9903,6 @@ export const TasksApiFactory = function (
           limit,
           offset,
           orderBy,
-          options,
-        )
-        .then((request) => request(axios, basePath));
-    },
-    /**
-     *
-     * @summary Task States Count
-     * @param {string} [taskId] comma separated list of task ids
-     * @param {string} [category] comma separated list of task categories
-     * @param {string} [requester] comma separated list of requester names
-     * @param {string} [pickup] comma separated list of pickup names
-     * @param {string} [destination] comma separated list of destination names
-     * @param {string} [assignedTo] comma separated list of assigned robot names
-     * @param {string} [status] comma separated list of statuses
-     * @param {string} [requestTimeBetween]          The period of request time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
-     * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
-     * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    taskStatesCountTasksCountGet(
-      taskId?: string,
-      category?: string,
-      requester?: string,
-      pickup?: string,
-      destination?: string,
-      assignedTo?: string,
-      status?: string,
-      requestTimeBetween?: string,
-      startTimeBetween?: string,
-      finishTimeBetween?: string,
-      options?: any,
-    ): AxiosPromise<number> {
-      return localVarFp
-        .taskStatesCountTasksCountGet(
-          taskId,
-          category,
-          requester,
-          pickup,
-          destination,
-          assignedTo,
-          status,
-          requestTimeBetween,
-          startTimeBetween,
-          finishTimeBetween,
           options,
         )
         .then((request) => request(axios, basePath));
@@ -10559,53 +10376,6 @@ export class TasksApi extends BaseAPI {
         limit,
         offset,
         orderBy,
-        options,
-      )
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
-   *
-   * @summary Task States Count
-   * @param {string} [taskId] comma separated list of task ids
-   * @param {string} [category] comma separated list of task categories
-   * @param {string} [requester] comma separated list of requester names
-   * @param {string} [pickup] comma separated list of pickup names
-   * @param {string} [destination] comma separated list of destination names
-   * @param {string} [assignedTo] comma separated list of assigned robot names
-   * @param {string} [status] comma separated list of statuses
-   * @param {string} [requestTimeBetween]          The period of request time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
-   * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
-   * @param {string} [finishTimeBetween]          The period of finishing time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof TasksApi
-   */
-  public taskStatesCountTasksCountGet(
-    taskId?: string,
-    category?: string,
-    requester?: string,
-    pickup?: string,
-    destination?: string,
-    assignedTo?: string,
-    status?: string,
-    requestTimeBetween?: string,
-    startTimeBetween?: string,
-    finishTimeBetween?: string,
-    options?: AxiosRequestConfig,
-  ) {
-    return TasksApiFp(this.configuration)
-      .taskStatesCountTasksCountGet(
-        taskId,
-        category,
-        requester,
-        pickup,
-        destination,
-        assignedTo,
-        status,
-        requestTimeBetween,
-        startTimeBetween,
-        finishTimeBetween,
         options,
       )
       .then((request) => request(this.axios, this.basePath));
