@@ -1,7 +1,15 @@
-import { Alert, AlertProps, createTheme, CssBaseline, Grid, Snackbar } from '@mui/material';
+import {
+  Alert,
+  AlertProps,
+  createTheme,
+  CssBaseline,
+  GlobalStyles,
+  Grid,
+  Snackbar,
+} from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import React from 'react';
-import { rmfDark, rmfLight } from 'react-components';
+import { rmfDark, rmfDarkLeaflet, rmfLight } from 'react-components';
 import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
 import { AppController, AppControllerContext, SettingsContext } from './app-contexts';
 import AppBar from './appbar';
@@ -65,6 +73,7 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      {settings.themeMode === ThemeMode.RmfDark && <GlobalStyles styles={rmfDarkLeaflet} />}
       <SettingsContext.Provider value={settings}>
         <AppControllerContext.Provider value={appController}>
           <AlertStore />
