@@ -1,9 +1,7 @@
 import DownloadIcon from '@mui/icons-material/Download';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import {
-  // Backdrop,
   Box,
-  // CircularProgress,
   IconButton,
   Menu,
   MenuItem,
@@ -86,7 +84,6 @@ export const TasksApp = React.memo(
     ) => {
       const rmf = React.useContext(RmfAppContext);
       const [autoRefresh, setAutoRefresh] = React.useState(true);
-      // const [openLoadingBackdrop, setOpenLoadingBackdrop] = React.useState(false);
       const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
       const [selectedPanelIndex, setSelectedPanelIndex] = React.useState(TaskTablePanel.QueueTable);
 
