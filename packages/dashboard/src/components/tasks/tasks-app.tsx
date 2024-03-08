@@ -1,9 +1,9 @@
 import DownloadIcon from '@mui/icons-material/Download';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import {
-  Backdrop,
+  // Backdrop,
   Box,
-  CircularProgress,
+  // CircularProgress,
   IconButton,
   Menu,
   MenuItem,
@@ -85,7 +85,7 @@ export const TasksApp = React.memo(
     ) => {
       const rmf = React.useContext(RmfAppContext);
       const [autoRefresh, setAutoRefresh] = React.useState(true);
-      const [openLoadingBackdrop, setOpenLoadingBackdrop] = React.useState(false);
+      // const [openLoadingBackdrop, setOpenLoadingBackdrop] = React.useState(false);
       const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
       const [selectedPanelIndex, setSelectedPanelIndex] = React.useState(TaskTablePanel.QueueTable);
 
@@ -249,6 +249,7 @@ export const TasksApp = React.memo(
         }
 
         const taskStateCount = (await rmf.tasksApi.taskStatesCountTasksCountGet()).data;
+        console.log(taskStateCount);
         const QUERY_LIMIT = 100;
         const queriesRequired = Math.ceil(taskStateCount / QUERY_LIMIT);
         const allTasks: TaskState[] = [];
@@ -272,24 +273,6 @@ export const TasksApp = React.memo(
           );
           allTasks.push(...resp.data);
         }
-
-        // const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
-        //   undefined,
-        //   undefined,
-        //   undefined,
-        //   undefined,
-        //   undefined,
-        //   undefined,
-        //   undefined,
-        //   `0,${timestamp.getTime()}`,
-        //   undefined,
-        //   undefined,
-        //   5000,
-        //   undefined,
-        //   '-unix_millis_start_time',
-        //   undefined,
-        // );
-        // const allTasks = resp.data as TaskState[];
         return allTasks;
       };
 
@@ -315,6 +298,7 @@ export const TasksApp = React.memo(
       };
 
       const exportTasksToCsv = async (minimal: boolean) => {
+        AppEvents.loadingBackdrop.next(true);
         const now = new Date();
         const allTasks = await getAllTasks(now);
         const allTaskRequests = await getAllTaskRequests(allTasks);
@@ -326,6 +310,7 @@ export const TasksApp = React.memo(
         } else {
           downloadCsvFull(now, allTasks);
         }
+        AppEvents.loadingBackdrop.next(false);
       };
 
       const [anchorExportElement, setAnchorExportElement] = React.useState<null | HTMLElement>(
@@ -376,12 +361,8 @@ export const TasksApp = React.memo(
                 >
                   <MenuItem
                     onClick={() => {
-                      handleCloseExportMenu();
-                      console.log('starting minimal export');
-                      setOpenLoadingBackdrop(true);
                       exportTasksToCsv(true);
-                      console.log('ending minimal export');
-                      setOpenLoadingBackdrop(false);
+                      handleCloseExportMenu();
                     }}
                     disableRipple
                   >
@@ -389,12 +370,8 @@ export const TasksApp = React.memo(
                   </MenuItem>
                   <MenuItem
                     onClick={() => {
-                      handleCloseExportMenu();
-                      console.log('starting full export');
-                      setOpenLoadingBackdrop(true);
                       exportTasksToCsv(false);
-                      console.log('ending full export');
-                      setOpenLoadingBackdrop(false);
+                      handleCloseExportMenu();
                     }}
                     disableRipple
                   >
@@ -471,15 +448,6 @@ export const TasksApp = React.memo(
             />
           )}
           {children}
-          <Backdrop
-            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-            open={openLoadingBackdrop}
-            // onClick={() => {
-            //   setOpenLoadingBackdrop(false);
-            // }}
-          >
-            <CircularProgress color="inherit" />
-          </Backdrop>
         </Window>
       );
     },

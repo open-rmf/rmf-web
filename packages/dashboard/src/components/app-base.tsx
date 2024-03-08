@@ -1,6 +1,8 @@
 import {
   Alert,
   AlertProps,
+  Backdrop,
+  CircularProgress,
   createTheme,
   CssBaseline,
   GlobalStyles,
@@ -14,6 +16,7 @@ import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
 import { AppController, AppControllerContext, SettingsContext } from './app-contexts';
 import AppBar from './appbar';
 import { AlertStore } from './alert-store';
+import { AppEvents } from './app-events';
 import { DeliveryAlertStore } from './delivery-alert-store';
 
 const DefaultAlertDuration = 2000;
@@ -39,6 +42,7 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
   const [alertMessage, setAlertMessage] = React.useState('');
   const [alertDuration, setAlertDuration] = React.useState(DefaultAlertDuration);
   const [extraAppbarIcons, setExtraAppbarIcons] = React.useState<React.ReactNode>(null);
+  const [openLoadingBackdrop, setOpenLoadingBackdrop] = React.useState(false);
 
   const theme = React.useMemo(() => {
     switch (settings.themeMode) {
@@ -70,10 +74,26 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
     [updateSettings],
   );
 
+  React.useEffect(() => {
+    const sub = AppEvents.loadingBackdrop.subscribe((value) => {
+      console.log('got event');
+      setOpenLoadingBackdrop(value);
+    });
+    return () => sub.unsubscribe();
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       {settings.themeMode === ThemeMode.RmfDark && <GlobalStyles styles={rmfDarkLeaflet} />}
+      {openLoadingBackdrop && (
+        <Backdrop
+          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={openLoadingBackdrop}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      )}
       <SettingsContext.Provider value={settings}>
         <AppControllerContext.Provider value={appController}>
           <AlertStore />
