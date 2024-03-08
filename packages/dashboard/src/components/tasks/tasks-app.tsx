@@ -246,42 +246,37 @@ export const TasksApp = React.memo(
           return [];
         }
 
-        const taskStateCount = (
-          await rmf.tasksApi.taskStatesCountTasksCountGet(
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            `0,${timestamp.getTime()}`,
-            undefined,
-            undefined,
-          )
-        ).data;
-        const queriesRequired = Math.ceil(taskStateCount / QueryLimit);
+        const currentMillis = timestamp.getTime();
+        const oneMonthMillis = 31 * 24 * 60 * 60 * 1000;
         const allTasks: TaskState[] = [];
-        for (let i = 0; i < queriesRequired; i++) {
-          const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            `0,${timestamp.getTime()}`,
-            undefined,
-            undefined,
-            QueryLimit,
-            i * QueryLimit,
-            '-unix_millis_start_time',
-            undefined,
-          );
-          allTasks.push(...resp.data);
-        }
+        let queries: TaskState[] = [];
+        let queryIndex = 0;
+        do {
+          queries = (
+            await rmf.tasksApi.queryTaskStatesTasksGet(
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              `${currentMillis - oneMonthMillis},${currentMillis}`,
+              undefined,
+              undefined,
+              QueryLimit,
+              queryIndex * QueryLimit,
+              '-unix_millis_start_time',
+              undefined,
+            )
+          ).data;
+          if (queries.length === 0) {
+            break;
+          }
+
+          allTasks.push(...queries);
+          queryIndex += 1;
+        } while (queries.length !== 0);
         return allTasks;
       };
 
