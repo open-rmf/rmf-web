@@ -33,6 +33,7 @@ import { TaskSummary } from './task-summary';
 import { downloadCsvFull, downloadCsvMinimal } from './utils';
 
 const RefreshTaskQueueTableInterval = 15000;
+const QueryLimit = 100;
 
 enum TaskTablePanel {
   QueueTable = 0,
@@ -248,13 +249,24 @@ export const TasksApp = React.memo(
           return [];
         }
 
-        const taskStateCount = (await rmf.tasksApi.taskStatesCountTasksCountGet()).data;
-        console.log(taskStateCount);
-        const QUERY_LIMIT = 100;
-        const queriesRequired = Math.ceil(taskStateCount / QUERY_LIMIT);
+        const taskStateCount = (
+          await rmf.tasksApi.taskStatesCountTasksCountGet(
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            `0,${timestamp.getTime()}`,
+            undefined,
+            undefined,
+          )
+        ).data;
+        const queriesRequired = Math.ceil(taskStateCount / QueryLimit);
         const allTasks: TaskState[] = [];
         for (let i = 0; i < queriesRequired; i++) {
-          console.log(`Querying task state bunch of index ${i}`);
           const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
             undefined,
             undefined,
@@ -266,8 +278,8 @@ export const TasksApp = React.memo(
             `0,${timestamp.getTime()}`,
             undefined,
             undefined,
-            QUERY_LIMIT,
-            i * QUERY_LIMIT,
+            QueryLimit,
+            i * QueryLimit,
             '-unix_millis_start_time',
             undefined,
           );
@@ -281,18 +293,23 @@ export const TasksApp = React.memo(
           return {};
         }
 
-        const taskIds: string[] = tasks.map((task) => task.booking.id);
-        const taskIdsQuery = taskIds.join(',');
-        const taskRequests = (await rmf.tasksApi.queryTaskRequestsTasksRequestsGet(taskIdsQuery))
-          .data;
-
         const taskRequestMap: Record<string, TaskRequest> = {};
-        let requestIndex = 0;
-        for (const id of taskIds) {
-          if (requestIndex < taskRequests.length && taskRequests[requestIndex]) {
-            taskRequestMap[id] = taskRequests[requestIndex];
+        const allTaskIds: string[] = tasks.map((task) => task.booking.id);
+        const queriesRequired = Math.ceil(allTaskIds.length / QueryLimit);
+        for (let i = 0; i < queriesRequired; i++) {
+          const endingIndex = Math.min(allTaskIds.length, (i + 1) * QueryLimit);
+          const taskIds = allTaskIds.slice(i * QueryLimit, endingIndex);
+          const taskIdsQuery = taskIds.join(',');
+          const taskRequests = (await rmf.tasksApi.queryTaskRequestsTasksRequestsGet(taskIdsQuery))
+            .data;
+
+          let requestIndex = 0;
+          for (const id of taskIds) {
+            if (requestIndex < taskRequests.length && taskRequests[requestIndex]) {
+              taskRequestMap[id] = taskRequests[requestIndex];
+            }
+            ++requestIndex;
           }
-          ++requestIndex;
         }
         return taskRequestMap;
       };

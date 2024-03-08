@@ -76,7 +76,6 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
 
   React.useEffect(() => {
     const sub = AppEvents.loadingBackdrop.subscribe((value) => {
-      console.log('got event');
       setOpenLoadingBackdrop(value);
     });
     return () => sub.unsubscribe();
