@@ -2,7 +2,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import {
   Box,
-  IconButton,
+  Button,
   Menu,
   MenuItem,
   styled,
@@ -12,6 +12,7 @@ import {
   Toolbar,
   Tooltip,
   useMediaQuery,
+  Typography,
 } from '@mui/material';
 import { TaskRequest, TaskState } from 'api-client';
 import React from 'react';
@@ -346,18 +347,27 @@ export const TasksApp = React.memo(
           toolbar={
             <Toolbar variant="dense">
               <div>
-                <Tooltip title="Download" placement="top">
-                  <IconButton
-                    sx={{ marginBottom: isScreenHeightLessThan800 ? 1.8 : 0 }}
+                <Tooltip title="Export task history of the past 31 days" placement="top">
+                  <Button
+                    sx={{
+                      fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
+                      paddingTop: isScreenHeightLessThan800 ? 0 : 'inherit',
+                      paddingBottom: isScreenHeightLessThan800 ? 0 : 'inherit',
+                      marginBottom: isScreenHeightLessThan800 ? 1.8 : 'inherit',
+                    }}
                     id="export-button"
                     aria-controls={openExportMenu ? 'export-menu' : undefined}
                     aria-haspopup="true"
                     aria-expanded={openExportMenu ? 'true' : undefined}
+                    variant="outlined"
                     onClick={handleClickExportMenu}
                     color="inherit"
+                    startIcon={
+                      <DownloadIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
+                    }
                   >
-                    <DownloadIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
-                  </IconButton>
+                    Export past 31 days
+                  </Button>
                 </Tooltip>
                 <Menu
                   id="export-menu"
@@ -388,16 +398,27 @@ export const TasksApp = React.memo(
                   </MenuItem>
                 </Menu>
               </div>
-              <Tooltip title="Refresh" color="inherit" placement="top">
-                <IconButton
-                  sx={{ marginBottom: isScreenHeightLessThan800 ? 1.8 : 0 }}
+              <Tooltip title="Refreshes the task queue table" color="inherit" placement="top">
+                <Button
+                  sx={{
+                    fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
+                    paddingTop: isScreenHeightLessThan800 ? 0 : 'inherit',
+                    paddingBottom: isScreenHeightLessThan800 ? 0 : 'inherit',
+                    marginBottom: isScreenHeightLessThan800 ? 1.8 : 'inherit',
+                  }}
+                  id="refresh-button"
+                  variant="outlined"
                   onClick={() => {
                     AppEvents.refreshTaskApp.next();
                   }}
                   aria-label="Refresh"
+                  color="inherit"
+                  startIcon={
+                    <RefreshIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
+                  }
                 >
-                  <RefreshIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
-                </IconButton>
+                  Refresh Task Queue
+                </Button>
               </Tooltip>
             </Toolbar>
           }
