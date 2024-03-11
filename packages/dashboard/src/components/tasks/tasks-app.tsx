@@ -310,6 +310,10 @@ export const TasksApp = React.memo(
         AppEvents.loadingBackdrop.next(true);
         const now = new Date();
         const allTasks = await getAllTasks(now);
+
+        // FIXME: Task requests are currently required for parsing pickup and
+        // destination information. Once we start using TaskState.Booking.Labels
+        // to encode these information, we can skip querying for task requests.
         const allTaskRequests = await getAllTaskRequests(allTasks);
         if (!allTasks || !allTasks.length) {
           return;
