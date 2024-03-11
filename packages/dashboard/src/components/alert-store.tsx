@@ -1,4 +1,5 @@
-import { ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert } from 'api-client';
+import { ApiServerModelsTortoiseModelsAlertsAlertLeaf as AlertModel } from 'api-client';
+import { Alert, Button } from '@mui/material';
 import { AppEvents } from './app-events';
 import React from 'react';
 import { RmfAppContext } from './rmf-app';
@@ -16,9 +17,9 @@ enum AlertCategory {
 
 export const AlertStore = React.memo(() => {
   const rmf = React.useContext(RmfAppContext);
-  const [taskAlerts, setTaskAlerts] = React.useState<Record<string, Alert>>({});
+  const [taskAlerts, setTaskAlerts] = React.useState<Record<string, AlertModel>>({});
 
-  const categorizeAndPushAlerts = (alert: Alert) => {
+  const categorizeAndPushAlerts = (alert: AlertModel) => {
     // We check if an existing alert has been acknowledged, remove it before
     // adding the acknowledged alert.
     if (alert.category === AlertCategory.Task) {
@@ -68,7 +69,25 @@ export const AlertStore = React.memo(() => {
         const removeThisAlert = () => {
           removeTaskAlert(alert.id);
         };
-        return <TaskAlertDialog key={alert.id} alert={alert} removeAlert={removeThisAlert} />;
+        return (
+          <Alert
+            key={alert.id}
+            severity="success"
+            action={
+              <>
+                <Button color="inherit" size="small">
+                  ACK
+                </Button>
+                <Button color="inherit" size="small">
+                  DISMISS
+                </Button>
+              </>
+            }
+          >
+            Test alert
+          </Alert>
+        );
+        // return <TaskAlertDialog key={alert.id} alert={alert} removeAlert={removeThisAlert} />;
       })}
     </>
   );
