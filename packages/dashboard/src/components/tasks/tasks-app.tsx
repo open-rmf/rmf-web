@@ -28,7 +28,7 @@ import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
 import { TaskSchedule } from './task-schedule';
 import { TaskSummary } from './task-summary';
-import { downloadCsvFull, downloadCsvMinimal } from './utils';
+import { exportCsvFull, exportCsvMinimal } from './utils';
 
 const RefreshTaskQueueTableInterval = 15000;
 const QueryLimit = 100;
@@ -319,9 +319,9 @@ export const TasksApp = React.memo(
           return;
         }
         if (minimal) {
-          downloadCsvMinimal(now, pastMonthTasks, pastMonthTaskRequests);
+          exportCsvMinimal(now, pastMonthTasks, pastMonthTaskRequests);
         } else {
-          downloadCsvFull(now, pastMonthTasks);
+          exportCsvFull(now, pastMonthTasks);
         }
         AppEvents.loadingBackdrop.next(false);
       };
