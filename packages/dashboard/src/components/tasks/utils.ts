@@ -17,7 +17,7 @@ export function parseTasksFile(contents: string): TaskRequest[] {
   return obj;
 }
 
-export function downloadCsvFull(timestamp: Date, allTasks: TaskState[]) {
+export function exportCsvFull(timestamp: Date, allTasks: TaskState[]) {
   const columnSeparator = ';';
   const rowSeparator = '\n';
   let csvContent = `sep=${columnSeparator}` + rowSeparator;
@@ -47,7 +47,7 @@ export function downloadCsvFull(timestamp: Date, allTasks: TaskState[]) {
   });
 }
 
-export function downloadCsvMinimal(
+export function exportCsvMinimal(
   timestamp: Date,
   allTasks: TaskState[],
   taskRequestMap: Record<string, TaskRequest>,

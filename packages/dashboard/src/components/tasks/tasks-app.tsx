@@ -2,7 +2,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import {
   Box,
-  IconButton,
+  Button,
   Menu,
   MenuItem,
   styled,
@@ -28,9 +28,10 @@ import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
 import { TaskSchedule } from './task-schedule';
 import { TaskSummary } from './task-summary';
-import { downloadCsvFull, downloadCsvMinimal } from './utils';
+import { exportCsvFull, exportCsvMinimal } from './utils';
 
 const RefreshTaskQueueTableInterval = 15000;
+const QueryLimit = 100;
 
 enum TaskTablePanel {
   QueueTable = 0,
@@ -240,64 +241,89 @@ export const TasksApp = React.memo(
         selectedPanelIndex,
       ]);
 
-      const getAllTasks = async (timestamp: Date) => {
+      const getPastMonthTasks = async (timestamp: Date) => {
         if (!rmf) {
           return [];
         }
 
-        const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          `0,${timestamp.getTime()}`,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          '-unix_millis_start_time',
-          undefined,
-        );
-        const allTasks = resp.data as TaskState[];
+        const currentMillis = timestamp.getTime();
+        const oneMonthMillis = 31 * 24 * 60 * 60 * 1000;
+        const allTasks: TaskState[] = [];
+        let queries: TaskState[] = [];
+        let queryIndex = 0;
+        do {
+          queries = (
+            await rmf.tasksApi.queryTaskStatesTasksGet(
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              `${currentMillis - oneMonthMillis},${currentMillis}`,
+              undefined,
+              QueryLimit,
+              queryIndex * QueryLimit,
+              '-unix_millis_start_time',
+              undefined,
+            )
+          ).data;
+          if (queries.length === 0) {
+            break;
+          }
+
+          allTasks.push(...queries);
+          queryIndex += 1;
+        } while (queries.length !== 0);
         return allTasks;
       };
 
-      const getAllTaskRequests = async (tasks: TaskState[]) => {
+      const getPastMonthTaskRequests = async (tasks: TaskState[]) => {
         if (!rmf) {
           return {};
         }
 
-        const taskIds: string[] = tasks.map((task) => task.booking.id);
-        const taskIdsQuery = taskIds.join(',');
-        const taskRequests = (await rmf.tasksApi.queryTaskRequestsTasksRequestsGet(taskIdsQuery))
-          .data;
-
         const taskRequestMap: Record<string, TaskRequest> = {};
-        let requestIndex = 0;
-        for (const id of taskIds) {
-          if (requestIndex < taskRequests.length && taskRequests[requestIndex]) {
-            taskRequestMap[id] = taskRequests[requestIndex];
+        const allTaskIds: string[] = tasks.map((task) => task.booking.id);
+        const queriesRequired = Math.ceil(allTaskIds.length / QueryLimit);
+        for (let i = 0; i < queriesRequired; i++) {
+          const endingIndex = Math.min(allTaskIds.length, (i + 1) * QueryLimit);
+          const taskIds = allTaskIds.slice(i * QueryLimit, endingIndex);
+          const taskIdsQuery = taskIds.join(',');
+          const taskRequests = (await rmf.tasksApi.queryTaskRequestsTasksRequestsGet(taskIdsQuery))
+            .data;
+
+          let requestIndex = 0;
+          for (const id of taskIds) {
+            if (requestIndex < taskRequests.length && taskRequests[requestIndex]) {
+              taskRequestMap[id] = taskRequests[requestIndex];
+            }
+            ++requestIndex;
           }
-          ++requestIndex;
         }
         return taskRequestMap;
       };
 
       const exportTasksToCsv = async (minimal: boolean) => {
+        AppEvents.loadingBackdrop.next(true);
         const now = new Date();
-        const allTasks = await getAllTasks(now);
-        const allTaskRequests = await getAllTaskRequests(allTasks);
-        if (!allTasks || !allTasks.length) {
+        const pastMonthTasks = await getPastMonthTasks(now);
+
+        if (!pastMonthTasks || !pastMonthTasks.length) {
           return;
         }
         if (minimal) {
-          downloadCsvMinimal(now, allTasks, allTaskRequests);
+          // FIXME: Task requests are currently required for parsing pickup and
+          // destination information. Once we start using TaskState.Booking.Labels
+          // to encode these fields, we can skip querying for task requests.
+          const pastMonthTaskRequests = await getPastMonthTaskRequests(pastMonthTasks);
+          exportCsvMinimal(now, pastMonthTasks, pastMonthTaskRequests);
         } else {
-          downloadCsvFull(now, allTasks);
+          exportCsvFull(now, pastMonthTasks);
         }
+        AppEvents.loadingBackdrop.next(false);
       };
 
       const [anchorExportElement, setAnchorExportElement] = React.useState<null | HTMLElement>(
@@ -324,18 +350,27 @@ export const TasksApp = React.memo(
           toolbar={
             <Toolbar variant="dense">
               <div>
-                <Tooltip title="Download" placement="top">
-                  <IconButton
-                    sx={{ marginBottom: isScreenHeightLessThan800 ? 1.8 : 0 }}
+                <Tooltip title="Export task history of the past 31 days" placement="top">
+                  <Button
+                    sx={{
+                      fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
+                      paddingTop: isScreenHeightLessThan800 ? 0 : 'inherit',
+                      paddingBottom: isScreenHeightLessThan800 ? 0 : 'inherit',
+                      marginBottom: isScreenHeightLessThan800 ? 1.8 : 'inherit',
+                    }}
                     id="export-button"
                     aria-controls={openExportMenu ? 'export-menu' : undefined}
                     aria-haspopup="true"
                     aria-expanded={openExportMenu ? 'true' : undefined}
+                    variant="outlined"
                     onClick={handleClickExportMenu}
                     color="inherit"
+                    startIcon={
+                      <DownloadIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
+                    }
                   >
-                    <DownloadIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
-                  </IconButton>
+                    Export past 31 days
+                  </Button>
                 </Tooltip>
                 <Menu
                   id="export-menu"
@@ -348,8 +383,8 @@ export const TasksApp = React.memo(
                 >
                   <MenuItem
                     onClick={() => {
-                      handleCloseExportMenu();
                       exportTasksToCsv(true);
+                      handleCloseExportMenu();
                     }}
                     disableRipple
                   >
@@ -357,8 +392,8 @@ export const TasksApp = React.memo(
                   </MenuItem>
                   <MenuItem
                     onClick={() => {
-                      handleCloseExportMenu();
                       exportTasksToCsv(false);
+                      handleCloseExportMenu();
                     }}
                     disableRipple
                   >
@@ -366,16 +401,27 @@ export const TasksApp = React.memo(
                   </MenuItem>
                 </Menu>
               </div>
-              <Tooltip title="Refresh" color="inherit" placement="top">
-                <IconButton
-                  sx={{ marginBottom: isScreenHeightLessThan800 ? 1.8 : 0 }}
+              <Tooltip title="Refreshes the task queue table" color="inherit" placement="top">
+                <Button
+                  sx={{
+                    fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
+                    paddingTop: isScreenHeightLessThan800 ? 0 : 'inherit',
+                    paddingBottom: isScreenHeightLessThan800 ? 0 : 'inherit',
+                    marginBottom: isScreenHeightLessThan800 ? 1.8 : 'inherit',
+                  }}
+                  id="refresh-button"
+                  variant="outlined"
                   onClick={() => {
                     AppEvents.refreshTaskApp.next();
                   }}
                   aria-label="Refresh"
+                  color="inherit"
+                  startIcon={
+                    <RefreshIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
+                  }
                 >
-                  <RefreshIcon transform={`scale(${isScreenHeightLessThan800 ? 0.8 : 1})`} />
-                </IconButton>
+                  Refresh Task Queue
+                </Button>
               </Tooltip>
             </Toolbar>
           }
