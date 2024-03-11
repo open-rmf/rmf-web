@@ -241,7 +241,7 @@ export const TasksApp = React.memo(
         selectedPanelIndex,
       ]);
 
-      const getAllTasks = async (timestamp: Date) => {
+      const getPastMonthTasks = async (timestamp: Date) => {
         if (!rmf) {
           return [];
         }
@@ -280,7 +280,7 @@ export const TasksApp = React.memo(
         return allTasks;
       };
 
-      const getAllTaskRequests = async (tasks: TaskState[]) => {
+      const getPastMonthTaskRequests = async (tasks: TaskState[]) => {
         if (!rmf) {
           return {};
         }
@@ -309,19 +309,19 @@ export const TasksApp = React.memo(
       const exportTasksToCsv = async (minimal: boolean) => {
         AppEvents.loadingBackdrop.next(true);
         const now = new Date();
-        const allTasks = await getAllTasks(now);
+        const pastMonthTasks = await getPastMonthTasks(now);
 
         // FIXME: Task requests are currently required for parsing pickup and
         // destination information. Once we start using TaskState.Booking.Labels
         // to encode these information, we can skip querying for task requests.
-        const allTaskRequests = await getAllTaskRequests(allTasks);
-        if (!allTasks || !allTasks.length) {
+        const pastMonthTaskRequests = await getPastMonthTaskRequests(pastMonthTasks);
+        if (!pastMonthTasks || !pastMonthTasks.length) {
           return;
         }
         if (minimal) {
-          downloadCsvMinimal(now, allTasks, allTaskRequests);
+          downloadCsvMinimal(now, pastMonthTasks, pastMonthTaskRequests);
         } else {
-          downloadCsvFull(now, allTasks);
+          downloadCsvFull(now, pastMonthTasks);
         }
         AppEvents.loadingBackdrop.next(false);
       };
