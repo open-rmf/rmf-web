@@ -311,14 +311,14 @@ export const TasksApp = React.memo(
         const now = new Date();
         const pastMonthTasks = await getPastMonthTasks(now);
 
-        // FIXME: Task requests are currently required for parsing pickup and
-        // destination information. Once we start using TaskState.Booking.Labels
-        // to encode these information, we can skip querying for task requests.
-        const pastMonthTaskRequests = await getPastMonthTaskRequests(pastMonthTasks);
         if (!pastMonthTasks || !pastMonthTasks.length) {
           return;
         }
         if (minimal) {
+          // FIXME: Task requests are currently required for parsing pickup and
+          // destination information. Once we start using TaskState.Booking.Labels
+          // to encode these fields, we can skip querying for task requests.
+          const pastMonthTaskRequests = await getPastMonthTaskRequests(pastMonthTasks);
           exportCsvMinimal(now, pastMonthTasks, pastMonthTaskRequests);
         } else {
           exportCsvFull(now, pastMonthTasks);
