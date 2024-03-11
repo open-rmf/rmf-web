@@ -30,4 +30,5 @@ export const AppEvents = {
   levelSelect: new BehaviorSubject<Level | null>(null),
   justLoggedIn: new BehaviorSubject<boolean>(false),
   resetCamera: new Subject<[x: number, y: number, z: number, zoom: number]>(),
+  loadingBackdrop: new Subject<boolean>(),
 };
