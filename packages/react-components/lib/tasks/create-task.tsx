@@ -43,6 +43,7 @@ import React from 'react';
 import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
+import { TaskRequestLabel } from './utils';
 
 // A bunch of manually defined descriptions to avoid using `any`.
 export interface PatrolTaskDescription {
@@ -1287,6 +1288,7 @@ export function CreateTaskForm({
   const [taskRequest, setTaskRequest] = React.useState<TaskRequest>(
     () => requestTask ?? defaultTask(),
   );
+  const [requestLabel, setRequestLabel] = React.useState<TaskRequestLabel>({});
 
   const [submitting, setSubmitting] = React.useState(false);
   const [formFullyFilled, setFormFullyFilled] = React.useState(requestTask !== undefined || false);
@@ -1358,7 +1360,13 @@ export function CreateTaskForm({
         <PatrolTaskForm
           taskDesc={taskRequest.description as PatrolTaskDescription}
           patrolWaypoints={patrolWaypoints}
-          onChange={(desc) => handleTaskDescriptionChange('patrol', desc)}
+          onChange={(desc) => {
+            handleTaskDescriptionChange('patrol', desc);
+            setRequestLabel({
+              category: taskRequest.category,
+              destination: desc.places.at(-1),
+            });
+          }}
           allowSubmit={allowSubmit}
         />
       );
@@ -1368,6 +1376,9 @@ export function CreateTaskForm({
           taskDesc={taskRequest.description as CustomComposeTaskDescription}
           onChange={(desc) => {
             handleCustomComposeTaskDescriptionChange(desc);
+            setRequestLabel({
+              category: taskRequest.category,
+            });
           }}
           allowSubmit={allowSubmit}
         />
@@ -1387,6 +1398,14 @@ export function CreateTaskForm({
               desc.phases[0].activity.description.activities[1].description.category =
                 taskRequest.description.category;
               handleTaskDescriptionChange('compose', desc);
+              const pickupPerformAction =
+                desc.phases[0].activity.description.activities[1].description.description;
+              setRequestLabel({
+                category: taskRequest.description.category,
+                pickup: pickupPerformAction.pickup_lot,
+                cart_id: pickupPerformAction.cart_id,
+                destination: desc.phases[1].activity.description.activities[0].description,
+              });
             }}
             allowSubmit={allowSubmit}
           />
@@ -1404,6 +1423,14 @@ export function CreateTaskForm({
               desc.phases[0].activity.description.activities[1].description.category =
                 taskRequest.description.category;
               handleTaskDescriptionChange('compose', desc);
+              const pickupPerformAction =
+                desc.phases[0].activity.description.activities[1].description.description;
+              setRequestLabel({
+                category: taskRequest.description.category,
+                pickup: pickupPerformAction.pickup_zone,
+                cart_id: pickupPerformAction.cart_id,
+                destination: desc.phases[1].activity.description.activities[0].description,
+              });
             }}
             allowSubmit={allowSubmit}
           />
@@ -1496,6 +1523,15 @@ export function CreateTaskForm({
         onFail && onFail(e as Error, [request]);
         return;
       }
+    }
+
+    try {
+      const labelString = JSON.stringify(requestLabel);
+      if (labelString) {
+        request.labels = ['testing', labelString];
+      }
+    } catch (e) {
+      console.error('Failed to generate string for task request label');
     }
 
     try {

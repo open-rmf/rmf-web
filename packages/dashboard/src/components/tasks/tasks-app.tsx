@@ -93,7 +93,6 @@ export const TasksApp = React.memo(
       const [tasksState, setTasksState] = React.useState<Tasks>({
         isLoading: true,
         data: [],
-        requests: {},
         total: 0,
         page: 1,
         pageSize: 10,
@@ -280,32 +279,6 @@ export const TasksApp = React.memo(
         return allTasks;
       };
 
-      const getPastMonthTaskRequests = async (tasks: TaskState[]) => {
-        if (!rmf) {
-          return {};
-        }
-
-        const taskRequestMap: Record<string, TaskRequest> = {};
-        const allTaskIds: string[] = tasks.map((task) => task.booking.id);
-        const queriesRequired = Math.ceil(allTaskIds.length / QueryLimit);
-        for (let i = 0; i < queriesRequired; i++) {
-          const endingIndex = Math.min(allTaskIds.length, (i + 1) * QueryLimit);
-          const taskIds = allTaskIds.slice(i * QueryLimit, endingIndex);
-          const taskIdsQuery = taskIds.join(',');
-          const taskRequests = (await rmf.tasksApi.queryTaskRequestsTasksRequestsGet(taskIdsQuery))
-            .data;
-
-          let requestIndex = 0;
-          for (const id of taskIds) {
-            if (requestIndex < taskRequests.length && taskRequests[requestIndex]) {
-              taskRequestMap[id] = taskRequests[requestIndex];
-            }
-            ++requestIndex;
-          }
-        }
-        return taskRequestMap;
-      };
-
       const exportTasksToCsv = async (minimal: boolean) => {
         AppEvents.loadingBackdrop.next(true);
         const now = new Date();
@@ -315,11 +288,7 @@ export const TasksApp = React.memo(
           return;
         }
         if (minimal) {
-          // FIXME: Task requests are currently required for parsing pickup and
-          // destination information. Once we start using TaskState.Booking.Labels
-          // to encode these fields, we can skip querying for task requests.
-          const pastMonthTaskRequests = await getPastMonthTaskRequests(pastMonthTasks);
-          exportCsvMinimal(now, pastMonthTasks, pastMonthTaskRequests);
+          exportCsvMinimal(now, pastMonthTasks);
         } else {
           exportCsvFull(now, pastMonthTasks);
         }
@@ -477,7 +446,6 @@ export const TasksApp = React.memo(
             <TaskSummary
               onClose={() => setOpenTaskSummary(false)}
               task={selectedTask ?? undefined}
-              request={selectedTask ? tasksState.requests[selectedTask.booking.id] : undefined}
             />
           )}
           {children}

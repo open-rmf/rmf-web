@@ -1,3 +1,4 @@
+import json
 import sys
 from datetime import datetime
 from typing import Dict, List, Optional, Sequence, Tuple, cast
@@ -16,6 +17,7 @@ from api_server.models import (
     Phases,
     TaskEventLog,
     TaskRequest,
+    TaskRequestLabel,
     TaskState,
     User,
 )
@@ -136,17 +138,17 @@ class TaskRepository:
         )
 
         # Add pickup and destination to task state model for filter and sort
-        pickup = parse_pickup(task_request)
-        destination = parse_destination(task_state, task_request)
-        db_task_state = await DbTaskState.get_or_none(id_=task_state.booking.id)
-        if db_task_state is not None:
-            db_task_state.update_from_dict(
-                {
-                    "pickup": pickup,
-                    "destination": destination,
-                }
-            )
-            await db_task_state.save()
+        # pickup = parse_pickup(task_request)
+        # destination = parse_destination(task_state, task_request)
+        # db_task_state = await DbTaskState.get_or_none(id_=task_state.booking.id)
+        # if db_task_state is not None:
+        #     db_task_state.update_from_dict(
+        #         {
+        #             "pickup": pickup,
+        #             "destination": destination,
+        #         }
+        #     )
+        #     await db_task_state.save()
 
     async def get_task_request(self, task_id: str) -> Optional[TaskRequest]:
         result = await DbTaskRequest.get_or_none(id_=task_id)
@@ -162,6 +164,15 @@ class TaskRepository:
             raise HTTPException(422, str(e)) from e
 
     async def save_task_state(self, task_state: TaskState) -> None:
+        labels = task_state.booking.labels
+        request_label = None
+        if labels is not None:
+            for l in labels:
+                validated_request_label = TaskRequestLabel.from_json_string(l)
+                if validated_request_label is not None:
+                    request_label = validated_request_label
+                    break
+
         task_state_dict = {
             "data": task_state.json(),
             "category": task_state.category.__root__ if task_state.category else None,
@@ -179,6 +190,10 @@ class TaskRepository:
             ),
             "requester": task_state.booking.requester
             if task_state.booking.requester
+            else None,
+            "pickup": request_label.pickup if request_label is not None else None,
+            "destination": request_label.destination
+            if request_label is not None
             else None,
         }
 

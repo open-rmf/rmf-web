@@ -20,6 +20,32 @@ export function taskTypeToStr(taskType: number): string {
   }
 }
 
+export interface TaskRequestLabel {
+  category?: string;
+  unix_millis_warn_time?: number;
+  pickup?: string;
+  destination?: string;
+  cart_id?: string;
+}
+
+export function parseTaskRequestLabel(taskState: TaskState): TaskRequestLabel | null {
+  let requestLabel: TaskRequestLabel | null = null;
+  if (taskState.booking.labels) {
+    for (const label of taskState.booking.labels) {
+      try {
+        const parsedLabel: TaskRequestLabel = JSON.parse(label);
+        if (parsedLabel) {
+          requestLabel = parsedLabel;
+          break;
+        }
+      } catch (e) {
+        continue;
+      }
+    }
+  }
+  return requestLabel;
+}
+
 function parsePhaseDetail(phases: TaskState['phases'], category?: string) {
   if (phases) {
     if (category === 'Loop') {

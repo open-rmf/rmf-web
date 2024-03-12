@@ -1,5 +1,5 @@
 import { PostScheduledTaskRequest, TaskRequest, TaskState } from 'api-client';
-import { Schedule, parsePickup, parseDestination } from 'react-components';
+import { parseTaskRequestLabel, Schedule } from 'react-components';
 import schema from 'api-client/dist/schema';
 import { ajv } from '../utils';
 
@@ -47,11 +47,7 @@ export function exportCsvFull(timestamp: Date, allTasks: TaskState[]) {
   });
 }
 
-export function exportCsvMinimal(
-  timestamp: Date,
-  allTasks: TaskState[],
-  taskRequestMap: Record<string, TaskRequest>,
-) {
+export function exportCsvMinimal(timestamp: Date, allTasks: TaskState[]) {
   const columnSeparator = ';';
   const rowSeparator = '\n';
   let csvContent = `sep=${columnSeparator}` + rowSeparator;
@@ -67,7 +63,8 @@ export function exportCsvMinimal(
   ];
   csvContent += keys.join(columnSeparator) + rowSeparator;
   allTasks.forEach((task) => {
-    const request: TaskRequest | undefined = taskRequestMap[task.booking.id];
+    let requestLabel = parseTaskRequestLabel(task);
+
     const values = [
       // Date
       task.booking.unix_millis_request_time
@@ -76,9 +73,9 @@ export function exportCsvMinimal(
       // Requester
       task.booking.requester ? task.booking.requester : 'n/a',
       // Pickup
-      parsePickup(request),
+      requestLabel ? requestLabel.pickup : 'n/a',
       // Destination
-      parseDestination(task, request),
+      requestLabel ? requestLabel.destination : 'n/a',
       // Robot
       task.assigned_to ? task.assigned_to.name : 'n/a',
       // Start Time
