@@ -162,6 +162,7 @@ async def migrate():
         destination = parse_destination(request_model)
         label = TaskRequestLabel(
             category=parse_category(request_model),
+            unix_millis_warn_time=None,
             pickup=pickup,
             destination=destination,
             cart_id=parse_cart_id(request_model),
