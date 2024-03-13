@@ -1470,10 +1470,15 @@ export function CreateTaskForm({
       return;
     }
 
-    const requester = scheduling ? `${user}__scheduled` : user;
-
     const request = { ...taskRequest };
-    request.requester = requester;
+    request.requester = user;
+    if (scheduling) {
+      if (!request.labels) {
+        request.labels = ['scheduled'];
+      } else {
+        request.labels.push('scheduled');
+      }
+    }
     request.unix_millis_request_time = Date.now();
 
     if (
