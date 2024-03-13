@@ -4,7 +4,7 @@ import React from 'react';
 import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { RmfAppContext } from '../rmf-app';
-import { UserProfileContext } from 'rmf-auth';
+import { UserProfile, UserProfileContext } from 'rmf-auth';
 import { Enforcer } from '../permissions';
 import { makeStyles, createStyles } from '@mui/styles';
 import { ConfirmationDialog } from 'react-components';
@@ -32,7 +32,7 @@ export function TaskCancelButton({
   const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
   const appController = React.useContext(AppControllerContext);
-  const profile = React.useContext(UserProfileContext);
+  const profile: UserProfile | null = React.useContext(UserProfileContext);
 
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
   const [openConfirmDialog, setOpenConfirmDialog] = React.useState(false);
@@ -66,6 +66,7 @@ export function TaskCancelButton({
       await rmf.tasksApi?.postCancelTaskTasksCancelTaskPost({
         type: 'cancel_task_request',
         task_id: taskState.booking.id,
+        labels: profile ? [profile.user.username] : undefined,
       });
       appController.showAlert('success', 'Task cancellation requested');
       AppEvents.taskSelect.next(null);
@@ -74,7 +75,7 @@ export function TaskCancelButton({
       appController.showAlert('error', `Failed to cancel task: ${(e as Error).message}`);
     }
     setOpenConfirmDialog(false);
-  }, [appController, taskState, rmf]);
+  }, [appController, taskState, rmf, profile]);
 
   return (
     <>
