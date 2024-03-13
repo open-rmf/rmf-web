@@ -3,9 +3,10 @@ import os
 import signal
 import threading
 from typing import Any, Callable, Coroutine, Union
+from urllib.parse import urljoin
 
 import schedule
-from fastapi import Depends
+from fastapi import Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import (
     get_redoc_html,
@@ -216,14 +217,14 @@ async def on_shutdown():
 
 
 @app.get("/docs", include_in_schema=False)
-async def custom_swagger_ui_html():
-    openapi_url = f"{app_config.public_url.geturl()}{app.openapi_url}"
+async def custom_swagger_ui_html(request: Request):
+    openapi_url = urljoin(str(request.base_url), app.openapi_url)
     return get_swagger_ui_html(
         openapi_url=openapi_url,
         title=app.title + " - Swagger UI",
         oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
-        swagger_js_url=f"{app_config.public_url.geturl()}/static/swagger-ui-bundle.js",
-        swagger_css_url=f"{app_config.public_url.geturl()}/static/swagger-ui.css",
+        swagger_js_url=urljoin(str(request.base_url), "/static/swagger-ui-bundle.js"),
+        swagger_css_url=urljoin(str(request.base_url), "/static/swagger-ui.css"),
     )
 
 
@@ -233,12 +234,12 @@ async def swagger_ui_redirect():
 
 
 @app.get("/redoc", include_in_schema=False)
-async def redoc_html():
-    openapi_url = f"{app_config.public_url.geturl()}{app.openapi_url}"
+async def redoc_html(request: Request):
+    openapi_url = urljoin(str(request.base_url), app.openapi_url)
     return get_redoc_html(
         openapi_url=openapi_url,
         title=app.title + " - ReDoc",
-        redoc_js_url=f"{app_config.public_url.geturl()}/static/redoc.standalone.js",
+        redoc_js_url=urljoin(str(request.base_url), "/static/redoc.standalone.js"),
     )
 
 

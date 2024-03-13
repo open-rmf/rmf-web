@@ -9,7 +9,7 @@ config = {
     # url that rmf-server is being served on.
     # When being a proxy, this must be the url that rmf-server is mounted on.
     # E.g. https://example.com/rmf/api/v1
-    "public_url": "http://localhost:8000",
+    "public_url": "",
     "cache_directory": "run/cache",  # The directory where cached files should be stored.
     "log_level": "WARNING",  # https://docs.python.org/3.8/library/logging.html#levels
     # a user that is automatically given admin privileges, note that this does not guarantee that the user exists in the identity provider.
