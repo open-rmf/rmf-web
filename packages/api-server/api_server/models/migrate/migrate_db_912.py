@@ -143,48 +143,48 @@ async def migrate():
     )
     await Tortoise.generate_schemas()
 
-    # # Acquire all existing TaskStates
-    # states = await ttm.TaskState.all()
-    # print(f"Migrating {len(states)} TaskState models")
+    # Acquire all existing TaskStates
+    states = await ttm.TaskState.all()
+    print(f"Migrating {len(states)} TaskState models")
 
-    # # Migrate each TaskState
-    # for state in states:
-    #     state_model = TaskState(**state.data)
-    #     task_id = state_model.booking.id
+    # Migrate each TaskState
+    for state in states:
+        state_model = TaskState(**state.data)
+        task_id = state_model.booking.id
 
-    #     # If the request is not available we skip migrating this TaskState
-    #     request = await ttm.TaskRequest.get_or_none(id_=task_id)
-    #     if request is None:
-    #         continue
-    #     request_model = TaskRequest(**request.request)
+        # If the request is not available we skip migrating this TaskState
+        request = await ttm.TaskRequest.get_or_none(id_=task_id)
+        if request is None:
+            continue
+        request_model = TaskRequest(**request.request)
 
-    #     # Construct TaskRequestLabel based on TaskRequest
-    #     pickup = parse_pickup(request_model)
-    #     destination = parse_destination(request_model)
-    #     label = TaskRequestLabel(
-    #         category=parse_category(request_model),
-    #         unix_millis_warn_time=None,
-    #         pickup=pickup,
-    #         destination=destination,
-    #         cart_id=parse_cart_id(request_model),
-    #     )
-    #     print(label)
+        # Construct TaskRequestLabel based on TaskRequest
+        pickup = parse_pickup(request_model)
+        destination = parse_destination(request_model)
+        label = TaskRequestLabel(
+            category=parse_category(request_model),
+            unix_millis_warn_time=None,
+            pickup=pickup,
+            destination=destination,
+            cart_id=parse_cart_id(request_model),
+        )
+        print(label)
 
-    #     # Update data json
-    #     if state_model.booking.labels is None:
-    #         state_model.booking.labels = [label.json()]
-    #     else:
-    #         state_model.booking.labels.append(label.json())
-    #     print(state_model)
+        # Update data json
+        if state_model.booking.labels is None:
+            state_model.booking.labels = [label.json()]
+        else:
+            state_model.booking.labels.append(label.json())
+        print(state_model)
 
-    #     state.update_from_dict(
-    #         {
-    #             "data": state_model.json(),
-    #             "pickup": pickup,
-    #             "destination": destination,
-    #         }
-    #     )
-    #     await state.save()
+        state.update_from_dict(
+            {
+                "data": state_model.json(),
+                "pickup": pickup,
+                "destination": destination,
+            }
+        )
+        await state.save()
 
     # Acquire all ScheduledTask
     scheduled_tasks = await ttm.ScheduledTask.all()
@@ -197,6 +197,29 @@ async def migrate():
         )
         task_request = TaskRequest(**scheduled_task_model.task_request)
         print(task_request)
+
+        # Construct TaskRequestLabel based on TaskRequest
+        pickup = parse_pickup(task_request)
+        destination = parse_destination(task_request)
+        label = TaskRequestLabel(
+            category=parse_category(task_request),
+            unix_millis_warn_time=None,
+            pickup=pickup,
+            destination=destination,
+            cart_id=parse_cart_id(task_request),
+        )
+        print(label)
+
+        # Update TaskRequest
+        if task_request.labels is None:
+            task_request.labels = [label.json()]
+        else:
+            task_request.labels.append(label.json())
+        print(task_request)
+
+        # Update ScheduledTask
+        scheduled_task.update_from_dict({"task_request": task_request.json()})
+        await scheduled_task.save()
 
     await Tortoise.close_connections()
 
