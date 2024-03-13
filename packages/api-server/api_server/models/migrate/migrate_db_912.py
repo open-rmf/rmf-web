@@ -22,6 +22,7 @@ from api_server.models import TaskRequest, TaskRequestLabel, TaskState
 # - Construct TaskRequestLabel from its TaskRequest if it is available.
 # - Update the respective TaskState.data json TaskState.booking.labels field
 #   with the newly constructed TaskRequestLabel json string.
+# - Update ScheduledTask to use labels too
 
 
 app_config = load_config(
@@ -142,48 +143,60 @@ async def migrate():
     )
     await Tortoise.generate_schemas()
 
-    # Acquire all existing TaskStates
-    states = await ttm.TaskState.all()
-    print(f"Migrating {len(states)} TaskState models")
+    # # Acquire all existing TaskStates
+    # states = await ttm.TaskState.all()
+    # print(f"Migrating {len(states)} TaskState models")
 
-    # Migrate each TaskState
-    for state in states:
-        state_model = TaskState(**state.data)
-        task_id = state_model.booking.id
+    # # Migrate each TaskState
+    # for state in states:
+    #     state_model = TaskState(**state.data)
+    #     task_id = state_model.booking.id
 
-        # If the request is not available we skip migrating this TaskState
-        request = await ttm.TaskRequest.get_or_none(id_=task_id)
-        if request is None:
-            continue
-        request_model = TaskRequest(**request.request)
+    #     # If the request is not available we skip migrating this TaskState
+    #     request = await ttm.TaskRequest.get_or_none(id_=task_id)
+    #     if request is None:
+    #         continue
+    #     request_model = TaskRequest(**request.request)
 
-        # Construct TaskRequestLabel based on TaskRequest
-        pickup = parse_pickup(request_model)
-        destination = parse_destination(request_model)
-        label = TaskRequestLabel(
-            category=parse_category(request_model),
-            unix_millis_warn_time=None,
-            pickup=pickup,
-            destination=destination,
-            cart_id=parse_cart_id(request_model),
+    #     # Construct TaskRequestLabel based on TaskRequest
+    #     pickup = parse_pickup(request_model)
+    #     destination = parse_destination(request_model)
+    #     label = TaskRequestLabel(
+    #         category=parse_category(request_model),
+    #         unix_millis_warn_time=None,
+    #         pickup=pickup,
+    #         destination=destination,
+    #         cart_id=parse_cart_id(request_model),
+    #     )
+    #     print(label)
+
+    #     # Update data json
+    #     if state_model.booking.labels is None:
+    #         state_model.booking.labels = [label.json()]
+    #     else:
+    #         state_model.booking.labels.append(label.json())
+    #     print(state_model)
+
+    #     state.update_from_dict(
+    #         {
+    #             "data": state_model.json(),
+    #             "pickup": pickup,
+    #             "destination": destination,
+    #         }
+    #     )
+    #     await state.save()
+
+    # Acquire all ScheduledTask
+    scheduled_tasks = await ttm.ScheduledTask.all()
+    print(f"Migrating {len(scheduled_tasks)} ScheduledTask models")
+
+    # Migrate each ScheduledTask
+    for scheduled_task in scheduled_tasks:
+        scheduled_task_model = await ttm.ScheduledTaskPydantic.from_tortoise_orm(
+            scheduled_task
         )
-        print(label)
-
-        # Update data json
-        if state_model.booking.labels is None:
-            state_model.booking.labels = [label.json()]
-        else:
-            state_model.booking.labels.append(label.json())
-        print(state_model)
-
-        state.update_from_dict(
-            {
-                "data": state_model.json(),
-                "pickup": pickup,
-                "destination": destination,
-            }
-        )
-        await state.save()
+        task_request = TaskRequest(**scheduled_task_model.task_request)
+        print(task_request)
 
     await Tortoise.close_connections()
 
