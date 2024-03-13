@@ -1528,7 +1528,11 @@ export function CreateTaskForm({
     try {
       const labelString = JSON.stringify(requestLabel);
       if (labelString) {
-        request.labels = ['testing', labelString];
+        if (request.labels) {
+          request.labels.push(labelString);
+        } else {
+          request.labels = [labelString];
+        }
       }
     } catch (e) {
       console.error('Failed to generate string for task request label');
