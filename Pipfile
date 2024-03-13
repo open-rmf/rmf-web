@@ -20,3 +20,6 @@ ros-translator = {editable = true, path = "./packages/ros-translator"}
 
 [requires]
 python_version = "3.10"
+
+[packages]
+uvicorn = "*"

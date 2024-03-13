@@ -20,7 +20,7 @@ setup(
     install_requires=[
         "fastapi~=0.109.0",
         "aiofiles~=0.8.0",
-        "uvicorn[standard]~=0.18.2",
+        "uvicorn[standard]~=0.28.0",
         "python-socketio~=5.7",
         "reactivex~=4.0.4",
         "tortoise-orm~=0.18.1",
