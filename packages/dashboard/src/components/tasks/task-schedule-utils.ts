@@ -167,11 +167,11 @@ export const apiScheduleToSchedule = (scheduleTask: ApiSchedule[]): Schedule => 
 };
 
 export const getScheduledTaskTitle = (task: ScheduledTask): string => {
-  if (!task.task_request || !task.task_request.category) {
+  const shortDescription = getShortDescription(task.task_request);
+  if (!task.task_request || !task.task_request.category || !shortDescription) {
     return `[${task.id}] Unknown`;
   }
-
-  return `${getShortDescription(task.task_request)}`;
+  return shortDescription;
 };
 
 // Pad a number to 2 digits

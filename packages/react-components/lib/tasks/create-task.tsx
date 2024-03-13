@@ -168,6 +168,8 @@ export interface DeliveryTaskDescription {
   ];
 }
 
+type CustomComposeTaskDescription = string;
+
 type TaskDescription =
   | DeliveryTaskDescription
   | DeliveryCustomTaskDescription
@@ -223,6 +225,20 @@ const isPatrolTaskDescriptionValid = (taskDescription: PatrolTaskDescription): b
   return taskDescription.rounds > 0;
 };
 
+const isCustomTaskDescriptionValid = (taskDescription: string): boolean => {
+  if (taskDescription.length === 0) {
+    return false;
+  }
+
+  try {
+    JSON.parse(taskDescription);
+  } catch (e) {
+    return false;
+  }
+
+  return true;
+};
+
 const classes = {
   title: 'dialogue-info-value',
   selectFileBtn: 'create-task-selected-file-btn',
@@ -251,7 +267,7 @@ const StyledDialog = styled((props: DialogProps) => <Dialog {...props} />)(({ th
   },
 }));
 
-export function getShortDescription(taskRequest: TaskRequest): string {
+export function getShortDescription(taskRequest: TaskRequest): string | undefined {
   if (taskRequest.category === 'patrol') {
     const formattedPlaces = taskRequest.description.places.map((place: string) => `[${place}]`);
     return `[Patrol] [${taskRequest.description.rounds}] round/s, along ${formattedPlaces.join(
@@ -259,26 +275,58 @@ export function getShortDescription(taskRequest: TaskRequest): string {
     )}`;
   }
 
-  const goToPickup: GoToPlaceActivity =
-    taskRequest.description.phases[0].activity.description.activities[0];
-  const pickup: LotPickupActivity =
-    taskRequest.description.phases[0].activity.description.activities[1];
-  const cartId = pickup.description.description.cart_id;
-  const goToDropoff: GoToPlaceActivity =
-    taskRequest.description.phases[1].activity.description.activities[0];
+  // This section is only valid for custom delivery types
+  // FIXME: This block looks like it makes assumptions about the structure of
+  // the task description in order to parse it, but it is following the
+  // statically defined description (object) at the top of this file. The
+  // descriptions should be replaced by a schema in general, however the better
+  // approach now should be to make each task description testable and in charge
+  // of their own short descriptions.
+  try {
+    const goToPickup: GoToPlaceActivity =
+      taskRequest.description.phases[0].activity.description.activities[0];
+    const pickup: LotPickupActivity =
+      taskRequest.description.phases[0].activity.description.activities[1];
+    const cartId = pickup.description.description.cart_id;
+    const goToDropoff: GoToPlaceActivity =
+      taskRequest.description.phases[1].activity.description.activities[0];
 
-  switch (taskRequest.description.category) {
-    case 'delivery_pickup': {
-      return `[Delivery - 1:1] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
+    switch (taskRequest.description.category) {
+      case 'delivery_pickup': {
+        return `[Delivery - 1:1] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
+      }
+      case 'delivery_sequential_lot_pickup': {
+        return `[Delivery - Sequential lot pick up] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
+      }
+      case 'delivery_area_pickup': {
+        return `[Delivery - Area pick up] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
+      }
+      default:
+        return `[Unknown] type "${taskRequest.description.category}"`;
     }
-    case 'delivery_sequential_lot_pickup': {
-      return `[Delivery - Sequential lot pick up] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
+  } catch (e) {
+    if (e instanceof TypeError) {
+      console.error(`Failed to parse custom delivery: ${e.message}`);
+    } else {
+      console.error(
+        `Failed to generate short description from task of category: ${taskRequest.category}: ${
+          (e as Error).message
+        }`,
+      );
     }
-    case 'delivery_area_pickup': {
-      return `[Delivery - Area pick up] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
+
+    try {
+      const descriptionString = JSON.stringify(taskRequest.description);
+      console.error(descriptionString);
+      return descriptionString;
+    } catch (e) {
+      console.error(
+        `Failed to parse description of task of category: ${taskRequest.category}: ${
+          (e as Error).message
+        }`,
+      );
+      return undefined;
     }
-    default:
-      return `[Unknown] type "${taskRequest.description.category}"`;
   }
 }
 
@@ -761,6 +809,7 @@ function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange, allowSubmit }: Pa
     allowSubmit(isPatrolTaskDescriptionValid(desc));
     onChange(desc);
   };
+  allowSubmit(isPatrolTaskDescriptionValid(taskDesc));
 
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
@@ -821,6 +870,37 @@ function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange, allowSubmit }: Pa
               ...taskDesc,
             })
           }
+        />
+      </Grid>
+    </Grid>
+  );
+}
+
+interface CustomComposeTaskFormProps {
+  taskDesc: CustomComposeTaskDescription;
+  onChange(customComposeTaskDescription: CustomComposeTaskDescription): void;
+  allowSubmit(allow: boolean): void;
+}
+
+function CustomComposeTaskForm({ taskDesc, onChange, allowSubmit }: CustomComposeTaskFormProps) {
+  const theme = useTheme();
+  const onInputChange = (desc: CustomComposeTaskDescription) => {
+    allowSubmit(isCustomTaskDescriptionValid(desc));
+    onChange(desc);
+  };
+
+  return (
+    <Grid container spacing={theme.spacing(2)}>
+      <Grid item xs={12}>
+        <TextField
+          label="Multiline"
+          multiline
+          rows={8}
+          value={taskDesc}
+          fullWidth
+          onChange={(ev) => {
+            onInputChange(ev.target.value);
+          }}
         />
       </Grid>
     </Grid>
@@ -1147,6 +1227,7 @@ export interface CreateTaskFormProps
   dropoffPoints?: Record<string, string>;
   favoritesTasks?: TaskFavorite[];
   scheduleToEdit?: Schedule;
+  // requestTask is provided only when editing a schedule
   requestTask?: TaskRequest;
   submitTasks?(tasks: TaskRequest[], schedule: Schedule | null): Promise<void>;
   tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
@@ -1202,21 +1283,18 @@ export function CreateTaskForm({
   const [favoriteTaskTitleError, setFavoriteTaskTitleError] = React.useState(false);
   const [savingFavoriteTask, setSavingFavoriteTask] = React.useState(false);
 
-  const [taskRequests, setTaskRequests] = React.useState<TaskRequest[]>(() => [
-    requestTask ?? defaultTask(),
-  ]);
-  const [selectedTaskIdx, setSelectedTaskIdx] = React.useState(0);
-  const taskTitles = React.useMemo(
-    () => taskRequests && taskRequests.map((t, i) => `${i + 1}: ${getShortDescription(t)}`),
-    [taskRequests],
+  const [taskType, setTaskType] = React.useState<string | undefined>(undefined);
+  const [taskRequest, setTaskRequest] = React.useState<TaskRequest>(
+    () => requestTask ?? defaultTask(),
   );
+
   const [submitting, setSubmitting] = React.useState(false);
   const [formFullyFilled, setFormFullyFilled] = React.useState(requestTask !== undefined || false);
-  const taskRequest = taskRequests[selectedTaskIdx];
   const [openSchedulingDialog, setOpenSchedulingDialog] = React.useState(false);
   const defaultScheduleDate = new Date();
   defaultScheduleDate.setSeconds(0);
   defaultScheduleDate.setMilliseconds(0);
+
   const [schedule, setSchedule] = React.useState<Schedule>(
     scheduleToEdit ?? {
       startOn: defaultScheduleDate,
@@ -1244,33 +1322,34 @@ export function CreateTaskForm({
     }
     setScheduleUntilValue(event.target.value);
   };
-  // schedule is not supported with batch upload
-  const scheduleEnabled = taskRequests.length === 1;
 
   const [warnTimeChecked, setWarnTimeChecked] = React.useState(false);
   const handleWarnTimeCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setWarnTimeChecked(event.target.checked);
   };
 
-  const updateTasks = () => {
-    setTaskRequests((prev) => {
-      prev.splice(selectedTaskIdx, 1, taskRequest);
-      return [...prev];
+  const handleTaskDescriptionChange = (newCategory: string, newDesc: TaskDescription) => {
+    setTaskRequest((prev) => {
+      return {
+        ...prev,
+        category: newCategory,
+        description: newDesc,
+      };
     });
-  };
-
-  const handleTaskDescriptionChange = (newDesc: TaskDescription) => {
-    taskRequest.category = 'compose';
-    taskRequest.description = newDesc;
-    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, description: newDesc, category: 'compose' });
-    updateTasks();
-  };
-
-  const legacyHandleTaskDescriptionChange = (newCategory: string, newDesc: TaskDescription) => {
-    taskRequest.category = newCategory;
-    taskRequest.description = newDesc;
     setFavoriteTaskBuffer({ ...favoriteTaskBuffer, description: newDesc, category: newCategory });
-    updateTasks();
+  };
+
+  // FIXME: Custom compose task descriptions are currently not allowed to be
+  // saved as favorite tasks. This will probably require a re-write of
+  // FavoriteTask's pydantic model with better typing.
+  const handleCustomComposeTaskDescriptionChange = (newDesc: CustomComposeTaskDescription) => {
+    setTaskRequest((prev) => {
+      return {
+        ...prev,
+        category: 'custom_compose',
+        description: newDesc,
+      };
+    });
   };
 
   const renderTaskDescriptionForm = () => {
@@ -1279,7 +1358,17 @@ export function CreateTaskForm({
         <PatrolTaskForm
           taskDesc={taskRequest.description as PatrolTaskDescription}
           patrolWaypoints={patrolWaypoints}
-          onChange={(desc) => legacyHandleTaskDescriptionChange('patrol', desc)}
+          onChange={(desc) => handleTaskDescriptionChange('patrol', desc)}
+          allowSubmit={allowSubmit}
+        />
+      );
+    } else if (taskRequest.category === 'custom_compose') {
+      return (
+        <CustomComposeTaskForm
+          taskDesc={taskRequest.description as CustomComposeTaskDescription}
+          onChange={(desc) => {
+            handleCustomComposeTaskDescriptionChange(desc);
+          }}
           allowSubmit={allowSubmit}
         />
       );
@@ -1297,7 +1386,7 @@ export function CreateTaskForm({
               desc.category = taskRequest.description.category;
               desc.phases[0].activity.description.activities[1].description.category =
                 taskRequest.description.category;
-              handleTaskDescriptionChange(desc);
+              handleTaskDescriptionChange('compose', desc);
             }}
             allowSubmit={allowSubmit}
           />
@@ -1314,7 +1403,7 @@ export function CreateTaskForm({
               desc.category = taskRequest.description.category;
               desc.phases[0].activity.description.activities[1].description.category =
                 taskRequest.description.category;
-              handleTaskDescriptionChange(desc);
+              handleTaskDescriptionChange('compose', desc);
             }}
             allowSubmit={allowSubmit}
           />
@@ -1324,18 +1413,23 @@ export function CreateTaskForm({
     }
   };
   const handleTaskTypeChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    const newCategory = ev.target.value;
-    const newDesc = defaultTaskDescription(newCategory);
-    if (newDesc === undefined) {
-      return;
+    const newType = ev.target.value;
+    setTaskType(newType);
+
+    if (newType === 'custom_compose') {
+      taskRequest.category = 'custom_compose';
+      taskRequest.description = '';
+    } else {
+      const newDesc = defaultTaskDescription(newType);
+      if (newDesc === undefined) {
+        return;
+      }
+      taskRequest.description = newDesc;
+      const category = newType === 'patrol' ? 'patrol' : 'compose';
+      taskRequest.category = category;
+
+      setFavoriteTaskBuffer({ ...favoriteTaskBuffer, category, description: newDesc });
     }
-    taskRequest.description = newDesc;
-    const category = newCategory === 'patrol' ? 'patrol' : 'compose';
-    taskRequest.category = category;
-
-    setFavoriteTaskBuffer({ ...favoriteTaskBuffer, category, description: newDesc });
-
-    updateTasks();
   };
 
   const allowSubmit = (allow: boolean) => {
@@ -1345,69 +1439,81 @@ export function CreateTaskForm({
   // no memo because deps would likely change
   const handleSubmit = async (scheduling: boolean) => {
     if (!submitTasks) {
-      onSuccess && onSuccess(taskRequests);
+      onSuccess && onSuccess([taskRequest]);
       return;
     }
 
     const requester = scheduling ? `${user}__scheduled` : user;
 
-    for (const t of taskRequests) {
-      t.requester = requester;
-      t.unix_millis_request_time = Date.now();
+    const request = { ...taskRequest };
+    request.requester = requester;
+    request.unix_millis_request_time = Date.now();
 
-      // Workaround where all the task category need to be compose.
-      if (t.category !== 'patrol') {
-        t.category = 'compose';
+    if (
+      taskType === 'delivery_pickup' ||
+      taskType === 'delivery_sequential_lot_pickup' ||
+      taskType === 'delivery_area_pickup'
+    ) {
+      const goToOneOfThePlaces: GoToOneOfThePlacesActivity = {
+        category: 'go_to_place',
+        description: {
+          one_of: emergencyLots.map((placeName) => {
+            return {
+              waypoint: placeName,
+            };
+          }),
+          constraints: [
+            {
+              category: 'prefer_same_map',
+              description: '',
+            },
+          ],
+        },
+      };
 
-        const goToOneOfThePlaces: GoToOneOfThePlacesActivity = {
-          category: 'go_to_place',
-          description: {
-            one_of: emergencyLots.map((placeName) => {
-              return {
-                waypoint: placeName,
-              };
-            }),
-            constraints: [
-              {
-                category: 'prefer_same_map',
-                description: '',
-              },
-            ],
-          },
-        };
-        const deliveryDropoff: DropoffActivity = {
-          category: 'perform_action',
-          description: {
-            unix_millis_action_duration_estimate: 60000,
-            category: 'delivery_dropoff',
-            description: {},
-          },
-        };
-        const onCancelDropoff: OnCancelDropoff = {
-          category: 'sequence',
-          description: [goToOneOfThePlaces, deliveryDropoff],
-        };
-        taskRequest.description.phases[1].on_cancel = [onCancelDropoff];
+      // FIXME: there should not be any statically defined duration estimates as
+      // it makes assumptions of the deployments.
+      const deliveryDropoff: DropoffActivity = {
+        category: 'perform_action',
+        description: {
+          unix_millis_action_duration_estimate: 60000,
+          category: 'delivery_dropoff',
+          description: {},
+        },
+      };
+      const onCancelDropoff: OnCancelDropoff = {
+        category: 'sequence',
+        description: [goToOneOfThePlaces, deliveryDropoff],
+      };
+      request.description.phases[1].on_cancel = [onCancelDropoff];
+    } else if (taskType === 'custom_compose') {
+      try {
+        const obj = JSON.parse(request.description);
+        request.category = 'compose';
+        request.description = obj;
+      } catch (e) {
+        console.error('Invalid custom compose task description');
+        onFail && onFail(e as Error, [request]);
+        return;
       }
     }
 
-    const submittingSchedule = scheduling && scheduleEnabled;
     try {
       setSubmitting(true);
-      await submitTasks(taskRequests, submittingSchedule ? schedule : null);
+      await submitTasks([request], scheduling ? schedule : null);
       setSubmitting(false);
 
-      if (submittingSchedule) {
+      if (scheduling) {
         onSuccessScheduling && onSuccessScheduling();
       } else {
-        onSuccess && onSuccess(taskRequests);
+        onSuccess && onSuccess([request]);
       }
     } catch (e) {
       setSubmitting(false);
-      if (submittingSchedule) {
+      if (scheduling) {
         onFailScheduling && onFailScheduling(e as Error);
       } else {
-        onFail && onFail(e as Error, taskRequests);
+        onFail && onFail(e as Error, [request]);
       }
     }
   };
@@ -1465,7 +1571,7 @@ export function CreateTaskForm({
       onSuccessFavoriteTask &&
         onSuccessFavoriteTask('Deleted favorite task successfully', favoriteTaskBuffer);
 
-      setTaskRequests([defaultTask()]);
+      setTaskRequest(defaultTask());
       setOpenFavoriteDialog(false);
       setCallToDeleteFavoriteTask(false);
       setCallToUpdateFavoriteTask(false);
@@ -1475,29 +1581,11 @@ export function CreateTaskForm({
     }
   };
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  const handleSelectFileClick: React.MouseEventHandler<HTMLButtonElement> = () => {
-    if (!tasksFromFile) {
-      return;
-    }
-    (async () => {
-      const newTasks = await tasksFromFile();
-      if (newTasks.length === 0) {
-        return;
-      }
-      setTaskRequests(newTasks);
-      setSelectedTaskIdx(0);
-    })();
-  };
-
-  const submitText = taskRequests.length > 1 ? 'Submit All Now' : 'Submit Now';
-
   return (
     <>
       <StyledDialog
         title="Create Task"
         maxWidth={isScreenHeightLessThan800 ? 'md' : 'lg'}
-        fullWidth={taskRequests.length > 1}
         disableEnforceFocus
         {...otherProps}
       >
@@ -1529,14 +1617,12 @@ export function CreateTaskForm({
                       setOpenDialog={setOpenFavoriteDialog}
                       listItemClick={() => {
                         setFavoriteTaskBuffer(favoriteTask);
-                        setTaskRequests([
-                          {
-                            category: favoriteTask.category,
-                            description: favoriteTask.description,
-                            unix_millis_earliest_start_time: Date.now(),
-                            priority: favoriteTask.priority,
-                          },
-                        ]);
+                        setTaskRequest({
+                          category: favoriteTask.category,
+                          description: favoriteTask.description,
+                          unix_millis_earliest_start_time: 0,
+                          priority: favoriteTask.priority,
+                        });
                       }}
                     />
                   );
@@ -1605,27 +1691,14 @@ export function CreateTaskForm({
                       >
                         Patrol
                       </MenuItem>
+                      <MenuItem value="custom_compose">Custom Compose Task</MenuItem>
                     </TextField>
                   </Grid>
                   <Grid item xs={isScreenHeightLessThan800 ? 6 : 7}>
                     <DateTimePicker
                       inputFormat={'MM/dd/yyyy HH:mm'}
-                      value={
-                        taskRequest.unix_millis_earliest_start_time
-                          ? new Date(taskRequest.unix_millis_earliest_start_time)
-                          : new Date()
-                      }
-                      onChange={(date) => {
-                        if (!date) {
-                          return;
-                        }
-                        taskRequest.unix_millis_earliest_start_time = date.valueOf();
-                        setFavoriteTaskBuffer({
-                          ...favoriteTaskBuffer,
-                          unix_millis_earliest_start_time: date.valueOf(),
-                        });
-                        updateTasks();
-                      }}
+                      value={new Date()}
+                      onChange={() => 0}
                       label="Start Time"
                       renderInput={(props) => (
                         <TextField
@@ -1667,7 +1740,12 @@ export function CreateTaskForm({
                           return;
                         }
                         taskRequest.unix_millis_warn_time = date.valueOf();
-                        updateTasks();
+                        setTaskRequest((prev) => {
+                          return {
+                            ...prev,
+                            unix_millis_warn_time: date.valueOf(),
+                          };
+                        });
                       }}
                       label="Warn Time"
                       renderInput={(props) => (
@@ -1704,33 +1782,12 @@ export function CreateTaskForm({
                       setOpenFavoriteDialog(true);
                     }}
                     style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }}
+                    disabled={taskType === 'custom_compose'}
                   >
                     {callToUpdateFavoriteTask ? `Confirm edits` : 'Save as a favorite task'}
                   </Button>
                 </Grid>
               </Grid>
-              {taskTitles.length > 1 && (
-                <>
-                  <Divider
-                    orientation="vertical"
-                    flexItem
-                    style={{ marginLeft: theme.spacing(2), marginRight: theme.spacing(2) }}
-                  />
-                  <List dense className={classes.taskList} aria-label="Tasks List">
-                    {taskTitles.map((title, idx) => (
-                      <ListItem
-                        key={idx}
-                        button
-                        onClick={() => setSelectedTaskIdx(idx)}
-                        className={selectedTaskIdx === idx ? classes.selectedTask : undefined}
-                        role="listitem button"
-                      >
-                        <ListItemText primary={title} />
-                      </ListItem>
-                    ))}
-                  </List>
-                </>
-              )}
             </Grid>
           </DialogContent>
           <DialogActions>
@@ -1759,7 +1816,7 @@ export function CreateTaskForm({
               color="primary"
               disabled={submitting || !formFullyFilled || scheduleToEdit !== undefined}
               className={classes.actionBtn}
-              aria-label={submitText}
+              aria-label="Submit Now"
               onClick={handleSubmitNow}
               size={isScreenHeightLessThan800 ? 'small' : 'medium'}
             >
@@ -1769,7 +1826,7 @@ export function CreateTaskForm({
                 size={isScreenHeightLessThan800 ? '0.8em' : '1.5em'}
                 color="inherit"
               >
-                {submitText}
+                Submit Now
               </Loading>
             </Button>
           </DialogActions>
@@ -1837,7 +1894,6 @@ export function CreateTaskForm({
                   });
                 }}
                 label="Start On"
-                disabled={!scheduleEnabled}
                 renderInput={(props) => (
                   <TextField
                     {...props}
@@ -1874,7 +1930,6 @@ export function CreateTaskForm({
                   }
                 }}
                 label="At"
-                disabled={!scheduleEnabled}
                 renderInput={(props) => (
                   <TextField
                     {...props}
@@ -1892,7 +1947,6 @@ export function CreateTaskForm({
             <Grid item xs={12}>
               <DaySelectorSwitch
                 value={schedule.days}
-                disabled={!scheduleEnabled}
                 onChange={(days) => setSchedule((prev) => ({ ...prev, days }))}
               />
             </Grid>
