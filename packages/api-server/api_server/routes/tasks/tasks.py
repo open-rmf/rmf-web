@@ -186,6 +186,7 @@ async def post_activity_discovery(
 async def post_cancel_task(
     request: mdl.CancelTaskRequest = Body(...),
 ):
+    logger.info(request)
     return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
 
 
