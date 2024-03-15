@@ -17,12 +17,21 @@ class TestTasksRoute(AppFixture):
         task_ids = [uuid4()]
         cls.task_states = [make_task_state(task_id=f"test_{x}") for x in task_ids]
         cls.task_logs = [make_task_log(task_id=f"test_{x}") for x in task_ids]
+        cls.clsSetupErr: str | None = None
+
+        if cls.client.portal is None:
+            cls.clsSetupErr = "missing client portal, is the client context entered?"
+            return
 
         repo = TaskRepository(cls.admin_user)
         for x in cls.task_states:
-            asyncio.run(repo.save_task_state(x))
+            cls.client.portal.call(repo.save_task_state, x)
         for x in cls.task_logs:
-            asyncio.run(repo.save_task_log(x))
+            cls.client.portal.call(repo.save_task_log, x)
+
+    def setUp(self):
+        super().setUp()
+        self.assertIsNone(self.clsSetupErr)
 
     def test_get_task_state(self):
         resp = self.client.get(f"/tasks/{self.task_states[0].booking.id}/state")
@@ -117,12 +126,7 @@ class TestTasksRoute(AppFixture):
     def test_sub_task_log(self):
         task_id = self.task_logs[0].task_id
         gen = self.subscribe_sio(f"/tasks/{task_id}/log")
-        with self.client.websocket_connect("/_internal") as ws:
-            ws.send_text(
-                mdl.TaskEventLogUpdate(
-                    type="task_log_update", data=self.task_logs[0]
-                ).json()
-            )
+        task_events.task_event_logs.on_next(self.task_logs[0])
         log = next(gen)
         self.assertEqual(task_id, cast(TaskEventLog, log).task_id)
 
