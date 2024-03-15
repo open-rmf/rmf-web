@@ -10,7 +10,10 @@ from pydantic import BaseModel, Field, conint
 
 class Error(BaseModel):
     code: Optional[conint(ge=0)] = Field(
-        None, description="A standard code for the kind of error that has occurred"
+        default=None,
+        description="A standard code for the kind of error that has occurred",
     )
-    category: Optional[str] = Field(None, description="The category of the error")
-    detail: Optional[str] = Field(None, description="Details about the error")
+    category: Optional[str] = Field(
+        default=None, description="The category of the error"
+    )
+    detail: Optional[str] = Field(default=None, description="Details about the error")

@@ -1,11 +1,13 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class AffineImage(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(from_attributes=True)
+
     name: str = ""  # string
     x_offset: float = 0  # float32
     y_offset: float = 0  # float32
@@ -13,20 +15,6 @@ class AffineImage(pydantic.BaseModel):
     scale: float = 0  # float32
     encoding: str = ""  # string
     data: bytes = bytes()  # uint8
-
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "name",
-                "x_offset",
-                "y_offset",
-                "yaw",
-                "scale",
-                "encoding",
-                "data",
-            ],
-        }
 
 
 # string name

@@ -1,22 +1,15 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class ModeParameter(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(from_attributes=True)
+
     name: str = ""  # string
     value: str = ""  # string
-
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "name",
-                "value",
-            ],
-        }
 
 
 # string name

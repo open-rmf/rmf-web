@@ -3,12 +3,12 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from pydantic import Field, RootModel
 
 from . import event_description_Clean
 
 
-class CleanTask(BaseModel):
-    __root__: event_description_Clean.CleanEvent = Field(
+class CleanTask(RootModel[event_description_Clean.CleanEvent]):
+    root: event_description_Clean.CleanEvent = Field(
         ..., description="Clean a zone", title="Clean Task"
     )

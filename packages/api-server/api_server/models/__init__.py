@@ -13,7 +13,7 @@ from .rmf_api.cancel_task_request import CancelTaskRequest
 from .rmf_api.cancel_task_response import TaskCancelResponse
 from .rmf_api.dispatch_task_request import DispatchTaskRequest
 from .rmf_api.dispatch_task_response import *
-from .rmf_api.fleet_log import FleetState as FleetLog
+from .rmf_api.fleet_log import FleetLog
 from .rmf_api.fleet_log_request import FleetLogRequest
 from .rmf_api.fleet_log_response import FleetLogResponse
 from .rmf_api.fleet_log_update import TaskEventLogUpdate as FleetLogUpdate
@@ -28,7 +28,7 @@ from .rmf_api.resume_task_request import TaskResumeRequest
 from .rmf_api.resume_task_response import TaskResumeResponse
 from .rmf_api.rewind_task_request import TaskRewindRequest
 from .rmf_api.rewind_task_response import TaskRewindResponse
-from .rmf_api.robot_state import Status2
+from .rmf_api.robot_state import Status
 from .rmf_api.robot_task_request import RobotTaskRequest
 from .rmf_api.robot_task_response import *
 from .rmf_api.skip_phase_request import TaskPhaseSkipRequest
@@ -44,4 +44,5 @@ from .rmf_api.task_state import Status, TaskState
 from .rmf_api.task_state_update import TaskStateUpdate
 from .rmf_api.undo_skip_phase_request import UndoPhaseSkipRequest
 from .rmf_api.undo_skip_phase_response import UndoPhaseSkipResponse
+from .tasks import *
 from .user import *

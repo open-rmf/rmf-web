@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,25 +8,14 @@ from ..builtin_interfaces.Time import Time
 
 
 class LiftRequest(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(from_attributes=True)
+
     lift_name: str = ""  # string
     request_time: Time = Time()  # builtin_interfaces/Time
     session_id: str = ""  # string
-    request_type: pydantic.conint(ge=0, le=255) = 0  # uint8
+    request_type: Annotated[int, pydantic.Field(ge=0, le=255)] = 0  # uint8
     destination_floor: str = ""  # string
-    door_state: pydantic.conint(ge=0, le=255) = 0  # uint8
-
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "lift_name",
-                "request_time",
-                "session_id",
-                "request_type",
-                "destination_floor",
-                "door_state",
-            ],
-        }
+    door_state: Annotated[int, pydantic.Field(ge=0, le=255)] = 0  # uint8
 
 
 # string lift_name

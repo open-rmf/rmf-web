@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -9,23 +9,13 @@ from ..rmf_dispenser_msgs.DispenserRequestItem import DispenserRequestItem
 
 
 class DispenserRequest(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(from_attributes=True)
+
     time: Time = Time()  # builtin_interfaces/Time
     request_guid: str = ""  # string
     target_guid: str = ""  # string
     transporter_type: str = ""  # string
-    items: List[DispenserRequestItem] = []  # rmf_dispenser_msgs/DispenserRequestItem
-
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "time",
-                "request_guid",
-                "target_guid",
-                "transporter_type",
-                "items",
-            ],
-        }
+    items: list[DispenserRequestItem] = []  # rmf_dispenser_msgs/DispenserRequestItem
 
 
 # builtin_interfaces/Time time

@@ -22,4 +22,6 @@ class BuildingMap(rmf_building_map_msgs.BuildingMap):
         for m in existing_maps:
             if m.id_ != self.name:
                 await m.delete()
-        await ttm.BuildingMap.update_or_create({"data": self.dict()}, id_=self.name)
+        await ttm.BuildingMap.update_or_create(
+            {"data": self.model_dump()}, id_=self.name
+        )

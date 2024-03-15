@@ -3,35 +3,35 @@
 
 from __future__ import annotations
 
-from enum import Enum
 from typing import List, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, RootModel
+from typing_extensions import Literal
 
 from . import error, task_log
 
 
-class Failure(Enum):
-    boolean_False = False
+class Success(RootModel[Literal[True]]):
+    root: Literal[True] = Field(..., description="The request was successful")
 
 
-class Success(Enum):
-    boolean_True = True
+class Failure(RootModel[Literal[False]]):
+    root: Literal[False] = Field(..., description="The request failed")
 
 
-class TaskLogResponseItem(BaseModel):
+class TaskLogResponse1(BaseModel):
     success: Success
     data: task_log.TaskEventLog
 
 
-class TaskLogResponseItem1(BaseModel):
+class TaskLogResponse2(BaseModel):
     success: Failure
     errors: List[error.Error] = Field(
         ..., description="Any error messages explaining why the request failed"
     )
 
 
-class TaskLogResponse(BaseModel):
-    __root__: Union[TaskLogResponseItem, TaskLogResponseItem1] = Field(
+class TaskLogResponse(RootModel[Union[TaskLogResponse1, TaskLogResponse2]]):
+    root: Union[TaskLogResponse1, TaskLogResponse2] = Field(
         ..., description="Responding to a task log request", title="Task Log Response"
     )

@@ -1,24 +1,16 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class SubmitTask_Response(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(from_attributes=True)
+
     success: bool = False  # bool
     task_id: str = ""  # string
     message: str = ""  # string
-
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "success",
-                "task_id",
-                "message",
-            ],
-        }
 
 
 #

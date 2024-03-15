@@ -23,9 +23,9 @@ setup(
         "uvicorn[standard]~=0.28.0",
         "python-socketio~=5.7",
         "reactivex~=4.0.4",
-        "tortoise-orm~=0.18.1",
+        "tortoise-orm~=0.20.0",
         "pyjwt[crypto]~=2.4",
-        "pydantic~=1.9",
+        "pydantic~=2.6.4",
         "schedule~=1.1.0",
     ],
     extras_require={

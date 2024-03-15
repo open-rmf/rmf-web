@@ -129,34 +129,38 @@ async def sub_task_log(_req: SubscriptionRequest, task_id: str):
 async def post_activity_discovery(
     request: mdl.ActivityDiscoveryRequest = Body(...),
 ):
-    return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
+    return RawJSONResponse(
+        await tasks_service().call(request.model_dump_json(exclude_none=True))
+    )
 
 
 @router.post("/cancel_task", response_model=mdl.TaskCancelResponse)
 async def post_cancel_task(
     request: mdl.CancelTaskRequest = Body(...),
 ):
-    return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
+    return RawJSONResponse(
+        await tasks_service().call(request.model_dump_json(exclude_none=True))
+    )
 
 
 @router.post(
     "/dispatch_task",
-    response_model=mdl.TaskDispatchResponseItem,
-    responses={400: {"model": mdl.TaskDispatchResponseItem1}},
+    response_model=mdl.TaskDispatchResponse,
+    responses={400: {"model": mdl.TaskDispatchResponse}},
 )
 async def post_dispatch_task(
     request: mdl.DispatchTaskRequest = Body(...),
     task_repo: TaskRepository = Depends(task_repo_dep),
 ):
-    resp = mdl.TaskDispatchResponse.parse_raw(
-        await tasks_service().call(request.json(exclude_none=True))
+    resp = mdl.TaskDispatchResponse.model_validate_json(
+        await tasks_service().call(request.model_dump_json(exclude_none=True))
     )
-    if not resp.__root__.success:
-        return RawJSONResponse(resp.json(), 400)
-    task_state = cast(mdl.TaskDispatchResponseItem, resp.__root__).state
+    if not resp.root.success:
+        return RawJSONResponse(resp.model_dump_json(), 400)
+    task_state = cast(mdl.TaskDispatchResponse1, resp.root).state
     await task_repo.save_task_state(task_state)
     await task_repo.save_task_request(task_state.booking.id, request.request)
-    return resp.__root__
+    return resp
 
 
 @router.post(
@@ -168,61 +172,75 @@ async def post_robot_task(
     request: mdl.RobotTaskRequest = Body(...),
     task_repo: TaskRepository = Depends(task_repo_dep),
 ):
-    resp = mdl.RobotTaskResponse.parse_raw(
-        await tasks_service().call(request.json(exclude_none=True))
+    resp = mdl.RobotTaskResponse.model_validate_json(
+        await tasks_service().call(request.model_dump_json(exclude_none=True))
     )
-    if not resp.__root__.__root__.success:
-        return RawJSONResponse(resp.json(), 400)
+    if not resp.root.root.success:
+        return RawJSONResponse(resp.model_dump_json(), 400)
     await task_repo.save_task_state(
-        cast(mdl.TaskDispatchResponseItem, resp.__root__.__root__).state
+        cast(mdl.TaskDispatchResponse1, resp.root.root).state
     )
-    return resp.__root__
+    return resp
 
 
 @router.post("/interrupt_task", response_model=mdl.TaskInterruptionResponse)
 async def post_interrupt_task(
     request: mdl.TaskInterruptionRequest = Body(...),
 ):
-    return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
+    return RawJSONResponse(
+        await tasks_service().call(request.model_dump_json(exclude_none=True))
+    )
 
 
 @router.post("/kill_task", response_model=mdl.TaskKillResponse)
 async def post_kill_task(
     request: mdl.TaskKillRequest = Body(...),
 ):
-    return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
+    return RawJSONResponse(
+        await tasks_service().call(request.model_dump_json(exclude_none=True))
+    )
 
 
 @router.post("/resume_task", response_model=mdl.TaskResumeResponse)
 async def post_resume_task(
     request: mdl.TaskResumeRequest = Body(...),
 ):
-    return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
+    return RawJSONResponse(
+        await tasks_service().call(request.model_dump_json(exclude_none=True))
+    )
 
 
 @router.post("/rewind_task", response_model=mdl.TaskRewindResponse)
 async def post_rewind_task(
     request: mdl.TaskRewindRequest = Body(...),
 ):
-    return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
+    return RawJSONResponse(
+        await tasks_service().call(request.model_dump_json(exclude_none=True))
+    )
 
 
 @router.post("/skip_phase", response_model=mdl.SkipPhaseResponse)
 async def post_skip_phase(
     request: mdl.TaskPhaseSkipRequest = Body(...),
 ):
-    return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
+    return RawJSONResponse(
+        await tasks_service().call(request.model_dump_json(exclude_none=True))
+    )
 
 
 @router.post("/task_discovery", response_model=mdl.TaskDiscovery)
 async def post_task_discovery(
     request: mdl.TaskDiscoveryRequest = Body(...),
 ):
-    return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
+    return RawJSONResponse(
+        await tasks_service().call(request.model_dump_json(exclude_none=True))
+    )
 
 
 @router.post("/undo_skip_phase", response_model=mdl.UndoPhaseSkipResponse)
 async def post_undo_skip_phase(
     request: mdl.UndoPhaseSkipRequest = Body(...),
 ):
-    return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
+    return RawJSONResponse(
+        await tasks_service().call(request.model_dump_json(exclude_none=True))
+    )

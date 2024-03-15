@@ -17,7 +17,9 @@ class TestFleetsRoute(AppFixture):
 
         with self.client.websocket_connect("/_internal") as ws:
             ws.send_text(
-                FleetStateUpdate(type="fleet_state_update", data=fleet_state).json()
+                FleetStateUpdate(
+                    type="fleet_state_update", data=fleet_state
+                ).model_dump_json()
             )
 
         msg = next(gen)
@@ -45,7 +47,11 @@ class TestFleetsRoute(AppFixture):
         fleet_events.fleet_logs.on_next(fleet_log)
 
         with self.client.websocket_connect("/_internal") as ws:
-            ws.send_text(FleetLogUpdate(type="fleet_log_update", data=fleet_log).json())
+            ws.send_text(
+                FleetLogUpdate(
+                    type="fleet_log_update", data=fleet_log
+                ).model_dump_json()
+            )
 
         msg = next(gen)
         self.assertEqual(fleet_log.name, cast(FleetLog, msg).name)

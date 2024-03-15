@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,23 +8,13 @@ from ..builtin_interfaces.Time import Time
 
 
 class DispenserState(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(from_attributes=True)
+
     time: Time = Time()  # builtin_interfaces/Time
     guid: str = ""  # string
-    mode: pydantic.conint(ge=-2147483648, le=2147483647) = 0  # int32
-    request_guid_queue: List[str] = []  # string
+    mode: Annotated[int, pydantic.Field(ge=-2147483648, le=2147483647)] = 0  # int32
+    request_guid_queue: list[str] = []  # string
     seconds_remaining: float = 0  # float32
-
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "time",
-                "guid",
-                "mode",
-                "request_guid_queue",
-                "seconds_remaining",
-            ],
-        }
 
 
 # builtin_interfaces/Time time

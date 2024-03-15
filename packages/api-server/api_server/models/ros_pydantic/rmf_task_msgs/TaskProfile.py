@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -9,19 +9,11 @@ from ..rmf_task_msgs.TaskDescription import TaskDescription
 
 
 class TaskProfile(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(from_attributes=True)
+
     task_id: str = ""  # string
     submission_time: Time = Time()  # builtin_interfaces/Time
     description: TaskDescription = TaskDescription()  # rmf_task_msgs/TaskDescription
-
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "task_id",
-                "submission_time",
-                "description",
-            ],
-        }
 
 
 # # Unique ID assigned to this task

@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -9,31 +9,17 @@ from ..rmf_building_map_msgs.Graph import Graph
 
 
 class Lift(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(from_attributes=True)
+
     name: str = ""  # string
-    levels: List[str] = []  # string
-    doors: List[Door] = []  # rmf_building_map_msgs/Door
+    levels: list[str] = []  # string
+    doors: list[Door] = []  # rmf_building_map_msgs/Door
     wall_graph: Graph = Graph()  # rmf_building_map_msgs/Graph
     ref_x: float = 0  # float32
     ref_y: float = 0  # float32
     ref_yaw: float = 0  # float32
     width: float = 0  # float32
     depth: float = 0  # float32
-
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "name",
-                "levels",
-                "doors",
-                "wall_graph",
-                "ref_x",
-                "ref_y",
-                "ref_yaw",
-                "width",
-                "depth",
-            ],
-        }
 
 
 # string name

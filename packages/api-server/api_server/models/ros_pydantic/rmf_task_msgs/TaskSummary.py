@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -9,31 +9,17 @@ from ..rmf_task_msgs.TaskProfile import TaskProfile
 
 
 class TaskSummary(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(from_attributes=True)
+
     fleet_name: str = ""  # string
     task_id: str = ""  # string
     task_profile: TaskProfile = TaskProfile()  # rmf_task_msgs/TaskProfile
-    state: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
+    state: Annotated[int, pydantic.Field(ge=0, le=4294967295)] = 0  # uint32
     status: str = ""  # string
     submission_time: Time = Time()  # builtin_interfaces/Time
     start_time: Time = Time()  # builtin_interfaces/Time
     end_time: Time = Time()  # builtin_interfaces/Time
     robot_name: str = ""  # string
-
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "fleet_name",
-                "task_id",
-                "task_profile",
-                "state",
-                "status",
-                "submission_time",
-                "start_time",
-                "end_time",
-                "robot_name",
-            ],
-        }
 
 
 # # Publish by Fleet Adapter (aka DispatchStatus)

@@ -3,23 +3,23 @@
 
 from __future__ import annotations
 
-from enum import Enum
 from typing import List, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, RootModel
+from typing_extensions import Literal
 
 from . import error
 
 
-class Failure(Enum):
-    boolean_False = False
+class Success(RootModel[Literal[True]]):
+    root: Literal[True] = Field(..., description="The request was successful")
 
 
-class Success(Enum):
-    boolean_True = True
+class Failure(RootModel[Literal[False]]):
+    root: Literal[False] = Field(..., description="The request failed")
 
 
-class TokenResponseItem(BaseModel):
+class TokenResponse1(BaseModel):
     success: Success
     token: str = Field(
         ...,
@@ -27,15 +27,15 @@ class TokenResponseItem(BaseModel):
     )
 
 
-class TokenResponseItem1(BaseModel):
+class TokenResponse2(BaseModel):
     success: Failure
     errors: List[error.Error] = Field(
         ..., description="Any error messages explaining why the request failed."
     )
 
 
-class TokenResponse(BaseModel):
-    __root__: Union[TokenResponseItem, TokenResponseItem1] = Field(
+class TokenResponse(RootModel[Union[TokenResponse1, TokenResponse2]]):
+    root: Union[TokenResponse1, TokenResponse2] = Field(
         ...,
         description="Template for defining a response message that provides a token upon success or errors upon failure",
         title="Token Response",

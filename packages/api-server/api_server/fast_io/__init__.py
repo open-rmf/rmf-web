@@ -129,8 +129,8 @@ class FastIORouter(APIRouter):
 
 
 class FastIOPacket(socketio.packet.Packet):
-    class PacketData(pydantic.BaseModel):
-        __root__: Tuple[str, pydantic.BaseModel]
+    class PacketData(pydantic.RootModel):
+        root: Tuple[str, pydantic.BaseModel]
 
     def encode(self):
         if (
@@ -138,8 +138,8 @@ class FastIOPacket(socketio.packet.Packet):
             and len(self.data) == 2
             and isinstance(self.data[1], pydantic.BaseModel)
         ):
-            pkt_data = FastIOPacket.PacketData.construct(__root__=self.data)
-            return str(self.packet_type) + pkt_data.json(exclude_none=True)
+            pkt_data = FastIOPacket.PacketData.model_construct(root=self.data)
+            return str(self.packet_type) + pkt_data.model_dump_json(exclude_none=True)
         return super().encode()
 
 

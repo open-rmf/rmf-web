@@ -13,6 +13,6 @@ from . import robot_state
 class FleetState(BaseModel):
     name: Optional[str] = None
     robots: Optional[Dict[str, robot_state.RobotState]] = Field(
-        None,
+        default=None,
         description="A dictionary of the states of the robots that belong to this fleet",
     )

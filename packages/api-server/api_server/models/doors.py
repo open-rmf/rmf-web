@@ -24,7 +24,9 @@ class DoorState(rmf_door_msgs.DoorState):
         return DoorState(**tortoise.data)
 
     async def save(self) -> None:
-        await ttm.DoorState.update_or_create({"data": self.dict()}, id_=self.door_name)
+        await ttm.DoorState.update_or_create(
+            {"data": self.model_dump()}, id_=self.door_name
+        )
 
 
 class DoorRequest(BaseModel):

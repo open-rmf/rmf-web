@@ -1,22 +1,15 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class Time(pydantic.BaseModel):
-    sec: pydantic.conint(ge=-2147483648, le=2147483647) = 0  # int32
-    nanosec: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "sec",
-                "nanosec",
-            ],
-        }
+    sec: Annotated[int, pydantic.Field(ge=-2147483648, le=2147483647)] = 0  # int32
+    nanosec: Annotated[int, pydantic.Field(ge=0, le=4294967295)] = 0  # uint32
 
 
 # # This message communicates ROS Time defined here:

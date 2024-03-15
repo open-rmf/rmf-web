@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -9,25 +9,14 @@ from ..rmf_task_msgs.TaskProfile import TaskProfile
 
 
 class BidProposal(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(from_attributes=True)
+
     fleet_name: str = ""  # string
     task_profile: TaskProfile = TaskProfile()  # rmf_task_msgs/TaskProfile
     prev_cost: float = 0  # float64
     new_cost: float = 0  # float64
     finish_time: Time = Time()  # builtin_interfaces/Time
     robot_name: str = ""  # string
-
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "fleet_name",
-                "task_profile",
-                "prev_cost",
-                "new_cost",
-                "finish_time",
-                "robot_name",
-            ],
-        }
 
 
 # # This message is published by a Fleet Adapter in response to a BidNotice

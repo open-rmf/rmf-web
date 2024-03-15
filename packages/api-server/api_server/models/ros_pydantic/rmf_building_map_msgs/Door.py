@@ -1,34 +1,23 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class Door(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(from_attributes=True)
+
     name: str = ""  # string
     v1_x: float = 0  # float32
     v1_y: float = 0  # float32
     v2_x: float = 0  # float32
     v2_y: float = 0  # float32
-    door_type: pydantic.conint(ge=0, le=255) = 0  # uint8
+    door_type: Annotated[int, pydantic.Field(ge=0, le=255)] = 0  # uint8
     motion_range: float = 0  # float32
-    motion_direction: pydantic.conint(ge=-2147483648, le=2147483647) = 0  # int32
-
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "name",
-                "v1_x",
-                "v1_y",
-                "v2_x",
-                "v2_y",
-                "door_type",
-                "motion_range",
-                "motion_direction",
-            ],
-        }
+    motion_direction: Annotated[
+        int, pydantic.Field(ge=-2147483648, le=2147483647)
+    ] = 0  # int32
 
 
 # string name

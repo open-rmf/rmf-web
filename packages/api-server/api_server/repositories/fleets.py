@@ -58,7 +58,7 @@ class FleetRepository:
     async def save_fleet_state(self, fleet_state: FleetState) -> None:
         await ttm.FleetState.update_or_create(
             {
-                "data": fleet_state.json(),
+                "data": fleet_state.model_dump_json(),
             },
             name=fleet_state.name,
         )

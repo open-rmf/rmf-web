@@ -34,7 +34,7 @@ class TaskRepository:
 
     async def save_task_request(self, task_id: str, task_request: TaskRequest) -> None:
         await DbTaskRequest.update_or_create(
-            {"request": task_request.json()}, id_=task_id
+            {"request": task_request.model_dump_json()}, id_=task_id
         )
 
     async def get_task_request(self, task_id: str) -> Optional[TaskRequest]:
@@ -46,10 +46,8 @@ class TaskRepository:
     async def save_task_state(self, task_state: TaskState) -> None:
         await DbTaskState.update_or_create(
             {
-                "data": task_state.json(),
-                "category": task_state.category.__root__
-                if task_state.category
-                else None,
+                "data": task_state.model_dump_json(),
+                "category": task_state.category.root if task_state.category else None,
                 "assigned_to": task_state.assigned_to.name
                 if task_state.assigned_to
                 else None,
@@ -141,7 +139,7 @@ class TaskRepository:
             )[0]
             for log in logs:
                 await ttm.TaskEventLogPhasesEventsLog.create(
-                    event=db_event, **log.dict()
+                    event=db_event, **log.model_dump()
                 )
 
     async def _savePhaseLogs(
@@ -157,7 +155,7 @@ class TaskRepository:
                 for log in phase.log:
                     await ttm.TaskEventLogPhasesLog.create(
                         phase=db_phase,
-                        **log.dict(),
+                        **log.model_dump(),
                     )
             if phase.events:
                 await self._saveEventLogs(db_phase, phase.events)

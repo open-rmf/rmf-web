@@ -97,11 +97,3 @@ class ScheduledTaskSchedule(Model):
             job = job.at(self.at)
 
         return job
-
-
-Tortoise.init_models(["api_server.models.tortoise_models.scheduled_task"], "models")
-ScheduledTaskPydantic = pydantic_model_creator(ScheduledTask)
-ScheduledTaskPydanticList = pydantic_queryset_creator(ScheduledTask)
-ScheduledTaskSchedulePydantic = pydantic_model_creator(
-    ScheduledTaskSchedule, exclude=("scheduled_task",)
-)

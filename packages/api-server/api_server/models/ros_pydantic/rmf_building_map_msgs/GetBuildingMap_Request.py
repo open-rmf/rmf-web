@@ -1,15 +1,11 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class GetBuildingMap_Request(pydantic.BaseModel):
-    pass
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [],
-        }
+    pass

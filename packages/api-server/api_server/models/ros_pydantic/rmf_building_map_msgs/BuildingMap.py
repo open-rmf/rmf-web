@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -9,19 +9,11 @@ from ..rmf_building_map_msgs.Lift import Lift
 
 
 class BuildingMap(pydantic.BaseModel):
-    name: str = ""  # string
-    levels: List[Level] = []  # rmf_building_map_msgs/Level
-    lifts: List[Lift] = []  # rmf_building_map_msgs/Lift
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "name",
-                "levels",
-                "lifts",
-            ],
-        }
+    name: str = ""  # string
+    levels: list[Level] = []  # rmf_building_map_msgs/Level
+    lifts: list[Lift] = []  # rmf_building_map_msgs/Lift
 
 
 # string name

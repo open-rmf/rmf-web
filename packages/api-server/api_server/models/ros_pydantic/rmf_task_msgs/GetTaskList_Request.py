@@ -1,22 +1,15 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class GetTaskList_Request(pydantic.BaseModel):
-    requester: str = ""  # string
-    task_id: List[str] = []  # string
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "requester",
-                "task_id",
-            ],
-        }
+    requester: str = ""  # string
+    task_id: list[str] = []  # string
 
 
 # # Query list of submitted tasks | Get service call

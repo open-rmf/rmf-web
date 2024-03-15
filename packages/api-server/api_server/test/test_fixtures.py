@@ -148,7 +148,7 @@ class AppFixture(unittest.TestCase):
         user = PostUsers(username=username, is_admin=admin)
         resp = self.client.post(
             "/admin/users",
-            content=user.json(),
+            content=user.model_dump_json(),
         )
         self.assertEqual(200, resp.status_code)
         return username

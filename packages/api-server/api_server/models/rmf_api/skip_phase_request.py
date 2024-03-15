@@ -20,5 +20,5 @@ class TaskPhaseSkipRequest(BaseModel):
         ..., description="Specify the phase that should be skipped"
     )
     labels: Optional[List[str]] = Field(
-        None, description="Labels to describe the purpose of the skip"
+        default=None, description="Labels to describe the purpose of the skip"
     )

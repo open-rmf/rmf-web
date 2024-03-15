@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,15 +8,9 @@ from ..rmf_fleet_msgs.Dock import Dock
 
 
 class DockSummary(pydantic.BaseModel):
-    docks: List[Dock] = []  # rmf_fleet_msgs/Dock
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "docks",
-            ],
-        }
+    docks: list[Dock] = []  # rmf_fleet_msgs/Dock
 
 
 # Dock[] docks

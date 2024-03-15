@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -9,23 +9,13 @@ from ..rmf_ingestor_msgs.IngestorRequestItem import IngestorRequestItem
 
 
 class IngestorRequest(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(from_attributes=True)
+
     time: Time = Time()  # builtin_interfaces/Time
     request_guid: str = ""  # string
     target_guid: str = ""  # string
     transporter_type: str = ""  # string
-    items: List[IngestorRequestItem] = []  # rmf_ingestor_msgs/IngestorRequestItem
-
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "time",
-                "request_guid",
-                "target_guid",
-                "transporter_type",
-                "items",
-            ],
-        }
+    items: list[IngestorRequestItem] = []  # rmf_ingestor_msgs/IngestorRequestItem
 
 
 # builtin_interfaces/Time time

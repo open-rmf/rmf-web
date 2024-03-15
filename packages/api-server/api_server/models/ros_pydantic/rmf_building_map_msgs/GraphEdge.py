@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,21 +8,12 @@ from ..rmf_building_map_msgs.Param import Param
 
 
 class GraphEdge(pydantic.BaseModel):
-    v1_idx: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
-    v2_idx: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
-    params: List[Param] = []  # rmf_building_map_msgs/Param
-    edge_type: pydantic.conint(ge=0, le=255) = 0  # uint8
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "v1_idx",
-                "v2_idx",
-                "params",
-                "edge_type",
-            ],
-        }
+    v1_idx: Annotated[int, pydantic.Field(ge=0, le=4294967295)] = 0  # uint32
+    v2_idx: Annotated[int, pydantic.Field(ge=0, le=4294967295)] = 0  # uint32
+    params: list[Param] = []  # rmf_building_map_msgs/Param
+    edge_type: Annotated[int, pydantic.Field(ge=0, le=255)] = 0  # uint8
 
 
 # uint32 v1_idx

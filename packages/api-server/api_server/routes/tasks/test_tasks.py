@@ -227,10 +227,7 @@ class TestTasksRoute(AppFixture):
                 "/tasks/undo_skip_phase",
                 content=mdl.UndoPhaseSkipRequest(
                     type="undo_phase_skip_request",
-                    for_task=None,
-                    for_tokens=None,
-                    labels=None,
-                ).json(exclude_none=True),
+                ).model_dump_json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
@@ -244,13 +241,8 @@ class TestDispatchTask(AppFixture):
                 request=mdl.TaskRequest(
                     category="test",
                     description="description",
-                    unix_millis_earliest_start_time=None,
-                    unix_millis_request_time=None,
-                    labels=None,
-                    priority=None,
-                    requester=None,
                 ),
-            ).json(exclude_none=True),
+            ).model_dump_json(exclude_none=True),
         )
 
     def test_success(self):

@@ -25,7 +25,9 @@ class LiftState(rmf_lift_msgs.LiftState):
         return LiftState(**tortoise.data)
 
     async def save(self) -> None:
-        await ttm.LiftState.update_or_create({"data": self.dict()}, id_=self.lift_name)
+        await ttm.LiftState.update_or_create(
+            {"data": self.model_dump()}, id_=self.lift_name
+        )
 
 
 class LiftRequest(BaseModel):
