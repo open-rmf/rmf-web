@@ -18,26 +18,36 @@ export const AlertStore = React.memo(() => {
   const rmf = React.useContext(RmfAppContext);
   const [taskAlerts, setTaskAlerts] = React.useState<Record<string, Alert>>({});
 
-  const categorizeAndPushAlerts = (alert: Alert) => {
-    // We check if an existing alert has been acknowledged, remove it before
-    // adding the acknowledged alert.
-    if (alert.category === AlertCategory.Task) {
-      setTaskAlerts((prev) => {
-        const filteredTaskAlerts = Object.fromEntries(
-          Object.entries(prev).filter(([key]) => key !== alert.original_id),
-        );
-        filteredTaskAlerts[alert.id] = alert;
-        return filteredTaskAlerts;
-      });
-    }
-  };
+  // const filterAndPushAlerts = (alert: Alert) => {
+  //   // We check if an existing alert has been acknowledged, remove it before
+  //   // adding the acknowledged alert.
+  //   if (alert.category === AlertCategory.Task) {
+  //     setTaskAlerts((prev) => {
+  //       const filteredTaskAlerts = Object.fromEntries(
+  //         Object.entries(prev).filter(([key]) => key !== alert.original_id),
+  //       );
+  //       filteredTaskAlerts[alert.id] = alert;
+  //       return filteredTaskAlerts;
+  //     });
+  //   }
+  // };
 
   React.useEffect(() => {
     const subs: Subscription[] = [];
     subs.push(
       AppEvents.alertListOpenedAlert.subscribe((alert) => {
         if (alert) {
-          categorizeAndPushAlerts(alert);
+          setTaskAlerts((prev) => {
+            // const updatedAlerts = prev;
+            // updatedAlerts[alert.id] = alert;
+            // return updatedAlerts;
+
+            const filteredTaskAlerts = Object.fromEntries(
+              Object.entries(prev).filter(([key]) => key !== alert.original_id),
+            );
+            filteredTaskAlerts[alert.id] = alert;
+            return filteredTaskAlerts;
+          });
         }
       }),
     );
@@ -49,7 +59,18 @@ export const AlertStore = React.memo(() => {
       return;
     }
     const sub = rmf.alertObsStore.subscribe(async (alert) => {
-      categorizeAndPushAlerts(alert);
+      setTaskAlerts((prev) => {
+        if (Object.keys(prev).includes(alert.original_id)) {
+          const filteredTaskAlerts = Object.fromEntries(
+            Object.entries(prev).filter(([key]) => key !== alert.original_id),
+          );
+          return filteredTaskAlerts;
+        }
+
+        const updatedAlerts = prev;
+        updatedAlerts[alert.id] = alert;
+        return updatedAlerts;
+      });
       AppEvents.refreshAlert.next();
     });
     return () => sub.unsubscribe();
