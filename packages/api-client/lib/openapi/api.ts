@@ -5829,7 +5829,7 @@ export const DeliveryAlertsApiAxiosParamCreator = function (configuration?: Conf
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost: async (
+    respondToDeliveryAlertDeliveryAlertsResponsePost: async (
       deliveryAlertId: string,
       category: ApiServerModelsDeliveryAlertsDeliveryAlertCategory,
       tier: ApiServerModelsDeliveryAlertsDeliveryAlertTier,
@@ -5840,44 +5840,21 @@ export const DeliveryAlertsApiAxiosParamCreator = function (configuration?: Conf
     ): Promise<RequestArgs> => {
       // verify required parameter 'deliveryAlertId' is not null or undefined
       assertParamExists(
-        'respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost',
+        'respondToDeliveryAlertDeliveryAlertsResponsePost',
         'deliveryAlertId',
         deliveryAlertId,
       );
       // verify required parameter 'category' is not null or undefined
-      assertParamExists(
-        'respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost',
-        'category',
-        category,
-      );
+      assertParamExists('respondToDeliveryAlertDeliveryAlertsResponsePost', 'category', category);
       // verify required parameter 'tier' is not null or undefined
-      assertParamExists(
-        'respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost',
-        'tier',
-        tier,
-      );
+      assertParamExists('respondToDeliveryAlertDeliveryAlertsResponsePost', 'tier', tier);
       // verify required parameter 'taskId' is not null or undefined
-      assertParamExists(
-        'respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost',
-        'taskId',
-        taskId,
-      );
+      assertParamExists('respondToDeliveryAlertDeliveryAlertsResponsePost', 'taskId', taskId);
       // verify required parameter 'action' is not null or undefined
-      assertParamExists(
-        'respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost',
-        'action',
-        action,
-      );
+      assertParamExists('respondToDeliveryAlertDeliveryAlertsResponsePost', 'action', action);
       // verify required parameter 'message' is not null or undefined
-      assertParamExists(
-        'respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost',
-        'message',
-        message,
-      );
-      const localVarPath = `/delivery_alerts/{delivery_alert_id}/response`.replace(
-        `{${'delivery_alert_id'}}`,
-        encodeURIComponent(String(deliveryAlertId)),
-      );
+      assertParamExists('respondToDeliveryAlertDeliveryAlertsResponsePost', 'message', message);
+      const localVarPath = `/delivery_alerts/response`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -5888,6 +5865,10 @@ export const DeliveryAlertsApiAxiosParamCreator = function (configuration?: Conf
       const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
+
+      if (deliveryAlertId !== undefined) {
+        localVarQueryParameter['delivery_alert_id'] = deliveryAlertId;
+      }
 
       if (category !== undefined) {
         localVarQueryParameter['category'] = category;
@@ -5944,7 +5925,7 @@ export const DeliveryAlertsApiFp = function (configuration?: Configuration) {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
+    async respondToDeliveryAlertDeliveryAlertsResponsePost(
       deliveryAlertId: string,
       category: ApiServerModelsDeliveryAlertsDeliveryAlertCategory,
       tier: ApiServerModelsDeliveryAlertsDeliveryAlertTier,
@@ -5954,7 +5935,7 @@ export const DeliveryAlertsApiFp = function (configuration?: Configuration) {
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeliveryAlert>> {
       const localVarAxiosArgs =
-        await localVarAxiosParamCreator.respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
+        await localVarAxiosParamCreator.respondToDeliveryAlertDeliveryAlertsResponsePost(
           deliveryAlertId,
           category,
           tier,
@@ -5991,7 +5972,7 @@ export const DeliveryAlertsApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
+    respondToDeliveryAlertDeliveryAlertsResponsePost(
       deliveryAlertId: string,
       category: ApiServerModelsDeliveryAlertsDeliveryAlertCategory,
       tier: ApiServerModelsDeliveryAlertsDeliveryAlertTier,
@@ -6001,7 +5982,7 @@ export const DeliveryAlertsApiFactory = function (
       options?: any,
     ): AxiosPromise<DeliveryAlert> {
       return localVarFp
-        .respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
+        .respondToDeliveryAlertDeliveryAlertsResponsePost(
           deliveryAlertId,
           category,
           tier,
@@ -6035,7 +6016,7 @@ export class DeliveryAlertsApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof DeliveryAlertsApi
    */
-  public respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
+  public respondToDeliveryAlertDeliveryAlertsResponsePost(
     deliveryAlertId: string,
     category: ApiServerModelsDeliveryAlertsDeliveryAlertCategory,
     tier: ApiServerModelsDeliveryAlertsDeliveryAlertTier,
@@ -6045,7 +6026,7 @@ export class DeliveryAlertsApi extends BaseAPI {
     options?: AxiosRequestConfig,
   ) {
     return DeliveryAlertsApiFp(this.configuration)
-      .respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
+      .respondToDeliveryAlertDeliveryAlertsResponsePost(
         deliveryAlertId,
         category,
         tier,

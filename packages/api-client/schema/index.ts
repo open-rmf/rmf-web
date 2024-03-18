@@ -318,17 +318,17 @@ export default {
         },
       },
     },
-    '/delivery_alerts/{delivery_alert_id}/response': {
+    '/delivery_alerts/response': {
       post: {
         tags: ['DeliveryAlerts'],
         summary: 'Respond To Delivery Alert',
-        operationId: 'respond_to_delivery_alert_delivery_alerts__delivery_alert_id__response_post',
+        operationId: 'respond_to_delivery_alert_delivery_alerts_response_post',
         parameters: [
           {
             required: true,
             schema: { title: 'Delivery Alert Id', type: 'string' },
             name: 'delivery_alert_id',
-            in: 'path',
+            in: 'query',
           },
           {
             required: true,

@@ -91,7 +91,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
       ) {
         (async () => {
           try {
-            await rmf.deliveryAlertsApi.respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
+            await rmf.deliveryAlertsApi.respondToDeliveryAlertDeliveryAlertsResponsePost(
               deliveryAlert.id,
               deliveryAlert.category,
               deliveryAlert.tier,
@@ -500,7 +500,7 @@ export const DeliveryAlertStore = React.memo(() => {
         if (!rmf) {
           throw new Error('delivery alert api not available');
         }
-        await rmf.deliveryAlertsApi.respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
+        await rmf.deliveryAlertsApi.respondToDeliveryAlertDeliveryAlertsResponsePost(
           delivery_alert.id,
           delivery_alert.category,
           delivery_alert.tier,
@@ -536,7 +536,7 @@ export const DeliveryAlertStore = React.memo(() => {
         if (!rmf) {
           throw new Error('delivery alert api not available');
         }
-        await rmf.deliveryAlertsApi.respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
+        await rmf.deliveryAlertsApi.respondToDeliveryAlertDeliveryAlertsResponsePost(
           delivery_alert.id,
           delivery_alert.category,
           delivery_alert.tier,

@@ -22,7 +22,7 @@ async def sub_delivery_alerts(_req: SubscriptionRequest):
     return rmf_events.delivery_alerts.pipe(rxops.filter(lambda x: x is not None))
 
 
-@router.post("/{delivery_alert_id}/response", response_model=DeliveryAlert)
+@router.post("/response", response_model=DeliveryAlert)
 async def respond_to_delivery_alert(
     delivery_alert_id: str,
     category: DeliveryAlert.Category,
@@ -51,3 +51,4 @@ async def respond_to_delivery_alert(
         message=delivery_alert.message,
     )
     rmf_events.delivery_alerts.on_next(delivery_alert)
+    return DeliveryAlert
