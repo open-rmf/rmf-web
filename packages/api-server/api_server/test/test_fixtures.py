@@ -106,6 +106,8 @@ class AppFixture(unittest.TestCase):
 
                 async def handle_resp(emit_room, msg, *_args, **_kwargs):
                     if emit_room == "subscribe" and not msg["success"]:
+                        # FIXME
+                        # pylint: disable=broad-exception-raised
                         raise Exception("Failed to subscribe")
                     if emit_room == room:
                         async with condition:
@@ -115,7 +117,7 @@ class AppFixture(unittest.TestCase):
                 mock_sio.emit.side_effect = handle_resp
                 # this is so type narrowing works
                 if self.client.portal is None:
-                    raise Exception(
+                    raise AssertionError(
                         "self.client.portal is None, make sure this is called within a test context"
                     )
 
