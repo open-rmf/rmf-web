@@ -126,7 +126,7 @@ class TaskRepository:
                 events[db_event.event] = [LogEntry(**dict(x)) for x in db_event.log]
             phase.events = events
             phases[db_phase.phase] = phase
-        return TaskEventLog.construct(
+        return TaskEventLog.model_construct(
             task_id=result.task_id,
             log=[LogEntry(**dict(x)) for x in result.log],
             phases=phases,
