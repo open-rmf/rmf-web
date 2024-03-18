@@ -3,9 +3,12 @@ from typing import List, Tuple, cast
 from fastapi import Depends, HTTPException
 from rx import operators as rxops
 
+from api_server.authenticator import user_dep
 from api_server.dependencies import between_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.models import FleetLog, FleetState
+from api_server.gateway import rmf_gateway
+from api_server.logger import logger
+from api_server.models import FleetLog, FleetState, User
 from api_server.repositories import FleetRepository, fleet_repo_dep
 from api_server.rmf_io import fleet_events
 
@@ -62,4 +65,37 @@ async def get_fleet_log(
 async def sub_fleet_log(_req: SubscriptionRequest, name: str):
     return fleet_events.fleet_logs.pipe(
         rxops.filter(lambda x: cast(FleetLog, x).name == name)
+    )
+
+
+@router.post("/{name}/decommission")
+async def decommission_robot(
+    name: str,
+    robot_name: str,
+    id: str,
+    labels: List[str],
+    user: User = Depends(user_dep),
+):
+    # TODO: check if this robot exists
+    logger.info(f"Decommissioning {robot_name} of {name} called by {user.username}")
+    rmf_gateway().decommission_robot(
+        fleet_name=name,
+        robot_name=robot_name,
+        id=id,
+        labels=labels,
+    )
+
+
+@router.post("/{name}/reinstate")
+async def reinstate_robot(
+    name: str,
+    robot_name: str,
+    id: str,
+    labels: List[str],
+    user: User = Depends(user_dep),
+):
+    # TODO: check if this robot exists
+    logger.info(f"Reinstating {robot_name} of {name} called by ${user.username}")
+    rmf_gateway().reinstate_robot(
+        fleet_name=name, robot_name=robot_name, id=id, labels=labels
     )
