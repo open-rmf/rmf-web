@@ -136,7 +136,7 @@ class TestTasksRoute(AppFixture):
                 "/tasks/activity_discovery",
                 content=mdl.ActivityDiscoveryRequest(
                     type="activitiy_discovery_request",
-                ).json(exclude_none=True),
+                ).model_dump_json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
@@ -147,7 +147,7 @@ class TestTasksRoute(AppFixture):
                 "/tasks/activity_discovery",
                 content=mdl.ActivityDiscoveryRequest(
                     type="activitiy_discovery_request"
-                ).json(exclude_none=True),
+                ).model_dump_json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
@@ -158,7 +158,7 @@ class TestTasksRoute(AppFixture):
                 "/tasks/interrupt_task",
                 content=mdl.TaskInterruptionRequest(
                     type="interrupt_task_request", task_id="task_id", labels=None
-                ).json(exclude_none=True),
+                ).model_dump_json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
@@ -169,7 +169,7 @@ class TestTasksRoute(AppFixture):
                 "/tasks/kill_task",
                 content=mdl.TaskKillRequest(
                     type="kill_task_request", task_id="task_id", labels=None
-                ).json(exclude_none=True),
+                ).model_dump_json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
@@ -180,7 +180,7 @@ class TestTasksRoute(AppFixture):
                 "/tasks/resume_task",
                 content=mdl.TaskResumeRequest(
                     type=None, for_task=None, for_tokens=None, labels=None
-                ).json(exclude_none=True),
+                ).model_dump_json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
@@ -191,7 +191,7 @@ class TestTasksRoute(AppFixture):
                 "/tasks/rewind_task",
                 content=mdl.TaskRewindRequest(
                     type="rewind_task_request", task_id="task_id", phase_id=0
-                ).json(exclude_none=True),
+                ).model_dump_json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
@@ -205,7 +205,7 @@ class TestTasksRoute(AppFixture):
                     task_id="task_id",
                     phase_id=0,
                     labels=None,
-                ).json(exclude_none=True),
+                ).model_dump_json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
@@ -214,9 +214,9 @@ class TestTasksRoute(AppFixture):
             mock.return_value = "{}"
             resp = self.client.post(
                 "/tasks/task_discovery",
-                content=mdl.TaskDiscoveryRequest(type="task_discovery_request").json(
-                    exclude_none=True
-                ),
+                content=mdl.TaskDiscoveryRequest(
+                    type="task_discovery_request"
+                ).model_dump_json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
