@@ -1823,6 +1823,80 @@ export default {
         },
       },
     },
+    '/fleets/{name}/decommission': {
+      post: {
+        tags: ['Fleets'],
+        summary: 'Decommission Robot',
+        operationId: 'decommission_robot_fleets__name__decommission_post',
+        parameters: [
+          { required: true, schema: { title: 'Name', type: 'string' }, name: 'name', in: 'path' },
+          {
+            required: true,
+            schema: { title: 'Robot Name', type: 'string' },
+            name: 'robot_name',
+            in: 'query',
+          },
+          { required: true, schema: { title: 'Id', type: 'string' }, name: 'id', in: 'query' },
+        ],
+        requestBody: {
+          content: {
+            'application/json': {
+              schema: { title: 'Labels', type: 'array', items: { type: 'string' } },
+            },
+          },
+          required: true,
+        },
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: { 'application/json': { schema: {} } },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
+    '/fleets/{name}/reinstate': {
+      post: {
+        tags: ['Fleets'],
+        summary: 'Reinstate Robot',
+        operationId: 'reinstate_robot_fleets__name__reinstate_post',
+        parameters: [
+          { required: true, schema: { title: 'Name', type: 'string' }, name: 'name', in: 'path' },
+          {
+            required: true,
+            schema: { title: 'Robot Name', type: 'string' },
+            name: 'robot_name',
+            in: 'query',
+          },
+          { required: true, schema: { title: 'Id', type: 'string' }, name: 'id', in: 'query' },
+        ],
+        requestBody: {
+          content: {
+            'application/json': {
+              schema: { title: 'Labels', type: 'array', items: { type: 'string' } },
+            },
+          },
+          required: true,
+        },
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: { 'application/json': { schema: {} } },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
     '/admin/users': {
       get: {
         tags: ['Admin'],

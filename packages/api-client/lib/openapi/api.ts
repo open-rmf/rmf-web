@@ -6728,6 +6728,74 @@ export class DoorsApi extends BaseAPI {
 export const FleetsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
+     *
+     * @summary Decommission Robot
+     * @param {string} name
+     * @param {string} robotName
+     * @param {string} id
+     * @param {Array<string>} requestBody
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    decommissionRobotFleetsNameDecommissionPost: async (
+      name: string,
+      robotName: string,
+      id: string,
+      requestBody: Array<string>,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'name' is not null or undefined
+      assertParamExists('decommissionRobotFleetsNameDecommissionPost', 'name', name);
+      // verify required parameter 'robotName' is not null or undefined
+      assertParamExists('decommissionRobotFleetsNameDecommissionPost', 'robotName', robotName);
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('decommissionRobotFleetsNameDecommissionPost', 'id', id);
+      // verify required parameter 'requestBody' is not null or undefined
+      assertParamExists('decommissionRobotFleetsNameDecommissionPost', 'requestBody', requestBody);
+      const localVarPath = `/fleets/{name}/decommission`.replace(
+        `{${'name'}}`,
+        encodeURIComponent(String(name)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      if (robotName !== undefined) {
+        localVarQueryParameter['robot_name'] = robotName;
+      }
+
+      if (id !== undefined) {
+        localVarQueryParameter['id'] = id;
+      }
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        requestBody,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Available in socket.io
      * @summary Get Fleet Log
      * @param {string} name
@@ -6847,6 +6915,74 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
         options: localVarRequestOptions,
       };
     },
+    /**
+     *
+     * @summary Reinstate Robot
+     * @param {string} name
+     * @param {string} robotName
+     * @param {string} id
+     * @param {Array<string>} requestBody
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    reinstateRobotFleetsNameReinstatePost: async (
+      name: string,
+      robotName: string,
+      id: string,
+      requestBody: Array<string>,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'name' is not null or undefined
+      assertParamExists('reinstateRobotFleetsNameReinstatePost', 'name', name);
+      // verify required parameter 'robotName' is not null or undefined
+      assertParamExists('reinstateRobotFleetsNameReinstatePost', 'robotName', robotName);
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('reinstateRobotFleetsNameReinstatePost', 'id', id);
+      // verify required parameter 'requestBody' is not null or undefined
+      assertParamExists('reinstateRobotFleetsNameReinstatePost', 'requestBody', requestBody);
+      const localVarPath = `/fleets/{name}/reinstate`.replace(
+        `{${'name'}}`,
+        encodeURIComponent(String(name)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      if (robotName !== undefined) {
+        localVarQueryParameter['robot_name'] = robotName;
+      }
+
+      if (id !== undefined) {
+        localVarQueryParameter['id'] = id;
+      }
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        requestBody,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
   };
 };
 
@@ -6857,6 +6993,33 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
 export const FleetsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = FleetsApiAxiosParamCreator(configuration);
   return {
+    /**
+     *
+     * @summary Decommission Robot
+     * @param {string} name
+     * @param {string} robotName
+     * @param {string} id
+     * @param {Array<string>} requestBody
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async decommissionRobotFleetsNameDecommissionPost(
+      name: string,
+      robotName: string,
+      id: string,
+      requestBody: Array<string>,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.decommissionRobotFleetsNameDecommissionPost(
+          name,
+          robotName,
+          id,
+          requestBody,
+          options,
+        );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
     /**
      * Available in socket.io
      * @summary Get Fleet Log
@@ -6921,6 +7084,33 @@ export const FleetsApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getFleetsFleetsGet(options);
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
+    /**
+     *
+     * @summary Reinstate Robot
+     * @param {string} name
+     * @param {string} robotName
+     * @param {string} id
+     * @param {Array<string>} requestBody
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async reinstateRobotFleetsNameReinstatePost(
+      name: string,
+      robotName: string,
+      id: string,
+      requestBody: Array<string>,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.reinstateRobotFleetsNameReinstatePost(
+          name,
+          robotName,
+          id,
+          requestBody,
+          options,
+        );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
   };
 };
 
@@ -6935,6 +7125,27 @@ export const FleetsApiFactory = function (
 ) {
   const localVarFp = FleetsApiFp(configuration);
   return {
+    /**
+     *
+     * @summary Decommission Robot
+     * @param {string} name
+     * @param {string} robotName
+     * @param {string} id
+     * @param {Array<string>} requestBody
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    decommissionRobotFleetsNameDecommissionPost(
+      name: string,
+      robotName: string,
+      id: string,
+      requestBody: Array<string>,
+      options?: any,
+    ): AxiosPromise<any> {
+      return localVarFp
+        .decommissionRobotFleetsNameDecommissionPost(name, robotName, id, requestBody, options)
+        .then((request) => request(axios, basePath));
+    },
     /**
      * Available in socket.io
      * @summary Get Fleet Log
@@ -6978,6 +7189,27 @@ export const FleetsApiFactory = function (
     ): AxiosPromise<Array<ApiServerModelsRmfApiFleetStateFleetState>> {
       return localVarFp.getFleetsFleetsGet(options).then((request) => request(axios, basePath));
     },
+    /**
+     *
+     * @summary Reinstate Robot
+     * @param {string} name
+     * @param {string} robotName
+     * @param {string} id
+     * @param {Array<string>} requestBody
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    reinstateRobotFleetsNameReinstatePost(
+      name: string,
+      robotName: string,
+      id: string,
+      requestBody: Array<string>,
+      options?: any,
+    ): AxiosPromise<any> {
+      return localVarFp
+        .reinstateRobotFleetsNameReinstatePost(name, robotName, id, requestBody, options)
+        .then((request) => request(axios, basePath));
+    },
   };
 };
 
@@ -6988,6 +7220,29 @@ export const FleetsApiFactory = function (
  * @extends {BaseAPI}
  */
 export class FleetsApi extends BaseAPI {
+  /**
+   *
+   * @summary Decommission Robot
+   * @param {string} name
+   * @param {string} robotName
+   * @param {string} id
+   * @param {Array<string>} requestBody
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof FleetsApi
+   */
+  public decommissionRobotFleetsNameDecommissionPost(
+    name: string,
+    robotName: string,
+    id: string,
+    requestBody: Array<string>,
+    options?: AxiosRequestConfig,
+  ) {
+    return FleetsApiFp(this.configuration)
+      .decommissionRobotFleetsNameDecommissionPost(name, robotName, id, requestBody, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
   /**
    * Available in socket.io
    * @summary Get Fleet Log
@@ -7027,6 +7282,29 @@ export class FleetsApi extends BaseAPI {
   public getFleetsFleetsGet(options?: AxiosRequestConfig) {
     return FleetsApiFp(this.configuration)
       .getFleetsFleetsGet(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Reinstate Robot
+   * @param {string} name
+   * @param {string} robotName
+   * @param {string} id
+   * @param {Array<string>} requestBody
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof FleetsApi
+   */
+  public reinstateRobotFleetsNameReinstatePost(
+    name: string,
+    robotName: string,
+    id: string,
+    requestBody: Array<string>,
+    options?: AxiosRequestConfig,
+  ) {
+    return FleetsApiFp(this.configuration)
+      .reinstateRobotFleetsNameReinstatePost(name, robotName, id, requestBody, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
