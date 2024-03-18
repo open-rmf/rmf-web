@@ -1,4 +1,3 @@
-import unittest
 from typing import cast
 
 from api_server.models import FleetLog, FleetLogUpdate, FleetState, FleetStateUpdate

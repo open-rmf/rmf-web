@@ -18,7 +18,7 @@ class LiftHealth(BasicHealth):
 
 
 class LiftState(rmf_lift_msgs.LiftState):
-    available_modes: list[int]
+    available_modes: list[int]  # pyright: ignore [reportIncompatibleVariableOverride]
 
     @staticmethod
     def from_tortoise(tortoise: ttm.LiftState) -> "LiftState":

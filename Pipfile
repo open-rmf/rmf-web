@@ -12,7 +12,6 @@ coverage = "~=5.5"
 api-server = {editable = true, path = "./packages/api-server"}
 httpx = "~=0.26.0"
 datamodel-code-generator = "==0.25.4"
-starlette = "~=0.36.3"
 requests = "~=2.25"
 websocket-client = "~=1.7.0"
 # ros-translator

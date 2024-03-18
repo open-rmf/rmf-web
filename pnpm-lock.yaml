@@ -33,8 +33,8 @@ importers:
         specifier: ^2.7.1
         version: 2.7.1
       pyright:
-        specifier: 1.1.257
-        version: 1.1.257
+        specifier: 1.1.354
+        version: 1.1.354
       typescript:
         specifier: ~4.4.4
         version: 4.4.4
@@ -17268,10 +17268,12 @@ packages:
       - utf-8-validate
     dev: true
 
-  /pyright@1.1.257:
-    resolution: {integrity: sha512-r8dBY9Q/o6oM7n/xh0sruCNQ68PfKkXga6GXwghUIhLSo59ZPnQfeoNDHdAh1caGbb/NvQQXzF8C5KqruOYokg==}
-    engines: {node: '>=12.0.0'}
+  /pyright@1.1.354:
+    resolution: {integrity: sha512-lUojJFZqg4St+4E2WrZbqODeqLvhuRJXRDros59bJcK485hXJLlCb3DzTd/9KYfaisf2TqvDV79qhc0grwyf/w==}
+    engines: {node: '>=14.0.0'}
     hasBin: true
+    optionalDependencies:
+      fsevents: 2.3.3
     dev: true
 
   /q@1.5.1:

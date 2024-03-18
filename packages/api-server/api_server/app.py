@@ -69,7 +69,7 @@ async def shutdown():
 
 
 @contextlib.asynccontextmanager
-async def lifespan(app: FastIO):
+async def lifespan(_app: FastIO):
     loop = asyncio.get_event_loop()
 
     await Tortoise.init(

@@ -41,6 +41,9 @@ class TaskRepository:
         result = await DbTaskRequest.get_or_none(id_=task_id)
         if result is None:
             return None
+        if not isinstance(result.request, dict):
+            logger.error(f"request is not a dict: {type(result.request)}")
+            raise HTTPException(500)
         return TaskRequest(**result.request)
 
     async def save_task_state(self, task_state: TaskState) -> None:
@@ -84,6 +87,9 @@ class TaskRepository:
         result = await DbTaskState.get_or_none(id_=task_id)
         if result is None:
             return None
+        if not isinstance(result.data, dict):
+            logger.error(f"data is not a dict: {type(result.data)}")
+            raise HTTPException(500)
         return TaskState(**result.data)
 
     async def get_task_log(

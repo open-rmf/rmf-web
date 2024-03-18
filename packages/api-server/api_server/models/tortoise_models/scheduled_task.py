@@ -3,11 +3,6 @@ from enum import Enum
 
 import schedule
 from schedule import Job
-from tortoise import Tortoise
-from tortoise.contrib.pydantic.creator import (
-    pydantic_model_creator,
-    pydantic_queryset_creator,
-)
 from tortoise.fields import (
     CharEnumField,
     CharField,
@@ -23,11 +18,11 @@ from tortoise.models import Model
 
 
 class ScheduledTask(Model):
-    task_request: dict = JSONField()  # type: ignore
-    created_by: str = CharField(255)  # type: ignore
+    task_request = JSONField()
+    created_by = CharField(255)
     schedules: ReverseRelation["ScheduledTaskSchedule"]
-    last_ran: datetime | None = DatetimeField(null=True)  # type: ignore
-    except_dates: list[str] = JSONField(null=True)  # type: ignore
+    last_ran = DatetimeField(null=True)
+    except_dates = JSONField(null=True)
 
 
 class ScheduledTaskSchedule(Model):
@@ -48,15 +43,15 @@ class ScheduledTaskSchedule(Model):
         Hour = "hour"
         Minute = "minute"
 
-    _id: int = IntField(pk=True, source_field="id")  # type: ignore
+    _id = IntField(pk=True, source_field="id")
     scheduled_task: ForeignKeyRelation[ScheduledTask] = ForeignKeyField(
         "models.ScheduledTask", related_name="schedules"
     )
-    every: int | None = SmallIntField(null=True)  # type: ignore
-    start_from: datetime | None = DatetimeField(null=True)  # type: ignore
-    until: datetime | None = DatetimeField(null=True)  # type: ignore
+    every = SmallIntField(null=True)
+    start_from = DatetimeField(null=True)
+    until = DatetimeField(null=True)
     period = CharEnumField(Period)
-    at: str | None = CharField(255, null=True)  # type: ignore
+    at = CharField(255, null=True)
 
     def get_id(self) -> int:
         return self._id

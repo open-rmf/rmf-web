@@ -12,7 +12,7 @@ from .log import LogMixin
 
 class FleetState(Model):
     name = CharField(255, pk=True)
-    data: dict = JSONField()  # type: ignore
+    data = JSONField()
 
 
 class FleetLog(Model):
@@ -26,7 +26,7 @@ class FleetLogLog(Model, LogMixin):
         "models.FleetLog", related_name="log"
     )
 
-    class Meta:
+    class Meta:  # type: ignore
         unique_together = ("fleet", "seq")
 
 
@@ -43,5 +43,5 @@ class FleetLogRobotsLog(Model, LogMixin):
         "models.FleetLogRobots", related_name="log"
     )
 
-    class Meta:
+    class Meta:  # type: ignore
         unique_together = ("id", "seq")

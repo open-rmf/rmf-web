@@ -45,6 +45,9 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
         # don't allow creating scheduled tasks that never runs
         raise HTTPException(422, "Task is never going to run")
 
+    if not isinstance(task.task_request, dict):
+        logger.error(f"task_request is not a dict: {type(task.task_request)}")
+        raise HTTPException(500)
     req = DispatchTaskRequest(
         type="dispatch_task_request",
         request=TaskRequest(**task.task_request),
@@ -156,6 +159,9 @@ async def del_scheduled_tasks_event(
         raise HTTPException(404)
 
     event_date_str = event_date.isoformat()
+    if not isinstance(task.except_dates, list):
+        logger.error(f"task.except_dates is not a list: {type(task.except_dates)}")
+        raise HTTPException(500)
     task.except_dates.append(event_date_str[:10])
     await task.save()
 
@@ -185,6 +191,11 @@ async def update_schedule_task(
         async with tortoise.transactions.in_transaction():
             if except_date:
                 event_date_str = except_date.isoformat()
+                if not isinstance(task.except_dates, list):
+                    logger.error(
+                        f"task.except_dates is not a list: {type(task.except_dates)}"
+                    )
+                    raise HTTPException(500)
                 task.except_dates.append(event_date_str[:10])
                 await task.save()
 

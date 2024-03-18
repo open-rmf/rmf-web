@@ -67,7 +67,7 @@ class TestTasksRoute(AppFixture):
             self.assertIsNotNone(logs.log)
             return
         self.assertEqual(1, len(logs.log))
-        log = logs.log[0]
+        log = logs.log[0]  # pylint: disable=unsubscriptable-object
         self.assertEqual(0, log.seq)
         self.assertEqual(mdl.Tier.info, log.tier)
         self.assertEqual(1636388410000, log.unix_millis_time)
@@ -82,7 +82,7 @@ class TestTasksRoute(AppFixture):
         self.assertIn("2", logs.phases)
 
         # check correct log
-        phase1 = logs.phases["1"]
+        phase1 = logs.phases["1"]  # pylint: disable=unsubscriptable-object
         phase1_log = phase1.log
         if phase1_log is None:
             self.assertIsNotNone(phase1_log)

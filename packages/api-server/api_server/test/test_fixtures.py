@@ -1,5 +1,4 @@
 import asyncio
-import contextlib
 import inspect
 import os
 import os.path
@@ -9,11 +8,8 @@ import unittest.mock
 from typing import Awaitable, Callable, Optional, TypeVar, Union
 from uuid import uuid4
 
-from starlette.testclient import WebSocketTestSession
-
 from api_server.app import app
 from api_server.models import User
-from api_server.models import tortoise_models as ttm
 from api_server.routes.admin import PostUsers
 
 from .mocks import patch_sio

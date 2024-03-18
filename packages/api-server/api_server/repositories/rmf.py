@@ -1,6 +1,7 @@
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 
 from api_server.authenticator import user_dep
+from api_server.logger import logger
 from api_server.models import (
     BuildingMap,
     Dispenser,
@@ -38,6 +39,9 @@ class RmfRepository:
         building_map = await ttm.BuildingMap.first()
         if building_map is None:
             return None
+        if not isinstance(building_map.data, dict):
+            logger.error(f"request is not a dict: {type(building_map.data)}")
+            raise HTTPException(500)
         return BuildingMap(**building_map.data)
 
     async def get_doors(self) -> list[Door]:

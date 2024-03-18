@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from tortoise.contrib.pydantic.creator import pydantic_model_creator
 from tortoise.fields import (
     CharField,
@@ -16,12 +14,12 @@ from .log import LogMixin
 
 class TaskRequest(Model):
     id_ = CharField(255, pk=True, source_field="id")
-    request: dict = JSONField()  # type: ignore
+    request = JSONField()
 
 
 class TaskState(Model):
     id_ = CharField(255, pk=True, source_field="id")
-    data: dict = JSONField()  # type: ignore
+    data = JSONField()
     category = CharField(255, null=True, index=True)
     assigned_to = CharField(255, null=True, index=True)
     unix_millis_start_time = DatetimeField(null=True, index=True)
@@ -42,7 +40,7 @@ class TaskEventLogLog(Model, LogMixin):
         "models.TaskEventLog", related_name="log"
     )
 
-    class Meta:
+    class Meta:  # type: ignore
         unique_together = ("task", "seq")
 
 
@@ -60,7 +58,7 @@ class TaskEventLogPhasesLog(Model, LogMixin):
         "models.TaskEventLogPhases", related_name="log"
     )
 
-    class Meta:
+    class Meta:  # type: ignore
         unique_together = ("id", "seq")
 
 
@@ -77,18 +75,18 @@ class TaskEventLogPhasesEventsLog(Model, LogMixin):
         "models.TaskEventLogPhasesEvents", related_name="log"
     )
 
-    class Meta:
+    class Meta:  # type: ignore
         unique_together = ("id", "seq")
 
 
 class TaskFavorite(Model):
-    id: str = CharField(255, pk=True, source_field="id")  # type: ignore
-    name: str = CharField(255, null=False, index=True)  # type: ignore
-    unix_millis_earliest_start_time: datetime = DatetimeField(null=True, index=True)  # type: ignore
-    priority: dict = JSONField(null=True)  # type: ignore
-    category: str = CharField(255, null=False, index=True)  # type: ignore
-    description: dict = JSONField()  # type: ignore
-    user: str = CharField(255, null=False, index=True)  # type: ignore
+    id = CharField(255, pk=True, source_field="id")
+    name = CharField(255, null=False, index=True)
+    unix_millis_earliest_start_time = DatetimeField(null=True, index=True)
+    priority = JSONField(null=True)
+    category = CharField(255, null=False, index=True)
+    description = JSONField()
+    user = CharField(255, null=False, index=True)
 
 
 TaskFavoritePydantic = pydantic_model_creator(TaskFavorite)

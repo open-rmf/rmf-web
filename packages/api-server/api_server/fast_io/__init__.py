@@ -102,7 +102,10 @@ class FastIORouter(APIRouter):
         super().__init__(*args, **kwargs)
         self.sub_routes: List[SubRoute] = []
 
-    def include_router(self, router: "FastIORouter", **kwargs):
+    def include_router(self, router: APIRouter, **kwargs):
+        if not isinstance(router, FastIORouter):
+            raise ValueError("router must be an instance of FastIORouter")
+
         super().include_router(router, **kwargs)
         prefix = kwargs.get("prefix", "")
 

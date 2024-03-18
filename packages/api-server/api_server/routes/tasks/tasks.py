@@ -67,12 +67,12 @@ async def query_task_states(
         filters["unix_millis_finish_time__gte"] = finish_time_between[0]
         filters["unix_millis_finish_time__lte"] = finish_time_between[1]
     if status is not None:
-        valid_values = [member.value for member in mdl.Status]
+        valid_values = [member.value for member in mdl.TaskStatus]
         filters["status__in"] = []
         for status_string in status.split(","):
             if status_string not in valid_values:
                 continue
-            filters["status__in"].append(mdl.Status(status_string))
+            filters["status__in"].append(mdl.TaskStatus(status_string))
 
     return await task_repo.query_task_states(DbTaskState.filter(**filters), pagination)
 
