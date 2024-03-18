@@ -205,8 +205,8 @@ class TaskRepository:
             task_state.phases = {
                 **task_state.phases,
                 next_phase_key: Phase(
-                    id=Id(__root__=next_phase_key),
-                    category=Category(__root__="Task completed"),
+                    id=Id(root=next_phase_key),
+                    category=Category(root="Task completed"),
                     detail=None,
                     unix_millis_start_time=None,
                     unix_millis_finish_time=None,
