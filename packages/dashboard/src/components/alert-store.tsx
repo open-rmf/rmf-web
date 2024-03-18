@@ -18,36 +18,29 @@ export const AlertStore = React.memo(() => {
   const rmf = React.useContext(RmfAppContext);
   const [taskAlerts, setTaskAlerts] = React.useState<Record<string, Alert>>({});
 
-  // const filterAndPushAlerts = (alert: Alert) => {
-  //   // We check if an existing alert has been acknowledged, remove it before
-  //   // adding the acknowledged alert.
-  //   if (alert.category === AlertCategory.Task) {
-  //     setTaskAlerts((prev) => {
-  //       const filteredTaskAlerts = Object.fromEntries(
-  //         Object.entries(prev).filter(([key]) => key !== alert.original_id),
-  //       );
-  //       filteredTaskAlerts[alert.id] = alert;
-  //       return filteredTaskAlerts;
-  //     });
-  //   }
-  // };
+  const categorizeAndPushAlerts = (alert: Alert) => {
+    // We check if an existing alert has been acknowledged, and remove it from
+    // display.
+    if (alert.category === AlertCategory.Task) {
+      setTaskAlerts((prev) => {
+        const filteredTaskAlerts = Object.fromEntries(
+          Object.entries(prev).filter(([key]) => key !== alert.original_id),
+        );
+
+        if (!alert.acknowledged_by) {
+          filteredTaskAlerts[alert.id] = alert;
+        }
+        return filteredTaskAlerts;
+      });
+    }
+  };
 
   React.useEffect(() => {
     const subs: Subscription[] = [];
     subs.push(
       AppEvents.alertListOpenedAlert.subscribe((alert) => {
         if (alert) {
-          setTaskAlerts((prev) => {
-            // const updatedAlerts = prev;
-            // updatedAlerts[alert.id] = alert;
-            // return updatedAlerts;
-
-            const filteredTaskAlerts = Object.fromEntries(
-              Object.entries(prev).filter(([key]) => key !== alert.original_id),
-            );
-            filteredTaskAlerts[alert.id] = alert;
-            return filteredTaskAlerts;
-          });
+          categorizeAndPushAlerts(alert);
         }
       }),
     );
@@ -58,19 +51,8 @@ export const AlertStore = React.memo(() => {
     if (!rmf) {
       return;
     }
-    const sub = rmf.alertObsStore.subscribe(async (alert) => {
-      setTaskAlerts((prev) => {
-        if (Object.keys(prev).includes(alert.original_id)) {
-          const filteredTaskAlerts = Object.fromEntries(
-            Object.entries(prev).filter(([key]) => key !== alert.original_id),
-          );
-          return filteredTaskAlerts;
-        }
-
-        const updatedAlerts = prev;
-        updatedAlerts[alert.id] = alert;
-        return updatedAlerts;
-      });
+    const sub = rmf.alertObsStore.subscribe((alert) => {
+      categorizeAndPushAlerts(alert);
       AppEvents.refreshAlert.next();
     });
     return () => sub.unsubscribe();
