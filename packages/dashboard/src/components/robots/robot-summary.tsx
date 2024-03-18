@@ -33,6 +33,7 @@ import {
   BatteryUnknown,
 } from '@mui/icons-material';
 import { TaskCancelButton } from '../tasks/task-cancellation';
+import { RobotDecommissionButton } from './robot-decommission';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -292,6 +293,17 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
       )}
       <DialogContent>{returnDialogContent()}</DialogContent>
       <DialogActions sx={{ justifyContent: 'center' }}>
+        <RobotDecommissionButton
+          fleet={robot.fleet}
+          robotState={robotState}
+          size="small"
+          variant="contained"
+          color="secondary"
+          sx={{
+            fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+            padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+          }}
+        />
         <TaskCancelButton
           taskId={taskState ? taskState.booking.id : null}
           size="small"
