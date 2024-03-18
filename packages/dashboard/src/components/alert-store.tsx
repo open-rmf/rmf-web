@@ -19,14 +19,17 @@ export const AlertStore = React.memo(() => {
   const [taskAlerts, setTaskAlerts] = React.useState<Record<string, Alert>>({});
 
   const categorizeAndPushAlerts = (alert: Alert) => {
-    // We check if an existing alert has been acknowledged, remove it before
-    // adding the acknowledged alert.
+    // We check if an existing alert has been acknowledged, and remove it from
+    // display.
     if (alert.category === AlertCategory.Task) {
       setTaskAlerts((prev) => {
         const filteredTaskAlerts = Object.fromEntries(
           Object.entries(prev).filter(([key]) => key !== alert.original_id),
         );
-        filteredTaskAlerts[alert.id] = alert;
+
+        if (!alert.acknowledged_by) {
+          filteredTaskAlerts[alert.id] = alert;
+        }
         return filteredTaskAlerts;
       });
     }
@@ -48,7 +51,7 @@ export const AlertStore = React.memo(() => {
     if (!rmf) {
       return;
     }
-    const sub = rmf.alertObsStore.subscribe(async (alert) => {
+    const sub = rmf.alertObsStore.subscribe((alert) => {
       categorizeAndPushAlerts(alert);
       AppEvents.refreshAlert.next();
     });

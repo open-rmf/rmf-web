@@ -149,7 +149,11 @@ async def post_scheduled_task(
             await ttm.ScheduledTaskSchedule.bulk_create(schedules)
 
             await schedule_task(scheduled_task, task_repo)
-        return await ttm.ScheduledTaskPydantic.from_tortoise_orm(scheduled_task)
+        scheduled_task_model = await ttm.ScheduledTaskPydantic.from_tortoise_orm(
+            scheduled_task
+        )
+        logger.info(f"New scheduled task:\n{scheduled_task_model}")
+        return scheduled_task_model
     except schedule.ScheduleError as e:
         raise HTTPException(422, str(e)) from e
 

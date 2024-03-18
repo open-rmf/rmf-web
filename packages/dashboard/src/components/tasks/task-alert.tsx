@@ -297,6 +297,7 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
             showAlertMessage += ` ${Math.round(ackSecondsAgo)}s ago`;
           }
           showAlert('success', showAlertMessage);
+          removeAlert();
         } else {
           throw new Error(`Failed to acknowledge alert ID ${idToAcknowledge}`);
         }
