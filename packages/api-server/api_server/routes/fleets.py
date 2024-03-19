@@ -86,8 +86,8 @@ async def decommission_robot(
     )
 
 
-@router.post("/{name}/reinstate")
-async def reinstate_robot(
+@router.post("/{name}/recommission")
+async def recommission_robot(
     name: str,
     robot_name: str,
     id: str,
@@ -95,7 +95,7 @@ async def reinstate_robot(
     user: User = Depends(user_dep),
 ):
     # TODO: check if this robot exists
-    logger.info(f"Reinstating {robot_name} of {name} called by ${user.username}")
+    logger.info(f"Recommissioning {robot_name} of {name} called by ${user.username}")
     rmf_gateway().reinstate_robot(
         fleet_name=name, robot_name=robot_name, id=id, labels=labels
     )

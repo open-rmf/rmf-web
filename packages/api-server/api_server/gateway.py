@@ -112,7 +112,7 @@ class RmfGateway:
 
         self._decommission_robot_request = ros_node().create_publisher(
             RmfInterruptRequest,
-            "decommission_robot",
+            "robot_decommission_request",
             rclpy.qos.QoSProfile(
                 history=rclpy.qos.HistoryPolicy.KEEP_LAST,
                 depth=10,
