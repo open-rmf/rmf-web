@@ -1860,11 +1860,11 @@ export default {
         },
       },
     },
-    '/fleets/{name}/reinstate': {
+    '/fleets/{name}/recommission': {
       post: {
         tags: ['Fleets'],
-        summary: 'Reinstate Robot',
-        operationId: 'reinstate_robot_fleets__name__reinstate_post',
+        summary: 'Recommission Robot',
+        operationId: 'recommission_robot_fleets__name__recommission_post',
         parameters: [
           { required: true, schema: { title: 'Name', type: 'string' }, name: 'name', in: 'path' },
           {

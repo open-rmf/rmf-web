@@ -6917,7 +6917,7 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
     },
     /**
      *
-     * @summary Reinstate Robot
+     * @summary Recommission Robot
      * @param {string} name
      * @param {string} robotName
      * @param {string} id
@@ -6925,7 +6925,7 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    reinstateRobotFleetsNameReinstatePost: async (
+    recommissionRobotFleetsNameRecommissionPost: async (
       name: string,
       robotName: string,
       id: string,
@@ -6933,14 +6933,14 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'name' is not null or undefined
-      assertParamExists('reinstateRobotFleetsNameReinstatePost', 'name', name);
+      assertParamExists('recommissionRobotFleetsNameRecommissionPost', 'name', name);
       // verify required parameter 'robotName' is not null or undefined
-      assertParamExists('reinstateRobotFleetsNameReinstatePost', 'robotName', robotName);
+      assertParamExists('recommissionRobotFleetsNameRecommissionPost', 'robotName', robotName);
       // verify required parameter 'id' is not null or undefined
-      assertParamExists('reinstateRobotFleetsNameReinstatePost', 'id', id);
+      assertParamExists('recommissionRobotFleetsNameRecommissionPost', 'id', id);
       // verify required parameter 'requestBody' is not null or undefined
-      assertParamExists('reinstateRobotFleetsNameReinstatePost', 'requestBody', requestBody);
-      const localVarPath = `/fleets/{name}/reinstate`.replace(
+      assertParamExists('recommissionRobotFleetsNameRecommissionPost', 'requestBody', requestBody);
+      const localVarPath = `/fleets/{name}/recommission`.replace(
         `{${'name'}}`,
         encodeURIComponent(String(name)),
       );
@@ -7086,7 +7086,7 @@ export const FleetsApiFp = function (configuration?: Configuration) {
     },
     /**
      *
-     * @summary Reinstate Robot
+     * @summary Recommission Robot
      * @param {string} name
      * @param {string} robotName
      * @param {string} id
@@ -7094,7 +7094,7 @@ export const FleetsApiFp = function (configuration?: Configuration) {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async reinstateRobotFleetsNameReinstatePost(
+    async recommissionRobotFleetsNameRecommissionPost(
       name: string,
       robotName: string,
       id: string,
@@ -7102,7 +7102,7 @@ export const FleetsApiFp = function (configuration?: Configuration) {
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
-        await localVarAxiosParamCreator.reinstateRobotFleetsNameReinstatePost(
+        await localVarAxiosParamCreator.recommissionRobotFleetsNameRecommissionPost(
           name,
           robotName,
           id,
@@ -7191,7 +7191,7 @@ export const FleetsApiFactory = function (
     },
     /**
      *
-     * @summary Reinstate Robot
+     * @summary Recommission Robot
      * @param {string} name
      * @param {string} robotName
      * @param {string} id
@@ -7199,7 +7199,7 @@ export const FleetsApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    reinstateRobotFleetsNameReinstatePost(
+    recommissionRobotFleetsNameRecommissionPost(
       name: string,
       robotName: string,
       id: string,
@@ -7207,7 +7207,7 @@ export const FleetsApiFactory = function (
       options?: any,
     ): AxiosPromise<any> {
       return localVarFp
-        .reinstateRobotFleetsNameReinstatePost(name, robotName, id, requestBody, options)
+        .recommissionRobotFleetsNameRecommissionPost(name, robotName, id, requestBody, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -7287,7 +7287,7 @@ export class FleetsApi extends BaseAPI {
 
   /**
    *
-   * @summary Reinstate Robot
+   * @summary Recommission Robot
    * @param {string} name
    * @param {string} robotName
    * @param {string} id
@@ -7296,7 +7296,7 @@ export class FleetsApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof FleetsApi
    */
-  public reinstateRobotFleetsNameReinstatePost(
+  public recommissionRobotFleetsNameRecommissionPost(
     name: string,
     robotName: string,
     id: string,
@@ -7304,7 +7304,7 @@ export class FleetsApi extends BaseAPI {
     options?: AxiosRequestConfig,
   ) {
     return FleetsApiFp(this.configuration)
-      .reinstateRobotFleetsNameReinstatePost(name, robotName, id, requestBody, options)
+      .recommissionRobotFleetsNameRecommissionPost(name, robotName, id, requestBody, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
