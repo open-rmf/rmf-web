@@ -42,6 +42,9 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
       const working = {
         color: theme.palette.success.main,
       };
+      const disabled = {
+        color: theme.palette.grey.A400,
+      };
       const defaultColor = {
         color: theme.palette.warning.main,
       };
@@ -49,6 +52,9 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
       switch (params.row.status) {
         case Status2.Error:
           return error;
+        case Status2.Offline:
+        case Status2.Uninitialized:
+          return disabled;
         case Status2.Charging:
           return charging;
         case Status2.Working:

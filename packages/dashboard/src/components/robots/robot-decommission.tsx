@@ -1,4 +1,5 @@
 import { Button, ButtonProps, Theme, Tooltip, Typography } from '@mui/material';
+import { AppEvents } from '../app-events';
 import { RobotState, Status2 } from 'api-client';
 import React from 'react';
 import { AppControllerContext } from '../app-contexts';
@@ -69,10 +70,11 @@ export function RobotDecommissionButton({
         `Failed to decommission ${fleet}:${robotState.name}: ${(e as Error).message}`,
       );
     }
+    AppEvents.refreshRobotApp.next();
     setOpenConfirmDialog(ConfirmDialogType.None);
   }, [appController, fleet, robotState, rmf, profile, ConfirmDialogType]);
 
-  const handleReinstate = React.useCallback<React.MouseEventHandler>(async () => {
+  const handleRecommission = React.useCallback<React.MouseEventHandler>(async () => {
     if (!robotState || !robotState.name) {
       return;
     }
@@ -80,21 +82,22 @@ export function RobotDecommissionButton({
       if (!rmf) {
         throw new Error('fleets api not available');
       }
-      const id = `reinstate-${fleet}-${robotState.name}-${Date.now()}`;
+      const id = `recommission-${fleet}-${robotState.name}-${Date.now()}`;
       const labels = profile ? [profile.user.username] : [];
-      await rmf.fleetsApi?.reinstateRobotFleetsNameReinstatePost(
+      await rmf.fleetsApi?.recommissionRobotFleetsNameRecommissionPost(
         fleet,
         robotState.name,
         id,
         labels,
       );
-      appController.showAlert('success', `Reinstatement of ${fleet}:${robotState.name} requested`);
+      appController.showAlert('success', `Recommission of ${fleet}:${robotState.name} requested`);
     } catch (e) {
       appController.showAlert(
         'error',
-        `Failed to reinstate ${fleet}:${robotState.name}: ${(e as Error).message}`,
+        `Failed to recommission ${fleet}:${robotState.name}: ${(e as Error).message}`,
       );
     }
+    AppEvents.refreshRobotApp.next();
     setOpenConfirmDialog(ConfirmDialogType.None);
   }, [appController, fleet, robotState, rmf, profile, ConfirmDialogType]);
 
@@ -106,7 +109,7 @@ export function RobotDecommissionButton({
           autoFocus
           {...otherProps}
         >
-          {'Reinstate robot'}
+          {'Recommission robot'}
         </Button>
       ) : robotState && !robotDecommissioned ? (
         <Button
@@ -117,9 +120,9 @@ export function RobotDecommissionButton({
           {'Decommission robot'}
         </Button>
       ) : (
-        <Tooltip title={`Robot from fleet ${fleet} cannot be decommissioned/reinstated.`}>
+        <Tooltip title={`Robot from fleet ${fleet} cannot be decommissioned/recommissioned.`}>
           <Button disabled className={classes['enableHover']} {...otherProps}>
-            {'Decommission/Reinstate robot'}
+            {'Decommission/Recommission robot'}
           </Button>
         </Tooltip>
       )}
@@ -147,7 +150,7 @@ export function RobotDecommissionButton({
           onClose={() => {
             setOpenConfirmDialog(ConfirmDialogType.None);
           }}
-          onSubmit={handleReinstate}
+          onSubmit={handleRecommission}
         >
           <Typography>Confirm reinstate robot?</Typography>
         </ConfirmationDialog>
