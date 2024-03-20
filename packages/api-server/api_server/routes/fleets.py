@@ -1,4 +1,4 @@
-from typing import List, Tuple, cast
+from typing import List, Optional, Tuple, cast
 
 from fastapi import Depends, HTTPException
 from rx import operators as rxops
@@ -87,6 +87,7 @@ async def decommission_robot(
         fleet_name=name,
         robot_name=robot_name,
         request_id=request_id,
+        labels=[user.username],
     )
 
 
@@ -106,5 +107,8 @@ async def recommission_robot(
 
     logger.info(f"Recommissioning {robot_name} of {name} called by ${user.username}")
     rmf_gateway().recommission_robot(
-        fleet_name=name, robot_name=robot_name, request_id=request_id
+        fleet_name=name,
+        robot_name=robot_name,
+        request_id=request_id,
+        labels=[user.username],
     )

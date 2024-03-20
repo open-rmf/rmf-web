@@ -4,7 +4,6 @@ import { RobotState, Status2 } from 'api-client';
 import React from 'react';
 import { AppControllerContext } from '../app-contexts';
 import { RmfAppContext } from '../rmf-app';
-import { UserProfile, UserProfileContext } from 'rmf-auth';
 import { makeStyles, createStyles } from '@mui/styles';
 import { ConfirmationDialog } from 'react-components';
 
@@ -31,7 +30,6 @@ export function RobotDecommissionButton({
   const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
   const appController = React.useContext(AppControllerContext);
-  const profile: UserProfile | null = React.useContext(UserProfileContext);
 
   enum ConfirmDialogType {
     None,
@@ -45,6 +43,7 @@ export function RobotDecommissionButton({
   const robotDecommissioned =
     robotState && robotState.status && robotState.status === Status2.Uninitialized;
   // TODO: use authz for decommissioning robot
+  // const profile: UserProfile | null = React.useContext(UserProfileContext);
   // const userCanDecommissionRobot = profile && Enforcer.canDecommissionRobot(profile);
 
   const handleDecommission = React.useCallback<React.MouseEventHandler>(async () => {
@@ -56,13 +55,7 @@ export function RobotDecommissionButton({
         throw new Error('fleets api not available');
       }
       const id = `decommission-${fleet}-${robotState.name}-${Date.now()}`;
-      const labels = profile ? [profile.user.username] : [];
-      await rmf.fleetsApi?.decommissionRobotFleetsNameDecommissionPost(
-        fleet,
-        robotState.name,
-        id,
-        labels,
-      );
+      await rmf.fleetsApi?.decommissionRobotFleetsNameDecommissionPost(fleet, robotState.name, id);
       appController.showAlert('success', `Decommission of ${fleet}:${robotState.name} requested`);
     } catch (e) {
       appController.showAlert(
@@ -72,7 +65,7 @@ export function RobotDecommissionButton({
     }
     AppEvents.refreshRobotApp.next();
     setOpenConfirmDialog(ConfirmDialogType.None);
-  }, [appController, fleet, robotState, rmf, profile, ConfirmDialogType]);
+  }, [appController, fleet, robotState, rmf, ConfirmDialogType]);
 
   const handleRecommission = React.useCallback<React.MouseEventHandler>(async () => {
     if (!robotState || !robotState.name) {
@@ -83,13 +76,7 @@ export function RobotDecommissionButton({
         throw new Error('fleets api not available');
       }
       const id = `recommission-${fleet}-${robotState.name}-${Date.now()}`;
-      const labels = profile ? [profile.user.username] : [];
-      await rmf.fleetsApi?.recommissionRobotFleetsNameRecommissionPost(
-        fleet,
-        robotState.name,
-        id,
-        labels,
-      );
+      await rmf.fleetsApi?.recommissionRobotFleetsNameRecommissionPost(fleet, robotState.name, id);
       appController.showAlert('success', `Recommission of ${fleet}:${robotState.name} requested`);
     } catch (e) {
       appController.showAlert(
@@ -99,7 +86,7 @@ export function RobotDecommissionButton({
     }
     AppEvents.refreshRobotApp.next();
     setOpenConfirmDialog(ConfirmDialogType.None);
-  }, [appController, fleet, robotState, rmf, profile, ConfirmDialogType]);
+  }, [appController, fleet, robotState, rmf, ConfirmDialogType]);
 
   return (
     <>

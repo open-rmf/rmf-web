@@ -299,11 +299,13 @@ class RmfGateway:
         fleet_name: str,
         robot_name: str,
         request_id: str,
+        labels: List[str],
     ):
         msg = RmfInterruptRequest()
         msg.fleet_name = fleet_name
         msg.robot_name = robot_name
         msg.interrupt_id = request_id
+        msg.labels = labels
         msg.type = msg.TYPE_INTERRUPT
         self._decommission_robot_request.publish(msg)
 
@@ -312,11 +314,13 @@ class RmfGateway:
         fleet_name: str,
         robot_name: str,
         request_id: str,
+        labels: List[str],
     ):
         msg = RmfInterruptRequest()
         msg.fleet_name = fleet_name
         msg.robot_name = robot_name
         msg.interrupt_id = request_id
+        msg.labels = labels
         msg.type = msg.TYPE_RESUME
         self._decommission_robot_request.publish(msg)
 
