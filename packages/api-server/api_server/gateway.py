@@ -298,29 +298,25 @@ class RmfGateway:
         self,
         fleet_name: str,
         robot_name: str,
-        id: str,
-        labels: List[str],
+        request_id: str,
     ):
         msg = RmfInterruptRequest()
         msg.fleet_name = fleet_name
         msg.robot_name = robot_name
-        msg.interrupt_id = id
-        msg.labels = labels
+        msg.interrupt_id = request_id
         msg.type = msg.TYPE_INTERRUPT
         self._decommission_robot_request.publish(msg)
 
-    def reinstate_robot(
+    def recommission_robot(
         self,
         fleet_name: str,
         robot_name: str,
-        id: str,
-        labels: List[str],
+        request_id: str,
     ):
         msg = RmfInterruptRequest()
         msg.fleet_name = fleet_name
         msg.robot_name = robot_name
-        msg.interrupt_id = id
-        msg.labels = labels
+        msg.interrupt_id = request_id
         msg.type = msg.TYPE_RESUME
         self._decommission_robot_request.publish(msg)
 

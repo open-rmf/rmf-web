@@ -1,11 +1,18 @@
+from urllib.parse import urlencode
+
 from api_server.models import FleetLogUpdate, FleetStateUpdate
-from api_server.test import AppFixture, make_fleet_log, make_fleet_state
+from api_server.test import (
+    AppFixture,
+    make_fleet_log,
+    make_fleet_state,
+    make_robot_state,
+)
 
 
 class TestFleetsRoute(AppFixture):
     def test_fleet_states(self):
         # subscribe to fleet states
-        fleet_state = make_fleet_state()
+        fleet_state = make_fleet_state("test_fleet")
         gen = self.subscribe_sio(f"/fleets/{fleet_state.name}/state")
 
         with self.client.websocket_connect("/_internal") as ws:
@@ -43,3 +50,93 @@ class TestFleetsRoute(AppFixture):
         resp = self.client.get(f"/fleets/{fleet_log.name}/log")
         self.assertEqual(200, resp.status_code)
         self.assertEqual(fleet_log.name, resp.json()["name"])
+
+    def test_decommission_robot(self):
+        # add a new robot
+        robot_state = make_robot_state()
+        fleet_state = make_fleet_state("test_fleet")
+        fleet_state.robots[robot_state.name] = robot_state
+
+        with self.client.websocket_connect("/_internal") as ws:
+            ws.send_text(
+                FleetStateUpdate(type="fleet_state_update", data=fleet_state).json()
+            )
+
+        # valid decommission
+        params = {
+            "robot_name": robot_state.name,
+            "request_id": "test_request_id",
+        }
+        resp = self.client.post(
+            f"/fleets/{fleet_state.name}/decommission?{urlencode(params)}"
+        )
+        self.assertEqual(200, resp.status_code)
+
+        # invalid fleets
+        resp = self.client.post(
+            f"fleets/invalid_fleet/decommission?{urlencode(params)}"
+        )
+        self.assertEqual(404, resp.status_code)
+
+        # invalid robot
+        params = {
+            "robot_name": "",
+            "request_id": "test_request_id",
+        }
+        resp = self.client.post(
+            f"fleets/{fleet_state.name}/decommission?{urlencode(params)}"
+        )
+        self.assertEqual(404, resp.status_code)
+        params = {
+            "robot_name": "invalid_robot",
+            "request_id": "test_request_id",
+        }
+        resp = self.client.post(
+            f"fleets/{fleet_state.name}/decommission?{urlencode(params)}"
+        )
+        self.assertEqual(404, resp.status_code)
+
+    def test_recommission_robot(self):
+        # add a new robot
+        robot_state = make_robot_state()
+        fleet_state = make_fleet_state()
+        fleet_state.robots[robot_state.name] = robot_state
+
+        with self.client.websocket_connect("/_internal") as ws:
+            ws.send_text(
+                FleetStateUpdate(type="fleet_state_update", data=fleet_state).json()
+            )
+
+        # valid decommission
+        params = {
+            "robot_name": robot_state.name,
+            "request_id": "test_request_id",
+        }
+        resp = self.client.post(
+            f"fleets/{fleet_state.name}/recommission?{urlencode(params)}"
+        )
+        self.assertEqual(200, resp.status_code)
+
+        # invalid fleet
+        resp = self.client.post(
+            f"fleets/invalid_fleet/recommission?{urlencode(params)}"
+        )
+        self.assertEqual(404, resp.status_code)
+
+        # invalid robot
+        params = {
+            "robot_name": "",
+            "request_id": "test_request_id",
+        }
+        resp = self.client.post(
+            f"fleets/{fleet_state.name}/recommission?{urlencode(params)}"
+        )
+        self.assertEqual(404, resp.status_code)
+        params = {
+            "robot_name": "invalid_robot",
+            "request_id": "test_request_id",
+        }
+        resp = self.client.post(
+            f"fleets/{fleet_state.name}/recommission?{urlencode(params)}"
+        )
+        self.assertEqual(404, resp.status_code)

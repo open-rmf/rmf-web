@@ -72,17 +72,21 @@ async def sub_fleet_log(_req: SubscriptionRequest, name: str):
 async def decommission_robot(
     name: str,
     robot_name: str,
-    id: str,
-    labels: List[str],
+    request_id: str,
+    repo: FleetRepository = Depends(fleet_repo_dep),
     user: User = Depends(user_dep),
 ):
-    # TODO: check if this robot exists
+    fleet_state = await repo.get_fleet_state(name)
+    if fleet_state is None:
+        raise HTTPException(404, f"Fleet {name} not found")
+    if robot_name not in fleet_state.robots:
+        raise HTTPException(404, f"Robot {robot_name} not found in fleet {name}")
+
     logger.info(f"Decommissioning {robot_name} of {name} called by {user.username}")
     rmf_gateway().decommission_robot(
         fleet_name=name,
         robot_name=robot_name,
-        id=id,
-        labels=labels,
+        request_id=request_id,
     )
 
 
@@ -90,12 +94,17 @@ async def decommission_robot(
 async def recommission_robot(
     name: str,
     robot_name: str,
-    id: str,
-    labels: List[str],
+    request_id: str,
+    repo: FleetRepository = Depends(fleet_repo_dep),
     user: User = Depends(user_dep),
 ):
-    # TODO: check if this robot exists
+    fleet_state = await repo.get_fleet_state(name)
+    if fleet_state is None:
+        raise HTTPException(404, f"Fleet {name} not found")
+    if robot_name not in fleet_state.robots:
+        raise HTTPException(404, f"Robot {robot_name} not found in fleet {name}")
+
     logger.info(f"Recommissioning {robot_name} of {name} called by ${user.username}")
-    rmf_gateway().reinstate_robot(
-        fleet_name=name, robot_name=robot_name, id=id, labels=labels
+    rmf_gateway().recommission_robot(
+        fleet_name=name, robot_name=robot_name, request_id=request_id
     )
