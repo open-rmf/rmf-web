@@ -6732,26 +6732,22 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
      * @summary Decommission Robot
      * @param {string} name
      * @param {string} robotName
-     * @param {string} id
-     * @param {Array<string>} requestBody
+     * @param {string} requestId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     decommissionRobotFleetsNameDecommissionPost: async (
       name: string,
       robotName: string,
-      id: string,
-      requestBody: Array<string>,
+      requestId: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'name' is not null or undefined
       assertParamExists('decommissionRobotFleetsNameDecommissionPost', 'name', name);
       // verify required parameter 'robotName' is not null or undefined
       assertParamExists('decommissionRobotFleetsNameDecommissionPost', 'robotName', robotName);
-      // verify required parameter 'id' is not null or undefined
-      assertParamExists('decommissionRobotFleetsNameDecommissionPost', 'id', id);
-      // verify required parameter 'requestBody' is not null or undefined
-      assertParamExists('decommissionRobotFleetsNameDecommissionPost', 'requestBody', requestBody);
+      // verify required parameter 'requestId' is not null or undefined
+      assertParamExists('decommissionRobotFleetsNameDecommissionPost', 'requestId', requestId);
       const localVarPath = `/fleets/{name}/decommission`.replace(
         `{${'name'}}`,
         encodeURIComponent(String(name)),
@@ -6771,11 +6767,9 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
         localVarQueryParameter['robot_name'] = robotName;
       }
 
-      if (id !== undefined) {
-        localVarQueryParameter['id'] = id;
+      if (requestId !== undefined) {
+        localVarQueryParameter['request_id'] = requestId;
       }
-
-      localVarHeaderParameter['Content-Type'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -6784,11 +6778,6 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
         ...headersFromBaseOptions,
         ...options.headers,
       };
-      localVarRequestOptions.data = serializeDataIfNeeded(
-        requestBody,
-        localVarRequestOptions,
-        configuration,
-      );
 
       return {
         url: toPathString(localVarUrlObj),
@@ -6920,26 +6909,22 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
      * @summary Recommission Robot
      * @param {string} name
      * @param {string} robotName
-     * @param {string} id
-     * @param {Array<string>} requestBody
+     * @param {string} requestId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     recommissionRobotFleetsNameRecommissionPost: async (
       name: string,
       robotName: string,
-      id: string,
-      requestBody: Array<string>,
+      requestId: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'name' is not null or undefined
       assertParamExists('recommissionRobotFleetsNameRecommissionPost', 'name', name);
       // verify required parameter 'robotName' is not null or undefined
       assertParamExists('recommissionRobotFleetsNameRecommissionPost', 'robotName', robotName);
-      // verify required parameter 'id' is not null or undefined
-      assertParamExists('recommissionRobotFleetsNameRecommissionPost', 'id', id);
-      // verify required parameter 'requestBody' is not null or undefined
-      assertParamExists('recommissionRobotFleetsNameRecommissionPost', 'requestBody', requestBody);
+      // verify required parameter 'requestId' is not null or undefined
+      assertParamExists('recommissionRobotFleetsNameRecommissionPost', 'requestId', requestId);
       const localVarPath = `/fleets/{name}/recommission`.replace(
         `{${'name'}}`,
         encodeURIComponent(String(name)),
@@ -6959,11 +6944,9 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
         localVarQueryParameter['robot_name'] = robotName;
       }
 
-      if (id !== undefined) {
-        localVarQueryParameter['id'] = id;
+      if (requestId !== undefined) {
+        localVarQueryParameter['request_id'] = requestId;
       }
-
-      localVarHeaderParameter['Content-Type'] = 'application/json';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -6972,11 +6955,6 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
         ...headersFromBaseOptions,
         ...options.headers,
       };
-      localVarRequestOptions.data = serializeDataIfNeeded(
-        requestBody,
-        localVarRequestOptions,
-        configuration,
-      );
 
       return {
         url: toPathString(localVarUrlObj),
@@ -6998,24 +6976,21 @@ export const FleetsApiFp = function (configuration?: Configuration) {
      * @summary Decommission Robot
      * @param {string} name
      * @param {string} robotName
-     * @param {string} id
-     * @param {Array<string>} requestBody
+     * @param {string} requestId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async decommissionRobotFleetsNameDecommissionPost(
       name: string,
       robotName: string,
-      id: string,
-      requestBody: Array<string>,
+      requestId: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.decommissionRobotFleetsNameDecommissionPost(
           name,
           robotName,
-          id,
-          requestBody,
+          requestId,
           options,
         );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -7089,24 +7064,21 @@ export const FleetsApiFp = function (configuration?: Configuration) {
      * @summary Recommission Robot
      * @param {string} name
      * @param {string} robotName
-     * @param {string} id
-     * @param {Array<string>} requestBody
+     * @param {string} requestId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async recommissionRobotFleetsNameRecommissionPost(
       name: string,
       robotName: string,
-      id: string,
-      requestBody: Array<string>,
+      requestId: string,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.recommissionRobotFleetsNameRecommissionPost(
           name,
           robotName,
-          id,
-          requestBody,
+          requestId,
           options,
         );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -7130,20 +7102,18 @@ export const FleetsApiFactory = function (
      * @summary Decommission Robot
      * @param {string} name
      * @param {string} robotName
-     * @param {string} id
-     * @param {Array<string>} requestBody
+     * @param {string} requestId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     decommissionRobotFleetsNameDecommissionPost(
       name: string,
       robotName: string,
-      id: string,
-      requestBody: Array<string>,
+      requestId: string,
       options?: any,
     ): AxiosPromise<any> {
       return localVarFp
-        .decommissionRobotFleetsNameDecommissionPost(name, robotName, id, requestBody, options)
+        .decommissionRobotFleetsNameDecommissionPost(name, robotName, requestId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -7194,20 +7164,18 @@ export const FleetsApiFactory = function (
      * @summary Recommission Robot
      * @param {string} name
      * @param {string} robotName
-     * @param {string} id
-     * @param {Array<string>} requestBody
+     * @param {string} requestId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     recommissionRobotFleetsNameRecommissionPost(
       name: string,
       robotName: string,
-      id: string,
-      requestBody: Array<string>,
+      requestId: string,
       options?: any,
     ): AxiosPromise<any> {
       return localVarFp
-        .recommissionRobotFleetsNameRecommissionPost(name, robotName, id, requestBody, options)
+        .recommissionRobotFleetsNameRecommissionPost(name, robotName, requestId, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -7225,8 +7193,7 @@ export class FleetsApi extends BaseAPI {
    * @summary Decommission Robot
    * @param {string} name
    * @param {string} robotName
-   * @param {string} id
-   * @param {Array<string>} requestBody
+   * @param {string} requestId
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof FleetsApi
@@ -7234,12 +7201,11 @@ export class FleetsApi extends BaseAPI {
   public decommissionRobotFleetsNameDecommissionPost(
     name: string,
     robotName: string,
-    id: string,
-    requestBody: Array<string>,
+    requestId: string,
     options?: AxiosRequestConfig,
   ) {
     return FleetsApiFp(this.configuration)
-      .decommissionRobotFleetsNameDecommissionPost(name, robotName, id, requestBody, options)
+      .decommissionRobotFleetsNameDecommissionPost(name, robotName, requestId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -7290,8 +7256,7 @@ export class FleetsApi extends BaseAPI {
    * @summary Recommission Robot
    * @param {string} name
    * @param {string} robotName
-   * @param {string} id
-   * @param {Array<string>} requestBody
+   * @param {string} requestId
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof FleetsApi
@@ -7299,12 +7264,11 @@ export class FleetsApi extends BaseAPI {
   public recommissionRobotFleetsNameRecommissionPost(
     name: string,
     robotName: string,
-    id: string,
-    requestBody: Array<string>,
+    requestId: string,
     options?: AxiosRequestConfig,
   ) {
     return FleetsApiFp(this.configuration)
-      .recommissionRobotFleetsNameRecommissionPost(name, robotName, id, requestBody, options)
+      .recommissionRobotFleetsNameRecommissionPost(name, robotName, requestId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

@@ -1836,16 +1836,13 @@ export default {
             name: 'robot_name',
             in: 'query',
           },
-          { required: true, schema: { title: 'Id', type: 'string' }, name: 'id', in: 'query' },
-        ],
-        requestBody: {
-          content: {
-            'application/json': {
-              schema: { title: 'Labels', type: 'array', items: { type: 'string' } },
-            },
+          {
+            required: true,
+            schema: { title: 'Request Id', type: 'string' },
+            name: 'request_id',
+            in: 'query',
           },
-          required: true,
-        },
+        ],
         responses: {
           '200': {
             description: 'Successful Response',
@@ -1873,16 +1870,13 @@ export default {
             name: 'robot_name',
             in: 'query',
           },
-          { required: true, schema: { title: 'Id', type: 'string' }, name: 'id', in: 'query' },
-        ],
-        requestBody: {
-          content: {
-            'application/json': {
-              schema: { title: 'Labels', type: 'array', items: { type: 'string' } },
-            },
+          {
+            required: true,
+            schema: { title: 'Request Id', type: 'string' },
+            name: 'request_id',
+            in: 'query',
           },
-          required: true,
-        },
+        ],
         responses: {
           '200': {
             description: 'Successful Response',
