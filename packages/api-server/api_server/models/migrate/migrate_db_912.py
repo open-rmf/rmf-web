@@ -195,7 +195,9 @@ async def migrate():
         scheduled_task_model = await ttm.ScheduledTaskPydantic.from_tortoise_orm(
             scheduled_task
         )
-        task_request = TaskRequest(**scheduled_task_model.task_request)
+        task_request = TaskRequest(
+            **scheduled_task_model.task_request  # pyright: ignore[reportGeneralTypeIssues]
+        )
         print(task_request)
 
         # Construct TaskRequestLabel based on TaskRequest
