@@ -22,6 +22,7 @@ from api_server.models import TaskRequest, TaskRequestLabel, TaskState
 # - Construct TaskRequestLabel from its TaskRequest if it is available.
 # - Update the respective TaskState.data json TaskState.booking.labels field
 #   with the newly constructed TaskRequestLabel json string.
+# - Update ScheduledTask to use labels too
 
 
 app_config = load_config(
@@ -184,6 +185,43 @@ async def migrate():
             }
         )
         await state.save()
+
+    # Acquire all ScheduledTask
+    scheduled_tasks = await ttm.ScheduledTask.all()
+    print(f"Migrating {len(scheduled_tasks)} ScheduledTask models")
+
+    # Migrate each ScheduledTask
+    for scheduled_task in scheduled_tasks:
+        scheduled_task_model = await ttm.ScheduledTaskPydantic.from_tortoise_orm(
+            scheduled_task
+        )
+        task_request = TaskRequest(
+            **scheduled_task_model.task_request  # pyright: ignore[reportGeneralTypeIssues]
+        )
+        print(task_request)
+
+        # Construct TaskRequestLabel based on TaskRequest
+        pickup = parse_pickup(task_request)
+        destination = parse_destination(task_request)
+        label = TaskRequestLabel(
+            category=parse_category(task_request),
+            unix_millis_warn_time=None,
+            pickup=pickup,
+            destination=destination,
+            cart_id=parse_cart_id(task_request),
+        )
+        print(label)
+
+        # Update TaskRequest
+        if task_request.labels is None:
+            task_request.labels = [label.json()]
+        else:
+            task_request.labels.append(label.json())
+        print(task_request)
+
+        # Update ScheduledTask
+        scheduled_task.update_from_dict({"task_request": task_request.json()})
+        await scheduled_task.save()
 
     await Tortoise.close_connections()
 
