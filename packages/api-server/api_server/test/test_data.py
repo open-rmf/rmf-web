@@ -104,7 +104,15 @@ def make_ingestor_state(guid: str = "test_ingestor") -> IngestorState:
 
 def make_robot_state(name: Optional[str] = None) -> RobotState:
     robot_name = name if name is not None else str(uuid4())
-    return RobotState(name=robot_name)
+    return RobotState(
+        name=robot_name,
+        status=None,
+        task_id=None,
+        unix_millis_time=None,
+        location=None,
+        battery=None,
+        issues=None,
+    )
 
 
 def make_fleet_state(name: Optional[str] = None) -> FleetState:

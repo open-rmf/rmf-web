@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, cast
+from typing import List, Tuple, cast
 
 from fastapi import Depends, HTTPException
 from rx import operators as rxops
@@ -79,7 +79,7 @@ async def decommission_robot(
     fleet_state = await repo.get_fleet_state(name)
     if fleet_state is None:
         raise HTTPException(404, f"Fleet {name} not found")
-    if robot_name not in fleet_state.robots:
+    if fleet_state.robots is None or robot_name not in fleet_state.robots:
         raise HTTPException(404, f"Robot {robot_name} not found in fleet {name}")
 
     logger.info(f"Decommissioning {robot_name} of {name} called by {user.username}")
@@ -102,7 +102,7 @@ async def recommission_robot(
     fleet_state = await repo.get_fleet_state(name)
     if fleet_state is None:
         raise HTTPException(404, f"Fleet {name} not found")
-    if robot_name not in fleet_state.robots:
+    if fleet_state.robots is None or robot_name not in fleet_state.robots:
         raise HTTPException(404, f"Robot {robot_name} not found in fleet {name}")
 
     logger.info(f"Recommissioning {robot_name} of {name} called by ${user.username}")

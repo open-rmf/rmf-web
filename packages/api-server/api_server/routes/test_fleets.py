@@ -53,9 +53,10 @@ class TestFleetsRoute(AppFixture):
 
     def test_decommission_robot(self):
         # add a new robot
-        robot_state = make_robot_state()
+        robot_name = "test_robot"
+        robot_state = make_robot_state(robot_name)
         fleet_state = make_fleet_state("test_fleet")
-        fleet_state.robots[robot_state.name] = robot_state
+        fleet_state.robots = {robot_name: robot_state}
 
         with self.client.websocket_connect("/_internal") as ws:
             ws.send_text(
@@ -64,7 +65,7 @@ class TestFleetsRoute(AppFixture):
 
         # valid decommission
         params = {
-            "robot_name": robot_state.name,
+            "robot_name": robot_name,
             "request_id": "test_request_id",
         }
         resp = self.client.post(
@@ -98,9 +99,10 @@ class TestFleetsRoute(AppFixture):
 
     def test_recommission_robot(self):
         # add a new robot
-        robot_state = make_robot_state()
-        fleet_state = make_fleet_state()
-        fleet_state.robots[robot_state.name] = robot_state
+        robot_name = "test_robot"
+        robot_state = make_robot_state(robot_name)
+        fleet_state = make_fleet_state("test_fleet")
+        fleet_state.robots = {robot_name: robot_state}
 
         with self.client.websocket_connect("/_internal") as ws:
             ws.send_text(
@@ -109,7 +111,7 @@ class TestFleetsRoute(AppFixture):
 
         # valid decommission
         params = {
-            "robot_name": robot_state.name,
+            "robot_name": robot_name,
             "request_id": "test_request_id",
         }
         resp = self.client.post(

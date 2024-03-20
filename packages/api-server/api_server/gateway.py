@@ -306,7 +306,7 @@ class RmfGateway:
         msg.robot_name = robot_name
         msg.interrupt_id = request_id
         msg.labels = labels
-        msg.type = msg.TYPE_INTERRUPT
+        msg.type = RmfInterruptRequest.TYPE_INTERRUPT
         self._decommission_robot_request.publish(msg)
 
     def recommission_robot(
@@ -321,7 +321,7 @@ class RmfGateway:
         msg.robot_name = robot_name
         msg.interrupt_id = request_id
         msg.labels = labels
-        msg.type = msg.TYPE_RESUME
+        msg.type = RmfInterruptRequest.TYPE_RESUME
         self._decommission_robot_request.publish(msg)
 
 
