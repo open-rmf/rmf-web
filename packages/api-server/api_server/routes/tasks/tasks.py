@@ -16,9 +16,10 @@ from api_server.dependencies import (
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.logger import logger
 from api_server.models.tortoise_models import TaskState as DbTaskState
-from api_server.repositories import TaskRepository, task_repo_dep
+from api_server.repositories import TaskRepository, rmf_repo_dep, task_repo_dep
 from api_server.response import RawJSONResponse
 from api_server.rmf_io import task_events, tasks_service
+from api_server.routes.building_map import get_building_map
 
 router = FastIORouter(tags=["Tasks"])
 
@@ -200,6 +201,73 @@ async def post_dispatch_task(
     task_repo: TaskRepository = Depends(task_repo_dep),
 ):
     task_warn_time = request.request.unix_millis_warn_time
+
+    # FIXME: In order to accommodate changing emergency lots over time, and
+    # avoiding updating all the saved scheduled tasks in the database, we only
+    # insert emergency lots as part of the cancellation behavior before
+    # dispatching.
+    # Check if request even has cancellation behavior
+    if (
+        request.request.category == "compose"
+        and request.request.description is not None
+        and "phases" in request.request.description
+        and len(request.request.description["phases"]) == 3
+        and "on_cancel" in request.request.description["phases"][1]
+    ):
+        print("Found a task that needs cancellation behavior")
+        print("Before:")
+        print(request.request.description)
+        # Get all waypoints from building map that has Emergency in them
+        rmf_repo = rmf_repo_dep()
+        building_map = None
+        try:
+            building_map = await get_building_map(rmf_repo)
+        except:
+            print("oh no couldn't get building map")
+        if building_map is not None:
+            emergency_lots = []
+            print(building_map.levels)
+            for level in building_map.levels:
+                for graph in level.nav_graphs:
+                    for node in graph.vertices:
+                        # if "emergency" in node.name.lower():
+                        #     emergency_lots.append(node.name)
+                        if len(node.name) != 0:
+                            emergency_lots.append(node.name)
+            print(f"emergency lots: {emergency_lots}")
+            if len(emergency_lots) != 0:
+                # Populate them in the correct form
+                go_to_one_of_the_places_activity = {
+                    "category": "go_to_place",
+                    "description": {
+                        "one_of": [{"waypoint": name} for name in emergency_lots],
+                        "constraints": [
+                            {"category": "prefer_same_map", "description": ""}
+                        ],
+                    },
+                }
+                delivery_dropoff_activity = {
+                    "category": "perform_action",
+                    "description": {
+                        "unix_millis_action_duration_estimate": 60000,
+                        "category": "delivery_dropoff",
+                        "description": {},
+                    },
+                }
+                on_cancel_dropoff = {
+                    "category": "sequence",
+                    "description": [
+                        go_to_one_of_the_places_activity,
+                        delivery_dropoff_activity,
+                    ],
+                }
+                # Add into task request
+                request.request.description["phases"][1][
+                    "on_cancel"
+                ] = on_cancel_dropoff
+                print("After:")
+                print(request.request.description)
+
     resp = mdl.TaskDispatchResponse.parse_raw(
         await tasks_service().call(request.json(exclude_none=True))
     )
