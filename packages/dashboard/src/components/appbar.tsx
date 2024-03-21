@@ -25,7 +25,7 @@ import {
   Typography,
 } from '@mui/material';
 import {
-  ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
+  TortoiseContribPydanticCreatorApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
   TaskFavoritePydantic as TaskFavorite,
   TaskRequest,
 } from 'api-client';

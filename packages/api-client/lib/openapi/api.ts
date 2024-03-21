@@ -1713,10 +1713,10 @@ export interface ScheduledTask {
   id: number;
   /**
    *
-   * @type {object}
+   * @type {TaskRequest}
    * @memberof ScheduledTask
    */
-  task_request: object;
+  task_request: TaskRequest;
   /**
    *
    * @type {string}

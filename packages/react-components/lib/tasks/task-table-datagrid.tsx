@@ -13,7 +13,7 @@ import {
 } from '@mui/x-data-grid';
 import { styled, TextField, Stack, Typography, Tooltip } from '@mui/material';
 import * as React from 'react';
-import { TaskState, Status } from 'api-client';
+import { TaskState, ApiServerModelsRmfApiTaskStateStatus as TaskStatus } from 'api-client';
 import { InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
 
 const classes = {
@@ -308,15 +308,15 @@ export function TaskDataGridTable({
         getCellClassName={(params: GridCellParams<string>) => {
           if (params.field === 'status') {
             switch (params.value) {
-              case Status.Underway:
+              case TaskStatus.Underway:
                 return classes.taskActiveCell;
-              case Status.Completed:
+              case TaskStatus.Completed:
                 return classes.taskCompletedCell;
-              case Status.Canceled:
+              case TaskStatus.Canceled:
                 return classes.taskCancelledCell;
-              case Status.Failed:
+              case TaskStatus.Failed:
                 return classes.taskFailedCell;
-              case Status.Queued:
+              case TaskStatus.Queued:
                 return classes.taskQueuedCell;
               default:
                 return classes.taskUnknownCell;

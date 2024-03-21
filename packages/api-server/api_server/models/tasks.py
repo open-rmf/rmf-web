@@ -3,6 +3,7 @@ from enum import Enum
 
 from pydantic import BaseModel, ConfigDict
 
+from .rmf_api.task_request import TaskRequest
 from .tortoise_support import TortoiseReverseRelation
 
 
@@ -32,7 +33,7 @@ class ScheduledTask(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    task_request: dict
+    task_request: TaskRequest
     created_by: str
     schedules: TortoiseReverseRelation[ScheduledTaskSchedule]
     last_ran: datetime | None = None

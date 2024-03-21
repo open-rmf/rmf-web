@@ -3579,7 +3579,7 @@ export default {
       ScheduledTask: {
         properties: {
           id: { type: 'integer', title: 'Id' },
-          task_request: { type: 'object', title: 'Task Request' },
+          task_request: { $ref: '#/components/schemas/TaskRequest' },
           created_by: { type: 'string', title: 'Created By' },
           schedules: {
             items: { $ref: '#/components/schemas/ScheduledTaskSchedule' },

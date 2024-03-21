@@ -9,7 +9,7 @@ import {
 } from '@mui/x-data-grid';
 import { Box, SxProps, Typography, useTheme } from '@mui/material';
 import * as React from 'react';
-import { Status2 } from 'api-client';
+import { ApiServerModelsRmfApiRobotStateStatus as RobotStatus } from 'api-client';
 import { RobotTableData } from './robot-table';
 import { robotStatusToUpperCase } from './utils';
 
@@ -45,11 +45,11 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
       };
 
       switch (params.row.status) {
-        case Status2.Error:
+        case RobotStatus.Error:
           return error;
-        case Status2.Charging:
+        case RobotStatus.Charging:
           return charging;
-        case Status2.Working:
+        case RobotStatus.Working:
           return working;
         default:
           return defaultColor;

@@ -6,10 +6,7 @@ import {
   SchedulerProps,
 } from '@aldabil/react-scheduler/types';
 import { Button } from '@mui/material';
-import {
-  ApiServerModelsTortoiseModelsScheduledTaskScheduledTask as ScheduledTask,
-  ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf as ApiSchedule,
-} from 'api-client';
+import { ScheduledTask, ScheduledTaskSchedule as ApiSchedule } from 'api-client';
 import React from 'react';
 import {
   ConfirmationDialog,

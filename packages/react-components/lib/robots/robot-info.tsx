@@ -4,7 +4,7 @@ import React from 'react';
 import { CircularProgressBar } from './circular-progress-bar';
 import { LinearProgressBar } from './linear-progress-bar';
 
-function getTaskStatusDisplay(assignedTask?: string, taskStatus?: string) {
+function getTaskStatusDisplay(assignedTask?: string, taskStatus?: string | null) {
   if (assignedTask && !taskStatus) {
     return 'Unknown';
   }

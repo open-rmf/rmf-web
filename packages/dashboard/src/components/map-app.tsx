@@ -1,11 +1,5 @@
 import { styled } from '@mui/material';
-import {
-  BuildingMap,
-  Dispenser,
-  ApiServerModelsRmfApiFleetStateFleetState,
-  Ingestor,
-  Level,
-} from 'api-client';
+import { BuildingMap, Dispenser, FleetState, Ingestor, Level } from 'api-client';
 import Debug from 'debug';
 import React, { ChangeEvent, Suspense } from 'react';
 import {
@@ -34,8 +28,6 @@ import { Canvas, useLoader } from '@react-three/fiber';
 import { Line } from '@react-three/drei';
 import { CameraControl, LayersController } from './three-fiber';
 import { Lifts, Door, RobotThree } from './three-fiber';
-
-type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
 const debug = Debug('MapApp');
 
