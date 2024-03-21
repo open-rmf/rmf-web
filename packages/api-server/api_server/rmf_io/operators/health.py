@@ -29,6 +29,8 @@ def most_critical() -> (
             return 1
         if health_status == HealthStatus.DEAD:
             return 2
+        # FIXME
+        # pylint: disable=broad-exception-raised
         raise Exception("unknown health status")
 
     def get_most_critical(health_statuses):

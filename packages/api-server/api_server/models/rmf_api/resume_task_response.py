@@ -3,13 +3,13 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from pydantic import Field, RootModel
 
 from . import simple_response
 
 
-class TaskResumeResponse(BaseModel):
-    __root__: simple_response.SimpleResponse = Field(
+class TaskResumeResponse(RootModel[simple_response.SimpleResponse]):
+    root: simple_response.SimpleResponse = Field(
         ...,
         description="Response to a request to resume a task",
         title="Task Resume Response",

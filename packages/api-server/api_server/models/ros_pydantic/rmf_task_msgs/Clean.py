@@ -1,20 +1,14 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class Clean(pydantic.BaseModel):
-    start_waypoint: str = ""  # string
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "start_waypoint",
-            ],
-        }
+    start_waypoint: str  # string
 
 
 # # The name of the waypoint where the robot should begin its pre-configured

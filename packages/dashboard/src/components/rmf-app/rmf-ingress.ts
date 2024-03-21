@@ -1,8 +1,8 @@
 import {
   AdminApi,
   AlertsApi,
-  ApiServerModelsTortoiseModelsAlertsAlertLeaf,
-  ApiServerModelsTortoiseModelsBeaconsBeaconStateLeaf as BeaconState,
+  TortoiseContribPydanticCreatorApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
+  TortoiseContribPydanticCreatorApiServerModelsTortoiseModelsBeaconsBeaconStateLeaf as BeaconState,
   BeaconsApi,
   BuildingApi,
   BuildingMap,
@@ -15,7 +15,7 @@ import {
   DoorsApi,
   DoorState,
   FleetsApi,
-  ApiServerModelsRmfApiFleetStateFleetState,
+  FleetState,
   Ingestor,
   IngestorsApi,
   IngestorState,
@@ -36,9 +36,6 @@ import {
   DefaultTrajectoryManager,
   RobotTrajectoryManager,
 } from '../../managers/robot-trajectory-manager';
-
-type Alert = ApiServerModelsTortoiseModelsAlertsAlertLeaf;
-type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
 export class RmfIngress {
   // This should be private because socketio does not support "replaying" subscription. If

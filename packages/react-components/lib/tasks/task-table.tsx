@@ -9,7 +9,7 @@ import {
   TableRow,
 } from '@mui/material';
 import { ArrowCircleDown, ArrowCircleUp } from '@mui/icons-material';
-import { Status, TaskState } from 'api-client';
+import { ApiServerModelsRmfApiTaskStateStatus as TaskStatus, TaskState } from 'api-client';
 import clsx from 'clsx';
 import React from 'react';
 
@@ -84,15 +84,15 @@ function TaskRow({ task, onClick }: TaskRowProps) {
 
   const getTaskStateCellClass = (task: TaskState) => {
     switch (task.status) {
-      case Status.Underway:
+      case TaskStatus.Underway:
         return classes.taskActiveCell;
-      case Status.Completed:
+      case TaskStatus.Completed:
         return classes.taskCompletedCell;
-      case Status.Canceled:
+      case TaskStatus.Canceled:
         return classes.taskCancelledCell;
-      case Status.Failed:
+      case TaskStatus.Failed:
         return classes.taskFailedCell;
-      case Status.Queued:
+      case TaskStatus.Queued:
         return classes.taskQueuedCell;
       default:
         return classes.taskUnknownCell;

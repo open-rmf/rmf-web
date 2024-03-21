@@ -1,8 +1,5 @@
 import { ProcessedEvent } from '@aldabil/react-scheduler/types';
-import {
-  ApiServerModelsTortoiseModelsScheduledTaskScheduledTask as ScheduledTask,
-  ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf as ApiSchedule,
-} from 'api-client';
+import { ScheduledTask, ScheduledTaskSchedule as ApiSchedule } from 'api-client';
 import {
   addMinutes,
   endOfDay,
@@ -103,7 +100,7 @@ export const scheduleToEvents = (
     ) {
       const curToIso = cur.toISOString();
       const curFormatted = `${curToIso.slice(0, 10)}`;
-      if (!task.except_dates.includes(curFormatted)) {
+      if (!task.except_dates?.includes(curFormatted)) {
         events.push({
           start: cur,
           end: addMinutes(cur, 45),
@@ -162,5 +159,5 @@ export const getScheduledTaskTitle = (task: ScheduledTask): string => {
     return `[${task.id}] Unknown`;
   }
 
-  return `${getShortDescription(task.task_request)}`;
+  return task.task_request ? getShortDescription(task.task_request) : '';
 };

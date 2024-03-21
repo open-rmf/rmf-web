@@ -1,28 +1,18 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class Loop(pydantic.BaseModel):
-    task_id: str = ""  # string
-    robot_type: str = ""  # string
-    num_loops: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
-    start_name: str = ""  # string
-    finish_name: str = ""  # string
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "task_id",
-                "robot_type",
-                "num_loops",
-                "start_name",
-                "finish_name",
-            ],
-        }
+    task_id: str  # string
+    robot_type: str  # string
+    num_loops: Annotated[int, pydantic.Field(ge=0, le=4294967295)]  # uint32
+    start_name: str  # string
+    finish_name: str  # string
 
 
 # # task_id is intended to be a pseudo-random string generated

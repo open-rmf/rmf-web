@@ -25,7 +25,7 @@ class TestRmfService(unittest.TestCase):
         cls._client_context.init()
         cls.client_node = rclpy.node.Node(
             f"test_client{cls._create_node_id()}", context=cls._client_context
-        )
+        )  # type: ignore rclpy has invalid typing
         cls._client_executor = rclpy.executors.SingleThreadedExecutor(
             context=cls._client_context
         )
@@ -44,7 +44,7 @@ class TestRmfService(unittest.TestCase):
         cls.server_node = rclpy.node.Node(
             f"test_server_{cls._create_node_id()}",
             context=cls._server_context,
-        )
+        )  # type: ignore rclpy has invalid typing
         cls._server_executor = rclpy.executors.SingleThreadedExecutor(
             context=cls._server_context
         )

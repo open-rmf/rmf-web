@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,15 +8,9 @@ from ..rmf_building_map_msgs.BuildingMap import BuildingMap
 
 
 class GetBuildingMap_Response(pydantic.BaseModel):
-    building_map: BuildingMap = BuildingMap()  # rmf_building_map_msgs/BuildingMap
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "building_map",
-            ],
-        }
+    building_map: BuildingMap  # rmf_building_map_msgs/BuildingMap
 
 
 #

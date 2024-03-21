@@ -61,7 +61,7 @@
     "@types/three": "^0.156.0",
     "ajv": "^8.10.0",
     "api-client": "workspace:*",
-    "axios": "^0.21.1",
+    "axios": "^1.6.8",
     "date-fns": "^2.21.3",
     "debug": "^4.2.0",
     "eventemitter3": "^4.0.7",

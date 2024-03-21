@@ -8,7 +8,7 @@ import unittest.mock
 from typing import Awaitable, Callable, Optional, TypeVar, Union
 from uuid import uuid4
 
-from api_server.app import app, on_sio_connect
+from api_server.app import app
 from api_server.models import User
 from api_server.routes.admin import PostUsers
 
@@ -95,6 +95,9 @@ class AppFixture(unittest.TestCase):
         Subscribes to a socketio room and return a generator of messages
         Returns a tuple of (success: bool, messages: Any).
         """
+        on_sio_connect = app.sio.handlers["/"]["connect"]
+        on_subscribe = app.sio.handlers["/"]["subscribe"]
+        on_disconnect = app.sio.handlers["/"]["disconnect"]
 
         def impl():
             with patch_sio() as mock_sio:
@@ -103,6 +106,8 @@ class AppFixture(unittest.TestCase):
 
                 async def handle_resp(emit_room, msg, *_args, **_kwargs):
                     if emit_room == "subscribe" and not msg["success"]:
+                        # FIXME
+                        # pylint: disable=broad-exception-raised
                         raise Exception("Failed to subscribe")
                     if emit_room == room:
                         async with condition:
@@ -110,15 +115,16 @@ class AppFixture(unittest.TestCase):
                             condition.notify()
 
                 mock_sio.emit.side_effect = handle_resp
-
-                self.assertIsNotNone(self.client.portal)
-                assert self.client.portal is not None
+                # this is so type narrowing works
+                if self.client.portal is None:
+                    raise AssertionError(
+                        "self.client.portal is None, make sure this is called within a test context"
+                    )
 
                 self.client.portal.call(
                     on_sio_connect, "test", {}, {"token": self.client.token(user)}
                 )
-                # pylint: disable=protected-access
-                self.client.portal.call(app._on_subscribe, "test", {"room": room})
+                self.client.portal.call(on_subscribe, "test", {"room": room})
 
                 yield
 
@@ -134,7 +140,7 @@ class AppFixture(unittest.TestCase):
                             asyncio.wait_for, wait_for_msgs(), 5
                         )
                 finally:
-                    self.client.portal.call(app._on_disconnect, "test")
+                    self.client.portal.call(on_disconnect, "test")
 
         gen = impl()
         next(gen)
@@ -148,7 +154,7 @@ class AppFixture(unittest.TestCase):
         user = PostUsers(username=username, is_admin=admin)
         resp = self.client.post(
             "/admin/users",
-            content=user.json(),
+            content=user.model_dump_json(),
         )
         self.assertEqual(200, resp.status_code)
         return username

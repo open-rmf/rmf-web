@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,19 +8,10 @@ from ..rmf_task_msgs.DispatchRequest import DispatchRequest
 
 
 class DispatchAck(pydantic.BaseModel):
-    dispatch_request: DispatchRequest = (
-        DispatchRequest()
-    )  # rmf_task_msgs/DispatchRequest
-    success: bool = False  # bool
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "dispatch_request",
-                "success",
-            ],
-        }
+    dispatch_request: DispatchRequest  # rmf_task_msgs/DispatchRequest
+    success: bool  # bool
 
 
 # # This message is published by the fleet adapter in response to a

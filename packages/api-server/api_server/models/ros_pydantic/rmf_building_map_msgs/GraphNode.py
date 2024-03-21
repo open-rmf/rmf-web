@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,21 +8,12 @@ from ..rmf_building_map_msgs.Param import Param
 
 
 class GraphNode(pydantic.BaseModel):
-    x: float = 0  # float32
-    y: float = 0  # float32
-    name: str = ""  # string
-    params: List[Param] = []  # rmf_building_map_msgs/Param
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "x",
-                "y",
-                "name",
-                "params",
-            ],
-        }
+    x: float  # float32
+    y: float  # float32
+    name: str  # string
+    params: list[Param]  # rmf_building_map_msgs/Param
 
 
 # float32 x

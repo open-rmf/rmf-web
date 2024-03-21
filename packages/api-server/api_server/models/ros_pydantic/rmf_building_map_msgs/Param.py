@@ -1,30 +1,19 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class Param(pydantic.BaseModel):
-    name: str = ""  # string
-    type: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
-    value_int: pydantic.conint(ge=-2147483648, le=2147483647) = 0  # int32
-    value_float: float = 0  # float32
-    value_string: str = ""  # string
-    value_bool: bool = False  # bool
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "name",
-                "type",
-                "value_int",
-                "value_float",
-                "value_string",
-                "value_bool",
-            ],
-        }
+    name: str  # string
+    type: Annotated[int, pydantic.Field(ge=0, le=4294967295)]  # uint32
+    value_int: Annotated[int, pydantic.Field(ge=-2147483648, le=2147483647)]  # int32
+    value_float: float  # float32
+    value_string: str  # string
+    value_bool: bool  # bool
 
 
 # string name

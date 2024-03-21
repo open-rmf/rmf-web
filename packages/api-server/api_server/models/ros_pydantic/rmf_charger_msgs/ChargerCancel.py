@@ -1,22 +1,15 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class ChargerCancel(pydantic.BaseModel):
-    charger_name: str = ""  # string
-    request_id: str = ""  # string
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "charger_name",
-                "request_id",
-            ],
-        }
+    charger_name: str  # string
+    request_id: str  # string
 
 
 # string charger_name  # the charger that should process this message

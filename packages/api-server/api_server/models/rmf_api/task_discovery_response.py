@@ -16,16 +16,16 @@ class Task(BaseModel):
     )
     detail: str = Field(..., description="Details about the behavior of the task.")
     description_schema: Optional[Dict[str, Any]] = Field(
-        None, description="The schema for this task description"
+        default=None, description="The schema for this task description"
     )
 
 
 class Data(BaseModel):
     fleet_name: Optional[str] = Field(
-        None, description="Name of the fleet that supports these tasks"
+        default=None, description="Name of the fleet that supports these tasks"
     )
     tasks: Optional[List[Task]] = Field(
-        None, description="(list:replace) List of tasks that the fleet supports"
+        default=None, description="(list:replace) List of tasks that the fleet supports"
     )
 
 

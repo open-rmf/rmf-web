@@ -71,12 +71,13 @@ export const RobotsApp = createMicroApp('Robots', () => {
               ? Object.entries(fleet.robots).map<RobotTableData>(([name, robot]) => ({
                   fleet: fleet.name || '',
                   name,
-                  battery: robot.battery && +robot.battery.toFixed(2),
+                  battery: robot.battery != null ? +robot.battery.toFixed(2) : undefined,
                   status: robot.status,
                   estFinishTime:
-                    robot.task_id && tasks[robot.task_id]
-                      ? tasks[robot.task_id].unix_millis_finish_time
-                      : undefined,
+                    (robot.task_id &&
+                      tasks[robot.task_id] &&
+                      tasks[robot.task_id].unix_millis_finish_time) ||
+                    undefined,
                   lastUpdateTime: robot.unix_millis_time ? robot.unix_millis_time : undefined,
                   level: robot.location?.map || 'N/A',
                 }))

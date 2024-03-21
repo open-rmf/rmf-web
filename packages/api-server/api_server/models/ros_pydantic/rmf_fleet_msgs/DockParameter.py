@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,19 +8,11 @@ from ..rmf_fleet_msgs.Location import Location
 
 
 class DockParameter(pydantic.BaseModel):
-    start: str = ""  # string
-    finish: str = ""  # string
-    path: List[Location] = []  # rmf_fleet_msgs/Location
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "start",
-                "finish",
-                "path",
-            ],
-        }
+    start: str  # string
+    finish: str  # string
+    path: list[Location]  # rmf_fleet_msgs/Location
 
 
 # # The name of the waypoint where the docking begins

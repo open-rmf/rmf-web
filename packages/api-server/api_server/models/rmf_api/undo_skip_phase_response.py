@@ -3,13 +3,13 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from pydantic import Field, RootModel
 
 from . import simple_response
 
 
-class UndoPhaseSkipResponse(BaseModel):
-    __root__: simple_response.SimpleResponse = Field(
+class UndoPhaseSkipResponse(RootModel[simple_response.SimpleResponse]):
+    root: simple_response.SimpleResponse = Field(
         ...,
         description="Response to an undo phase skip request",
         title="Undo Phase Skip Response",

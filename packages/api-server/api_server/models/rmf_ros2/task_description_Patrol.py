@@ -15,6 +15,6 @@ class PatrolTaskDescription(BaseModel):
         ..., description="A list of which places to patrol between"
     )
     rounds: Optional[conint(ge=1)] = Field(
-        None,
+        default=None,
         description="How many times the patrol should be performed. By default this is 1.",
     )

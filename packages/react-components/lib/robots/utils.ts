@@ -1,4 +1,4 @@
-import { Status2 } from 'api-client';
+import { ApiServerModelsRmfApiRobotStateStatus as RobotStatus } from 'api-client';
 import { RobotMode as RmfRobotMode } from 'rmf-models';
 
 /**
@@ -8,21 +8,21 @@ export function robotHash(name: string, fleet: string): string {
   return `${name}__${fleet}`;
 }
 
-export function robotStatusToUpperCase(status: Status2): string {
+export function robotStatusToUpperCase(status: RobotStatus): string {
   switch (status) {
-    case Status2.Charging:
+    case RobotStatus.Charging:
       return 'CHARGING';
-    case Status2.Idle:
+    case RobotStatus.Idle:
       return 'IDLE';
-    case Status2.Working:
+    case RobotStatus.Working:
       return 'WORKING';
-    case Status2.Offline:
+    case RobotStatus.Offline:
       return 'OFFLINE';
-    case Status2.Uninitialized:
+    case RobotStatus.Uninitialized:
       return 'UNINITIALIZED';
-    case Status2.Shutdown:
+    case RobotStatus.Shutdown:
       return 'SHUTDOWN';
-    case Status2.Error:
+    case RobotStatus.Error:
       return 'ERROR';
     default:
       return `UNKNOWN (${status})`;

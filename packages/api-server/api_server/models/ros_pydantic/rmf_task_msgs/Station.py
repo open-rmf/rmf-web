@@ -1,24 +1,16 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class Station(pydantic.BaseModel):
-    task_id: str = ""  # string
-    robot_type: str = ""  # string
-    place_name: str = ""  # string
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "task_id",
-                "robot_type",
-                "place_name",
-            ],
-        }
+    task_id: str  # string
+    robot_type: str  # string
+    place_name: str  # string
 
 
 # # task_id is intended to be a pseudo-random string generated

@@ -1,4 +1,4 @@
-import { ApiServerModelsTortoiseModelsBeaconsBeaconStateLeaf as BeaconState } from 'api-client';
+import { TortoiseContribPydanticCreatorApiServerModelsTortoiseModelsBeaconsBeaconStateLeaf as BeaconState } from 'api-client';
 import React from 'react';
 import { BeaconDataGridTable } from 'react-components';
 import { createMicroApp } from './micro-app';

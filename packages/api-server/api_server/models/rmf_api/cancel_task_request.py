@@ -15,5 +15,5 @@ class CancelTaskRequest(BaseModel):
     )
     task_id: str = Field(..., description="Specify the task ID to cancel")
     labels: Optional[List[str]] = Field(
-        None, description="Labels to describe the purpose of the cancellation"
+        default=None, description="Labels to describe the purpose of the cancellation"
     )

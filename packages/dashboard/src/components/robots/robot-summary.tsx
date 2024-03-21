@@ -17,7 +17,11 @@ import { makeStyles, createStyles } from '@mui/styles';
 import React from 'react';
 import { RmfAppContext } from '../rmf-app';
 import { RobotTableData, base } from 'react-components';
-import { RobotState, Status2, TaskState } from 'api-client';
+import {
+  RobotState,
+  ApiServerModelsRmfApiRobotStateStatus as RobotStatus,
+  TaskState,
+} from 'api-client';
 import { EMPTY, combineLatest, mergeMap, of } from 'rxjs';
 import { TaskInspector } from '../tasks/task-inspector';
 import {
@@ -44,16 +48,16 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const setTaskDialogColor = (robotStatus: Status2 | undefined) => {
+const setTaskDialogColor = (robotStatus?: RobotStatus | null) => {
   if (!robotStatus) {
     return base.palette.background.default;
   }
 
   switch (robotStatus) {
-    case Status2.Error:
+    case RobotStatus.Error:
       return base.palette.error.dark;
 
-    case Status2.Working:
+    case RobotStatus.Working:
       return base.palette.success.dark;
 
     default:
@@ -82,7 +86,7 @@ interface RobotSummaryProps {
 }
 
 const showBatteryIcon = (robot: RobotState, robotBattery: number) => {
-  if (robot.status === Status2.Charging) {
+  if (robot.status === RobotStatus.Charging) {
     return <BatteryChargingFull />;
   }
 

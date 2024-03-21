@@ -12,9 +12,10 @@
  * Do not edit the class manually.
  */
 
-import { Configuration } from './configuration';
-import { RequiredError, RequestArgs } from './base';
-import { AxiosInstance, AxiosResponse } from 'axios';
+import type { Configuration } from './configuration';
+import type { RequestArgs } from './base';
+import type { AxiosInstance, AxiosResponse } from 'axios';
+import { RequiredError } from './base';
 
 /**
  *
@@ -106,6 +107,7 @@ function setFlattenedQueryParams(
   parameter: any,
   key: string = '',
 ): void {
+  if (parameter == null) return;
   if (typeof parameter === 'object') {
     if (Array.isArray(parameter)) {
       (parameter as any[]).forEach((item) => setFlattenedQueryParams(urlSearchParams, item, key));
@@ -178,7 +180,7 @@ export const createRequestFunction = function (
   ) => {
     const axiosRequestArgs = {
       ...axiosArgs.options,
-      url: (configuration?.basePath || basePath) + axiosArgs.url,
+      url: (axios.defaults.baseURL ? '' : configuration?.basePath ?? basePath) + axiosArgs.url,
     };
     return axios.request<T, R>(axiosRequestArgs);
   };

@@ -1,22 +1,15 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class CancelTask_Response(pydantic.BaseModel):
-    success: bool = False  # bool
-    message: str = ""  # string
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "success",
-                "message",
-            ],
-        }
+    success: bool  # bool
+    message: str  # string
 
 
 #

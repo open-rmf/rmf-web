@@ -12,7 +12,14 @@ from api_server.authenticator import user_dep
 from api_server.dependencies import pagination_query
 from api_server.fast_io import FastIORouter
 from api_server.logger import logger
-from api_server.models import DispatchTaskRequest, Pagination, TaskRequest, User
+from api_server.models import (
+    DispatchTaskRequest,
+    Pagination,
+    ScheduledTask,
+    ScheduledTaskSchedule,
+    TaskRequest,
+    User,
+)
 from api_server.models import tortoise_models as ttm
 from api_server.repositories import TaskRepository, task_repo_dep
 
@@ -23,7 +30,7 @@ router = FastIORouter(tags=["Tasks"])
 
 class PostScheduledTaskRequest(BaseModel):
     task_request: TaskRequest
-    schedules: list[ttm.ScheduledTaskSchedulePydantic]
+    schedules: list[ScheduledTaskSchedule]
 
 
 async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
@@ -38,6 +45,9 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
         # don't allow creating scheduled tasks that never runs
         raise HTTPException(422, "Task is never going to run")
 
+    if not isinstance(task.task_request, dict):
+        logger.error(f"task_request is not a dict: {type(task.task_request)}")
+        raise HTTPException(500)
     req = DispatchTaskRequest(
         type="dispatch_task_request",
         request=TaskRequest(**task.task_request),
@@ -60,7 +70,7 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
     logger.info(f"scheduled task [{task.pk}]")
 
 
-@router.post("", status_code=201, response_model=ttm.ScheduledTaskPydantic)
+@router.post("", status_code=201, response_model=ScheduledTask)
 async def post_scheduled_task(
     scheduled_task_request: PostScheduledTaskRequest,
     user: User = Depends(user_dep),
@@ -83,24 +93,26 @@ async def post_scheduled_task(
     try:
         async with tortoise.transactions.in_transaction():
             scheduled_task = await ttm.ScheduledTask.create(
-                task_request=scheduled_task_request.task_request.json(
+                task_request=scheduled_task_request.task_request.model_dump_json(
                     exclude_none=True
                 ),
                 created_by=user.username,
             )
             schedules = [
-                ttm.ScheduledTaskSchedule(scheduled_task=scheduled_task, **x.dict())
+                ttm.ScheduledTaskSchedule(
+                    scheduled_task=scheduled_task, **x.model_dump()
+                )
                 for x in scheduled_task_request.schedules
             ]
             await ttm.ScheduledTaskSchedule.bulk_create(schedules)
 
             await schedule_task(scheduled_task, task_repo)
-        return await ttm.ScheduledTaskPydantic.from_tortoise_orm(scheduled_task)
+        return ScheduledTask.model_validate(scheduled_task)
     except schedule.ScheduleError as e:
         raise HTTPException(422, str(e)) from e
 
 
-@router.get("", response_model=ttm.ScheduledTaskPydanticList)
+@router.get("", response_model=list[ScheduledTask])
 async def get_scheduled_tasks(
     start_before: datetime = Query(
         description="Only return scheduled tasks that start before given timestamp"
@@ -116,16 +128,19 @@ async def get_scheduled_tasks(
             | Q(schedules__start_from__isnull=True),
             Q(schedules__until__gte=until_after) | Q(schedules__until__isnull=True),
         )
+        .prefetch_related("schedules")
         .distinct()
         .limit(pagination.limit)
         .offset(pagination.offset)
     )
     if pagination.order_by:
         q.order_by(*pagination.order_by.split(","))
-    return await ttm.ScheduledTaskPydanticList.from_queryset(q)
+    results = await q
+    await ttm.ScheduledTask.fetch_for_list(results)
+    return [ScheduledTask.model_validate(x) for x in results]
 
 
-@router.get("/{task_id}", response_model=ttm.ScheduledTaskPydantic)
+@router.get("/{task_id}", response_model=ScheduledTask)
 async def get_scheduled_task(task_id: int) -> ttm.ScheduledTask:
     task = await ttm.ScheduledTask.get_or_none(id=task_id).prefetch_related("schedules")
     if task is None:
@@ -144,6 +159,9 @@ async def del_scheduled_tasks_event(
         raise HTTPException(404)
 
     event_date_str = event_date.isoformat()
+    if not isinstance(task.except_dates, list):
+        logger.error(f"task.except_dates is not a list: {type(task.except_dates)}")
+        raise HTTPException(500)
     task.except_dates.append(event_date_str[:10])
     await task.save()
 
@@ -153,9 +171,7 @@ async def del_scheduled_tasks_event(
     await schedule_task(task, task_repo)
 
 
-@router.post(
-    "/{task_id}/update", status_code=201, response_model=ttm.ScheduledTaskPydantic
-)
+@router.post("/{task_id}/update", status_code=201, response_model=ScheduledTask)
 async def update_schedule_task(
     task_id: int,
     scheduled_task_request: PostScheduledTaskRequest,
@@ -175,6 +191,11 @@ async def update_schedule_task(
         async with tortoise.transactions.in_transaction():
             if except_date:
                 event_date_str = except_date.isoformat()
+                if not isinstance(task.except_dates, list):
+                    logger.error(
+                        f"task.except_dates is not a list: {type(task.except_dates)}"
+                    )
+                    raise HTTPException(500)
                 task.except_dates.append(event_date_str[:10])
                 await task.save()
 
@@ -184,13 +205,15 @@ async def update_schedule_task(
                 await schedule_task(task, task_repo)
 
                 scheduled_task = await ttm.ScheduledTask.create(
-                    task_request=scheduled_task_request.task_request.json(
+                    task_request=scheduled_task_request.task_request.model_dump_json(
                         exclude_none=True
                     ),
                     created_by=task.created_by,
                 )
                 schedules = [
-                    ttm.ScheduledTaskSchedule(scheduled_task=scheduled_task, **x.dict())
+                    ttm.ScheduledTaskSchedule(
+                        scheduled_task=scheduled_task, **x.model_dump()
+                    )
                     for x in scheduled_task_request.schedules
                 ]
                 await ttm.ScheduledTaskSchedule.bulk_create(schedules)
@@ -205,7 +228,7 @@ async def update_schedule_task(
                 #   4. Create new schedules based on the requested data.
                 task.update_from_dict(
                     {
-                        "task_request": scheduled_task_request.task_request.json(
+                        "task_request": scheduled_task_request.task_request.model_dump_json(
                             exclude_none=True
                         ),
                         "except_dates": [],
@@ -219,7 +242,7 @@ async def update_schedule_task(
 
                 await task.save()
                 schedules = [
-                    ttm.ScheduledTaskSchedule(scheduled_task=task, **x.dict())
+                    ttm.ScheduledTaskSchedule(scheduled_task=task, **x.model_dump())
                     for x in scheduled_task_request.schedules
                 ]
 

@@ -14,7 +14,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { makeStyles, createStyles } from '@mui/styles';
-import { Status, TaskState } from 'api-client';
+import { ApiServerModelsRmfApiTaskStateStatus as TaskStatus, TaskState } from 'api-client';
 import { base } from 'react-components';
 import { TaskInspector } from './task-inspector';
 import { RmfAppContext } from '../rmf-app';
@@ -45,19 +45,19 @@ const LinearProgressWithLabel = (props: LinearProgressProps & { value: number })
   );
 };
 
-const setTaskDialogColor = (taskStatus: Status | undefined) => {
+const setTaskDialogColor = (taskStatus?: TaskStatus | null) => {
   if (!taskStatus) {
     return base.palette.background.default;
   }
 
   switch (taskStatus) {
-    case Status.Failed:
+    case TaskStatus.Failed:
       return base.palette.error.dark;
 
-    case Status.Underway:
+    case TaskStatus.Underway:
       return base.palette.success.dark;
 
-    case Status.Queued:
+    case TaskStatus.Queued:
       return base.palette.info.main;
 
     default:

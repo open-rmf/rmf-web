@@ -5,33 +5,33 @@ from __future__ import annotations
 
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, Extra, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from . import log_entry
 
 
 class Phases(BaseModel):
-    class Config:
-        extra = Extra.forbid
-
+    model_config = ConfigDict(
+        extra="forbid",
+    )
     log: Optional[List[log_entry.LogEntry]] = Field(
-        None, description="Log entries related to the overall phase"
+        default=None, description="Log entries related to the overall phase"
     )
     events: Optional[Dict[str, List[log_entry.LogEntry]]] = Field(
-        None,
+        default=None,
         description="A dictionary whose keys (property names) are the indices of an event in the phase",
     )
 
 
 class TaskEventLog(BaseModel):
-    class Config:
-        extra = Extra.forbid
-
+    model_config = ConfigDict(
+        extra="forbid",
+    )
     task_id: str
     log: Optional[List[log_entry.LogEntry]] = Field(
-        None, description="Log entries related to the overall task"
+        default=None, description="Log entries related to the overall task"
     )
     phases: Optional[Dict[str, Phases]] = Field(
-        None,
+        default=None,
         description="A dictionary whose keys (property names) are the indices of a phase",
     )

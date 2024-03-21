@@ -21,6 +21,7 @@ import socketio.packet
 from fastapi import APIRouter, FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.routing import APIRoute
+from pydantic import BaseModel
 from reactivex import Observable
 from starlette.routing import compile_path
 
@@ -102,7 +103,10 @@ class FastIORouter(APIRouter):
         super().__init__(*args, **kwargs)
         self.sub_routes: List[SubRoute] = []
 
-    def include_router(self, router: "FastIORouter", **kwargs):
+    def include_router(self, router: APIRouter, **kwargs):
+        if not isinstance(router, FastIORouter):
+            raise ValueError("router must be an instance of FastIORouter")
+
         super().include_router(router, **kwargs)
         prefix = kwargs.get("prefix", "")
 
@@ -129,8 +133,8 @@ class FastIORouter(APIRouter):
 
 
 class FastIOPacket(socketio.packet.Packet):
-    class PacketData(pydantic.BaseModel):
-        __root__: Tuple[str, pydantic.BaseModel]
+    class PacketData(pydantic.RootModel):
+        root: tuple[str, pydantic.BaseModel]
 
     def encode(self):
         if (
@@ -138,8 +142,10 @@ class FastIOPacket(socketio.packet.Packet):
             and len(self.data) == 2
             and isinstance(self.data[1], pydantic.BaseModel)
         ):
-            pkt_data = FastIOPacket.PacketData.construct(__root__=self.data)
-            return str(self.packet_type) + pkt_data.json(exclude_none=True)
+            pkt_data = FastIOPacket.PacketData(
+                root=cast(tuple[str, pydantic.BaseModel], self.data)
+            )
+            return str(self.packet_type) + pkt_data.model_dump_json(exclude_none=True)
         return super().encode()
 
 
@@ -282,7 +288,10 @@ The message must be of the form:
 
             def on_next(data):
                 async def emit():
-                    await self.sio.emit(sub_data.room, data, to=sid)
+                    if isinstance(data, BaseModel):
+                        await self.sio.emit(sub_data.room, data.model_dump(), to=sid)
+                    else:
+                        await self.sio.emit(sub_data.room, data, to=sid)
 
                 loop.create_task(emit())
 

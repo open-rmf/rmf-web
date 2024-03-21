@@ -1,22 +1,15 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class LiftClearance_Request(pydantic.BaseModel):
-    robot_name: str = ""  # string
-    lift_name: str = ""  # string
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "robot_name",
-                "lift_name",
-            ],
-        }
+    robot_name: str  # string
+    lift_name: str  # string
 
 
 #

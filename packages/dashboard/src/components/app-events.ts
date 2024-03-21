@@ -1,5 +1,5 @@
 import {
-  ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
+  TortoiseContribPydanticCreatorApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
   Dispenser,
   Door,
   Ingestor,

@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -9,19 +9,11 @@ from ..rmf_door_msgs.DoorMode import DoorMode
 
 
 class DoorState(pydantic.BaseModel):
-    door_time: Time = Time()  # builtin_interfaces/Time
-    door_name: str = ""  # string
-    current_mode: DoorMode = DoorMode()  # rmf_door_msgs/DoorMode
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "door_time",
-                "door_name",
-                "current_mode",
-            ],
-        }
+    door_time: Time  # builtin_interfaces/Time
+    door_name: str  # string
+    current_mode: DoorMode  # rmf_door_msgs/DoorMode
 
 
 # builtin_interfaces/Time door_time

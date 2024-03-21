@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,19 +8,11 @@ from ..rmf_task_msgs.TaskSummary import TaskSummary
 
 
 class GetTaskList_Response(pydantic.BaseModel):
-    success: bool = False  # bool
-    active_tasks: List[TaskSummary] = []  # rmf_task_msgs/TaskSummary
-    terminated_tasks: List[TaskSummary] = []  # rmf_task_msgs/TaskSummary
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "success",
-                "active_tasks",
-                "terminated_tasks",
-            ],
-        }
+    success: bool  # bool
+    active_tasks: list[TaskSummary]  # rmf_task_msgs/TaskSummary
+    terminated_tasks: list[TaskSummary]  # rmf_task_msgs/TaskSummary
 
 
 #

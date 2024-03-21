@@ -13,20 +13,20 @@ template_env.keep_trailing_newline = True
 
 PRIMITIVE_TYPES = {
     "bool": "bool",
-    "byte": "pydantic.conint(ge=0, le=255)",
-    "char": "pydantic.conint(ge=0, le=255)",
+    "byte": "Annotated[int, pydantic.Field(ge=0, le=255)]",
+    "char": "Annotated[int, pydantic.Field(ge=0, le=255)]",
     "float32": "float",
     "float64": "float",
-    "int8": "pydantic.conint(ge=-128, le=127)",
-    "int16": "pydantic.conint(ge=-32768, le=32767)",
-    "int32": "pydantic.conint(ge=-2147483648, le=2147483647)",
+    "int8": "Annotated[int, pydantic.Field(ge=-128, le=127)]",
+    "int16": "Annotated[int, pydantic.Field(ge=-32768, le=32767)]",
+    "int32": "Annotated[int, pydantic.Field(ge=-2147483648, le=2147483647)]",
     "int64": "int",
     "string": "str",
     "wstring": "str",
-    "uint8": "pydantic.conint(ge=0, le=255)",
-    "uint16": "pydantic.conint(ge=0, le=65535)",
-    "uint32": "pydantic.conint(ge=0, le=4294967295)",
-    "uint64": "pydantic.conint(ge=0, le=18446744073709551615)",
+    "uint8": "Annotated[int, pydantic.Field(ge=0, le=255)]",
+    "uint16": "Annotated[int, pydantic.Field(ge=0, le=65535)]",
+    "uint32": "Annotated[int, pydantic.Field(ge=0, le=4294967295)]",
+    "uint64": "Annotated[int, pydantic.Field(ge=0, le=18446744073709551615)]",
 }
 
 DEFAULT_VALUES = {
@@ -78,11 +78,11 @@ class PydanticType:
 
     def _get_array_type(self, ros_type, elem_type):
         if ros_type.is_upper_bound:
-            return f"pydantic.conlist(item_type={elem_type}, max_items={ros_type.array_size}"
+            return f"Annotated[list[{elem_type}], pydantic.Field(max_items={ros_type.array_size})]"
         elif ros_type.array_size:
-            return f"pydantic.conlist(item_type={elem_type}, min_items={ros_type.array_size}, max_items={ros_type.array_size}"
+            return f"Annotated[list[{elem_type}], pydantic.Field(min_items={ros_type.array_size}, max_items={ros_type.array_size}]"
         else:
-            return f"List[{elem_type}]"
+            return f"list[{elem_type}]"
 
     def _init_array_type(self, ros_type):
         if ros_type.is_primitive_type():
@@ -102,7 +102,7 @@ class PydanticType:
 def augment_message(msg: Message):
     for field in msg.spec.fields:
         field.pydantic_type = PydanticType(field.type)
-    msg.commented_raw = "".join(
+    msg.commented_raw = "".join(  # type: ignore
         map(lambda x: f"# {x}", msg.raw.splitlines(keepends=True))
     )
     return msg

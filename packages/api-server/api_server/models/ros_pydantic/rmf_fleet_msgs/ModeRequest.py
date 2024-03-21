@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -9,23 +9,13 @@ from ..rmf_fleet_msgs.RobotMode import RobotMode
 
 
 class ModeRequest(pydantic.BaseModel):
-    fleet_name: str = ""  # string
-    robot_name: str = ""  # string
-    mode: RobotMode = RobotMode()  # rmf_fleet_msgs/RobotMode
-    task_id: str = ""  # string
-    parameters: List[ModeParameter] = []  # rmf_fleet_msgs/ModeParameter
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "fleet_name",
-                "robot_name",
-                "mode",
-                "task_id",
-                "parameters",
-            ],
-        }
+    fleet_name: str  # string
+    robot_name: str  # string
+    mode: RobotMode  # rmf_fleet_msgs/RobotMode
+    task_id: str  # string
+    parameters: list[ModeParameter]  # rmf_fleet_msgs/ModeParameter
 
 
 # string fleet_name

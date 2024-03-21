@@ -33,7 +33,7 @@ def startup():
         )
     else:
         rclpy.init(args=["--ros-args"] + app_config.ros_args)
-    _ros_node = rclpy.node.Node("rmf_api_server")
+    _ros_node = rclpy.node.Node("rmf_api_server")  # type: ignore rclpy has invalid typing
 
 
 def shutdown():

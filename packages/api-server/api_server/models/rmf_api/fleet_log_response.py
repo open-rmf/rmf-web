@@ -3,35 +3,35 @@
 
 from __future__ import annotations
 
-from enum import Enum
 from typing import List, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, RootModel
+from typing_extensions import Literal
 
 from . import error, fleet_log
 
 
-class Failure(Enum):
-    boolean_False = False
+class Success(RootModel[Literal[True]]):
+    root: Literal[True] = Field(..., description="The request was successful")
 
 
-class Success(Enum):
-    boolean_True = True
+class Failure(RootModel[Literal[False]]):
+    root: Literal[False] = Field(..., description="The request failed")
 
 
-class FleetLogResponseItem(BaseModel):
+class FleetLogResponse1(BaseModel):
     success: Success
-    data: fleet_log.FleetState
+    data: fleet_log.FleetLog
 
 
-class FleetLogResponseItem1(BaseModel):
+class FleetLogResponse2(BaseModel):
     success: Failure
     errors: List[error.Error] = Field(
         ..., description="Any error messages explaining why the request failed"
     )
 
 
-class FleetLogResponse(BaseModel):
-    __root__: Union[FleetLogResponseItem, FleetLogResponseItem1] = Field(
+class FleetLogResponse(RootModel[Union[FleetLogResponse1, FleetLogResponse2]]):
+    root: Union[FleetLogResponse1, FleetLogResponse2] = Field(
         ..., description="Responding to a fleet log request", title="Fleet Log Response"
     )

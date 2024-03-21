@@ -5,20 +5,20 @@ from __future__ import annotations
 
 from typing import Optional, Union
 
-from pydantic import BaseModel, Field, conint
+from pydantic import BaseModel, Field, RootModel, conint
 
 
-class Waypoint(BaseModel):
-    __root__: Union[str, conint(ge=0)]
+class Waypoint(RootModel[Union[str, conint(ge=0)]]):
+    root: Union[str, conint(ge=0)]
 
 
-class PlaceDescriptionItem(BaseModel):
+class PlaceDescription1(BaseModel):
     waypoint: Waypoint
     orientation: Optional[float] = None
 
 
-class PlaceDescription(BaseModel):
-    __root__: Union[Waypoint, PlaceDescriptionItem] = Field(
+class PlaceDescription(RootModel[Union[Waypoint, PlaceDescription1]]):
+    root: Union[Waypoint, PlaceDescription1] = Field(
         ...,
         description="Description of a place that the robot can go to",
         title="Place Description",

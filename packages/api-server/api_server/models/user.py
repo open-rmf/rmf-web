@@ -1,17 +1,15 @@
-from typing import List
-
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from . import tortoise_models as ttm
 
 
 class User(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={"required": ["username", "is_admin", "roles"]}
+    )
     username: str
     is_admin: bool = False
-    roles: List[str] = []
-
-    class Config:
-        schema_extra = {"required": ["username", "is_admin", "roles"]}
+    roles: list[str] = []
 
     @staticmethod
     async def load_or_create_from_db(username: str) -> "User":

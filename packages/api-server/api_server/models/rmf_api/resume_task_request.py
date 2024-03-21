@@ -11,14 +11,16 @@ from typing_extensions import Literal
 
 class TaskResumeRequest(BaseModel):
     type: Optional[Literal["resume_task_request"]] = Field(
-        None, description="Indicate that this is a task resuming request"
+        default=None, description="Indicate that this is a task resuming request"
     )
-    for_task: Optional[str] = Field(None, description="Specify task ID to resume.")
+    for_task: Optional[str] = Field(
+        default=None, description="Specify task ID to resume."
+    )
     for_tokens: Optional[List[str]] = Field(
-        None,
+        default=None,
         description="A list of tokens of interruption requests which should be resumed. The interruption request associated with each token will be discarded.",
-        min_items=1,
+        min_length=1,
     )
     labels: Optional[List[str]] = Field(
-        None, description="Labels describing this request"
+        default=None, description="Labels describing this request"
     )

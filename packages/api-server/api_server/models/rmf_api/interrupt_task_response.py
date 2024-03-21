@@ -3,13 +3,13 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from pydantic import Field, RootModel
 
 from . import token_response
 
 
-class TaskInterruptionResponse(BaseModel):
-    __root__: token_response.TokenResponse = Field(
+class TaskInterruptionResponse(RootModel[token_response.TokenResponse]):
+    root: token_response.TokenResponse = Field(
         ...,
         description="Response to a request for a task to be interrupted",
         title="Task Interruption Response",

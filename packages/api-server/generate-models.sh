@@ -4,7 +4,7 @@ shopt -s globstar
 
 RMF_BUILDING_MAP_MSGS_VER=c5e0352e2dfd3d11e4d292a1c2901cad867c1441
 RMF_INTERNAL_MSGS_VER=0c237e1758872917661879975d7dc0acf5fa518c
-RMF_API_MSGS_VER=91295892192d24ec73c9a1c6fa54334963586784
+RMF_API_MSGS_VER=a77c3a2d53f7f61aa379bf2ba64a41f98998c9f5
 RMF_ROS2_VER=bf038461b5b0fb7d4594461a724bc9e5e7cb97c6
 CODEGEN_VER=$(pipenv run datamodel-codegen --version)
 
@@ -72,7 +72,13 @@ generate_from_json_schema() {
 
   rm -rf "$output"
   mkdir -p "$output"
-  pipenv run datamodel-codegen --disable-timestamp --input-file-type jsonschema --enum-field-as-literal one --input "$input" --output "$output"
+  pipenv run datamodel-codegen \
+    --disable-timestamp \
+    --input-file-type jsonschema \
+    --enum-field-as-literal one \
+    --output-model-type pydantic_v2.BaseModel \
+    --use-default-kwarg \
+    --input "$input" --output "$output"
   cat << EOF > "$output/version.py"
 # THIS FILE IS GENERATED
 version = {

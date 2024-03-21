@@ -1,15 +1,7 @@
 import React from 'react';
 import * as RmfModels from 'rmf-models';
-import {
-  ApiServerModelsRmfApiFleetStateFleetState,
-  SioClient,
-  Ingestor,
-  Dispenser,
-  Subscription,
-} from 'api-client';
+import { FleetState, SioClient, Ingestor, Dispenser, Subscription } from 'api-client';
 import { RmfIngress } from '../components/rmf-app/rmf-ingress';
-
-type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
 export const useFleets = (
   rmfIngress: RmfIngress | undefined,

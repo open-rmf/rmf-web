@@ -116,7 +116,7 @@ class RmfBookKeeper:
 
     @staticmethod
     def _report_health(health: BasicHealth, logger: logging.Logger):
-        message = health.json()
+        message = health.model_dump_json()
         if health.health_status == HealthStatus.UNHEALTHY:
             logger.warning(message)
         elif health.health_status == HealthStatus.DEAD:
@@ -129,7 +129,7 @@ class RmfBookKeeper:
             if not building_map:
                 return
             await building_map.save()
-            self._loggers.building_map.info(json.dumps(building_map.dict()))
+            self._loggers.building_map.info(json.dumps(building_map.model_dump()))
 
         self._subscriptions.append(
             self.rmf.building_map.subscribe(lambda x: self._create_task(update(x)))
@@ -138,7 +138,7 @@ class RmfBookKeeper:
     def _record_door_state(self):
         async def update(door_state: DoorState):
             await door_state.save()
-            self._loggers.door_state.info(json.dumps(door_state.dict()))
+            self._loggers.door_state.info(json.dumps(door_state.model_dump()))
 
         self._subscriptions.append(
             self.rmf.door_states.subscribe(lambda x: self._create_task(update(x)))
@@ -147,7 +147,7 @@ class RmfBookKeeper:
     def _record_door_health(self):
         async def update(health: DoorHealth):
             await ttm.DoorHealth.update_or_create(
-                health.dict(exclude={"id_"}), id_=health.id_
+                health.model_dump(exclude={"id_"}), id_=health.id_
             )
             self._report_health(health, self._loggers.door_health)
 
@@ -158,7 +158,7 @@ class RmfBookKeeper:
     def _record_lift_state(self):
         async def update(lift_state: LiftState):
             await lift_state.save()
-            self._loggers.lift_state.info(lift_state.json())
+            self._loggers.lift_state.info(lift_state.model_dump_json())
 
         self._subscriptions.append(
             self.rmf.lift_states.subscribe(lambda x: self._create_task(update(x)))
@@ -167,7 +167,7 @@ class RmfBookKeeper:
     def _record_lift_health(self):
         async def update(health: LiftHealth):
             await ttm.LiftHealth.update_or_create(
-                health.dict(exclude={"id_"}), id_=health.id_
+                health.model_dump(exclude={"id_"}), id_=health.id_
             )
             self._report_health(health, self._loggers.lift_health)
 
@@ -178,7 +178,7 @@ class RmfBookKeeper:
     def _record_dispenser_state(self):
         async def update(dispenser_state: DispenserState):
             await dispenser_state.save()
-            self._loggers.dispenser_state.info(dispenser_state.json())
+            self._loggers.dispenser_state.info(dispenser_state.model_dump_json())
 
         self._subscriptions.append(
             self.rmf.dispenser_states.subscribe(lambda x: self._create_task(update(x)))
@@ -187,7 +187,7 @@ class RmfBookKeeper:
     def _record_dispenser_health(self):
         async def update(health: DispenserHealth):
             await ttm.DispenserHealth.update_or_create(
-                health.dict(exclude={"id_"}), id_=health.id_
+                health.model_dump(exclude={"id_"}), id_=health.id_
             )
             self._report_health(health, self._loggers.dispenser_health)
 
@@ -198,7 +198,7 @@ class RmfBookKeeper:
     def _record_ingestor_state(self):
         async def update(ingestor_state: IngestorState):
             await ingestor_state.save()
-            self._loggers.ingestor_state.info(ingestor_state.json())
+            self._loggers.ingestor_state.info(ingestor_state.model_dump_json())
 
         self._subscriptions.append(
             self.rmf.ingestor_states.subscribe(lambda x: self._create_task(update(x)))
@@ -207,7 +207,7 @@ class RmfBookKeeper:
     def _record_ingestor_health(self):
         async def update(health: IngestorHealth):
             await ttm.IngestorHealth.update_or_create(
-                health.dict(exclude={"id_"}), id_=health.id_
+                health.model_dump(exclude={"id_"}), id_=health.id_
             )
             self._report_health(health, self._loggers.ingestor_health)
 
