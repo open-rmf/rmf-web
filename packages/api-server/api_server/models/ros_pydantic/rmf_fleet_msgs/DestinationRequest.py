@@ -10,10 +10,10 @@ from ..rmf_fleet_msgs.Location import Location
 class DestinationRequest(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    fleet_name: str = ""  # string
-    robot_name: str = ""  # string
-    destination: Location = Location()  # rmf_fleet_msgs/Location
-    task_id: str = ""  # string
+    fleet_name: str  # string
+    robot_name: str  # string
+    destination: Location  # rmf_fleet_msgs/Location
+    task_id: str  # string
 
 
 # string fleet_name

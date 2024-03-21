@@ -8,8 +8,8 @@ import pydantic
 class ReviveTask_Request(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    requester: str = ""  # string
-    task_id: str = ""  # string
+    requester: str  # string
+    task_id: str  # string
 
 
 # # Revive a previously cancelled or failed task. This will reinitiate

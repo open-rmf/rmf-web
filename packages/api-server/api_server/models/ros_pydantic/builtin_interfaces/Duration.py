@@ -8,8 +8,8 @@ import pydantic
 class Duration(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    sec: Annotated[int, pydantic.Field(ge=-2147483648, le=2147483647)] = 0  # int32
-    nanosec: Annotated[int, pydantic.Field(ge=0, le=4294967295)] = 0  # uint32
+    sec: Annotated[int, pydantic.Field(ge=-2147483648, le=2147483647)]  # int32
+    nanosec: Annotated[int, pydantic.Field(ge=0, le=4294967295)]  # uint32
 
 
 # # Duration defines a period between two time points.

@@ -10,7 +10,7 @@ from ..rmf_building_map_msgs.BuildingMap import BuildingMap
 class GetBuildingMap_Response(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    building_map: BuildingMap = BuildingMap()  # rmf_building_map_msgs/BuildingMap
+    building_map: BuildingMap  # rmf_building_map_msgs/BuildingMap
 
 
 #

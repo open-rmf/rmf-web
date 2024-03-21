@@ -8,8 +8,8 @@ import pydantic
 class BehaviorParameter(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    name: str = ""  # string
-    value: str = ""  # string
+    name: str  # string
+    value: str  # string
 
 
 # string name

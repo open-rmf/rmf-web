@@ -8,16 +8,16 @@ import pydantic
 class Door(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    name: str = ""  # string
-    v1_x: float = 0  # float32
-    v1_y: float = 0  # float32
-    v2_x: float = 0  # float32
-    v2_y: float = 0  # float32
-    door_type: Annotated[int, pydantic.Field(ge=0, le=255)] = 0  # uint8
-    motion_range: float = 0  # float32
+    name: str  # string
+    v1_x: float  # float32
+    v1_y: float  # float32
+    v2_x: float  # float32
+    v2_y: float  # float32
+    door_type: Annotated[int, pydantic.Field(ge=0, le=255)]  # uint8
+    motion_range: float  # float32
     motion_direction: Annotated[
         int, pydantic.Field(ge=-2147483648, le=2147483647)
-    ] = 0  # int32
+    ]  # int32
 
 
 # string name

@@ -11,9 +11,9 @@ from ..rmf_task_msgs.TaskDescription import TaskDescription
 class TaskProfile(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    task_id: str = ""  # string
-    submission_time: Time = Time()  # builtin_interfaces/Time
-    description: TaskDescription = TaskDescription()  # rmf_task_msgs/TaskDescription
+    task_id: str  # string
+    submission_time: Time  # builtin_interfaces/Time
+    description: TaskDescription  # rmf_task_msgs/TaskDescription
 
 
 # # Unique ID assigned to this task

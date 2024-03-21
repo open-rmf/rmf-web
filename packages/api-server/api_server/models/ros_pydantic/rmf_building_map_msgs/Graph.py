@@ -12,10 +12,10 @@ from ..rmf_building_map_msgs.Param import Param
 class Graph(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    name: str = ""  # string
-    vertices: list[GraphNode] = []  # rmf_building_map_msgs/GraphNode
-    edges: list[GraphEdge] = []  # rmf_building_map_msgs/GraphEdge
-    params: list[Param] = []  # rmf_building_map_msgs/Param
+    name: str  # string
+    vertices: list[GraphNode]  # rmf_building_map_msgs/GraphNode
+    edges: list[GraphEdge]  # rmf_building_map_msgs/GraphEdge
+    params: list[Param]  # rmf_building_map_msgs/Param
 
 
 # string name

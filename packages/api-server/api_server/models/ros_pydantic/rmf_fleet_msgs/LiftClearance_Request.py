@@ -8,8 +8,8 @@ import pydantic
 class LiftClearance_Request(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    robot_name: str = ""  # string
-    lift_name: str = ""  # string
+    robot_name: str  # string
+    lift_name: str  # string
 
 
 #

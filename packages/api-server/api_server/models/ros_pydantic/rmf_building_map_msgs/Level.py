@@ -13,13 +13,13 @@ from ..rmf_building_map_msgs.Place import Place
 class Level(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    name: str = ""  # string
-    elevation: float = 0  # float32
-    images: list[AffineImage] = []  # rmf_building_map_msgs/AffineImage
-    places: list[Place] = []  # rmf_building_map_msgs/Place
-    doors: list[Door] = []  # rmf_building_map_msgs/Door
-    nav_graphs: list[Graph] = []  # rmf_building_map_msgs/Graph
-    wall_graph: Graph = Graph()  # rmf_building_map_msgs/Graph
+    name: str  # string
+    elevation: float  # float32
+    images: list[AffineImage]  # rmf_building_map_msgs/AffineImage
+    places: list[Place]  # rmf_building_map_msgs/Place
+    doors: list[Door]  # rmf_building_map_msgs/Door
+    nav_graphs: list[Graph]  # rmf_building_map_msgs/Graph
+    wall_graph: Graph  # rmf_building_map_msgs/Graph
 
 
 # string name

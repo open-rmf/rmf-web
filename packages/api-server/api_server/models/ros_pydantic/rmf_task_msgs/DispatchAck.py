@@ -10,10 +10,8 @@ from ..rmf_task_msgs.DispatchRequest import DispatchRequest
 class DispatchAck(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    dispatch_request: DispatchRequest = (
-        DispatchRequest()
-    )  # rmf_task_msgs/DispatchRequest
-    success: bool = False  # bool
+    dispatch_request: DispatchRequest  # rmf_task_msgs/DispatchRequest
+    success: bool  # bool
 
 
 # # This message is published by the fleet adapter in response to a

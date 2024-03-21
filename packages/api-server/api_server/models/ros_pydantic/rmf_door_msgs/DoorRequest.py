@@ -11,10 +11,10 @@ from ..rmf_door_msgs.DoorMode import DoorMode
 class DoorRequest(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    request_time: Time = Time()  # builtin_interfaces/Time
-    requester_id: str = ""  # string
-    door_name: str = ""  # string
-    requested_mode: DoorMode = DoorMode()  # rmf_door_msgs/DoorMode
+    request_time: Time  # builtin_interfaces/Time
+    requester_id: str  # string
+    door_name: str  # string
+    requested_mode: DoorMode  # rmf_door_msgs/DoorMode
 
 
 # builtin_interfaces/Time request_time

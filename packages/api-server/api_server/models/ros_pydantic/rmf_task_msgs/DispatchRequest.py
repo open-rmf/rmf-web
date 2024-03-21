@@ -10,9 +10,9 @@ from ..rmf_task_msgs.TaskProfile import TaskProfile
 class DispatchRequest(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    fleet_name: str = ""  # string
-    task_profile: TaskProfile = TaskProfile()  # rmf_task_msgs/TaskProfile
-    method: Annotated[int, pydantic.Field(ge=0, le=255)] = 0  # uint8
+    fleet_name: str  # string
+    task_profile: TaskProfile  # rmf_task_msgs/TaskProfile
+    method: Annotated[int, pydantic.Field(ge=0, le=255)]  # uint8
 
 
 # # This message is published by Task Dispatcher Node to either award or cancel a

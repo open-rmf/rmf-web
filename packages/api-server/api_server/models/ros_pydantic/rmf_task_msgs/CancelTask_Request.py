@@ -8,8 +8,8 @@ import pydantic
 class CancelTask_Request(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    requester: str = ""  # string
-    task_id: str = ""  # string
+    requester: str  # string
+    task_id: str  # string
 
 
 # # Cancel Task | "Delete" service call

@@ -10,10 +10,10 @@ from ..builtin_interfaces.Time import Time
 class IngestorResult(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    time: Time = Time()  # builtin_interfaces/Time
-    request_guid: str = ""  # string
-    source_guid: str = ""  # string
-    status: Annotated[int, pydantic.Field(ge=0, le=255)] = 0  # uint8
+    time: Time  # builtin_interfaces/Time
+    request_guid: str  # string
+    source_guid: str  # string
+    status: Annotated[int, pydantic.Field(ge=0, le=255)]  # uint8
 
 
 # builtin_interfaces/Time time

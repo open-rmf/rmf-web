@@ -11,12 +11,12 @@ from ..rmf_task_msgs.TaskProfile import TaskProfile
 class BidProposal(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    fleet_name: str = ""  # string
-    task_profile: TaskProfile = TaskProfile()  # rmf_task_msgs/TaskProfile
-    prev_cost: float = 0  # float64
-    new_cost: float = 0  # float64
-    finish_time: Time = Time()  # builtin_interfaces/Time
-    robot_name: str = ""  # string
+    fleet_name: str  # string
+    task_profile: TaskProfile  # rmf_task_msgs/TaskProfile
+    prev_cost: float  # float64
+    new_cost: float  # float64
+    finish_time: Time  # builtin_interfaces/Time
+    robot_name: str  # string
 
 
 # # This message is published by a Fleet Adapter in response to a BidNotice

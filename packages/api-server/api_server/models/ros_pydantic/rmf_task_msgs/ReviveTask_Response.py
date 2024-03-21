@@ -8,7 +8,7 @@ import pydantic
 class ReviveTask_Response(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    success: bool = False  # bool
+    success: bool  # bool
 
 
 #

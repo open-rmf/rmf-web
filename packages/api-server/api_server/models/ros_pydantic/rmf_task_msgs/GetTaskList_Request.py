@@ -8,8 +8,8 @@ import pydantic
 class GetTaskList_Request(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    requester: str = ""  # string
-    task_id: list[str] = []  # string
+    requester: str  # string
+    task_id: list[str]  # string
 
 
 # # Query list of submitted tasks | Get service call

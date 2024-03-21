@@ -10,11 +10,11 @@ from ..builtin_interfaces.Time import Time
 class IngestorState(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    time: Time = Time()  # builtin_interfaces/Time
-    guid: str = ""  # string
-    mode: Annotated[int, pydantic.Field(ge=-2147483648, le=2147483647)] = 0  # int32
-    request_guid_queue: list[str] = []  # string
-    seconds_remaining: float = 0  # float32
+    time: Time  # builtin_interfaces/Time
+    guid: str  # string
+    mode: Annotated[int, pydantic.Field(ge=-2147483648, le=2147483647)]  # int32
+    request_guid_queue: list[str]  # string
+    seconds_remaining: float  # float32
 
 
 # builtin_interfaces/Time time

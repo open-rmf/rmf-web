@@ -11,15 +11,15 @@ from ..rmf_building_map_msgs.Graph import Graph
 class Lift(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    name: str = ""  # string
-    levels: list[str] = []  # string
-    doors: list[Door] = []  # rmf_building_map_msgs/Door
-    wall_graph: Graph = Graph()  # rmf_building_map_msgs/Graph
-    ref_x: float = 0  # float32
-    ref_y: float = 0  # float32
-    ref_yaw: float = 0  # float32
-    width: float = 0  # float32
-    depth: float = 0  # float32
+    name: str  # string
+    levels: list[str]  # string
+    doors: list[Door]  # rmf_building_map_msgs/Door
+    wall_graph: Graph  # rmf_building_map_msgs/Graph
+    ref_x: float  # float32
+    ref_y: float  # float32
+    ref_yaw: float  # float32
+    width: float  # float32
+    depth: float  # float32
 
 
 # string name

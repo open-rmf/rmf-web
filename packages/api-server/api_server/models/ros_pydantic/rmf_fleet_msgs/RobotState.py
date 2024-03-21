@@ -11,14 +11,14 @@ from ..rmf_fleet_msgs.RobotMode import RobotMode
 class RobotState(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    name: str = ""  # string
-    model: str = ""  # string
-    task_id: str = ""  # string
-    seq: Annotated[int, pydantic.Field(ge=0, le=18446744073709551615)] = 0  # uint64
-    mode: RobotMode = RobotMode()  # rmf_fleet_msgs/RobotMode
-    battery_percent: float = 0  # float32
-    location: Location = Location()  # rmf_fleet_msgs/Location
-    path: list[Location] = []  # rmf_fleet_msgs/Location
+    name: str  # string
+    model: str  # string
+    task_id: str  # string
+    seq: Annotated[int, pydantic.Field(ge=0, le=18446744073709551615)]  # uint64
+    mode: RobotMode  # rmf_fleet_msgs/RobotMode
+    battery_percent: float  # float32
+    location: Location  # rmf_fleet_msgs/Location
+    path: list[Location]  # rmf_fleet_msgs/Location
 
 
 # string name

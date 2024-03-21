@@ -11,14 +11,14 @@ from ..builtin_interfaces.Time import Time
 class ChargerState(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    charger_time: Time = Time()  # builtin_interfaces/Time
-    state: Annotated[int, pydantic.Field(ge=0, le=4294967295)] = 0  # uint32
-    charger_name: str = ""  # string
-    error_message: str = ""  # string
-    request_id: str = ""  # string
-    robot_fleet: str = ""  # string
-    robot_name: str = ""  # string
-    time_to_fully_charged: Duration = Duration()  # builtin_interfaces/Duration
+    charger_time: Time  # builtin_interfaces/Time
+    state: Annotated[int, pydantic.Field(ge=0, le=4294967295)]  # uint32
+    charger_name: str  # string
+    error_message: str  # string
+    request_id: str  # string
+    robot_fleet: str  # string
+    robot_name: str  # string
+    time_to_fully_charged: Duration  # builtin_interfaces/Duration
 
 
 # # Time when this state message was created

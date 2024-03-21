@@ -10,16 +10,16 @@ from ..builtin_interfaces.Time import Time
 class LiftState(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    lift_time: Time = Time()  # builtin_interfaces/Time
-    lift_name: str = ""  # string
-    available_floors: list[str] = []  # string
-    current_floor: str = ""  # string
-    destination_floor: str = ""  # string
-    door_state: Annotated[int, pydantic.Field(ge=0, le=255)] = 0  # uint8
-    motion_state: Annotated[int, pydantic.Field(ge=0, le=255)] = 0  # uint8
-    available_modes: bytes = bytes()  # uint8
-    current_mode: Annotated[int, pydantic.Field(ge=0, le=255)] = 0  # uint8
-    session_id: str = ""  # string
+    lift_time: Time  # builtin_interfaces/Time
+    lift_name: str  # string
+    available_floors: list[str]  # string
+    current_floor: str  # string
+    destination_floor: str  # string
+    door_state: Annotated[int, pydantic.Field(ge=0, le=255)]  # uint8
+    motion_state: Annotated[int, pydantic.Field(ge=0, le=255)]  # uint8
+    available_modes: bytes  # uint8
+    current_mode: Annotated[int, pydantic.Field(ge=0, le=255)]  # uint8
+    session_id: str  # string
 
 
 # # lift_time records when the information in this message was generated

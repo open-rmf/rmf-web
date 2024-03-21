@@ -10,8 +10,8 @@ from ..rmf_door_msgs.Session import Session
 class DoorSessions(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    door_name: str = ""  # string
-    sessions: list[Session] = []  # rmf_door_msgs/Session
+    door_name: str  # string
+    sessions: list[Session]  # rmf_door_msgs/Session
 
 
 #

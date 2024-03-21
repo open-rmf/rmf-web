@@ -10,8 +10,8 @@ from ..builtin_interfaces.Time import Time
 class Session(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    request_time: Time = Time()  # builtin_interfaces/Time
-    requester_id: str = ""  # string
+    request_time: Time  # builtin_interfaces/Time
+    requester_id: str  # string
 
 
 #

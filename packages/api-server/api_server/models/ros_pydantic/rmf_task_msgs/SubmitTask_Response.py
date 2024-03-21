@@ -8,9 +8,9 @@ import pydantic
 class SubmitTask_Response(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    success: bool = False  # bool
-    task_id: str = ""  # string
-    message: str = ""  # string
+    success: bool  # bool
+    task_id: str  # string
+    message: str  # string
 
 
 #

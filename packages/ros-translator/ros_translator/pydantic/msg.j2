@@ -12,7 +12,7 @@ class {{ msg.spec.base_type.type }}(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
 {% for field in msg.spec.fields %}
-    {{ field.name }}: {{ field.pydantic_type.type }} = {{ field.pydantic_type.default_value }} # {% if field.type.pkg_name %}{{ field.type.pkg_name }}/{% endif %}{{ field.type.type }}
+    {{ field.name }}: {{ field.pydantic_type.type }} # {% if field.type.pkg_name %}{{ field.type.pkg_name }}/{% endif %}{{ field.type.type }}
 {% endfor %}
 {% if not msg.spec.fields %}
     pass

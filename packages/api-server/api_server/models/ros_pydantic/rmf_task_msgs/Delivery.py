@@ -11,14 +11,14 @@ from ..rmf_task_msgs.Behavior import Behavior
 class Delivery(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    task_id: str = ""  # string
-    items: list[DispenserRequestItem] = []  # rmf_dispenser_msgs/DispenserRequestItem
-    pickup_place_name: str = ""  # string
-    pickup_dispenser: str = ""  # string
-    pickup_behavior: Behavior = Behavior()  # rmf_task_msgs/Behavior
-    dropoff_place_name: str = ""  # string
-    dropoff_ingestor: str = ""  # string
-    dropoff_behavior: Behavior = Behavior()  # rmf_task_msgs/Behavior
+    task_id: str  # string
+    items: list[DispenserRequestItem]  # rmf_dispenser_msgs/DispenserRequestItem
+    pickup_place_name: str  # string
+    pickup_dispenser: str  # string
+    pickup_behavior: Behavior  # rmf_task_msgs/Behavior
+    dropoff_place_name: str  # string
+    dropoff_ingestor: str  # string
+    dropoff_behavior: Behavior  # rmf_task_msgs/Behavior
 
 
 # # task_id is intended to be a pseudo-random string generated

@@ -8,11 +8,11 @@ import pydantic
 class Loop(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    task_id: str = ""  # string
-    robot_type: str = ""  # string
-    num_loops: Annotated[int, pydantic.Field(ge=0, le=4294967295)] = 0  # uint32
-    start_name: str = ""  # string
-    finish_name: str = ""  # string
+    task_id: str  # string
+    robot_type: str  # string
+    num_loops: Annotated[int, pydantic.Field(ge=0, le=4294967295)]  # uint32
+    start_name: str  # string
+    finish_name: str  # string
 
 
 # # task_id is intended to be a pseudo-random string generated

@@ -11,11 +11,11 @@ from ..rmf_ingestor_msgs.IngestorRequestItem import IngestorRequestItem
 class IngestorRequest(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    time: Time = Time()  # builtin_interfaces/Time
-    request_guid: str = ""  # string
-    target_guid: str = ""  # string
-    transporter_type: str = ""  # string
-    items: list[IngestorRequestItem] = []  # rmf_ingestor_msgs/IngestorRequestItem
+    time: Time  # builtin_interfaces/Time
+    request_guid: str  # string
+    target_guid: str  # string
+    transporter_type: str  # string
+    items: list[IngestorRequestItem]  # rmf_ingestor_msgs/IngestorRequestItem
 
 
 # builtin_interfaces/Time time

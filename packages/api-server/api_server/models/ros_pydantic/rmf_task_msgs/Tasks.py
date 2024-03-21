@@ -10,7 +10,7 @@ from ..rmf_task_msgs.TaskSummary import TaskSummary
 class Tasks(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    tasks: list[TaskSummary] = []  # rmf_task_msgs/TaskSummary
+    tasks: list[TaskSummary]  # rmf_task_msgs/TaskSummary
 
 
 # TaskSummary[] tasks

@@ -8,13 +8,13 @@ import pydantic
 class AffineImage(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    name: str = ""  # string
-    x_offset: float = 0  # float32
-    y_offset: float = 0  # float32
-    yaw: float = 0  # float32
-    scale: float = 0  # float32
-    encoding: str = ""  # string
-    data: bytes = bytes()  # uint8
+    name: str  # string
+    x_offset: float  # float32
+    y_offset: float  # float32
+    yaw: float  # float32
+    scale: float  # float32
+    encoding: str  # string
+    data: bytes  # uint8
 
 
 # string name

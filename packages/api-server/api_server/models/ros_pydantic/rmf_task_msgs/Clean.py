@@ -8,7 +8,7 @@ import pydantic
 class Clean(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    start_waypoint: str = ""  # string
+    start_waypoint: str  # string
 
 
 # # The name of the waypoint where the robot should begin its pre-configured

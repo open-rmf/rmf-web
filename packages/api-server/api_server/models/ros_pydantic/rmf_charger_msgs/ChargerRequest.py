@@ -10,11 +10,11 @@ from ..builtin_interfaces.Duration import Duration
 class ChargerRequest(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    charger_name: str = ""  # string
-    fleet_name: str = ""  # string
-    robot_name: str = ""  # string
-    start_timeout: Duration = Duration()  # builtin_interfaces/Duration
-    request_id: str = ""  # string
+    charger_name: str  # string
+    fleet_name: str  # string
+    robot_name: str  # string
+    start_timeout: Duration  # builtin_interfaces/Duration
+    request_id: str  # string
 
 
 # # The name of the charger that should process this message

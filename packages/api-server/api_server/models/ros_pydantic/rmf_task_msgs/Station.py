@@ -8,9 +8,9 @@ import pydantic
 class Station(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    task_id: str = ""  # string
-    robot_type: str = ""  # string
-    place_name: str = ""  # string
+    task_id: str  # string
+    robot_type: str  # string
+    place_name: str  # string
 
 
 # # task_id is intended to be a pseudo-random string generated

@@ -11,15 +11,15 @@ from ..rmf_task_msgs.TaskProfile import TaskProfile
 class TaskSummary(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    fleet_name: str = ""  # string
-    task_id: str = ""  # string
-    task_profile: TaskProfile = TaskProfile()  # rmf_task_msgs/TaskProfile
-    state: Annotated[int, pydantic.Field(ge=0, le=4294967295)] = 0  # uint32
-    status: str = ""  # string
-    submission_time: Time = Time()  # builtin_interfaces/Time
-    start_time: Time = Time()  # builtin_interfaces/Time
-    end_time: Time = Time()  # builtin_interfaces/Time
-    robot_name: str = ""  # string
+    fleet_name: str  # string
+    task_id: str  # string
+    task_profile: TaskProfile  # rmf_task_msgs/TaskProfile
+    state: Annotated[int, pydantic.Field(ge=0, le=4294967295)]  # uint32
+    status: str  # string
+    submission_time: Time  # builtin_interfaces/Time
+    start_time: Time  # builtin_interfaces/Time
+    end_time: Time  # builtin_interfaces/Time
+    robot_name: str  # string
 
 
 # # Publish by Fleet Adapter (aka DispatchStatus)

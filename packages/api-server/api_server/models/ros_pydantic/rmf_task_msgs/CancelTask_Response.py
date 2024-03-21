@@ -8,8 +8,8 @@ import pydantic
 class CancelTask_Response(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    success: bool = False  # bool
-    message: str = ""  # string
+    success: bool  # bool
+    message: str  # string
 
 
 #

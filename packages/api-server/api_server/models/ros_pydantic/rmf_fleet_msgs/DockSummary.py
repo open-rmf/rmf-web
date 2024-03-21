@@ -10,7 +10,7 @@ from ..rmf_fleet_msgs.Dock import Dock
 class DockSummary(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    docks: list[Dock] = []  # rmf_fleet_msgs/Dock
+    docks: list[Dock]  # rmf_fleet_msgs/Dock
 
 
 # Dock[] docks

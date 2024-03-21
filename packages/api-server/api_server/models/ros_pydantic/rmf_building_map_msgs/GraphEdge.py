@@ -10,10 +10,10 @@ from ..rmf_building_map_msgs.Param import Param
 class GraphEdge(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    v1_idx: Annotated[int, pydantic.Field(ge=0, le=4294967295)] = 0  # uint32
-    v2_idx: Annotated[int, pydantic.Field(ge=0, le=4294967295)] = 0  # uint32
-    params: list[Param] = []  # rmf_building_map_msgs/Param
-    edge_type: Annotated[int, pydantic.Field(ge=0, le=255)] = 0  # uint8
+    v1_idx: Annotated[int, pydantic.Field(ge=0, le=4294967295)]  # uint32
+    v2_idx: Annotated[int, pydantic.Field(ge=0, le=4294967295)]  # uint32
+    params: list[Param]  # rmf_building_map_msgs/Param
+    edge_type: Annotated[int, pydantic.Field(ge=0, le=255)]  # uint8
 
 
 # uint32 v1_idx

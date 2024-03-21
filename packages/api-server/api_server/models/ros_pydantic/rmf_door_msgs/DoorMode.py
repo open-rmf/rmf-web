@@ -8,7 +8,7 @@ import pydantic
 class DoorMode(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    value: Annotated[int, pydantic.Field(ge=0, le=4294967295)] = 0  # uint32
+    value: Annotated[int, pydantic.Field(ge=0, le=4294967295)]  # uint32
 
 
 # # The DoorMode message captures the "mode" of an automatic door controller.

@@ -8,14 +8,12 @@ import pydantic
 class Param(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    name: str = ""  # string
-    type: Annotated[int, pydantic.Field(ge=0, le=4294967295)] = 0  # uint32
-    value_int: Annotated[
-        int, pydantic.Field(ge=-2147483648, le=2147483647)
-    ] = 0  # int32
-    value_float: float = 0  # float32
-    value_string: str = ""  # string
-    value_bool: bool = False  # bool
+    name: str  # string
+    type: Annotated[int, pydantic.Field(ge=0, le=4294967295)]  # uint32
+    value_int: Annotated[int, pydantic.Field(ge=-2147483648, le=2147483647)]  # int32
+    value_float: float  # float32
+    value_string: str  # string
+    value_bool: bool  # bool
 
 
 # string name

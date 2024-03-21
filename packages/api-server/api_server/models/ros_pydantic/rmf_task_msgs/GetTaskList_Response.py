@@ -10,9 +10,9 @@ from ..rmf_task_msgs.TaskSummary import TaskSummary
 class GetTaskList_Response(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    success: bool = False  # bool
-    active_tasks: list[TaskSummary] = []  # rmf_task_msgs/TaskSummary
-    terminated_tasks: list[TaskSummary] = []  # rmf_task_msgs/TaskSummary
+    success: bool  # bool
+    active_tasks: list[TaskSummary]  # rmf_task_msgs/TaskSummary
+    terminated_tasks: list[TaskSummary]  # rmf_task_msgs/TaskSummary
 
 
 #

@@ -8,8 +8,8 @@ import pydantic
 class ChargerCancel(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    charger_name: str = ""  # string
-    request_id: str = ""  # string
+    charger_name: str  # string
+    request_id: str  # string
 
 
 # string charger_name  # the charger that should process this message

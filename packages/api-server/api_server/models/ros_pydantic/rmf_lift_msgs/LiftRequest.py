@@ -10,12 +10,12 @@ from ..builtin_interfaces.Time import Time
 class LiftRequest(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    lift_name: str = ""  # string
-    request_time: Time = Time()  # builtin_interfaces/Time
-    session_id: str = ""  # string
-    request_type: Annotated[int, pydantic.Field(ge=0, le=255)] = 0  # uint8
-    destination_floor: str = ""  # string
-    door_state: Annotated[int, pydantic.Field(ge=0, le=255)] = 0  # uint8
+    lift_name: str  # string
+    request_time: Time  # builtin_interfaces/Time
+    session_id: str  # string
+    request_type: Annotated[int, pydantic.Field(ge=0, le=255)]  # uint8
+    destination_floor: str  # string
+    door_state: Annotated[int, pydantic.Field(ge=0, le=255)]  # uint8
 
 
 # string lift_name

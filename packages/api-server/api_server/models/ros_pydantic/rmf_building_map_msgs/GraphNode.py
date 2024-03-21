@@ -10,10 +10,10 @@ from ..rmf_building_map_msgs.Param import Param
 class GraphNode(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    x: float = 0  # float32
-    y: float = 0  # float32
-    name: str = ""  # string
-    params: list[Param] = []  # rmf_building_map_msgs/Param
+    x: float  # float32
+    y: float  # float32
+    name: str  # string
+    params: list[Param]  # rmf_building_map_msgs/Param
 
 
 # float32 x

@@ -8,7 +8,7 @@ import pydantic
 class LiftClearance_Response(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-    decision: Annotated[int, pydantic.Field(ge=0, le=4294967295)] = 0  # uint32
+    decision: Annotated[int, pydantic.Field(ge=0, le=4294967295)]  # uint32
 
 
 #
