@@ -142,7 +142,9 @@ class FastIOPacket(socketio.packet.Packet):
             and len(self.data) == 2
             and isinstance(self.data[1], pydantic.BaseModel)
         ):
-            pkt_data = FastIOPacket.PacketData(root=self.data)
+            pkt_data = FastIOPacket.PacketData(
+                root=cast(tuple[str, pydantic.BaseModel], self.data)
+            )
             return str(self.packet_type) + pkt_data.model_dump_json(exclude_none=True)
         return super().encode()
 
