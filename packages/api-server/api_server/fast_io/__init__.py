@@ -21,6 +21,7 @@ import socketio.packet
 from fastapi import APIRouter, FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.routing import APIRoute
+from pydantic import BaseModel
 from reactivex import Observable
 from starlette.routing import compile_path
 
@@ -133,7 +134,7 @@ class FastIORouter(APIRouter):
 
 class FastIOPacket(socketio.packet.Packet):
     class PacketData(pydantic.RootModel):
-        root: Tuple[str, pydantic.BaseModel]
+        root: tuple[str, pydantic.BaseModel]
 
     def encode(self):
         if (
@@ -141,7 +142,7 @@ class FastIOPacket(socketio.packet.Packet):
             and len(self.data) == 2
             and isinstance(self.data[1], pydantic.BaseModel)
         ):
-            pkt_data = FastIOPacket.PacketData.model_construct(root=self.data)
+            pkt_data = FastIOPacket.PacketData(root=self.data)
             return str(self.packet_type) + pkt_data.model_dump_json(exclude_none=True)
         return super().encode()
 
@@ -285,7 +286,10 @@ The message must be of the form:
 
             def on_next(data):
                 async def emit():
-                    await self.sio.emit(sub_data.room, data, to=sid)
+                    if isinstance(data, BaseModel):
+                        await self.sio.emit(sub_data.room, data.model_dump(), to=sid)
+                    else:
+                        await self.sio.emit(sub_data.room, data, to=sid)
 
                 loop.create_task(emit())
 
