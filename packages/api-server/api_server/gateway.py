@@ -212,7 +212,7 @@ class RmfGateway:
             )
 
         def handle_delivery_alert(delivery_alert: DeliveryAlert):
-            self.logger.info(f"Received delivery alert:")
+            self.logger.info("Received delivery alert:")
             self.logger.info(delivery_alert)
             rmf_events.delivery_alerts.on_next(delivery_alert)
 
