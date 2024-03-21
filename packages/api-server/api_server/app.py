@@ -150,6 +150,7 @@ app = FastIO(
     socketio_connect=on_sio_connect,
     docs_url=None,
     redoc_url=None,
+    separate_input_output_schemas=False,
 )
 
 

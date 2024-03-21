@@ -863,7 +863,7 @@ export default {
               'application/json': {
                 schema: {
                   type: 'array',
-                  items: { $ref: '#/components/schemas/TaskState-Output' },
+                  items: { $ref: '#/components/schemas/TaskState' },
                   title: 'Response Query Task States Tasks Get',
                 },
               },
@@ -902,9 +902,7 @@ export default {
         responses: {
           '200': {
             description: 'Successful Response',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/TaskState-Output' } },
-            },
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/TaskState' } } },
           },
           '422': {
             description: 'Validation Error',
@@ -1061,16 +1059,12 @@ export default {
           '200': {
             description: 'Successful Response',
             content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/TaskDispatchResponse-Output' },
-              },
+              'application/json': { schema: { $ref: '#/components/schemas/TaskDispatchResponse' } },
             },
           },
           '400': {
             content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/TaskDispatchResponse-Input' },
-              },
+              'application/json': { schema: { $ref: '#/components/schemas/TaskDispatchResponse' } },
             },
             description: 'Bad Request',
           },
@@ -1106,16 +1100,12 @@ export default {
           '200': {
             description: 'Successful Response',
             content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/RobotTaskResponse-Output' },
-              },
+              'application/json': { schema: { $ref: '#/components/schemas/RobotTaskResponse' } },
             },
           },
           '400': {
             content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/RobotTaskResponse-Input' },
-              },
+              'application/json': { schema: { $ref: '#/components/schemas/RobotTaskResponse' } },
             },
             description: 'Bad Request',
           },
@@ -2994,31 +2984,7 @@ export default {
         title: 'Error',
       },
       EstimateMillis: { type: 'integer', minimum: 0.0, title: 'EstimateMillis' },
-      'EventState-Input': {
-        properties: {
-          id: { $ref: '#/components/schemas/Id' },
-          status: { anyOf: [{ $ref: '#/components/schemas/Status-Input' }, { type: 'null' }] },
-          name: {
-            anyOf: [{ type: 'string' }, { type: 'null' }],
-            title: 'Name',
-            description: 'The brief name of the event',
-          },
-          detail: {
-            anyOf: [{ $ref: '#/components/schemas/Detail' }, { type: 'null' }],
-            description: 'Detailed information about the event',
-          },
-          deps: {
-            anyOf: [{ items: { type: 'integer', minimum: 0.0 }, type: 'array' }, { type: 'null' }],
-            title: 'Deps',
-            description:
-              'This event may depend on other events. This array contains the IDs of those other event dependencies.',
-          },
-        },
-        type: 'object',
-        required: ['id'],
-        title: 'EventState',
-      },
-      'EventState-Output': {
+      EventState: {
         properties: {
           id: { $ref: '#/components/schemas/Id' },
           status: {
@@ -3496,7 +3462,7 @@ export default {
         required: ['authz_grp', 'action'],
         title: 'Permission',
       },
-      'Phase-Input': {
+      Phase: {
         properties: {
           id: { $ref: '#/components/schemas/Id' },
           category: { anyOf: [{ $ref: '#/components/schemas/Category' }, { type: 'null' }] },
@@ -3518,58 +3484,7 @@ export default {
           final_event_id: { anyOf: [{ $ref: '#/components/schemas/Id' }, { type: 'null' }] },
           events: {
             anyOf: [
-              {
-                additionalProperties: { $ref: '#/components/schemas/EventState-Input' },
-                type: 'object',
-              },
-              { type: 'null' },
-            ],
-            title: 'Events',
-            description:
-              'A dictionary of events for this phase. The keys (property names) are the event IDs, which are integers.',
-          },
-          skip_requests: {
-            anyOf: [
-              {
-                additionalProperties: { $ref: '#/components/schemas/SkipPhaseRequest' },
-                type: 'object',
-              },
-              { type: 'null' },
-            ],
-            title: 'Skip Requests',
-            description: 'Information about any skip requests that have been received',
-          },
-        },
-        type: 'object',
-        required: ['id'],
-        title: 'Phase',
-      },
-      'Phase-Output': {
-        properties: {
-          id: { $ref: '#/components/schemas/Id' },
-          category: { anyOf: [{ $ref: '#/components/schemas/Category' }, { type: 'null' }] },
-          detail: { anyOf: [{ $ref: '#/components/schemas/Detail' }, { type: 'null' }] },
-          unix_millis_start_time: {
-            anyOf: [{ type: 'integer' }, { type: 'null' }],
-            title: 'Unix Millis Start Time',
-          },
-          unix_millis_finish_time: {
-            anyOf: [{ type: 'integer' }, { type: 'null' }],
-            title: 'Unix Millis Finish Time',
-          },
-          original_estimate_millis: {
-            anyOf: [{ $ref: '#/components/schemas/EstimateMillis' }, { type: 'null' }],
-          },
-          estimate_millis: {
-            anyOf: [{ $ref: '#/components/schemas/EstimateMillis' }, { type: 'null' }],
-          },
-          final_event_id: { anyOf: [{ $ref: '#/components/schemas/Id' }, { type: 'null' }] },
-          events: {
-            anyOf: [
-              {
-                additionalProperties: { $ref: '#/components/schemas/EventState-Output' },
-                type: 'object',
-              },
+              { additionalProperties: { $ref: '#/components/schemas/EventState' }, type: 'object' },
               { type: 'null' },
             ],
             title: 'Events',
@@ -3740,12 +3655,8 @@ export default {
         required: ['type', 'robot', 'fleet', 'request'],
         title: 'RobotTaskRequest',
       },
-      'RobotTaskResponse-Input': {
-        allOf: [{ $ref: '#/components/schemas/TaskDispatchResponse-Input' }],
-        title: 'RobotTaskResponse',
-      },
-      'RobotTaskResponse-Output': {
-        allOf: [{ $ref: '#/components/schemas/TaskDispatchResponse-Output' }],
+      RobotTaskResponse: {
+        allOf: [{ $ref: '#/components/schemas/TaskDispatchResponse' }],
         title: 'RobotTaskResponse',
       },
       ScheduledTask: {
@@ -3842,24 +3753,6 @@ export default {
         allOf: [{ $ref: '#/components/schemas/TokenResponse' }],
         title: 'SkipPhaseResponse',
       },
-      'Status-Input': {
-        type: 'string',
-        enum: [
-          'uninitialized',
-          'blocked',
-          'error',
-          'failed',
-          'queued',
-          'standby',
-          'underway',
-          'delayed',
-          'skipped',
-          'canceled',
-          'killed',
-          'completed',
-        ],
-        title: 'Status',
-      },
       Status2: {
         type: 'string',
         enum: ['queued', 'selected', 'dispatched', 'failed_to_assign', 'canceled_in_flight'],
@@ -3918,33 +3811,17 @@ export default {
         required: ['type'],
         title: 'TaskDiscoveryRequest',
       },
-      'TaskDispatchResponse-Input': {
+      TaskDispatchResponse: {
         anyOf: [
-          { $ref: '#/components/schemas/TaskDispatchResponse1-Input' },
+          { $ref: '#/components/schemas/TaskDispatchResponse1' },
           { $ref: '#/components/schemas/TaskDispatchResponse2' },
         ],
         title: 'TaskDispatchResponse',
       },
-      'TaskDispatchResponse-Output': {
-        anyOf: [
-          { $ref: '#/components/schemas/TaskDispatchResponse1-Output' },
-          { $ref: '#/components/schemas/TaskDispatchResponse2' },
-        ],
-        title: 'TaskDispatchResponse',
-      },
-      'TaskDispatchResponse1-Input': {
+      TaskDispatchResponse1: {
         properties: {
           success: { const: true, title: 'Success' },
-          state: { $ref: '#/components/schemas/TaskState-Input' },
-        },
-        type: 'object',
-        required: ['success', 'state'],
-        title: 'TaskDispatchResponse1',
-      },
-      'TaskDispatchResponse1-Output': {
-        properties: {
-          success: { const: true, title: 'Success' },
-          state: { $ref: '#/components/schemas/TaskState-Output' },
+          state: { $ref: '#/components/schemas/TaskState' },
         },
         type: 'object',
         required: ['success', 'state'],
@@ -4195,91 +4072,7 @@ export default {
         allOf: [{ $ref: '#/components/schemas/SimpleResponse' }],
         title: 'TaskRewindResponse',
       },
-      'TaskState-Input': {
-        properties: {
-          booking: { $ref: '#/components/schemas/Booking' },
-          category: { anyOf: [{ $ref: '#/components/schemas/Category' }, { type: 'null' }] },
-          detail: { anyOf: [{ $ref: '#/components/schemas/Detail' }, { type: 'null' }] },
-          unix_millis_start_time: {
-            anyOf: [{ type: 'integer' }, { type: 'null' }],
-            title: 'Unix Millis Start Time',
-          },
-          unix_millis_finish_time: {
-            anyOf: [{ type: 'integer' }, { type: 'null' }],
-            title: 'Unix Millis Finish Time',
-          },
-          original_estimate_millis: {
-            anyOf: [{ $ref: '#/components/schemas/EstimateMillis' }, { type: 'null' }],
-          },
-          estimate_millis: {
-            anyOf: [{ $ref: '#/components/schemas/EstimateMillis' }, { type: 'null' }],
-          },
-          assigned_to: {
-            anyOf: [{ $ref: '#/components/schemas/AssignedTo' }, { type: 'null' }],
-            description: 'Which agent (robot) is the task assigned to',
-          },
-          status: { anyOf: [{ $ref: '#/components/schemas/Status-Input' }, { type: 'null' }] },
-          dispatch: { anyOf: [{ $ref: '#/components/schemas/Dispatch' }, { type: 'null' }] },
-          phases: {
-            anyOf: [
-              {
-                additionalProperties: { $ref: '#/components/schemas/Phase-Input' },
-                type: 'object',
-              },
-              { type: 'null' },
-            ],
-            title: 'Phases',
-            description:
-              'A dictionary of the states of the phases of the task. The keys (property names) are phase IDs, which are integers.',
-          },
-          completed: {
-            anyOf: [
-              { items: { $ref: '#/components/schemas/Id' }, type: 'array' },
-              { type: 'null' },
-            ],
-            title: 'Completed',
-            description: 'An array of the IDs of completed phases of this task',
-          },
-          active: {
-            anyOf: [{ $ref: '#/components/schemas/Id' }, { type: 'null' }],
-            description: 'The ID of the active phase for this task',
-          },
-          pending: {
-            anyOf: [
-              { items: { $ref: '#/components/schemas/Id' }, type: 'array' },
-              { type: 'null' },
-            ],
-            title: 'Pending',
-            description: 'An array of the pending phases of this task',
-          },
-          interruptions: {
-            anyOf: [
-              {
-                additionalProperties: { $ref: '#/components/schemas/Interruption' },
-                type: 'object',
-              },
-              { type: 'null' },
-            ],
-            title: 'Interruptions',
-            description:
-              'A dictionary of interruptions that have been applied to this task. The keys (property names) are the unique token of the interruption request.',
-          },
-          cancellation: {
-            anyOf: [{ $ref: '#/components/schemas/Cancellation' }, { type: 'null' }],
-            description:
-              'If the task was cancelled, this will describe information about the request.',
-          },
-          killed: {
-            anyOf: [{ $ref: '#/components/schemas/Killed' }, { type: 'null' }],
-            description:
-              'If the task was killed, this will describe information about the request.',
-          },
-        },
-        type: 'object',
-        required: ['booking'],
-        title: 'TaskState',
-      },
-      'TaskState-Output': {
+      TaskState: {
         properties: {
           booking: { $ref: '#/components/schemas/Booking' },
           category: { anyOf: [{ $ref: '#/components/schemas/Category' }, { type: 'null' }] },
@@ -4311,10 +4104,7 @@ export default {
           dispatch: { anyOf: [{ $ref: '#/components/schemas/Dispatch' }, { type: 'null' }] },
           phases: {
             anyOf: [
-              {
-                additionalProperties: { $ref: '#/components/schemas/Phase-Output' },
-                type: 'object',
-              },
+              { additionalProperties: { $ref: '#/components/schemas/Phase' }, type: 'object' },
               { type: 'null' },
             ],
             title: 'Phases',

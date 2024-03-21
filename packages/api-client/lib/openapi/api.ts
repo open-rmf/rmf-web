@@ -746,95 +746,52 @@ export interface Errors1 {}
 /**
  *
  * @export
- * @interface EventStateInput
+ * @interface EventState
  */
-export interface EventStateInput {
+export interface EventState {
   /**
    *
    * @type {number}
-   * @memberof EventStateInput
+   * @memberof EventState
    */
   id: number;
   /**
    *
-   * @type {EventStateInputStatus}
-   * @memberof EventStateInput
+   * @type {EventStateStatus}
+   * @memberof EventState
    */
-  status?: EventStateInputStatus;
+  status?: EventStateStatus;
   /**
    *
    * @type {Name}
-   * @memberof EventStateInput
+   * @memberof EventState
    */
   name?: Name;
   /**
    *
-   * @type {EventStateInputDetail}
-   * @memberof EventStateInput
+   * @type {EventStateDetail}
+   * @memberof EventState
    */
-  detail?: EventStateInputDetail;
+  detail?: EventStateDetail;
   /**
    *
    * @type {Deps}
-   * @memberof EventStateInput
+   * @memberof EventState
    */
   deps?: Deps;
 }
 /**
  * Detailed information about the event
  * @export
- * @interface EventStateInputDetail
+ * @interface EventStateDetail
  */
-export interface EventStateInputDetail {}
+export interface EventStateDetail {}
 /**
  *
  * @export
- * @interface EventStateInputStatus
+ * @interface EventStateStatus
  */
-export interface EventStateInputStatus {}
-/**
- *
- * @export
- * @interface EventStateOutput
- */
-export interface EventStateOutput {
-  /**
-   *
-   * @type {number}
-   * @memberof EventStateOutput
-   */
-  id: number;
-  /**
-   *
-   * @type {EventStateOutputStatus}
-   * @memberof EventStateOutput
-   */
-  status?: EventStateOutputStatus;
-  /**
-   *
-   * @type {Name}
-   * @memberof EventStateOutput
-   */
-  name?: Name;
-  /**
-   *
-   * @type {EventStateInputDetail}
-   * @memberof EventStateOutput
-   */
-  detail?: EventStateInputDetail;
-  /**
-   *
-   * @type {Deps}
-   * @memberof EventStateOutput
-   */
-  deps?: Deps;
-}
-/**
- *
- * @export
- * @interface EventStateOutputStatus
- */
-export interface EventStateOutputStatus {}
+export interface EventStateStatus {}
 /**
  * A dictionary of events for this phase. The keys (property names) are the event IDs, which are integers.
  * @export
@@ -842,17 +799,11 @@ export interface EventStateOutputStatus {}
  */
 export interface Events {}
 /**
- * A dictionary of events for this phase. The keys (property names) are the event IDs, which are integers.
+ * A dictionary whose keys (property names) are the indices of an event in the phase
  * @export
  * @interface Events1
  */
 export interface Events1 {}
-/**
- * A dictionary whose keys (property names) are the indices of an event in the phase
- * @export
- * @interface Events2
- */
-export interface Events2 {}
 /**
  *
  * @export
@@ -1775,161 +1726,94 @@ export interface Permission {
 /**
  *
  * @export
- * @interface PhaseInput
+ * @interface Phase
  */
-export interface PhaseInput {
+export interface Phase {
   /**
    *
    * @type {number}
-   * @memberof PhaseInput
+   * @memberof Phase
    */
   id: number;
   /**
    *
-   * @type {PhaseInputCategory}
-   * @memberof PhaseInput
+   * @type {PhaseCategory}
+   * @memberof Phase
    */
-  category?: PhaseInputCategory;
+  category?: PhaseCategory;
   /**
    *
-   * @type {PhaseInputDetail}
-   * @memberof PhaseInput
+   * @type {PhaseDetail}
+   * @memberof Phase
    */
-  detail?: PhaseInputDetail;
+  detail?: PhaseDetail;
   /**
    *
    * @type {UnixMillisStartTime}
-   * @memberof PhaseInput
+   * @memberof Phase
    */
   unix_millis_start_time?: UnixMillisStartTime;
   /**
    *
    * @type {UnixMillisFinishTime}
-   * @memberof PhaseInput
+   * @memberof Phase
    */
   unix_millis_finish_time?: UnixMillisFinishTime;
   /**
    *
-   * @type {PhaseInputOriginalEstimateMillis}
-   * @memberof PhaseInput
+   * @type {PhaseOriginalEstimateMillis}
+   * @memberof Phase
    */
-  original_estimate_millis?: PhaseInputOriginalEstimateMillis;
+  original_estimate_millis?: PhaseOriginalEstimateMillis;
   /**
    *
-   * @type {PhaseInputOriginalEstimateMillis}
-   * @memberof PhaseInput
+   * @type {PhaseOriginalEstimateMillis}
+   * @memberof Phase
    */
-  estimate_millis?: PhaseInputOriginalEstimateMillis;
+  estimate_millis?: PhaseOriginalEstimateMillis;
   /**
    *
-   * @type {PhaseInputFinalEventId}
-   * @memberof PhaseInput
+   * @type {PhaseFinalEventId}
+   * @memberof Phase
    */
-  final_event_id?: PhaseInputFinalEventId;
+  final_event_id?: PhaseFinalEventId;
   /**
    *
    * @type {Events}
-   * @memberof PhaseInput
+   * @memberof Phase
    */
   events?: Events;
   /**
    *
    * @type {SkipRequests}
-   * @memberof PhaseInput
+   * @memberof Phase
    */
   skip_requests?: SkipRequests;
 }
 /**
  *
  * @export
- * @interface PhaseInputCategory
+ * @interface PhaseCategory
  */
-export interface PhaseInputCategory {}
+export interface PhaseCategory {}
 /**
  *
  * @export
- * @interface PhaseInputDetail
+ * @interface PhaseDetail
  */
-export interface PhaseInputDetail {}
+export interface PhaseDetail {}
 /**
  *
  * @export
- * @interface PhaseInputFinalEventId
+ * @interface PhaseFinalEventId
  */
-export interface PhaseInputFinalEventId {}
+export interface PhaseFinalEventId {}
 /**
  *
  * @export
- * @interface PhaseInputOriginalEstimateMillis
+ * @interface PhaseOriginalEstimateMillis
  */
-export interface PhaseInputOriginalEstimateMillis {}
-/**
- *
- * @export
- * @interface PhaseOutput
- */
-export interface PhaseOutput {
-  /**
-   *
-   * @type {number}
-   * @memberof PhaseOutput
-   */
-  id: number;
-  /**
-   *
-   * @type {PhaseInputCategory}
-   * @memberof PhaseOutput
-   */
-  category?: PhaseInputCategory;
-  /**
-   *
-   * @type {PhaseInputDetail}
-   * @memberof PhaseOutput
-   */
-  detail?: PhaseInputDetail;
-  /**
-   *
-   * @type {UnixMillisStartTime}
-   * @memberof PhaseOutput
-   */
-  unix_millis_start_time?: UnixMillisStartTime;
-  /**
-   *
-   * @type {UnixMillisFinishTime}
-   * @memberof PhaseOutput
-   */
-  unix_millis_finish_time?: UnixMillisFinishTime;
-  /**
-   *
-   * @type {PhaseInputOriginalEstimateMillis}
-   * @memberof PhaseOutput
-   */
-  original_estimate_millis?: PhaseInputOriginalEstimateMillis;
-  /**
-   *
-   * @type {PhaseInputOriginalEstimateMillis}
-   * @memberof PhaseOutput
-   */
-  estimate_millis?: PhaseInputOriginalEstimateMillis;
-  /**
-   *
-   * @type {PhaseInputFinalEventId}
-   * @memberof PhaseOutput
-   */
-  final_event_id?: PhaseInputFinalEventId;
-  /**
-   *
-   * @type {Events1}
-   * @memberof PhaseOutput
-   */
-  events?: Events1;
-  /**
-   *
-   * @type {SkipRequests}
-   * @memberof PhaseOutput
-   */
-  skip_requests?: SkipRequests;
-}
+export interface PhaseOriginalEstimateMillis {}
 /**
  *
  * @export
@@ -1946,10 +1830,10 @@ export interface Phases {
   log?: Log1;
   /**
    *
-   * @type {Events2}
+   * @type {Events1}
    * @memberof Phases
    */
-  events?: Events2;
+  events?: Events1;
 }
 /**
  * A dictionary whose keys (property names) are the indices of a phase
@@ -1963,12 +1847,6 @@ export interface Phases1 {}
  * @interface Phases2
  */
 export interface Phases2 {}
-/**
- * A dictionary of the states of the phases of the task. The keys (property names) are phase IDs, which are integers.
- * @export
- * @interface Phases3
- */
-export interface Phases3 {}
 /**
  *
  * @export
@@ -2239,50 +2117,25 @@ export interface RobotTaskRequest {
 /**
  *
  * @export
- * @interface RobotTaskResponseInput
+ * @interface RobotTaskResponse
  */
-export interface RobotTaskResponseInput {
+export interface RobotTaskResponse {
   /**
    *
    * @type {Success1}
-   * @memberof RobotTaskResponseInput
+   * @memberof RobotTaskResponse
    */
   success: Success1;
   /**
    *
-   * @type {TaskStateInput}
-   * @memberof RobotTaskResponseInput
+   * @type {TaskState}
+   * @memberof RobotTaskResponse
    */
-  state: TaskStateInput;
+  state: TaskState;
   /**
    *
    * @type {Errors1}
-   * @memberof RobotTaskResponseInput
-   */
-  errors?: Errors1;
-}
-/**
- *
- * @export
- * @interface RobotTaskResponseOutput
- */
-export interface RobotTaskResponseOutput {
-  /**
-   *
-   * @type {Success1}
-   * @memberof RobotTaskResponseOutput
-   */
-  success: Success1;
-  /**
-   *
-   * @type {TaskStateOutput}
-   * @memberof RobotTaskResponseOutput
-   */
-  state: TaskStateOutput;
-  /**
-   *
-   * @type {Errors1}
-   * @memberof RobotTaskResponseOutput
+   * @memberof RobotTaskResponse
    */
   errors?: Errors1;
 }
@@ -2536,29 +2389,6 @@ export type Status2 = typeof Status2[keyof typeof Status2];
 /**
  *
  * @export
- * @enum {string}
- */
-
-export const StatusInput = {
-  Uninitialized: 'uninitialized',
-  Blocked: 'blocked',
-  Error: 'error',
-  Failed: 'failed',
-  Queued: 'queued',
-  Standby: 'standby',
-  Underway: 'underway',
-  Delayed: 'delayed',
-  Skipped: 'skipped',
-  Canceled: 'canceled',
-  Killed: 'killed',
-  Completed: 'completed',
-} as const;
-
-export type StatusInput = typeof StatusInput[keyof typeof StatusInput];
-
-/**
- *
- * @export
  * @interface Success1
  */
 export interface Success1 {}
@@ -2641,40 +2471,46 @@ export interface TaskDiscoveryRequest {
 /**
  *
  * @export
- * @interface TaskDispatchResponse1Input
+ * @interface TaskDispatchResponse
  */
-export interface TaskDispatchResponse1Input {
+export interface TaskDispatchResponse {
   /**
    *
-   * @type {any}
-   * @memberof TaskDispatchResponse1Input
+   * @type {Success1}
+   * @memberof TaskDispatchResponse
    */
-  success: any;
+  success: Success1;
   /**
    *
-   * @type {TaskStateInput}
-   * @memberof TaskDispatchResponse1Input
+   * @type {TaskState}
+   * @memberof TaskDispatchResponse
    */
-  state: TaskStateInput;
+  state: TaskState;
+  /**
+   *
+   * @type {Errors1}
+   * @memberof TaskDispatchResponse
+   */
+  errors?: Errors1;
 }
 /**
  *
  * @export
- * @interface TaskDispatchResponse1Output
+ * @interface TaskDispatchResponse1
  */
-export interface TaskDispatchResponse1Output {
+export interface TaskDispatchResponse1 {
   /**
    *
    * @type {any}
-   * @memberof TaskDispatchResponse1Output
+   * @memberof TaskDispatchResponse1
    */
   success: any;
   /**
    *
-   * @type {TaskStateOutput}
-   * @memberof TaskDispatchResponse1Output
+   * @type {TaskState}
+   * @memberof TaskDispatchResponse1
    */
-  state: TaskStateOutput;
+  state: TaskState;
 }
 /**
  *
@@ -2692,56 +2528,6 @@ export interface TaskDispatchResponse2 {
    *
    * @type {Errors1}
    * @memberof TaskDispatchResponse2
-   */
-  errors?: Errors1;
-}
-/**
- *
- * @export
- * @interface TaskDispatchResponseInput
- */
-export interface TaskDispatchResponseInput {
-  /**
-   *
-   * @type {Success1}
-   * @memberof TaskDispatchResponseInput
-   */
-  success: Success1;
-  /**
-   *
-   * @type {TaskStateInput}
-   * @memberof TaskDispatchResponseInput
-   */
-  state: TaskStateInput;
-  /**
-   *
-   * @type {Errors1}
-   * @memberof TaskDispatchResponseInput
-   */
-  errors?: Errors1;
-}
-/**
- *
- * @export
- * @interface TaskDispatchResponseOutput
- */
-export interface TaskDispatchResponseOutput {
-  /**
-   *
-   * @type {Success1}
-   * @memberof TaskDispatchResponseOutput
-   */
-  success: Success1;
-  /**
-   *
-   * @type {TaskStateOutput}
-   * @memberof TaskDispatchResponseOutput
-   */
-  state: TaskStateOutput;
-  /**
-   *
-   * @type {Errors1}
-   * @memberof TaskDispatchResponseOutput
    */
   errors?: Errors1;
 }
@@ -3110,178 +2896,178 @@ export interface TaskRewindResponse {
 /**
  *
  * @export
- * @interface TaskStateInput
+ * @interface TaskState
  */
-export interface TaskStateInput {
+export interface TaskState {
   /**
    *
    * @type {Booking}
-   * @memberof TaskStateInput
+   * @memberof TaskState
    */
   booking: Booking;
   /**
    *
-   * @type {PhaseInputCategory}
-   * @memberof TaskStateInput
+   * @type {PhaseCategory}
+   * @memberof TaskState
    */
-  category?: PhaseInputCategory;
+  category?: PhaseCategory;
   /**
    *
-   * @type {PhaseInputDetail}
-   * @memberof TaskStateInput
+   * @type {PhaseDetail}
+   * @memberof TaskState
    */
-  detail?: PhaseInputDetail;
+  detail?: PhaseDetail;
   /**
    *
    * @type {UnixMillisStartTime}
-   * @memberof TaskStateInput
+   * @memberof TaskState
    */
   unix_millis_start_time?: UnixMillisStartTime;
   /**
    *
    * @type {UnixMillisFinishTime}
-   * @memberof TaskStateInput
+   * @memberof TaskState
    */
   unix_millis_finish_time?: UnixMillisFinishTime;
   /**
    *
-   * @type {PhaseInputOriginalEstimateMillis}
-   * @memberof TaskStateInput
+   * @type {PhaseOriginalEstimateMillis}
+   * @memberof TaskState
    */
-  original_estimate_millis?: PhaseInputOriginalEstimateMillis;
+  original_estimate_millis?: PhaseOriginalEstimateMillis;
   /**
    *
-   * @type {PhaseInputOriginalEstimateMillis}
-   * @memberof TaskStateInput
+   * @type {PhaseOriginalEstimateMillis}
+   * @memberof TaskState
    */
-  estimate_millis?: PhaseInputOriginalEstimateMillis;
+  estimate_millis?: PhaseOriginalEstimateMillis;
   /**
    *
-   * @type {TaskStateInputAssignedTo}
-   * @memberof TaskStateInput
+   * @type {TaskStateAssignedTo}
+   * @memberof TaskState
    */
-  assigned_to?: TaskStateInputAssignedTo;
+  assigned_to?: TaskStateAssignedTo;
   /**
    *
-   * @type {EventStateInputStatus}
-   * @memberof TaskStateInput
+   * @type {EventStateStatus}
+   * @memberof TaskState
    */
-  status?: EventStateInputStatus;
+  status?: EventStateStatus;
   /**
    *
-   * @type {TaskStateInputDispatch}
-   * @memberof TaskStateInput
+   * @type {TaskStateDispatch}
+   * @memberof TaskState
    */
-  dispatch?: TaskStateInputDispatch;
+  dispatch?: TaskStateDispatch;
   /**
    *
    * @type {Phases2}
-   * @memberof TaskStateInput
+   * @memberof TaskState
    */
   phases?: Phases2;
   /**
    *
    * @type {Completed}
-   * @memberof TaskStateInput
+   * @memberof TaskState
    */
   completed?: Completed;
   /**
    *
-   * @type {TaskStateInputActive}
-   * @memberof TaskStateInput
+   * @type {TaskStateActive}
+   * @memberof TaskState
    */
-  active?: TaskStateInputActive;
+  active?: TaskStateActive;
   /**
    *
    * @type {Pending}
-   * @memberof TaskStateInput
+   * @memberof TaskState
    */
   pending?: Pending;
   /**
    *
    * @type {Interruptions}
-   * @memberof TaskStateInput
+   * @memberof TaskState
    */
   interruptions?: Interruptions;
   /**
    *
-   * @type {TaskStateInputCancellation}
-   * @memberof TaskStateInput
+   * @type {TaskStateCancellation}
+   * @memberof TaskState
    */
-  cancellation?: TaskStateInputCancellation;
+  cancellation?: TaskStateCancellation;
   /**
    *
-   * @type {TaskStateInputKilled}
-   * @memberof TaskStateInput
+   * @type {TaskStateKilled}
+   * @memberof TaskState
    */
-  killed?: TaskStateInputKilled;
+  killed?: TaskStateKilled;
 }
 /**
  * The ID of the active phase for this task
  * @export
- * @interface TaskStateInputActive
+ * @interface TaskStateActive
  */
-export interface TaskStateInputActive {}
+export interface TaskStateActive {}
 /**
  * Which agent (robot) is the task assigned to
  * @export
- * @interface TaskStateInputAssignedTo
+ * @interface TaskStateAssignedTo
  */
-export interface TaskStateInputAssignedTo {
+export interface TaskStateAssignedTo {
   /**
    *
    * @type {any}
-   * @memberof TaskStateInputAssignedTo
+   * @memberof TaskStateAssignedTo
    */
   group: any;
   /**
    *
    * @type {any}
-   * @memberof TaskStateInputAssignedTo
+   * @memberof TaskStateAssignedTo
    */
   name: any;
 }
 /**
  * If the task was cancelled, this will describe information about the request.
  * @export
- * @interface TaskStateInputCancellation
+ * @interface TaskStateCancellation
  */
-export interface TaskStateInputCancellation {
+export interface TaskStateCancellation {
   /**
    * The time that the cancellation request arrived
    * @type {any}
-   * @memberof TaskStateInputCancellation
+   * @memberof TaskStateCancellation
    */
   unix_millis_request_time: any;
   /**
    * Labels to describe the cancel request
    * @type {any}
-   * @memberof TaskStateInputCancellation
+   * @memberof TaskStateCancellation
    */
   labels: any;
 }
 /**
  *
  * @export
- * @interface TaskStateInputDispatch
+ * @interface TaskStateDispatch
  */
-export interface TaskStateInputDispatch {
+export interface TaskStateDispatch {
   /**
    *
    * @type {Status2}
-   * @memberof TaskStateInputDispatch
+   * @memberof TaskStateDispatch
    */
   status: Status2;
   /**
    *
    * @type {DispatchAssignment}
-   * @memberof TaskStateInputDispatch
+   * @memberof TaskStateDispatch
    */
   assignment?: DispatchAssignment;
   /**
    *
    * @type {Errors}
-   * @memberof TaskStateInputDispatch
+   * @memberof TaskStateDispatch
    */
   errors?: Errors;
 }
@@ -3289,130 +3075,21 @@ export interface TaskStateInputDispatch {
 /**
  * If the task was killed, this will describe information about the request.
  * @export
- * @interface TaskStateInputKilled
+ * @interface TaskStateKilled
  */
-export interface TaskStateInputKilled {
+export interface TaskStateKilled {
   /**
    * The time that the cancellation request arrived
    * @type {any}
-   * @memberof TaskStateInputKilled
+   * @memberof TaskStateKilled
    */
   unix_millis_request_time: any;
   /**
    * Labels to describe the kill request
    * @type {any}
-   * @memberof TaskStateInputKilled
+   * @memberof TaskStateKilled
    */
   labels: any;
-}
-/**
- *
- * @export
- * @interface TaskStateOutput
- */
-export interface TaskStateOutput {
-  /**
-   *
-   * @type {Booking}
-   * @memberof TaskStateOutput
-   */
-  booking: Booking;
-  /**
-   *
-   * @type {PhaseInputCategory}
-   * @memberof TaskStateOutput
-   */
-  category?: PhaseInputCategory;
-  /**
-   *
-   * @type {PhaseInputDetail}
-   * @memberof TaskStateOutput
-   */
-  detail?: PhaseInputDetail;
-  /**
-   *
-   * @type {UnixMillisStartTime}
-   * @memberof TaskStateOutput
-   */
-  unix_millis_start_time?: UnixMillisStartTime;
-  /**
-   *
-   * @type {UnixMillisFinishTime}
-   * @memberof TaskStateOutput
-   */
-  unix_millis_finish_time?: UnixMillisFinishTime;
-  /**
-   *
-   * @type {PhaseInputOriginalEstimateMillis}
-   * @memberof TaskStateOutput
-   */
-  original_estimate_millis?: PhaseInputOriginalEstimateMillis;
-  /**
-   *
-   * @type {PhaseInputOriginalEstimateMillis}
-   * @memberof TaskStateOutput
-   */
-  estimate_millis?: PhaseInputOriginalEstimateMillis;
-  /**
-   *
-   * @type {TaskStateInputAssignedTo}
-   * @memberof TaskStateOutput
-   */
-  assigned_to?: TaskStateInputAssignedTo;
-  /**
-   *
-   * @type {EventStateOutputStatus}
-   * @memberof TaskStateOutput
-   */
-  status?: EventStateOutputStatus;
-  /**
-   *
-   * @type {TaskStateInputDispatch}
-   * @memberof TaskStateOutput
-   */
-  dispatch?: TaskStateInputDispatch;
-  /**
-   *
-   * @type {Phases3}
-   * @memberof TaskStateOutput
-   */
-  phases?: Phases3;
-  /**
-   *
-   * @type {Completed}
-   * @memberof TaskStateOutput
-   */
-  completed?: Completed;
-  /**
-   *
-   * @type {TaskStateInputActive}
-   * @memberof TaskStateOutput
-   */
-  active?: TaskStateInputActive;
-  /**
-   *
-   * @type {Pending}
-   * @memberof TaskStateOutput
-   */
-  pending?: Pending;
-  /**
-   *
-   * @type {Interruptions}
-   * @memberof TaskStateOutput
-   */
-  interruptions?: Interruptions;
-  /**
-   *
-   * @type {TaskStateInputCancellation}
-   * @memberof TaskStateOutput
-   */
-  cancellation?: TaskStateInputCancellation;
-  /**
-   *
-   * @type {TaskStateInputKilled}
-   * @memberof TaskStateOutput
-   */
-  killed?: TaskStateInputKilled;
 }
 /**
  * (list:replace) List of tasks that the fleet supports
@@ -10928,7 +10605,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
       taskId: string,
       authorization?: Authorization,
       options?: RawAxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskStateOutput>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskState>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getTaskStateTasksTaskIdStateGet(
         taskId,
         authorization,
@@ -11022,9 +10699,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
       dispatchTaskRequest: DispatchTaskRequest,
       authorization?: Authorization,
       options?: RawAxiosRequestConfig,
-    ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskDispatchResponseOutput>
-    > {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskDispatchResponse>> {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.postDispatchTaskTasksDispatchTaskPost(
           dispatchTaskRequest,
@@ -11213,9 +10888,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
       robotTaskRequest: RobotTaskRequest,
       authorization?: Authorization,
       options?: RawAxiosRequestConfig,
-    ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<RobotTaskResponseOutput>
-    > {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RobotTaskResponse>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.postRobotTaskTasksRobotTaskPost(
         robotTaskRequest,
         authorization,
@@ -11388,7 +11061,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
       orderBy?: OrderBy,
       authorization?: Authorization,
       options?: RawAxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskStateOutput>>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskState>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.queryTaskStatesTasksGet(
         taskId,
         category,
@@ -11636,7 +11309,7 @@ export const TasksApiFactory = function (
       taskId: string,
       authorization?: Authorization,
       options?: any,
-    ): AxiosPromise<TaskStateOutput> {
+    ): AxiosPromise<TaskState> {
       return localVarFp
         .getTaskStateTasksTaskIdStateGet(taskId, authorization, options)
         .then((request) => request(axios, basePath));
@@ -11691,7 +11364,7 @@ export const TasksApiFactory = function (
       dispatchTaskRequest: DispatchTaskRequest,
       authorization?: Authorization,
       options?: any,
-    ): AxiosPromise<TaskDispatchResponseOutput> {
+    ): AxiosPromise<TaskDispatchResponse> {
       return localVarFp
         .postDispatchTaskTasksDispatchTaskPost(dispatchTaskRequest, authorization, options)
         .then((request) => request(axios, basePath));
@@ -11793,7 +11466,7 @@ export const TasksApiFactory = function (
       robotTaskRequest: RobotTaskRequest,
       authorization?: Authorization,
       options?: any,
-    ): AxiosPromise<RobotTaskResponseOutput> {
+    ): AxiosPromise<RobotTaskResponse> {
       return localVarFp
         .postRobotTaskTasksRobotTaskPost(robotTaskRequest, authorization, options)
         .then((request) => request(axios, basePath));
@@ -11894,7 +11567,7 @@ export const TasksApiFactory = function (
       orderBy?: OrderBy,
       authorization?: Authorization,
       options?: any,
-    ): AxiosPromise<Array<TaskStateOutput>> {
+    ): AxiosPromise<Array<TaskState>> {
       return localVarFp
         .queryTaskStatesTasksGet(
           taskId,
