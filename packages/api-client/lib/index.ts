@@ -1,24 +1,23 @@
 import Debug from 'debug';
 import { io, Socket } from 'socket.io-client';
 import {
-  ApiServerModelsTortoiseModelsAlertsAlertLeaf,
-  ApiServerModelsTortoiseModelsBeaconsBeaconStateLeaf as BeaconState,
+  TortoiseContribPydanticCreatorApiServerModelsTortoiseModelsAlertsAlertLeaf,
+  TortoiseContribPydanticCreatorApiServerModelsTortoiseModelsBeaconsBeaconStateLeaf as BeaconState,
   BuildingMap,
   DispenserHealth,
   DispenserState,
   DoorHealth,
   DoorState,
-  ApiServerModelsRmfApiFleetStateFleetState,
+  FleetState,
   IngestorHealth,
   IngestorState,
   LiftHealth,
   LiftState,
   TaskEventLog,
-  TaskState,
+  TaskStateOutput as TaskState,
 } from './openapi';
 
-type Alert = ApiServerModelsTortoiseModelsAlertsAlertLeaf;
-type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
+type Alert = TortoiseContribPydanticCreatorApiServerModelsTortoiseModelsAlertsAlertLeaf;
 
 const debug = Debug('rmf-client');
 
