@@ -9,10 +9,8 @@ import {
   TableRow,
   useTheme,
 } from '@mui/material';
-import type { RobotState } from 'api-client';
+import { ApiServerModelsRmfApiRobotStateStatus as RobotStatus } from 'api-client';
 import React from 'react';
-
-type RobotStatus = Required<RobotState>['status'];
 
 export interface RobotTableData {
   fleet: string;
@@ -37,22 +35,22 @@ const RobotRow = React.memo(
         return {};
       }
       switch (status) {
-        case 'error':
+        case RobotStatus.Error:
           return {
             backgroundColor: theme.palette.error.main,
           };
-        case 'charging':
+        case RobotStatus.Charging:
           return {
             backgroundColor: theme.palette.info.main,
           };
-        case 'working':
+        case RobotStatus.Working:
           return {
             backgroundColor: theme.palette.success.main,
           };
-        case 'idle':
-        case 'offline':
-        case 'shutdown':
-        case 'uninitialized':
+        case RobotStatus.Idle:
+        case RobotStatus.Offline:
+        case RobotStatus.Shutdown:
+        case RobotStatus.Uninitialized:
           return {
             backgroundColor: theme.palette.warning.main,
           };
