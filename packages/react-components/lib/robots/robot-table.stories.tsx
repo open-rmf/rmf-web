@@ -2,7 +2,7 @@ import { Meta, Story } from '@storybook/react';
 import React from 'react';
 import { PaginationOptions, RobotTable, RobotTableProps } from './robot-table';
 import { RobotTableData } from './robot-table';
-import { Status2 as RobotStatus } from 'api-client';
+import { ApiServerModelsRmfApiRobotStateStatus as RobotStatus } from 'api-client';
 
 export default {
   title: 'Robots/Table',

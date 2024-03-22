@@ -1,5 +1,5 @@
 import { render, fireEvent } from '@testing-library/react';
-import { Status2 as RobotStatus } from 'api-client';
+import { ApiServerModelsRmfApiRobotStateStatus as RobotStatus } from 'api-client';
 import React from 'react';
 import { RobotTable, RobotTableData } from './robot-table';
 import { makeRobot } from './test-utils.spec';

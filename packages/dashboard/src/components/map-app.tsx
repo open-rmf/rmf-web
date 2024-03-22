@@ -1,5 +1,5 @@
 import { Box, styled, Typography, useMediaQuery } from '@mui/material';
-import { BuildingMap, ApiServerModelsRmfApiFleetStateFleetState, Level, Lift } from 'api-client';
+import { BuildingMap, FleetState, Level, Lift } from 'api-client';
 import { Door as DoorModel } from 'rmf-models';
 import Debug from 'debug';
 import React, { ChangeEvent, Suspense } from 'react';
@@ -30,8 +30,6 @@ import { CameraControl, LayersController } from './three-fiber';
 import { Lifts, Door, RobotThree } from './three-fiber';
 import { DoorSummary } from './door-summary';
 import { LiftSummary } from './lift-summary';
-
-type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
 const debug = Debug('MapApp');
 
