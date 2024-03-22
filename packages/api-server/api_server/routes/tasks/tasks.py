@@ -214,27 +214,25 @@ async def post_dispatch_task(
         and len(request.request.description["phases"]) == 3
         and "on_cancel" in request.request.description["phases"][1]
     ):
-        print("Found a task that needs cancellation behavior")
-        print("Before:")
-        print(request.request.description)
         # Get all waypoints from building map that has Emergency in them
         rmf_repo = rmf_repo_dep()
         building_map = None
         try:
             building_map = await get_building_map(rmf_repo)
         except:
-            print("oh no couldn't get building map")
+            logger.warn(
+                "No building map found, cannot obtain emergency lots for cancellation behavior"
+            )
         if building_map is not None:
             emergency_lots = []
-            print(building_map.levels)
             for level in building_map.levels:
                 for graph in level.nav_graphs:
                     for node in graph.vertices:
-                        # if "emergency" in node.name.lower():
-                        #     emergency_lots.append(node.name)
-                        if len(node.name) != 0:
+                        if "emergency" in node.name.lower():
                             emergency_lots.append(node.name)
-            print(f"emergency lots: {emergency_lots}")
+            logger.warn(
+                f"Adding emergency lots {emergency_lots} to cancellation behavior"
+            )
             if len(emergency_lots) != 0:
                 # Populate them in the correct form
                 go_to_one_of_the_places_activity = {
@@ -262,11 +260,9 @@ async def post_dispatch_task(
                     ],
                 }
                 # Add into task request
-                request.request.description["phases"][1][
-                    "on_cancel"
-                ] = on_cancel_dropoff
-                print("After:")
-                print(request.request.description)
+                request.request.description["phases"][1]["on_cancel"] = [
+                    on_cancel_dropoff
+                ]
 
     resp = mdl.TaskDispatchResponse.parse_raw(
         await tasks_service().call(request.json(exclude_none=True))
