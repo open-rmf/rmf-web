@@ -14,8 +14,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { makeStyles, createStyles } from '@mui/styles';
-import { Status, TaskRequest, TaskState } from 'api-client';
-import { base, parseCartId, parseCategory, parseDestination, parsePickup } from 'react-components';
+import { Status, TaskState } from 'api-client';
+import { base, parseTaskRequestLabel, TaskRequestLabel } from 'react-components';
 import { TaskInspector } from './task-inspector';
 import { RmfAppContext } from '../rmf-app';
 import { TaskCancelButton } from './task-cancellation';
@@ -69,7 +69,6 @@ const setTaskDialogColor = (taskStatus: Status | undefined) => {
 export interface TaskSummaryProps {
   onClose: () => void;
   task?: TaskState;
-  request?: TaskRequest;
 }
 
 export const TaskSummary = React.memo((props: TaskSummaryProps) => {
@@ -77,10 +76,11 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
   const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
 
-  const { onClose, task, request } = props;
+  const { onClose, task } = props;
 
   const [openTaskDetailsLogs, setOpenTaskDetailsLogs] = React.useState(false);
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
+  const [label, setLabel] = React.useState<TaskRequestLabel>({});
   const [isOpen, setIsOpen] = React.useState(true);
 
   const taskProgress = React.useMemo(() => {
@@ -106,9 +106,15 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
     if (!rmf || !task) {
       return;
     }
-    const sub = rmf
-      .getTaskStateObs(task.booking.id)
-      .subscribe((subscribedTask) => setTaskState(subscribedTask));
+    const sub = rmf.getTaskStateObs(task.booking.id).subscribe((subscribedTask) => {
+      const requestLabel = parseTaskRequestLabel(subscribedTask);
+      if (requestLabel) {
+        setLabel(requestLabel);
+      } else {
+        setLabel({});
+      }
+      setTaskState(subscribedTask);
+    });
     return () => sub.unsubscribe();
   }, [rmf, task]);
 
@@ -120,19 +126,19 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
       },
       {
         title: 'Category',
-        value: parseCategory(task, request),
+        value: label.category ?? 'n/a',
       },
       {
         title: 'Pickup',
-        value: parsePickup(request),
+        value: label.pickup ?? 'n/a',
       },
       {
         title: 'Cart ID',
-        value: parseCartId(request),
+        value: label.cart_id ?? 'n/a',
       },
       {
         title: 'Dropoff',
-        value: parseDestination(task, request),
+        value: label.destination ?? 'n/a',
       },
       {
         title: 'Est. end time',
