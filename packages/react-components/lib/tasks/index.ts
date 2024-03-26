@@ -1,4 +1,5 @@
 export * from './create-task';
+export * from './descriptions';
 export * from './task-info';
 export * from './task-logs';
 export * from './task-table';
