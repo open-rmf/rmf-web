@@ -66,6 +66,7 @@ class TestFleetsRoute(AppFixture):
         # invalid fleets
         params = {
             "robot_name": robot_name,
+            "reassign_task": True,
         }
         resp = self.client.post(
             f"fleets/invalid_fleet/decommission?{urlencode(params)}"
@@ -75,6 +76,7 @@ class TestFleetsRoute(AppFixture):
         # invalid robot
         params = {
             "robot_name": "",
+            "reassign_task": True,
         }
         resp = self.client.post(
             f"fleets/{fleet_state.name}/decommission?{urlencode(params)}"
@@ -82,6 +84,7 @@ class TestFleetsRoute(AppFixture):
         self.assertEqual(404, resp.status_code)
         params = {
             "robot_name": "invalid_robot",
+            "reassign_task": True,
         }
         resp = self.client.post(
             f"fleets/{fleet_state.name}/decommission?{urlencode(params)}"

@@ -125,9 +125,9 @@ async def decommission_robot(
 
     logger.info(f"Decommissioning {robot_name} of {name} called by {user.username}")
     if reassign_tasks:
-        logger.info(f"Task re-assignment requested")
+        logger.info("Task re-assignment requested")
     else:
-        logger.info(f"No Task re-assignment requested, tasks will be cancelled")
+        logger.info("No Task re-assignment requested, tasks will be cancelled")
     resp = RobotCommissionResponse.parse_raw(
         await robots_service().call(request.json(exclude_none=True))
     )
