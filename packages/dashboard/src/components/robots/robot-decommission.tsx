@@ -1,4 +1,13 @@
-import { Button, ButtonProps, Theme, Tooltip, Typography } from '@mui/material';
+import {
+  Button,
+  ButtonProps,
+  Checkbox,
+  FormGroup,
+  FormControlLabel,
+  Theme,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import { AppEvents } from '../app-events';
 import { RobotState } from 'api-client';
 import React from 'react';
@@ -30,11 +39,16 @@ export function RobotDecommissionButton({
   const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
   const appController = React.useContext(AppControllerContext);
+  const [reassignTasks, setReassignTasks] = React.useState(true);
+
+  const handleReassignTasksChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setReassignTasks(event.target.checked);
+  };
 
   enum ConfirmDialogType {
     None,
     Decommission,
-    Reinstate,
+    Recommission,
   }
   const [openConfirmDialog, setOpenConfirmDialog] = React.useState<ConfirmDialogType>(
     ConfirmDialogType.None,
@@ -59,17 +73,35 @@ export function RobotDecommissionButton({
       if (!rmf) {
         throw new Error('fleets api not available');
       }
-      await rmf.fleetsApi?.decommissionRobotFleetsNameDecommissionPost(fleet, robotState.name);
-      appController.showAlert('success', `Decommission of ${fleet}:${robotState.name} requested`);
+      const resp = await rmf.fleetsApi?.decommissionRobotFleetsNameDecommissionPost(
+        fleet,
+        robotState.name,
+        reassignTasks,
+      );
+
+      if (!resp.data.success) {
+        appController.showAlert(
+          'error',
+          `Failed to decommission ${fleet}:${robotState.name}: ${resp.data.errors}`,
+        );
+      } else {
+        appController.showAlert(
+          'success',
+          `Decommission of ${fleet}:${robotState.name} requested, ${
+            reassignTasks ? 'with' : 'without'
+          } task re-assignment`,
+        );
+      }
     } catch (e) {
       appController.showAlert(
         'error',
         `Failed to decommission ${fleet}:${robotState.name}: ${(e as Error).message}`,
       );
     }
+    setReassignTasks(true);
     AppEvents.refreshRobotApp.next();
     setOpenConfirmDialog(ConfirmDialogType.None);
-  }, [appController, fleet, robotState, rmf, ConfirmDialogType]);
+  }, [appController, fleet, robotState, reassignTasks, rmf, ConfirmDialogType]);
 
   const handleRecommission = React.useCallback<React.MouseEventHandler>(async () => {
     if (!robotState || !robotState.name) {
@@ -79,8 +111,18 @@ export function RobotDecommissionButton({
       if (!rmf) {
         throw new Error('fleets api not available');
       }
-      await rmf.fleetsApi?.recommissionRobotFleetsNameRecommissionPost(fleet, robotState.name);
-      appController.showAlert('success', `Recommission of ${fleet}:${robotState.name} requested`);
+      const resp = await rmf.fleetsApi?.recommissionRobotFleetsNameRecommissionPost(
+        fleet,
+        robotState.name,
+      );
+      if (!resp.data.success) {
+        appController.showAlert(
+          'error',
+          `Failed to recommission ${fleet}:${robotState.name}: ${resp.data.errors}`,
+        );
+      } else {
+        appController.showAlert('success', `Recommission of ${fleet}:${robotState.name} requested`);
+      }
     } catch (e) {
       appController.showAlert(
         'error',
@@ -95,7 +137,7 @@ export function RobotDecommissionButton({
     <>
       {robotDecommissioned ? (
         <Button
-          onClick={() => setOpenConfirmDialog(ConfirmDialogType.Reinstate)}
+          onClick={() => setOpenConfirmDialog(ConfirmDialogType.Recommission)}
           autoFocus
           {...otherProps}
         >
@@ -129,20 +171,26 @@ export function RobotDecommissionButton({
           onSubmit={handleDecommission}
         >
           <Typography>Confirm decommission robot?</Typography>
+          <FormGroup>
+            <FormControlLabel
+              control={<Checkbox checked={reassignTasks} onChange={handleReassignTasksChange} />}
+              label="Re-assign tasks"
+            />
+          </FormGroup>
         </ConfirmationDialog>
-      ) : openConfirmDialog === ConfirmDialogType.Reinstate ? (
+      ) : openConfirmDialog === ConfirmDialogType.Recommission ? (
         <ConfirmationDialog
           confirmText="Confirm"
           cancelText="Cancel"
-          open={openConfirmDialog === ConfirmDialogType.Reinstate}
-          title={`Reinstate [${fleet}:${robotState?.name || 'n/a'}]`}
+          open={openConfirmDialog === ConfirmDialogType.Recommission}
+          title={`Recommission [${fleet}:${robotState?.name || 'n/a'}]`}
           submitting={undefined}
           onClose={() => {
             setOpenConfirmDialog(ConfirmDialogType.None);
           }}
           onSubmit={handleRecommission}
         >
-          <Typography>Confirm reinstate robot?</Typography>
+          <Typography>Confirm recommission robot?</Typography>
         </ConfirmationDialog>
       ) : (
         <></>

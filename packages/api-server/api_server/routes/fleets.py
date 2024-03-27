@@ -88,6 +88,7 @@ async def sub_fleet_log(_req: SubscriptionRequest, name: str):
 async def decommission_robot(
     name: str,
     robot_name: str,
+    reassign_tasks: bool,
     repo: FleetRepository = Depends(fleet_repo_dep),
     user: User = Depends(user_dep),
 ):
@@ -119,10 +120,14 @@ async def decommission_robot(
         robot=robot_name,
         fleet=name,
         commission=commission,
-        reassign_tasks=True,
+        reassign_tasks=reassign_tasks,
     )
 
     logger.info(f"Decommissioning {robot_name} of {name} called by {user.username}")
+    if reassign_tasks:
+        logger.info(f"Task re-assignment requested")
+    else:
+        logger.info(f"No Task re-assignment requested, tasks will be cancelled")
     resp = RobotCommissionResponse.parse_raw(
         await robots_service().call(request.json(exclude_none=True))
     )

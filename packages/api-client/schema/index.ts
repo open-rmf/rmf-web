@@ -1824,6 +1824,12 @@ export default {
             name: 'robot_name',
             in: 'query',
           },
+          {
+            required: true,
+            schema: { title: 'Reassign Tasks', type: 'boolean' },
+            name: 'reassign_tasks',
+            in: 'query',
+          },
         ],
         responses: {
           '200': {

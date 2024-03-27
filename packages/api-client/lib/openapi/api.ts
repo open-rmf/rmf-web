@@ -6846,18 +6846,26 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
      * @summary Decommission Robot
      * @param {string} name
      * @param {string} robotName
+     * @param {boolean} reassignTasks
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     decommissionRobotFleetsNameDecommissionPost: async (
       name: string,
       robotName: string,
+      reassignTasks: boolean,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'name' is not null or undefined
       assertParamExists('decommissionRobotFleetsNameDecommissionPost', 'name', name);
       // verify required parameter 'robotName' is not null or undefined
       assertParamExists('decommissionRobotFleetsNameDecommissionPost', 'robotName', robotName);
+      // verify required parameter 'reassignTasks' is not null or undefined
+      assertParamExists(
+        'decommissionRobotFleetsNameDecommissionPost',
+        'reassignTasks',
+        reassignTasks,
+      );
       const localVarPath = `/fleets/{name}/decommission`.replace(
         `{${'name'}}`,
         encodeURIComponent(String(name)),
@@ -6875,6 +6883,10 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
 
       if (robotName !== undefined) {
         localVarQueryParameter['robot_name'] = robotName;
+      }
+
+      if (reassignTasks !== undefined) {
+        localVarQueryParameter['reassign_tasks'] = reassignTasks;
       }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -7074,12 +7086,14 @@ export const FleetsApiFp = function (configuration?: Configuration) {
      * @summary Decommission Robot
      * @param {string} name
      * @param {string} robotName
+     * @param {boolean} reassignTasks
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async decommissionRobotFleetsNameDecommissionPost(
       name: string,
       robotName: string,
+      reassignTasks: boolean,
       options?: AxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<RobotCommissionResponse>
@@ -7088,6 +7102,7 @@ export const FleetsApiFp = function (configuration?: Configuration) {
         await localVarAxiosParamCreator.decommissionRobotFleetsNameDecommissionPost(
           name,
           robotName,
+          reassignTasks,
           options,
         );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -7183,16 +7198,18 @@ export const FleetsApiFactory = function (
      * @summary Decommission Robot
      * @param {string} name
      * @param {string} robotName
+     * @param {boolean} reassignTasks
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     decommissionRobotFleetsNameDecommissionPost(
       name: string,
       robotName: string,
+      reassignTasks: boolean,
       options?: any,
     ): AxiosPromise<RobotCommissionResponse> {
       return localVarFp
-        .decommissionRobotFleetsNameDecommissionPost(name, robotName, options)
+        .decommissionRobotFleetsNameDecommissionPost(name, robotName, reassignTasks, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -7265,6 +7282,7 @@ export class FleetsApi extends BaseAPI {
    * @summary Decommission Robot
    * @param {string} name
    * @param {string} robotName
+   * @param {boolean} reassignTasks
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof FleetsApi
@@ -7272,10 +7290,11 @@ export class FleetsApi extends BaseAPI {
   public decommissionRobotFleetsNameDecommissionPost(
     name: string,
     robotName: string,
+    reassignTasks: boolean,
     options?: AxiosRequestConfig,
   ) {
     return FleetsApiFp(this.configuration)
-      .decommissionRobotFleetsNameDecommissionPost(name, robotName, options)
+      .decommissionRobotFleetsNameDecommissionPost(name, robotName, reassignTasks, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
