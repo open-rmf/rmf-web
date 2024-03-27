@@ -82,7 +82,7 @@ export function RobotDecommissionButton({
       if (!resp.data.success) {
         appController.showAlert(
           'error',
-          `Failed to decommission ${fleet}:${robotState.name}: ${resp.data.errors}`,
+          `Failed to decommission ${fleet}:${robotState.name}: ${resp.data.errors ?? ''}`,
         );
       } else {
         appController.showAlert(
@@ -118,7 +118,7 @@ export function RobotDecommissionButton({
       if (!resp.data.success) {
         appController.showAlert(
           'error',
-          `Failed to recommission ${fleet}:${robotState.name}: ${resp.data.errors}`,
+          `Failed to recommission ${fleet}:${robotState.name}: ${resp.data.errors ?? ''}`,
         );
       } else {
         appController.showAlert('success', `Recommission of ${fleet}:${robotState.name} requested`);
