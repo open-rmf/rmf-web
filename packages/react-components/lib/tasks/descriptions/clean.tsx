@@ -88,7 +88,7 @@ export function CleanTaskForm({
   cleaningZones,
   onChange,
   allowSubmit,
-}: CleanTaskFormProps) {
+}: CleanTaskFormProps): React.JSX.Element {
   const onInputChange = (desc: CleanTaskDescription) => {
     allowSubmit(isCleanTaskDescriptionValid(desc));
     onChange(desc);

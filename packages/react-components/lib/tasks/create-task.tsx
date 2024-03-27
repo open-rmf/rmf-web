@@ -51,14 +51,18 @@ import {
   makeDefaultSimpleDeliveryTaskDescription,
 } from './descriptions/delivery-simple';
 import {
-  defaultDeliveryCustomTaskDescription,
-  defaultDeliveryTaskDescription,
   DeliveryCustomTaskForm,
   DeliveryCustomTaskDescription,
   DeliveryTaskDescription,
   DeliveryTaskForm,
+  makeDefaultDeliveryCustomTaskDescription,
+  makeDefaultDeliveryTaskDescription,
 } from './descriptions/delivery-custom';
-import { defaultPatrolTask, PatrolTaskDescription, PatrolTaskForm } from './descriptions/patrol';
+import {
+  makeDefaultPatrolTask,
+  PatrolTaskDescription,
+  PatrolTaskForm,
+} from './descriptions/patrol';
 
 type TaskDescription =
   | DeliveryTaskDescription
@@ -167,12 +171,12 @@ function FavoriteTask({
 function defaultTaskDescription(taskCategory: string): TaskDescription | undefined {
   switch (taskCategory) {
     case 'delivery_pickup':
-      return defaultDeliveryTaskDescription();
+      return makeDefaultDeliveryTaskDescription();
     case 'delivery_sequential_lot_pickup':
     case 'delivery_area_pickup':
-      return defaultDeliveryCustomTaskDescription(taskCategory);
+      return makeDefaultDeliveryCustomTaskDescription(taskCategory);
     case 'patrol':
-      return defaultPatrolTask();
+      return makeDefaultPatrolTask();
     case 'delivery':
       return makeDefaultSimpleDeliveryTaskDescription();
     case 'clean':
@@ -185,7 +189,7 @@ function defaultTaskDescription(taskCategory: string): TaskDescription | undefin
 function defaultTask(): TaskRequest {
   return {
     category: 'compose',
-    description: defaultDeliveryTaskDescription(),
+    description: makeDefaultDeliveryTaskDescription(),
     unix_millis_earliest_start_time: 0,
     unix_millis_request_time: Date.now(),
     priority: { type: 'binary', value: 0 },
@@ -261,7 +265,7 @@ const defaultFavoriteTask = (): TaskFavorite => {
     id: '',
     name: '',
     category: 'compose',
-    description: defaultDeliveryTaskDescription(),
+    description: makeDefaultDeliveryTaskDescription(),
     unix_millis_earliest_start_time: 0,
     priority: { type: 'binary', value: 0 },
     user: '',

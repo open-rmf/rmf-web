@@ -236,7 +236,7 @@ export function DeliveryTaskForm({
   dropoffPoints = {},
   onChange,
   allowSubmit,
-}: DeliveryTaskFormProps) {
+}: DeliveryTaskFormProps): React.JSX.Element {
   const theme = useTheme();
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const onInputChange = (desc: DeliveryTaskDescription) => {
@@ -449,7 +449,7 @@ export function DeliveryCustomTaskForm({
   dropoffPoints = [],
   onChange,
   allowSubmit,
-}: DeliveryCustomProps) {
+}: DeliveryCustomProps): React.JSX.Element {
   const theme = useTheme();
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const onInputChange = (desc: DeliveryCustomTaskDescription) => {
@@ -586,7 +586,7 @@ export function DeliveryCustomTaskForm({
   );
 }
 
-export function defaultDeliveryTaskDescription(): DeliveryTaskDescription {
+export function makeDefaultDeliveryTaskDescription(): DeliveryTaskDescription {
   return {
     category: 'delivery_pickup',
     phases: [
@@ -649,7 +649,7 @@ export function defaultDeliveryTaskDescription(): DeliveryTaskDescription {
   };
 }
 
-export function defaultDeliveryCustomTaskDescription(
+export function makeDefaultDeliveryCustomTaskDescription(
   taskCategory: string,
 ): DeliveryCustomTaskDescription {
   return {

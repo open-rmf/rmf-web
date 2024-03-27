@@ -27,7 +27,7 @@ export function CustomComposeTaskForm({
   taskDesc,
   onChange,
   allowSubmit,
-}: CustomComposeTaskFormProps) {
+}: CustomComposeTaskFormProps): React.JSX.Element {
   const theme = useTheme();
   const onInputChange = (desc: CustomComposeTaskDescription) => {
     allowSubmit(isCustomTaskDescriptionValid(desc));

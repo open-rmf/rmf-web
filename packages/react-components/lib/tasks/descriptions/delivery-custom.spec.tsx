@@ -11,7 +11,7 @@ import {
   deliveryCustomInsertCartId,
   deliveryCustomInsertDropoff,
   deliveryCustomInsertOnCancel,
-} from './create-task';
+} from '.';
 
 describe('Custom deliveries', () => {
   it('delivery 1:1', () => {

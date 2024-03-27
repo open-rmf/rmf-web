@@ -67,7 +67,7 @@ export function SimpleDeliveryTaskForm({
   dropoffPoints = {},
   onChange,
   allowSubmit,
-}: SimpleDeliveryTaskFormProps) {
+}: SimpleDeliveryTaskFormProps): React.JSX.Element {
   const theme = useTheme();
   const onInputChange = (desc: SimpleDeliveryTaskDescription) => {
     allowSubmit(isSimpleDeliveryTaskDescriptionValid(desc));

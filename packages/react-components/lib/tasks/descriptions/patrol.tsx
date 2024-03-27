@@ -32,7 +32,7 @@ export const isPatrolTaskDescriptionValid = (taskDescription: PatrolTaskDescript
   return taskDescription.rounds > 0;
 };
 
-export function defaultPatrolTask(): PatrolTaskDescription {
+export function makeDefaultPatrolTask(): PatrolTaskDescription {
   return {
     places: [],
     rounds: 1,
@@ -86,7 +86,7 @@ export function PatrolTaskForm({
   patrolWaypoints,
   onChange,
   allowSubmit,
-}: PatrolTaskFormProps) {
+}: PatrolTaskFormProps): React.JSX.Element {
   const theme = useTheme();
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const onInputChange = (desc: PatrolTaskDescription) => {
