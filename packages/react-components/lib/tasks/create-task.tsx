@@ -41,19 +41,25 @@ import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { CustomComposeTaskDescription, CustomComposeTaskForm } from './descriptions/custom-compose';
 import {
+  SimpleDeliveryTaskDescription,
+  SimpleDeliveryTaskForm,
+  makeDefaultSimpleDeliveryTaskDescription,
+} from './descriptions/delivery-simple';
+import {
   defaultDeliveryCustomTaskDescription,
   defaultDeliveryTaskDescription,
   DeliveryCustomTaskForm,
   DeliveryCustomTaskDescription,
   DeliveryTaskDescription,
   DeliveryTaskForm,
-} from './descriptions/delivery_custom';
+} from './descriptions/delivery-custom';
 import { defaultPatrolTask, PatrolTaskDescription, PatrolTaskForm } from './descriptions/patrol';
 
 type TaskDescription =
   | DeliveryTaskDescription
   | DeliveryCustomTaskDescription
-  | PatrolTaskDescription;
+  | PatrolTaskDescription
+  | SimpleDeliveryTaskDescription;
 
 const classes = {
   title: 'dialogue-info-value',
@@ -161,6 +167,8 @@ function defaultTaskDescription(taskCategory: string): TaskDescription | undefin
       return defaultDeliveryCustomTaskDescription(taskCategory);
     case 'patrol':
       return defaultPatrolTask();
+    case 'delivery':
+      return makeDefaultSimpleDeliveryTaskDescription();
     default:
       return undefined;
   }
@@ -403,6 +411,16 @@ export function CreateTaskForm({
           allowSubmit={allowSubmit}
         />
       );
+    } else if (taskRequest.category === 'delivery') {
+      return (
+        <SimpleDeliveryTaskForm
+          taskDesc={taskRequest.description as SimpleDeliveryTaskDescription}
+          pickupPoints={pickupPoints}
+          dropoffPoints={dropoffPoints}
+          onChange={(desc) => handleTaskDescriptionChange('delivery', desc)}
+          allowSubmit={allowSubmit}
+        />
+      );
     } else if (taskRequest.category === 'custom_compose') {
       return (
         <CustomComposeTaskForm
@@ -466,7 +484,10 @@ export function CreateTaskForm({
         return;
       }
       taskRequest.description = newDesc;
-      const category = newType === 'patrol' ? 'patrol' : 'compose';
+
+      const primaryTypes = ['patrol', 'delivery'];
+      const category = primaryTypes.includes(newType) ? newType : 'compose';
+      // const category = newType === 'patrol' ? 'patrol' : 'compose';
       taskRequest.category = category;
 
       setFavoriteTaskBuffer({ ...favoriteTaskBuffer, category, description: newDesc });
@@ -694,6 +715,15 @@ export function CreateTaskForm({
                         disabled={!patrolWaypoints || patrolWaypoints.length === 0}
                       >
                         Patrol
+                      </MenuItem>
+                      <MenuItem
+                        value="delivery"
+                        disabled={
+                          Object.keys(pickupPoints).length === 0 ||
+                          Object.keys(dropoffPoints).length === 0
+                        }
+                      >
+                        Delivery
                       </MenuItem>
                       <MenuItem value="custom_compose">Custom Compose Task</MenuItem>
                     </TextField>

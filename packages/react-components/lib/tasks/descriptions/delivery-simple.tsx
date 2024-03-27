@@ -12,7 +12,7 @@ interface TaskPlace {
   };
 }
 
-export interface DeliveryTaskDescription {
+export interface SimpleDeliveryTaskDescription {
   pickup: TaskPlace;
   dropoff: TaskPlace;
 }
@@ -26,11 +26,13 @@ function isTaskPlaceValid(place: TaskPlace): boolean {
   );
 }
 
-function isDeliveryTaskDescriptionValid(taskDescription: DeliveryTaskDescription): boolean {
+function isSimpleDeliveryTaskDescriptionValid(
+  taskDescription: SimpleDeliveryTaskDescription,
+): boolean {
   return isTaskPlaceValid(taskDescription.pickup) && isTaskPlaceValid(taskDescription.dropoff);
 }
 
-export function makeDefaultDeliveryTaskDescription(): DeliveryTaskDescription {
+export function makeDefaultSimpleDeliveryTaskDescription(): SimpleDeliveryTaskDescription {
   return {
     pickup: {
       place: '',
@@ -51,24 +53,24 @@ export function makeDefaultDeliveryTaskDescription(): DeliveryTaskDescription {
   };
 }
 
-export interface DeliveryTaskFormProps {
-  taskDesc: DeliveryTaskDescription;
+export interface SimpleDeliveryTaskFormProps {
+  taskDesc: SimpleDeliveryTaskDescription;
   pickupPoints: Record<string, string>;
   dropoffPoints: Record<string, string>;
-  onChange(taskDesc: DeliveryTaskDescription): void;
+  onChange(taskDesc: SimpleDeliveryTaskDescription): void;
   allowSubmit(allow: boolean): void;
 }
 
-export function DeliveryTaskForm({
+export function SimpleDeliveryTaskForm({
   taskDesc,
   pickupPoints = {},
   dropoffPoints = {},
   onChange,
   allowSubmit,
-}: DeliveryTaskFormProps) {
+}: SimpleDeliveryTaskFormProps) {
   const theme = useTheme();
-  const onInputChange = (desc: DeliveryTaskDescription) => {
-    allowSubmit(isDeliveryTaskDescriptionValid(desc));
+  const onInputChange = (desc: SimpleDeliveryTaskDescription) => {
+    allowSubmit(isSimpleDeliveryTaskDescriptionValid(desc));
     onChange(desc);
   };
 

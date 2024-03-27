@@ -1,5 +1,5 @@
 import { TaskRequest } from 'api-client';
-import { GoToPlaceActivity, LotPickupActivity } from './delivery_custom';
+import { GoToPlaceActivity, LotPickupActivity } from './delivery-custom';
 
 export function isNonEmptyString(value: string): boolean {
   return value.length > 0;
@@ -10,11 +10,16 @@ export function isPositiveNumber(value: number): boolean {
 }
 
 export function getShortDescription(taskRequest: TaskRequest): string | undefined {
-  if (taskRequest.category === 'patrol') {
-    const formattedPlaces = taskRequest.description.places.map((place: string) => `[${place}]`);
-    return `[Patrol] [${taskRequest.description.rounds}] round/s, along ${formattedPlaces.join(
-      ', ',
-    )}`;
+  switch (taskRequest.category) {
+    case 'patrol': {
+      const formattedPlaces = taskRequest.description.places.map((place: string) => `[${place}]`);
+      return `[Patrol] [${taskRequest.description.rounds}] round/s, along ${formattedPlaces.join(
+        ', ',
+      )}`;
+    }
+    case 'delivery': {
+      return `[Delivery] Pickup [${taskRequest.description.pickup.payload.sku}] from [${taskRequest.description.pickup.place}], dropoff [${taskRequest.description.dropoff.payload.sku}] at [${taskRequest.description.dropoff.place}]`;
+    }
   }
 
   // This section is only valid for custom delivery types
