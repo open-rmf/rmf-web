@@ -1824,17 +1824,31 @@ export default {
             name: 'robot_name',
             in: 'query',
           },
-          {
-            required: true,
-            schema: { title: 'Request Id', type: 'string' },
-            name: 'request_id',
-            in: 'query',
-          },
         ],
         responses: {
           '200': {
             description: 'Successful Response',
-            content: { 'application/json': { schema: {} } },
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/RobotCommissionResponse' },
+              },
+            },
+          },
+          '400': {
+            description: 'Bad Request',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/RobotCommissionResponseItem1' },
+              },
+            },
+          },
+          '404': {
+            description: 'Not Found',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/RobotCommissionResponseItem1' },
+              },
+            },
           },
           '422': {
             description: 'Validation Error',
@@ -1858,17 +1872,31 @@ export default {
             name: 'robot_name',
             in: 'query',
           },
-          {
-            required: true,
-            schema: { title: 'Request Id', type: 'string' },
-            name: 'request_id',
-            in: 'query',
-          },
         ],
         responses: {
           '200': {
             description: 'Successful Response',
-            content: { 'application/json': { schema: {} } },
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/RobotCommissionResponse' },
+              },
+            },
+          },
+          '400': {
+            description: 'Bad Request',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/RobotCommissionResponseItem1' },
+              },
+            },
+          },
+          '404': {
+            description: 'Not Found',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/RobotCommissionResponseItem1' },
+              },
+            },
           },
           '422': {
             description: 'Validation Error',
@@ -3324,6 +3352,33 @@ export default {
           },
         },
       },
+      RobotCommissionResponse: {
+        title: 'RobotCommissionResponse',
+        anyOf: [
+          { $ref: '#/components/schemas/RobotCommissionResponseItem' },
+          { $ref: '#/components/schemas/RobotCommissionResponseItem1' },
+        ],
+        description: 'Response to a robot commission request',
+      },
+      RobotCommissionResponseItem: {
+        title: 'RobotCommissionResponseItem',
+        required: ['success'],
+        type: 'object',
+        properties: { success: { title: 'Success', enum: [true], type: 'boolean' } },
+      },
+      RobotCommissionResponseItem1: {
+        title: 'RobotCommissionResponseItem1',
+        type: 'object',
+        properties: {
+          success: { title: 'Success', enum: [false], type: 'boolean' },
+          errors: {
+            title: 'Errors',
+            type: 'array',
+            items: { $ref: '#/components/schemas/Error' },
+            description: 'Any error messages explaining why the request failed',
+          },
+        },
+      },
       RobotState: {
         title: 'RobotState',
         type: 'object',
@@ -3367,7 +3422,7 @@ export default {
           type: {
             title: 'Type',
             type: 'string',
-            description: 'Indicate that this is a task dispatch request',
+            description: 'Indicate that this is a direct task request',
           },
           robot: { title: 'Robot', type: 'string', description: 'The name of the robot' },
           fleet: { title: 'Fleet', type: 'string', description: 'The fleet the robot belongs to' },
