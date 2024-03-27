@@ -12,6 +12,7 @@ from .rmf_api.activity_discovery_request import ActivityDiscoveryRequest
 from .rmf_api.activity_discovery_response import ActivityDiscovery
 from .rmf_api.cancel_task_request import CancelTaskRequest
 from .rmf_api.cancel_task_response import TaskCancelResponse
+from .rmf_api.commission import Commission
 from .rmf_api.dispatch_task_request import DispatchTaskRequest
 from .rmf_api.dispatch_task_response import *
 from .rmf_api.error import *
