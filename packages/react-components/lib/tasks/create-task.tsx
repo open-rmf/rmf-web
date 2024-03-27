@@ -39,6 +39,11 @@ import type { TaskFavoritePydantic as TaskFavorite, TaskRequest } from 'api-clie
 import React from 'react';
 import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
+import {
+  makeDefaultCleanTaskDescription,
+  CleanTaskDescription,
+  CleanTaskForm,
+} from './descriptions/clean';
 import { CustomComposeTaskDescription, CustomComposeTaskForm } from './descriptions/custom-compose';
 import {
   SimpleDeliveryTaskDescription,
@@ -59,7 +64,8 @@ type TaskDescription =
   | DeliveryTaskDescription
   | DeliveryCustomTaskDescription
   | PatrolTaskDescription
-  | SimpleDeliveryTaskDescription;
+  | SimpleDeliveryTaskDescription
+  | CleanTaskDescription;
 
 const classes = {
   title: 'dialogue-info-value',
@@ -169,6 +175,8 @@ function defaultTaskDescription(taskCategory: string): TaskDescription | undefin
       return defaultPatrolTask();
     case 'delivery':
       return makeDefaultSimpleDeliveryTaskDescription();
+    case 'clean':
+      return makeDefaultCleanTaskDescription();
     default:
       return undefined;
   }
@@ -434,6 +442,18 @@ export function CreateTaskForm({
     }
 
     switch (taskRequest.description.category) {
+      case 'clean':
+        return (
+          <CleanTaskForm
+            taskDesc={taskRequest.description as CleanTaskDescription}
+            cleaningZones={cleaningZones}
+            onChange={(desc: CleanTaskDescription) => {
+              desc.category = taskRequest.description.category;
+              handleTaskDescriptionChange('compose', desc);
+            }}
+            allowSubmit={allowSubmit}
+          />
+        );
       case 'delivery_pickup':
         return (
           <DeliveryTaskForm
@@ -485,9 +505,8 @@ export function CreateTaskForm({
       }
       taskRequest.description = newDesc;
 
-      const primaryTypes = ['patrol', 'delivery'];
-      const category = primaryTypes.includes(newType) ? newType : 'compose';
-      // const category = newType === 'patrol' ? 'patrol' : 'compose';
+      const primaryTaskCategories = ['patrol', 'delivery'];
+      const category = primaryTaskCategories.includes(newType) ? newType : 'compose';
       taskRequest.category = category;
 
       setFavoriteTaskBuffer({ ...favoriteTaskBuffer, category, description: newDesc });
@@ -724,6 +743,12 @@ export function CreateTaskForm({
                         }
                       >
                         Delivery
+                      </MenuItem>
+                      <MenuItem
+                        value="clean"
+                        disabled={!cleaningZones || cleaningZones.length === 0}
+                      >
+                        Clean
                       </MenuItem>
                       <MenuItem value="custom_compose">Custom Compose Task</MenuItem>
                     </TextField>

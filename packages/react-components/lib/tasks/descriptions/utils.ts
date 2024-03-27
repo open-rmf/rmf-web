@@ -22,6 +22,13 @@ export function getShortDescription(taskRequest: TaskRequest): string | undefine
     }
   }
 
+  // FIXME: This block is only for non-primary task cateogries, that utilize
+  // compose.
+  if (taskRequest.description.category === 'clean') {
+    const cleanActivity = taskRequest.description.phases[0].activity.description.activities[1];
+    return `[Clean] zone [${cleanActivity.description.description.zone}]`;
+  }
+
   // This section is only valid for custom delivery types
   // FIXME: This block looks like it makes assumptions about the structure of
   // the task description in order to parse it, but it is following the
