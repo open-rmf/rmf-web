@@ -1,5 +1,5 @@
 # THIS FILE IS GENERATED
 version = {
-    "rmf_api_msgs": "a77c3a2d53f7f61aa379bf2ba64a41f98998c9f5",
+    "rmf_api_msgs": "a94b0a852d06ac871658de36ca0faa8fe6578244",
     "datamodel-code-generator": "0.11.19",
 }
