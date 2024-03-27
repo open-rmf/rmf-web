@@ -116,7 +116,7 @@ async def decommission_robot(
         dispatch_tasks=False, direct_tasks=False, idle_behavior=False
     )
     request = RobotCommissionRequest(
-        type="",
+        type="commission_request",
         robot=robot_name,
         fleet=name,
         commission=commission,
@@ -174,7 +174,7 @@ async def recommission_robot(
 
     commission = Commission(dispatch_tasks=True, direct_tasks=True, idle_behavior=True)
     request = RobotCommissionRequest(
-        type="",
+        type="commission_request",
         robot=robot_name,
         fleet=name,
         commission=commission,
