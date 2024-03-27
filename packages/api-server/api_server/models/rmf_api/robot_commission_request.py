@@ -7,20 +7,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-
-class Commission(BaseModel):
-    dispatch_tasks: Optional[bool] = Field(
-        None,
-        description="Should the robot accept dispatched tasks, true/false. Leave unset to not change the robot's current value.",
-    )
-    direct_tasks: Optional[bool] = Field(
-        None,
-        description="Should the robot accept direct task requests, true/false. Leave unset to not change the robot's current value.",
-    )
-    idle_behavior: Optional[bool] = Field(
-        None,
-        description="Should the robot perform its idle behavior, true/false. Leave unset to not change the robot's current value.",
-    )
+from . import commission
 
 
 class RobotCommissionRequest(BaseModel):
@@ -29,9 +16,7 @@ class RobotCommissionRequest(BaseModel):
     )
     robot: str = Field(..., description="The name of the robot")
     fleet: str = Field(..., description="The fleet the robot belongs to")
-    commission: Commission = Field(
-        ..., description="Describe the requested commission for this robot"
-    )
+    commission: commission.Commission
     reassign_tasks: Optional[bool] = Field(
         None,
         description="Should the tasks of the decommissioned robot be reassigned to other robots? If unset, it will be treated as true.",
