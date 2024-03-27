@@ -31,6 +31,10 @@ class TaskRequest(BaseModel):
         None,
         description="(Optional) An identifier for the entity that requested this task",
     )
+    fleet_name: Optional[str] = Field(
+        None,
+        description="(Optional) The name of the fleet that should perform this task. If specified, other fleets will not bid for this task.",
+    )
     unix_millis_warn_time: Optional[int] = Field(
         None,
         description="(Optional) The time at which a warning will be issued if the estimated completion time is later than expected",

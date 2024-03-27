@@ -21,7 +21,7 @@ class Success(Enum):
 
 class FleetLogResponseItem(BaseModel):
     success: Success
-    data: fleet_log.FleetState
+    data: fleet_log.FleetLog
 
 
 class FleetLogResponseItem1(BaseModel):

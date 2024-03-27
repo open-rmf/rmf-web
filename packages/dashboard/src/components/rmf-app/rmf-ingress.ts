@@ -17,7 +17,7 @@ import {
   DoorsApi,
   DoorState,
   FleetsApi,
-  ApiServerModelsRmfApiFleetStateFleetState,
+  FleetState,
   Ingestor,
   IngestorsApi,
   IngestorState,
@@ -40,7 +40,6 @@ import {
 } from '../../managers/robot-trajectory-manager';
 
 type Alert = ApiServerModelsTortoiseModelsAlertsAlertLeaf;
-type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
 export class RmfIngress {
   // This should be private because socketio does not support "replaying" subscription. If

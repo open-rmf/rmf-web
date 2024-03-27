@@ -9,7 +9,7 @@ import {
 } from '@mui/x-data-grid';
 import { Box, SxProps, Typography, useTheme, useMediaQuery } from '@mui/material';
 import * as React from 'react';
-import { Status2 } from 'api-client';
+import { ApiServerModelsRmfApiRobotStateStatus as Status } from 'api-client';
 import { RobotTableData } from './robot-table';
 import { robotStatusToUpperCase } from './utils';
 
@@ -30,7 +30,7 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
     }
   };
 
-  const Status = (params: GridCellParams): React.ReactNode => {
+  const StatusCell = (params: GridCellParams): React.ReactNode => {
     const theme = useTheme();
     const statusLabelStyle: SxProps = (() => {
       const error = {
@@ -42,16 +42,22 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
       const working = {
         color: theme.palette.success.main,
       };
+      const disabled = {
+        color: theme.palette.grey.A400,
+      };
       const defaultColor = {
         color: theme.palette.warning.main,
       };
 
       switch (params.row.status) {
-        case Status2.Error:
+        case Status.Error:
           return error;
-        case Status2.Charging:
+        case Status.Offline:
+        case Status.Uninitialized:
+          return disabled;
+        case Status.Charging:
           return charging;
-        case Status2.Working:
+        case Status.Working:
           return working;
         default:
           return defaultColor;
@@ -135,7 +141,7 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
       headerName: 'Status',
       editable: false,
       flex: 1,
-      renderCell: Status,
+      renderCell: StatusCell,
       filterable: true,
     },
   ];

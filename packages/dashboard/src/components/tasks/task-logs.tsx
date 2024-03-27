@@ -1,5 +1,10 @@
 import { Box, Divider, Grid, Paper, Typography, useTheme } from '@mui/material';
-import { EventState, Status, TaskEventLog, TaskState } from 'api-client';
+import {
+  EventState,
+  ApiServerModelsRmfApiTaskStateStatus as Status,
+  TaskEventLog,
+  TaskState,
+} from 'api-client';
 import { format } from 'date-fns';
 
 interface TaskLogProps {

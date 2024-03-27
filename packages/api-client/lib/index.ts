@@ -9,7 +9,7 @@ import {
   DispenserState,
   DoorHealth,
   DoorState,
-  ApiServerModelsRmfApiFleetStateFleetState,
+  FleetState,
   IngestorHealth,
   IngestorState,
   LiftHealth,
@@ -19,7 +19,6 @@ import {
 } from './openapi';
 
 type Alert = ApiServerModelsTortoiseModelsAlertsAlertLeaf;
-type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
 const debug = Debug('rmf-client');
 

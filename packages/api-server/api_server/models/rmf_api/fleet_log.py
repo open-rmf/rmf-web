@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 from . import log_entry
 
 
-class FleetState(BaseModel):
+class FleetLog(BaseModel):
     name: Optional[str] = None
     log: Optional[List[log_entry.LogEntry]] = Field(
         None, description="Log for the overall fleet"

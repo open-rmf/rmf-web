@@ -76,10 +76,18 @@ export const RobotsApp = createMicroApp('Robots', () => {
       await refreshRobotTable();
     })();
 
+    // Set up the refresh trigger subscription
+    const sub = AppEvents.refreshRobotApp.subscribe({
+      next: async () => {
+        await refreshRobotTable();
+      },
+    });
+
     // Set up regular interval to refresh table
     const refreshInterval = window.setInterval(refreshRobotTable, RefreshRobotTableInterval);
     return () => {
       clearInterval(refreshInterval);
+      sub.unsubscribe();
     };
   }, [rmf]);
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { RobotDataGridTable } from './robot-table-datagrid';
-import { Status2 as RobotStatus } from 'api-client';
+import { ApiServerModelsRmfApiRobotStateStatus as RobotStatus } from 'api-client';
 import { RobotTableData } from './robot-table';
 
 // Define the stories
