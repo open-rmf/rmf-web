@@ -6,10 +6,10 @@ from rx import operators as rxops
 from api_server.authenticator import user_dep
 from api_server.dependencies import between_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.gateway import rmf_gateway
 from api_server.logger import logger
 from api_server.models import (
     Commission,
+    Error,
     FleetLog,
     FleetState,
     RobotCommissionRequest,
@@ -18,6 +18,7 @@ from api_server.models import (
     User,
 )
 from api_server.repositories import FleetRepository, fleet_repo_dep
+from api_server.response import RawJSONResponse
 from api_server.rmf_io import fleet_events, robots_service
 
 router = FastIORouter(tags=["Fleets"])
@@ -79,7 +80,10 @@ async def sub_fleet_log(_req: SubscriptionRequest, name: str):
 @router.post(
     "/{name}/decommission",
     response_model=RobotCommissionResponse,
-    responses={400: {"model": RobotCommissionResponseItem1}},
+    responses={
+        400: {"model": RobotCommissionResponseItem1},
+        404: {"model": RobotCommissionResponseItem1},
+    },
 )
 async def decommission_robot(
     name: str,
@@ -89,9 +93,23 @@ async def decommission_robot(
 ):
     fleet_state = await repo.get_fleet_state(name)
     if fleet_state is None:
-        raise HTTPException(404, f"Fleet {name} not found")
+        resp = RobotCommissionResponseItem1(
+            success=False,
+            errors=[Error(code=404, category=None, detail=f"Fleet {name} not found")],
+        )
+        return RawJSONResponse(resp.json(), 404)
     if fleet_state.robots is None or robot_name not in fleet_state.robots:
-        raise HTTPException(404, f"Robot {robot_name} not found in fleet {name}")
+        resp = RobotCommissionResponseItem1(
+            success=False,
+            errors=[
+                Error(
+                    code=404,
+                    category=None,
+                    detail=f"Robot {robot_name} not found in fleet {name}",
+                )
+            ],
+        )
+        return RawJSONResponse(resp.json(), 404)
 
     commission = Commission(
         dispatch_tasks=False, direct_tasks=False, idle_behavior=False
@@ -111,14 +129,17 @@ async def decommission_robot(
     logger.info(resp)
     if not resp.__root__.success:
         logger.error(f"Failed to decommission {robot_name} of {name}")
-        return RobotCommissionResponseItem1(resp.json(), 400)
+        return RawJSONResponse(resp.json(), 400)
     return resp.__root__
 
 
 @router.post(
     "/{name}/recommission",
     response_model=RobotCommissionResponse,
-    responses={400: {"model": RobotCommissionResponseItem1}},
+    responses={
+        400: {"model": RobotCommissionResponseItem1},
+        404: {"model": RobotCommissionResponseItem1},
+    },
 )
 async def recommission_robot(
     name: str,
@@ -128,9 +149,23 @@ async def recommission_robot(
 ):
     fleet_state = await repo.get_fleet_state(name)
     if fleet_state is None:
-        raise HTTPException(404, f"Fleet {name} not found")
+        resp = RobotCommissionResponseItem1(
+            success=False,
+            errors=[Error(code=404, category=None, detail=f"Fleet {name} not found")],
+        )
+        return RawJSONResponse(resp.json(), 404)
     if fleet_state.robots is None or robot_name not in fleet_state.robots:
-        raise HTTPException(404, f"Robot {robot_name} not found in fleet {name}")
+        resp = RobotCommissionResponseItem1(
+            success=False,
+            errors=[
+                Error(
+                    code=404,
+                    category=None,
+                    detail=f"Robot {robot_name} not found in fleet {name}",
+                )
+            ],
+        )
+        return RawJSONResponse(resp.json(), 404)
 
     commission = Commission(dispatch_tasks=True, direct_tasks=True, idle_behavior=True)
     request = RobotCommissionRequest(
@@ -148,5 +183,5 @@ async def recommission_robot(
     logger.info(resp)
     if not resp.__root__.success:
         logger.error(f"Failed to recommission {robot_name} of {name}")
-        return RobotCommissionResponseItem1(resp.json(), 400)
+        return RawJSONResponse(resp.json(), 400)
     return resp.__root__

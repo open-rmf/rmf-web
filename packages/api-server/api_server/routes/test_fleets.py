@@ -63,17 +63,10 @@ class TestFleetsRoute(AppFixture):
                 FleetStateUpdate(type="fleet_state_update", data=fleet_state).json()
             )
 
-        # valid decommission
+        # invalid fleets
         params = {
             "robot_name": robot_name,
-            "request_id": "test_request_id",
         }
-        resp = self.client.post(
-            f"/fleets/{fleet_state.name}/decommission?{urlencode(params)}"
-        )
-        self.assertEqual(200, resp.status_code)
-
-        # invalid fleets
         resp = self.client.post(
             f"fleets/invalid_fleet/decommission?{urlencode(params)}"
         )
@@ -82,7 +75,6 @@ class TestFleetsRoute(AppFixture):
         # invalid robot
         params = {
             "robot_name": "",
-            "request_id": "test_request_id",
         }
         resp = self.client.post(
             f"fleets/{fleet_state.name}/decommission?{urlencode(params)}"
@@ -90,7 +82,6 @@ class TestFleetsRoute(AppFixture):
         self.assertEqual(404, resp.status_code)
         params = {
             "robot_name": "invalid_robot",
-            "request_id": "test_request_id",
         }
         resp = self.client.post(
             f"fleets/{fleet_state.name}/decommission?{urlencode(params)}"
@@ -109,17 +100,10 @@ class TestFleetsRoute(AppFixture):
                 FleetStateUpdate(type="fleet_state_update", data=fleet_state).json()
             )
 
-        # valid decommission
+        # invalid fleet
         params = {
             "robot_name": robot_name,
-            "request_id": "test_request_id",
         }
-        resp = self.client.post(
-            f"fleets/{fleet_state.name}/recommission?{urlencode(params)}"
-        )
-        self.assertEqual(200, resp.status_code)
-
-        # invalid fleet
         resp = self.client.post(
             f"fleets/invalid_fleet/recommission?{urlencode(params)}"
         )
@@ -128,7 +112,6 @@ class TestFleetsRoute(AppFixture):
         # invalid robot
         params = {
             "robot_name": "",
-            "request_id": "test_request_id",
         }
         resp = self.client.post(
             f"fleets/{fleet_state.name}/recommission?{urlencode(params)}"
@@ -136,7 +119,6 @@ class TestFleetsRoute(AppFixture):
         self.assertEqual(404, resp.status_code)
         params = {
             "robot_name": "invalid_robot",
-            "request_id": "test_request_id",
         }
         resp = self.client.post(
             f"fleets/{fleet_state.name}/recommission?{urlencode(params)}"
