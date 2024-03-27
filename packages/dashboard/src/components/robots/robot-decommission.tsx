@@ -1,6 +1,6 @@
 import { Button, ButtonProps, Theme, Tooltip, Typography } from '@mui/material';
 import { AppEvents } from '../app-events';
-import { RobotState, ApiServerModelsRmfApiRobotStateStatus as Status } from 'api-client';
+import { RobotState } from 'api-client';
 import React from 'react';
 import { AppControllerContext } from '../app-contexts';
 import { RmfAppContext } from '../rmf-app';
@@ -41,7 +41,12 @@ export function RobotDecommissionButton({
   );
 
   const robotDecommissioned =
-    robotState && robotState.status && robotState.status === Status.Uninitialized;
+    robotState &&
+    robotState.commission &&
+    robotState.commission.dispatch_tasks === false &&
+    robotState.commission.direct_tasks === false &&
+    robotState.commission.idle_behavior === false;
+
   // TODO: use authz for decommissioning robot
   // const profile: UserProfile | null = React.useContext(UserProfileContext);
   // const userCanDecommissionRobot = profile && Enforcer.canDecommissionRobot(profile);
