@@ -29,6 +29,8 @@ from .rmf_api.resume_task_request import TaskResumeRequest
 from .rmf_api.resume_task_response import TaskResumeResponse
 from .rmf_api.rewind_task_request import TaskRewindRequest
 from .rmf_api.rewind_task_response import TaskRewindResponse
+from .rmf_api.robot_commission_request import *
+from .rmf_api.robot_commission_response import *
 from .rmf_api.robot_state import RobotState
 from .rmf_api.robot_state import Status as Status2
 from .rmf_api.robot_task_request import RobotTaskRequest

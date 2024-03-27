@@ -8,9 +8,17 @@ from api_server.dependencies import between_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import rmf_gateway
 from api_server.logger import logger
-from api_server.models import FleetLog, FleetState, User
+from api_server.models import (
+    Commission,
+    FleetLog,
+    FleetState,
+    RobotCommissionRequest,
+    RobotCommissionResponse,
+    RobotCommissionResponseItem1,
+    User,
+)
 from api_server.repositories import FleetRepository, fleet_repo_dep
-from api_server.rmf_io import fleet_events
+from api_server.rmf_io import fleet_events, robots_service
 
 router = FastIORouter(tags=["Fleets"])
 
@@ -68,11 +76,14 @@ async def sub_fleet_log(_req: SubscriptionRequest, name: str):
     )
 
 
-@router.post("/{name}/decommission")
+@router.post(
+    "/{name}/decommission",
+    response_model=RobotCommissionResponse,
+    responses={400: {"model": RobotCommissionResponseItem1}},
+)
 async def decommission_robot(
     name: str,
     robot_name: str,
-    request_id: str,
     repo: FleetRepository = Depends(fleet_repo_dep),
     user: User = Depends(user_dep),
 ):
@@ -82,20 +93,36 @@ async def decommission_robot(
     if fleet_state.robots is None or robot_name not in fleet_state.robots:
         raise HTTPException(404, f"Robot {robot_name} not found in fleet {name}")
 
-    logger.info(f"Decommissioning {robot_name} of {name} called by {user.username}")
-    rmf_gateway().decommission_robot(
-        fleet_name=name,
-        robot_name=robot_name,
-        request_id=request_id,
-        labels=[user.username],
+    commission = Commission(
+        dispatch_tasks=False, direct_tasks=False, idle_behavior=False
+    )
+    request = RobotCommissionRequest(
+        type="",
+        robot=robot_name,
+        fleet=name,
+        commission=commission,
+        reassign_tasks=True,
     )
 
+    logger.info(f"Decommissioning {robot_name} of {name} called by {user.username}")
+    resp = RobotCommissionResponse.parse_raw(
+        await robots_service().call(request.json(exclude_none=True))
+    )
+    logger.info(resp)
+    if not resp.__root__.success:
+        logger.error(f"Failed to decommission {robot_name} of {name}")
+        return RobotCommissionResponseItem1(resp.json(), 400)
+    return resp.__root__
 
-@router.post("/{name}/recommission")
+
+@router.post(
+    "/{name}/recommission",
+    response_model=RobotCommissionResponse,
+    responses={400: {"model": RobotCommissionResponseItem1}},
+)
 async def recommission_robot(
     name: str,
     robot_name: str,
-    request_id: str,
     repo: FleetRepository = Depends(fleet_repo_dep),
     user: User = Depends(user_dep),
 ):
@@ -105,10 +132,21 @@ async def recommission_robot(
     if fleet_state.robots is None or robot_name not in fleet_state.robots:
         raise HTTPException(404, f"Robot {robot_name} not found in fleet {name}")
 
-    logger.info(f"Recommissioning {robot_name} of {name} called by ${user.username}")
-    rmf_gateway().recommission_robot(
-        fleet_name=name,
-        robot_name=robot_name,
-        request_id=request_id,
-        labels=[user.username],
+    commission = Commission(dispatch_tasks=True, direct_tasks=True, idle_behavior=True)
+    request = RobotCommissionRequest(
+        type="",
+        robot=robot_name,
+        fleet=name,
+        commission=commission,
+        reassign_tasks=None,
     )
+
+    logger.info(f"Recommissioning {robot_name} of {name} called by {user.username}")
+    resp = RobotCommissionResponse.parse_raw(
+        await robots_service().call(request.json(exclude_none=True))
+    )
+    logger.info(resp)
+    if not resp.__root__.success:
+        logger.error(f"Failed to recommission {robot_name} of {name}")
+        return RobotCommissionResponseItem1(resp.json(), 400)
+    return resp.__root__
