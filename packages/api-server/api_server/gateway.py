@@ -26,7 +26,6 @@ from rmf_fleet_msgs.msg import DeliveryAlert as RmfDeliveryAlert
 from rmf_fleet_msgs.msg import DeliveryAlertAction as RmfDeliveryAlertAction
 from rmf_fleet_msgs.msg import DeliveryAlertCategory as RmfDeliveryAlertCategory
 from rmf_fleet_msgs.msg import DeliveryAlertTier as RmfDeliveryAlertTier
-from rmf_fleet_msgs.msg import InterruptRequest as RmfInterruptRequest
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
@@ -102,17 +101,6 @@ class RmfGateway:
         self._delivery_alert_response = ros_node().create_publisher(
             RmfDeliveryAlert,
             "delivery_alert_response",
-            rclpy.qos.QoSProfile(
-                history=rclpy.qos.HistoryPolicy.KEEP_LAST,
-                depth=10,
-                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
-                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
-            ),
-        )
-
-        self._decommission_robot_request = ros_node().create_publisher(
-            RmfInterruptRequest,
-            "robot_decommission_request",
             rclpy.qos.QoSProfile(
                 history=rclpy.qos.HistoryPolicy.KEEP_LAST,
                 depth=10,
@@ -293,36 +281,6 @@ class RmfGateway:
         msg.action = RmfDeliveryAlertAction(value=action)
         msg.message = message
         self._delivery_alert_response.publish(msg)
-
-    def decommission_robot(
-        self,
-        fleet_name: str,
-        robot_name: str,
-        request_id: str,
-        labels: List[str],
-    ):
-        msg = RmfInterruptRequest()
-        msg.fleet_name = fleet_name
-        msg.robot_name = robot_name
-        msg.interrupt_id = request_id
-        msg.labels = labels
-        msg.type = RmfInterruptRequest.TYPE_INTERRUPT
-        self._decommission_robot_request.publish(msg)
-
-    def recommission_robot(
-        self,
-        fleet_name: str,
-        robot_name: str,
-        request_id: str,
-        labels: List[str],
-    ):
-        msg = RmfInterruptRequest()
-        msg.fleet_name = fleet_name
-        msg.robot_name = robot_name
-        msg.interrupt_id = request_id
-        msg.labels = labels
-        msg.type = RmfInterruptRequest.TYPE_RESUME
-        self._decommission_robot_request.publish(msg)
 
 
 _rmf_gateway: RmfGateway

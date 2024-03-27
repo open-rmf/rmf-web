@@ -54,8 +54,7 @@ export function RobotDecommissionButton({
       if (!rmf) {
         throw new Error('fleets api not available');
       }
-      const id = `decommission-${fleet}-${robotState.name}-${Date.now()}`;
-      await rmf.fleetsApi?.decommissionRobotFleetsNameDecommissionPost(fleet, robotState.name, id);
+      await rmf.fleetsApi?.decommissionRobotFleetsNameDecommissionPost(fleet, robotState.name);
       appController.showAlert('success', `Decommission of ${fleet}:${robotState.name} requested`);
     } catch (e) {
       appController.showAlert(
@@ -75,8 +74,7 @@ export function RobotDecommissionButton({
       if (!rmf) {
         throw new Error('fleets api not available');
       }
-      const id = `recommission-${fleet}-${robotState.name}-${Date.now()}`;
-      await rmf.fleetsApi?.recommissionRobotFleetsNameRecommissionPost(fleet, robotState.name, id);
+      await rmf.fleetsApi?.recommissionRobotFleetsNameRecommissionPost(fleet, robotState.name);
       appController.showAlert('success', `Recommission of ${fleet}:${robotState.name} requested`);
     } catch (e) {
       appController.showAlert(
