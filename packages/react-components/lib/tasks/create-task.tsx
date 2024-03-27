@@ -39,6 +39,7 @@ import type { TaskFavoritePydantic as TaskFavorite, TaskRequest } from 'api-clie
 import React from 'react';
 import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
+import { CustomComposeTaskDescription, CustomComposeTaskForm } from './descriptions/custom-compose';
 import {
   defaultDeliveryCustomTaskDescription,
   defaultDeliveryTaskDescription,
@@ -49,26 +50,10 @@ import {
 } from './descriptions/delivery_custom';
 import { defaultPatrolTask, PatrolTaskDescription, PatrolTaskForm } from './descriptions/patrol';
 
-type CustomComposeTaskDescription = string;
-
 type TaskDescription =
   | DeliveryTaskDescription
   | DeliveryCustomTaskDescription
   | PatrolTaskDescription;
-
-const isCustomTaskDescriptionValid = (taskDescription: string): boolean => {
-  if (taskDescription.length === 0) {
-    return false;
-  }
-
-  try {
-    JSON.parse(taskDescription);
-  } catch (e) {
-    return false;
-  }
-
-  return true;
-};
 
 const classes = {
   title: 'dialogue-info-value',
@@ -97,37 +82,6 @@ const StyledDialog = styled((props: DialogProps) => <Dialog {...props} />)(({ th
     minWidth: 80,
   },
 }));
-
-interface CustomComposeTaskFormProps {
-  taskDesc: CustomComposeTaskDescription;
-  onChange(customComposeTaskDescription: CustomComposeTaskDescription): void;
-  allowSubmit(allow: boolean): void;
-}
-
-function CustomComposeTaskForm({ taskDesc, onChange, allowSubmit }: CustomComposeTaskFormProps) {
-  const theme = useTheme();
-  const onInputChange = (desc: CustomComposeTaskDescription) => {
-    allowSubmit(isCustomTaskDescriptionValid(desc));
-    onChange(desc);
-  };
-
-  return (
-    <Grid container spacing={theme.spacing(2)}>
-      <Grid item xs={12}>
-        <TextField
-          label="Multiline"
-          multiline
-          rows={8}
-          value={taskDesc}
-          fullWidth
-          onChange={(ev) => {
-            onInputChange(ev.target.value);
-          }}
-        />
-      </Grid>
-    </Grid>
-  );
-}
 
 interface FavoriteTaskProps {
   listItemText: string;
