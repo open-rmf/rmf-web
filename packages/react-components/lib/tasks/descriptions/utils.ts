@@ -9,16 +9,23 @@ export function isPositiveNumber(value: number): boolean {
   return value > 0;
 }
 
-export function getShortDescription(taskRequest: TaskRequest): string | undefined {
+export function getShortDescription(
+  taskRequest: TaskRequest,
+  taskNameRemap?: Record<string, string>,
+): string | undefined {
   switch (taskRequest.category) {
     case 'patrol': {
       const formattedPlaces = taskRequest.description.places.map((place: string) => `[${place}]`);
-      return `[Patrol] [${taskRequest.description.rounds}] round/s, along ${formattedPlaces.join(
-        ', ',
-      )}`;
+      return `[${(taskNameRemap && taskNameRemap[taskRequest.category]) ?? 'Patrol'}] [${
+        taskRequest.description.rounds
+      }] round/s, along ${formattedPlaces.join(', ')}`;
     }
     case 'delivery': {
-      return `[Delivery] Pickup [${taskRequest.description.pickup.payload.sku}] from [${taskRequest.description.pickup.place}], dropoff [${taskRequest.description.dropoff.payload.sku}] at [${taskRequest.description.dropoff.place}]`;
+      return `[${(taskNameRemap && taskNameRemap[taskRequest.category]) ?? 'Delivery'}] Pickup [${
+        taskRequest.description.pickup.payload.sku
+      }] from [${taskRequest.description.pickup.place}], dropoff [${
+        taskRequest.description.dropoff.payload.sku
+      }] at [${taskRequest.description.dropoff.place}]`;
     }
   }
 
@@ -26,7 +33,9 @@ export function getShortDescription(taskRequest: TaskRequest): string | undefine
   // compose.
   if (taskRequest.description.category === 'clean') {
     const cleanActivity = taskRequest.description.phases[0].activity.description.activities[1];
-    return `[Clean] zone [${cleanActivity.description.description.zone}]`;
+    return `[${
+      (taskNameRemap && taskNameRemap[taskRequest.description.category]) ?? 'Clean'
+    }] zone [${cleanActivity.description.description.zone}]`;
   }
 
   // This section is only valid for custom delivery types
@@ -47,13 +56,21 @@ export function getShortDescription(taskRequest: TaskRequest): string | undefine
 
     switch (taskRequest.description.category) {
       case 'delivery_pickup': {
-        return `[Delivery - 1:1] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
+        return `[${
+          (taskNameRemap && taskNameRemap[taskRequest.description.category]) ?? 'Delivery - 1:1'
+        }] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
       }
       case 'delivery_sequential_lot_pickup': {
-        return `[Delivery - Sequential lot pick up] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
+        return `[${
+          (taskNameRemap && taskNameRemap[taskRequest.description.category]) ??
+          'Delivery - Sequential lot pick up'
+        }] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
       }
       case 'delivery_area_pickup': {
-        return `[Delivery - Area pick up] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
+        return `[${
+          (taskNameRemap && taskNameRemap[taskRequest.description.category]) ??
+          'Delivery - Area pick up'
+        }] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
       }
       default:
         return `[Unknown] type "${taskRequest.description.category}"`;

@@ -168,13 +168,13 @@ function FavoriteTask({
   );
 }
 
-function defaultTaskDescription(taskCategory: string): TaskDescription | undefined {
-  switch (taskCategory) {
+function defaultTaskDescription(taskName: string): TaskDescription | undefined {
+  switch (taskName) {
     case 'delivery_pickup':
       return makeDefaultDeliveryTaskDescription();
     case 'delivery_sequential_lot_pickup':
     case 'delivery_area_pickup':
-      return makeDefaultDeliveryCustomTaskDescription(taskCategory);
+      return makeDefaultDeliveryCustomTaskDescription(taskName);
     case 'patrol':
       return makeDefaultPatrolTask();
     case 'delivery':
@@ -186,10 +186,29 @@ function defaultTaskDescription(taskCategory: string): TaskDescription | undefin
   }
 }
 
-function defaultTask(): TaskRequest {
+function taskRequestCategory(taskName: string): string | undefined {
+  switch (taskName) {
+    case 'patrol':
+    case 'delivery':
+      return taskName;
+    case 'delivery_pickup':
+    case 'delivery_sequential_lot_pickup':
+    case 'delivery_area_pickup':
+    case 'clean':
+    case 'custom_compose':
+      return 'compose';
+    default:
+      return undefined;
+  }
+}
+
+function defaultTaskRequest(taskName: string): TaskRequest {
+  const category = taskRequestCategory(taskName);
+  const description = defaultTaskDescription(taskName);
+
   return {
-    category: 'compose',
-    description: makeDefaultDeliveryTaskDescription(),
+    category: category ?? 'compose',
+    description: description ?? makeDefaultDeliveryTaskDescription(),
     unix_millis_earliest_start_time: 0,
     unix_millis_request_time: Date.now(),
     priority: { type: 'binary', value: 0 },
@@ -278,6 +297,8 @@ export interface CreateTaskFormProps
    * Shows extra UI elements suitable for submittng batched tasks. Default to 'false'.
    */
   user: string;
+  supportedTasks?: string[];
+  taskNameRemap?: Record<string, string>;
   allowBatch?: boolean;
   cleaningZones?: string[];
   patrolWaypoints?: string[];
@@ -304,6 +325,8 @@ export interface CreateTaskFormProps
 
 export function CreateTaskForm({
   user,
+  supportedTasks = ['patrol', 'delivery', 'clean'],
+  taskNameRemap = {},
   /* eslint-disable @typescript-eslint/no-unused-vars */
   cleaningZones = [],
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -346,7 +369,7 @@ export function CreateTaskForm({
 
   const [taskType, setTaskType] = React.useState<string | undefined>(undefined);
   const [taskRequest, setTaskRequest] = React.useState<TaskRequest>(
-    () => requestTask ?? defaultTask(),
+    () => requestTask ?? defaultTaskRequest(supportedTasks[0]),
   );
 
   const [submitting, setSubmitting] = React.useState(false);
@@ -414,35 +437,36 @@ export function CreateTaskForm({
   };
 
   const renderTaskDescriptionForm = () => {
-    if (taskRequest.category === 'patrol') {
-      return (
-        <PatrolTaskForm
-          taskDesc={taskRequest.description as PatrolTaskDescription}
-          patrolWaypoints={patrolWaypoints}
-          onChange={(desc) => handleTaskDescriptionChange('patrol', desc)}
-          allowSubmit={allowSubmit}
-        />
-      );
-    } else if (taskRequest.category === 'delivery') {
-      return (
-        <SimpleDeliveryTaskForm
-          taskDesc={taskRequest.description as SimpleDeliveryTaskDescription}
-          pickupPoints={pickupPoints}
-          dropoffPoints={dropoffPoints}
-          onChange={(desc) => handleTaskDescriptionChange('delivery', desc)}
-          allowSubmit={allowSubmit}
-        />
-      );
-    } else if (taskRequest.category === 'custom_compose') {
-      return (
-        <CustomComposeTaskForm
-          taskDesc={taskRequest.description as CustomComposeTaskDescription}
-          onChange={(desc) => {
-            handleCustomComposeTaskDescriptionChange(desc);
-          }}
-          allowSubmit={allowSubmit}
-        />
-      );
+    switch (taskRequest.category) {
+      case 'patrol':
+        return (
+          <PatrolTaskForm
+            taskDesc={taskRequest.description as PatrolTaskDescription}
+            patrolWaypoints={patrolWaypoints}
+            onChange={(desc) => handleTaskDescriptionChange('patrol', desc)}
+            allowSubmit={allowSubmit}
+          />
+        );
+      case 'delivery':
+        return (
+          <SimpleDeliveryTaskForm
+            taskDesc={taskRequest.description as SimpleDeliveryTaskDescription}
+            pickupPoints={pickupPoints}
+            dropoffPoints={dropoffPoints}
+            onChange={(desc) => handleTaskDescriptionChange('delivery', desc)}
+            allowSubmit={allowSubmit}
+          />
+        );
+      case 'custom_compose':
+        return (
+          <CustomComposeTaskForm
+            taskDesc={taskRequest.description as CustomComposeTaskDescription}
+            onChange={(desc) => {
+              handleCustomComposeTaskDescriptionChange(desc);
+            }}
+            allowSubmit={allowSubmit}
+          />
+        );
     }
 
     switch (taskRequest.description.category) {
@@ -619,13 +643,76 @@ export function CreateTaskForm({
       onSuccessFavoriteTask &&
         onSuccessFavoriteTask('Deleted favorite task successfully', favoriteTaskBuffer);
 
-      setTaskRequest(defaultTask());
+      setTaskRequest(defaultTaskRequest(supportedTasks[0]));
       setOpenFavoriteDialog(false);
       setCallToDeleteFavoriteTask(false);
       setCallToUpdateFavoriteTask(false);
     } catch (e) {
       setDeletingFavoriteTask(false);
       onFailFavoriteTask && onFailFavoriteTask(e as Error, favoriteTaskBuffer);
+    }
+  };
+
+  // Order the menu items based on the supported tasks
+  const renderMenuItem = (taskName: string, taskNameRemap: Record<string, string>) => {
+    switch (taskName) {
+      case 'patrol':
+        return (
+          <MenuItem value={taskName} disabled={!patrolWaypoints || patrolWaypoints.length === 0}>
+            {taskNameRemap[taskName] ?? 'Patrol'}
+          </MenuItem>
+        );
+      case 'delivery':
+        return (
+          <MenuItem
+            value={taskName}
+            disabled={
+              Object.keys(pickupPoints).length === 0 || Object.keys(dropoffPoints).length === 0
+            }
+          >
+            {taskNameRemap[taskName] ?? 'Delivery'}
+          </MenuItem>
+        );
+      case 'clean':
+        return (
+          <MenuItem value={taskName} disabled={!cleaningZones || cleaningZones.length === 0}>
+            {taskNameRemap[taskName] ?? 'Clean'}
+          </MenuItem>
+        );
+      case 'custom_compose':
+        return (
+          <MenuItem value={taskName}>{taskNameRemap[taskName] ?? 'Custom Compose Task'}</MenuItem>
+        );
+      case 'delivery_pickup':
+        return (
+          <MenuItem
+            value={taskName}
+            disabled={
+              Object.keys(pickupPoints).length === 0 || Object.keys(dropoffPoints).length === 0
+            }
+            sx={{
+              '& .MuiMenu-list': {
+                fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+              },
+            }}
+          >
+            {taskNameRemap[taskName] ?? 'Delivery - 1:1'}
+          </MenuItem>
+        );
+      case 'delivery_sequential_lot_pickup':
+        return (
+          <MenuItem value={taskName} disabled={Object.keys(dropoffPoints).length === 0}>
+            {taskNameRemap[taskName] ?? 'Delivery - Sequential lot pick up'}
+          </MenuItem>
+        );
+      case 'delivery_area_pickup':
+        return (
+          <MenuItem value={taskName} disabled={Object.keys(dropoffPoints).length === 0}>
+            {taskNameRemap[taskName] ?? 'Delivery - Area pick up'}
+          </MenuItem>
+        );
+      default:
+        return undefined;
     }
   };
 
@@ -707,7 +794,11 @@ export function CreateTaskForm({
                       }}
                       InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
                     >
-                      <MenuItem
+                      {supportedTasks.map((taskName) => {
+                        return renderMenuItem(taskName, taskNameRemap);
+                      })}
+
+                      {/* <MenuItem
                         value="delivery_pickup"
                         disabled={
                           Object.keys(pickupPoints).length === 0 ||
@@ -754,7 +845,7 @@ export function CreateTaskForm({
                       >
                         Clean
                       </MenuItem>
-                      <MenuItem value="custom_compose">Custom Compose Task</MenuItem>
+                      <MenuItem value="custom_compose">Custom Compose Task</MenuItem> */}
                     </TextField>
                   </Grid>
                   <Grid item xs={isScreenHeightLessThan800 ? 6 : 7}>

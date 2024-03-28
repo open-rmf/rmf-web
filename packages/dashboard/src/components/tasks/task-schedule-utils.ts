@@ -166,8 +166,11 @@ export const apiScheduleToSchedule = (scheduleTask: ApiSchedule[]): Schedule => 
   };
 };
 
-export const getScheduledTaskTitle = (task: ScheduledTask): string => {
-  const shortDescription = getShortDescription(task.task_request);
+export const getScheduledTaskTitle = (
+  task: ScheduledTask,
+  taskNameRemap?: Record<string, string>,
+): string => {
+  const shortDescription = getShortDescription(task.task_request, taskNameRemap);
   if (!task.task_request || !task.task_request.category || !shortDescription) {
     return `[${task.id}] Unknown`;
   }
