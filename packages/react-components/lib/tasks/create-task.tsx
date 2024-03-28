@@ -43,13 +43,13 @@ import {
   makeDefaultCleanTaskDescription,
   CleanTaskDescription,
   CleanTaskForm,
-} from './descriptions/clean';
-import { CustomComposeTaskDescription, CustomComposeTaskForm } from './descriptions/custom-compose';
+} from './types/clean';
+import { CustomComposeTaskDescription, CustomComposeTaskForm } from './types/custom-compose';
 import {
   SimpleDeliveryTaskDescription,
   SimpleDeliveryTaskForm,
   makeDefaultSimpleDeliveryTaskDescription,
-} from './descriptions/delivery-simple';
+} from './types/delivery-simple';
 import {
   DeliveryCustomTaskForm,
   DeliveryCustomTaskDescription,
@@ -57,12 +57,8 @@ import {
   DeliveryTaskForm,
   makeDefaultDeliveryCustomTaskDescription,
   makeDefaultDeliveryTaskDescription,
-} from './descriptions/delivery-custom';
-import {
-  makeDefaultPatrolTask,
-  PatrolTaskDescription,
-  PatrolTaskForm,
-} from './descriptions/patrol';
+} from './types/delivery-custom';
+import { makeDefaultPatrolTask, PatrolTaskDescription, PatrolTaskForm } from './types/patrol';
 
 type TaskDescription =
   | DeliveryTaskDescription
@@ -797,55 +793,6 @@ export function CreateTaskForm({
                       {supportedTasks.map((taskName) => {
                         return renderMenuItem(taskName, taskNameRemap);
                       })}
-
-                      {/* <MenuItem
-                        value="delivery_pickup"
-                        disabled={
-                          Object.keys(pickupPoints).length === 0 ||
-                          Object.keys(dropoffPoints).length === 0
-                        }
-                        sx={{
-                          '& .MuiMenu-list': {
-                            fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                          },
-                        }}
-                      >
-                        Delivery - 1:1
-                      </MenuItem>
-                      <MenuItem
-                        value="delivery_sequential_lot_pickup"
-                        disabled={Object.keys(dropoffPoints).length === 0}
-                      >
-                        Delivery - Sequential lot pick up
-                      </MenuItem>
-                      <MenuItem
-                        value="delivery_area_pickup"
-                        disabled={Object.keys(dropoffPoints).length === 0}
-                      >
-                        Delivery - Area pick up
-                      </MenuItem>
-                      <MenuItem
-                        value="patrol"
-                        disabled={!patrolWaypoints || patrolWaypoints.length === 0}
-                      >
-                        Patrol
-                      </MenuItem>
-                      <MenuItem
-                        value="delivery"
-                        disabled={
-                          Object.keys(pickupPoints).length === 0 ||
-                          Object.keys(dropoffPoints).length === 0
-                        }
-                      >
-                        Delivery
-                      </MenuItem>
-                      <MenuItem
-                        value="clean"
-                        disabled={!cleaningZones || cleaningZones.length === 0}
-                      >
-                        Clean
-                      </MenuItem>
-                      <MenuItem value="custom_compose">Custom Compose Task</MenuItem> */}
                     </TextField>
                   </Grid>
                   <Grid item xs={isScreenHeightLessThan800 ? 6 : 7}>
