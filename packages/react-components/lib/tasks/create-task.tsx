@@ -5,9 +5,7 @@
 
 import UpdateIcon from '@mui/icons-material/Create';
 import DeleteIcon from '@mui/icons-material/Delete';
-import PlaceOutlined from '@mui/icons-material/PlaceOutlined';
 import {
-  Autocomplete,
   Box,
   Button,
   Checkbox,
@@ -25,7 +23,6 @@ import {
   IconButton,
   List,
   ListItem,
-  ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
   MenuItem,
@@ -42,202 +39,33 @@ import type { TaskFavoritePydantic as TaskFavorite, TaskRequest } from 'api-clie
 import React from 'react';
 import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
-import { PositiveIntField } from '../form-inputs';
-
-// A bunch of manually defined descriptions to avoid using `any`.
-export interface PatrolTaskDescription {
-  places: string[];
-  rounds: number;
-}
-
-interface LotPickupActivity {
-  category: string;
-  description: {
-    unix_millis_action_duration_estimate: number;
-    category: string;
-    description: {
-      cart_id: string;
-      pickup_lot: string;
-    };
-  };
-}
-
-interface ZonePickupActivity {
-  category: string;
-  description: {
-    unix_millis_action_duration_estimate: number;
-    category: string;
-    description: {
-      cart_id: string;
-      pickup_zone: string;
-    };
-  };
-}
-
-interface GoToPlaceActivity {
-  category: string;
-  description: string;
-}
-
-interface CartCustomPickupPhase {
-  activity: {
-    category: string;
-    description: {
-      activities: [go_to_pickup: GoToPlaceActivity, pickup_cart: ZonePickupActivity];
-    };
-  };
-}
-
-interface CartPickupPhase {
-  activity: {
-    category: string;
-    description: {
-      activities: [go_to_pickup: GoToPlaceActivity, pickup_cart: LotPickupActivity];
-    };
-  };
-}
-
-interface DropoffActivity {
-  category: string;
-  description: {
-    unix_millis_action_duration_estimate: number;
-    category: string;
-    description: {};
-  };
-}
-
-interface OneOfWaypoint {
-  waypoint: string;
-}
-
-interface GoToOneOfThePlacesActivity {
-  category: string;
-  description: {
-    one_of: OneOfWaypoint[];
-    constraints: [
-      {
-        category: string;
-        description: string;
-      },
-    ];
-  };
-}
-
-interface OnCancelDropoff {
-  category: string;
-  description: [
-    go_to_one_of_the_places: GoToOneOfThePlacesActivity,
-    delivery_dropoff: DropoffActivity,
-  ];
-}
-
-interface DeliveryWithCancellationPhase {
-  activity: {
-    category: string;
-    description: {
-      activities: [go_to_place: GoToPlaceActivity];
-    };
-  };
-  on_cancel: OnCancelDropoff[];
-}
-
-interface CartDropoffPhase {
-  activity: {
-    category: string;
-    description: {
-      activities: [delivery_dropoff: DropoffActivity];
-    };
-  };
-}
-
-export interface DeliveryCustomTaskDescription {
-  category: string;
-  phases: [
-    pickup_phase: CartCustomPickupPhase,
-    delivery_phase: DeliveryWithCancellationPhase,
-    dropoff_phase: CartDropoffPhase,
-  ];
-}
-
-export interface DeliveryTaskDescription {
-  category: string;
-  phases: [
-    pickup_phase: CartPickupPhase,
-    delivery_phase: DeliveryWithCancellationPhase,
-    dropoff_phase: CartDropoffPhase,
-  ];
-}
-
-type CustomComposeTaskDescription = string;
+import {
+  makeDefaultCleanTaskDescription,
+  CleanTaskDescription,
+  CleanTaskForm,
+} from './types/clean';
+import { CustomComposeTaskDescription, CustomComposeTaskForm } from './types/custom-compose';
+import {
+  SimpleDeliveryTaskDescription,
+  SimpleDeliveryTaskForm,
+  makeDefaultSimpleDeliveryTaskDescription,
+} from './types/delivery-simple';
+import {
+  DeliveryCustomTaskForm,
+  DeliveryCustomTaskDescription,
+  DeliveryTaskDescription,
+  DeliveryTaskForm,
+  makeDefaultDeliveryCustomTaskDescription,
+  makeDefaultDeliveryTaskDescription,
+} from './types/delivery-custom';
+import { makeDefaultPatrolTask, PatrolTaskDescription, PatrolTaskForm } from './types/patrol';
 
 type TaskDescription =
   | DeliveryTaskDescription
   | DeliveryCustomTaskDescription
-  | PatrolTaskDescription;
-
-const isNonEmptyString = (value: string): boolean => value.length > 0;
-
-const isDeliveryTaskDescriptionValid = (
-  taskDescription: DeliveryTaskDescription,
-  pickupPoints: Record<string, string>,
-  dropoffPoints: Record<string, string>,
-): boolean => {
-  const goToPickup = taskDescription.phases[0].activity.description.activities[0];
-  const pickup = taskDescription.phases[0].activity.description.activities[1];
-  const goToDropoff = taskDescription.phases[1].activity.description.activities[0];
-  return (
-    isNonEmptyString(goToPickup.description) &&
-    Object.keys(pickupPoints).includes(goToPickup.description) &&
-    pickupPoints[goToPickup.description] === pickup.description.description.pickup_lot &&
-    isNonEmptyString(pickup.description.description.cart_id) &&
-    isNonEmptyString(goToDropoff.description) &&
-    Object.keys(dropoffPoints).includes(goToDropoff.description)
-  );
-};
-
-const isDeliveryCustomTaskDescriptionValid = (
-  taskDescription: DeliveryCustomTaskDescription,
-  pickupZones: string[],
-  dropoffPoints: string[],
-): boolean => {
-  const goToPickup = taskDescription.phases[0].activity.description.activities[0];
-  const pickup = taskDescription.phases[0].activity.description.activities[1];
-  const goToDropoff = taskDescription.phases[1].activity.description.activities[0];
-  return (
-    isNonEmptyString(goToPickup.description) &&
-    isNonEmptyString(pickup.description.description.pickup_zone) &&
-    pickupZones.includes(pickup.description.description.pickup_zone) &&
-    isNonEmptyString(pickup.description.description.cart_id) &&
-    isNonEmptyString(goToDropoff.description) &&
-    dropoffPoints.includes(goToDropoff.description)
-  );
-};
-
-const isPatrolTaskDescriptionValid = (taskDescription: PatrolTaskDescription): boolean => {
-  if (taskDescription.places.length === 0) {
-    return false;
-  }
-  for (const place of taskDescription.places) {
-    if (place.length === 0) {
-      return false;
-    }
-  }
-  return taskDescription.rounds > 0;
-};
-
-const isCustomTaskDescriptionValid = (taskDescription: string): boolean => {
-  if (taskDescription.length === 0) {
-    return false;
-  }
-
-  try {
-    JSON.parse(taskDescription);
-  } catch (e) {
-    return false;
-  }
-
-  return true;
-};
+  | PatrolTaskDescription
+  | SimpleDeliveryTaskDescription
+  | CleanTaskDescription;
 
 const classes = {
   title: 'dialogue-info-value',
@@ -266,646 +94,6 @@ const StyledDialog = styled((props: DialogProps) => <Dialog {...props} />)(({ th
     minWidth: 80,
   },
 }));
-
-export function getShortDescription(taskRequest: TaskRequest): string | undefined {
-  if (taskRequest.category === 'patrol') {
-    const formattedPlaces = taskRequest.description.places.map((place: string) => `[${place}]`);
-    return `[Patrol] [${taskRequest.description.rounds}] round/s, along ${formattedPlaces.join(
-      ', ',
-    )}`;
-  }
-
-  // This section is only valid for custom delivery types
-  // FIXME: This block looks like it makes assumptions about the structure of
-  // the task description in order to parse it, but it is following the
-  // statically defined description (object) at the top of this file. The
-  // descriptions should be replaced by a schema in general, however the better
-  // approach now should be to make each task description testable and in charge
-  // of their own short descriptions.
-  try {
-    const goToPickup: GoToPlaceActivity =
-      taskRequest.description.phases[0].activity.description.activities[0];
-    const pickup: LotPickupActivity =
-      taskRequest.description.phases[0].activity.description.activities[1];
-    const cartId = pickup.description.description.cart_id;
-    const goToDropoff: GoToPlaceActivity =
-      taskRequest.description.phases[1].activity.description.activities[0];
-
-    switch (taskRequest.description.category) {
-      case 'delivery_pickup': {
-        return `[Delivery - 1:1] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
-      }
-      case 'delivery_sequential_lot_pickup': {
-        return `[Delivery - Sequential lot pick up] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
-      }
-      case 'delivery_area_pickup': {
-        return `[Delivery - Area pick up] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
-      }
-      default:
-        return `[Unknown] type "${taskRequest.description.category}"`;
-    }
-  } catch (e) {
-    if (e instanceof TypeError) {
-      console.error(`Failed to parse custom delivery: ${e.message}`);
-    } else {
-      console.error(
-        `Failed to generate short description from task of category: ${taskRequest.category}: ${
-          (e as Error).message
-        }`,
-      );
-    }
-
-    try {
-      const descriptionString = JSON.stringify(taskRequest.description);
-      console.error(descriptionString);
-      return descriptionString;
-    } catch (e) {
-      console.error(
-        `Failed to parse description of task of category: ${taskRequest.category}: ${
-          (e as Error).message
-        }`,
-      );
-      return undefined;
-    }
-  }
-}
-
-export function deliveryInsertPickup(
-  taskDescription: DeliveryTaskDescription,
-  pickupPlace: string,
-  pickupLot: string,
-): DeliveryTaskDescription {
-  taskDescription.phases[0].activity.description.activities[0].description = pickupPlace;
-  taskDescription.phases[0].activity.description.activities[1].description.description.pickup_lot =
-    pickupLot;
-  return taskDescription;
-}
-
-export function deliveryInsertCartId(
-  taskDescription: DeliveryTaskDescription,
-  cartId: string,
-): DeliveryTaskDescription {
-  taskDescription.phases[0].activity.description.activities[1].description.description.cart_id =
-    cartId;
-  return taskDescription;
-}
-
-export function deliveryInsertDropoff(
-  taskDescription: DeliveryTaskDescription,
-  dropoffPlace: string,
-): DeliveryTaskDescription {
-  taskDescription.phases[1].activity.description.activities[0].description = dropoffPlace;
-  return taskDescription;
-}
-
-export function deliveryInsertOnCancel(
-  taskDescription: DeliveryTaskDescription,
-  onCancelPlaces: string[],
-): DeliveryTaskDescription {
-  const goToOneOfThePlaces: GoToOneOfThePlacesActivity = {
-    category: 'go_to_place',
-    description: {
-      one_of: onCancelPlaces.map((placeName) => {
-        return {
-          waypoint: placeName,
-        };
-      }),
-      constraints: [
-        {
-          category: 'prefer_same_map',
-          description: '',
-        },
-      ],
-    },
-  };
-  const deliveryDropoff: DropoffActivity = {
-    category: 'perform_action',
-    description: {
-      unix_millis_action_duration_estimate: 60000,
-      category: 'delivery_dropoff',
-      description: {},
-    },
-  };
-  const onCancelDropoff: OnCancelDropoff = {
-    category: 'sequence',
-    description: [goToOneOfThePlaces, deliveryDropoff],
-  };
-  taskDescription.phases[1].on_cancel = [onCancelDropoff];
-  return taskDescription;
-}
-
-interface DeliveryTaskFormProps {
-  taskDesc: DeliveryTaskDescription;
-  pickupPoints: Record<string, string>;
-  cartIds: string[];
-  dropoffPoints: Record<string, string>;
-  onChange(taskDesc: TaskDescription): void;
-  allowSubmit(allow: boolean): void;
-}
-
-function DeliveryTaskForm({
-  taskDesc,
-  pickupPoints = {},
-  cartIds = [],
-  dropoffPoints = {},
-  onChange,
-  allowSubmit,
-}: DeliveryTaskFormProps) {
-  const theme = useTheme();
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
-  const onInputChange = (desc: DeliveryTaskDescription) => {
-    allowSubmit(isDeliveryTaskDescriptionValid(desc, pickupPoints, dropoffPoints));
-    onChange(desc);
-  };
-
-  return (
-    <Grid container spacing={theme.spacing(2)} justifyContent="left" alignItems="center">
-      <Grid item xs={8}>
-        <Autocomplete
-          id="pickup-location"
-          freeSolo
-          fullWidth
-          options={Object.keys(pickupPoints).sort()}
-          value={taskDesc.phases[0].activity.description.activities[0].description}
-          onInputChange={(_ev, newValue) => {
-            const pickupLot = pickupPoints[newValue] ?? '';
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryInsertPickup(newTaskDesc, newValue, pickupLot);
-            onInputChange(newTaskDesc);
-          }}
-          onBlur={(ev) => {
-            const place = (ev.target as HTMLInputElement).value;
-            const pickupLot = pickupPoints[place] ?? '';
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryInsertPickup(newTaskDesc, place, pickupLot);
-            onInputChange(newTaskDesc);
-          }}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
-              fontSize: isScreenHeightLessThan800 ? 14 : 20,
-            },
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Pickup Location"
-              required
-              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
-              error={
-                !Object.keys(pickupPoints).includes(
-                  taskDesc.phases[0].activity.description.activities[0].description,
-                )
-              }
-            />
-          )}
-        />
-      </Grid>
-      <Grid item xs={4}>
-        <Autocomplete
-          id="cart_id"
-          freeSolo
-          fullWidth
-          options={cartIds}
-          value={
-            taskDesc.phases[0].activity.description.activities[1].description.description.cart_id
-          }
-          getOptionLabel={(option) => option}
-          onInputChange={(_ev, newValue) => {
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryInsertCartId(newTaskDesc, newValue);
-            onInputChange(newTaskDesc);
-          }}
-          onBlur={(ev) => {
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryInsertCartId(newTaskDesc, (ev.target as HTMLInputElement).value);
-            onInputChange(newTaskDesc);
-          }}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
-              fontSize: isScreenHeightLessThan800 ? 14 : 20,
-            },
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Cart ID"
-              required
-              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
-              error={
-                taskDesc.phases[0].activity.description.activities[1].description.description
-                  .cart_id.length === 0
-              }
-            />
-          )}
-        />
-      </Grid>
-      <Grid item xs={8}>
-        <Autocomplete
-          id="dropoff-location"
-          freeSolo
-          fullWidth
-          options={Object.keys(dropoffPoints).sort()}
-          value={taskDesc.phases[1].activity.description.activities[0].description}
-          onInputChange={(_ev, newValue) => {
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryInsertDropoff(newTaskDesc, newValue);
-            onInputChange(newTaskDesc);
-          }}
-          onBlur={(ev) => {
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryInsertDropoff(newTaskDesc, (ev.target as HTMLInputElement).value);
-            onInputChange(newTaskDesc);
-          }}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
-              fontSize: isScreenHeightLessThan800 ? 14 : 20,
-            },
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Dropoff Location"
-              required
-              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
-              error={
-                !Object.keys(dropoffPoints).includes(
-                  taskDesc.phases[1].activity.description.activities[0].description,
-                )
-              }
-            />
-          )}
-        />
-      </Grid>
-    </Grid>
-  );
-}
-
-export function deliveryCustomInsertPickup(
-  taskDescription: DeliveryCustomTaskDescription,
-  pickupPlace: string,
-  pickupZone: string,
-): DeliveryCustomTaskDescription {
-  taskDescription.phases[0].activity.description.activities[0].description = pickupPlace;
-  taskDescription.phases[0].activity.description.activities[1].description.description.pickup_zone =
-    pickupZone;
-  return taskDescription;
-}
-
-export function deliveryCustomInsertCartId(
-  taskDescription: DeliveryCustomTaskDescription,
-  cartId: string,
-): DeliveryCustomTaskDescription {
-  taskDescription.phases[0].activity.description.activities[1].description.description.cart_id =
-    cartId;
-  return taskDescription;
-}
-
-export function deliveryCustomInsertDropoff(
-  taskDescription: DeliveryCustomTaskDescription,
-  dropoffPlace: string,
-): DeliveryCustomTaskDescription {
-  taskDescription.phases[1].activity.description.activities[0].description = dropoffPlace;
-  return taskDescription;
-}
-
-export function deliveryCustomInsertOnCancel(
-  taskDescription: DeliveryCustomTaskDescription,
-  onCancelPlaces: string[],
-): DeliveryCustomTaskDescription {
-  const goToOneOfThePlaces: GoToOneOfThePlacesActivity = {
-    category: 'go_to_place',
-    description: {
-      one_of: onCancelPlaces.map((placeName) => {
-        return {
-          waypoint: placeName,
-        };
-      }),
-      constraints: [
-        {
-          category: 'prefer_same_map',
-          description: '',
-        },
-      ],
-    },
-  };
-  const deliveryDropoff: DropoffActivity = {
-    category: 'perform_action',
-    description: {
-      unix_millis_action_duration_estimate: 60000,
-      category: 'delivery_dropoff',
-      description: {},
-    },
-  };
-  const onCancelDropoff: OnCancelDropoff = {
-    category: 'sequence',
-    description: [goToOneOfThePlaces, deliveryDropoff],
-  };
-  taskDescription.phases[1].on_cancel = [onCancelDropoff];
-  return taskDescription;
-}
-
-interface DeliveryCustomProps {
-  taskDesc: DeliveryCustomTaskDescription;
-  pickupZones: string[];
-  cartIds: string[];
-  dropoffPoints: string[];
-  onChange(taskDesc: DeliveryCustomTaskDescription): void;
-  allowSubmit(allow: boolean): void;
-}
-
-function DeliveryCustomTaskForm({
-  taskDesc,
-  pickupZones = [],
-  cartIds = [],
-  dropoffPoints = [],
-  onChange,
-  allowSubmit,
-}: DeliveryCustomProps) {
-  const theme = useTheme();
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
-  const onInputChange = (desc: DeliveryCustomTaskDescription) => {
-    allowSubmit(isDeliveryCustomTaskDescriptionValid(desc, pickupZones, dropoffPoints));
-    onChange(desc);
-  };
-
-  return (
-    <Grid container spacing={theme.spacing(2)} justifyContent="left" alignItems="center">
-      <Grid item xs={8}>
-        <Autocomplete
-          id="pickup-zone"
-          freeSolo
-          fullWidth
-          options={pickupZones.sort()}
-          value={taskDesc.phases[0].activity.description.activities[0].description}
-          onInputChange={(_ev, newValue) => {
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryCustomInsertPickup(newTaskDesc, newValue, newValue);
-            onInputChange(newTaskDesc);
-          }}
-          onBlur={(ev) => {
-            const zone = (ev.target as HTMLInputElement).value;
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryCustomInsertPickup(newTaskDesc, zone, zone);
-            onInputChange(newTaskDesc);
-          }}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
-              fontSize: isScreenHeightLessThan800 ? 14 : 20,
-            },
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Pickup Zone"
-              required
-              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
-              error={
-                !pickupZones.includes(
-                  taskDesc.phases[0].activity.description.activities[0].description,
-                )
-              }
-            />
-          )}
-        />
-      </Grid>
-      <Grid item xs={4}>
-        <Autocomplete
-          id="cart-id"
-          freeSolo
-          fullWidth
-          options={cartIds}
-          value={
-            taskDesc.phases[0].activity.description.activities[1].description.description.cart_id
-          }
-          getOptionLabel={(option) => option}
-          onInputChange={(_ev, newValue) => {
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryCustomInsertCartId(newTaskDesc, newValue);
-            onInputChange(newTaskDesc);
-          }}
-          onBlur={(ev) => {
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryCustomInsertCartId(
-              newTaskDesc,
-              (ev.target as HTMLInputElement).value,
-            );
-            onInputChange(newTaskDesc);
-          }}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
-              fontSize: isScreenHeightLessThan800 ? 14 : 20,
-            },
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Cart ID"
-              required
-              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
-              error={
-                taskDesc.phases[0].activity.description.activities[1].description.description
-                  .cart_id.length === 0
-              }
-            />
-          )}
-        />
-      </Grid>
-      <Grid item xs={8}>
-        <Autocomplete
-          id="dropoff-location"
-          freeSolo
-          fullWidth
-          options={dropoffPoints.sort()}
-          value={taskDesc.phases[1].activity.description.activities[0].description}
-          onInputChange={(_ev, newValue) => {
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryCustomInsertDropoff(newTaskDesc, newValue);
-            onInputChange(newTaskDesc);
-          }}
-          onBlur={(ev) => {
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryCustomInsertDropoff(
-              newTaskDesc,
-              (ev.target as HTMLInputElement).value,
-            );
-            onInputChange(newTaskDesc);
-          }}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
-              fontSize: isScreenHeightLessThan800 ? 14 : 20,
-            },
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Dropoff Location"
-              required
-              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
-              error={
-                !dropoffPoints.includes(
-                  taskDesc.phases[1].activity.description.activities[0].description,
-                )
-              }
-            />
-          )}
-        />
-      </Grid>
-    </Grid>
-  );
-}
-
-interface PlaceListProps {
-  places: string[];
-  onClick(places_index: number): void;
-}
-
-function PlaceList({ places, onClick }: PlaceListProps) {
-  const theme = useTheme();
-  return (
-    <List
-      dense
-      sx={{
-        bgcolor: 'background.paper',
-        marginLeft: theme.spacing(3),
-        marginRight: theme.spacing(3),
-      }}
-    >
-      {places.map((value, index) => (
-        <ListItem
-          key={`${value}-${index}`}
-          secondaryAction={
-            <IconButton edge="end" aria-label="delete" onClick={() => onClick(index)}>
-              <DeleteIcon />
-            </IconButton>
-          }
-        >
-          <ListItemIcon>
-            <PlaceOutlined />
-          </ListItemIcon>
-          <ListItemText primary={`Place Name:   ${value}`} />
-        </ListItem>
-      ))}
-    </List>
-  );
-}
-
-interface PatrolTaskFormProps {
-  taskDesc: PatrolTaskDescription;
-  patrolWaypoints: string[];
-  onChange(patrolTaskDescription: PatrolTaskDescription): void;
-  allowSubmit(allow: boolean): void;
-}
-
-function PatrolTaskForm({ taskDesc, patrolWaypoints, onChange, allowSubmit }: PatrolTaskFormProps) {
-  const theme = useTheme();
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
-  const onInputChange = (desc: PatrolTaskDescription) => {
-    allowSubmit(isPatrolTaskDescriptionValid(desc));
-    onChange(desc);
-  };
-  allowSubmit(isPatrolTaskDescriptionValid(taskDesc));
-
-  return (
-    <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">
-      <Grid item xs={isScreenHeightLessThan800 ? 8 : 10}>
-        <Autocomplete
-          id="place-input"
-          freeSolo
-          fullWidth
-          options={patrolWaypoints.sort()}
-          onChange={(_ev, newValue) =>
-            newValue !== null &&
-            onInputChange({
-              ...taskDesc,
-              places: taskDesc.places.concat(newValue).filter((el: string) => el),
-            })
-          }
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
-              fontSize: isScreenHeightLessThan800 ? 14 : 20,
-            },
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Place Name"
-              required={true}
-              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
-            />
-          )}
-        />
-      </Grid>
-      <Grid item xs={isScreenHeightLessThan800 ? 4 : 2}>
-        <PositiveIntField
-          id="loops"
-          label="Loops"
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
-              fontSize: isScreenHeightLessThan800 ? 14 : 20,
-            },
-          }}
-          value={taskDesc.rounds}
-          onChange={(_ev, val) => {
-            onInputChange({
-              ...taskDesc,
-              rounds: val,
-            });
-          }}
-        />
-      </Grid>
-      <Grid item xs={10}>
-        <PlaceList
-          places={taskDesc && taskDesc.places ? taskDesc.places : []}
-          onClick={(places_index) =>
-            taskDesc.places.splice(places_index, 1) &&
-            onInputChange({
-              ...taskDesc,
-            })
-          }
-        />
-      </Grid>
-    </Grid>
-  );
-}
-
-interface CustomComposeTaskFormProps {
-  taskDesc: CustomComposeTaskDescription;
-  onChange(customComposeTaskDescription: CustomComposeTaskDescription): void;
-  allowSubmit(allow: boolean): void;
-}
-
-function CustomComposeTaskForm({ taskDesc, onChange, allowSubmit }: CustomComposeTaskFormProps) {
-  const theme = useTheme();
-  const onInputChange = (desc: CustomComposeTaskDescription) => {
-    allowSubmit(isCustomTaskDescriptionValid(desc));
-    onChange(desc);
-  };
-
-  return (
-    <Grid container spacing={theme.spacing(2)}>
-      <Grid item xs={12}>
-        <TextField
-          label="Multiline"
-          multiline
-          rows={8}
-          value={taskDesc}
-          fullWidth
-          onChange={(ev) => {
-            onInputChange(ev.target.value);
-          }}
-        />
-      </Grid>
-    </Grid>
-  );
-}
 
 interface FavoriteTaskProps {
   listItemText: string;
@@ -976,159 +164,47 @@ function FavoriteTask({
   );
 }
 
-export function defaultDeliveryTaskDescription(): DeliveryTaskDescription {
-  return {
-    category: 'delivery_pickup',
-    phases: [
-      {
-        activity: {
-          category: 'sequence',
-          description: {
-            activities: [
-              {
-                category: 'go_to_place',
-                description: '',
-              },
-              {
-                category: 'perform_action',
-                description: {
-                  unix_millis_action_duration_estimate: 60000,
-                  category: 'delivery_pickup',
-                  description: {
-                    cart_id: '',
-                    pickup_lot: '',
-                  },
-                },
-              },
-            ],
-          },
-        },
-      },
-      {
-        activity: {
-          category: 'sequence',
-          description: {
-            activities: [
-              {
-                category: 'go_to_place',
-                description: '',
-              },
-            ],
-          },
-        },
-        on_cancel: [],
-      },
-      {
-        activity: {
-          category: 'sequence',
-          description: {
-            activities: [
-              {
-                category: 'perform_action',
-                description: {
-                  unix_millis_action_duration_estimate: 60000,
-                  category: 'delivery_dropoff',
-                  description: {},
-                },
-              },
-            ],
-          },
-        },
-      },
-    ],
-  };
-}
-
-export function defaultDeliveryCustomTaskDescription(
-  taskCategory: string,
-): DeliveryCustomTaskDescription {
-  return {
-    category: taskCategory,
-    phases: [
-      {
-        activity: {
-          category: 'sequence',
-          description: {
-            activities: [
-              {
-                category: 'go_to_place',
-                description: '',
-              },
-              {
-                category: 'perform_action',
-                description: {
-                  unix_millis_action_duration_estimate: 60000,
-                  category: taskCategory,
-                  description: {
-                    cart_id: '',
-                    pickup_zone: '',
-                  },
-                },
-              },
-            ],
-          },
-        },
-      },
-      {
-        activity: {
-          category: 'sequence',
-          description: {
-            activities: [
-              {
-                category: 'go_to_place',
-                description: '',
-              },
-            ],
-          },
-        },
-        on_cancel: [],
-      },
-      {
-        activity: {
-          category: 'sequence',
-          description: {
-            activities: [
-              {
-                category: 'perform_action',
-                description: {
-                  unix_millis_action_duration_estimate: 60000,
-                  category: 'delivery_dropoff',
-                  description: {},
-                },
-              },
-            ],
-          },
-        },
-      },
-    ],
-  };
-}
-
-export function defaultPatrolTask(): PatrolTaskDescription {
-  return {
-    places: [],
-    rounds: 1,
-  };
-}
-
-function defaultTaskDescription(taskCategory: string): TaskDescription | undefined {
-  switch (taskCategory) {
+function defaultTaskDescription(taskName: string): TaskDescription | undefined {
+  switch (taskName) {
     case 'delivery_pickup':
-      return defaultDeliveryTaskDescription();
+      return makeDefaultDeliveryTaskDescription();
     case 'delivery_sequential_lot_pickup':
     case 'delivery_area_pickup':
-      return defaultDeliveryCustomTaskDescription(taskCategory);
+      return makeDefaultDeliveryCustomTaskDescription(taskName);
     case 'patrol':
-      return defaultPatrolTask();
+      return makeDefaultPatrolTask();
+    case 'delivery':
+      return makeDefaultSimpleDeliveryTaskDescription();
+    case 'clean':
+      return makeDefaultCleanTaskDescription();
     default:
       return undefined;
   }
 }
 
-function defaultTask(): TaskRequest {
+function taskRequestCategory(taskName: string): string | undefined {
+  switch (taskName) {
+    case 'patrol':
+    case 'delivery':
+      return taskName;
+    case 'delivery_pickup':
+    case 'delivery_sequential_lot_pickup':
+    case 'delivery_area_pickup':
+    case 'clean':
+    case 'custom_compose':
+      return 'compose';
+    default:
+      return undefined;
+  }
+}
+
+function defaultTaskRequest(taskName: string): TaskRequest {
+  const category = taskRequestCategory(taskName);
+  const description = defaultTaskDescription(taskName);
+
   return {
-    category: 'compose',
-    description: defaultDeliveryTaskDescription(),
+    category: category ?? 'compose',
+    description: description ?? makeDefaultDeliveryTaskDescription(),
     unix_millis_earliest_start_time: 0,
     unix_millis_request_time: Date.now(),
     priority: { type: 'binary', value: 0 },
@@ -1204,7 +280,7 @@ const defaultFavoriteTask = (): TaskFavorite => {
     id: '',
     name: '',
     category: 'compose',
-    description: defaultDeliveryTaskDescription(),
+    description: makeDefaultDeliveryTaskDescription(),
     unix_millis_earliest_start_time: 0,
     priority: { type: 'binary', value: 0 },
     user: '',
@@ -1217,6 +293,8 @@ export interface CreateTaskFormProps
    * Shows extra UI elements suitable for submittng batched tasks. Default to 'false'.
    */
   user: string;
+  supportedTasks?: string[];
+  taskNameRemap?: Record<string, string>;
   allowBatch?: boolean;
   cleaningZones?: string[];
   patrolWaypoints?: string[];
@@ -1243,6 +321,8 @@ export interface CreateTaskFormProps
 
 export function CreateTaskForm({
   user,
+  supportedTasks = ['patrol', 'delivery', 'clean'],
+  taskNameRemap = {},
   /* eslint-disable @typescript-eslint/no-unused-vars */
   cleaningZones = [],
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -1285,7 +365,7 @@ export function CreateTaskForm({
 
   const [taskType, setTaskType] = React.useState<string | undefined>(undefined);
   const [taskRequest, setTaskRequest] = React.useState<TaskRequest>(
-    () => requestTask ?? defaultTask(),
+    () => requestTask ?? defaultTaskRequest(supportedTasks[0]),
   );
 
   const [submitting, setSubmitting] = React.useState(false);
@@ -1353,28 +433,51 @@ export function CreateTaskForm({
   };
 
   const renderTaskDescriptionForm = () => {
-    if (taskRequest.category === 'patrol') {
-      return (
-        <PatrolTaskForm
-          taskDesc={taskRequest.description as PatrolTaskDescription}
-          patrolWaypoints={patrolWaypoints}
-          onChange={(desc) => handleTaskDescriptionChange('patrol', desc)}
-          allowSubmit={allowSubmit}
-        />
-      );
-    } else if (taskRequest.category === 'custom_compose') {
-      return (
-        <CustomComposeTaskForm
-          taskDesc={taskRequest.description as CustomComposeTaskDescription}
-          onChange={(desc) => {
-            handleCustomComposeTaskDescriptionChange(desc);
-          }}
-          allowSubmit={allowSubmit}
-        />
-      );
+    switch (taskRequest.category) {
+      case 'patrol':
+        return (
+          <PatrolTaskForm
+            taskDesc={taskRequest.description as PatrolTaskDescription}
+            patrolWaypoints={patrolWaypoints}
+            onChange={(desc) => handleTaskDescriptionChange('patrol', desc)}
+            allowSubmit={allowSubmit}
+          />
+        );
+      case 'delivery':
+        return (
+          <SimpleDeliveryTaskForm
+            taskDesc={taskRequest.description as SimpleDeliveryTaskDescription}
+            pickupPoints={pickupPoints}
+            dropoffPoints={dropoffPoints}
+            onChange={(desc) => handleTaskDescriptionChange('delivery', desc)}
+            allowSubmit={allowSubmit}
+          />
+        );
+      case 'custom_compose':
+        return (
+          <CustomComposeTaskForm
+            taskDesc={taskRequest.description as CustomComposeTaskDescription}
+            onChange={(desc) => {
+              handleCustomComposeTaskDescriptionChange(desc);
+            }}
+            allowSubmit={allowSubmit}
+          />
+        );
     }
 
     switch (taskRequest.description.category) {
+      case 'clean':
+        return (
+          <CleanTaskForm
+            taskDesc={taskRequest.description as CleanTaskDescription}
+            cleaningZones={cleaningZones}
+            onChange={(desc: CleanTaskDescription) => {
+              desc.category = taskRequest.description.category;
+              handleTaskDescriptionChange('compose', desc);
+            }}
+            allowSubmit={allowSubmit}
+          />
+        );
       case 'delivery_pickup':
         return (
           <DeliveryTaskForm
@@ -1425,7 +528,9 @@ export function CreateTaskForm({
         return;
       }
       taskRequest.description = newDesc;
-      const category = newType === 'patrol' ? 'patrol' : 'compose';
+
+      const primaryTaskCategories = ['patrol', 'delivery'];
+      const category = primaryTaskCategories.includes(newType) ? newType : 'compose';
       taskRequest.category = category;
 
       setFavoriteTaskBuffer({ ...favoriteTaskBuffer, category, description: newDesc });
@@ -1449,44 +554,7 @@ export function CreateTaskForm({
     request.requester = requester;
     request.unix_millis_request_time = Date.now();
 
-    if (
-      taskType === 'delivery_pickup' ||
-      taskType === 'delivery_sequential_lot_pickup' ||
-      taskType === 'delivery_area_pickup'
-    ) {
-      const goToOneOfThePlaces: GoToOneOfThePlacesActivity = {
-        category: 'go_to_place',
-        description: {
-          one_of: emergencyLots.map((placeName) => {
-            return {
-              waypoint: placeName,
-            };
-          }),
-          constraints: [
-            {
-              category: 'prefer_same_map',
-              description: '',
-            },
-          ],
-        },
-      };
-
-      // FIXME: there should not be any statically defined duration estimates as
-      // it makes assumptions of the deployments.
-      const deliveryDropoff: DropoffActivity = {
-        category: 'perform_action',
-        description: {
-          unix_millis_action_duration_estimate: 60000,
-          category: 'delivery_dropoff',
-          description: {},
-        },
-      };
-      const onCancelDropoff: OnCancelDropoff = {
-        category: 'sequence',
-        description: [goToOneOfThePlaces, deliveryDropoff],
-      };
-      request.description.phases[1].on_cancel = [onCancelDropoff];
-    } else if (taskType === 'custom_compose') {
+    if (taskType === 'custom_compose') {
       try {
         const obj = JSON.parse(request.description);
         request.category = 'compose';
@@ -1571,13 +639,76 @@ export function CreateTaskForm({
       onSuccessFavoriteTask &&
         onSuccessFavoriteTask('Deleted favorite task successfully', favoriteTaskBuffer);
 
-      setTaskRequest(defaultTask());
+      setTaskRequest(defaultTaskRequest(supportedTasks[0]));
       setOpenFavoriteDialog(false);
       setCallToDeleteFavoriteTask(false);
       setCallToUpdateFavoriteTask(false);
     } catch (e) {
       setDeletingFavoriteTask(false);
       onFailFavoriteTask && onFailFavoriteTask(e as Error, favoriteTaskBuffer);
+    }
+  };
+
+  // Order the menu items based on the supported tasks
+  const renderMenuItem = (taskName: string, taskNameRemap: Record<string, string>) => {
+    switch (taskName) {
+      case 'patrol':
+        return (
+          <MenuItem value={taskName} disabled={!patrolWaypoints || patrolWaypoints.length === 0}>
+            {taskNameRemap[taskName] ?? 'Patrol'}
+          </MenuItem>
+        );
+      case 'delivery':
+        return (
+          <MenuItem
+            value={taskName}
+            disabled={
+              Object.keys(pickupPoints).length === 0 || Object.keys(dropoffPoints).length === 0
+            }
+          >
+            {taskNameRemap[taskName] ?? 'Delivery'}
+          </MenuItem>
+        );
+      case 'clean':
+        return (
+          <MenuItem value={taskName} disabled={!cleaningZones || cleaningZones.length === 0}>
+            {taskNameRemap[taskName] ?? 'Clean'}
+          </MenuItem>
+        );
+      case 'custom_compose':
+        return (
+          <MenuItem value={taskName}>{taskNameRemap[taskName] ?? 'Custom Compose Task'}</MenuItem>
+        );
+      case 'delivery_pickup':
+        return (
+          <MenuItem
+            value={taskName}
+            disabled={
+              Object.keys(pickupPoints).length === 0 || Object.keys(dropoffPoints).length === 0
+            }
+            sx={{
+              '& .MuiMenu-list': {
+                fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+              },
+            }}
+          >
+            {taskNameRemap[taskName] ?? 'Delivery - 1:1'}
+          </MenuItem>
+        );
+      case 'delivery_sequential_lot_pickup':
+        return (
+          <MenuItem value={taskName} disabled={Object.keys(dropoffPoints).length === 0}>
+            {taskNameRemap[taskName] ?? 'Delivery - Sequential lot pick up'}
+          </MenuItem>
+        );
+      case 'delivery_area_pickup':
+        return (
+          <MenuItem value={taskName} disabled={Object.keys(dropoffPoints).length === 0}>
+            {taskNameRemap[taskName] ?? 'Delivery - Area pick up'}
+          </MenuItem>
+        );
+      default:
+        return undefined;
     }
   };
 
@@ -1659,39 +790,9 @@ export function CreateTaskForm({
                       }}
                       InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
                     >
-                      <MenuItem
-                        value="delivery_pickup"
-                        disabled={
-                          Object.keys(pickupPoints).length === 0 ||
-                          Object.keys(dropoffPoints).length === 0
-                        }
-                        sx={{
-                          '& .MuiMenu-list': {
-                            fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                          },
-                        }}
-                      >
-                        Delivery - 1:1
-                      </MenuItem>
-                      <MenuItem
-                        value="delivery_sequential_lot_pickup"
-                        disabled={Object.keys(dropoffPoints).length === 0}
-                      >
-                        Delivery - Sequential lot pick up
-                      </MenuItem>
-                      <MenuItem
-                        value="delivery_area_pickup"
-                        disabled={Object.keys(dropoffPoints).length === 0}
-                      >
-                        Delivery - Area pick up
-                      </MenuItem>
-                      <MenuItem
-                        value="patrol"
-                        disabled={!patrolWaypoints || patrolWaypoints.length === 0}
-                      >
-                        Patrol
-                      </MenuItem>
-                      <MenuItem value="custom_compose">Custom Compose Task</MenuItem>
+                      {supportedTasks.map((taskName) => {
+                        return renderMenuItem(taskName, taskNameRemap);
+                      })}
                     </TextField>
                   </Grid>
                   <Grid item xs={isScreenHeightLessThan800 ? 6 : 7}>
