@@ -3,28 +3,8 @@
 
 from __future__ import annotations
 
-from typing import List, Optional, Union
-
-from pydantic import BaseModel, Field
-from typing_extensions import Literal
-
-from . import error
-
-
-class RobotCommissionResponseItem(BaseModel):
-    success: Literal[True]
-
-
-class RobotCommissionResponseItem1(BaseModel):
-    success: Optional[Literal[False]] = None
-    errors: Optional[List[error.Error]] = Field(
-        None, description="Any error messages explaining why the request failed"
-    )
+from pydantic import BaseModel
 
 
 class RobotCommissionResponse(BaseModel):
-    __root__: Union[RobotCommissionResponseItem, RobotCommissionResponseItem1] = Field(
-        ...,
-        description="Response to a robot commission request",
-        title="Robot Commission Response",
-    )
+    pass
