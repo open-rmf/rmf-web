@@ -9,7 +9,7 @@ import {
   TableRow,
   useTheme,
 } from '@mui/material';
-import { ApiServerModelsRmfApiRobotStateStatus as RobotStatus } from 'api-client';
+import { ApiServerModelsRmfApiRobotStateStatus as RobotStatus, Commission } from 'api-client';
 import React from 'react';
 
 export interface RobotTableData {
@@ -20,6 +20,7 @@ export interface RobotTableData {
   estFinishTime?: number;
   lastUpdateTime?: number;
   level?: string;
+  commission?: Commission;
 }
 
 interface RobotRowProps extends RobotTableData {

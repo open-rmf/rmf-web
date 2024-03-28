@@ -64,6 +64,12 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
       }
     })();
 
+    const robotDecommissioned =
+      params.row.commission &&
+      params.row.commission.dispatch_tasks === false &&
+      params.row.commission.direct_tasks === false &&
+      params.row.commission.idle_behavior === false;
+
     return (
       <Box component="div" sx={statusLabelStyle}>
         <Typography
@@ -74,7 +80,7 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
             fontSize: isScreenHeightLessThan800 ? 10 : 16,
           }}
         >
-          {robotStatusToUpperCase(params.row.status)}
+          {robotDecommissioned ? 'DECOMMISSIONED' : robotStatusToUpperCase(params.row.status)}
         </Typography>
       </Box>
     );

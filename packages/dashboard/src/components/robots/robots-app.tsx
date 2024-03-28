@@ -64,6 +64,7 @@ export const RobotsApp = createMicroApp('Robots', () => {
                       : undefined,
                   lastUpdateTime: robot.unix_millis_time ? robot.unix_millis_time : undefined,
                   level: robot.location?.map || 'N/A',
+                  commission: robot.commission,
                 }))
               : [],
           };
