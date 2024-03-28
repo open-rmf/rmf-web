@@ -1,6 +1,6 @@
 import {
-  defaultDeliveryTaskDescription,
-  defaultDeliveryCustomTaskDescription,
+  makeDefaultDeliveryTaskDescription,
+  makeDefaultDeliveryCustomTaskDescription,
   DeliveryCustomTaskDescription,
   deliveryInsertCartId,
   deliveryInsertDropoff,
@@ -119,7 +119,7 @@ describe('Custom deliveries', () => {
     }
     expect(deliveryTaskDescription).not.toEqual(null);
 
-    let description = defaultDeliveryTaskDescription();
+    let description = makeDefaultDeliveryTaskDescription();
     description = deliveryInsertPickup(description, 'test_pickup_place', 'test_pickup_lot');
     description = deliveryInsertCartId(description, 'test_cart_id');
     description = deliveryInsertDropoff(description, 'test_dropoff_place');
@@ -236,7 +236,7 @@ describe('Custom deliveries', () => {
     }
     expect(deliveryTaskDescription).not.toEqual(null);
 
-    let description: DeliveryCustomTaskDescription = defaultDeliveryCustomTaskDescription(
+    let description: DeliveryCustomTaskDescription = makeDefaultDeliveryCustomTaskDescription(
       'delivery_sequential_lot_pickup',
     );
     description = deliveryCustomInsertPickup(description, 'test_pickup_place', 'test_pickup_zone');
@@ -356,7 +356,7 @@ describe('Custom deliveries', () => {
     expect(deliveryTaskDescription).not.toEqual(null);
 
     let description: DeliveryCustomTaskDescription =
-      defaultDeliveryCustomTaskDescription('delivery_area_pickup');
+      makeDefaultDeliveryCustomTaskDescription('delivery_area_pickup');
     description = deliveryCustomInsertPickup(description, 'test_pickup_place', 'test_pickup_zone');
     description = deliveryCustomInsertCartId(description, 'test_cart_id');
     description = deliveryCustomInsertDropoff(description, 'test_dropoff_place');
