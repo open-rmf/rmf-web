@@ -3,8 +3,30 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel
+from typing import List, Optional, Union
+
+from pydantic import BaseModel, Field
+from typing_extensions import Literal
+
+from . import error
+
+
+class ResultItem(BaseModel):
+    success: Literal[True]
+
+
+class ResultItem1(BaseModel):
+    success: Literal[False]
+    errors: Optional[List[error.Error]] = Field(
+        None, description="Any error messages explaining why the request failed"
+    )
+
+
+class Result(BaseModel):
+    __root__: Union[ResultItem, ResultItem1]
 
 
 class RobotCommissionResponse(BaseModel):
-    pass
+    commission: Result
+    pending_dispatch_tasks_policy: Optional[Result] = None
+    pending_direct_tasks_policy: Optional[Result] = None

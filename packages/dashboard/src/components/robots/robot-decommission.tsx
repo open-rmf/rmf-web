@@ -79,17 +79,33 @@ export function RobotDecommissionButton({
         reassignTasks,
       );
 
-      if (!resp.data.success) {
+      if (!resp.data.commission.success) {
         appController.showAlert(
           'error',
-          `Failed to decommission ${fleet}:${robotState.name}: ${resp.data.errors ?? ''}`,
+          `Failed to decommission ${fleet}:${robotState.name}: ${
+            resp.data.commission.errors ?? ''
+          }`,
         );
       } else {
+        const errors = [];
+        if (
+          resp.data.pending_direct_tasks_policy &&
+          !resp.data.pending_direct_tasks_policy?.success
+        ) {
+          errors.push(`${resp.data.pending_direct_tasks_policy.errors}`);
+        }
+        if (
+          resp.data.pending_dispatch_tasks_policy &&
+          !resp.data.pending_dispatch_tasks_policy?.success
+        ) {
+          errors.push(`${resp.data.pending_dispatch_tasks_policy.errors}`);
+        }
+
         appController.showAlert(
           'success',
           `Decommission of ${fleet}:${robotState.name} requested, ${
             reassignTasks ? 'with' : 'without'
-          } task re-assignment`,
+          } task re-assignment${errors.length !== 0 ? `, but with errors: ${errors}` : ''}`,
         );
       }
     } catch (e) {
@@ -115,10 +131,12 @@ export function RobotDecommissionButton({
         fleet,
         robotState.name,
       );
-      if (!resp.data.success) {
+      if (!resp.data.commission.success) {
         appController.showAlert(
           'error',
-          `Failed to recommission ${fleet}:${robotState.name}: ${resp.data.errors ?? ''}`,
+          `Failed to recommission ${fleet}:${robotState.name}: ${
+            resp.data.commission.errors ?? ''
+          }`,
         );
       } else {
         appController.showAlert('success', `Recommission of ${fleet}:${robotState.name} requested`);

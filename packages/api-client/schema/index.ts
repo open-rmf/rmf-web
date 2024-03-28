@@ -1840,22 +1840,6 @@ export default {
               },
             },
           },
-          '400': {
-            description: 'Bad Request',
-            content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/RobotCommissionResponseItem1' },
-              },
-            },
-          },
-          '404': {
-            description: 'Not Found',
-            content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/RobotCommissionResponseItem1' },
-              },
-            },
-          },
           '422': {
             description: 'Validation Error',
             content: {
@@ -1885,22 +1869,6 @@ export default {
             content: {
               'application/json': {
                 schema: { $ref: '#/components/schemas/RobotCommissionResponse' },
-              },
-            },
-          },
-          '400': {
-            description: 'Bad Request',
-            content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/RobotCommissionResponseItem1' },
-              },
-            },
-          },
-          '404': {
-            description: 'Not Found',
-            content: {
-              'application/json': {
-                schema: { $ref: '#/components/schemas/RobotCommissionResponseItem1' },
               },
             },
           },
@@ -3364,6 +3332,33 @@ export default {
           is_admin: { title: 'Is Admin', type: 'boolean', default: false },
         },
       },
+      Result: {
+        title: 'Result',
+        anyOf: [
+          { $ref: '#/components/schemas/ResultItem' },
+          { $ref: '#/components/schemas/ResultItem1' },
+        ],
+      },
+      ResultItem: {
+        title: 'ResultItem',
+        required: ['success'],
+        type: 'object',
+        properties: { success: { title: 'Success', enum: [true], type: 'boolean' } },
+      },
+      ResultItem1: {
+        title: 'ResultItem1',
+        required: ['success'],
+        type: 'object',
+        properties: {
+          success: { title: 'Success', enum: [false], type: 'boolean' },
+          errors: {
+            title: 'Errors',
+            type: 'array',
+            items: { $ref: '#/components/schemas/Error' },
+            description: 'Any error messages explaining why the request failed',
+          },
+        },
+      },
       ResumedBy: {
         title: 'ResumedBy',
         required: ['labels'],
@@ -3384,29 +3379,12 @@ export default {
       },
       RobotCommissionResponse: {
         title: 'RobotCommissionResponse',
-        anyOf: [
-          { $ref: '#/components/schemas/RobotCommissionResponseItem' },
-          { $ref: '#/components/schemas/RobotCommissionResponseItem1' },
-        ],
-        description: 'Response to a robot commission request',
-      },
-      RobotCommissionResponseItem: {
-        title: 'RobotCommissionResponseItem',
-        required: ['success'],
-        type: 'object',
-        properties: { success: { title: 'Success', enum: [true], type: 'boolean' } },
-      },
-      RobotCommissionResponseItem1: {
-        title: 'RobotCommissionResponseItem1',
+        required: ['commission'],
         type: 'object',
         properties: {
-          success: { title: 'Success', enum: [false], type: 'boolean' },
-          errors: {
-            title: 'Errors',
-            type: 'array',
-            items: { $ref: '#/components/schemas/Error' },
-            description: 'Any error messages explaining why the request failed',
-          },
+          commission: { $ref: '#/components/schemas/Result' },
+          pending_dispatch_tasks_policy: { $ref: '#/components/schemas/Result' },
+          pending_direct_tasks_policy: { $ref: '#/components/schemas/Result' },
         },
       },
       RobotState: {

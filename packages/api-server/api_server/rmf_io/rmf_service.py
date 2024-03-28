@@ -98,15 +98,3 @@ def tasks_service():
             default_ros_node, "task_api_requests", "task_api_responses"
         )
     return _tasks_service
-
-
-_robots_service: Optional[RmfService] = None
-
-
-def robots_service():
-    global _robots_service
-    if _robots_service is None:
-        _robots_service = RmfService(
-            default_ros_node, "robot_api_requests", "robot_api_responses"
-        )
-    return _robots_service

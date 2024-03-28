@@ -8,5 +8,5 @@ from .events import (
     task_events,
 )
 from .health_watchdog import HealthWatchdog
-from .rmf_service import RmfService, robots_service, tasks_service
+from .rmf_service import RmfService, tasks_service
 from .topics import topics

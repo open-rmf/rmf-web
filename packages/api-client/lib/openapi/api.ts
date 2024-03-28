@@ -2022,6 +2022,80 @@ export interface PostUsers {
  */
 export interface Priority {}
 /**
+ *
+ * @export
+ * @interface Result
+ */
+export interface Result {
+  /**
+   *
+   * @type {boolean}
+   * @memberof Result
+   */
+  success: ResultSuccessEnum;
+  /**
+   * Any error messages explaining why the request failed
+   * @type {Array<Error>}
+   * @memberof Result
+   */
+  errors?: Array<Error>;
+}
+
+export const ResultSuccessEnum = {
+  False: false,
+} as const;
+
+export type ResultSuccessEnum = typeof ResultSuccessEnum[keyof typeof ResultSuccessEnum];
+
+/**
+ *
+ * @export
+ * @interface ResultItem
+ */
+export interface ResultItem {
+  /**
+   *
+   * @type {boolean}
+   * @memberof ResultItem
+   */
+  success: ResultItemSuccessEnum;
+}
+
+export const ResultItemSuccessEnum = {
+  True: true,
+} as const;
+
+export type ResultItemSuccessEnum =
+  typeof ResultItemSuccessEnum[keyof typeof ResultItemSuccessEnum];
+
+/**
+ *
+ * @export
+ * @interface ResultItem1
+ */
+export interface ResultItem1 {
+  /**
+   *
+   * @type {boolean}
+   * @memberof ResultItem1
+   */
+  success: ResultItem1SuccessEnum;
+  /**
+   * Any error messages explaining why the request failed
+   * @type {Array<Error>}
+   * @memberof ResultItem1
+   */
+  errors?: Array<Error>;
+}
+
+export const ResultItem1SuccessEnum = {
+  False: false,
+} as const;
+
+export type ResultItem1SuccessEnum =
+  typeof ResultItem1SuccessEnum[keyof typeof ResultItem1SuccessEnum];
+
+/**
  * Information about the resume request that ended this interruption. This field will be missing if the interruption is still active.
  * @export
  * @interface ResumedBy
@@ -2041,80 +2115,30 @@ export interface ResumedBy {
   labels: Array<string>;
 }
 /**
- * Response to a robot commission request
+ *
  * @export
  * @interface RobotCommissionResponse
  */
 export interface RobotCommissionResponse {
   /**
    *
-   * @type {boolean}
+   * @type {Result}
    * @memberof RobotCommissionResponse
    */
-  success: RobotCommissionResponseSuccessEnum;
+  commission: Result;
   /**
-   * Any error messages explaining why the request failed
-   * @type {Array<Error>}
+   *
+   * @type {Result}
    * @memberof RobotCommissionResponse
    */
-  errors?: Array<Error>;
-}
-
-export const RobotCommissionResponseSuccessEnum = {
-  False: false,
-} as const;
-
-export type RobotCommissionResponseSuccessEnum =
-  typeof RobotCommissionResponseSuccessEnum[keyof typeof RobotCommissionResponseSuccessEnum];
-
-/**
- *
- * @export
- * @interface RobotCommissionResponseItem
- */
-export interface RobotCommissionResponseItem {
+  pending_dispatch_tasks_policy?: Result;
   /**
    *
-   * @type {boolean}
-   * @memberof RobotCommissionResponseItem
+   * @type {Result}
+   * @memberof RobotCommissionResponse
    */
-  success: RobotCommissionResponseItemSuccessEnum;
+  pending_direct_tasks_policy?: Result;
 }
-
-export const RobotCommissionResponseItemSuccessEnum = {
-  True: true,
-} as const;
-
-export type RobotCommissionResponseItemSuccessEnum =
-  typeof RobotCommissionResponseItemSuccessEnum[keyof typeof RobotCommissionResponseItemSuccessEnum];
-
-/**
- *
- * @export
- * @interface RobotCommissionResponseItem1
- */
-export interface RobotCommissionResponseItem1 {
-  /**
-   *
-   * @type {boolean}
-   * @memberof RobotCommissionResponseItem1
-   */
-  success?: RobotCommissionResponseItem1SuccessEnum;
-  /**
-   * Any error messages explaining why the request failed
-   * @type {Array<Error>}
-   * @memberof RobotCommissionResponseItem1
-   */
-  errors?: Array<Error>;
-}
-
-export const RobotCommissionResponseItem1SuccessEnum = {
-  False: false,
-} as const;
-
-export type RobotCommissionResponseItem1SuccessEnum =
-  typeof RobotCommissionResponseItem1SuccessEnum[keyof typeof RobotCommissionResponseItem1SuccessEnum];
-
 /**
  *
  * @export
