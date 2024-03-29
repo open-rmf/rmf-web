@@ -213,8 +213,8 @@ async def recommission_robot(
         robot=robot_name,
         fleet=name,
         commission=commission,
-        pending_direct_tasks_policy=None,
-        pending_dispatch_tasks_policy=None,
+        pending_direct_tasks_policy=PendingDirectTasksPolicy.complete,
+        pending_dispatch_tasks_policy=PendingDispatchTasksPolicy.complete,
     )
 
     logger.info(f"Recommissioning {robot_name} of {name} called by {user.username}")
