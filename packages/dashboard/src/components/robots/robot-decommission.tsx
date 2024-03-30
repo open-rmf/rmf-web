@@ -190,10 +190,12 @@ export function RobotDecommissionButton({
         >
           <Typography>Confirm decommission robot?</Typography>
           <FormGroup>
-            <FormControlLabel
-              control={<Checkbox checked={reassignTasks} onChange={handleReassignTasksChange} />}
-              label="Re-assign tasks"
-            />
+            <Tooltip title="Attempts to reassign all queued tasks to other robots if possible">
+              <FormControlLabel
+                control={<Checkbox checked={reassignTasks} onChange={handleReassignTasksChange} />}
+                label="Re-assign queued tasks"
+              />
+            </Tooltip>
           </FormGroup>
         </ConfirmationDialog>
       ) : openConfirmDialog === ConfirmDialogType.Recommission ? (
