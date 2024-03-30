@@ -40,9 +40,14 @@ export function RobotDecommissionButton({
   const rmf = React.useContext(RmfAppContext);
   const appController = React.useContext(AppControllerContext);
   const [reassignTasks, setReassignTasks] = React.useState(true);
+  const [allowIdleBehavior, setAllowIdleBehavior] = React.useState(false);
 
   const handleReassignTasksChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setReassignTasks(event.target.checked);
+  };
+
+  const handleAllowIdleBehaviorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAllowIdleBehavior(event.target.checked);
   };
 
   enum ConfirmDialogType {
@@ -58,8 +63,7 @@ export function RobotDecommissionButton({
     robotState &&
     robotState.commission &&
     robotState.commission.dispatch_tasks === false &&
-    robotState.commission.direct_tasks === false &&
-    robotState.commission.idle_behavior === false;
+    robotState.commission.direct_tasks === false;
 
   // TODO: use authz for decommissioning robot
   // const profile: UserProfile | null = React.useContext(UserProfileContext);
@@ -77,6 +81,7 @@ export function RobotDecommissionButton({
         fleet,
         robotState.name,
         reassignTasks,
+        allowIdleBehavior,
       );
 
       if (!resp.data.commission.success) {
@@ -105,7 +110,9 @@ export function RobotDecommissionButton({
           'success',
           `Decommission of ${fleet}:${robotState.name} requested, ${
             reassignTasks ? 'with' : 'without'
-          } task re-assignment${errors.length !== 0 ? `, but with errors: ${errors}` : ''}`,
+          } task re-assignment, ${allowIdleBehavior ? 'allow' : 'not allowing'} idle behaviors${
+            errors.length !== 0 ? `, but with errors: ${errors}` : ''
+          }`,
         );
       }
     } catch (e) {
@@ -117,7 +124,7 @@ export function RobotDecommissionButton({
     setReassignTasks(true);
     AppEvents.refreshRobotApp.next();
     setOpenConfirmDialog(ConfirmDialogType.None);
-  }, [appController, fleet, robotState, reassignTasks, rmf, ConfirmDialogType]);
+  }, [appController, fleet, robotState, reassignTasks, allowIdleBehavior, rmf, ConfirmDialogType]);
 
   const handleRecommission = React.useCallback<React.MouseEventHandler>(async () => {
     if (!robotState || !robotState.name) {
@@ -194,6 +201,14 @@ export function RobotDecommissionButton({
               <FormControlLabel
                 control={<Checkbox checked={reassignTasks} onChange={handleReassignTasksChange} />}
                 label="Re-assign queued tasks"
+              />
+            </Tooltip>
+            <Tooltip title="Allows the robot to perform its idle behavior (charging, parking, etc)">
+              <FormControlLabel
+                control={
+                  <Checkbox checked={allowIdleBehavior} onChange={handleAllowIdleBehaviorChange} />
+                }
+                label="Allow idle behavior"
               />
             </Tooltip>
           </FormGroup>

@@ -85,6 +85,7 @@ async def decommission_robot(
     name: str,
     robot_name: str,
     reassign_tasks: bool,
+    allow_idle_behavior: bool,
     repo: FleetRepository = Depends(fleet_repo_dep),
     user: User = Depends(user_dep),
 ):
@@ -123,7 +124,7 @@ async def decommission_robot(
         return RawJSONResponse(resp.json(), 404)
 
     commission = Commission(
-        dispatch_tasks=False, direct_tasks=False, idle_behavior=False
+        dispatch_tasks=False, direct_tasks=False, idle_behavior=allow_idle_behavior
     )
     dispatch_policy = (
         PendingDispatchTasksPolicy.reassign

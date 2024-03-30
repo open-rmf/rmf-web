@@ -67,8 +67,7 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
     const robotDecommissioned =
       params.row.commission &&
       params.row.commission.dispatch_tasks === false &&
-      params.row.commission.direct_tasks === false &&
-      params.row.commission.idle_behavior === false;
+      params.row.commission.direct_tasks === false;
 
     return (
       <Box component="div" sx={statusLabelStyle}>

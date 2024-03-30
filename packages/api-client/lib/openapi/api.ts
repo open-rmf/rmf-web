@@ -6871,6 +6871,7 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
      * @param {string} name
      * @param {string} robotName
      * @param {boolean} reassignTasks
+     * @param {boolean} allowIdleBehavior
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -6878,6 +6879,7 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
       name: string,
       robotName: string,
       reassignTasks: boolean,
+      allowIdleBehavior: boolean,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'name' is not null or undefined
@@ -6889,6 +6891,12 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
         'decommissionRobotFleetsNameDecommissionPost',
         'reassignTasks',
         reassignTasks,
+      );
+      // verify required parameter 'allowIdleBehavior' is not null or undefined
+      assertParamExists(
+        'decommissionRobotFleetsNameDecommissionPost',
+        'allowIdleBehavior',
+        allowIdleBehavior,
       );
       const localVarPath = `/fleets/{name}/decommission`.replace(
         `{${'name'}}`,
@@ -6911,6 +6919,10 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
 
       if (reassignTasks !== undefined) {
         localVarQueryParameter['reassign_tasks'] = reassignTasks;
+      }
+
+      if (allowIdleBehavior !== undefined) {
+        localVarQueryParameter['allow_idle_behavior'] = allowIdleBehavior;
       }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -7111,6 +7123,7 @@ export const FleetsApiFp = function (configuration?: Configuration) {
      * @param {string} name
      * @param {string} robotName
      * @param {boolean} reassignTasks
+     * @param {boolean} allowIdleBehavior
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -7118,6 +7131,7 @@ export const FleetsApiFp = function (configuration?: Configuration) {
       name: string,
       robotName: string,
       reassignTasks: boolean,
+      allowIdleBehavior: boolean,
       options?: AxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<RobotCommissionResponse>
@@ -7127,6 +7141,7 @@ export const FleetsApiFp = function (configuration?: Configuration) {
           name,
           robotName,
           reassignTasks,
+          allowIdleBehavior,
           options,
         );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -7223,6 +7238,7 @@ export const FleetsApiFactory = function (
      * @param {string} name
      * @param {string} robotName
      * @param {boolean} reassignTasks
+     * @param {boolean} allowIdleBehavior
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -7230,10 +7246,17 @@ export const FleetsApiFactory = function (
       name: string,
       robotName: string,
       reassignTasks: boolean,
+      allowIdleBehavior: boolean,
       options?: any,
     ): AxiosPromise<RobotCommissionResponse> {
       return localVarFp
-        .decommissionRobotFleetsNameDecommissionPost(name, robotName, reassignTasks, options)
+        .decommissionRobotFleetsNameDecommissionPost(
+          name,
+          robotName,
+          reassignTasks,
+          allowIdleBehavior,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
     /**
@@ -7307,6 +7330,7 @@ export class FleetsApi extends BaseAPI {
    * @param {string} name
    * @param {string} robotName
    * @param {boolean} reassignTasks
+   * @param {boolean} allowIdleBehavior
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof FleetsApi
@@ -7315,10 +7339,17 @@ export class FleetsApi extends BaseAPI {
     name: string,
     robotName: string,
     reassignTasks: boolean,
+    allowIdleBehavior: boolean,
     options?: AxiosRequestConfig,
   ) {
     return FleetsApiFp(this.configuration)
-      .decommissionRobotFleetsNameDecommissionPost(name, robotName, reassignTasks, options)
+      .decommissionRobotFleetsNameDecommissionPost(
+        name,
+        robotName,
+        reassignTasks,
+        allowIdleBehavior,
+        options,
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 

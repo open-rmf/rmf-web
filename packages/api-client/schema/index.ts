@@ -1830,6 +1830,12 @@ export default {
             name: 'reassign_tasks',
             in: 'query',
           },
+          {
+            required: true,
+            schema: { title: 'Allow Idle Behavior', type: 'boolean' },
+            name: 'allow_idle_behavior',
+            in: 'query',
+          },
         ],
         responses: {
           '200': {
