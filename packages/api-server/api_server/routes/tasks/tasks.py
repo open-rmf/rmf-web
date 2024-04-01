@@ -146,7 +146,27 @@ async def query_task_states(
                 continue
             filters["status__in"].append(mdl.Status(status_string))
 
-    return await task_repo.query_task_states(DbTaskState.filter(**filters), pagination)
+    return await task_repo.query_task_states(
+        DbTaskState.filter(**filters), pagination, False
+    )
+
+
+@router.get("export", response_model=List[mdl.TaskState])
+async def export_task_states(
+    task_repo: TaskRepository = Depends(task_repo_dep),
+    start_time_between: Optional[Tuple[datetime, datetime]] = Depends(
+        start_time_between_query
+    ),
+    pagination: mdl.Pagination = Depends(pagination_query),
+):
+    filters = {}
+    if start_time_between is not None:
+        filters["unix_millis_start_time__gte"] = start_time_between[0]
+        filters["unix_millis_start_time__lte"] = start_time_between[1]
+
+    return await task_repo.query_task_states(
+        DbTaskState.filter(**filters), pagination, True
+    )
 
 
 @router.get("/{task_id}/state", response_model=mdl.TaskState)

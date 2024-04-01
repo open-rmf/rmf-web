@@ -190,14 +190,26 @@ class TaskRepository:
         await ttm.TaskState.update_or_create(task_state_dict, id_=task_state.booking.id)
 
     async def query_task_states(
-        self, query: QuerySet[DbTaskState], pagination: Optional[Pagination] = None
+        self,
+        query: QuerySet[DbTaskState],
+        pagination: Optional[Pagination] = None,
+        with_phases: bool = False,
     ) -> List[TaskState]:
         try:
             if pagination:
                 query = add_pagination(query, pagination)
             # TODO: enforce with authz
             results = await query.values_list("data", flat=True)
-            return [TaskState(**r) for r in results]
+
+            if with_phases:
+                return [TaskState(**r) for r in results]
+
+            states: List[TaskState] = []
+            for r in results:
+                if "phases" in r:
+                    r["phases"] = None
+                states.append(TaskState(**r))
+            return states
         except FieldError as e:
             raise HTTPException(422, str(e)) from e
 
