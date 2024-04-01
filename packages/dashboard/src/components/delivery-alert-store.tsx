@@ -463,10 +463,13 @@ export const DeliveryAlertStore = React.memo(() => {
             alertData.deliveryAlert.task_id !== deliveryAlert.task_id,
         ),
       );
-      filteredAlerts[deliveryAlert.id] = {
-        deliveryAlert,
-        taskState,
-      };
+
+      if (deliveryAlert.action === DeliveryAlertAction.Waiting) {
+        filteredAlerts[deliveryAlert.id] = {
+          deliveryAlert,
+          taskState,
+        };
+      }
       return filteredAlerts;
     });
   };
@@ -515,6 +518,7 @@ export const DeliveryAlertStore = React.memo(() => {
           'success',
           `Overriding delivery alert ${delivery_alert.id}${taskReferenceText}`,
         );
+        removeDeliveryAlertDialog(delivery_alert.id);
       } catch (e) {
         const taskReferenceText = delivery_alert.task_id
           ? ` and continue with task ${delivery_alert.task_id}`
@@ -529,6 +533,10 @@ export const DeliveryAlertStore = React.memo(() => {
     },
     [rmf, appController],
   );
+
+  const removeDeliveryAlertDialog = (id: string) => {
+    setAlerts((prev) => Object.fromEntries(Object.entries(prev).filter(([key]) => key !== id)));
+  };
 
   const onResume = React.useCallback<Required<DeliveryWarningDialogProps>['onResume']>(
     async (delivery_alert) => {
@@ -551,6 +559,7 @@ export const DeliveryAlertStore = React.memo(() => {
           'success',
           `Resuming after delivery alert ${delivery_alert.id}${taskReferenceText}`,
         );
+        removeDeliveryAlertDialog(delivery_alert.id);
       } catch (e) {
         const taskReferenceText = delivery_alert.task_id ? ` ${delivery_alert.task_id}` : '';
         appController.showAlert(
@@ -570,13 +579,7 @@ export const DeliveryAlertStore = React.memo(() => {
             <DeliveryErrorDialog
               deliveryAlert={alert.deliveryAlert}
               taskState={alert.taskState}
-              onClose={() =>
-                setAlerts((prev) =>
-                  Object.fromEntries(
-                    Object.entries(prev).filter(([key]) => key !== alert.deliveryAlert.id),
-                  ),
-                )
-              }
+              onClose={() => removeDeliveryAlertDialog(alert.deliveryAlert.id)}
               key={alert.deliveryAlert.id}
             />
           );
@@ -590,13 +593,7 @@ export const DeliveryAlertStore = React.memo(() => {
             <DeliveryErrorDialog
               deliveryAlert={alert.deliveryAlert}
               taskState={alert.taskState}
-              onClose={() =>
-                setAlerts((prev) =>
-                  Object.fromEntries(
-                    Object.entries(prev).filter(([key]) => key !== alert.deliveryAlert.id),
-                  ),
-                )
-              }
+              onClose={() => removeDeliveryAlertDialog(alert.deliveryAlert.id)}
               key={alert.deliveryAlert.id}
             />
           );
@@ -617,13 +614,7 @@ export const DeliveryAlertStore = React.memo(() => {
                 ? onResume
                 : undefined
             }
-            onClose={() =>
-              setAlerts((prev) =>
-                Object.fromEntries(
-                  Object.entries(prev).filter(([key]) => key !== alert.deliveryAlert.id),
-                ),
-              )
-            }
+            onClose={() => removeDeliveryAlertDialog(alert.deliveryAlert.id)}
             key={alert.deliveryAlert.id}
           />
         );
