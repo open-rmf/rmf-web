@@ -854,6 +854,86 @@ export default {
         },
       },
     },
+    '/tasksexport': {
+      get: {
+        tags: ['Tasks'],
+        summary: 'Export Task States',
+        operationId: 'export_task_states_tasksexport_get',
+        parameters: [
+          {
+            description:
+              '\n        The period of starting time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n        ',
+            required: false,
+            schema: {
+              title: 'Start Time Between',
+              type: 'string',
+              description:
+                '\n        The period of starting time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n        ',
+            },
+            name: 'start_time_between',
+            in: 'query',
+          },
+          {
+            description: 'defaults to 100',
+            required: false,
+            schema: {
+              title: 'Limit',
+              maximum: 1000.0,
+              exclusiveMinimum: 0.0,
+              type: 'integer',
+              description: 'defaults to 100',
+            },
+            name: 'limit',
+            in: 'query',
+          },
+          {
+            description: 'defaults to 0',
+            required: false,
+            schema: {
+              title: 'Offset',
+              minimum: 0.0,
+              type: 'integer',
+              description: 'defaults to 0',
+            },
+            name: 'offset',
+            in: 'query',
+          },
+          {
+            description:
+              "common separated list of fields to order by, prefix with '-' to sort descendingly.",
+            required: false,
+            schema: {
+              title: 'Order By',
+              type: 'string',
+              description:
+                "common separated list of fields to order by, prefix with '-' to sort descendingly.",
+            },
+            name: 'order_by',
+            in: 'query',
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: {
+              'application/json': {
+                schema: {
+                  title: 'Response Export Task States Tasksexport Get',
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/TaskState' },
+                },
+              },
+            },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
     '/tasks/{task_id}/state': {
       get: {
         tags: ['Tasks'],

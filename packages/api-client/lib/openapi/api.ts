@@ -7842,6 +7842,64 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     },
     /**
      *
+     * @summary Export Task States
+     * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {number} [limit] defaults to 100
+     * @param {number} [offset] defaults to 0
+     * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    exportTaskStatesTasksexportGet: async (
+      startTimeBetween?: string,
+      limit?: number,
+      offset?: number,
+      orderBy?: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/tasksexport`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      if (startTimeBetween !== undefined) {
+        localVarQueryParameter['start_time_between'] = startTimeBetween;
+      }
+
+      if (limit !== undefined) {
+        localVarQueryParameter['limit'] = limit;
+      }
+
+      if (offset !== undefined) {
+        localVarQueryParameter['offset'] = offset;
+      }
+
+      if (orderBy !== undefined) {
+        localVarQueryParameter['order_by'] = orderBy;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Get Favorites Tasks
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -9027,6 +9085,32 @@ export const TasksApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Export Task States
+     * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {number} [limit] defaults to 100
+     * @param {number} [offset] defaults to 0
+     * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async exportTaskStatesTasksexportGet(
+      startTimeBetween?: string,
+      limit?: number,
+      offset?: number,
+      orderBy?: string,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskState>>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.exportTaskStatesTasksexportGet(
+        startTimeBetween,
+        limit,
+        offset,
+        orderBy,
+        options,
+      );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
      * @summary Get Favorites Tasks
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -9548,6 +9632,27 @@ export const TasksApiFactory = function (
     },
     /**
      *
+     * @summary Export Task States
+     * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {number} [limit] defaults to 100
+     * @param {number} [offset] defaults to 0
+     * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    exportTaskStatesTasksexportGet(
+      startTimeBetween?: string,
+      limit?: number,
+      offset?: number,
+      orderBy?: string,
+      options?: any,
+    ): AxiosPromise<Array<TaskState>> {
+      return localVarFp
+        .exportTaskStatesTasksexportGet(startTimeBetween, limit, offset, orderBy, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Get Favorites Tasks
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -9988,6 +10093,29 @@ export class TasksApi extends BaseAPI {
   ) {
     return TasksApiFp(this.configuration)
       .deleteFavoriteTaskFavoriteTasksFavoriteTaskIdDelete(favoriteTaskId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Export Task States
+   * @param {string} [startTimeBetween]          The period of starting time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+   * @param {number} [limit] defaults to 100
+   * @param {number} [offset] defaults to 0
+   * @param {string} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public exportTaskStatesTasksexportGet(
+    startTimeBetween?: string,
+    limit?: number,
+    offset?: number,
+    orderBy?: string,
+    options?: AxiosRequestConfig,
+  ) {
+    return TasksApiFp(this.configuration)
+      .exportTaskStatesTasksexportGet(startTimeBetween, limit, offset, orderBy, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
