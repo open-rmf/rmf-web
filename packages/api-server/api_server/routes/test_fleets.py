@@ -67,6 +67,7 @@ class TestFleetsRoute(AppFixture):
         params = {
             "robot_name": robot_name,
             "reassign_tasks": True,
+            "allow_idle_behavior": False,
         }
         resp = self.client.post(
             f"fleets/invalid_fleet/decommission?{urlencode(params)}"
@@ -77,6 +78,7 @@ class TestFleetsRoute(AppFixture):
         params = {
             "robot_name": "",
             "reassign_tasks": True,
+            "allow_idle_behavior": False,
         }
         resp = self.client.post(
             f"fleets/{fleet_state.name}/decommission?{urlencode(params)}"
@@ -85,6 +87,7 @@ class TestFleetsRoute(AppFixture):
         params = {
             "robot_name": "invalid_robot",
             "reassign_tasks": True,
+            "allow_idle_behavior": False,
         }
         resp = self.client.post(
             f"fleets/{fleet_state.name}/decommission?{urlencode(params)}"
