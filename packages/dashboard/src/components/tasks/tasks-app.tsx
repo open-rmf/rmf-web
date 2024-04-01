@@ -253,17 +253,8 @@ export const TasksApp = React.memo(
         let queryIndex = 0;
         do {
           queries = (
-            await rmf.tasksApi.queryTaskStatesTasksGet(
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
+            await rmf.tasksApi.exportTaskStatesTasksexportGet(
               `${currentMillis - oneMonthMillis},${currentMillis}`,
-              undefined,
               QueryLimit,
               queryIndex * QueryLimit,
               '-unix_millis_start_time',
