@@ -35,6 +35,7 @@ export const LiftSummary = ({ onClose, lift }: LiftSummaryProps): JSX.Element =>
     destinationFloor: '',
     doorState: 0,
     motionState: 0,
+    sessionId: '',
     lift: lift,
   });
 
@@ -54,6 +55,7 @@ export const LiftSummary = ({ onClose, lift }: LiftSummaryProps): JSX.Element =>
             destinationFloor: liftState.destination_floor,
             doorState: liftState.door_state,
             motionState: liftState.motion_state,
+            sessionId: liftState.session_id,
             lift: lift,
           });
         });

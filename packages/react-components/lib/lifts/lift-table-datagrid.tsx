@@ -24,6 +24,7 @@ export interface LiftTableData {
   destinationFloor?: string;
   doorState: number;
   motionState: number;
+  sessionId?: string;
   lift: Lift;
   onRequestSubmit?(
     event: React.FormEvent,
