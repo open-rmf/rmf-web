@@ -49,10 +49,10 @@ class TestTasksRoute(AppFixture):
 
     def test_sub_task_state(self):
         task_id = self.task_states[0].booking.id
-        gen = self.subscribe_sio(f"/tasks/{task_id}/state")
-        task_events.task_states.on_next(self.task_states[0])
-        state = next(gen)
-        self.assertEqual(task_id, cast(TaskState, state).booking.id)
+        with self.subscribe_sio(f"/tasks/{task_id}/state") as sub:
+            task_events.task_states.on_next(self.task_states[0])
+            state = TaskState(**next(sub))
+            self.assertEqual(task_id, cast(TaskState, state).booking.id)
 
     def test_get_task_log(self):
         resp = self.client.get(
@@ -124,10 +124,10 @@ class TestTasksRoute(AppFixture):
 
     def test_sub_task_log(self):
         task_id = self.task_logs[0].task_id
-        gen = self.subscribe_sio(f"/tasks/{task_id}/log")
-        task_events.task_event_logs.on_next(self.task_logs[0])
-        log = next(gen)
-        self.assertEqual(task_id, cast(TaskEventLog, log).task_id)
+        with self.subscribe_sio(f"/tasks/{task_id}/log") as sub:
+            task_events.task_event_logs.on_next(self.task_logs[0])
+            log = TaskEventLog(**next(sub))
+            self.assertEqual(task_id, cast(TaskEventLog, log).task_id)
 
     def test_activity_discovery(self):
         with patch.object(tasks_service(), "call") as mock:

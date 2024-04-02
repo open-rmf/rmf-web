@@ -1,5 +1,4 @@
 import asyncio
-from typing import cast
 from uuid import uuid4
 
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
@@ -33,8 +32,9 @@ class TestLiftsRoute(AppFixture):
         self.assertEqual(self.lift_states[0].lift_name, state["lift_name"])
 
     def test_sub_lift_state(self):
-        msg = next(self.subscribe_sio(f"/lifts/{self.lift_states[0].lift_name}/state"))
-        self.assertEqual(self.lift_states[0].lift_name, cast(LiftState, msg).lift_name)
+        with self.subscribe_sio(f"/lifts/{self.lift_states[0].lift_name}/state") as sub:
+            msg = LiftState(**next(sub))
+            self.assertEqual(self.lift_states[0].lift_name, msg.lift_name)
 
     def test_request_lift(self):
         resp = self.client.post(

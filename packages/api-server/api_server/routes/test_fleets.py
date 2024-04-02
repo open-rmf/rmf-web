@@ -1,5 +1,3 @@
-from typing import cast
-
 from api_server.models import FleetLog, FleetLogUpdate, FleetState, FleetStateUpdate
 from api_server.rmf_io.events import fleet_events
 from api_server.test import AppFixture, make_fleet_log, make_fleet_state
@@ -7,19 +5,19 @@ from api_server.test import AppFixture, make_fleet_log, make_fleet_state
 
 class TestFleetsRoute(AppFixture):
     def test_fleet_states(self):
-        with self.client.websocket_connect("/_internal") as ws:
-            # subscribe to fleet states
-            fleet_state = make_fleet_state()
-            gen = self.subscribe_sio(f"/fleets/{fleet_state.name}/state")
+        fleet_state = make_fleet_state()
 
+        with self.client.websocket_connect("/_internal") as ws, self.subscribe_sio(
+            f"/fleets/{fleet_state.name}/state"
+        ) as sub:
             ws.send_text(
                 FleetStateUpdate(
                     type="fleet_state_update", data=fleet_state
                 ).model_dump_json()
             )
 
-            msg = next(gen)
-            self.assertEqual(fleet_state.name, cast(FleetState, msg).name)
+            msg = FleetState(**next(sub))
+            self.assertEqual(fleet_state.name, msg.name)
 
             # get fleet state
             resp = self.client.get(f"/fleets/{fleet_state.name}/state")
@@ -35,9 +33,11 @@ class TestFleetsRoute(AppFixture):
             self.assertEqual(fleet_state.name, resp_json[0]["name"])
 
     def test_fleet_logs(self):
-        with self.client.websocket_connect("/_internal") as ws:
-            fleet_log = make_fleet_log()
-            gen = self.subscribe_sio(f"/fleets/{fleet_log.name}/log")
+        fleet_log = make_fleet_log()
+
+        with self.client.websocket_connect("/_internal") as ws, self.subscribe_sio(
+            f"/fleets/{fleet_log.name}/log"
+        ) as sub:
             fleet_events.fleet_logs.on_next(fleet_log)
 
             ws.send_text(
@@ -46,8 +46,8 @@ class TestFleetsRoute(AppFixture):
                 ).model_dump_json()
             )
 
-            msg = next(gen)
-            self.assertEqual(fleet_log.name, cast(FleetLog, msg).name)
+            msg = FleetLog(**next(sub))
+            self.assertEqual(fleet_log.name, msg.name)
 
             # Since there are no sample fleet logs, we cannot check the log contents
             resp = self.client.get(f"/fleets/{fleet_log.name}/log")

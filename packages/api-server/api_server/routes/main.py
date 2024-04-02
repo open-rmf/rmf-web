@@ -29,7 +29,7 @@ async def get_effective_permissions(user: User = Depends(user_dep)):
         .values("authz_grp", "action")
     )
     return [
-        Permission.construct(authz_grp=p["authz_grp"], action=p["action"])
+        Permission.model_construct(authz_grp=p["authz_grp"], action=p["action"])
         for p in perms
     ]
 
