@@ -1,5 +1,12 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogTitle, Divider, TextField } from '@mui/material';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  TextField,
+  useMediaQuery,
+} from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { RmfAppContext } from './rmf-app';
 import { getApiErrorMessage } from './utils';
@@ -25,6 +32,7 @@ interface LiftSummaryProps {
 }
 
 export const LiftSummary = ({ onClose, lift }: LiftSummaryProps): JSX.Element => {
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
   const [liftData, setLiftData] = React.useState<LiftTableData>({
@@ -83,9 +91,14 @@ export const LiftSummary = ({ onClose, lift }: LiftSummaryProps): JSX.Element =>
         onClose();
       }}
       fullWidth
-      maxWidth="sm"
+      maxWidth={isScreenHeightLessThan800 ? 'xs' : 'sm'}
     >
-      <DialogTitle align="center">Lift summary</DialogTitle>
+      <DialogTitle
+        align="center"
+        sx={{ fontSize: isScreenHeightLessThan800 ? '1.2rem' : '1.5rem' }}
+      >
+        Lift summary
+      </DialogTitle>
       <Divider />
       <DialogContent>
         {Object.entries(liftData).map(([key, value]) => {
@@ -128,6 +141,11 @@ export const LiftSummary = ({ onClose, lift }: LiftSummaryProps): JSX.Element =>
                 maxRows={4}
                 margin="dense"
                 value={displayValue}
+                sx={{
+                  '& .MuiFilledInput-root': {
+                    fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                  },
+                }}
               />
             </div>
           );
