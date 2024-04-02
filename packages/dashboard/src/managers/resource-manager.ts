@@ -2,7 +2,7 @@ import Debug from 'debug';
 import { DispenserResourceManager, RawDispenserResource } from './resource-manager-dispensers';
 import { LogoResource, LogoResourceManager } from './resource-manager-logos';
 import { RobotResource, RobotResourceManager } from './resource-manager-robots';
-import { TaskResourceManager } from './resource-manager-tasks';
+import { TaskDefinition } from 'react-components';
 
 const debug = Debug('ResourceManager');
 const ResourceFile = 'resources/main.json';
@@ -20,8 +20,7 @@ export interface ResourceConfigurationsType {
   cartIds?: string[];
   loggedInDisplayLevel?: string;
   emergencyLots?: string[];
-  supportedTasks?: string[];
-  taskNameRemap?: Record<string, string>; // Record<OriginalName, NewName>
+  supportedTasks?: TaskDefinition[];
 }
 
 export default class ResourceManager {
@@ -37,8 +36,7 @@ export default class ResourceManager {
   cartIds?: string[];
   loggedInDisplayLevel?: string;
   emergencyLots?: string[];
-  supportedTasks?: string[];
-  tasks: TaskResourceManager;
+  supportedTasks?: TaskDefinition[];
 
   /**
    * Gets the default resource manager using the embedded resource file (aka "assets/resources/main.json").
@@ -79,10 +77,11 @@ export default class ResourceManager {
     this.cartIds = resources.cartIds || [];
     this.loggedInDisplayLevel = resources.loggedInDisplayLevel;
     this.emergencyLots = resources.emergencyLots || [];
-    this.tasks = new TaskResourceManager(
-      resources.supportedTasks || ['patrol', 'delivery', 'clean'],
-      resources.taskNameRemap,
-    );
+    this.supportedTasks = resources.supportedTasks || [
+      { name: 'patrol', nameRemap: undefined },
+      { name: 'delivery', nameRemap: undefined },
+      { name: 'clean', nameRemap: undefined },
+    ];
   }
 }
 

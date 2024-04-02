@@ -23,7 +23,7 @@ import {
   nextWednesday,
   startOfMinute,
 } from 'date-fns';
-import { getShortDescription, RecurringDays, Schedule } from 'react-components';
+import { getShortDescription, RecurringDays, Schedule, TaskDefinition } from 'react-components';
 
 /**
  * Generates a list of ProcessedEvents to occur within the query start and end,
@@ -168,9 +168,18 @@ export const apiScheduleToSchedule = (scheduleTask: ApiSchedule[]): Schedule => 
 
 export const getScheduledTaskTitle = (
   task: ScheduledTask,
-  taskNameRemap?: Record<string, string>,
+  supportedTasks?: TaskDefinition[],
 ): string => {
-  const shortDescription = getShortDescription(task.task_request, taskNameRemap);
+  let remappedTaskName: string | undefined = undefined;
+  if (supportedTasks) {
+    for (const s of supportedTasks) {
+      if (s.name === task.task_request.category) {
+        remappedTaskName = s.nameRemap;
+      }
+    }
+  }
+
+  const shortDescription = getShortDescription(task.task_request, remappedTaskName);
   if (!task.task_request || !task.task_request.category || !shortDescription) {
     return `[${task.id}] Unknown`;
   }

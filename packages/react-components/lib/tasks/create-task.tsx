@@ -60,6 +60,13 @@ import {
 } from './types/delivery-custom';
 import { makeDefaultPatrolTask, PatrolTaskDescription, PatrolTaskForm } from './types/patrol';
 
+// FIXME: temporary task definition workaround, before we start using proper
+// schemas.
+export interface TaskDefinition {
+  name: string;
+  nameRemap: string | undefined;
+}
+
 type TaskDescription =
   | DeliveryTaskDescription
   | DeliveryCustomTaskDescription
@@ -293,8 +300,7 @@ export interface CreateTaskFormProps
    * Shows extra UI elements suitable for submittng batched tasks. Default to 'false'.
    */
   user: string;
-  supportedTasks?: string[];
-  taskNameRemap?: Record<string, string>;
+  supportedTasks?: TaskDefinition[];
   allowBatch?: boolean;
   cleaningZones?: string[];
   patrolWaypoints?: string[];
@@ -321,8 +327,11 @@ export interface CreateTaskFormProps
 
 export function CreateTaskForm({
   user,
-  supportedTasks = ['patrol', 'delivery', 'clean'],
-  taskNameRemap = {},
+  supportedTasks = [
+    { name: 'patrol', nameRemap: undefined },
+    { name: 'delivery', nameRemap: undefined },
+    { name: 'clean', nameRemap: undefined },
+  ],
   /* eslint-disable @typescript-eslint/no-unused-vars */
   cleaningZones = [],
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -364,8 +373,10 @@ export function CreateTaskForm({
   const [savingFavoriteTask, setSavingFavoriteTask] = React.useState(false);
 
   const [taskType, setTaskType] = React.useState<string | undefined>(undefined);
-  const [taskRequest, setTaskRequest] = React.useState<TaskRequest>(
-    () => requestTask ?? defaultTaskRequest(supportedTasks[0]),
+  const [taskRequest, setTaskRequest] = React.useState<TaskRequest>(() =>
+    requestTask ?? (supportedTasks && supportedTasks.length > 0)
+      ? defaultTaskRequest(supportedTasks[0].name)
+      : defaultTaskRequest('patrol'),
   );
 
   const [submitting, setSubmitting] = React.useState(false);
@@ -639,7 +650,11 @@ export function CreateTaskForm({
       onSuccessFavoriteTask &&
         onSuccessFavoriteTask('Deleted favorite task successfully', favoriteTaskBuffer);
 
-      setTaskRequest(defaultTaskRequest(supportedTasks[0]));
+      setTaskRequest(
+        supportedTasks && supportedTasks.length > 0
+          ? defaultTaskRequest(supportedTasks[0].name)
+          : defaultTaskRequest('patrol'),
+      );
       setOpenFavoriteDialog(false);
       setCallToDeleteFavoriteTask(false);
       setCallToUpdateFavoriteTask(false);
@@ -650,12 +665,14 @@ export function CreateTaskForm({
   };
 
   // Order the menu items based on the supported tasks
-  const renderMenuItem = (taskName: string, taskNameRemap: Record<string, string>) => {
+  const renderMenuItem = (taskDefinition: TaskDefinition) => {
+    const taskName = taskDefinition.name;
+    const remappedName = taskDefinition.nameRemap;
     switch (taskName) {
       case 'patrol':
         return (
           <MenuItem value={taskName} disabled={!patrolWaypoints || patrolWaypoints.length === 0}>
-            {taskNameRemap[taskName] ?? 'Patrol'}
+            {remappedName ?? 'Patrol'}
           </MenuItem>
         );
       case 'delivery':
@@ -666,19 +683,17 @@ export function CreateTaskForm({
               Object.keys(pickupPoints).length === 0 || Object.keys(dropoffPoints).length === 0
             }
           >
-            {taskNameRemap[taskName] ?? 'Delivery'}
+            {remappedName ?? 'Delivery'}
           </MenuItem>
         );
       case 'clean':
         return (
           <MenuItem value={taskName} disabled={!cleaningZones || cleaningZones.length === 0}>
-            {taskNameRemap[taskName] ?? 'Clean'}
+            {remappedName ?? 'Clean'}
           </MenuItem>
         );
       case 'custom_compose':
-        return (
-          <MenuItem value={taskName}>{taskNameRemap[taskName] ?? 'Custom Compose Task'}</MenuItem>
-        );
+        return <MenuItem value={taskName}>{remappedName ?? 'Custom Compose Task'}</MenuItem>;
       case 'delivery_pickup':
         return (
           <MenuItem
@@ -692,19 +707,19 @@ export function CreateTaskForm({
               },
             }}
           >
-            {taskNameRemap[taskName] ?? 'Delivery - 1:1'}
+            {remappedName ?? 'Delivery - 1:1'}
           </MenuItem>
         );
       case 'delivery_sequential_lot_pickup':
         return (
           <MenuItem value={taskName} disabled={Object.keys(dropoffPoints).length === 0}>
-            {taskNameRemap[taskName] ?? 'Delivery - Sequential lot pick up'}
+            {remappedName ?? 'Delivery - Sequential lot pick up'}
           </MenuItem>
         );
       case 'delivery_area_pickup':
         return (
           <MenuItem value={taskName} disabled={Object.keys(dropoffPoints).length === 0}>
-            {taskNameRemap[taskName] ?? 'Delivery - Area pick up'}
+            {remappedName ?? 'Delivery - Area pick up'}
           </MenuItem>
         );
       default:
@@ -790,9 +805,10 @@ export function CreateTaskForm({
                       }}
                       InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
                     >
-                      {supportedTasks.map((taskName) => {
-                        return renderMenuItem(taskName, taskNameRemap);
-                      })}
+                      {supportedTasks &&
+                        supportedTasks.map((taskDefinition) => {
+                          return renderMenuItem(taskDefinition);
+                        })}
                     </TextField>
                   </Grid>
                   <Grid item xs={isScreenHeightLessThan800 ? 6 : 7}>

@@ -137,7 +137,7 @@ export const TaskSchedule = () => {
       return tasks.flatMap((t: ScheduledTask) =>
         t.schedules.flatMap<ProcessedEvent>((s: ApiSchedule) => {
           const events = scheduleToEvents(params.start, params.end, s, t, getEventId, () =>
-            getScheduledTaskTitle(t, resourceManager?.tasks.taskNameRemap),
+            getScheduledTaskTitle(t, resourceManager?.supportedTasks),
           );
           events.forEach((ev) => {
             eventsMap.current[Number(ev.event_id)] = t;

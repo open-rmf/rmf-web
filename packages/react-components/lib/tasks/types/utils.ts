@@ -11,17 +11,17 @@ export function isPositiveNumber(value: number): boolean {
 
 export function getShortDescription(
   taskRequest: TaskRequest,
-  taskNameRemap?: Record<string, string>,
+  remappedTaskName?: string,
 ): string | undefined {
   switch (taskRequest.category) {
     case 'patrol': {
       const formattedPlaces = taskRequest.description.places.map((place: string) => `[${place}]`);
-      return `[${(taskNameRemap && taskNameRemap[taskRequest.category]) ?? 'Patrol'}] [${
+      return `[${remappedTaskName ?? 'Patrol'}] [${
         taskRequest.description.rounds
       }] round/s, along ${formattedPlaces.join(', ')}`;
     }
     case 'delivery': {
-      return `[${(taskNameRemap && taskNameRemap[taskRequest.category]) ?? 'Delivery'}] Pickup [${
+      return `[${remappedTaskName ?? 'Delivery'}] Pickup [${
         taskRequest.description.pickup.payload.sku
       }] from [${taskRequest.description.pickup.place}], dropoff [${
         taskRequest.description.dropoff.payload.sku
@@ -33,9 +33,7 @@ export function getShortDescription(
   // compose.
   if (taskRequest.description.category === 'clean') {
     const cleanActivity = taskRequest.description.phases[0].activity.description.activities[1];
-    return `[${
-      (taskNameRemap && taskNameRemap[taskRequest.description.category]) ?? 'Clean'
-    }] zone [${cleanActivity.description.description.zone}]`;
+    return `[${remappedTaskName ?? 'Clean'}] zone [${cleanActivity.description.description.zone}]`;
   }
 
   // This section is only valid for custom delivery types
@@ -56,21 +54,19 @@ export function getShortDescription(
 
     switch (taskRequest.description.category) {
       case 'delivery_pickup': {
-        return `[${
-          (taskNameRemap && taskNameRemap[taskRequest.description.category]) ?? 'Delivery - 1:1'
-        }] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
+        return `[${remappedTaskName ?? 'Delivery - 1:1'}] payload [${cartId}] from [${
+          goToPickup.description
+        }] to [${goToDropoff.description}]`;
       }
       case 'delivery_sequential_lot_pickup': {
         return `[${
-          (taskNameRemap && taskNameRemap[taskRequest.description.category]) ??
-          'Delivery - Sequential lot pick up'
+          remappedTaskName ?? 'Delivery - Sequential lot pick up'
         }] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
       }
       case 'delivery_area_pickup': {
-        return `[${
-          (taskNameRemap && taskNameRemap[taskRequest.description.category]) ??
-          'Delivery - Area pick up'
-        }] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
+        return `[${remappedTaskName ?? 'Delivery - Area pick up'}] payload [${cartId}] from [${
+          goToPickup.description
+        }] to [${goToDropoff.description}]`;
       }
       default:
         return `[Unknown] type "${taskRequest.description.category}"`;

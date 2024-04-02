@@ -1,16 +1,14 @@
-export class TaskResourceManager {
-  supportedTasks: string[] = ['patrol', 'delivery', 'clean'];
-  taskNameRemap: Record<string, string> = {};
+import { TaskDefinition } from 'react-components';
 
-  constructor(
-    supportedTasks: string[] | undefined,
-    taskNameRemap: Record<string, string> | undefined,
-  ) {
+export class TaskResourceManager {
+  supportedTasks: Record<string, TaskDefinition>;
+
+  constructor(supportedTasks: TaskDefinition[] | undefined) {
+    this.supportedTasks = {};
     if (supportedTasks) {
-      this.supportedTasks = supportedTasks;
-    }
-    if (taskNameRemap) {
-      this.taskNameRemap = taskNameRemap;
+      for (const t of supportedTasks) {
+        this.supportedTasks[t.name] = t;
+      }
     }
   }
 }
