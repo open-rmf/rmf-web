@@ -17,13 +17,13 @@ describe('The correct operation of the getAvailablePlacesPerFleet method of the 
 
   test('Correct assignation of places, when a fleet has places defined', () => {
     const fleetName = Object.keys(resourceData)[0]; // tinyRobot
-    const places = manager.getAvailablePlacesPerFleet(fleetName) as String[];
+    const places = manager.getAvailablePlacesPerFleet(fleetName) as string[];
     expect(Object.keys(places).length).toEqual(Object.keys(resourceData[fleetName].places).length);
   });
 
   test('Returns false when a fleet has no spaces defined', () => {
     const fleetName = Object.keys(resourceData)[1]; // deliveryRobot
-    const places = manager.getAvailablePlacesPerFleet(fleetName) as String[];
+    const places = manager.getAvailablePlacesPerFleet(fleetName) as string[];
     expect(Object.keys(places).length).toBeFalsy();
   });
 });
@@ -48,6 +48,7 @@ describe('The correct operation of the getIconPath method of the RobotResourceMa
         testFleet: '',
       },
       places: {},
+      scale: 1,
     };
     const icon = await manager.getIconPath('testFleet');
     expect(icon).toBeFalsy();
@@ -63,6 +64,7 @@ describe('The correct operation of the getIconPath method of the RobotResourceMa
         testModel: '/model',
       },
       places: {},
+      scale: 1,
     };
     const icon = await manager.getIconPath('testFleet', 'testModel');
     expect(icon).toEqual('/assets/resources/icons/model');

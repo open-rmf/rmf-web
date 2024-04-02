@@ -19,7 +19,7 @@
     "lint-staged": "^10.5.4",
     "prettier": "^2.7.1",
     "pyright": "1.1.354",
-    "typescript": "~4.4.4"
+    "typescript": "~5.4.3"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,css,scss}": [
