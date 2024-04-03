@@ -5,7 +5,7 @@
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "build": "pnpm run --filter {.}^... build && node scripts/build.js",
-    "build:storybook": "build-storybook -s public",
+    "build-storybook": "storybook build",
     "setup": "node ./scripts/setup/setup.js",
     "start": "concurrently npm:start:rmf-server npm:start:react",
     "start:airport": "RMF_DASHBOARD_DEMO_MAP=airport_terminal.launch.xml pnpm run start:sim",
@@ -15,7 +15,7 @@
     "start:rmf-server": "RMF_SERVER_USE_SIM_TIME=true npm --prefix ../api-server start",
     "start:rmf-server:psql": "RMF_SERVER_USE_SIM_TIME=true npm run --prefix ../api-server start:psql",
     "start:sim": "concurrently npm:start:rmf-server npm:start:rmf npm:start:react",
-    "storybook": "start-storybook -p 9009 -s public",
+    "storybook": "storybook dev -p 6006",
     "test": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:e2e": "cd e2e && npm test",
@@ -33,17 +33,20 @@
     "@fortawesome/react-fontawesome": "^0.1.11",
     "@mui/icons-material": "^5.8.3",
     "@mui/material": "^5.8.3",
-    "@mui/styles": "^5.8.3",
     "@mui/system": "^5.8.3",
     "@mui/x-date-pickers": "^5.0.20",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@react-three/drei": "^9.103.0",
     "@react-three/fiber": "^8.16.1",
-    "@storybook/addon-actions": "^6.5.8",
-    "@storybook/addon-essentials": "^6.5.8",
-    "@storybook/addon-links": "^6.5.8",
-    "@storybook/node-logger": "^6.5.9",
-    "@storybook/react": "^6.5.8",
+    "@storybook/addon-essentials": "^8.0.5",
+    "@storybook/addon-interactions": "^8.0.5",
+    "@storybook/addon-links": "^8.0.5",
+    "@storybook/addon-onboarding": "^8.0.5",
+    "@storybook/addon-webpack5-compiler-babel": "^3.0.3",
+    "@storybook/blocks": "^8.0.5",
+    "@storybook/react": "^8.0.5",
+    "@storybook/react-webpack5": "^8.0.5",
+    "@storybook/test": "^8.0.5",
     "@svgr/webpack": "^5.5.0",
     "@testing-library/dom": "^9.3.4",
     "@testing-library/jest-dom": "^6.4.2",
@@ -73,14 +76,15 @@
     "canvas": "^2.11.2",
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
     "chalk": "^4.1.0",
-    "concurrently": "^5.3.0",
+    "concurrently": "^8.2.2",
     "css-loader": "^6.5.1",
     "css-minimizer-webpack-plugin": "^3.2.0",
-    "date-fns": "^2.21.3",
+    "date-fns": "^2.30.0",
     "debug": "^4.2.0",
     "dotenv": "^10.0.0",
     "dotenv-expand": "^5.1.0",
     "eslint": "^8.57.0",
+    "eslint-plugin-storybook": "^0.8.0",
     "eslint-webpack-plugin": "^3.1.1",
     "eventemitter3": "^4.0.7",
     "file-loader": "^6.2.0",
@@ -103,7 +107,7 @@
     "prompts": "^2.4.2",
     "react": "^18.2.0",
     "react-components": "workspace:*",
-    "react-customizable-progressbar": "^1.0.3",
+    "react-customizable-progressbar": "^1.2.0",
     "react-dev-utils": "^12.0.1",
     "react-dom": "^18.2.0",
     "react-grid-layout": "^1.3.4",
@@ -122,6 +126,7 @@
     "semver": "^7.3.5",
     "source-map-explorer": "^2.5.3",
     "source-map-loader": "^5.0.0",
+    "storybook": "^8.0.5",
     "style-loader": "^3.3.1",
     "styled-components": "^4.4.1",
     "tailwindcss": "^3.0.2",
@@ -145,6 +150,11 @@
       "last 1 safari version"
     ]
   },
+  "eslintConfig": {
+    "extends": [
+      "plugin:storybook/recommended"
+    ]
+  },
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
@@ -156,6 +166,9 @@
       "!**/stories/**",
       "!**/tests/**"
     ],
+    "moduleNameMapper": {
+      "\\.(css|less)$": "identity-obj-proxy"
+    },
     "modulePaths": [],
     "roots": [
       "<rootDir>/src"
@@ -164,9 +177,6 @@
       "<rootDir>/src/setupTests.ts"
     ],
     "testEnvironment": "jsdom",
-    "moduleNameMapper": {
-      "\\.(css|less)$": "identity-obj-proxy"
-    },
     "transform": {
       "\\.[jt]sx?$": "babel-jest"
     },

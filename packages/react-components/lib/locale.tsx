@@ -14,7 +14,7 @@ export const LocalizationProvider: React.FC<React.PropsWithChildren> = ({ childr
     (async () => {
       for (const lang of navigator.languages) {
         try {
-          setLocale((await import(`date-fns/locale/${lang}`)).default);
+          setLocale((await import(`date-fns/locale/${lang}/index.js`)).default);
           return;
         } catch {
           continue;

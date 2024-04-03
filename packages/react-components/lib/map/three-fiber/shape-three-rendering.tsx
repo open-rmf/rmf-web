@@ -9,14 +9,14 @@ interface ShapeThreeRenderingProps {
 }
 
 export const debounce = (callback: () => void, delay: number): (() => void) => {
-  let timeoutId: NodeJS.Timeout | null = null;
+  let timeoutId: number | null = null;
 
   return () => {
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
 
-    timeoutId = setTimeout(() => {
+    timeoutId = window.setTimeout(() => {
       callback();
     }, delay);
   };

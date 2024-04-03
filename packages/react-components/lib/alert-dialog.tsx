@@ -1,28 +1,18 @@
-import * as React from 'react';
 import {
   Box,
   Button,
+  Divider,
   LinearProgress,
   LinearProgressProps,
   TextField,
-  Theme,
   Typography,
-  Divider,
+  useTheme,
 } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { makeStyles, createStyles } from '@mui/styles';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    textField: {
-      background: theme.palette.background.default,
-      pointerEvents: 'none',
-    },
-  }),
-);
+import React from 'react';
 
 export interface AlertContent {
   title: string;
@@ -50,6 +40,7 @@ export interface DialogAlertProps {
 }
 
 export const AlertDialog = React.memo((props: DialogAlertProps) => {
+  const theme = useTheme();
   const LinearProgressWithLabel = (props: LinearProgressProps & { value: number }) => {
     return (
       <Box component="div" sx={{ display: 'flex', alignItems: 'center' }}>
@@ -75,7 +66,10 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
               id="standard-size-small"
               size="small"
               variant="filled"
-              InputProps={{ readOnly: true, className: classes.textField }}
+              sx={{
+                background: theme.palette.background.default,
+                pointerEvents: 'none',
+              }}
               fullWidth={true}
               multiline
               maxRows={4}
@@ -98,7 +92,6 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
     alertContents,
     backgroundColor,
   } = props;
-  const classes = useStyles();
   const [isOpen, setIsOpen] = React.useState(true);
   const [acknowledged, setAcknowledged] = React.useState(acknowledgedBy !== undefined);
 

@@ -1,5 +1,4 @@
-import { createTheme } from '@mui/material';
-import { ThemeProvider } from '@mui/styles';
+import { createTheme, ThemeProvider } from '@mui/material';
 import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
 import { AlertContent, AlertDialog } from './alert-dialog';

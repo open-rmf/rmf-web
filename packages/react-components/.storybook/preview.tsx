@@ -1,7 +1,7 @@
 import { CssBaseline } from '@mui/material';
 import { Theme, ThemeProvider } from '@mui/material/styles';
 import defaultTheme from '@mui/material/styles/defaultTheme';
-import { Decorator } from '@storybook/react';
+import { Decorator, Preview } from '@storybook/react';
 import React from 'react';
 import { LocalizationProvider, rmfDark, rmfLight } from '../lib';
 
