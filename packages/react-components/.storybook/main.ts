@@ -16,5 +16,14 @@ const config: StorybookConfig = {
   docs: {
     autodocs: 'tag',
   },
+  swc: () => ({
+    jsc: {
+      transform: {
+        react: {
+          runtime: 'automatic',
+        },
+      },
+    },
+  }),
 };
 export default config;
