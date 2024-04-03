@@ -84,12 +84,12 @@ failed_tasks = deque(maxlen=10)
 
 async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
     if "type" not in msg:
-        logger.warn(msg)
-        logger.warn("Ignoring message, 'type' must include in msg field")
+        logger.warning(msg)
+        logger.warning("Ignoring message, 'type' must include in msg field")
         return
     payload_type: str = msg["type"]
     if not isinstance(payload_type, str):
-        logger.warn("error processing message, 'type' must be a string")
+        logger.warning("error processing message, 'type' must be a string")
         return
     logger.debug(msg)
 
@@ -105,7 +105,7 @@ async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
                 if alert is not None:
                     alert_events.alerts.on_next(alert)
             else:
-                logger.warn(
+                logger.warning(
                     "Received a repeated complete task state update, please check if the fleet adapter has stalled"
                 )
         elif task_state.status == mdl.Status.failed:
@@ -117,7 +117,7 @@ async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
                 if alert is not None:
                     alert_events.alerts.on_next(alert)
             else:
-                logger.warn(
+                logger.warning(
                     "Received a repeated failed task state update, please check if the fleet adapter has stalled"
                 )
         elif (
@@ -163,4 +163,4 @@ async def rmf_gateway(websocket: WebSocket):
             await process_msg(msg, fleet_repo)
     except (WebSocketDisconnect, ConnectionClosed):
         connection_manager.disconnect(websocket)
-        logger.warn("Client websocket disconnected")
+        logger.warning("Client websocket disconnected")
