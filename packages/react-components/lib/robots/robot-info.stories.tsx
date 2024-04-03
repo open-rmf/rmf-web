@@ -1,13 +1,13 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import { RobotInfo, RobotInfoProps } from './robot-info';
 
 export default {
   title: 'Robots/Detailed Info',
   component: RobotInfo,
-} as Meta;
+} satisfies Meta;
 
-export const Default: Story<RobotInfoProps> = (args) => {
+export const Default: StoryFn<RobotInfoProps> = (args) => {
   return <RobotInfo {...args}></RobotInfo>;
 };
 

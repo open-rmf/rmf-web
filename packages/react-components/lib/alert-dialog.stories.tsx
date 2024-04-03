@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import { AlertContent, AlertDialog, DialogAlertProps } from './alert-dialog';
 
@@ -21,9 +21,9 @@ const buildAlertDialogContent = (): AlertContent[] => {
 export default {
   title: 'Alert Dialog',
   component: AlertDialog,
-} as Meta;
+} satisfies Meta;
 
-export const AlertDialogComponent: Story<DialogAlertProps> = () => {
+export const AlertDialogComponent: StoryFn<DialogAlertProps> = () => {
   const [acknowledged, setAcknowledged] = React.useState(false);
   const [dismissed, setDismissed] = React.useState(false);
   return (

@@ -7,7 +7,7 @@ import { makeDispenser, makeDispenserState } from './test-utils.spec';
 export default {
   title: 'Workcell Panel',
   component: WorkcellPanel,
-} as Meta;
+} satisfies Meta;
 
 const dispensers = [
   makeDispenser({ guid: 'test_dispenser' }),

@@ -7,5 +7,5 @@ export default {
   moduleNameMapper: {
     '\\.(css|less)$': 'identity-obj-proxy',
   },
-  testPathIgnorePatterns: ['<rootDir>/.*/test-utils.spec.ts', '<rootDir>/.*/test-data.spec.ts'],
+  testPathIgnorePatterns: ['<rootDir>/.*/test-utils.spec.tsx?', '<rootDir>/.*/test-data.spec.tsx?'],
 } as Config;

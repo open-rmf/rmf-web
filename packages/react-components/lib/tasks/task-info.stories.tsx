@@ -1,5 +1,5 @@
 import { Paper } from '@mui/material';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import { TaskInfo, TaskInfoProps } from './task-info';
 import { makeTaskState } from './test-data.spec';
@@ -7,9 +7,9 @@ import { makeTaskState } from './test-data.spec';
 export default {
   title: 'Tasks/Task Info',
   component: TaskInfo,
-} as Meta;
+} satisfies Meta;
 
-export const Default: Story<TaskInfoProps> = (args) => {
+export const Default: StoryFn<TaskInfoProps> = (args) => {
   return (
     <Paper style={{ padding: '1rem' }}>
       <TaskInfo {...args}></TaskInfo>

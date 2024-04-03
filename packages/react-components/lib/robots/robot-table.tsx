@@ -78,11 +78,6 @@ const RobotRow = React.memo(
   },
 );
 
-export type PaginationOptions = Omit<
-  React.ComponentPropsWithoutRef<typeof TablePagination>,
-  'component'
->;
-
 export interface RobotTableProps extends TableProps {
   /**
    * The current list of robots to display, when pagination is enabled, this should only

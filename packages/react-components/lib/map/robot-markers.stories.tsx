@@ -1,5 +1,5 @@
 import { Grid, Paper, Typography } from '@mui/material';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import { RobotMarker, RobotMarkerProps } from './robot-marker';
 
@@ -7,7 +7,7 @@ export default {
   title: 'Map/Robot Markers',
   component: RobotMarker,
   parameters: { controls: { include: ['onClick'], hideNoControlsWarning: true } },
-} as Meta;
+} satisfies Meta;
 
 function makeRobotMarkerProps(props?: Partial<Omit<RobotMarkerProps, 'robot'>>): RobotMarkerProps {
   props = props || {};
@@ -31,7 +31,7 @@ const robotMarkerProps: Record<string, RobotMarkerProps> = {
   }),
 };
 
-export const Gallery: Story = (args) => {
+export const Gallery: StoryFn = (args) => {
   return (
     <Grid container spacing={2}>
       {Object.keys(robotMarkerProps).map((k) => (

@@ -1,14 +1,14 @@
 import { Typography } from '@mui/material';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import { Tooltip } from './tooltip';
 
 export default {
   title: 'Tooltip',
   component: Tooltip,
-} as Meta;
+} satisfies Meta;
 
-export const SimpleTooltip: Story = (args) => {
+export const SimpleTooltip: StoryFn = (args) => {
   return (
     <Tooltip title="This is a tooltip" id="test" enabled={true} {...args}>
       <Typography variant="h5">Hover over me</Typography>

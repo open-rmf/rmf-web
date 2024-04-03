@@ -1,12 +1,12 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import { NameLabel, NameLabelProps } from './label-marker';
 
 export default {
   title: 'Map/Label Marker',
-} as Meta;
+} satisfies Meta;
 
-export const NameLabelStory: Story<NameLabelProps> = (args) => {
+export const NameLabelStory: StoryFn<NameLabelProps> = (args) => {
   return (
     <svg width={800} height={400} style={{ border: '1px black solid' }}>
       <NameLabel {...args} strokeWidth={1} style={{ fontSize: '1em' }} />
