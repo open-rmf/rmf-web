@@ -164,6 +164,8 @@ class TaskRepository:
             raise HTTPException(422, str(e)) from e
 
     async def save_task_state(self, task_state: TaskState) -> None:
+        # FIXME: this may be fixed upstream in DB or ORM, this mutex can be
+        # removed once these libraries have been updated and tested to be fixed
         with self.save_task_state_mutex:
             task_state_dict = {
                 "data": task_state.json(),
