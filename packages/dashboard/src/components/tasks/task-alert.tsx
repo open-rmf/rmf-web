@@ -28,18 +28,18 @@ export interface TaskAlertDialogProps {
 
 export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): JSX.Element {
   const getErrorLogEntries = (logs: TaskEventLog) => {
-    let errorLogs: LogEntry[] = [];
+    const errorLogs: LogEntry[] = [];
     if (logs.log) {
       errorLogs.concat(logs.log.filter((entry) => entry.tier === Tier.Error));
     }
 
     if (logs.phases) {
-      for (let phase of Object.values(logs.phases)) {
+      for (const phase of Object.values(logs.phases)) {
         if (phase.log) {
           errorLogs.concat(phase.log.filter((entry) => entry.tier === Tier.Error));
         }
         if (phase.events) {
-          for (let eventLogs of Object.values(phase.events)) {
+          for (const eventLogs of Object.values(phase.events)) {
             errorLogs.concat(eventLogs.filter((entry) => entry.tier === Tier.Error));
           }
         }
@@ -84,7 +84,7 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
     // Second field would be any errors found
     if (errorLogEntries.length !== 0) {
       let consolidatedErrorMessages = '';
-      for (let entry of errorLogEntries) {
+      for (const entry of errorLogEntries) {
         consolidatedErrorMessages += `${new Date(entry.unix_millis_time).toLocaleString()} - ${
           entry.text
         }

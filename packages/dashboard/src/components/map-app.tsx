@@ -142,7 +142,6 @@ export const MapApp = styled(
         return;
       }
 
-      let interval: number;
       let cancel = false;
 
       const updateTrajectory = async () => {
@@ -174,7 +173,7 @@ export const MapApp = styled(
       };
 
       updateTrajectory();
-      interval = window.setInterval(updateTrajectory, TrajectoryUpdateInterval);
+      const interval = window.setInterval(updateTrajectory, TrajectoryUpdateInterval);
       debug(`created trajectory update interval ${interval}`);
 
       return () => {
@@ -435,7 +434,7 @@ export const MapApp = styled(
             <ReactThreeFiberImageMaker level={currentLevel} imageUrl={imageUrl} />
           )}
           {buildingMap.lifts.length > 0
-            ? buildingMap.lifts.map((lift, i) =>
+            ? buildingMap.lifts.map((lift) =>
                 lift.doors.map((door, i) => (
                   <React.Fragment key={`${door.name}${i}`}>
                     {!disabledLayers['Labels'] && (

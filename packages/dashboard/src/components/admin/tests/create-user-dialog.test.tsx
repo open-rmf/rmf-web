@@ -1,4 +1,4 @@
-import { render, act, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { CreateUserDialog } from '../create-user-dialog';

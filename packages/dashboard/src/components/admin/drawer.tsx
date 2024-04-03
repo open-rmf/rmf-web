@@ -51,7 +51,7 @@ export function AdminDrawer(): JSX.Element {
   const navigate = useNavigate();
   const activeItem = React.useMemo<AdminDrawerValues>(() => {
     const matched = Object.entries(drawerValuesRoutesMap).find(
-      ([_k, v]) => location.pathname === `/admin${v.path}`,
+      ([, v]) => location.pathname === `/admin${v.path}`,
     );
 
     return matched ? (matched[0] as AdminDrawerValues) : 'Users';

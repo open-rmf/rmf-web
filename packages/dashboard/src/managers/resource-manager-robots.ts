@@ -43,7 +43,7 @@ export class RobotResourceManager {
     if (!!robotModel && robotIcons.hasOwnProperty(robotModel)) {
       iconPath = robotIcons[robotModel];
     } else {
-      iconPath = !!robotIcons[fleetName] ? `${robotIcons[fleetName]}` : null;
+      iconPath = robotIcons[fleetName] ? `${robotIcons[fleetName]}` : null;
     }
 
     try {
@@ -69,7 +69,7 @@ export class RobotResourceManager {
 
     const robotScale = this.robots[fleetName].scale;
 
-    if (!!robotModel) {
+    if (robotModel) {
       return robotScale;
     }
 
