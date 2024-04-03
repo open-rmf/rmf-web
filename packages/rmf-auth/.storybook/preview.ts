@@ -12,15 +12,3 @@ const preview: Preview = {
 };
 
 export default preview;
-
-// const withThemeProvider: DecoratorFn = (Story, context) => {
-//   return (
-//     <ThemeProvider theme={defaultTheme}>
-//       <ThemeProvider theme={defaultTheme}>
-//         <CssBaseline />
-//         <Story {...context} />
-//       </ThemeProvider>
-//     </ThemeProvider>
-//   );
-// };
-// export const decorators = [withThemeProvider];
