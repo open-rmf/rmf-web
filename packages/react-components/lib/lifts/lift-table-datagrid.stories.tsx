@@ -1,5 +1,4 @@
 import React from 'react';
-import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { LiftDataGridTable, LiftTableData } from './lift-table-datagrid';
 import { makeLift } from './test-utils.spec';
@@ -19,6 +18,9 @@ const mockLifts: LiftTableData[] = [
   },
 ];
 
-storiesOf('LiftDataGridTable', module)
-  .add('Default', () => <LiftDataGridTable lifts={mockLifts} />)
-  .add('Empty', () => <LiftDataGridTable lifts={[]} />);
+export default {
+  title: 'LiftDataGridTable',
+};
+
+export const Default = () => <LiftDataGridTable lifts={mockLifts} />;
+export const Empty = () => <LiftDataGridTable lifts={[]} />;

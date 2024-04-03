@@ -15,6 +15,7 @@ describe('DoorDataGridTable', () => {
         door_name: 'L3_door2',
         current_mode: { value: RmfDoorMode.MODE_MOVING },
       }),
+      opMode: '',
     },
   ];
 

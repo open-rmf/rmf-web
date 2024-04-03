@@ -15,6 +15,7 @@ describe('LiftDataGridTable', () => {
       doorState: RmfLiftState.DOOR_OPEN,
       motionState: RmfLiftState.MOTION_DOWN,
       lift: lift,
+      opMode: '',
     },
   ];
 

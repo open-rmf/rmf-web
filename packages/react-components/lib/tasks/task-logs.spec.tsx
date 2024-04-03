@@ -13,8 +13,8 @@ describe('TaskLogs', () => {
         eventStatus={() => 'completed'}
       />,
     );
-    Object.values(logs.phases).forEach((p) => {
-      Object.values(p.events).forEach((e) => {
+    Object.values(logs.phases!).forEach((p) => {
+      Object.values(p.events!).forEach((e) => {
         e.forEach((l) => {
           expect(root.getAllByText(l.text).length).toBeGreaterThan(0);
         });

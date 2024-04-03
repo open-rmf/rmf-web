@@ -217,6 +217,7 @@ export function LiftDataGridTable({ lifts }: LiftDataGridTableProps): JSX.Elemen
             sortModel: [{ field: 'name', sort: 'asc' }],
           },
         }}
+        disableVirtualization={true}
       />
     </div>
   );

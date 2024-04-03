@@ -324,6 +324,7 @@ export function TaskDataGridTable({
           }
           return '';
         }}
+        disableVirtualization={true}
       />
     </div>
   );

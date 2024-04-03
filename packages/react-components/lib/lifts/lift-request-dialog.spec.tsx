@@ -6,8 +6,8 @@ import { requestDoorModes, requestModes } from './lift-utils';
 import { makeLift, makeLiftState } from './test-utils.spec';
 
 describe('Lift request form', () => {
-  it('destination is required', () => {
-    const mockOnClose = jasmine.createSpy();
+  it('destination is required', async () => {
+    const mockOnClose = jest.fn();
     const lift = makeLift();
     const liftState = makeLiftState();
     render(
@@ -20,8 +20,11 @@ describe('Lift request form', () => {
         onClose={mockOnClose}
       />,
     );
-    userEvent.type(screen.getByPlaceholderText('Pick a Destination'), '{selectall}{backspace}');
-    fireEvent.click(screen.getByText('Request'));
+    await userEvent.type(
+      screen.getByPlaceholderText('Pick a Destination'),
+      '{selectall}{backspace}',
+    );
+    await userEvent.click(screen.getByText('Request'));
     expect(screen.getByText('Destination cannot be empty')).toBeTruthy();
   });
 });

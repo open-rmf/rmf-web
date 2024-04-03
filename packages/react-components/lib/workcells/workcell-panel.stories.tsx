@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 import { WorkcellPanel } from './workcell-panel';
@@ -27,7 +27,7 @@ const ingestors = [
   makeDispenser({ guid: 'test_ingestor5' }),
 ];
 
-export const WorkcellPanelStory: Story = (args) => {
+export const WorkcellPanelStory: StoryFn = (args) => {
   return (
     <WorkcellPanel
       dispensers={dispensers}

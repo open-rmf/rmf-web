@@ -1,6 +1,5 @@
 import React from 'react';
 import { DoorTableData, DoorDataGridTable } from './door-table-datagrid';
-import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { Door as RmfDoor, DoorMode as RmfDoorMode } from 'rmf-models';
 import { makeDoorState } from './test-utils.spec';
@@ -20,6 +19,9 @@ const mockDoors: DoorTableData[] = [
   },
 ];
 
-storiesOf('DoorDataGridTable', module)
-  .add('Default', () => <DoorDataGridTable doors={mockDoors} />)
-  .add('Empty', () => <DoorDataGridTable doors={[]} />);
+export default {
+  title: 'DoorDataGridTable',
+};
+
+export const Default = () => <DoorDataGridTable doors={mockDoors} />;
+export const Empty = () => <DoorDataGridTable doors={[]} />;

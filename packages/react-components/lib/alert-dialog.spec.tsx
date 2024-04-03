@@ -1,8 +1,10 @@
-import { ThemeProvider } from '@mui/material';
-import { render, fireEvent } from '@testing-library/react';
+import { createTheme } from '@mui/material';
+import { ThemeProvider } from '@mui/styles';
+import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
 import { AlertContent, AlertDialog } from './alert-dialog';
-import defaultTheme from '@mui/material/styles/defaultTheme';
+
+const theme = createTheme();
 
 describe('AcknowledgeAndCloseAlertDialog', () => {
   it('dismiss button called', () => {
@@ -22,10 +24,10 @@ describe('AcknowledgeAndCloseAlertDialog', () => {
         },
       ];
     };
-    const acknowledge = jasmine.createSpy();
-    const dismiss = jasmine.createSpy();
+    const acknowledge = jest.fn();
+    const dismiss = jest.fn();
     const root = render(
-      <ThemeProvider theme={defaultTheme}>
+      <ThemeProvider theme={theme}>
         <AlertDialog
           key={'testAlert'}
           onDismiss={dismiss}
@@ -60,10 +62,10 @@ describe('AcknowledgeAndCloseAlertDialog', () => {
         },
       ];
     };
-    const acknowledge = jasmine.createSpy();
-    const close = jasmine.createSpy();
+    const acknowledge = jest.fn();
+    const close = jest.fn();
     const root = render(
-      <ThemeProvider theme={defaultTheme}>
+      <ThemeProvider theme={theme}>
         <AlertDialog
           key={'testAlert'}
           onDismiss={close}

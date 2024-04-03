@@ -1,19 +1,22 @@
 import { CssBaseline } from '@mui/material';
 import { Theme, ThemeProvider } from '@mui/material/styles';
 import defaultTheme from '@mui/material/styles/defaultTheme';
-import { DecoratorFn } from '@storybook/react';
+import { Decorator } from '@storybook/react';
+import React from 'react';
 import { LocalizationProvider, rmfDark, rmfLight } from '../lib';
 
-export const parameters = {
-  actions: { argTypesRegex: '^on[A-Z].*' },
-  controls: {
-    matchers: {
-      color: /(background|color)$/i,
-      date: /Date$/,
+const preview: Preview = {
+  parameters: {
+    controls: {
+      matchers: {
+        color: /(background|color)$/i,
+        date: /Date$/i,
+      },
     },
   },
-  s: { argTypesRegex: '^on[A-Z].*' },
 };
+
+export default preview;
 
 const getTheme = (themeName: string): Theme => {
   switch (themeName) {
@@ -26,7 +29,7 @@ const getTheme = (themeName: string): Theme => {
   }
 };
 
-const withThemeProvider: DecoratorFn = (Story, context) => {
+const withThemeProvider: Decorator = (Story, context) => {
   const theme = getTheme(context.globals.theme);
   return (
     <ThemeProvider theme={theme}>
@@ -36,7 +39,7 @@ const withThemeProvider: DecoratorFn = (Story, context) => {
   );
 };
 
-const withLocalization: DecoratorFn = (Story, context) => {
+const withLocalization: Decorator = (Story, context) => {
   return (
     <LocalizationProvider>
       <Story {...context} />
