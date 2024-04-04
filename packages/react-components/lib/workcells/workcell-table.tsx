@@ -1,4 +1,4 @@
-import { styled, Table, TableBody, TableHead, TableRow } from '@mui/material';
+import { Table, TableBody, TableHead, TableRow } from '@mui/material';
 import clsx from 'clsx';
 import React from 'react';
 import { DispenserState as RmfDispenserState } from 'rmf-models';

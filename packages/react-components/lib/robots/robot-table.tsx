@@ -4,7 +4,6 @@ import {
   TableBody,
   TableCell,
   TableHead,
-  TablePagination,
   TableProps,
   TableRow,
   useTheme,
