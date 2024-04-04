@@ -7,7 +7,7 @@
     "build": "tsc --build",
     "clean": "tsc --build --clean",
     "prepack": "pnpm run clean && pnpm run --filter {.}... build && pnpm run lint",
-    "lint": "eslint --max-warnings 0 --ext ts,tsx lib",
+    "lint": "eslint --max-warnings 0 lib",
     "test": "jasmine"
   },
   "author": "koonpeng@openrobotics.org",
