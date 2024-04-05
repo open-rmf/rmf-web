@@ -125,6 +125,9 @@ export const LiftSummary = ({ onClose, lift }: LiftSummaryProps): JSX.Element =>
               displayValue = doorStateToString(value);
               displayLabel = 'State';
               break;
+            case 'sessionId':
+              displayLabel = 'Session ID';
+              break;
             default:
               break;
           }
