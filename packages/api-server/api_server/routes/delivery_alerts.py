@@ -1,7 +1,11 @@
+from fastapi import Depends
 from rx import operators as rxops
 
+from api_server.authenticator import user_dep
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import rmf_gateway
+from api_server.logger import logger
+from api_server.models import User
 from api_server.models.delivery_alerts import (
     DeliveryAlert,
     action_to_msg,
@@ -26,6 +30,7 @@ async def respond_to_delivery_alert(
     task_id: str,
     action: DeliveryAlert.Action,
     message: str,
+    user: User = Depends(user_dep),
 ):
     delivery_alert = DeliveryAlert(
         id=delivery_alert_id,
@@ -35,6 +40,8 @@ async def respond_to_delivery_alert(
         task_id=task_id,
         message=message,
     )
+    logger.info(f"Delivery alert responded by {user.username}")
+    logger.info(delivery_alert)
     rmf_gateway().respond_to_delivery_alert(
         alert_id=delivery_alert.id,
         category=category_to_msg(delivery_alert.category),

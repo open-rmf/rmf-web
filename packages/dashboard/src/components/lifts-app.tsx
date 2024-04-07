@@ -1,4 +1,4 @@
-import { BuildingMap } from 'api-client';
+import { BuildingMap, Lift } from 'api-client';
 import React from 'react';
 import { LiftRequest as RmfLiftRequest } from 'rmf-models';
 import { LiftTableData, LiftDataGridTable } from 'react-components';
@@ -6,11 +6,15 @@ import { AppEvents } from './app-events';
 import { createMicroApp } from './micro-app';
 import { RmfAppContext } from './rmf-app';
 import { getApiErrorMessage } from './utils';
+import { TableContainer } from '@mui/material';
+import { LiftSummary } from './lift-summary';
 
 export const LiftsApp = createMicroApp('Lifts', () => {
   const rmf = React.useContext(RmfAppContext);
   const [buildingMap, setBuildingMap] = React.useState<BuildingMap | null>(null);
   const [liftTableData, setLiftTableData] = React.useState<Record<string, LiftTableData[]>>({});
+  const [openLiftSummary, setOpenLiftSummary] = React.useState(false);
+  const [selectedLift, setSelectedLift] = React.useState<Lift | null>(null);
 
   React.useEffect(() => {
     if (!rmf) {
@@ -43,6 +47,7 @@ export const LiftsApp = createMicroApp('Lifts', () => {
                   destinationFloor: liftState.destination_floor,
                   doorState: liftState.door_state,
                   motionState: liftState.motion_state,
+                  sessionId: liftState.session_id,
                   lift: lift,
                   onRequestSubmit: async (_ev, doorState, requestType, destination) => {
                     let fleet_session_ids: string[] = [];
@@ -78,21 +83,28 @@ export const LiftsApp = createMicroApp('Lifts', () => {
   }, [rmf, buildingMap]);
 
   return (
-    <LiftDataGridTable
-      lifts={Object.values(liftTableData).flatMap((l) => l)}
-      onLiftClick={(_ev, liftData) => {
-        if (!buildingMap) {
-          AppEvents.liftSelect.next(null);
-          return;
-        }
-
-        for (const lift of buildingMap.lifts) {
-          if (lift.name === liftData.name) {
-            AppEvents.liftSelect.next(lift);
+    <TableContainer>
+      <LiftDataGridTable
+        lifts={Object.values(liftTableData).flatMap((l) => l)}
+        onLiftClick={(_ev, liftData) => {
+          if (!buildingMap) {
+            AppEvents.liftSelect.next(null);
             return;
           }
-        }
-      }}
-    />
+
+          for (const lift of buildingMap.lifts) {
+            if (lift.name === liftData.name) {
+              AppEvents.liftSelect.next(lift);
+              setSelectedLift(lift);
+              setOpenLiftSummary(true);
+              return;
+            }
+          }
+        }}
+      />
+      {openLiftSummary && selectedLift && (
+        <LiftSummary lift={selectedLift} onClose={() => setOpenLiftSummary(false)} />
+      )}
+    </TableContainer>
   );
 });
