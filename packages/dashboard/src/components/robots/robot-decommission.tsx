@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export interface RobotDecommissionButtonProp extends ButtonProps {
+export interface RobotDecommissionButtonProp extends Omit<ButtonProps, 'onClick' | 'autoFocus'> {
   fleet: string;
   robotState: RobotState | null;
 }
@@ -48,6 +48,11 @@ export function RobotDecommissionButton({
 
   const handleAllowIdleBehaviorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAllowIdleBehavior(event.target.checked);
+  };
+
+  const resetDecommissionConfiguration = () => {
+    setReassignTasks(true);
+    setAllowIdleBehavior(false);
   };
 
   enum ConfirmDialogType {
@@ -107,7 +112,7 @@ export function RobotDecommissionButton({
         }
 
         appController.showAlert(
-          'success',
+          'warning',
           `Decommission of ${fleet}:${robotState.name} requested, ${
             reassignTasks ? 'with' : 'without'
           } task re-assignment, ${allowIdleBehavior ? 'allow' : 'not allowing'} idle behaviors${
@@ -121,7 +126,7 @@ export function RobotDecommissionButton({
         `Failed to decommission ${fleet}:${robotState.name}: ${(e as Error).message}`,
       );
     }
-    setReassignTasks(true);
+    resetDecommissionConfiguration();
     AppEvents.refreshRobotApp.next();
     setOpenConfirmDialog(ConfirmDialogType.None);
   }, [appController, fleet, robotState, reassignTasks, allowIdleBehavior, rmf, ConfirmDialogType]);
@@ -166,7 +171,7 @@ export function RobotDecommissionButton({
           autoFocus
           {...otherProps}
         >
-          {'Recommission robot'}
+          {'Recommission'}
         </Button>
       ) : robotState && !robotDecommissioned ? (
         <Button
@@ -174,12 +179,12 @@ export function RobotDecommissionButton({
           autoFocus
           {...otherProps}
         >
-          {'Decommission robot'}
+          {'Decommission'}
         </Button>
       ) : (
         <Tooltip title={`Robot from fleet ${fleet} cannot be decommissioned/recommissioned.`}>
           <Button disabled className={classes['enableHover']} {...otherProps}>
-            {'Decommission/Recommission robot'}
+            {'Decommission'}
           </Button>
         </Tooltip>
       )}
