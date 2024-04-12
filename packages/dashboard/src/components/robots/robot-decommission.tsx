@@ -41,6 +41,7 @@ export function RobotDecommissionButton({
   const appController = React.useContext(AppControllerContext);
   const [reassignTasks, setReassignTasks] = React.useState(true);
   const [allowIdleBehavior, setAllowIdleBehavior] = React.useState(false);
+  const [openConfirmDialog, setOpenConfirmDialog] = React.useState(false);
 
   const handleReassignTasksChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setReassignTasks(event.target.checked);
@@ -53,16 +54,8 @@ export function RobotDecommissionButton({
   const resetDecommissionConfiguration = () => {
     setReassignTasks(true);
     setAllowIdleBehavior(false);
+    setOpenConfirmDialog(false);
   };
-
-  enum ConfirmDialogType {
-    None,
-    Decommission,
-    Recommission,
-  }
-  const [openConfirmDialog, setOpenConfirmDialog] = React.useState<ConfirmDialogType>(
-    ConfirmDialogType.None,
-  );
 
   const robotDecommissioned =
     robotState &&
@@ -112,7 +105,7 @@ export function RobotDecommissionButton({
         }
 
         appController.showAlert(
-          'warning',
+          errors.length !== 0 ? 'warning' : 'success',
           `Decommission of ${fleet}:${robotState.name} requested, ${
             reassignTasks ? 'with' : 'without'
           } task re-assignment, ${allowIdleBehavior ? 'allow' : 'not allowing'} idle behaviors${
@@ -128,8 +121,7 @@ export function RobotDecommissionButton({
     }
     resetDecommissionConfiguration();
     AppEvents.refreshRobotApp.next();
-    setOpenConfirmDialog(ConfirmDialogType.None);
-  }, [appController, fleet, robotState, reassignTasks, allowIdleBehavior, rmf, ConfirmDialogType]);
+  }, [appController, fleet, robotState, reassignTasks, allowIdleBehavior, rmf]);
 
   const handleRecommission = React.useCallback<React.MouseEventHandler>(async () => {
     if (!robotState || !robotState.name) {
@@ -159,27 +151,15 @@ export function RobotDecommissionButton({
         `Failed to recommission ${fleet}:${robotState.name}: ${(e as Error).message}`,
       );
     }
+    resetDecommissionConfiguration();
     AppEvents.refreshRobotApp.next();
-    setOpenConfirmDialog(ConfirmDialogType.None);
-  }, [appController, fleet, robotState, rmf, ConfirmDialogType]);
+  }, [appController, fleet, robotState, rmf]);
 
   return (
     <>
-      {robotDecommissioned ? (
-        <Button
-          onClick={() => setOpenConfirmDialog(ConfirmDialogType.Recommission)}
-          autoFocus
-          {...otherProps}
-        >
-          {'Recommission'}
-        </Button>
-      ) : robotState && !robotDecommissioned ? (
-        <Button
-          onClick={() => setOpenConfirmDialog(ConfirmDialogType.Decommission)}
-          autoFocus
-          {...otherProps}
-        >
-          {'Decommission'}
+      {robotState ? (
+        <Button onClick={() => setOpenConfirmDialog(true)} autoFocus {...otherProps}>
+          {robotDecommissioned ? 'Recommission' : 'Decommission'}
         </Button>
       ) : (
         <Tooltip title={`Robot from fleet ${fleet} cannot be decommissioned/recommissioned.`}>
@@ -188,52 +168,49 @@ export function RobotDecommissionButton({
           </Button>
         </Tooltip>
       )}
-      {openConfirmDialog === ConfirmDialogType.Decommission ? (
+      {openConfirmDialog && (
         <ConfirmationDialog
           confirmText="Confirm"
           cancelText="Cancel"
-          open={openConfirmDialog === ConfirmDialogType.Decommission}
-          title={`Decommission [${fleet}:${robotState?.name || 'n/a'}]`}
+          open={true}
+          title={`${robotDecommissioned ? 'Recommission' : 'Decommission'} [${fleet}:${
+            robotState?.name || 'n/a'
+          }]`}
           submitting={undefined}
           onClose={() => {
-            setOpenConfirmDialog(ConfirmDialogType.None);
+            resetDecommissionConfiguration();
           }}
-          onSubmit={handleDecommission}
+          onSubmit={robotDecommissioned ? handleRecommission : handleDecommission}
         >
-          <Typography>Confirm decommission robot?</Typography>
-          <FormGroup>
-            <Tooltip title="Attempts to reassign all queued tasks to other robots if possible">
-              <FormControlLabel
-                control={<Checkbox checked={reassignTasks} onChange={handleReassignTasksChange} />}
-                label="Re-assign queued tasks"
-              />
-            </Tooltip>
-            <Tooltip title="Allows the robot to perform its idle behavior (charging, parking, etc)">
-              <FormControlLabel
-                control={
-                  <Checkbox checked={allowIdleBehavior} onChange={handleAllowIdleBehaviorChange} />
-                }
-                label="Allow idle behavior"
-              />
-            </Tooltip>
-          </FormGroup>
+          {robotDecommissioned ? (
+            <Typography>Confirm recommission robot?</Typography>
+          ) : (
+            <>
+              <Typography>Confirm decommission robot?</Typography>
+              <FormGroup>
+                <Tooltip title="Attempts to reassign all queued tasks to other robots if possible">
+                  <FormControlLabel
+                    control={
+                      <Checkbox checked={reassignTasks} onChange={handleReassignTasksChange} />
+                    }
+                    label="Re-assign queued tasks"
+                  />
+                </Tooltip>
+                <Tooltip title="Allows the robot to perform its idle behavior (charging, parking, etc)">
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={allowIdleBehavior}
+                        onChange={handleAllowIdleBehaviorChange}
+                      />
+                    }
+                    label="Allow idle behavior"
+                  />
+                </Tooltip>
+              </FormGroup>
+            </>
+          )}
         </ConfirmationDialog>
-      ) : openConfirmDialog === ConfirmDialogType.Recommission ? (
-        <ConfirmationDialog
-          confirmText="Confirm"
-          cancelText="Cancel"
-          open={openConfirmDialog === ConfirmDialogType.Recommission}
-          title={`Recommission [${fleet}:${robotState?.name || 'n/a'}]`}
-          submitting={undefined}
-          onClose={() => {
-            setOpenConfirmDialog(ConfirmDialogType.None);
-          }}
-          onSubmit={handleRecommission}
-        >
-          <Typography>Confirm recommission robot?</Typography>
-        </ConfirmationDialog>
-      ) : (
-        <></>
       )}
     </>
   );
