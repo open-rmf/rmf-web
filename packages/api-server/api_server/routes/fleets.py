@@ -76,15 +76,7 @@ async def sub_fleet_log(_req: SubscriptionRequest, name: str):
     )
 
 
-@router.post(
-    "/{name}/decommission",
-    response_model=RobotCommissionResponse,
-    description="Decommissions a robot, preventing it from accepting any new "
-    "tasks (both normal dispatches and direct dispatches), with the option to "
-    "reassign all queued tasks to other robots, as well as the option to "
-    "disable idle behaviors (formerly known as finishing tasks). This will not "
-    "affect the ongoing task that the robot is currently performing.",
-)
+@router.post("/{name}/decommission", response_model=RobotCommissionResponse)
 async def decommission_robot(
     name: str,
     robot_name: str,
@@ -93,6 +85,22 @@ async def decommission_robot(
     repo: FleetRepository = Depends(fleet_repo_dep),
     user: User = Depends(user_dep),
 ):
+    """
+    Decommissions a robot, cancels all direct tasks, and preventing it from
+    accepting any new tasks (both dispatch tasks and direct tasks), with the
+    options to:
+
+    - Reassign all queued dispatch tasks to other robots. If task reassignment
+      is chosen, the response will contain the results of the reassignment as
+      well, any failed reassignments will be cancelled instead.
+    - Disable idle behaviors (formerly known as finishing tasks). If disabled,
+      the robot will not be issued any more commands (e.g. return to charger, or
+      navigating anywhere at all) once it is decommissioned, and could require
+      human intervention to recover it.
+
+    This will not affect the ongoing task that the robot is currently
+    performing.
+    """
     fleet_state = await repo.get_fleet_state(name)
     if fleet_state is None:
         raise HTTPException(404, f"Fleet {name} not found")
@@ -135,9 +143,6 @@ async def decommission_robot(
 @router.post(
     "/{name}/recommission",
     response_model=RobotCommissionResponse,
-    description="Recommissions a robot, allowing it to accept all new "
-    "tasks (both normal dispatches and direct dispatches), as well as resume "
-    "idle behaviors (formerly known as finishing tasks).",
 )
 async def recommission_robot(
     name: str,
@@ -145,6 +150,10 @@ async def recommission_robot(
     repo: FleetRepository = Depends(fleet_repo_dep),
     user: User = Depends(user_dep),
 ):
+    """
+    Recommissions a robot, allowing it to accept new dispatch tasks and direct
+    tasks, as well as resume idle behaviors (formerly known as finishing tasks).
+    """
     fleet_state = await repo.get_fleet_state(name)
     if fleet_state is None:
         raise HTTPException(404, f"Fleet {name} not found")
