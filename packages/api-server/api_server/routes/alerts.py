@@ -5,7 +5,7 @@ from rx import operators as rxops
 
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import tortoise_models as ttm
-from api_server.repositories import AlertRepository, alert_repo_dep
+from api_server.repositories import AlertRepository
 from api_server.rmf_io import alert_events
 
 router = FastIORouter(tags=["Alerts"])
@@ -17,12 +17,12 @@ async def sub_alerts(_req: SubscriptionRequest):
 
 
 @router.get("", response_model=List[ttm.AlertPydantic])
-async def get_alerts(repo: AlertRepository = Depends(alert_repo_dep)):
+async def get_alerts(repo: AlertRepository = Depends(AlertRepository)):
     return await repo.get_all_alerts()
 
 
 @router.get("/{alert_id}", response_model=ttm.AlertPydantic)
-async def get_alert(alert_id: str, repo: AlertRepository = Depends(alert_repo_dep)):
+async def get_alert(alert_id: str, repo: AlertRepository = Depends(AlertRepository)):
     alert = await repo.get_alert(alert_id)
     if alert is None:
         raise HTTPException(404, f"Alert with ID {alert_id} not found")
@@ -31,7 +31,7 @@ async def get_alert(alert_id: str, repo: AlertRepository = Depends(alert_repo_de
 
 @router.post("", status_code=201, response_model=ttm.AlertPydantic)
 async def create_alert(
-    alert_id: str, category: str, repo: AlertRepository = Depends(alert_repo_dep)
+    alert_id: str, category: str, repo: AlertRepository = Depends(AlertRepository)
 ):
     alert = await repo.create_alert(alert_id, category)
     if alert is None:
@@ -41,7 +41,7 @@ async def create_alert(
 
 @router.post("/{alert_id}", status_code=201, response_model=ttm.AlertPydantic)
 async def acknowledge_alert(
-    alert_id: str, repo: AlertRepository = Depends(alert_repo_dep)
+    alert_id: str, repo: AlertRepository = Depends(AlertRepository)
 ):
     alert = await repo.acknowledge_alert(alert_id)
     if alert is None:

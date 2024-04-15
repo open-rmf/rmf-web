@@ -6,7 +6,7 @@ from rx import operators as rxops
 from api_server.dependencies import between_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import FleetLog, FleetState
-from api_server.repositories import FleetRepository, fleet_repo_dep
+from api_server.repositories import FleetRepository
 from api_server.rmf_io import fleet_events
 
 router = FastIORouter(tags=["Fleets"])
@@ -14,13 +14,13 @@ router = FastIORouter(tags=["Fleets"])
 
 @router.get("", response_model=List[FleetState])
 async def get_fleets(
-    repo: FleetRepository = Depends(fleet_repo_dep),
+    repo: FleetRepository = Depends(FleetRepository),
 ):
     return await repo.get_all_fleets()
 
 
 @router.get("/{name}/state", response_model=FleetState)
-async def get_fleet_state(name: str, repo: FleetRepository = Depends(fleet_repo_dep)):
+async def get_fleet_state(name: str, repo: FleetRepository = Depends(FleetRepository)):
     """
     Available in socket.io
     """
@@ -46,7 +46,7 @@ async def sub_fleet_state(req: SubscriptionRequest, name: str):
 @router.get("/{name}/log", response_model=FleetLog)
 async def get_fleet_log(
     name: str,
-    repo: FleetRepository = Depends(fleet_repo_dep),
+    repo: FleetRepository = Depends(FleetRepository),
     between: Tuple[int, int] = Depends(between_query),
 ):
     """

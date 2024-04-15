@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 import signal
 import threading
@@ -19,7 +20,7 @@ from . import gateway, ros, routes
 from .app_config import app_config
 from .authenticator import AuthenticationError, authenticator, user_dep
 from .fast_io import FastIO
-from .logger import logger
+from .logging import logger
 from .models import (
     DispenserHealth,
     DispenserState,
@@ -37,7 +38,9 @@ from .rmf_io import HealthWatchdog, RmfBookKeeper, rmf_events
 from .types import is_coroutine
 
 
-async def on_sio_connect(sid: str, _environ: dict, auth: Optional[dict] = None):
+async def on_sio_connect(
+    sid: str, _environ: dict, auth: Optional[dict] = None, logger=Depends(logger)
+):
     session = await app.sio.get_session(sid)
     token = None
     if auth:
@@ -85,7 +88,7 @@ app.mount(
 # will be called in reverse order on app shutdown
 shutdown_cbs: List[Union[Coroutine[Any, Any, Any], Callable[[], None]]] = []
 
-rmf_bookkeeper = RmfBookKeeper(rmf_events, logger=logger.getChild("BookKeeper"))
+rmf_bookkeeper = RmfBookKeeper(rmf_events)
 
 app.include_router(routes.main_router)
 app.include_router(
@@ -185,35 +188,34 @@ async def on_startup():
     shutdown_cbs.append(rmf_bookkeeper.stop())
     health_watchdog = HealthWatchdog(
         rmf_events,
-        logger=logger.getChild("HealthWatchdog"),
     )
     await health_watchdog.start()
 
-    logger.info("starting scheduler")
+    logging.info("starting scheduler")
     asyncio.create_task(_spin_scheduler())
     scheduled_tasks = await ttm.ScheduledTask.all()
     scheduled = 0
     for t in scheduled_tasks:
         user = await User.load_from_db(t.created_by)
         if user is None:
-            logger.warning(f"User who scheduled task, [{t.created_by}] does not exist")
-            logger.warning(f"Skipping request: [{t.task_request}]")
+            logging.warning(f"User who scheduled task, [{t.created_by}] does not exist")
+            logging.warning(f"Skipping request: [{t.task_request}]")
             continue
         task_repo = TaskRepository(user)
         try:
             await routes.scheduled_tasks.schedule_task(t, task_repo)
-            logger.info(f"Scheduling task created by [{t.created_by}]")
-            logger.info(f"{t.task_request}")
+            logging.info(f"Scheduling task created by [{t.created_by}]")
+            logging.info(f"{t.task_request}")
             scheduled += 1
         except Exception as e:  # pylint: disable=broad-except
-            logger.warning(f"Unable to schedule task requested by {t.created_by}: {e}")
-            logger.warning(f"Skipping request: [{t.task_request}]")
-    logger.info(
+            logging.warning(f"Unable to schedule task requested by {t.created_by}: {e}")
+            logging.warning(f"Skipping request: [{t.task_request}]")
+    logging.info(
         f"Retrieved {len(scheduled_tasks)} scheduled tasks, scheduled {scheduled} tasks"
     )
 
     ros.spin_background()
-    logger.info("started app")
+    logging.info("started app")
 
 
 @app.on_event("shutdown")
@@ -225,7 +227,7 @@ async def on_shutdown():
         elif callable(cb):
             cb()
 
-    logger.info("shutdown app")
+    logging.info("shutdown app")
 
 
 @app.get("/docs", include_in_schema=False)
@@ -262,56 +264,56 @@ async def _spin_scheduler():
 
 
 async def _load_states():
-    logger.info("loading states from database...")
+    logging.info("loading states from database...")
 
     door_states = [DoorState.from_tortoise(x) for x in await ttm.DoorState.all()]
     for state in door_states:
         rmf_events.door_states.on_next(state)
-    logger.info(f"loaded {len(door_states)} door states")
+    logging.info(f"loaded {len(door_states)} door states")
 
     door_health = [
         await DoorHealth.from_tortoise(x) for x in await ttm.DoorHealth.all()
     ]
     for health in door_health:
         rmf_events.door_health.on_next(health)
-    logger.info(f"loaded {len(door_health)} door health")
+    logging.info(f"loaded {len(door_health)} door health")
 
     lift_states = [LiftState.from_tortoise(x) for x in await ttm.LiftState.all()]
     for state in lift_states:
         rmf_events.lift_states.on_next(state)
-    logger.info(f"loaded {len(lift_states)} lift states")
+    logging.info(f"loaded {len(lift_states)} lift states")
 
     lift_health = [
         await LiftHealth.from_tortoise(x) for x in await ttm.LiftHealth.all()
     ]
     for health in lift_health:
         rmf_events.lift_health.on_next(health)
-    logger.info(f"loaded {len(lift_health)} lift health")
+    logging.info(f"loaded {len(lift_health)} lift health")
 
     dispenser_states = [
         DispenserState.from_tortoise(x) for x in await ttm.DispenserState.all()
     ]
     for state in dispenser_states:
         rmf_events.dispenser_states.on_next(state)
-    logger.info(f"loaded {len(dispenser_states)} dispenser states")
+    logging.info(f"loaded {len(dispenser_states)} dispenser states")
 
     dispenser_health = [
         await DispenserHealth.from_tortoise(x) for x in await ttm.DispenserHealth.all()
     ]
     for health in dispenser_health:
         rmf_events.dispenser_health.on_next(health)
-    logger.info(f"loaded {len(dispenser_health)} dispenser health")
+    logging.info(f"loaded {len(dispenser_health)} dispenser health")
 
     ingestor_states = [
         IngestorState.from_tortoise(x) for x in await ttm.IngestorState.all()
     ]
     for state in ingestor_states:
         rmf_events.ingestor_states.on_next(state)
-    logger.info(f"loaded {len(ingestor_states)} ingestor states")
+    logging.info(f"loaded {len(ingestor_states)} ingestor states")
 
     ingestor_health = [
         await IngestorHealth.from_tortoise(x) for x in await ttm.IngestorHealth.all()
     ]
     for health in ingestor_health:
         rmf_events.ingestor_health.on_next(health)
-    logger.info(f"loaded {len(ingestor_health)} ingestor health")
+    logging.info(f"loaded {len(ingestor_health)} ingestor health")

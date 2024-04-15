@@ -1,8 +1,7 @@
 import asyncio
 import json
 import logging
-from collections import namedtuple
-from typing import Coroutine, List, Optional
+from typing import Coroutine, List
 
 from rx.core.typing import Disposable
 from rx.subject.subject import Subject
@@ -31,66 +30,14 @@ class RmfBookKeeperEvents:
 
 
 class RmfBookKeeper:
-    _ChildLoggers = namedtuple(
-        "_ChildLoggers",
-        [
-            "beacon_state",
-            "building_map",
-            "door_state",
-            "door_health",
-            "lift_state",
-            "lift_health",
-            "dispenser_state",
-            "dispenser_health",
-            "ingestor_state",
-            "ingestor_health",
-            "fleet_state",
-            "robot_health",
-            "task_summary",
-        ],
-    )
-
     def __init__(
         self,
         rmf_events: RmfEvents,
-        *,
-        logger: Optional[logging.Logger] = None,
     ):
         self.rmf = rmf_events
         self.bookkeeper_events = RmfBookKeeperEvents()
         self._loop: asyncio.AbstractEventLoop
-        self._main_logger = logger or logging.getLogger(self.__class__.__name__)
         self._pending_tasks = set()
-
-        self._loggers = self._ChildLoggers(
-            self._main_logger.getChild("beacon_state"),
-            self._main_logger.getChild("building_map"),
-            self._main_logger.getChild("door_state"),
-            self._main_logger.getChild("door_health"),
-            self._main_logger.getChild("lift_state"),
-            self._main_logger.getChild("lift_health"),
-            self._main_logger.getChild("dispenser_state"),
-            self._main_logger.getChild("dispenser_health"),
-            self._main_logger.getChild("ingestor_state"),
-            self._main_logger.getChild("ingestor_health"),
-            self._main_logger.getChild("fleet_state"),
-            self._main_logger.getChild("robot_health"),
-            self._main_logger.getChild("task_summary"),
-        )
-
-        self._loggers.beacon_state.parent = self._main_logger
-        self._loggers.door_state.parent = self._main_logger
-        self._loggers.door_health.parent = self._main_logger
-        self._loggers.lift_state.parent = self._main_logger
-        self._loggers.lift_health.parent = self._main_logger
-        self._loggers.dispenser_state.parent = self._main_logger
-        self._loggers.dispenser_health.parent = self._main_logger
-        self._loggers.ingestor_state.parent = self._main_logger
-        self._loggers.ingestor_health.parent = self._main_logger
-        self._loggers.fleet_state.parent = self._main_logger
-        self._loggers.robot_health.parent = self._main_logger
-        self._loggers.task_summary.parent = self._main_logger
-
         self._subscriptions: List[Disposable] = []
 
     async def start(self):
@@ -119,19 +66,19 @@ class RmfBookKeeper:
         self._pending_tasks.add(task)
 
     @staticmethod
-    def _report_health(health: BaseBasicHealth, logger: logging.Logger):
+    def _report_health(health: BaseBasicHealth):
         message = health.json()
         if health.health_status == HealthStatus.UNHEALTHY:
-            logger.warning(message)
+            logging.warning(message)
         elif health.health_status == HealthStatus.DEAD:
-            logger.error(message)
+            logging.error(message)
         else:
-            logger.info(message)
+            logging.info(message)
 
     def _record_beacon_state(self):
         async def update(beacon_state: BeaconState):
             await beacon_state.save()
-            self._loggers.beacon_state.debug(json.dumps(beacon_state.dict()))
+            logging.debug(json.dumps(beacon_state.dict()))
 
         self._subscriptions.append(
             self.rmf.beacons.subscribe(lambda x: self._create_task(update(x)))
@@ -142,7 +89,7 @@ class RmfBookKeeper:
             if not building_map:
                 return
             await building_map.save()
-            self._loggers.building_map.debug(json.dumps(building_map.dict()))
+            logging.debug(json.dumps(building_map.dict()))
 
         self._subscriptions.append(
             self.rmf.building_map.subscribe(lambda x: self._create_task(update(x)))
@@ -151,7 +98,7 @@ class RmfBookKeeper:
     def _record_door_state(self):
         async def update(door_state: DoorState):
             await door_state.save()
-            self._loggers.door_state.debug(json.dumps(door_state.dict()))
+            logging.debug(json.dumps(door_state.dict()))
 
         self._subscriptions.append(
             self.rmf.door_states.subscribe(lambda x: self._create_task(update(x)))
@@ -169,7 +116,7 @@ class RmfBookKeeper:
     def _record_lift_state(self):
         async def update(lift_state: LiftState):
             await lift_state.save()
-            self._loggers.lift_state.debug(lift_state.json())
+            logging.debug(lift_state.json())
 
         self._subscriptions.append(
             self.rmf.lift_states.subscribe(lambda x: self._create_task(update(x)))
@@ -178,7 +125,7 @@ class RmfBookKeeper:
     def _record_lift_health(self):
         async def update(health: LiftHealth):
             await health.save()
-            self._report_health(health, self._loggers.lift_health)
+            self._report_health(health)
 
         self._subscriptions.append(
             self.rmf.lift_health.subscribe(lambda x: self._create_task(update(x)))
@@ -187,7 +134,7 @@ class RmfBookKeeper:
     def _record_dispenser_state(self):
         async def update(dispenser_state: DispenserState):
             await dispenser_state.save()
-            self._loggers.dispenser_state.debug(dispenser_state.json())
+            logging.debug(dispenser_state.json())
 
         self._subscriptions.append(
             self.rmf.dispenser_states.subscribe(lambda x: self._create_task(update(x)))
@@ -196,7 +143,7 @@ class RmfBookKeeper:
     def _record_dispenser_health(self):
         async def update(health: DispenserHealth):
             await health.save()
-            self._report_health(health, self._loggers.dispenser_health)
+            self._report_health(health)
 
         self._subscriptions.append(
             self.rmf.dispenser_health.subscribe(lambda x: self._create_task(update(x)))
@@ -205,7 +152,7 @@ class RmfBookKeeper:
     def _record_ingestor_state(self):
         async def update(ingestor_state: IngestorState):
             await ingestor_state.save()
-            self._loggers.ingestor_state.debug(ingestor_state.json())
+            logging.debug(ingestor_state.json())
 
         self._subscriptions.append(
             self.rmf.ingestor_states.subscribe(lambda x: self._create_task(update(x)))
@@ -214,7 +161,7 @@ class RmfBookKeeper:
     def _record_ingestor_health(self):
         async def update(health: IngestorHealth):
             await health.save()
-            self._report_health(health, self._loggers.ingestor_health)
+            self._report_health(health)
 
         self._subscriptions.append(
             self.rmf.ingestor_health.subscribe(lambda x: self._create_task(update(x)))

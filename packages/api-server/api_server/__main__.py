@@ -1,10 +1,12 @@
+import logging
 import os
 
 import uvicorn
+import uvicorn.logging
 from uvicorn.config import LOGGING_CONFIG
 
-from .app import app
-from .app_config import app_config, load_config
+from .app_config import load_config
+from .logging import LogfmtFormatter
 
 app_config = load_config(
     os.environ.get(
@@ -13,18 +15,34 @@ app_config = load_config(
     )
 )
 
-TORTOISE_ORM = app_config.get_tortoise_orm_config()
+handler = logging.StreamHandler()
+handler.setFormatter(LogfmtFormatter())
+logging.basicConfig(level=app_config.log_level, handlers=[handler])
+
+LOGGING_CONFIG["formatters"]["logfmt"] = {"()": LogfmtFormatter}
+LOGGING_CONFIG["handlers"]["logfmt"] = {
+    "formatter": "logfmt",
+    "class": "logging.StreamHandler",
+    "stream": "ext://sys.stdout",
+}
+# uvicorn appears to log to both the default and configured handler,
+# since we already configured the default logger,
+# setting a handler here will cause double logging
+LOGGING_CONFIG["loggers"]["uvicorn"]["handlers"] = []
+LOGGING_CONFIG["loggers"]["uvicorn.access"]["handlers"] = ["logfmt"]
 
 
 def main():
-    LOGGING_CONFIG["formatters"]["access"][
-        "fmt"
-    ] = '%(asctime)s %(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s'
+    # FIXME: we need to init logging before the app, better solution is to
+    # NOT use global app that init on import
+    from .app import app  # pylint: disable=import-outside-toplevel
+
     uvicorn.run(
         app,
         host=app_config.host,
         port=app_config.port,
         root_path=app_config.public_url.path,
+        log_config=LOGGING_CONFIG,
         log_level=app_config.log_level.lower(),
     )
 

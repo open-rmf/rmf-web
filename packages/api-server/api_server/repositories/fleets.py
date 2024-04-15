@@ -1,3 +1,4 @@
+from logging import Logger
 from typing import List, Optional, Sequence, Tuple, cast
 
 from fastapi import Depends
@@ -6,14 +7,17 @@ from tortoise.query_utils import Prefetch
 from tortoise.transactions import in_transaction
 
 from api_server.authenticator import user_dep
-from api_server.logger import format_exception, logger
+from api_server.logging import logger
 from api_server.models import FleetLog, FleetState, LogEntry, User
 from api_server.models import tortoise_models as ttm
 
 
 class FleetRepository:
-    def __init__(self, user: User):
+    def __init__(
+        self, user: User = Depends(user_dep), logger: Logger = Depends(logger)
+    ):
         self.user = user
+        self.logger = logger
 
     async def get_all_fleets(self) -> List[FleetState]:
         db_states = await ttm.FleetState.all().values_list("data", flat=True)
@@ -85,8 +89,4 @@ class FleetRepository:
                 if fleet_log.log:
                     await _save_logs(db_fleet_log, fleet_log.log)
             except IntegrityError as e:
-                logger.error(format_exception(e))
-
-
-def fleet_repo_dep(user: User = Depends(user_dep)):
-    return FleetRepository(user)
+                self.logger.error(e)
