@@ -6891,7 +6891,7 @@ export class DoorsApi extends BaseAPI {
 export const FleetsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     * Decommissions a robot, cancels all direct tasks, and preventing it from accepting any new tasks (both dispatch tasks and direct tasks), with the options to:  - Reassign all queued dispatch tasks to other robots. If task reassignment   is chosen, the response will contain the results of the reassignment as   well, any failed reassignments will be cancelled instead. - Disable idle behaviors (formerly known as finishing tasks). If disabled,   the robot will not be issued any more commands (e.g. return to charger, or   navigating anywhere at all) once it is decommissioned, and could require   human intervention to recover it.  This will not affect the ongoing task that the robot is currently performing.
+     * Decommissions a robot, cancels all direct tasks, and preventing it from accepting any new tasks (both dispatch tasks and direct tasks), with the options to:  - Reassign all queued dispatch tasks to other robots. If task reassignment   is chosen, the response will contain the results of the reassignment as   well, any failed reassignments will be cancelled instead. - Still allow idle behaviors (formerly known as finishing tasks). If   allowed, the robot will still be issued idle behavior commands (e.g.   return to charger, park somewhere) once it is decommissioned, as opposed   to waiting for human intervention at the same position when it was   decommissioned.  This will not affect the ongoing task that the robot is currently performing.
      * @summary Decommission Robot
      * @param {string} name
      * @param {string} robotName
@@ -7200,7 +7200,7 @@ export const FleetsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = FleetsApiAxiosParamCreator(configuration);
   return {
     /**
-     * Decommissions a robot, cancels all direct tasks, and preventing it from accepting any new tasks (both dispatch tasks and direct tasks), with the options to:  - Reassign all queued dispatch tasks to other robots. If task reassignment   is chosen, the response will contain the results of the reassignment as   well, any failed reassignments will be cancelled instead. - Disable idle behaviors (formerly known as finishing tasks). If disabled,   the robot will not be issued any more commands (e.g. return to charger, or   navigating anywhere at all) once it is decommissioned, and could require   human intervention to recover it.  This will not affect the ongoing task that the robot is currently performing.
+     * Decommissions a robot, cancels all direct tasks, and preventing it from accepting any new tasks (both dispatch tasks and direct tasks), with the options to:  - Reassign all queued dispatch tasks to other robots. If task reassignment   is chosen, the response will contain the results of the reassignment as   well, any failed reassignments will be cancelled instead. - Still allow idle behaviors (formerly known as finishing tasks). If   allowed, the robot will still be issued idle behavior commands (e.g.   return to charger, park somewhere) once it is decommissioned, as opposed   to waiting for human intervention at the same position when it was   decommissioned.  This will not affect the ongoing task that the robot is currently performing.
      * @summary Decommission Robot
      * @param {string} name
      * @param {string} robotName
@@ -7339,7 +7339,7 @@ export const FleetsApiFactory = function (
   const localVarFp = FleetsApiFp(configuration);
   return {
     /**
-     * Decommissions a robot, cancels all direct tasks, and preventing it from accepting any new tasks (both dispatch tasks and direct tasks), with the options to:  - Reassign all queued dispatch tasks to other robots. If task reassignment   is chosen, the response will contain the results of the reassignment as   well, any failed reassignments will be cancelled instead. - Disable idle behaviors (formerly known as finishing tasks). If disabled,   the robot will not be issued any more commands (e.g. return to charger, or   navigating anywhere at all) once it is decommissioned, and could require   human intervention to recover it.  This will not affect the ongoing task that the robot is currently performing.
+     * Decommissions a robot, cancels all direct tasks, and preventing it from accepting any new tasks (both dispatch tasks and direct tasks), with the options to:  - Reassign all queued dispatch tasks to other robots. If task reassignment   is chosen, the response will contain the results of the reassignment as   well, any failed reassignments will be cancelled instead. - Still allow idle behaviors (formerly known as finishing tasks). If   allowed, the robot will still be issued idle behavior commands (e.g.   return to charger, park somewhere) once it is decommissioned, as opposed   to waiting for human intervention at the same position when it was   decommissioned.  This will not affect the ongoing task that the robot is currently performing.
      * @summary Decommission Robot
      * @param {string} name
      * @param {string} robotName
@@ -7450,7 +7450,7 @@ export const FleetsApiFactory = function (
  */
 export class FleetsApi extends BaseAPI {
   /**
-   * Decommissions a robot, cancels all direct tasks, and preventing it from accepting any new tasks (both dispatch tasks and direct tasks), with the options to:  - Reassign all queued dispatch tasks to other robots. If task reassignment   is chosen, the response will contain the results of the reassignment as   well, any failed reassignments will be cancelled instead. - Disable idle behaviors (formerly known as finishing tasks). If disabled,   the robot will not be issued any more commands (e.g. return to charger, or   navigating anywhere at all) once it is decommissioned, and could require   human intervention to recover it.  This will not affect the ongoing task that the robot is currently performing.
+   * Decommissions a robot, cancels all direct tasks, and preventing it from accepting any new tasks (both dispatch tasks and direct tasks), with the options to:  - Reassign all queued dispatch tasks to other robots. If task reassignment   is chosen, the response will contain the results of the reassignment as   well, any failed reassignments will be cancelled instead. - Still allow idle behaviors (formerly known as finishing tasks). If   allowed, the robot will still be issued idle behavior commands (e.g.   return to charger, park somewhere) once it is decommissioned, as opposed   to waiting for human intervention at the same position when it was   decommissioned.  This will not affect the ongoing task that the robot is currently performing.
    * @summary Decommission Robot
    * @param {string} name
    * @param {string} robotName
