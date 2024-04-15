@@ -93,10 +93,11 @@ async def decommission_robot(
     - Reassign all queued dispatch tasks to other robots. If task reassignment
       is chosen, the response will contain the results of the reassignment as
       well, any failed reassignments will be cancelled instead.
-    - Disable idle behaviors (formerly known as finishing tasks). If disabled,
-      the robot will not be issued any more commands (e.g. return to charger, or
-      navigating anywhere at all) once it is decommissioned, and could require
-      human intervention to recover it.
+    - Still allow idle behaviors (formerly known as finishing tasks). If
+      allowed, the robot will still be issued idle behavior commands (e.g.
+      return to charger, park somewhere) once it is decommissioned, as opposed
+      to waiting for human intervention at the same position when it was
+      decommissioned.
 
     This will not affect the ongoing task that the robot is currently
     performing.
