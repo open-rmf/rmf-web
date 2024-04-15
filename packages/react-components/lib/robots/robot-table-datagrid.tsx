@@ -9,9 +9,19 @@ import {
 } from '@mui/x-data-grid';
 import { Box, SxProps, Typography, useTheme, useMediaQuery } from '@mui/material';
 import * as React from 'react';
-import { ApiServerModelsRmfApiRobotStateStatus as Status } from 'api-client';
-import { RobotTableData } from './robot-table';
+import { ApiServerModelsRmfApiRobotStateStatus as Status, Commission } from 'api-client';
 import { robotStatusToUpperCase } from './utils';
+
+export interface RobotTableData {
+  fleet: string;
+  name: string;
+  status?: Status;
+  battery?: number;
+  estFinishTime?: number;
+  lastUpdateTime?: number;
+  level?: string;
+  commission?: Commission;
+}
 
 export interface RobotDataGridTableProps {
   onRobotClick?(ev: MuiEvent<React.MouseEvent<HTMLElement>>, robotName: RobotTableData): void;
@@ -31,6 +41,9 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
   };
 
   const StatusCell = (params: GridCellParams): React.ReactNode => {
+    const robotDecommissioned =
+      params.row.commission && params.row.commission.dispatch_tasks === false;
+
     const theme = useTheme();
     const statusLabelStyle: SxProps = (() => {
       const error = {
@@ -43,11 +56,15 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
         color: theme.palette.success.main,
       };
       const disabled = {
-        color: theme.palette.grey.A400,
+        color: theme.palette.action.disabled,
       };
       const defaultColor = {
         color: theme.palette.warning.main,
       };
+
+      if (robotDecommissioned) {
+        return disabled;
+      }
 
       switch (params.row.status) {
         case Status.Error:
@@ -63,11 +80,6 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
           return defaultColor;
       }
     })();
-
-    const robotDecommissioned =
-      params.row.commission &&
-      params.row.commission.dispatch_tasks === false &&
-      params.row.commission.direct_tasks === false;
 
     return (
       <Box component="div" sx={statusLabelStyle}>

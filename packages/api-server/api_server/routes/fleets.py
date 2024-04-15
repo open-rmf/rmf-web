@@ -9,19 +9,15 @@ from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.logger import logger
 from api_server.models import (
     Commission,
-    Error,
     FleetLog,
     FleetState,
     PendingDirectTasksPolicy,
     PendingDispatchTasksPolicy,
-    Result,
-    ResultItem1,
     RobotCommissionRequest,
     RobotCommissionResponse,
     User,
 )
 from api_server.repositories import FleetRepository, fleet_repo_dep
-from api_server.response import RawJSONResponse
 from api_server.rmf_io import fleet_events, tasks_service
 
 router = FastIORouter(tags=["Fleets"])
@@ -89,39 +85,27 @@ async def decommission_robot(
     repo: FleetRepository = Depends(fleet_repo_dep),
     user: User = Depends(user_dep),
 ):
+    """
+    Decommissions a robot, cancels all direct tasks, and preventing it from
+    accepting any new tasks (both dispatch tasks and direct tasks), with the
+    options to:
+
+    - Reassign all queued dispatch tasks to other robots. If task reassignment
+      is chosen, the response will contain the results of the reassignment as
+      well, any failed reassignments will be cancelled instead.
+    - Disable idle behaviors (formerly known as finishing tasks). If disabled,
+      the robot will not be issued any more commands (e.g. return to charger, or
+      navigating anywhere at all) once it is decommissioned, and could require
+      human intervention to recover it.
+
+    This will not affect the ongoing task that the robot is currently
+    performing.
+    """
     fleet_state = await repo.get_fleet_state(name)
     if fleet_state is None:
-        resp = RobotCommissionResponse(
-            commission=Result(
-                __root__=ResultItem1(
-                    success=False,
-                    errors=[
-                        Error(code=404, category=None, detail=f"Fleet {name} not found")
-                    ],
-                ),
-            ),
-            pending_direct_tasks_policy=None,
-            pending_dispatch_tasks_policy=None,
-        )
-        return RawJSONResponse(resp.json(), 404)
+        raise HTTPException(404, f"Fleet {name} not found")
     if fleet_state.robots is None or robot_name not in fleet_state.robots:
-        resp = RobotCommissionResponse(
-            commission=Result(
-                __root__=ResultItem1(
-                    success=False,
-                    errors=[
-                        Error(
-                            code=404,
-                            category=None,
-                            detail=f"Robot {robot_name} not found in fleet {name}",
-                        )
-                    ],
-                ),
-            ),
-            pending_direct_tasks_policy=None,
-            pending_dispatch_tasks_policy=None,
-        )
-        return RawJSONResponse(resp.json(), 404)
+        raise HTTPException(404, f"Robot {robot_name} not found in fleet {name}")
 
     commission = Commission(
         dispatch_tasks=False, direct_tasks=False, idle_behavior=allow_idle_behavior
@@ -140,73 +124,41 @@ async def decommission_robot(
         pending_dispatch_tasks_policy=dispatch_policy,
     )
 
-    logger.info(f"Decommissioning {robot_name} of {name} called by {user.username}")
+    reassignment_log_str = "No Task re-assignment requested, tasks will be cancelled."
     if reassign_tasks:
-        logger.info("Task re-assignment requested")
-    else:
-        logger.info("No Task re-assignment requested, tasks will be cancelled")
+        reassignment_log_str = "Task re-assignment requested."
+    logger.info(
+        f"Decommissioning {robot_name} of {name} called by {user.username}. {reassignment_log_str}"
+    )
     resp = RobotCommissionResponse.parse_raw(
         await tasks_service().call(request.json(exclude_none=True))
     )
     logger.info(resp)
     if not resp.commission.__root__.success:
         logger.error(f"Failed to decommission {robot_name} of {name}")
-        return RawJSONResponse(resp.json(), 400)
-
-    # Check if pending direct or dispatch task policies were fulfilled
-    if (
-        resp.pending_direct_tasks_policy is not None
-        and not resp.pending_direct_tasks_policy.__root__.success
-    ):
-        logger.error("Failed to cancel pending direct tasks")
-    if (
-        resp.pending_dispatch_tasks_policy is not None
-        and not resp.pending_dispatch_tasks_policy.__root__.success
-    ):
-        logger.error(f"Failed to {dispatch_policy} pending dispatch tasks")
+        raise HTTPException(400, resp)
     return resp
 
 
-@router.post("/{name}/recommission", response_model=RobotCommissionResponse)
+@router.post(
+    "/{name}/recommission",
+    response_model=RobotCommissionResponse,
+)
 async def recommission_robot(
     name: str,
     robot_name: str,
     repo: FleetRepository = Depends(fleet_repo_dep),
     user: User = Depends(user_dep),
 ):
+    """
+    Recommissions a robot, allowing it to accept new dispatch tasks and direct
+    tasks, as well as resume idle behaviors (formerly known as finishing tasks).
+    """
     fleet_state = await repo.get_fleet_state(name)
     if fleet_state is None:
-        resp = RobotCommissionResponse(
-            commission=Result(
-                __root__=ResultItem1(
-                    success=False,
-                    errors=[
-                        Error(code=404, category=None, detail=f"Fleet {name} not found")
-                    ],
-                ),
-            ),
-            pending_direct_tasks_policy=None,
-            pending_dispatch_tasks_policy=None,
-        )
-        return RawJSONResponse(resp.json(), 404)
+        raise HTTPException(404, f"Fleet {name} not found")
     if fleet_state.robots is None or robot_name not in fleet_state.robots:
-        resp = RobotCommissionResponse(
-            commission=Result(
-                __root__=ResultItem1(
-                    success=False,
-                    errors=[
-                        Error(
-                            code=404,
-                            category=None,
-                            detail=f"Robot {robot_name} not found in fleet {name}",
-                        )
-                    ],
-                ),
-            ),
-            pending_direct_tasks_policy=None,
-            pending_dispatch_tasks_policy=None,
-        )
-        return RawJSONResponse(resp.json(), 404)
+        raise HTTPException(404, f"Robot {robot_name} not found in fleet {name}")
 
     commission = Commission(dispatch_tasks=True, direct_tasks=True, idle_behavior=True)
     request = RobotCommissionRequest(
@@ -225,7 +177,7 @@ async def recommission_robot(
     logger.info(resp)
     if not resp.commission.__root__.success:
         logger.error(f"Failed to recommission {robot_name} of {name}")
-        return RawJSONResponse(resp.json(), 400)
+        raise HTTPException(400, resp)
     return resp
 
 
