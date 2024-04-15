@@ -7132,6 +7132,63 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
         options: localVarRequestOptions,
       };
     },
+    /**
+     * Request to manually unlock a mutex group that is currently being held by a specific robot of a specific fleet. This call does not provide any feedback, and changes to mutex groups should be reviewed from the updated robot states.
+     * @summary Unlock Mutex Group
+     * @param {string} name
+     * @param {string} robotName
+     * @param {string} mutexGroup
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    unlockMutexGroupFleetsNameUnlockMutexGroupPost: async (
+      name: string,
+      robotName: string,
+      mutexGroup: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'name' is not null or undefined
+      assertParamExists('unlockMutexGroupFleetsNameUnlockMutexGroupPost', 'name', name);
+      // verify required parameter 'robotName' is not null or undefined
+      assertParamExists('unlockMutexGroupFleetsNameUnlockMutexGroupPost', 'robotName', robotName);
+      // verify required parameter 'mutexGroup' is not null or undefined
+      assertParamExists('unlockMutexGroupFleetsNameUnlockMutexGroupPost', 'mutexGroup', mutexGroup);
+      const localVarPath = `/fleets/{name}/unlock_mutex_group`.replace(
+        `{${'name'}}`,
+        encodeURIComponent(String(name)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      if (robotName !== undefined) {
+        localVarQueryParameter['robot_name'] = robotName;
+      }
+
+      if (mutexGroup !== undefined) {
+        localVarQueryParameter['mutex_group'] = mutexGroup;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
   };
 };
 
@@ -7243,6 +7300,30 @@ export const FleetsApiFp = function (configuration?: Configuration) {
         );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
+    /**
+     * Request to manually unlock a mutex group that is currently being held by a specific robot of a specific fleet. This call does not provide any feedback, and changes to mutex groups should be reviewed from the updated robot states.
+     * @summary Unlock Mutex Group
+     * @param {string} name
+     * @param {string} robotName
+     * @param {string} mutexGroup
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async unlockMutexGroupFleetsNameUnlockMutexGroupPost(
+      name: string,
+      robotName: string,
+      mutexGroup: string,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.unlockMutexGroupFleetsNameUnlockMutexGroupPost(
+          name,
+          robotName,
+          mutexGroup,
+          options,
+        );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
   };
 };
 
@@ -7337,6 +7418,25 @@ export const FleetsApiFactory = function (
     ): AxiosPromise<RobotCommissionResponse> {
       return localVarFp
         .recommissionRobotFleetsNameRecommissionPost(name, robotName, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Request to manually unlock a mutex group that is currently being held by a specific robot of a specific fleet. This call does not provide any feedback, and changes to mutex groups should be reviewed from the updated robot states.
+     * @summary Unlock Mutex Group
+     * @param {string} name
+     * @param {string} robotName
+     * @param {string} mutexGroup
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    unlockMutexGroupFleetsNameUnlockMutexGroupPost(
+      name: string,
+      robotName: string,
+      mutexGroup: string,
+      options?: any,
+    ): AxiosPromise<any> {
+      return localVarFp
+        .unlockMutexGroupFleetsNameUnlockMutexGroupPost(name, robotName, mutexGroup, options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -7436,6 +7536,27 @@ export class FleetsApi extends BaseAPI {
   ) {
     return FleetsApiFp(this.configuration)
       .recommissionRobotFleetsNameRecommissionPost(name, robotName, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Request to manually unlock a mutex group that is currently being held by a specific robot of a specific fleet. This call does not provide any feedback, and changes to mutex groups should be reviewed from the updated robot states.
+   * @summary Unlock Mutex Group
+   * @param {string} name
+   * @param {string} robotName
+   * @param {string} mutexGroup
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof FleetsApi
+   */
+  public unlockMutexGroupFleetsNameUnlockMutexGroupPost(
+    name: string,
+    robotName: string,
+    mutexGroup: string,
+    options?: AxiosRequestConfig,
+  ) {
+    return FleetsApiFp(this.configuration)
+      .unlockMutexGroupFleetsNameUnlockMutexGroupPost(name, robotName, mutexGroup, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

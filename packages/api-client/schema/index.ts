@@ -1891,6 +1891,42 @@ export default {
         },
       },
     },
+    '/fleets/{name}/unlock_mutex_group': {
+      post: {
+        tags: ['Fleets'],
+        summary: 'Unlock Mutex Group',
+        description:
+          'Request to manually unlock a mutex group that is currently being held by a\nspecific robot of a specific fleet. This call does not provide any feedback,\nand changes to mutex groups should be reviewed from the updated robot\nstates.',
+        operationId: 'unlock_mutex_group_fleets__name__unlock_mutex_group_post',
+        parameters: [
+          { required: true, schema: { title: 'Name', type: 'string' }, name: 'name', in: 'path' },
+          {
+            required: true,
+            schema: { title: 'Robot Name', type: 'string' },
+            name: 'robot_name',
+            in: 'query',
+          },
+          {
+            required: true,
+            schema: { title: 'Mutex Group', type: 'string' },
+            name: 'mutex_group',
+            in: 'query',
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: { 'application/json': { schema: {} } },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
     '/admin/users': {
       get: {
         tags: ['Admin'],
