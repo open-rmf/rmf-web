@@ -7133,7 +7133,7 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
-     *
+     * Request to manually unlock a mutex group that is currently being held by a specific robot of a specific fleet.
      * @summary Unlock Mutex Group
      * @param {string} name
      * @param {string} robotName
@@ -7301,7 +7301,7 @@ export const FleetsApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
-     *
+     * Request to manually unlock a mutex group that is currently being held by a specific robot of a specific fleet.
      * @summary Unlock Mutex Group
      * @param {string} name
      * @param {string} robotName
@@ -7421,7 +7421,7 @@ export const FleetsApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     * Request to manually unlock a mutex group that is currently being held by a specific robot of a specific fleet.
      * @summary Unlock Mutex Group
      * @param {string} name
      * @param {string} robotName
@@ -7540,7 +7540,7 @@ export class FleetsApi extends BaseAPI {
   }
 
   /**
-   *
+   * Request to manually unlock a mutex group that is currently being held by a specific robot of a specific fleet.
    * @summary Unlock Mutex Group
    * @param {string} name
    * @param {string} robotName

@@ -191,18 +191,26 @@ async def unlock_mutex_group(
     repo: FleetRepository = Depends(fleet_repo_dep),
     user: User = Depends(user_dep),
 ):
+    """
+    Request to manually unlock a mutex group that is currently being held by a
+    specific robot of a specific fleet.
+    """
     fleet_state = await repo.get_fleet_state(name)
     if fleet_state is None:
         raise HTTPException(404, f"Fleet {name} not found")
     if fleet_state.robots is None or robot_name not in fleet_state.robots:
         raise HTTPException(404, f"Robot {robot_name} not found in fleet {name}")
+    mutex_groups = fleet_state.robots[robot_name].mutex_groups
+    if (
+        mutex_groups is None
+        or mutex_groups.locked is None
+        or mutex_group not in mutex_groups.locked
+    ):
+        raise HTTPException(
+            404,
+            f"Robot {robot_name} in fleet {name} does not have mutex group {mutex_group} locked",
+        )
 
-    """
-    Request to manually unlock a mutex group that is currently being held by a
-    specific robot of a specific fleet. This call does not provide any feedback,
-    and changes to mutex groups should be reviewed from the updated robot
-    states.
-    """
     logger.info(
         f"User [{user.username}] manually releasing mutex group {mutex_group} for {robot_name} of fleet {name}"
     )

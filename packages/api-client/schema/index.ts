@@ -1895,6 +1895,8 @@ export default {
       post: {
         tags: ['Fleets'],
         summary: 'Unlock Mutex Group',
+        description:
+          'Request to manually unlock a mutex group that is currently being held by a\nspecific robot of a specific fleet.',
         operationId: 'unlock_mutex_group_fleets__name__unlock_mutex_group_post',
         parameters: [
           { required: true, schema: { title: 'Name', type: 'string' }, name: 'name', in: 'path' },
