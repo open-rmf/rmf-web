@@ -25,10 +25,15 @@ class _CustomLogRecord(logging.LogRecord):
 
 
 class LogfmtFormatter(logging.Formatter):
-    def format(self, record):
+    """A formatter to formats to logfmt.
+
+    Note that this formatter does not do any validation or escaping.
+    """
+
+    def fields(self, record):
         # Extract fields from the log record
         fields = {
-            "msg": f'"{record.getMessage()}"',
+            "msg": f"{record.getMessage()}",
             "level": record.levelname,
             "ts": self.formatTime(
                 record, datefmt=f"%Y-%m-%dT%H:%M:%S.{int(record.msecs)}%z"
@@ -41,12 +46,25 @@ class LogfmtFormatter(logging.Formatter):
         if hasattr(record, "request"):
             record = typing.cast(_CustomLogRecord, record)
             client = record.request.client
-            fields["client"] = f"{client.host}/{client.port}" if client else "None"
+            fields["client"] = f"{client.host}:{client.port}" if client else "None"
             fields["user"] = record.user.username if record.user else "None"
 
+        return fields
+
+    def format(self, record):
+        fields = self.fields(record)
         color = log_colors.get(record.levelname, None)
-        logfmt_pairs = [f"{key}={value}" for key, value in fields.items()]
+        logfmt_pairs = [f'{key}="{value}"' for key, value in fields.items()]
         return colored(" ".join(logfmt_pairs), color)
+
+
+class SafeLogfmtFormatter(LogfmtFormatter):
+    """A safer logfmt formatter that replaces double quotes with single quotes in the `msg` field"""
+
+    def fields(self, record):
+        fields = super().fields(record)
+        fields["msg"] = fields["msg"].replace('"', "'")
+        return fields
 
 
 class Logger(logging.LoggerAdapter):
