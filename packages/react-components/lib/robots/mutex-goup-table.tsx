@@ -11,7 +11,7 @@ import * as React from 'react';
 
 export interface MutexGroupData {
   name: string;
-  lockedBy: string;
+  lockedBy?: string;
   requestedBy: string[];
 }
 
@@ -52,7 +52,7 @@ export function MutexGroupGridTable({
       field: 'lockedBy',
       headerName: 'Locked',
       width: 90,
-      valueGetter: (params: GridValueGetterParams) => params.row.fleet,
+      valueGetter: (params: GridValueGetterParams) => params.row.lockedBy ?? 'n/a',
       flex: 1,
       filterable: true,
     },
@@ -61,8 +61,7 @@ export function MutexGroupGridTable({
       headerName: 'Waiting',
       width: 150,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.estFinishTime ? new Date(params.row.estFinishTime).toLocaleString() : '-',
+      valueGetter: (params: GridValueGetterParams) => params.row.requestedBy?.join(', ') ?? 'n/a',
       flex: 1,
       filterable: true,
     },
