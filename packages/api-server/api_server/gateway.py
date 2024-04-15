@@ -223,10 +223,15 @@ class RmfGateway:
                 message=delivery_alert.message,  # pyright: ignore[reportGeneralTypeIssues]
             )
 
+        def handle_delivery_alert(delivery_alert: DeliveryAlert):
+            self.logger.info("Received delivery alert:")
+            self.logger.info(delivery_alert)
+            rmf_events.delivery_alerts.on_next(delivery_alert)
+
         delivery_alert_request_sub = ros_node().create_subscription(
             RmfDeliveryAlert,
             "delivery_alert_request",
-            lambda msg: rmf_events.delivery_alerts.on_next(convert_delivery_alert(msg)),
+            lambda msg: handle_delivery_alert(convert_delivery_alert(msg)),
             rclpy.qos.QoSProfile(
                 history=rclpy.qos.HistoryPolicy.KEEP_LAST,
                 depth=10,
