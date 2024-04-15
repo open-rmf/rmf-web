@@ -1815,6 +1815,8 @@ export default {
       post: {
         tags: ['Fleets'],
         summary: 'Decommission Robot',
+        description:
+          'Decommissions a robot, cancels all direct tasks, and preventing it from\naccepting any new tasks (both dispatch tasks and direct tasks), with the\noptions to:\n\n- Reassign all queued dispatch tasks to other robots. If task reassignment\n  is chosen, the response will contain the results of the reassignment as\n  well, any failed reassignments will be cancelled instead.\n- Disable idle behaviors (formerly known as finishing tasks). If disabled,\n  the robot will not be issued any more commands (e.g. return to charger, or\n  navigating anywhere at all) once it is decommissioned, and could require\n  human intervention to recover it.\n\nThis will not affect the ongoing task that the robot is currently\nperforming.',
         operationId: 'decommission_robot_fleets__name__decommission_post',
         parameters: [
           { required: true, schema: { title: 'Name', type: 'string' }, name: 'name', in: 'path' },
@@ -1859,6 +1861,8 @@ export default {
       post: {
         tags: ['Fleets'],
         summary: 'Recommission Robot',
+        description:
+          'Recommissions a robot, allowing it to accept new dispatch tasks and direct\ntasks, as well as resume idle behaviors (formerly known as finishing tasks).',
         operationId: 'recommission_robot_fleets__name__recommission_post',
         parameters: [
           { required: true, schema: { title: 'Name', type: 'string' }, name: 'name', in: 'path' },
