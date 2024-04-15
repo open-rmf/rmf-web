@@ -76,7 +76,10 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
             for (const requesting of robot.mutex_groups.requesting) {
               if (updatedMutexGroups[requesting]) {
                 updatedMutexGroups[requesting].requestedBy.push(robotIdentifier);
-              } else if (!updatedMutexGroups[requesting].requestedBy) {
+              } else if (
+                updatedMutexGroups[requesting] &&
+                !updatedMutexGroups[requesting].requestedBy
+              ) {
                 updatedMutexGroups[requesting].requestedBy = [robotIdentifier];
               } else {
                 updatedMutexGroups[requesting] = {
@@ -89,6 +92,15 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
           }
         }
       }
+
+      // Filter intermediate mutex groups which are not locked, but just
+      // requested by robots
+      for (const mutexGroupName of Object.keys(updatedMutexGroups)) {
+        if (!updatedMutexGroups[mutexGroupName].lockedBy) {
+          delete updatedMutexGroups[mutexGroupName];
+        }
+      }
+
       setMutexGroups(updatedMutexGroups);
     };
 
@@ -151,7 +163,7 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
           setSelectedMutexGroup(mutexGroup);
         }}
       />
-      {openMutexGroupDialog && selectedMutexGroup && (
+      {openMutexGroupDialog && selectedMutexGroup && selectedMutexGroup.lockedBy && (
         <ConfirmationDialog
           confirmText="Confirm unlock"
           cancelText="Cancel"
@@ -164,8 +176,8 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
           onSubmit={handleUnlockMutexGroup}
         >
           <Typography>
-            Confirm unlock mutex group {selectedMutexGroup.name} for{' '}
-            {selectedMutexGroup.lockedBy ?? 'n/a'}?
+            Confirm unlock mutex group [{selectedMutexGroup.name}] for [
+            {selectedMutexGroup.lockedBy}]?
           </Typography>
         </ConfirmationDialog>
       )}

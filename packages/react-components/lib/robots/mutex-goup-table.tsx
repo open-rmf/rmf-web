@@ -41,8 +41,8 @@ export function MutexGroupGridTable({
   const columns: GridColDef[] = [
     {
       field: 'mutexGroup',
-      headerName: 'Mutex group name',
-      width: 150,
+      headerName: 'Group',
+      maxWidth: 240,
       editable: false,
       valueGetter: (params: GridValueGetterParams) => params.row.name,
       flex: 1,
@@ -51,7 +51,7 @@ export function MutexGroupGridTable({
     {
       field: 'lockedBy',
       headerName: 'Locked',
-      width: 90,
+      maxWidth: 240,
       valueGetter: (params: GridValueGetterParams) => params.row.lockedBy ?? 'n/a',
       flex: 1,
       filterable: true,
@@ -59,7 +59,6 @@ export function MutexGroupGridTable({
     {
       field: 'requestedBy',
       headerName: 'Waiting',
-      width: 150,
       editable: false,
       valueGetter: (params: GridValueGetterParams) => params.row.requestedBy?.join(', ') ?? 'n/a',
       flex: 1,
