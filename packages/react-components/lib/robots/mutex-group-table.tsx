@@ -15,7 +15,7 @@ export interface MutexGroupData {
   requestedBy: string[];
 }
 
-export interface MutexGroupDataGridTableProps {
+export interface MutexGroupTableProps {
   onMutexGroupClick?(
     ev: MuiEvent<React.MouseEvent<HTMLElement>>,
     mutexGroups: MutexGroupData,
@@ -23,10 +23,10 @@ export interface MutexGroupDataGridTableProps {
   mutexGroups: MutexGroupData[];
 }
 
-export function MutexGroupGridTable({
+export function MutexGroupTable({
   onMutexGroupClick,
   mutexGroups,
-}: MutexGroupDataGridTableProps): JSX.Element {
+}: MutexGroupTableProps): JSX.Element {
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
 
   const handleEvent: GridEventListener<'rowClick'> = (

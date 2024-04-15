@@ -1,6 +1,6 @@
 import { TableContainer, Typography } from '@mui/material';
 import React from 'react';
-import { ConfirmationDialog, MutexGroupData, MutexGroupGridTable } from 'react-components';
+import { ConfirmationDialog, MutexGroupData, MutexGroupTable } from 'react-components';
 import { AppControllerContext } from './../app-contexts';
 import { createMicroApp } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
@@ -156,7 +156,7 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
 
   return (
     <TableContainer>
-      <MutexGroupGridTable
+      <MutexGroupTable
         mutexGroups={Object.values(mutexGroups)}
         onMutexGroupClick={(_ev, mutexGroup) => {
           setOpenMutexGroupDialog(true);
