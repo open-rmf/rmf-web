@@ -212,7 +212,7 @@ async def unlock_mutex_group(
         )
 
     logger.info(
-        f"User [{user.username}] manually releasing mutex group {mutex_group} for {robot_name} of fleet {name}"
+        f"User [{user.username}] requested to manually release mutex group {mutex_group} for {robot_name} of fleet {name}"
     )
     rmf_gateway().manual_release_mutex_groups(
         mutex_groups=[mutex_group], fleet=name, robot=robot_name
