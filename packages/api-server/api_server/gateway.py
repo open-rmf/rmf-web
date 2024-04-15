@@ -43,7 +43,7 @@ from .models import (
     LiftState,
 )
 from .models.delivery_alerts import action_from_msg, category_from_msg, tier_from_msg
-from .repositories import CachedFilesRepository
+from .repositories import CachedFilesRepository, cached_files_repo
 from .rmf_io import rmf_events
 from .ros import ros_node
 
@@ -74,10 +74,7 @@ def process_building_map(
 
 
 class RmfGateway:
-    def __init__(
-        self,
-        cached_files: CachedFilesRepository = Depends(CachedFilesRepository),
-    ):
+    def __init__(self, cached_files: CachedFilesRepository):
         self._door_req = ros_node().create_publisher(
             RmfDoorRequest, "adapter_door_requests", 10
         )
@@ -297,5 +294,5 @@ def startup():
     Must be called after the ros node is created and before spinning the it.
     """
     global _rmf_gateway
-    _rmf_gateway = RmfGateway()
+    _rmf_gateway = RmfGateway(cached_files_repo)
     return _rmf_gateway

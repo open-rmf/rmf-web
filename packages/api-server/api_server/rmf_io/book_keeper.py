@@ -107,7 +107,7 @@ class RmfBookKeeper:
     def _record_door_health(self):
         async def update(health: DoorHealth):
             await health.save()
-            self._report_health(health, self._loggers.door_health)
+            self._report_health(health)
 
         self._subscriptions.append(
             self.rmf.door_health.subscribe(lambda x: self._create_task(update(x)))

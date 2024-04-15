@@ -26,7 +26,6 @@ router = FastIORouter(tags=["Tasks"])
 
 
 async def cancellation_lots_from_building_map(logger: Logger) -> List[str]:
-    logger.info("hello")
     rmf_repo = RmfRepository()
     building_map = None
     try:
@@ -160,7 +159,6 @@ async def get_task_state(
     """
     Available in socket.io
     """
-    await cancellation_lots_from_building_map(logger)
     result = await task_repo.get_task_state(task_id)
     if result is None:
         raise HTTPException(status_code=404)

@@ -6,7 +6,7 @@ import uvicorn.logging
 from uvicorn.config import LOGGING_CONFIG
 
 from .app_config import load_config
-from .logging import LogfmtFormatter, SafeLogfmtFormatter
+from .logging import LogfmtFormatter
 
 app_config = load_config(
     os.environ.get(
@@ -20,7 +20,7 @@ handler.setFormatter(LogfmtFormatter())
 logging.basicConfig(level=app_config.log_level, handlers=[handler])
 
 # uvicorn access logs contains double quotes so we need to use the safer formatter
-LOGGING_CONFIG["formatters"]["logfmt"] = {"()": SafeLogfmtFormatter}
+LOGGING_CONFIG["formatters"]["logfmt"] = {"()": LogfmtFormatter}
 LOGGING_CONFIG["handlers"]["logfmt"] = {
     "formatter": "logfmt",
     "class": "logging.StreamHandler",
