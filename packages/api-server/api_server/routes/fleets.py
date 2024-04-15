@@ -6,6 +6,7 @@ from rx import operators as rxops
 from api_server.authenticator import user_dep
 from api_server.dependencies import between_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
+from api_server.gateway import rmf_gateway
 from api_server.logger import logger
 from api_server.models import (
     Commission,
@@ -185,6 +186,17 @@ async def recommission_robot(
 async def unlock_mutex_group(
     name: str,
     robot_name: str,
-    mutex_groups: List[str],
+    mutex_group: str,
 ):
-    raise NotImplementedError
+    """
+    Request to manually unlock a mutex group that is currently being held by a
+    specific robot of a specific fleet. This call does not provide any feedback,
+    and changes to mutex groups should be reviewed from the updated robot
+    states.
+    """
+    logger.info(
+        f"Manually releasing mutex group {mutex_group} for {robot_name} of fleet {name}"
+    )
+    rmf_gateway().manual_release_mutex_groups(
+        mutex_groups=[mutex_group], fleet=name, robot=robot_name
+    )
