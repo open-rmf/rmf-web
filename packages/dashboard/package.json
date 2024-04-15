@@ -8,7 +8,7 @@
     "start:sim": "concurrently npm:start:rmf-server npm:start:rmf npm:start:react",
     "start:clinic": "RMF_DASHBOARD_DEMO_MAP=clinic.launch.xml pnpm run start:sim",
     "start:airport": "RMF_DASHBOARD_DEMO_MAP=airport_terminal.launch.xml pnpm run start:sim",
-    "start:react": "pnpm run --filter {.}^... build && react-scripts start",
+    "start:react": "pnpm run --filter {.}^... build && react-scripts --openssl-legacy-provider start",
     "start:rmf": "node scripts/start-rmf.js",
     "start:rmf-server": "RMF_SERVER_USE_SIM_TIME=true npm --prefix ../api-server start",
     "start:rmf-server:psql": "RMF_SERVER_USE_SIM_TIME=true npm run --prefix ../api-server start:psql",

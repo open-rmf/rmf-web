@@ -227,3 +227,12 @@ async def recommission_robot(
         logger.error(f"Failed to recommission {robot_name} of {name}")
         return RawJSONResponse(resp.json(), 400)
     return resp
+
+
+@router.post("/{name}/unlock_mutex_group")
+async def unlock_mutex_group(
+    name: str,
+    robot_name: str,
+    mutex_groups: List[str],
+):
+    raise NotImplementedError
