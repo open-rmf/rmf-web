@@ -6,6 +6,7 @@ from rx import operators as rxops
 from api_server.authenticator import user_dep
 from api_server.dependencies import between_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
+from api_server.gateway import rmf_gateway
 from api_server.logger import logger
 from api_server.models import (
     Commission,
@@ -180,3 +181,31 @@ async def recommission_robot(
         logger.error(f"Failed to recommission {robot_name} of {name}")
         raise HTTPException(400, resp)
     return resp
+
+
+@router.post("/{name}/unlock_mutex_group")
+async def unlock_mutex_group(
+    name: str,
+    robot_name: str,
+    mutex_group: str,
+    repo: FleetRepository = Depends(fleet_repo_dep),
+    user: User = Depends(user_dep),
+):
+    fleet_state = await repo.get_fleet_state(name)
+    if fleet_state is None:
+        raise HTTPException(404, f"Fleet {name} not found")
+    if fleet_state.robots is None or robot_name not in fleet_state.robots:
+        raise HTTPException(404, f"Robot {robot_name} not found in fleet {name}")
+
+    """
+    Request to manually unlock a mutex group that is currently being held by a
+    specific robot of a specific fleet. This call does not provide any feedback,
+    and changes to mutex groups should be reviewed from the updated robot
+    states.
+    """
+    logger.info(
+        f"User [{user.username}] manually releasing mutex group {mutex_group} for {robot_name} of fleet {name}"
+    )
+    rmf_gateway().manual_release_mutex_groups(
+        mutex_groups=[mutex_group], fleet=name, robot=robot_name
+    )
