@@ -12,7 +12,6 @@ import {
 } from '@mui/icons-material';
 import {
   Badge,
-  Box,
   Button,
   CardContent,
   Chip,
@@ -379,7 +378,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
         console.error(`Failed to get previous fire alarm trigger: ${(e as Error).message}`);
       }
     })();
-  }, [openAdminActionsDialog]);
+  }, [rmf, openAdminActionsDialog]);
 
   const handleResetFireAlarmTrigger = React.useCallback<React.MouseEventHandler>(async () => {
     try {
@@ -660,12 +659,34 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           <DialogActions sx={{ px: 2 }}>
             <Stack direction="column" spacing={2}>
               <Stack direction="row" spacing={2}>
-                <Typography variant="body2" alignContent="center">
-                  Last triggered:{' '}
-                  {fireAlarmPreviousTrigger
-                    ? new Date(fireAlarmPreviousTrigger.unix_millis_time).toLocaleString()
-                    : 'n/a'}
-                </Typography>
+                {fireAlarmPreviousTrigger && fireAlarmPreviousTrigger.trigger ? (
+                  <div>
+                    <Typography variant="subtitle2" alignContent="center">
+                      Last fire alarm triggered on:
+                    </Typography>
+                    <Typography variant="body2" alignContent="center">
+                      {new Date(fireAlarmPreviousTrigger.unix_millis_time).toLocaleString()}
+                    </Typography>
+                  </div>
+                ) : fireAlarmPreviousTrigger && !fireAlarmPreviousTrigger.trigger ? (
+                  <div>
+                    <Typography variant="subtitle2" alignContent="center">
+                      Last fire alarm reset on:
+                    </Typography>
+                    <Typography variant="body2" alignContent="center">
+                      {new Date(fireAlarmPreviousTrigger.unix_millis_time).toLocaleString()}
+                    </Typography>
+                  </div>
+                ) : (
+                  <div>
+                    <Typography variant="subtitle2" alignContent="center">
+                      Last fire alarm triggered on:
+                    </Typography>
+                    <Typography variant="body2" alignContent="center">
+                      n/a
+                    </Typography>
+                  </div>
+                )}
                 <Button
                   variant="contained"
                   onClick={() => setOpenFireAlarmTriggerResetDialog(true)}
