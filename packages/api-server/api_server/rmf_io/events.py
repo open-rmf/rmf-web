@@ -18,6 +18,7 @@ class RmfEvents:
         self.building_map = BehaviorSubject(None)  # Optional[BuildingMap]
         self.beacons = Subject()  # BeaconState
         self.delivery_alerts = Subject()  # ttm.DeliveryAlertPydantic
+        self.fire_alarm_trigger = BehaviorSubject(None)  # Optional[bool]
 
 
 rmf_events = RmfEvents()

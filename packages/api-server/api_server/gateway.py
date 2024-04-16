@@ -4,6 +4,7 @@ import asyncio
 import base64
 import hashlib
 import logging
+from datetime import datetime
 from typing import Any, List, Optional
 
 import rclpy
@@ -32,6 +33,7 @@ from rmf_lift_msgs.msg import LiftState as RmfLiftState
 from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 from rosidl_runtime_py.convert import message_to_ordereddict
+from std_msgs.msg import Bool as BoolMsg
 
 from .logger import logger as base_logger
 from .models import (
@@ -40,6 +42,7 @@ from .models import (
     DeliveryAlert,
     DispenserState,
     DoorState,
+    FireAlarmTriggerState,
     IngestorState,
     LiftState,
 )
@@ -101,6 +104,17 @@ class RmfGateway:
         self._delivery_alert_response = ros_node().create_publisher(
             RmfDeliveryAlert,
             "delivery_alert_response",
+            rclpy.qos.QoSProfile(
+                history=rclpy.qos.HistoryPolicy.KEEP_LAST,
+                depth=10,
+                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
+                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
+            ),
+        )
+
+        self._fire_alarm_trigger = ros_node().create_publisher(
+            BoolMsg,
+            "fire_alarm_trigger",
             rclpy.qos.QoSProfile(
                 history=rclpy.qos.HistoryPolicy.KEEP_LAST,
                 depth=10,
@@ -229,6 +243,30 @@ class RmfGateway:
         )
         self._subscriptions.append(delivery_alert_request_sub)
 
+        def handle_fire_alarm_trigger(fire_alarm_trigger_msg: BoolMsg):
+            if fire_alarm_trigger_msg.data:
+                self.logger.info("Fire alarm triggered")
+            else:
+                self.logger.info("Fire alarm trigger reset")
+            fire_alarm_trigger_state = FireAlarmTriggerState(
+                unix_millis_time=round(datetime.now().timestamp() * 1000),
+                trigger=fire_alarm_trigger_msg.data,
+            )
+            rmf_events.fire_alarm_trigger.on_next(fire_alarm_trigger_state)
+
+        fire_alarm_trigger_sub = ros_node().create_subscription(
+            BoolMsg,
+            "fire_alarm_trigger",
+            lambda msg: handle_fire_alarm_trigger(msg),
+            rclpy.qos.QoSProfile(
+                history=rclpy.qos.HistoryPolicy.KEEP_LAST,
+                depth=10,
+                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
+                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
+            ),
+        )
+        self._subscriptions.append(fire_alarm_trigger_sub)
+
     @staticmethod
     def now() -> Optional[RosTime]:
         """
@@ -286,6 +324,11 @@ class RmfGateway:
         msg.action = RmfDeliveryAlertAction(value=action)
         msg.message = message
         self._delivery_alert_response.publish(msg)
+
+    def reset_fire_alarm_trigger(self):
+        reset_msg = BoolMsg()
+        reset_msg.data = False
+        self._fire_alarm_trigger.publish(reset_msg)
 
 
 _rmf_gateway: RmfGateway

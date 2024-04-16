@@ -1,5 +1,7 @@
 from typing import List
 
+from pydantic import BaseModel
+
 from . import tortoise_models as ttm
 from .ros_pydantic import rmf_building_map_msgs
 
@@ -25,3 +27,8 @@ class BuildingMap(rmf_building_map_msgs.BuildingMap):
             if m.id_ != self.name:
                 await m.delete()
         await ttm.BuildingMap.update_or_create({"data": self.dict()}, id_=self.name)
+
+
+class FireAlarmTriggerState(BaseModel):
+    unix_millis_time: int
+    trigger: bool
