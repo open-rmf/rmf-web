@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import Depends, HTTPException
 from rx import operators as rxops
 
@@ -28,14 +30,26 @@ def sub_building_map(_req: SubscriptionRequest):
     return rmf_events.building_map.pipe(rxops.filter(lambda x: x is not None))
 
 
-@router.sub("", response_model=FireAlarmTriggerState)
+@router.sub("/fire_alarm_trigger", response_model=FireAlarmTriggerState)
 async def sub_fire_alarm_trigger(_req: SubscriptionRequest):
     return rmf_events.fire_alarm_trigger.pipe(rxops.filter(lambda x: x is not None))
 
 
-@router.post("/reset_fire_alarm_trigger")
+@router.get("/previous_fire_alarm_trigger", response_model=FireAlarmTriggerState)
+async def get_previous_fire_alarm_trigger():
+    previous_trigger = rmf_events.fire_alarm_trigger.value
+    if previous_trigger is None:
+        raise HTTPException(404, "previous fire alarm trigger not available")
+    return previous_trigger
+
+
+@router.post("/reset_fire_alarm_trigger", response_model=FireAlarmTriggerState)
 async def reset_fire_alarm_trigger(
     user: User = Depends(user_dep),
 ):
     logger.info(f"User {user.username} requested to reset fire alarm trigger")
     rmf_gateway().reset_fire_alarm_trigger()
+    fire_alarm_trigger_state = FireAlarmTriggerState(
+        unix_millis_time=round(datetime.now().timestamp() * 1000), trigger=False
+    )
+    return fire_alarm_trigger_state

@@ -12,6 +12,7 @@ import {
 } from '@mui/icons-material';
 import {
   Badge,
+  Box,
   Button,
   CardContent,
   Chip,
@@ -37,6 +38,7 @@ import {
 } from '@mui/material';
 import {
   ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
+  FireAlarmTriggerState,
   TaskFavoritePydantic as TaskFavorite,
   TaskRequest,
 } from 'api-client';
@@ -177,6 +179,9 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [openAdminActionsDialog, setOpenAdminActionsDialog] = React.useState(false);
   const [openFireAlarmTriggerResetDialog, setOpenFireAlarmTriggerResetDialog] =
     React.useState(false);
+  const [fireAlarmPreviousTrigger, setFireAlarmPreviousTrigger] = React.useState<
+    FireAlarmTriggerState | undefined
+  >(undefined);
 
   const curTheme = React.useContext(SettingsContext).themeMode;
   const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames } =
@@ -361,11 +366,41 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     return formatDistance(new Date(), new Date(time));
   };
 
-  const handleResetFireAlarmTrigger = () => {
-    // TODO
+  React.useEffect(() => {
+    if (!rmf) {
+      return;
+    }
+    (async () => {
+      try {
+        const resp =
+          await rmf.buildingApi.getPreviousFireAlarmTriggerBuildingMapPreviousFireAlarmTriggerGet();
+        setFireAlarmPreviousTrigger(resp.data);
+      } catch (e) {
+        console.error(`Failed to get previous fire alarm trigger: ${(e as Error).message}`);
+      }
+    })();
+  }, [openAdminActionsDialog]);
+
+  const handleResetFireAlarmTrigger = React.useCallback<React.MouseEventHandler>(async () => {
+    try {
+      if (!rmf) {
+        throw new Error('building map api not available');
+      }
+
+      const resp =
+        await rmf.buildingApi.resetFireAlarmTriggerBuildingMapResetFireAlarmTriggerPost();
+      if (!resp.data.trigger) {
+        showAlert('success', 'Requested to reset fire alarm trigger');
+      } else {
+        showAlert('error', 'Failed to reset fire alarm trigger');
+      }
+    } catch (e) {
+      showAlert('error', `Failed to reset fire alarm trigger: ${(e as Error).message}`);
+    }
+
     setOpenFireAlarmTriggerResetDialog(false);
     setOpenAdminActionsDialog(false);
-  };
+  }, [rmf, showAlert]);
 
   return (
     <>
@@ -622,15 +657,23 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       {openAdminActionsDialog && (
         <Dialog onClose={() => setOpenAdminActionsDialog(false)} open={openAdminActionsDialog}>
           <DialogTitle>Admin actions</DialogTitle>
-          <DialogActions>
-            <Stack direction="column">
-              <Button
-                variant="contained"
-                onClick={() => setOpenFireAlarmTriggerResetDialog(true)}
-                startIcon={<LocalFireDepartment />}
-              >
-                Reset fire alarm
-              </Button>
+          <DialogActions sx={{ px: 2 }}>
+            <Stack direction="column" spacing={2}>
+              <Stack direction="row" spacing={2}>
+                <Typography variant="body2" alignContent="center">
+                  Last triggered:{' '}
+                  {fireAlarmPreviousTrigger
+                    ? new Date(fireAlarmPreviousTrigger.unix_millis_time).toLocaleString()
+                    : 'n/a'}
+                </Typography>
+                <Button
+                  variant="contained"
+                  onClick={() => setOpenFireAlarmTriggerResetDialog(true)}
+                  startIcon={<LocalFireDepartment />}
+                >
+                  Reset fire alarm
+                </Button>
+              </Stack>
             </Stack>
           </DialogActions>
         </Dialog>
