@@ -257,7 +257,7 @@ class RmfGateway:
         fire_alarm_trigger_sub = ros_node().create_subscription(
             BoolMsg,
             "fire_alarm_trigger",
-            lambda msg: handle_fire_alarm_trigger(msg),
+            handle_fire_alarm_trigger,
             rclpy.qos.QoSProfile(
                 history=rclpy.qos.HistoryPolicy.KEEP_LAST,
                 depth=10,
