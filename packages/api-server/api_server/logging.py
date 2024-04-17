@@ -1,8 +1,8 @@
 import logging
 import typing
+from logging import LoggerAdapter
 
-# from api_server.models import User
-from fastapi import Request
+from fastapi.requests import HTTPConnection
 from termcolor import colored
 from termcolor._types import Color
 
@@ -20,7 +20,7 @@ log_colors: dict[str, Color] = {
 class _CustomLogRecord(logging.LogRecord):
     """A Customized LogRecord for typing"""
 
-    request: Request
+    conn: HTTPConnection
     user: User | None
 
 
@@ -41,9 +41,9 @@ class LogfmtFormatter(logging.Formatter):
         }
 
         # Add contextual information
-        if hasattr(record, "request"):
+        if hasattr(record, "conn"):
             record = typing.cast(_CustomLogRecord, record)
-            client = record.request.client
+            client = record.conn.client
             fields["client"] = f"{client.host}:{client.port}" if client else "None"
             fields["user"] = record.user.username if record.user else "None"
 
@@ -59,21 +59,21 @@ class LogfmtFormatter(logging.Formatter):
         return colored(" ".join(logfmt_pairs), color)
 
 
-class Logger(logging.LoggerAdapter):
+class CustomLoggerAdapter(LoggerAdapter):
     """A customized `LoggerAdapter` that adds extra contextual info like client and user"""
 
-    def __init__(self, logger: logging.Logger, request: Request, user: User | None):
+    def __init__(self, logger: logging.Logger, conn: HTTPConnection, user: User | None):
         super().__init__(logger)
-        self.request = request
+        self.conn = conn
         self.user = user
 
     def process(self, msg, kwargs):
-        kwargs["extra"] = {"request": self.request, "user": self.user}
+        kwargs["extra"] = {"conn": self.conn, "user": self.user}
         return msg, kwargs
 
 
-def logger(request: Request) -> Logger:
+def get_logger(conn: HTTPConnection) -> CustomLoggerAdapter:
     l = logging.getLogger()
     # Note that user is always `None` here to avoid circular dependency if we use `user_dep`.
     # The authenticator will fill in the user instead.
-    return Logger(l, request, user=None)
+    return CustomLoggerAdapter(l, conn, user=None)

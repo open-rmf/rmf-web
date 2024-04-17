@@ -1,4 +1,3 @@
-from logging import Logger
 from typing import List, Optional, Sequence, Tuple, cast
 
 from fastapi import Depends
@@ -7,14 +6,16 @@ from tortoise.query_utils import Prefetch
 from tortoise.transactions import in_transaction
 
 from api_server.authenticator import user_dep
-from api_server.logging import logger
+from api_server.logging import LoggerAdapter, get_logger
 from api_server.models import FleetLog, FleetState, LogEntry, User
 from api_server.models import tortoise_models as ttm
 
 
 class FleetRepository:
     def __init__(
-        self, user: User = Depends(user_dep), logger: Logger = Depends(logger)
+        self,
+        user: User = Depends(user_dep),
+        logger: LoggerAdapter = Depends(get_logger),
     ):
         self.user = user
         self.logger = logger

@@ -6,7 +6,7 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OpenIdConnect
 
 from .app_config import app_config
-from .logging import Logger, logger
+from .logging import CustomLoggerAdapter, get_logger
 from .models import User
 
 
@@ -122,7 +122,10 @@ else:
 _base_user_dep = authenticator.fastapi_dep()
 
 
-def user_dep(user: User = Depends(_base_user_dep), logger: Logger = Depends(logger)):
+def user_dep(
+    user: User = Depends(_base_user_dep),
+    logger: CustomLoggerAdapter = Depends(get_logger),
+):
     # extends the original user dep to set the authenticated user to the logger
     logger.user = user
     return user

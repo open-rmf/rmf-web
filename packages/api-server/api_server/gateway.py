@@ -10,7 +10,7 @@ import rclpy
 import rclpy.client
 import rclpy.qos
 from builtin_interfaces.msg import Time as RosTime
-from fastapi import Depends, HTTPException
+from fastapi import HTTPException
 from rclpy.subscription import Subscription
 from rmf_building_map_msgs.msg import AffineImage as RmfAffineImage
 from rmf_building_map_msgs.msg import BuildingMap as RmfBuildingMap

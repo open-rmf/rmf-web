@@ -1,6 +1,5 @@
 # NOTE: This will eventually replace `gateway.py``
 import os
-from logging import Logger
 from typing import Any, Dict
 
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
@@ -8,7 +7,7 @@ from websockets.exceptions import ConnectionClosed
 
 from api_server import models as mdl
 from api_server.app_config import app_config
-from api_server.logging import logger
+from api_server.logging import LoggerAdapter, get_logger
 from api_server.repositories import AlertRepository, FleetRepository, TaskRepository
 from api_server.rmf_io import alert_events, fleet_events, task_events
 
@@ -17,7 +16,7 @@ user: mdl.User = mdl.User(username="__rmf_internal__", is_admin=True)
 
 
 class ConnectionManager:
-    def __init__(self, logger: Logger = Depends(logger)):
+    def __init__(self, logger: LoggerAdapter):
         self.logger = logger
         self.active_connections: list[WebSocket] = []
 
@@ -78,7 +77,7 @@ async def process_msg(
     fleet_repo: FleetRepository,
     task_repo: TaskRepository,
     alert_repo: AlertRepository,
-    logger: Logger,
+    logger: LoggerAdapter,
 ) -> None:
     if "type" not in msg:
         logger.warn(msg)
@@ -136,8 +135,10 @@ async def process_msg(
 
 
 @router.websocket("")
-async def rmf_gateway(websocket: WebSocket, logger: Logger = Depends(logger)):
-    connection_manager = ConnectionManager()
+async def rmf_gateway(
+    websocket: WebSocket, logger: LoggerAdapter = Depends(get_logger)
+):
+    connection_manager = ConnectionManager(logger)
     await connection_manager.connect(websocket)
     fleet_repo = FleetRepository(user, logger)
     task_repo = TaskRepository(user, logger)

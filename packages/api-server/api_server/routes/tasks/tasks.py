@@ -1,5 +1,4 @@
 from datetime import datetime
-from logging import Logger
 from typing import List, Optional, Tuple, cast
 
 from fastapi import Body, Depends, HTTPException, Path, Query
@@ -15,7 +14,7 @@ from api_server.dependencies import (
     start_time_between_query,
 )
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.logging import logger
+from api_server.logging import LoggerAdapter, get_logger
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.repositories import RmfRepository, TaskRepository
 from api_server.response import RawJSONResponse
@@ -25,7 +24,7 @@ from api_server.routes.building_map import get_building_map
 router = FastIORouter(tags=["Tasks"])
 
 
-async def cancellation_lots_from_building_map(logger: Logger) -> List[str]:
+async def cancellation_lots_from_building_map(logger: LoggerAdapter) -> List[str]:
     rmf_repo = RmfRepository()
     building_map = None
     try:
@@ -154,7 +153,6 @@ async def query_task_states(
 async def get_task_state(
     task_repo: TaskRepository = Depends(TaskRepository),
     task_id: str = Path(..., description="task_id"),
-    logger: Logger = Depends(logger),
 ):
     """
     Available in socket.io
@@ -211,7 +209,7 @@ async def post_activity_discovery(
 @router.post("/cancel_task", response_model=mdl.TaskCancelResponse)
 async def post_cancel_task(
     request: mdl.CancelTaskRequest = Body(...),
-    logger: Logger = Depends(logger),
+    logger: LoggerAdapter = Depends(get_logger),
 ):
     logger.info(request)
     return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
@@ -225,7 +223,7 @@ async def post_cancel_task(
 async def post_dispatch_task(
     request: mdl.DispatchTaskRequest = Body(...),
     task_repo: TaskRepository = Depends(TaskRepository),
-    logger: Logger = Depends(logger),
+    logger: LoggerAdapter = Depends(get_logger),
 ):
     task_warn_time = request.request.unix_millis_warn_time
 

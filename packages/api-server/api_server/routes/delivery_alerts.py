@@ -6,7 +6,7 @@ from rx import operators as rxops
 from api_server.authenticator import user_dep
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import rmf_gateway
-from api_server.logging import logger
+from api_server.logging import get_logger
 from api_server.models import User
 from api_server.models.delivery_alerts import (
     DeliveryAlert,
@@ -33,7 +33,7 @@ async def respond_to_delivery_alert(
     action: DeliveryAlert.Action,
     message: str,
     user: User = Depends(user_dep),
-    logger: logging.Logger = Depends(logger),
+    logger: logging.Logger = Depends(get_logger),
 ):
     delivery_alert = DeliveryAlert(
         id=delivery_alert_id,

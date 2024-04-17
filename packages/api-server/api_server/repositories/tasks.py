@@ -1,6 +1,5 @@
 import sys
 from datetime import datetime
-from logging import Logger
 from typing import Dict, List, Optional, Sequence, Tuple, cast
 
 from fastapi import Depends, HTTPException
@@ -10,7 +9,7 @@ from tortoise.queryset import QuerySet
 from tortoise.transactions import in_transaction
 
 from api_server.authenticator import user_dep
-from api_server.logging import logger
+from api_server.logging import LoggerAdapter, get_logger
 from api_server.models import (
     LogEntry,
     Pagination,
@@ -31,7 +30,9 @@ from api_server.rmf_io import task_events
 
 class TaskRepository:
     def __init__(
-        self, user: User = Depends(user_dep), logger: Logger = Depends(logger)
+        self,
+        user: User = Depends(user_dep),
+        logger: LoggerAdapter = Depends(get_logger),
     ):
         self.user = user
         self.logger = logger

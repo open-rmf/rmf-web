@@ -1,6 +1,5 @@
 import asyncio
 from datetime import datetime
-from logging import Logger
 from typing import Optional
 from zoneinfo import ZoneInfo
 
@@ -14,7 +13,7 @@ from api_server.app_config import app_config
 from api_server.authenticator import user_dep
 from api_server.dependencies import pagination_query
 from api_server.fast_io import FastIORouter
-from api_server.logging import logger
+from api_server.logging import LoggerAdapter, get_logger
 from api_server.models import DispatchTaskRequest, Pagination, TaskRequest, User
 from api_server.models import tortoise_models as ttm
 from api_server.repositories import TaskRepository
@@ -30,7 +29,7 @@ class PostScheduledTaskRequest(BaseModel):
 
 
 async def schedule_task(
-    task: ttm.ScheduledTask, task_repo: TaskRepository, logger: Logger
+    task: ttm.ScheduledTask, task_repo: TaskRepository, logger: LoggerAdapter
 ):
     await task.fetch_related("schedules")
     jobs: list[tuple[ttm.ScheduledTaskSchedule, schedule.Job]] = []
@@ -83,7 +82,7 @@ async def schedule_task(
     logger.info(f"scheduled task [{task.pk}]")
 
 
-def convert_date_server_timezone_iso_str(date: datetime, logger: Logger) -> str:
+def convert_date_server_timezone_iso_str(date: datetime, logger: LoggerAdapter) -> str:
     # Server time zone
     server_tz_info = ZoneInfo(app_config.timezone)
     logger.info(f"Server tz: {server_tz_info}")
@@ -122,7 +121,7 @@ async def post_scheduled_task(
     scheduled_task_request: PostScheduledTaskRequest,
     user: User = Depends(user_dep),
     task_repo: TaskRepository = Depends(TaskRepository),
-    logger: Logger = Depends(logger),
+    logger: LoggerAdapter = Depends(get_logger),
 ):
     """
     Create a scheduled task. Below are some examples of how the schedules are represented.
@@ -200,7 +199,7 @@ async def del_scheduled_tasks_event(
     task_id: int,
     event_date: datetime,
     task_repo: TaskRepository = Depends(TaskRepository),
-    logger: Logger = Depends(logger),
+    logger: LoggerAdapter = Depends(get_logger),
 ):
     logger.info(f"Deleting task with schedule id {task_id}, event date {event_date}")
 
@@ -235,7 +234,7 @@ async def update_schedule_task(
     scheduled_task_request: PostScheduledTaskRequest,
     except_date: Optional[datetime] = None,
     task_repo: TaskRepository = Depends(TaskRepository),
-    logger: Logger = Depends(logger),
+    logger: LoggerAdapter = Depends(get_logger),
 ):
     try:
         logger.info(f"Updating scheduled task [{task_id}]")

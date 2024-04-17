@@ -20,7 +20,7 @@ from . import gateway, ros, routes
 from .app_config import app_config
 from .authenticator import AuthenticationError, authenticator, user_dep
 from .fast_io import FastIO
-from .logging import logger
+from .logging import get_logger
 from .models import (
     DispenserHealth,
     DispenserState,
@@ -39,7 +39,7 @@ from .types import is_coroutine
 
 
 async def on_sio_connect(
-    sid: str, _environ: dict, auth: Optional[dict] = None, logger=Depends(logger)
+    sid: str, _environ: dict, auth: Optional[dict] = None, logger=Depends(get_logger)
 ):
     session = await app.sio.get_session(sid)
     token = None
@@ -203,7 +203,9 @@ async def on_startup():
             continue
         task_repo = TaskRepository(user)
         try:
-            await routes.scheduled_tasks.schedule_task(t, task_repo)
+            await routes.scheduled_tasks.schedule_task(
+                t, task_repo, logging.LoggerAdapter(logging.getLogger())
+            )
             logging.info(f"Scheduling task created by [{t.created_by}]")
             logging.info(f"{t.task_request}")
             scheduled += 1
