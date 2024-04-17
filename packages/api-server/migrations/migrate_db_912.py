@@ -11,8 +11,8 @@ from api_server.models import TaskRequest, TaskRequestLabel, TaskState
 # NOTE: This script is for migrating TaskState in an existing database to work
 # with https://github.com/open-rmf/rmf-web/pull/912.
 # Before migration:
-# - Pickup, destination, cart ID, category information will be unavailable on
-#   the Task Queue Table on the dashboard, as we no longer gather those
+# - Pickup, destination, cart ID, task identifier information will be unavailable
+#   on the Task Queue Table on the dashboard, as we no longer gather those
 #   fields from the TaskRequest
 # After migration:
 # - Dashboard will behave the same as before #912, however it is no longer
@@ -33,13 +33,13 @@ app_config = load_config(
 )
 
 
-def parse_category(task_request: TaskRequest) -> Optional[str]:
-    category = None
+def parse_task_identifier(task_request: TaskRequest) -> Optional[str]:
+    identifier = None
     if task_request.category.lower() == "patrol":
-        category = "Patrol"
+        identifier = "Patrol"
     elif task_request.description and task_request.description["category"]:
-        category = task_request.description["category"]
-    return category
+        identifier = task_request.description["category"]
+    return identifier
 
 
 def parse_pickup(task_request: TaskRequest) -> Optional[str]:
@@ -148,6 +148,8 @@ async def migrate():
     print(f"Migrating {len(states)} TaskState models")
 
     # Migrate each TaskState
+    skipped_task_states_count = 0
+    failed_task_states_count = 0
     for state in states:
         state_model = TaskState(**state.data)
         task_id = state_model.booking.id
@@ -155,14 +157,22 @@ async def migrate():
         # If the request is not available we skip migrating this TaskState
         request = await ttm.TaskRequest.get_or_none(id_=task_id)
         if request is None:
+            skipped_task_states_count += 1
             continue
         request_model = TaskRequest(**request.request)
 
         # Construct TaskRequestLabel based on TaskRequest
         pickup = parse_pickup(request_model)
         destination = parse_destination(request_model)
+
+        # If the task identifier could not be parsed, we skip migrating this TaskState
+        task_identifier = parse_task_identifier(request_model)
+        if task_identifier is None:
+            failed_task_states_count += 1
+            continue
+
         label = TaskRequestLabel(
-            category=parse_category(request_model),
+            task_identifier=task_identifier,
             unix_millis_warn_time=None,
             pickup=pickup,
             destination=destination,
@@ -191,6 +201,7 @@ async def migrate():
     print(f"Migrating {len(scheduled_tasks)} ScheduledTask models")
 
     # Migrate each ScheduledTask
+    failed_scheduled_task_count = 0
     for scheduled_task in scheduled_tasks:
         scheduled_task_model = await ttm.ScheduledTaskPydantic.from_tortoise_orm(
             scheduled_task
@@ -200,11 +211,16 @@ async def migrate():
         )
         print(task_request)
 
+        task_identifier = parse_task_identifier(task_request)
+        if task_identifier is None:
+            failed_scheduled_task_count += 1
+            continue
+
         # Construct TaskRequestLabel based on TaskRequest
         pickup = parse_pickup(task_request)
         destination = parse_destination(task_request)
         label = TaskRequestLabel(
-            category=parse_category(task_request),
+            task_identifier=task_identifier,
             unix_millis_warn_time=None,
             pickup=pickup,
             destination=destination,

@@ -43,7 +43,7 @@ import React from 'react';
 import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
-import { TaskRequestLabel } from './utils';
+import { TaskRequestLabel } from './task-request-label';
 
 // A bunch of manually defined descriptions to avoid using `any`.
 export interface PatrolTaskDescription {
@@ -1288,7 +1288,7 @@ export function CreateTaskForm({
   const [taskRequest, setTaskRequest] = React.useState<TaskRequest>(
     () => requestTask ?? defaultTask(),
   );
-  const [requestLabel, setRequestLabel] = React.useState<TaskRequestLabel>({});
+  const [requestLabel, setRequestLabel] = React.useState<TaskRequestLabel | null>(null);
 
   const [submitting, setSubmitting] = React.useState(false);
   const [formFullyFilled, setFormFullyFilled] = React.useState(requestTask !== undefined || false);
@@ -1363,7 +1363,7 @@ export function CreateTaskForm({
           onChange={(desc) => {
             handleTaskDescriptionChange('patrol', desc);
             setRequestLabel({
-              category: taskRequest.category,
+              task_identifier: taskRequest.category,
               destination: desc.places.at(-1),
             });
           }}
@@ -1377,7 +1377,7 @@ export function CreateTaskForm({
           onChange={(desc) => {
             handleCustomComposeTaskDescriptionChange(desc);
             setRequestLabel({
-              category: taskRequest.category,
+              task_identifier: taskRequest.category,
             });
           }}
           allowSubmit={allowSubmit}
@@ -1401,7 +1401,7 @@ export function CreateTaskForm({
               const pickupPerformAction =
                 desc.phases[0].activity.description.activities[1].description.description;
               setRequestLabel({
-                category: taskRequest.description.category,
+                task_identifier: taskRequest.description.category,
                 pickup: pickupPerformAction.pickup_lot,
                 cart_id: pickupPerformAction.cart_id,
                 destination: desc.phases[1].activity.description.activities[0].description,
@@ -1426,7 +1426,7 @@ export function CreateTaskForm({
               const pickupPerformAction =
                 desc.phases[0].activity.description.activities[1].description.description;
               setRequestLabel({
-                category: taskRequest.description.category,
+                task_identifier: taskRequest.description.category,
                 pickup: pickupPerformAction.pickup_zone,
                 cart_id: pickupPerformAction.cart_id,
                 destination: desc.phases[1].activity.description.activities[0].description,

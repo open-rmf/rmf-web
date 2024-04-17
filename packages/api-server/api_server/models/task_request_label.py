@@ -8,7 +8,7 @@ from pydantic import BaseModel
 
 
 class TaskRequestLabel(BaseModel):
-    category: Optional[str]
+    task_identifier: str
     unix_millis_warn_time: Optional[str]
     pickup: Optional[str]
     destination: Optional[str]
