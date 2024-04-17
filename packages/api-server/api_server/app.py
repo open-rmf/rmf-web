@@ -20,7 +20,6 @@ from . import gateway, ros, routes
 from .app_config import app_config
 from .authenticator import AuthenticationError, authenticator, user_dep
 from .fast_io import FastIO
-from .logging import LoggerAdapter
 from .models import (
     DispenserHealth,
     DispenserState,

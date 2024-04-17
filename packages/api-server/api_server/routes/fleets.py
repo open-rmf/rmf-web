@@ -6,7 +6,7 @@ from rx import operators as rxops
 from api_server.authenticator import user_dep
 from api_server.dependencies import between_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.logger import logger
+from api_server.logging import LoggerAdapter, get_logger
 from api_server.models import (
     Commission,
     FleetLog,
@@ -83,7 +83,7 @@ async def decommission_robot(
     reassign_tasks: bool,
     allow_idle_behavior: bool,
     repo: FleetRepository = Depends(FleetRepository),
-    user: User = Depends(user_dep),
+    logger: LoggerAdapter = Depends(get_logger),
 ):
     """
     Decommissions a robot, cancels all direct tasks, and preventing it from
@@ -128,9 +128,7 @@ async def decommission_robot(
     reassignment_log_str = "No Task re-assignment requested, tasks will be cancelled."
     if reassign_tasks:
         reassignment_log_str = "Task re-assignment requested."
-    logger.info(
-        f"Decommissioning {robot_name} of {name} called by {user.username}. {reassignment_log_str}"
-    )
+    logger.info(f"Decommissioning {robot_name} of {name}. {reassignment_log_str}")
     resp = RobotCommissionResponse.parse_raw(
         await tasks_service().call(request.json(exclude_none=True))
     )
@@ -150,6 +148,7 @@ async def recommission_robot(
     robot_name: str,
     repo: FleetRepository = Depends(FleetRepository),
     user: User = Depends(user_dep),
+    logger: LoggerAdapter = Depends(get_logger),
 ):
     """
     Recommissions a robot, allowing it to accept new dispatch tasks and direct
