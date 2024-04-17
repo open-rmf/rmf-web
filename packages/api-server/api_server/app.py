@@ -20,7 +20,7 @@ from . import gateway, ros, routes
 from .app_config import app_config
 from .authenticator import AuthenticationError, authenticator, user_dep
 from .fast_io import FastIO
-from .logging import get_logger
+from .logging import LoggerAdapter
 from .models import (
     DispenserHealth,
     DispenserState,
@@ -39,7 +39,9 @@ from .types import is_coroutine
 
 
 async def on_sio_connect(
-    sid: str, _environ: dict, auth: Optional[dict] = None, logger=Depends(get_logger)
+    sid: str,
+    _environ: dict,
+    auth: Optional[dict] = None,
 ):
     session = await app.sio.get_session(sid)
     token = None
@@ -50,7 +52,7 @@ async def on_sio_connect(
         session["user"] = user
         return True
     except AuthenticationError as e:
-        logger.info(f"authentication failed: {e}")
+        logging.info(f"authentication failed: {e}")
         return False
 
 

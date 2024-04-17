@@ -59,16 +59,19 @@ class JwtAuthenticator:
         if not token:
             raise AuthenticationError("authentication required")
 
-        claims = jwt.decode(
-            token,
-            self._public_key,
-            algorithms=["RS256"],
-            audience=self.aud,
-            issuer=self.iss,
-        )
-        user = await self._get_user(claims)
+        try:
+            claims = jwt.decode(
+                token,
+                self._public_key,
+                algorithms=["RS256"],
+                audience=self.aud,
+                issuer=self.iss,
+            )
+            user = await self._get_user(claims)
 
-        return user
+            return user
+        except jwt.DecodeError as e:
+            raise AuthenticationError(str(e)) from e
 
     def fastapi_dep(self) -> Callable[..., Union[Coroutine[Any, Any, User], User]]:
         async def dep(
