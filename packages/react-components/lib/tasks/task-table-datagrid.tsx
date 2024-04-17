@@ -13,7 +13,7 @@ import {
 } from '@mui/x-data-grid';
 import { styled, Stack, Typography, Tooltip, useMediaQuery, SxProps, Theme } from '@mui/material';
 import * as React from 'react';
-import { TaskState, Status } from 'api-client';
+import { Booking, TaskState, Status } from 'api-client';
 import { InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
 import { parseTaskRequestLabel } from './utils';
 
@@ -81,8 +81,8 @@ export interface TableDataGridState {
   setSortFields: React.Dispatch<React.SetStateAction<SortFields>>;
 }
 
-const TaskRequester = (requester: string | null, sx: SxProps<Theme>): JSX.Element => {
-  if (!requester) {
+const TaskRequester = (booking: Booking, sx: SxProps<Theme>): JSX.Element => {
+  if (!booking.requester) {
     return (
       <Typography variant="body1" sx={sx}>
         n/a
@@ -90,32 +90,16 @@ const TaskRequester = (requester: string | null, sx: SxProps<Theme>): JSX.Elemen
     );
   }
 
-  /** When a task is created as scheduled,
-   we save the requester as USERNAME__scheduled.
-   Therefore, we remove the __schedule because the different icon is enough indicator to know
-   if the task was adhoc or scheduled.
-  */
   return (
     <Stack direction="row" alignItems="center" gap={1}>
-      {requester.includes('scheduled') ? (
-        <>
-          <Tooltip title="User scheduled" sx={sx}>
-            <ScheduleIcon />
-          </Tooltip>
-          <Typography variant="body1" sx={sx}>
-            {requester.split('__')[0]}
-          </Typography>
-        </>
-      ) : (
-        <>
-          <Tooltip title="User submitted" sx={sx}>
-            <UserIcon />
-          </Tooltip>
-          <Typography variant="body1" sx={sx}>
-            {requester}
-          </Typography>
-        </>
-      )}
+      <>
+        <Tooltip title="User scheduled" sx={sx}>
+          {booking.labels && booking.labels.includes('scheduled') ? <ScheduleIcon /> : <UserIcon />}
+        </Tooltip>
+        <Typography variant="body1" sx={sx}>
+          {booking.requester}
+        </Typography>
+      </>
     </Stack>
   );
 };
@@ -173,7 +157,7 @@ export function TaskDataGridTable({
       headerName: 'Requester',
       width: 150,
       editable: false,
-      renderCell: (cellValues) => TaskRequester(cellValues.row.booking.requester, sxProp),
+      renderCell: (cellValues) => TaskRequester(cellValues.row.booking, sxProp),
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,
