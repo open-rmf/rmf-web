@@ -9,7 +9,7 @@ from . import task_request
 
 
 class RobotTaskRequest(BaseModel):
-    type: str = Field(..., description="Indicate that this is a task dispatch request")
+    type: str = Field(..., description="Indicate that this is a direct task request")
     robot: str = Field(..., description="The name of the robot")
     fleet: str = Field(..., description="The fleet the robot belongs to")
     request: task_request.TaskRequest

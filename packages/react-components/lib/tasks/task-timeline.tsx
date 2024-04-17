@@ -15,7 +15,12 @@ import {
 } from '@mui/lab';
 import { styled } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { EventState, Phase, Status, TaskState } from 'api-client';
+import {
+  EventState,
+  Phase,
+  ApiServerModelsRmfApiTaskStateStatus as Status,
+  TaskState,
+} from 'api-client';
 import React from 'react';
 
 interface TimeLinePropsWithRef extends TimelineProps {

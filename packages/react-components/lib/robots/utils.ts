@@ -1,4 +1,4 @@
-import { Status2 } from 'api-client';
+import { ApiServerModelsRmfApiRobotStateStatus as Status2 } from 'api-client';
 import { RobotMode as RmfRobotMode } from 'rmf-models';
 
 /**
