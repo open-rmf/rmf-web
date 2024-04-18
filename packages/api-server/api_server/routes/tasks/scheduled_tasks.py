@@ -49,7 +49,7 @@ async def schedule_task(
 
     async def run():
         req.request.unix_millis_request_time = round(datetime.now().timestamp() * 1e3)
-        await post_dispatch_task(req, task_repo)
+        await post_dispatch_task(req, task_repo, logger)
         task.last_ran = datetime.now()
         await task.save()
 
