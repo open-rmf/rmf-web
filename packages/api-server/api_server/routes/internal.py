@@ -1,4 +1,5 @@
 # NOTE: This will eventually replace `gateway.py``
+import logging
 import os
 from typing import Any, Dict
 
@@ -16,14 +17,13 @@ user: mdl.User = mdl.User(username="__rmf_internal__", is_admin=True)
 
 
 class ConnectionManager:
-    def __init__(self, logger: LoggerAdapter):
-        self.logger = logger
+    def __init__(self):
         self.active_connections: list[WebSocket] = []
 
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         self.active_connections.append(websocket)
-        self.logger.info(
+        logging.info(
             f"ConnectionManager: {len(self.active_connections)} websocket connections still alive"
         )
 
@@ -33,17 +33,20 @@ class ConnectionManager:
             and len(self.active_connections)
             > app_config.max_internal_websocket_connections
         ):
-            self.logger.error(
+            logging.error(
                 f"ConnectionManager: exceeded maximum allowed internal websocket connections [{app_config.max_internal_websocket_connections}]"
             )
-            self.logger.error("ConnectionManager: Shutting down server")
+            logging.error("ConnectionManager: Shutting down server")
             os._exit(1)  # pylint: disable=protected-access
 
     def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)
-        self.logger.info(
+        logging.info(
             f"ConnectionManager: {len(self.active_connections)} websocket connections still alive"
         )
+
+
+connection_manager = ConnectionManager()
 
 
 def log_phase_has_error(phase: mdl.Phases) -> bool:
@@ -136,9 +139,9 @@ async def process_msg(
 
 @router.websocket("")
 async def rmf_gateway(
-    websocket: WebSocket, logger: LoggerAdapter = Depends(get_logger)
+    websocket: WebSocket,
+    logger: LoggerAdapter = Depends(get_logger),
 ):
-    connection_manager = ConnectionManager(logger)
     await connection_manager.connect(websocket)
     fleet_repo = FleetRepository(user, logger)
     task_repo = TaskRepository(user, logger)
