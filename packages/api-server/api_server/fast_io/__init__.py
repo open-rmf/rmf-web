@@ -17,7 +17,6 @@ from urllib.parse import unquote as url_unquote
 
 import pydantic
 import socketio
-import socketio.packet
 from fastapi import APIRouter, FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.routing import APIRoute
@@ -28,6 +27,7 @@ from starlette.routing import compile_path
 from api_server.logger import logger
 
 from .errors import *
+from .pydantic_json_serializer import PydanticJsonSerializer
 
 
 @dataclass
@@ -132,21 +132,21 @@ class FastIORouter(APIRouter):
         return decorator
 
 
-class FastIOPacket(socketio.packet.Packet):
-    class PacketData(pydantic.RootModel):
-        root: tuple[str, pydantic.BaseModel]
+# class FastIOPacket(socketio.packet.Packet):
+#     class PacketData(pydantic.RootModel):
+#         root: tuple[str, pydantic.BaseModel]
 
-    def encode(self):
-        if (
-            isinstance(self.data, list)
-            and len(self.data) == 2
-            and isinstance(self.data[1], pydantic.BaseModel)
-        ):
-            pkt_data = FastIOPacket.PacketData(
-                root=cast(tuple[str, pydantic.BaseModel], self.data)
-            )
-            return str(self.packet_type) + pkt_data.model_dump_json(exclude_none=True)
-        return super().encode()
+#     def encode(self):
+#         if (
+#             isinstance(self.data, list)
+#             and len(self.data) == 2
+#             and isinstance(self.data[1], pydantic.BaseModel)
+#         ):
+#             pkt_data = FastIOPacket.PacketData(
+#                 root=cast(tuple[str, pydantic.BaseModel], self.data)
+#             )
+#             return str(self.packet_type) + pkt_data.model_dump_json(exclude_none=True)
+#         return super().encode()
 
 
 class FastIO(FastAPI):
@@ -163,7 +163,7 @@ class FastIO(FastAPI):
         if self.swagger_ui_oauth2_redirect_url is None:
             self.swagger_ui_oauth2_redirect_url = "docs/oauth2-redirect"
         self.sio = socketio.AsyncServer(
-            async_mode="asgi", cors_allowed_origins=[], serializer=FastIOPacket
+            async_mode="asgi", cors_allowed_origins=[], json=PydanticJsonSerializer()
         )
         self.sio.on("connect", socketio_connect)
         self.sio.on("subscribe", self._on_subscribe)
@@ -287,13 +287,7 @@ The message must be of the form:
             loop = asyncio.get_event_loop()
 
             def on_next(data):
-                async def emit():
-                    if isinstance(data, BaseModel):
-                        await self.sio.emit(sub_data.room, data.model_dump(), to=sid)
-                    else:
-                        await self.sio.emit(sub_data.room, data, to=sid)
-
-                loop.create_task(emit())
+                loop.create_task(self.sio.emit(sub_data.room, data, to=sid))
 
             sub = obs.subscribe(on_next)
             session.setdefault("_subscriptions", {})[sub_data.room] = sub
