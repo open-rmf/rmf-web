@@ -180,9 +180,9 @@ class TestFleetsRoute(AppFixture):
         resp = self.client.post(
             f"fleets/{fleet_state.name}/unlock_mutex_group?{urlencode(params)}"
         )
-        self.assertEqual(404, resp.status_code)
+        self.assertEqual(400, resp.status_code)
         params = {"robot_name": "test_robot", "mutex_group": "invalid_mutex_group"}
         resp = self.client.post(
             f"fleets/{fleet_state.name}/unlock_mutex_group?{urlencode(params)}"
         )
-        self.assertEqual(404, resp.status_code)
+        self.assertEqual(400, resp.status_code)
