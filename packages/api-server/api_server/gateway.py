@@ -26,6 +26,7 @@ from rmf_fleet_msgs.msg import DeliveryAlert as RmfDeliveryAlert
 from rmf_fleet_msgs.msg import DeliveryAlertAction as RmfDeliveryAlertAction
 from rmf_fleet_msgs.msg import DeliveryAlertCategory as RmfDeliveryAlertCategory
 from rmf_fleet_msgs.msg import DeliveryAlertTier as RmfDeliveryAlertTier
+from rmf_fleet_msgs.msg import MutexGroupManualRelease as RmfMutexGroupManualRelease
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
@@ -95,6 +96,17 @@ class RmfGateway:
         self._delivery_alert_response = ros_node().create_publisher(
             RmfDeliveryAlert,
             "delivery_alert_response",
+            rclpy.qos.QoSProfile(
+                history=rclpy.qos.HistoryPolicy.KEEP_LAST,
+                depth=10,
+                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
+                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
+            ),
+        )
+
+        self._mutex_group_release = ros_node().create_publisher(
+            RmfMutexGroupManualRelease,
+            "mutex_group_manual_release",
             rclpy.qos.QoSProfile(
                 history=rclpy.qos.HistoryPolicy.KEEP_LAST,
                 depth=10,
@@ -279,6 +291,18 @@ class RmfGateway:
         msg.action = RmfDeliveryAlertAction(value=action)
         msg.message = message
         self._delivery_alert_response.publish(msg)
+
+    def manual_release_mutex_groups(
+        self,
+        mutex_groups: List[str],
+        fleet: str,
+        robot: str,
+    ):
+        msg = RmfMutexGroupManualRelease()
+        msg.release_mutex_groups = mutex_groups
+        msg.fleet = fleet
+        msg.robot = robot
+        self._mutex_group_release.publish(msg)
 
 
 _rmf_gateway: RmfGateway

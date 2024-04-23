@@ -21,6 +21,16 @@ class Status(Enum):
     error = "error"
 
 
+class MutexGroups(BaseModel):
+    locked: Optional[List[str]] = Field(
+        None, description="A list of mutex groups that this robot has currently locked"
+    )
+    requesting: Optional[List[str]] = Field(
+        None,
+        description="A list of the mutex groups that this robot is currently requesting but has not lockd yet",
+    )
+
+
 class Issue(BaseModel):
     category: Optional[str] = Field(None, description="Category of the robot's issue")
     detail: Optional[Union[Dict[str, Any], List, str]] = Field(
@@ -48,3 +58,7 @@ class RobotState(BaseModel):
         description="A list of issues with the robot that operators need to address",
     )
     commission: Optional[commission.Commission] = None
+    mutex_groups: Optional[MutexGroups] = Field(
+        None,
+        description="Information about the mutex groups that this robot is interacting with",
+    )

@@ -1,6 +1,6 @@
 from urllib.parse import urlencode
 
-from api_server.models import FleetLogUpdate, FleetStateUpdate
+from api_server.models import FleetLogUpdate, FleetStateUpdate, MutexGroups
 from api_server.test import (
     AppFixture,
     make_fleet_log,
@@ -130,3 +130,59 @@ class TestFleetsRoute(AppFixture):
             f"fleets/{fleet_state.name}/recommission?{urlencode(params)}"
         )
         self.assertEqual(404, resp.status_code)
+
+    def test_unlock_mutex_group(self):
+        # add a new robot
+        robot_name = "test_robot"
+        robot_state = make_robot_state(robot_name)
+        fleet_state = make_fleet_state("test_fleet")
+        robot_state.mutex_groups = MutexGroups(
+            locked=["test_locked_mutex_group"], requesting=[]
+        )
+        fleet_state.robots = {robot_name: robot_state}
+
+        with self.client.websocket_connect("/_internal") as ws:
+            ws.send_text(
+                FleetStateUpdate(type="fleet_state_update", data=fleet_state).json()
+            )
+
+        # valid
+        params = {"robot_name": "test_robot", "mutex_group": "test_locked_mutex_group"}
+        resp = self.client.post(
+            f"fleets/{fleet_state.name}/unlock_mutex_group?{urlencode(params)}"
+        )
+        self.assertEqual(200, resp.status_code)
+
+        # invalid fleet
+        params = {"robot_name": robot_name, "mutex_group": "test_locked_mutex_group"}
+        resp = self.client.post(
+            f"fleets/invalid_fleet/unlock_mutex_group?{urlencode(params)}"
+        )
+        self.assertEqual(404, resp.status_code)
+
+        # invalid robot
+        params = {"robot_name": "", "mutex_group": "test_locked_mutex_group"}
+        resp = self.client.post(
+            f"fleets/{fleet_state.name}/unlock_mutex_group?{urlencode(params)}"
+        )
+        self.assertEqual(404, resp.status_code)
+        params = {
+            "robot_name": "invalid_robot",
+            "mutex_group": "test_locked_mutex_group",
+        }
+        resp = self.client.post(
+            f"fleets/{fleet_state.name}/unlock_mutex_group?{urlencode(params)}"
+        )
+        self.assertEqual(404, resp.status_code)
+
+        # invalid mutex group
+        params = {"robot_name": "test_robot", "mutex_group": ""}
+        resp = self.client.post(
+            f"fleets/{fleet_state.name}/unlock_mutex_group?{urlencode(params)}"
+        )
+        self.assertEqual(400, resp.status_code)
+        params = {"robot_name": "test_robot", "mutex_group": "invalid_mutex_group"}
+        resp = self.client.post(
+            f"fleets/{fleet_state.name}/unlock_mutex_group?{urlencode(params)}"
+        )
+        self.assertEqual(400, resp.status_code)
