@@ -86,6 +86,7 @@ export function MutexGroupTable({
           sortModel: [{ field: 'name', sort: 'asc' }],
         },
       }}
+      disableVirtualization
     />
   );
 }

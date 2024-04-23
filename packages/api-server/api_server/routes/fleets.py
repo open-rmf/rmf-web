@@ -207,12 +207,12 @@ async def unlock_mutex_group(
         or mutex_group not in mutex_groups.locked
     ):
         raise HTTPException(
-            404,
+            400,
             f"Robot {robot_name} in fleet {name} does not have mutex group {mutex_group} locked",
         )
 
     logger.info(
-        f"User [{user.username}] requested to manually release mutex group {mutex_group} for {robot_name} of fleet {name}"
+        f"Manual release mutex group {mutex_group} for {robot_name} of fleet {name} requested"
     )
     rmf_gateway().manual_release_mutex_groups(
         mutex_groups=[mutex_group], fleet=name, robot=robot_name

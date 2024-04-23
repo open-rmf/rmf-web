@@ -12,8 +12,7 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
   const appController = React.useContext(AppControllerContext);
 
   const [mutexGroups, setMutexGroups] = React.useState<Record<string, MutexGroupData>>({});
-  const [selectedMutexGroup, setSelectedMutexGroup] = React.useState<MutexGroupData>();
-  const [openMutexGroupDialog, setOpenMutexGroupDialog] = React.useState(false);
+  const [selectedMutexGroup, setSelectedMutexGroup] = React.useState<MutexGroupData | null>(null);
 
   const robotIdentifierDelimiter = '/';
 
@@ -151,7 +150,7 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
         }`,
       );
     }
-    setOpenMutexGroupDialog(false);
+    setSelectedMutexGroup(null);
   }, [selectedMutexGroup, rmf, appController]);
 
   return (
@@ -159,28 +158,27 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
       <MutexGroupTable
         mutexGroups={Object.values(mutexGroups)}
         onMutexGroupClick={(_ev, mutexGroup) => {
-          setOpenMutexGroupDialog(true);
           setSelectedMutexGroup(mutexGroup);
         }}
       />
-      {openMutexGroupDialog && selectedMutexGroup && selectedMutexGroup.lockedBy && (
-        <ConfirmationDialog
-          confirmText="Confirm unlock"
-          cancelText="Cancel"
-          open={openMutexGroupDialog}
-          title={'Mutex group manual unlock'}
-          submitting={undefined}
-          onClose={() => {
-            setOpenMutexGroupDialog(false);
-          }}
-          onSubmit={handleUnlockMutexGroup}
-        >
+      <ConfirmationDialog
+        confirmText="Confirm unlock"
+        cancelText="Cancel"
+        open={selectedMutexGroup !== null && selectedMutexGroup.lockedBy !== undefined}
+        title={'Mutex group manual unlock'}
+        submitting={undefined}
+        onClose={() => setSelectedMutexGroup(null)}
+        onSubmit={handleUnlockMutexGroup}
+      >
+        {selectedMutexGroup && selectedMutexGroup.lockedBy ? (
           <Typography>
             Confirm unlock mutex group [{selectedMutexGroup.name}] for [
             {selectedMutexGroup.lockedBy}]?
           </Typography>
-        </ConfirmationDialog>
-      )}
+        ) : (
+          <Typography>Confirm unlock mutex group?</Typography>
+        )}
+      </ConfirmationDialog>
     </TableContainer>
   );
 });
