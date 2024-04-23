@@ -41,11 +41,9 @@ class HealthWatchdog:
         rmf_events: RmfEvents,
         *,
         scheduler: Optional[Scheduler] = None,
-        logger: Optional[logging.Logger] = None,
     ):
         self.rmf = rmf_events
         self.scheduler = scheduler
-        self.logger = logger or logging.getLogger(self.__class__.__name__)
         self._building_watchers: List[Disposable] = []
 
     async def start(self):
@@ -127,7 +125,7 @@ class HealthWatchdog:
         except MultipleObjectsReturned:
             ttm_maps = await ttm.BuildingMap.all()
             map_names = [BuildingMap.from_tortoise(m).name for m in ttm_maps]
-            self.logger.error(
+            logging.error(
                 "There appears to be multiple building maps "
                 f"available: {map_names}. Please ensure that "
                 "there is only a single building_map_server "

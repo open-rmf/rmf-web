@@ -34,7 +34,6 @@ from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 from rosidl_runtime_py.convert import message_to_ordereddict
 
-from .logger import logger as base_logger
 from .models import (
     BeaconState,
     BuildingMap,
@@ -76,12 +75,7 @@ def process_building_map(
 
 
 class RmfGateway:
-    def __init__(
-        self,
-        cached_files: CachedFilesRepository,
-        *,
-        logger: Optional[logging.Logger] = None,
-    ):
+    def __init__(self, cached_files: CachedFilesRepository):
         self._door_req = ros_node().create_publisher(
             RmfDoorRequest, "adapter_door_requests", 10
         )
@@ -122,7 +116,6 @@ class RmfGateway:
         )
 
         self.cached_files = cached_files
-        self.logger = logger or base_logger.getChild(self.__class__.__name__)
         self._subscriptions: List[Subscription] = []
 
         self._subscribe_all()
@@ -224,8 +217,8 @@ class RmfGateway:
             )
 
         def handle_delivery_alert(delivery_alert: DeliveryAlert):
-            self.logger.info("Received delivery alert:")
-            self.logger.info(delivery_alert)
+            logging.info("Received delivery alert:")
+            logging.info(delivery_alert)
             rmf_events.delivery_alerts.on_next(delivery_alert)
 
         delivery_alert_request_sub = ros_node().create_subscription(

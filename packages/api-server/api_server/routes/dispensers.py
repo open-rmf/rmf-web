@@ -6,20 +6,20 @@ from rx import operators as rxops
 from api_server.dependencies import sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import Dispenser, DispenserHealth, DispenserState
-from api_server.repositories import RmfRepository, rmf_repo_dep
+from api_server.repositories import RmfRepository
 from api_server.rmf_io import rmf_events
 
 router = FastIORouter(tags=["Dispensers"])
 
 
 @router.get("", response_model=List[Dispenser])
-async def get_dispensers(rmf_repo: RmfRepository = Depends(rmf_repo_dep)):
+async def get_dispensers(rmf_repo: RmfRepository = Depends(RmfRepository)):
     return await rmf_repo.get_dispensers()
 
 
 @router.get("/{guid}/state", response_model=DispenserState)
 async def get_dispenser_state(
-    guid: str, rmf_repo: RmfRepository = Depends(rmf_repo_dep)
+    guid: str, rmf_repo: RmfRepository = Depends(RmfRepository)
 ):
     """
     Available in socket.io
@@ -44,7 +44,7 @@ async def sub_dispenser_state(req: SubscriptionRequest, guid: str):
 
 @router.get("/{guid}/health", response_model=DispenserHealth)
 async def get_dispenser_health(
-    guid: str, rmf_repo: RmfRepository = Depends(rmf_repo_dep)
+    guid: str, rmf_repo: RmfRepository = Depends(RmfRepository)
 ):
     """
     Available in socket.io

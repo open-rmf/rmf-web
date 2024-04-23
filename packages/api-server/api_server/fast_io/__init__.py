@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from dataclasses import dataclass
 from re import Match
 from typing import (
@@ -23,8 +24,6 @@ from fastapi.exceptions import HTTPException
 from fastapi.routing import APIRoute
 from rx.core.observable.observable import Observable
 from starlette.routing import compile_path
-
-from api_server.logger import logger
 
 from .errors import *
 
@@ -255,7 +254,7 @@ The message must be of the form:
             sub_data = self._parse_sub_data(data)
         except SubscribeError as e:
             await self.sio.emit("subscribe", {"success": False, "error": str(e)})
-            logger.info(f"{sid}: str(e)")
+            logging.info(f"{sid}: str(e)")
             return
 
         try:

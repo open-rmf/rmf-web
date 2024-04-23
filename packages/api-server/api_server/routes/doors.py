@@ -7,20 +7,20 @@ from api_server.dependencies import sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import rmf_gateway
 from api_server.models import Door, DoorHealth, DoorRequest, DoorState
-from api_server.repositories import RmfRepository, rmf_repo_dep
+from api_server.repositories import RmfRepository
 from api_server.rmf_io import rmf_events
 
 router = FastIORouter(tags=["Doors"])
 
 
 @router.get("", response_model=List[Door])
-async def get_doors(rmf_repo: RmfRepository = Depends(rmf_repo_dep)):
+async def get_doors(rmf_repo: RmfRepository = Depends(RmfRepository)):
     return await rmf_repo.get_doors()
 
 
 @router.get("/{door_name}/state", response_model=DoorState)
 async def get_door_state(
-    door_name: str, rmf_repo: RmfRepository = Depends(rmf_repo_dep)
+    door_name: str, rmf_repo: RmfRepository = Depends(RmfRepository)
 ):
     """
     Available in socket.io
@@ -45,7 +45,7 @@ async def sub_door_state(req: SubscriptionRequest, door_name: str):
 
 @router.get("/{door_name}/health", response_model=DoorHealth)
 async def get_door_health(
-    door_name: str, rmf_repo: RmfRepository = Depends(rmf_repo_dep)
+    door_name: str, rmf_repo: RmfRepository = Depends(RmfRepository)
 ):
     """
     Available in socket.io

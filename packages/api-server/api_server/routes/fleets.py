@@ -7,7 +7,7 @@ from api_server.authenticator import user_dep
 from api_server.dependencies import between_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import rmf_gateway
-from api_server.logger import logger
+from api_server.logging import LoggerAdapter, get_logger
 from api_server.models import (
     Commission,
     FleetLog,
@@ -18,7 +18,7 @@ from api_server.models import (
     RobotCommissionResponse,
     User,
 )
-from api_server.repositories import FleetRepository, fleet_repo_dep
+from api_server.repositories import FleetRepository
 from api_server.rmf_io import fleet_events, tasks_service
 
 router = FastIORouter(tags=["Fleets"])
@@ -26,13 +26,13 @@ router = FastIORouter(tags=["Fleets"])
 
 @router.get("", response_model=List[FleetState])
 async def get_fleets(
-    repo: FleetRepository = Depends(fleet_repo_dep),
+    repo: FleetRepository = Depends(FleetRepository),
 ):
     return await repo.get_all_fleets()
 
 
 @router.get("/{name}/state", response_model=FleetState)
-async def get_fleet_state(name: str, repo: FleetRepository = Depends(fleet_repo_dep)):
+async def get_fleet_state(name: str, repo: FleetRepository = Depends(FleetRepository)):
     """
     Available in socket.io
     """
@@ -58,7 +58,7 @@ async def sub_fleet_state(req: SubscriptionRequest, name: str):
 @router.get("/{name}/log", response_model=FleetLog)
 async def get_fleet_log(
     name: str,
-    repo: FleetRepository = Depends(fleet_repo_dep),
+    repo: FleetRepository = Depends(FleetRepository),
     between: Tuple[int, int] = Depends(between_query),
 ):
     """
@@ -83,8 +83,8 @@ async def decommission_robot(
     robot_name: str,
     reassign_tasks: bool,
     allow_idle_behavior: bool,
-    repo: FleetRepository = Depends(fleet_repo_dep),
-    user: User = Depends(user_dep),
+    repo: FleetRepository = Depends(FleetRepository),
+    logger: LoggerAdapter = Depends(get_logger),
 ):
     """
     Decommissions a robot, cancels all direct tasks, and preventing it from
@@ -129,9 +129,7 @@ async def decommission_robot(
     reassignment_log_str = "No Task re-assignment requested, tasks will be cancelled."
     if reassign_tasks:
         reassignment_log_str = "Task re-assignment requested."
-    logger.info(
-        f"Decommissioning {robot_name} of {name} called by {user.username}. {reassignment_log_str}"
-    )
+    logger.info(f"Decommissioning {robot_name} of {name}. {reassignment_log_str}")
     resp = RobotCommissionResponse.parse_raw(
         await tasks_service().call(request.json(exclude_none=True))
     )
@@ -149,8 +147,9 @@ async def decommission_robot(
 async def recommission_robot(
     name: str,
     robot_name: str,
-    repo: FleetRepository = Depends(fleet_repo_dep),
+    repo: FleetRepository = Depends(FleetRepository),
     user: User = Depends(user_dep),
+    logger: LoggerAdapter = Depends(get_logger),
 ):
     """
     Recommissions a robot, allowing it to accept new dispatch tasks and direct
@@ -188,7 +187,8 @@ async def unlock_mutex_group(
     name: str,
     robot_name: str,
     mutex_group: str,
-    repo: FleetRepository = Depends(fleet_repo_dep),
+    repo: FleetRepository = Depends(FleetRepository),
+    logger: LoggerAdapter = Depends(get_logger),
 ):
     """
     Request to manually unlock a mutex group that is currently being held by a
