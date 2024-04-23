@@ -189,7 +189,6 @@ async def unlock_mutex_group(
     robot_name: str,
     mutex_group: str,
     repo: FleetRepository = Depends(fleet_repo_dep),
-    user: User = Depends(user_dep),
 ):
     """
     Request to manually unlock a mutex group that is currently being held by a
