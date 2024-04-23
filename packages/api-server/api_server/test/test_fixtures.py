@@ -10,6 +10,8 @@ from collections.abc import Generator
 from typing import Awaitable, Callable, Optional, TypeVar, Union
 from uuid import uuid4
 
+import pydantic
+
 from api_server.app import app
 from api_server.models import User
 from api_server.routes.admin import PostUsers
@@ -131,6 +133,8 @@ class AppFixture(unittest.TestCase):
                         raise Exception("Failed to subscribe")
                     if emit_room == room:
                         async with condition:
+                            if isinstance(msg, pydantic.BaseModel):
+                                msg = msg.model_dump(round_trip=True)
                             msgs.append(msg)
                             condition.notify()
 

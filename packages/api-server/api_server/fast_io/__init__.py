@@ -132,23 +132,6 @@ class FastIORouter(APIRouter):
         return decorator
 
 
-# class FastIOPacket(socketio.packet.Packet):
-#     class PacketData(pydantic.RootModel):
-#         root: tuple[str, pydantic.BaseModel]
-
-#     def encode(self):
-#         if (
-#             isinstance(self.data, list)
-#             and len(self.data) == 2
-#             and isinstance(self.data[1], pydantic.BaseModel)
-#         ):
-#             pkt_data = FastIOPacket.PacketData(
-#                 root=cast(tuple[str, pydantic.BaseModel], self.data)
-#             )
-#             return str(self.packet_type) + pkt_data.model_dump_json(exclude_none=True)
-#         return super().encode()
-
-
 class FastIO(FastAPI):
     def __init__(
         self,
