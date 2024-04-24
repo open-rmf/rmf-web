@@ -1,18 +1,18 @@
 import { RobotState } from 'api-client';
 import React from 'react';
 import {
-  fromRmfCoords,
-  fromRmfYaw,
   RobotMarker as BaseRobotMarker,
   RobotMarkerProps as BaseRobotMarkerProps,
   SVGOverlay,
   SVGOverlayProps,
+  WithLabelProps,
+  fromRmfCoords,
+  fromRmfYaw,
   useAutoScale,
   viewBoxFromLeafletBounds,
   withLabel,
-  WithLabelProps,
 } from 'react-components';
-import { EMPTY, mergeMap, of } from 'rxjs';
+import { EMPTY, mergeMap, of, throttleTime } from 'rxjs';
 import { RmfAppContext } from './rmf-app';
 
 export interface RobotData {
@@ -44,6 +44,7 @@ const RobotMarker = ({ robot, scale, ...otherProps }: RobotMarkerProps) => {
     const sub = rmf
       .getFleetStateObs(robot.fleet)
       .pipe(
+        throttleTime(5000, undefined, { leading: true, trailing: true }),
         mergeMap((state) =>
           state.robots && state.robots[robot.name] ? of(state.robots[robot.name]) : EMPTY,
         ),

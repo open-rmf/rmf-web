@@ -1,10 +1,10 @@
-import React from 'react';
-import { DoorState, Lift, LiftState } from 'api-client';
-import { Door as DoorModel } from 'rmf-models';
-import { RmfAppContext } from '../rmf-app';
-import { DoorMode } from 'rmf-models';
-import { DoorThreeMaker } from 'react-components';
 import { ThreeEvent } from '@react-three/fiber';
+import { DoorState, Lift, LiftState } from 'api-client';
+import React from 'react';
+import { DoorThreeMaker } from 'react-components';
+import { DoorMode, Door as DoorModel } from 'rmf-models';
+import { throttleTime } from 'rxjs';
+import { RmfAppContext } from '../rmf-app';
 
 interface DoorProps {
   door: DoorModel;
@@ -35,7 +35,10 @@ export const Door = React.memo(({ ...doorProps }: DoorProps): JSX.Element => {
       return;
     }
 
-    const sub = rmf.getLiftStateObs(lift.name).subscribe(setLiftState);
+    const sub = rmf
+      .getLiftStateObs(lift.name)
+      .pipe(throttleTime(5000, undefined, { leading: true, trailing: true }))
+      .subscribe(setLiftState);
     return () => sub.unsubscribe();
   }, [rmf, lift]);
 

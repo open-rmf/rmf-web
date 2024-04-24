@@ -1,6 +1,7 @@
 import { Box, styled, Typography, useMediaQuery } from '@mui/material';
+import { Line } from '@react-three/drei';
+import { Canvas, useLoader } from '@react-three/fiber';
 import { BuildingMap, FleetState, Level, Lift } from 'api-client';
-import { Door as DoorModel } from 'rmf-models';
 import Debug from 'debug';
 import React, { ChangeEvent, Suspense } from 'react';
 import {
@@ -9,27 +10,25 @@ import {
   getPlaces,
   Place,
   ReactThreeFiberImageMaker,
+  RobotData,
   RobotTableData,
   ShapeThreeRendering,
   TextThreeRendering,
-  RobotData,
 } from 'react-components';
 import { ErrorBoundary } from 'react-error-boundary';
-import { EMPTY, merge, scan, Subscription, switchMap } from 'rxjs';
+import { Door as DoorModel } from 'rmf-models';
+import { EMPTY, merge, scan, Subscription, switchMap, throttleTime } from 'rxjs';
+import { Box3, TextureLoader, Vector3 } from 'three';
 import appConfig from '../app-config';
 import { AppControllerContext, ResourcesContext } from './app-contexts';
 import { AppEvents } from './app-events';
-import { createMicroApp } from './micro-app';
-import { RmfAppContext } from './rmf-app';
-import { TrajectoryData } from './trajectories-overlay';
-import { RobotSummary } from './robots/robot-summary';
-import { Box3, TextureLoader, Vector3 } from 'three';
-import { Canvas, useLoader } from '@react-three/fiber';
-import { Line } from '@react-three/drei';
-import { CameraControl, LayersController } from './three-fiber';
-import { Lifts, Door, RobotThree } from './three-fiber';
 import { DoorSummary } from './door-summary';
 import { LiftSummary } from './lift-summary';
+import { createMicroApp } from './micro-app';
+import { RmfAppContext } from './rmf-app';
+import { RobotSummary } from './robots/robot-summary';
+import { CameraControl, Door, LayersController, Lifts, RobotThree } from './three-fiber';
+import { TrajectoryData } from './trajectories-overlay';
 
 const debug = Debug('MapApp');
 
@@ -310,7 +309,15 @@ export const MapApp = styled(
       const sub = rmf.fleetsObs
         .pipe(
           switchMap((fleets) =>
-            merge(...fleets.map((f) => (f.name ? rmf.getFleetStateObs(f.name) : EMPTY))),
+            merge(
+              ...fleets.map((f) =>
+                f.name
+                  ? rmf
+                      .getFleetStateObs(f.name)
+                      .pipe(throttleTime(5000, undefined, { leading: true, trailing: true }))
+                  : EMPTY,
+              ),
+            ),
           ),
         )
         .subscribe((fleetState) => {

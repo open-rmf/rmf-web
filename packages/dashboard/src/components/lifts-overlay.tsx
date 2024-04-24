@@ -1,20 +1,21 @@
 import { Door, DoorMode, Lift, LiftState } from 'api-client';
 import React from 'react';
 import {
-  DoorMarker,
-  fromRmfCoords,
-  fromRmfYaw,
   LiftMarker as BaseLiftMarker,
-  liftMarkerClasses,
   LiftMarkerProps as BaseLiftMarkerProps,
-  radiansToDegrees,
+  DoorMarker,
   SVGOverlay,
   SVGOverlayProps,
+  fromRmfCoords,
+  fromRmfYaw,
+  liftMarkerClasses,
+  radiansToDegrees,
   useAutoScale,
   viewBoxFromLeafletBounds,
   withLabel,
 } from 'react-components';
 import { LiftState as RmfLiftState } from 'rmf-models';
+import { throttleTime } from 'rxjs';
 import { RmfAppContext } from './rmf-app';
 
 function toDoorMode(liftState: LiftState): DoorMode {
@@ -56,7 +57,10 @@ const LiftMarker = withLabel(({ lift, currentLevel, ...otherProps }: LiftMarkerP
     if (!rmf) {
       return;
     }
-    const sub = rmf.getLiftStateObs(lift.name).subscribe(setLiftState);
+    const sub = rmf
+      .getLiftStateObs(lift.name)
+      .pipe(throttleTime(5000, undefined, { leading: true, trailing: true }))
+      .subscribe(setLiftState);
     return () => sub.unsubscribe();
   }, [rmf, lift]);
 

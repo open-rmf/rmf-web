@@ -2,7 +2,7 @@ import { Box, CardContent, Typography } from '@mui/material';
 import { RobotState, TaskState } from 'api-client';
 import React from 'react';
 import { RobotInfo } from 'react-components';
-import { combineLatest, EMPTY, mergeMap, of, switchMap } from 'rxjs';
+import { EMPTY, combineLatest, mergeMap, of, switchMap, throttleTime } from 'rxjs';
 import { AppEvents } from '../app-events';
 import { createMicroApp } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
@@ -24,6 +24,7 @@ export const RobotInfoApp = createMicroApp('Robot Info', () => {
           }
           const [fleet, name] = data;
           return rmf.getFleetStateObs(fleet).pipe(
+            throttleTime(5000, undefined, { leading: true, trailing: true }),
             mergeMap((fleetState) => {
               const robotState = fleetState?.robots?.[name];
               const taskObs = robotState?.task_id

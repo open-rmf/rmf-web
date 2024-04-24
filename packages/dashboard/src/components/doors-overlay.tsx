@@ -3,14 +3,15 @@ import React from 'react';
 import {
   DoorMarker as BaseDoorMarker,
   DoorMarkerProps as BaseDoorMarkerProps,
-  fromRmfCoords,
-  getDoorCenter,
   SVGOverlay,
   SVGOverlayProps,
+  fromRmfCoords,
+  getDoorCenter,
   useAutoScale,
   viewBoxFromLeafletBounds,
   withLabel,
 } from 'react-components';
+import { throttleTime } from 'rxjs';
 import { RmfAppContext } from './rmf-app';
 
 interface DoorMarkerProps extends Omit<BaseDoorMarkerProps, 'doorMode'> {
@@ -24,7 +25,10 @@ const DoorMarker = withLabel(({ door, ...otherProps }: DoorMarkerProps) => {
     if (!rmf) {
       return;
     }
-    const sub = rmf.getDoorStateObs(door.name).subscribe(setDoorState);
+    const sub = rmf
+      .getDoorStateObs(door.name)
+      .pipe(throttleTime(5000, undefined, { leading: true, trailing: true }))
+      .subscribe(setDoorState);
     return () => sub.unsubscribe();
   }, [rmf, door]);
 
