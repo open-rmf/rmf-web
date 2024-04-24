@@ -249,6 +249,34 @@ The message must be of the form:
                 return match, r
         return None
 
+    async def _add_subscription(
+        self,
+        req: SubscriptionRequest,
+        handler: Callable[[], Observable | Coroutine[Any, Any, Observable]],
+    ):
+        if "_subscriptions" in req.session and req.session["_subscriptions"].get(
+            req.room
+        ):
+            return
+
+        maybe_coro = handler()
+        if asyncio.iscoroutine(maybe_coro):
+            obs = await maybe_coro
+        else:
+            obs = maybe_coro
+        obs = cast(Observable, obs)
+
+        loop = asyncio.get_event_loop()
+
+        def on_next(data):
+            async def emit():
+                await self.sio.emit(req.room, data, to=req.sid)
+
+            loop.create_task(emit())
+
+        sub = obs.subscribe(on_next)
+        req.session.setdefault("_subscriptions", {})[req.room] = sub
+
     async def _on_subscribe(self, sid: str, data: dict):
         try:
             sub_data = self._parse_sub_data(data)
@@ -270,23 +298,8 @@ The message must be of the form:
             req = SubscriptionRequest(
                 sid=sid, sio=self.sio, room=sub_data.room, session=session
             )
-            maybe_coro = route.endpoint(req, **match.groupdict())
-            if asyncio.iscoroutine(maybe_coro):
-                obs = await maybe_coro
-            else:
-                obs = maybe_coro
-            obs = cast(Observable, obs)
-
-            loop = asyncio.get_event_loop()
-
-            def on_next(data):
-                async def emit():
-                    await self.sio.emit(sub_data.room, data, to=sid)
-
-                loop.create_task(emit())
-
-            sub = obs.subscribe(on_next)
-            session.setdefault("_subscriptions", {})[sub_data.room] = sub
+            handler = lambda: route.endpoint(req, **match.groupdict())
+            await self._add_subscription(req, handler)
 
         except HTTPException as e:
             await self.sio.emit(
