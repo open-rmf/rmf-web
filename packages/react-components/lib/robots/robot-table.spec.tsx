@@ -1,5 +1,5 @@
 import { render, fireEvent } from '@testing-library/react';
-import { Status2 as RobotStatus } from 'api-client';
+import { ApiServerModelsRmfApiRobotStateStatus as RobotStatus } from 'api-client';
 import React from 'react';
 import { RobotTable, RobotTableData } from './robot-table';
 import { makeRobot } from './test-utils.spec';
@@ -11,7 +11,7 @@ describe('RobotTable', () => {
     const robots = [makeRobot({ name: 'test_robot1' }), makeRobot({ name: 'test_robot2' })];
     const tableData: RobotTableData[] = robots.map((robot) => ({
       fleet: 'test_fleet',
-      name: robot.name,
+      name: robot.name!,
     }));
     const root = render(<RobotTable robots={tableData} />);
     expect(root.getByText('test_robot1')).toBeTruthy();
@@ -24,7 +24,7 @@ describe('RobotTable', () => {
       <RobotTable
         robots={robots.map((robot) => ({
           fleet: 'test_fleet',
-          name: robot.name,
+          name: robot.name!,
           status: robot.status,
         }))}
       />,
@@ -32,7 +32,7 @@ describe('RobotTable', () => {
   });
 
   it('onRobotClick is called when row is clicked', () => {
-    const onRobotClick = jasmine.createSpy();
+    const onRobotClick = jest.fn();
     const root = render(
       <RobotTable
         robots={[{ fleet: 'test_fleet', name: 'test_robot' }]}
@@ -60,7 +60,7 @@ describe('RobotTable', () => {
         if (!node) {
           return false;
         }
-        const hasText = (node) => node.textContent === new Date(1000).toLocaleString();
+        const hasText = (node: Element) => node.textContent === new Date(1000).toLocaleString();
         const nodeHasText = hasText(node);
         const childrenDontHaveText = Array.from(node.children).every((child) => !hasText(child));
         return nodeHasText && childrenDontHaveText;
@@ -71,7 +71,7 @@ describe('RobotTable', () => {
         if (!node) {
           return false;
         }
-        const hasText = (node) => node.textContent === new Date(900).toLocaleString();
+        const hasText = (node: Element) => node.textContent === new Date(900).toLocaleString();
         const nodeHasText = hasText(node);
         const childrenDontHaveText = Array.from(node.children).every((child) => !hasText(child));
         return nodeHasText && childrenDontHaveText;

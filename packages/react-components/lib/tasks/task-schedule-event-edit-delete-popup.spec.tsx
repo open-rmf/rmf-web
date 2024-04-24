@@ -6,7 +6,7 @@ describe('EventEditDeletePopup', () => {
   const currentValue = 'current';
   const allValue = 'all';
   const value = 'current';
-  const onChange = jasmine.createSpy('onChange');
+  const onChange = jest.fn();
 
   it('handles onChange event', () => {
     const { getByLabelText } = render(

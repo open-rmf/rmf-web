@@ -26,7 +26,7 @@ export const DoorsApp = createMicroApp('Doors', () => {
 
     let doorIndex = 0;
     buildingMap?.levels.map((level) =>
-      level.doors.map(async (door, i) => {
+      level.doors.map(async (door) => {
         try {
           const { data } = await rmf.doorsApi.getDoorHealthDoorsDoorNameHealthGet(door.name);
           const { health_status } = data;

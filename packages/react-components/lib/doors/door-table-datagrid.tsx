@@ -213,6 +213,7 @@ export function DoorDataGridTable({ doors }: DoorDataGridTableProps): JSX.Elemen
             sortModel: [{ field: 'doorName', sort: 'asc' }],
           },
         }}
+        disableVirtualization={true}
       />
     </div>
   );

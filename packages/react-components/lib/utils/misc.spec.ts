@@ -26,9 +26,9 @@ describe('almostShallowEqual', () => {
     // `foo` is not strict equal even though they contain objects with the same content.
     const a = { foo: { bar: 'baz' } };
     const b = { foo: { bar: 'baz' } };
-    expect(almostShallowEqual(a, b)).toBeFalse();
+    expect(almostShallowEqual(a, b)).toBe(false);
     // this should traverse into `foo` and check the contents shallowing, rather than checking
     // `foo` itself.
-    expect(almostShallowEqual(a, b, ['foo'])).toBeTrue();
+    expect(almostShallowEqual(a, b, ['foo'])).toBe(true);
   });
 });

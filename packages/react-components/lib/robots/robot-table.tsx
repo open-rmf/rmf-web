@@ -4,7 +4,6 @@ import {
   TableBody,
   TableCell,
   TableHead,
-  TablePagination,
   TableProps,
   TableRow,
   useTheme,
@@ -77,11 +76,6 @@ const RobotRow = React.memo(
     );
   },
 );
-
-export type PaginationOptions = Omit<
-  React.ComponentPropsWithoutRef<typeof TablePagination>,
-  'component'
->;
 
 export interface RobotTableProps extends TableProps {
   /**

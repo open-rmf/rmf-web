@@ -18,14 +18,16 @@ class LiftHealth(BasicHealth):
 
 
 class LiftState(rmf_lift_msgs.LiftState):
-    available_modes: list[int]
+    available_modes: list[int]  # pyright: ignore [reportIncompatibleVariableOverride]
 
     @staticmethod
     def from_tortoise(tortoise: ttm.LiftState) -> "LiftState":
         return LiftState(**tortoise.data)
 
     async def save(self) -> None:
-        await ttm.LiftState.update_or_create({"data": self.dict()}, id_=self.lift_name)
+        await ttm.LiftState.update_or_create(
+            {"data": self.model_dump()}, id_=self.lift_name
+        )
 
 
 class LiftRequest(BaseModel):

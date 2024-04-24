@@ -151,7 +151,7 @@ export class NegotiationStatusManager extends TrajectorySocketManager {
 
   removeOldConflicts(): void {
     const retainCount = 50;
-    let resolved: string[] = [];
+    const resolved: string[] = [];
 
     for (const [version, status] of Object.entries(this._conflicts)) {
       if (status.resolved & ResolveState.RESOLVED) resolved.push(version);

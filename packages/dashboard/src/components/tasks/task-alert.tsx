@@ -1,8 +1,8 @@
 import React from 'react';
 import {
-  ApiServerModelsTortoiseModelsAlertsAlertLeaf,
+  TortoiseContribPydanticCreatorApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
   LogEntry,
-  Status,
+  ApiServerModelsRmfApiTaskStateStatus as TaskStatus,
   TaskEventLog,
   TaskState,
   Tier,
@@ -12,8 +12,6 @@ import { RmfAppContext } from '../rmf-app';
 import { AlertContent, AlertDialog } from 'react-components';
 import { base } from 'react-components';
 import { TaskInspector } from './task-inspector';
-
-type Alert = ApiServerModelsTortoiseModelsAlertsAlertLeaf;
 
 interface TaskAlert extends TaskEventLog {
   title: string;
@@ -30,18 +28,18 @@ export interface TaskAlertDialogProps {
 
 export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): JSX.Element {
   const getErrorLogEntries = (logs: TaskEventLog) => {
-    let errorLogs: LogEntry[] = [];
+    const errorLogs: LogEntry[] = [];
     if (logs.log) {
       errorLogs.concat(logs.log.filter((entry) => entry.tier === Tier.Error));
     }
 
     if (logs.phases) {
-      for (let phase of Object.values(logs.phases)) {
+      for (const phase of Object.values(logs.phases)) {
         if (phase.log) {
           errorLogs.concat(phase.log.filter((entry) => entry.tier === Tier.Error));
         }
         if (phase.events) {
-          for (let eventLogs of Object.values(phase.events)) {
+          for (const eventLogs of Object.values(phase.events)) {
             errorLogs.concat(eventLogs.filter((entry) => entry.tier === Tier.Error));
           }
         }
@@ -51,7 +49,7 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
   };
 
   const getAlertTitle = (state: TaskState, errorLogEntries: LogEntry[]) => {
-    if (state.status && state.status === Status.Completed) {
+    if (state.status && state.status === TaskStatus.Completed) {
       return 'Task completed';
     }
     if (errorLogEntries.length !== 0) {
@@ -61,7 +59,7 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
   };
 
   const getTaskProgress = (state: TaskState) => {
-    if (state.status && state.status === Status.Completed) {
+    if (state.status && state.status === TaskStatus.Completed) {
       return 1;
     }
 
@@ -86,7 +84,7 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
     // Second field would be any errors found
     if (errorLogEntries.length !== 0) {
       let consolidatedErrorMessages = '';
-      for (let entry of errorLogEntries) {
+      for (const entry of errorLogEntries) {
         consolidatedErrorMessages += `${new Date(entry.unix_millis_time).toLocaleString()} - ${
           entry.text
         }
@@ -104,7 +102,7 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
 
     // If the task happen to complete anyway, we mention that it has completed
     // in a separate log
-    if (state.status && state.status === Status.Completed) {
+    if (state.status && state.status === TaskStatus.Completed) {
       const completionTimeString = state.unix_millis_finish_time
         ? `${new Date(state.unix_millis_finish_time).toLocaleString()} - `
         : '';
@@ -124,11 +122,11 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
   const getAlertColor = (state: TaskState, errorLogs: LogEntry[]) => {
     if (state.status) {
       switch (state.status) {
-        case Status.Completed:
+        case TaskStatus.Completed:
           return base.palette.success.dark;
 
-        case Status.Error:
-        case Status.Failed:
+        case TaskStatus.Error:
+        case TaskStatus.Failed:
           return base.palette.error.dark;
 
         default:

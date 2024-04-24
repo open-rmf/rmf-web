@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -9,17 +9,10 @@ from ..rmf_task_msgs.TaskProfile import TaskProfile
 
 
 class BidNotice(pydantic.BaseModel):
-    task_profile: TaskProfile = TaskProfile()  # rmf_task_msgs/TaskProfile
-    time_window: Duration = Duration()  # builtin_interfaces/Duration
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "task_profile",
-                "time_window",
-            ],
-        }
+    task_profile: TaskProfile  # rmf_task_msgs/TaskProfile
+    time_window: Duration  # builtin_interfaces/Duration
 
 
 # # This message is published by the Task Dispatcher node to notify all

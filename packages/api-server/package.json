@@ -11,7 +11,7 @@
     "test": "../../scripts/pipenv run python scripts/test.py",
     "test:cov": "../../scripts/pipenv run python -m coverage run scripts/test.py",
     "test:report": "../../scripts/pipenv run python -m coverage html && xdg-open htmlcov/index.html",
-    "lint": "../../scripts/pipenv run pyright && ../../scripts/pipenv run pylint api_server --ignore=ros_pydantic,rmf_api",
+    "lint": "../../scripts/pipenv run pyright && ../../scripts/pipenv run pylint --rcfile=../../.pylintrc api_server --ignore=ros_pydantic,rmf_api,rmf_ros2",
     "generate-models": "./generate-models.sh",
     "generate-docs": "RMF_API_SERVER_CONFIG=scripts/docs_config.py ../../scripts/pipenv run python scripts/extract_docs.py -o docs"
   },

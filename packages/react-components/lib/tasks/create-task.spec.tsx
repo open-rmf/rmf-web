@@ -9,13 +9,13 @@
 // describe('CreateTaskForm', () => {
 //   describe('submit tasks', () => {
 //     it('is called with correct clean task data when form is submitted', async () => {
-//       const spy = jasmine.createSpy().and.resolveTo(undefined);
+//       const spy = jest.fn().and.resolveTo(undefined);
 //       const root = render(<CreateTaskForm open submitTasks={spy} />);
-//       userEvent.click(getTaskTypeEl(root));
-//       userEvent.click(root.getByRole('option', { name: 'Clean' }));
+//       await userEvent.click(getTaskTypeEl(root));
+//       await userEvent.click(root.getByRole('option', { name: 'Clean' }));
 //       await waitForElementToBeRemoved(() => root.getByRole('option', { name: 'Clean' }));
-//       userEvent.type(root.getByLabelText('Cleaning Zone'), 'test_zone');
-//       userEvent.click(root.getByText('Submit'));
+//       await userEvent.type(root.getByLabelText('Cleaning Zone'), 'test_zone');
+//       await userEvent.click(root.getByText('Submit'));
 
 //       expect(spy).toHaveBeenCalledTimes(1);
 //       const task = spy.calls.argsFor(0)[0][0] as SubmitTask;
@@ -23,17 +23,17 @@
 //     });
 
 //     it('is called with correct loop task data when form is submitted', async () => {
-//       const spy = jasmine.createSpy().and.resolveTo(undefined);
+//       const spy = jest.fn().and.resolveTo(undefined);
 //       const root = render(<CreateTaskForm open submitTasks={spy} />);
-//       userEvent.click(getTaskTypeEl(root));
-//       userEvent.click(root.getByRole('option', { name: 'Loop' }));
+//       await userEvent.click(getTaskTypeEl(root));
+//       await userEvent.click(root.getByRole('option', { name: 'Loop' }));
 //       await waitForElementToBeRemoved(() => root.getByRole('option', { name: 'Clean' }));
-//       userEvent.type(root.getByLabelText('Start Location'), 'start');
-//       userEvent.type(root.getByLabelText('Finish Location'), 'finish');
+//       await userEvent.type(root.getByLabelText('Start Location'), 'start');
+//       await userEvent.type(root.getByLabelText('Finish Location'), 'finish');
 //       const loopsInput = root.getByLabelText('Loops');
-//       userEvent.clear(loopsInput);
-//       userEvent.type(loopsInput, '2');
-//       userEvent.click(root.getByText('Submit'));
+//       await userEvent.clear(loopsInput);
+//       await userEvent.type(loopsInput, '2');
+//       await userEvent.click(root.getByText('Submit'));
 
 //       expect(spy).toHaveBeenCalledTimes(1);
 //       const task = spy.calls.argsFor(0)[0][0] as SubmitTask;
@@ -44,16 +44,16 @@
 //     });
 
 //     it('is called with correct delivery task data when form is submitted', async () => {
-//       const spy = jasmine.createSpy().and.resolveTo(undefined);
+//       const spy = jest.fn().and.resolveTo(undefined);
 //       const root = render(<CreateTaskForm open submitTasks={spy} />);
-//       userEvent.click(getTaskTypeEl(root));
-//       userEvent.click(root.getByRole('option', { name: 'Delivery' }));
+//       await userEvent.click(getTaskTypeEl(root));
+//       await userEvent.click(root.getByRole('option', { name: 'Delivery' }));
 //       await waitForElementToBeRemoved(() => root.getByRole('option', { name: 'Delivery' }));
-//       userEvent.type(root.getByLabelText('Pickup Location'), 'pickup_location');
-//       userEvent.type(root.getByLabelText('Dispenser'), 'pickup_dispenser');
-//       userEvent.type(root.getByLabelText('Dropoff Location'), 'dropoff_location');
-//       userEvent.type(root.getByLabelText('Ingestor'), 'dropoff_ingestor');
-//       userEvent.click(root.getByText('Submit'));
+//       await userEvent.type(root.getByLabelText('Pickup Location'), 'pickup_location');
+//       await userEvent.type(root.getByLabelText('Dispenser'), 'pickup_dispenser');
+//       await userEvent.type(root.getByLabelText('Dropoff Location'), 'dropoff_location');
+//       await userEvent.type(root.getByLabelText('Ingestor'), 'dropoff_ingestor');
+//       await userEvent.click(root.getByText('Submit'));
 
 //       expect(spy).toHaveBeenCalledTimes(1);
 //       const task = spy.calls.argsFor(0)[0][0] as SubmitTask;
@@ -66,25 +66,25 @@
 //   });
 
 //   it('onClose is called when cancel button is clicked', () => {
-//     const spy = jasmine.createSpy();
+//     const spy = jest.fn();
 //     const root = render(<CreateTaskForm open onClose={spy} />);
-//     userEvent.click(root.getByText('Cancel'));
+//     await userEvent.click(root.getByText('Cancel'));
 //     expect(spy).toHaveBeenCalledTimes(1);
 //   });
 
 //   it('onFail is called when submitTasks fails', async () => {
-//     const submitSpy = jasmine.createSpy().and.rejectWith(new Error('error!!'));
-//     const failSpy = jasmine.createSpy();
+//     const submitSpy = jest.fn().and.rejectWith(new Error('error!!'));
+//     const failSpy = jest.fn();
 //     const root = render(<CreateTaskForm open submitTasks={submitSpy} onFail={failSpy} />);
-//     userEvent.click(root.getByText('Submit'));
+//     await userEvent.click(root.getByText('Submit'));
 //     await new Promise((res) => setTimeout(res, 0));
 //     expect(failSpy).toHaveBeenCalledTimes(1);
 //   });
 
 //   it('tasksFromFile is called when select file button is clicked', () => {
-//     const spy = jasmine.createSpy().and.resolveTo([]);
+//     const spy = jest.fn().and.resolveTo([]);
 //     const root = render(<CreateTaskForm open tasksFromFile={spy} />);
-//     userEvent.click(root.getByLabelText('Select File'));
+//     await userEvent.click(root.getByLabelText('Select File'));
 //     expect(spy).toHaveBeenCalledTimes(1);
 //   });
 
@@ -102,7 +102,7 @@
 //       task2.task_type = RmfTaskType.TYPE_LOOP;
 //       const tasksFromFile = () => Promise.resolve([task1, task2]);
 //       const root = render(<CreateTaskForm open tasksFromFile={tasksFromFile} />);
-//       userEvent.click(root.getByLabelText('Select File'));
+//       await userEvent.click(root.getByLabelText('Select File'));
 
 //       const getTaskList = async () => root.findByLabelText('Tasks List');
 //       const getTaskItems = async () => within(await getTaskList()).getAllByRole('listitem');
@@ -126,10 +126,14 @@
 //       const { root, q } = mount();
 //       const tasks = await q.getTaskItems();
 //       expect(tasks.length).toBeGreaterThan(0);
-//       userEvent.click(tasks[0]);
+//       await userEvent.click(tasks[0]);
 //       within(getTaskTypeEl(root)).getByText('Clean');
-//       userEvent.click(tasks[1]);
+//       await userEvent.click(tasks[1]);
 //       within(getTaskTypeEl(root)).getByText('Loop');
 //     });
 //   });
 // });
+
+describe('CreateTaskForm', () => {
+  it('FIXME: CreateTaskForm tests are broken', () => {});
+});

@@ -4,7 +4,7 @@ import asyncio
 import base64
 import hashlib
 import logging
-from typing import Any, List, Optional
+from typing import Any, List, Optional, cast
 
 import rclpy
 import rclpy.client
@@ -47,13 +47,13 @@ def process_building_map(
     for i, level in enumerate(rmf_building_map.levels):
         level: RmfLevel
         for j, image in enumerate(level.images):
-            image: RmfAffineImage
+            image = cast(RmfAffineImage, image)
             # look at non-crypto hashes if we need more performance
             sha1_hash = hashlib.sha1()
             sha1_hash.update(image.data)
             fingerprint = base64.b32encode(sha1_hash.digest()).lower().decode()
             relpath = f"{rmf_building_map.name}/{level.name}-{image.name}.{fingerprint}.{image.encoding}"  # pylint: disable=line-too-long
-            urlpath = cached_files.add_file(image.data, relpath)
+            urlpath = cached_files.add_file(cast(bytes, image.data), relpath)
             processed_map["levels"][i]["images"][j]["data"] = urlpath
     return BuildingMap(**processed_map)
 
@@ -116,7 +116,9 @@ class RmfGateway:
         lift_states_sub = ros_node().create_subscription(
             RmfLiftState,
             "lift_states",
-            lambda msg: rmf_events.lift_states.on_next(convert_lift_state(msg)),
+            lambda msg: rmf_events.lift_states.on_next(
+                convert_lift_state(cast(RmfLiftState, msg))
+            ),
             10,
         )
         self._subscriptions.append(lift_states_sub)
@@ -143,7 +145,7 @@ class RmfGateway:
             RmfBuildingMap,
             "map",
             lambda msg: rmf_events.building_map.on_next(
-                process_building_map(msg, self.cached_files)
+                process_building_map(cast(RmfBuildingMap, msg), self.cached_files)
             ),
             rclpy.qos.QoSProfile(
                 history=rclpy.qos.HistoryPolicy.KEEP_ALL,

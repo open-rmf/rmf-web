@@ -63,9 +63,9 @@ export const RobotInfoApp = createMicroApp('Robot Info', () => {
       {robotState ? (
         <RobotInfo
           robotName={robotState.name || 'unknown'}
-          assignedTask={robotState.task_id}
-          battery={robotState.battery && +robotState.battery.toFixed(2)}
-          estFinishTime={taskState?.unix_millis_finish_time}
+          assignedTask={robotState.task_id ?? undefined}
+          battery={robotState.battery != null ? +robotState.battery.toFixed(2) : undefined}
+          estFinishTime={taskState?.unix_millis_finish_time ?? undefined}
           taskProgress={taskProgress}
           taskStatus={taskState?.status}
         />

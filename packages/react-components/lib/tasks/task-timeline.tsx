@@ -15,7 +15,12 @@ import {
 } from '@mui/lab';
 import { styled } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { EventState, Phase, Status, TaskState } from 'api-client';
+import {
+  EventState,
+  Phase,
+  ApiServerModelsRmfApiTaskStateStatus as TaskStatus,
+  TaskState,
+} from 'api-client';
 import React from 'react';
 
 interface TimeLinePropsWithRef extends TimelineProps {
@@ -84,28 +89,28 @@ function colorDot(phase: Phase | undefined): TimelineDotProps['color'] {
   if (root_event.status == null) return 'error';
 
   switch (root_event.status) {
-    case Status.Uninitialized:
-    case Status.Blocked:
-    case Status.Error:
-    case Status.Failed:
+    case TaskStatus.Uninitialized:
+    case TaskStatus.Blocked:
+    case TaskStatus.Error:
+    case TaskStatus.Failed:
       return 'error';
 
-    case Status.Queued:
-    case Status.Standby:
+    case TaskStatus.Queued:
+    case TaskStatus.Standby:
       return 'grey';
 
-    case Status.Underway:
+    case TaskStatus.Underway:
       return 'success';
 
-    case Status.Skipped:
-    case Status.Canceled:
-    case Status.Killed:
+    case TaskStatus.Skipped:
+    case TaskStatus.Canceled:
+    case TaskStatus.Killed:
       return 'secondary';
 
-    case Status.Delayed:
+    case TaskStatus.Delayed:
       return 'warning';
 
-    case Status.Completed:
+    case TaskStatus.Completed:
       return 'primary';
 
     default:
@@ -136,7 +141,7 @@ function RenderPhase(phase: Phase) {
           {phase.id}. {phase.category}
         </Typography>
         <TreeView defaultCollapseIcon={<ExpandMoreIcon />} defaultExpandIcon={<ChevronRightIcon />}>
-          {NestedEvents(phase.events, phase.final_event_id)}
+          {phase.events && NestedEvents(phase.events, phase.final_event_id)}
         </TreeView>
       </TimelineContent>
     </TimelineItem>

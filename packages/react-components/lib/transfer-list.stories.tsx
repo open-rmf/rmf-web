@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import { Paper } from '@mui/material';
 import { TransferList, TransferListProps } from './transfer-list';
@@ -26,7 +26,7 @@ export default {
       defaultValue: 'Choices',
     },
   },
-} as Meta;
+} satisfies Meta;
 
 const numbers: Record<string, number> = {
   one: 1,
@@ -39,7 +39,7 @@ const numbers: Record<string, number> = {
   eight: 8,
 };
 
-export const TransferListStory: Story<TransferListProps> = (args) => {
+export const TransferListStory: StoryFn<TransferListProps> = (args: TransferListProps) => {
   const [leftItems, setLeftItems] = React.useState(['one', 'two', 'three', 'four']);
   const [rightItems, setRightItems] = React.useState(['five', 'six', 'seven', 'eight']);
   return (

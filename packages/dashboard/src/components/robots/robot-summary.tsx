@@ -10,14 +10,17 @@ import {
   LinearProgress,
   LinearProgressProps,
   TextField,
-  Theme,
   Typography,
+  useTheme,
 } from '@mui/material';
-import { makeStyles, createStyles } from '@mui/styles';
 import React from 'react';
 import { RmfAppContext } from '../rmf-app';
 import { RobotTableData, base } from 'react-components';
-import { RobotState, Status2, TaskState } from 'api-client';
+import {
+  RobotState,
+  ApiServerModelsRmfApiRobotStateStatus as RobotStatus,
+  TaskState,
+} from 'api-client';
 import { EMPTY, combineLatest, mergeMap, of } from 'rxjs';
 import { TaskInspector } from '../tasks/task-inspector';
 import {
@@ -33,27 +36,16 @@ import {
   BatteryUnknown,
 } from '@mui/icons-material';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    textField: {
-      background: theme.palette.background.default,
-      '&:hover': {
-        backgroundColor: theme.palette.background.default,
-      },
-    },
-  }),
-);
-
-const setTaskDialogColor = (robotStatus: Status2 | undefined) => {
+const setTaskDialogColor = (robotStatus?: RobotStatus | null) => {
   if (!robotStatus) {
     return base.palette.background.default;
   }
 
   switch (robotStatus) {
-    case Status2.Error:
+    case RobotStatus.Error:
       return base.palette.error.dark;
 
-    case Status2.Working:
+    case RobotStatus.Working:
       return base.palette.success.dark;
 
     default:
@@ -82,7 +74,7 @@ interface RobotSummaryProps {
 }
 
 const showBatteryIcon = (robot: RobotState, robotBattery: number) => {
-  if (robot.status === Status2.Charging) {
+  if (robot.status === RobotStatus.Charging) {
     return <BatteryChargingFull />;
   }
 
@@ -108,7 +100,6 @@ const showBatteryIcon = (robot: RobotState, robotBattery: number) => {
 };
 
 export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) => {
-  const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
 
   const [isOpen, setIsOpen] = React.useState(true);
@@ -213,6 +204,8 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
       );
     }
 
+    const theme = useTheme();
+
     return (
       <>
         {contents.map((message, index) => (
@@ -222,7 +215,12 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
               id="standard-size-small"
               size="small"
               variant="filled"
-              InputProps={{ readOnly: true, className: classes.textField }}
+              sx={{
+                background: theme.palette.background.default,
+                '&:hover': {
+                  backgroundColor: theme.palette.background.default,
+                },
+              }}
               fullWidth={true}
               multiline
               maxRows={4}

@@ -14,20 +14,21 @@ describe('Tasks table', () => {
 
   tasks.data = [makeTaskState('task_0'), makeTaskState('task_1')];
   let root: RenderResult;
-  let mockAddMoreRows: ReturnType<typeof jasmine.createSpy>;
+  let mockAddMoreRows: ReturnType<typeof jest.fn>;
 
   beforeEach(() => {
     const setFilterFields: FilterFields = {
       model: undefined,
     };
 
-    mockAddMoreRows = jasmine.createSpy();
+    mockAddMoreRows = jest.fn();
     root = render(
       <TaskDataGridTable
         tasks={tasks}
         onPageChange={mockAddMoreRows}
         onPageSizeChange={mockAddMoreRows}
         setFilterFields={() => setFilterFields}
+        setSortFields={() => {}}
       />,
     );
   });

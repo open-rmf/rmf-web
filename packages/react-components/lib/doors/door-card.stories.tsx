@@ -1,5 +1,5 @@
 import { CardActions } from '@mui/material';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import { Door, DoorMode } from 'rmf-models';
 import { DoorCard, DoorCardProps } from './door-card';
@@ -7,9 +7,9 @@ import { DoorControls } from './door-controls';
 
 export default {
   title: 'Door Card',
-} as Meta;
+} satisfies Meta;
 
-export const Default: Story<DoorCardProps> = (args) => <DoorCard sx={{ width: 200 }} {...args} />;
+export const Default: StoryFn<DoorCardProps> = (args) => <DoorCard sx={{ width: 200 }} {...args} />;
 Default.args = {
   name: 'main_door',
   level: 'L1',
@@ -17,7 +17,7 @@ Default.args = {
   type: Door.DOOR_TYPE_SINGLE_SWING,
 };
 
-export const WithControls: Story<DoorCardProps> = (args) => (
+export const WithControls: StoryFn<DoorCardProps> = (args) => (
   <DoorCard sx={{ width: 200 }} {...args}>
     <CardActions sx={{ justifyContent: 'center' }}>
       <DoorControls />

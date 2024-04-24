@@ -1,22 +1,15 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class ReviveTask_Request(pydantic.BaseModel):
-    requester: str = ""  # string
-    task_id: str = ""  # string
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "requester",
-                "task_id",
-            ],
-        }
+    requester: str  # string
+    task_id: str  # string
 
 
 # # Revive a previously cancelled or failed task. This will reinitiate

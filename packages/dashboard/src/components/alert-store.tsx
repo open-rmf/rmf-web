@@ -1,4 +1,4 @@
-import { ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert } from 'api-client';
+import { TortoiseContribPydanticCreatorApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert } from 'api-client';
 import { AppEvents } from './app-events';
 import React from 'react';
 import { RmfAppContext } from './rmf-app';

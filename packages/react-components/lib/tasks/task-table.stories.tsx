@@ -1,5 +1,5 @@
 import { Paper, TableContainer, TablePagination } from '@mui/material';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import { TaskTable, TaskTableProps } from './task-table';
 import { makeTaskState } from './test-data.spec';
@@ -21,9 +21,9 @@ export default {
       },
     },
   },
-} as Meta;
+} satisfies Meta;
 
-export const Table: Story<TaskTableProps> = (args) => {
+export const Table: StoryFn<TaskTableProps> = (args) => {
   const [page, setPage] = React.useState(0);
   const count = page >= args.tasks.length / 10 - 1 ? args.tasks.length : -1;
 

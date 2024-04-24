@@ -3,12 +3,12 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from pydantic import Field, RootModel
 
 from . import dispatch_task_response
 
 
-class RobotTaskResponse(BaseModel):
-    __root__: dispatch_task_response.TaskDispatchResponse = Field(
+class RobotTaskResponse(RootModel[dispatch_task_response.TaskDispatchResponse]):
+    root: dispatch_task_response.TaskDispatchResponse = Field(
         ..., description="Response to a robot task request", title="Robot Task Response"
     )

@@ -1,11 +1,11 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import { OnFilterChangeEvent, SimpleFilter } from './simple-filter';
 
 export default {
   title: 'Simple Filter',
   component: SimpleFilter,
-} as Meta;
+} satisfies Meta;
 
 function SimpleFilterHandler(): JSX.Element {
   const [filter, setFilter] = React.useState('');
@@ -17,6 +17,6 @@ function SimpleFilterHandler(): JSX.Element {
   return <SimpleFilter value={filter} onChange={onChange} />;
 }
 
-export const SimpleFilterStory: Story = (args) => {
+export const SimpleFilterStory: StoryFn = (args) => {
   return <SimpleFilterHandler {...args} />;
 };

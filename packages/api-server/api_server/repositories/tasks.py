@@ -34,22 +34,23 @@ class TaskRepository:
 
     async def save_task_request(self, task_id: str, task_request: TaskRequest) -> None:
         await DbTaskRequest.update_or_create(
-            {"request": task_request.json()}, id_=task_id
+            {"request": task_request.model_dump_json()}, id_=task_id
         )
 
     async def get_task_request(self, task_id: str) -> Optional[TaskRequest]:
         result = await DbTaskRequest.get_or_none(id_=task_id)
         if result is None:
             return None
+        if not isinstance(result.request, dict):
+            logger.error(f"request is not a dict: {type(result.request)}")
+            raise HTTPException(500)
         return TaskRequest(**result.request)
 
     async def save_task_state(self, task_state: TaskState) -> None:
         await DbTaskState.update_or_create(
             {
-                "data": task_state.json(),
-                "category": task_state.category.__root__
-                if task_state.category
-                else None,
+                "data": task_state.model_dump_json(),
+                "category": task_state.category.root if task_state.category else None,
                 "assigned_to": task_state.assigned_to.name
                 if task_state.assigned_to
                 else None,
@@ -86,6 +87,9 @@ class TaskRepository:
         result = await DbTaskState.get_or_none(id_=task_id)
         if result is None:
             return None
+        if not isinstance(result.data, dict):
+            logger.error(f"data is not a dict: {type(result.data)}")
+            raise HTTPException(500)
         return TaskState(**result.data)
 
     async def get_task_log(
@@ -122,7 +126,7 @@ class TaskRepository:
                 events[db_event.event] = [LogEntry(**dict(x)) for x in db_event.log]
             phase.events = events
             phases[db_phase.phase] = phase
-        return TaskEventLog.construct(
+        return TaskEventLog.model_construct(
             task_id=result.task_id,
             log=[LogEntry(**dict(x)) for x in result.log],
             phases=phases,
@@ -141,7 +145,7 @@ class TaskRepository:
             )[0]
             for log in logs:
                 await ttm.TaskEventLogPhasesEventsLog.create(
-                    event=db_event, **log.dict()
+                    event=db_event, **log.model_dump()
                 )
 
     async def _savePhaseLogs(
@@ -157,7 +161,7 @@ class TaskRepository:
                 for log in phase.log:
                     await ttm.TaskEventLogPhasesLog.create(
                         phase=db_phase,
-                        **log.dict(),
+                        **log.model_dump(),
                     )
             if phase.events:
                 await self._saveEventLogs(db_phase, phase.events)
@@ -207,8 +211,8 @@ class TaskRepository:
             task_state.phases = {
                 **task_state.phases,
                 next_phase_key: Phase(
-                    id=Id(__root__=next_phase_key),
-                    category=Category(__root__="Task completed"),
+                    id=Id(root=next_phase_key),
+                    category=Category(root="Task completed"),
                     detail=None,
                     unix_millis_start_time=None,
                     unix_millis_finish_time=None,

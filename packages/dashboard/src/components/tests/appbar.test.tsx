@@ -1,5 +1,4 @@
 import { waitFor } from '@testing-library/react';
-import { act } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { StubAuthenticator, UserProfile, UserProfileContext } from 'rmf-auth';
@@ -55,7 +54,7 @@ describe('AppBar', () => {
     expect(root.getByLabelText('user-btn')).toBeTruthy();
   });
 
-  test('logout is triggered when logout button is clicked', () => {
+  test('logout is triggered when logout button is clicked', async () => {
     const authenticator = new StubAuthenticator('test');
     const appConfig: AppConfig = {
       authenticator,
@@ -77,8 +76,8 @@ describe('AppBar', () => {
         </Base>
       </AppConfigContext.Provider>,
     );
-    userEvent.click(root.getByLabelText('user-btn'));
-    userEvent.click(root.getByText('Logout'));
+    await userEvent.click(root.getByLabelText('user-btn'));
+    await userEvent.click(root.getByText('Logout'));
     expect(spy).toHaveBeenCalledTimes(1);
   });
 
@@ -86,7 +85,12 @@ describe('AppBar', () => {
     const robotResourcesMgr = new RobotResourceManager({});
     const logoResourcesMgr = new LogoResourceManager({});
     logoResourcesMgr.getHeaderLogoPath = () => Promise.resolve('/test-logo.png');
-    const resourceMgr: ResourceManager = { robots: robotResourcesMgr, logos: logoResourcesMgr };
+    const resourceMgr: ResourceManager = {
+      robots: robotResourcesMgr,
+      logos: logoResourcesMgr,
+      helpLink: '',
+      reportIssue: '',
+    };
 
     const root = render(
       <ResourcesContext.Provider value={resourceMgr}>

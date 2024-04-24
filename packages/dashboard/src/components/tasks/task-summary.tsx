@@ -4,31 +4,19 @@ import {
   Button,
   LinearProgress,
   LinearProgressProps,
-  Theme,
   Typography,
   Divider,
   TextField,
+  useTheme,
 } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { makeStyles, createStyles } from '@mui/styles';
-import { Status, TaskState } from 'api-client';
+import { ApiServerModelsRmfApiTaskStateStatus as TaskStatus, TaskState } from 'api-client';
 import { base } from 'react-components';
 import { TaskInspector } from './task-inspector';
 import { RmfAppContext } from '../rmf-app';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    textField: {
-      background: theme.palette.background.default,
-      '&:hover': {
-        backgroundColor: theme.palette.background.default,
-      },
-    },
-  }),
-);
 
 const LinearProgressWithLabel = (props: LinearProgressProps & { value: number }) => {
   return (
@@ -45,19 +33,19 @@ const LinearProgressWithLabel = (props: LinearProgressProps & { value: number })
   );
 };
 
-const setTaskDialogColor = (taskStatus: Status | undefined) => {
+const setTaskDialogColor = (taskStatus?: TaskStatus | null) => {
   if (!taskStatus) {
     return base.palette.background.default;
   }
 
   switch (taskStatus) {
-    case Status.Failed:
+    case TaskStatus.Failed:
       return base.palette.error.dark;
 
-    case Status.Underway:
+    case TaskStatus.Underway:
       return base.palette.success.dark;
 
-    case Status.Queued:
+    case TaskStatus.Queued:
       return base.palette.info.main;
 
     default:
@@ -71,7 +59,6 @@ export interface TaskSummaryProps {
 }
 
 export const TaskSummary = React.memo((props: TaskSummaryProps) => {
-  const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
 
   const { onClose, task } = props;
@@ -139,6 +126,8 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
       },
     ];
 
+    const theme = useTheme();
+
     return (
       <>
         {contents.map((message, index) => (
@@ -148,7 +137,12 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
               id="standard-size-small"
               size="small"
               variant="filled"
-              InputProps={{ readOnly: true, className: classes.textField }}
+              sx={{
+                background: theme.palette.background.default,
+                '&:hover': {
+                  backgroundColor: theme.palette.background.default,
+                },
+              }}
               fullWidth={true}
               multiline
               maxRows={4}

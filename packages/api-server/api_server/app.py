@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import os
 import signal
 import threading
@@ -51,88 +52,24 @@ async def on_sio_connect(sid: str, _environ: dict, auth: dict | None = None) -> 
         return False
 
 
-app = FastIO(
-    title="RMF API Server",
-    socketio_connect=on_sio_connect,
-    docs_url=None,
-    redoc_url=None,
-)
-
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-app.mount(
-    "/static",
-    StaticFiles(
-        directory=os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
-    ),
-    name="static",
-)
-
-os.makedirs(app_config.cache_directory, exist_ok=True)
-app.mount(
-    "/cache",
-    StaticFiles(directory=app_config.cache_directory),
-    name="cache",
-)
-
 # will be called in reverse order on app shutdown
+# TODO: convert them all to contexts
 shutdown_cbs: list[Union[Coroutine[Any, Any, Any], Callable[[], None]]] = []
 
-rmf_bookkeeper = RmfBookKeeper(rmf_events, logger=logger.getChild("BookKeeper"))
 
-app.include_router(routes.main_router)
-app.include_router(
-    routes.alerts_router, prefix="/alerts", dependencies=[Depends(user_dep)]
-)
-app.include_router(
-    routes.beacons_router, prefix="/beacons", dependencies=[Depends(user_dep)]
-)
-app.include_router(
-    routes.building_map_router, prefix="/building_map", dependencies=[Depends(user_dep)]
-)
-app.include_router(
-    routes.doors_router, prefix="/doors", dependencies=[Depends(user_dep)]
-)
-app.include_router(
-    routes.lifts_router, prefix="/lifts", dependencies=[Depends(user_dep)]
-)
-app.include_router(
-    routes.tasks_router, prefix="/tasks", dependencies=[Depends(user_dep)]
-)
-app.include_router(
-    routes.scheduled_tasks.router,
-    prefix="/scheduled_tasks",
-    dependencies=[Depends(user_dep)],
-)
-app.include_router(
-    routes.favorite_tasks_router,
-    prefix="/favorite_tasks",
-    dependencies=[Depends(user_dep)],
-)
-app.include_router(
-    routes.dispensers_router, prefix="/dispensers", dependencies=[Depends(user_dep)]
-)
-app.include_router(
-    routes.ingestors_router, prefix="/ingestors", dependencies=[Depends(user_dep)]
-)
-app.include_router(
-    routes.fleets_router, prefix="/fleets", dependencies=[Depends(user_dep)]
-)
-app.include_router(
-    routes.admin_router, prefix="/admin", dependencies=[Depends(user_dep)]
-)
-app.include_router(routes.internal_router, prefix="/_internal")
+async def shutdown():
+    while shutdown_cbs:
+        cb = shutdown_cbs.pop()
+        if is_coroutine(cb):
+            await cb
+        elif callable(cb):
+            cb()
+
+    logger.info("shutdown app")
 
 
-@app.on_event("startup")
-async def on_startup():
+@contextlib.asynccontextmanager
+async def lifespan(_app: FastIO):
     loop = asyncio.get_event_loop()
 
     await Tortoise.init(
@@ -152,7 +89,7 @@ async def on_startup():
     # "locked up" as some dependencies like tortoise does not allow python to exit until
     # it is closed "gracefully".
     def on_signal(sig, frame):
-        task = loop.create_task(on_shutdown())
+        task = loop.create_task(shutdown())
         if not loop.is_running():
             loop.run_until_complete(task)
         if sig == signal.SIGINT and callable(prev_sigint):
@@ -202,17 +139,88 @@ async def on_startup():
     ros.spin_background()
     logger.info("started app")
 
+    yield
 
-@app.on_event("shutdown")
-async def on_shutdown():
-    while shutdown_cbs:
-        cb = shutdown_cbs.pop()
-        if is_coroutine(cb):
-            await cb
-        elif callable(cb):
-            cb()
+    await shutdown()
 
-    logger.info("shutdown app")
+
+app = FastIO(
+    title="RMF API Server",
+    lifespan=lifespan,
+    socketio_connect=on_sio_connect,
+    docs_url=None,
+    redoc_url=None,
+    separate_input_output_schemas=False,
+)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.mount(
+    "/static",
+    StaticFiles(
+        directory=os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+    ),
+    name="static",
+)
+
+os.makedirs(app_config.cache_directory, exist_ok=True)
+app.mount(
+    "/cache",
+    StaticFiles(directory=app_config.cache_directory),
+    name="cache",
+)
+
+rmf_bookkeeper = RmfBookKeeper(rmf_events, logger=logger.getChild("BookKeeper"))
+
+app.include_router(routes.main_router)
+app.include_router(
+    routes.alerts_router, prefix="/alerts", dependencies=[Depends(user_dep)]
+)
+app.include_router(
+    routes.beacons_router, prefix="/beacons", dependencies=[Depends(user_dep)]
+)
+app.include_router(
+    routes.building_map_router, prefix="/building_map", dependencies=[Depends(user_dep)]
+)
+app.include_router(
+    routes.doors_router, prefix="/doors", dependencies=[Depends(user_dep)]
+)
+app.include_router(
+    routes.lifts_router, prefix="/lifts", dependencies=[Depends(user_dep)]
+)
+app.include_router(
+    routes.tasks_router, prefix="/tasks", dependencies=[Depends(user_dep)]
+)
+app.include_router(
+    routes.scheduled_tasks.router,
+    prefix="/scheduled_tasks",
+    dependencies=[Depends(user_dep)],
+)
+app.include_router(
+    routes.favorite_tasks_router,
+    prefix="/favorite_tasks",
+    dependencies=[Depends(user_dep)],
+)
+app.include_router(
+    routes.dispensers_router, prefix="/dispensers", dependencies=[Depends(user_dep)]
+)
+app.include_router(
+    routes.ingestors_router, prefix="/ingestors", dependencies=[Depends(user_dep)]
+)
+app.include_router(
+    routes.fleets_router, prefix="/fleets", dependencies=[Depends(user_dep)]
+)
+app.include_router(
+    routes.admin_router, prefix="/admin", dependencies=[Depends(user_dep)]
+)
+app.include_router(routes.internal_router, prefix="/_internal")
 
 
 @app.get("/docs", include_in_schema=False)

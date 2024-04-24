@@ -23,7 +23,7 @@ export const NavigationBar = (props: NavigationBarProps): JSX.Element => {
     <StyledTabs
       variant="scrollable"
       scrollButtons="auto"
-      value={value}
+      value={value || false}
       onChange={onTabChange}
       className={classes.tabsContainer}
       TabIndicatorProps={{ style: { backgroundColor: '#d32f2f' } }}

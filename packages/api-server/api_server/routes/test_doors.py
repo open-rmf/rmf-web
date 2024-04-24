@@ -1,5 +1,4 @@
 import asyncio
-from typing import cast
 from uuid import uuid4
 
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
@@ -34,8 +33,9 @@ class TestDoorsRoute(AppFixture):
         self.assertEqual(self.door_states[0].door_name, state["door_name"])
 
     def test_sub_door_state(self):
-        msg = next(self.subscribe_sio(f"/doors/{self.door_states[0].door_name}/state"))
-        self.assertEqual(self.door_states[0].door_name, cast(DoorState, msg).door_name)
+        with self.subscribe_sio(f"/doors/{self.door_states[0].door_name}/state") as sub:
+            msg = DoorState(**next(sub))
+            self.assertEqual(self.door_states[0].door_name, msg.door_name)
 
     def test_post_door_request(self):
         resp = self.client.post(

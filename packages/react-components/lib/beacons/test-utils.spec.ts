@@ -1,4 +1,4 @@
-import type { ApiServerModelsTortoiseModelsBeaconsBeaconStateLeaf as BeaconState } from 'api-client';
+import type { TortoiseContribPydanticCreatorApiServerModelsTortoiseModelsBeaconsBeaconStateLeaf as BeaconState } from 'api-client';
 
 export function makeBeaconState(state?: Partial<BeaconState>): BeaconState {
   return {

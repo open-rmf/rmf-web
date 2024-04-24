@@ -1,6 +1,6 @@
 from typing import List, Optional, Sequence, Tuple
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from tortoise.exceptions import IntegrityError
 from tortoise.query_utils import Prefetch
 from tortoise.transactions import in_transaction
@@ -24,6 +24,9 @@ class FleetRepository:
         result = await ttm.FleetState.get_or_none(name=name)
         if result is None:
             return None
+        if not isinstance(result.data, dict):
+            logger.error(f"data is not a dict: {type(result.data)}")
+            raise HTTPException(500)
         return FleetState(**result.data)
 
     async def get_fleet_log(
@@ -49,7 +52,7 @@ class FleetRepository:
         for db_robot in result.robots:
             robot = [LogEntry(**dict(db_log)) for db_log in db_robot.log]
             robots[db_robot.name] = robot
-        return FleetLog.construct(
+        return FleetLog.model_construct(
             name=result.name,
             log=[LogEntry(**dict(db_log)) for db_log in result.log],
             robots=robots,
@@ -58,7 +61,7 @@ class FleetRepository:
     async def save_fleet_state(self, fleet_state: FleetState) -> None:
         await ttm.FleetState.update_or_create(
             {
-                "data": fleet_state.json(),
+                "data": fleet_state.model_dump_json(),
             },
             name=fleet_state.name,
         )

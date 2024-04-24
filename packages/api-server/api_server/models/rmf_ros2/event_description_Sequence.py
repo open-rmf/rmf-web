@@ -5,32 +5,34 @@ from __future__ import annotations
 
 from typing import Any, List, Optional, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, RootModel
 
 
 class ActivityArrayItem(BaseModel):
-    category: Optional[str] = Field(None, description="The category of the activity")
+    category: Optional[str] = Field(
+        default=None, description="The category of the activity"
+    )
     description: Optional[Any] = Field(
-        None,
+        default=None,
         description="A description of the activity. This must match a schema supported by a fleet for the activity category.",
     )
 
 
-class ActivityArray(BaseModel):
-    __root__: List[ActivityArrayItem] = Field(..., ge=1.0)
+class ActivityArray(RootModel[List[ActivityArrayItem]]):
+    root: List[ActivityArrayItem] = Field(..., ge=1)
 
 
-class ActivitySequenceItem(BaseModel):
+class ActivitySequence1(BaseModel):
     activities: ActivityArray
     category: Optional[str] = Field(
-        None, description="Customize the category display for this sequence"
+        default=None, description="Customize the category display for this sequence"
     )
     detail: Optional[Any] = Field(
-        None, description="Customize the detail display for this sequence"
+        default=None, description="Customize the detail display for this sequence"
     )
 
 
-class ActivitySequence(BaseModel):
-    __root__: Union[ActivityArray, ActivitySequenceItem] = Field(
+class ActivitySequence(RootModel[Union[ActivityArray, ActivitySequence1]]):
+    root: Union[ActivityArray, ActivitySequence1] = Field(
         ..., description="A sequence of activities", title="Activity Sequence"
     )

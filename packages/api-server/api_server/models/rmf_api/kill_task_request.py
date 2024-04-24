@@ -15,5 +15,5 @@ class TaskKillRequest(BaseModel):
     )
     task_id: str = Field(..., description="Specify the task ID to kill")
     labels: Optional[List[str]] = Field(
-        None, description="Labels to describe the purpose of the kill"
+        default=None, description="Labels to describe the purpose of the kill"
     )

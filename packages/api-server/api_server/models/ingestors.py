@@ -25,4 +25,6 @@ class IngestorState(rmf_ingestor_msgs.IngestorState):
         return IngestorState(**tortoise.data)
 
     async def save(self) -> None:
-        await ttm.IngestorState.update_or_create({"data": self.dict()}, id_=self.guid)
+        await ttm.IngestorState.update_or_create(
+            {"data": self.model_dump()}, id_=self.guid
+        )

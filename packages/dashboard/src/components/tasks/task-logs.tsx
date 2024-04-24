@@ -1,5 +1,10 @@
 import { Box, Divider, Grid, Paper, Typography, useTheme } from '@mui/material';
-import { EventState, Status, TaskEventLog, TaskState } from 'api-client';
+import {
+  EventState,
+  ApiServerModelsRmfApiTaskStateStatus as TaskStatus,
+  TaskEventLog,
+  TaskState,
+} from 'api-client';
 import { format } from 'date-fns';
 
 interface TaskLogProps {
@@ -19,28 +24,28 @@ export function TaskLogs({ taskLog, taskState, title }: TaskLogProps) {
     if (event == null || event.status == null) return theme.palette.warning.light;
 
     switch (event.status) {
-      case Status.Uninitialized:
-      case Status.Blocked:
-      case Status.Error:
-      case Status.Failed:
+      case TaskStatus.Uninitialized:
+      case TaskStatus.Blocked:
+      case TaskStatus.Error:
+      case TaskStatus.Failed:
         return theme.palette.error.dark;
 
-      case Status.Queued:
-      case Status.Standby:
+      case TaskStatus.Queued:
+      case TaskStatus.Standby:
         return theme.palette.info.light;
 
-      case Status.Underway:
+      case TaskStatus.Underway:
         return theme.palette.success.light;
 
-      case Status.Delayed:
+      case TaskStatus.Delayed:
         return theme.palette.warning.main;
 
-      case Status.Skipped:
-      case Status.Canceled:
-      case Status.Killed:
+      case TaskStatus.Skipped:
+      case TaskStatus.Canceled:
+      case TaskStatus.Killed:
         return theme.palette.error.light;
 
-      case Status.Completed:
+      case TaskStatus.Completed:
         return theme.palette.info.light;
 
       default:

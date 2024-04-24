@@ -6,6 +6,6 @@ from .authorization import Role
 
 
 class User(Model):
-    username: str = CharField(255, pk=True)  # type: ignore
-    is_admin: bool = BooleanField()  # type: ignore
+    username = CharField(255, pk=True)
+    is_admin = BooleanField()
     roles: ManyToManyRelation[Role] = ManyToManyField("models.Role")

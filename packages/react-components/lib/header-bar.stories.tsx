@@ -2,7 +2,7 @@ import { IconButton, Toolbar, Typography, styled } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import TabContext from '@mui/lab/TabContext';
 import TabPanel from '@mui/lab/TabPanel';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import { HeaderBar } from '../lib/header-bar';
 import { LogoButton } from './logo-button';
@@ -12,9 +12,9 @@ import { AppBarTab } from './appbar-tab';
 export default {
   title: 'Header Bar',
   component: HeaderBar,
-} as Meta;
+} satisfies Meta;
 
-export const NavBar: Story = () => {
+export const NavBar: StoryFn = () => {
   const [value, setValue] = React.useState('building');
 
   const onTabChange = (event: React.ChangeEvent<unknown>, newValue: string) => {
@@ -51,7 +51,7 @@ export const NavBar: Story = () => {
   );
 };
 
-export const FullHeaderBar: Story = () => {
+export const FullHeaderBar: StoryFn = () => {
   const classes = {
     toolbar: 'headerbar-story-toolbar',
     avatar: 'headerbar-story-avatar',

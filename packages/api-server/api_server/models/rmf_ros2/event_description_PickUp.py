@@ -3,12 +3,14 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from pydantic import Field, RootModel
 
 from . import event_description_PayloadTransfer
 
 
-class PickUpEventDescription(BaseModel):
-    __root__: event_description_PayloadTransfer.ItemTransferEventDescription = Field(
+class PickUpEventDescription(
+    RootModel[event_description_PayloadTransfer.ItemTransferEventDescription]
+):
+    root: event_description_PayloadTransfer.ItemTransferEventDescription = Field(
         ..., title="Pick Up Event Description"
     )

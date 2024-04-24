@@ -14,7 +14,7 @@ export function parseTasksFile(contents: string): TaskRequest[] {
     const errors = ajv.errors!;
     throw new Error(`Validation error on item ${errIdx + 1}: ${errors[0].message}`);
   }
-  return obj;
+  return obj as TaskRequest[];
 }
 
 export function downloadCsvFull(timestamp: Date, allTasks: TaskState[]) {

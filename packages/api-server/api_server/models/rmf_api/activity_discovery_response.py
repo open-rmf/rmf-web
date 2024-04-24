@@ -15,7 +15,7 @@ class Activity(BaseModel):
     )
     detail: str = Field(..., description="Details about the behavior of the activity.")
     description_schema: Optional[Dict[str, Any]] = Field(
-        None, description="The schema for this activity description"
+        default=None, description="The schema for this activity description"
     )
 
 

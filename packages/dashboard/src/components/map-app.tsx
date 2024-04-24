@@ -1,11 +1,5 @@
 import { styled } from '@mui/material';
-import {
-  BuildingMap,
-  Dispenser,
-  ApiServerModelsRmfApiFleetStateFleetState,
-  Ingestor,
-  Level,
-} from 'api-client';
+import { BuildingMap, Dispenser, FleetState, Ingestor, Level } from 'api-client';
 import Debug from 'debug';
 import React, { ChangeEvent, Suspense } from 'react';
 import {
@@ -34,8 +28,6 @@ import { Canvas, useLoader } from '@react-three/fiber';
 import { Line } from '@react-three/drei';
 import { CameraControl, LayersController } from './three-fiber';
 import { Lifts, Door, RobotThree } from './three-fiber';
-
-type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
 const debug = Debug('MapApp');
 
@@ -150,7 +142,6 @@ export const MapApp = styled(
         return;
       }
 
-      let interval: number;
       let cancel = false;
 
       const updateTrajectory = async () => {
@@ -182,7 +173,7 @@ export const MapApp = styled(
       };
 
       updateTrajectory();
-      interval = window.setInterval(updateTrajectory, TrajectoryUpdateInterval);
+      const interval = window.setInterval(updateTrajectory, TrajectoryUpdateInterval);
       debug(`created trajectory update interval ${interval}`);
 
       return () => {
@@ -443,7 +434,7 @@ export const MapApp = styled(
             <ReactThreeFiberImageMaker level={currentLevel} imageUrl={imageUrl} />
           )}
           {buildingMap.lifts.length > 0
-            ? buildingMap.lifts.map((lift, i) =>
+            ? buildingMap.lifts.map((lift) =>
                 lift.doors.map((door, i) => (
                   <React.Fragment key={`${door.name}${i}`}>
                     {!disabledLayers['Labels'] && (

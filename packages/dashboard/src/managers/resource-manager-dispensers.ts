@@ -56,7 +56,7 @@ export class DispenserResourceManager {
   private assignGuidToDispensers(
     dispensers: Record<string, RawDispenserResource>,
   ): Record<string, DispenserResource> {
-    let newDict: any = Object.assign({}, dispensers);
+    const newDict: any = Object.assign({}, dispensers);
     Object.keys(dispensers).forEach((key) => {
       newDict[key].guid = key;
     });

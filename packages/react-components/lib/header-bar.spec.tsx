@@ -7,7 +7,7 @@ import { HeaderBar } from './header-bar';
 
 describe('Header Bar', () => {
   it('renders correctly', () => {
-    const mockOnTabChange = jasmine.createSpy();
+    const mockOnTabChange = jest.fn();
     render(
       <HeaderBar>
         <NavigationBar onTabChange={mockOnTabChange} value={'building'}>

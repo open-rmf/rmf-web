@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,15 +8,9 @@ from ..rmf_door_msgs.DoorSessions import DoorSessions
 
 
 class SupervisorHeartbeat(pydantic.BaseModel):
-    all_sessions: List[DoorSessions] = []  # rmf_door_msgs/DoorSessions
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "all_sessions",
-            ],
-        }
+    all_sessions: list[DoorSessions]  # rmf_door_msgs/DoorSessions
 
 
 #

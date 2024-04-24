@@ -1,7 +1,6 @@
 import Debug from 'debug';
 import {
   RobotTrajectoryManager,
-  TimeRequest,
   TimeResponse,
   TrajectoryRequest,
   TrajectoryResponse,
@@ -27,7 +26,7 @@ export default class FakeTrajectoryManager implements RobotTrajectoryManager {
     };
   }
 
-  serverTime(request: TimeRequest): Promise<TimeResponse> {
+  serverTime(): Promise<TimeResponse> {
     throw new Error('Method not implemented.');
   }
 

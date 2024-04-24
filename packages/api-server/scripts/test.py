@@ -1,5 +1,6 @@
 import asyncio
 import os
+import sys
 
 from tortoise import Tortoise
 
@@ -9,6 +10,6 @@ os.environ[
 
 import unittest
 
-result = unittest.main(module=None, exit=False)
+result = unittest.main(module=None, exit=False, argv=sys.argv)
 asyncio.run(Tortoise.close_connections())
 exit(1 if not result.result.wasSuccessful() else 0)

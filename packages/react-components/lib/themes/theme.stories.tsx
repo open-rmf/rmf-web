@@ -1,10 +1,10 @@
 import { styled, Paper, Typography } from '@mui/material';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 
 export default {
   title: 'Theme',
-} as Meta;
+} satisfies Meta;
 
 interface ColorCardProps {
   color: string | undefined;
@@ -103,6 +103,6 @@ const ThemeDisplay = (): JSX.Element => {
   );
 };
 
-export const ThemeStory: Story = (args) => {
+export const ThemeStory: StoryFn = (args) => {
   return <ThemeDisplay {...args} />;
 };

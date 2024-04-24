@@ -25,4 +25,6 @@ class DispenserState(rmf_dispenser_msgs.DispenserState):
         return DispenserState(**tortoise.data)
 
     async def save(self) -> None:
-        await ttm.DispenserState.update_or_create({"data": self.dict()}, id_=self.guid)
+        await ttm.DispenserState.update_or_create(
+            {"data": self.model_dump()}, id_=self.guid
+        )

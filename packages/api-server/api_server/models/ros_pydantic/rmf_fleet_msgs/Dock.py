@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,17 +8,10 @@ from ..rmf_fleet_msgs.DockParameter import DockParameter
 
 
 class Dock(pydantic.BaseModel):
-    fleet_name: str = ""  # string
-    params: List[DockParameter] = []  # rmf_fleet_msgs/DockParameter
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "fleet_name",
-                "params",
-            ],
-        }
+    fleet_name: str  # string
+    params: list[DockParameter]  # rmf_fleet_msgs/DockParameter
 
 
 # string fleet_name

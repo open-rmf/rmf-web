@@ -1,11 +1,13 @@
 import React from 'react';
-import { storiesOf } from '@storybook/react';
 import { RobotDataGridTable } from './robot-table-datagrid';
-import { Status2 as RobotStatus } from 'api-client';
+import { ApiServerModelsRmfApiRobotStateStatus as RobotStatus } from 'api-client';
 import { RobotTableData } from './robot-table';
 
-// Define the stories
-storiesOf('Components/RobotDataGridTable', module).add('Default', () => {
+export default {
+  title: 'Components/RobotDataGridTable',
+};
+
+export const Default = () => {
   const robots: RobotTableData[] = [
     {
       fleet: 'Fleet A',
@@ -34,4 +36,4 @@ storiesOf('Components/RobotDataGridTable', module).add('Default', () => {
   ];
 
   return <RobotDataGridTable robots={robots} />;
-});
+};

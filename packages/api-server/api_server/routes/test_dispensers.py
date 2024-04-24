@@ -1,5 +1,5 @@
 import asyncio
-from typing import List, cast
+from typing import List
 from uuid import uuid4
 
 from api_server.models import DispenserState
@@ -32,7 +32,8 @@ class TestDispensersRoute(AppFixture):
         self.assertEqual(self.dispenser_states[0].guid, state["guid"])
 
     def test_sub_dispenser_state(self):
-        msg = next(
-            self.subscribe_sio(f"/dispensers/{self.dispenser_states[0].guid}/state")
-        )
-        self.assertEqual(self.dispenser_states[0].guid, cast(DispenserState, msg).guid)
+        with self.subscribe_sio(
+            f"/dispensers/{self.dispenser_states[0].guid}/state"
+        ) as sub:
+            msg = DispenserState(**next(sub))
+            self.assertEqual(self.dispenser_states[0].guid, msg.guid)
