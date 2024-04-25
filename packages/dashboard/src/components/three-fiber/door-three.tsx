@@ -37,7 +37,7 @@ export const Door = React.memo(({ ...doorProps }: DoorProps): JSX.Element => {
 
     const sub = rmf
       .getLiftStateObs(lift.name)
-      .pipe(throttleTime(5000, undefined, { leading: true, trailing: true }))
+      .pipe(throttleTime(3000, undefined, { leading: true, trailing: true }))
       .subscribe(setLiftState);
     return () => sub.unsubscribe();
   }, [rmf, lift]);

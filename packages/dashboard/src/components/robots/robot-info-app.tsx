@@ -24,7 +24,7 @@ export const RobotInfoApp = createMicroApp('Robot Info', () => {
           }
           const [fleet, name] = data;
           return rmf.getFleetStateObs(fleet).pipe(
-            throttleTime(5000, undefined, { leading: true, trailing: true }),
+            throttleTime(3000, undefined, { leading: true, trailing: true }),
             mergeMap((fleetState) => {
               const robotState = fleetState?.robots?.[name];
               const taskObs = robotState?.task_id

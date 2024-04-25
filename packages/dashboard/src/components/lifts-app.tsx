@@ -37,7 +37,7 @@ export const LiftsApp = createMicroApp('Lifts', () => {
       try {
         const sub = rmf
           .getLiftStateObs(lift.name)
-          .pipe(throttleTime(5000, undefined, { leading: true, trailing: true }))
+          .pipe(throttleTime(3000, undefined, { leading: true, trailing: true }))
           .subscribe((liftState) => {
             setLiftTableData((prev) => {
               return {

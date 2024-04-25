@@ -34,7 +34,7 @@ export const DoorsApp = createMicroApp('Doors', () => {
           const { health_status } = data;
           const sub = rmf
             .getDoorStateObs(door.name)
-            .pipe(throttleTime(5000, undefined, { leading: true, trailing: true }))
+            .pipe(throttleTime(3000, undefined, { leading: true, trailing: true }))
             .subscribe((doorState) => {
               setDoorTableData((prev) => {
                 return {
