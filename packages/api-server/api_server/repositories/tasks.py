@@ -9,7 +9,7 @@ from tortoise.queryset import QuerySet
 from tortoise.transactions import in_transaction
 
 from api_server.authenticator import user_dep
-from api_server.logger import format_exception, logger
+from api_server.logging import LoggerAdapter, get_logger
 from api_server.models import (
     LogEntry,
     Pagination,
@@ -30,8 +30,13 @@ from api_server.rmf_io import task_events
 
 
 class TaskRepository:
-    def __init__(self, user: User):
+    def __init__(
+        self,
+        user: User = Depends(user_dep),
+        logger: LoggerAdapter = Depends(get_logger),
+    ):
         self.user = user
+        self.logger = logger
 
     async def save_task_request(
         self, task_state: TaskState, task_request: TaskRequest
@@ -268,8 +273,4 @@ class TaskRepository:
                 if task_log.phases:
                     await self._savePhaseLogs(db_task_log, task_log.phases)
             except IntegrityError as e:
-                logger.error(format_exception(e))
-
-
-def task_repo_dep(user: User = Depends(user_dep)):
-    return TaskRepository(user)
+                self.logger.error(e)

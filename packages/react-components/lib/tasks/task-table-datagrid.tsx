@@ -13,7 +13,7 @@ import {
 } from '@mui/x-data-grid';
 import { styled, Stack, Typography, Tooltip, useMediaQuery, SxProps, Theme } from '@mui/material';
 import * as React from 'react';
-import { TaskState, Status } from 'api-client';
+import { TaskState, ApiServerModelsRmfApiTaskStateStatus as Status } from 'api-client';
 import { InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
 import { parseTaskRequestLabel } from './utils';
 

@@ -9,7 +9,7 @@ import {
   TableRow,
 } from '@mui/material';
 import { ArrowCircleDown, ArrowCircleUp } from '@mui/icons-material';
-import { Status, TaskState } from 'api-client';
+import { ApiServerModelsRmfApiTaskStateStatus as Status, TaskState } from 'api-client';
 import clsx from 'clsx';
 import React from 'react';
 

@@ -26,6 +26,7 @@ from rmf_fleet_msgs.msg import DeliveryAlert as RmfDeliveryAlert
 from rmf_fleet_msgs.msg import DeliveryAlertAction as RmfDeliveryAlertAction
 from rmf_fleet_msgs.msg import DeliveryAlertCategory as RmfDeliveryAlertCategory
 from rmf_fleet_msgs.msg import DeliveryAlertTier as RmfDeliveryAlertTier
+from rmf_fleet_msgs.msg import MutexGroupManualRelease as RmfMutexGroupManualRelease
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
@@ -33,7 +34,6 @@ from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 from rosidl_runtime_py.convert import message_to_ordereddict
 
-from .logger import logger as base_logger
 from .models import (
     BeaconState,
     BuildingMap,
@@ -75,12 +75,7 @@ def process_building_map(
 
 
 class RmfGateway:
-    def __init__(
-        self,
-        cached_files: CachedFilesRepository,
-        *,
-        logger: Optional[logging.Logger] = None,
-    ):
+    def __init__(self, cached_files: CachedFilesRepository):
         self._door_req = ros_node().create_publisher(
             RmfDoorRequest, "adapter_door_requests", 10
         )
@@ -109,8 +104,18 @@ class RmfGateway:
             ),
         )
 
+        self._mutex_group_release = ros_node().create_publisher(
+            RmfMutexGroupManualRelease,
+            "mutex_group_manual_release",
+            rclpy.qos.QoSProfile(
+                history=rclpy.qos.HistoryPolicy.KEEP_LAST,
+                depth=10,
+                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
+                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
+            ),
+        )
+
         self.cached_files = cached_files
-        self.logger = logger or base_logger.getChild(self.__class__.__name__)
         self._subscriptions: List[Subscription] = []
 
         self._subscribe_all()
@@ -212,8 +217,8 @@ class RmfGateway:
             )
 
         def handle_delivery_alert(delivery_alert: DeliveryAlert):
-            self.logger.info("Received delivery alert:")
-            self.logger.info(delivery_alert)
+            logging.info("Received delivery alert:")
+            logging.info(delivery_alert)
             rmf_events.delivery_alerts.on_next(delivery_alert)
 
         delivery_alert_request_sub = ros_node().create_subscription(
@@ -286,6 +291,18 @@ class RmfGateway:
         msg.action = RmfDeliveryAlertAction(value=action)
         msg.message = message
         self._delivery_alert_response.publish(msg)
+
+    def manual_release_mutex_groups(
+        self,
+        mutex_groups: List[str],
+        fleet: str,
+        robot: str,
+    ):
+        msg = RmfMutexGroupManualRelease()
+        msg.release_mutex_groups = mutex_groups
+        msg.fleet = fleet
+        msg.robot = robot
+        self._mutex_group_release.publish(msg)
 
 
 _rmf_gateway: RmfGateway

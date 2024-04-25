@@ -13,10 +13,10 @@ from api_server.app_config import app_config
 from api_server.authenticator import user_dep
 from api_server.dependencies import pagination_query
 from api_server.fast_io import FastIORouter
-from api_server.logger import logger
+from api_server.logging import LoggerAdapter, get_logger
 from api_server.models import DispatchTaskRequest, Pagination, TaskRequest, User
 from api_server.models import tortoise_models as ttm
-from api_server.repositories import TaskRepository, task_repo_dep
+from api_server.repositories import TaskRepository
 
 from .tasks import post_dispatch_task
 
@@ -28,7 +28,9 @@ class PostScheduledTaskRequest(BaseModel):
     schedules: list[ttm.ScheduledTaskSchedulePydantic]
 
 
-async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
+async def schedule_task(
+    task: ttm.ScheduledTask, task_repo: TaskRepository, logger: LoggerAdapter
+):
     await task.fetch_related("schedules")
     jobs: list[tuple[ttm.ScheduledTaskSchedule, schedule.Job]] = []
     for sche in task.schedules:
@@ -47,7 +49,7 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
 
     async def run():
         req.request.unix_millis_request_time = round(datetime.now().timestamp() * 1e3)
-        await post_dispatch_task(req, task_repo)
+        await post_dispatch_task(req, task_repo, logger)
         task.last_ran = datetime.now()
         await task.save()
 
@@ -80,7 +82,7 @@ async def schedule_task(task: ttm.ScheduledTask, task_repo: TaskRepository):
     logger.info(f"scheduled task [{task.pk}]")
 
 
-def convert_date_server_timezone_iso_str(date: datetime) -> str:
+def convert_date_server_timezone_iso_str(date: datetime, logger: LoggerAdapter) -> str:
     # Server time zone
     server_tz_info = ZoneInfo(app_config.timezone)
     logger.info(f"Server tz: {server_tz_info}")
@@ -118,7 +120,8 @@ def convert_date_server_timezone_iso_str(date: datetime) -> str:
 async def post_scheduled_task(
     scheduled_task_request: PostScheduledTaskRequest,
     user: User = Depends(user_dep),
-    task_repo: TaskRepository = Depends(task_repo_dep),
+    task_repo: TaskRepository = Depends(TaskRepository),
+    logger: LoggerAdapter = Depends(get_logger),
 ):
     """
     Create a scheduled task. Below are some examples of how the schedules are represented.
@@ -148,7 +151,7 @@ async def post_scheduled_task(
             ]
             await ttm.ScheduledTaskSchedule.bulk_create(schedules)
 
-            await schedule_task(scheduled_task, task_repo)
+            await schedule_task(scheduled_task, task_repo, logger)
         scheduled_task_model = await ttm.ScheduledTaskPydantic.from_tortoise_orm(
             scheduled_task
         )
@@ -195,7 +198,8 @@ async def get_scheduled_task(task_id: int) -> ttm.ScheduledTask:
 async def del_scheduled_tasks_event(
     task_id: int,
     event_date: datetime,
-    task_repo: TaskRepository = Depends(task_repo_dep),
+    task_repo: TaskRepository = Depends(TaskRepository),
+    logger: LoggerAdapter = Depends(get_logger),
 ):
     logger.info(f"Deleting task with schedule id {task_id}, event date {event_date}")
 
@@ -204,7 +208,7 @@ async def del_scheduled_tasks_event(
         logger.error(f"Task with scehdule id {task_id} not found")
         raise HTTPException(404)
 
-    event_date_str = convert_date_server_timezone_iso_str(event_date)
+    event_date_str = convert_date_server_timezone_iso_str(event_date, logger)
 
     logger.info(f"Deleting event with iso format date: {event_date_str}")
     task.except_dates.append(event_date_str[:10])
@@ -217,7 +221,7 @@ async def del_scheduled_tasks_event(
     pydantic_schedule_task = await ttm.ScheduledTaskPydantic.from_tortoise_orm(task)
     logger.info(f"Re-scheduling task: {pydantic_schedule_task}")
     try:
-        await schedule_task(task, task_repo)
+        await schedule_task(task, task_repo, logger)
     except schedule.ScheduleError as e:
         raise HTTPException(422, str(e)) from e
 
@@ -229,7 +233,8 @@ async def update_schedule_task(
     task_id: int,
     scheduled_task_request: PostScheduledTaskRequest,
     except_date: Optional[datetime] = None,
-    task_repo: TaskRepository = Depends(task_repo_dep),
+    task_repo: TaskRepository = Depends(TaskRepository),
+    logger: LoggerAdapter = Depends(get_logger),
 ):
     try:
         logger.info(f"Updating scheduled task [{task_id}]")
@@ -244,7 +249,9 @@ async def update_schedule_task(
 
         async with tortoise.transactions.in_transaction():
             if except_date:
-                event_date_str = convert_date_server_timezone_iso_str(except_date)
+                event_date_str = convert_date_server_timezone_iso_str(
+                    except_date, logger
+                )
                 logger.info(f"Updating event with iso format date: {event_date_str}")
                 task.except_dates.append(event_date_str[:10])
                 await task.save()
@@ -257,7 +264,7 @@ async def update_schedule_task(
                     await ttm.ScheduledTaskPydantic.from_tortoise_orm(task)
                 )
                 logger.info(f"Re-scheduling task: {pydantic_schedule_task}")
-                await schedule_task(task, task_repo)
+                await schedule_task(task, task_repo, logger)
 
                 scheduled_task = await ttm.ScheduledTask.create(
                     task_request=scheduled_task_request.task_request.json(
@@ -277,7 +284,7 @@ async def update_schedule_task(
                 logger.info(
                     f"Scheduling single event task: {pydantic_schedule_single_event_task}"
                 )
-                await schedule_task(scheduled_task, task_repo)
+                await schedule_task(scheduled_task, task_repo, logger)
             else:
                 # If "except_date" is not provided, it means the entire series is being updated.
                 # In this case, we perform the following steps:
@@ -312,7 +319,7 @@ async def update_schedule_task(
                     await ttm.ScheduledTaskPydantic.from_tortoise_orm(task)
                 )
                 logger.info(f"Re-scheduling task: {pydantic_schedule_task}")
-                await schedule_task(task, task_repo)
+                await schedule_task(task, task_repo, logger)
     except schedule.ScheduleError as e:
         raise HTTPException(422, str(e)) from e
 

@@ -17,7 +17,7 @@ import {
   DoorsApi,
   DoorState,
   FleetsApi,
-  ApiServerModelsRmfApiFleetStateFleetState,
+  FleetState,
   Ingestor,
   IngestorsApi,
   IngestorState,
@@ -40,7 +40,6 @@ import {
 } from '../../managers/robot-trajectory-manager';
 
 type Alert = ApiServerModelsTortoiseModelsAlertsAlertLeaf;
-type FleetState = ApiServerModelsRmfApiFleetStateFleetState;
 
 export class RmfIngress {
   // This should be private because socketio does not support "replaying" subscription. If
@@ -138,8 +137,16 @@ export class RmfIngress {
     sioSubscribe: (handler: (data: T) => void) => SioSubscription,
   ): Observable<T> {
     return new Observable<T>((subscriber) => {
-      const sioSub = sioSubscribe(subscriber.next.bind(subscriber));
-      return () => this._sioClient.unsubscribe(sioSub);
+      let sioSub: SioSubscription | null = null;
+      const onConnect = () => {
+        sioSub = sioSubscribe(subscriber.next.bind(subscriber));
+      };
+      onConnect();
+      this._sioClient.sio.on('connect', onConnect);
+      return () => {
+        sioSub && this._sioClient.unsubscribe(sioSub);
+        this._sioClient.sio.off('connect', onConnect);
+      };
     }).pipe(shareReplay(1));
   }
 
