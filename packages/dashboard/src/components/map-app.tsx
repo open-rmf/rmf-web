@@ -314,7 +314,7 @@ export const MapApp = styled(
                 f.name
                   ? rmf
                       .getFleetStateObs(f.name)
-                      .pipe(throttleTime(5000, undefined, { leading: true, trailing: true }))
+                      .pipe(throttleTime(500, undefined, { leading: true, trailing: true }))
                   : EMPTY,
               ),
             ),
