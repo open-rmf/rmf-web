@@ -14,9 +14,9 @@ from api_server.models import (
     LogEntry,
     Pagination,
     Phases,
+    TaskBookingLabel,
     TaskEventLog,
     TaskRequest,
-    TaskRequestLabel,
     TaskState,
     User,
 )
@@ -60,12 +60,12 @@ class TaskRepository:
 
     async def save_task_state(self, task_state: TaskState) -> None:
         labels = task_state.booking.labels
-        request_label = None
+        booking_label = None
         if labels is not None:
             for l in labels:
-                validated_request_label = TaskRequestLabel.from_json_string(l)
-                if validated_request_label is not None:
-                    request_label = validated_request_label
+                validated_booking_label = TaskBookingLabel.from_json_string(l)
+                if validated_booking_label is not None:
+                    booking_label = validated_booking_label
                     break
 
         task_state_dict = {
@@ -86,13 +86,13 @@ class TaskRepository:
             "requester": task_state.booking.requester
             if task_state.booking.requester
             else None,
-            "pickup": request_label.description.pickup
-            if request_label is not None
-            and request_label.description.pickup is not None
+            "pickup": booking_label.description.pickup
+            if booking_label is not None
+            and booking_label.description.pickup is not None
             else None,
-            "destination": request_label.description.destination
-            if request_label is not None
-            and request_label.description.destination is not None
+            "destination": booking_label.description.destination
+            if booking_label is not None
+            and booking_label.description.destination is not None
             else None,
         }
 

@@ -83,26 +83,6 @@ async def query_task_requests(
     return return_requests
 
 
-@router.get("/{task_id}/request_label", response_model=mdl.TaskRequestLabel)
-async def get_task_request_label(
-    task_repo: TaskRepository = Depends(TaskRepository),
-    task_id: str = Path(..., description="task_id"),
-):
-    request = await task_repo.get_task_request(task_id)
-    if request is None:
-        raise HTTPException(status_code=404)
-
-    if request.labels is not None:
-        for label in request.labels:
-            if len(label) == 0:
-                continue
-
-        request_label = mdl.TaskRequestLabel.from_json_string(label)
-        if request_label is not None:
-            return request_label
-    raise HTTPException(status_code=404)
-
-
 @router.get("", response_model=List[mdl.TaskState])
 async def query_task_states(
     task_repo: TaskRepository = Depends(TaskRepository),
@@ -194,6 +174,26 @@ async def sub_task_state(req: SubscriptionRequest, task_id: str):
     if current_state:
         return obs.pipe(rxops.start_with(current_state))
     return obs
+
+
+@router.get("/{task_id}/booking_label", response_model=mdl.TaskBookingLabel)
+async def get_task_booking_label(
+    task_repo: TaskRepository = Depends(TaskRepository),
+    task_id: str = Path(..., description="task_id"),
+):
+    state = await task_repo.get_task_state(task_id)
+    if state is None:
+        raise HTTPException(status_code=404)
+
+    if state.booking.labels is not None:
+        for label in state.booking.labels:
+            if len(label) == 0:
+                continue
+
+            booking_label = mdl.TaskBookingLabel.from_json_string(label)
+            if booking_label is not None:
+                return booking_label
+    raise HTTPException(status_code=404)
 
 
 @router.get("/{task_id}/log", response_model=mdl.TaskEventLog)

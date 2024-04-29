@@ -7,27 +7,27 @@ from pydantic import BaseModel
 # populated by the dashboard. Any changes to either side will require syncing.
 
 
-class TaskRequestLabelDescription(BaseModel):
+class TaskBookingLabelDescription(BaseModel):
     task_name: Optional[str]
-    unix_millis_warn_time: Optional[str]
+    unix_millis_warn_time: Optional[int]
     pickup: Optional[str]
     destination: Optional[str]
     cart_id: Optional[str]
 
     @staticmethod
-    def from_json_string(json_str: str) -> Optional["TaskRequestLabelDescription"]:
+    def from_json_string(json_str: str) -> Optional["TaskBookingLabelDescription"]:
         try:
-            return TaskRequestLabelDescription.parse_raw(json_str)
+            return TaskBookingLabelDescription.parse_raw(json_str)
         except pydantic.error_wrappers.ValidationError:
             return None
 
 
-class TaskRequestLabel(BaseModel):
-    description: TaskRequestLabelDescription
+class TaskBookingLabel(BaseModel):
+    description: TaskBookingLabelDescription
 
     @staticmethod
-    def from_json_string(json_str: str) -> Optional["TaskRequestLabel"]:
+    def from_json_string(json_str: str) -> Optional["TaskBookingLabel"]:
         try:
-            return TaskRequestLabel.parse_raw(json_str)
+            return TaskBookingLabel.parse_raw(json_str)
         except pydantic.error_wrappers.ValidationError:
             return None
