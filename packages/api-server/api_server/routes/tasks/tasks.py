@@ -83,6 +83,26 @@ async def query_task_requests(
     return return_requests
 
 
+@router.get("/{task_id}/request_label", response_model=mdl.TaskRequestLabel)
+async def get_task_request_label(
+    task_repo: TaskRepository = Depends(TaskRepository),
+    task_id: str = Path(..., description="task_id"),
+):
+    request = await task_repo.get_task_request(task_id)
+    if request is None:
+        raise HTTPException(status_code=404)
+
+    if request.labels is not None:
+        for label in request.labels:
+            if len(label) == 0:
+                continue
+
+        request_label = mdl.TaskRequestLabel.from_json_string(label)
+        if request_label is not None:
+            return request_label
+    raise HTTPException(status_code=404)
+
+
 @router.get("", response_model=List[mdl.TaskState])
 async def query_task_states(
     task_repo: TaskRepository = Depends(TaskRepository),

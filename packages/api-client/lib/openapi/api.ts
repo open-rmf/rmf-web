@@ -2866,6 +2866,56 @@ export interface TaskRequest {
 /**
  *
  * @export
+ * @interface TaskRequestLabel
+ */
+export interface TaskRequestLabel {
+  /**
+   *
+   * @type {TaskRequestLabelDescription}
+   * @memberof TaskRequestLabel
+   */
+  description: TaskRequestLabelDescription;
+}
+/**
+ *
+ * @export
+ * @interface TaskRequestLabelDescription
+ */
+export interface TaskRequestLabelDescription {
+  /**
+   *
+   * @type {string}
+   * @memberof TaskRequestLabelDescription
+   */
+  task_name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskRequestLabelDescription
+   */
+  unix_millis_warn_time?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskRequestLabelDescription
+   */
+  pickup?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskRequestLabelDescription
+   */
+  destination?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskRequestLabelDescription
+   */
+  cart_id?: string;
+}
+/**
+ *
+ * @export
  * @interface TaskResumeRequest
  */
 export interface TaskResumeRequest {
@@ -8564,6 +8614,47 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     },
     /**
      *
+     * @summary Get Task Request Label
+     * @param {string} taskId task_id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getTaskRequestLabelTasksTaskIdRequestLabelGet: async (
+      taskId: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'taskId' is not null or undefined
+      assertParamExists('getTaskRequestLabelTasksTaskIdRequestLabelGet', 'taskId', taskId);
+      const localVarPath = `/tasks/{task_id}/request_label`.replace(
+        `{${'task_id'}}`,
+        encodeURIComponent(String(taskId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @summary Get Task Request
      * @param {string} taskId task_id
      * @param {*} [options] Override http request option.
@@ -9647,6 +9738,24 @@ export const TasksApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @summary Get Task Request Label
+     * @param {string} taskId task_id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getTaskRequestLabelTasksTaskIdRequestLabelGet(
+      taskId: string,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskRequestLabel>> {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.getTaskRequestLabelTasksTaskIdRequestLabelGet(
+          taskId,
+          options,
+        );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
      * @summary Get Task Request
      * @param {string} taskId task_id
      * @param {*} [options] Override http request option.
@@ -10151,6 +10260,21 @@ export const TasksApiFactory = function (
     },
     /**
      *
+     * @summary Get Task Request Label
+     * @param {string} taskId task_id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getTaskRequestLabelTasksTaskIdRequestLabelGet(
+      taskId: string,
+      options?: any,
+    ): AxiosPromise<TaskRequestLabel> {
+      return localVarFp
+        .getTaskRequestLabelTasksTaskIdRequestLabelGet(taskId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @summary Get Task Request
      * @param {string} taskId task_id
      * @param {*} [options] Override http request option.
@@ -10589,6 +10713,23 @@ export class TasksApi extends BaseAPI {
   ) {
     return TasksApiFp(this.configuration)
       .getTaskLogTasksTaskIdLogGet(taskId, between, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get Task Request Label
+   * @param {string} taskId task_id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public getTaskRequestLabelTasksTaskIdRequestLabelGet(
+    taskId: string,
+    options?: AxiosRequestConfig,
+  ) {
+    return TasksApiFp(this.configuration)
+      .getTaskRequestLabelTasksTaskIdRequestLabelGet(taskId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
