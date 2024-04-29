@@ -39,15 +39,15 @@ import {
 } from '@mui/material';
 import { DatePicker, TimePicker, DateTimePicker } from '@mui/x-date-pickers';
 import type {
+  TaskBookingLabel,
   TaskFavoritePydantic as TaskFavorite,
   TaskRequest,
-  TaskRequestLabel,
 } from 'api-client';
 import React from 'react';
 import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
-import { serializeTaskRequestLabel } from './task-request-label-utils';
+import { serializeTaskBookingLabel } from './task-booking-label-utils';
 
 // A bunch of manually defined descriptions to avoid using `any`.
 export interface PatrolTaskDescription {
@@ -1292,7 +1292,7 @@ export function CreateTaskForm({
   const [taskRequest, setTaskRequest] = React.useState<TaskRequest>(
     () => requestTask ?? defaultTask(),
   );
-  const [requestLabel, setRequestLabel] = React.useState<TaskRequestLabel>({ description: {} });
+  const [requestLabel, setRequestLabel] = React.useState<TaskBookingLabel>({ description: {} });
 
   const [submitting, setSubmitting] = React.useState(false);
   const [formFullyFilled, setFormFullyFilled] = React.useState(requestTask !== undefined || false);
@@ -1550,7 +1550,7 @@ export function CreateTaskForm({
     }
 
     try {
-      const labelString = serializeTaskRequestLabel(requestLabel);
+      const labelString = serializeTaskBookingLabel(requestLabel);
       if (labelString) {
         console.log('pushing label: ');
         console.log(labelString);

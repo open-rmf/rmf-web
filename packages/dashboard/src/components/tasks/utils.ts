@@ -1,5 +1,5 @@
 import { PostScheduledTaskRequest, TaskRequest, TaskState } from 'api-client';
-import { getTaskRequestLabelFromTaskState, Schedule } from 'react-components';
+import { getTaskBookingLabelFromTaskState, Schedule } from 'react-components';
 import schema from 'api-client/dist/schema';
 import { ajv } from '../utils';
 
@@ -63,7 +63,7 @@ export function exportCsvMinimal(timestamp: Date, allTasks: TaskState[]) {
   ];
   csvContent += keys.join(columnSeparator) + rowSeparator;
   allTasks.forEach((task) => {
-    let requestLabel = getTaskRequestLabelFromTaskState(task);
+    let requestLabel = getTaskBookingLabelFromTaskState(task);
 
     const values = [
       // Date

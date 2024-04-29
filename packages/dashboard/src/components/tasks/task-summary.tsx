@@ -16,10 +16,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { makeStyles, createStyles } from '@mui/styles';
 import {
   ApiServerModelsRmfApiTaskStateStatus as Status,
-  TaskRequestLabel,
+  TaskBookingLabel,
   TaskState,
 } from 'api-client';
-import { base, getTaskRequestLabelFromTaskState } from 'react-components';
+import { base, getTaskBookingLabelFromTaskState } from 'react-components';
 import { TaskInspector } from './task-inspector';
 import { RmfAppContext } from '../rmf-app';
 import { TaskCancelButton } from './task-cancellation';
@@ -84,7 +84,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
 
   const [openTaskDetailsLogs, setOpenTaskDetailsLogs] = React.useState(false);
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
-  const [label, setLabel] = React.useState<TaskRequestLabel>({ description: {} });
+  const [label, setLabel] = React.useState<TaskBookingLabel>({ description: {} });
   const [isOpen, setIsOpen] = React.useState(true);
 
   const taskProgress = React.useMemo(() => {
@@ -111,7 +111,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
       return;
     }
     const sub = rmf.getTaskStateObs(task.booking.id).subscribe((subscribedTask) => {
-      const requestLabel = getTaskRequestLabelFromTaskState(subscribedTask);
+      const requestLabel = getTaskBookingLabelFromTaskState(subscribedTask);
       if (requestLabel) {
         setLabel(requestLabel);
       } else {

@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 import schema from 'api-client/dist/schema';
-import type { TaskState, TaskRequestLabel } from 'api-client';
+import type { TaskBookingLabel, TaskState } from 'api-client';
 
 // FIXME: AJV is duplicated here with dashboard, but this is only a temporary
 // measure until we start using an external validation tool.
@@ -10,37 +10,37 @@ Object.entries(schema.components.schemas).forEach(([k, v]) => {
   ajv.addSchema(v, `#/components/schemas/${k}`);
 });
 
-const validateTaskRequestLabel = ajv.compile(schema.components.schemas.TaskRequestLabel);
+const validateTaskBookingLabel = ajv.compile(schema.components.schemas.TaskBookingLabel);
 
-export function serializeTaskRequestLabel(label: TaskRequestLabel): string {
+export function serializeTaskBookingLabel(label: TaskBookingLabel): string {
   return JSON.stringify(label);
 }
 
-export function getTaskRequestLabelFromJsonString(
+export function getTaskBookingLabelFromJsonString(
   jsonString: string,
-): TaskRequestLabel | undefined {
+): TaskBookingLabel | undefined {
   try {
     // Validate first before parsing again into the interface
-    const validated = validateTaskRequestLabel(JSON.parse(jsonString));
+    const validated = validateTaskBookingLabel(JSON.parse(jsonString));
     if (validated) {
-      const parsedLabel: TaskRequestLabel = JSON.parse(jsonString);
+      const parsedLabel: TaskBookingLabel = JSON.parse(jsonString);
       return parsedLabel;
     }
   } catch (e) {
-    console.error(`Failed to parse TaskRequestLabel: ${(e as Error).message}`);
+    console.error(`Failed to parse TaskBookingLabel: ${(e as Error).message}`);
     return undefined;
   }
 
-  console.error(`Failed to validate TaskRequestLabel`);
+  console.error(`Failed to validate TaskBookingLabel`);
   return undefined;
 }
 
-export function getTaskRequestLabelFromTaskState(taskState: TaskState): TaskRequestLabel | null {
-  let requestLabel: TaskRequestLabel | null = null;
+export function getTaskBookingLabelFromTaskState(taskState: TaskState): TaskBookingLabel | null {
+  let requestLabel: TaskBookingLabel | null = null;
   if (taskState.booking.labels) {
     for (const label of taskState.booking.labels) {
       try {
-        const parsedLabel = getTaskRequestLabelFromJsonString(label);
+        const parsedLabel = getTaskBookingLabelFromJsonString(label);
         if (parsedLabel) {
           requestLabel = parsedLabel;
           break;
