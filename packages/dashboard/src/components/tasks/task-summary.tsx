@@ -14,8 +14,12 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { makeStyles, createStyles } from '@mui/styles';
-import { ApiServerModelsRmfApiTaskStateStatus as Status, TaskRequest, TaskState } from 'api-client';
-import { base, parseTaskRequestLabel, TaskRequestLabel } from 'react-components';
+import {
+  ApiServerModelsRmfApiTaskStateStatus as Status,
+  TaskRequestLabel,
+  TaskState,
+} from 'api-client';
+import { base, getTaskRequestLabelFromTaskState } from 'react-components';
 import { TaskInspector } from './task-inspector';
 import { RmfAppContext } from '../rmf-app';
 import { TaskCancelButton } from './task-cancellation';
@@ -80,7 +84,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
 
   const [openTaskDetailsLogs, setOpenTaskDetailsLogs] = React.useState(false);
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
-  const [label, setLabel] = React.useState<TaskRequestLabel>({});
+  const [label, setLabel] = React.useState<TaskRequestLabel>({ description: {} });
   const [isOpen, setIsOpen] = React.useState(true);
 
   const taskProgress = React.useMemo(() => {
@@ -107,11 +111,11 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
       return;
     }
     const sub = rmf.getTaskStateObs(task.booking.id).subscribe((subscribedTask) => {
-      const requestLabel = parseTaskRequestLabel(subscribedTask);
+      const requestLabel = getTaskRequestLabelFromTaskState(subscribedTask);
       if (requestLabel) {
         setLabel(requestLabel);
       } else {
-        setLabel({});
+        setLabel({ description: {} });
       }
       setTaskState(subscribedTask);
     });
@@ -125,20 +129,20 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
         value: taskState ? taskState.booking.id : 'n/a.',
       },
       {
-        title: 'Category',
-        value: label.category ?? 'n/a',
+        title: 'Task name',
+        value: label.description.task_name ?? 'n/a',
       },
       {
         title: 'Pickup',
-        value: label.pickup ?? 'n/a',
+        value: label.description.pickup ?? 'n/a',
       },
       {
         title: 'Cart ID',
-        value: label.cart_id ?? 'n/a',
+        value: label.description.cart_id ?? 'n/a',
       },
       {
         title: 'Dropoff',
-        value: label.destination ?? 'n/a',
+        value: label.description.destination ?? 'n/a',
       },
       {
         title: 'Est. end time',

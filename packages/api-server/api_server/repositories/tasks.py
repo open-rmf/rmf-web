@@ -86,9 +86,13 @@ class TaskRepository:
             "requester": task_state.booking.requester
             if task_state.booking.requester
             else None,
-            "pickup": request_label.pickup if request_label is not None else None,
-            "destination": request_label.destination
+            "pickup": request_label.description.pickup
             if request_label is not None
+            and request_label.description.pickup is not None
+            else None,
+            "destination": request_label.description.destination
+            if request_label is not None
+            and request_label.description.destination is not None
             else None,
         }
 

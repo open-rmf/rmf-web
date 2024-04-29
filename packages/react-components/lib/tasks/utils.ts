@@ -1,6 +1,5 @@
 import { TaskType as RmfTaskType } from 'rmf-models';
 import type { TaskState, TaskRequest } from 'api-client';
-import { Convert, TaskRequestLabel } from './task-request-label';
 
 export function taskTypeToStr(taskType: number): string {
   switch (taskType) {
@@ -19,21 +18,6 @@ export function taskTypeToStr(taskType: number): string {
     default:
       return 'Unknown';
   }
-}
-
-export function parseTaskRequestLabel(taskState: TaskState): TaskRequestLabel | null {
-  let requestLabel: TaskRequestLabel | null = null;
-  if (taskState.booking.labels) {
-    for (const label of taskState.booking.labels) {
-      try {
-        requestLabel = Convert.toTaskRequestLabel(label);
-        break;
-      } catch (e) {
-        continue;
-      }
-    }
-  }
-  return requestLabel;
 }
 
 function parsePhaseDetail(phases: TaskState['phases'], category?: string) {

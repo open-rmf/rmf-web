@@ -38,12 +38,16 @@ import {
   useTheme,
 } from '@mui/material';
 import { DatePicker, TimePicker, DateTimePicker } from '@mui/x-date-pickers';
-import type { TaskFavoritePydantic as TaskFavorite, TaskRequest } from 'api-client';
+import type {
+  TaskFavoritePydantic as TaskFavorite,
+  TaskRequest,
+  TaskRequestLabel,
+} from 'api-client';
 import React from 'react';
 import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
-import { TaskRequestLabel } from './task-request-label';
+import { serializeTaskRequestLabel } from './task-request-label-utils';
 
 // A bunch of manually defined descriptions to avoid using `any`.
 export interface PatrolTaskDescription {
@@ -1288,7 +1292,7 @@ export function CreateTaskForm({
   const [taskRequest, setTaskRequest] = React.useState<TaskRequest>(
     () => requestTask ?? defaultTask(),
   );
-  const [requestLabel, setRequestLabel] = React.useState<TaskRequestLabel | null>(null);
+  const [requestLabel, setRequestLabel] = React.useState<TaskRequestLabel>({ description: {} });
 
   const [submitting, setSubmitting] = React.useState(false);
   const [formFullyFilled, setFormFullyFilled] = React.useState(requestTask !== undefined || false);
@@ -1362,9 +1366,14 @@ export function CreateTaskForm({
           patrolWaypoints={patrolWaypoints}
           onChange={(desc) => {
             handleTaskDescriptionChange('patrol', desc);
-            setRequestLabel({
-              task_identifier: taskRequest.category,
-              destination: desc.places.at(-1),
+            setRequestLabel((prev) => {
+              return {
+                description: {
+                  ...prev.description,
+                  task_name: taskRequest.category,
+                  destination: desc.places.at(-1),
+                },
+              };
             });
           }}
           allowSubmit={allowSubmit}
@@ -1376,8 +1385,13 @@ export function CreateTaskForm({
           taskDesc={taskRequest.description as CustomComposeTaskDescription}
           onChange={(desc) => {
             handleCustomComposeTaskDescriptionChange(desc);
-            setRequestLabel({
-              task_identifier: taskRequest.category,
+            setRequestLabel((prev) => {
+              return {
+                description: {
+                  ...prev.description,
+                  task_name: taskRequest.category,
+                },
+              };
             });
           }}
           allowSubmit={allowSubmit}
@@ -1400,11 +1414,16 @@ export function CreateTaskForm({
               handleTaskDescriptionChange('compose', desc);
               const pickupPerformAction =
                 desc.phases[0].activity.description.activities[1].description.description;
-              setRequestLabel({
-                task_identifier: taskRequest.description.category,
-                pickup: pickupPerformAction.pickup_lot,
-                cart_id: pickupPerformAction.cart_id,
-                destination: desc.phases[1].activity.description.activities[0].description,
+              setRequestLabel((prev) => {
+                return {
+                  description: {
+                    ...prev.description,
+                    task_name: taskRequest.description.category,
+                    pickup: pickupPerformAction.pickup_lot,
+                    cart_id: pickupPerformAction.cart_id,
+                    destination: desc.phases[1].activity.description.activities[0].description,
+                  },
+                };
               });
             }}
             allowSubmit={allowSubmit}
@@ -1425,11 +1444,16 @@ export function CreateTaskForm({
               handleTaskDescriptionChange('compose', desc);
               const pickupPerformAction =
                 desc.phases[0].activity.description.activities[1].description.description;
-              setRequestLabel({
-                task_identifier: taskRequest.description.category,
-                pickup: pickupPerformAction.pickup_zone,
-                cart_id: pickupPerformAction.cart_id,
-                destination: desc.phases[1].activity.description.activities[0].description,
+              setRequestLabel((prev) => {
+                return {
+                  description: {
+                    ...prev.description,
+                    task_name: taskRequest.description.category,
+                    pickup: pickupPerformAction.pickup_zone,
+                    cart_id: pickupPerformAction.cart_id,
+                    destination: desc.phases[1].activity.description.activities[0].description,
+                  },
+                };
               });
             }}
             allowSubmit={allowSubmit}
@@ -1526,8 +1550,10 @@ export function CreateTaskForm({
     }
 
     try {
-      const labelString = JSON.stringify(requestLabel);
+      const labelString = serializeTaskRequestLabel(requestLabel);
       if (labelString) {
+        console.log('pushing label: ');
+        console.log(labelString);
         if (request.labels) {
           request.labels.push(labelString);
         } else {

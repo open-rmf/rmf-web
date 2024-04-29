@@ -15,7 +15,7 @@ import { styled, Stack, Typography, Tooltip, useMediaQuery, SxProps, Theme } fro
 import * as React from 'react';
 import { TaskState, ApiServerModelsRmfApiTaskStateStatus as Status } from 'api-client';
 import { InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
-import { parseTaskRequestLabel } from './utils';
+import { getTaskRequestLabelFromTaskState } from './task-request-label-utils';
 
 const classes = {
   taskActiveCell: 'MuiDataGrid-cell-active-cell',
@@ -184,9 +184,9 @@ export function TaskDataGridTable({
       width: 150,
       editable: false,
       valueGetter: (params: GridValueGetterParams) => {
-        const requestLabel = parseTaskRequestLabel(params.row);
-        if (requestLabel && requestLabel.pickup) {
-          return requestLabel.pickup;
+        const requestLabel = getTaskRequestLabelFromTaskState(params.row);
+        if (requestLabel && requestLabel.description.pickup) {
+          return requestLabel.description.pickup;
         }
         return 'n/a';
       },
@@ -200,9 +200,9 @@ export function TaskDataGridTable({
       width: 150,
       editable: false,
       valueGetter: (params: GridValueGetterParams) => {
-        const requestLabel = parseTaskRequestLabel(params.row);
-        if (requestLabel && requestLabel.destination) {
-          return requestLabel.destination;
+        const requestLabel = getTaskRequestLabelFromTaskState(params.row);
+        if (requestLabel && requestLabel.description.destination) {
+          return requestLabel.description.destination;
         }
         return 'n/a';
       },
