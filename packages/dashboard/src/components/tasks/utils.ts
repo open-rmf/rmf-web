@@ -1,7 +1,6 @@
 import { PostScheduledTaskRequest, TaskRequest, TaskState } from 'api-client';
-import { getTaskBookingLabelFromTaskState, Schedule } from 'react-components';
+import { ajv, getTaskBookingLabelFromTaskState, Schedule } from 'react-components';
 import schema from 'api-client/dist/schema';
-import { ajv } from '../utils';
 
 export function parseTasksFile(contents: string): TaskRequest[] {
   const obj = JSON.parse(contents) as unknown[];

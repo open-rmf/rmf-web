@@ -1,14 +1,6 @@
-import Ajv from 'ajv';
+import { ajv } from '../utils/schema-utils';
 import schema from 'api-client/dist/schema';
 import type { TaskBookingLabel, TaskState } from 'api-client';
-
-// FIXME: AJV is duplicated here with dashboard, but this is only a temporary
-// measure until we start using an external validation tool.
-const ajv = new Ajv();
-
-Object.entries(schema.components.schemas).forEach(([k, v]) => {
-  ajv.addSchema(v, `#/components/schemas/${k}`);
-});
 
 const validateTaskBookingLabel = ajv.compile(schema.components.schemas.TaskBookingLabel);
 
