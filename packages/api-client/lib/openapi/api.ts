@@ -2426,6 +2426,56 @@ export interface Task {
   description_schema?: object;
 }
 /**
+ *
+ * @export
+ * @interface TaskBookingLabel
+ */
+export interface TaskBookingLabel {
+  /**
+   *
+   * @type {TaskBookingLabelDescription}
+   * @memberof TaskBookingLabel
+   */
+  description: TaskBookingLabelDescription;
+}
+/**
+ *
+ * @export
+ * @interface TaskBookingLabelDescription
+ */
+export interface TaskBookingLabelDescription {
+  /**
+   *
+   * @type {string}
+   * @memberof TaskBookingLabelDescription
+   */
+  task_name?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof TaskBookingLabelDescription
+   */
+  unix_millis_warn_time?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskBookingLabelDescription
+   */
+  pickup?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskBookingLabelDescription
+   */
+  destination?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskBookingLabelDescription
+   */
+  cart_id?: string;
+}
+/**
  * Response to a request to cancel a task
  * @export
  * @interface TaskCancelResponse
@@ -2862,56 +2912,6 @@ export interface TaskRequest {
    * @memberof TaskRequest
    */
   unix_millis_warn_time?: number;
-}
-/**
- *
- * @export
- * @interface TaskRequestLabel
- */
-export interface TaskRequestLabel {
-  /**
-   *
-   * @type {TaskRequestLabelDescription}
-   * @memberof TaskRequestLabel
-   */
-  description: TaskRequestLabelDescription;
-}
-/**
- *
- * @export
- * @interface TaskRequestLabelDescription
- */
-export interface TaskRequestLabelDescription {
-  /**
-   *
-   * @type {string}
-   * @memberof TaskRequestLabelDescription
-   */
-  task_name?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof TaskRequestLabelDescription
-   */
-  unix_millis_warn_time?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof TaskRequestLabelDescription
-   */
-  pickup?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof TaskRequestLabelDescription
-   */
-  destination?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof TaskRequestLabelDescription
-   */
-  cart_id?: string;
 }
 /**
  *
@@ -8566,6 +8566,47 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
+     *
+     * @summary Get Task Booking Label
+     * @param {string} taskId task_id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getTaskBookingLabelTasksTaskIdBookingLabelGet: async (
+      taskId: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'taskId' is not null or undefined
+      assertParamExists('getTaskBookingLabelTasksTaskIdBookingLabelGet', 'taskId', taskId);
+      const localVarPath = `/tasks/{task_id}/booking_label`.replace(
+        `{${'task_id'}}`,
+        encodeURIComponent(String(taskId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Available in socket.io
      * @summary Get Task Log
      * @param {string} taskId task_id
@@ -8598,47 +8639,6 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       if (between !== undefined) {
         localVarQueryParameter['between'] = between;
       }
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
-     *
-     * @summary Get Task Request Label
-     * @param {string} taskId task_id
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getTaskRequestLabelTasksTaskIdRequestLabelGet: async (
-      taskId: string,
-      options: AxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'taskId' is not null or undefined
-      assertParamExists('getTaskRequestLabelTasksTaskIdRequestLabelGet', 'taskId', taskId);
-      const localVarPath = `/tasks/{task_id}/request_label`.replace(
-        `{${'task_id'}}`,
-        encodeURIComponent(String(taskId)),
-      );
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -9717,6 +9717,24 @@ export const TasksApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
+     *
+     * @summary Get Task Booking Label
+     * @param {string} taskId task_id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getTaskBookingLabelTasksTaskIdBookingLabelGet(
+      taskId: string,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskBookingLabel>> {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.getTaskBookingLabelTasksTaskIdBookingLabelGet(
+          taskId,
+          options,
+        );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
      * Available in socket.io
      * @summary Get Task Log
      * @param {string} taskId task_id
@@ -9734,24 +9752,6 @@ export const TasksApiFp = function (configuration?: Configuration) {
         between,
         options,
       );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-    },
-    /**
-     *
-     * @summary Get Task Request Label
-     * @param {string} taskId task_id
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async getTaskRequestLabelTasksTaskIdRequestLabelGet(
-      taskId: string,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskRequestLabel>> {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getTaskRequestLabelTasksTaskIdRequestLabelGet(
-          taskId,
-          options,
-        );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -10242,6 +10242,21 @@ export const TasksApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
+     *
+     * @summary Get Task Booking Label
+     * @param {string} taskId task_id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getTaskBookingLabelTasksTaskIdBookingLabelGet(
+      taskId: string,
+      options?: any,
+    ): AxiosPromise<TaskBookingLabel> {
+      return localVarFp
+        .getTaskBookingLabelTasksTaskIdBookingLabelGet(taskId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      * Available in socket.io
      * @summary Get Task Log
      * @param {string} taskId task_id
@@ -10256,21 +10271,6 @@ export const TasksApiFactory = function (
     ): AxiosPromise<TaskEventLog> {
       return localVarFp
         .getTaskLogTasksTaskIdLogGet(taskId, between, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
-     *
-     * @summary Get Task Request Label
-     * @param {string} taskId task_id
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    getTaskRequestLabelTasksTaskIdRequestLabelGet(
-      taskId: string,
-      options?: any,
-    ): AxiosPromise<TaskRequestLabel> {
-      return localVarFp
-        .getTaskRequestLabelTasksTaskIdRequestLabelGet(taskId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -10698,6 +10698,23 @@ export class TasksApi extends BaseAPI {
   }
 
   /**
+   *
+   * @summary Get Task Booking Label
+   * @param {string} taskId task_id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public getTaskBookingLabelTasksTaskIdBookingLabelGet(
+    taskId: string,
+    options?: AxiosRequestConfig,
+  ) {
+    return TasksApiFp(this.configuration)
+      .getTaskBookingLabelTasksTaskIdBookingLabelGet(taskId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
    * Available in socket.io
    * @summary Get Task Log
    * @param {string} taskId task_id
@@ -10713,23 +10730,6 @@ export class TasksApi extends BaseAPI {
   ) {
     return TasksApiFp(this.configuration)
       .getTaskLogTasksTaskIdLogGet(taskId, between, options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
-   *
-   * @summary Get Task Request Label
-   * @param {string} taskId task_id
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof TasksApi
-   */
-  public getTaskRequestLabelTasksTaskIdRequestLabelGet(
-    taskId: string,
-    options?: AxiosRequestConfig,
-  ) {
-    return TasksApiFp(this.configuration)
-      .getTaskRequestLabelTasksTaskIdRequestLabelGet(taskId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

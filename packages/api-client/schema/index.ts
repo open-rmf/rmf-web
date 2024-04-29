@@ -671,36 +671,6 @@ export default {
         },
       },
     },
-    '/tasks/{task_id}/request_label': {
-      get: {
-        tags: ['Tasks'],
-        summary: 'Get Task Request Label',
-        operationId: 'get_task_request_label_tasks__task_id__request_label_get',
-        parameters: [
-          {
-            description: 'task_id',
-            required: true,
-            schema: { title: 'Task Id', type: 'string', description: 'task_id' },
-            name: 'task_id',
-            in: 'path',
-          },
-        ],
-        responses: {
-          '200': {
-            description: 'Successful Response',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/TaskRequestLabel' } },
-            },
-          },
-          '422': {
-            description: 'Validation Error',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
-            },
-          },
-        },
-      },
-    },
     '/tasks': {
       get: {
         tags: ['Tasks'],
@@ -903,6 +873,36 @@ export default {
           '200': {
             description: 'Successful Response',
             content: { 'application/json': { schema: { $ref: '#/components/schemas/TaskState' } } },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
+    '/tasks/{task_id}/booking_label': {
+      get: {
+        tags: ['Tasks'],
+        summary: 'Get Task Booking Label',
+        operationId: 'get_task_booking_label_tasks__task_id__booking_label_get',
+        parameters: [
+          {
+            description: 'task_id',
+            required: true,
+            schema: { title: 'Task Id', type: 'string', description: 'task_id' },
+            name: 'task_id',
+            in: 'path',
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/TaskBookingLabel' } },
+            },
           },
           '422': {
             description: 'Validation Error',
@@ -3634,6 +3634,23 @@ export default {
           },
         },
       },
+      TaskBookingLabel: {
+        title: 'TaskBookingLabel',
+        required: ['description'],
+        type: 'object',
+        properties: { description: { $ref: '#/components/schemas/TaskBookingLabelDescription' } },
+      },
+      TaskBookingLabelDescription: {
+        title: 'TaskBookingLabelDescription',
+        type: 'object',
+        properties: {
+          task_name: { title: 'Task Name', type: 'string' },
+          unix_millis_warn_time: { title: 'Unix Millis Warn Time', type: 'integer' },
+          pickup: { title: 'Pickup', type: 'string' },
+          destination: { title: 'Destination', type: 'string' },
+          cart_id: { title: 'Cart Id', type: 'string' },
+        },
+      },
       TaskCancelResponse: {
         title: 'TaskCancelResponse',
         allOf: [{ $ref: '#/components/schemas/SimpleResponse' }],
@@ -3868,23 +3885,6 @@ export default {
             description:
               '(Optional) The time at which a warning will be issued if the estimated completion time is later than expected',
           },
-        },
-      },
-      TaskRequestLabel: {
-        title: 'TaskRequestLabel',
-        required: ['description'],
-        type: 'object',
-        properties: { description: { $ref: '#/components/schemas/TaskRequestLabelDescription' } },
-      },
-      TaskRequestLabelDescription: {
-        title: 'TaskRequestLabelDescription',
-        type: 'object',
-        properties: {
-          task_name: { title: 'Task Name', type: 'string' },
-          unix_millis_warn_time: { title: 'Unix Millis Warn Time', type: 'string' },
-          pickup: { title: 'Pickup', type: 'string' },
-          destination: { title: 'Destination', type: 'string' },
-          cart_id: { title: 'Cart Id', type: 'string' },
         },
       },
       TaskResumeRequest: {
