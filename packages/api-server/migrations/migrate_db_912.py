@@ -6,12 +6,12 @@ from tortoise import Tortoise
 
 import api_server.models.tortoise_models as ttm
 from api_server.app_config import app_config, load_config
-from api_server.models import TaskRequest, TaskRequestLabel, TaskState
+from api_server.models import TaskBookingLabel, TaskRequest, TaskState
 
-# NOTE: This script is for migrating TaskState in an existing database to work
-# with https://github.com/open-rmf/rmf-web/pull/912.
+# NOTE: This script is for migrating TaskState and ScheduledTask in an existing
+# database to work with https://github.com/open-rmf/rmf-web/pull/912.
 # Before migration:
-# - Pickup, destination, cart ID, task identifier information will be unavailable
+# - Pickup, destination, cart ID, task name information will be unavailable
 #   on the Task Queue Table on the dashboard, as we no longer gather those
 #   fields from the TaskRequest
 # After migration:
@@ -19,10 +19,10 @@ from api_server.models import TaskRequest, TaskRequestLabel, TaskState
 #   dependent on TaskRequest to fill out those fields. It gathers those fields
 #   from the json string in TaskState.booking.labels.
 # This script performs the following:
-# - Construct TaskRequestLabel from its TaskRequest if it is available.
+# - Construct TaskBookingLabel from its TaskRequest if it is available.
 # - Update the respective TaskState.data json TaskState.booking.labels field
-#   with the newly constructed TaskRequestLabel json string.
-# - Update ScheduledTask to use labels too
+#   with the newly constructed TaskBookingLabel json string.
+# - Update the requests in ScheduledTask to use labels too
 
 
 app_config = load_config(
@@ -33,13 +33,13 @@ app_config = load_config(
 )
 
 
-def parse_task_identifier(task_request: TaskRequest) -> Optional[str]:
-    identifier = None
+def parse_task_name(task_request: TaskRequest) -> Optional[str]:
+    name = None
     if task_request.category.lower() == "patrol":
-        identifier = "Patrol"
+        name = "Patrol"
     elif task_request.description and task_request.description["category"]:
-        identifier = task_request.description["category"]
-    return identifier
+        name = task_request.description["category"]
+    return name
 
 
 def parse_pickup(task_request: TaskRequest) -> Optional[str]:
@@ -161,18 +161,18 @@ async def migrate():
             continue
         request_model = TaskRequest(**request.request)
 
-        # Construct TaskRequestLabel based on TaskRequest
+        # Construct TaskBookingLabel based on TaskRequest
         pickup = parse_pickup(request_model)
         destination = parse_destination(request_model)
 
-        # If the task identifier could not be parsed, we skip migrating this TaskState
-        task_identifier = parse_task_identifier(request_model)
-        if task_identifier is None:
+        # If the task name could not be parsed, we skip migrating this TaskState
+        task_name = parse_task_name(request_model)
+        if task_name is None:
             failed_task_states_count += 1
             continue
 
-        label = TaskRequestLabel(
-            task_identifier=task_identifier,
+        label = TaskBookingLabel(
+            task_name=task_name,
             unix_millis_warn_time=None,
             pickup=pickup,
             destination=destination,
@@ -211,16 +211,16 @@ async def migrate():
         )
         print(task_request)
 
-        task_identifier = parse_task_identifier(task_request)
-        if task_identifier is None:
+        task_name = parse_task_name(task_request)
+        if task_name is None:
             failed_scheduled_task_count += 1
             continue
 
-        # Construct TaskRequestLabel based on TaskRequest
+        # Construct TaskBookingLabel based on TaskRequest
         pickup = parse_pickup(task_request)
         destination = parse_destination(task_request)
-        label = TaskRequestLabel(
-            task_identifier=task_identifier,
+        label = TaskBookingLabel(
+            task_name=task_name,
             unix_millis_warn_time=None,
             pickup=pickup,
             destination=destination,
