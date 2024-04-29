@@ -47,7 +47,10 @@ import React from 'react';
 import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
-import { serializeTaskBookingLabel } from './task-booking-label-utils';
+import {
+  getTaskBookingLabelFromJsonString,
+  serializeTaskBookingLabel,
+} from './task-booking-label-utils';
 
 // A bunch of manually defined descriptions to avoid using `any`.
 export interface PatrolTaskDescription {
@@ -1292,7 +1295,18 @@ export function CreateTaskForm({
   const [taskRequest, setTaskRequest] = React.useState<TaskRequest>(
     () => requestTask ?? defaultTask(),
   );
-  const [requestLabel, setRequestLabel] = React.useState<TaskBookingLabel>({ description: {} });
+
+  let bookingLabel: TaskBookingLabel = { description: {} };
+  if (requestTask && requestTask.labels) {
+    for (const label of requestTask.labels) {
+      const parsedLabel = getTaskBookingLabelFromJsonString(label);
+      if (parsedLabel) {
+        bookingLabel = parsedLabel;
+      }
+    }
+  }
+  const [requestBookingLabel, setRequestBookingLabel] =
+    React.useState<TaskBookingLabel>(bookingLabel);
 
   const [submitting, setSubmitting] = React.useState(false);
   const [formFullyFilled, setFormFullyFilled] = React.useState(requestTask !== undefined || false);
@@ -1366,7 +1380,7 @@ export function CreateTaskForm({
           patrolWaypoints={patrolWaypoints}
           onChange={(desc) => {
             handleTaskDescriptionChange('patrol', desc);
-            setRequestLabel((prev) => {
+            setRequestBookingLabel((prev) => {
               return {
                 description: {
                   ...prev.description,
@@ -1385,7 +1399,7 @@ export function CreateTaskForm({
           taskDesc={taskRequest.description as CustomComposeTaskDescription}
           onChange={(desc) => {
             handleCustomComposeTaskDescriptionChange(desc);
-            setRequestLabel((prev) => {
+            setRequestBookingLabel((prev) => {
               return {
                 description: {
                   ...prev.description,
@@ -1414,7 +1428,7 @@ export function CreateTaskForm({
               handleTaskDescriptionChange('compose', desc);
               const pickupPerformAction =
                 desc.phases[0].activity.description.activities[1].description.description;
-              setRequestLabel((prev) => {
+              setRequestBookingLabel((prev) => {
                 return {
                   description: {
                     ...prev.description,
@@ -1444,7 +1458,7 @@ export function CreateTaskForm({
               handleTaskDescriptionChange('compose', desc);
               const pickupPerformAction =
                 desc.phases[0].activity.description.activities[1].description.description;
-              setRequestLabel((prev) => {
+              setRequestBookingLabel((prev) => {
                 return {
                   description: {
                     ...prev.description,
@@ -1466,6 +1480,7 @@ export function CreateTaskForm({
   const handleTaskTypeChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     const newType = ev.target.value;
     setTaskType(newType);
+    setRequestBookingLabel({ description: { task_name: newType } });
 
     if (newType === 'custom_compose') {
       taskRequest.category = 'custom_compose';
@@ -1550,15 +1565,9 @@ export function CreateTaskForm({
     }
 
     try {
-      const labelString = serializeTaskBookingLabel(requestLabel);
+      const labelString = serializeTaskBookingLabel(requestBookingLabel);
       if (labelString) {
-        console.log('pushing label: ');
-        console.log(labelString);
-        if (request.labels) {
-          request.labels.push(labelString);
-        } else {
-          request.labels = [labelString];
-        }
+        request.labels = [labelString];
       }
     } catch (e) {
       console.error('Failed to generate string for task request label');
