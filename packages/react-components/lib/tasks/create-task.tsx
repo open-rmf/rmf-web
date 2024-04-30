@@ -1616,7 +1616,11 @@ export function CreateTaskForm({
     }
     try {
       setSavingFavoriteTask(true);
-      await submitFavoriteTask(favoriteTaskBuffer);
+
+      const favoriteTask = favoriteTaskBuffer;
+      favoriteTask.labels = [serializeTaskBookingLabel(requestBookingLabel)];
+
+      await submitFavoriteTask(favoriteTask);
       setSavingFavoriteTask(false);
       onSuccessFavoriteTask &&
         onSuccessFavoriteTask(
@@ -1696,6 +1700,16 @@ export function CreateTaskForm({
                           unix_millis_earliest_start_time: 0,
                           priority: favoriteTask.priority,
                         });
+                        let bookingLabel: TaskBookingLabel = { description: {} };
+                        if (favoriteTask.labels) {
+                          for (const label of favoriteTask.labels) {
+                            const parsedLabel = getTaskBookingLabelFromJsonString(label);
+                            if (parsedLabel) {
+                              bookingLabel = parsedLabel;
+                            }
+                          }
+                        }
+                        setRequestBookingLabel(bookingLabel);
                       }}
                     />
                   );
