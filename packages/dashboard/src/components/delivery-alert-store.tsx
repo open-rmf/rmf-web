@@ -206,7 +206,8 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
         </DialogContent>
         <DialogActions>
           {(newTaskState && newTaskState.status && newTaskState.status === 'canceled') ||
-          deliveryAlert.category === DeliveryAlertCategory.Cancelled ? (
+          deliveryAlert.category === DeliveryAlertCategory.Cancelled ||
+          (deliveryAlert.message && deliveryAlert.message.includes(' latch ')) ? (
             <Button
               size="small"
               variant="contained"
