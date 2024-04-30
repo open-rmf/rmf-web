@@ -51,4 +51,5 @@ from .rmf_api.task_state_update import TaskStateUpdate
 from .rmf_api.undo_skip_phase_request import UndoPhaseSkipRequest
 from .rmf_api.undo_skip_phase_response import UndoPhaseSkipResponse
 from .task_booking_label import *
+from .task_favorite import *
 from .user import *

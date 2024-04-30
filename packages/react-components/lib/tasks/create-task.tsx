@@ -38,11 +38,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { DatePicker, TimePicker, DateTimePicker } from '@mui/x-date-pickers';
-import type {
-  TaskBookingLabel,
-  TaskFavoritePydantic as TaskFavorite,
-  TaskRequest,
-} from 'api-client';
+import type { TaskBookingLabel, TaskFavorite, TaskRequest } from 'api-client';
 import React from 'react';
 import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
@@ -1216,6 +1212,7 @@ const defaultFavoriteTask = (): TaskFavorite => {
     unix_millis_earliest_start_time: 0,
     priority: { type: 'binary', value: 0 },
     user: '',
+    labels: [],
   };
 };
 
@@ -1569,6 +1566,7 @@ export function CreateTaskForm({
       if (labelString) {
         request.labels = [labelString];
       }
+      console.log(`labels: ${request.labels}`);
     } catch (e) {
       console.error('Failed to generate string for task request label');
     }
