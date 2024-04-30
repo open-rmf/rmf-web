@@ -1,7 +1,6 @@
 from fastapi import Depends
 from rx import operators as rxops
 
-from api_server.authenticator import user_dep
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import rmf_gateway
 from api_server.logging import LoggerAdapter, get_logger
