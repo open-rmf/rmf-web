@@ -31,7 +31,7 @@ import {
 } from '@mui/material';
 import {
   ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
-  TaskFavoritePydantic as TaskFavorite,
+  TaskFavorite,
   TaskRequest,
 } from 'api-client';
 import React from 'react';

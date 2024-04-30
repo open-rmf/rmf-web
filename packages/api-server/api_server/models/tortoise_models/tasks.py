@@ -1,4 +1,3 @@
-from tortoise.contrib.pydantic.creator import pydantic_model_creator
 from tortoise.fields import (
     CharField,
     DatetimeField,
@@ -80,6 +79,4 @@ class TaskFavorite(Model):
     category = CharField(255, null=False, index=True)
     description = JSONField()
     user = CharField(255, null=False, index=True)
-
-
-TaskFavoritePydantic = pydantic_model_creator(TaskFavorite)
+    labels = JSONField(null=True, default=list)
