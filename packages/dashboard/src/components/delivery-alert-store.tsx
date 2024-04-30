@@ -206,8 +206,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
         </DialogContent>
         <DialogActions>
           {(newTaskState && newTaskState.status && newTaskState.status === 'canceled') ||
-          deliveryAlert.category === DeliveryAlertCategory.Cancelled ||
-          (deliveryAlert.message && deliveryAlert.message.includes(' latch ')) ? (
+          deliveryAlert.category === DeliveryAlertCategory.Cancelled ? (
             <Button
               size="small"
               variant="contained"
@@ -219,6 +218,19 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
               }}
             >
               Cancelled
+            </Button>
+          ) : deliveryAlert.message && deliveryAlert.message.includes(' latch ') ? (
+            <Button
+              size="small"
+              variant="contained"
+              disabled
+              autoFocus
+              sx={{
+                fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+                padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+              }}
+            >
+              Cancel
             </Button>
           ) : newTaskState ? (
             <Tooltip title="Cancels the current delivery task.">
