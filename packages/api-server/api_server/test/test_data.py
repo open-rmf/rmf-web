@@ -25,9 +25,9 @@ from api_server.models import (
     TaskBookingLabel,
     TaskBookingLabelDescription,
     TaskEventLog,
+    TaskFavorite,
     TaskState,
 )
-from api_server.models import tortoise_models as ttm
 
 
 def make_door(name: str = "test_door") -> Door:
@@ -450,7 +450,7 @@ def make_task_state(task_id: str = "test_task") -> TaskState:
 
 def make_task_favorite(
     favorite_task_id: str = "default_id",
-) -> ttm.TaskFavoritePydantic:
+) -> TaskFavorite:
     sample_favorite_task = json.loads(
         """
    {
@@ -479,7 +479,7 @@ def make_task_favorite(
     """
     )
     sample_favorite_task["id"] = favorite_task_id
-    return ttm.TaskFavoritePydantic(**sample_favorite_task)
+    return TaskFavorite(**sample_favorite_task)
 
 
 def make_task_log(task_id: str) -> TaskEventLog:
