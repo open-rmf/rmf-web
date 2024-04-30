@@ -44,7 +44,7 @@ export const Action = {
   Resume: 'resume',
 } as const;
 
-export type Action = (typeof Action)[keyof typeof Action];
+export type Action = typeof Action[keyof typeof Action];
 
 /**
  *
@@ -103,7 +103,7 @@ export const ActivityDiscoveryRequestTypeEnum = {
 } as const;
 
 export type ActivityDiscoveryRequestTypeEnum =
-  (typeof ActivityDiscoveryRequestTypeEnum)[keyof typeof ActivityDiscoveryRequestTypeEnum];
+  typeof ActivityDiscoveryRequestTypeEnum[keyof typeof ActivityDiscoveryRequestTypeEnum];
 
 /**
  *
@@ -168,7 +168,7 @@ export const ApiServerModelsDeliveryAlertsDeliveryAlertCategory = {
 } as const;
 
 export type ApiServerModelsDeliveryAlertsDeliveryAlertCategory =
-  (typeof ApiServerModelsDeliveryAlertsDeliveryAlertCategory)[keyof typeof ApiServerModelsDeliveryAlertsDeliveryAlertCategory];
+  typeof ApiServerModelsDeliveryAlertsDeliveryAlertCategory[keyof typeof ApiServerModelsDeliveryAlertsDeliveryAlertCategory];
 
 /**
  * An enumeration.
@@ -182,7 +182,7 @@ export const ApiServerModelsDeliveryAlertsDeliveryAlertTier = {
 } as const;
 
 export type ApiServerModelsDeliveryAlertsDeliveryAlertTier =
-  (typeof ApiServerModelsDeliveryAlertsDeliveryAlertTier)[keyof typeof ApiServerModelsDeliveryAlertsDeliveryAlertTier];
+  typeof ApiServerModelsDeliveryAlertsDeliveryAlertTier[keyof typeof ApiServerModelsDeliveryAlertsDeliveryAlertTier];
 
 /**
  * An enumeration.
@@ -198,7 +198,7 @@ export const ApiServerModelsRmfApiLogEntryTier = {
 } as const;
 
 export type ApiServerModelsRmfApiLogEntryTier =
-  (typeof ApiServerModelsRmfApiLogEntryTier)[keyof typeof ApiServerModelsRmfApiLogEntryTier];
+  typeof ApiServerModelsRmfApiLogEntryTier[keyof typeof ApiServerModelsRmfApiLogEntryTier];
 
 /**
  * An enumeration.
@@ -217,7 +217,7 @@ export const ApiServerModelsRmfApiRobotStateStatus = {
 } as const;
 
 export type ApiServerModelsRmfApiRobotStateStatus =
-  (typeof ApiServerModelsRmfApiRobotStateStatus)[keyof typeof ApiServerModelsRmfApiRobotStateStatus];
+  typeof ApiServerModelsRmfApiRobotStateStatus[keyof typeof ApiServerModelsRmfApiRobotStateStatus];
 
 /**
  * An enumeration.
@@ -255,7 +255,7 @@ export const ApiServerModelsRmfApiTaskStateStatus = {
 } as const;
 
 export type ApiServerModelsRmfApiTaskStateStatus =
-  (typeof ApiServerModelsRmfApiTaskStateStatus)[keyof typeof ApiServerModelsRmfApiTaskStateStatus];
+  typeof ApiServerModelsRmfApiTaskStateStatus[keyof typeof ApiServerModelsRmfApiTaskStateStatus];
 
 /**
  * An enumeration.
@@ -617,7 +617,7 @@ export const CancelTaskRequestTypeEnum = {
 } as const;
 
 export type CancelTaskRequestTypeEnum =
-  (typeof CancelTaskRequestTypeEnum)[keyof typeof CancelTaskRequestTypeEnum];
+  typeof CancelTaskRequestTypeEnum[keyof typeof CancelTaskRequestTypeEnum];
 
 /**
  *
@@ -844,7 +844,7 @@ export const DispatchTaskRequestTypeEnum = {
 } as const;
 
 export type DispatchTaskRequestTypeEnum =
-  (typeof DispatchTaskRequestTypeEnum)[keyof typeof DispatchTaskRequestTypeEnum];
+  typeof DispatchTaskRequestTypeEnum[keyof typeof DispatchTaskRequestTypeEnum];
 
 /**
  *
@@ -2064,7 +2064,7 @@ export const ResultSuccessEnum = {
   False: false,
 } as const;
 
-export type ResultSuccessEnum = (typeof ResultSuccessEnum)[keyof typeof ResultSuccessEnum];
+export type ResultSuccessEnum = typeof ResultSuccessEnum[keyof typeof ResultSuccessEnum];
 
 /**
  *
@@ -2085,7 +2085,7 @@ export const ResultItemSuccessEnum = {
 } as const;
 
 export type ResultItemSuccessEnum =
-  (typeof ResultItemSuccessEnum)[keyof typeof ResultItemSuccessEnum];
+  typeof ResultItemSuccessEnum[keyof typeof ResultItemSuccessEnum];
 
 /**
  *
@@ -2112,7 +2112,7 @@ export const ResultItem1SuccessEnum = {
 } as const;
 
 export type ResultItem1SuccessEnum =
-  (typeof ResultItem1SuccessEnum)[keyof typeof ResultItem1SuccessEnum];
+  typeof ResultItem1SuccessEnum[keyof typeof ResultItem1SuccessEnum];
 
 /**
  * Information about the resume request that ended this interruption. This field will be missing if the interruption is still active.
@@ -2281,7 +2281,7 @@ export const RobotTaskResponseSuccessEnum = {
 } as const;
 
 export type RobotTaskResponseSuccessEnum =
-  (typeof RobotTaskResponseSuccessEnum)[keyof typeof RobotTaskResponseSuccessEnum];
+  typeof RobotTaskResponseSuccessEnum[keyof typeof RobotTaskResponseSuccessEnum];
 
 /**
  * Template for defining a response message that only indicates success and describes any errors
@@ -2398,7 +2398,7 @@ export const Status1 = {
   CanceledInFlight: 'canceled_in_flight',
 } as const;
 
-export type Status1 = (typeof Status1)[keyof typeof Status1];
+export type Status1 = typeof Status1[keyof typeof Status1];
 
 /**
  *
@@ -2469,7 +2469,7 @@ export const TaskDiscoveryTypeEnum = {
 } as const;
 
 export type TaskDiscoveryTypeEnum =
-  (typeof TaskDiscoveryTypeEnum)[keyof typeof TaskDiscoveryTypeEnum];
+  typeof TaskDiscoveryTypeEnum[keyof typeof TaskDiscoveryTypeEnum];
 
 /**
  *
@@ -2490,7 +2490,7 @@ export const TaskDiscoveryRequestTypeEnum = {
 } as const;
 
 export type TaskDiscoveryRequestTypeEnum =
-  (typeof TaskDiscoveryRequestTypeEnum)[keyof typeof TaskDiscoveryRequestTypeEnum];
+  typeof TaskDiscoveryRequestTypeEnum[keyof typeof TaskDiscoveryRequestTypeEnum];
 
 /**
  * Response to a task dispatch request
@@ -2523,7 +2523,7 @@ export const TaskDispatchResponseSuccessEnum = {
 } as const;
 
 export type TaskDispatchResponseSuccessEnum =
-  (typeof TaskDispatchResponseSuccessEnum)[keyof typeof TaskDispatchResponseSuccessEnum];
+  typeof TaskDispatchResponseSuccessEnum[keyof typeof TaskDispatchResponseSuccessEnum];
 
 /**
  *
@@ -2550,7 +2550,7 @@ export const TaskDispatchResponseItemSuccessEnum = {
 } as const;
 
 export type TaskDispatchResponseItemSuccessEnum =
-  (typeof TaskDispatchResponseItemSuccessEnum)[keyof typeof TaskDispatchResponseItemSuccessEnum];
+  typeof TaskDispatchResponseItemSuccessEnum[keyof typeof TaskDispatchResponseItemSuccessEnum];
 
 /**
  *
@@ -2577,7 +2577,7 @@ export const TaskDispatchResponseItem1SuccessEnum = {
 } as const;
 
 export type TaskDispatchResponseItem1SuccessEnum =
-  (typeof TaskDispatchResponseItem1SuccessEnum)[keyof typeof TaskDispatchResponseItem1SuccessEnum];
+  typeof TaskDispatchResponseItem1SuccessEnum[keyof typeof TaskDispatchResponseItem1SuccessEnum];
 
 /**
  *
@@ -2684,7 +2684,7 @@ export const TaskInterruptionRequestTypeEnum = {
 } as const;
 
 export type TaskInterruptionRequestTypeEnum =
-  (typeof TaskInterruptionRequestTypeEnum)[keyof typeof TaskInterruptionRequestTypeEnum];
+  typeof TaskInterruptionRequestTypeEnum[keyof typeof TaskInterruptionRequestTypeEnum];
 
 /**
  * Response to a request for a task to be interrupted
@@ -2742,7 +2742,7 @@ export const TaskKillRequestTypeEnum = {
 } as const;
 
 export type TaskKillRequestTypeEnum =
-  (typeof TaskKillRequestTypeEnum)[keyof typeof TaskKillRequestTypeEnum];
+  typeof TaskKillRequestTypeEnum[keyof typeof TaskKillRequestTypeEnum];
 
 /**
  * Response to a request to kill a task
@@ -2800,7 +2800,7 @@ export const TaskPhaseSkipRequestTypeEnum = {
 } as const;
 
 export type TaskPhaseSkipRequestTypeEnum =
-  (typeof TaskPhaseSkipRequestTypeEnum)[keyof typeof TaskPhaseSkipRequestTypeEnum];
+  typeof TaskPhaseSkipRequestTypeEnum[keyof typeof TaskPhaseSkipRequestTypeEnum];
 
 /**
  *
@@ -2900,7 +2900,7 @@ export const TaskResumeRequestTypeEnum = {
 } as const;
 
 export type TaskResumeRequestTypeEnum =
-  (typeof TaskResumeRequestTypeEnum)[keyof typeof TaskResumeRequestTypeEnum];
+  typeof TaskResumeRequestTypeEnum[keyof typeof TaskResumeRequestTypeEnum];
 
 /**
  * Response to a request to resume a task
@@ -2952,7 +2952,7 @@ export const TaskRewindRequestTypeEnum = {
 } as const;
 
 export type TaskRewindRequestTypeEnum =
-  (typeof TaskRewindRequestTypeEnum)[keyof typeof TaskRewindRequestTypeEnum];
+  typeof TaskRewindRequestTypeEnum[keyof typeof TaskRewindRequestTypeEnum];
 
 /**
  * Response to a request to rewind a task
@@ -3264,7 +3264,7 @@ export const UndoPhaseSkipRequestTypeEnum = {
 } as const;
 
 export type UndoPhaseSkipRequestTypeEnum =
-  (typeof UndoPhaseSkipRequestTypeEnum)[keyof typeof UndoPhaseSkipRequestTypeEnum];
+  typeof UndoPhaseSkipRequestTypeEnum[keyof typeof UndoPhaseSkipRequestTypeEnum];
 
 /**
  * Response to an undo phase skip request
@@ -5610,8 +5610,9 @@ export const BuildingApiFp = function (configuration?: Configuration) {
     async getBuildingMapBuildingMapGet(
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BuildingMap>> {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getBuildingMapBuildingMapGet(options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getBuildingMapBuildingMapGet(
+        options,
+      );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
   };
@@ -9565,8 +9566,9 @@ export const TasksApiFp = function (configuration?: Configuration) {
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskFavoritePydantic>>
     > {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getFavoritesTasksFavoriteTasksGet(options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.getFavoritesTasksFavoriteTasksGet(
+        options,
+      );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
