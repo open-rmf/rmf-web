@@ -1,3 +1,4 @@
+import asyncio
 import sys
 from datetime import datetime
 from typing import Dict, List, Optional, Sequence, Tuple, cast
@@ -9,7 +10,7 @@ from tortoise.queryset import QuerySet
 from tortoise.transactions import in_transaction
 
 from api_server.authenticator import user_dep
-from api_server.logger import format_exception, logger
+from api_server.logging import LoggerAdapter, get_logger
 from api_server.models import (
     LogEntry,
     Pagination,
@@ -28,105 +29,107 @@ from api_server.query import add_pagination
 from api_server.rmf_io import task_events
 
 
-def parse_pickup(task_request: TaskRequest) -> Optional[str]:
-    # patrol
-    if task_request.category.lower() == "patrol":
-        return None
-
-    # custom deliveries
-    supportedDeliveries = [
-        "delivery_pickup",
-        "delivery_sequential_lot_pickup",
-        "delivery_area_pickup",
-    ]
-    if (
-        "category" not in task_request.description
-        or task_request.description["category"] not in supportedDeliveries
+class TaskRepository:
+    def __init__(
+        self,
+        user: User = Depends(user_dep),
+        logger: LoggerAdapter = Depends(get_logger),
     ):
-        return None
+        self.user = user
+        self.logger = logger
+        self.save_task_state_mutex = asyncio.Lock()
 
-    category = task_request.description["category"]
-    try:
-        perform_action_description = task_request.description["phases"][0]["activity"][
-            "description"
-        ]["activities"][1]["description"]["description"]
-        if category == "delivery_pickup":
-            return perform_action_description["pickup_lot"]
-        return perform_action_description["pickup_zone"]
-    except Exception as e:  # pylint: disable=W0703
-        logger.error(format_exception(e))
-        logger.error(f"Failed to parse pickup for task of category {category}")
-    return None
+    def parse_pickup(self, task_request: TaskRequest) -> Optional[str]:
+        # patrol
+        if task_request.category.lower() == "patrol":
+            return None
 
-
-def parse_destination(
-    task_state: TaskState, task_request: TaskRequest
-) -> Optional[str]:
-    # patrol
-    try:
+        # custom deliveries
+        supportedDeliveries = [
+            "delivery_pickup",
+            "delivery_sequential_lot_pickup",
+            "delivery_area_pickup",
+        ]
         if (
-            task_request.category.lower() == "patrol"
-            and task_request.description["places"] is not None
-            and len(task_request.description["places"]) > 0
+            "category" not in task_request.description
+            or task_request.description["category"] not in supportedDeliveries
         ):
-            return task_request.description["places"][-1]
-    except Exception as e:  # pylint: disable=W0703
-        logger.error(format_exception(e))
-        logger.error("Failed to parse destination for patrol")
-        return None
+            return None
 
-    # custom deliveries
-    supportedDeliveries = [
-        "delivery_pickup",
-        "delivery_sequential_lot_pickup",
-        "delivery_area_pickup",
-    ]
-    if (
-        "category" not in task_request.description
-        or task_request.description["category"] not in supportedDeliveries
-    ):
-        return None
-
-    category = task_request.description["category"]
-    try:
-        destination = task_request.description["phases"][1]["activity"]["description"][
-            "activities"
-        ][0]["description"]
-        return destination
-    except Exception as e:  # pylint: disable=W0703
-        logger.error(format_exception(e))
-        logger.error(
-            f"Failed to parse destination from task request of category {category}"
-        )
-
-    # automated tasks that can only be parsed with state
-    if task_state.category is not None and task_state.category == "Charge Battery":
+        category = task_request.description["category"]
         try:
-            if (
-                task_state.phases is None
-                or "1" not in task_state.phases
-                or task_state.phases["1"].events is None
-                or "1" not in task_state.phases["1"].events
-                or task_state.phases["1"].events["1"].name is None
-            ):
-                raise ValueError
-
-            charge_event_name = task_state.phases["1"].events["1"].name
-            charge_place_split = charge_event_name.split("[place:")[1]
-            charge_place = charge_place_split.split("]")[0]
-            return charge_place
+            perform_action_description = task_request.description["phases"][0][
+                "activity"
+            ]["description"]["activities"][1]["description"]["description"]
+            if category == "delivery_pickup":
+                return perform_action_description["pickup_lot"]
+            return perform_action_description["pickup_zone"]
         except Exception as e:  # pylint: disable=W0703
-            logger.error(format_exception(e))
-            logger.error(
-                f"Failed to parse charging point from task state of id {task_state.booking.id}"
+            self.logger.error(
+                f"Failed to parse pickup for task of category [{category}] [{e}]"
             )
         return None
-    return None
 
+    def parse_destination(
+        self, task_state: TaskState, task_request: TaskRequest
+    ) -> Optional[str]:
+        # patrol
+        try:
+            if (
+                task_request.category.lower() == "patrol"
+                and task_request.description["places"] is not None
+                and len(task_request.description["places"]) > 0
+            ):
+                return task_request.description["places"][-1]
+        except Exception as e:  # pylint: disable=W0703
+            self.logger.error(f"Failed to parse destination for patrol [{e}]")
+            return None
 
-class TaskRepository:
-    def __init__(self, user: User):
-        self.user = user
+        # custom deliveries
+        supportedDeliveries = [
+            "delivery_pickup",
+            "delivery_sequential_lot_pickup",
+            "delivery_area_pickup",
+        ]
+        if (
+            "category" not in task_request.description
+            or task_request.description["category"] not in supportedDeliveries
+        ):
+            return None
+
+        category = task_request.description["category"]
+        try:
+            destination = task_request.description["phases"][1]["activity"][
+                "description"
+            ]["activities"][0]["description"]
+            return destination
+        except Exception as e:  # pylint: disable=W0703
+            self.logger.error(
+                f"Failed to parse destination from task request of category [{category}] [{e}]"
+            )
+
+        # automated tasks that can only be parsed with state
+        if task_state.category is not None and task_state.category == "Charge Battery":
+            try:
+                if (
+                    task_state.phases is None
+                    or "1" not in task_state.phases
+                    or task_state.phases["1"].events is None
+                    or "1" not in task_state.phases["1"].events
+                    or task_state.phases["1"].events["1"].name is None
+                ):
+                    raise ValueError
+
+                charge_event_name = task_state.phases["1"].events["1"].name
+                charge_place_split = charge_event_name.split("[place:")[1]
+                charge_place = charge_place_split.split("]")[0]
+                return charge_place
+            except Exception as e:  # pylint: disable=W0703
+                self.logger.error(
+                    f"Failed to parse charging point from task state of id [{task_state.booking.id}] [{e}]"
+                )
+            return None
+        return None
 
     async def save_task_request(
         self, task_state: TaskState, task_request: TaskRequest
@@ -136,8 +139,8 @@ class TaskRepository:
         )
 
         # Add pickup and destination to task state model for filter and sort
-        pickup = parse_pickup(task_request)
-        destination = parse_destination(task_state, task_request)
+        pickup = self.parse_pickup(task_request)
+        destination = self.parse_destination(task_state, task_request)
         db_task_state = await DbTaskState.get_or_none(id_=task_state.booking.id)
         if db_task_state is not None:
             db_task_state.update_from_dict(
@@ -162,32 +165,46 @@ class TaskRepository:
             raise HTTPException(422, str(e)) from e
 
     async def save_task_state(self, task_state: TaskState) -> None:
-        task_state_dict = {
-            "data": task_state.json(),
-            "category": task_state.category.__root__ if task_state.category else None,
-            "assigned_to": task_state.assigned_to.name
-            if task_state.assigned_to
-            else None,
-            "unix_millis_start_time": task_state.unix_millis_start_time
-            and datetime.fromtimestamp(task_state.unix_millis_start_time / 1000),
-            "unix_millis_finish_time": task_state.unix_millis_finish_time
-            and datetime.fromtimestamp(task_state.unix_millis_finish_time / 1000),
-            "status": task_state.status if task_state.status else None,
-            "unix_millis_request_time": task_state.booking.unix_millis_request_time
-            and datetime.fromtimestamp(
-                task_state.booking.unix_millis_request_time / 1000
-            ),
-            "requester": task_state.booking.requester
-            if task_state.booking.requester
-            else None,
-        }
+        # FIXME: If the task dispatcher is also provided websocket access to
+        # the API server, when a new task is dispatched via the API server,
+        # there may be a race condition where both the ROS 2 task response and
+        # task dispatcher websocket update may attempt to create a new task
+        # state model with the same task ID. This have unfortunately not been
+        # reproducible locally, only in the production environment, which uses
+        # Postgres instead of sqlite. This may be fixed upstream in DB or ORM,
+        # this mutex can be removed once these libraries have been updated and
+        # tested to be fixed.
+        async with self.save_task_state_mutex:
+            task_state_dict = {
+                "data": task_state.json(),
+                "category": task_state.category.__root__
+                if task_state.category
+                else None,
+                "assigned_to": task_state.assigned_to.name
+                if task_state.assigned_to
+                else None,
+                "unix_millis_start_time": task_state.unix_millis_start_time
+                and datetime.fromtimestamp(task_state.unix_millis_start_time / 1000),
+                "unix_millis_finish_time": task_state.unix_millis_finish_time
+                and datetime.fromtimestamp(task_state.unix_millis_finish_time / 1000),
+                "status": task_state.status if task_state.status else None,
+                "unix_millis_request_time": task_state.booking.unix_millis_request_time
+                and datetime.fromtimestamp(
+                    task_state.booking.unix_millis_request_time / 1000
+                ),
+                "requester": task_state.booking.requester
+                if task_state.booking.requester
+                else None,
+            }
 
-        if task_state.unix_millis_warn_time is not None:
-            task_state_dict["unix_millis_warn_time"] = datetime.fromtimestamp(
-                task_state.unix_millis_warn_time / 1000
+            if task_state.unix_millis_warn_time is not None:
+                task_state_dict["unix_millis_warn_time"] = datetime.fromtimestamp(
+                    task_state.unix_millis_warn_time / 1000
+                )
+
+            await ttm.TaskState.update_or_create(
+                task_state_dict, id_=task_state.booking.id
             )
-
-        await ttm.TaskState.update_or_create(task_state_dict, id_=task_state.booking.id)
 
     async def query_task_states(
         self, query: QuerySet[DbTaskState], pagination: Optional[Pagination] = None
@@ -363,8 +380,4 @@ class TaskRepository:
                 if task_log.phases:
                     await self._savePhaseLogs(db_task_log, task_log.phases)
             except IntegrityError as e:
-                logger.error(format_exception(e))
-
-
-def task_repo_dep(user: User = Depends(user_dep)):
-    return TaskRepository(user)
+                self.logger.error(e)

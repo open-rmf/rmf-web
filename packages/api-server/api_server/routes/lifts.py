@@ -7,20 +7,20 @@ from api_server.dependencies import sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import rmf_gateway
 from api_server.models import Lift, LiftHealth, LiftRequest, LiftState
-from api_server.repositories import RmfRepository, rmf_repo_dep
+from api_server.repositories import RmfRepository
 from api_server.rmf_io import rmf_events
 
 router = FastIORouter(tags=["Lifts"])
 
 
 @router.get("", response_model=List[Lift])
-async def get_lifts(rmf_repo: RmfRepository = Depends(rmf_repo_dep)):
+async def get_lifts(rmf_repo: RmfRepository = Depends(RmfRepository)):
     return await rmf_repo.get_lifts()
 
 
 @router.get("/{lift_name}/state", response_model=LiftState)
 async def get_lift_state(
-    lift_name: str, rmf_repo: RmfRepository = Depends(rmf_repo_dep)
+    lift_name: str, rmf_repo: RmfRepository = Depends(RmfRepository)
 ):
     """
     Available in socket.io
@@ -45,7 +45,7 @@ async def sub_lift_state(req: SubscriptionRequest, lift_name: str):
 
 @router.get("/{lift_name}/health", response_model=LiftHealth)
 async def get_lift_health(
-    lift_name: str, rmf_repo: RmfRepository = Depends(rmf_repo_dep)
+    lift_name: str, rmf_repo: RmfRepository = Depends(RmfRepository)
 ):
     """
     Available in socket.io

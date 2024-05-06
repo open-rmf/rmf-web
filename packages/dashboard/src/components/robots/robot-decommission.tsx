@@ -183,10 +183,22 @@ export function RobotDecommissionButton({
           onSubmit={robotDecommissioned ? handleRecommission : handleDecommission}
         >
           {robotDecommissioned ? (
-            <Typography>Confirm recommission robot?</Typography>
+            <>
+              <Typography>Confirm recommission robot?</Typography>
+              <Typography color="warning.main">
+                Warning: the robot could immediately be assigned a new task after recommission,
+                please ensure that the robot is fully functional, localized, and its location
+                reflecting accurately on the Open-RMF map before recommissioning.
+              </Typography>
+            </>
           ) : (
             <>
               <Typography>Confirm decommission robot?</Typography>
+              <Typography color="warning.main">
+                Warning: ongoing tasks will not be affected. If manual intervention is required,
+                please ensure the ongoing task is cancelled after decommission, before executing
+                manual intervention.
+              </Typography>
               <FormGroup>
                 <Tooltip title="Attempts to reassign all queued tasks to other robots if possible">
                   <FormControlLabel

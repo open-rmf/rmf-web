@@ -112,6 +112,7 @@ def make_robot_state(name: Optional[str] = None) -> RobotState:
         location=None,
         battery=None,
         issues=None,
+        mutex_groups=None,
     )
 
 

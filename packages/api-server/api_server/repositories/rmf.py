@@ -25,7 +25,7 @@ from api_server.query import add_pagination
 
 
 class RmfRepository:
-    def __init__(self, user: User):
+    def __init__(self, user: User = Depends(user_dep)):
         self.user = user
 
     @staticmethod
@@ -129,7 +129,3 @@ class RmfRepository:
                 pagination,
             ).values_list("username", flat=True),
         )
-
-
-def rmf_repo_dep(user: User = Depends(user_dep)):
-    return RmfRepository(user)

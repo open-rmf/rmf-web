@@ -1,8 +1,9 @@
-import React from 'react';
-import { Lift, LiftState } from 'api-client';
-import { RmfAppContext } from '../rmf-app';
-import { LiftThreeMaker } from 'react-components';
 import { ThreeEvent } from '@react-three/fiber';
+import { Lift, LiftState } from 'api-client';
+import React from 'react';
+import { LiftThreeMaker } from 'react-components';
+import { throttleTime } from 'rxjs';
+import { RmfAppContext } from '../rmf-app';
 
 interface LiftsProps {
   opacity: number;
@@ -49,7 +50,10 @@ export const Lifts = React.memo(({ lift, onLiftClick }: LiftsProps): JSX.Element
       return;
     }
 
-    const sub = rmf.getLiftStateObs(lift.name).subscribe(setLiftState);
+    const sub = rmf
+      .getLiftStateObs(lift.name)
+      .pipe(throttleTime(3000, undefined, { leading: true, trailing: true }))
+      .subscribe(setLiftState);
     return () => sub.unsubscribe();
   }, [rmf, lift]);
 

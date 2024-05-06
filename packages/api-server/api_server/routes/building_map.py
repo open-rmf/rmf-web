@@ -3,19 +3,18 @@ from datetime import datetime
 from fastapi import Depends, HTTPException
 from rx import operators as rxops
 
-from api_server.authenticator import user_dep
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import rmf_gateway
-from api_server.logger import logger
+from api_server.logging import LoggerAdapter, get_logger
 from api_server.models import BuildingMap, FireAlarmTriggerState, User
-from api_server.repositories import RmfRepository, rmf_repo_dep
+from api_server.repositories import RmfRepository
 from api_server.rmf_io import rmf_events
 
 router = FastIORouter(tags=["Building"])
 
 
 @router.get("", response_model=BuildingMap)
-async def get_building_map(rmf_repo: RmfRepository = Depends(rmf_repo_dep)):
+async def get_building_map(rmf_repo: RmfRepository = Depends(RmfRepository)):
     """
     Available in socket.io
     """
@@ -45,9 +44,9 @@ async def get_previous_fire_alarm_trigger():
 
 @router.post("/reset_fire_alarm_trigger", response_model=FireAlarmTriggerState)
 async def reset_fire_alarm_trigger(
-    user: User = Depends(user_dep),
+    logger: LoggerAdapter = Depends(get_logger),
 ):
-    logger.info(f"User {user.username} requested to reset fire alarm trigger")
+    logger.info(f"Fire alarm trigger reset requested")
     rmf_gateway().reset_fire_alarm_trigger()
     fire_alarm_trigger_state = FireAlarmTriggerState(
         unix_millis_time=round(datetime.now().timestamp() * 1000), trigger=False

@@ -216,6 +216,19 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
       );
     }
 
+    if (robotState && robotState.commission) {
+      const commission = robotState.commission;
+      contents.push({
+        title: `[${
+          commission.dispatch_tasks === false ? 'Decommissioned' : 'Commissioned'
+        }] status`,
+        value:
+          `Direct tasks  : ${commission.direct_tasks ?? 'n/a'}\n` +
+          `Dispatch tasks: ${commission.dispatch_tasks ?? 'n/a'}\n` +
+          `Idle Behavior : ${commission.idle_behavior ?? 'n/a'}`,
+      });
+    }
+
     return (
       <>
         {contents.map((message, index) => (
