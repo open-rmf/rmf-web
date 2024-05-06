@@ -3633,6 +3633,8 @@ export default {
         required: ['description'],
         type: 'object',
         properties: { description: { $ref: '#/components/schemas/TaskBookingLabelDescription' } },
+        description:
+          'This label is to be populated by any frontend during a task dispatch, by\nbeing added to TaskRequest.labels, which in turn populates\nTaskState.booking.labels, and can be used to display relevant information\nneeded for any frontends.',
       },
       TaskBookingLabelDescription: {
         title: 'TaskBookingLabelDescription',
@@ -3644,6 +3646,8 @@ export default {
           destination: { title: 'Destination', type: 'string' },
           cart_id: { title: 'Cart Id', type: 'string' },
         },
+        description:
+          'This description holds several fields that could be useful for frontend\ndashboards when dispatching a task, to then be identified or rendered\naccordingly back on the same frontend.',
       },
       TaskCancelResponse: {
         title: 'TaskCancelResponse',

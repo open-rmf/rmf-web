@@ -2377,7 +2377,7 @@ export interface Task {
   description_schema?: object;
 }
 /**
- *
+ * This label is to be populated by any frontend during a task dispatch, by being added to TaskRequest.labels, which in turn populates TaskState.booking.labels, and can be used to display relevant information needed for any frontends.
  * @export
  * @interface TaskBookingLabel
  */
@@ -2390,7 +2390,7 @@ export interface TaskBookingLabel {
   description: TaskBookingLabelDescription;
 }
 /**
- *
+ * This description holds several fields that could be useful for frontend dashboards when dispatching a task, to then be identified or rendered accordingly back on the same frontend.
  * @export
  * @interface TaskBookingLabelDescription
  */

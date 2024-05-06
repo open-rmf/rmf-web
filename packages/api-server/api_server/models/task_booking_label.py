@@ -8,6 +8,12 @@ from pydantic import BaseModel
 
 
 class TaskBookingLabelDescription(BaseModel):
+    """
+    This description holds several fields that could be useful for frontend
+    dashboards when dispatching a task, to then be identified or rendered
+    accordingly back on the same frontend.
+    """
+
     task_name: Optional[str]
     unix_millis_warn_time: Optional[int]
     pickup: Optional[str]
@@ -23,6 +29,13 @@ class TaskBookingLabelDescription(BaseModel):
 
 
 class TaskBookingLabel(BaseModel):
+    """
+    This label is to be populated by any frontend during a task dispatch, by
+    being added to TaskRequest.labels, which in turn populates
+    TaskState.booking.labels, and can be used to display relevant information
+    needed for any frontends.
+    """
+
     description: TaskBookingLabelDescription
 
     @staticmethod
