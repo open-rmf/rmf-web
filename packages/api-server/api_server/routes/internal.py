@@ -1,6 +1,5 @@
 # NOTE: This will eventually replace `gateway.py``
 import os
-from collections import deque
 from typing import Any, Dict
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
@@ -78,10 +77,6 @@ def task_log_has_error(task_log: mdl.TaskEventLog) -> bool:
     return False
 
 
-completed_tasks = deque(maxlen=10)
-failed_tasks = deque(maxlen=10)
-
-
 async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
     if "type" not in msg:
         logger.warning(msg)
@@ -98,28 +93,13 @@ async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
         await task_repo.save_task_state(task_state)
         task_events.task_states.on_next(task_state)
 
-        if task_state.status == mdl.Status.completed:
-            if task_state.booking.id not in completed_tasks:
-                completed_tasks.append(task_state.booking.id)
-                alert = await alert_repo.create_alert(task_state.booking.id, "task")
-                if alert is not None:
-                    alert_events.alerts.on_next(alert)
-            else:
-                logger.warning(
-                    "Received a repeated complete task state update, please check if the fleet adapter has stalled"
-                )
-        elif task_state.status == mdl.Status.failed:
-            if task_state.booking.id not in failed_tasks:
-                failed_tasks.append(task_state.booking.id)
-
-                # TODO: check if the failure alert content is the same
-                alert = await alert_repo.create_alert(task_state.booking.id, "task")
-                if alert is not None:
-                    alert_events.alerts.on_next(alert)
-            else:
-                logger.warning(
-                    "Received a repeated failed task state update, please check if the fleet adapter has stalled"
-                )
+        if (
+            task_state.status == mdl.Status.completed
+            or task_state.status == mdl.Status.failed
+        ):
+            alert = await alert_repo.create_alert(task_state.booking.id, "task")
+            if alert is not None:
+                alert_events.alerts.on_next(alert)
         elif (
             task_state.unix_millis_finish_time
             and task_state.unix_millis_warn_time
