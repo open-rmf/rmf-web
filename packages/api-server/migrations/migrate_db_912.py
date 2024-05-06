@@ -23,6 +23,8 @@ from api_server.models import TaskBookingLabel, TaskRequest, TaskState
 # - Update the respective TaskState.data json TaskState.booking.labels field
 #   with the newly constructed TaskBookingLabel json string.
 # - Update the requests in ScheduledTask to use labels too
+# - TaskFavorite will not be migrated as the database model was not able to
+#   support it until rmf-web#912
 
 
 app_config = load_config(
