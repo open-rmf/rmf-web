@@ -6,7 +6,7 @@ from rx import operators as rxops
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import rmf_gateway
 from api_server.logging import LoggerAdapter, get_logger
-from api_server.models import BuildingMap, FireAlarmTriggerState, User
+from api_server.models import BuildingMap, FireAlarmTriggerState
 from api_server.repositories import RmfRepository
 from api_server.rmf_io import rmf_events
 
@@ -46,7 +46,7 @@ async def get_previous_fire_alarm_trigger():
 async def reset_fire_alarm_trigger(
     logger: LoggerAdapter = Depends(get_logger),
 ):
-    logger.info(f"Fire alarm trigger reset requested")
+    logger.info("Fire alarm trigger reset requested")
     rmf_gateway().reset_fire_alarm_trigger()
     fire_alarm_trigger_state = FireAlarmTriggerState(
         unix_millis_time=round(datetime.now().timestamp() * 1000), trigger=False
