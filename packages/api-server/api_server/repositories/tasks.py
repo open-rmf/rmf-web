@@ -1,3 +1,4 @@
+import asyncio
 import sys
 from datetime import datetime
 from typing import Dict, List, Optional, Sequence, Tuple, cast
@@ -37,6 +38,7 @@ class TaskRepository:
     ):
         self.user = user
         self.logger = logger
+        self.save_task_state_mutex = asyncio.Lock()
 
     async def save_task_request(
         self, task_state: TaskState, task_request: TaskRequest
@@ -101,7 +103,19 @@ class TaskRepository:
                 task_state.unix_millis_warn_time / 1000
             )
 
-        await ttm.TaskState.update_or_create(task_state_dict, id_=task_state.booking.id)
+        # FIXME: If the task dispatcher is also provided websocket access to
+        # the API server, when a new task is dispatched via the API server,
+        # there may be a race condition where both the ROS 2 task response and
+        # task dispatcher websocket update may attempt to create a new task
+        # state model with the same task ID. This have unfortunately not been
+        # reproducible locally, only in the production environment, which uses
+        # Postgres instead of sqlite. This may be fixed upstream in DB or ORM,
+        # this mutex can be removed once these libraries have been updated and
+        # tested to be fixed.
+        async with self.save_task_state_mutex:
+            await ttm.TaskState.update_or_create(
+                task_state_dict, id_=task_state.booking.id
+            )
 
     async def query_task_states(
         self, query: QuerySet[DbTaskState], pagination: Optional[Pagination] = None
