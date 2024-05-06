@@ -46,6 +46,7 @@ async def get_previous_fire_alarm_trigger():
 async def reset_fire_alarm_trigger(
     logger: LoggerAdapter = Depends(get_logger),
 ):
+    # TODO: enforce with authz
     logger.info("Fire alarm trigger reset requested")
     rmf_gateway().reset_fire_alarm_trigger()
     fire_alarm_trigger_state = FireAlarmTriggerState(

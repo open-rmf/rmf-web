@@ -709,9 +709,9 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           onClose={() => setOpenFireAlarmTriggerResetDialog(false)}
           onSubmit={handleResetFireAlarmTrigger}
         >
-          <Typography>
-            Please ensure that all other systems are back online and that it is safe to resume robot
-            operations.
+          <Typography color="warning.main">
+            Warning: Please ensure that all other systems are back online and that it is safe to
+            resume robot operations.
           </Typography>
         </ConfirmationDialog>
       )}
