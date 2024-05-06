@@ -83,12 +83,12 @@ async def process_msg(
     logger: LoggerAdapter,
 ) -> None:
     if "type" not in msg:
-        logger.warn(msg)
-        logger.warn("Ignoring message, 'type' must include in msg field")
+        logger.warning(msg)
+        logger.warning("Ignoring message, 'type' must include in msg field")
         return
     payload_type: str = msg["type"]
     if not isinstance(payload_type, str):
-        logger.warn("error processing message, 'type' must be a string")
+        logger.warning("error processing message, 'type' must be a string")
         return
     logger.debug(msg)
 
@@ -152,4 +152,4 @@ async def rmf_gateway(
             await process_msg(msg, fleet_repo, task_repo, alert_repo, logger)
     except (WebSocketDisconnect, ConnectionClosed):
         connection_manager.disconnect(websocket)
-        logger.warn("Client websocket disconnected")
+        logger.warning("Client websocket disconnected")
