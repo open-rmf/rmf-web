@@ -1,21 +1,19 @@
 # NOTE: This will eventually replace `gateway.py``
+import logging
 import os
 from typing import Any, Dict
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from websockets.exceptions import ConnectionClosed
 
 from api_server import models as mdl
 from api_server.app_config import app_config
-from api_server.logger import logger as base_logger
+from api_server.logging import LoggerAdapter, get_logger
 from api_server.repositories import AlertRepository, FleetRepository, TaskRepository
 from api_server.rmf_io import alert_events, fleet_events, task_events
 
 router = APIRouter(tags=["_internal"])
-logger = base_logger.getChild("RmfGatewayApp")
 user: mdl.User = mdl.User(username="__rmf_internal__", is_admin=True)
-task_repo = TaskRepository(user)
-alert_repo = AlertRepository(user, task_repo)
 
 
 class ConnectionManager:
@@ -25,7 +23,7 @@ class ConnectionManager:
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         self.active_connections.append(websocket)
-        logger.info(
+        logging.info(
             f"ConnectionManager: {len(self.active_connections)} websocket connections still alive"
         )
 
@@ -35,15 +33,15 @@ class ConnectionManager:
             and len(self.active_connections)
             > app_config.max_internal_websocket_connections
         ):
-            logger.error(
+            logging.error(
                 f"ConnectionManager: exceeded maximum allowed internal websocket connections [{app_config.max_internal_websocket_connections}]"
             )
-            logger.error("ConnectionManager: Shutting down server")
+            logging.error("ConnectionManager: Shutting down server")
             os._exit(1)  # pylint: disable=protected-access
 
     def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)
-        logger.info(
+        logging.info(
             f"ConnectionManager: {len(self.active_connections)} websocket connections still alive"
         )
 
@@ -77,7 +75,13 @@ def task_log_has_error(task_log: mdl.TaskEventLog) -> bool:
     return False
 
 
-async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
+async def process_msg(
+    msg: Dict[str, Any],
+    fleet_repo: FleetRepository,
+    task_repo: TaskRepository,
+    alert_repo: AlertRepository,
+    logger: LoggerAdapter,
+) -> None:
     if "type" not in msg:
         logger.warning(msg)
         logger.warning("Ignoring message, 'type' must include in msg field")
@@ -134,13 +138,18 @@ async def process_msg(msg: Dict[str, Any], fleet_repo: FleetRepository) -> None:
 
 
 @router.websocket("")
-async def rmf_gateway(websocket: WebSocket):
+async def rmf_gateway(
+    websocket: WebSocket,
+    logger: LoggerAdapter = Depends(get_logger),
+):
     await connection_manager.connect(websocket)
-    fleet_repo = FleetRepository(user)
+    fleet_repo = FleetRepository(user, logger)
+    task_repo = TaskRepository(user, logger)
+    alert_repo = AlertRepository(user, task_repo)
     try:
         while True:
             msg: Dict[str, Any] = await websocket.receive_json()
-            await process_msg(msg, fleet_repo)
+            await process_msg(msg, fleet_repo, task_repo, alert_repo, logger)
     except (WebSocketDisconnect, ConnectionClosed):
         connection_manager.disconnect(websocket)
         logger.warning("Client websocket disconnected")

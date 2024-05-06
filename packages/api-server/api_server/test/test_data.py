@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 from uuid import uuid4
 
 from rmf_building_map_msgs.msg import Door as RmfDoor
@@ -20,6 +21,7 @@ from api_server.models import (
     Level,
     Lift,
     LiftState,
+    RobotState,
     TaskEventLog,
     TaskState,
 )
@@ -100,8 +102,23 @@ def make_ingestor_state(guid: str = "test_ingestor") -> IngestorState:
     )
 
 
-def make_fleet_state() -> FleetState:
-    return FleetState(name=str(uuid4()), robots={})
+def make_robot_state(name: Optional[str] = None) -> RobotState:
+    robot_name = name if name is not None else str(uuid4())
+    return RobotState(
+        name=robot_name,
+        status=None,
+        task_id=None,
+        unix_millis_time=None,
+        location=None,
+        battery=None,
+        issues=None,
+        mutex_groups=None,
+    )
+
+
+def make_fleet_state(name: Optional[str] = None) -> FleetState:
+    fleet_name = name if name is not None else str(uuid4())
+    return FleetState(name=fleet_name, robots={})
 
 
 def make_fleet_log() -> FleetLog:

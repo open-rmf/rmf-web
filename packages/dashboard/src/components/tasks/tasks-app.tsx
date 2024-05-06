@@ -23,6 +23,7 @@ import {
   Tasks,
   Window,
 } from 'react-components';
+import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
@@ -83,6 +84,7 @@ export const TasksApp = React.memo(
       ref: React.Ref<HTMLDivElement>,
     ) => {
       const rmf = React.useContext(RmfAppContext);
+      const appController = React.useContext(AppControllerContext);
       const [autoRefresh, setAutoRefresh] = React.useState(true);
       const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
       const [selectedPanelIndex, setSelectedPanelIndex] = React.useState(TaskTablePanel.QueueTable);
@@ -312,6 +314,8 @@ export const TasksApp = React.memo(
         const pastMonthTasks = await getPastMonthTasks(now);
 
         if (!pastMonthTasks || !pastMonthTasks.length) {
+          appController.showAlert('error', 'No tasks found over the past month.');
+          AppEvents.loadingBackdrop.next(false);
           return;
         }
         if (minimal) {

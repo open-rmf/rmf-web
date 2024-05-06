@@ -1,21 +1,23 @@
+import logging
 from datetime import datetime
 from typing import List, Optional
 
 from fastapi import Depends
 
 from api_server.authenticator import user_dep
-from api_server.logger import logger
 from api_server.models import User
 from api_server.models import tortoise_models as ttm
-from api_server.repositories.tasks import TaskRepository, task_repo_dep
+from api_server.repositories.tasks import TaskRepository
 
 
 class AlertRepository:
-    def __init__(self, user: User, task_repo: Optional[TaskRepository]):
+    def __init__(
+        self,
+        user: User = Depends(user_dep),
+        task_repo: TaskRepository = Depends(TaskRepository),
+    ):
         self.user = user
-        self.task_repo = (
-            task_repo if task_repo is not None else TaskRepository(self.user)
-        )
+        self.task_repo = task_repo
 
     async def get_all_alerts(self) -> List[ttm.AlertPydantic]:
         alerts = await ttm.Alert.all()
@@ -32,7 +34,7 @@ class AlertRepository:
     async def get_alert(self, alert_id: str) -> Optional[ttm.AlertPydantic]:
         alert = await ttm.Alert.get_or_none(id=alert_id)
         if alert is None:
-            logger.error(f"Alert with ID {alert_id} not found")
+            logging.error(f"Alert with ID {alert_id} not found")
             return None
         alert_pydantic = await ttm.AlertPydantic.from_tortoise_orm(alert)
         return alert_pydantic
@@ -51,7 +53,7 @@ class AlertRepository:
             id=alert_id,
         )
         if alert is None:
-            logger.error(f"Failed to create Alert with ID {alert_id}")
+            logging.error(f"Failed to create Alert with ID {alert_id}")
             return None
         alert_pydantic = await ttm.AlertPydantic.from_tortoise_orm(alert)
         return alert_pydantic
@@ -61,7 +63,7 @@ class AlertRepository:
         if alert is None:
             acknowledged_alert = await ttm.Alert.filter(original_id=alert_id).first()
             if acknowledged_alert is None:
-                logger.error(f"No existing or past alert with ID {alert_id} found.")
+                logging.error(f"No existing or past alert with ID {alert_id} found.")
                 return None
             acknowledged_alert_pydantic = await ttm.AlertPydantic.from_tortoise_orm(
                 acknowledged_alert
@@ -90,9 +92,3 @@ class AlertRepository:
         await alert.delete()
         ack_alert_pydantic = await ttm.AlertPydantic.from_tortoise_orm(ack_alert)
         return ack_alert_pydantic
-
-
-def alert_repo_dep(
-    user: User = Depends(user_dep), task_repo: TaskRepository = Depends(task_repo_dep)
-):
-    return AlertRepository(user, task_repo)

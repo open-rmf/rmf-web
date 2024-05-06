@@ -17,7 +17,7 @@ import { makeStyles, createStyles } from '@mui/styles';
 import React from 'react';
 import { RmfAppContext } from '../rmf-app';
 import { RobotTableData, base } from 'react-components';
-import { RobotState, Status2, TaskState } from 'api-client';
+import { RobotState, ApiServerModelsRmfApiRobotStateStatus as Status, TaskState } from 'api-client';
 import { EMPTY, combineLatest, mergeMap, of } from 'rxjs';
 import { TaskInspector } from '../tasks/task-inspector';
 import {
@@ -33,6 +33,7 @@ import {
   BatteryUnknown,
 } from '@mui/icons-material';
 import { TaskCancelButton } from '../tasks/task-cancellation';
+import { RobotDecommissionButton } from './robot-decommission';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -45,16 +46,16 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const setTaskDialogColor = (robotStatus: Status2 | undefined) => {
+const setTaskDialogColor = (robotStatus: Status | undefined) => {
   if (!robotStatus) {
     return base.palette.background.default;
   }
 
   switch (robotStatus) {
-    case Status2.Error:
+    case Status.Error:
       return base.palette.error.dark;
 
-    case Status2.Working:
+    case Status.Working:
       return base.palette.success.dark;
 
     default:
@@ -83,7 +84,7 @@ interface RobotSummaryProps {
 }
 
 const showBatteryIcon = (robot: RobotState, robotBattery: number) => {
-  if (robot.status === Status2.Charging) {
+  if (robot.status === Status.Charging) {
     return <BatteryChargingFull />;
   }
 
@@ -215,6 +216,19 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
       );
     }
 
+    if (robotState && robotState.commission) {
+      const commission = robotState.commission;
+      contents.push({
+        title: `[${
+          commission.dispatch_tasks === false ? 'Decommissioned' : 'Commissioned'
+        }] status`,
+        value:
+          `Direct tasks  : ${commission.direct_tasks ?? 'n/a'}\n` +
+          `Dispatch tasks: ${commission.dispatch_tasks ?? 'n/a'}\n` +
+          `Idle Behavior : ${commission.idle_behavior ?? 'n/a'}`,
+      });
+    }
+
     return (
       <>
         {contents.map((message, index) => (
@@ -292,6 +306,17 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
       )}
       <DialogContent>{returnDialogContent()}</DialogContent>
       <DialogActions sx={{ justifyContent: 'center' }}>
+        <RobotDecommissionButton
+          fleet={robot.fleet}
+          robotState={robotState}
+          size="small"
+          variant="contained"
+          color="secondary"
+          sx={{
+            fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+            padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+          }}
+        />
         <TaskCancelButton
           taskId={taskState ? taskState.booking.id : null}
           size="small"

@@ -27,6 +27,7 @@ setup(
         "pyjwt[crypto]~=2.4",
         "pydantic~=1.9",
         "schedule~=1.2.1",
+        "termcolor~=2.4.0",
     ],
     extras_require={
         "postgres": ["asyncpg~=0.25.0"],

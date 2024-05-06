@@ -8,10 +8,10 @@ from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field, confloat
 
-from . import location_2D
+from . import commission, location_2D
 
 
-class Status2(Enum):
+class Status(Enum):
     uninitialized = "uninitialized"
     offline = "offline"
     shutdown = "shutdown"
@@ -19,6 +19,16 @@ class Status2(Enum):
     charging = "charging"
     working = "working"
     error = "error"
+
+
+class MutexGroups(BaseModel):
+    locked: Optional[List[str]] = Field(
+        None, description="A list of mutex groups that this robot has currently locked"
+    )
+    requesting: Optional[List[str]] = Field(
+        None,
+        description="A list of the mutex groups that this robot is currently requesting but has not lockd yet",
+    )
 
 
 class Issue(BaseModel):
@@ -30,7 +40,7 @@ class Issue(BaseModel):
 
 class RobotState(BaseModel):
     name: Optional[str] = None
-    status: Optional[Status2] = Field(
+    status: Optional[Status] = Field(
         None, description="A simple token representing the status of the robot"
     )
     task_id: Optional[str] = Field(
@@ -46,4 +56,9 @@ class RobotState(BaseModel):
     issues: Optional[List[Issue]] = Field(
         None,
         description="A list of issues with the robot that operators need to address",
+    )
+    commission: Optional[commission.Commission] = None
+    mutex_groups: Optional[MutexGroups] = Field(
+        None,
+        description="Information about the mutex groups that this robot is interacting with",
     )

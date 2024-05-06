@@ -14,9 +14,9 @@ from api_server.dependencies import (
     start_time_between_query,
 )
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.logger import logger
+from api_server.logging import LoggerAdapter, get_logger
 from api_server.models.tortoise_models import TaskState as DbTaskState
-from api_server.repositories import TaskRepository, rmf_repo_dep, task_repo_dep
+from api_server.repositories import RmfRepository, TaskRepository
 from api_server.response import RawJSONResponse
 from api_server.rmf_io import task_events, tasks_service
 from api_server.routes.building_map import get_building_map
@@ -24,8 +24,8 @@ from api_server.routes.building_map import get_building_map
 router = FastIORouter(tags=["Tasks"])
 
 
-async def cancellation_lots_from_building_map() -> List[str]:
-    rmf_repo = rmf_repo_dep()
+async def cancellation_lots_from_building_map(logger: LoggerAdapter) -> List[str]:
+    rmf_repo = RmfRepository()
     building_map = None
     try:
         building_map = await get_building_map(rmf_repo)
@@ -49,7 +49,7 @@ async def cancellation_lots_from_building_map() -> List[str]:
 
 @router.get("/{task_id}/request", response_model=mdl.TaskRequest)
 async def get_task_request(
-    task_repo: TaskRepository = Depends(task_repo_dep),
+    task_repo: TaskRepository = Depends(TaskRepository),
     task_id: str = Path(..., description="task_id"),
 ):
     result = await task_repo.get_task_request(task_id)
@@ -60,7 +60,7 @@ async def get_task_request(
 
 @router.get("/requests", response_model=List[Optional[mdl.TaskRequest]])
 async def query_task_requests(
-    task_repo: TaskRepository = Depends(task_repo_dep),
+    task_repo: TaskRepository = Depends(TaskRepository),
     task_ids: Optional[str] = Query(
         None, description="comma separated list of task ids"
     ),
@@ -85,7 +85,7 @@ async def query_task_requests(
 
 @router.get("", response_model=List[mdl.TaskState])
 async def query_task_states(
-    task_repo: TaskRepository = Depends(task_repo_dep),
+    task_repo: TaskRepository = Depends(TaskRepository),
     task_id: Optional[str] = Query(
         None, description="comma separated list of task ids"
     ),
@@ -151,7 +151,7 @@ async def query_task_states(
 
 @router.get("/{task_id}/state", response_model=mdl.TaskState)
 async def get_task_state(
-    task_repo: TaskRepository = Depends(task_repo_dep),
+    task_repo: TaskRepository = Depends(TaskRepository),
     task_id: str = Path(..., description="task_id"),
 ):
     """
@@ -178,7 +178,7 @@ async def sub_task_state(req: SubscriptionRequest, task_id: str):
 
 @router.get("/{task_id}/log", response_model=mdl.TaskEventLog)
 async def get_task_log(
-    task_repo: TaskRepository = Depends(task_repo_dep),
+    task_repo: TaskRepository = Depends(TaskRepository),
     task_id: str = Path(..., description="task_id"),
     between: Tuple[int, int] = Depends(between_query),
 ):
@@ -209,6 +209,7 @@ async def post_activity_discovery(
 @router.post("/cancel_task", response_model=mdl.TaskCancelResponse)
 async def post_cancel_task(
     request: mdl.CancelTaskRequest = Body(...),
+    logger: LoggerAdapter = Depends(get_logger),
 ):
     logger.info(request)
     return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
@@ -221,7 +222,8 @@ async def post_cancel_task(
 )
 async def post_dispatch_task(
     request: mdl.DispatchTaskRequest = Body(...),
-    task_repo: TaskRepository = Depends(task_repo_dep),
+    task_repo: TaskRepository = Depends(TaskRepository),
+    logger: LoggerAdapter = Depends(get_logger),
 ):
     task_warn_time = request.request.unix_millis_warn_time
 
@@ -237,7 +239,7 @@ async def post_dispatch_task(
         and len(request.request.description["phases"]) == 3
         and "on_cancel" in request.request.description["phases"][1]
     ):
-        cancellation_lots = await cancellation_lots_from_building_map()
+        cancellation_lots = await cancellation_lots_from_building_map(logger)
         if len(cancellation_lots) != 0:
             # Populate them in the correct form
             go_to_one_of_the_places_activity = {
@@ -286,7 +288,7 @@ async def post_dispatch_task(
 )
 async def post_robot_task(
     request: mdl.RobotTaskRequest = Body(...),
-    task_repo: TaskRepository = Depends(task_repo_dep),
+    task_repo: TaskRepository = Depends(TaskRepository),
 ):
     resp = mdl.RobotTaskResponse.parse_raw(
         await tasks_service().call(request.json(exclude_none=True))
