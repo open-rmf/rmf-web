@@ -1024,9 +1024,12 @@ function SinglePickupMultiDropoffTaskForm({
               <TableBody>
                 {taskDesc.dropoffs.map((dropoff, index) => {
                   return (
-                    <TableRow key={1} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableRow
+                      key={`single-pickup-multi-dropoff-dropoff-${index + 1}`}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
                       <TableCell component="th" scope="row">
-                        (1)
+                        ({index + 1})
                       </TableCell>
                       <TableCell align="right">{dropoff.dropoff}</TableCell>
                       <TableCell align="right">{dropoff.compartment}</TableCell>
