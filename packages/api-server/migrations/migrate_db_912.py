@@ -6,7 +6,12 @@ from tortoise import Tortoise
 
 import api_server.models.tortoise_models as ttm
 from api_server.app_config import app_config, load_config
-from api_server.models import TaskBookingLabel, TaskRequest, TaskState
+from api_server.models import (
+    TaskBookingLabel,
+    TaskBookingLabelDescription,
+    TaskRequest,
+    TaskState,
+)
 
 # NOTE: This script is for migrating TaskState and ScheduledTask in an existing
 # database to work with https://github.com/open-rmf/rmf-web/pull/912.
@@ -173,25 +178,30 @@ async def migrate():
             failed_task_states_count += 1
             continue
 
-        label = TaskBookingLabel(
+        label_description = TaskBookingLabelDescription(
             task_name=task_name,
             unix_millis_warn_time=None,
             pickup=pickup,
             destination=destination,
             cart_id=parse_cart_id(request_model),
         )
-        print(label)
+        label = TaskBookingLabel(description=label_description)
+        # print(label)
 
         # Update data json
         if state_model.booking.labels is None:
-            state_model.booking.labels = [label.json()]
+            state_model.booking.labels = [
+                label.json(exclude_none=True, separators=(",", ":"))
+            ]
         else:
-            state_model.booking.labels.append(label.json())
-        print(state_model)
+            state_model.booking.labels.append(
+                label.json(exclude_none=True, separators=(",", ":"))
+            )
+        # print(state_model)
 
         state.update_from_dict(
             {
-                "data": state_model.json(),
+                "data": state_model.json(exclude_none=True, separators=(",", ":")),
                 "pickup": pickup,
                 "destination": destination,
             }
@@ -211,7 +221,7 @@ async def migrate():
         task_request = TaskRequest(
             **scheduled_task_model.task_request  # pyright: ignore[reportGeneralTypeIssues]
         )
-        print(task_request)
+        # print(task_request)
 
         task_name = parse_task_name(task_request)
         if task_name is None:
@@ -221,24 +231,33 @@ async def migrate():
         # Construct TaskBookingLabel based on TaskRequest
         pickup = parse_pickup(task_request)
         destination = parse_destination(task_request)
-        label = TaskBookingLabel(
+        label_description = TaskBookingLabelDescription(
             task_name=task_name,
             unix_millis_warn_time=None,
             pickup=pickup,
             destination=destination,
             cart_id=parse_cart_id(task_request),
         )
-        print(label)
+        label = TaskBookingLabel(description=label_description)
+        # print(label)
 
         # Update TaskRequest
         if task_request.labels is None:
-            task_request.labels = [label.json()]
+            task_request.labels = [label.json(exclude_none=True, separators=(",", ":"))]
         else:
-            task_request.labels.append(label.json())
-        print(task_request)
+            task_request.labels.append(
+                label.json(exclude_none=True, separators=(",", ":"))
+            )
+        # print(task_request)
 
         # Update ScheduledTask
-        scheduled_task.update_from_dict({"task_request": task_request.json()})
+        scheduled_task.update_from_dict(
+            {
+                "task_request": task_request.json(
+                    exclude_none=True, separators=(",", ":")
+                )
+            }
+        )
         await scheduled_task.save()
 
     await Tortoise.close_connections()
