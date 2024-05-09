@@ -3734,7 +3734,14 @@ export default {
       },
       TaskFavorite: {
         title: 'TaskFavorite',
-        required: ['id', 'name', 'unix_millis_earliest_start_time', 'category', 'user'],
+        required: [
+          'id',
+          'name',
+          'unix_millis_earliest_start_time',
+          'category',
+          'user',
+          'task_definition_id',
+        ],
         type: 'object',
         properties: {
           id: { title: 'Id', type: 'string' },
@@ -3747,7 +3754,7 @@ export default {
           category: { title: 'Category', type: 'string' },
           description: { title: 'Description', type: 'object' },
           user: { title: 'User', type: 'string' },
-          labels: { title: 'Labels', type: 'array', items: { type: 'string' } },
+          task_definition_id: { title: 'Task Definition Id', type: 'string' },
         },
       },
       TaskInterruptionRequest: {

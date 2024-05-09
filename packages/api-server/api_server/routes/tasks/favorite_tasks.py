@@ -15,23 +15,25 @@ router = FastIORouter(tags=["Tasks"])
 
 @router.post("")
 async def post_favorite_task(
-    request: TaskFavorite,
+    favorite_task: TaskFavorite,
     user: User = Depends(user_dep),
 ):
     try:
         await ttm.TaskFavorite.update_or_create(
             {
-                "name": request.name,
+                "name": favorite_task.name,
                 "unix_millis_earliest_start_time": datetime.fromtimestamp(
-                    request.unix_millis_earliest_start_time / 1000
+                    favorite_task.unix_millis_earliest_start_time / 1000
                 ),
-                "priority": request.priority if request.priority else None,
-                "category": request.category,
-                "description": request.description if request.description else None,
+                "priority": favorite_task.priority if favorite_task.priority else None,
+                "category": favorite_task.category,
+                "description": favorite_task.description
+                if favorite_task.description
+                else None,
                 "user": user.username,
-                "labels": request.labels,
+                "task_definition_id": favorite_task.task_definition_id,
             },
-            id=request.id if request.id != "" else uuid.uuid4(),
+            id=favorite_task.id if favorite_task.id != "" else uuid.uuid4(),
         )
     except IntegrityError as e:
         raise HTTPException(422, str(e)) from e
@@ -55,7 +57,7 @@ async def get_favorites_tasks(
             if favorite_task.description
             else None,
             user=user.username,
-            labels=favorite_task.labels,
+            task_definition_id=favorite_task.task_definition_id,
         )
         for favorite_task in favorites_tasks
     ]

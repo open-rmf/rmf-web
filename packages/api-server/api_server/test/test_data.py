@@ -474,7 +474,8 @@ def make_task_favorite(
             "payload":""
          }
       },
-      "user":"stub"
+      "user":"stub",
+      "task_definition_id": "delivery"
    }
     """
     )

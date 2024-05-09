@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict
 
 from pydantic import BaseModel
 
@@ -11,4 +11,4 @@ class TaskFavorite(BaseModel):
     category: str
     description: Dict | None
     user: str
-    labels: List[str] | None
+    task_definition_id: str

@@ -2655,10 +2655,10 @@ export interface TaskFavorite {
   user: string;
   /**
    *
-   * @type {Array<string>}
+   * @type {string}
    * @memberof TaskFavorite
    */
-  labels?: Array<string>;
+  task_definition_id: string;
 }
 /**
  *

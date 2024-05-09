@@ -79,4 +79,4 @@ class TaskFavorite(Model):
     category = CharField(255, null=False, index=True)
     description = JSONField()
     user = CharField(255, null=False, index=True)
-    labels = JSONField(null=True, default=list)
+    task_definition_id = CharField(255, null=True, index=True)
