@@ -9,6 +9,7 @@ import {
   DispenserState,
   DoorHealth,
   DoorState,
+  FireAlarmTriggerState,
   FleetState,
   IngestorHealth,
   IngestorState,
@@ -107,6 +108,10 @@ export class SioClient {
 
   subscribeDeliveryAlerts(listener: Listener<DeliveryAlert>): Subscription {
     return this.subscribe<DeliveryAlert>(`/delivery_alerts`, listener);
+  }
+
+  subscribeFireAlarmTrigger(listener: Listener<FireAlarmTriggerState>): Subscription {
+    return this.subscribe<FireAlarmTriggerState>('/fire_alarm_trigger', listener);
   }
 }
 
