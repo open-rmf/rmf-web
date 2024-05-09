@@ -3638,9 +3638,10 @@ export default {
       },
       TaskBookingLabelDescription: {
         title: 'TaskBookingLabelDescription',
+        required: ['task_definition_id'],
         type: 'object',
         properties: {
-          task_name: { title: 'Task Name', type: 'string' },
+          task_definition_id: { title: 'Task Definition Id', type: 'string' },
           unix_millis_warn_time: { title: 'Unix Millis Warn Time', type: 'integer' },
           pickup: { title: 'Pickup', type: 'string' },
           destination: { title: 'Destination', type: 'string' },

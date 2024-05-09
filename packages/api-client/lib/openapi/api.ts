@@ -2400,7 +2400,7 @@ export interface TaskBookingLabelDescription {
    * @type {string}
    * @memberof TaskBookingLabelDescription
    */
-  task_name?: string;
+  task_definition_id: string;
   /**
    *
    * @type {number}

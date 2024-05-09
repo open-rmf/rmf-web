@@ -130,7 +130,7 @@ def make_fleet_log() -> FleetLog:
 def make_task_booking_label() -> TaskBookingLabel:
     return TaskBookingLabel(
         description=TaskBookingLabelDescription(
-            task_name="Multi-Delivery",
+            task_definition_id="multi-delivery",
             unix_millis_warn_time=1636388400000,
             pickup="Kitchen",
             destination="room_203",

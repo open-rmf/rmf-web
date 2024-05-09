@@ -40,7 +40,13 @@ app_config = load_config(
 )
 
 
-def parse_task_name(task_request: TaskRequest) -> Optional[str]:
+def parse_task_definition_id(task_request: TaskRequest) -> Optional[str]:
+    """
+    Although not IDs per-se, these names are used to identify which task
+    definition to use when rendering on the dashboard. While these IDs are
+    going to be static, in the next update, the underlying display name will be
+    configurable at build time.
+    """
     name = None
     if task_request.category.lower() == "patrol":
         name = "Patrol"
@@ -172,14 +178,15 @@ async def migrate():
         pickup = parse_pickup(request_model)
         destination = parse_destination(request_model)
 
-        # If the task name could not be parsed, we skip migrating this TaskState
-        task_name = parse_task_name(request_model)
-        if task_name is None:
+        # If the task definition id could not be parsed, we skip migrating this
+        # TaskState
+        task_definition_id = parse_task_definition_id(request_model)
+        if task_definition_id is None:
             failed_task_states_count += 1
             continue
 
         label_description = TaskBookingLabelDescription(
-            task_name=task_name,
+            task_definition_id=task_definition_id,
             unix_millis_warn_time=None,
             pickup=pickup,
             destination=destination,
@@ -223,8 +230,8 @@ async def migrate():
         )
         # print(task_request)
 
-        task_name = parse_task_name(task_request)
-        if task_name is None:
+        task_definition_id = parse_task_definition_id(task_request)
+        if task_definition_id is None:
             failed_scheduled_task_count += 1
             continue
 
@@ -232,7 +239,7 @@ async def migrate():
         pickup = parse_pickup(task_request)
         destination = parse_destination(task_request)
         label_description = TaskBookingLabelDescription(
-            task_name=task_name,
+            task_definition_id=task_definition_id,
             unix_millis_warn_time=None,
             pickup=pickup,
             destination=destination,

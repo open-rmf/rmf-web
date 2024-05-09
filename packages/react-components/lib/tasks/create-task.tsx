@@ -48,6 +48,36 @@ import {
   serializeTaskBookingLabel,
 } from './task-booking-label-utils';
 
+interface TaskDefinition {
+  task_definition_id: string;
+  task_display_name: string;
+}
+
+const TaskDefinitions: Record<string, TaskDefinition> = {
+  delivery_pickup: {
+    task_definition_id: 'delivery_pickup',
+    task_display_name: 'Delivery - 1:1',
+  },
+  delivery_sequential_lot_pickup: {
+    task_definition_id: 'delivery_sequential_lot_pickup',
+    task_display_name: 'Delivery - Sequential lot pick up',
+  },
+  delivery_area_pickup: {
+    task_definition_id: 'delivery_area_pickup',
+    task_display_name: 'Delivery - Area pick up',
+  },
+  patrol: {
+    task_definition_id: 'patrol',
+    task_display_name: 'Patrol',
+  },
+  custom_compose: {
+    task_definition_id: 'custom_compose',
+    task_display_name: 'Custom Compose Task',
+  },
+};
+
+const DefaultTaskDefinitionId = 'custom_compose';
+
 // A bunch of manually defined descriptions to avoid using `any`.
 export interface PatrolTaskDescription {
   places: string[];
@@ -1212,7 +1242,7 @@ const defaultFavoriteTask = (): TaskFavorite => {
     unix_millis_earliest_start_time: 0,
     priority: { type: 'binary', value: 0 },
     user: '',
-    labels: [],
+    task_definition_id: DefaultTaskDefinitionId,
   };
 };
 
@@ -1293,7 +1323,9 @@ export function CreateTaskForm({
     () => requestTask ?? defaultTask(),
   );
 
-  let bookingLabel: TaskBookingLabel = { description: {} };
+  let bookingLabel: TaskBookingLabel = {
+    description: { task_definition_id: DefaultTaskDefinitionId },
+  };
   if (requestTask && requestTask.labels) {
     for (const label of requestTask.labels) {
       const parsedLabel = getTaskBookingLabelFromJsonString(label);
@@ -1381,7 +1413,7 @@ export function CreateTaskForm({
               return {
                 description: {
                   ...prev.description,
-                  task_name: taskRequest.category,
+                  task_definition_id: taskRequest.category,
                   destination: desc.places.at(-1),
                 },
               };
@@ -1477,7 +1509,7 @@ export function CreateTaskForm({
   const handleTaskTypeChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     const newType = ev.target.value;
     setTaskType(newType);
-    setRequestBookingLabel({ description: { task_name: newType } });
+    setRequestBookingLabel({ description: { task_definition_id: newType } });
 
     if (newType === 'custom_compose') {
       taskRequest.category = 'custom_compose';
@@ -1618,7 +1650,7 @@ export function CreateTaskForm({
       setSavingFavoriteTask(true);
 
       const favoriteTask = favoriteTaskBuffer;
-      favoriteTask.labels = [serializeTaskBookingLabel(requestBookingLabel)];
+      favoriteTask.task_definition_id = requestBookingLabel.description.task_definition_id;
 
       await submitFavoriteTask(favoriteTask);
       setSavingFavoriteTask(false);
@@ -1700,16 +1732,11 @@ export function CreateTaskForm({
                           unix_millis_earliest_start_time: 0,
                           priority: favoriteTask.priority,
                         });
-                        let bookingLabel: TaskBookingLabel = { description: {} };
-                        if (favoriteTask.labels) {
-                          for (const label of favoriteTask.labels) {
-                            const parsedLabel = getTaskBookingLabelFromJsonString(label);
-                            if (parsedLabel) {
-                              bookingLabel = parsedLabel;
-                            }
-                          }
-                        }
-                        setRequestBookingLabel(bookingLabel);
+                        setRequestBookingLabel({
+                          description: {
+                            task_definition_id: favoriteTask.task_definition_id,
+                          },
+                        });
                       }}
                     />
                   );

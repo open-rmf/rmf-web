@@ -14,7 +14,7 @@ class TaskBookingLabelDescription(BaseModel):
     accordingly back on the same frontend.
     """
 
-    task_name: Optional[str]
+    task_definition_id: str
     unix_millis_warn_time: Optional[int]
     pickup: Optional[str]
     destination: Optional[str]
