@@ -50,29 +50,6 @@ interface TaskDefinition {
   task_display_name: string;
 }
 
-const SupportedTaskDefinitionsMap: Record<string, TaskDefinition> = {
-  delivery_pickup: {
-    task_definition_id: 'delivery_pickup',
-    task_display_name: 'Delivery - 1:1',
-  },
-  delivery_sequential_lot_pickup: {
-    task_definition_id: 'delivery_sequential_lot_pickup',
-    task_display_name: 'Delivery - Sequential lot pick up',
-  },
-  delivery_area_pickup: {
-    task_definition_id: 'delivery_area_pickup',
-    task_display_name: 'Delivery - Area pick up',
-  },
-  patrol: {
-    task_definition_id: 'patrol',
-    task_display_name: 'Patrol',
-  },
-  custom_compose: {
-    task_definition_id: 'custom_compose',
-    task_display_name: 'Custom Compose Task',
-  },
-};
-
 // If no task definition id is found in a past task (scheduled or favorite)
 const DefaultTaskDefinitionId = 'custom_compose';
 
