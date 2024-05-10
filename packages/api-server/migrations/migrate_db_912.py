@@ -16,9 +16,9 @@ from api_server.models import (
 # NOTE: This script is for migrating TaskState and ScheduledTask in an existing
 # database to work with https://github.com/open-rmf/rmf-web/pull/912.
 # Before migration:
-# - Pickup, destination, cart ID, task name information will be unavailable
-#   on the Task Queue Table on the dashboard, as we no longer gather those
-#   fields from the TaskRequest
+# - Pickup, destination, cart ID, task definition id information will be
+#   unavailable on the Task Queue Table on the dashboard, as we no longer gather
+#   those fields from the TaskRequest
 # After migration:
 # - Dashboard will behave the same as before #912, however it is no longer
 #   dependent on TaskRequest to fill out those fields. It gathers those fields

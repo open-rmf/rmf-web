@@ -84,7 +84,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
 
   const [openTaskDetailsLogs, setOpenTaskDetailsLogs] = React.useState(false);
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
-  const [label, setLabel] = React.useState<TaskBookingLabel>({ description: {} });
+  const [label, setLabel] = React.useState<TaskBookingLabel | null>(null);
   const [isOpen, setIsOpen] = React.useState(true);
 
   const taskProgress = React.useMemo(() => {
@@ -115,7 +115,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
       if (requestLabel) {
         setLabel(requestLabel);
       } else {
-        setLabel({ description: {} });
+        setLabel(null);
       }
       setTaskState(subscribedTask);
     });
@@ -129,20 +129,20 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
         value: taskState ? taskState.booking.id : 'n/a.',
       },
       {
-        title: 'Task name',
-        value: label.description.task_name ?? 'n/a',
+        title: 'Task definition ID',
+        value: label?.description.task_definition_id ?? 'n/a',
       },
       {
         title: 'Pickup',
-        value: label.description.pickup ?? 'n/a',
+        value: label?.description.pickup ?? 'n/a',
       },
       {
         title: 'Cart ID',
-        value: label.description.cart_id ?? 'n/a',
+        value: label?.description.cart_id ?? 'n/a',
       },
       {
         title: 'Dropoff',
-        value: label.description.destination ?? 'n/a',
+        value: label?.description.destination ?? 'n/a',
       },
       {
         title: 'Est. end time',
