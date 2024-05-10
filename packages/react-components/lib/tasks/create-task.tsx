@@ -1746,7 +1746,10 @@ export function CreateTaskForm({
                       InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
                     >
                       {SupportedTaskDefinitions.map((taskDefinition) => (
-                        <MenuItem value={taskDefinition.task_definition_id}>
+                        <MenuItem
+                          value={taskDefinition.task_definition_id}
+                          key={taskDefinition.task_definition_id}
+                        >
                           {taskDefinition.task_display_name}
                         </MenuItem>
                       ))}
