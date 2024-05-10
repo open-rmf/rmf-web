@@ -1325,7 +1325,6 @@ export interface CreateTaskFormProps
   patrolWaypoints?: string[];
   pickupZones?: string[];
   cartIds?: string[];
-  emergencyLots?: string[];
   pickupPoints?: Record<string, string>;
   dropoffPoints?: Record<string, string>;
   favoritesTasks?: TaskFavorite[];
@@ -1352,7 +1351,6 @@ export function CreateTaskForm({
   patrolWaypoints = [],
   pickupZones = [],
   cartIds = [],
-  emergencyLots = [],
   pickupPoints = {},
   dropoffPoints = {},
   favoritesTasks = [],
@@ -1555,55 +1553,6 @@ export function CreateTaskForm({
     const request = { ...taskRequest };
     request.requester = requester;
     request.unix_millis_request_time = Date.now();
-
-    // if (
-    //   taskDefinition === 'delivery_pickup' ||
-    //   taskDefinition === 'delivery_sequential_lot_pickup' ||
-    //   taskDefinition === 'delivery_area_pickup'
-    // ) {
-    //   const goToOneOfThePlaces: GoToOneOfThePlacesActivity = {
-    //     category: 'go_to_place',
-    //     description: {
-    //       one_of: emergencyLots.map((placeName) => {
-    //         return {
-    //           waypoint: placeName,
-    //         };
-    //       }),
-    //       constraints: [
-    //         {
-    //           category: 'prefer_same_map',
-    //           description: '',
-    //         },
-    //       ],
-    //     },
-    //   };
-
-    //   // FIXME: there should not be any statically defined duration estimates as
-    //   // it makes assumptions of the deployments.
-    //   const deliveryDropoff: DropoffActivity = {
-    //     category: 'perform_action',
-    //     description: {
-    //       unix_millis_action_duration_estimate: 60000,
-    //       category: 'delivery_dropoff',
-    //       description: {},
-    //     },
-    //   };
-    //   const onCancelDropoff: OnCancelDropoff = {
-    //     category: 'sequence',
-    //     description: [goToOneOfThePlaces, deliveryDropoff],
-    //   };
-    //   request.description.phases[1].on_cancel = [onCancelDropoff];
-    // } else if (taskDefinition === 'custom_compose') {
-    //   try {
-    //     const obj = JSON.parse(request.description);
-    //     request.category = 'compose';
-    //     request.description = obj;
-    //   } catch (e) {
-    //     console.error('Invalid custom compose task description');
-    //     onFail && onFail(e as Error, [request]);
-    //     return;
-    //   }
-    // }
 
     if (taskDefinitionId === 'custom_compose') {
       try {
