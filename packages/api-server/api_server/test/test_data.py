@@ -15,6 +15,7 @@ from api_server.models import (
     Door,
     DoorMode,
     DoorState,
+    FireAlarmTriggerState,
     FleetLog,
     FleetState,
     IngestorState,
@@ -67,6 +68,10 @@ def make_building_map():
         ],
         lifts=[make_lift()],
     )
+
+
+def make_fire_alarm_trigger(trigger: bool = True):
+    return FireAlarmTriggerState(unix_millis_time=1000, trigger=trigger)
 
 
 def make_door_state(name: str, mode: int = RmfDoorMode.MODE_CLOSED) -> DoorState:

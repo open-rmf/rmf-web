@@ -1,7 +1,9 @@
 import {
   AccountCircle,
+  AdminPanelSettings,
   AddOutlined,
   Help,
+  LocalFireDepartment,
   Logout,
   Notifications,
   Report,
@@ -13,6 +15,9 @@ import {
   Button,
   CardContent,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogTitle,
   Divider,
   FormControl,
   FormControlLabel,
@@ -24,6 +29,7 @@ import {
   MenuItem,
   Radio,
   RadioGroup,
+  Stack,
   Toolbar,
   Tooltip,
   Typography,
@@ -31,12 +37,14 @@ import {
 } from '@mui/material';
 import {
   ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
+  FireAlarmTriggerState,
   TaskFavorite,
   TaskRequest,
 } from 'api-client';
 import React from 'react';
 import {
   AppBarTab,
+  ConfirmationDialog,
   CreateTaskForm,
   CreateTaskFormProps,
   HeaderBar,
@@ -167,6 +175,12 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [alertListAnchor, setAlertListAnchor] = React.useState<HTMLElement | null>(null);
   const [unacknowledgedAlertsNum, setUnacknowledgedAlertsNum] = React.useState(0);
   const [unacknowledgedAlertList, setUnacknowledgedAlertList] = React.useState<Alert[]>([]);
+  const [openAdminActionsDialog, setOpenAdminActionsDialog] = React.useState(false);
+  const [openFireAlarmTriggerResetDialog, setOpenFireAlarmTriggerResetDialog] =
+    React.useState(false);
+  const [fireAlarmPreviousTrigger, setFireAlarmPreviousTrigger] = React.useState<
+    FireAlarmTriggerState | undefined
+  >(undefined);
 
   const curTheme = React.useContext(SettingsContext).themeMode;
   const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames } =
@@ -351,6 +365,42 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     return formatDistance(new Date(), new Date(time));
   };
 
+  React.useEffect(() => {
+    if (!rmf) {
+      return;
+    }
+    (async () => {
+      try {
+        const resp =
+          await rmf.buildingApi.getPreviousFireAlarmTriggerBuildingMapPreviousFireAlarmTriggerGet();
+        setFireAlarmPreviousTrigger(resp.data);
+      } catch (e) {
+        console.error(`Failed to get previous fire alarm trigger: ${(e as Error).message}`);
+      }
+    })();
+  }, [rmf, openAdminActionsDialog]);
+
+  const handleResetFireAlarmTrigger = React.useCallback<React.MouseEventHandler>(async () => {
+    try {
+      if (!rmf) {
+        throw new Error('building map api not available');
+      }
+
+      const resp =
+        await rmf.buildingApi.resetFireAlarmTriggerBuildingMapResetFireAlarmTriggerPost();
+      if (!resp.data.trigger) {
+        showAlert('success', 'Requested to reset fire alarm trigger');
+      } else {
+        showAlert('error', 'Failed to reset fire alarm trigger');
+      }
+    } catch (e) {
+      showAlert('error', `Failed to reset fire alarm trigger: ${(e as Error).message}`);
+    }
+
+    setOpenFireAlarmTriggerResetDialog(false);
+    setOpenAdminActionsDialog(false);
+  }, [rmf, showAlert]);
+
   return (
     <>
       <HeaderBar>
@@ -524,6 +574,20 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
                   </ListItemIcon>
                 </MenuItem>
                 <Divider />
+                <MenuItem
+                  disabled={!profile.user.is_admin}
+                  id="admin-action-btn"
+                  onClick={() => {
+                    setOpenAdminActionsDialog(true);
+                    setAnchorEl(null);
+                  }}
+                >
+                  <ListItemIcon>
+                    <AdminPanelSettings fontSize="small" />
+                  </ListItemIcon>
+                  Admin actions
+                </MenuItem>
+                <Divider />
                 <MenuItem id="logout-btn" onClick={handleLogout}>
                   <ListItemIcon>
                     <Logout fontSize="small" />
@@ -588,6 +652,68 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             showAlert('error', `Failed to submit schedule: ${e.message}`);
           }}
         />
+      )}
+      {openAdminActionsDialog && (
+        <Dialog onClose={() => setOpenAdminActionsDialog(false)} open={openAdminActionsDialog}>
+          <DialogTitle>Admin actions</DialogTitle>
+          <DialogActions sx={{ px: 2 }}>
+            <Stack direction="column" spacing={2}>
+              <Stack direction="row" spacing={2}>
+                {fireAlarmPreviousTrigger && fireAlarmPreviousTrigger.trigger ? (
+                  <div>
+                    <Typography variant="subtitle2" alignContent="center">
+                      Last fire alarm triggered on:
+                    </Typography>
+                    <Typography variant="body2" alignContent="center">
+                      {new Date(fireAlarmPreviousTrigger.unix_millis_time).toLocaleString()}
+                    </Typography>
+                  </div>
+                ) : fireAlarmPreviousTrigger && !fireAlarmPreviousTrigger.trigger ? (
+                  <div>
+                    <Typography variant="subtitle2" alignContent="center">
+                      Last fire alarm reset on:
+                    </Typography>
+                    <Typography variant="body2" alignContent="center">
+                      {new Date(fireAlarmPreviousTrigger.unix_millis_time).toLocaleString()}
+                    </Typography>
+                  </div>
+                ) : (
+                  <div>
+                    <Typography variant="subtitle2" alignContent="center">
+                      Last fire alarm triggered on:
+                    </Typography>
+                    <Typography variant="body2" alignContent="center">
+                      n/a
+                    </Typography>
+                  </div>
+                )}
+                <Button
+                  variant="contained"
+                  onClick={() => setOpenFireAlarmTriggerResetDialog(true)}
+                  startIcon={<LocalFireDepartment />}
+                >
+                  Reset fire alarm
+                </Button>
+              </Stack>
+            </Stack>
+          </DialogActions>
+        </Dialog>
+      )}
+      {openFireAlarmTriggerResetDialog && (
+        <ConfirmationDialog
+          confirmText="Confirm reset"
+          cancelText="Cancel"
+          open={true}
+          title={'Reset fire alarm trigger'}
+          submitting={undefined}
+          onClose={() => setOpenFireAlarmTriggerResetDialog(false)}
+          onSubmit={handleResetFireAlarmTrigger}
+        >
+          <Typography color="warning.main">
+            Warning: Please ensure that all other systems are back online and that it is safe to
+            resume robot operations.
+          </Typography>
+        </ConfirmationDialog>
       )}
     </>
   );
