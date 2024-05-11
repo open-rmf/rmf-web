@@ -187,13 +187,25 @@ export interface SinglePickupMultiDropoffTaskDescription {
   dropoffs: TmpDropoff[];
 }
 
+interface TmpPickup {
+  pickup: string;
+  compartment: string;
+}
+
+export interface MultiPickupSingleDropoffTaskDescription {
+  category: string;
+  pickups: TmpPickup[];
+  dropoff: string;
+}
+
 type CustomComposeTaskDescription = string;
 
 type TaskDescription =
   | DeliveryTaskDescription
   | DeliveryCustomTaskDescription
   | PatrolTaskDescription
-  | SinglePickupMultiDropoffTaskDescription;
+  | SinglePickupMultiDropoffTaskDescription
+  | MultiPickupSingleDropoffTaskDescription;
 
 const isNonEmptyString = (value: string): boolean => value.length > 0;
 
@@ -1055,6 +1067,165 @@ function SinglePickupMultiDropoffTaskForm({
   );
 }
 
+interface MultiPickupSingleDropoffTaskFormProps {
+  taskDesc: MultiPickupSingleDropoffTaskDescription;
+  onChange(taskDesc: MultiPickupSingleDropoffTaskDescription): void;
+  allowSubmit(allow: boolean): void;
+}
+
+function MultiPickupSingleDropoffTaskForm({
+  taskDesc,
+  onChange,
+  allowSubmit,
+}: MultiPickupSingleDropoffTaskFormProps) {
+  const theme = useTheme();
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
+  const onInputChange = (desc: MultiPickupSingleDropoffTaskDescription) => {
+    allowSubmit(true);
+    onChange(desc);
+  };
+  const [pickupBuffer, setPickupBuffer] = React.useState<string | null>(null);
+  const [compartmentBuffer, setCompartmentBuffer] = React.useState<string | null>(null);
+
+  const handleDelete = (deleteIndex: number) => {
+    const pickups = taskDesc.pickups;
+    const filteredPickups = pickups.filter((_, index) => index !== deleteIndex);
+    onInputChange({
+      ...taskDesc,
+      pickups: filteredPickups,
+    });
+  };
+
+  return (
+    <>
+      <Grid container spacing={theme.spacing(2)}>
+        <Grid item xs={4}>
+          <Autocomplete
+            id="multi-pickup-single-dropoff-pickup"
+            freeSolo
+            fullWidth
+            options={['pickup1', 'pickup2']}
+            value={pickupBuffer ?? ''}
+            onChange={(_ev, newValue) => newValue && setPickupBuffer(newValue)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Pickup"
+                InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
+              />
+            )}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <Autocomplete
+            id="multi-pickup-single-dropoff-compartment"
+            freeSolo
+            fullWidth
+            options={['compartment1', 'compartment2']}
+            value={compartmentBuffer ?? ''}
+            onChange={(_ev, newValue) => newValue && setCompartmentBuffer(newValue)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Compartment"
+                InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
+              />
+            )}
+          />
+        </Grid>
+        <Grid item xs={1}>
+          <IconButton
+            edge="end"
+            aria-label="multi-pickup-single-dropoff-add"
+            color="primary"
+            disabled={!pickupBuffer || !compartmentBuffer}
+            onClick={() => {
+              pickupBuffer &&
+                compartmentBuffer &&
+                onInputChange({
+                  ...taskDesc,
+                  pickups: [
+                    ...taskDesc.pickups,
+                    { pickup: pickupBuffer, compartment: compartmentBuffer },
+                  ],
+                });
+              setPickupBuffer(null);
+              setCompartmentBuffer(null);
+            }}
+          >
+            <AddCircleIcon fontSize="large" />
+          </IconButton>
+        </Grid>
+        <Grid item xs={4}>
+          <Autocomplete
+            id="multi-pickup-single-dropoff-dropoff"
+            freeSolo
+            fullWidth
+            options={['dropoff1', 'dropoff2']}
+            onChange={(_ev, newValue) =>
+              newValue &&
+              onInputChange({
+                ...taskDesc,
+                dropoff: newValue,
+              })
+            }
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Dropoff"
+                required={true}
+                InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
+              />
+            )}
+          />
+        </Grid>
+      </Grid>
+      <Grid container spacing={theme.spacing(2)}>
+        <Grid item xs={8}>
+          <TableContainer component={Paper}>
+            <Table size="small" aria-label="a dense table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Seq.</TableCell>
+                  <TableCell align="right">Pickup</TableCell>
+                  <TableCell align="right">Compartment</TableCell>
+                  <TableCell align="right"></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {taskDesc.pickups.map((pickup, index) => {
+                  return (
+                    <TableRow
+                      key={`multi-pickup-single-dropoff-pickup-${index + 1}`}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
+                      <TableCell component="th" scope="row">
+                        ({index + 1})
+                      </TableCell>
+                      <TableCell align="right">{pickup.pickup}</TableCell>
+                      <TableCell align="right">{pickup.compartment}</TableCell>
+                      <TableCell align="right" padding="checkbox">
+                        <IconButton
+                          edge="end"
+                          aria-label="delete"
+                          onClick={() => handleDelete(index)}
+                          size={'small'}
+                        >
+                          <DeleteIcon fontSize={'small'} />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
+      </Grid>
+    </>
+  );
+}
+
 interface CustomComposeTaskFormProps {
   taskDesc: CustomComposeTaskDescription;
   onChange(customComposeTaskDescription: CustomComposeTaskDescription): void;
@@ -1298,6 +1469,14 @@ export function defaultSinglePickupMultiDropoffTask(): SinglePickupMultiDropoffT
   };
 }
 
+export function defaultMultiPickupSingleDropoffTask(): MultiPickupSingleDropoffTaskDescription {
+  return {
+    category: 'multi_pickup_single_dropoff',
+    pickups: [],
+    dropoff: '',
+  };
+}
+
 function defaultTaskDescription(taskCategory: string): TaskDescription | undefined {
   switch (taskCategory) {
     case 'delivery_pickup':
@@ -1307,6 +1486,8 @@ function defaultTaskDescription(taskCategory: string): TaskDescription | undefin
       return defaultDeliveryCustomTaskDescription(taskCategory);
     case 'single_pickup_multi_dropoff':
       return defaultSinglePickupMultiDropoffTask();
+    case 'multi_pickup_single_dropoff':
+      return defaultMultiPickupSingleDropoffTask();
     case 'patrol':
       return defaultPatrolTask();
     default:
@@ -1605,6 +1786,14 @@ export function CreateTaskForm({
             allowSubmit={allowSubmit}
           />
         );
+      case 'multi_pickup_single_dropoff':
+        return (
+          <MultiPickupSingleDropoffTaskForm
+            taskDesc={taskRequest.description as MultiPickupSingleDropoffTaskDescription}
+            onChange={(desc) => handleTaskDescriptionChange('multi_pickup_single_dropoff', desc)}
+            allowSubmit={allowSubmit}
+          />
+        );
       default:
         return null;
     }
@@ -1890,6 +2079,9 @@ export function CreateTaskForm({
                       </MenuItem>
                       <MenuItem value="single_pickup_multi_dropoff">
                         Single pickup multi dropoff
+                      </MenuItem>
+                      <MenuItem value="multi_pickup_single_dropoff">
+                        Multi pickup single dropoff
                       </MenuItem>
                       <MenuItem value="custom_compose">Custom Compose Task</MenuItem>
                     </TextField>
