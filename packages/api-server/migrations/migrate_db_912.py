@@ -214,11 +214,11 @@ async def migrate():
 
         if pickup is not None:
             await ttm.TaskLabel.create(
-                state.state, label_name="pickup", label_value_str=pickup
+                state=state, label_name="pickup", label_value_str=pickup
             )
         if destination is not None:
             await ttm.TaskLabel.create(
-                state.state, label_name="destination", label_value_str=destination
+                state=state, label_name="destination", label_value_str=destination
             )
 
         state.update_from_dict(
