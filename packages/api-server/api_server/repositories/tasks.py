@@ -59,15 +59,6 @@ class TaskRepository:
             raise HTTPException(422, str(e)) from e
 
     async def save_task_state(self, task_state: TaskState) -> None:
-        labels = task_state.booking.labels
-        booking_label = None
-        if labels is not None:
-            for l in labels:
-                validated_booking_label = TaskBookingLabel.from_json_string(l)
-                if validated_booking_label is not None:
-                    booking_label = validated_booking_label
-                    break
-
         task_state_dict = {
             "data": task_state.json(),
             "category": task_state.category.__root__ if task_state.category else None,
@@ -86,23 +77,10 @@ class TaskRepository:
             "requester": task_state.booking.requester
             if task_state.booking.requester
             else None,
-            "pickup": booking_label.description.pickup
-            if booking_label is not None
-            and booking_label.description.pickup is not None
-            else None,
-            "destination": booking_label.description.destination
-            if booking_label is not None
-            and booking_label.description.destination is not None
-            else None,
         }
 
-        if task_state.unix_millis_warn_time is not None:
-            task_state_dict["unix_millis_warn_time"] = datetime.fromtimestamp(
-                task_state.unix_millis_warn_time / 1000
-            )
-
         try:
-            await ttm.TaskState.update_or_create(
+            state, created = await ttm.TaskState.update_or_create(
                 task_state_dict, id_=task_state.booking.id
             )
         except Exception as e:  # pylint: disable=W0703
@@ -118,6 +96,43 @@ class TaskRepository:
             # environment, and may be fixed upstream in updated libraries.
             self.logger.error(
                 f"Failed to save task state of id [{task_state.booking.id}] [{e}]"
+            )
+            return
+
+        if not created:
+            return
+
+        # Save the labels that we want
+        labels = task_state.booking.labels
+        booking_label = None
+        if labels is not None:
+            for l in labels:
+                validated_booking_label = TaskBookingLabel.from_json_string(l)
+                if validated_booking_label is not None:
+                    booking_label = validated_booking_label
+                    break
+        if booking_label is None:
+            return
+
+        # Here we generate the labels required for server-side sorting and
+        # filtering.
+        if booking_label.description.pickup is not None:
+            await ttm.TaskLabel.create(
+                state=state,
+                label_name="pickup",
+                label_value_str=booking_label.description.pickup,
+            )
+        if booking_label.description.destination is not None:
+            await ttm.TaskLabel.create(
+                state=state,
+                label_name="destination",
+                label_value_str=booking_label.description.destination,
+            )
+        if booking_label.description.unix_millis_warn_time is not None:
+            await ttm.TaskLabel.create(
+                state=state,
+                label_name="unix_millis_warn_time",
+                label_value_num=booking_label.description.unix_millis_warn_time,
             )
 
     async def query_task_states(

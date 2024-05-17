@@ -18,11 +18,17 @@ from api_server.models import (
 # Before migration:
 # - Pickup, destination, cart ID, task definition id information will be
 #   unavailable on the Task Queue Table on the dashboard, as we no longer gather
-#   those fields from the TaskRequest
+#   those fields from the TaskRequest.
+# - TaskState database model contains optional CharFields for pickup and
+#   destination, to facilitate server-side sorting and filtering.
 # After migration:
 # - Dashboard will behave the same as before #912, however it is no longer
 #   dependent on TaskRequest to fill out those fields. It gathers those fields
 #   from the json string in TaskState.booking.labels.
+# - In the database, we create a new generic key-value pair model, that allow
+#   us to encode all this information and tie them to a task state, and be used
+#   for sorting and filtering, using reverse relations, as opposed to fully
+#   filled out columns for TaskState.
 # This script performs the following:
 # - Construct TaskBookingLabel from its TaskRequest if it is available.
 # - Update the respective TaskState.data json TaskState.booking.labels field
@@ -206,12 +212,17 @@ async def migrate():
             )
         # print(state_model)
 
+        if pickup is not None:
+            await ttm.TaskLabel.create(
+                state.state, label_name="pickup", label_value_str=pickup
+            )
+        if destination is not None:
+            await ttm.TaskLabel.create(
+                state.state, label_name="destination", label_value_str=destination
+            )
+
         state.update_from_dict(
-            {
-                "data": state_model.json(exclude_none=True, separators=(",", ":")),
-                "pickup": pickup,
-                "destination": destination,
-            }
+            {"data": state_model.json(exclude_none=True, separators=(",", ":"))}
         )
         await state.save()
 

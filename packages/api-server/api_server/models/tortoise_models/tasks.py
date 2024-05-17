@@ -1,4 +1,5 @@
 from tortoise.fields import (
+    BigIntField,
     CharField,
     DatetimeField,
     ForeignKeyField,
@@ -29,6 +30,14 @@ class TaskState(Model):
     unix_millis_warn_time = DatetimeField(null=True, index=True)
     pickup = CharField(255, null=True, index=True)
     destination = CharField(255, null=True, index=True)
+    labels = ReverseRelation["TaskLabel"]
+
+
+class TaskLabel(Model):
+    state = ForeignKeyField("models.TaskState", null=True, related_name="labels")
+    label_name = CharField(255, null=False, index=True)
+    label_value_str = CharField(255, null=True, index=True)
+    label_value_num = BigIntField(null=True, index=True)
 
 
 class TaskEventLog(Model):
