@@ -2,6 +2,7 @@ from tortoise.fields import (
     BigIntField,
     CharField,
     DatetimeField,
+    FloatField,
     ForeignKeyField,
     ForeignKeyRelation,
     JSONField,
@@ -38,6 +39,7 @@ class TaskLabel(Model):
     label_name = CharField(255, null=False, index=True)
     label_value_str = CharField(255, null=True, index=True)
     label_value_num = BigIntField(null=True, index=True)
+    label_value_float = FloatField(null=True, index=True)
 
 
 class TaskEventLog(Model):

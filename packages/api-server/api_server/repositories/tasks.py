@@ -99,10 +99,11 @@ class TaskRepository:
             )
             return
 
+        # Since this is updating an existing task state, we are done
         if not created:
             return
 
-        # Save the labels that we want
+        # Labels are created and saved when a new task state is first received
         labels = task_state.booking.labels
         booking_label = None
         if labels is not None:
