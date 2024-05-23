@@ -28,7 +28,12 @@ async def create_new_alert(alert: AlertRequest):
     if exists:
         raise HTTPException(409, f"Alert with ID {alert.id} already exists")
 
-    await ttm.AlertRequest.create(id=alert.id, data=alert.json(), task_id=alert.task_id)
+    await ttm.AlertRequest.create(
+        id=alert.id,
+        data=alert.json(),
+        response_expected=(len(alert.responses_available) > 0 and alert.display),
+        task_id=alert.task_id,
+    )
 
     if alert.display:
         alert_events.alert_requests.on_next(alert)
@@ -48,12 +53,13 @@ async def respond_to_alert(alert_id: str, response: str):
     """
     alert = await ttm.AlertRequest.get_or_none(id=alert_id)
     if alert is None:
-        raise HTTPException(404, f"Alert with ID {alert.id} does not exists")
+        raise HTTPException(404, f"Alert with ID {alert_id} does not exists")
 
     alert_model = AlertRequest(**alert.data)
     if response not in alert_model.responses_available:
         raise HTTPException(
-            422, f"Alert with ID {alert.id} does not have allow response of {response}"
+            422,
+            f"Alert with ID {alert_model.id} does not have allow response of {response}",
         )
 
     alert_response_model = AlertResponse(
@@ -104,15 +110,26 @@ async def get_alerts_of_task(task_id: str, unresponded: bool = True):
     Returns all the alerts associated to a task ID. Provides the option to only
     return alerts that have not been responded to yet.
     """
-    task_id_alerts = await ttm.AlertRequest.filter(task_id=task_id)
+    if unresponded:
+        task_id_alerts = await ttm.AlertRequest.filter(
+            response_expected=True,
+            task_id=task_id,
+            alert_response=None,
+        )
+    else:
+        task_id_alerts = await ttm.AlertRequest.filter(task_id=task_id)
 
-    alert_models = []
-    for alert in task_id_alerts:
-        alert_model = AlertRequest(**alert.data)
-
-        if unresponded:
-            response_exists = await ttm.AlertResponse.get_or_none(id=alert_model.id)
-            if response_exists:
-                continue
-        alert_models.append(alert_model)
+    alert_models = [AlertRequest(**alert.data) for alert in task_id_alerts]
     return alert_models
+
+
+@router.get("/unresponded", response_model=List[AlertRequest])
+async def get_unresponded_alert_ids():
+    """
+    Returns the list of alert IDs that have yet to be responded to, while a
+    response was required.
+    """
+    unresponded_alerts = await ttm.AlertRequest.filter(
+        alert_response=None, response_expected=True
+    )
+    return [AlertRequest(**alert.data) for alert in unresponded_alerts]

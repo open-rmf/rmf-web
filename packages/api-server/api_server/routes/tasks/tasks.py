@@ -350,21 +350,3 @@ async def post_undo_skip_phase(
     request: mdl.UndoPhaseSkipRequest = Body(...),
 ):
     return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
-
-
-# @router.post("/location/check_in")
-# async def location_check_in(
-#     task_id: str,
-#     location: str
-# ):
-#     """
-#     Allows tagging a named location to a task. This is a way to inform any downstream
-#     applications the whereabouts
-#     """
-#     # TODO: check if the location is in buildingmap
-#     # TODO: check if task is still an ongoing task
-#     DbTaskLocationCheckIn.create(
-#         task_id=task_id,
-#         unix_millis_check_in_time=round(datetime.now().timestamp() * 1000),
-#         location=location
-#     )
