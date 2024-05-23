@@ -37,5 +37,10 @@ class AlertRequest(BaseModel):
 
     async def save(self) -> None:
         await ttm.AlertRequest.update_or_create(
-            {"data": self.json(), "task_id": self.task_id}, id=self.id
+            {
+                "data": self.json(),
+                "response_expected": (len(self.responses_available) > 0),
+                "task_id": self.task_id,
+            },
+            id=self.id,
         )

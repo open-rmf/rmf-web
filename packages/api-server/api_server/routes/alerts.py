@@ -31,7 +31,7 @@ async def create_new_alert(alert: AlertRequest):
     await ttm.AlertRequest.create(
         id=alert.id,
         data=alert.json(),
-        response_expected=(len(alert.responses_available) > 0 and alert.display),
+        response_expected=(len(alert.responses_available) > 0),
         task_id=alert.task_id,
     )
 

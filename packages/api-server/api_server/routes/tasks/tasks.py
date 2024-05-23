@@ -21,6 +21,7 @@ from api_server.models.tortoise_models import (
 from api_server.repositories import RmfRepository, TaskRepository
 from api_server.response import RawJSONResponse
 from api_server.rmf_io import task_events, tasks_service
+from api_server.routes.alerts import get_alerts_of_task, respond_to_alert
 from api_server.routes.building_map import get_building_map
 
 router = FastIORouter(tags=["Tasks"])
@@ -391,3 +392,46 @@ async def post_undo_skip_phase(
     request: mdl.UndoPhaseSkipRequest = Body(...),
 ):
     return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
+
+
+@router.post("/location_complete")
+async def location_complete(
+    task_id: str,
+    location: str,
+    success: bool,
+    logger: LoggerAdapter = Depends(get_logger),
+):
+    alerts = await get_alerts_of_task(task_id=task_id, unresponded=True)
+    if len(alerts) == 0:
+        raise HTTPException(
+            404, f"There are no locations awaiting completion for task {task_id}"
+        )
+
+    # TODO: not hardcode the expected responses from the fleet adapter
+    # TODO: not hardcode the alert parameter expected from the fleet adapter
+    TimeoutResponse = "timeout"
+    MoveOffResponse = "move_off"
+    ParameterName = "waiting_at"
+
+    for alert in alerts:
+        if (
+            len(alert.alert_parameters) == 0
+            or TimeoutResponse not in alert.responses_available
+            or MoveOffResponse not in alert.responses_available
+        ):
+            continue
+
+        # TODO: make sure that there are no duplicated locations that have
+        # not been responded to yet
+        for param in alert.alert_parameters:
+            if param.name == ParameterName and param.value == location:
+                response = await respond_to_alert(
+                    alert_id=alert.id,
+                    response=TimeoutResponse if not success else MoveOffResponse,
+                )
+                logger.info(response)
+                return
+
+    error = f"Task {task_id} is not awaiting completion of location {location}"
+    logger.error(error)
+    raise HTTPException(404, error)
