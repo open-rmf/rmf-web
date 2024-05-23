@@ -27,6 +27,8 @@ from rmf_fleet_msgs.msg import DeliveryAlert as RmfDeliveryAlert
 from rmf_fleet_msgs.msg import DeliveryAlertAction as RmfDeliveryAlertAction
 from rmf_fleet_msgs.msg import DeliveryAlertCategory as RmfDeliveryAlertCategory
 from rmf_fleet_msgs.msg import DeliveryAlertTier as RmfDeliveryAlertTier
+from rmf_fleet_msgs.msg import FleetAlert as RmfFleetAlert
+from rmf_fleet_msgs.msg import FleetAlertResponse as RmfFleetAlertResponse
 from rmf_fleet_msgs.msg import MutexGroupManualRelease as RmfMutexGroupManualRelease
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
@@ -37,6 +39,8 @@ from rosidl_runtime_py.convert import message_to_ordereddict
 from std_msgs.msg import Bool as BoolMsg
 
 from .models import (
+    AlertParameter,
+    AlertRequest,
     BeaconState,
     BuildingMap,
     DeliveryAlert,
@@ -48,7 +52,7 @@ from .models import (
 )
 from .models.delivery_alerts import action_from_msg, category_from_msg, tier_from_msg
 from .repositories import CachedFilesRepository, cached_files_repo
-from .rmf_io import rmf_events
+from .rmf_io import alert_events, rmf_events
 from .ros import ros_node
 
 
@@ -99,6 +103,17 @@ class RmfGateway:
         self._delivery_alert_response = ros_node().create_publisher(
             RmfDeliveryAlert,
             "delivery_alert_response",
+            rclpy.qos.QoSProfile(
+                history=rclpy.qos.HistoryPolicy.KEEP_LAST,
+                depth=10,
+                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
+                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
+            ),
+        )
+
+        self._fleet_alert_response = ros_node().create_publisher(
+            RmfFleetAlertResponse,
+            "fleet_alert_response",
             rclpy.qos.QoSProfile(
                 history=rclpy.qos.HistoryPolicy.KEEP_LAST,
                 depth=10,
@@ -248,6 +263,52 @@ class RmfGateway:
         )
         self._subscriptions.append(delivery_alert_request_sub)
 
+        def convert_fleet_alert(fleet_alert: RmfFleetAlert):
+            tier = AlertRequest.Tier.Info
+            if fleet_alert.tier == RmfFleetAlert.TIER_WARNING:
+                tier = AlertRequest.Tier.Warning
+            elif fleet_alert.tier == RmfFleetAlert.TIER_ERROR:
+                tier = AlertRequest.Tier.Error
+
+            parameters = []
+            for p in fleet_alert.alert_parameters:
+                parameters.append(AlertParameter(name=p.name, value=p.value))
+
+            return AlertRequest(
+                id=fleet_alert.id,
+                unix_millis_alert_time=round(datetime.now().timestamp() * 1000),
+                title=fleet_alert.title,
+                subtitle=fleet_alert.subtitle,
+                message=fleet_alert.message,
+                display=fleet_alert.display,
+                tier=tier,
+                responses_available=fleet_alert.responses_available,
+                alert_parameters=parameters,
+                task_id=fleet_alert.task_id if len(fleet_alert.task_id) > 0 else None,
+            )
+
+        def handle_fleet_alert(fleet_alert: AlertRequest):
+            logging.info("Received fleet alert:")
+            logging.info(fleet_alert)
+
+            # we can do the destination reached tagging here instead of in the
+            # route
+
+            alert_events.alert_requests.on_next(fleet_alert)
+
+        fleet_alert_sub = ros_node().create_subscription(
+            RmfFleetAlert,
+            "fleet_alert",
+            lambda msg: handle_fleet_alert(convert_fleet_alert(msg)),
+            rclpy.qos.QoSProfile(
+                history=rclpy.qos.HistoryPolicy.KEEP_LAST,
+                depth=10,
+                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
+                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
+            ),
+        )
+        self._subscriptions.append(fleet_alert_sub)
+
         def handle_fire_alarm_trigger(fire_alarm_trigger_msg: BoolMsg):
             if fire_alarm_trigger_msg.data:
                 logging.info("Fire alarm triggered")
@@ -329,6 +390,12 @@ class RmfGateway:
         msg.action = RmfDeliveryAlertAction(value=action)
         msg.message = message
         self._delivery_alert_response.publish(msg)
+
+    def respond_to_alert(self, alert_id: str, response: str):
+        msg = RmfFleetAlertResponse()
+        msg.id = alert_id
+        msg.response = response
+        self._fleet_alert_response.publish(msg)
 
     def manual_release_mutex_groups(
         self,

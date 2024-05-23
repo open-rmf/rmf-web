@@ -1,5 +1,6 @@
 from tortoise.contrib.pydantic.creator import pydantic_model_creator
 from tortoise.fields import (
+    BigIntField,
     CharField,
     DatetimeField,
     ForeignKeyField,
@@ -83,3 +84,13 @@ class TaskFavorite(Model):
 
 
 TaskFavoritePydantic = pydantic_model_creator(TaskFavorite)
+
+
+# class TaskPath(Model):
+#     task_id = CharField(255, null=False, index=True)
+
+
+# class TaskLocationCheckIn(Model):
+#     task_id = CharField(255, null=False, index=True)
+#     unix_millis_check_in_time = BigIntField(null=False, index=True)
+#     location = CharField(255, null=False, index=True)

@@ -1,50 +1,118 @@
+import logging
+from datetime import datetime
 from typing import List
 
-from fastapi import Depends, HTTPException
+from fastapi import HTTPException
 from rx import operators as rxops
 
 from api_server.fast_io import FastIORouter, SubscriptionRequest
+from api_server.gateway import rmf_gateway
+from api_server.models import AlertRequest, AlertResponse
 from api_server.models import tortoise_models as ttm
-from api_server.repositories import AlertRepository
 from api_server.rmf_io import alert_events
 
 router = FastIORouter(tags=["Alerts"])
 
 
-@router.sub("", response_model=ttm.AlertPydantic)
+@router.sub("", response_model=AlertRequest)
 async def sub_alerts(_req: SubscriptionRequest):
-    return alert_events.alerts.pipe(rxops.filter(lambda x: x is not None))
+    return alert_events.alert_requests.pipe(rxops.filter(lambda x: x is not None))
 
 
-@router.get("", response_model=List[ttm.AlertPydantic])
-async def get_alerts(repo: AlertRepository = Depends(AlertRepository)):
-    return await repo.get_all_alerts()
+@router.post("/request", status_code=201, response_model=AlertRequest)
+async def create_new_alert(alert: AlertRequest):
+    """
+    Creates a new alert.
+    """
+    exists = await ttm.AlertRequest.exists(id=alert.id)
+    if exists:
+        raise HTTPException(409, f"Alert with ID {alert.id} already exists")
 
+    await ttm.AlertRequest.create(id=alert.id, data=alert.json(), task_id=alert.task_id)
 
-@router.get("/{alert_id}", response_model=ttm.AlertPydantic)
-async def get_alert(alert_id: str, repo: AlertRepository = Depends(AlertRepository)):
-    alert = await repo.get_alert(alert_id)
-    if alert is None:
-        raise HTTPException(404, f"Alert with ID {alert_id} not found")
+    if alert.display:
+        alert_events.alert_requests.on_next(alert)
     return alert
 
 
-@router.post("", status_code=201, response_model=ttm.AlertPydantic)
-async def create_alert(
-    alert_id: str, category: str, repo: AlertRepository = Depends(AlertRepository)
-):
-    alert = await repo.create_alert(alert_id, category)
-    if alert is None:
-        raise HTTPException(404, f"Could not create alert with ID {alert_id}")
-    return alert
+@router.sub("/responses", response_model=AlertResponse)
+async def sub_alert_responses(_req: SubscriptionRequest):
+    return alert_events.alert_responses.pipe(rxops.filter(lambda x: x is not None))
 
 
-@router.post("/{alert_id}", status_code=201, response_model=ttm.AlertPydantic)
-async def acknowledge_alert(
-    alert_id: str, repo: AlertRepository = Depends(AlertRepository)
-):
-    alert = await repo.acknowledge_alert(alert_id)
+@router.post("/{alert_id}/respond", status_code=201, response_model=AlertResponse)
+async def respond_to_alert(alert_id: str, response: str):
+    """
+    Responds to an existing alert. The response must be one of the available
+    responses listed in the alert.
+    """
+    alert = await ttm.AlertRequest.get_or_none(id=alert_id)
     if alert is None:
-        raise HTTPException(404, f"Could acknowledge alert with ID {alert_id}")
-    alert_events.alerts.on_next(alert)
-    return alert
+        raise HTTPException(404, f"Alert with ID {alert.id} does not exists")
+
+    alert_model = AlertRequest(**alert.data)
+    if response not in alert_model.responses_available:
+        raise HTTPException(
+            422, f"Alert with ID {alert.id} does not have allow response of {response}"
+        )
+
+    alert_response_model = AlertResponse(
+        id=alert_id,
+        unix_millis_response_time=round(datetime.now().timestamp() * 1000),
+        response=response,
+    )
+    await ttm.AlertResponse.create(
+        id=alert_id, alert_request=alert, data=alert_response_model.json()
+    )
+    alert_events.alert_responses.on_next(alert_response_model)
+
+    rmf_gateway().respond_to_alert(alert_id, response)
+    return alert_response_model
+
+
+@router.get("/{alert_id}", response_model=AlertRequest)
+async def get_alert(alert_id: str):
+    """
+    Gets an alert based on the alert ID.
+    """
+    alert = await ttm.AlertRequest.get_or_none(id=alert_id)
+    if alert is None:
+        raise HTTPException(404, f"Alert with ID {alert_id} does not exists")
+
+    alert_model = AlertRequest(**alert.data)
+    return alert_model
+
+
+@router.get("/{alert_id}/response", response_model=AlertResponse)
+async def get_alert_response(alert_id: str):
+    """
+    Gets the response to the alert based on the alert ID.
+    """
+    response = await ttm.AlertResponse.get_or_none(id=alert_id)
+    if response is None:
+        raise HTTPException(
+            404, f"Response to alert with ID {alert_id} does not exists"
+        )
+
+    response_model = AlertResponse(**response.data)
+    return response_model
+
+
+@router.get("/task/{task_id}", response_model=List[AlertRequest])
+async def get_alerts_of_task(task_id: str, unresponded: bool = True):
+    """
+    Returns all the alerts associated to a task ID. Provides the option to only
+    return alerts that have not been responded to yet.
+    """
+    task_id_alerts = await ttm.AlertRequest.filter(task_id=task_id)
+
+    alert_models = []
+    for alert in task_id_alerts:
+        alert_model = AlertRequest(**alert.data)
+
+        if unresponded:
+            response_exists = await ttm.AlertResponse.get_or_none(id=alert_model.id)
+            if response_exists:
+                continue
+        alert_models.append(alert_model)
+    return alert_models

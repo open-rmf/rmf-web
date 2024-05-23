@@ -18,7 +18,7 @@ from .ingestor_state import IngestorState
 from .lift_state import LiftState
 from .log import LogMixin
 from .scheduled_task import *
-from .tasks import (
+from .tasks import (  # TaskLocationCheckIn,
     TaskEventLog,
     TaskEventLogLog,
     TaskEventLogPhases,

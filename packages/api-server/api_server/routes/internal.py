@@ -9,7 +9,7 @@ from websockets.exceptions import ConnectionClosed
 from api_server import models as mdl
 from api_server.app_config import app_config
 from api_server.logging import LoggerAdapter, get_logger
-from api_server.repositories import AlertRepository, FleetRepository, TaskRepository
+from api_server.repositories import FleetRepository, TaskRepository
 from api_server.rmf_io import alert_events, fleet_events, task_events
 
 router = APIRouter(tags=["_internal"])
@@ -79,7 +79,6 @@ async def process_msg(
     msg: Dict[str, Any],
     fleet_repo: FleetRepository,
     task_repo: TaskRepository,
-    alert_repo: AlertRepository,
     logger: LoggerAdapter,
 ) -> None:
     if "type" not in msg:
@@ -97,34 +96,34 @@ async def process_msg(
         await task_repo.save_task_state(task_state)
         task_events.task_states.on_next(task_state)
 
-        if (
-            task_state.status == mdl.Status.completed
-            or task_state.status == mdl.Status.failed
-        ):
-            alert = await alert_repo.create_alert(task_state.booking.id, "task")
-            if alert is not None:
-                alert_events.alerts.on_next(alert)
-        elif (
-            task_state.unix_millis_finish_time
-            and task_state.unix_millis_warn_time
-            and task_state.unix_millis_finish_time > task_state.unix_millis_warn_time
-        ):
-            # TODO(AC): Perhaps set a late alert as its own category
-            late_alert_id = f"{task_state.booking.id}__late"
-            if not await alert_repo.alert_original_id_exists(late_alert_id):
-                alert = await alert_repo.create_alert(late_alert_id, "task")
-                if alert is not None:
-                    alert_events.alerts.on_next(alert)
+        # if (
+        #     task_state.status == mdl.Status.completed
+        #     or task_state.status == mdl.Status.failed
+        # ):
+        #     alert = await alert_repo.create_alert(task_state.booking.id, "task")
+        #     if alert is not None:
+        #         alert_events.alerts.on_next(alert)
+        # elif (
+        #     task_state.unix_millis_finish_time
+        #     and task_state.unix_millis_warn_time
+        #     and task_state.unix_millis_finish_time > task_state.unix_millis_warn_time
+        # ):
+        #     # TODO(AC): Perhaps set a late alert as its own category
+        #     late_alert_id = f"{task_state.booking.id}__late"
+        #     if not await alert_repo.alert_original_id_exists(late_alert_id):
+        #         alert = await alert_repo.create_alert(late_alert_id, "task")
+        #         if alert is not None:
+        #             alert_events.alerts.on_next(alert)
 
     elif payload_type == "task_log_update":
         task_log = mdl.TaskEventLog(**msg["data"])
         await task_repo.save_task_log(task_log)
         task_events.task_event_logs.on_next(task_log)
 
-        if task_log_has_error(task_log):
-            alert = await alert_repo.create_alert(task_log.task_id, "task")
-            if alert is not None:
-                alert_events.alerts.on_next(alert)
+        # if task_log_has_error(task_log):
+        #     alert = await alert_repo.create_alert(task_log.task_id, "task")
+        #     if alert is not None:
+        #         alert_events.alerts.on_next(alert)
 
     elif payload_type == "fleet_state_update":
         fleet_state = mdl.FleetState(**msg["data"])
@@ -145,11 +144,10 @@ async def rmf_gateway(
     await connection_manager.connect(websocket)
     fleet_repo = FleetRepository(user, logger)
     task_repo = TaskRepository(user, logger)
-    alert_repo = AlertRepository(user, task_repo)
     try:
         while True:
             msg: Dict[str, Any] = await websocket.receive_json()
-            await process_msg(msg, fleet_repo, task_repo, alert_repo, logger)
+            await process_msg(msg, fleet_repo, task_repo, logger)
     except (WebSocketDisconnect, ConnectionClosed):
         connection_manager.disconnect(websocket)
         logger.warning("Client websocket disconnected")

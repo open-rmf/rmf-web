@@ -15,7 +15,9 @@ from api_server.dependencies import (
 )
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.logging import LoggerAdapter, get_logger
-from api_server.models.tortoise_models import TaskState as DbTaskState
+from api_server.models.tortoise_models import (
+    TaskState as DbTaskState,  # TaskLocationCheckIn as DbTaskLocationCheckIn
+)
 from api_server.repositories import RmfRepository, TaskRepository
 from api_server.response import RawJSONResponse
 from api_server.rmf_io import task_events, tasks_service
@@ -348,3 +350,21 @@ async def post_undo_skip_phase(
     request: mdl.UndoPhaseSkipRequest = Body(...),
 ):
     return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
+
+
+# @router.post("/location/check_in")
+# async def location_check_in(
+#     task_id: str,
+#     location: str
+# ):
+#     """
+#     Allows tagging a named location to a task. This is a way to inform any downstream
+#     applications the whereabouts
+#     """
+#     # TODO: check if the location is in buildingmap
+#     # TODO: check if task is still an ongoing task
+#     DbTaskLocationCheckIn.create(
+#         task_id=task_id,
+#         unix_millis_check_in_time=round(datetime.now().timestamp() * 1000),
+#         location=location
+#     )
