@@ -432,55 +432,6 @@ export interface ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskSchedule
   at?: string | null;
 }
 /**
- *
- * @export
- * @interface ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
- */
-export interface ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf {
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
-   */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
-   */
-  name: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
-   */
-  unix_millis_earliest_start_time?: string | null;
-  /**
-   *
-   * @type {any}
-   * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
-   */
-  priority?: any;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
-   */
-  category: string;
-  /**
-   *
-   * @type {any}
-   * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
-   */
-  description?: any;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf
-   */
-  user: string;
-}
-/**
  * Which agent (robot) is the task assigned to
  * @export
  * @interface AssignedTo
@@ -2445,6 +2396,56 @@ export interface Task {
   description_schema?: object;
 }
 /**
+ * This label is to be populated by any frontend during a task dispatch, by being added to TaskRequest.labels, which in turn populates TaskState.booking.labels, and can be used to display relevant information needed for any frontends.
+ * @export
+ * @interface TaskBookingLabel
+ */
+export interface TaskBookingLabel {
+  /**
+   *
+   * @type {TaskBookingLabelDescription}
+   * @memberof TaskBookingLabel
+   */
+  description: TaskBookingLabelDescription;
+}
+/**
+ * This description holds several fields that could be useful for frontend dashboards when dispatching a task, to then be identified or rendered accordingly back on the same frontend.
+ * @export
+ * @interface TaskBookingLabelDescription
+ */
+export interface TaskBookingLabelDescription {
+  /**
+   *
+   * @type {string}
+   * @memberof TaskBookingLabelDescription
+   */
+  task_definition_id: string;
+  /**
+   *
+   * @type {number}
+   * @memberof TaskBookingLabelDescription
+   */
+  unix_millis_warn_time?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskBookingLabelDescription
+   */
+  pickup?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskBookingLabelDescription
+   */
+  destination?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskBookingLabelDescription
+   */
+  cart_id?: string;
+}
+/**
  * Response to a request to cancel a task
  * @export
  * @interface TaskCancelResponse
@@ -2626,51 +2627,57 @@ export interface TaskEventLog {
 /**
  *
  * @export
- * @interface TaskFavoritePydantic
+ * @interface TaskFavorite
  */
-export interface TaskFavoritePydantic {
+export interface TaskFavorite {
   /**
    *
    * @type {string}
-   * @memberof TaskFavoritePydantic
+   * @memberof TaskFavorite
    */
   id: string;
   /**
    *
    * @type {string}
-   * @memberof TaskFavoritePydantic
+   * @memberof TaskFavorite
    */
   name: string;
   /**
    *
    * @type {number}
-   * @memberof TaskFavoritePydantic
+   * @memberof TaskFavorite
    */
   unix_millis_earliest_start_time: number;
   /**
    *
    * @type {object}
-   * @memberof TaskFavoritePydantic
+   * @memberof TaskFavorite
    */
   priority?: object;
   /**
    *
    * @type {string}
-   * @memberof TaskFavoritePydantic
+   * @memberof TaskFavorite
    */
   category: string;
   /**
    *
    * @type {object}
-   * @memberof TaskFavoritePydantic
+   * @memberof TaskFavorite
    */
   description?: object;
   /**
    *
    * @type {string}
-   * @memberof TaskFavoritePydantic
+   * @memberof TaskFavorite
    */
   user: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TaskFavorite
+   */
+  task_definition_id: string;
 }
 /**
  *
@@ -8687,6 +8694,47 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
+     *
+     * @summary Get Task Booking Label
+     * @param {string} taskId task_id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getTaskBookingLabelTasksTaskIdBookingLabelGet: async (
+      taskId: string,
+      options: AxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'taskId' is not null or undefined
+      assertParamExists('getTaskBookingLabelTasksTaskIdBookingLabelGet', 'taskId', taskId);
+      const localVarPath = `/tasks/{task_id}/booking_label`.replace(
+        `{${'task_id'}}`,
+        encodeURIComponent(String(taskId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Available in socket.io
      * @summary Get Task Log
      * @param {string} taskId task_id
@@ -8965,20 +9013,16 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
     /**
      *
      * @summary Post Favorite Task
-     * @param {TaskFavoritePydantic} taskFavoritePydantic
+     * @param {TaskFavorite} taskFavorite
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postFavoriteTaskFavoriteTasksPost: async (
-      taskFavoritePydantic: TaskFavoritePydantic,
+      taskFavorite: TaskFavorite,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      // verify required parameter 'taskFavoritePydantic' is not null or undefined
-      assertParamExists(
-        'postFavoriteTaskFavoriteTasksPost',
-        'taskFavoritePydantic',
-        taskFavoritePydantic,
-      );
+      // verify required parameter 'taskFavorite' is not null or undefined
+      assertParamExists('postFavoriteTaskFavoriteTasksPost', 'taskFavorite', taskFavorite);
       const localVarPath = `/favorite_tasks`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -9001,7 +9045,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        taskFavoritePydantic,
+        taskFavorite,
         localVarRequestOptions,
         configuration,
       );
@@ -9734,9 +9778,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
      */
     async getFavoritesTasksFavoriteTasksGet(
       options?: AxiosRequestConfig,
-    ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskFavoritePydantic>>
-    > {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskFavorite>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getFavoritesTasksFavoriteTasksGet(
         options,
       );
@@ -9794,6 +9836,24 @@ export const TasksApiFp = function (configuration?: Configuration) {
         orderBy,
         options,
       );
+      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+    },
+    /**
+     *
+     * @summary Get Task Booking Label
+     * @param {string} taskId task_id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async getTaskBookingLabelTasksTaskIdBookingLabelGet(
+      taskId: string,
+      options?: AxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskBookingLabel>> {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.getTaskBookingLabelTasksTaskIdBookingLabelGet(
+          taskId,
+          options,
+        );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -9908,21 +9968,16 @@ export const TasksApiFp = function (configuration?: Configuration) {
     /**
      *
      * @summary Post Favorite Task
-     * @param {TaskFavoritePydantic} taskFavoritePydantic
+     * @param {TaskFavorite} taskFavorite
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async postFavoriteTaskFavoriteTasksPost(
-      taskFavoritePydantic: TaskFavoritePydantic,
+      taskFavorite: TaskFavorite,
       options?: AxiosRequestConfig,
-    ): Promise<
-      (
-        axios?: AxiosInstance,
-        basePath?: string,
-      ) => AxiosPromise<ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf>
-    > {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.postFavoriteTaskFavoriteTasksPost(
-        taskFavoritePydantic,
+        taskFavorite,
         options,
       );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -10253,7 +10308,7 @@ export const TasksApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getFavoritesTasksFavoriteTasksGet(options?: any): AxiosPromise<Array<TaskFavoritePydantic>> {
+    getFavoritesTasksFavoriteTasksGet(options?: any): AxiosPromise<Array<TaskFavorite>> {
       return localVarFp
         .getFavoritesTasksFavoriteTasksGet(options)
         .then((request) => request(axios, basePath));
@@ -10301,6 +10356,21 @@ export const TasksApiFactory = function (
           orderBy,
           options,
         )
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get Task Booking Label
+     * @param {string} taskId task_id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    getTaskBookingLabelTasksTaskIdBookingLabelGet(
+      taskId: string,
+      options?: any,
+    ): AxiosPromise<TaskBookingLabel> {
+      return localVarFp
+        .getTaskBookingLabelTasksTaskIdBookingLabelGet(taskId, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -10392,16 +10462,16 @@ export const TasksApiFactory = function (
     /**
      *
      * @summary Post Favorite Task
-     * @param {TaskFavoritePydantic} taskFavoritePydantic
+     * @param {TaskFavorite} taskFavorite
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     postFavoriteTaskFavoriteTasksPost(
-      taskFavoritePydantic: TaskFavoritePydantic,
+      taskFavorite: TaskFavorite,
       options?: any,
-    ): AxiosPromise<ApiServerModelsTortoiseModelsTasksTaskFavoriteLeaf> {
+    ): AxiosPromise<any> {
       return localVarFp
-        .postFavoriteTaskFavoriteTasksPost(taskFavoritePydantic, options)
+        .postFavoriteTaskFavoriteTasksPost(taskFavorite, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -10745,6 +10815,23 @@ export class TasksApi extends BaseAPI {
   }
 
   /**
+   *
+   * @summary Get Task Booking Label
+   * @param {string} taskId task_id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TasksApi
+   */
+  public getTaskBookingLabelTasksTaskIdBookingLabelGet(
+    taskId: string,
+    options?: AxiosRequestConfig,
+  ) {
+    return TasksApiFp(this.configuration)
+      .getTaskBookingLabelTasksTaskIdBookingLabelGet(taskId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
    * Available in socket.io
    * @summary Get Task Log
    * @param {string} taskId task_id
@@ -10845,17 +10932,17 @@ export class TasksApi extends BaseAPI {
   /**
    *
    * @summary Post Favorite Task
-   * @param {TaskFavoritePydantic} taskFavoritePydantic
+   * @param {TaskFavorite} taskFavorite
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof TasksApi
    */
   public postFavoriteTaskFavoriteTasksPost(
-    taskFavoritePydantic: TaskFavoritePydantic,
+    taskFavorite: TaskFavorite,
     options?: AxiosRequestConfig,
   ) {
     return TasksApiFp(this.configuration)
-      .postFavoriteTaskFavoriteTasksPost(taskFavoritePydantic, options)
+      .postFavoriteTaskFavoriteTasksPost(taskFavorite, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

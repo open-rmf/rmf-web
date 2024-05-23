@@ -1,8 +1,8 @@
-from tortoise.contrib.pydantic.creator import pydantic_model_creator
 from tortoise.fields import (
     BigIntField,
     CharField,
     DatetimeField,
+    FloatField,
     ForeignKeyField,
     ForeignKeyRelation,
     JSONField,
@@ -31,6 +31,15 @@ class TaskState(Model):
     unix_millis_warn_time = DatetimeField(null=True, index=True)
     pickup = CharField(255, null=True, index=True)
     destination = CharField(255, null=True, index=True)
+    labels = ReverseRelation["TaskLabel"]
+
+
+class TaskLabel(Model):
+    state = ForeignKeyField("models.TaskState", null=True, related_name="labels")
+    label_name = CharField(255, null=False, index=True)
+    label_value_str = CharField(255, null=True, index=True)
+    label_value_num = BigIntField(null=True, index=True)
+    label_value_float = FloatField(null=True, index=True)
 
 
 class TaskEventLog(Model):
@@ -81,16 +90,4 @@ class TaskFavorite(Model):
     category = CharField(255, null=False, index=True)
     description = JSONField()
     user = CharField(255, null=False, index=True)
-
-
-TaskFavoritePydantic = pydantic_model_creator(TaskFavorite)
-
-
-# class TaskPath(Model):
-#     task_id = CharField(255, null=False, index=True)
-
-
-# class TaskLocationCheckIn(Model):
-#     task_id = CharField(255, null=False, index=True)
-#     unix_millis_check_in_time = BigIntField(null=False, index=True)
-#     location = CharField(255, null=False, index=True)
+    task_definition_id = CharField(255, null=True, index=True)

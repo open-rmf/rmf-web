@@ -917,6 +917,36 @@ export default {
         },
       },
     },
+    '/tasks/{task_id}/booking_label': {
+      get: {
+        tags: ['Tasks'],
+        summary: 'Get Task Booking Label',
+        operationId: 'get_task_booking_label_tasks__task_id__booking_label_get',
+        parameters: [
+          {
+            description: 'task_id',
+            required: true,
+            schema: { title: 'Task Id', type: 'string', description: 'task_id' },
+            name: 'task_id',
+            in: 'path',
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Successful Response',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/TaskBookingLabel' } },
+            },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
+            },
+          },
+        },
+      },
+    },
     '/tasks/{task_id}/log': {
       get: {
         tags: ['Tasks'],
@@ -1556,7 +1586,7 @@ export default {
                 schema: {
                   title: 'Response Get Favorites Tasks Favorite Tasks Get',
                   type: 'array',
-                  items: { $ref: '#/components/schemas/TaskFavoritePydantic' },
+                  items: { $ref: '#/components/schemas/TaskFavorite' },
                 },
               },
             },
@@ -1569,20 +1599,14 @@ export default {
         operationId: 'post_favorite_task_favorite_tasks_post',
         requestBody: {
           content: {
-            'application/json': { schema: { $ref: '#/components/schemas/TaskFavoritePydantic' } },
+            'application/json': { schema: { $ref: '#/components/schemas/TaskFavorite' } },
           },
           required: true,
         },
         responses: {
           '200': {
             description: 'Successful Response',
-            content: {
-              'application/json': {
-                schema: {
-                  $ref: '#/components/schemas/api_server.models.tortoise_models.tasks.TaskFavorite.leaf',
-                },
-              },
-            },
+            content: { 'application/json': { schema: {} } },
           },
           '422': {
             description: 'Validation Error',
@@ -3647,6 +3671,28 @@ export default {
           },
         },
       },
+      TaskBookingLabel: {
+        title: 'TaskBookingLabel',
+        required: ['description'],
+        type: 'object',
+        properties: { description: { $ref: '#/components/schemas/TaskBookingLabelDescription' } },
+        description:
+          'This label is to be populated by any frontend during a task dispatch, by\nbeing added to TaskRequest.labels, which in turn populates\nTaskState.booking.labels, and can be used to display relevant information\nneeded for any frontends.',
+      },
+      TaskBookingLabelDescription: {
+        title: 'TaskBookingLabelDescription',
+        required: ['task_definition_id'],
+        type: 'object',
+        properties: {
+          task_definition_id: { title: 'Task Definition Id', type: 'string' },
+          unix_millis_warn_time: { title: 'Unix Millis Warn Time', type: 'integer' },
+          pickup: { title: 'Pickup', type: 'string' },
+          destination: { title: 'Destination', type: 'string' },
+          cart_id: { title: 'Cart Id', type: 'string' },
+        },
+        description:
+          'This description holds several fields that could be useful for frontend\ndashboards when dispatching a task, to then be identified or rendered\naccordingly back on the same frontend.',
+      },
       TaskCancelResponse: {
         title: 'TaskCancelResponse',
         allOf: [{ $ref: '#/components/schemas/SimpleResponse' }],
@@ -3730,9 +3776,16 @@ export default {
         },
         additionalProperties: false,
       },
-      TaskFavoritePydantic: {
-        title: 'TaskFavoritePydantic',
-        required: ['id', 'name', 'unix_millis_earliest_start_time', 'category', 'user'],
+      TaskFavorite: {
+        title: 'TaskFavorite',
+        required: [
+          'id',
+          'name',
+          'unix_millis_earliest_start_time',
+          'category',
+          'user',
+          'task_definition_id',
+        ],
         type: 'object',
         properties: {
           id: { title: 'Id', type: 'string' },
@@ -3745,6 +3798,7 @@ export default {
           category: { title: 'Category', type: 'string' },
           description: { title: 'Description', type: 'object' },
           user: { title: 'User', type: 'string' },
+          task_definition_id: { title: 'Task Definition Id', type: 'string' },
         },
       },
       TaskInterruptionRequest: {
@@ -4258,26 +4312,6 @@ export default {
         items: {
           $ref: '#/components/schemas/api_server.models.tortoise_models.scheduled_task.ScheduledTask',
         },
-      },
-      'api_server.models.tortoise_models.tasks.TaskFavorite.leaf': {
-        title: 'TaskFavorite',
-        required: ['id', 'name', 'category', 'user'],
-        type: 'object',
-        properties: {
-          id: { title: 'Id', maxLength: 255, type: 'string' },
-          name: { title: 'Name', maxLength: 255, type: 'string' },
-          unix_millis_earliest_start_time: {
-            title: 'Unix Millis Earliest Start Time',
-            type: 'string',
-            format: 'date-time',
-            nullable: true,
-          },
-          priority: { title: 'Priority' },
-          category: { title: 'Category', maxLength: 255, type: 'string' },
-          description: { title: 'Description' },
-          user: { title: 'User', maxLength: 255, type: 'string' },
-        },
-        additionalProperties: false,
       },
       api_server__models__delivery_alerts__DeliveryAlert__Category: {
         title: 'Category',

@@ -38,7 +38,7 @@ import {
 import {
   ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
   FireAlarmTriggerState,
-  TaskFavoritePydantic as TaskFavorite,
+  TaskFavorite,
   TaskRequest,
 } from 'api-client';
 import React from 'react';
@@ -615,7 +615,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           cleaningZones={cleaningZoneNames}
           pickupZones={resourceManager?.pickupZones}
           cartIds={resourceManager?.cartIds}
-          emergencyLots={resourceManager?.emergencyLots}
           pickupPoints={pickupPoints}
           dropoffPoints={dropoffPoints}
           favoritesTasks={favoritesTasks}

@@ -70,7 +70,7 @@ class JwtAuthenticator:
             user = await self._get_user(claims)
 
             return user
-        except jwt.DecodeError as e:
+        except jwt.InvalidTokenError as e:
             raise AuthenticationError(str(e)) from e
 
     def fastapi_dep(self) -> Callable[..., Union[Coroutine[Any, Any, User], User]]:

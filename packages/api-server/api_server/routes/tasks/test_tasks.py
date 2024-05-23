@@ -3,7 +3,12 @@ from uuid import uuid4
 
 from api_server import models as mdl
 from api_server.rmf_io import tasks_service
-from api_server.test import AppFixture, make_task_log, make_task_state
+from api_server.test import (
+    AppFixture,
+    make_task_booking_label,
+    make_task_log,
+    make_task_state,
+)
 
 
 class TestTasksRoute(AppFixture):
@@ -50,6 +55,14 @@ class TestTasksRoute(AppFixture):
             )
         state = next(gen)
         self.assertEqual(task_id, state.booking.id)  # type: ignore
+
+    def test_get_task_booking_label(self):
+        resp = self.client.get(f"/tasks/{self.task_states[0].booking.id}/booking_label")
+        self.assertEqual(200, resp.status_code)
+        self.assertEqual(
+            make_task_booking_label(),
+            mdl.TaskBookingLabel(**resp.json()),
+        )
 
     def test_get_task_log(self):
         resp = self.client.get(

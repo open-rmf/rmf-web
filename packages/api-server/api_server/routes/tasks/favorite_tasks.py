@@ -1,59 +1,51 @@
 import uuid
 from datetime import datetime
-from typing import Dict, List
+from typing import List
 
 from fastapi import Depends, HTTPException
-from pydantic import BaseModel
 from tortoise.exceptions import IntegrityError
 
 from api_server.authenticator import user_dep
 from api_server.fast_io import FastIORouter
-from api_server.models import User
+from api_server.models import TaskFavorite, User
 from api_server.models import tortoise_models as ttm
 
 router = FastIORouter(tags=["Tasks"])
 
 
-class TaskFavoritePydantic(BaseModel):
-    id: str
-    name: str
-    unix_millis_earliest_start_time: int
-    priority: Dict | None
-    category: str
-    description: Dict | None
-    user: str
-
-
-@router.post("", response_model=ttm.TaskFavoritePydantic)
+@router.post("")
 async def post_favorite_task(
-    request: TaskFavoritePydantic,
+    favorite_task: TaskFavorite,
     user: User = Depends(user_dep),
 ):
     try:
         await ttm.TaskFavorite.update_or_create(
             {
-                "name": request.name,
+                "name": favorite_task.name,
                 "unix_millis_earliest_start_time": datetime.fromtimestamp(
-                    request.unix_millis_earliest_start_time / 1000
+                    favorite_task.unix_millis_earliest_start_time / 1000
                 ),
-                "priority": request.priority if request.priority else None,
-                "category": request.category,
-                "description": request.description if request.description else None,
+                "priority": favorite_task.priority if favorite_task.priority else None,
+                "category": favorite_task.category,
+                "description": favorite_task.description
+                if favorite_task.description
+                else None,
                 "user": user.username,
+                "task_definition_id": favorite_task.task_definition_id,
             },
-            id=request.id if request.id != "" else uuid.uuid4(),
+            id=favorite_task.id if favorite_task.id != "" else uuid.uuid4(),
         )
     except IntegrityError as e:
         raise HTTPException(422, str(e)) from e
 
 
-@router.get("", response_model=List[TaskFavoritePydantic])
+@router.get("", response_model=List[TaskFavorite])
 async def get_favorites_tasks(
     user: User = Depends(user_dep),
 ):
     favorites_tasks = await ttm.TaskFavorite.filter(user=user.username)
     return [
-        TaskFavoritePydantic(
+        TaskFavorite(
             id=favorite_task.id,
             name=favorite_task.name,
             unix_millis_earliest_start_time=int(
@@ -65,6 +57,7 @@ async def get_favorites_tasks(
             if favorite_task.description
             else None,
             user=user.username,
+            task_definition_id=favorite_task.task_definition_id,
         )
         for favorite_task in favorites_tasks
     ]

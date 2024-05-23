@@ -13,9 +13,9 @@ import {
 } from '@mui/x-data-grid';
 import { styled, Stack, Typography, Tooltip, useMediaQuery, SxProps, Theme } from '@mui/material';
 import * as React from 'react';
-import { TaskState, TaskRequest, ApiServerModelsRmfApiTaskStateStatus as Status } from 'api-client';
+import { TaskState, ApiServerModelsRmfApiTaskStateStatus as Status } from 'api-client';
 import { InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
-import { parsePickup, parseDestination } from './utils';
+import { getTaskBookingLabelFromTaskState } from './task-booking-label-utils';
 
 const classes = {
   taskActiveCell: 'MuiDataGrid-cell-active-cell',
@@ -57,7 +57,6 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 export interface Tasks {
   isLoading: boolean;
   data: TaskState[];
-  requests: Record<string, TaskRequest>;
   total: number;
   page: number;
   pageSize: number;
@@ -185,8 +184,11 @@ export function TaskDataGridTable({
       width: 150,
       editable: false,
       valueGetter: (params: GridValueGetterParams) => {
-        const request: TaskRequest | undefined = tasks.requests[params.row.booking.id];
-        return parsePickup(request);
+        const requestLabel = getTaskBookingLabelFromTaskState(params.row);
+        if (requestLabel && requestLabel.description.pickup) {
+          return requestLabel.description.pickup;
+        }
+        return 'n/a';
       },
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
@@ -198,8 +200,11 @@ export function TaskDataGridTable({
       width: 150,
       editable: false,
       valueGetter: (params: GridValueGetterParams) => {
-        const request: TaskRequest | undefined = tasks.requests[params.row.booking.id];
-        return parseDestination(params.row, request);
+        const requestLabel = getTaskBookingLabelFromTaskState(params.row);
+        if (requestLabel && requestLabel.description.destination) {
+          return requestLabel.description.destination;
+        }
+        return 'n/a';
       },
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,

@@ -128,10 +128,6 @@ async def query_task_states(
         filters["unix_millis_request_time__lte"] = request_time_between[1]
     if requester is not None:
         filters["requester__in"] = requester.split(",")
-    if pickup is not None:
-        filters["pickup__in"] = pickup.split(",")
-    if destination is not None:
-        filters["destination__in"] = destination.split(",")
     if assigned_to is not None:
         filters["assigned_to__in"] = assigned_to.split(",")
     if start_time_between is not None:
@@ -147,6 +143,31 @@ async def query_task_states(
             if status_string not in valid_values:
                 continue
             filters["status__in"].append(mdl.Status(status_string))
+
+    # NOTE: in order to perform filtering based on the values in labels, a
+    # filter on the label_name will need to be applied as well as a filter on
+    # the label_value.
+    if pickup is not None:
+        filters["labels__label_name"] = "pickup"
+        filters["labels__label_value_str__in"] = pickup.split(",")
+    if destination is not None:
+        filters["labels__label_name"] = "destination"
+        filters["labels__label_value_str__in"] = destination.split(",")
+
+    # NOTE: In order to perform sorting based on the values in labels, a filter
+    # on the label_name has to be performed first. A side-effect of this would
+    # be that states that do not contain this field will not be returned.
+    if pagination.order_by is not None:
+        labels_fields = ["pickup", "destination"]
+        new_order = pagination.order_by
+        for field in labels_fields:
+            if field in pagination.order_by:
+                filters["labels__label_name"] = field
+                new_order = pagination.order_by.replace(
+                    field, "labels__label_value_str"
+                )
+                break
+        pagination.order_by = new_order
 
     return await task_repo.query_task_states(DbTaskState.filter(**filters), pagination)
 
@@ -176,6 +197,26 @@ async def sub_task_state(req: SubscriptionRequest, task_id: str):
     if current_state:
         return obs.pipe(rxops.start_with(current_state))
     return obs
+
+
+@router.get("/{task_id}/booking_label", response_model=mdl.TaskBookingLabel)
+async def get_task_booking_label(
+    task_repo: TaskRepository = Depends(TaskRepository),
+    task_id: str = Path(..., description="task_id"),
+):
+    state = await task_repo.get_task_state(task_id)
+    if state is None:
+        raise HTTPException(status_code=404)
+
+    if state.booking.labels is not None:
+        for label in state.booking.labels:
+            if len(label) == 0:
+                continue
+
+            booking_label = mdl.TaskBookingLabel.from_json_string(label)
+            if booking_label is not None:
+                return booking_label
+    raise HTTPException(status_code=404)
 
 
 @router.get("/{task_id}/log", response_model=mdl.TaskEventLog)
