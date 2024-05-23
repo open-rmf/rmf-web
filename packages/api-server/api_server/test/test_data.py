@@ -23,10 +23,12 @@ from api_server.models import (
     Lift,
     LiftState,
     RobotState,
+    TaskBookingLabel,
+    TaskBookingLabelDescription,
     TaskEventLog,
+    TaskFavorite,
     TaskState,
 )
-from api_server.models import tortoise_models as ttm
 
 
 def make_door(name: str = "test_door") -> Door:
@@ -128,6 +130,18 @@ def make_fleet_state(name: Optional[str] = None) -> FleetState:
 
 def make_fleet_log() -> FleetLog:
     return FleetLog(name=str(uuid4()), log=[], robots={})
+
+
+def make_task_booking_label() -> TaskBookingLabel:
+    return TaskBookingLabel(
+        description=TaskBookingLabelDescription(
+            task_definition_id="multi-delivery",
+            unix_millis_warn_time=1636388400000,
+            pickup="Kitchen",
+            destination="room_203",
+            cart_id="soda",
+        )
+    )
 
 
 def make_task_state(task_id: str = "test_task") -> TaskState:
@@ -429,12 +443,19 @@ def make_task_state(task_id: str = "test_task") -> TaskState:
         """
     )
     sample_task["booking"]["id"] = task_id
+
+    booking_labels = [
+        "dummy_label_1",
+        "dummy_label_2",
+        make_task_booking_label().json(),
+    ]
+    sample_task["booking"]["labels"] = booking_labels
     return TaskState(**sample_task)
 
 
 def make_task_favorite(
     favorite_task_id: str = "default_id",
-) -> ttm.TaskFavoritePydantic:
+) -> TaskFavorite:
     sample_favorite_task = json.loads(
         """
    {
@@ -458,12 +479,13 @@ def make_task_favorite(
             "payload":""
          }
       },
-      "user":"stub"
+      "user":"stub",
+      "task_definition_id": "delivery"
    }
     """
     )
     sample_favorite_task["id"] = favorite_task_id
-    return ttm.TaskFavoritePydantic(**sample_favorite_task)
+    return TaskFavorite(**sample_favorite_task)
 
 
 def make_task_log(task_id: str) -> TaskEventLog:
