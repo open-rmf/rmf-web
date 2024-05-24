@@ -404,30 +404,40 @@ async def location_complete(
     alerts = await get_alerts_of_task(task_id=task_id, unresponded=True)
     if len(alerts) == 0:
         raise HTTPException(
-            404, f"There are no locations awaiting completion for task {task_id}"
+            404, f"There are no location alerts awaiting response for task {task_id}"
         )
 
-    # TODO: not hardcode the expected responses from the fleet adapter
-    # TODO: not hardcode the alert parameter expected from the fleet adapter
-    TimeoutResponse = "timeout"
-    MoveOffResponse = "move_off"
-    ParameterName = "waiting_at"
+    # TODO: not hardcode all these expected values
+    SuccessResponse = "success"
+    FailResponse = "fail"
+    TypeParameterName = "type"
+    TypeParameterValue = "location_result"
+    LocationParameterName = "location_name"
 
     for alert in alerts:
         if (
-            len(alert.alert_parameters) == 0
-            or TimeoutResponse not in alert.responses_available
-            or MoveOffResponse not in alert.responses_available
+            len(alert.alert_parameters) < 2
+            or SuccessResponse not in alert.responses_available
+            or FailResponse not in alert.responses_available
         ):
+            continue
+
+        # Check type
+        alert_type = None
+        for param in alert.alert_parameters:
+            if param.name == TypeParameterName:
+                alert_type = param.value
+                break
+        if alert_type != TypeParameterValue:
             continue
 
         # TODO: make sure that there are no duplicated locations that have
         # not been responded to yet
         for param in alert.alert_parameters:
-            if param.name == ParameterName and param.value == location:
+            if param.name == LocationParameterName and param.value == location:
                 response = await respond_to_alert(
                     alert_id=alert.id,
-                    response=TimeoutResponse if not success else MoveOffResponse,
+                    response=SuccessResponse if success else FailResponse,
                 )
                 logger.info(response)
                 return
