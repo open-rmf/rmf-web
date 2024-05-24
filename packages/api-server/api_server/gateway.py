@@ -274,6 +274,8 @@ class RmfGateway:
             for p in fleet_alert.alert_parameters:
                 parameters.append(AlertParameter(name=p.name, value=p.value))
 
+            # check task phases to find out what waypoint it is?
+
             return AlertRequest(
                 id=fleet_alert.id,
                 unix_millis_alert_time=round(datetime.now().timestamp() * 1000),

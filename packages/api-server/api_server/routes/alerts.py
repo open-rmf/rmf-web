@@ -14,7 +14,7 @@ from api_server.rmf_io import alert_events
 router = FastIORouter(tags=["Alerts"])
 
 
-@router.sub("", response_model=AlertRequest)
+@router.sub("/requests", response_model=AlertRequest)
 async def sub_alerts(_req: SubscriptionRequest):
     return alert_events.alert_requests.pipe(rxops.filter(lambda x: x is not None))
 
@@ -40,12 +40,27 @@ async def create_new_alert(alert: AlertRequest):
     return alert
 
 
+@router.get("/request/{alert_id}", response_model=AlertRequest)
+async def get_alert(alert_id: str):
+    """
+    Gets an alert based on the alert ID.
+    """
+    alert = await ttm.AlertRequest.get_or_none(id=alert_id)
+    if alert is None:
+        raise HTTPException(404, f"Alert with ID {alert_id} does not exists")
+
+    alert_model = AlertRequest(**alert.data)
+    return alert_model
+
+
 @router.sub("/responses", response_model=AlertResponse)
 async def sub_alert_responses(_req: SubscriptionRequest):
     return alert_events.alert_responses.pipe(rxops.filter(lambda x: x is not None))
 
 
-@router.post("/{alert_id}/respond", status_code=201, response_model=AlertResponse)
+@router.post(
+    "/request/{alert_id}/respond", status_code=201, response_model=AlertResponse
+)
 async def respond_to_alert(alert_id: str, response: str):
     """
     Responds to an existing alert. The response must be one of the available
@@ -76,20 +91,7 @@ async def respond_to_alert(alert_id: str, response: str):
     return alert_response_model
 
 
-@router.get("/{alert_id}", response_model=AlertRequest)
-async def get_alert(alert_id: str):
-    """
-    Gets an alert based on the alert ID.
-    """
-    alert = await ttm.AlertRequest.get_or_none(id=alert_id)
-    if alert is None:
-        raise HTTPException(404, f"Alert with ID {alert_id} does not exists")
-
-    alert_model = AlertRequest(**alert.data)
-    return alert_model
-
-
-@router.get("/{alert_id}/response", response_model=AlertResponse)
+@router.get("/request/{alert_id}/response", response_model=AlertResponse)
 async def get_alert_response(alert_id: str):
     """
     Gets the response to the alert based on the alert ID.
@@ -104,7 +106,7 @@ async def get_alert_response(alert_id: str):
     return response_model
 
 
-@router.get("/task/{task_id}", response_model=List[AlertRequest])
+@router.get("/requests/task/{task_id}", response_model=List[AlertRequest])
 async def get_alerts_of_task(task_id: str, unresponded: bool = True):
     """
     Returns all the alerts associated to a task ID. Provides the option to only
@@ -123,8 +125,8 @@ async def get_alerts_of_task(task_id: str, unresponded: bool = True):
     return alert_models
 
 
-@router.get("/unresponded", response_model=List[AlertRequest])
-async def get_unresponded_alert_ids():
+@router.get("/unresponded_requests", response_model=List[AlertRequest])
+async def get_unresponded_alerts():
     """
     Returns the list of alert IDs that have yet to be responded to, while a
     response was required.
