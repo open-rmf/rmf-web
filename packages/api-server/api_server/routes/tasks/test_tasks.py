@@ -44,6 +44,22 @@ class TestTasksRoute(AppFixture):
         self.assertEqual(1, len(results))
         self.assertEqual(self.task_states[0].booking.id, results[0]["booking"]["id"])
 
+    def test_query_task_states_by_label(self):
+        test_cases = {
+            "pickup": "Kitchen",
+            "destination": "room_203",
+        }
+        for k, v in test_cases.items():
+            resp = self.client.get(
+                f"/tasks?task_id={self.task_states[0].booking.id}&{k}={v}"
+            )
+            self.assertEqual(200, resp.status_code)
+            results = resp.json()
+            self.assertEqual(1, len(results))
+            self.assertEqual(
+                self.task_states[0].booking.id, results[0]["booking"]["id"]
+            )
+
     def test_sub_task_state(self):
         task_id = self.task_states[0].booking.id
         gen = self.subscribe_sio(f"/tasks/{task_id}/state")
@@ -59,10 +75,13 @@ class TestTasksRoute(AppFixture):
     def test_get_task_booking_label(self):
         resp = self.client.get(f"/tasks/{self.task_states[0].booking.id}/booking_label")
         self.assertEqual(200, resp.status_code)
-        self.assertEqual(
-            make_task_booking_label(),
-            mdl.TaskBookingLabel(**resp.json()),
-        )
+        labels = mdl.TaskBookingLabel.parse_raw(resp.content)
+        expected = make_task_booking_label()
+        for k, v in expected.description.items():
+            self.assertEqual(
+                v,
+                labels.description[k],
+            )
 
     def test_get_task_log(self):
         resp = self.client.get(

@@ -117,24 +117,27 @@ class TaskRepository:
 
         # Here we generate the labels required for server-side sorting and
         # filtering.
-        if booking_label.description.pickup is not None:
-            await ttm.TaskLabel.create(
-                state=state,
-                label_name="pickup",
-                label_value_str=booking_label.description.pickup,
-            )
-        if booking_label.description.destination is not None:
-            await ttm.TaskLabel.create(
-                state=state,
-                label_name="destination",
-                label_value_str=booking_label.description.destination,
-            )
-        if booking_label.description.unix_millis_warn_time is not None:
-            await ttm.TaskLabel.create(
-                state=state,
-                label_name="unix_millis_warn_time",
-                label_value_num=booking_label.description.unix_millis_warn_time,
-            )
+        async with in_transaction():
+            for k, v in booking_label.description.items():
+                if isinstance(v, str):
+                    await ttm.TaskLabel.create(
+                        state=state, label_name=k, label_value_str=v
+                    )
+                elif isinstance(v, int):
+                    await ttm.TaskLabel.create(
+                        state=state,
+                        label_name=k,
+                        label_value_num=v,
+                        label_value_float=v,  # also store float to make querying easier
+                    )
+                elif isinstance(v, float):
+                    exact_val = int(v) if v.is_integer else None
+                    await ttm.TaskLabel.create(
+                        state=state,
+                        label_name=k,
+                        label_value_float=v,
+                        label_value_num=exact_val,  # also store int to make querying easier
+                    )
 
     async def query_task_states(
         self, query: QuerySet[DbTaskState], pagination: Optional[Pagination] = None
