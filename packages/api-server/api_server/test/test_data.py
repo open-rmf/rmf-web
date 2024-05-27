@@ -743,9 +743,9 @@ def make_task_log(task_id: str) -> TaskEventLog:
     return sample
 
 
-def make_alert_request(id: str, responses: List[str]) -> AlertRequest:
+def make_alert_request(alert_id: str, responses: List[str]) -> AlertRequest:
     return AlertRequest(
-        id=id,
+        id=alert_id,
         unix_millis_alert_time=0,
         title="test_title",
         subtitle="test_subtitle",

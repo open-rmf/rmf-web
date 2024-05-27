@@ -10,7 +10,7 @@ from api_server import models as mdl
 from api_server.app_config import app_config
 from api_server.logging import LoggerAdapter, get_logger
 from api_server.repositories import FleetRepository, TaskRepository
-from api_server.rmf_io import alert_events, fleet_events, task_events
+from api_server.rmf_io import fleet_events, task_events
 
 router = APIRouter(tags=["_internal"])
 user: mdl.User = mdl.User(username="__rmf_internal__", is_admin=True)

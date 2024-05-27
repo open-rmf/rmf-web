@@ -1,9 +1,7 @@
-from unittest.mock import patch
 from urllib.parse import urlencode
 from uuid import uuid4
 
 from api_server import models as mdl
-from api_server.rmf_io import tasks_service
 from api_server.test import AppFixture, make_alert_request
 
 
@@ -13,20 +11,20 @@ class TestAlertsRoute(AppFixture):
         super().setUpClass()
 
     def test_create_new_alert(self):
-        id = str(uuid4())
-        alert = make_alert_request(id=id, responses=["resume", "cancel"])
+        alert_id = str(uuid4())
+        alert = make_alert_request(alert_id=alert_id, responses=["resume", "cancel"])
         resp = self.client.post("/alerts/request", data=alert.json(exclude_none=True))
         self.assertEqual(201, resp.status_code, resp.content)
         self.assertEqual(alert, resp.json(), resp.content)
 
         # repeated creation with same ID will fail
-        alert = make_alert_request(id=id, responses=["resume", "cancel"])
+        alert = make_alert_request(alert_id=alert_id, responses=["resume", "cancel"])
         resp = self.client.post("/alerts/request", data=alert.json(exclude_none=True))
         self.assertEqual(409, resp.status_code, resp.content)
 
     def respond_to_alert(self):
-        id = str(uuid4())
-        alert = make_alert_request(id=id, responses=["resume", "cancel"])
+        alert_id = str(uuid4())
+        alert = make_alert_request(alert_id=alert_id, responses=["resume", "cancel"])
         resp = self.client.post("/alerts/request", data=alert.json(exclude_none=True))
         self.assertEqual(201, resp.status_code, resp.content)
         self.assertEqual(alert, resp.json(), resp.content)
@@ -40,38 +38,40 @@ class TestAlertsRoute(AppFixture):
 
         # response that is unavailable
         params = {"response": "wrong"}
-        resp = self.client.post(f"/alerts/{id}/respond?{urlencode(params)}")
+        resp = self.client.post(f"/alerts/{alert_id}/respond?{urlencode(params)}")
         self.assertEqual(422, resp.status_code, resp.content)
 
         # respond correctly
         response = "resume"
         params = {"response": response}
-        resp = self.client.post(f"/alerts/request/{id}/respond?{urlencode(params)}")
+        resp = self.client.post(
+            f"/alerts/request/{alert_id}/respond?{urlencode(params)}"
+        )
         self.assertEqual(201, resp.status_code, resp.content)
         self.assertEqual(id, resp.json()["id"], resp.content)
         self.assertEqual(response, resp.json()["response"], resp.content)
 
     def test_get_alert(self):
-        id = str(uuid4())
+        alert_id = str(uuid4())
 
         # alert does not exist
-        resp = self.client.get(f"/alerts/request/{id}")
+        resp = self.client.get(f"/alerts/request/{alert_id}")
         self.assertEqual(404, resp.status_code, resp.content)
 
         # create alert
-        alert = make_alert_request(id=id, responses=["resume", "cancel"])
+        alert = make_alert_request(alert_id=alert_id, responses=["resume", "cancel"])
         resp = self.client.post("/alerts/request", data=alert.json(exclude_none=True))
         self.assertEqual(201, resp.status_code, resp.content)
         self.assertEqual(alert, resp.json(), resp.content)
 
         # alert exists now
-        resp = self.client.get(f"/alerts/request/{id}")
+        resp = self.client.get(f"/alerts/request/{alert_id}")
         self.assertEqual(200, resp.status_code, resp.content)
         self.assertEqual(alert, resp.json(), resp.content)
 
     def test_get_alert_response(self):
-        id = str(uuid4())
-        alert = make_alert_request(id=id, responses=["resume", "cancel"])
+        alert_id = str(uuid4())
+        alert = make_alert_request(alert_id=alert_id, responses=["resume", "cancel"])
         resp = self.client.post("/alerts/request", data=alert.json(exclude_none=True))
         self.assertEqual(201, resp.status_code, resp.content)
         self.assertEqual(alert, resp.json(), resp.content)
@@ -79,22 +79,24 @@ class TestAlertsRoute(AppFixture):
         # respond
         response = "resume"
         params = {"response": response}
-        resp = self.client.post(f"/alerts/request/{id}/respond?{urlencode(params)}")
+        resp = self.client.post(
+            f"/alerts/request/{alert_id}/respond?{urlencode(params)}"
+        )
         self.assertEqual(201, resp.status_code, resp.content)
-        self.assertEqual(id, resp.json()["id"], resp.content)
+        self.assertEqual(alert_id, resp.json()["id"], resp.content)
         self.assertEqual(response, resp.json()["response"], resp.content)
 
         # response exists
-        resp = self.client.get(f"/alerts/request/{id}/response")
+        resp = self.client.get(f"/alerts/request/{alert_id}/response")
         self.assertEqual(200, resp.status_code, resp.content)
-        self.assertEqual(id, resp.json()["id"], resp.content)
+        self.assertEqual(alert_id, resp.json()["id"], resp.content)
         self.assertEqual(response, resp.json()["response"], resp.content)
 
     def test_sub_alert(self):
         gen = self.subscribe_sio("/alerts/requests")
 
-        id = str(uuid4())
-        alert = make_alert_request(id=id, responses=["resume", "cancel"])
+        alert_id = str(uuid4())
+        alert = make_alert_request(alert_id=alert_id, responses=["resume", "cancel"])
         resp = self.client.post("/alerts/request", data=alert.json(exclude_none=True))
         self.assertEqual(201, resp.status_code, resp.content)
         self.assertEqual(alert, resp.json(), resp.content)
@@ -106,8 +108,8 @@ class TestAlertsRoute(AppFixture):
     def test_sub_alert_response(self):
         gen = self.subscribe_sio("/alerts/responses")
 
-        id = str(uuid4())
-        alert = make_alert_request(id=id, responses=["resume", "cancel"])
+        alert_id = str(uuid4())
+        alert = make_alert_request(alert_id=alert_id, responses=["resume", "cancel"])
         resp = self.client.post("/alerts/request", data=alert.json(exclude_none=True))
         self.assertEqual(201, resp.status_code, resp.content)
         self.assertEqual(alert, resp.json(), resp.content)
@@ -115,9 +117,11 @@ class TestAlertsRoute(AppFixture):
         # respond
         response = "resume"
         params = {"response": response}
-        resp = self.client.post(f"/alerts/request/{id}/respond?{urlencode(params)}")
+        resp = self.client.post(
+            f"/alerts/request/{alert_id}/respond?{urlencode(params)}"
+        )
         self.assertEqual(201, resp.status_code, resp.content)
-        self.assertEqual(id, resp.json()["id"], resp.content)
+        self.assertEqual(alert_id, resp.json()["id"], resp.content)
         self.assertEqual(response, resp.json()["response"], resp.content)
 
         # check subscribed alert response
@@ -125,8 +129,8 @@ class TestAlertsRoute(AppFixture):
         self.assertEqual(subbed_alert_response, resp.json(), subbed_alert_response)
 
     def test_get_alerts_of_task(self):
-        id = str(uuid4())
-        alert = make_alert_request(id=id, responses=["resume", "cancel"])
+        alert_id = str(uuid4())
+        alert = make_alert_request(alert_id=alert_id, responses=["resume", "cancel"])
         alert.task_id = "test_task_id"
         resp = self.client.post("/alerts/request", data=alert.json(exclude_none=True))
         self.assertEqual(201, resp.status_code, resp.content)
@@ -146,9 +150,11 @@ class TestAlertsRoute(AppFixture):
         # respond to alert
         response = "resume"
         params = {"response": response}
-        resp = self.client.post(f"/alerts/request/{id}/respond?{urlencode(params)}")
+        resp = self.client.post(
+            f"/alerts/request/{alert_id}/respond?{urlencode(params)}"
+        )
         self.assertEqual(201, resp.status_code, resp.content)
-        self.assertEqual(id, resp.json()["id"], resp.content)
+        self.assertEqual(alert_id, resp.json()["id"], resp.content)
         self.assertEqual(response, resp.json()["response"], resp.content)
 
         # check for alert of correct task ID again (will only return
@@ -168,7 +174,9 @@ class TestAlertsRoute(AppFixture):
 
     def test_get_unresponded_alert_ids(self):
         first_id = str(uuid4())
-        first_alert = make_alert_request(id=first_id, responses=["resume", "cancel"])
+        first_alert = make_alert_request(
+            alert_id=first_id, responses=["resume", "cancel"]
+        )
         resp = self.client.post(
             "/alerts/request", data=first_alert.json(exclude_none=True)
         )
@@ -176,7 +184,9 @@ class TestAlertsRoute(AppFixture):
         self.assertEqual(first_alert, resp.json(), resp.content)
 
         second_id = str(uuid4())
-        second_alert = make_alert_request(id=second_id, responses=["resume", "cancel"])
+        second_alert = make_alert_request(
+            alert_id=second_id, responses=["resume", "cancel"]
+        )
         resp = self.client.post(
             "/alerts/request", data=second_alert.json(exclude_none=True)
         )
@@ -215,10 +225,10 @@ class TestAlertsRoute(AppFixture):
         self.assertTrue(second_id in returned_alert_ids)
 
     def test_task_location_complete(self):
-        id = str(uuid4())
+        alert_id = str(uuid4())
         task_id = "test_task_id"
         location_name = "test_location"
-        alert = make_alert_request(id=id, responses=["success", "fail"])
+        alert = make_alert_request(alert_id=alert_id, responses=["success", "fail"])
         alert.alert_parameters = [
             mdl.AlertParameter(name="type", value="location_result"),
             mdl.AlertParameter(name="location_name", value=location_name),
