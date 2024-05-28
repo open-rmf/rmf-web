@@ -1,7 +1,9 @@
 # NOTE: This will eventually replace `gateway.py``
 import logging
 import os
+from datetime import datetime
 from typing import Any, Dict
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from websockets.exceptions import ConnectionClosed
@@ -11,6 +13,7 @@ from api_server.app_config import app_config
 from api_server.logging import LoggerAdapter, get_logger
 from api_server.repositories import FleetRepository, TaskRepository
 from api_server.rmf_io import fleet_events, task_events
+from api_server.routes.alerts import create_new_alert
 
 router = APIRouter(tags=["_internal"])
 user: mdl.User = mdl.User(username="__rmf_internal__", is_admin=True)
@@ -49,30 +52,30 @@ class ConnectionManager:
 connection_manager = ConnectionManager()
 
 
-def log_phase_has_error(phase: mdl.Phases) -> bool:
-    if phase.log:
-        for log in phase.log:
-            if log.tier == mdl.Tier.error:
-                return True
-    if phase.events:
-        for _, event_logs in phase.events.items():
-            for event_log in event_logs:
-                if event_log.tier == mdl.Tier.error:
-                    return True
-    return False
+# def log_phase_has_error(phase: mdl.Phases) -> bool:
+#     if phase.log:
+#         for log in phase.log:
+#             if log.tier == mdl.Tier.error:
+#                 return True
+#     if phase.events:
+#         for _, event_logs in phase.events.items():
+#             for event_log in event_logs:
+#                 if event_log.tier == mdl.Tier.error:
+#                     return True
+#     return False
 
 
-def task_log_has_error(task_log: mdl.TaskEventLog) -> bool:
-    if task_log.log:
-        for log in task_log.log:
-            if log.tier == mdl.Tier.error:
-                return True
+# def task_log_has_error(task_log: mdl.TaskEventLog) -> bool:
+#     if task_log.log:
+#         for log in task_log.log:
+#             if log.tier == mdl.Tier.error:
+#                 return True
 
-    if task_log.phases:
-        for _, phase in task_log.phases.items():
-            if log_phase_has_error(phase):
-                return True
-    return False
+#     if task_log.phases:
+#         for _, phase in task_log.phases.items():
+#             if log_phase_has_error(phase):
+#                 return True
+#     return False
 
 
 async def process_msg(
@@ -114,6 +117,34 @@ async def process_msg(
         #         alert = await alert_repo.create_alert(late_alert_id, "task")
         #         if alert is not None:
         #             alert_events.alerts.on_next(alert)
+        if task_state.status == mdl.Status.completed:
+            alert_request = mdl.AlertRequest(
+                id=str(uuid4()),
+                unix_millis_alert_time=round(datetime.now().timestamp() * 1000),
+                title="Task completed",
+                subtitle=f"ID: {task_state.booking.id}",
+                message="",
+                display=True,
+                tier=mdl.AlertRequest.Tier.Info,
+                responses_available=["Acknowledge"],
+                alert_parameters=[],
+                task_id=task_state.booking.id,
+            )
+            await create_new_alert(alert_request)
+        elif task_state.status == mdl.Status.failed:
+            alert_request = mdl.AlertRequest(
+                id=str(uuid4()),
+                unix_millis_alert_time=round(datetime.now().timestamp() * 1000),
+                title="Task failed",
+                subtitle=f"ID: {task_state.booking.id}",
+                message="",
+                display=True,
+                tier=mdl.AlertRequest.Tier.Error,
+                responses_available=["Acknowledge"],
+                alert_parameters=[],
+                task_id=task_state.booking.id,
+            )
+            await create_new_alert(alert_request)
 
     elif payload_type == "task_log_update":
         task_log = mdl.TaskEventLog(**msg["data"])

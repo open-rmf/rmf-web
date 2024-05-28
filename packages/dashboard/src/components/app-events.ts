@@ -1,12 +1,4 @@
-import {
-  ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
-  Dispenser,
-  Door,
-  Ingestor,
-  Level,
-  Lift,
-  TaskState,
-} from 'api-client';
+import { AlertRequest, Dispenser, Door, Ingestor, Level, Lift, TaskState } from 'api-client';
 import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs';
 import { Vector3 } from 'three';
 
@@ -22,7 +14,7 @@ export const AppEvents = {
   refreshFavoriteTasks: new Subject<void>(),
   refreshTaskSchedule: new Subject<void>(),
   refreshAlert: new Subject<void>(),
-  alertListOpenedAlert: new Subject<Alert | null>(),
+  alertListOpenedAlert: new Subject<AlertRequest | null>(),
   disabledLayers: new ReplaySubject<Record<string, boolean>>(),
   zoom: new BehaviorSubject<number | null>(null),
   cameraPosition: new BehaviorSubject<Vector3 | null>(null),
