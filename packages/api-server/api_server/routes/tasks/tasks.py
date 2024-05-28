@@ -399,6 +399,10 @@ async def location_complete(
     success: bool,
     logger: LoggerAdapter = Depends(get_logger),
 ):
+    """
+    Warning: This endpoint is still actively being worked on and could be
+    subjected to modifications.
+    """
     alerts = await get_alerts_of_task(task_id=task_id, unresponded=True)
     if len(alerts) == 0:
         raise HTTPException(
