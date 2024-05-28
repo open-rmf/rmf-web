@@ -88,14 +88,11 @@ async def process_msg(
             )
             await create_new_alert(alert_request)
         elif task_state.status == mdl.Status.failed:
-            print("FAILED TASK")
             errorMessage = ""
-            print(task_state.dispatch)
             if (
                 task_state.dispatch is not None
                 and task_state.dispatch.status == mdl.Status1.failed_to_assign
             ):
-                print("FAILED TO ASSIGN")
                 errorMessage += "Failed to assign\n"
                 if task_state.dispatch.errors is not None:
                     for error in task_state.dispatch.errors:

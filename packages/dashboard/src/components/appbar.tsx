@@ -209,7 +209,8 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           (async () => {
             const resp = await rmf.alertsApi.getUnrespondedAlertsAlertsUnrespondedRequestsGet();
             const alerts = resp.data as AlertRequest[];
-            setUnacknowledgedAlertsNum(alerts.length);
+            const alertsToBeDisplayed = alerts.filter((alert) => alert.display);
+            setUnacknowledgedAlertsNum(alertsToBeDisplayed.length);
           })();
         },
       }),
@@ -219,7 +220,8 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     (async () => {
       const resp = await rmf.alertsApi.getUnrespondedAlertsAlertsUnrespondedRequestsGet();
       const alerts = resp.data as AlertRequest[];
-      setUnacknowledgedAlertsNum(alerts.length);
+      const alertsToBeDisplayed = alerts.filter((alert) => alert.display);
+      setUnacknowledgedAlertsNum(alertsToBeDisplayed.length);
     })();
     return () => subs.forEach((s) => s.unsubscribe());
   }, [rmf]);
@@ -338,7 +340,8 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     (async () => {
       const { data: alerts } =
         await rmf.alertsApi.getUnrespondedAlertsAlertsUnrespondedRequestsGet();
-      setUnacknowledgedAlertList(alerts.reverse());
+      const alertsToBeDisplayed = alerts.filter((alert) => alert.display);
+      setUnacknowledgedAlertList(alertsToBeDisplayed.reverse());
     })();
     setAlertListAnchor(event.currentTarget);
   };

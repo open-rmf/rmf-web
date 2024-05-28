@@ -265,10 +265,21 @@ export const AlertStore = React.memo(() => {
       return;
     }
 
-    const pushAlertIfUnresponded = async (alertRequest: AlertRequest) => {
+    const pushAlertsToBeDisplayed = async (alertRequest: AlertRequest) => {
       if (!rmf) {
+        console.error('Alerts API not available');
         return;
       }
+      if (!alertRequest.display) {
+        setOpenAlerts((prev) => {
+          const filteredAlerts = Object.fromEntries(
+            Object.entries(prev).filter(([key]) => key !== alertRequest.id),
+          );
+          return filteredAlerts;
+        });
+        return;
+      }
+
       try {
         const resp = (
           await rmf.alertsApi.getAlertResponseAlertsRequestAlertIdResponseGet(alertRequest.id)
@@ -295,7 +306,7 @@ export const AlertStore = React.memo(() => {
 
     subs.push(
       rmf.alertRequestsObsStore.subscribe(
-        async (alertRequest) => await pushAlertIfUnresponded(alertRequest),
+        async (alertRequest) => await pushAlertsToBeDisplayed(alertRequest),
       ),
     );
 
@@ -304,7 +315,7 @@ export const AlertStore = React.memo(() => {
         if (!alertRequest) {
           return;
         }
-        await pushAlertIfUnresponded(alertRequest);
+        await pushAlertsToBeDisplayed(alertRequest);
       }),
     );
 

@@ -292,10 +292,6 @@ class RmfGateway:
         def handle_fleet_alert(fleet_alert: AlertRequest):
             logging.info("Received fleet alert:")
             logging.info(fleet_alert)
-
-            # we can do the destination reached tagging here instead of in the
-            # route
-
             alert_events.alert_requests.on_next(fleet_alert)
 
         fleet_alert_sub = ros_node().create_subscription(
