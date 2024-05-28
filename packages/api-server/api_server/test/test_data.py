@@ -143,7 +143,10 @@ def make_task_booking_label() -> TaskBookingLabel:
     )
 
 
-def make_task_state(task_id: str = "test_task") -> TaskState:
+def make_task_state(
+    task_id: str = "test_task",
+    booking_labels: list[str] | None = None,
+) -> TaskState:
     # from https://raw.githubusercontent.com/open-rmf/rmf_api_msgs/960b286d9849fc716a3043b8e1f5fb341bdf5778/rmf_api_msgs/samples/task_state/multi_dropoff_delivery.json
     sample_task = json.loads(
         """
@@ -443,11 +446,12 @@ def make_task_state(task_id: str = "test_task") -> TaskState:
     )
     sample_task["booking"]["id"] = task_id
 
-    booking_labels = [
-        "dummy_label_1",
-        "dummy_label_2",
-        make_task_booking_label().json(),
-    ]
+    if booking_labels is None:
+        booking_labels = [
+            "dummy_label_1",
+            "dummy_label_2",
+            make_task_booking_label().json(),
+        ]
     sample_task["booking"]["labels"] = booking_labels
     return TaskState(**sample_task)
 

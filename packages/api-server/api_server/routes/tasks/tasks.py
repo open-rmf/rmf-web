@@ -3,6 +3,8 @@ from typing import List, Optional, Tuple, cast
 
 from fastapi import Body, Depends, HTTPException, Path, Query
 from rx import operators as rxops
+from tortoise.expressions import Case, F, Q, RawSQL, Subquery, When
+from tortoise.functions import Max
 
 from api_server import models as mdl
 from api_server.dependencies import (
@@ -15,6 +17,7 @@ from api_server.dependencies import (
 )
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.logging import LoggerAdapter, get_logger
+from api_server.models.tortoise_models import TaskLabel as DbTaskLabel
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.repositories import RmfRepository, TaskRepository
 from api_server.response import RawJSONResponse
@@ -99,10 +102,10 @@ async def query_task_states(
         None, description="comma separated list of requester names"
     ),
     pickup: Optional[str] = Query(
-        None, description="comma separated list of pickup names"
+        None, description="comma separated list of pickup names", deprecated=True
     ),
     destination: Optional[str] = Query(
-        None, description="comma separated list of destination names"
+        None, description="comma separated list of destination names", deprecated=True
     ),
     assigned_to: Optional[str] = Query(
         None, description="comma separated list of assigned robot names"
@@ -116,6 +119,10 @@ async def query_task_states(
     status: Optional[str] = Query(None, description="comma separated list of statuses"),
     pagination: mdl.Pagination = Depends(pagination_query),
 ):
+    """
+    Note that sorting by `pickup` and `destination` is mutually exclusive and sorting
+    by either of them will filter only tasks which has those labels.
+    """
     filters = {}
     if task_id is not None:
         filters["id___in"] = task_id.split(",")
@@ -155,6 +162,27 @@ async def query_task_states(
     # NOTE: In order to perform sorting based on the values in labels, a filter
     # on the label_name has to be performed first. A side-effect of this would
     # be that states that do not contain this field will not be returned.
+    #
+    # tortoise-orm lacks too many features to implement a proper sort logic, for
+    # reference, these are some solutions in sql
+    #
+    # Solution 1 (can't do multiple joins):
+    # SELECT t.*
+    # FROM tasks t
+    # LEFT JOIN tasklabels tl_foo ON t.task_id = tl_foo.task_id AND tl_foo.label_name = 'foo'
+    # LEFT JOIN tasklabels tl_bar ON t.task_id = tl_bar.task_id AND tl_bar.label_name = 'bar'
+    # ORDER BY
+    # tl_foo.label_value,  -- Primary sort by 'foo' label
+    # tl_bar.label_value;  -- Secondary sort by 'bar' label
+    #
+    # Solution 2 (can't do MAX on CASE WHEN):
+    # SELECT t.task_id,
+    # MAX(CASE WHEN tl.label_name = 'foo' THEN tl.label_value END) AS foo_value,
+    # MAX(CASE WHEN tl.label_name = 'bar' THEN tl.label_value END) AS bar_value
+    # FROM tasks t
+    # LEFT JOIN tasklabels tl ON t.task_id = tl.task_id
+    # GROUP BY t.task_id
+    # ORDER BY foo_value, bar_value;
     if pagination.order_by is not None:
         labels_fields = ["pickup", "destination"]
         new_order = pagination.order_by
