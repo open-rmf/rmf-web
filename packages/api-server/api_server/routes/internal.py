@@ -52,32 +52,6 @@ class ConnectionManager:
 connection_manager = ConnectionManager()
 
 
-# def log_phase_has_error(phase: mdl.Phases) -> bool:
-#     if phase.log:
-#         for log in phase.log:
-#             if log.tier == mdl.Tier.error:
-#                 return True
-#     if phase.events:
-#         for _, event_logs in phase.events.items():
-#             for event_log in event_logs:
-#                 if event_log.tier == mdl.Tier.error:
-#                     return True
-#     return False
-
-
-# def task_log_has_error(task_log: mdl.TaskEventLog) -> bool:
-#     if task_log.log:
-#         for log in task_log.log:
-#             if log.tier == mdl.Tier.error:
-#                 return True
-
-#     if task_log.phases:
-#         for _, phase in task_log.phases.items():
-#             if log_phase_has_error(phase):
-#                 return True
-#     return False
-
-
 async def process_msg(
     msg: Dict[str, Any],
     fleet_repo: FleetRepository,
@@ -99,24 +73,6 @@ async def process_msg(
         await task_repo.save_task_state(task_state)
         task_events.task_states.on_next(task_state)
 
-        # if (
-        #     task_state.status == mdl.Status.completed
-        #     or task_state.status == mdl.Status.failed
-        # ):
-        #     alert = await alert_repo.create_alert(task_state.booking.id, "task")
-        #     if alert is not None:
-        #         alert_events.alerts.on_next(alert)
-        # elif (
-        #     task_state.unix_millis_finish_time
-        #     and task_state.unix_millis_warn_time
-        #     and task_state.unix_millis_finish_time > task_state.unix_millis_warn_time
-        # ):
-        #     # TODO(AC): Perhaps set a late alert as its own category
-        #     late_alert_id = f"{task_state.booking.id}__late"
-        #     if not await alert_repo.alert_original_id_exists(late_alert_id):
-        #         alert = await alert_repo.create_alert(late_alert_id, "task")
-        #         if alert is not None:
-        #             alert_events.alerts.on_next(alert)
         if task_state.status == mdl.Status.completed:
             alert_request = mdl.AlertRequest(
                 id=str(uuid4()),
@@ -132,12 +88,25 @@ async def process_msg(
             )
             await create_new_alert(alert_request)
         elif task_state.status == mdl.Status.failed:
+            print("FAILED TASK")
+            errorMessage = ""
+            print(task_state.dispatch)
+            if (
+                task_state.dispatch is not None
+                and task_state.dispatch.status == mdl.Status1.failed_to_assign
+            ):
+                print("FAILED TO ASSIGN")
+                errorMessage += "Failed to assign\n"
+                if task_state.dispatch.errors is not None:
+                    for error in task_state.dispatch.errors:
+                        errorMessage += error.json() + "\n"
+
             alert_request = mdl.AlertRequest(
                 id=str(uuid4()),
                 unix_millis_alert_time=round(datetime.now().timestamp() * 1000),
                 title="Task failed",
                 subtitle=f"ID: {task_state.booking.id}",
-                message="",
+                message=errorMessage,
                 display=True,
                 tier=mdl.AlertRequest.Tier.Error,
                 responses_available=["Acknowledge"],
@@ -150,11 +119,6 @@ async def process_msg(
         task_log = mdl.TaskEventLog(**msg["data"])
         await task_repo.save_task_log(task_log)
         task_events.task_event_logs.on_next(task_log)
-
-        # if task_log_has_error(task_log):
-        #     alert = await alert_repo.create_alert(task_log.task_id, "task")
-        #     if alert is not None:
-        #         alert_events.alerts.on_next(alert)
 
     elif payload_type == "fleet_state_update":
         fleet_state = mdl.FleetState(**msg["data"])

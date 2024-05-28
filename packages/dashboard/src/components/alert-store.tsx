@@ -1,4 +1,10 @@
-import { AlertRequest, ApiServerModelsAlertsAlertRequestTier } from 'api-client';
+import {
+  AlertRequest,
+  ApiServerModelsAlertsAlertRequestTier,
+  LogEntry,
+  TaskEventLog,
+  ApiServerModelsRmfApiLogEntryTier as LogEntryTier,
+} from 'api-client';
 import { AppEvents } from './app-events';
 import {
   Button,
@@ -23,7 +29,9 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     textField: {
       background: theme.palette.background.default,
-      pointerEvents: 'none',
+      '&:hover': {
+        backgroundColor: theme.palette.background.default,
+      },
     },
   }),
 );
@@ -40,6 +48,7 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
   const { showAlert } = React.useContext(AppControllerContext);
   const rmf = React.useContext(RmfAppContext);
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
+  const [additionalAlertMessage, setAdditionalAlertMessage] = React.useState<string | null>(null);
 
   const respondToAlert = async (alert_id: string, response: string) => {
     if (!rmf) {
@@ -66,6 +75,67 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
     console.log(successMessage);
     showAlert('success', successMessage);
   };
+
+  const getErrorLogEntries = (logs: TaskEventLog) => {
+    let errorLogs: LogEntry[] = [];
+    if (logs.log) {
+      errorLogs.concat(logs.log.filter((entry) => entry.tier === LogEntryTier.Error));
+    }
+
+    if (logs.phases) {
+      for (let phase of Object.values(logs.phases)) {
+        if (phase.log) {
+          errorLogs.concat(phase.log.filter((entry) => entry.tier === LogEntryTier.Error));
+        }
+        if (phase.events) {
+          for (let eventLogs of Object.values(phase.events)) {
+            errorLogs.concat(eventLogs.filter((entry) => entry.tier === LogEntryTier.Error));
+          }
+        }
+      }
+    }
+    return errorLogs;
+  };
+
+  React.useEffect(() => {
+    if (alertRequest.tier === ApiServerModelsAlertsAlertRequestTier.Info || !alertRequest.task_id) {
+      return;
+    }
+    if (!rmf) {
+      return;
+    }
+
+    (async () => {
+      if (!alertRequest.task_id) {
+        return;
+      }
+
+      let logs: TaskEventLog | null = null;
+      try {
+        logs = (
+          await rmf.tasksApi.getTaskLogTasksTaskIdLogGet(
+            alertRequest.task_id,
+            `0,${Number.MAX_SAFE_INTEGER}`,
+          )
+        ).data;
+      } catch {
+        console.log(
+          `Failed to fetch task [${alertRequest.task_id}] logs for alert [${alertRequest.id}]`,
+        );
+      }
+      const errorLogEntries = logs ? getErrorLogEntries(logs) : [];
+
+      let consolidatedErrorMessages = '';
+      for (const entry of errorLogEntries) {
+        consolidatedErrorMessages += `${new Date(entry.unix_millis_time).toLocaleString()} - ${
+          entry.text
+        }\n`;
+      }
+      if (consolidatedErrorMessages.length > 0) {
+        setAdditionalAlertMessage(consolidatedErrorMessages);
+      }
+    })();
+  }, [rmf, alertRequest.id, alertRequest.task_id, alertRequest.tier]);
 
   return (
     <>
@@ -123,7 +193,11 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
             multiline
             maxRows={4}
             margin="dense"
-            value={alertRequest.message.length > 0 ? alertRequest.message : 'n/a'}
+            value={
+              (alertRequest.message.length > 0 ? alertRequest.message : 'n/a') +
+              '\n' +
+              (additionalAlertMessage ?? '')
+            }
           />
         </DialogContent>
         <DialogActions>
@@ -133,6 +207,7 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
                 size="small"
                 variant="contained"
                 autoFocus
+                key={`${alertRequest.id}-${response}`}
                 sx={{
                   fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
                   padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
@@ -240,6 +315,7 @@ export const AlertStore = React.memo(() => {
             Object.entries(prev).filter(([key]) => key !== alertResponse.id),
           );
         });
+        AppEvents.refreshAlert.next();
       }),
     );
 

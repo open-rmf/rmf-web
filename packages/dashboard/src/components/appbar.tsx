@@ -209,7 +209,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           (async () => {
             const resp = await rmf.alertsApi.getUnrespondedAlertsAlertsUnrespondedRequestsGet();
             const alerts = resp.data as AlertRequest[];
-            console.log(`in refreshAlert sub: ${alerts.length}`);
             setUnacknowledgedAlertsNum(alerts.length);
           })();
         },
