@@ -61,35 +61,35 @@ class TestTasksRoute(AppFixture):
         self.assertEqual(self.task_states[0].booking.id, results[0]["booking"]["id"])
 
     def test_query_task_states_by_label(self):
-        resp = self.client.get(f"/tasks?label=not_existing")
+        resp = self.client.get("/tasks?label=not_existing")
         self.assertEqual(200, resp.status_code)
         results = resp.json()
         self.assertEqual(0, len(results))
 
-        resp = self.client.get(f"/tasks?label=test_single")
+        resp = self.client.get("/tasks?label=test_single")
         self.assertEqual(200, resp.status_code)
         results = resp.json()
         self.assertEqual(1, len(results))
         self.assertEqual(self.task_states[0].booking.id, results[0]["booking"]["id"])
 
-        resp = self.client.get(f"/tasks?label=test_single=wrong_value")
+        resp = self.client.get("/tasks?label=test_single=wrong_value")
         self.assertEqual(200, resp.status_code)
         results = resp.json()
         self.assertEqual(0, len(results))
 
-        resp = self.client.get(f"/tasks?label=test_single_2=")
+        resp = self.client.get("/tasks?label=test_single_2=")
         self.assertEqual(200, resp.status_code)
         results = resp.json()
         self.assertEqual(1, len(results))
         self.assertEqual(self.task_states[0].booking.id, results[0]["booking"]["id"])
 
-        resp = self.client.get(f"/tasks?label=test_kv=value")
+        resp = self.client.get("/tasks?label=test_kv=value")
         self.assertEqual(200, resp.status_code)
         results = resp.json()
         self.assertEqual(1, len(results))
         self.assertEqual(self.task_states[0].booking.id, results[0]["booking"]["id"])
 
-        resp = self.client.get(f"/tasks?label=test_kv=wrong_value")
+        resp = self.client.get("/tasks?label=test_kv=wrong_value")
         self.assertEqual(200, resp.status_code)
         results = resp.json()
         self.assertEqual(0, len(results))

@@ -19,7 +19,7 @@ class Labels(RootModel):
 
     @staticmethod
     def from_strings(labels: Sequence[str]) -> "Labels":
-        return Labels({k: v for k, v in [Labels._parse_label(s) for s in labels]})
+        return Labels(dict(Labels._parse_label(s) for s in labels))
 
     def to_strings(self) -> list[str]:
         return [f"{k}={v}" for k, v in self.root.items()]
