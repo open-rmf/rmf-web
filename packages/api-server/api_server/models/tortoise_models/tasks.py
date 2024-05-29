@@ -29,6 +29,12 @@ class TaskState(Model):
     requester = CharField(255, null=True, index=True)
 
 
+class TaskLabel(Model):
+    state = ForeignKeyField("models.TaskState", null=True, related_name="labels")
+    label_name = CharField(255, null=False, index=True)
+    label_value = CharField(255, null=True, index=True)
+
+
 class TaskEventLog(Model):
     task_id = CharField(255, pk=True)
     log: ReverseRelation["TaskEventLogLog"]

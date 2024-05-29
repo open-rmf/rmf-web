@@ -14,7 +14,13 @@ class TestTasksRoute(AppFixture):
     def setUpClass(cls):
         super().setUpClass()
         task_ids = [uuid4()]
-        cls.task_states = [make_task_state(task_id=f"test_{x}") for x in task_ids]
+        cls.task_states = [
+            make_task_state(
+                task_id=f"test_{x}",
+                labels=["test_single", "test_single_2=", "test_kv=value"],
+            )
+            for x in task_ids
+        ]
         cls.task_logs = [make_task_log(task_id=f"test_{x}") for x in task_ids]
         cls.clsSetupErr: str | None = None
 
@@ -35,10 +41,17 @@ class TestTasksRoute(AppFixture):
     def test_get_task_state(self):
         resp = self.client.get(f"/tasks/{self.task_states[0].booking.id}/state")
         self.assertEqual(200, resp.status_code)
+        task_state = TaskState.model_validate_json(resp.content)
         self.assertEqual(
             self.task_states[0].booking.id,
-            resp.json()["booking"]["id"],
+            task_state.booking.id,
         )
+        if task_state.booking.labels is None:
+            self.fail("expected label not to be None")
+        labels = mdl.Labels.from_strings(task_state.booking.labels)
+        self.assertEqual("", labels.root["test_single"])
+        self.assertEqual("", labels.root["test_single_2"])
+        self.assertEqual("value", labels.root["test_kv"])
 
     def test_query_task_states(self):
         resp = self.client.get(f"/tasks?task_id={self.task_states[0].booking.id}")
@@ -46,6 +59,40 @@ class TestTasksRoute(AppFixture):
         results = resp.json()
         self.assertEqual(1, len(results))
         self.assertEqual(self.task_states[0].booking.id, results[0]["booking"]["id"])
+
+    def test_query_task_states_by_label(self):
+        resp = self.client.get(f"/tasks?label=not_existing")
+        self.assertEqual(200, resp.status_code)
+        results = resp.json()
+        self.assertEqual(0, len(results))
+
+        resp = self.client.get(f"/tasks?label=test_single")
+        self.assertEqual(200, resp.status_code)
+        results = resp.json()
+        self.assertEqual(1, len(results))
+        self.assertEqual(self.task_states[0].booking.id, results[0]["booking"]["id"])
+
+        resp = self.client.get(f"/tasks?label=test_single=wrong_value")
+        self.assertEqual(200, resp.status_code)
+        results = resp.json()
+        self.assertEqual(0, len(results))
+
+        resp = self.client.get(f"/tasks?label=test_single_2=")
+        self.assertEqual(200, resp.status_code)
+        results = resp.json()
+        self.assertEqual(1, len(results))
+        self.assertEqual(self.task_states[0].booking.id, results[0]["booking"]["id"])
+
+        resp = self.client.get(f"/tasks?label=test_kv=value")
+        self.assertEqual(200, resp.status_code)
+        results = resp.json()
+        self.assertEqual(1, len(results))
+        self.assertEqual(self.task_states[0].booking.id, results[0]["booking"]["id"])
+
+        resp = self.client.get(f"/tasks?label=test_kv=wrong_value")
+        self.assertEqual(200, resp.status_code)
+        results = resp.json()
+        self.assertEqual(0, len(results))
 
     def test_sub_task_state(self):
         task_id = self.task_states[0].booking.id

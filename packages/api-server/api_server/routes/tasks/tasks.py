@@ -3,6 +3,7 @@ from typing import List, Optional, Tuple, cast
 
 from fastapi import Body, Depends, HTTPException, Path, Query
 from reactivex import operators as rxops
+from tortoise.expressions import Q
 
 from api_server import models as mdl
 from api_server.dependencies import (
@@ -51,6 +52,11 @@ async def query_task_states(
         finish_time_between_query
     ),
     status: Optional[str] = Query(None, description="comma separated list of statuses"),
+    label: str
+    | None = Query(
+        None,
+        description="must be in the form <key>=<value>",
+    ),
     pagination: mdl.Pagination = Depends(pagination_query),
 ):
     filters = {}
@@ -74,7 +80,26 @@ async def query_task_states(
                 continue
             filters["status__in"].append(mdl.TaskStatus(status_string))
 
-    return await task_repo.query_task_states(DbTaskState.filter(**filters), pagination)
+    # Due to tortoise-orm limitations, we cannot support filtering by multiple labels.
+    # Mainly it's because
+    # 1. cannot use `annotate` with `values` and related fields (https://github.com/tortoise/tortoise-orm/issues/996 not exact issue but related)
+    # 2. `only` does not work, got "IndexError: list index out of range".
+    # 3. can drop `values` and `only` and fetch the all columns, but with the downside of less performance.
+    label_filters = []
+    if label is not None:
+        labels = mdl.Labels.from_strings([label])
+        if len(labels.root) != 1:
+            raise HTTPException(
+                status_code=422, detail="Label must be in the form <key>=<value>"
+            )
+        label_filters = [
+            Q(labels__label_name=k) & Q(labels__label_value=v)
+            for k, v in labels.root.items()
+        ]
+
+    return await task_repo.query_task_states(
+        DbTaskState.filter(*label_filters, **filters), pagination
+    )
 
 
 @router.get("/{task_id}/state", response_model=mdl.TaskState)
