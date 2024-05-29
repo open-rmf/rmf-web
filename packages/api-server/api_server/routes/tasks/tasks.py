@@ -15,7 +15,6 @@ from api_server.dependencies import (
 )
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.logging import LoggerAdapter, get_logger
-from api_server.models.tortoise_models import TaskLabel as DbTaskLabel
 from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.repositories import RmfRepository, TaskRepository
 from api_server.response import RawJSONResponse
