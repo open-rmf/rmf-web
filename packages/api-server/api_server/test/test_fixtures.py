@@ -89,10 +89,7 @@ class AppFixture(unittest.TestCase):
         cls.client = TestClient()
         cls.client.headers["Content-Type"] = "application/json"
         cls.client.__enter__()
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.client.__exit__()
+        cls.addClassCleanup(cls.client.__exit__)
 
     @contextlib.contextmanager
     def subscribe_sio(self, room: str, *, user="admin"):
