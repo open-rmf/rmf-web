@@ -266,11 +266,14 @@ export const AlertStore = React.memo(() => {
     }
 
     const pushAlertsToBeDisplayed = async (alertRequest: AlertRequest) => {
+      console.log('push alert called');
       if (!rmf) {
         console.error('Alerts API not available');
         return;
       }
+      console.log('api exists');
       if (!alertRequest.display) {
+        console.log('not displayed');
         setOpenAlerts((prev) => {
           const filteredAlerts = Object.fromEntries(
             Object.entries(prev).filter(([key]) => key !== alertRequest.id),

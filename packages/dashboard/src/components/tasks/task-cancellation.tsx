@@ -42,7 +42,6 @@ export function TaskCancelButton({
       return;
     }
     const sub = rmf.getTaskStateObs(taskId).subscribe((state) => {
-      console.log(state.status);
       setTaskState(state);
     });
     return () => sub.unsubscribe();

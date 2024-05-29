@@ -14,12 +14,12 @@ from api_server.dependencies import (
     start_time_between_query,
 )
 from api_server.fast_io import FastIORouter, SubscriptionRequest
+from api_server.gateway import rmf_gateway
 from api_server.logging import LoggerAdapter, get_logger
 from api_server.models.tortoise_models import TaskState as DbTaskState
-from api_server.repositories import RmfRepository, TaskRepository
+from api_server.repositories import AlertRepository, RmfRepository, TaskRepository
 from api_server.response import RawJSONResponse
-from api_server.rmf_io import task_events, tasks_service
-from api_server.routes.alerts import get_alerts_of_task, respond_to_alert
+from api_server.rmf_io import alert_events, task_events, tasks_service
 from api_server.routes.building_map import get_building_map
 
 router = FastIORouter(tags=["Tasks"])
@@ -397,53 +397,21 @@ async def location_complete(
     task_id: str,
     location: str,
     success: bool,
+    alert_repo: AlertRepository = Depends(AlertRepository),
     logger: LoggerAdapter = Depends(get_logger),
 ):
     """
     Warning: This endpoint is still actively being worked on and could be
     subjected to modifications.
     """
-    alerts = await get_alerts_of_task(task_id=task_id, unresponded=True)
-    if len(alerts) == 0:
+    response_model = await alert_repo.create_location_alert_response(
+        task_id, location, success
+    )
+    if response_model is None:
         raise HTTPException(
-            404, f"There are no location alerts awaiting response for task {task_id}"
+            422,
+            f"Failed to create location completion alert response to task [{task_id}] at location [{location}]",
         )
-
-    # TODO: not hardcode all these expected values
-    SuccessResponse = "success"
-    FailResponse = "fail"
-    TypeParameterName = "type"
-    TypeParameterValue = "location_result"
-    LocationParameterName = "location_name"
-
-    for alert in alerts:
-        if (
-            len(alert.alert_parameters) < 2
-            or SuccessResponse not in alert.responses_available
-            or FailResponse not in alert.responses_available
-        ):
-            continue
-
-        # Check type
-        alert_type = None
-        for param in alert.alert_parameters:
-            if param.name == TypeParameterName:
-                alert_type = param.value
-                break
-        if alert_type != TypeParameterValue:
-            continue
-
-        # TODO: make sure that there are no duplicated locations that have
-        # not been responded to yet
-        for param in alert.alert_parameters:
-            if param.name == LocationParameterName and param.value == location:
-                response = await respond_to_alert(
-                    alert_id=alert.id,
-                    response=SuccessResponse if success else FailResponse,
-                )
-                logger.info(response)
-                return
-
-    error = f"Task {task_id} is not awaiting completion of location {location}"
-    logger.error(error)
-    raise HTTPException(404, error)
+    alert_events.alert_responses.on_next(response_model)
+    rmf_gateway().respond_to_alert(response_model.id, response_model.response)
+    logger.info(response_model)

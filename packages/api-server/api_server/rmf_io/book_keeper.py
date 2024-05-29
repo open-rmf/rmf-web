@@ -21,8 +21,13 @@ from api_server.models import (
     LiftState,
 )
 from api_server.models.health import BaseBasicHealth
+from api_server.repositories import (
+    AlertRepository,  # , is_final_location_alert_check, LocationAlertFailResponse, LocationAlertSuccessResponse
+)
 
 from .events import AlertEvents, RmfEvents
+
+# from api_server.gateway import rmf_gateway
 
 
 class RmfBookKeeperEvents:
@@ -38,6 +43,7 @@ class RmfBookKeeper:
     ):
         self.rmf_events = rmf_events
         self.alert_events = alert_events
+        self.alert_repository = AlertRepository()
         self.bookkeeper_events = RmfBookKeeperEvents()
         self._loop: asyncio.AbstractEventLoop
         self._pending_tasks = set()

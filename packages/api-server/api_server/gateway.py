@@ -51,7 +51,14 @@ from .models import (
     LiftState,
 )
 from .models.delivery_alerts import action_from_msg, category_from_msg, tier_from_msg
-from .repositories import CachedFilesRepository, cached_files_repo
+from .repositories import (
+    CachedFilesRepository,
+    LocationAlertFailResponse,
+    LocationAlertSuccessResponse,
+    cached_files_repo,
+    is_final_location_alert_check,
+    task_id_to_all_locations_success_cache,
+)
 from .rmf_io import alert_events, rmf_events
 from .ros import ros_node
 
@@ -274,8 +281,6 @@ class RmfGateway:
             for p in fleet_alert.alert_parameters:
                 parameters.append(AlertParameter(name=p.name, value=p.value))
 
-            # check task phases to find out what waypoint it is?
-
             return AlertRequest(
                 id=fleet_alert.id,
                 unix_millis_alert_time=round(datetime.now().timestamp() * 1000),
@@ -292,6 +297,19 @@ class RmfGateway:
         def handle_fleet_alert(fleet_alert: AlertRequest):
             logging.info("Received fleet alert:")
             logging.info(fleet_alert)
+
+            # Handle request for checking all location completion success for
+            # this task
+            is_final_check = is_final_location_alert_check(fleet_alert)
+            if is_final_check:
+                successful_so_far = task_id_to_all_locations_success_cache.lookup(
+                    fleet_alert.task_id
+                )
+                if successful_so_far is None or not successful_so_far:
+                    self.respond_to_alert(fleet_alert.id, LocationAlertFailResponse)
+                else:
+                    self.respond_to_alert(fleet_alert.id, LocationAlertSuccessResponse)
+
             alert_events.alert_requests.on_next(fleet_alert)
 
         fleet_alert_sub = ros_node().create_subscription(

@@ -34,7 +34,7 @@ class TestAlertsRoute(AppFixture):
         resp = self.client.post(
             f"/alerts/request/wrong_alert/respond?{urlencode(params)}"
         )
-        self.assertEqual(404, resp.status_code, resp.content)
+        self.assertEqual(422, resp.status_code, resp.content)
 
         # response that is unavailable
         params = {"response": "wrong"}
@@ -245,12 +245,12 @@ class TestAlertsRoute(AppFixture):
             "success": True,
         }
         resp = self.client.post(f"/tasks/location_complete?{urlencode(params)}")
-        self.assertEqual(404, resp.status_code, resp.content)
+        self.assertEqual(422, resp.status_code, resp.content)
 
         # complete missing location
         params = {"task_id": task_id, "location": "wrong_location", "success": True}
         resp = self.client.post(f"/tasks/location_complete?{urlencode(params)}")
-        self.assertEqual(404, resp.status_code, resp.content)
+        self.assertEqual(422, resp.status_code, resp.content)
 
         # complete location
         params = {"task_id": task_id, "location": location_name, "success": True}
