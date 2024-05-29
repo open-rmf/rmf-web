@@ -8,7 +8,7 @@ from api_server.models.pagination import Pagination
 def add_pagination(
     query: QuerySet[MODEL],
     pagination: Pagination,
-    field_mappings: Dict[str, str] = {},
+    field_mappings: Optional[Dict[str, str]] = None,
 ) -> QuerySet[MODEL]:
     """
     Adds pagination and ordering to a query.
@@ -17,6 +17,7 @@ def add_pagination(
         query. e.g. a url of `?order_by=order_field` and a field mapping of `{"order_field": "db_field"}`
         will order the query result according to `db_field`.
     """
+    field_mappings = field_mappings or {}
     query = query.limit(pagination.limit).offset(pagination.offset)
     if pagination.order_by is not None:
         order_fields = []

@@ -3,8 +3,6 @@ from typing import List, Optional, Tuple, cast
 
 from fastapi import Body, Depends, HTTPException, Path, Query
 from rx import operators as rxops
-from tortoise.expressions import Case, F, Q, RawSQL, Subquery, When
-from tortoise.functions import Max
 
 from api_server import models as mdl
 from api_server.dependencies import (
