@@ -56,7 +56,7 @@ async def query_task_states(
     label: str
     | None = Query(
         None,
-        description="comma separated list of labels, each item must be in the form <key>=<value>",
+        description="comma separated list of labels, each item must be in the form <key>=<value>, multiple items will filter tasks with all the labels",
     ),
     pagination: mdl.Pagination = Depends(pagination_query),
 ):
@@ -90,11 +90,7 @@ async def query_task_states(
             for k, v in labels.root.items()
         ]
         query = (
-            query.annotate(
-                label_filter=tfuncs.Count(
-                    "id_", _filter=Q(*label_filters, join_type=Q.OR)
-                )
-            )
+            query.annotate(label_filter=tfuncs.Count("id_", _filter=Q(*label_filters)))
             .group_by(
                 "labels__state_id"
             )  # need to group by a related field to make tortoise-orm generate joins

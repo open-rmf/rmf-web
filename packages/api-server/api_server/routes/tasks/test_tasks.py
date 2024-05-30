@@ -106,13 +106,10 @@ class TestTasksRoute(AppFixture):
         results = resp.json()
         self.assertEqual(0, len(results))
 
-        resp = self.client.get(
-            "/tasks?label=test_single,test_single_2=,test_kv=wrong_value"
-        )
+        resp = self.client.get("/tasks?label=test_single,test_kv=wrong_value")
         self.assertEqual(200, resp.status_code)
         results = resp.json()
-        self.assertEqual(1, len(results))
-        self.assertEqual(self.task_states[0].booking.id, results[0]["booking"]["id"])
+        self.assertEqual(0, len(results))
 
     def test_query_task_states_sort_by_label(self):
         resp = self.client.get("/tasks?order_by=-label=test_label_sort")
