@@ -4,7 +4,7 @@ from typing import List, Optional, Tuple, cast
 import tortoise.functions as tfuncs
 from fastapi import Body, Depends, HTTPException, Path, Query
 from reactivex import operators as rxops
-from tortoise.expressions import Case, F, Q, RawSQL, When
+from tortoise.expressions import Q
 
 from api_server import models as mdl
 from api_server.dependencies import (
