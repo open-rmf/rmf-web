@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List, Optional, Tuple, cast
 
+import tortoise.functions as tfuncs
 from fastapi import Body, Depends, HTTPException, Path, Query
 from reactivex import operators as rxops
 from tortoise.expressions import Q
@@ -55,7 +56,7 @@ async def query_task_states(
     label: str
     | None = Query(
         None,
-        description="must be in the form <key>=<value>",
+        description="comma separated list of labels, each item must be in the form <key>=<value>",
     ),
     pagination: mdl.Pagination = Depends(pagination_query),
 ):
@@ -79,27 +80,26 @@ async def query_task_states(
             if status_string not in valid_values:
                 continue
             filters["status__in"].append(mdl.TaskStatus(status_string))
+    query = DbTaskState.filter(**filters)
 
-    # Due to tortoise-orm limitations, we cannot support filtering by multiple labels.
-    # Mainly it's because
-    # 1. cannot use `annotate` with `values` and related fields (https://github.com/tortoise/tortoise-orm/issues/996 not exact issue but related)
-    # 2. `only` does not work, got "IndexError: list index out of range".
-    # 3. can drop `values` and `only` and fetch the all columns, but with the downside of less performance.
     label_filters = []
     if label is not None:
-        labels = mdl.Labels.from_strings([label])
-        if len(labels.root) != 1:
-            raise HTTPException(
-                status_code=422, detail="Label must be in the form <key>=<value>"
-            )
+        labels = mdl.Labels.from_strings(label.split(","))
         label_filters = [
-            Q(labels__label_name=k) & Q(labels__label_value=v)
+            Q(labels__label_name=k, labels__label_value=v)
             for k, v in labels.root.items()
         ]
-
-    return await task_repo.query_task_states(
-        DbTaskState.filter(*label_filters, **filters), pagination
+    query = (
+        query.annotate(
+            label_filter=tfuncs.Count("id_", _filter=Q(*label_filters, join_type=Q.OR))
+        )
+        .group_by(
+            "labels__state_id"
+        )  # need to group by a related field to make tortoise-orm generate joins
+        .filter(label_filter__gt=0)
     )
+
+    return await task_repo.query_task_states(query, pagination)
 
 
 @router.get("/{task_id}/state", response_model=mdl.TaskState)
