@@ -2,6 +2,8 @@ from typing import cast
 from unittest.mock import patch
 from uuid import uuid4
 
+import pydantic
+
 from api_server import models as mdl
 from api_server.models import TaskEventLog, TaskState
 from api_server.repositories import TaskRepository
@@ -13,13 +15,23 @@ class TestTasksRoute(AppFixture):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        task_ids = [uuid4()]
+        task_ids = [str(uuid4()), str(uuid4())]
         cls.task_states = [
             make_task_state(
-                task_id=f"test_{x}",
-                labels=["test_single", "test_single_2=", "test_kv=value"],
-            )
-            for x in task_ids
+                task_id=task_ids[0],
+                labels=[
+                    "test_single",
+                    "test_single_2=",
+                    "test_kv=value",
+                    "test_label_sort=zzz",
+                    "test_label_sort_2=aaa",
+                    "test_label_sort_3=bbb",
+                ],
+            ),
+            make_task_state(
+                task_id=task_ids[1],
+                labels=["test_label_sort=aaa", "test_label_sort_3=bbb"],
+            ),
         ]
         cls.task_logs = [make_task_log(task_id=f"test_{x}") for x in task_ids]
         cls.clsSetupErr: str | None = None
@@ -101,6 +113,36 @@ class TestTasksRoute(AppFixture):
         results = resp.json()
         self.assertEqual(1, len(results))
         self.assertEqual(self.task_states[0].booking.id, results[0]["booking"]["id"])
+
+    def test_query_task_states_sort_by_label(self):
+        resp = self.client.get("/tasks?order_by=-label=test_label_sort")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.TypeAdapter(list[TaskState]).validate_json(resp.content)
+        self.assertEqual(2, len(results))
+        [self.assertEqual(a, b) for a, b in zip(self.task_states, results)]
+
+        resp = self.client.get("/tasks?order_by=label=test_label_sort")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.TypeAdapter(list[TaskState]).validate_json(resp.content)
+        self.assertEqual(2, len(results))
+        [self.assertEqual(a, b) for a, b in zip(self.task_states[::-1], results)]
+
+        # test sorting by multiple labels
+        resp = self.client.get(
+            "/tasks?order_by=label=test_label_sort,label=test_label_sort_3"
+        )
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.TypeAdapter(list[TaskState]).validate_json(resp.content)
+        self.assertEqual(2, len(results))
+        [self.assertEqual(a, b) for a, b in zip(self.task_states[::-1], results)]
+
+        # test that tasks without the label are not filtered out
+        # we don't test the result order because different db has different behavior
+        # of sorting NULL.
+        resp = self.client.get("/tasks?order_by=label=test_label_sort_not_existing")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.TypeAdapter(list[TaskState]).validate_json(resp.content)
+        self.assertEqual(2, len(results))
 
     def test_sub_task_state(self):
         task_id = self.task_states[0].booking.id

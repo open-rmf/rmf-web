@@ -4,7 +4,7 @@ from typing import List, Optional, Tuple, cast
 import tortoise.functions as tfuncs
 from fastapi import Body, Depends, HTTPException, Path, Query
 from reactivex import operators as rxops
-from tortoise.expressions import Q
+from tortoise.expressions import Case, F, Q, RawSQL, When
 
 from api_server import models as mdl
 from api_server.dependencies import (
@@ -89,15 +89,17 @@ async def query_task_states(
             Q(labels__label_name=k, labels__label_value=v)
             for k, v in labels.root.items()
         ]
-    query = (
-        query.annotate(
-            label_filter=tfuncs.Count("id_", _filter=Q(*label_filters, join_type=Q.OR))
+        query = (
+            query.annotate(
+                label_filter=tfuncs.Count(
+                    "id_", _filter=Q(*label_filters, join_type=Q.OR)
+                )
+            )
+            .group_by(
+                "labels__state_id"
+            )  # need to group by a related field to make tortoise-orm generate joins
+            .filter(label_filter__gt=0)
         )
-        .group_by(
-            "labels__state_id"
-        )  # need to group by a related field to make tortoise-orm generate joins
-        .filter(label_filter__gt=0)
-    )
 
     return await task_repo.query_task_states(query, pagination)
 
