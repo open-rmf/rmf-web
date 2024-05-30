@@ -16,6 +16,10 @@ class AlertResponse(BaseModel):
     unix_millis_response_time: int
     response: str
 
+    @staticmethod
+    def from_tortoise(tortoise: ttm.AlertResponse) -> "AlertResponse":
+        return AlertResponse(**tortoise.data)
+
 
 class AlertRequest(BaseModel):
     class Tier(str, Enum):
@@ -33,6 +37,10 @@ class AlertRequest(BaseModel):
     responses_available: List[str]
     alert_parameters: List[AlertParameter]
     task_id: Optional[str]
+
+    @staticmethod
+    def from_tortoise(tortoise: ttm.AlertRequest) -> "AlertRequest":
+        return AlertRequest(**tortoise.data)
 
     async def save(self) -> None:
         await ttm.AlertRequest.update_or_create(

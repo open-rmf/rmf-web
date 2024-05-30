@@ -6,9 +6,6 @@ from typing import List, Optional
 from api_server.models import AlertRequest, AlertResponse
 from api_server.models import tortoise_models as ttm
 
-# from api_server.gateway import rmf_gateway
-
-
 # TODO: not hardcode all these expected values
 LocationAlertSuccessResponse = "success"
 LocationAlertFailResponse = "fail"
@@ -126,7 +123,7 @@ class AlertRepository:
             logging.error(f"Alert with ID {alert_id} does not exists")
             return None
 
-        alert_model = AlertRequest(**alert.data)
+        alert_model = AlertRequest.from_tortoise(alert)
         return alert_model
 
     async def create_response(
@@ -137,7 +134,7 @@ class AlertRepository:
             logging.error(f"Alert with ID {alert_id} does not exists")
             return None
 
-        alert_model = AlertRequest(**alert.data)
+        alert_model = AlertRequest.from_tortoise(alert)
         if response not in alert_model.responses_available:
             logging.error(
                 f"Alert with ID {alert_model.id} does not have allow response of {response}"
@@ -160,7 +157,7 @@ class AlertRepository:
             logging.error(f"Response to alert with ID {alert_id} does not exists")
             return None
 
-        response_model = AlertResponse(**response.data)
+        response_model = AlertResponse.from_tortoise(response)
         return response_model
 
     async def get_alerts_of_task(
@@ -175,14 +172,14 @@ class AlertRepository:
         else:
             task_id_alerts = await ttm.AlertRequest.filter(task_id=task_id)
 
-        alert_models = [AlertRequest(**alert.data) for alert in task_id_alerts]
+        alert_models = [AlertRequest.from_tortoise(alert) for alert in task_id_alerts]
         return alert_models
 
     async def get_unresponded_alerts(self) -> List[AlertRequest]:
         unresponded_alerts = await ttm.AlertRequest.filter(
             alert_response=None, response_expected=True
         )
-        return [AlertRequest(**alert.data) for alert in unresponded_alerts]
+        return [AlertRequest.from_tortoise(alert) for alert in unresponded_alerts]
 
     async def create_location_alert_response(
         self,
@@ -235,36 +232,3 @@ class AlertRepository:
             f"Task {task_id} is not awaiting completion of location {location}"
         )
         return None
-
-    async def check_all_task_location_alerts_if_succeeded(self, task_id: str) -> bool:
-        """
-        Checks if all location alert reponses for the task were successful.
-        Note: This is an experimental feature and may be subjected to
-        modifications often.
-        """
-        task_id_alerts = await ttm.AlertRequest.filter(task_id=task_id)
-        if len(task_id_alerts) == 0:
-            logging.info(f"There were no location alerts for task {task_id}")
-            return False
-
-        for alert in task_id_alerts:
-            alert_model = AlertRequest(**alert.data)
-            location_alert_location = get_location_from_location_alert(alert_model)
-            if location_alert_location is None:
-                continue
-
-            if alert.alert_response is None:
-                logging.info(
-                    f"Alert {alert_model.id} does not have a response, check return False"
-                )
-                return False
-
-            alert_response_model = AlertResponse(**alert.alert_response.data)
-            if alert_response_model.response != LocationAlertSuccessResponse:
-                logging.info(
-                    f"Alert {alert_model.id} has a response {alert_response_model.response}, check return False"
-                )
-                return False
-
-        logging.info(f"All location alerts for task {task_id} succeeded")
-        return True

@@ -177,28 +177,30 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
             margin="dense"
             value={alertRequest.subtitle.length > 0 ? alertRequest.subtitle : 'n/a'}
           />
-          <TextField
-            label="Message"
-            id="standard-size-small"
-            size="small"
-            variant="filled"
-            sx={{
-              '& .MuiFilledInput-root': {
-                fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-              },
-            }}
-            InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
-            InputProps={{ readOnly: true, className: classes.textField }}
-            fullWidth={true}
-            multiline
-            maxRows={4}
-            margin="dense"
-            value={
-              (alertRequest.message.length > 0 ? alertRequest.message : 'n/a') +
-              '\n' +
-              (additionalAlertMessage ?? '')
-            }
-          />
+          {(alertRequest.message.length > 0 || additionalAlertMessage !== null) && (
+            <TextField
+              label="Message"
+              id="standard-size-small"
+              size="small"
+              variant="filled"
+              sx={{
+                '& .MuiFilledInput-root': {
+                  fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                },
+              }}
+              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
+              InputProps={{ readOnly: true, className: classes.textField }}
+              fullWidth={true}
+              multiline
+              maxRows={4}
+              margin="dense"
+              value={
+                (alertRequest.message.length > 0 ? alertRequest.message : 'n/a') +
+                '\n' +
+                (additionalAlertMessage ?? '')
+              }
+            />
+          )}
         </DialogContent>
         <DialogActions>
           {alertRequest.responses_available.map((response) => {

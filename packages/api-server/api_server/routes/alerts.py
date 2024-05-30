@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import List
 
 from fastapi import Depends, HTTPException
@@ -7,7 +6,6 @@ from rx import operators as rxops
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import rmf_gateway
 from api_server.models import AlertRequest, AlertResponse
-from api_server.models import tortoise_models as ttm
 from api_server.repositories import AlertRepository
 from api_server.rmf_io import alert_events
 

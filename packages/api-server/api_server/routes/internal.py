@@ -11,9 +11,8 @@ from websockets.exceptions import ConnectionClosed
 from api_server import models as mdl
 from api_server.app_config import app_config
 from api_server.logging import LoggerAdapter, get_logger
-from api_server.repositories import FleetRepository, TaskRepository
-from api_server.rmf_io import fleet_events, task_events
-from api_server.routes.alerts import create_new_alert
+from api_server.repositories import AlertRepository, FleetRepository, TaskRepository
+from api_server.rmf_io import alert_events, fleet_events, task_events
 
 router = APIRouter(tags=["_internal"])
 user: mdl.User = mdl.User(username="__rmf_internal__", is_admin=True)
@@ -54,6 +53,7 @@ connection_manager = ConnectionManager()
 
 async def process_msg(
     msg: Dict[str, Any],
+    alert_repo: AlertRepository,
     fleet_repo: FleetRepository,
     task_repo: TaskRepository,
     logger: LoggerAdapter,
@@ -86,7 +86,8 @@ async def process_msg(
                 alert_parameters=[],
                 task_id=task_state.booking.id,
             )
-            await create_new_alert(alert_request)
+            created_alert = await alert_repo.create_new_alert(alert_request)
+            alert_events.alert_requests.on_next(created_alert)
         elif task_state.status == mdl.Status.failed:
             errorMessage = ""
             if (
@@ -110,7 +111,8 @@ async def process_msg(
                 alert_parameters=[],
                 task_id=task_state.booking.id,
             )
-            await create_new_alert(alert_request)
+            created_alert = await alert_repo.create_new_alert(alert_request)
+            alert_events.alert_requests.on_next(created_alert)
 
     elif payload_type == "task_log_update":
         task_log = mdl.TaskEventLog(**msg["data"])
@@ -134,12 +136,13 @@ async def rmf_gateway(
     logger: LoggerAdapter = Depends(get_logger),
 ):
     await connection_manager.connect(websocket)
+    alert_repo = AlertRepository()
     fleet_repo = FleetRepository(user, logger)
     task_repo = TaskRepository(user, logger)
     try:
         while True:
             msg: Dict[str, Any] = await websocket.receive_json()
-            await process_msg(msg, fleet_repo, task_repo, logger)
+            await process_msg(msg, alert_repo, fleet_repo, task_repo, logger)
     except (WebSocketDisconnect, ConnectionClosed):
         connection_manager.disconnect(websocket)
         logger.warning("Client websocket disconnected")
