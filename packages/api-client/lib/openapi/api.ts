@@ -9132,7 +9132,7 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
-     *
+     * Warning: This endpoint is still actively being worked on and could be subjected to modifications.
      * @summary Location Complete
      * @param {string} taskId
      * @param {string} location
@@ -10237,7 +10237,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
-     *
+     * Warning: This endpoint is still actively being worked on and could be subjected to modifications.
      * @summary Location Complete
      * @param {string} taskId
      * @param {string} location
@@ -10765,7 +10765,7 @@ export const TasksApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     *
+     * Warning: This endpoint is still actively being worked on and could be subjected to modifications.
      * @summary Location Complete
      * @param {string} taskId
      * @param {string} location
@@ -11248,7 +11248,7 @@ export class TasksApi extends BaseAPI {
   }
 
   /**
-   *
+   * Warning: This endpoint is still actively being worked on and could be subjected to modifications.
    * @summary Location Complete
    * @param {string} taskId
    * @param {string} location

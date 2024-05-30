@@ -309,6 +309,7 @@ class RmfGateway:
                     self.respond_to_alert(fleet_alert.id, LocationAlertFailResponse)
                 else:
                     self.respond_to_alert(fleet_alert.id, LocationAlertSuccessResponse)
+                return
 
             alert_events.alert_requests.on_next(fleet_alert)
 

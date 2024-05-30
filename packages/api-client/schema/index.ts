@@ -1384,6 +1384,8 @@ export default {
       post: {
         tags: ['Tasks'],
         summary: 'Location Complete',
+        description:
+          'Warning: This endpoint is still actively being worked on and could be\nsubjected to modifications.',
         operationId: 'location_complete_tasks_location_complete_post',
         parameters: [
           {
