@@ -20,6 +20,14 @@ class AlertResponse(BaseModel):
     def from_tortoise(tortoise: ttm.AlertResponse) -> "AlertResponse":
         return AlertResponse(**tortoise.data)
 
+    async def save(self) -> None:
+        await ttm.AlertResponse.update_or_create(
+            {
+                "data": self.json(),
+            },
+            id=self.id,
+        )
+
 
 class AlertRequest(BaseModel):
     class Tier(str, Enum):

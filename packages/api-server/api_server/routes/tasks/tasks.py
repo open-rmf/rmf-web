@@ -14,12 +14,11 @@ from api_server.dependencies import (
     start_time_between_query,
 )
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.gateway import rmf_gateway
 from api_server.logging import LoggerAdapter, get_logger
 from api_server.models.tortoise_models import TaskState as DbTaskState
-from api_server.repositories import AlertRepository, RmfRepository, TaskRepository
+from api_server.repositories import RmfRepository, TaskRepository
 from api_server.response import RawJSONResponse
-from api_server.rmf_io import alert_events, task_events, tasks_service
+from api_server.rmf_io import task_events, tasks_service
 from api_server.routes.building_map import get_building_map
 
 router = FastIORouter(tags=["Tasks"])
@@ -390,28 +389,3 @@ async def post_undo_skip_phase(
     request: mdl.UndoPhaseSkipRequest = Body(...),
 ):
     return RawJSONResponse(await tasks_service().call(request.json(exclude_none=True)))
-
-
-@router.post("/location_complete")
-async def location_complete(
-    task_id: str,
-    location: str,
-    success: bool,
-    alert_repo: AlertRepository = Depends(AlertRepository),
-    logger: LoggerAdapter = Depends(get_logger),
-):
-    """
-    Warning: This endpoint is still actively being worked on and could be
-    subjected to modifications.
-    """
-    response_model = await alert_repo.create_location_alert_response(
-        task_id, location, success
-    )
-    if response_model is None:
-        raise HTTPException(
-            422,
-            f"Failed to create location completion alert response to task [{task_id}] at location [{location}]",
-        )
-    alert_events.alert_responses.on_next(response_model)
-    rmf_gateway().respond_to_alert(response_model.id, response_model.response)
-    logger.info(response_model)
