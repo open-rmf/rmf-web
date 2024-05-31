@@ -9132,64 +9132,6 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
-     * Warning: This endpoint is still actively being worked on and could be subjected to modifications.
-     * @summary Location Complete
-     * @param {string} taskId
-     * @param {string} location
-     * @param {boolean} success
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    locationCompleteTasksLocationCompletePost: async (
-      taskId: string,
-      location: string,
-      success: boolean,
-      options: AxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
-      // verify required parameter 'taskId' is not null or undefined
-      assertParamExists('locationCompleteTasksLocationCompletePost', 'taskId', taskId);
-      // verify required parameter 'location' is not null or undefined
-      assertParamExists('locationCompleteTasksLocationCompletePost', 'location', location);
-      // verify required parameter 'success' is not null or undefined
-      assertParamExists('locationCompleteTasksLocationCompletePost', 'success', success);
-      const localVarPath = `/tasks/location_complete`;
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      if (taskId !== undefined) {
-        localVarQueryParameter['task_id'] = taskId;
-      }
-
-      if (location !== undefined) {
-        localVarQueryParameter['location'] = location;
-      }
-
-      if (success !== undefined) {
-        localVarQueryParameter['success'] = success;
-      }
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
      *
      * @summary Post Activity Discovery
      * @param {ActivityDiscoveryRequest} activityDiscoveryRequest
@@ -10237,30 +10179,6 @@ export const TasksApiFp = function (configuration?: Configuration) {
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
-     * Warning: This endpoint is still actively being worked on and could be subjected to modifications.
-     * @summary Location Complete
-     * @param {string} taskId
-     * @param {string} location
-     * @param {boolean} success
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async locationCompleteTasksLocationCompletePost(
-      taskId: string,
-      location: string,
-      success: boolean,
-      options?: AxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
-      const localVarAxiosArgs =
-        await localVarAxiosParamCreator.locationCompleteTasksLocationCompletePost(
-          taskId,
-          location,
-          success,
-          options,
-        );
-      return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-    },
-    /**
      *
      * @summary Post Activity Discovery
      * @param {ActivityDiscoveryRequest} activityDiscoveryRequest
@@ -10765,25 +10683,6 @@ export const TasksApiFactory = function (
         .then((request) => request(axios, basePath));
     },
     /**
-     * Warning: This endpoint is still actively being worked on and could be subjected to modifications.
-     * @summary Location Complete
-     * @param {string} taskId
-     * @param {string} location
-     * @param {boolean} success
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    locationCompleteTasksLocationCompletePost(
-      taskId: string,
-      location: string,
-      success: boolean,
-      options?: any,
-    ): AxiosPromise<any> {
-      return localVarFp
-        .locationCompleteTasksLocationCompletePost(taskId, location, success, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
      *
      * @summary Post Activity Discovery
      * @param {ActivityDiscoveryRequest} activityDiscoveryRequest
@@ -11244,27 +11143,6 @@ export class TasksApi extends BaseAPI {
   public getTaskStateTasksTaskIdStateGet(taskId: string, options?: AxiosRequestConfig) {
     return TasksApiFp(this.configuration)
       .getTaskStateTasksTaskIdStateGet(taskId, options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
-   * Warning: This endpoint is still actively being worked on and could be subjected to modifications.
-   * @summary Location Complete
-   * @param {string} taskId
-   * @param {string} location
-   * @param {boolean} success
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof TasksApi
-   */
-  public locationCompleteTasksLocationCompletePost(
-    taskId: string,
-    location: string,
-    success: boolean,
-    options?: AxiosRequestConfig,
-  ) {
-    return TasksApiFp(this.configuration)
-      .locationCompleteTasksLocationCompletePost(taskId, location, success, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
