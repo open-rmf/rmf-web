@@ -1,3 +1,4 @@
+import logging
 from typing import Any, Callable, Coroutine, Optional, Union
 
 import jwt
@@ -5,7 +6,7 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OpenIdConnect
 
 from .app_config import app_config
-from .logger import logger
+from .logging import CustomLoggerAdapter, get_logger
 from .models import User
 
 
@@ -14,7 +15,14 @@ class AuthenticationError(Exception):
 
 
 class JwtAuthenticator:
-    def __init__(self, pem_file: str, aud: str, iss: str, *, oidc_url: str = ""):
+    def __init__(
+        self,
+        pem_file: str,
+        aud: str,
+        iss: str,
+        *,
+        oidc_url: str = "",
+    ):
         """
         Authenticates with a JWT token, the client must send an auth params with
         a "token" key.
@@ -49,8 +57,8 @@ class JwtAuthenticator:
 
     async def verify_token(self, token: Optional[str]) -> User:
         if not token:
-            logger.error("No token provided")
             raise AuthenticationError("authentication required")
+
         try:
             claims = jwt.decode(
                 token,
@@ -59,22 +67,10 @@ class JwtAuthenticator:
                 audience=self.aud,
                 issuer=self.iss,
             )
-            return await self._get_user(claims)
-        except jwt.InvalidSignatureError as e:
-            logger.error("JWT invalid signature error")
-            logger.error(f"Token: {token}")
-            raise AuthenticationError(str(e)) from e
-        except jwt.DecodeError as e:
-            logger.error("JWT decode error")
-            logger.error(f"Token: {token}")
-            raise AuthenticationError(str(e)) from e
-        except jwt.ExpiredSignatureError as e:
-            logger.error("JWT expired signature error")
-            logger.error(f"Token: {token}")
-            raise AuthenticationError(str(e)) from e
+            user = await self._get_user(claims)
+
+            return user
         except jwt.InvalidTokenError as e:
-            logger.error("JWT invalid token error")
-            logger.error(f"Token: {token}")
             raise AuthenticationError(str(e)) from e
 
     def fastapi_dep(self) -> Callable[..., Union[Coroutine[Any, Any, User], User]]:
@@ -87,7 +83,6 @@ class JwtAuthenticator:
             try:
                 return await self.verify_token(parts[1])
             except AuthenticationError as e:
-                logger.error("Failed to verify token")
                 raise HTTPException(401, str(e)) from e
 
         return dep
@@ -124,6 +119,16 @@ if app_config.jwt_public_key:
     )
 else:
     authenticator = StubAuthenticator()
-    logger.warning("authentication is disabled")
+    logging.warning("authentication is disabled")
 
-user_dep = authenticator.fastapi_dep()
+
+_base_user_dep = authenticator.fastapi_dep()
+
+
+def user_dep(
+    user: User = Depends(_base_user_dep),
+    logger: CustomLoggerAdapter = Depends(get_logger),
+):
+    # extends the original user dep to set the authenticated user to the logger
+    logger.user = user
+    return user

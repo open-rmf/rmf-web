@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from asyncio import Future
 from typing import Callable, Dict, Optional
 from uuid import uuid4
@@ -9,7 +10,6 @@ import rclpy.qos
 from fastapi import HTTPException
 from rmf_task_msgs.msg import ApiRequest, ApiResponse
 
-from api_server.logger import logger
 from api_server.ros import ros_node as default_ros_node
 
 
@@ -30,7 +30,6 @@ class RmfService:
         response_topic: str,
     ):
         self.ros_node = ros_node
-        self._logger = logger.getChild(self.__class__.__name__)
         self._requests: Dict[str, Future] = {}
         self._api_pub = self.ros_node().create_publisher(
             ApiRequest,
@@ -67,8 +66,8 @@ class RmfService:
         fut = Future()
         self._requests[req_id] = fut
         self._api_pub.publish(msg)
-        self._logger.info(f"sent request '{req_id}'")
-        self._logger.debug(msg)
+        logging.info(f"sent request '{req_id}'")
+        logging.debug(msg)
         try:
             return await asyncio.wait_for(fut, timeout)
         except asyncio.TimeoutError as e:
@@ -77,11 +76,11 @@ class RmfService:
             del self._requests[req_id]
 
     def _handle_response(self, msg: ApiResponse):
-        self._logger.info(f"got response '{msg.request_id}'")
-        self._logger.debug(msg)
+        logging.info(f"got response '{msg.request_id}'")
+        logging.debug(msg)
         fut = self._requests.get(msg.request_id)
         if fut is None:
-            self._logger.warning(
+            logging.warning(
                 f"Received response for unknown request id: {msg.request_id}"
             )
             return

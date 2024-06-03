@@ -14,10 +14,28 @@ import {
 } from '@mui/material';
 import React from 'react';
 import { PositiveIntField } from '../../form-inputs';
+import { TaskDefinition } from '../create-task';
+import type { TaskBookingLabel } from 'api-client';
+
+export const DefaultPatrolTaskDefinition: TaskDefinition = {
+  task_definition_id: 'patrol',
+  task_display_name: 'Patrol',
+};
 
 export interface PatrolTaskDescription {
   places: string[];
   rounds: number;
+}
+
+export function makePatrolTaskBookingLabel(
+  task_description: PatrolTaskDescription,
+): TaskBookingLabel {
+  return {
+    description: {
+      task_definition_id: 'patrol',
+      destination: task_description.places[task_description.places.length - 1],
+    },
+  };
 }
 
 export const isPatrolTaskDescriptionValid = (taskDescription: PatrolTaskDescription): boolean => {

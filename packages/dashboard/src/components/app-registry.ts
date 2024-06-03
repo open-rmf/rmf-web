@@ -3,6 +3,7 @@ import { DoorsApp } from './doors-app';
 import { LiftsApp } from './lifts-app';
 import { MapApp } from './map-app';
 import { RobotInfoApp } from './robots/robot-info-app';
+import { MutexGroupsApp } from './robots/robot-mutex-group-app';
 import { RobotsApp } from './robots/robots-app';
 import { TaskDetailsApp } from './tasks/task-details-app';
 import { TaskLogsApp } from './tasks/task-logs-app';
@@ -13,6 +14,7 @@ export const AppRegistry = {
   Doors: DoorsApp,
   Lifts: LiftsApp,
   Map: MapApp,
+  'Mutex Groups': MutexGroupsApp,
   Tasks: TasksApp,
   'Task Details': TaskDetailsApp,
   'Task Logs': TaskLogsApp,

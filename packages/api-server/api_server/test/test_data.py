@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 from uuid import uuid4
 
 from rmf_building_map_msgs.msg import Door as RmfDoor
@@ -14,16 +15,20 @@ from api_server.models import (
     Door,
     DoorMode,
     DoorState,
+    FireAlarmTriggerState,
     FleetLog,
     FleetState,
     IngestorState,
     Level,
     Lift,
     LiftState,
+    RobotState,
+    TaskBookingLabel,
+    TaskBookingLabelDescription,
     TaskEventLog,
+    TaskFavorite,
     TaskState,
 )
-from api_server.models import tortoise_models as ttm
 
 
 def make_door(name: str = "test_door") -> Door:
@@ -65,6 +70,10 @@ def make_building_map():
     )
 
 
+def make_fire_alarm_trigger(trigger: bool = True):
+    return FireAlarmTriggerState(unix_millis_time=1000, trigger=trigger)
+
+
 def make_door_state(name: str, mode: int = RmfDoorMode.MODE_CLOSED) -> DoorState:
     return DoorState(
         door_name=name,
@@ -100,12 +109,39 @@ def make_ingestor_state(guid: str = "test_ingestor") -> IngestorState:
     )
 
 
-def make_fleet_state() -> FleetState:
-    return FleetState(name=str(uuid4()), robots={})
+def make_robot_state(name: Optional[str] = None) -> RobotState:
+    robot_name = name if name is not None else str(uuid4())
+    return RobotState(
+        name=robot_name,
+        status=None,
+        task_id=None,
+        unix_millis_time=None,
+        location=None,
+        battery=None,
+        issues=None,
+        mutex_groups=None,
+    )
+
+
+def make_fleet_state(name: Optional[str] = None) -> FleetState:
+    fleet_name = name if name is not None else str(uuid4())
+    return FleetState(name=fleet_name, robots={})
 
 
 def make_fleet_log() -> FleetLog:
     return FleetLog(name=str(uuid4()), log=[], robots={})
+
+
+def make_task_booking_label() -> TaskBookingLabel:
+    return TaskBookingLabel(
+        description=TaskBookingLabelDescription(
+            task_definition_id="multi-delivery",
+            unix_millis_warn_time=1636388400000,
+            pickup="Kitchen",
+            destination="room_203",
+            cart_id="soda",
+        )
+    )
 
 
 def make_task_state(task_id: str = "test_task") -> TaskState:
@@ -407,12 +443,19 @@ def make_task_state(task_id: str = "test_task") -> TaskState:
         """
     )
     sample_task["booking"]["id"] = task_id
+
+    booking_labels = [
+        "dummy_label_1",
+        "dummy_label_2",
+        make_task_booking_label().json(),
+    ]
+    sample_task["booking"]["labels"] = booking_labels
     return TaskState(**sample_task)
 
 
 def make_task_favorite(
     favorite_task_id: str = "default_id",
-) -> ttm.TaskFavoritePydantic:
+) -> TaskFavorite:
     sample_favorite_task = json.loads(
         """
    {
@@ -436,12 +479,13 @@ def make_task_favorite(
             "payload":""
          }
       },
-      "user":"stub"
+      "user":"stub",
+      "task_definition_id": "delivery"
    }
     """
     )
     sample_favorite_task["id"] = favorite_task_id
-    return ttm.TaskFavoritePydantic(**sample_favorite_task)
+    return TaskFavorite(**sample_favorite_task)
 
 
 def make_task_log(task_id: str) -> TaskEventLog:

@@ -1,5 +1,12 @@
 import { Autocomplete, TextField } from '@mui/material';
 import React from 'react';
+import type { TaskBookingLabel } from 'api-client';
+import { TaskDefinition } from '../create-task';
+
+export const DefaultCleanTaskDefinition: TaskDefinition = {
+  task_definition_id: 'clean',
+  task_display_name: 'Clean',
+};
 
 interface GoToPlaceActivity {
   category: string;
@@ -31,6 +38,18 @@ export interface CleanTaskDescription {
       };
     },
   ];
+}
+
+export function makeCleanTaskBookingLabel(
+  task_description: CleanTaskDescription,
+): TaskBookingLabel {
+  return {
+    description: {
+      task_definition_id: 'clean',
+      destination:
+        task_description.phases[0].activity.description.activities[1].description.description.zone,
+    },
+  };
 }
 
 export function isCleanTaskDescriptionValid(taskDescription: CleanTaskDescription): boolean {

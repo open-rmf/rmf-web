@@ -1,7 +1,22 @@
 import { Grid, TextField, useTheme } from '@mui/material';
 import React from 'react';
+import type { TaskBookingLabel } from 'api-client';
+import { TaskDefinition } from '../create-task';
+
+export const DefaultCustomComposeTaskDefinition: TaskDefinition = {
+  task_definition_id: 'custom_compose',
+  task_display_name: 'Custom Compose Task',
+};
 
 export type CustomComposeTaskDescription = string;
+
+export function makeCustomComposeTaskBookingLabel(): TaskBookingLabel {
+  return {
+    description: {
+      task_definition_id: 'custom_compose',
+    },
+  };
+}
 
 const isCustomTaskDescriptionValid = (taskDescription: string): boolean => {
   if (taskDescription.length === 0) {

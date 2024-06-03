@@ -2,6 +2,13 @@ import { isNonEmptyString, isPositiveNumber } from './utils';
 import { Autocomplete, Grid, TextField, useTheme } from '@mui/material';
 import { PositiveIntField } from '../../form-inputs';
 import React from 'react';
+import type { TaskBookingLabel } from 'api-client';
+import { TaskDefinition } from '../create-task';
+
+export const DefaultSimpleDeliveryTaskDefinition: TaskDefinition = {
+  task_definition_id: 'delivery',
+  task_display_name: 'Simple delivery',
+};
 
 interface TaskPlace {
   place: string;
@@ -15,6 +22,19 @@ interface TaskPlace {
 export interface SimpleDeliveryTaskDescription {
   pickup: TaskPlace;
   dropoff: TaskPlace;
+}
+
+export function makeSimpleDeliveryTaskBookingLabel(
+  task_description: SimpleDeliveryTaskDescription,
+): TaskBookingLabel {
+  return {
+    description: {
+      task_definition_id: 'delivery',
+      pickup: task_description.pickup.place,
+      destination: task_description.dropoff.place,
+      cart_id: task_description.pickup.payload.sku,
+    },
+  };
 }
 
 function isTaskPlaceValid(place: TaskPlace): boolean {

@@ -1,6 +1,23 @@
 import { Autocomplete, Grid, TextField, useMediaQuery, useTheme } from '@mui/material';
 import React from 'react';
 import { isNonEmptyString } from './utils';
+import type { TaskBookingLabel } from 'api-client';
+import { TaskDefinition } from '../create-task';
+
+export const DefaultDeliveryPickupTaskDefinition: TaskDefinition = {
+  task_definition_id: 'delivery_pickup',
+  task_display_name: 'Delivery - 1:1',
+};
+
+export const DefaultDeliverySequentialLotPickupTaskDefinition: TaskDefinition = {
+  task_definition_id: 'delivery_sequential_lot_pickup',
+  task_display_name: 'Delivery - Sequential lot pick up',
+};
+
+export const DefaultDeliveryAreaPickupTaskDefinition: TaskDefinition = {
+  task_definition_id: 'delivery_area_pickup',
+  task_display_name: 'Delivery - Area pick up',
+};
 
 export interface LotPickupActivity {
   category: string;
@@ -118,6 +135,36 @@ export interface DeliveryTaskDescription {
     delivery_phase: DeliveryWithCancellationPhase,
     dropoff_phase: CartDropoffPhase,
   ];
+}
+
+export function makeDeliveryTaskBookingLabel(
+  task_description: DeliveryTaskDescription,
+): TaskBookingLabel {
+  const pickupDescription =
+    task_description.phases[0].activity.description.activities[1].description.description;
+  return {
+    description: {
+      task_definition_id: task_description.category,
+      pickup: pickupDescription.pickup_lot,
+      destination: task_description.phases[1].activity.description.activities[0].description,
+      cart_id: pickupDescription.cart_id,
+    },
+  };
+}
+
+export function makeDeliveryCustomTaskBookingLabel(
+  task_description: DeliveryCustomTaskDescription,
+): TaskBookingLabel {
+  const pickupDescription =
+    task_description.phases[0].activity.description.activities[1].description.description;
+  return {
+    description: {
+      task_definition_id: task_description.category,
+      pickup: pickupDescription.pickup_zone,
+      destination: task_description.phases[1].activity.description.activities[0].description,
+      cart_id: pickupDescription.cart_id,
+    },
+  };
 }
 
 const isDeliveryTaskDescriptionValid = (

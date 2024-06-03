@@ -2,6 +2,7 @@ export * from './create-task';
 export * from './types';
 export * from './task-info';
 export * from './task-logs';
+export * from './task-booking-label-utils';
 export * from './task-table';
 export * from './task-timeline';
 export * from './task-table-datagrid';

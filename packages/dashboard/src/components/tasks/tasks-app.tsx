@@ -23,6 +23,7 @@ import {
   Tasks,
   Window,
 } from 'react-components';
+import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
@@ -83,6 +84,7 @@ export const TasksApp = React.memo(
       ref: React.Ref<HTMLDivElement>,
     ) => {
       const rmf = React.useContext(RmfAppContext);
+      const appController = React.useContext(AppControllerContext);
       const [autoRefresh, setAutoRefresh] = React.useState(true);
       const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
       const [selectedPanelIndex, setSelectedPanelIndex] = React.useState(TaskTablePanel.QueueTable);
@@ -93,7 +95,6 @@ export const TasksApp = React.memo(
       const [tasksState, setTasksState] = React.useState<Tasks>({
         isLoading: true,
         data: [],
-        requests: {},
         total: 0,
         page: 1,
         pageSize: 10,
@@ -280,46 +281,18 @@ export const TasksApp = React.memo(
         return allTasks;
       };
 
-      const getPastMonthTaskRequests = async (tasks: TaskState[]) => {
-        if (!rmf) {
-          return {};
-        }
-
-        const taskRequestMap: Record<string, TaskRequest> = {};
-        const allTaskIds: string[] = tasks.map((task) => task.booking.id);
-        const queriesRequired = Math.ceil(allTaskIds.length / QueryLimit);
-        for (let i = 0; i < queriesRequired; i++) {
-          const endingIndex = Math.min(allTaskIds.length, (i + 1) * QueryLimit);
-          const taskIds = allTaskIds.slice(i * QueryLimit, endingIndex);
-          const taskIdsQuery = taskIds.join(',');
-          const taskRequests = (await rmf.tasksApi.queryTaskRequestsTasksRequestsGet(taskIdsQuery))
-            .data;
-
-          let requestIndex = 0;
-          for (const id of taskIds) {
-            if (requestIndex < taskRequests.length && taskRequests[requestIndex]) {
-              taskRequestMap[id] = taskRequests[requestIndex];
-            }
-            ++requestIndex;
-          }
-        }
-        return taskRequestMap;
-      };
-
       const exportTasksToCsv = async (minimal: boolean) => {
         AppEvents.loadingBackdrop.next(true);
         const now = new Date();
         const pastMonthTasks = await getPastMonthTasks(now);
 
         if (!pastMonthTasks || !pastMonthTasks.length) {
+          appController.showAlert('error', 'No tasks found over the past month.');
+          AppEvents.loadingBackdrop.next(false);
           return;
         }
         if (minimal) {
-          // FIXME: Task requests are currently required for parsing pickup and
-          // destination information. Once we start using TaskState.Booking.Labels
-          // to encode these fields, we can skip querying for task requests.
-          const pastMonthTaskRequests = await getPastMonthTaskRequests(pastMonthTasks);
-          exportCsvMinimal(now, pastMonthTasks, pastMonthTaskRequests);
+          exportCsvMinimal(now, pastMonthTasks);
         } else {
           exportCsvFull(now, pastMonthTasks);
         }
@@ -477,7 +450,6 @@ export const TasksApp = React.memo(
             <TaskSummary
               onClose={() => setOpenTaskSummary(false)}
               task={selectedTask ?? undefined}
-              request={selectedTask ? tasksState.requests[selectedTask.booking.id] : undefined}
             />
           )}
           {children}

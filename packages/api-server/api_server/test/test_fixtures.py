@@ -176,6 +176,7 @@ class AppFixture(unittest.TestCase):
             "category": "clean",
             "description": {"type": "", "zone": ""},
             "user": "",
+            "task_definition_id": "",
         }
         return self.client.post(
             "/favorite_tasks",

@@ -13,4 +13,4 @@ class TaskEventLogUpdate(BaseModel):
     type: Literal["fleet_log_update"] = Field(
         ..., description="Indicate that this is a fleet log update"
     )
-    data: fleet_log.FleetState
+    data: fleet_log.FleetLog

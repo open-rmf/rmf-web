@@ -9,7 +9,7 @@ import api_server.models.tortoise_models as ttm
 from api_server.authenticator import user_dep
 from api_server.dependencies import pagination_query
 from api_server.models import Pagination, Permission, User
-from api_server.repositories.rmf import RmfRepository, rmf_repo_dep
+from api_server.repositories.rmf import RmfRepository
 
 
 class PostUsers(BaseModel):
@@ -49,7 +49,7 @@ router = APIRouter(tags=["Admin"], dependencies=[Depends(admin_dep)])
 
 @router.get("/users", response_model=List[str])
 async def get_users(
-    rmf_repo: RmfRepository = Depends(rmf_repo_dep),
+    rmf_repo: RmfRepository = Depends(RmfRepository),
     pagination: Pagination = Depends(pagination_query),
     username: Optional[str] = Query(
         None, description="filters username that starts with the value"

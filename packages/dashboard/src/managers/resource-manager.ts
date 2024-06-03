@@ -2,7 +2,13 @@ import Debug from 'debug';
 import { DispenserResourceManager, RawDispenserResource } from './resource-manager-dispensers';
 import { LogoResource, LogoResourceManager } from './resource-manager-logos';
 import { RobotResource, RobotResourceManager } from './resource-manager-robots';
-import { TaskDefinition } from 'react-components';
+import {
+  DefaultPatrolTaskDefinition,
+  DefaultSimpleDeliveryTaskDefinition,
+  DefaultCleanTaskDefinition,
+  TaskDefinition,
+  DefaultCustomComposeTaskDefinition,
+} from 'react-components';
 
 const debug = Debug('ResourceManager');
 const ResourceFile = 'resources/main.json';
@@ -19,7 +25,6 @@ export interface ResourceConfigurationsType {
   attributionPrefix?: string;
   cartIds?: string[];
   loggedInDisplayLevel?: string;
-  emergencyLots?: string[];
   supportedTasks?: TaskDefinition[];
 }
 
@@ -35,7 +40,6 @@ export default class ResourceManager {
   attributionPrefix?: string;
   cartIds?: string[];
   loggedInDisplayLevel?: string;
-  emergencyLots?: string[];
   supportedTasks?: TaskDefinition[];
 
   /**
@@ -76,11 +80,11 @@ export default class ResourceManager {
     this.attributionPrefix = resources.attributionPrefix || 'OSRC-SG';
     this.cartIds = resources.cartIds || [];
     this.loggedInDisplayLevel = resources.loggedInDisplayLevel;
-    this.emergencyLots = resources.emergencyLots || [];
     this.supportedTasks = resources.supportedTasks || [
-      { name: 'patrol', nameRemap: undefined },
-      { name: 'delivery', nameRemap: undefined },
-      { name: 'clean', nameRemap: undefined },
+      DefaultPatrolTaskDefinition,
+      DefaultSimpleDeliveryTaskDefinition,
+      DefaultCleanTaskDefinition,
+      DefaultCustomComposeTaskDefinition,
     ];
   }
 }

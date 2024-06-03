@@ -35,37 +35,59 @@ import {
   useTheme,
 } from '@mui/material';
 import { DatePicker, TimePicker, DateTimePicker } from '@mui/x-date-pickers';
-import type { TaskFavoritePydantic as TaskFavorite, TaskRequest } from 'api-client';
+import type { TaskBookingLabel, TaskFavorite, TaskRequest } from 'api-client';
 import React from 'react';
 import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import {
-  makeDefaultCleanTaskDescription,
   CleanTaskDescription,
   CleanTaskForm,
+  DefaultCleanTaskDefinition,
+  makeCleanTaskBookingLabel,
+  makeDefaultCleanTaskDescription,
 } from './types/clean';
-import { CustomComposeTaskDescription, CustomComposeTaskForm } from './types/custom-compose';
 import {
+  DefaultCustomComposeTaskDefinition,
+  CustomComposeTaskDescription,
+  CustomComposeTaskForm,
+  makeCustomComposeTaskBookingLabel,
+} from './types/custom-compose';
+import {
+  DefaultSimpleDeliveryTaskDefinition,
   SimpleDeliveryTaskDescription,
   SimpleDeliveryTaskForm,
   makeDefaultSimpleDeliveryTaskDescription,
+  makeSimpleDeliveryTaskBookingLabel,
 } from './types/delivery-simple';
 import {
+  DefaultDeliveryPickupTaskDefinition,
+  DefaultDeliveryAreaPickupTaskDefinition,
+  DefaultDeliverySequentialLotPickupTaskDefinition,
   DeliveryCustomTaskForm,
   DeliveryCustomTaskDescription,
   DeliveryTaskDescription,
   DeliveryTaskForm,
   makeDefaultDeliveryCustomTaskDescription,
   makeDefaultDeliveryTaskDescription,
+  makeDeliveryCustomTaskBookingLabel,
+  makeDeliveryTaskBookingLabel,
 } from './types/delivery-custom';
-import { makeDefaultPatrolTask, PatrolTaskDescription, PatrolTaskForm } from './types/patrol';
+import {
+  makeDefaultPatrolTask,
+  makePatrolTaskBookingLabel,
+  DefaultPatrolTaskDefinition,
+  PatrolTaskDescription,
+  PatrolTaskForm,
+} from './types/patrol';
+import { serializeTaskBookingLabel } from './task-booking-label-utils';
 
-// FIXME: temporary task definition workaround, before we start using proper
-// schemas.
 export interface TaskDefinition {
-  name: string;
-  nameRemap: string | undefined;
+  task_definition_id: string;
+  task_display_name: string;
 }
+
+// If no task definition id is found in a past task (scheduled or favorite)
+const DefaultTaskDefinitionId = DefaultCustomComposeTaskDefinition.task_definition_id;
 
 type TaskDescription =
   | DeliveryTaskDescription
@@ -189,25 +211,25 @@ function defaultTaskDescription(taskName: string): TaskDescription | undefined {
   }
 }
 
-function taskRequestCategory(taskName: string): string | undefined {
-  switch (taskName) {
-    case 'patrol':
-    case 'delivery':
-      return taskName;
-    case 'delivery_pickup':
-    case 'delivery_sequential_lot_pickup':
-    case 'delivery_area_pickup':
-    case 'clean':
-    case 'custom_compose':
+function taskRequestCategory(task_definition_id: string): string | undefined {
+  switch (task_definition_id) {
+    case DefaultPatrolTaskDefinition.task_definition_id:
+    case DefaultSimpleDeliveryTaskDefinition.task_definition_id:
+      return task_definition_id;
+    case DefaultDeliveryPickupTaskDefinition.task_definition_id:
+    case DefaultDeliverySequentialLotPickupTaskDefinition.task_definition_id:
+    case DefaultDeliveryAreaPickupTaskDefinition.task_definition_id:
+    case DefaultCleanTaskDefinition.task_definition_id:
+    case DefaultCustomComposeTaskDefinition.task_definition_id:
       return 'compose';
     default:
       return undefined;
   }
 }
 
-function defaultTaskRequest(taskName: string): TaskRequest {
-  const category = taskRequestCategory(taskName);
-  const description = defaultTaskDescription(taskName);
+function defaultTaskRequest(task_definition_id: string): TaskRequest {
+  const category = taskRequestCategory(task_definition_id);
+  const description = defaultTaskDescription(task_definition_id);
 
   return {
     category: category ?? 'compose',
@@ -291,6 +313,7 @@ const defaultFavoriteTask = (): TaskFavorite => {
     unix_millis_earliest_start_time: 0,
     priority: { type: 'binary', value: 0 },
     user: '',
+    task_definition_id: DefaultTaskDefinitionId,
   };
 };
 
@@ -306,7 +329,6 @@ export interface CreateTaskFormProps
   patrolWaypoints?: string[];
   pickupZones?: string[];
   cartIds?: string[];
-  emergencyLots?: string[];
   pickupPoints?: Record<string, string>;
   dropoffPoints?: Record<string, string>;
   favoritesTasks?: TaskFavorite[];
@@ -328,9 +350,10 @@ export interface CreateTaskFormProps
 export function CreateTaskForm({
   user,
   supportedTasks = [
-    { name: 'patrol', nameRemap: undefined },
-    { name: 'delivery', nameRemap: undefined },
-    { name: 'clean', nameRemap: undefined },
+    DefaultPatrolTaskDefinition,
+    DefaultSimpleDeliveryTaskDefinition,
+    DefaultCleanTaskDefinition,
+    DefaultCustomComposeTaskDefinition,
   ],
   /* eslint-disable @typescript-eslint/no-unused-vars */
   cleaningZones = [],
@@ -338,7 +361,6 @@ export function CreateTaskForm({
   patrolWaypoints = [],
   pickupZones = [],
   cartIds = [],
-  emergencyLots = [],
   pickupPoints = {},
   dropoffPoints = {},
   favoritesTasks = [],
@@ -372,11 +394,15 @@ export function CreateTaskForm({
   const [favoriteTaskTitleError, setFavoriteTaskTitleError] = React.useState(false);
   const [savingFavoriteTask, setSavingFavoriteTask] = React.useState(false);
 
-  const [taskType, setTaskType] = React.useState<string | undefined>(undefined);
-  const [taskRequest, setTaskRequest] = React.useState<TaskRequest>(() =>
-    requestTask ?? (supportedTasks && supportedTasks.length > 0)
-      ? defaultTaskRequest(supportedTasks[0].name)
-      : defaultTaskRequest('patrol'),
+  const [taskDefinitionId, setTaskDefinitionId] = React.useState<string>(
+    supportedTasks.length > 0 ? supportedTasks[0].task_definition_id : DefaultTaskDefinitionId,
+  );
+  const [taskRequest, setTaskRequest] = React.useState<TaskRequest>(
+    () =>
+      requestTask ??
+      defaultTaskRequest(
+        supportedTasks.length > 0 ? supportedTasks[0].task_definition_id : DefaultTaskDefinitionId,
+      ),
   );
 
   const [submitting, setSubmitting] = React.useState(false);
@@ -501,6 +527,8 @@ export function CreateTaskForm({
               desc.phases[0].activity.description.activities[1].description.category =
                 taskRequest.description.category;
               handleTaskDescriptionChange('compose', desc);
+              const pickupPerformAction =
+                desc.phases[0].activity.description.activities[1].description.description;
             }}
             allowSubmit={allowSubmit}
           />
@@ -518,6 +546,8 @@ export function CreateTaskForm({
               desc.phases[0].activity.description.activities[1].description.category =
                 taskRequest.description.category;
               handleTaskDescriptionChange('compose', desc);
+              const pickupPerformAction =
+                desc.phases[0].activity.description.activities[1].description.description;
             }}
             allowSubmit={allowSubmit}
           />
@@ -528,7 +558,7 @@ export function CreateTaskForm({
   };
   const handleTaskTypeChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     const newType = ev.target.value;
-    setTaskType(newType);
+    setTaskDefinitionId(newType);
 
     if (newType === 'custom_compose') {
       taskRequest.category = 'custom_compose';
@@ -565,7 +595,7 @@ export function CreateTaskForm({
     request.requester = requester;
     request.unix_millis_request_time = Date.now();
 
-    if (taskType === 'custom_compose') {
+    if (taskDefinitionId === 'custom_compose') {
       try {
         const obj = JSON.parse(request.description);
         request.category = 'compose';
@@ -575,6 +605,46 @@ export function CreateTaskForm({
         onFail && onFail(e as Error, [request]);
         return;
       }
+    }
+
+    // Generate booking label for each task
+    try {
+      let requestBookingLabel: TaskBookingLabel | null = null;
+      switch (taskDefinitionId) {
+        case 'delivery_pickup':
+          requestBookingLabel = makeDeliveryTaskBookingLabel(request.description);
+          break;
+        case 'delivery_sequential_lot_pickup':
+        case 'delivery_area_pickup':
+          requestBookingLabel = makeDeliveryCustomTaskBookingLabel(request.description);
+          break;
+        case 'patrol':
+          requestBookingLabel = makePatrolTaskBookingLabel(request.description);
+          break;
+        case 'delivery':
+          requestBookingLabel = makeSimpleDeliveryTaskBookingLabel(request.description);
+        case 'clean':
+          requestBookingLabel = makeCleanTaskBookingLabel(request.description);
+        case 'custom_compose':
+          requestBookingLabel = makeCustomComposeTaskBookingLabel();
+          break;
+      }
+
+      if (!requestBookingLabel) {
+        const error = Error(
+          `Failed to generate booking label for task request of definition ID: ${taskDefinitionId}`,
+        );
+        onFail && onFail(error, [request]);
+        return;
+      }
+
+      const labelString = serializeTaskBookingLabel(requestBookingLabel);
+      if (labelString) {
+        request.labels = [labelString];
+      }
+      console.log(`labels: ${request.labels}`);
+    } catch (e) {
+      console.error('Failed to generate string for task request label');
     }
 
     try {
@@ -622,7 +692,11 @@ export function CreateTaskForm({
     }
     try {
       setSavingFavoriteTask(true);
-      await submitFavoriteTask(favoriteTaskBuffer);
+
+      const favoriteTask = favoriteTaskBuffer;
+      favoriteTask.task_definition_id = taskDefinitionId ?? DefaultTaskDefinitionId;
+
+      await submitFavoriteTask(favoriteTask);
       setSavingFavoriteTask(false);
       onSuccessFavoriteTask &&
         onSuccessFavoriteTask(
@@ -652,7 +726,7 @@ export function CreateTaskForm({
 
       setTaskRequest(
         supportedTasks && supportedTasks.length > 0
-          ? defaultTaskRequest(supportedTasks[0].name)
+          ? defaultTaskRequest(supportedTasks[0].task_definition_id)
           : defaultTaskRequest('patrol'),
       );
       setOpenFavoriteDialog(false);
@@ -661,69 +735,6 @@ export function CreateTaskForm({
     } catch (e) {
       setDeletingFavoriteTask(false);
       onFailFavoriteTask && onFailFavoriteTask(e as Error, favoriteTaskBuffer);
-    }
-  };
-
-  // Order the menu items based on the supported tasks
-  const renderMenuItem = (taskDefinition: TaskDefinition) => {
-    const taskName = taskDefinition.name;
-    const remappedName = taskDefinition.nameRemap;
-    switch (taskName) {
-      case 'patrol':
-        return (
-          <MenuItem value={taskName} disabled={!patrolWaypoints || patrolWaypoints.length === 0}>
-            {remappedName ?? 'Patrol'}
-          </MenuItem>
-        );
-      case 'delivery':
-        return (
-          <MenuItem
-            value={taskName}
-            disabled={
-              Object.keys(pickupPoints).length === 0 || Object.keys(dropoffPoints).length === 0
-            }
-          >
-            {remappedName ?? 'Delivery'}
-          </MenuItem>
-        );
-      case 'clean':
-        return (
-          <MenuItem value={taskName} disabled={!cleaningZones || cleaningZones.length === 0}>
-            {remappedName ?? 'Clean'}
-          </MenuItem>
-        );
-      case 'custom_compose':
-        return <MenuItem value={taskName}>{remappedName ?? 'Custom Compose Task'}</MenuItem>;
-      case 'delivery_pickup':
-        return (
-          <MenuItem
-            value={taskName}
-            disabled={
-              Object.keys(pickupPoints).length === 0 || Object.keys(dropoffPoints).length === 0
-            }
-            sx={{
-              '& .MuiMenu-list': {
-                fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-              },
-            }}
-          >
-            {remappedName ?? 'Delivery - 1:1'}
-          </MenuItem>
-        );
-      case 'delivery_sequential_lot_pickup':
-        return (
-          <MenuItem value={taskName} disabled={Object.keys(dropoffPoints).length === 0}>
-            {remappedName ?? 'Delivery - Sequential lot pick up'}
-          </MenuItem>
-        );
-      case 'delivery_area_pickup':
-        return (
-          <MenuItem value={taskName} disabled={Object.keys(dropoffPoints).length === 0}>
-            {remappedName ?? 'Delivery - Area pick up'}
-          </MenuItem>
-        );
-      default:
-        return undefined;
     }
   };
 
@@ -769,6 +780,7 @@ export function CreateTaskForm({
                           unix_millis_earliest_start_time: 0,
                           priority: favoriteTask.priority,
                         });
+                        setTaskDefinitionId(favoriteTask.task_definition_id);
                       }}
                     />
                   );
@@ -805,10 +817,13 @@ export function CreateTaskForm({
                       }}
                       InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
                     >
-                      {supportedTasks &&
-                        supportedTasks.map((taskDefinition) => {
-                          return renderMenuItem(taskDefinition);
-                        })}
+                      {supportedTasks.map((taskDefinition) => {
+                        return (
+                          <MenuItem value={taskDefinition.task_definition_id}>
+                            {taskDefinition.task_display_name}
+                          </MenuItem>
+                        );
+                      })}
                     </TextField>
                   </Grid>
                   <Grid item xs={isScreenHeightLessThan800 ? 6 : 7}>
@@ -899,7 +914,7 @@ export function CreateTaskForm({
                       setOpenFavoriteDialog(true);
                     }}
                     style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }}
-                    disabled={taskType === 'custom_compose'}
+                    disabled={taskDefinitionId === 'custom_compose'}
                   >
                     {callToUpdateFavoriteTask ? `Confirm edits` : 'Save as a favorite task'}
                   </Button>
