@@ -709,6 +709,8 @@ export default {
       get: {
         tags: ['Tasks'],
         summary: 'Query Task States',
+        description:
+          'Note that sorting by `pickup` and `destination` is mutually exclusive and sorting\nby either of them will filter only tasks which has those labels.',
         operationId: 'query_task_states_tasks_get',
         parameters: [
           {
@@ -745,23 +747,27 @@ export default {
             in: 'query',
           },
           {
-            description: 'comma separated list of pickup names',
+            description: 'comma separated list of pickup names. [deprecated] use `label` instead',
             required: false,
+            deprecated: true,
             schema: {
               title: 'Pickup',
               type: 'string',
-              description: 'comma separated list of pickup names',
+              description: 'comma separated list of pickup names. [deprecated] use `label` instead',
             },
             name: 'pickup',
             in: 'query',
           },
           {
-            description: 'comma separated list of destination names',
+            description:
+              'comma separated list of destination names, [deprecated] use `label` instead',
             required: false,
+            deprecated: true,
             schema: {
               title: 'Destination',
               type: 'string',
-              description: 'comma separated list of destination names',
+              description:
+                'comma separated list of destination names, [deprecated] use `label` instead',
             },
             name: 'destination',
             in: 'query',
@@ -786,6 +792,19 @@ export default {
               description: 'comma separated list of statuses',
             },
             name: 'status',
+            in: 'query',
+          },
+          {
+            description:
+              'comma separated list of labels, each item must be in the form <key>=<value>, multiple items will filter tasks with all the labels',
+            required: false,
+            schema: {
+              title: 'Label',
+              type: 'string',
+              description:
+                'comma separated list of labels, each item must be in the form <key>=<value>, multiple items will filter tasks with all the labels',
+            },
+            name: 'label',
             in: 'query',
           },
           {
@@ -3675,23 +3694,17 @@ export default {
         title: 'TaskBookingLabel',
         required: ['description'],
         type: 'object',
-        properties: { description: { $ref: '#/components/schemas/TaskBookingLabelDescription' } },
-        description:
-          'This label is to be populated by any frontend during a task dispatch, by\nbeing added to TaskRequest.labels, which in turn populates\nTaskState.booking.labels, and can be used to display relevant information\nneeded for any frontends.',
-      },
-      TaskBookingLabelDescription: {
-        title: 'TaskBookingLabelDescription',
-        required: ['task_definition_id'],
-        type: 'object',
         properties: {
-          task_definition_id: { title: 'Task Definition Id', type: 'string' },
-          unix_millis_warn_time: { title: 'Unix Millis Warn Time', type: 'integer' },
-          pickup: { title: 'Pickup', type: 'string' },
-          destination: { title: 'Destination', type: 'string' },
-          cart_id: { title: 'Cart Id', type: 'string' },
+          description: {
+            title: 'Description',
+            type: 'object',
+            additionalProperties: {
+              anyOf: [{ type: 'string' }, { type: 'integer' }, { type: 'number' }],
+            },
+          },
         },
         description:
-          'This description holds several fields that could be useful for frontend\ndashboards when dispatching a task, to then be identified or rendered\naccordingly back on the same frontend.',
+          'This label is to be populated by any frontend during a task dispatch, by\nbeing added to TaskRequest.labels, which in turn populates\nTaskState.booking.labels, and can be used to display relevant information\nneeded for any frontends.',
       },
       TaskCancelResponse: {
         title: 'TaskCancelResponse',
