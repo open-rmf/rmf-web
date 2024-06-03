@@ -68,7 +68,10 @@ export class BaseAPI {
  * @extends {Error}
  */
 export class RequiredError extends Error {
-  constructor(public field: string, msg?: string) {
+  constructor(
+    public field: string,
+    msg?: string,
+  ) {
     super(msg);
     this.name = 'RequiredError';
   }
