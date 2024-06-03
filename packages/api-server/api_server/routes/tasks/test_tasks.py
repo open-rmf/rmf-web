@@ -1,6 +1,8 @@
 from unittest.mock import patch
 from uuid import uuid4
 
+import pydantic
+
 from api_server import models as mdl
 from api_server.rmf_io import tasks_service
 from api_server.test import (
@@ -15,12 +17,27 @@ class TestTasksRoute(AppFixture):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        booking_labels = make_task_booking_label()
+        booking_labels.description["test_single"] = ""
+        booking_labels.description["test_single_2"] = ""
+        booking_labels.description["test_kv"] = "value"
+        booking_labels.description["test_label_sort"] = "zzz"
+        booking_labels.description["test_label_sort_2"] = "aaa"
+        booking_labels.description["test_label_sort_3"] = "bbb"
         booking_labels_2 = make_task_booking_label()
-        booking_labels_2.description["pickup"] = "AAA"
-        booking_labels_2.description["destination"] = "BBB"
+        booking_labels_2.description["test_label_sort"] = "aaa"
+        booking_labels_2.description["test_label_sort_3"] = "bbb"
+
         task_ids = [uuid4(), uuid4()]
         cls.task_states = [
-            make_task_state(task_id=f"test_{task_ids[0]}"),
+            make_task_state(
+                task_id=f"test_{task_ids[0]}",
+                booking_labels=[
+                    "dummy_label_1",
+                    "dummy_label_2",
+                    booking_labels.json(),
+                ],
+            ),
             make_task_state(
                 task_id=f"test_{task_ids[1]}",
                 booking_labels=[booking_labels_2.json()],
@@ -53,21 +70,73 @@ class TestTasksRoute(AppFixture):
         self.assertEqual(1, len(results))
         self.assertEqual(self.task_states[0].booking.id, results[0]["booking"]["id"])
 
-    def test_query_task_states_by_label(self):
-        test_cases = {
-            "pickup": "Kitchen",
-            "destination": "room_203",
-        }
-        for k, v in test_cases.items():
+        test_cases = [
+            ({"pickup": "Kitchen"}, [self.task_states[0].booking.id]),
+            ({"destination": "room_203"}, [self.task_states[0].booking.id]),
+            (
+                {"pickup": "Kitchen", "destination": "room_203"},
+                [self.task_states[0].booking.id],
+            ),
+            (
+                {"pickup": "Kitchen", "destination": "room_202"},
+                [],
+            ),
+        ]
+        for tc in test_cases:
+            q = "&".join(f"{k}={v}" for k, v in tc[0].items())
             resp = self.client.get(
-                f"/tasks?task_id={self.task_states[0].booking.id}&{k}={v}"
+                f"/tasks?task_id={self.task_states[0].booking.id}&{q}"
             )
-            self.assertEqual(200, resp.status_code)
+            self.assertEqual(200, resp.status_code, tc)
             results = resp.json()
-            self.assertEqual(1, len(results))
-            self.assertEqual(
-                self.task_states[0].booking.id, results[0]["booking"]["id"]
-            )
+            self.assertEqual(len(tc[1]), len(results), tc)
+            for a, b in zip(tc[1], results):
+                self.assertEqual(a, b["booking"]["id"], tc)
+
+    def test_query_task_states_filter_by_label(self):
+        resp = self.client.get("/tasks?label=not_existing")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(0, len(results))
+
+        resp = self.client.get("/tasks?label=test_single")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(1, len(results))
+        self.assertEqual(self.task_states[0].booking.id, results[0].booking.id)
+
+        resp = self.client.get("/tasks?label=test_single=wrong_value")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(0, len(results))
+
+        resp = self.client.get("/tasks?label=test_single_2=")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(1, len(results))
+        self.assertEqual(self.task_states[0].booking.id, results[0].booking.id)
+
+        resp = self.client.get("/tasks?label=test_kv=value")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(1, len(results))
+        self.assertEqual(self.task_states[0].booking.id, results[0].booking.id)
+
+        resp = self.client.get("/tasks?label=test_kv=wrong_value")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(0, len(results))
+
+        resp = self.client.get("/tasks?label=test_single,test_kv=value")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(1, len(results))
+        self.assertEqual(self.task_states[0].booking.id, results[0].booking.id)
+
+        resp = self.client.get("/tasks?label=test_single,test_kv=wrong_value")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(0, len(results))
 
     # FIXME(koonpeng): This does not work because of tortoise-orm limitations
     # def test_query_task_states_sort_by_label(self):

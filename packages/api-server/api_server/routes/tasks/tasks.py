@@ -1,8 +1,10 @@
 from datetime import datetime
 from typing import List, Optional, Tuple, cast
 
+import tortoise.functions as tfuncs
 from fastapi import Body, Depends, HTTPException, Path, Query
 from rx import operators as rxops
+from tortoise.expressions import Q
 
 from api_server import models as mdl
 from api_server.dependencies import (
@@ -99,10 +101,14 @@ async def query_task_states(
         None, description="comma separated list of requester names"
     ),
     pickup: Optional[str] = Query(
-        None, description="comma separated list of pickup names", deprecated=True
+        None,
+        description="comma separated list of pickup names. [deprecated] use `label` instead",
+        deprecated=True,
     ),
     destination: Optional[str] = Query(
-        None, description="comma separated list of destination names", deprecated=True
+        None,
+        description="comma separated list of destination names, [deprecated] use `label` instead",
+        deprecated=True,
     ),
     assigned_to: Optional[str] = Query(
         None, description="comma separated list of assigned robot names"
@@ -114,6 +120,11 @@ async def query_task_states(
         finish_time_between_query
     ),
     status: Optional[str] = Query(None, description="comma separated list of statuses"),
+    label: str
+    | None = Query(
+        None,
+        description="comma separated list of labels, each item must be in the form <key>=<value>, multiple items will filter tasks with all the labels",
+    ),
     pagination: mdl.Pagination = Depends(pagination_query),
 ):
     """
@@ -145,41 +156,52 @@ async def query_task_states(
             if status_string not in valid_values:
                 continue
             filters["status__in"].append(mdl.Status(status_string))
+    query = DbTaskState.filter(**filters)
 
-    # NOTE: in order to perform filtering based on the values in labels, a
-    # filter on the label_name will need to be applied as well as a filter on
-    # the label_value.
+    label_filters = {}
     if pickup is not None:
-        filters["labels__label_name"] = "pickup"
-        filters["labels__label_value_str__in"] = pickup.split(",")
+        label_filters["label_filter_pickup"] = tfuncs.Count(
+            "id_",
+            _filter=Q(
+                labels__label_name="pickup",
+                labels__label_value_str__in=pickup.split(","),
+            ),
+        )
     if destination is not None:
-        filters["labels__label_name"] = "destination"
-        filters["labels__label_value_str__in"] = destination.split(",")
+        label_filters["label_filter_destination"] = tfuncs.Count(
+            "id_",
+            _filter=Q(
+                labels__label_name="destination",
+                labels__label_value_str__in=destination.split(","),
+            ),
+        )
+    if label is not None:
+        labels = mdl.Labels.from_strings(label.split(","))
+        label_filters.update(
+            {
+                f"label_filter_{k}": tfuncs.Count(
+                    "id_", _filter=Q(labels__label_name=k, labels__label_value_str=v)
+                )
+                for k, v in labels.__root__.items()
+            }
+        )
+
+    if len(label_filters) > 0:
+        filter_gt = {f"{f}__gt": 0 for f in label_filters}
+        query = (
+            query.annotate(**label_filters)
+            .group_by(
+                "labels__state_id"
+            )  # need to group by a related field to make tortoise-orm generate joins
+            .filter(**filter_gt)
+        )
 
     # NOTE: In order to perform sorting based on the values in labels, a filter
     # on the label_name has to be performed first. A side-effect of this would
     # be that states that do not contain this field will not be returned.
     #
-    # tortoise-orm lacks too many features to implement a proper sort logic, for
-    # reference, these are some solutions in sql
-    #
-    # Solution 1 (can't do multiple joins):
-    # SELECT t.*
-    # FROM tasks t
-    # LEFT JOIN tasklabels tl_foo ON t.task_id = tl_foo.task_id AND tl_foo.label_name = 'foo'
-    # LEFT JOIN tasklabels tl_bar ON t.task_id = tl_bar.task_id AND tl_bar.label_name = 'bar'
-    # ORDER BY
-    # tl_foo.label_value,  -- Primary sort by 'foo' label
-    # tl_bar.label_value;  -- Secondary sort by 'bar' label
-    #
-    # Solution 2 (can't do MAX on CASE WHEN):
-    # SELECT t.task_id,
-    # MAX(CASE WHEN tl.label_name = 'foo' THEN tl.label_value END) AS foo_value,
-    # MAX(CASE WHEN tl.label_name = 'bar' THEN tl.label_value END) AS bar_value
-    # FROM tasks t
-    # LEFT JOIN tasklabels tl ON t.task_id = tl.task_id
-    # GROUP BY t.task_id
-    # ORDER BY foo_value, bar_value;
+    # The version of tortoise-orm used has some bugs which blocks sorting by
+    # labels.
     if pagination.order_by is not None:
         labels_fields = ["pickup", "destination"]
         new_order = pagination.order_by
@@ -192,7 +214,7 @@ async def query_task_states(
                 break
         pagination.order_by = new_order
 
-    return await task_repo.query_task_states(DbTaskState.filter(**filters), pagination)
+    return await task_repo.query_task_states(query, pagination)
 
 
 @router.get("/{task_id}/state", response_model=mdl.TaskState)
