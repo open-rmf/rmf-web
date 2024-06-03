@@ -147,6 +147,7 @@ class TaskRepository:
                 query = add_pagination(
                     query,
                     pagination,
+                    # TODO(koonpeng): remove this mapping after `pickup` and `destination` query is removed.
                     {"pickup": "label=pickup", "destination": "label=destination"},
                     group_by="labels__state_id",
                 )
