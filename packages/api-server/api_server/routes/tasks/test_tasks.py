@@ -106,6 +106,12 @@ class TestTasksRoute(AppFixture):
         results = pydantic.TypeAdapter(list[TaskState]).validate_json(resp.content)
         self.assertEqual(0, len(results))
 
+        resp = self.client.get("/tasks?label=test_single,test_kv=value")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.TypeAdapter(list[TaskState]).validate_json(resp.content)
+        self.assertEqual(1, len(results))
+        self.assertEqual(self.task_states[0].booking.id, results[0].booking.id)
+
         resp = self.client.get("/tasks?label=test_single,test_kv=wrong_value")
         self.assertEqual(200, resp.status_code)
         results = pydantic.TypeAdapter(list[TaskState]).validate_json(resp.content)
