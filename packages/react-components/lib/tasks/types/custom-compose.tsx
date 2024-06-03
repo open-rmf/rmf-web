@@ -4,8 +4,9 @@ import type { TaskBookingLabel } from 'api-client';
 import { TaskDefinition } from '../create-task';
 
 export const DefaultCustomComposeTaskDefinition: TaskDefinition = {
-  task_definition_id: 'custom_compose',
-  task_display_name: 'Custom Compose Task',
+  taskDefinitionId: 'custom_compose',
+  taskDisplayName: 'Custom Compose Task',
+  requestCategory: 'compose',
 };
 
 export type CustomComposeTaskDescription = string;
@@ -13,9 +14,13 @@ export type CustomComposeTaskDescription = string;
 export function makeCustomComposeTaskBookingLabel(): TaskBookingLabel {
   return {
     description: {
-      task_definition_id: 'custom_compose',
+      task_definition_id: DefaultCustomComposeTaskDefinition.taskDefinitionId,
     },
   };
+}
+
+export function makeCustomComposeTaskShortDescription(desc: CustomComposeTaskDescription): string {
+  return desc;
 }
 
 const isCustomTaskDescriptionValid = (taskDescription: string): boolean => {

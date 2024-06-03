@@ -3,9 +3,10 @@ import React from 'react';
 import type { TaskBookingLabel } from 'api-client';
 import { TaskDefinition } from '../create-task';
 
-export const DefaultCleanTaskDefinition: TaskDefinition = {
-  task_definition_id: 'clean',
-  task_display_name: 'Clean',
+export const DefaultComposeCleanTaskDefinition: TaskDefinition = {
+  taskDefinitionId: 'compose-clean',
+  taskDisplayName: 'Clean',
+  requestCategory: 'compose',
 };
 
 interface GoToPlaceActivity {
@@ -26,7 +27,7 @@ interface CleanActivity {
   };
 }
 
-export interface CleanTaskDescription {
+export interface ComposeCleanTaskDescription {
   category: string;
   phases: [
     cleanPhase: {
@@ -40,19 +41,21 @@ export interface CleanTaskDescription {
   ];
 }
 
-export function makeCleanTaskBookingLabel(
-  task_description: CleanTaskDescription,
+export function makeComposeCleanTaskBookingLabel(
+  task_description: ComposeCleanTaskDescription,
 ): TaskBookingLabel {
   return {
     description: {
-      task_definition_id: 'clean',
+      task_definition_id: DefaultComposeCleanTaskDefinition.taskDefinitionId,
       destination:
         task_description.phases[0].activity.description.activities[1].description.description.zone,
     },
   };
 }
 
-export function isCleanTaskDescriptionValid(taskDescription: CleanTaskDescription): boolean {
+export function isComposeCleanTaskDescriptionValid(
+  taskDescription: ComposeCleanTaskDescription,
+): boolean {
   const goToPlaceActivity = taskDescription.phases[0].activity.description.activities[0];
   const cleanActivity = taskDescription.phases[0].activity.description.activities[1];
   return (
@@ -62,7 +65,7 @@ export function isCleanTaskDescriptionValid(taskDescription: CleanTaskDescriptio
   );
 }
 
-export function makeDefaultCleanTaskDescription(): CleanTaskDescription {
+export function makeDefaultComposeCleanTaskDescription(): ComposeCleanTaskDescription {
   return {
     category: 'clean',
     phases: [
@@ -95,21 +98,31 @@ export function makeDefaultCleanTaskDescription(): CleanTaskDescription {
   };
 }
 
-interface CleanTaskFormProps {
-  taskDesc: CleanTaskDescription;
+export function makeComposeCleanTaskShortDescription(
+  desc: ComposeCleanTaskDescription,
+  displayName: string | undefined,
+): string {
+  const cleanActivity = desc.phases[0].activity.description.activities[1];
+  return `[${displayName ?? DefaultComposeCleanTaskDefinition.taskDisplayName}] zone [${
+    cleanActivity.description.description.zone
+  }]`;
+}
+
+interface ComposeCleanTaskFormProps {
+  taskDesc: ComposeCleanTaskDescription;
   cleaningZones: string[];
-  onChange(cleanTaskDescription: CleanTaskDescription): void;
+  onChange(cleanTaskDescription: ComposeCleanTaskDescription): void;
   allowSubmit(allow: boolean): void;
 }
 
-export function CleanTaskForm({
+export function ComposeCleanTaskForm({
   taskDesc,
   cleaningZones,
   onChange,
   allowSubmit,
-}: CleanTaskFormProps): React.JSX.Element {
-  const onInputChange = (desc: CleanTaskDescription) => {
-    allowSubmit(isCleanTaskDescriptionValid(desc));
+}: ComposeCleanTaskFormProps): React.JSX.Element {
+  const onInputChange = (desc: ComposeCleanTaskDescription) => {
+    allowSubmit(isComposeCleanTaskDescriptionValid(desc));
     onChange(desc);
   };
 

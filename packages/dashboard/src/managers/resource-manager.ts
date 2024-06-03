@@ -4,8 +4,8 @@ import { LogoResource, LogoResourceManager } from './resource-manager-logos';
 import { RobotResource, RobotResourceManager } from './resource-manager-robots';
 import {
   DefaultPatrolTaskDefinition,
-  DefaultSimpleDeliveryTaskDefinition,
-  DefaultCleanTaskDefinition,
+  DefaultDeliveryTaskDefinition,
+  DefaultComposeCleanTaskDefinition,
   TaskDefinition,
   DefaultCustomComposeTaskDefinition,
 } from 'react-components';
@@ -82,8 +82,8 @@ export default class ResourceManager {
     this.loggedInDisplayLevel = resources.loggedInDisplayLevel;
     this.supportedTasks = resources.supportedTasks || [
       DefaultPatrolTaskDefinition,
-      DefaultSimpleDeliveryTaskDefinition,
-      DefaultCleanTaskDefinition,
+      DefaultDeliveryTaskDefinition,
+      DefaultComposeCleanTaskDefinition,
       DefaultCustomComposeTaskDefinition,
     ];
   }

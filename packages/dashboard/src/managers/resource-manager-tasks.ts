@@ -7,7 +7,7 @@ export class TaskResourceManager {
     this.supportedTasks = {};
     if (supportedTasks) {
       for (const t of supportedTasks) {
-        this.supportedTasks[t.task_definition_id] = t;
+        this.supportedTasks[t.taskDefinitionId] = t;
       }
     }
   }

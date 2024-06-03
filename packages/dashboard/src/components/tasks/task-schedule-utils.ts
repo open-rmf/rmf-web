@@ -173,8 +173,8 @@ export const getScheduledTaskTitle = (
   let remappedTaskName: string | undefined = undefined;
   if (supportedTasks) {
     for (const s of supportedTasks) {
-      if (s.task_definition_id === task.task_request.category) {
-        remappedTaskName = s.task_display_name;
+      if (s.taskDefinitionId === task.task_request.category) {
+        remappedTaskName = s.taskDisplayName;
       }
     }
   }

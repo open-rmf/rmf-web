@@ -5,18 +5,21 @@ import type { TaskBookingLabel } from 'api-client';
 import { TaskDefinition } from '../create-task';
 
 export const DefaultDeliveryPickupTaskDefinition: TaskDefinition = {
-  task_definition_id: 'delivery_pickup',
-  task_display_name: 'Delivery - 1:1',
+  taskDefinitionId: 'delivery_pickup',
+  taskDisplayName: 'Delivery - 1:1',
+  requestCategory: 'compose',
 };
 
 export const DefaultDeliverySequentialLotPickupTaskDefinition: TaskDefinition = {
-  task_definition_id: 'delivery_sequential_lot_pickup',
-  task_display_name: 'Delivery - Sequential lot pick up',
+  taskDefinitionId: 'delivery_sequential_lot_pickup',
+  taskDisplayName: 'Delivery - Sequential lot pick up',
+  requestCategory: 'compose',
 };
 
 export const DefaultDeliveryAreaPickupTaskDefinition: TaskDefinition = {
-  task_definition_id: 'delivery_area_pickup',
-  task_display_name: 'Delivery - Area pick up',
+  taskDefinitionId: 'delivery_area_pickup',
+  taskDisplayName: 'Delivery - Area pick up',
+  requestCategory: 'compose',
 };
 
 export interface LotPickupActivity {
@@ -128,7 +131,7 @@ export interface DeliveryCustomTaskDescription {
   ];
 }
 
-export interface DeliveryTaskDescription {
+export interface DeliveryPickupTaskDescription {
   category: string;
   phases: [
     pickup_phase: CartPickupPhase,
@@ -137,8 +140,8 @@ export interface DeliveryTaskDescription {
   ];
 }
 
-export function makeDeliveryTaskBookingLabel(
-  task_description: DeliveryTaskDescription,
+export function makeDeliveryPickupTaskBookingLabel(
+  task_description: DeliveryPickupTaskDescription,
 ): TaskBookingLabel {
   const pickupDescription =
     task_description.phases[0].activity.description.activities[1].description.description;
@@ -167,8 +170,75 @@ export function makeDeliveryCustomTaskBookingLabel(
   };
 }
 
-const isDeliveryTaskDescriptionValid = (
-  taskDescription: DeliveryTaskDescription,
+export function makeDeliveryPickupTaskShortDescription(
+  desc: DeliveryPickupTaskDescription,
+  taskDisplayName: string | undefined,
+): string {
+  try {
+    const goToPickup: GoToPlaceActivity = desc.phases[0].activity.description.activities[0];
+    const pickup: LotPickupActivity = desc.phases[0].activity.description.activities[1];
+    const cartId = pickup.description.description.cart_id;
+    const goToDropoff: GoToPlaceActivity = desc.phases[1].activity.description.activities[0];
+
+    return `[${
+      taskDisplayName ?? DefaultDeliveryPickupTaskDefinition.taskDisplayName
+    }] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
+  } catch (e) {
+    try {
+      const descriptionString = JSON.stringify(desc);
+      console.error(descriptionString);
+      return descriptionString;
+    } catch (e) {
+      console.error(
+        `Failed to parse task description of delivery pickup task: ${(e as Error).message}`,
+      );
+    }
+  }
+
+  return '[Unknown] delivery pickup task';
+}
+
+export function makeDeliveryCustomTaskShortDescription(
+  desc: DeliveryCustomTaskDescription,
+  taskDisplayName: string | undefined,
+): string {
+  try {
+    const goToPickup: GoToPlaceActivity = desc.phases[0].activity.description.activities[0];
+    const pickup: ZonePickupActivity = desc.phases[0].activity.description.activities[1];
+    const cartId = pickup.description.description.cart_id;
+    const goToDropoff: GoToPlaceActivity = desc.phases[1].activity.description.activities[0];
+
+    switch (desc.category) {
+      case DefaultDeliverySequentialLotPickupTaskDefinition.taskDefinitionId: {
+        return `[${
+          taskDisplayName ?? DefaultDeliverySequentialLotPickupTaskDefinition.taskDisplayName
+        }] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
+      }
+      case DefaultDeliveryAreaPickupTaskDefinition.taskDefinitionId: {
+        return `[${
+          taskDisplayName ?? DefaultDeliveryAreaPickupTaskDefinition.taskDisplayName
+        }] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
+      }
+      default:
+        return `[Unknown] type "${desc.category}"`;
+    }
+  } catch (e) {
+    try {
+      const descriptionString = JSON.stringify(desc);
+      console.error(descriptionString);
+      return descriptionString;
+    } catch (e) {
+      console.error(
+        `Failed to parse task description of delivery pickup task: ${(e as Error).message}`,
+      );
+    }
+  }
+
+  return '[Unknown] delivery pickup task';
+}
+
+const isDeliveryPickupTaskDescriptionValid = (
+  taskDescription: DeliveryPickupTaskDescription,
   pickupPoints: Record<string, string>,
   dropoffPoints: Record<string, string>,
 ): boolean => {
@@ -204,10 +274,10 @@ const isDeliveryCustomTaskDescriptionValid = (
 };
 
 export function deliveryInsertPickup(
-  taskDescription: DeliveryTaskDescription,
+  taskDescription: DeliveryPickupTaskDescription,
   pickupPlace: string,
   pickupLot: string,
-): DeliveryTaskDescription {
+): DeliveryPickupTaskDescription {
   taskDescription.phases[0].activity.description.activities[0].description = pickupPlace;
   taskDescription.phases[0].activity.description.activities[1].description.description.pickup_lot =
     pickupLot;
@@ -215,26 +285,26 @@ export function deliveryInsertPickup(
 }
 
 export function deliveryInsertCartId(
-  taskDescription: DeliveryTaskDescription,
+  taskDescription: DeliveryPickupTaskDescription,
   cartId: string,
-): DeliveryTaskDescription {
+): DeliveryPickupTaskDescription {
   taskDescription.phases[0].activity.description.activities[1].description.description.cart_id =
     cartId;
   return taskDescription;
 }
 
 export function deliveryInsertDropoff(
-  taskDescription: DeliveryTaskDescription,
+  taskDescription: DeliveryPickupTaskDescription,
   dropoffPlace: string,
-): DeliveryTaskDescription {
+): DeliveryPickupTaskDescription {
   taskDescription.phases[1].activity.description.activities[0].description = dropoffPlace;
   return taskDescription;
 }
 
 export function deliveryInsertOnCancel(
-  taskDescription: DeliveryTaskDescription,
+  taskDescription: DeliveryPickupTaskDescription,
   onCancelPlaces: string[],
-): DeliveryTaskDescription {
+): DeliveryPickupTaskDescription {
   const goToOneOfThePlaces: GoToOneOfThePlacesActivity = {
     category: 'go_to_place',
     description: {
@@ -267,27 +337,27 @@ export function deliveryInsertOnCancel(
   return taskDescription;
 }
 
-interface DeliveryTaskFormProps {
-  taskDesc: DeliveryTaskDescription;
+interface DeliveryPickupTaskFormProps {
+  taskDesc: DeliveryPickupTaskDescription;
   pickupPoints: Record<string, string>;
   cartIds: string[];
   dropoffPoints: Record<string, string>;
-  onChange(taskDesc: DeliveryTaskDescription): void;
+  onChange(taskDesc: DeliveryPickupTaskDescription): void;
   allowSubmit(allow: boolean): void;
 }
 
-export function DeliveryTaskForm({
+export function DeliveryPickupTaskForm({
   taskDesc,
   pickupPoints = {},
   cartIds = [],
   dropoffPoints = {},
   onChange,
   allowSubmit,
-}: DeliveryTaskFormProps): React.JSX.Element {
+}: DeliveryPickupTaskFormProps): React.JSX.Element {
   const theme = useTheme();
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
-  const onInputChange = (desc: DeliveryTaskDescription) => {
-    allowSubmit(isDeliveryTaskDescriptionValid(desc, pickupPoints, dropoffPoints));
+  const onInputChange = (desc: DeliveryPickupTaskDescription) => {
+    allowSubmit(isDeliveryPickupTaskDescriptionValid(desc, pickupPoints, dropoffPoints));
     onChange(desc);
   };
 
@@ -633,7 +703,7 @@ export function DeliveryCustomTaskForm({
   );
 }
 
-export function makeDefaultDeliveryTaskDescription(): DeliveryTaskDescription {
+export function makeDefaultDeliveryPickupTaskDescription(): DeliveryPickupTaskDescription {
   return {
     category: 'delivery_pickup',
     phases: [

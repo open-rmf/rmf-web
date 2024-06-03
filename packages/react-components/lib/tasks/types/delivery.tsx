@@ -5,9 +5,10 @@ import React from 'react';
 import type { TaskBookingLabel } from 'api-client';
 import { TaskDefinition } from '../create-task';
 
-export const DefaultSimpleDeliveryTaskDefinition: TaskDefinition = {
-  task_definition_id: 'delivery',
-  task_display_name: 'Simple delivery',
+export const DefaultDeliveryTaskDefinition: TaskDefinition = {
+  taskDefinitionId: 'delivery',
+  taskDisplayName: 'Delivery',
+  requestCategory: 'delivery',
 };
 
 interface TaskPlace {
@@ -19,17 +20,17 @@ interface TaskPlace {
   };
 }
 
-export interface SimpleDeliveryTaskDescription {
+export interface DeliveryTaskDescription {
   pickup: TaskPlace;
   dropoff: TaskPlace;
 }
 
-export function makeSimpleDeliveryTaskBookingLabel(
-  task_description: SimpleDeliveryTaskDescription,
+export function makeDeliveryTaskBookingLabel(
+  task_description: DeliveryTaskDescription,
 ): TaskBookingLabel {
   return {
     description: {
-      task_definition_id: 'delivery',
+      task_definition_id: DefaultDeliveryTaskDefinition.taskDefinitionId,
       pickup: task_description.pickup.place,
       destination: task_description.dropoff.place,
       cart_id: task_description.pickup.payload.sku,
@@ -46,13 +47,11 @@ function isTaskPlaceValid(place: TaskPlace): boolean {
   );
 }
 
-function isSimpleDeliveryTaskDescriptionValid(
-  taskDescription: SimpleDeliveryTaskDescription,
-): boolean {
+function isDeliveryTaskDescriptionValid(taskDescription: DeliveryTaskDescription): boolean {
   return isTaskPlaceValid(taskDescription.pickup) && isTaskPlaceValid(taskDescription.dropoff);
 }
 
-export function makeDefaultSimpleDeliveryTaskDescription(): SimpleDeliveryTaskDescription {
+export function makeDefaultDeliveryTaskDescription(): DeliveryTaskDescription {
   return {
     pickup: {
       place: '',
@@ -73,24 +72,33 @@ export function makeDefaultSimpleDeliveryTaskDescription(): SimpleDeliveryTaskDe
   };
 }
 
-export interface SimpleDeliveryTaskFormProps {
-  taskDesc: SimpleDeliveryTaskDescription;
+export function makeDeliveryTaskShortDescription(
+  desc: DeliveryTaskDescription,
+  displayName?: string,
+): string {
+  return `[${displayName ?? DefaultDeliveryTaskDefinition.taskDisplayName}] Pickup [${
+    desc.pickup.payload.sku
+  }] from [${desc.pickup.place}], dropoff [${desc.dropoff.payload.sku}] at [${desc.dropoff.place}]`;
+}
+
+export interface DeliveryTaskFormProps {
+  taskDesc: DeliveryTaskDescription;
   pickupPoints: Record<string, string>;
   dropoffPoints: Record<string, string>;
-  onChange(taskDesc: SimpleDeliveryTaskDescription): void;
+  onChange(taskDesc: DeliveryTaskDescription): void;
   allowSubmit(allow: boolean): void;
 }
 
-export function SimpleDeliveryTaskForm({
+export function DeliveryTaskForm({
   taskDesc,
   pickupPoints = {},
   dropoffPoints = {},
   onChange,
   allowSubmit,
-}: SimpleDeliveryTaskFormProps): React.JSX.Element {
+}: DeliveryTaskFormProps): React.JSX.Element {
   const theme = useTheme();
-  const onInputChange = (desc: SimpleDeliveryTaskDescription) => {
-    allowSubmit(isSimpleDeliveryTaskDescriptionValid(desc));
+  const onInputChange = (desc: DeliveryTaskDescription) => {
+    allowSubmit(isDeliveryTaskDescriptionValid(desc));
     onChange(desc);
   };
 

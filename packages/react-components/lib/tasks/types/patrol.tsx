@@ -18,8 +18,9 @@ import { TaskDefinition } from '../create-task';
 import type { TaskBookingLabel } from 'api-client';
 
 export const DefaultPatrolTaskDefinition: TaskDefinition = {
-  task_definition_id: 'patrol',
-  task_display_name: 'Patrol',
+  taskDefinitionId: 'patrol',
+  taskDisplayName: 'Patrol',
+  requestCategory: 'patrol',
 };
 
 export interface PatrolTaskDescription {
@@ -32,7 +33,7 @@ export function makePatrolTaskBookingLabel(
 ): TaskBookingLabel {
   return {
     description: {
-      task_definition_id: 'patrol',
+      task_definition_id: DefaultPatrolTaskDefinition.taskDefinitionId,
       destination: task_description.places[task_description.places.length - 1],
     },
   };
@@ -55,6 +56,18 @@ export function makeDefaultPatrolTask(): PatrolTaskDescription {
     places: [],
     rounds: 1,
   };
+}
+
+export function makePatrolTaskShortDescription(
+  desc: PatrolTaskDescription,
+  displayName?: string,
+): string {
+  console.log(desc);
+
+  const formattedPlaces = desc.places.map((place: string) => `[${place}]`);
+  return `[${displayName ?? DefaultPatrolTaskDefinition.taskDisplayName}] [${
+    desc.rounds
+  }] round/s, along ${formattedPlaces.join(', ')}`;
 }
 
 interface PlaceListProps {
