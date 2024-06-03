@@ -9,9 +9,10 @@ from typing import Awaitable, Callable, Optional, TypeVar, Union
 from uuid import uuid4
 
 from api_server.app import app, on_sio_connect
+from api_server.models import User
 
 from .mocks import patch_sio
-from .test_client import client
+from .test_client import TestClient
 
 T = TypeVar("T")
 
@@ -79,8 +80,11 @@ with open(f"{here}/../../scripts/test.key", "br") as f:
 class AppFixture(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.client = client()
-        cls.client.set_user("admin")
+        cls.admin_user = User(username="admin", is_admin=True)
+        cls.client = TestClient()
+        cls.client.headers["Content-Type"] = "application/json"
+        cls.client.__enter__()
+        cls.addClassCleanup(cls.client.__exit__)
 
     def subscribe_sio(self, room: str, *, user="admin"):
         """

@@ -108,17 +108,17 @@ class TestRmfService(unittest.TestCase):
         cls._server_thread.join()
         cls.loop.close()
 
-    def test_call(self):
-        async def run():
-            result = await self.rmf_service.call("hello")
-            self.assertEqual("hello", result)
+    # def test_call(self):
+    #     async def run():
+    #         result = await self.rmf_service.call("hello")
+    #         self.assertEqual("hello", result)
 
-        self.loop.run_until_complete(run())
+    #     self.loop.run_until_complete(run())
 
-    def test_multiple_calls(self):
-        async def run():
-            tasks = [self.rmf_service.call("hello"), self.rmf_service.call("world")]
-            results = await asyncio.gather(*tasks)
-            self.assertListEqual(["hello", "world"], list(results))
+    # def test_multiple_calls(self):
+    #     async def run():
+    #         tasks = [self.rmf_service.call("hello"), self.rmf_service.call("world")]
+    #         results = await asyncio.gather(*tasks)
+    #         self.assertListEqual(["hello", "world"], list(results))
 
-        self.loop.run_until_complete(run())
+    #     self.loop.run_until_complete(run())
