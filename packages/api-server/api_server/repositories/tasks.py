@@ -144,7 +144,12 @@ class TaskRepository:
     ) -> List[TaskState]:
         try:
             if pagination:
-                query = add_pagination(query, pagination)
+                query = add_pagination(
+                    query,
+                    pagination,
+                    {"pickup": "label=pickup", "destination": "label=destination"},
+                    group_by="labels__state_id",
+                )
             # TODO: enforce with authz
             results = await query.values_list("data", flat=True)
             return [TaskState(**r) for r in results]

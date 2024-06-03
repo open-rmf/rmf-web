@@ -138,23 +138,38 @@ class TestTasksRoute(AppFixture):
         results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
         self.assertEqual(0, len(results))
 
-    # FIXME(koonpeng): This does not work because of tortoise-orm limitations
-    # def test_query_task_states_sort_by_label(self):
-    #     """Checks that sorting by `pickup` for `destination` does not filter out tasks"""
-    #     test_cases = {
-    #         "pickup": "Kitchen",
-    #         "destination": "room_203",
-    #     }
-    #     for k, v in test_cases.items():
-    #         resp = self.client.get(
-    #             f"/tasks?task_id={self.task_states[0].booking.id}&order_by=pickup"
-    #         )
-    #         self.assertEqual(200, resp.status_code)
-    #         results = resp.json()
-    #         self.assertEqual(2, len(results))
-    #         self.assertEqual(
-    #             self.task_states[1].booking.id, results[0]["booking"]["id"]
-    #         )
+    def test_query_task_states_sort_by_label(self):
+        resp = self.client.get("/tasks?order_by=-label=test_label_sort")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(2, len(results))
+        for a, b in zip(self.task_states, results):
+            self.assertEqual(a, b)
+
+        resp = self.client.get("/tasks?order_by=label=test_label_sort")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(2, len(results))
+        for a, b in zip(self.task_states[::-1], results):
+            self.assertEqual(a, b)
+
+        # test sorting by multiple labels
+        resp = self.client.get(
+            "/tasks?order_by=label=test_label_sort,label=test_label_sort_3"
+        )
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(2, len(results))
+        for a, b in zip(self.task_states[::-1], results):
+            self.assertEqual(a, b)
+
+        # test that tasks without the label are not filtered out
+        # we don't test the result order because different db has different behavior
+        # of sorting NULL.
+        resp = self.client.get("/tasks?order_by=label=test_label_sort_not_existing")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(2, len(results))
 
     def test_sub_task_state(self):
         task_id = self.task_states[0].booking.id

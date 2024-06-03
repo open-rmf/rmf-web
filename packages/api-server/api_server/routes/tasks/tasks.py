@@ -196,24 +196,6 @@ async def query_task_states(
             .filter(**filter_gt)
         )
 
-    # NOTE: In order to perform sorting based on the values in labels, a filter
-    # on the label_name has to be performed first. A side-effect of this would
-    # be that states that do not contain this field will not be returned.
-    #
-    # The version of tortoise-orm used has some bugs which blocks sorting by
-    # labels.
-    if pagination.order_by is not None:
-        labels_fields = ["pickup", "destination"]
-        new_order = pagination.order_by
-        for field in labels_fields:
-            if field in pagination.order_by:
-                filters["labels__label_name"] = field
-                new_order = pagination.order_by.replace(
-                    field, "labels__label_value_str"
-                )
-                break
-        pagination.order_by = new_order
-
     return await task_repo.query_task_states(query, pagination)
 
 
