@@ -55,17 +55,6 @@ function rawStringFromJsonRequest(taskRequest: TaskRequest): string | undefined 
   }
 }
 
-export const TaskDefinitionMap: Record<string, TaskDefinition> = {
-  [DefaultComposeCleanTaskDefinition.taskDefinitionId]: DefaultComposeCleanTaskDefinition,
-  [DefaultDeliveryPickupTaskDefinition.taskDefinitionId]: DefaultDeliveryPickupTaskDefinition,
-  [DefaultDeliverySequentialLotPickupTaskDefinition.taskDefinitionId]:
-    DefaultDeliverySequentialLotPickupTaskDefinition,
-  [DefaultDeliveryAreaPickupTaskDefinition.taskDefinitionId]:
-    DefaultDeliveryAreaPickupTaskDefinition,
-  [DefaultDeliveryTaskDefinition.taskDefinitionId]: DefaultDeliveryTaskDefinition,
-  [DefaultPatrolTaskDefinition.taskDefinitionId]: DefaultPatrolTaskDefinition,
-};
-
 export function getShortDescription(
   taskRequest: TaskRequest,
   taskDisplayName?: string,
@@ -118,8 +107,21 @@ export function getDefaultTaskDescription(
 }
 
 export function getTaskRequestCategory(taskDefinitionId: string): string | undefined {
-  if (taskDefinitionId in TaskDefinitionMap) {
-    return TaskDefinitionMap[taskDefinitionId].requestCategory;
+  switch (taskDefinitionId) {
+    case DefaultComposeCleanTaskDefinition.taskDefinitionId:
+      return DefaultComposeCleanTaskDefinition.requestCategory;
+    case DefaultDeliveryPickupTaskDefinition.taskDefinitionId:
+      return DefaultDeliveryPickupTaskDefinition.requestCategory;
+    case DefaultDeliverySequentialLotPickupTaskDefinition.taskDefinitionId:
+      return DefaultDeliverySequentialLotPickupTaskDefinition.requestCategory;
+    case DefaultDeliveryAreaPickupTaskDefinition.taskDefinitionId:
+      return DefaultDeliveryAreaPickupTaskDefinition.requestCategory;
+    case DefaultDeliveryTaskDefinition.taskDefinitionId:
+      return DefaultDeliveryTaskDefinition.requestCategory;
+    case DefaultPatrolTaskDefinition.taskDefinitionId:
+      return DefaultPatrolTaskDefinition.requestCategory;
+    case DefaultCustomComposeTaskDefinition.taskDefinitionId:
+      return DefaultCustomComposeTaskDefinition.requestCategory;
   }
   return undefined;
 }
