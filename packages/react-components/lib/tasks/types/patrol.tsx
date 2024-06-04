@@ -51,7 +51,7 @@ export const isPatrolTaskDescriptionValid = (taskDescription: PatrolTaskDescript
   return taskDescription.rounds > 0;
 };
 
-export function makeDefaultPatrolTask(): PatrolTaskDescription {
+export function makeDefaultPatrolTaskDescription(): PatrolTaskDescription {
   return {
     places: [],
     rounds: 1,

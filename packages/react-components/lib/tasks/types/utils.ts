@@ -1,24 +1,34 @@
 import { TaskRequest } from 'api-client';
-import { DefaultPatrolTaskDefinition, makePatrolTaskShortDescription } from './patrol';
+import {
+  DefaultPatrolTaskDefinition,
+  makePatrolTaskShortDescription,
+  makeDefaultPatrolTaskDescription,
+} from './patrol';
 import {
   DefaultDeliveryAreaPickupTaskDefinition,
   DefaultDeliveryPickupTaskDefinition,
   DefaultDeliverySequentialLotPickupTaskDefinition,
+  makeDeliveryPickupTaskShortDescription,
+  makeDeliveryCustomTaskShortDescription,
+  makeDefaultDeliveryCustomTaskDescription,
+  makeDefaultDeliveryPickupTaskDescription,
 } from './delivery-custom';
 import { getTaskBookingLabelFromTaskRequest } from '../task-booking-label-utils';
 import {
   DefaultComposeCleanTaskDefinition,
   makeComposeCleanTaskShortDescription,
+  makeDefaultComposeCleanTaskDescription,
 } from './compose-clean';
-import { DefaultDeliveryTaskDefinition, makeDeliveryTaskShortDescription } from './delivery';
 import {
-  makeDeliveryPickupTaskShortDescription,
-  makeDeliveryCustomTaskShortDescription,
-} from './delivery-custom';
+  DefaultDeliveryTaskDefinition,
+  makeDeliveryTaskShortDescription,
+  makeDefaultDeliveryTaskDescription,
+} from './delivery';
 import {
   DefaultCustomComposeTaskDefinition,
   makeCustomComposeTaskShortDescription,
 } from './custom-compose';
+import { TaskDefinition, TaskDescription } from '../create-task';
 
 export function isNonEmptyString(value: string): boolean {
   return value.length > 0;
@@ -44,6 +54,17 @@ function rawStringFromJsonRequest(taskRequest: TaskRequest): string | undefined 
     return undefined;
   }
 }
+
+export const TaskDefinitionMap: Record<string, TaskDefinition> = {
+  [DefaultComposeCleanTaskDefinition.taskDefinitionId]: DefaultComposeCleanTaskDefinition,
+  [DefaultDeliveryPickupTaskDefinition.taskDefinitionId]: DefaultDeliveryPickupTaskDefinition,
+  [DefaultDeliverySequentialLotPickupTaskDefinition.taskDefinitionId]:
+    DefaultDeliverySequentialLotPickupTaskDefinition,
+  [DefaultDeliveryAreaPickupTaskDefinition.taskDefinitionId]:
+    DefaultDeliveryAreaPickupTaskDefinition,
+  [DefaultDeliveryTaskDefinition.taskDefinitionId]: DefaultDeliveryTaskDefinition,
+  [DefaultPatrolTaskDefinition.taskDefinitionId]: DefaultPatrolTaskDefinition,
+};
 
 export function getShortDescription(
   taskRequest: TaskRequest,
@@ -72,4 +93,33 @@ export function getShortDescription(
     default:
       return `[Unknown] type "${taskRequest.description.category}"`;
   }
+}
+
+export function getDefaultTaskDescription(
+  taskDefinitionId: string,
+): TaskDescription | string | undefined {
+  switch (taskDefinitionId) {
+    case DefaultComposeCleanTaskDefinition.taskDefinitionId:
+      return makeDefaultComposeCleanTaskDescription();
+    case DefaultDeliveryPickupTaskDefinition.taskDefinitionId:
+      return makeDefaultDeliveryPickupTaskDescription();
+    case DefaultDeliverySequentialLotPickupTaskDefinition.taskDefinitionId:
+    case DefaultDeliveryAreaPickupTaskDefinition.taskDefinitionId:
+      return makeDefaultDeliveryCustomTaskDescription(taskDefinitionId);
+    case DefaultDeliveryTaskDefinition.taskDefinitionId:
+      return makeDefaultDeliveryTaskDescription();
+    case DefaultPatrolTaskDefinition.taskDefinitionId:
+      return makeDefaultPatrolTaskDescription();
+    case DefaultCustomComposeTaskDefinition.taskDefinitionId:
+      return '';
+    default:
+      return undefined;
+  }
+}
+
+export function getTaskRequestCategory(taskDefinitionId: string): string | undefined {
+  if (taskDefinitionId in TaskDefinitionMap) {
+    return TaskDefinitionMap[taskDefinitionId].requestCategory;
+  }
+  return undefined;
 }

@@ -44,7 +44,6 @@ import {
   ComposeCleanTaskForm,
   DefaultComposeCleanTaskDefinition,
   makeComposeCleanTaskBookingLabel,
-  makeDefaultComposeCleanTaskDescription,
 } from './types/compose-clean';
 import {
   DefaultCustomComposeTaskDefinition,
@@ -60,25 +59,23 @@ import {
   makeDeliveryTaskBookingLabel,
 } from './types/delivery';
 import {
-  DefaultDeliveryPickupTaskDefinition,
-  DefaultDeliveryAreaPickupTaskDefinition,
-  DefaultDeliverySequentialLotPickupTaskDefinition,
   DeliveryCustomTaskForm,
   DeliveryCustomTaskDescription,
   DeliveryPickupTaskDescription,
   DeliveryPickupTaskForm,
-  makeDefaultDeliveryCustomTaskDescription,
-  makeDefaultDeliveryPickupTaskDescription,
   makeDeliveryCustomTaskBookingLabel,
   makeDeliveryPickupTaskBookingLabel,
+  DefaultDeliveryPickupTaskDefinition,
+  DefaultDeliverySequentialLotPickupTaskDefinition,
+  DefaultDeliveryAreaPickupTaskDefinition,
 } from './types/delivery-custom';
 import {
-  makeDefaultPatrolTask,
   makePatrolTaskBookingLabel,
   DefaultPatrolTaskDefinition,
   PatrolTaskDescription,
   PatrolTaskForm,
 } from './types/patrol';
+import { getDefaultTaskDescription, getTaskRequestCategory } from './types/utils';
 import {
   getTaskBookingLabelFromTaskRequest,
   serializeTaskBookingLabel,
@@ -93,7 +90,7 @@ export interface TaskDefinition {
 // If no task definition id is found in a past task (scheduled or favorite)
 const DefaultTaskDefinitionId = DefaultCustomComposeTaskDefinition.taskDefinitionId;
 
-type TaskDescription =
+export type TaskDescription =
   | DeliveryPickupTaskDescription
   | DeliveryCustomTaskDescription
   | PatrolTaskDescription
@@ -197,45 +194,9 @@ function FavoriteTask({
   );
 }
 
-function defaultTaskDescription(taskDefinitionId: string): TaskDescription | undefined {
-  switch (taskDefinitionId) {
-    case DefaultDeliveryPickupTaskDefinition.taskDefinitionId:
-      return makeDefaultDeliveryPickupTaskDescription();
-    case DefaultDeliverySequentialLotPickupTaskDefinition.taskDefinitionId:
-    case DefaultDeliveryAreaPickupTaskDefinition.taskDefinitionId:
-      return makeDefaultDeliveryCustomTaskDescription(taskDefinitionId);
-    case DefaultPatrolTaskDefinition.taskDefinitionId:
-      return makeDefaultPatrolTask();
-    case DefaultDeliveryTaskDefinition.taskDefinitionId:
-      return makeDefaultDeliveryTaskDescription();
-    case DefaultComposeCleanTaskDefinition.taskDefinitionId:
-      return makeDefaultComposeCleanTaskDescription();
-    default:
-      return undefined;
-  }
-}
-
-// TODO: Move this into task defintion as well. To consider moving
-// description.category into task definition too.
-function taskRequestCategory(taskDefinitionId: string): string | undefined {
-  switch (taskDefinitionId) {
-    case DefaultPatrolTaskDefinition.taskDefinitionId:
-    case DefaultDeliveryTaskDefinition.taskDefinitionId:
-      return taskDefinitionId;
-    case DefaultDeliveryPickupTaskDefinition.taskDefinitionId:
-    case DefaultDeliverySequentialLotPickupTaskDefinition.taskDefinitionId:
-    case DefaultDeliveryAreaPickupTaskDefinition.taskDefinitionId:
-    case DefaultComposeCleanTaskDefinition.taskDefinitionId:
-    case DefaultCustomComposeTaskDefinition.taskDefinitionId:
-      return 'compose';
-    default:
-      return undefined;
-  }
-}
-
 function defaultTaskRequest(taskDefinitionId: string): TaskRequest {
-  const category = taskRequestCategory(taskDefinitionId);
-  const description = defaultTaskDescription(taskDefinitionId);
+  const category = getTaskRequestCategory(taskDefinitionId);
+  const description = getDefaultTaskDescription(taskDefinitionId);
 
   return {
     category: category ?? 'compose',
@@ -568,25 +529,22 @@ export function CreateTaskForm({
     }
   };
   const handleTaskTypeChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    const newType = ev.target.value;
-    console.log(`handleTaskTypeChange ${newType}`);
-    setTaskDefinitionId(newType);
+    const newTaskDefinitionId = ev.target.value;
+    setTaskDefinitionId(newTaskDefinitionId);
 
-    if (newType === 'custom_compose') {
-      taskRequest.category = 'custom_compose';
-      taskRequest.description = '';
-    } else {
-      const newDesc = defaultTaskDescription(newType);
-      if (newDesc === undefined) {
-        return;
-      }
-      taskRequest.description = newDesc;
+    const category =
+      getTaskRequestCategory(newTaskDefinitionId) ??
+      DefaultCustomComposeTaskDefinition.requestCategory;
+    taskRequest.category = category;
 
-      const primaryTaskCategories = ['patrol', 'delivery'];
-      const category = primaryTaskCategories.includes(newType) ? newType : 'compose';
-      taskRequest.category = category;
+    const description = getDefaultTaskDescription(newTaskDefinitionId) ?? '';
+    taskRequest.description = description;
 
-      setFavoriteTaskBuffer({ ...favoriteTaskBuffer, category, description: newDesc });
+    if (
+      newTaskDefinitionId !== DefaultCustomComposeTaskDefinition.taskDefinitionId &&
+      typeof description === 'object'
+    ) {
+      setFavoriteTaskBuffer({ ...favoriteTaskBuffer, category, description });
     }
   };
 
@@ -607,10 +565,10 @@ export function CreateTaskForm({
     request.requester = requester;
     request.unix_millis_request_time = Date.now();
 
-    if (taskDefinitionId === 'custom_compose') {
+    if (taskDefinitionId === DefaultCustomComposeTaskDefinition.taskDefinitionId) {
       try {
         const obj = JSON.parse(request.description);
-        request.category = 'compose';
+        request.category = DefaultCustomComposeTaskDefinition.requestCategory;
         request.description = obj;
       } catch (e) {
         console.error('Invalid custom compose task description');
@@ -623,23 +581,23 @@ export function CreateTaskForm({
     try {
       let requestBookingLabel: TaskBookingLabel | null = null;
       switch (taskDefinitionId) {
-        case 'delivery_pickup':
+        case DefaultDeliveryPickupTaskDefinition.taskDefinitionId:
           requestBookingLabel = makeDeliveryPickupTaskBookingLabel(request.description);
           break;
-        case 'delivery_sequential_lot_pickup':
-        case 'delivery_area_pickup':
+        case DefaultDeliverySequentialLotPickupTaskDefinition.taskDefinitionId:
+        case DefaultDeliveryAreaPickupTaskDefinition.taskDefinitionId:
           requestBookingLabel = makeDeliveryCustomTaskBookingLabel(request.description);
           break;
-        case 'patrol':
+        case DefaultPatrolTaskDefinition.taskDefinitionId:
           requestBookingLabel = makePatrolTaskBookingLabel(request.description);
           break;
-        case 'delivery':
+        case DefaultDeliveryTaskDefinition.taskDefinitionId:
           requestBookingLabel = makeDeliveryTaskBookingLabel(request.description);
           break;
-        case 'clean':
+        case DefaultComposeCleanTaskDefinition.taskDefinitionId:
           requestBookingLabel = makeComposeCleanTaskBookingLabel(request.description);
           break;
-        case 'custom_compose':
+        case DefaultCustomComposeTaskDefinition.taskDefinitionId:
           requestBookingLabel = makeCustomComposeTaskBookingLabel();
           break;
       }
