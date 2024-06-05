@@ -195,6 +195,7 @@ export const TasksApp = React.memo(
             filterColumn && filterColumn === 'destination' ? filterValue : undefined,
             filterColumn && filterColumn === 'assigned_to' ? filterValue : undefined,
             filterColumn && filterColumn === 'status' ? filterValue : undefined,
+            undefined,
             filterColumn && filterColumn === 'unix_millis_request_time' ? filterValue : undefined,
             filterColumn && filterColumn === 'unix_millis_start_time' ? filterValue : undefined,
             filterColumn && filterColumn === 'unix_millis_finish_time' ? filterValue : undefined,
@@ -255,6 +256,7 @@ export const TasksApp = React.memo(
         do {
           queries = (
             await rmf.tasksApi.queryTaskStatesTasksGet(
+              undefined,
               undefined,
               undefined,
               undefined,
