@@ -4,7 +4,6 @@ from unittest.mock import AsyncMock, patch
 
 from api_server.app import app, on_sio_connect
 
-from .test import client
 from .test.test_fixtures import AppFixture
 
 
@@ -33,4 +32,4 @@ class TestSioAuth(AppFixture):
         self.assertFalse(self.try_connect("invalid"))
 
     def test_success_with_valid_token(self):
-        self.assertTrue(self.try_connect(client().token("admin")))
+        self.assertTrue(self.try_connect(self.client.token("admin")))

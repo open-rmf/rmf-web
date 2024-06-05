@@ -1,8 +1,10 @@
 from datetime import datetime
 from typing import List, Optional, Tuple, cast
 
+import tortoise.functions as tfuncs
 from fastapi import Body, Depends, HTTPException, Path, Query
 from rx import operators as rxops
+from tortoise.expressions import Q
 
 from api_server import models as mdl
 from api_server.dependencies import (
@@ -99,10 +101,14 @@ async def query_task_states(
         None, description="comma separated list of requester names"
     ),
     pickup: Optional[str] = Query(
-        None, description="comma separated list of pickup names"
+        None,
+        description="comma separated list of pickup names. [deprecated] use `label` instead",
+        deprecated=True,
     ),
     destination: Optional[str] = Query(
-        None, description="comma separated list of destination names"
+        None,
+        description="comma separated list of destination names, [deprecated] use `label` instead",
+        deprecated=True,
     ),
     assigned_to: Optional[str] = Query(
         None, description="comma separated list of assigned robot names"
@@ -114,8 +120,17 @@ async def query_task_states(
         finish_time_between_query
     ),
     status: Optional[str] = Query(None, description="comma separated list of statuses"),
+    label: str
+    | None = Query(
+        None,
+        description="comma separated list of labels, each item must be in the form <key>=<value>, multiple items will filter tasks with all the labels",
+    ),
     pagination: mdl.Pagination = Depends(pagination_query),
 ):
+    """
+    Note that sorting by `pickup` and `destination` is mutually exclusive and sorting
+    by either of them will filter only tasks which has those labels.
+    """
     filters = {}
     if task_id is not None:
         filters["id___in"] = task_id.split(",")
@@ -141,33 +156,47 @@ async def query_task_states(
             if status_string not in valid_values:
                 continue
             filters["status__in"].append(mdl.Status(status_string))
+    query = DbTaskState.filter(**filters)
 
-    # NOTE: in order to perform filtering based on the values in labels, a
-    # filter on the label_name will need to be applied as well as a filter on
-    # the label_value.
+    label_filters = {}
     if pickup is not None:
-        filters["labels__label_name"] = "pickup"
-        filters["labels__label_value_str__in"] = pickup.split(",")
+        label_filters["label_filter_pickup"] = tfuncs.Count(
+            "id_",
+            _filter=Q(
+                labels__label_name="pickup",
+                labels__label_value_str__in=pickup.split(","),
+            ),
+        )
     if destination is not None:
-        filters["labels__label_name"] = "destination"
-        filters["labels__label_value_str__in"] = destination.split(",")
-
-    # NOTE: In order to perform sorting based on the values in labels, a filter
-    # on the label_name has to be performed first. A side-effect of this would
-    # be that states that do not contain this field will not be returned.
-    if pagination.order_by is not None:
-        labels_fields = ["pickup", "destination"]
-        new_order = pagination.order_by
-        for field in labels_fields:
-            if field in pagination.order_by:
-                filters["labels__label_name"] = field
-                new_order = pagination.order_by.replace(
-                    field, "labels__label_value_str"
+        label_filters["label_filter_destination"] = tfuncs.Count(
+            "id_",
+            _filter=Q(
+                labels__label_name="destination",
+                labels__label_value_str__in=destination.split(","),
+            ),
+        )
+    if label is not None:
+        labels = mdl.Labels.from_strings(label.split(","))
+        label_filters.update(
+            {
+                f"label_filter_{k}": tfuncs.Count(
+                    "id_", _filter=Q(labels__label_name=k, labels__label_value_str=v)
                 )
-                break
-        pagination.order_by = new_order
+                for k, v in labels.__root__.items()
+            }
+        )
 
-    return await task_repo.query_task_states(DbTaskState.filter(**filters), pagination)
+    if len(label_filters) > 0:
+        filter_gt = {f"{f}__gt": 0 for f in label_filters}
+        query = (
+            query.annotate(**label_filters)
+            .group_by(
+                "labels__state_id"
+            )  # need to group by a related field to make tortoise-orm generate joins
+            .filter(**filter_gt)
+        )
+
+    return await task_repo.query_task_states(query, pagination)
 
 
 @router.get("/{task_id}/state", response_model=mdl.TaskState)

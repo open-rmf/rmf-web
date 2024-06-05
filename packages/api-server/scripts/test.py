@@ -6,9 +6,5 @@ os.environ[
 
 import unittest
 
-from api_server.test import test_client
-
-test_client.client()
 result = unittest.main(module=None, exit=False)
-test_client.shutdown()
 exit(1 if not result.result.wasSuccessful() else 0)
