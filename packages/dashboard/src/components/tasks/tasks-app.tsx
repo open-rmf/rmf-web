@@ -164,6 +164,7 @@ export const TasksApp = React.memo(
             filterColumn && filterColumn === 'category' ? filterValue : undefined,
             filterColumn && filterColumn === 'assigned_to' ? filterValue : undefined,
             filterColumn && filterColumn === 'status' ? filterValue : undefined,
+            undefined,
             filterColumn && filterColumn === 'unix_millis_start_time' ? filterValue : undefined,
             filterColumn && filterColumn === 'unix_millis_finish_time' ? filterValue : undefined,
             GET_LIMIT,
@@ -203,6 +204,7 @@ export const TasksApp = React.memo(
         }
 
         const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
+          undefined,
           undefined,
           undefined,
           undefined,
