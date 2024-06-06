@@ -435,59 +435,50 @@ export function CreateTaskForm({
     setTaskRequest((prev) => {
       return {
         ...prev,
-        category: 'custom_compose',
+        category: DefaultCustomComposeTaskDefinition.requestCategory,
         description: newDesc,
       };
     });
   };
 
-  const renderTaskDescriptionForm = () => {
-    switch (taskRequest.category) {
-      case 'patrol':
+  const renderTaskDescriptionForm = (definitionId: string) => {
+    switch (definitionId) {
+      case DefaultPatrolTaskDefinition.taskDefinitionId:
         return (
           <PatrolTaskForm
             taskDesc={taskRequest.description as PatrolTaskDescription}
             patrolWaypoints={patrolWaypoints}
-            onChange={(desc) => handleTaskDescriptionChange('patrol', desc)}
+            onChange={(desc) =>
+              handleTaskDescriptionChange(DefaultPatrolTaskDefinition.requestCategory, desc)
+            }
             allowSubmit={allowSubmit}
           />
         );
-      case 'delivery':
+      case DefaultDeliveryTaskDefinition.taskDefinitionId:
         return (
           <DeliveryTaskForm
             taskDesc={taskRequest.description as DeliveryTaskDescription}
             pickupPoints={pickupPoints}
             dropoffPoints={dropoffPoints}
-            onChange={(desc) => handleTaskDescriptionChange('delivery', desc)}
+            onChange={(desc) =>
+              handleTaskDescriptionChange(DefaultDeliveryTaskDefinition.requestCategory, desc)
+            }
             allowSubmit={allowSubmit}
           />
         );
-      case 'custom_compose':
-        return (
-          <CustomComposeTaskForm
-            taskDesc={taskRequest.description as CustomComposeTaskDescription}
-            onChange={(desc) => {
-              handleCustomComposeTaskDescriptionChange(desc);
-            }}
-            allowSubmit={allowSubmit}
-          />
-        );
-    }
-
-    switch (taskRequest.description.category) {
-      case 'clean':
+      case DefaultComposeCleanTaskDefinition.taskDefinitionId:
         return (
           <ComposeCleanTaskForm
             taskDesc={taskRequest.description as ComposeCleanTaskDescription}
             cleaningZones={cleaningZones}
             onChange={(desc: ComposeCleanTaskDescription) => {
               desc.category = taskRequest.description.category;
-              handleTaskDescriptionChange('compose', desc);
+              handleTaskDescriptionChange(DefaultComposeCleanTaskDefinition.requestCategory, desc);
             }}
             allowSubmit={allowSubmit}
           />
         );
-      case 'delivery_pickup':
+      case DefaultDeliveryPickupTaskDefinition.taskDefinitionId:
         return (
           <DeliveryPickupTaskForm
             taskDesc={taskRequest.description as DeliveryPickupTaskDescription}
@@ -498,15 +489,15 @@ export function CreateTaskForm({
               desc.category = taskRequest.description.category;
               desc.phases[0].activity.description.activities[1].description.category =
                 taskRequest.description.category;
-              handleTaskDescriptionChange('compose', desc);
-              const pickupPerformAction =
-                desc.phases[0].activity.description.activities[1].description.description;
+              handleTaskDescriptionChange(
+                DefaultDeliveryPickupTaskDefinition.requestCategory,
+                desc,
+              );
             }}
             allowSubmit={allowSubmit}
           />
         );
-      case 'delivery_sequential_lot_pickup':
-      case 'delivery_area_pickup':
+      case DefaultDeliverySequentialLotPickupTaskDefinition.taskDefinitionId:
         return (
           <DeliveryCustomTaskForm
             taskDesc={taskRequest.description as DeliveryCustomTaskDescription}
@@ -517,15 +508,44 @@ export function CreateTaskForm({
               desc.category = taskRequest.description.category;
               desc.phases[0].activity.description.activities[1].description.category =
                 taskRequest.description.category;
-              handleTaskDescriptionChange('compose', desc);
-              const pickupPerformAction =
-                desc.phases[0].activity.description.activities[1].description.description;
+              handleTaskDescriptionChange(
+                DefaultDeliverySequentialLotPickupTaskDefinition.requestCategory,
+                desc,
+              );
             }}
             allowSubmit={allowSubmit}
           />
         );
+      case DefaultDeliveryAreaPickupTaskDefinition.taskDefinitionId:
+        return (
+          <DeliveryCustomTaskForm
+            taskDesc={taskRequest.description as DeliveryCustomTaskDescription}
+            pickupZones={pickupZones}
+            cartIds={cartIds}
+            dropoffPoints={Object.keys(dropoffPoints)}
+            onChange={(desc) => {
+              desc.category = taskRequest.description.category;
+              desc.phases[0].activity.description.activities[1].description.category =
+                taskRequest.description.category;
+              handleTaskDescriptionChange(
+                DefaultDeliveryAreaPickupTaskDefinition.requestCategory,
+                desc,
+              );
+            }}
+            allowSubmit={allowSubmit}
+          />
+        );
+      case DefaultCustomComposeTaskDefinition.taskDefinitionId:
       default:
-        return null;
+        return (
+          <CustomComposeTaskForm
+            taskDesc={taskRequest.description as CustomComposeTaskDescription}
+            onChange={(desc) => {
+              handleCustomComposeTaskDescriptionChange(desc);
+            }}
+            allowSubmit={allowSubmit}
+          />
+        );
     }
   };
   const handleTaskTypeChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -876,7 +896,7 @@ export function CreateTaskForm({
                   flexItem
                   style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }}
                 />
-                {renderTaskDescriptionForm()}
+                {renderTaskDescriptionForm(taskDefinitionId)}
                 <Grid container justifyContent="center">
                   <Button
                     aria-label="Save as a favorite task"
@@ -889,7 +909,9 @@ export function CreateTaskForm({
                       setOpenFavoriteDialog(true);
                     }}
                     style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }}
-                    disabled={taskDefinitionId === 'custom_compose'}
+                    disabled={
+                      taskDefinitionId === DefaultCustomComposeTaskDefinition.taskDefinitionId
+                    }
                   >
                     {callToUpdateFavoriteTask ? `Confirm edits` : 'Save as a favorite task'}
                   </Button>
