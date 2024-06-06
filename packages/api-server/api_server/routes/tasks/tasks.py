@@ -1,8 +1,10 @@
 from datetime import datetime
 from typing import List, Optional, Tuple, cast
 
+import tortoise.functions as tfuncs
 from fastapi import Body, Depends, HTTPException, Path, Query
 from reactivex import operators as rxops
+from tortoise.expressions import Q
 
 from api_server import models as mdl
 from api_server.dependencies import (
@@ -51,6 +53,11 @@ async def query_task_states(
         finish_time_between_query
     ),
     status: Optional[str] = Query(None, description="comma separated list of statuses"),
+    label: str
+    | None = Query(
+        None,
+        description="comma separated list of labels, each item must be in the form <key>=<value>, multiple items will filter tasks with all the labels",
+    ),
     pagination: mdl.Pagination = Depends(pagination_query),
 ):
     filters = {}
@@ -73,8 +80,31 @@ async def query_task_states(
             if status_string not in valid_values:
                 continue
             filters["status__in"].append(mdl.TaskStatus(status_string))
+    query = DbTaskState.filter(**filters)
 
-    return await task_repo.query_task_states(DbTaskState.filter(**filters), pagination)
+    label_filters = {}
+    if label is not None:
+        labels = mdl.Labels.from_strings(label.split(","))
+        label_filters.update(
+            {
+                f"label_filter_{k}": tfuncs.Count(
+                    "id_", _filter=Q(labels__label_name=k, labels__label_value=v)
+                )
+                for k, v in labels.root.items()
+            }
+        )
+
+    if len(label_filters) > 0:
+        filter_gt = {f"{f}__gt": 0 for f in label_filters}
+        query = (
+            query.annotate(**label_filters)
+            .group_by(
+                "labels__state_id"
+            )  # need to group by a related field to make tortoise-orm generate joins
+            .filter(**filter_gt)
+        )
+
+    return await task_repo.query_task_states(query, pagination)
 
 
 @router.get("/{task_id}/state", response_model=mdl.TaskState)

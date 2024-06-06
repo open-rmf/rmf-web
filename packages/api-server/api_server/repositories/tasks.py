@@ -11,6 +11,7 @@ from tortoise.transactions import in_transaction
 from api_server.authenticator import user_dep
 from api_server.logger import format_exception, logger
 from api_server.models import (
+    Labels,
     LogEntry,
     Pagination,
     Phases,
@@ -46,36 +47,60 @@ class TaskRepository:
             raise HTTPException(500)
         return TaskRequest(**result.request)
 
+    async def save_task_labels(
+        self, db_task_state: ttm.TaskState, labels: Labels
+    ) -> None:
+        for k, v in labels.root.items():
+            await ttm.TaskLabel.update_or_create(
+                {"label_value": v},
+                state=db_task_state,
+                label_name=k,
+            )
+
     async def save_task_state(self, task_state: TaskState) -> None:
-        await DbTaskState.update_or_create(
-            {
-                "data": task_state.model_dump_json(),
-                "category": task_state.category.root if task_state.category else None,
-                "assigned_to": task_state.assigned_to.name
-                if task_state.assigned_to
-                else None,
-                "unix_millis_start_time": task_state.unix_millis_start_time
-                and datetime.fromtimestamp(task_state.unix_millis_start_time / 1000),
-                "unix_millis_finish_time": task_state.unix_millis_finish_time
-                and datetime.fromtimestamp(task_state.unix_millis_finish_time / 1000),
-                "status": task_state.status if task_state.status else None,
-                "unix_millis_request_time": task_state.booking.unix_millis_request_time
-                and datetime.fromtimestamp(
-                    task_state.booking.unix_millis_request_time / 1000
-                ),
-                "requester": task_state.booking.requester
-                if task_state.booking.requester
-                else None,
-            },
-            id_=task_state.booking.id,
-        )
+        async with in_transaction():
+            db_task_state, created = await DbTaskState.update_or_create(
+                {
+                    "data": task_state.model_dump_json(),
+                    "category": task_state.category.root
+                    if task_state.category
+                    else None,
+                    "assigned_to": task_state.assigned_to.name
+                    if task_state.assigned_to
+                    else None,
+                    "unix_millis_start_time": task_state.unix_millis_start_time
+                    and datetime.fromtimestamp(
+                        task_state.unix_millis_start_time / 1000
+                    ),
+                    "unix_millis_finish_time": task_state.unix_millis_finish_time
+                    and datetime.fromtimestamp(
+                        task_state.unix_millis_finish_time / 1000
+                    ),
+                    "status": task_state.status if task_state.status else None,
+                    "unix_millis_request_time": task_state.booking.unix_millis_request_time
+                    and datetime.fromtimestamp(
+                        task_state.booking.unix_millis_request_time / 1000
+                    ),
+                    "requester": task_state.booking.requester
+                    if task_state.booking.requester
+                    else None,
+                },
+                id_=task_state.booking.id,
+            )
+
+            # Labels attached to a task is not expected to change in task state updates,
+            # so we can skip saving labels if it is not new. Note that if the labels were
+            # to change, the labels we stored for querying would become out of sync.
+            if created and task_state.booking.labels:
+                labels = Labels.from_strings(task_state.booking.labels)
+                await self.save_task_labels(db_task_state, labels)
 
     async def query_task_states(
         self, query: QuerySet[DbTaskState], pagination: Optional[Pagination] = None
     ) -> List[TaskState]:
         try:
             if pagination:
-                query = add_pagination(query, pagination)
+                query = add_pagination(query, pagination, group_by="labels__state_id")
             # TODO: enforce with authz
             results = await query.values_list("data")
             return [TaskState(**r[0]) for r in results]

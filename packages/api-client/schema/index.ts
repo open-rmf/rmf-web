@@ -789,6 +789,19 @@ export default {
             description: 'comma separated list of statuses',
           },
           {
+            name: 'label',
+            in: 'query',
+            required: false,
+            schema: {
+              anyOf: [{ type: 'string' }, { type: 'null' }],
+              description:
+                'comma separated list of labels, each item must be in the form <key>=<value>, multiple items will filter tasks with all the labels',
+              title: 'Label',
+            },
+            description:
+              'comma separated list of labels, each item must be in the form <key>=<value>, multiple items will filter tasks with all the labels',
+          },
+          {
             name: 'start_time_between',
             in: 'query',
             required: false,
