@@ -6,6 +6,7 @@ from .dispensers import *
 from .doors import *
 from .health import *
 from .ingestors import *
+from .labels import *
 from .lifts import *
 from .pagination import *
 from .rmf_api.activity_discovery_request import ActivityDiscoveryRequest
