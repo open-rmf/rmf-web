@@ -28,7 +28,7 @@ import {
   DefaultCustomComposeTaskDefinition,
   makeCustomComposeTaskShortDescription,
 } from './custom-compose';
-import { TaskDefinition, TaskDescription } from '../create-task';
+import { TaskDescription } from '../create-task';
 
 export function isNonEmptyString(value: string): boolean {
   return value.length > 0;
