@@ -370,8 +370,8 @@ export function CreateTaskForm({
   );
   const initialBookingLabel = requestTask ? getTaskBookingLabelFromTaskRequest(requestTask) : null;
   const [taskDefinitionId, setTaskDefinitionId] = React.useState<string>(
-    initialBookingLabel
-      ? initialBookingLabel.description.task_definition_id
+    initialBookingLabel && initialBookingLabel.description.task_definition_id
+      ? (initialBookingLabel.description.task_definition_id as string)
       : supportedTasks.length > 0
       ? supportedTasks[0].taskDefinitionId
       : DefaultTaskDefinitionId,
