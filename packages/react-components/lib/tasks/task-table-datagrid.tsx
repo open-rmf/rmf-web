@@ -293,7 +293,7 @@ export function TaskDataGridTable({
                 </React.Fragment>
               }
             >
-              <Box component="div">{'interrupted'}</Box>
+              <Box component="div">{'stale'}</Box>
             </Tooltip>
           );
         }
