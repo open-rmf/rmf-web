@@ -18,6 +18,7 @@ export interface ResourceConfigurationsType {
   attributionPrefix?: string;
   cartIds?: string[];
   loggedInDisplayLevel?: string;
+  dismissStaleTasks?: boolean;
 }
 
 export default class ResourceManager {
@@ -32,6 +33,7 @@ export default class ResourceManager {
   attributionPrefix?: string;
   cartIds?: string[];
   loggedInDisplayLevel?: string;
+  dismissStaleTasks?: boolean;
 
   /**
    * Gets the default resource manager using the embedded resource file (aka "assets/resources/main.json").
@@ -71,6 +73,7 @@ export default class ResourceManager {
     this.attributionPrefix = resources.attributionPrefix || 'OSRC-SG';
     this.cartIds = resources.cartIds || [];
     this.loggedInDisplayLevel = resources.loggedInDisplayLevel;
+    this.dismissStaleTasks = resources.dismissStaleTasks ?? false;
   }
 }
 

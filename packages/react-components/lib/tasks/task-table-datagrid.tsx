@@ -11,7 +11,16 @@ import {
   GridFilterModel,
   GridSortModel,
 } from '@mui/x-data-grid';
-import { styled, Stack, Typography, Tooltip, useMediaQuery, SxProps, Theme } from '@mui/material';
+import {
+  Box,
+  styled,
+  Stack,
+  Typography,
+  Tooltip,
+  useMediaQuery,
+  SxProps,
+  Theme,
+} from '@mui/material';
 import * as React from 'react';
 import { TaskState, ApiServerModelsRmfApiTaskStateStatus as Status } from 'api-client';
 import { InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
@@ -54,6 +63,20 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   },
 }));
 
+function isTaskOutdated(taskState: TaskState): boolean {
+  if (
+    !taskState.unix_millis_finish_time ||
+    !taskState.status ||
+    (taskState.status !== Status.Underway && taskState.status !== Status.Queued)
+  ) {
+    return false;
+  }
+
+  const finishDateTime = new Date(taskState.unix_millis_finish_time);
+  const nowDateTime = new Date();
+  return nowDateTime > finishDateTime;
+}
+
 export interface Tasks {
   isLoading: boolean;
   data: TaskState[];
@@ -74,6 +97,7 @@ export type MuiMouseEvent = MuiEvent<React.MouseEvent<HTMLElement>>;
 
 export interface TableDataGridState {
   tasks: Tasks;
+  dismissStaleTasks: boolean;
   onTaskClick?(ev: MuiMouseEvent, task: TaskState): void;
   onPageChange: (newPage: number) => void;
   onPageSizeChange: (newPageSize: number) => void;
@@ -122,6 +146,7 @@ const TaskRequester = (requester: string | null, sx: SxProps<Theme>): JSX.Elemen
 
 export function TaskDataGridTable({
   tasks,
+  dismissStaleTasks,
   onTaskClick,
   onPageChange,
   onPageSizeChange,
@@ -251,8 +276,30 @@ export function TaskDataGridTable({
       field: 'status',
       headerName: 'State',
       editable: false,
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.status ? params.row.status : 'unknown',
+      renderCell: (cellValues) => {
+        const statusString = cellValues.row.status ? cellValues.row.status : 'unknown';
+        if (dismissStaleTasks && isTaskOutdated(cellValues.row)) {
+          return (
+            <Tooltip
+              title={
+                <React.Fragment>
+                  <Typography>
+                    Finish time is in the past, but task is still queued or underway.
+                  </Typography>
+                  <Typography>
+                    The task may have been interrupted or stalled during the execution.
+                  </Typography>
+                  <Typography>Last status update: {statusString}</Typography>
+                </React.Fragment>
+              }
+            >
+              <Box component="div">{'interrupted'}</Box>
+            </Tooltip>
+          );
+        }
+
+        return <Box component="div">{statusString}</Box>;
+      },
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,
@@ -299,6 +346,10 @@ export function TaskDataGridTable({
         onRowClick={handleEvent}
         getCellClassName={(params: GridCellParams<string>) => {
           if (params.field === 'status') {
+            if (isTaskOutdated(params.row)) {
+              return classes.taskUnknownCell;
+            }
+
             switch (params.value) {
               case Status.Underway:
                 return classes.taskActiveCell;
