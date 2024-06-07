@@ -62,13 +62,6 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
     if (errorLogEntries.length !== 0) {
       return 'Task error';
     }
-    if (
-      state.unix_millis_finish_time &&
-      state.unix_millis_warn_time &&
-      state.unix_millis_finish_time > state.unix_millis_warn_time
-    ) {
-      return 'Task warning';
-    }
     return 'Task alert';
   };
 
@@ -145,20 +138,6 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
           value: `${completionTimeString}Task completed!`,
         },
       ];
-    } else if (
-      state.unix_millis_finish_time &&
-      state.unix_millis_warn_time &&
-      state.unix_millis_finish_time > state.unix_millis_warn_time
-    ) {
-      const completionTimeString = `${new Date(state.unix_millis_finish_time).toLocaleString()}`;
-      const warningTimeString = `${new Date(state.unix_millis_warn_time).toLocaleString()}`;
-      content = [
-        ...content,
-        {
-          title: 'Late',
-          value: `Task is estimated to complete at ${completionTimeString}, later than the expected ${warningTimeString}.`,
-        },
-      ];
     }
 
     return content;
@@ -181,14 +160,6 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
 
     if (errorLogs.length !== 0) {
       return base.palette.error.dark;
-    }
-
-    if (
-      state.unix_millis_finish_time &&
-      state.unix_millis_warn_time &&
-      state.unix_millis_finish_time > state.unix_millis_warn_time
-    ) {
-      return base.palette.warning.dark;
     }
 
     return base.palette.background.default;

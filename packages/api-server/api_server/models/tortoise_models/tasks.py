@@ -28,7 +28,6 @@ class TaskState(Model):
     status = CharField(255, null=True, index=True)
     unix_millis_request_time = DatetimeField(null=True, index=True)
     requester = CharField(255, null=True, index=True)
-    unix_millis_warn_time = DatetimeField(null=True, index=True)
     pickup = CharField(255, null=True, index=True)
     destination = CharField(255, null=True, index=True)
     labels = ReverseRelation["TaskLabel"]

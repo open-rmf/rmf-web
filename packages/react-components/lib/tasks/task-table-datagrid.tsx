@@ -11,7 +11,16 @@ import {
   GridFilterModel,
   GridSortModel,
 } from '@mui/x-data-grid';
-import { styled, Stack, Typography, Tooltip, useMediaQuery, SxProps, Theme } from '@mui/material';
+import {
+  Box,
+  styled,
+  Stack,
+  Typography,
+  Tooltip,
+  useMediaQuery,
+  SxProps,
+  Theme,
+} from '@mui/material';
 import * as React from 'react';
 import { TaskState, ApiServerModelsRmfApiTaskStateStatus as Status } from 'api-client';
 import { InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
@@ -25,6 +34,7 @@ const classes = {
   taskPendingCell: 'MuiDataGrid-cell-pending-cell',
   taskQueuedCell: 'MuiDataGrid-cell-queued-cell',
   taskUnknownCell: 'MuiDataGrid-cell-unknown-cell',
+  taskLateCell: 'MuiDataGrid-cell-late-cell',
 };
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
@@ -49,6 +59,10 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     color: theme.palette.getContrastText(theme.palette.grey[300]),
   },
   [`& .${classes.taskUnknownCell}`]: {
+    backgroundColor: theme.palette.warning.main,
+    color: theme.palette.getContrastText(theme.palette.warning.main),
+  },
+  [`& .${classes.taskLateCell}`]: {
     backgroundColor: theme.palette.warning.main,
     color: theme.palette.getContrastText(theme.palette.warning.main),
   },
@@ -226,10 +240,25 @@ export function TaskDataGridTable({
       headerName: 'Start Time',
       width: 150,
       editable: false,
-      renderCell: (cellValues) =>
-        cellValues.row.unix_millis_start_time
-          ? `${new Date(cellValues.row.unix_millis_start_time).toLocaleTimeString()}`
-          : 'n/a',
+      renderCell: (cellValues) => {
+        const startDateTime = cellValues.row.unix_millis_start_time
+          ? new Date(cellValues.row.unix_millis_start_time)
+          : undefined;
+        const startTimeString = startDateTime ? `${startDateTime.toLocaleTimeString()}` : 'n/a';
+        return (
+          <Tooltip
+            title={
+              <React.Fragment>
+                <Typography>
+                  Start time: {startDateTime ? startDateTime.toLocaleString() : 'n/a'}
+                </Typography>
+              </React.Fragment>
+            }
+          >
+            <Box component="div">{startTimeString}</Box>
+          </Tooltip>
+        );
+      },
       flex: 1,
       filterOperators: getMinimalDateOperators,
       filterable: true,
@@ -239,10 +268,37 @@ export function TaskDataGridTable({
       headerName: 'End Time',
       width: 150,
       editable: false,
-      renderCell: (cellValues) =>
-        cellValues.row.unix_millis_finish_time
-          ? `${new Date(cellValues.row.unix_millis_finish_time).toLocaleTimeString()}`
-          : 'n/a',
+      renderCell: (cellValues) => {
+        const bookingLabel = getTaskBookingLabelFromTaskState(cellValues.row);
+        let warnDateTime: Date | undefined = undefined;
+        if (bookingLabel?.description.unix_millis_warn_time) {
+          const warnMillisNum = parseInt(bookingLabel.description.unix_millis_warn_time as string);
+          if (!Number.isNaN(warnMillisNum)) {
+            warnDateTime = new Date(warnMillisNum);
+          }
+        }
+
+        const finishDateTime = cellValues.row.unix_millis_finish_time
+          ? new Date(cellValues.row.unix_millis_finish_time)
+          : undefined;
+        const finishTimeString = finishDateTime ? `${finishDateTime.toLocaleTimeString()}` : 'n/a';
+        return (
+          <Tooltip
+            title={
+              <React.Fragment>
+                <Typography>
+                  Warning time: {warnDateTime ? warnDateTime.toLocaleString() : 'n/a'}
+                </Typography>
+                <Typography>
+                  Finish time: {finishDateTime ? finishDateTime.toLocaleString() : 'n/a'}
+                </Typography>
+              </React.Fragment>
+            }
+          >
+            <Box component="div">{finishTimeString}</Box>
+          </Tooltip>
+        );
+      },
       flex: 1,
       filterOperators: getMinimalDateOperators,
       filterable: true,
@@ -312,6 +368,27 @@ export function TaskDataGridTable({
                 return classes.taskQueuedCell;
               default:
                 return classes.taskUnknownCell;
+            }
+          } else if (params.field === 'unix_millis_finish_time') {
+            if (!params.value) {
+              return classes.taskUnknownCell;
+            }
+
+            const bookingLabel = getTaskBookingLabelFromTaskState(params.row);
+            let warnDateTime: Date | undefined = undefined;
+            if (bookingLabel?.description.unix_millis_warn_time) {
+              const warnMillisNum = parseInt(
+                bookingLabel.description.unix_millis_warn_time as string,
+              );
+              if (!Number.isNaN(warnMillisNum)) {
+                warnDateTime = new Date(warnMillisNum);
+              }
+            }
+
+            const finishDateTime = params.value ? new Date(params.value) : undefined;
+
+            if (warnDateTime && finishDateTime && finishDateTime > warnDateTime) {
+              return classes.taskLateCell;
             }
           }
           return '';
