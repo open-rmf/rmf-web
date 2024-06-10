@@ -18,7 +18,6 @@ export interface ResourceConfigurationsType {
   attributionPrefix?: string;
   cartIds?: string[];
   loggedInDisplayLevel?: string;
-  dismissStaleTasks?: boolean;
 }
 
 export default class ResourceManager {
