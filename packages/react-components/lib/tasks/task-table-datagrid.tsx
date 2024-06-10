@@ -97,7 +97,6 @@ export type MuiMouseEvent = MuiEvent<React.MouseEvent<HTMLElement>>;
 
 export interface TableDataGridState {
   tasks: Tasks;
-  dismissStaleTasks: boolean;
   onTaskClick?(ev: MuiMouseEvent, task: TaskState): void;
   onPageChange: (newPage: number) => void;
   onPageSizeChange: (newPageSize: number) => void;
@@ -146,7 +145,6 @@ const TaskRequester = (requester: string | null, sx: SxProps<Theme>): JSX.Elemen
 
 export function TaskDataGridTable({
   tasks,
-  dismissStaleTasks,
   onTaskClick,
   onPageChange,
   onPageSizeChange,
@@ -278,7 +276,7 @@ export function TaskDataGridTable({
       editable: false,
       renderCell: (cellValues) => {
         const statusString = cellValues.row.status ? cellValues.row.status : 'unknown';
-        if (dismissStaleTasks && isTaskOutdated(cellValues.row)) {
+        if (isTaskOutdated(cellValues.row)) {
           return (
             <Tooltip
               title={
@@ -289,11 +287,10 @@ export function TaskDataGridTable({
                   <Typography>
                     The task may have been interrupted or stalled during the execution.
                   </Typography>
-                  <Typography>Last status update: {statusString}</Typography>
                 </React.Fragment>
               }
             >
-              <Box component="div">{'stale'}</Box>
+              <Box component="div">{`${statusString} (stale)`}</Box>
             </Tooltip>
           );
         }

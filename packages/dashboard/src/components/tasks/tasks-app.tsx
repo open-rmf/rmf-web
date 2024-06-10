@@ -23,7 +23,7 @@ import {
   Tasks,
   Window,
 } from 'react-components';
-import { AppControllerContext, ResourcesContext } from '../app-contexts';
+import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
@@ -85,7 +85,6 @@ export const TasksApp = React.memo(
     ) => {
       const rmf = React.useContext(RmfAppContext);
       const appController = React.useContext(AppControllerContext);
-      const resourcesContext = React.useContext(ResourcesContext);
       const [autoRefresh, setAutoRefresh] = React.useState(true);
       const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
       const [selectedPanelIndex, setSelectedPanelIndex] = React.useState(TaskTablePanel.QueueTable);
@@ -425,7 +424,6 @@ export const TasksApp = React.memo(
             <TableContainer>
               <TaskDataGridTable
                 tasks={tasksState}
-                dismissStaleTasks={resourcesContext?.dismissStaleTasks ?? false}
                 onTaskClick={(_: MuiMouseEvent, task: TaskState) => {
                   setSelectedTask(task);
                   if (task.assigned_to) {
