@@ -31,6 +31,9 @@ class TaskState(Model):
     pickup = CharField(255, null=True, index=True)
     destination = CharField(255, null=True, index=True)
     labels = ReverseRelation["TaskLabel"]
+    _do_not_use_unix_millis_warn_time = DatetimeField(
+        null=True, index=True, source_field="unix_millis_warn_time"
+    )
 
 
 class TaskLabel(Model):
