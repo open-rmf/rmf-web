@@ -329,6 +329,8 @@ export function TaskDataGridTable({
       field: 'status',
       headerName: 'State',
       editable: false,
+      valueGetter: (params: GridValueGetterParams) =>
+        params.row.state.status ? params.row.state.status : 'unknown',
       renderCell: (cellValues) => {
         const statusString = cellValues.row.state.status ? cellValues.row.state.status : 'unknown';
         if (isTaskOutdated(cellValues.row.state)) {
@@ -405,7 +407,7 @@ export function TaskDataGridTable({
         onRowClick={handleEvent}
         getCellClassName={(params: GridCellParams<string>) => {
           if (params.field === 'status') {
-            if (isTaskOutdated(params.row)) {
+            if (isTaskOutdated(params.row.state)) {
               return classes.taskUnknownCell;
             }
 
@@ -424,7 +426,7 @@ export function TaskDataGridTable({
                 return classes.taskUnknownCell;
             }
           } else if (params.field === 'unix_millis_finish_time') {
-            if (!params.value) {
+            if (!params.row.state.unix_millis_finish_time) {
               return classes.taskUnknownCell;
             }
 
@@ -438,7 +440,9 @@ export function TaskDataGridTable({
               }
             }
 
-            const finishDateTime = params.value ? new Date(params.value) : undefined;
+            const finishDateTime = params.row.state.unix_millis_finish_time
+              ? new Date(params.row.state.unix_millis_finish_time)
+              : undefined;
 
             if (warnDateTime && finishDateTime && finishDateTime > warnDateTime) {
               return classes.taskLateCell;
