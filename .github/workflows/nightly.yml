@@ -25,7 +25,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: ${{ github.repository }}/minimal-rmf
+          tags: ghcr.io/${{ github.repository }}/minimal-rmf
           context: .github/minimal-rmf
   # dashboard-e2e:
   #   strategy:
