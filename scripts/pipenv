@@ -1,6 +1,5 @@
-#!/bin/bash
+#!/usr/bin/bash
 set -e
 
 # Wrapper to the locally installed pipenv.
-. "$(dirname $0)/../.venv/bin/activate"
-pipenv "$@"
+exec "$(dirname "$0")/../.venv/bin/pipenv" "$@"

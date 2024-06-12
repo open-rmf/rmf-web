@@ -21,6 +21,8 @@ RUN cd /rmf \
   && colcon build --merge-install --install-base /opt/rmf --cmake-args -DCMAKE_BUILD_TYPE=Release \
   && rm -rf /rmf
 
+# install tools for rmf-web
+
 RUN curl -fsSL https://get.pnpm.io/install.sh | bash -
 # shell runs in non-interactive mode, which does not source .bashrc so we need to set the PATH manually
 ENV PNPM_HOME /root/.local/share/pnpm
@@ -28,3 +30,5 @@ ENV PATH "$PNPM_HOME:$PATH"
 
 # nodejs seems to have changed the official mirror, the default in pnpm is very slow now
 RUN pnpm config -g set 'node-mirror:release' https://nodejs.org/dist && pnpm env use --global lts
+
+RUN apt update && apt install -y python3-venv

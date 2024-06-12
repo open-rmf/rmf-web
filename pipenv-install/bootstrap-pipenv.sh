@@ -8,5 +8,3 @@ if [ ! -d .venv ]; then
   python3 -m venv .venv --system-site-packages --prompt rmf-web
   .venv/bin/pip3 install pipenv
 fi
-
-exec .venv/bin/pipenv "$@"
