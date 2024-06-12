@@ -39,7 +39,7 @@ jobs:
           . /opt/rmf/setup.bash
           pnpm run lint
           pnpm run test:cov -v
-          .venv/bin/pipenv run python -m coverage xml
+          ../../.venv/bin/pipenv run python -m coverage xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
