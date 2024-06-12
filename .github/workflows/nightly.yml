@@ -6,7 +6,7 @@ on:
 jobs:
   build-docker-images:
     name: Push Docker images to GitHub Packages
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v2
       - name: Push e2e image to GitHub Packages
@@ -25,7 +25,7 @@ jobs:
       fail-fast: false
     needs: build-docker-images
     name: Dashboard e2e
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     container:
       image: ghcr.io/${{ github.repository }}/e2e
       options: --privileged --ipc=host

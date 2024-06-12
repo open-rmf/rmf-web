@@ -12,7 +12,7 @@ env:
 jobs:
   unit-tests:
     name: Unit Tests
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     container:
       image: ghcr.io/${{ github.repository }}/e2e
       credentials:
@@ -31,4 +31,4 @@ jobs:
         with:
           package: ros-translator
       - name: test
-        run: . /opt/ros/humble/setup.bash && pnpm test
+        run: . /opt/ros/jazzy/setup.bash && pnpm test
