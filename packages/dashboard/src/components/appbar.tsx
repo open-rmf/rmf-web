@@ -474,10 +474,16 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
                   key={alert.id}
                   title={
                     <React.Fragment>
-                      <Typography>Alert</Typography>
-                      <Typography>ID: {alert.original_id}</Typography>
-                      <Typography>Type: {alert.category.toUpperCase()}</Typography>
-                      <Typography>
+                      <Typography variant="caption" display="block" noWrap>
+                        Alert
+                      </Typography>
+                      <Typography variant="caption" display="block" noWrap>
+                        ID: {alert.original_id}
+                      </Typography>
+                      <Typography variant="caption" display="block" noWrap>
+                        Type: {alert.category.toUpperCase()}
+                      </Typography>
+                      <Typography variant="caption" display="block" noWrap>
                         Created: {new Date(alert.unix_millis_created_time).toLocaleString()}
                       </Typography>
                     </React.Fragment>
