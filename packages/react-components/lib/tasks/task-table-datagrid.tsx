@@ -72,6 +72,20 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   },
 }));
 
+function isTaskOutdated(taskState: TaskState): boolean {
+  if (
+    !taskState.unix_millis_finish_time ||
+    !taskState.status ||
+    (taskState.status !== Status.Underway && taskState.status !== Status.Queued)
+  ) {
+    return false;
+  }
+
+  const finishDateTime = new Date(taskState.unix_millis_finish_time);
+  const nowDateTime = new Date();
+  return nowDateTime > finishDateTime;
+}
+
 export interface Tasks {
   isLoading: boolean;
   data: TaskState[];
@@ -317,6 +331,29 @@ export function TaskDataGridTable({
       editable: false,
       valueGetter: (params: GridValueGetterParams) =>
         params.row.state.status ? params.row.state.status : 'unknown',
+      renderCell: (cellValues) => {
+        const statusString = cellValues.row.state.status ? cellValues.row.state.status : 'unknown';
+        if (isTaskOutdated(cellValues.row.state)) {
+          return (
+            <Tooltip
+              title={
+                <React.Fragment>
+                  <Typography>
+                    Finish time is in the past, but task is still queued or underway.
+                  </Typography>
+                  <Typography>
+                    The task may have been interrupted or stalled during the execution.
+                  </Typography>
+                </React.Fragment>
+              }
+            >
+              <Box component="div">{`${statusString} (stale)`}</Box>
+            </Tooltip>
+          );
+        }
+
+        return <Box component="div">{statusString}</Box>;
+      },
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,
@@ -370,6 +407,10 @@ export function TaskDataGridTable({
         onRowClick={handleEvent}
         getCellClassName={(params: GridCellParams<string>) => {
           if (params.field === 'status') {
+            if (isTaskOutdated(params.row.state)) {
+              return classes.taskUnknownCell;
+            }
+
             switch (params.value) {
               case Status.Underway:
                 return classes.taskActiveCell;
@@ -385,7 +426,7 @@ export function TaskDataGridTable({
                 return classes.taskUnknownCell;
             }
           } else if (params.field === 'unix_millis_finish_time') {
-            if (!params.value) {
+            if (!params.row.state.unix_millis_finish_time) {
               return classes.taskUnknownCell;
             }
 
@@ -399,7 +440,9 @@ export function TaskDataGridTable({
               }
             }
 
-            const finishDateTime = params.value ? new Date(params.value) : undefined;
+            const finishDateTime = params.row.state.unix_millis_finish_time
+              ? new Date(params.row.state.unix_millis_finish_time)
+              : undefined;
 
             if (warnDateTime && finishDateTime && finishDateTime > warnDateTime) {
               return classes.taskLateCell;
