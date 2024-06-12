@@ -18,4 +18,4 @@ websocket-client = "~=1.7.0"
 ros-translator = {editable = true, path = "./packages/ros-translator"}
 
 [requires]
-python_version = "3.10"
+python_version = "~=3.10.4"
