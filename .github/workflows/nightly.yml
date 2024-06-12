@@ -4,6 +4,9 @@ on:
     # 2am SGT
     - cron: '0 18 * * *'
   push:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   build-docker-images:
     name: Push Docker images to GitHub Packages
