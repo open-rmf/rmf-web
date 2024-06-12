@@ -26,7 +26,7 @@ jobs:
         shell: bash
         working-directory: packages/ros-translator
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: setup python
         run: apt update && apt install -y python3-venv python-is-python3
       - name: bootstrap

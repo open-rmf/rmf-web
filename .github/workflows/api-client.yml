@@ -19,7 +19,7 @@ jobs:
         shell: bash
         working-directory: packages/api-client
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:

@@ -21,7 +21,7 @@ jobs:
         shell: bash
         working-directory: packages/rmf-auth
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:

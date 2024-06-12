@@ -27,7 +27,7 @@ jobs:
         shell: bash
         working-directory: packages/api-server
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: setup python
         run: apt update && apt install -y python3-venv python-is-python3
       - name: bootstrap
@@ -36,7 +36,7 @@ jobs:
           package: api-server
       - name: tests
         run: |
-          . /rmf_demos_ws/install/setup.bash
+          . /opt/rmf/setup.bash
           pnpm run lint
           pnpm run test:cov -v
           pipenv run python -m coverage xml
