@@ -3,7 +3,7 @@ on:
   schedule:
     # 2am SGT
     - cron: '0 18 * * *'
-  workflow_dispatch:
+  push:
 jobs:
   build-docker-images:
     name: Push Docker images to GitHub Packages
