@@ -9,7 +9,7 @@ jobs:
     name: Push Docker images to GitHub Packages
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Push minimal-rmf image to GitHub Packages
         uses: docker/build-push-action@v5
         with:
@@ -18,7 +18,7 @@ jobs:
           registry: ghcr.io
           repository: ${{ github.repository }}/minimal-rmf
           tags: latest
-          path: .github/minimal-rmf
+          context: .github/minimal-rmf
   # dashboard-e2e:
   #   strategy:
   #     matrix:
