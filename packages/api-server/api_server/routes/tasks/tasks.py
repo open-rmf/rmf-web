@@ -295,8 +295,6 @@ async def post_dispatch_task(
     task_repo: TaskRepository = Depends(TaskRepository),
     logger: LoggerAdapter = Depends(get_logger),
 ):
-    task_warn_time = request.request.unix_millis_warn_time
-
     # FIXME: In order to accommodate changing cancellation lots over time, and
     # avoiding updating all the saved scheduled tasks in the database, we only
     # insert cancellation lots as part of the cancellation behavior before
@@ -344,8 +342,6 @@ async def post_dispatch_task(
     if not resp.__root__.success:
         return RawJSONResponse(resp.json(), 400)
     new_state = cast(mdl.TaskDispatchResponseItem, resp.__root__).state
-    if task_warn_time is not None:
-        new_state.unix_millis_warn_time = task_warn_time
     await task_repo.save_task_state(new_state)
     await task_repo.save_task_request(new_state, request.request)
     return resp.__root__

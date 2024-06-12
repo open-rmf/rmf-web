@@ -43,7 +43,10 @@ import React from 'react';
 import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { PositiveIntField } from '../form-inputs';
-import { serializeTaskBookingLabel } from './task-booking-label-utils';
+import {
+  getTaskBookingLabelFromTaskRequest,
+  serializeTaskBookingLabel,
+} from './task-booking-label-utils';
 
 interface TaskDefinition {
   task_definition_id: string;
@@ -1403,9 +1406,23 @@ export function CreateTaskForm({
     setScheduleUntilValue(event.target.value);
   };
 
-  const [warnTimeChecked, setWarnTimeChecked] = React.useState(false);
+  const existingBookingLabel = requestTask
+    ? getTaskBookingLabelFromTaskRequest(requestTask)
+    : undefined;
+  let existingWarnTime: Date | null = null;
+  if (existingBookingLabel && existingBookingLabel.description.unix_millis_warn_time) {
+    const warnTimeInt = parseInt(existingBookingLabel.description.unix_millis_warn_time as string);
+    if (!Number.isNaN(warnTimeInt)) {
+      existingWarnTime = new Date(warnTimeInt);
+    }
+  }
+  const [warnTime, setWarnTime] = React.useState<Date | null>(existingWarnTime);
   const handleWarnTimeCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setWarnTimeChecked(event.target.checked);
+    if (event.target.checked) {
+      setWarnTime(new Date());
+    } else {
+      setWarnTime(null);
+    }
   };
 
   const handleTaskDescriptionChange = (newCategory: string, newDesc: TaskDescription) => {
@@ -1568,6 +1585,10 @@ export function CreateTaskForm({
         );
         onFail && onFail(error, [request]);
         return;
+      }
+
+      if (warnTime !== null) {
+        requestBookingLabel.description.unix_millis_warn_time = `${warnTime.valueOf()}`;
       }
 
       const labelString = serializeTaskBookingLabel(requestBookingLabel);
@@ -1779,7 +1800,7 @@ export function CreateTaskForm({
                   </Grid>
                   <Grid item xs={1}>
                     <Checkbox
-                      checked={warnTimeChecked}
+                      checked={warnTime !== null}
                       onChange={handleWarnTimeCheckboxChange}
                       inputProps={{ 'aria-label': 'controlled' }}
                       sx={{
@@ -1789,24 +1810,11 @@ export function CreateTaskForm({
                   </Grid>
                   <Grid item xs={isScreenHeightLessThan800 ? 5 : 4}>
                     <DateTimePicker
-                      disabled={!warnTimeChecked}
+                      disabled={warnTime === null}
                       inputFormat={'MM/dd/yyyy HH:mm'}
-                      value={
-                        taskRequest.unix_millis_warn_time
-                          ? new Date(taskRequest.unix_millis_warn_time)
-                          : new Date()
-                      }
+                      value={warnTime}
                       onChange={(date) => {
-                        if (!date || !warnTimeChecked) {
-                          return;
-                        }
-                        taskRequest.unix_millis_warn_time = date.valueOf();
-                        setTaskRequest((prev) => {
-                          return {
-                            ...prev,
-                            unix_millis_warn_time: date.valueOf(),
-                          };
-                        });
+                        setWarnTime(date);
                       }}
                       label="Warn Time"
                       renderInput={(props) => (
