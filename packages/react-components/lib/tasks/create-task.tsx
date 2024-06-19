@@ -55,7 +55,6 @@ import {
   DefaultDeliveryTaskDefinition,
   DeliveryTaskDescription,
   DeliveryTaskForm,
-  makeDefaultDeliveryTaskDescription,
   makeDeliveryTaskBookingLabel,
 } from './types/delivery';
 import {
@@ -88,7 +87,7 @@ export interface TaskDefinition {
 }
 
 // If no task definition id is found in a past task (scheduled or favorite)
-const DefaultTaskDefinitionId = DefaultCustomComposeTaskDefinition.taskDefinitionId;
+const FallbackTaskDefinition = DefaultCustomComposeTaskDefinition;
 
 export type TaskDescription =
   | DeliveryPickupTaskDescription
@@ -194,18 +193,31 @@ function FavoriteTask({
   );
 }
 
-function defaultTaskRequest(taskDefinitionId: string): TaskRequest {
+function getDefaultTaskRequest(taskDefinitionId: string): TaskRequest | null {
   const category = getTaskRequestCategory(taskDefinitionId);
   const description = getDefaultTaskDescription(taskDefinitionId);
 
-  return {
-    category: category ?? 'compose',
-    description: description ?? makeDefaultDeliveryTaskDescription(),
-    unix_millis_earliest_start_time: 0,
-    unix_millis_request_time: Date.now(),
-    priority: { type: 'binary', value: 0 },
-    requester: '',
-  };
+  if (!category) {
+    console.error(`Unable to retrieve task category for task definition of id ${taskDefinitionId}`);
+  }
+  if (!description) {
+    console.error(
+      `Unable to retrieve task description for task definition of id ${taskDefinitionId}`,
+    );
+  }
+
+  if (category && description) {
+    return {
+      category,
+      description,
+      unix_millis_earliest_start_time: 0,
+      unix_millis_request_time: Date.now(),
+      priority: { type: 'binary', value: 0 },
+      requester: '',
+    };
+  }
+
+  return null;
 }
 
 export type RecurringDays = [boolean, boolean, boolean, boolean, boolean, boolean, boolean];
@@ -269,19 +281,6 @@ const DaySelectorSwitch: React.VFC<DaySelectorSwitchProps> = ({ disabled, onChan
       />
     </div>
   );
-};
-
-const defaultFavoriteTask = (): TaskFavorite => {
-  return {
-    id: '',
-    name: '',
-    category: 'compose',
-    description: makeDefaultDeliveryTaskDescription(),
-    unix_millis_earliest_start_time: 0,
-    priority: { type: 'binary', value: 0 },
-    user: '',
-    task_definition_id: DefaultTaskDefinitionId,
-  };
 };
 
 export interface CreateTaskFormProps
@@ -355,26 +354,84 @@ export function CreateTaskForm({
 
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
 
-  const [favoriteTaskBuffer, setFavoriteTaskBuffer] = React.useState<TaskFavorite>(
-    defaultFavoriteTask(),
-  );
+  // Note that we are not checking if the number of supported tasks is larger
+  // than 0, this will cause the dashboard to fail when the create task form is
+  // opened. This is intentional as it is a misconfiguration and will require
+  // the build-time configuration to be fixed.
+  let allSupportedTasksAreValid = true;
+  const validTasks: TaskDefinition[] = [];
+  let defaultTaskDescription: string | TaskDescription | null = null;
+  let defaultTaskRequest: TaskRequest | null = null;
+  supportedTasks.forEach((supportedTask: TaskDefinition, index: number) => {
+    const definitionId = supportedTask.taskDefinitionId;
+    const desc = getDefaultTaskDescription(definitionId);
+    const req = getDefaultTaskRequest(definitionId);
+
+    if (!desc) {
+      console.error(`Failed to retrieve task description for definition ID: [${definitionId}]`);
+      allSupportedTasksAreValid = false;
+    }
+    if (!req) {
+      console.error(`Failed to create task request for definition ID: [${definitionId}]`);
+      allSupportedTasksAreValid = false;
+    }
+    if (desc && req) {
+      validTasks.push(supportedTask);
+
+      if (!defaultTaskDescription && !defaultTaskRequest) {
+        defaultTaskDescription = desc;
+        defaultTaskRequest = req;
+      }
+    }
+  });
+
+  // for (const supportedTask of supportedTasks) {
+  //   const definitionId = supportedTask.taskDefinitionId;
+  //   const desc = getDefaultTaskDescription(definitionId);
+  //   const req = getDefaultTaskRequest(definitionId);
+  //   if (!desc) {
+  //     console.error(`Failed to retrieve task description for definition ID: [${definitionId}]`);
+  //     allSupportedTasksAreValid = false;
+  //   }
+  //   if (!req) {
+  //     console.error(`Failed to create task request for definition ID: [${definitionId}]`);
+  //     allSupportedTasksAreValid = false;
+  //   }
+  //   if (desc && req) {
+  //     validTasks.push(supportedTask);
+  //   }
+  // }
+  // if (!allSupportedTasksAreValid) {
+  //   console.error('Issues found in supported task definitions');
+  // }
+
+  if (!defaultTaskDescription || !defaultTaskRequest) {
+    // We should never reach this state
+    console.error('Default task could not be generated, this might be a configuration error');
+    return <></>;
+  }
+
+  const [favoriteTaskBuffer, setFavoriteTaskBuffer] = React.useState<TaskFavorite>({
+    id: '',
+    name: '',
+    category: supportedTasks[0].requestCategory,
+    description: defaultTaskDescription as object,
+    unix_millis_earliest_start_time: 0,
+    priority: { type: 'binary', value: 0 },
+    user: '',
+    task_definition_id: supportedTasks[0].taskDefinitionId,
+  });
   const [favoriteTaskTitleError, setFavoriteTaskTitleError] = React.useState(false);
   const [savingFavoriteTask, setSavingFavoriteTask] = React.useState(false);
 
   const [taskRequest, setTaskRequest] = React.useState<TaskRequest>(
-    () =>
-      requestTask ??
-      defaultTaskRequest(
-        supportedTasks.length > 0 ? supportedTasks[0].taskDefinitionId : DefaultTaskDefinitionId,
-      ),
+    requestTask ?? defaultTaskRequest,
   );
   const initialBookingLabel = requestTask ? getTaskBookingLabelFromTaskRequest(requestTask) : null;
   const [taskDefinitionId, setTaskDefinitionId] = React.useState<string>(
     initialBookingLabel && initialBookingLabel.description.task_definition_id
       ? (initialBookingLabel.description.task_definition_id as string)
-      : supportedTasks.length > 0
-      ? supportedTasks[0].taskDefinitionId
-      : DefaultTaskDefinitionId,
+      : supportedTasks[0].taskDefinitionId,
   );
 
   const [submitting, setSubmitting] = React.useState(false);
@@ -455,6 +512,10 @@ export function CreateTaskForm({
     });
   };
 
+  const onValidate = (valid: boolean) => {
+    setFormFullyFilled(valid);
+  };
+
   const renderTaskDescriptionForm = (definitionId: string) => {
     switch (definitionId) {
       case DefaultPatrolTaskDefinition.taskDefinitionId:
@@ -465,7 +526,7 @@ export function CreateTaskForm({
             onChange={(desc) =>
               handleTaskDescriptionChange(DefaultPatrolTaskDefinition.requestCategory, desc)
             }
-            allowSubmit={allowSubmit}
+            onValidate={onValidate}
           />
         );
       case DefaultDeliveryTaskDefinition.taskDefinitionId:
@@ -477,7 +538,7 @@ export function CreateTaskForm({
             onChange={(desc) =>
               handleTaskDescriptionChange(DefaultDeliveryTaskDefinition.requestCategory, desc)
             }
-            allowSubmit={allowSubmit}
+            onValidate={onValidate}
           />
         );
       case DefaultComposeCleanTaskDefinition.taskDefinitionId:
@@ -489,7 +550,7 @@ export function CreateTaskForm({
               desc.category = taskRequest.description.category;
               handleTaskDescriptionChange(DefaultComposeCleanTaskDefinition.requestCategory, desc);
             }}
-            allowSubmit={allowSubmit}
+            onValidate={onValidate}
           />
         );
       case DefaultDeliveryPickupTaskDefinition.taskDefinitionId:
@@ -508,7 +569,7 @@ export function CreateTaskForm({
                 desc,
               );
             }}
-            allowSubmit={allowSubmit}
+            onValidate={onValidate}
           />
         );
       case DefaultDeliverySequentialLotPickupTaskDefinition.taskDefinitionId:
@@ -527,7 +588,7 @@ export function CreateTaskForm({
                 desc,
               );
             }}
-            allowSubmit={allowSubmit}
+            onValidate={onValidate}
           />
         );
       case DefaultDeliveryAreaPickupTaskDefinition.taskDefinitionId:
@@ -546,7 +607,7 @@ export function CreateTaskForm({
                 desc,
               );
             }}
-            allowSubmit={allowSubmit}
+            onValidate={onValidate}
           />
         );
       case DefaultCustomComposeTaskDefinition.taskDefinitionId:
@@ -557,7 +618,7 @@ export function CreateTaskForm({
             onChange={(desc) => {
               handleCustomComposeTaskDescriptionChange(desc);
             }}
-            allowSubmit={allowSubmit}
+            onValidate={onValidate}
           />
         );
     }
@@ -580,10 +641,6 @@ export function CreateTaskForm({
     ) {
       setFavoriteTaskBuffer({ ...favoriteTaskBuffer, category, description });
     }
-  };
-
-  const allowSubmit = (allow: boolean) => {
-    setFormFullyFilled(allow);
   };
 
   // no memo because deps would likely change
@@ -704,7 +761,7 @@ export function CreateTaskForm({
       setSavingFavoriteTask(true);
 
       const favoriteTask = favoriteTaskBuffer;
-      favoriteTask.task_definition_id = taskDefinitionId ?? DefaultTaskDefinitionId;
+      favoriteTask.task_definition_id = taskDefinitionId ?? supportedTasks[0].taskDefinitionId;
 
       await submitFavoriteTask(favoriteTask);
       setSavingFavoriteTask(false);
@@ -734,11 +791,15 @@ export function CreateTaskForm({
       onSuccessFavoriteTask &&
         onSuccessFavoriteTask('Deleted favorite task successfully', favoriteTaskBuffer);
 
-      setTaskRequest(
-        supportedTasks && supportedTasks.length > 0
-          ? defaultTaskRequest(supportedTasks[0].taskDefinitionId)
-          : defaultTaskRequest('patrol'),
-      );
+      const defaultTaskRequest = getDefaultTaskRequest(supportedTasks[0].taskDefinitionId);
+      if (!defaultTaskRequest) {
+        // We should never reach this area as we have already validated that
+        // each supported task have a valid task request for generation
+        console.error('Failed to reset task request buffer after deleting favorite task');
+        return;
+      }
+
+      setTaskRequest(defaultTaskRequest);
       setOpenFavoriteDialog(false);
       setCallToDeleteFavoriteTask(false);
       setCallToUpdateFavoriteTask(false);

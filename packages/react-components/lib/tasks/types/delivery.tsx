@@ -86,7 +86,7 @@ export interface DeliveryTaskFormProps {
   pickupPoints: Record<string, string>;
   dropoffPoints: Record<string, string>;
   onChange(taskDesc: DeliveryTaskDescription): void;
-  allowSubmit(allow: boolean): void;
+  onValidate(valid: boolean): void;
 }
 
 export function DeliveryTaskForm({
@@ -94,11 +94,11 @@ export function DeliveryTaskForm({
   pickupPoints = {},
   dropoffPoints = {},
   onChange,
-  allowSubmit,
+  onValidate,
 }: DeliveryTaskFormProps): React.JSX.Element {
   const theme = useTheme();
   const onInputChange = (desc: DeliveryTaskDescription) => {
-    allowSubmit(isDeliveryTaskDescriptionValid(desc));
+    onValidate(isDeliveryTaskDescriptionValid(desc));
     onChange(desc);
   };
 

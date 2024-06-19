@@ -40,17 +40,17 @@ const isCustomTaskDescriptionValid = (taskDescription: string): boolean => {
 interface CustomComposeTaskFormProps {
   taskDesc: CustomComposeTaskDescription;
   onChange(customComposeTaskDescription: CustomComposeTaskDescription): void;
-  allowSubmit(allow: boolean): void;
+  onValidate(valid: boolean): void;
 }
 
 export function CustomComposeTaskForm({
   taskDesc,
   onChange,
-  allowSubmit,
+  onValidate,
 }: CustomComposeTaskFormProps): React.JSX.Element {
   const theme = useTheme();
   const onInputChange = (desc: CustomComposeTaskDescription) => {
-    allowSubmit(isCustomTaskDescriptionValid(desc));
+    onValidate(isCustomTaskDescriptionValid(desc));
     onChange(desc);
   };
 

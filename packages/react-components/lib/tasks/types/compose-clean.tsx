@@ -112,17 +112,17 @@ interface ComposeCleanTaskFormProps {
   taskDesc: ComposeCleanTaskDescription;
   cleaningZones: string[];
   onChange(cleanTaskDescription: ComposeCleanTaskDescription): void;
-  allowSubmit(allow: boolean): void;
+  onValidate(valid: boolean): void;
 }
 
 export function ComposeCleanTaskForm({
   taskDesc,
   cleaningZones,
   onChange,
-  allowSubmit,
+  onValidate,
 }: ComposeCleanTaskFormProps): React.JSX.Element {
   const onInputChange = (desc: ComposeCleanTaskDescription) => {
-    allowSubmit(isComposeCleanTaskDescriptionValid(desc));
+    onValidate(isComposeCleanTaskDescriptionValid(desc));
     onChange(desc);
   };
 

@@ -109,22 +109,22 @@ interface PatrolTaskFormProps {
   taskDesc: PatrolTaskDescription;
   patrolWaypoints: string[];
   onChange(patrolTaskDescription: PatrolTaskDescription): void;
-  allowSubmit(allow: boolean): void;
+  onValidate(valid: boolean): void;
 }
 
 export function PatrolTaskForm({
   taskDesc,
   patrolWaypoints,
   onChange,
-  allowSubmit,
+  onValidate,
 }: PatrolTaskFormProps): React.JSX.Element {
   const theme = useTheme();
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const onInputChange = (desc: PatrolTaskDescription) => {
-    allowSubmit(isPatrolTaskDescriptionValid(desc));
+    onValidate(isPatrolTaskDescriptionValid(desc));
     onChange(desc);
   };
-  allowSubmit(isPatrolTaskDescriptionValid(taskDesc));
+  onValidate(isPatrolTaskDescriptionValid(taskDesc));
 
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="center" alignItems="center">

@@ -343,7 +343,7 @@ interface DeliveryPickupTaskFormProps {
   cartIds: string[];
   dropoffPoints: Record<string, string>;
   onChange(taskDesc: DeliveryPickupTaskDescription): void;
-  allowSubmit(allow: boolean): void;
+  onValidate(valid: boolean): void;
 }
 
 export function DeliveryPickupTaskForm({
@@ -352,12 +352,12 @@ export function DeliveryPickupTaskForm({
   cartIds = [],
   dropoffPoints = {},
   onChange,
-  allowSubmit,
+  onValidate,
 }: DeliveryPickupTaskFormProps): React.JSX.Element {
   const theme = useTheme();
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const onInputChange = (desc: DeliveryPickupTaskDescription) => {
-    allowSubmit(isDeliveryPickupTaskDescriptionValid(desc, pickupPoints, dropoffPoints));
+    onValidate(isDeliveryPickupTaskDescriptionValid(desc, pickupPoints, dropoffPoints));
     onChange(desc);
   };
 
@@ -556,7 +556,7 @@ interface DeliveryCustomProps {
   cartIds: string[];
   dropoffPoints: string[];
   onChange(taskDesc: DeliveryCustomTaskDescription): void;
-  allowSubmit(allow: boolean): void;
+  onValidate(valid: boolean): void;
 }
 
 export function DeliveryCustomTaskForm({
@@ -565,12 +565,12 @@ export function DeliveryCustomTaskForm({
   cartIds = [],
   dropoffPoints = [],
   onChange,
-  allowSubmit,
+  onValidate,
 }: DeliveryCustomProps): React.JSX.Element {
   const theme = useTheme();
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
   const onInputChange = (desc: DeliveryCustomTaskDescription) => {
-    allowSubmit(isDeliveryCustomTaskDescriptionValid(desc, pickupZones, dropoffPoints));
+    onValidate(isDeliveryCustomTaskDescriptionValid(desc, pickupZones, dropoffPoints));
     onChange(desc);
   };
 
