@@ -385,29 +385,11 @@ export function CreateTaskForm({
     }
   });
 
-  // for (const supportedTask of supportedTasks) {
-  //   const definitionId = supportedTask.taskDefinitionId;
-  //   const desc = getDefaultTaskDescription(definitionId);
-  //   const req = getDefaultTaskRequest(definitionId);
-  //   if (!desc) {
-  //     console.error(`Failed to retrieve task description for definition ID: [${definitionId}]`);
-  //     allSupportedTasksAreValid = false;
-  //   }
-  //   if (!req) {
-  //     console.error(`Failed to create task request for definition ID: [${definitionId}]`);
-  //     allSupportedTasksAreValid = false;
-  //   }
-  //   if (desc && req) {
-  //     validTasks.push(supportedTask);
-  //   }
-  // }
-  // if (!allSupportedTasksAreValid) {
-  //   console.error('Issues found in supported task definitions');
-  // }
-
   if (!defaultTaskDescription || !defaultTaskRequest) {
-    // We should never reach this state
-    console.error('Default task could not be generated, this might be a configuration error');
+    // We should never reach this state unless a misconfiguration happened.
+    const err = Error('Default task could not be generated, this might be a configuration error');
+    onFail && onFail(err, []);
+    console.error(err.message);
     return <></>;
   }
 
