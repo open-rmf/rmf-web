@@ -60,15 +60,15 @@ export default class ResourceManager {
       resources.allowedTasks || [
         {
           task_definition_id: 'patrol',
-          display_name: 'Patrol',
         },
         {
           task_definition_id: 'delivery',
-          display_name: 'Delivery',
         },
         {
-          task_definition_id: 'clean',
-          display_name: 'Clean',
+          task_definition_id: 'compose-clean',
+        },
+        {
+          task_definition_id: 'custom_compose',
         },
       ],
     );

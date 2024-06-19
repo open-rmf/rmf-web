@@ -394,7 +394,7 @@ export function CreateTaskForm({
     id: '',
     name: '',
     category: tasksToDisplay[0].requestCategory,
-    description: defaultTaskDescription as object,
+    description: defaultTaskDescription,
     unix_millis_earliest_start_time: 0,
     priority: { type: 'binary', value: 0 },
     user: '',
@@ -585,7 +585,6 @@ export function CreateTaskForm({
           />
         );
       case CustomComposeTaskDefinition.taskDefinitionId:
-      default:
         return (
           <CustomComposeTaskForm
             taskDesc={taskRequest.description as CustomComposeTaskDescription}
