@@ -17,7 +17,7 @@ import { PositiveIntField } from '../../form-inputs';
 import { TaskDefinition } from '../create-task';
 import type { TaskBookingLabel } from 'api-client';
 
-export const DefaultPatrolTaskDefinition: TaskDefinition = {
+export const PatrolTaskDefinition: TaskDefinition = {
   taskDefinitionId: 'patrol',
   taskDisplayName: 'Patrol',
   requestCategory: 'patrol',
@@ -33,7 +33,7 @@ export function makePatrolTaskBookingLabel(
 ): TaskBookingLabel {
   return {
     description: {
-      task_definition_id: DefaultPatrolTaskDefinition.taskDefinitionId,
+      task_definition_id: PatrolTaskDefinition.taskDefinitionId,
       destination: task_description.places[task_description.places.length - 1],
     },
   };
@@ -65,7 +65,7 @@ export function makePatrolTaskShortDescription(
   console.log(desc);
 
   const formattedPlaces = desc.places.map((place: string) => `[${place}]`);
-  return `[${displayName ?? DefaultPatrolTaskDefinition.taskDisplayName}] [${
+  return `[${displayName ?? PatrolTaskDefinition.taskDisplayName}] [${
     desc.rounds
   }] round/s, along ${formattedPlaces.join(', ')}`;
 }

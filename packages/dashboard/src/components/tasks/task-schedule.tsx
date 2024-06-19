@@ -69,7 +69,7 @@ const disablingCellsWithoutEvents = (
 
 export const TaskSchedule = () => {
   const rmf = React.useContext(RmfAppContext);
-  const resourceManager = React.useContext(ResourcesContext);
+  const taskResourcesContext = React.useContext(ResourcesContext)?.tasks;
   const { showAlert } = React.useContext(AppControllerContext);
   const profile = React.useContext(UserProfileContext);
 
@@ -137,7 +137,7 @@ export const TaskSchedule = () => {
       return tasks.flatMap((t: ScheduledTask) =>
         t.schedules.flatMap<ProcessedEvent>((s: ApiSchedule) => {
           const events = scheduleToEvents(params.start, params.end, s, t, getEventId, () =>
-            getScheduledTaskTitle(t, resourceManager?.supportedTasks),
+            getScheduledTaskTitle(t, taskResourcesContext?.tasks),
           );
           events.forEach((ev) => {
             eventsMap.current[Number(ev.event_id)] = t;
@@ -147,7 +147,7 @@ export const TaskSchedule = () => {
         }),
       );
     },
-    [rmf, resourceManager],
+    [rmf, taskResourcesContext],
   );
 
   const CustomCalendarEditor = ({ scheduler, value, onChange }: CustomCalendarEditorProps) => {
@@ -320,7 +320,7 @@ export const TaskSchedule = () => {
       {openCreateTaskForm && (
         <CreateTaskForm
           user={username ? username : 'unknown user'}
-          supportedTasks={resourceManager?.supportedTasks}
+          tasksToDisplay={taskResourcesContext?.tasks}
           patrolWaypoints={waypointNames}
           cleaningZones={cleaningZoneNames}
           pickupPoints={pickupPoints}

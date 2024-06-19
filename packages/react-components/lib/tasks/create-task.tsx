@@ -42,17 +42,17 @@ import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dia
 import {
   ComposeCleanTaskDescription,
   ComposeCleanTaskForm,
-  DefaultComposeCleanTaskDefinition,
+  ComposeCleanTaskDefinition,
   makeComposeCleanTaskBookingLabel,
 } from './types/compose-clean';
 import {
-  DefaultCustomComposeTaskDefinition,
+  CustomComposeTaskDefinition,
   CustomComposeTaskDescription,
   CustomComposeTaskForm,
   makeCustomComposeTaskBookingLabel,
 } from './types/custom-compose';
 import {
-  DefaultDeliveryTaskDefinition,
+  DeliveryTaskDefinition,
   DeliveryTaskDescription,
   DeliveryTaskForm,
   makeDeliveryTaskBookingLabel,
@@ -64,13 +64,13 @@ import {
   DeliveryPickupTaskForm,
   makeDeliveryCustomTaskBookingLabel,
   makeDeliveryPickupTaskBookingLabel,
-  DefaultDeliveryPickupTaskDefinition,
-  DefaultDeliverySequentialLotPickupTaskDefinition,
-  DefaultDeliveryAreaPickupTaskDefinition,
+  DeliveryPickupTaskDefinition,
+  DeliverySequentialLotPickupTaskDefinition,
+  DeliveryAreaPickupTaskDefinition,
 } from './types/delivery-custom';
 import {
   makePatrolTaskBookingLabel,
-  DefaultPatrolTaskDefinition,
+  PatrolTaskDefinition,
   PatrolTaskDescription,
   PatrolTaskForm,
 } from './types/patrol';
@@ -286,7 +286,7 @@ export interface CreateTaskFormProps
    * Shows extra UI elements suitable for submittng batched tasks. Default to 'false'.
    */
   user: string;
-  supportedTasks?: TaskDefinition[];
+  tasksToDisplay?: TaskDefinition[];
   allowBatch?: boolean;
   cleaningZones?: string[];
   patrolWaypoints?: string[];
@@ -312,11 +312,11 @@ export interface CreateTaskFormProps
 
 export function CreateTaskForm({
   user,
-  supportedTasks = [
-    DefaultPatrolTaskDefinition,
-    DefaultDeliveryTaskDefinition,
-    DefaultComposeCleanTaskDefinition,
-    DefaultCustomComposeTaskDefinition,
+  tasksToDisplay = [
+    PatrolTaskDefinition,
+    DeliveryTaskDefinition,
+    ComposeCleanTaskDefinition,
+    CustomComposeTaskDefinition,
   ],
   /* eslint-disable @typescript-eslint/no-unused-vars */
   cleaningZones = [],
@@ -355,22 +355,22 @@ export function CreateTaskForm({
   // than 0, this will cause the dashboard to fail when the create task form is
   // opened. This is intentional as it is a misconfiguration and will require
   // the build-time configuration to be fixed.
-  let allSupportedTasksAreValid = true;
+  let allTasksToDisplayAreValid = true;
   const validTasks: TaskDefinition[] = [];
   let defaultTaskDescription: string | TaskDescription | null = null;
   let defaultTaskRequest: TaskRequest | null = null;
-  supportedTasks.forEach((supportedTask: TaskDefinition, index: number) => {
+  tasksToDisplay.forEach((supportedTask: TaskDefinition, index: number) => {
     const definitionId = supportedTask.taskDefinitionId;
     const desc = getDefaultTaskDescription(definitionId);
     const req = getDefaultTaskRequest(definitionId);
 
     if (desc === undefined) {
       console.error(`Failed to retrieve task description for definition ID: [${definitionId}]`);
-      allSupportedTasksAreValid = false;
+      allTasksToDisplayAreValid = false;
     }
     if (req === null) {
       console.error(`Failed to create task request for definition ID: [${definitionId}]`);
-      allSupportedTasksAreValid = false;
+      allTasksToDisplayAreValid = false;
     }
     if (desc && req) {
       validTasks.push(supportedTask);
@@ -393,12 +393,12 @@ export function CreateTaskForm({
   const [favoriteTaskBuffer, setFavoriteTaskBuffer] = React.useState<TaskFavorite>({
     id: '',
     name: '',
-    category: supportedTasks[0].requestCategory,
+    category: tasksToDisplay[0].requestCategory,
     description: defaultTaskDescription as object,
     unix_millis_earliest_start_time: 0,
     priority: { type: 'binary', value: 0 },
     user: '',
-    task_definition_id: supportedTasks[0].taskDefinitionId,
+    task_definition_id: tasksToDisplay[0].taskDefinitionId,
   });
   const [favoriteTaskTitleError, setFavoriteTaskTitleError] = React.useState(false);
   const [savingFavoriteTask, setSavingFavoriteTask] = React.useState(false);
@@ -412,7 +412,7 @@ export function CreateTaskForm({
       initialBookingLabel.description.task_definition_id &&
       typeof initialBookingLabel.description.task_definition_id === 'string'
       ? initialBookingLabel.description.task_definition_id
-      : supportedTasks[0].taskDefinitionId,
+      : tasksToDisplay[0].taskDefinitionId,
   );
 
   const [submitting, setSubmitting] = React.useState(false);
@@ -480,14 +480,13 @@ export function CreateTaskForm({
     setFavoriteTaskBuffer({ ...favoriteTaskBuffer, description: newDesc, category: newCategory });
   };
 
-  // FIXME: Custom compose task descriptions are currently not allowed to be
-  // saved as favorite tasks. This will probably require a re-write of
-  // FavoriteTask's pydantic model with better typing.
+  // FIXME: Favorite tasks are disabled for custom compose tasks for now, as it
+  // will require a re-write of FavoriteTask's pydantic model with better typing.
   const handleCustomComposeTaskDescriptionChange = (newDesc: CustomComposeTaskDescription) => {
     setTaskRequest((prev) => {
       return {
         ...prev,
-        category: DefaultCustomComposeTaskDefinition.requestCategory,
+        category: CustomComposeTaskDefinition.requestCategory,
         description: newDesc,
       };
     });
@@ -499,42 +498,42 @@ export function CreateTaskForm({
 
   const renderTaskDescriptionForm = (definitionId: string) => {
     switch (definitionId) {
-      case DefaultPatrolTaskDefinition.taskDefinitionId:
+      case PatrolTaskDefinition.taskDefinitionId:
         return (
           <PatrolTaskForm
             taskDesc={taskRequest.description as PatrolTaskDescription}
             patrolWaypoints={patrolWaypoints}
             onChange={(desc) =>
-              handleTaskDescriptionChange(DefaultPatrolTaskDefinition.requestCategory, desc)
+              handleTaskDescriptionChange(PatrolTaskDefinition.requestCategory, desc)
             }
             onValidate={onValidate}
           />
         );
-      case DefaultDeliveryTaskDefinition.taskDefinitionId:
+      case DeliveryTaskDefinition.taskDefinitionId:
         return (
           <DeliveryTaskForm
             taskDesc={taskRequest.description as DeliveryTaskDescription}
             pickupPoints={pickupPoints}
             dropoffPoints={dropoffPoints}
             onChange={(desc) =>
-              handleTaskDescriptionChange(DefaultDeliveryTaskDefinition.requestCategory, desc)
+              handleTaskDescriptionChange(DeliveryTaskDefinition.requestCategory, desc)
             }
             onValidate={onValidate}
           />
         );
-      case DefaultComposeCleanTaskDefinition.taskDefinitionId:
+      case ComposeCleanTaskDefinition.taskDefinitionId:
         return (
           <ComposeCleanTaskForm
             taskDesc={taskRequest.description as ComposeCleanTaskDescription}
             cleaningZones={cleaningZones}
             onChange={(desc: ComposeCleanTaskDescription) => {
               desc.category = taskRequest.description.category;
-              handleTaskDescriptionChange(DefaultComposeCleanTaskDefinition.requestCategory, desc);
+              handleTaskDescriptionChange(ComposeCleanTaskDefinition.requestCategory, desc);
             }}
             onValidate={onValidate}
           />
         );
-      case DefaultDeliveryPickupTaskDefinition.taskDefinitionId:
+      case DeliveryPickupTaskDefinition.taskDefinitionId:
         return (
           <DeliveryPickupTaskForm
             taskDesc={taskRequest.description as DeliveryPickupTaskDescription}
@@ -545,15 +544,12 @@ export function CreateTaskForm({
               desc.category = taskRequest.description.category;
               desc.phases[0].activity.description.activities[1].description.category =
                 taskRequest.description.category;
-              handleTaskDescriptionChange(
-                DefaultDeliveryPickupTaskDefinition.requestCategory,
-                desc,
-              );
+              handleTaskDescriptionChange(DeliveryPickupTaskDefinition.requestCategory, desc);
             }}
             onValidate={onValidate}
           />
         );
-      case DefaultDeliverySequentialLotPickupTaskDefinition.taskDefinitionId:
+      case DeliverySequentialLotPickupTaskDefinition.taskDefinitionId:
         return (
           <DeliveryCustomTaskForm
             taskDesc={taskRequest.description as DeliveryCustomTaskDescription}
@@ -565,14 +561,14 @@ export function CreateTaskForm({
               desc.phases[0].activity.description.activities[1].description.category =
                 taskRequest.description.category;
               handleTaskDescriptionChange(
-                DefaultDeliverySequentialLotPickupTaskDefinition.requestCategory,
+                DeliverySequentialLotPickupTaskDefinition.requestCategory,
                 desc,
               );
             }}
             onValidate={onValidate}
           />
         );
-      case DefaultDeliveryAreaPickupTaskDefinition.taskDefinitionId:
+      case DeliveryAreaPickupTaskDefinition.taskDefinitionId:
         return (
           <DeliveryCustomTaskForm
             taskDesc={taskRequest.description as DeliveryCustomTaskDescription}
@@ -583,15 +579,12 @@ export function CreateTaskForm({
               desc.category = taskRequest.description.category;
               desc.phases[0].activity.description.activities[1].description.category =
                 taskRequest.description.category;
-              handleTaskDescriptionChange(
-                DefaultDeliveryAreaPickupTaskDefinition.requestCategory,
-                desc,
-              );
+              handleTaskDescriptionChange(DeliveryAreaPickupTaskDefinition.requestCategory, desc);
             }}
             onValidate={onValidate}
           />
         );
-      case DefaultCustomComposeTaskDefinition.taskDefinitionId:
+      case CustomComposeTaskDefinition.taskDefinitionId:
       default:
         return (
           <CustomComposeTaskForm
@@ -623,7 +616,7 @@ export function CreateTaskForm({
     taskRequest.description = description;
 
     if (
-      newTaskDefinitionId !== DefaultCustomComposeTaskDefinition.taskDefinitionId &&
+      newTaskDefinitionId !== CustomComposeTaskDefinition.taskDefinitionId &&
       typeof description === 'object'
     ) {
       setFavoriteTaskBuffer({ ...favoriteTaskBuffer, category, description });
@@ -643,10 +636,10 @@ export function CreateTaskForm({
     request.requester = requester;
     request.unix_millis_request_time = Date.now();
 
-    if (taskDefinitionId === DefaultCustomComposeTaskDefinition.taskDefinitionId) {
+    if (taskDefinitionId === CustomComposeTaskDefinition.taskDefinitionId) {
       try {
         const obj = JSON.parse(request.description);
-        request.category = DefaultCustomComposeTaskDefinition.requestCategory;
+        request.category = CustomComposeTaskDefinition.requestCategory;
         request.description = obj;
       } catch (e) {
         console.error('Invalid custom compose task description');
@@ -659,23 +652,23 @@ export function CreateTaskForm({
     try {
       let requestBookingLabel: TaskBookingLabel | null = null;
       switch (taskDefinitionId) {
-        case DefaultDeliveryPickupTaskDefinition.taskDefinitionId:
+        case DeliveryPickupTaskDefinition.taskDefinitionId:
           requestBookingLabel = makeDeliveryPickupTaskBookingLabel(request.description);
           break;
-        case DefaultDeliverySequentialLotPickupTaskDefinition.taskDefinitionId:
-        case DefaultDeliveryAreaPickupTaskDefinition.taskDefinitionId:
+        case DeliverySequentialLotPickupTaskDefinition.taskDefinitionId:
+        case DeliveryAreaPickupTaskDefinition.taskDefinitionId:
           requestBookingLabel = makeDeliveryCustomTaskBookingLabel(request.description);
           break;
-        case DefaultPatrolTaskDefinition.taskDefinitionId:
+        case PatrolTaskDefinition.taskDefinitionId:
           requestBookingLabel = makePatrolTaskBookingLabel(request.description);
           break;
-        case DefaultDeliveryTaskDefinition.taskDefinitionId:
+        case DeliveryTaskDefinition.taskDefinitionId:
           requestBookingLabel = makeDeliveryTaskBookingLabel(request.description);
           break;
-        case DefaultComposeCleanTaskDefinition.taskDefinitionId:
+        case ComposeCleanTaskDefinition.taskDefinitionId:
           requestBookingLabel = makeComposeCleanTaskBookingLabel(request.description);
           break;
-        case DefaultCustomComposeTaskDefinition.taskDefinitionId:
+        case CustomComposeTaskDefinition.taskDefinitionId:
           requestBookingLabel = makeCustomComposeTaskBookingLabel();
           break;
       }
@@ -748,7 +741,7 @@ export function CreateTaskForm({
       setSavingFavoriteTask(true);
 
       const favoriteTask = favoriteTaskBuffer;
-      favoriteTask.task_definition_id = taskDefinitionId ?? supportedTasks[0].taskDefinitionId;
+      favoriteTask.task_definition_id = taskDefinitionId ?? tasksToDisplay[0].taskDefinitionId;
 
       await submitFavoriteTask(favoriteTask);
       setSavingFavoriteTask(false);
@@ -778,7 +771,7 @@ export function CreateTaskForm({
       onSuccessFavoriteTask &&
         onSuccessFavoriteTask('Deleted favorite task successfully', favoriteTaskBuffer);
 
-      const defaultTaskRequest = getDefaultTaskRequest(supportedTasks[0].taskDefinitionId);
+      const defaultTaskRequest = getDefaultTaskRequest(tasksToDisplay[0].taskDefinitionId);
       if (!defaultTaskRequest) {
         // We should never reach this area as we have already validated that
         // each supported task have a valid task request for generation
@@ -871,7 +864,7 @@ export function CreateTaskForm({
                       }}
                       InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
                     >
-                      {supportedTasks.map((taskDefinition) => {
+                      {tasksToDisplay.map((taskDefinition) => {
                         return (
                           <MenuItem
                             value={taskDefinition.taskDefinitionId}
@@ -958,9 +951,10 @@ export function CreateTaskForm({
                       setOpenFavoriteDialog(true);
                     }}
                     style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(2) }}
-                    disabled={
-                      taskDefinitionId === DefaultCustomComposeTaskDefinition.taskDefinitionId
-                    }
+                    // FIXME: Favorite tasks are disabled for custom compose
+                    // tasks for now, as it will require a re-write of
+                    // FavoriteTask's pydantic model with better typing.
+                    disabled={taskDefinitionId === CustomComposeTaskDefinition.taskDefinitionId}
                   >
                     {callToUpdateFavoriteTask ? `Confirm edits` : 'Save as a favorite task'}
                   </Button>

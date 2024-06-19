@@ -4,19 +4,19 @@ import { isNonEmptyString } from './utils';
 import type { TaskBookingLabel } from 'api-client';
 import { TaskDefinition } from '../create-task';
 
-export const DefaultDeliveryPickupTaskDefinition: TaskDefinition = {
+export const DeliveryPickupTaskDefinition: TaskDefinition = {
   taskDefinitionId: 'delivery_pickup',
   taskDisplayName: 'Delivery - 1:1',
   requestCategory: 'compose',
 };
 
-export const DefaultDeliverySequentialLotPickupTaskDefinition: TaskDefinition = {
+export const DeliverySequentialLotPickupTaskDefinition: TaskDefinition = {
   taskDefinitionId: 'delivery_sequential_lot_pickup',
   taskDisplayName: 'Delivery - Sequential lot pick up',
   requestCategory: 'compose',
 };
 
-export const DefaultDeliveryAreaPickupTaskDefinition: TaskDefinition = {
+export const DeliveryAreaPickupTaskDefinition: TaskDefinition = {
   taskDefinitionId: 'delivery_area_pickup',
   taskDisplayName: 'Delivery - Area pick up',
   requestCategory: 'compose',
@@ -181,7 +181,7 @@ export function makeDeliveryPickupTaskShortDescription(
     const goToDropoff: GoToPlaceActivity = desc.phases[1].activity.description.activities[0];
 
     return `[${
-      taskDisplayName ?? DefaultDeliveryPickupTaskDefinition.taskDisplayName
+      taskDisplayName ?? DeliveryPickupTaskDefinition.taskDisplayName
     }] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
   } catch (e) {
     try {
@@ -209,14 +209,14 @@ export function makeDeliveryCustomTaskShortDescription(
     const goToDropoff: GoToPlaceActivity = desc.phases[1].activity.description.activities[0];
 
     switch (desc.category) {
-      case DefaultDeliverySequentialLotPickupTaskDefinition.taskDefinitionId: {
+      case DeliverySequentialLotPickupTaskDefinition.taskDefinitionId: {
         return `[${
-          taskDisplayName ?? DefaultDeliverySequentialLotPickupTaskDefinition.taskDisplayName
+          taskDisplayName ?? DeliverySequentialLotPickupTaskDefinition.taskDisplayName
         }] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
       }
-      case DefaultDeliveryAreaPickupTaskDefinition.taskDefinitionId: {
+      case DeliveryAreaPickupTaskDefinition.taskDefinitionId: {
         return `[${
-          taskDisplayName ?? DefaultDeliveryAreaPickupTaskDefinition.taskDisplayName
+          taskDisplayName ?? DeliveryAreaPickupTaskDefinition.taskDisplayName
         }] payload [${cartId}] from [${goToPickup.description}] to [${goToDropoff.description}]`;
       }
       default:

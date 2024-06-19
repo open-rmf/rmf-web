@@ -3,7 +3,7 @@ import React from 'react';
 import type { TaskBookingLabel } from 'api-client';
 import { TaskDefinition } from '../create-task';
 
-export const DefaultCustomComposeTaskDefinition: TaskDefinition = {
+export const CustomComposeTaskDefinition: TaskDefinition = {
   taskDefinitionId: 'custom_compose',
   taskDisplayName: 'Custom Compose Task',
   requestCategory: 'compose',
@@ -14,7 +14,7 @@ export type CustomComposeTaskDescription = string;
 export function makeCustomComposeTaskBookingLabel(): TaskBookingLabel {
   return {
     description: {
-      task_definition_id: DefaultCustomComposeTaskDefinition.taskDefinitionId,
+      task_definition_id: CustomComposeTaskDefinition.taskDefinitionId,
     },
   };
 }

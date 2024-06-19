@@ -5,7 +5,7 @@ import React from 'react';
 import type { TaskBookingLabel } from 'api-client';
 import { TaskDefinition } from '../create-task';
 
-export const DefaultDeliveryTaskDefinition: TaskDefinition = {
+export const DeliveryTaskDefinition: TaskDefinition = {
   taskDefinitionId: 'delivery',
   taskDisplayName: 'Delivery',
   requestCategory: 'delivery',
@@ -30,7 +30,7 @@ export function makeDeliveryTaskBookingLabel(
 ): TaskBookingLabel {
   return {
     description: {
-      task_definition_id: DefaultDeliveryTaskDefinition.taskDefinitionId,
+      task_definition_id: DeliveryTaskDefinition.taskDefinitionId,
       pickup: task_description.pickup.place,
       destination: task_description.dropoff.place,
       cart_id: task_description.pickup.payload.sku,
@@ -76,7 +76,7 @@ export function makeDeliveryTaskShortDescription(
   desc: DeliveryTaskDescription,
   displayName?: string,
 ): string {
-  return `[${displayName ?? DefaultDeliveryTaskDefinition.taskDisplayName}] Pickup [${
+  return `[${displayName ?? DeliveryTaskDefinition.taskDisplayName}] Pickup [${
     desc.pickup.payload.sku
   }] from [${desc.pickup.place}], dropoff [${desc.dropoff.payload.sku}] at [${desc.dropoff.place}]`;
 }

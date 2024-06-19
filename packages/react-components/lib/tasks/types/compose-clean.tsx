@@ -3,7 +3,7 @@ import React from 'react';
 import type { TaskBookingLabel } from 'api-client';
 import { TaskDefinition } from '../create-task';
 
-export const DefaultComposeCleanTaskDefinition: TaskDefinition = {
+export const ComposeCleanTaskDefinition: TaskDefinition = {
   taskDefinitionId: 'compose-clean',
   taskDisplayName: 'Clean',
   requestCategory: 'compose',
@@ -46,7 +46,7 @@ export function makeComposeCleanTaskBookingLabel(
 ): TaskBookingLabel {
   return {
     description: {
-      task_definition_id: DefaultComposeCleanTaskDefinition.taskDefinitionId,
+      task_definition_id: ComposeCleanTaskDefinition.taskDefinitionId,
       destination:
         task_description.phases[0].activity.description.activities[1].description.description.zone,
     },
@@ -103,7 +103,7 @@ export function makeComposeCleanTaskShortDescription(
   displayName: string | undefined,
 ): string {
   const cleanActivity = desc.phases[0].activity.description.activities[1];
-  return `[${displayName ?? DefaultComposeCleanTaskDefinition.taskDisplayName}] zone [${
+  return `[${displayName ?? ComposeCleanTaskDefinition.taskDisplayName}] zone [${
     cleanActivity.description.description.zone
   }]`;
 }

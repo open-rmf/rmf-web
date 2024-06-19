@@ -1,13 +1,13 @@
 import { TaskRequest } from 'api-client';
 import {
-  DefaultPatrolTaskDefinition,
+  PatrolTaskDefinition,
   makePatrolTaskShortDescription,
   makeDefaultPatrolTaskDescription,
 } from './patrol';
 import {
-  DefaultDeliveryAreaPickupTaskDefinition,
-  DefaultDeliveryPickupTaskDefinition,
-  DefaultDeliverySequentialLotPickupTaskDefinition,
+  DeliveryAreaPickupTaskDefinition,
+  DeliveryPickupTaskDefinition,
+  DeliverySequentialLotPickupTaskDefinition,
   makeDeliveryPickupTaskShortDescription,
   makeDeliveryCustomTaskShortDescription,
   makeDefaultDeliveryCustomTaskDescription,
@@ -15,20 +15,20 @@ import {
 } from './delivery-custom';
 import { getTaskBookingLabelFromTaskRequest } from '../task-booking-label-utils';
 import {
-  DefaultComposeCleanTaskDefinition,
+  ComposeCleanTaskDefinition,
   makeComposeCleanTaskShortDescription,
   makeDefaultComposeCleanTaskDescription,
 } from './compose-clean';
 import {
-  DefaultDeliveryTaskDefinition,
+  DeliveryTaskDefinition,
   makeDeliveryTaskShortDescription,
   makeDefaultDeliveryTaskDescription,
 } from './delivery';
 import {
-  DefaultCustomComposeTaskDefinition,
+  CustomComposeTaskDefinition,
   makeCustomComposeTaskShortDescription,
 } from './custom-compose';
-import { TaskDescription } from '../create-task';
+import { TaskDefinition, TaskDescription } from '../create-task';
 
 export function isNonEmptyString(value: string): boolean {
   return value.length > 0;
@@ -66,40 +66,60 @@ export function getShortDescription(
 
   const taskDefinitionId = bookingLabel.description.task_definition_id;
   switch (taskDefinitionId) {
-    case DefaultPatrolTaskDefinition.taskDefinitionId:
+    case PatrolTaskDefinition.taskDefinitionId:
       return makePatrolTaskShortDescription(taskRequest.description, taskDisplayName);
-    case DefaultDeliveryTaskDefinition.taskDefinitionId:
+    case DeliveryTaskDefinition.taskDefinitionId:
       return makeDeliveryTaskShortDescription(taskRequest.description, taskDisplayName);
-    case DefaultComposeCleanTaskDefinition.taskDefinitionId:
+    case ComposeCleanTaskDefinition.taskDefinitionId:
       return makeComposeCleanTaskShortDescription(taskRequest.description, taskDisplayName);
-    case DefaultDeliveryPickupTaskDefinition.taskDefinitionId:
+    case DeliveryPickupTaskDefinition.taskDefinitionId:
       return makeDeliveryPickupTaskShortDescription(taskRequest.description, taskDisplayName);
-    case DefaultDeliverySequentialLotPickupTaskDefinition.taskDefinitionId:
-    case DefaultDeliveryAreaPickupTaskDefinition.taskDefinitionId:
+    case DeliverySequentialLotPickupTaskDefinition.taskDefinitionId:
+    case DeliveryAreaPickupTaskDefinition.taskDefinitionId:
       return makeDeliveryCustomTaskShortDescription(taskRequest.description, taskDisplayName);
-    case DefaultCustomComposeTaskDefinition.taskDefinitionId:
+    case CustomComposeTaskDefinition.taskDefinitionId:
       return makeCustomComposeTaskShortDescription(taskRequest.description);
     default:
       return `[Unknown] type "${taskRequest.description.category}"`;
   }
 }
 
+export function getTaskDefinition(taskDefinitionId: string): TaskDefinition | undefined {
+  switch (taskDefinitionId) {
+    case ComposeCleanTaskDefinition.taskDefinitionId:
+      return ComposeCleanTaskDefinition;
+    case DeliveryPickupTaskDefinition.taskDefinitionId:
+      return DeliveryPickupTaskDefinition;
+    case DeliverySequentialLotPickupTaskDefinition.taskDefinitionId:
+      return DeliverySequentialLotPickupTaskDefinition;
+    case DeliveryAreaPickupTaskDefinition.taskDefinitionId:
+      return DeliveryAreaPickupTaskDefinition;
+    case DeliveryTaskDefinition.taskDefinitionId:
+      return DeliveryTaskDefinition;
+    case PatrolTaskDefinition.taskDefinitionId:
+      return PatrolTaskDefinition;
+    case CustomComposeTaskDefinition.taskDefinitionId:
+      return CustomComposeTaskDefinition;
+  }
+  return undefined;
+}
+
 export function getDefaultTaskDescription(
   taskDefinitionId: string,
 ): TaskDescription | string | undefined {
   switch (taskDefinitionId) {
-    case DefaultComposeCleanTaskDefinition.taskDefinitionId:
+    case ComposeCleanTaskDefinition.taskDefinitionId:
       return makeDefaultComposeCleanTaskDescription();
-    case DefaultDeliveryPickupTaskDefinition.taskDefinitionId:
+    case DeliveryPickupTaskDefinition.taskDefinitionId:
       return makeDefaultDeliveryPickupTaskDescription();
-    case DefaultDeliverySequentialLotPickupTaskDefinition.taskDefinitionId:
-    case DefaultDeliveryAreaPickupTaskDefinition.taskDefinitionId:
+    case DeliverySequentialLotPickupTaskDefinition.taskDefinitionId:
+    case DeliveryAreaPickupTaskDefinition.taskDefinitionId:
       return makeDefaultDeliveryCustomTaskDescription(taskDefinitionId);
-    case DefaultDeliveryTaskDefinition.taskDefinitionId:
+    case DeliveryTaskDefinition.taskDefinitionId:
       return makeDefaultDeliveryTaskDescription();
-    case DefaultPatrolTaskDefinition.taskDefinitionId:
+    case PatrolTaskDefinition.taskDefinitionId:
       return makeDefaultPatrolTaskDescription();
-    case DefaultCustomComposeTaskDefinition.taskDefinitionId:
+    case CustomComposeTaskDefinition.taskDefinitionId:
       return '';
     default:
       return undefined;
@@ -107,21 +127,6 @@ export function getDefaultTaskDescription(
 }
 
 export function getTaskRequestCategory(taskDefinitionId: string): string | undefined {
-  switch (taskDefinitionId) {
-    case DefaultComposeCleanTaskDefinition.taskDefinitionId:
-      return DefaultComposeCleanTaskDefinition.requestCategory;
-    case DefaultDeliveryPickupTaskDefinition.taskDefinitionId:
-      return DefaultDeliveryPickupTaskDefinition.requestCategory;
-    case DefaultDeliverySequentialLotPickupTaskDefinition.taskDefinitionId:
-      return DefaultDeliverySequentialLotPickupTaskDefinition.requestCategory;
-    case DefaultDeliveryAreaPickupTaskDefinition.taskDefinitionId:
-      return DefaultDeliveryAreaPickupTaskDefinition.requestCategory;
-    case DefaultDeliveryTaskDefinition.taskDefinitionId:
-      return DefaultDeliveryTaskDefinition.requestCategory;
-    case DefaultPatrolTaskDefinition.taskDefinitionId:
-      return DefaultPatrolTaskDefinition.requestCategory;
-    case DefaultCustomComposeTaskDefinition.taskDefinitionId:
-      return DefaultCustomComposeTaskDefinition.requestCategory;
-  }
-  return undefined;
+  const definition = getTaskDefinition(taskDefinitionId);
+  return definition !== undefined ? definition.requestCategory : undefined;
 }

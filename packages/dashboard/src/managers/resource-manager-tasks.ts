@@ -1,14 +1,29 @@
-import { TaskDefinition } from 'react-components';
+import { getTaskDefinition, TaskDefinition } from 'react-components';
+
+export interface TaskResource {
+  task_definition_id: string;
+  display_name?: string;
+}
 
 export class TaskResourceManager {
-  supportedTasks: Record<string, TaskDefinition>;
+  tasks: TaskDefinition[];
 
-  constructor(supportedTasks: TaskDefinition[] | undefined) {
-    this.supportedTasks = {};
-    if (supportedTasks) {
-      for (const t of supportedTasks) {
-        this.supportedTasks[t.taskDefinitionId] = t;
+  constructor(taskResources: TaskResource[]) {
+    this.tasks = [];
+    for (const taskResource of taskResources) {
+      const definition = getTaskDefinition(taskResource.task_definition_id);
+      if (!definition) {
+        console.error(
+          `Invalid tasks configured for dashboard: [${taskResource.task_definition_id}]`,
+        );
+        continue;
       }
+
+      if (taskResource.display_name !== undefined) {
+        definition.taskDisplayName = taskResource.display_name;
+      }
+
+      this.tasks.push(definition);
     }
   }
 }
