@@ -387,7 +387,7 @@ export function CreateTaskForm({
     const err = Error('Default task could not be generated, this might be a configuration error');
     onFail && onFail(err, []);
     console.error(err.message);
-    return <></>;
+    throw new TypeError(err.message);
   }
 
   const [favoriteTaskBuffer, setFavoriteTaskBuffer] = React.useState<TaskFavorite>({
