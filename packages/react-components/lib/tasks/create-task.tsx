@@ -86,9 +86,6 @@ export interface TaskDefinition {
   requestCategory: string;
 }
 
-// If no task definition id is found in a past task (scheduled or favorite)
-const FallbackTaskDefinition = DefaultCustomComposeTaskDefinition;
-
 export type TaskDescription =
   | DeliveryPickupTaskDescription
   | DeliveryCustomTaskDescription
@@ -197,16 +194,16 @@ function getDefaultTaskRequest(taskDefinitionId: string): TaskRequest | null {
   const category = getTaskRequestCategory(taskDefinitionId);
   const description = getDefaultTaskDescription(taskDefinitionId);
 
-  if (!category) {
+  if (category === undefined) {
     console.error(`Unable to retrieve task category for task definition of id ${taskDefinitionId}`);
   }
-  if (!description) {
+  if (description === undefined) {
     console.error(
       `Unable to retrieve task description for task definition of id ${taskDefinitionId}`,
     );
   }
 
-  if (category && description) {
+  if (category !== undefined && description !== undefined) {
     return {
       category,
       description,
@@ -367,11 +364,11 @@ export function CreateTaskForm({
     const desc = getDefaultTaskDescription(definitionId);
     const req = getDefaultTaskRequest(definitionId);
 
-    if (!desc) {
+    if (desc === undefined) {
       console.error(`Failed to retrieve task description for definition ID: [${definitionId}]`);
       allSupportedTasksAreValid = false;
     }
-    if (!req) {
+    if (req === null) {
       console.error(`Failed to create task request for definition ID: [${definitionId}]`);
       allSupportedTasksAreValid = false;
     }
@@ -411,8 +408,10 @@ export function CreateTaskForm({
   );
   const initialBookingLabel = requestTask ? getTaskBookingLabelFromTaskRequest(requestTask) : null;
   const [taskDefinitionId, setTaskDefinitionId] = React.useState<string>(
-    initialBookingLabel && initialBookingLabel.description.task_definition_id
-      ? (initialBookingLabel.description.task_definition_id as string)
+    initialBookingLabel &&
+      initialBookingLabel.description.task_definition_id &&
+      typeof initialBookingLabel.description.task_definition_id === 'string'
+      ? initialBookingLabel.description.task_definition_id
       : supportedTasks[0].taskDefinitionId,
   );
 
@@ -609,9 +608,15 @@ export function CreateTaskForm({
     const newTaskDefinitionId = ev.target.value;
     setTaskDefinitionId(newTaskDefinitionId);
 
-    const category =
-      getTaskRequestCategory(newTaskDefinitionId) ??
-      DefaultCustomComposeTaskDefinition.requestCategory;
+    const category = getTaskRequestCategory(newTaskDefinitionId);
+    if (category === undefined) {
+      const err = Error(
+        `Failed to retrieve task request category for task [${newTaskDefinitionId}], there might be a misconfiguration.`,
+      );
+      console.error(err.message);
+      onFail && onFail(err, []);
+      return;
+    }
     taskRequest.category = category;
 
     const description = getDefaultTaskDescription(newTaskDefinitionId) ?? '';
@@ -856,11 +861,7 @@ export function CreateTaskForm({
                       variant="outlined"
                       fullWidth
                       margin="normal"
-                      value={
-                        taskRequest.category !== 'compose'
-                          ? taskRequest.category
-                          : taskRequest.description.category
-                      }
+                      value={taskDefinitionId}
                       onChange={handleTaskTypeChange}
                       sx={{
                         '& .MuiInputBase-input': {

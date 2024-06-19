@@ -23,7 +23,13 @@ import {
   nextWednesday,
   startOfMinute,
 } from 'date-fns';
-import { getShortDescription, RecurringDays, Schedule, TaskDefinition } from 'react-components';
+import {
+  getShortDescription,
+  getTaskBookingLabelFromTaskRequest,
+  RecurringDays,
+  Schedule,
+  TaskDefinition,
+} from 'react-components';
 
 /**
  * Generates a list of ProcessedEvents to occur within the query start and end,
@@ -170,10 +176,17 @@ export const getScheduledTaskTitle = (
   task: ScheduledTask,
   supportedTasks?: TaskDefinition[],
 ): string => {
+  const taskBookingLabel = getTaskBookingLabelFromTaskRequest(task.task_request);
+
   let remappedTaskName: string | undefined = undefined;
-  if (supportedTasks) {
+  if (
+    supportedTasks &&
+    taskBookingLabel &&
+    taskBookingLabel.description.task_definition_id &&
+    typeof taskBookingLabel.description.task_definition_id === 'string'
+  ) {
     for (const s of supportedTasks) {
-      if (s.taskDefinitionId === task.task_request.category) {
+      if (s.taskDefinitionId === taskBookingLabel.description.task_definition_id) {
         remappedTaskName = s.taskDisplayName;
       }
     }
