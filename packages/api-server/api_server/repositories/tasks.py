@@ -2,10 +2,11 @@ import sys
 from datetime import datetime
 from typing import Dict, List, Optional, Sequence, Tuple
 
+import tortoise.functions as tfuncs
 from fastapi import Depends, HTTPException
 from tortoise.exceptions import FieldError, IntegrityError
+from tortoise.expressions import Q
 from tortoise.query_utils import Prefetch
-from tortoise.queryset import QuerySet
 from tortoise.transactions import in_transaction
 
 from api_server.authenticator import user_dep
@@ -18,6 +19,7 @@ from api_server.models import (
     TaskEventLog,
     TaskRequest,
     TaskState,
+    TaskStatus,
     User,
 )
 from api_server.models import tortoise_models as ttm
@@ -96,11 +98,64 @@ class TaskRepository:
                 await self.save_task_labels(db_task_state, labels)
 
     async def query_task_states(
-        self, query: QuerySet[DbTaskState], pagination: Optional[Pagination] = None
+        self,
+        task_id: list[str] | None = None,
+        category: list[str] | None = None,
+        assigned_to: list[str] | None = None,
+        start_time_between: tuple[datetime, datetime] | None = None,
+        finish_time_between: tuple[datetime, datetime] | None = None,
+        status: list[str] | None = None,
+        label: Labels | None = None,
+        pagination: Optional[Pagination] = None,
     ) -> List[TaskState]:
+        filters = {}
+        if task_id is not None:
+            filters["id___in"] = task_id
+        if category is not None:
+            filters["category__in"] = category
+        if assigned_to is not None:
+            filters["assigned_to__in"] = assigned_to
+        if start_time_between is not None:
+            filters["unix_millis_start_time__gte"] = start_time_between[0]
+            filters["unix_millis_start_time__lte"] = start_time_between[1]
+        if finish_time_between is not None:
+            filters["unix_millis_finish_time__gte"] = finish_time_between[0]
+            filters["unix_millis_finish_time__lte"] = finish_time_between[1]
+        if status is not None:
+            valid_values = [member.value for member in TaskStatus]
+            filters["status__in"] = []
+            for status_string in status:
+                if status_string not in valid_values:
+                    continue
+                filters["status__in"].append(TaskStatus(status_string))
+        query = DbTaskState.filter(**filters)
+
+        if pagination:
+            query = add_pagination(query, pagination, group_by="labels__state_id")
+
+        label_filters = {}
+        if label is not None:
+            label_filters.update(
+                {
+                    f"label_filter_{k}": tfuncs.Count(
+                        "id_",
+                        _filter=Q(labels__label_name=k, labels__label_value=v),
+                    )
+                    for k, v in label.root.items()
+                }
+            )
+
+        if len(label_filters) > 0:
+            filter_gt = {f"{f}__gt": 0 for f in label_filters}
+            query = (
+                query.annotate(**label_filters)
+                .group_by(
+                    "labels__state_id", "data"
+                )  # need to group by a related field to make tortoise-orm generate joins
+                .filter(**filter_gt)
+            )
+
         try:
-            if pagination:
-                query = add_pagination(query, pagination, group_by="labels__state_id")
             # TODO: enforce with authz
             results = await query.values_list("data")
             return [TaskState(**r[0]) for r in results]
