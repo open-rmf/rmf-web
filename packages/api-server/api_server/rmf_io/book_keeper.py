@@ -8,6 +8,7 @@ from rx.subject.subject import Subject
 
 from api_server.models import (
     AlertRequest,
+    AlertResponse,
     BeaconState,
     BuildingMap,
     DispenserHealth,
@@ -21,9 +22,7 @@ from api_server.models import (
     LiftState,
 )
 from api_server.models.health import BaseBasicHealth
-from api_server.repositories import (
-    AlertRepository,  # , is_final_location_alert_check, LocationAlertFailResponse, LocationAlertSuccessResponse
-)
+from api_server.repositories import AlertRepository
 
 from .events import AlertEvents, RmfEvents
 
@@ -62,6 +61,7 @@ class RmfBookKeeper:
         self._record_ingestor_state()
         self._record_ingestor_health()
         self._record_alert_request()
+        self._record_alert_response()
 
     async def stop(self):
         for sub in self._subscriptions:
@@ -202,6 +202,17 @@ class RmfBookKeeper:
 
         self._subscriptions.append(
             self.alert_events.alert_requests.subscribe(
+                lambda x: self._create_task(update(x))
+            )
+        )
+
+    def _record_alert_response(self):
+        async def update(alert_response: AlertResponse):
+            await alert_response.save()
+            logging.debug(json.dumps(alert_response.dict()))
+
+        self._subscriptions.append(
+            self.alert_events.alert_responses.subscribe(
                 lambda x: self._create_task(update(x))
             )
         )

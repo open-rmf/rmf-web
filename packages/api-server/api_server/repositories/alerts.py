@@ -1,5 +1,4 @@
 import logging
-from collections import deque
 from datetime import datetime
 from typing import List, Optional
 
@@ -45,61 +44,6 @@ def get_location_from_location_alert(alert: AlertRequest) -> Optional[str]:
         if param.name == LocationAlertLocationParameterName:
             return param.value
     return None
-
-
-def is_final_location_alert_check(alert: AlertRequest) -> bool:
-    """
-    Checks if the alert request requires a check on all location alerts of this
-    task.
-    Note: This is an experimental feature and may be subjected to
-    modifications often.
-    """
-    if (
-        alert.task_id is None
-        or len(alert.alert_parameters) < 1
-        or LocationAlertSuccessResponse not in alert.responses_available
-        or LocationAlertFailResponse not in alert.responses_available
-    ):
-        return False
-
-    # Check type
-    for param in alert.alert_parameters:
-        if param.name == LocationAlertTypeParameterName:
-            if param.value == LocationAlertFinalCheckTypeParameterValue:
-                return True
-            return False
-    return False
-
-
-class LRUCache:
-    def __init__(self, capacity: int):
-        self._cache = deque(maxlen=capacity)
-        self._lookup = {}
-
-    def add(self, key, value):
-        if key in self._lookup:
-            self._cache.remove(key)
-        elif len(self._cache) == self._cache.maxlen:
-            oldest_key = self._cache.popleft()
-            del self._lookup[oldest_key]
-
-        self._cache.append(key)
-        self._lookup[key] = value
-
-    def remove(self, key):
-        if key in self._lookup:
-            self._cache.remove(key)
-            del self._lookup[key]
-
-    def lookup(self, key):
-        if key in self._lookup:
-            self._cache.remove(key)
-            self._cache.append(key)
-            return self._lookup[key]
-        return None
-
-
-task_id_to_all_locations_success_cache: LRUCache = LRUCache(20)
 
 
 class AlertRepository:
@@ -180,55 +124,3 @@ class AlertRepository:
             alert_response=None, response_expected=True
         )
         return [AlertRequest.from_tortoise(alert) for alert in unresponded_alerts]
-
-    async def create_location_alert_response(
-        self,
-        task_id: str,
-        location: str,
-        success: bool,
-    ) -> Optional[AlertResponse]:
-        """
-        Creates an alert response for a location alert of the task.
-        Note: This is an experimental feature and may be subjected to
-        modifications often.
-        """
-        alerts = await self.get_alerts_of_task(task_id=task_id, unresponded=True)
-        if len(alerts) == 0:
-            logging.error(
-                f"There are no location alerts awaiting response for task {task_id}"
-            )
-            return None
-
-        for alert in alerts:
-            location_alert_location = get_location_from_location_alert(alert)
-            if location_alert_location is None:
-                continue
-
-            if location_alert_location == location:
-                response = (
-                    LocationAlertSuccessResponse
-                    if success
-                    else LocationAlertFailResponse
-                )
-                alert_response_model = await self.create_response(alert.id, response)
-                if alert_response_model is None:
-                    logging.error(
-                        f"Failed to create response {response} to alert with ID {alert.id}"
-                    )
-                    return None
-
-                # Cache if all locations of this task has been successful so far
-                cache = task_id_to_all_locations_success_cache.lookup(task_id)
-                if cache is None:
-                    task_id_to_all_locations_success_cache.add(task_id, success)
-                else:
-                    task_id_to_all_locations_success_cache.add(
-                        task_id, cache and success
-                    )
-
-                return alert_response_model
-
-        logging.error(
-            f"Task {task_id} is not awaiting completion of location {location}"
-        )
-        return None

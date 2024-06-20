@@ -223,36 +223,3 @@ class TestAlertsRoute(AppFixture):
         returned_alert_ids = [a["id"] for a in returned_alerts]
         self.assertTrue(first_id not in returned_alert_ids)
         self.assertTrue(second_id in returned_alert_ids)
-
-    def test_task_location_complete(self):
-        alert_id = str(uuid4())
-        task_id = "test_task_id"
-        location_name = "test_location"
-        alert = make_alert_request(alert_id=alert_id, responses=["success", "fail"])
-        alert.alert_parameters = [
-            mdl.AlertParameter(name="type", value="location_result"),
-            mdl.AlertParameter(name="location_name", value=location_name),
-        ]
-        alert.task_id = task_id
-        resp = self.client.post("/alerts/request", data=alert.json(exclude_none=True))
-        self.assertEqual(201, resp.status_code, resp.content)
-        self.assertEqual(alert, resp.json(), resp.content)
-
-        # complete wrong task ID
-        params = {
-            "task_id": "wrong_task_id",
-            "location": location_name,
-            "success": True,
-        }
-        resp = self.client.post(f"/tasks/location_complete?{urlencode(params)}")
-        self.assertEqual(422, resp.status_code, resp.content)
-
-        # complete missing location
-        params = {"task_id": task_id, "location": "wrong_location", "success": True}
-        resp = self.client.post(f"/tasks/location_complete?{urlencode(params)}")
-        self.assertEqual(422, resp.status_code, resp.content)
-
-        # complete location
-        params = {"task_id": task_id, "location": location_name, "success": True}
-        resp = self.client.post(f"/tasks/location_complete?{urlencode(params)}")
-        self.assertEqual(200, resp.status_code, resp.content)

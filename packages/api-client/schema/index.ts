@@ -1380,47 +1380,6 @@ export default {
         },
       },
     },
-    '/tasks/location_complete': {
-      post: {
-        tags: ['Tasks'],
-        summary: 'Location Complete',
-        description:
-          'Warning: This endpoint is still actively being worked on and could be\nsubjected to modifications.',
-        operationId: 'location_complete_tasks_location_complete_post',
-        parameters: [
-          {
-            required: true,
-            schema: { title: 'Task Id', type: 'string' },
-            name: 'task_id',
-            in: 'query',
-          },
-          {
-            required: true,
-            schema: { title: 'Location', type: 'string' },
-            name: 'location',
-            in: 'query',
-          },
-          {
-            required: true,
-            schema: { title: 'Success', type: 'boolean' },
-            name: 'success',
-            in: 'query',
-          },
-        ],
-        responses: {
-          '200': {
-            description: 'Successful Response',
-            content: { 'application/json': { schema: {} } },
-          },
-          '422': {
-            description: 'Validation Error',
-            content: {
-              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
-            },
-          },
-        },
-      },
-    },
     '/scheduled_tasks': {
       get: {
         tags: ['Tasks'],

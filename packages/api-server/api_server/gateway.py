@@ -41,6 +41,7 @@ from std_msgs.msg import Bool as BoolMsg
 from .models import (
     AlertParameter,
     AlertRequest,
+    AlertResponse,
     BeaconState,
     BuildingMap,
     DeliveryAlert,
@@ -51,14 +52,7 @@ from .models import (
     LiftState,
 )
 from .models.delivery_alerts import action_from_msg, category_from_msg, tier_from_msg
-from .repositories import (
-    CachedFilesRepository,
-    LocationAlertFailResponse,
-    LocationAlertSuccessResponse,
-    cached_files_repo,
-    is_final_location_alert_check,
-    task_id_to_all_locations_success_cache,
-)
+from .repositories import CachedFilesRepository, cached_files_repo
 from .rmf_io import alert_events, rmf_events
 from .ros import ros_node
 
@@ -297,20 +291,6 @@ class RmfGateway:
         def handle_fleet_alert(fleet_alert: AlertRequest):
             logging.info("Received fleet alert:")
             logging.info(fleet_alert)
-
-            # Handle request for checking all location completion success for
-            # this task
-            is_final_check = is_final_location_alert_check(fleet_alert)
-            if is_final_check:
-                successful_so_far = task_id_to_all_locations_success_cache.lookup(
-                    fleet_alert.task_id
-                )
-                if successful_so_far is None or not successful_so_far:
-                    self.respond_to_alert(fleet_alert.id, LocationAlertFailResponse)
-                else:
-                    self.respond_to_alert(fleet_alert.id, LocationAlertSuccessResponse)
-                return
-
             alert_events.alert_requests.on_next(fleet_alert)
 
         fleet_alert_sub = ros_node().create_subscription(
@@ -325,6 +305,31 @@ class RmfGateway:
             ),
         )
         self._subscriptions.append(fleet_alert_sub)
+
+        def convert_fleet_alert_response(fleet_alert_response: RmfFleetAlertResponse):
+            return AlertResponse(
+                id=fleet_alert_response.id,
+                unix_millis_response_time=round(datetime.now().timestamp() * 1000),
+                response=fleet_alert_response.response,
+            )
+
+        def handle_fleet_alert_response(alert_response: AlertResponse):
+            logging.info("Received alert response:")
+            logging.info(alert_response)
+            alert_events.alert_responses.on_next(alert_response)
+
+        fleet_alert_response_sub = ros_node().create_subscription(
+            RmfFleetAlertResponse,
+            "fleet_alert_response",
+            lambda msg: handle_fleet_alert_response(convert_fleet_alert_response(msg)),
+            rclpy.qos.QoSProfile(
+                history=rclpy.qos.HistoryPolicy.KEEP_LAST,
+                depth=10,
+                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
+                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
+            ),
+        )
+        self._subscriptions.append(fleet_alert_response_sub)
 
         def handle_fire_alarm_trigger(fire_alarm_trigger_msg: BoolMsg):
             if fire_alarm_trigger_msg.data:
