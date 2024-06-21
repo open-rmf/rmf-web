@@ -5,6 +5,5 @@ from .mocks import *
 from .test_client import TestClient
 from .test_data import *
 from .test_fixtures import *
-from .test_utils import *
 
 test_user = User(username="test_user", is_admin=True)

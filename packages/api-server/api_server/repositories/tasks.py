@@ -5,7 +5,7 @@ from typing import Dict, List, Optional, Sequence, Tuple
 import tortoise.functions as tfuncs
 from fastapi import Depends, HTTPException
 from tortoise.exceptions import FieldError, IntegrityError
-from tortoise.expressions import Q
+from tortoise.expressions import Expression, Q
 from tortoise.query_utils import Prefetch
 from tortoise.transactions import in_transaction
 
@@ -130,9 +130,7 @@ class TaskRepository:
                 filters["status__in"].append(TaskStatus(status_string))
         query = DbTaskState.filter(**filters)
 
-        if pagination:
-            query = add_pagination(query, pagination, group_by="labels__state_id")
-
+        need_group_by = False
         label_filters = {}
         if label is not None:
             label_filters.update(
@@ -147,13 +145,36 @@ class TaskRepository:
 
         if len(label_filters) > 0:
             filter_gt = {f"{f}__gt": 0 for f in label_filters}
+            query = query.annotate(**label_filters).filter(**filter_gt)
+            need_group_by = True
+
+        if pagination:
+            order_fields: list[str] = []
+            annotations: dict[str, Expression] = {}
+            # add annotations required for sorting by labels
+            for f in pagination.order_by:
+                order_prefix = f[0] if f[0] == "-" else ""
+                order_field = f[1:] if order_prefix == "-" else f
+                if order_field.startswith("label="):
+                    f = order_field[6:]
+                    annotations[f"label_sort_{f}"] = tfuncs.Max(
+                        "labels__label_value",
+                        _filter=Q(labels__label_name=f),
+                    )
+                    order_field = f"label_sort_{f}"
+
+                order_fields.append(order_prefix + order_field)
+
             query = (
-                query.annotate(**label_filters)
-                .group_by(
-                    "labels__state_id", "data"
-                )  # need to group by a related field to make tortoise-orm generate joins
-                .filter(**filter_gt)
+                query.annotate(**annotations)
+                .limit(pagination.limit)
+                .offset(pagination.offset)
+                .order_by(*order_fields)
             )
+            need_group_by = True
+
+        if need_group_by:
+            query = query.group_by("id_", "labels__state_id")
 
         try:
             # TODO: enforce with authz

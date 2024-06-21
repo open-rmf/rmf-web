@@ -20,7 +20,11 @@ def pagination_query(
 ) -> Pagination:
     limit = limit or 100
     offset = offset or 0
-    return Pagination(limit=limit, offset=offset, order_by=order_by)
+    return Pagination(
+        limit=limit,
+        offset=offset,
+        order_by=order_by.split(",") if order_by else [],
+    )
 
 
 # hacky way to get the sio user
