@@ -1,10 +1,8 @@
 from datetime import datetime
 from typing import List, Optional, Tuple, cast
 
-import tortoise.functions as tfuncs
 from fastapi import Body, Depends, HTTPException, Path, Query
 from reactivex import operators as rxops
-from tortoise.expressions import Q
 
 from api_server import models as mdl
 from api_server.dependencies import (
@@ -15,7 +13,6 @@ from api_server.dependencies import (
     start_time_between_query,
 )
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.repositories import TaskRepository, task_repo_dep
 from api_server.response import RawJSONResponse
 from api_server.rmf_io import task_events, tasks_service

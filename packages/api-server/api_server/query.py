@@ -1,5 +1,3 @@
-import tortoise.functions as tfuncs
-from tortoise.expressions import Q
 from tortoise.queryset import MODEL, QuerySet
 
 from api_server.models.pagination import Pagination

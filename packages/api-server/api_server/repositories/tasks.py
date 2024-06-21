@@ -27,7 +27,6 @@ from api_server.models.rmf_api.log_entry import Tier
 from api_server.models.rmf_api.task_state import Category, Id, Phase
 from api_server.models.tortoise_models import TaskRequest as DbTaskRequest
 from api_server.models.tortoise_models import TaskState as DbTaskState
-from api_server.query import add_pagination
 from api_server.rmf_io import task_events
 
 
