@@ -1,10 +1,8 @@
 from datetime import datetime
 from typing import List, Optional, Tuple, cast
 
-import tortoise.functions as tfuncs
 from fastapi import Body, Depends, HTTPException, Path, Query
 from rx import operators as rxops
-from tortoise.expressions import Q
 
 from api_server import models as mdl
 from api_server.dependencies import (
@@ -17,7 +15,6 @@ from api_server.dependencies import (
 )
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.logging import LoggerAdapter, get_logger
-from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.repositories import RmfRepository, TaskRepository
 from api_server.response import RawJSONResponse
 from api_server.rmf_io import task_events, tasks_service
@@ -102,12 +99,12 @@ async def query_task_states(
     ),
     pickup: Optional[str] = Query(
         None,
-        description="comma separated list of pickup names. [deprecated] use `label` instead",
+        description="pickup name. [deprecated] use `label` instead",
         deprecated=True,
     ),
     destination: Optional[str] = Query(
         None,
-        description="comma separated list of destination names, [deprecated] use `label` instead",
+        description="destination name, [deprecated] use `label` instead",
         deprecated=True,
     ),
     assigned_to: Optional[str] = Query(
@@ -127,76 +124,26 @@ async def query_task_states(
     ),
     pagination: mdl.Pagination = Depends(pagination_query),
 ):
-    """
-    Note that sorting by `pickup` and `destination` is mutually exclusive and sorting
-    by either of them will filter only tasks which has those labels.
-    """
-    filters = {}
-    if task_id is not None:
-        filters["id___in"] = task_id.split(",")
-    if category is not None:
-        filters["category__in"] = category.split(",")
-    if request_time_between is not None:
-        filters["unix_millis_request_time__gte"] = request_time_between[0]
-        filters["unix_millis_request_time__lte"] = request_time_between[1]
-    if requester is not None:
-        filters["requester__in"] = requester.split(",")
-    if assigned_to is not None:
-        filters["assigned_to__in"] = assigned_to.split(",")
-    if start_time_between is not None:
-        filters["unix_millis_start_time__gte"] = start_time_between[0]
-        filters["unix_millis_start_time__lte"] = start_time_between[1]
-    if finish_time_between is not None:
-        filters["unix_millis_finish_time__gte"] = finish_time_between[0]
-        filters["unix_millis_finish_time__lte"] = finish_time_between[1]
-    if status is not None:
-        valid_values = [member.value for member in mdl.Status]
-        filters["status__in"] = []
-        for status_string in status.split(","):
-            if status_string not in valid_values:
-                continue
-            filters["status__in"].append(mdl.Status(status_string))
-    query = DbTaskState.filter(**filters)
+    labels = (
+        mdl.Labels.from_strings(label.split(",")) if label else mdl.Labels(__root__={})
+    )
+    if pickup:
+        labels.__root__["pickup"] = pickup
+    if destination:
+        labels.__root__["destination"] = destination
 
-    label_filters = {}
-    if pickup is not None:
-        label_filters["label_filter_pickup"] = tfuncs.Count(
-            "id_",
-            _filter=Q(
-                labels__label_name="pickup",
-                labels__label_value_str__in=pickup.split(","),
-            ),
-        )
-    if destination is not None:
-        label_filters["label_filter_destination"] = tfuncs.Count(
-            "id_",
-            _filter=Q(
-                labels__label_name="destination",
-                labels__label_value_str__in=destination.split(","),
-            ),
-        )
-    if label is not None:
-        labels = mdl.Labels.from_strings(label.split(","))
-        label_filters.update(
-            {
-                f"label_filter_{k}": tfuncs.Count(
-                    "id_", _filter=Q(labels__label_name=k, labels__label_value_str=v)
-                )
-                for k, v in labels.__root__.items()
-            }
-        )
-
-    if len(label_filters) > 0:
-        filter_gt = {f"{f}__gt": 0 for f in label_filters}
-        query = (
-            query.annotate(**label_filters)
-            .group_by(
-                "labels__state_id"
-            )  # need to group by a related field to make tortoise-orm generate joins
-            .filter(**filter_gt)
-        )
-
-    return await task_repo.query_task_states(query, pagination)
+    return await task_repo.query_task_states(
+        task_id=task_id.split(",") if task_id else None,
+        category=category.split(",") if category else None,
+        assigned_to=assigned_to.split(",") if assigned_to else None,
+        start_time_between=start_time_between,
+        finish_time_between=finish_time_between,
+        request_time_between=request_time_between,
+        requester=requester.split(",") if requester else None,
+        status=status.split(",") if status else None,
+        label=labels,
+        pagination=pagination,
+    )
 
 
 @router.get("/{task_id}/state", response_model=mdl.TaskState)

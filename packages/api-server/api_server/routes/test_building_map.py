@@ -10,7 +10,8 @@ from api_server.test import (
 class TestBuildingMapRoute(AppFixture):
     def test_get_building_map(self):
         building_map = make_building_map()
-        rmf_events.building_map.on_next(building_map)
+        portal = self.get_portal()
+        portal.call(building_map.save)
 
         resp = try_until(
             lambda: self.client.get("/building_map"), lambda x: x.status_code == 200

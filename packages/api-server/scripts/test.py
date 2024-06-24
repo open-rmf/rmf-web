@@ -1,8 +1,6 @@
 import os
 
-os.environ[
-    "RMF_API_SERVER_CONFIG"
-] = f"{os.path.dirname(__file__)}/sqlite_test_config.py"
+os.environ["RMF_API_SERVER_CONFIG"] = f"{os.path.dirname(__file__)}/test_config.py"
 
 import unittest
 
