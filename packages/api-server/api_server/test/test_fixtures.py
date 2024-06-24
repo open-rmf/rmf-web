@@ -135,7 +135,8 @@ class AppFixture(unittest.TestCase):
                     return msgs.pop(0)
 
             while True:
-                yield portal.call(asyncio.wait_for, wait_for_msgs(), 5)
+                # TODO: type check is ignored because pyright is outdated
+                yield portal.call(asyncio.wait_for, wait_for_msgs(), 5)  # type: ignore
 
         with patch_sio() as mock_sio:
             connected = False
@@ -145,8 +146,6 @@ class AppFixture(unittest.TestCase):
 
                 async def handle_resp(emit_room, msg, *_args, **_kwargs):
                     if emit_room == "subscribe" and not msg["success"]:
-                        # FIXME
-                        # pylint: disable=broad-exception-raised
                         raise Exception("Failed to subscribe")
                     if emit_room == room:
                         async with condition:
