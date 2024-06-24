@@ -49,7 +49,6 @@ rmf_msgs=(
   'rmf_ingestor_msgs'
   'rmf_fleet_msgs'
   'rmf_task_msgs'
-  'rmf_workcell_msgs'
 )
 rm -rf api_server/models/ros_pydantic
 pipenv run ros_translator -t=pydantic -o=api_server/models/ros_pydantic "${rmf_msgs[@]}"
