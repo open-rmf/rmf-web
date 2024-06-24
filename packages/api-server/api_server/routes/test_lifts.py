@@ -1,4 +1,3 @@
-import asyncio
 from uuid import uuid4
 
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
@@ -12,11 +11,12 @@ class TestLiftsRoute(AppFixture):
     def setUpClass(cls):
         super().setUpClass()
         cls.building_map = make_building_map()
-        asyncio.run(cls.building_map.save())
+        portal = cls.get_portal()
+        portal.call(cls.building_map.save)
 
         cls.lift_states = [make_lift_state(f"test_{uuid4()}")]
         for x in cls.lift_states:
-            asyncio.run(x.save())
+            portal.call(x.save)
 
     def test_get_lifts(self):
         resp = self.client.get("/lifts")

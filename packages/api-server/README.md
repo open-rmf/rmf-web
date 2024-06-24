@@ -252,18 +252,24 @@ Restart the `api-server` and the changes to the databse should be reflected.
 ### Running unit tests
 
 ```bash
-npm test
+pnpm test
+```
+
+By default in-memory sqlite database is used for testing, to test on another database, set the `RMF_API_SERVER_TEST_DB_URL` environment variable.
+
+```bash
+RMF_API_SERVER_TEST_DB_URL=<db_url> pnpm test
 ```
 
 ### Collecting code coverage
 
 ```bash
-npm run test:cov
+pnpm run test:cov
 ```
 
 Generate coverage report
 ```bash
-npm run test:report
+pnpm run test:report
 ```
 
 ## Live reload

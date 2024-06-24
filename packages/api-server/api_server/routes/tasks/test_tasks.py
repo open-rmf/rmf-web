@@ -36,15 +36,12 @@ class TestTasksRoute(AppFixture):
         cls.task_logs = [make_task_log(task_id=f"test_{x}") for x in task_ids]
         cls.clsSetupErr: str | None = None
 
-        if cls.client.portal is None:
-            cls.clsSetupErr = "missing client portal, is the client context entered?"
-            return
-
+        portal = cls.get_portal()
         repo = TaskRepository(cls.admin_user)
         for x in cls.task_states:
-            cls.client.portal.call(repo.save_task_state, x)
+            portal.call(repo.save_task_state, x)
         for x in cls.task_logs:
-            cls.client.portal.call(repo.save_task_log, x)
+            portal.call(repo.save_task_log, x)
 
     def setUp(self):
         super().setUp()

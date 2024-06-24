@@ -2,10 +2,11 @@ import sys
 from datetime import datetime
 from typing import Dict, List, Optional, Sequence, Tuple
 
+import tortoise.functions as tfuncs
 from fastapi import Depends, HTTPException
 from tortoise.exceptions import FieldError, IntegrityError
+from tortoise.expressions import Expression, Q
 from tortoise.query_utils import Prefetch
-from tortoise.queryset import QuerySet
 from tortoise.transactions import in_transaction
 
 from api_server.authenticator import user_dep
@@ -18,6 +19,7 @@ from api_server.models import (
     TaskEventLog,
     TaskRequest,
     TaskState,
+    TaskStatus,
     User,
 )
 from api_server.models import tortoise_models as ttm
@@ -25,7 +27,6 @@ from api_server.models.rmf_api.log_entry import Tier
 from api_server.models.rmf_api.task_state import Category, Id, Phase
 from api_server.models.tortoise_models import TaskRequest as DbTaskRequest
 from api_server.models.tortoise_models import TaskState as DbTaskState
-from api_server.query import add_pagination
 from api_server.rmf_io import task_events
 
 
@@ -96,11 +97,85 @@ class TaskRepository:
                 await self.save_task_labels(db_task_state, labels)
 
     async def query_task_states(
-        self, query: QuerySet[DbTaskState], pagination: Optional[Pagination] = None
+        self,
+        task_id: list[str] | None = None,
+        category: list[str] | None = None,
+        assigned_to: list[str] | None = None,
+        start_time_between: tuple[datetime, datetime] | None = None,
+        finish_time_between: tuple[datetime, datetime] | None = None,
+        status: list[str] | None = None,
+        label: Labels | None = None,
+        pagination: Optional[Pagination] = None,
     ) -> List[TaskState]:
+        filters = {}
+        if task_id is not None:
+            filters["id___in"] = task_id
+        if category is not None:
+            filters["category__in"] = category
+        if assigned_to is not None:
+            filters["assigned_to__in"] = assigned_to
+        if start_time_between is not None:
+            filters["unix_millis_start_time__gte"] = start_time_between[0]
+            filters["unix_millis_start_time__lte"] = start_time_between[1]
+        if finish_time_between is not None:
+            filters["unix_millis_finish_time__gte"] = finish_time_between[0]
+            filters["unix_millis_finish_time__lte"] = finish_time_between[1]
+        if status is not None:
+            valid_values = [member.value for member in TaskStatus]
+            filters["status__in"] = []
+            for status_string in status:
+                if status_string not in valid_values:
+                    continue
+                filters["status__in"].append(TaskStatus(status_string))
+        query = DbTaskState.filter(**filters)
+
+        need_group_by = False
+        label_filters = {}
+        if label is not None:
+            label_filters.update(
+                {
+                    f"label_filter_{k}": tfuncs.Count(
+                        "id_",
+                        _filter=Q(labels__label_name=k, labels__label_value=v),
+                    )
+                    for k, v in label.root.items()
+                }
+            )
+
+        if len(label_filters) > 0:
+            filter_gt = {f"{f}__gt": 0 for f in label_filters}
+            query = query.annotate(**label_filters).filter(**filter_gt)
+            need_group_by = True
+
+        if pagination:
+            order_fields: list[str] = []
+            annotations: dict[str, Expression] = {}
+            # add annotations required for sorting by labels
+            for f in pagination.order_by:
+                order_prefix = f[0] if f[0] == "-" else ""
+                order_field = f[1:] if order_prefix == "-" else f
+                if order_field.startswith("label="):
+                    f = order_field[6:]
+                    annotations[f"label_sort_{f}"] = tfuncs.Max(
+                        "labels__label_value",
+                        _filter=Q(labels__label_name=f),
+                    )
+                    order_field = f"label_sort_{f}"
+
+                order_fields.append(order_prefix + order_field)
+
+            query = (
+                query.annotate(**annotations)
+                .limit(pagination.limit)
+                .offset(pagination.offset)
+                .order_by(*order_fields)
+            )
+            need_group_by = True
+
+        if need_group_by:
+            query = query.group_by("id_", "labels__state_id")
+
         try:
-            if pagination:
-                query = add_pagination(query, pagination, group_by="labels__state_id")
             # TODO: enforce with authz
             results = await query.values_list("data")
             return [TaskState(**r[0]) for r in results]
