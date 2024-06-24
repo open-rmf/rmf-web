@@ -1,14 +1,19 @@
 import asyncio
+import contextlib
 import inspect
 import os
 import os.path
 import time
 import unittest
 import unittest.mock
-from typing import Awaitable, Callable, Optional, TypeVar, Union
+from typing import Awaitable, Callable, Generator, Optional, TypeVar, Union
 from uuid import uuid4
 
-from api_server.app import app, on_sio_connect
+import pydantic
+from anyio.abc import BlockingPortal
+from tortoise import Tortoise
+
+from api_server.app import app, app_config
 from api_server.models import User
 
 from .mocks import patch_sio
@@ -80,20 +85,62 @@ with open(f"{here}/../../scripts/test.key", "br") as f:
 class AppFixture(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        async def clean_db():
+            # connect to the db to drop it
+            await Tortoise.init(db_url=app_config.db_url, modules={"models": []})
+            await Tortoise._drop_databases()  # pylint: disable=protected-access
+            # connect to it again to recreate it
+            await Tortoise.init(
+                db_url=app_config.db_url, modules={"models": []}, _create_db=True
+            )
+            await Tortoise.close_connections()
+
+        asyncio.run(clean_db())
+
         cls.admin_user = User(username="admin", is_admin=True)
         cls.client = TestClient()
         cls.client.headers["Content-Type"] = "application/json"
         cls.client.__enter__()
         cls.addClassCleanup(cls.client.__exit__)
 
+    @classmethod
+    def get_portal(cls) -> BlockingPortal:
+        if not cls.client.portal:
+            raise AssertionError(
+                "missing client portal, is the client context entered?"
+            )
+        return cls.client.portal
+
+    @contextlib.contextmanager
     def subscribe_sio(self, room: str, *, user="admin"):
         """
         Subscribes to a socketio room and return a generator of messages
         Returns a tuple of (success: bool, messages: Any).
         """
+        if self.client.portal is None:
+            raise AssertionError(
+                "self.client.portal is None, make sure this is called within a test context"
+            )
+        portal = self.client.portal
 
-        def impl():
-            with patch_sio() as mock_sio:
+        on_sio_connect = app.sio.handlers["/"]["connect"]
+        on_subscribe = app.sio.handlers["/"]["subscribe"]
+        on_disconnect = app.sio.handlers["/"]["disconnect"]
+
+        def gen() -> Generator[dict, None, None]:
+            async def wait_for_msgs():
+                async with condition:
+                    if len(msgs) == 0:
+                        await condition.wait()
+                    return msgs.pop(0)
+
+            while True:
+                # TODO: type check is ignored because pyright is outdated
+                yield portal.call(asyncio.wait_for, wait_for_msgs(), 5)  # type: ignore
+
+        with patch_sio() as mock_sio:
+            connected = False
+            try:
                 msgs = []
                 condition = asyncio.Condition()
 
@@ -102,39 +149,23 @@ class AppFixture(unittest.TestCase):
                         raise Exception("Failed to subscribe")
                     if emit_room == room:
                         async with condition:
+                            if isinstance(msg, pydantic.BaseModel):
+                                msg = msg.dict()
                             msgs.append(msg)
                             condition.notify()
 
                 mock_sio.emit.side_effect = handle_resp
 
-                self.assertIsNotNone(self.client.portal)
-                assert self.client.portal is not None
-
-                self.client.portal.call(
+                portal.call(
                     on_sio_connect, "test", {}, {"token": self.client.token(user)}
                 )
-                # pylint: disable=protected-access
-                self.client.portal.call(app._on_subscribe, "test", {"room": room})
+                connected = True
+                portal.call(on_subscribe, "test", {"room": room})
 
-                yield
-
-                async def wait_for_msgs():
-                    async with condition:
-                        if len(msgs) == 0:
-                            await condition.wait()
-                        return msgs.pop(0)
-
-                try:
-                    while True:
-                        yield self.client.portal.call(
-                            asyncio.wait_for, wait_for_msgs(), 5
-                        )
-                finally:
-                    self.client.portal.call(app._on_disconnect, "test")
-
-        gen = impl()
-        next(gen)
-        return gen
+                yield gen()
+            finally:
+                if connected:
+                    portal.call(on_disconnect, "test")
 
     def setUp(self):
         self.test_time = 0

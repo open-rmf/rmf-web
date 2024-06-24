@@ -218,7 +218,7 @@ export function TaskDataGridTable({
       filterable: true,
     },
     {
-      field: 'pickup',
+      field: 'label=pickup',
       headerName: 'Pickup',
       width: 150,
       editable: false,
@@ -233,7 +233,7 @@ export function TaskDataGridTable({
       filterable: true,
     },
     {
-      field: 'destination',
+      field: 'label=destination',
       headerName: 'Destination',
       width: 150,
       editable: false,

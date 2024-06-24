@@ -18,6 +18,5 @@ class TestStress(AppFixture):
         rmf_events.door_states.on_next(door_state)
 
         while True:
-            gen = self.subscribe_sio(f"/doors/{door_state.door_name}/state")
-            next(gen)
-            gen.close()
+            with self.subscribe_sio(f"/doors/{door_state.door_name}/state") as sub:
+                next(sub)
