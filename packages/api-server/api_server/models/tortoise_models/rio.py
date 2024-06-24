@@ -1,5 +1,3 @@
-from typing import Annotated
-
 import tortoise
 from tortoise.fields import CharField, JSONField
 

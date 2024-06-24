@@ -12,16 +12,18 @@ router = FastIORouter(tags=["RIOs"])
 
 @router.get("", response_model=list[Rio])
 async def query_rios(
-    id: Annotated[str | None, Query(description="comma separated list of ids")] = None,
-    type: Annotated[
-        str | None, Query(description="comma separated list of types")
+    id_: Annotated[
+        str | None, Query(alias="id", description="comma separated list of ids")
+    ] = None,
+    type_: Annotated[
+        str | None, Query(alias="type", description="comma separated list of types")
     ] = None,
 ):
     filters = {}
-    if id:
-        filters["id__in"] = id.split(",")
-    if type:
-        filters["type__in"] = type.split(",")
+    if id_:
+        filters["id__in"] = id_.split(",")
+    if type_:
+        filters["type__in"] = type_.split(",")
 
     rios = await DbRio.filter(**filters)
     return [Rio.model_validate(x) for x in rios]
