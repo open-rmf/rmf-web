@@ -355,30 +355,33 @@ export function CreateTaskForm({
   // than 0, this will cause the dashboard to fail when the create task form is
   // opened. This is intentional as it is a misconfiguration and will require
   // the build-time configuration to be fixed.
-  // TODO(ac): Use a memo to prevent re-checking if task configurations are valid.
-  const validTasks: TaskDefinition[] = [];
-  let defaultTaskDescription: string | TaskDescription | null = null;
-  let defaultTaskRequest: TaskRequest | null = null;
-  tasksToDisplay.forEach((supportedTask: TaskDefinition) => {
-    const definitionId = supportedTask.taskDefinitionId;
-    const desc = getDefaultTaskDescription(definitionId);
-    const req = getDefaultTaskRequest(definitionId);
+  const { defaultTaskDescription, defaultTaskRequest, validTasks } = React.useMemo(() => {
+    let defaultTaskDescription: string | TaskDescription | null = null;
+    let defaultTaskRequest: TaskRequest | null = null;
+    const validTasks: TaskDefinition[] = [];
 
-    if (desc === undefined) {
-      console.error(`Failed to retrieve task description for definition ID: [${definitionId}]`);
-    }
-    if (req === null) {
-      console.error(`Failed to create task request for definition ID: [${definitionId}]`);
-    }
-    if (desc && req) {
-      validTasks.push(supportedTask);
+    tasksToDisplay.forEach((supportedTask: TaskDefinition) => {
+      const definitionId = supportedTask.taskDefinitionId;
+      const desc = getDefaultTaskDescription(definitionId);
+      const req = getDefaultTaskRequest(definitionId);
 
-      if (!defaultTaskDescription && !defaultTaskRequest) {
-        defaultTaskDescription = desc;
-        defaultTaskRequest = req;
+      if (desc === undefined) {
+        console.error(`Failed to retrieve task description for definition ID: [${definitionId}]`);
       }
-    }
-  });
+      if (req === null) {
+        console.error(`Failed to create task request for definition ID: [${definitionId}]`);
+      }
+      if (desc && req) {
+        validTasks.push(supportedTask);
+
+        if (!defaultTaskDescription && !defaultTaskRequest) {
+          defaultTaskDescription = desc;
+          defaultTaskRequest = req;
+        }
+      }
+    });
+    return { defaultTaskDescription, defaultTaskRequest, validTasks };
+  }, [tasksToDisplay]);
 
   if (!defaultTaskDescription || !defaultTaskRequest) {
     // We should never reach this state unless a misconfiguration happened.
