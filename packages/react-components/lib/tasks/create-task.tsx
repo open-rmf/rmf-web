@@ -355,7 +355,6 @@ export function CreateTaskForm({
   // than 0, this will cause the dashboard to fail when the create task form is
   // opened. This is intentional as it is a misconfiguration and will require
   // the build-time configuration to be fixed.
-  let allTasksToDisplayAreValid = true;
   const validTasks: TaskDefinition[] = [];
   let defaultTaskDescription: string | TaskDescription | null = null;
   let defaultTaskRequest: TaskRequest | null = null;
@@ -366,11 +365,9 @@ export function CreateTaskForm({
 
     if (desc === undefined) {
       console.error(`Failed to retrieve task description for definition ID: [${definitionId}]`);
-      allTasksToDisplayAreValid = false;
     }
     if (req === null) {
       console.error(`Failed to create task request for definition ID: [${definitionId}]`);
-      allTasksToDisplayAreValid = false;
     }
     if (desc && req) {
       validTasks.push(supportedTask);

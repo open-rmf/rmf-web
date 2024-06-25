@@ -84,7 +84,7 @@ export function getShortDescription(
   }
 }
 
-export function getTaskDefinition(taskDefinitionId: string): TaskDefinition | undefined {
+export function getDefaultTaskDefinition(taskDefinitionId: string): TaskDefinition | undefined {
   switch (taskDefinitionId) {
     case ComposeCleanTaskDefinition.taskDefinitionId:
       return ComposeCleanTaskDefinition;
@@ -127,6 +127,6 @@ export function getDefaultTaskDescription(
 }
 
 export function getTaskRequestCategory(taskDefinitionId: string): string | undefined {
-  const definition = getTaskDefinition(taskDefinitionId);
+  const definition = getDefaultTaskDefinition(taskDefinitionId);
   return definition !== undefined ? definition.requestCategory : undefined;
 }
