@@ -355,10 +355,11 @@ export function CreateTaskForm({
   // than 0, this will cause the dashboard to fail when the create task form is
   // opened. This is intentional as it is a misconfiguration and will require
   // the build-time configuration to be fixed.
+  // TODO(ac): Use a memo to prevent re-checking if task configurations are valid.
   const validTasks: TaskDefinition[] = [];
   let defaultTaskDescription: string | TaskDescription | null = null;
   let defaultTaskRequest: TaskRequest | null = null;
-  tasksToDisplay.forEach((supportedTask: TaskDefinition, index: number) => {
+  tasksToDisplay.forEach((supportedTask: TaskDefinition) => {
     const definitionId = supportedTask.taskDefinitionId;
     const desc = getDefaultTaskDescription(definitionId);
     const req = getDefaultTaskRequest(definitionId);
@@ -860,7 +861,7 @@ export function CreateTaskForm({
                       }}
                       InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
                     >
-                      {tasksToDisplay.map((taskDefinition) => {
+                      {validTasks.map((taskDefinition) => {
                         return (
                           <MenuItem
                             value={taskDefinition.taskDefinitionId}
