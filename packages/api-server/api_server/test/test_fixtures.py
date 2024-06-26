@@ -105,6 +105,7 @@ class AppFixture(unittest.TestCase):
             ...
         ```
         """
+        # pylint: disable=protected-access
         testcase._init_mode = AppFixture.InitMode.SETUP_TEST
         return testcase
 
