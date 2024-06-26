@@ -93,17 +93,19 @@ class TestAlertsRoute(AppFixture):
         self.assertEqual(response, resp.json()["response"], resp.content)
 
     def test_sub_alert(self):
-        gen = self.subscribe_sio("/alerts/requests")
-
         alert_id = str(uuid4())
         alert = make_alert_request(alert_id=alert_id, responses=["resume", "cancel"])
-        resp = self.client.post("/alerts/request", data=alert.json(exclude_none=True))
-        self.assertEqual(201, resp.status_code, resp.content)
-        self.assertEqual(alert, resp.json(), resp.content)
 
         # check subscribed alert
-        subbed_alert = next(gen)
-        self.assertEqual(subbed_alert, alert, subbed_alert)
+        with self.subscribe_sio("/alerts/requests") as sub:
+            resp = self.client.post(
+                "/alerts/request", data=alert.json(exclude_none=True)
+            )
+            self.assertEqual(201, resp.status_code, resp.content)
+            self.assertEqual(alert, resp.json(), resp.content)
+
+            subbed_alert = mdl.AlertRequest(**next(sub))
+            self.assertEqual(subbed_alert, alert, subbed_alert)
 
     def test_sub_alert_response(self):
         gen = self.subscribe_sio("/alerts/responses")
@@ -117,16 +119,17 @@ class TestAlertsRoute(AppFixture):
         # respond
         response = "resume"
         params = {"response": response}
-        resp = self.client.post(
-            f"/alerts/request/{alert_id}/respond?{urlencode(params)}"
-        )
-        self.assertEqual(201, resp.status_code, resp.content)
-        self.assertEqual(alert_id, resp.json()["id"], resp.content)
-        self.assertEqual(response, resp.json()["response"], resp.content)
+        with self.subscribe_sio("/alerts/responses") as sub:
+            resp = self.client.post(
+                f"/alerts/request/{alert_id}/respond?{urlencode(params)}"
+            )
+            self.assertEqual(201, resp.status_code, resp.content)
+            self.assertEqual(alert_id, resp.json()["id"], resp.content)
+            self.assertEqual(response, resp.json()["response"], resp.content)
 
-        # check subscribed alert response
-        subbed_alert_response = next(gen)
-        self.assertEqual(subbed_alert_response, resp.json(), subbed_alert_response)
+            # check subscribed alert response
+            subbed_alert_response = mdl.AlertResponse(**next(sub))
+            self.assertEqual(subbed_alert_response, resp.json(), subbed_alert_response)
 
     def test_get_alerts_of_task(self):
         alert_id = str(uuid4())
