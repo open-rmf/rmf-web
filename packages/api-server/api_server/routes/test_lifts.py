@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 
-from api_server.rmf_io import rmf_events
+from api_server.models import LiftState
 from api_server.test import AppFixture, make_building_map, make_lift_state
 
 
@@ -11,11 +11,12 @@ class TestLiftsRoute(AppFixture):
     def setUpClass(cls):
         super().setUpClass()
         cls.building_map = make_building_map()
-        cls.lift_states = [make_lift_state(f"test_{uuid4()}")]
+        portal = cls.get_portal()
+        portal.call(cls.building_map.save)
 
-        rmf_events.building_map.on_next(cls.building_map)
+        cls.lift_states = [make_lift_state(f"test_{uuid4()}")]
         for x in cls.lift_states:
-            rmf_events.lift_states.on_next(x)
+            portal.call(x.save)
 
     def test_get_lifts(self):
         resp = self.client.get("/lifts")
@@ -31,8 +32,9 @@ class TestLiftsRoute(AppFixture):
         self.assertEqual(self.lift_states[0].lift_name, state["lift_name"])
 
     def test_sub_lift_state(self):
-        msg = next(self.subscribe_sio(f"/lifts/{self.lift_states[0].lift_name}/state"))
-        self.assertEqual(self.lift_states[0].lift_name, msg.lift_name)  # type: ignore
+        with self.subscribe_sio(f"/lifts/{self.lift_states[0].lift_name}/state") as sub:
+            msg = LiftState(**next(sub))
+            self.assertEqual(self.lift_states[0].lift_name, msg.lift_name)
 
     def test_request_lift(self):
         resp = self.client.post(
