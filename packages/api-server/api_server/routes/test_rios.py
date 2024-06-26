@@ -6,6 +6,7 @@ from api_server.rmf_io import rio_events
 from api_server.test import AppFixture
 
 
+@AppFixture.reset_app_before_test
 class TestRiosRoute(AppFixture):
     def test_get_rios(self):
         self.portal.call(
