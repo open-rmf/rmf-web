@@ -15,7 +15,6 @@ from api_server.dependencies import (
 )
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.logging import LoggerAdapter, get_logger
-from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.repositories import RmfRepository, TaskRepository
 from api_server.response import RawJSONResponse
 from api_server.rmf_io import task_events, tasks_service
@@ -99,10 +98,14 @@ async def query_task_states(
         None, description="comma separated list of requester names"
     ),
     pickup: Optional[str] = Query(
-        None, description="comma separated list of pickup names"
+        None,
+        description="pickup name. [deprecated] use `label` instead",
+        deprecated=True,
     ),
     destination: Optional[str] = Query(
-        None, description="comma separated list of destination names"
+        None,
+        description="destination name, [deprecated] use `label` instead",
+        deprecated=True,
     ),
     assigned_to: Optional[str] = Query(
         None, description="comma separated list of assigned robot names"
@@ -114,60 +117,33 @@ async def query_task_states(
         finish_time_between_query
     ),
     status: Optional[str] = Query(None, description="comma separated list of statuses"),
+    label: str
+    | None = Query(
+        None,
+        description="comma separated list of labels, each item must be in the form <key>=<value>, multiple items will filter tasks with all the labels",
+    ),
     pagination: mdl.Pagination = Depends(pagination_query),
 ):
-    filters = {}
-    if task_id is not None:
-        filters["id___in"] = task_id.split(",")
-    if category is not None:
-        filters["category__in"] = category.split(",")
-    if request_time_between is not None:
-        filters["unix_millis_request_time__gte"] = request_time_between[0]
-        filters["unix_millis_request_time__lte"] = request_time_between[1]
-    if requester is not None:
-        filters["requester__in"] = requester.split(",")
-    if assigned_to is not None:
-        filters["assigned_to__in"] = assigned_to.split(",")
-    if start_time_between is not None:
-        filters["unix_millis_start_time__gte"] = start_time_between[0]
-        filters["unix_millis_start_time__lte"] = start_time_between[1]
-    if finish_time_between is not None:
-        filters["unix_millis_finish_time__gte"] = finish_time_between[0]
-        filters["unix_millis_finish_time__lte"] = finish_time_between[1]
-    if status is not None:
-        valid_values = [member.value for member in mdl.Status]
-        filters["status__in"] = []
-        for status_string in status.split(","):
-            if status_string not in valid_values:
-                continue
-            filters["status__in"].append(mdl.Status(status_string))
+    labels = (
+        mdl.Labels.from_strings(label.split(",")) if label else mdl.Labels(__root__={})
+    )
+    if pickup:
+        labels.__root__["pickup"] = pickup
+    if destination:
+        labels.__root__["destination"] = destination
 
-    # NOTE: in order to perform filtering based on the values in labels, a
-    # filter on the label_name will need to be applied as well as a filter on
-    # the label_value.
-    if pickup is not None:
-        filters["labels__label_name"] = "pickup"
-        filters["labels__label_value_str__in"] = pickup.split(",")
-    if destination is not None:
-        filters["labels__label_name"] = "destination"
-        filters["labels__label_value_str__in"] = destination.split(",")
-
-    # NOTE: In order to perform sorting based on the values in labels, a filter
-    # on the label_name has to be performed first. A side-effect of this would
-    # be that states that do not contain this field will not be returned.
-    if pagination.order_by is not None:
-        labels_fields = ["pickup", "destination"]
-        new_order = pagination.order_by
-        for field in labels_fields:
-            if field in pagination.order_by:
-                filters["labels__label_name"] = field
-                new_order = pagination.order_by.replace(
-                    field, "labels__label_value_str"
-                )
-                break
-        pagination.order_by = new_order
-
-    return await task_repo.query_task_states(DbTaskState.filter(**filters), pagination)
+    return await task_repo.query_task_states(
+        task_id=task_id.split(",") if task_id else None,
+        category=category.split(",") if category else None,
+        assigned_to=assigned_to.split(",") if assigned_to else None,
+        start_time_between=start_time_between,
+        finish_time_between=finish_time_between,
+        request_time_between=request_time_between,
+        requester=requester.split(",") if requester else None,
+        status=status.split(",") if status else None,
+        label=labels,
+        pagination=pagination,
+    )
 
 
 @router.get("/{task_id}/state", response_model=mdl.TaskState)
@@ -266,8 +242,6 @@ async def post_dispatch_task(
     task_repo: TaskRepository = Depends(TaskRepository),
     logger: LoggerAdapter = Depends(get_logger),
 ):
-    task_warn_time = request.request.unix_millis_warn_time
-
     # FIXME: In order to accommodate changing cancellation lots over time, and
     # avoiding updating all the saved scheduled tasks in the database, we only
     # insert cancellation lots as part of the cancellation behavior before
@@ -315,8 +289,6 @@ async def post_dispatch_task(
     if not resp.__root__.success:
         return RawJSONResponse(resp.json(), 400)
     new_state = cast(mdl.TaskDispatchResponseItem, resp.__root__).state
-    if task_warn_time is not None:
-        new_state.unix_millis_warn_time = task_warn_time
     await task_repo.save_task_state(new_state)
     await task_repo.save_task_request(new_state, request.request)
     return resp.__root__

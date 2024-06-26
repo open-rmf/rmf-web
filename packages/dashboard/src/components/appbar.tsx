@@ -159,6 +159,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const location = useLocation();
   const tabValue = React.useMemo(() => locationToTabValue(location.pathname), [location]);
   const logoResourcesContext = React.useContext(ResourcesContext)?.logos;
+  const taskResourcesContext = React.useContext(ResourcesContext)?.tasks;
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const { authenticator } = React.useContext(AppConfigContext);
   const profile = React.useContext(UserProfileContext);
@@ -600,6 +601,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       {openCreateTaskForm && (
         <CreateTaskForm
           user={username ? username : 'unknown user'}
+          tasksToDisplay={taskResourcesContext?.tasks}
           patrolWaypoints={waypointNames}
           cleaningZones={cleaningZoneNames}
           pickupZones={resourceManager?.pickupZones}

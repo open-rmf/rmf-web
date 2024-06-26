@@ -1,8 +1,13 @@
+from typing import cast
 from unittest.mock import patch
 from uuid import uuid4
 
+import pydantic
+
 from api_server import models as mdl
-from api_server.rmf_io import tasks_service
+from api_server.models import TaskEventLog, TaskState
+from api_server.repositories import TaskRepository
+from api_server.rmf_io import task_events, tasks_service
 from api_server.test import (
     AppFixture,
     make_task_booking_label,
@@ -15,19 +20,40 @@ class TestTasksRoute(AppFixture):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        task_ids = [uuid4()]
-        cls.task_states = [make_task_state(task_id=f"test_{x}") for x in task_ids]
+        booking_labels = make_task_booking_label()
+        booking_labels.description["test_single"] = ""
+        booking_labels.description["test_single_2"] = ""
+        booking_labels.description["test_kv"] = "value"
+        booking_labels.description["test_label_sort"] = "zzz"
+        booking_labels.description["test_label_sort_2"] = "aaa"
+        booking_labels.description["test_label_sort_3"] = "bbb"
+        booking_labels_2 = make_task_booking_label()
+        booking_labels_2.description["test_label_sort"] = "aaa"
+        booking_labels_2.description["test_label_sort_3"] = "bbb"
+
+        task_ids = [uuid4(), uuid4()]
+        cls.task_states = [
+            make_task_state(
+                task_id=f"test_{task_ids[0]}",
+                booking_labels=[
+                    "dummy_label_1",
+                    "dummy_label_2",
+                    booking_labels.json(),
+                ],
+            ),
+            make_task_state(
+                task_id=f"test_{task_ids[1]}",
+                booking_labels=[booking_labels_2.json()],
+            ),
+        ]
         cls.task_logs = [make_task_log(task_id=f"test_{x}") for x in task_ids]
 
-        with cls.client.websocket_connect("/_internal") as ws:
-            for x in cls.task_states:
-                ws.send_text(
-                    mdl.TaskStateUpdate(type="task_state_update", data=x).json()
-                )
-            for x in cls.task_logs:
-                ws.send_text(
-                    mdl.TaskEventLogUpdate(type="task_log_update", data=x).json()
-                )
+        portal = cls.get_portal()
+        repo = TaskRepository(cls.admin_user)
+        for x in cls.task_states:
+            portal.call(repo.save_task_state, x)
+        for x in cls.task_logs:
+            portal.call(repo.save_task_log, x)
 
     def test_get_task_state(self):
         resp = self.client.get(f"/tasks/{self.task_states[0].booking.id}/state")
@@ -44,25 +70,124 @@ class TestTasksRoute(AppFixture):
         self.assertEqual(1, len(results))
         self.assertEqual(self.task_states[0].booking.id, results[0]["booking"]["id"])
 
+        test_cases = [
+            ({"pickup": "Kitchen"}, [self.task_states[0].booking.id]),
+            ({"destination": "room_203"}, [self.task_states[0].booking.id]),
+            (
+                {"pickup": "Kitchen", "destination": "room_203"},
+                [self.task_states[0].booking.id],
+            ),
+            (
+                {"pickup": "Kitchen", "destination": "room_202"},
+                [],
+            ),
+        ]
+        for tc in test_cases:
+            q = "&".join(f"{k}={v}" for k, v in tc[0].items())
+            resp = self.client.get(
+                f"/tasks?task_id={self.task_states[0].booking.id}&{q}"
+            )
+            self.assertEqual(200, resp.status_code, tc)
+            results = resp.json()
+            self.assertEqual(len(tc[1]), len(results), tc)
+            for a, b in zip(tc[1], results):
+                self.assertEqual(a, b["booking"]["id"], tc)
+
+    def test_query_task_states_filter_by_label(self):
+        resp = self.client.get("/tasks?label=not_existing")
+        self.assertEqual(200, resp.status_code, resp.content)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(0, len(results))
+
+        resp = self.client.get("/tasks?label=test_single")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(1, len(results))
+        self.assertEqual(self.task_states[0].booking.id, results[0].booking.id)
+
+        resp = self.client.get("/tasks?label=test_single=wrong_value")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(0, len(results))
+
+        resp = self.client.get("/tasks?label=test_single_2=")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(1, len(results))
+        self.assertEqual(self.task_states[0].booking.id, results[0].booking.id)
+
+        resp = self.client.get("/tasks?label=test_kv=value")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(1, len(results))
+        self.assertEqual(self.task_states[0].booking.id, results[0].booking.id)
+
+        resp = self.client.get("/tasks?label=test_kv=wrong_value")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(0, len(results))
+
+        resp = self.client.get("/tasks?label=test_single,test_kv=value")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(1, len(results))
+        self.assertEqual(self.task_states[0].booking.id, results[0].booking.id)
+
+        resp = self.client.get("/tasks?label=test_single,test_kv=wrong_value")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(0, len(results))
+
+    def test_query_task_states_sort_by_label(self):
+        resp = self.client.get("/tasks?order_by=-label=test_label_sort")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(2, len(results))
+        for a, b in zip(self.task_states, results):
+            self.assertEqual(a, b)
+
+        resp = self.client.get("/tasks?order_by=label=test_label_sort")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(2, len(results))
+        for a, b in zip(self.task_states[::-1], results):
+            self.assertEqual(a, b)
+
+        # test sorting by multiple labels
+        resp = self.client.get(
+            "/tasks?order_by=label=test_label_sort,label=test_label_sort_3"
+        )
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(2, len(results))
+        for a, b in zip(self.task_states[::-1], results):
+            self.assertEqual(a, b)
+
+        # test that tasks without the label are not filtered out
+        # we don't test the result order because different db has different behavior
+        # of sorting NULL.
+        resp = self.client.get("/tasks?order_by=label=test_label_sort_not_existing")
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(2, len(results))
+
     def test_sub_task_state(self):
         task_id = self.task_states[0].booking.id
-        gen = self.subscribe_sio(f"/tasks/{task_id}/state")
-        with self.client.websocket_connect("/_internal") as ws:
-            ws.send_text(
-                mdl.TaskStateUpdate(
-                    type="task_state_update", data=self.task_states[0]
-                ).json()
-            )
-        state = next(gen)
-        self.assertEqual(task_id, state.booking.id)  # type: ignore
+        with self.subscribe_sio(f"/tasks/{task_id}/state") as sub:
+            task_events.task_states.on_next(self.task_states[0])
+            state = TaskState(**next(sub))
+            self.assertEqual(task_id, cast(TaskState, state).booking.id)
 
     def test_get_task_booking_label(self):
         resp = self.client.get(f"/tasks/{self.task_states[0].booking.id}/booking_label")
         self.assertEqual(200, resp.status_code)
-        self.assertEqual(
-            make_task_booking_label(),
-            mdl.TaskBookingLabel(**resp.json()),
-        )
+        labels = mdl.TaskBookingLabel.parse_raw(resp.content)
+        expected = make_task_booking_label()
+        for k, v in expected.description.items():
+            self.assertEqual(
+                v,
+                labels.description[k],
+            )
 
     def test_get_task_log(self):
         resp = self.client.get(
@@ -134,15 +259,10 @@ class TestTasksRoute(AppFixture):
 
     def test_sub_task_log(self):
         task_id = self.task_logs[0].task_id
-        gen = self.subscribe_sio(f"/tasks/{task_id}/log")
-        with self.client.websocket_connect("/_internal") as ws:
-            ws.send_text(
-                mdl.TaskEventLogUpdate(
-                    type="task_log_update", data=self.task_logs[0]
-                ).json()
-            )
-        log = next(gen)
-        self.assertEqual(task_id, log.task_id)  # type: ignore
+        with self.subscribe_sio(f"/tasks/{task_id}/log") as sub:
+            task_events.task_event_logs.on_next(self.task_logs[0])
+            log = TaskEventLog(**next(sub))
+            self.assertEqual(task_id, cast(TaskEventLog, log).task_id)
 
     def test_activity_discovery(self):
         with patch.object(tasks_service(), "call") as mock:

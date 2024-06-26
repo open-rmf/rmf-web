@@ -2,6 +2,7 @@ import Debug from 'debug';
 import { DispenserResourceManager, RawDispenserResource } from './resource-manager-dispensers';
 import { LogoResource, LogoResourceManager } from './resource-manager-logos';
 import { RobotResource, RobotResourceManager } from './resource-manager-robots';
+import { TaskResource, TaskResourceManager } from './resource-manager-tasks';
 
 const debug = Debug('ResourceManager');
 const ResourceFile = 'resources/main.json';
@@ -18,6 +19,7 @@ export interface ResourceConfigurationsType {
   attributionPrefix?: string;
   cartIds?: string[];
   loggedInDisplayLevel?: string;
+  allowedTasks?: TaskResource[];
 }
 
 export default class ResourceManager {
@@ -32,6 +34,7 @@ export default class ResourceManager {
   attributionPrefix?: string;
   cartIds?: string[];
   loggedInDisplayLevel?: string;
+  tasks: TaskResourceManager;
 
   /**
    * Gets the default resource manager using the embedded resource file (aka "assets/resources/main.json").
@@ -53,6 +56,22 @@ export default class ResourceManager {
   constructor(resources: ResourceConfigurationsType) {
     this.robots = new RobotResourceManager(resources.robots || {});
     this.logos = new LogoResourceManager(resources.logos || {});
+    this.tasks = new TaskResourceManager(
+      resources.allowedTasks || [
+        {
+          task_definition_id: 'patrol',
+        },
+        {
+          task_definition_id: 'delivery',
+        },
+        {
+          task_definition_id: 'compose-clean',
+        },
+        {
+          task_definition_id: 'custom_compose',
+        },
+      ],
+    );
     if (resources.dispensers) {
       this.dispensers = new DispenserResourceManager(resources.dispensers);
     }

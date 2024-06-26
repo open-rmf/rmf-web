@@ -1,4 +1,5 @@
 export * from './create-task';
+export * from './types';
 export * from './task-info';
 export * from './task-logs';
 export * from './task-booking-label-utils';

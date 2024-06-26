@@ -23,7 +23,13 @@ import {
   nextWednesday,
   startOfMinute,
 } from 'date-fns';
-import { getShortDescription, RecurringDays, Schedule } from 'react-components';
+import {
+  getShortDescription,
+  getTaskBookingLabelFromTaskRequest,
+  RecurringDays,
+  Schedule,
+  TaskDefinition,
+} from 'react-components';
 
 /**
  * Generates a list of ProcessedEvents to occur within the query start and end,
@@ -166,8 +172,27 @@ export const apiScheduleToSchedule = (scheduleTask: ApiSchedule[]): Schedule => 
   };
 };
 
-export const getScheduledTaskTitle = (task: ScheduledTask): string => {
-  const shortDescription = getShortDescription(task.task_request);
+export const getScheduledTaskTitle = (
+  task: ScheduledTask,
+  supportedTasks?: TaskDefinition[],
+): string => {
+  const taskBookingLabel = getTaskBookingLabelFromTaskRequest(task.task_request);
+
+  let remappedTaskName: string | undefined = undefined;
+  if (
+    supportedTasks &&
+    taskBookingLabel &&
+    taskBookingLabel.description.task_definition_id &&
+    typeof taskBookingLabel.description.task_definition_id === 'string'
+  ) {
+    for (const s of supportedTasks) {
+      if (s.taskDefinitionId === taskBookingLabel.description.task_definition_id) {
+        remappedTaskName = s.taskDisplayName;
+      }
+    }
+  }
+
+  const shortDescription = getShortDescription(task.task_request, remappedTaskName);
   if (!task.task_request || !task.task_request.category || !shortDescription) {
     return `[${task.id}] Unknown`;
   }

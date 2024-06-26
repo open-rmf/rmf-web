@@ -1,23 +1,23 @@
 import {
-  defaultDeliveryTaskDescription,
-  defaultDeliveryCustomTaskDescription,
+  deliveryCustomInsertCartId,
+  deliveryCustomInsertDropoff,
+  deliveryCustomInsertOnCancel,
+  deliveryCustomInsertPickup,
   DeliveryCustomTaskDescription,
   deliveryInsertCartId,
   deliveryInsertDropoff,
   deliveryInsertOnCancel,
   deliveryInsertPickup,
-  DeliveryTaskDescription,
-  deliveryCustomInsertPickup,
-  deliveryCustomInsertCartId,
-  deliveryCustomInsertDropoff,
-  deliveryCustomInsertOnCancel,
-} from './create-task';
+  DeliveryPickupTaskDescription,
+  makeDefaultDeliveryCustomTaskDescription,
+  makeDefaultDeliveryPickupTaskDescription,
+} from '.';
 
 describe('Custom deliveries', () => {
-  it('delivery 1:1', () => {
-    let deliveryTaskDescription: DeliveryTaskDescription | null = null;
+  it('delivery pickup', () => {
+    let deliveryPickupTaskDescription: DeliveryPickupTaskDescription | null = null;
     try {
-      deliveryTaskDescription = JSON.parse(`{
+      deliveryPickupTaskDescription = JSON.parse(`{
         "category": "delivery_pickup",
         "phases": [
           {
@@ -113,13 +113,13 @@ describe('Custom deliveries', () => {
           }
         ]
       }
-      `) as DeliveryTaskDescription;
+      `) as DeliveryPickupTaskDescription;
     } catch (e) {
-      deliveryTaskDescription = null;
+      deliveryPickupTaskDescription = null;
     }
-    expect(deliveryTaskDescription).not.toEqual(null);
+    expect(deliveryPickupTaskDescription).not.toEqual(null);
 
-    let description = defaultDeliveryTaskDescription();
+    let description = makeDefaultDeliveryPickupTaskDescription();
     description = deliveryInsertPickup(description, 'test_pickup_place', 'test_pickup_lot');
     description = deliveryInsertCartId(description, 'test_cart_id');
     description = deliveryInsertDropoff(description, 'test_dropoff_place');
@@ -128,13 +128,13 @@ describe('Custom deliveries', () => {
       'test_waypoint_2',
       'test_waypoint_3',
     ]);
-    expect(deliveryTaskDescription).toEqual(description);
+    expect(deliveryPickupTaskDescription).toEqual(description);
   });
 
   it('delivery_sequential_lot_pickup', () => {
-    let deliveryTaskDescription: DeliveryCustomTaskDescription | null = null;
+    let deliveryCustomTaskDescription: DeliveryCustomTaskDescription | null = null;
     try {
-      deliveryTaskDescription = JSON.parse(`{
+      deliveryCustomTaskDescription = JSON.parse(`{
         "category": "delivery_sequential_lot_pickup",
         "phases": [
           {
@@ -232,11 +232,11 @@ describe('Custom deliveries', () => {
       }
       `) as DeliveryCustomTaskDescription;
     } catch (e) {
-      deliveryTaskDescription = null;
+      deliveryCustomTaskDescription = null;
     }
-    expect(deliveryTaskDescription).not.toEqual(null);
+    expect(deliveryCustomTaskDescription).not.toEqual(null);
 
-    let description: DeliveryCustomTaskDescription = defaultDeliveryCustomTaskDescription(
+    let description: DeliveryCustomTaskDescription = makeDefaultDeliveryCustomTaskDescription(
       'delivery_sequential_lot_pickup',
     );
     description = deliveryCustomInsertPickup(description, 'test_pickup_place', 'test_pickup_zone');
@@ -247,13 +247,13 @@ describe('Custom deliveries', () => {
       'test_waypoint_2',
       'test_waypoint_3',
     ]);
-    expect(deliveryTaskDescription).toEqual(description);
+    expect(deliveryCustomTaskDescription).toEqual(description);
   });
 
   it('delivery_area_pickup', () => {
-    let deliveryTaskDescription: DeliveryCustomTaskDescription | null = null;
+    let deliveryCustomTaskDescription: DeliveryCustomTaskDescription | null = null;
     try {
-      deliveryTaskDescription = JSON.parse(`{
+      deliveryCustomTaskDescription = JSON.parse(`{
         "category": "delivery_area_pickup",
         "phases": [
           {
@@ -351,12 +351,12 @@ describe('Custom deliveries', () => {
       }
       `) as DeliveryCustomTaskDescription;
     } catch (e) {
-      deliveryTaskDescription = null;
+      deliveryCustomTaskDescription = null;
     }
-    expect(deliveryTaskDescription).not.toEqual(null);
+    expect(deliveryCustomTaskDescription).not.toEqual(null);
 
     let description: DeliveryCustomTaskDescription =
-      defaultDeliveryCustomTaskDescription('delivery_area_pickup');
+      makeDefaultDeliveryCustomTaskDescription('delivery_area_pickup');
     description = deliveryCustomInsertPickup(description, 'test_pickup_place', 'test_pickup_zone');
     description = deliveryCustomInsertCartId(description, 'test_cart_id');
     description = deliveryCustomInsertDropoff(description, 'test_dropoff_place');
@@ -365,6 +365,6 @@ describe('Custom deliveries', () => {
       'test_waypoint_2',
       'test_waypoint_3',
     ]);
-    expect(deliveryTaskDescription).toEqual(description);
+    expect(deliveryCustomTaskDescription).toEqual(description);
   });
 });

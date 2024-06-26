@@ -182,7 +182,7 @@ async def get_scheduled_tasks(
         .offset(pagination.offset)
     )
     if pagination.order_by:
-        q.order_by(*pagination.order_by.split(","))
+        q.order_by(*pagination.order_by)
     return await ttm.ScheduledTaskPydanticList.from_queryset(q)
 
 
