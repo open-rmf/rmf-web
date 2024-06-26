@@ -48,18 +48,20 @@ export function getTaskBookingLabelFromTaskState(taskState: TaskState): TaskBook
 export function getTaskBookingLabelFromTaskRequest(
   taskRequest: TaskRequest,
 ): TaskBookingLabel | null {
+  if (!taskRequest.labels) {
+    return null;
+  }
+
   let requestLabel: TaskBookingLabel | null = null;
-  if (taskRequest.labels) {
-    for (const label of taskRequest.labels) {
-      try {
-        const parsedLabel = getTaskBookingLabelFromJsonString(label);
-        if (parsedLabel) {
-          requestLabel = parsedLabel;
-          break;
-        }
-      } catch (e) {
-        continue;
+  for (const label of taskRequest.labels) {
+    try {
+      const parsedLabel = getTaskBookingLabelFromJsonString(label);
+      if (parsedLabel) {
+        requestLabel = parsedLabel;
+        break;
       }
+    } catch (e) {
+      continue;
     }
   }
   return requestLabel;

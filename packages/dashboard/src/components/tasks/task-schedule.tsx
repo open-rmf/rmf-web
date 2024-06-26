@@ -23,7 +23,7 @@ import {
 } from 'react-components';
 import { useCreateTaskFormData } from '../../hooks/useCreateTaskForm';
 import useGetUsername from '../../hooks/useFetchUser';
-import { AppControllerContext } from '../app-contexts';
+import { AppControllerContext, ResourcesContext } from '../app-contexts';
 import { UserProfileContext } from 'rmf-auth';
 import { AppEvents } from '../app-events';
 import { RmfAppContext } from '../rmf-app';
@@ -69,6 +69,7 @@ const disablingCellsWithoutEvents = (
 
 export const TaskSchedule = () => {
   const rmf = React.useContext(RmfAppContext);
+  const taskResourcesContext = React.useContext(ResourcesContext)?.tasks;
   const { showAlert } = React.useContext(AppControllerContext);
   const profile = React.useContext(UserProfileContext);
 
@@ -136,7 +137,7 @@ export const TaskSchedule = () => {
       return tasks.flatMap((t: ScheduledTask) =>
         t.schedules.flatMap<ProcessedEvent>((s: ApiSchedule) => {
           const events = scheduleToEvents(params.start, params.end, s, t, getEventId, () =>
-            getScheduledTaskTitle(t),
+            getScheduledTaskTitle(t, taskResourcesContext?.tasks),
           );
           events.forEach((ev) => {
             eventsMap.current[Number(ev.event_id)] = t;
@@ -146,7 +147,7 @@ export const TaskSchedule = () => {
         }),
       );
     },
-    [rmf],
+    [rmf, taskResourcesContext],
   );
 
   const CustomCalendarEditor = ({ scheduler, value, onChange }: CustomCalendarEditorProps) => {
@@ -319,6 +320,7 @@ export const TaskSchedule = () => {
       {openCreateTaskForm && (
         <CreateTaskForm
           user={username ? username : 'unknown user'}
+          tasksToDisplay={taskResourcesContext?.tasks}
           patrolWaypoints={waypointNames}
           cleaningZones={cleaningZoneNames}
           pickupPoints={pickupPoints}
