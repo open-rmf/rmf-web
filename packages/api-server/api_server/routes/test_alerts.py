@@ -108,8 +108,6 @@ class TestAlertsRoute(AppFixture):
             self.assertEqual(subbed_alert, alert, subbed_alert)
 
     def test_sub_alert_response(self):
-        gen = self.subscribe_sio("/alerts/responses")
-
         alert_id = str(uuid4())
         alert = make_alert_request(alert_id=alert_id, responses=["resume", "cancel"])
         resp = self.client.post("/alerts/request", data=alert.json(exclude_none=True))
