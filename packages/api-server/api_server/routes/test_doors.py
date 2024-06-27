@@ -1,4 +1,3 @@
-import asyncio
 from uuid import uuid4
 
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
@@ -12,12 +11,13 @@ class TestDoorsRoute(AppFixture):
     def setUpClass(cls):
         super().setUpClass()
         cls.building_map = make_building_map()
-        asyncio.run(cls.building_map.save())
+        portal = cls.get_portal()
+        portal.call(cls.building_map.save)
 
         cls.door_states = [make_door_state(f"test_{uuid4()}")]
 
         for x in cls.door_states:
-            asyncio.run(x.save())
+            portal.call(x.save)
 
     def test_get_doors(self):
         resp = self.client.get("/doors")

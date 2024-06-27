@@ -1,4 +1,3 @@
-import asyncio
 from typing import List
 from uuid import uuid4
 
@@ -12,8 +11,9 @@ class TestIngestorsRoute(AppFixture):
         super().setUpClass()
         cls.ingestor_states = [make_ingestor_state(f"test_{uuid4()}")]
 
+        portal = cls.get_portal()
         for x in cls.ingestor_states:
-            asyncio.run(x.save())
+            portal.call(x.save)
 
     def test_get_ingestors(self):
         resp = self.client.get("/ingestors")

@@ -1,10 +1,8 @@
 from datetime import datetime
 from typing import List, Optional, Tuple, cast
 
-import tortoise.functions as tfuncs
 from fastapi import Body, Depends, HTTPException, Path, Query
 from reactivex import operators as rxops
-from tortoise.expressions import Q
 
 from api_server import models as mdl
 from api_server.dependencies import (
@@ -15,7 +13,6 @@ from api_server.dependencies import (
     start_time_between_query,
 )
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.models.tortoise_models import TaskState as DbTaskState
 from api_server.repositories import TaskRepository, task_repo_dep
 from api_server.response import RawJSONResponse
 from api_server.rmf_io import task_events, tasks_service
@@ -60,51 +57,16 @@ async def query_task_states(
     ),
     pagination: mdl.Pagination = Depends(pagination_query),
 ):
-    filters = {}
-    if task_id is not None:
-        filters["id___in"] = task_id.split(",")
-    if category is not None:
-        filters["category__in"] = category.split(",")
-    if assigned_to is not None:
-        filters["assigned_to__in"] = assigned_to.split(",")
-    if start_time_between is not None:
-        filters["unix_millis_start_time__gte"] = start_time_between[0]
-        filters["unix_millis_start_time__lte"] = start_time_between[1]
-    if finish_time_between is not None:
-        filters["unix_millis_finish_time__gte"] = finish_time_between[0]
-        filters["unix_millis_finish_time__lte"] = finish_time_between[1]
-    if status is not None:
-        valid_values = [member.value for member in mdl.TaskStatus]
-        filters["status__in"] = []
-        for status_string in status.split(","):
-            if status_string not in valid_values:
-                continue
-            filters["status__in"].append(mdl.TaskStatus(status_string))
-    query = DbTaskState.filter(**filters)
-
-    label_filters = {}
-    if label is not None:
-        labels = mdl.Labels.from_strings(label.split(","))
-        label_filters.update(
-            {
-                f"label_filter_{k}": tfuncs.Count(
-                    "id_", _filter=Q(labels__label_name=k, labels__label_value=v)
-                )
-                for k, v in labels.root.items()
-            }
-        )
-
-    if len(label_filters) > 0:
-        filter_gt = {f"{f}__gt": 0 for f in label_filters}
-        query = (
-            query.annotate(**label_filters)
-            .group_by(
-                "labels__state_id"
-            )  # need to group by a related field to make tortoise-orm generate joins
-            .filter(**filter_gt)
-        )
-
-    return await task_repo.query_task_states(query, pagination)
+    return await task_repo.query_task_states(
+        task_id=task_id.split(",") if task_id else None,
+        category=category.split(",") if category else None,
+        assigned_to=assigned_to.split(",") if assigned_to else None,
+        start_time_between=start_time_between,
+        finish_time_between=finish_time_between,
+        status=status.split(",") if status else None,
+        label=mdl.Labels.from_strings(label.split(",")) if label else None,
+        pagination=pagination,
+    )
 
 
 @router.get("/{task_id}/state", response_model=mdl.TaskState)

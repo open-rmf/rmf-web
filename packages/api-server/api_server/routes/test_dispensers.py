@@ -1,4 +1,3 @@
-import asyncio
 from typing import List
 from uuid import uuid4
 
@@ -12,8 +11,9 @@ class TestDispensersRoute(AppFixture):
         super().setUpClass()
         cls.dispenser_states = [make_dispenser_state(f"test_{uuid4()}")]
 
+        portal = cls.get_portal()
         for x in cls.dispenser_states:
-            asyncio.run(x.save())
+            portal.call(x.save)
 
     def test_get_dispensers(self):
         resp = self.client.get("/dispensers")

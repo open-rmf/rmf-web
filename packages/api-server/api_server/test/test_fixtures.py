@@ -11,8 +11,10 @@ from typing import Awaitable, Callable, Optional, TypeVar, Union
 from uuid import uuid4
 
 import pydantic
+from anyio.abc import BlockingPortal
+from tortoise import Tortoise
 
-from api_server.app import app
+from api_server.app import app, app_config
 from api_server.models import User
 from api_server.routes.admin import PostUsers
 
@@ -85,11 +87,31 @@ with open(f"{here}/../../scripts/test.key", "br") as f:
 class AppFixture(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        async def clean_db():
+            # connect to the db to drop it
+            await Tortoise.init(db_url=app_config.db_url, modules={"models": []})
+            await Tortoise._drop_databases()  # pylint: disable=protected-access
+            # connect to it again to recreate it
+            await Tortoise.init(
+                db_url=app_config.db_url, modules={"models": []}, _create_db=True
+            )
+            await Tortoise.close_connections()
+
+        asyncio.run(clean_db())
+
         cls.admin_user = User(username="admin", is_admin=True)
         cls.client = TestClient()
         cls.client.headers["Content-Type"] = "application/json"
         cls.client.__enter__()
         cls.addClassCleanup(cls.client.__exit__)
+
+    @classmethod
+    def get_portal(cls) -> BlockingPortal:
+        if not cls.client.portal:
+            raise AssertionError(
+                "missing client portal, is the client context entered?"
+            )
+        return cls.client.portal
 
     @contextlib.contextmanager
     def subscribe_sio(self, room: str, *, user="admin"):
