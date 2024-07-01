@@ -1,12 +1,18 @@
 from typing import List
 
 from fastapi import Depends, HTTPException
-from rx import operators as rxops
+from tortoise.exceptions import IntegrityError
 
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import rmf_gateway
 from api_server.models import AlertRequest, AlertResponse
-from api_server.repositories import AlertRepository
+from api_server.repositories import (
+    AlertAlreadyExistsError,
+    AlertNotFoundError,
+    AlertRepository,
+    AlertResponseNotFoundError,
+    InvalidAlertResponseError,
+)
 from api_server.rmf_io import alert_events
 
 router = FastIORouter(tags=["Alerts"])
@@ -14,7 +20,7 @@ router = FastIORouter(tags=["Alerts"])
 
 @router.sub("/requests", response_model=AlertRequest)
 async def sub_alerts(_req: SubscriptionRequest):
-    return alert_events.alert_requests.pipe(rxops.filter(lambda x: x is not None))
+    return alert_events.alert_requests
 
 
 @router.post("/request", status_code=201, response_model=AlertRequest)
@@ -24,12 +30,14 @@ async def create_new_alert(
     """
     Creates a new alert.
     """
-    created_alert = await repo.create_new_alert(alert)
-    if created_alert is None:
-        raise HTTPException(409, f"Failed to create alert with ID {alert.id}")
+    try:
+        created_alert = await repo.create_new_alert(alert)
+    except IntegrityError as e:
+        raise HTTPException(400, e) from e
+    except AlertAlreadyExistsError as e:
+        raise HTTPException(409, str(e)) from e
 
-    if created_alert.display:
-        alert_events.alert_requests.on_next(created_alert)
+    alert_events.alert_requests.on_next(created_alert)
     return created_alert
 
 
@@ -38,16 +46,17 @@ async def get_alert(alert_id: str, repo: AlertRepository = Depends(AlertReposito
     """
     Gets an alert based on the alert ID.
     """
-    alert_model = await repo.get_alert(alert_id)
-    if alert_model is None:
-        raise HTTPException(404, f"Alert with ID {alert_id} does not exists")
+    try:
+        alert_model = await repo.get_alert(alert_id)
+    except AlertNotFoundError as e:
+        raise HTTPException(404, str(e)) from e
 
     return alert_model
 
 
 @router.sub("/responses", response_model=AlertResponse)
 async def sub_alert_responses(_req: SubscriptionRequest):
-    return alert_events.alert_responses.pipe(rxops.filter(lambda x: x is not None))
+    return alert_events.alert_responses
 
 
 @router.post(
@@ -60,12 +69,14 @@ async def respond_to_alert(
     Responds to an existing alert. The response must be one of the available
     responses listed in the alert.
     """
-    alert_response_model = await repo.create_response(alert_id, response)
-    if alert_response_model is None:
-        raise HTTPException(
-            422,
-            f"Failed to create response {response} to alert with ID {alert_id}",
-        )
+    try:
+        alert_response_model = await repo.create_response(alert_id, response)
+    except IntegrityError as e:
+        raise HTTPException(400, e) from e
+    except AlertNotFoundError as e:
+        raise HTTPException(404, str(e)) from e
+    except InvalidAlertResponseError as e:
+        raise HTTPException(400, str(e)) from e
 
     alert_events.alert_responses.on_next(alert_response_model)
     rmf_gateway().respond_to_alert(alert_id, response)
@@ -79,11 +90,10 @@ async def get_alert_response(
     """
     Gets the response to the alert based on the alert ID.
     """
-    response_model = await repo.get_alert_response(alert_id)
-    if response_model is None:
-        raise HTTPException(
-            404, f"Response to alert with ID {alert_id} does not exists"
-        )
+    try:
+        response_model = await repo.get_alert_response(alert_id)
+    except AlertResponseNotFoundError as e:
+        raise HTTPException(404, str(e)) from e
 
     return response_model
 

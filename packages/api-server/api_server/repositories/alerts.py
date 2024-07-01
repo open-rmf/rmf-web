@@ -1,57 +1,40 @@
-import logging
 from datetime import datetime
-from typing import List, Optional
+from typing import List
 
 from api_server.models import AlertRequest, AlertResponse
 from api_server.models import tortoise_models as ttm
 
-# TODO: not hardcode all these expected values
-LocationAlertSuccessResponse = "success"
-LocationAlertFailResponse = "fail"
-LocationAlertTypeParameterName = "type"
-LocationAlertTypeParameterValue = "location_result"
-LocationAlertLocationParameterName = "location_name"
-LocationAlertFinalCheckTypeParameterValue = "check_all_task_location_alerts"
 
-
-def get_location_from_location_alert(alert: AlertRequest) -> Optional[str]:
+class AlertAlreadyExistsError(Exception):
     """
-    Returns the location name from a location alert when possible, otherwise
-    returns None.
-    Note: This is an experimental feature and may be subjected to
-    modifications often.
+    Raised when an alert ID already exists and there is a conflict.
     """
-    if (
-        len(alert.alert_parameters) < 2
-        or LocationAlertSuccessResponse not in alert.responses_available
-        or LocationAlertFailResponse not in alert.responses_available
-    ):
-        return None
 
-    # Check type
-    alert_type = None
-    for param in alert.alert_parameters:
-        if param.name == LocationAlertTypeParameterName:
-            alert_type = param.value
-            break
-    if alert_type != LocationAlertTypeParameterValue:
-        return None
 
-    # Check location name
-    # TODO: make sure that there are no duplicated locations that have
-    # not been responded to yet
-    for param in alert.alert_parameters:
-        if param.name == LocationAlertLocationParameterName:
-            return param.value
-    return None
+class AlertNotFoundError(Exception):
+    """
+    Raised when an alert is not found.
+    """
+
+
+class InvalidAlertResponseError(Exception):
+    """
+    Raised when a response does not match any of the available responses in the
+    alert.
+    """
+
+
+class AlertResponseNotFoundError(Exception):
+    """
+    Raised when an alert response is not found.
+    """
 
 
 class AlertRepository:
-    async def create_new_alert(self, alert: AlertRequest) -> Optional[AlertRequest]:
+    async def create_new_alert(self, alert: AlertRequest) -> AlertRequest:
         exists = await ttm.AlertRequest.exists(id=alert.id)
         if exists:
-            logging.error(f"Alert with ID {alert.id} already exists")
-            return None
+            raise AlertAlreadyExistsError(f"Alert with ID {alert.id} already exists")
 
         await ttm.AlertRequest.create(
             id=alert.id,
@@ -61,29 +44,24 @@ class AlertRepository:
         )
         return alert
 
-    async def get_alert(self, alert_id: str) -> Optional[AlertRequest]:
+    async def get_alert(self, alert_id: str) -> AlertRequest:
         alert = await ttm.AlertRequest.get_or_none(id=alert_id)
         if alert is None:
-            logging.error(f"Alert with ID {alert_id} does not exists")
-            return None
+            raise AlertNotFoundError(f"Alert with ID {alert_id} does not exists")
 
         alert_model = AlertRequest.from_tortoise(alert)
         return alert_model
 
-    async def create_response(
-        self, alert_id: str, response: str
-    ) -> Optional[AlertResponse]:
+    async def create_response(self, alert_id: str, response: str) -> AlertResponse:
         alert = await ttm.AlertRequest.get_or_none(id=alert_id)
         if alert is None:
-            logging.error(f"Alert with ID {alert_id} does not exists")
-            return None
+            raise AlertNotFoundError(f"Alert with ID {alert_id} does not exists")
 
         alert_model = AlertRequest.from_tortoise(alert)
         if response not in alert_model.responses_available:
-            logging.error(
-                f"Alert with ID {alert_model.id} does not have allow response of {response}"
+            raise InvalidAlertResponseError(
+                f"Response [{response}] is not a response option of alert with ID {alert_model.id}"
             )
-            return None
 
         alert_response_model = AlertResponse(
             id=alert_id,
@@ -95,11 +73,12 @@ class AlertRepository:
         )
         return alert_response_model
 
-    async def get_alert_response(self, alert_id: str) -> Optional[AlertResponse]:
+    async def get_alert_response(self, alert_id: str) -> AlertResponse:
         response = await ttm.AlertResponse.get_or_none(id=alert_id)
         if response is None:
-            logging.error(f"Response to alert with ID {alert_id} does not exists")
-            return None
+            raise AlertResponseNotFoundError(
+                f"Response to alert with ID {alert_id} does not exists"
+            )
 
         response_model = AlertResponse.from_tortoise(response)
         return response_model
