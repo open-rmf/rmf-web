@@ -1,7 +1,8 @@
 import {
   AdminApi,
   AlertsApi,
-  ApiServerModelsTortoiseModelsAlertsAlertLeaf,
+  AlertRequest,
+  AlertResponse,
   ApiServerModelsTortoiseModelsBeaconsBeaconStateLeaf as BeaconState,
   BeaconsApi,
   BuildingApi,
@@ -38,8 +39,6 @@ import {
   DefaultTrajectoryManager,
   RobotTrajectoryManager,
 } from '../../managers/robot-trajectory-manager';
-
-type Alert = ApiServerModelsTortoiseModelsAlertsAlertLeaf;
 
 export class RmfIngress {
   // This should be private because socketio does not support "replaying" subscription. If
@@ -245,8 +244,12 @@ export class RmfIngress {
     return this._taskStateObsStore[taskId];
   }
 
-  alertObsStore: Observable<Alert> = this._convertSioToRxObs((handler) =>
-    this._sioClient.subscribeAlerts(handler),
+  alertRequestsObsStore: Observable<AlertRequest> = this._convertSioToRxObs((handler) =>
+    this._sioClient.subscribeAlertRequests(handler),
+  );
+
+  alertResponsesObsStore: Observable<AlertResponse> = this._convertSioToRxObs((handler) =>
+    this._sioClient.subscribeAlertResponses(handler),
   );
 
   deliveryAlertObsStore: Observable<DeliveryAlert> = this._convertSioToRxObs((handler) =>

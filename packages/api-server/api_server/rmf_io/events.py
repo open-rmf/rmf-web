@@ -46,7 +46,8 @@ fleet_events = FleetEvents()
 
 class AlertEvents:
     def __init__(self):
-        self.alerts = Subject()  # Alert
+        self.alert_requests = Subject()  # AlertRequest
+        self.alert_responses = Subject()  # AlertResponse
 
 
 alert_events = AlertEvents()

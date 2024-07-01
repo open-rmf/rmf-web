@@ -5,20 +5,20 @@ from typing import List
 import pydantic
 
 
-class DeliveryAlertCategory(pydantic.BaseModel):
-    value: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
+class AlertParameter(pydantic.BaseModel):
+    name: str = ""  # string
+    value: str = ""  # string
 
     class Config:
         orm_mode = True
         schema_extra = {
             "required": [
+                "name",
                 "value",
             ],
         }
 
 
-# uint32 value
-# uint32 MISSING=0
-# uint32 WRONG=1
-# uint32 OBSTRUCTED=2
-# uint32 CANCELLED=3
+# # Generic key-value pair to be used in Alert
+# string name
+# string value

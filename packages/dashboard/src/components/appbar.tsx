@@ -35,12 +35,7 @@ import {
   Typography,
   useMediaQuery,
 } from '@mui/material';
-import {
-  ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
-  FireAlarmTriggerState,
-  TaskFavorite,
-  TaskRequest,
-} from 'api-client';
+import { AlertRequest, FireAlarmTriggerState, TaskFavorite, TaskRequest } from 'api-client';
 import React from 'react';
 import {
   AppBarTab,
@@ -175,7 +170,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
   const [alertListAnchor, setAlertListAnchor] = React.useState<HTMLElement | null>(null);
   const [unacknowledgedAlertsNum, setUnacknowledgedAlertsNum] = React.useState(0);
-  const [unacknowledgedAlertList, setUnacknowledgedAlertList] = React.useState<Alert[]>([]);
+  const [unacknowledgedAlertList, setUnacknowledgedAlertList] = React.useState<AlertRequest[]>([]);
   const [openAdminActionsDialog, setOpenAdminActionsDialog] = React.useState(false);
   const [openFireAlarmTriggerResetDialog, setOpenFireAlarmTriggerResetDialog] =
     React.useState(false);
@@ -213,13 +208,10 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       AppEvents.refreshAlert.subscribe({
         next: () => {
           (async () => {
-            const resp = await rmf.alertsApi.getAlertsAlertsGet();
-            const alerts = resp.data as Alert[];
-            setUnacknowledgedAlertsNum(
-              alerts.filter(
-                (alert) => !(alert.acknowledged_by && alert.unix_millis_acknowledged_time),
-              ).length,
-            );
+            const resp = await rmf.alertsApi.getUnrespondedAlertsAlertsUnrespondedRequestsGet();
+            const alerts = resp.data as AlertRequest[];
+            const alertsToBeDisplayed = alerts.filter((alert) => alert.display);
+            setUnacknowledgedAlertsNum(alertsToBeDisplayed.length);
           })();
         },
       }),
@@ -227,12 +219,10 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
 
     // Get the initial number of unacknowledged alerts
     (async () => {
-      const resp = await rmf.alertsApi.getAlertsAlertsGet();
-      const alerts = resp.data as Alert[];
-      setUnacknowledgedAlertsNum(
-        alerts.filter((alert) => !(alert.acknowledged_by && alert.unix_millis_acknowledged_time))
-          .length,
-      );
+      const resp = await rmf.alertsApi.getUnrespondedAlertsAlertsUnrespondedRequestsGet();
+      const alerts = resp.data as AlertRequest[];
+      const alertsToBeDisplayed = alerts.filter((alert) => alert.display);
+      setUnacknowledgedAlertsNum(alertsToBeDisplayed.length);
     })();
     return () => subs.forEach((s) => s.unsubscribe());
   }, [rmf]);
@@ -349,16 +339,15 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       return;
     }
     (async () => {
-      const { data: alerts } = await rmf.alertsApi.getAlertsAlertsGet();
-      const unackList = alerts.filter(
-        (alert) => !alert.acknowledged_by && !alert.unix_millis_acknowledged_time,
-      );
-      setUnacknowledgedAlertList(unackList.reverse());
+      const { data: alerts } =
+        await rmf.alertsApi.getUnrespondedAlertsAlertsUnrespondedRequestsGet();
+      const alertsToBeDisplayed = alerts.filter((alert) => alert.display);
+      setUnacknowledgedAlertList(alertsToBeDisplayed.reverse());
     })();
     setAlertListAnchor(event.currentTarget);
   };
 
-  const openAlertDialog = (alert: Alert) => {
+  const openAlertDialog = (alert: AlertRequest) => {
     AppEvents.alertListOpenedAlert.next(alert);
   };
 
@@ -475,17 +464,11 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
                   key={alert.id}
                   title={
                     <React.Fragment>
-                      <Typography variant="caption" display="block" noWrap>
-                        Alert
-                      </Typography>
-                      <Typography variant="caption" display="block" noWrap>
-                        ID: {alert.original_id}
-                      </Typography>
-                      <Typography variant="caption" display="block" noWrap>
-                        Type: {alert.category.toUpperCase()}
-                      </Typography>
-                      <Typography variant="caption" display="block" noWrap>
-                        Created: {new Date(alert.unix_millis_created_time).toLocaleString()}
+                      <Typography>Alert</Typography>
+                      <Typography>ID: {alert.id}</Typography>
+                      <Typography>Title: {alert.title}</Typography>
+                      <Typography>
+                        Created: {new Date(alert.unix_millis_alert_time).toLocaleString()}
                       </Typography>
                     </React.Fragment>
                   }
@@ -501,8 +484,8 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
                   >
                     <Report />
                     <Typography variant="body2" mx={1} noWrap>
-                      Task {alert.original_id} had an alert{' '}
-                      {timeDistance(alert.unix_millis_created_time)} ago
+                      {alert.task_id ? `Task ${alert.task_id} had an alert ` : 'Alert occured '}
+                      {timeDistance(alert.unix_millis_alert_time)} ago
                     </Typography>
                   </MenuItem>
                 </Tooltip>
