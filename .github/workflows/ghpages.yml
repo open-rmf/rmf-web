@@ -5,6 +5,7 @@ on:
   push:
     branches: ["main"]
     paths:
+      - ".github/workflows/ghpages.yml"
       - "packages/api-server/**"
 
   # Allows you to run this workflow manually from the Actions tab
