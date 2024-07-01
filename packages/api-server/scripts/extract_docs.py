@@ -28,7 +28,6 @@ server_proc = subprocess.Popen(
     ("python", "-m", "api_server"),
     cwd=f"{os.path.dirname(__file__)}/..",
     start_new_session=True,
-    env={"API_SERVER_CONFIG_FILE": f"{os.path.dirname(__file__)}/docs_config.py"},
 )
 
 time.sleep(5)  # wait for server to be ready
