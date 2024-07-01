@@ -18,7 +18,7 @@ Open-RMF Web is a collection of packages that provide a web-based interface for 
 
 ### Prerequisites
 
-We currently support [Ubuntu 22.04](https://releases.ubuntu.com/jammy/), [ROS 2 Humble](https://docs.ros.org/en/humble/index.html) and Open-RMF's [22.09](https://github.com/open-rmf/rmf/releases/tag/22.09) release. Other distributions may work as well, but is not guaranteed.
+We currently support [Ubuntu 24.04](https://releases.ubuntu.com/noble/), [ROS 2 Jazzy](https://docs.ros.org/en/jazzy/index.html) and Open-RMF's [22.09](https://github.com/open-rmf/rmf/releases/tag/22.09) release. Other distributions may work as well, but is not guaranteed.
 
 Install pnpm and nodejs
 ```bash
@@ -62,7 +62,7 @@ pnpm install -w --filter <package>...
 Source Open-RMF and launch the dashboard in development mode,
 ```bash
 # For binary installation
-source /opt/ros/humble/setup.bash
+source /opt/ros/jazzy/setup.bash
 
 # For source build
 source /path/to/workspace/install/setup.bash

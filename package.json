@@ -2,8 +2,8 @@
   "name": "root",
   "private": true,
   "engines": {
-    "node": ">=16",
-    "pnpm": ">=7.5.0",
+    "node": ">=20",
+    "pnpm": ">=9.0.0",
     "npm": ">=99"
   },
   "scripts": {

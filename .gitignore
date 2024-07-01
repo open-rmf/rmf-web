@@ -1,7 +1,8 @@
 node_modules/
 coverage/
 dist/
-npm-debug.log
+.pnpm-debug.log
 
 __pycache__/
 /static
+/.venv/

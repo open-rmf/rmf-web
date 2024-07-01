@@ -16,7 +16,6 @@ setup(
         "Programming Language :: Python",
         "Topic :: Software Development",
     ],
-    python_requires="~=3.10.4",
     install_requires=[
         "fastapi~=0.109.0",
         "aiofiles~=23.2.1",

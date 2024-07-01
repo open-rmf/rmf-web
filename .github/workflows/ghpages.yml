@@ -29,7 +29,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     container:
-      image: ghcr.io/${{ github.repository }}/e2e
+      image: ghcr.io/${{ github.repository }}/minimal-rmf
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -43,15 +43,13 @@ jobs:
         uses: actions/checkout@v3
       - name: Setup Pages
         uses: actions/configure-pages@v3
-      - name: setup python
-        run: apt update && apt install -y python3-venv python-is-python3
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:
           package: api-server
       - name: Extract docs
         run: |
-          . /rmf_demos_ws/install/setup.bash
+          . /opt/rmf/install/setup.bash
           pnpm run generate-docs
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1

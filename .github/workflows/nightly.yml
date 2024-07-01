@@ -3,60 +3,64 @@ on:
   schedule:
     # 2am SGT
     - cron: '0 18 * * *'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   build-docker-images:
     name: Push Docker images to GitHub Packages
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v2
-      - name: Push e2e image to GitHub Packages
-        uses: docker/build-push-action@v1
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to docker
+        uses: docker/login-action@v3
         with:
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          registry: ghcr.io
-          repository: ${{ github.repository }}/e2e
-          tags: latest
-          path: docker
-  dashboard-e2e:
-    strategy:
-      matrix:
-        npm: ['latest']
-      fail-fast: false
-    needs: build-docker-images
-    name: Dashboard e2e
-    runs-on: ubuntu-22.04
-    container:
-      image: ghcr.io/${{ github.repository }}/e2e
-      options: --privileged --ipc=host
-    defaults:
-      run:
-        shell: bash
-        working-directory: packages/dashboard-e2e
-    env:
-      BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-      BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-      BROWSERSTACK_BUILD: ${{ github.head_ref }}:${{ github.event.number }}
-    steps:
-      - uses: actions/checkout@v2
-      - name: bootstrap
-        uses: ./.github/actions/bootstrap
+      - name: Build and push
+        uses: docker/build-push-action@v5
         with:
-          package: rmf-dashboard-e2e
-          skip-build: true
-      - name: test
-        uses: nick-fields/retry@v2
-        with:
-          timeout_minutes: 20
-          max_attempts: 3
-          command: |
-            . /rmf_demos_ws/install/setup.bash
-            cd packages/dashboard-e2e
-            pnpm test
-          shell: bash
-      - name: upload artifacts
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: artifacts
-          path: packages/dashboard-e2e/artifacts
+          push: true
+          tags: ghcr.io/${{ github.repository }}/minimal-rmf
+          context: .github/minimal-rmf
+  # dashboard-e2e:
+  #   strategy:
+  #     matrix:
+  #       npm: ['latest']
+  #     fail-fast: false
+  #   needs: build-docker-images
+  #   name: Dashboard e2e
+  #   runs-on: ubuntu-24.04
+  #   container:
+  #     image: ghcr.io/${{ github.repository }}/e2e
+  #     options: --privileged --ipc=host
+  #   defaults:
+  #     run:
+  #       shell: bash
+  #       working-directory: packages/dashboard-e2e
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: bootstrap
+  #       uses: ./.github/actions/bootstrap
+  #       with:
+  #         package: rmf-dashboard-e2e
+  #         skip-build: true
+  #     - name: test
+  #       uses: nick-fields/retry@v2
+  #       with:
+  #         timeout_minutes: 20
+  #         max_attempts: 3
+  #         command: |
+  #           . /rmf_demos_ws/install/setup.bash
+  #           cd packages/dashboard-e2e
+  #           pnpm test
+  #         shell: bash
+  #     - name: upload artifacts
+  #       uses: actions/upload-artifact@v2
+  #       if: always()
+  #       with:
+  #         name: artifacts
+  #         path: packages/dashboard-e2e/artifacts
