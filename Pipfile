@@ -5,17 +5,14 @@ name = "pypi"
 
 [dev-packages]
 black = "==22.6.0"
-isort = "~=5.8"
-pylint = "==2.10.2"
+isort = "==5.13.2"
+pylint = "==3.1.0"
 coverage = "~=5.5"
 # api-server
-api-server = {editable = true, path = "./packages/api-server"}
-asyncpg = "~=0.25.0"
-datamodel-code-generator = "==0.11.19"
+api-server = {editable = true, path = "./packages/api-server", extras = ["postgres"]}
+httpx = "~=0.26.0"
+datamodel-code-generator = "==0.25.4"
 requests = "~=2.25"
-websocket-client = "~=1.2.3"
+websocket-client = "~=1.7.0"
 # ros-translator
 ros-translator = {editable = true, path = "./packages/ros-translator"}
-
-[requires]
-python_version = "3.10"

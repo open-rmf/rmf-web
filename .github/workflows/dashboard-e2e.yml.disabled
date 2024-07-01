@@ -1,0 +1,54 @@
+name: Dashboard End-to-End
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+env:
+  CI: true
+jobs:
+  dashboard-e2e:
+    name: Dashboard e2e
+    runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/${{ github.repository }}/e2e
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+      options: --privileged --ipc=host
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/dashboard-e2e
+    env:
+      BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+      BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+      BROWSERSTACK_BUILD: ${{ github.head_ref }}:${{ github.event.number }}
+      RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup python
+        run: apt update && apt install -y python3-venv python-is-python3
+      - name: install rmw-cyclonedds-cpp
+        run: apt install -y ros-jazzy-rmw-cyclonedds-cpp
+      - name: bootstrap
+        uses: ./.github/actions/bootstrap
+        with:
+          package: rmf-dashboard-e2e
+          skip-build: true
+      - name: test
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 20
+          max_attempts: 3
+          command: |
+            . /rmf_demos_ws/install/setup.bash
+            cd packages/dashboard-e2e
+            pnpm test
+          shell: bash
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: artifacts
+          path: packages/dashboard-e2e/artifacts

@@ -7,7 +7,7 @@
     "build": "tsc --build",
     "clean": "tsc --build --clean",
     "prepack": "pnpm run clean && pnpm run --filter {.}... build && pnpm run lint",
-    "lint": "eslint --max-warnings 0 --ext ts,tsx lib",
+    "lint": "eslint --max-warnings 0 lib",
     "test": "jasmine"
   },
   "author": "koonpeng@openrobotics.org",
@@ -19,17 +19,17 @@
     "socket.io-client": "^3.1.3"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.33.0",
-    "@typescript-eslint/parser": "^4.33.0",
+    "@openapitools/openapi-generator-cli": "^2.13.1",
     "@types/jasmine": "^3.8.2",
-    "axios": "^0.21.1",
-    "eslint": "^7.26.0",
+    "@typescript-eslint/eslint-plugin": "^7.5.0",
+    "@typescript-eslint/parser": "^7.5.0",
+    "eslint": "^8.57.0",
     "jasmine": "^3.6.6",
     "ts-node": "^9.1.1",
-    "typescript": "~4.4.4"
+    "typescript": "~5.4.3"
   },
   "peerDependencies": {
-    "axios": "^0.21.1"
+    "axios": "^1.6.8"
   },
   "files": [
     "dist/",

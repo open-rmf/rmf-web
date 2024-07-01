@@ -2,32 +2,31 @@
   "name": "root",
   "private": true,
   "engines": {
-    "node": ">=16",
-    "pnpm": ">=7.5.0",
+    "node": ">=20",
+    "pnpm": ">=9.0.0",
     "npm": ">=99"
   },
   "scripts": {
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.33.0",
-    "@typescript-eslint/parser": "^4.33.0",
-    "eslint": "^7.32.0",
-    "eslint-plugin-react": "^7.30.1",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "husky": "^8.0.1",
-    "lint-staged": "^10.5.4",
-    "prettier": "^2.7.1",
-    "pyright": "^1.1.257",
-    "typescript": "~4.4.4"
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "prettier": "^3.2.5",
+    "pyright": "1.1.354",
+    "typescript": "~5.4.3",
+    "typescript-eslint": "^7.5.0"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,css,scss}": [
       "prettier --write"
     ],
     "**/*.py": [
-      "scripts/pipenv run isort",
-      "scripts/pipenv run black"
+      ".venv/bin/isort",
+      ".venv/bin/black"
     ]
   },
   "overrides": {

@@ -7,15 +7,18 @@ on:
   push:
     branches:
       - main
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 env:
   CI: true
   PIPENV_VERBOSITY: -1
 jobs:
   tests:
     name: Tests
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     container:
-      image: ghcr.io/${{ github.repository }}/e2e
+      image: ghcr.io/${{ github.repository }}/minimal-rmf
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -24,19 +27,17 @@ jobs:
         shell: bash
         working-directory: packages/api-server
     steps:
-      - uses: actions/checkout@v2
-      - name: setup python
-        run: apt update && apt install -y python3-venv python-is-python3
+      - uses: actions/checkout@v4
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:
           package: api-server
       - name: tests
         run: |
-          . /rmf_demos_ws/install/setup.bash
+          . /opt/rmf/setup.bash
           pnpm run lint
-          pnpm run test:cov
-          pipenv run python -m coverage xml
+          pnpm run test:cov -v
+          ../../.venv/bin/python -m coverage xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
