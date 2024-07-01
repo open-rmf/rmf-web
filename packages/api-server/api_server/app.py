@@ -217,6 +217,7 @@ app.include_router(
 app.include_router(
     routes.fleets_router, prefix="/fleets", dependencies=[Depends(user_dep)]
 )
+app.include_router(routes.rios_router, prefix="/rios", dependencies=[Depends(user_dep)])
 app.include_router(
     routes.admin_router, prefix="/admin", dependencies=[Depends(user_dep)]
 )

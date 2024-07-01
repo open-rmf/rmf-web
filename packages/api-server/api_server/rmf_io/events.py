@@ -54,3 +54,11 @@ class BeaconEvents:
 
 
 beacon_events = BeaconEvents()
+
+
+class RioEvents:
+    def __init__(self):
+        self.rios = Subject[mdl.Rio]()
+
+
+rio_events = RioEvents()

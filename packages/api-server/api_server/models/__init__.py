@@ -8,6 +8,7 @@ from .ingestors import *
 from .labels import *
 from .lifts import *
 from .pagination import *
+from .rio import *
 from .rmf_api.activity_discovery_request import ActivityDiscoveryRequest
 from .rmf_api.activity_discovery_response import ActivityDiscovery
 from .rmf_api.cancel_task_request import CancelTaskRequest
