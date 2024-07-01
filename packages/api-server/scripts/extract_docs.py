@@ -28,13 +28,14 @@ server_proc = subprocess.Popen(
     ("python", "-m", "api_server"),
     cwd=f"{os.path.dirname(__file__)}/..",
     start_new_session=True,
+    env={"API_SERVER_CONFIG_FILE": f"{os.path.dirname(__file__)}/docs_config.py"},
 )
 
 time.sleep(5)  # wait for server to be ready
 outdir = f"{args.output}"
 os.makedirs(outdir, exist_ok=True)
 
-base_url = "http://localhost:8000"
+base_url = "http://localhost:8000/rmf-web"
 with urlopen(f"{base_url}/docs") as resp:
     html: bytes = resp.read()
     with open(f"{outdir}/index.html", "bw") as f:
