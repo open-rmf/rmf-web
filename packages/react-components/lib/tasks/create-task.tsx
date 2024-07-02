@@ -67,6 +67,10 @@ import {
   DeliveryPickupTaskDefinition,
   DeliverySequentialLotPickupTaskDefinition,
   DeliveryAreaPickupTaskDefinition,
+  DoubleComposeDeliveryTaskDescription,
+  DoubleComposeDeliveryTaskDefinition,
+  makeDoubleComposeDeliveryTaskBookingLabel,
+  DoubleComposeDeliveryTaskForm,
 } from './types/delivery-custom';
 import {
   makePatrolTaskBookingLabel,
@@ -89,6 +93,7 @@ export interface TaskDefinition {
 export type TaskDescription =
   | DeliveryPickupTaskDescription
   | DeliveryCustomTaskDescription
+  | DoubleComposeDeliveryTaskDescription
   | PatrolTaskDescription
   | DeliveryTaskDescription
   | ComposeCleanTaskDescription;
@@ -585,6 +590,27 @@ export function CreateTaskForm({
             onValidate={onValidate}
           />
         );
+      case DoubleComposeDeliveryTaskDefinition.taskDefinitionId:
+        return (
+          <DoubleComposeDeliveryTaskForm
+            taskDesc={taskRequest.description as DoubleComposeDeliveryTaskDescription}
+            pickupPoints={pickupPoints}
+            cartIds={cartIds}
+            dropoffPoints={dropoffPoints}
+            onChange={(desc: DoubleComposeDeliveryTaskDescription) => {
+              desc.category = taskRequest.description.category;
+              desc.phases[0].activity.description.activities[1].description.category =
+                taskRequest.description.category;
+              desc.phases[3].activity.description.activities[1].description.category =
+                taskRequest.description.category;
+              handleTaskDescriptionChange(
+                DoubleComposeDeliveryTaskDefinition.requestCategory,
+                desc,
+              );
+            }}
+            onValidate={onValidate}
+          />
+        );
       case CustomComposeTaskDefinition.taskDefinitionId:
         return (
           <CustomComposeTaskForm
@@ -658,6 +684,9 @@ export function CreateTaskForm({
         case DeliverySequentialLotPickupTaskDefinition.taskDefinitionId:
         case DeliveryAreaPickupTaskDefinition.taskDefinitionId:
           requestBookingLabel = makeDeliveryCustomTaskBookingLabel(request.description);
+          break;
+        case DoubleComposeDeliveryTaskDefinition.taskDefinitionId:
+          requestBookingLabel = makeDoubleComposeDeliveryTaskBookingLabel(request.description);
           break;
         case PatrolTaskDefinition.taskDefinitionId:
           requestBookingLabel = makePatrolTaskBookingLabel(request.description);
@@ -893,12 +922,18 @@ export function CreateTaskForm({
                               fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
                             },
                           }}
+                          fullWidth
                         />
                       )}
                       disabled
                     />
                   </Grid>
-                  <Grid item xs={1}>
+                  <Grid
+                    container
+                    xs={isScreenHeightLessThan800 ? 6 : 5}
+                    justifyContent="flex-end"
+                    alignItems="flex-end"
+                  >
                     <Checkbox
                       checked={warnTime !== null}
                       onChange={handleWarnTimeCheckboxChange}
@@ -907,8 +942,6 @@ export function CreateTaskForm({
                         '& .MuiSvgIcon-root': { fontSize: isScreenHeightLessThan800 ? 22 : 32 },
                       }}
                     />
-                  </Grid>
-                  <Grid item xs={isScreenHeightLessThan800 ? 5 : 4}>
                     <DateTimePicker
                       disabled={warnTime === null}
                       inputFormat={'MM/dd/yyyy HH:mm'}
@@ -1026,6 +1059,7 @@ export function CreateTaskForm({
               }
               helperText="Required"
               error={favoriteTaskTitleError}
+              fullWidth
             />
           )}
           {callToDeleteFavoriteTask && (
