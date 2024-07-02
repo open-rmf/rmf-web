@@ -119,7 +119,7 @@ describe('Custom deliveries', () => {
     }
     expect(deliveryPickupTaskDescription).not.toEqual(null);
 
-    let description = makeDefaultDeliveryPickupTaskDescription();
+    const description = makeDefaultDeliveryPickupTaskDescription();
     let pickupPhase = cartPickupPhaseInsertPickup(
       description.phases[0],
       'test_pickup_place',
@@ -242,7 +242,7 @@ describe('Custom deliveries', () => {
     }
     expect(deliveryCustomTaskDescription).not.toEqual(null);
 
-    let description: DeliveryCustomTaskDescription = makeDefaultDeliveryCustomTaskDescription(
+    const description: DeliveryCustomTaskDescription = makeDefaultDeliveryCustomTaskDescription(
       'delivery_sequential_lot_pickup',
     );
     let pickupPhase = cartCustomPickupPhaseInsertPickup(
@@ -367,7 +367,7 @@ describe('Custom deliveries', () => {
     }
     expect(deliveryCustomTaskDescription).not.toEqual(null);
 
-    let description: DeliveryCustomTaskDescription =
+    const description: DeliveryCustomTaskDescription =
       makeDefaultDeliveryCustomTaskDescription('delivery_area_pickup');
     let pickupPhase = cartCustomPickupPhaseInsertPickup(
       description.phases[0],
@@ -582,7 +582,7 @@ describe('Custom deliveries', () => {
     }
     expect(desc).not.toEqual(null);
 
-    let description: DoubleComposeDeliveryTaskDescription =
+    const description: DoubleComposeDeliveryTaskDescription =
       makeDefaultDoubleComposeDeliveryTaskDescription();
     let firstPickupPhase = cartPickupPhaseInsertPickup(
       description.phases[0],

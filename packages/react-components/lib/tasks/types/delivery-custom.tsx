@@ -477,7 +477,7 @@ export function DeliveryPickupTaskForm({
           value={taskDesc.phases[0].activity.description.activities[0].description}
           onInputChange={(_ev, newValue) => {
             const pickupLot = pickupPoints[newValue] ?? '';
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[0] = cartPickupPhaseInsertPickup(
               newTaskDesc.phases[0],
               newValue,
@@ -488,7 +488,7 @@ export function DeliveryPickupTaskForm({
           onBlur={(ev) => {
             const place = (ev.target as HTMLInputElement).value;
             const pickupLot = pickupPoints[place] ?? '';
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[0] = cartPickupPhaseInsertPickup(
               newTaskDesc.phases[0],
               place,
@@ -528,12 +528,12 @@ export function DeliveryPickupTaskForm({
           }
           getOptionLabel={(option) => option}
           onInputChange={(_ev, newValue) => {
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[0] = cartPickupPhaseInsertCartId(newTaskDesc.phases[0], newValue);
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[0] = cartPickupPhaseInsertCartId(
               newTaskDesc.phases[0],
               (ev.target as HTMLInputElement).value,
@@ -568,12 +568,12 @@ export function DeliveryPickupTaskForm({
           options={Object.keys(dropoffPoints).sort()}
           value={taskDesc.phases[1].activity.description.activities[0].description}
           onInputChange={(_ev, newValue) => {
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[1] = deliveryPhaseInsertDropoff(newTaskDesc.phases[1], newValue);
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[1] = deliveryPhaseInsertDropoff(
               newTaskDesc.phases[1],
               (ev.target as HTMLInputElement).value,
@@ -640,7 +640,7 @@ export function DoubleComposeDeliveryTaskForm({
           value={taskDesc.phases[0].activity.description.activities[0].description}
           onInputChange={(_ev, newValue) => {
             const pickupLot = pickupPoints[newValue] ?? '';
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[0] = cartPickupPhaseInsertPickup(
               newTaskDesc.phases[0],
               newValue,
@@ -651,7 +651,7 @@ export function DoubleComposeDeliveryTaskForm({
           onBlur={(ev) => {
             const place = (ev.target as HTMLInputElement).value;
             const pickupLot = pickupPoints[place] ?? '';
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[0] = cartPickupPhaseInsertPickup(
               newTaskDesc.phases[0],
               place,
@@ -688,12 +688,12 @@ export function DoubleComposeDeliveryTaskForm({
           options={Object.keys(dropoffPoints).sort()}
           value={taskDesc.phases[1].activity.description.activities[0].description}
           onInputChange={(_ev, newValue) => {
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[1] = deliveryPhaseInsertDropoff(newTaskDesc.phases[1], newValue);
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[1] = deliveryPhaseInsertDropoff(
               newTaskDesc.phases[1],
               (ev.target as HTMLInputElement).value,
@@ -732,12 +732,12 @@ export function DoubleComposeDeliveryTaskForm({
           }
           getOptionLabel={(option) => option}
           onInputChange={(_ev, newValue) => {
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[0] = cartPickupPhaseInsertCartId(newTaskDesc.phases[0], newValue);
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[0] = cartPickupPhaseInsertCartId(
               newTaskDesc.phases[0],
               (ev.target as HTMLInputElement).value,
@@ -773,7 +773,7 @@ export function DoubleComposeDeliveryTaskForm({
           value={taskDesc.phases[3].activity.description.activities[0].description}
           onInputChange={(_ev, newValue) => {
             const pickupLot = pickupPoints[newValue] ?? '';
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[3] = cartPickupPhaseInsertPickup(
               newTaskDesc.phases[3],
               newValue,
@@ -784,7 +784,7 @@ export function DoubleComposeDeliveryTaskForm({
           onBlur={(ev) => {
             const place = (ev.target as HTMLInputElement).value;
             const pickupLot = pickupPoints[place] ?? '';
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[3] = cartPickupPhaseInsertPickup(
               newTaskDesc.phases[3],
               place,
@@ -821,12 +821,12 @@ export function DoubleComposeDeliveryTaskForm({
           options={Object.keys(dropoffPoints).sort()}
           value={taskDesc.phases[4].activity.description.activities[0].description}
           onInputChange={(_ev, newValue) => {
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[4] = deliveryPhaseInsertDropoff(newTaskDesc.phases[4], newValue);
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[4] = deliveryPhaseInsertDropoff(
               newTaskDesc.phases[4],
               (ev.target as HTMLInputElement).value,
@@ -865,12 +865,12 @@ export function DoubleComposeDeliveryTaskForm({
           }
           getOptionLabel={(option) => option}
           onInputChange={(_ev, newValue) => {
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[3] = cartPickupPhaseInsertCartId(newTaskDesc.phases[3], newValue);
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[3] = cartPickupPhaseInsertCartId(
               newTaskDesc.phases[3],
               (ev.target as HTMLInputElement).value,
@@ -953,7 +953,7 @@ export function DeliveryCustomTaskForm({
           options={pickupZones.sort()}
           value={taskDesc.phases[0].activity.description.activities[0].description}
           onInputChange={(_ev, newValue) => {
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[0] = cartCustomPickupPhaseInsertPickup(
               newTaskDesc.phases[0],
               newValue,
@@ -963,7 +963,7 @@ export function DeliveryCustomTaskForm({
           }}
           onBlur={(ev) => {
             const zone = (ev.target as HTMLInputElement).value;
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[0] = cartCustomPickupPhaseInsertPickup(
               newTaskDesc.phases[0],
               zone,
@@ -1003,7 +1003,7 @@ export function DeliveryCustomTaskForm({
           }
           getOptionLabel={(option) => option}
           onInputChange={(_ev, newValue) => {
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[0] = cartCustomPickupPhaseInsertCartId(
               newTaskDesc.phases[0],
               newValue,
@@ -1011,7 +1011,7 @@ export function DeliveryCustomTaskForm({
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[0] = cartCustomPickupPhaseInsertCartId(
               newTaskDesc.phases[0],
               (ev.target as HTMLInputElement).value,
@@ -1046,12 +1046,12 @@ export function DeliveryCustomTaskForm({
           options={dropoffPoints.sort()}
           value={taskDesc.phases[1].activity.description.activities[0].description}
           onInputChange={(_ev, newValue) => {
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[1] = deliveryPhaseInsertDropoff(newTaskDesc.phases[1], newValue);
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
-            let newTaskDesc = { ...taskDesc };
+            const newTaskDesc = { ...taskDesc };
             newTaskDesc.phases[1] = deliveryPhaseInsertDropoff(
               newTaskDesc.phases[1],
               (ev.target as HTMLInputElement).value,
