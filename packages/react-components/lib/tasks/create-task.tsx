@@ -922,6 +922,7 @@ export function CreateTaskForm({
                               fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
                             },
                           }}
+                          fullWidth
                         />
                       )}
                       disabled
@@ -957,6 +958,7 @@ export function CreateTaskForm({
                               fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
                             },
                           }}
+                          fullWidth
                         />
                       )}
                     />
