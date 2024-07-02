@@ -10,8 +10,8 @@ CODEGEN_VER=$(pipenv run datamodel-codegen --version)
 
 cd "$(dirname $0)"
 
-if [[ $ROS_DISTRO != 'humble' ]]; then
-  echo 'Unable to find ros humble, please make sure that it is sourced.'
+if [[ $ROS_DISTRO != 'jazzy' ]]; then
+  echo 'Unable to find ros jazzy, please make sure that it is sourced.'
   exit 1
 fi
 

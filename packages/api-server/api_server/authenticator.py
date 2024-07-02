@@ -1,17 +1,24 @@
-import logging
-from typing import Any, Callable, Coroutine, Optional, Union
+import base64
+import json
+from typing import Any, Callable, Coroutine, Optional, Protocol, Union
 
 import jwt
-from fastapi import Depends, HTTPException
+from fastapi import Depends, Header, HTTPException
 from fastapi.security import OpenIdConnect
 
 from .app_config import app_config
-from .logging import CustomLoggerAdapter, get_logger
+from .logger import logger
 from .models import User
 
 
 class AuthenticationError(Exception):
     pass
+
+
+class Authenticator(Protocol):
+    async def verify_token(self, token: Optional[str]) -> User: ...
+
+    def fastapi_dep(self) -> Callable[..., Union[Coroutine[Any, Any, User], User]]: ...
 
 
 class JwtAuthenticator:
@@ -58,7 +65,6 @@ class JwtAuthenticator:
     async def verify_token(self, token: Optional[str]) -> User:
         if not token:
             raise AuthenticationError("authentication required")
-
         try:
             claims = jwt.decode(
                 token,
@@ -88,22 +94,29 @@ class JwtAuthenticator:
         return dep
 
 
-class StubAuthenticator(JwtAuthenticator):
-    def __init__(self):  # pylint: disable=super-init-not-called
-        self._user = None
+class StubAuthenticator(Authenticator):
+    """
+    StubAuthenticator will authenticate as an admin user called "stub" if no tokens are
+    present. If there is a bearer token in the `Authorization` header, then it decodes the jwt
+    WITHOUT verifying the signature and authenticated as the user given.
+    """
 
-    async def _get_user(self, claims: dict) -> User:
-        if self._user is None:
-            self._user = await User.load_or_create_from_db("stub")
-            await self._user.update_admin(True)
-        return self._user
+    async def verify_token(self, token: Optional[str]):
+        if not token:
+            return User(username="stub", is_admin=True)
+        # decode the jwt without verifying signature
+        parts = token.split(".")
+        # add padding to ignore incorrect padding errors
+        payload = base64.b64decode(parts[1] + "==")
+        username = json.loads(payload)["preferred_username"]
+        return await User.load_or_create_from_db(username)
 
-    async def verify_token(self, token: Optional[str]) -> User:
-        return await self._get_user({})
-
-    def fastapi_dep(self) -> Callable[..., Union[Coroutine[Any, Any, User], User]]:
-        async def dep():
-            return await self._get_user({})
+    def fastapi_dep(self):
+        async def dep(authorization: str | None = Header(None)):
+            if not authorization:
+                return await self.verify_token(None)
+            token = authorization.split(" ")[1]
+            return await self.verify_token(token)
 
         return dep
 
@@ -119,16 +132,7 @@ if app_config.jwt_public_key:
     )
 else:
     authenticator = StubAuthenticator()
-    logging.warning("authentication is disabled")
+    logger.warning("authentication is disabled")
 
 
-_base_user_dep = authenticator.fastapi_dep()
-
-
-def user_dep(
-    user: User = Depends(_base_user_dep),
-    logger: CustomLoggerAdapter = Depends(get_logger),
-):
-    # extends the original user dep to set the authenticated user to the logger
-    logger.user = user
-    return user
+user_dep = authenticator.fastapi_dep()

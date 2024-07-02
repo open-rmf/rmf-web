@@ -5,12 +5,11 @@ import base64
 import hashlib
 import logging
 from datetime import datetime
-from typing import Any, List, Optional
+from typing import Any, List, Optional, cast
 
 import rclpy
 import rclpy.client
 import rclpy.qos
-from builtin_interfaces.msg import Time as RosTime
 from fastapi import HTTPException
 from rclpy.subscription import Subscription
 from rmf_building_map_msgs.msg import AffineImage as RmfAffineImage
@@ -20,8 +19,6 @@ from rmf_dispenser_msgs.msg import DispenserState as RmfDispenserState
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
 from rmf_door_msgs.msg import DoorRequest as RmfDoorRequest
 from rmf_door_msgs.msg import DoorState as RmfDoorState
-
-# pylint: disable-next=no-name-in-module
 from rmf_fleet_msgs.msg import BeaconState as RmfBeaconState
 from rmf_fleet_msgs.msg import DeliveryAlert as RmfDeliveryAlert
 from rmf_fleet_msgs.msg import DeliveryAlertAction as RmfDeliveryAlertAction
@@ -46,7 +43,6 @@ from .models import (
     IngestorState,
     LiftState,
 )
-from .models.delivery_alerts import action_from_msg, category_from_msg, tier_from_msg
 from .repositories import CachedFilesRepository, cached_files_repo
 from .rmf_io import rmf_events
 from .ros import ros_node
@@ -66,19 +62,24 @@ def process_building_map(
     for i, level in enumerate(rmf_building_map.levels):
         level: RmfLevel
         for j, image in enumerate(level.images):
-            image: RmfAffineImage
+            image = cast(RmfAffineImage, image)
             # look at non-crypto hashes if we need more performance
             sha1_hash = hashlib.sha1()
             sha1_hash.update(image.data)
             fingerprint = base64.b32encode(sha1_hash.digest()).lower().decode()
             relpath = f"{rmf_building_map.name}/{level.name}-{image.name}.{fingerprint}.{image.encoding}"  # pylint: disable=line-too-long
-            urlpath = cached_files.add_file(image.data, relpath)
+            urlpath = cached_files.add_file(cast(bytes, image.data), relpath)
             processed_map["levels"][i]["images"][j]["data"] = urlpath
     return BuildingMap(**processed_map)
 
 
 class RmfGateway:
-    def __init__(self, cached_files: CachedFilesRepository):
+    def __init__(
+        self,
+        cached_files: CachedFilesRepository,
+        *,
+        logger: Optional[logging.Logger] = None,
+    ):
         self._door_req = ros_node().create_publisher(
             RmfDoorRequest, "adapter_door_requests", 10
         )
@@ -130,6 +131,7 @@ class RmfGateway:
         )
 
         self.cached_files = cached_files
+        self.logger = logger or logging.getLogger()
         self._subscriptions: List[Subscription] = []
 
         self._subscribe_all()
@@ -162,7 +164,9 @@ class RmfGateway:
         lift_states_sub = ros_node().create_subscription(
             RmfLiftState,
             "lift_states",
-            lambda msg: rmf_events.lift_states.on_next(convert_lift_state(msg)),
+            lambda msg: rmf_events.lift_states.on_next(
+                convert_lift_state(cast(RmfLiftState, msg))
+            ),
             10,
         )
         self._subscriptions.append(lift_states_sub)
@@ -189,7 +193,7 @@ class RmfGateway:
             RmfBuildingMap,
             "map",
             lambda msg: rmf_events.building_map.on_next(
-                process_building_map(msg, self.cached_files)
+                process_building_map(cast(RmfBuildingMap, msg), self.cached_files)
             ),
             rclpy.qos.QoSProfile(
                 history=rclpy.qos.HistoryPolicy.KEEP_ALL,
@@ -212,22 +216,21 @@ class RmfGateway:
         beacon_sub = ros_node().create_subscription(
             RmfBeaconState,
             "beacon_state",
-            lambda msg: rmf_events.beacons.on_next(convert_beacon_state(msg)),
+            lambda msg: rmf_events.beacons.on_next(
+                convert_beacon_state(cast(RmfBeaconState, msg))
+            ),
             10,
         )
         self._subscriptions.append(beacon_sub)
 
         def convert_delivery_alert(delivery_alert: RmfDeliveryAlert):
-            category = category_from_msg(delivery_alert.category.value)
-            tier = tier_from_msg(delivery_alert.tier.value)
-            action = action_from_msg(delivery_alert.action.value)
             return DeliveryAlert(
-                id=delivery_alert.id,  # pyright: ignore[reportGeneralTypeIssues]
-                category=category,  # pyright: ignore[reportGeneralTypeIssues]
-                tier=tier,  # pyright: ignore[reportGeneralTypeIssues]
-                task_id=delivery_alert.task_id,  # pyright: ignore[reportGeneralTypeIssues]
-                action=action,  # pyright: ignore[reportGeneralTypeIssues]
-                message=delivery_alert.message,  # pyright: ignore[reportGeneralTypeIssues]
+                id=delivery_alert.id,
+                category=DeliveryAlert.Category(delivery_alert.category.value),
+                tier=DeliveryAlert.Tier(delivery_alert.tier.value),
+                task_id=delivery_alert.task_id,
+                action=DeliveryAlert.Action(delivery_alert.action.value),
+                message=delivery_alert.message,
             )
 
         def handle_delivery_alert(delivery_alert: DeliveryAlert):
@@ -238,7 +241,9 @@ class RmfGateway:
         delivery_alert_request_sub = ros_node().create_subscription(
             RmfDeliveryAlert,
             "delivery_alert_request",
-            lambda msg: handle_delivery_alert(convert_delivery_alert(msg)),
+            lambda msg: handle_delivery_alert(
+                convert_delivery_alert(cast(RmfDeliveryAlert, msg))
+            ),
             rclpy.qos.QoSProfile(
                 history=rclpy.qos.HistoryPolicy.KEEP_LAST,
                 depth=10,
@@ -271,13 +276,6 @@ class RmfGateway:
             ),
         )
         self._subscriptions.append(fire_alarm_trigger_sub)
-
-    @staticmethod
-    def now() -> Optional[RosTime]:
-        """
-        Returns the current sim time, or `None` if not using sim time
-        """
-        return ros_node().get_clock().now().to_msg()
 
     def request_door(self, door_name: str, mode: int) -> None:
         msg = RmfDoorRequest(

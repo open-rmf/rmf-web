@@ -2,6 +2,16 @@ from datetime import datetime, timezone
 
 from builtin_interfaces.msg import Time as RosTime
 
+from .ros import ros_node
+
+
+def now() -> int:
+    """
+    Return current unix time in millis
+    """
+    ros_time = ros_node().get_clock().now()
+    return ros_time.nanoseconds // 1000000
+
 
 def ros_to_py_datetime(ros_time: RosTime) -> datetime:
     """
