@@ -1055,6 +1055,7 @@ export function CreateTaskForm({
               }
               helperText="Required"
               error={favoriteTaskTitleError}
+              fullWidth
             />
           )}
           {callToDeleteFavoriteTask && (

@@ -66,7 +66,7 @@ interface CartCustomPickupPhase {
   };
 }
 
-interface CartPickupPhase {
+export interface CartPickupPhase {
   activity: {
     category: string;
     description: {
@@ -109,7 +109,7 @@ interface OnCancelDropoff {
   ];
 }
 
-interface DeliveryWithCancellationPhase {
+export interface DeliveryWithCancellationPhase {
   activity: {
     category: string;
     description: {

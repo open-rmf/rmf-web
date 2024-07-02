@@ -3,10 +3,12 @@ import {
   cartPickupPhaseInsertPickup,
   cartCustomPickupPhaseInsertCartId,
   cartCustomPickupPhaseInsertPickup,
+  CartPickupPhase,
   DeliveryCustomTaskDescription,
   deliveryPhaseInsertDropoff,
   deliveryPhaseInsertOnCancel,
   DeliveryPickupTaskDescription,
+  DeliveryWithCancellationPhase,
   DoubleComposeDeliveryTaskDescription,
   makeDefaultDeliveryCustomTaskDescription,
   makeDefaultDeliveryPickupTaskDescription,
@@ -14,6 +16,113 @@ import {
 } from '.';
 
 describe('Custom deliveries', () => {
+  it('cart pickup phase', () => {
+    let parsedPhase: CartPickupPhase | null = null;
+    try {
+      parsedPhase = JSON.parse(`{
+        "activity": {
+          "category": "sequence",
+          "description": {
+            "activities": [
+              {
+                "category": "go_to_place",
+                "description": "test_pickup_place"
+              },
+              {
+                "category": "perform_action",
+                "description": {
+                  "unix_millis_action_duration_estimate": 60000,
+                  "category": "delivery_pickup",
+                  "description": {
+                    "cart_id": "test_cart_id",
+                    "pickup_lot": "test_pickup_lot"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+      `) as CartPickupPhase;
+    } catch (e) {
+      parsedPhase = null;
+    }
+    expect(parsedPhase).not.toEqual(null);
+
+    const defaultDesc = makeDefaultDeliveryPickupTaskDescription();
+    let pickupPhase = cartPickupPhaseInsertPickup(
+      defaultDesc.phases[0],
+      'test_pickup_place',
+      'test_pickup_lot',
+    );
+    pickupPhase = cartPickupPhaseInsertCartId(pickupPhase, 'test_cart_id');
+    expect(parsedPhase).toEqual(pickupPhase);
+  });
+
+  it('delivery with cancellation phase', () => {
+    let parsedPhase: DeliveryWithCancellationPhase | null = null;
+    try {
+      parsedPhase = JSON.parse(`{
+        "activity": {
+          "category": "sequence",
+          "description": {
+            "activities": [
+              {
+                "category": "go_to_place",
+                "description": "test_dropoff_place"
+              }
+            ]
+          }
+        },
+        "on_cancel": [
+          {
+            "category": "sequence",
+            "description": [
+              {
+                "category": "go_to_place",
+                "description": {
+                  "one_of": [
+                    {
+                      "waypoint": "test_waypoint_1"
+                    },
+                    {
+                      "waypoint": "test_waypoint_2"
+                    },
+                    {
+                      "waypoint": "test_waypoint_3"
+                    }
+                  ],
+                  "constraints": [
+                    {
+                      "category": "prefer_same_map",
+                      "description": ""
+                    }
+                  ]
+                }
+              },
+              {
+                "category": "perform_action",
+                "description": {
+                  "unix_millis_action_duration_estimate": 60000,
+                  "category": "delivery_dropoff",
+                  "description": {}
+                }
+              }
+            ]
+          }
+        ]
+      }
+      `) as DeliveryWithCancellationPhase;
+    } catch (e) {
+      parsedPhase = null;
+    }
+    expect(parsedPhase).not.toEqual(null);
+
+    const defaultDesc = makeDefaultDeliveryPickupTaskDescription();
+    const deliveryPhase = deliveryPhaseInsertDropoff(defaultDesc.phases[1], 'test_dropoff_place');
+    expect(parsedPhase).toEqual(deliveryPhase);
+  });
+
   it('delivery pickup', () => {
     let deliveryPickupTaskDescription: DeliveryPickupTaskDescription | null = null;
     try {
