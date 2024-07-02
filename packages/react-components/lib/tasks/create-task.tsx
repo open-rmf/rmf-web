@@ -928,7 +928,12 @@ export function CreateTaskForm({
                       disabled
                     />
                   </Grid>
-                  <Grid item xs={1}>
+                  <Grid
+                    container
+                    xs={isScreenHeightLessThan800 ? 6 : 5}
+                    justifyContent="flex-end"
+                    alignItems="flex-end"
+                  >
                     <Checkbox
                       checked={warnTime !== null}
                       onChange={handleWarnTimeCheckboxChange}
@@ -937,8 +942,6 @@ export function CreateTaskForm({
                         '& .MuiSvgIcon-root': { fontSize: isScreenHeightLessThan800 ? 22 : 32 },
                       }}
                     />
-                  </Grid>
-                  <Grid item xs={isScreenHeightLessThan800 ? 5 : 4}>
                     <DateTimePicker
                       disabled={warnTime === null}
                       inputFormat={'MM/dd/yyyy HH:mm'}
@@ -958,7 +961,6 @@ export function CreateTaskForm({
                               fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
                             },
                           }}
-                          fullWidth
                         />
                       )}
                     />

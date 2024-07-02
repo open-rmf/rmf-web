@@ -119,7 +119,12 @@ describe('Custom deliveries', () => {
     expect(parsedPhase).not.toEqual(null);
 
     const defaultDesc = makeDefaultDeliveryPickupTaskDescription();
-    const deliveryPhase = deliveryPhaseInsertDropoff(defaultDesc.phases[1], 'test_dropoff_place');
+    let deliveryPhase = deliveryPhaseInsertDropoff(defaultDesc.phases[1], 'test_dropoff_place');
+    deliveryPhase = deliveryPhaseInsertOnCancel(deliveryPhase, [
+      'test_waypoint_1',
+      'test_waypoint_2',
+      'test_waypoint_3',
+    ]);
     expect(parsedPhase).toEqual(deliveryPhase);
   });
 
