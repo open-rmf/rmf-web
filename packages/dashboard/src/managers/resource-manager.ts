@@ -59,6 +59,9 @@ export default class ResourceManager {
     this.tasks = new TaskResourceManager(
       resources.allowedTasks || [
         {
+          task_definition_id: 'double-compose-delivery',
+        },
+        {
           task_definition_id: 'patrol',
         },
         {
