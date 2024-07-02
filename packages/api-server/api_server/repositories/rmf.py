@@ -1,9 +1,10 @@
-from typing import List, Optional, cast
+from typing import Annotated, List, Optional, cast
 
 from fastapi import Depends
 
 from api_server.authenticator import user_dep
 from api_server.models import (
+    BeaconState,
     BuildingMap,
     Dispenser,
     DispenserState,
@@ -21,7 +22,7 @@ from api_server.query import add_pagination
 
 
 class RmfRepository:
-    def __init__(self, user: User = Depends(user_dep)):
+    def __init__(self, user: Annotated[User, Depends(user_dep)]):
         self.user = user
 
     @staticmethod
@@ -36,7 +37,16 @@ class RmfRepository:
         building_map = await ttm.BuildingMap.first()
         if building_map is None:
             return None
-        return BuildingMap.model_construct(**cast(dict, building_map.data))
+        return BuildingMap(**cast(dict, building_map.data))
+
+    async def save_building_map(self, building_map: BuildingMap) -> None:
+        existing_maps = await ttm.BuildingMap.all()
+        for m in existing_maps:
+            if m.id_ != building_map.name:
+                await m.delete()
+        await ttm.BuildingMap.update_or_create(
+            {"data": building_map.model_dump()}, id_=building_map.name
+        )
 
     async def get_doors(self) -> List[Door]:
         building_map = await self.get_bulding_map()
@@ -50,6 +60,11 @@ class RmfRepository:
             return None
         return DoorState.model_construct(**cast(dict, door_state.data))
 
+    async def save_door_state(self, door_state: DoorState) -> None:
+        await ttm.DoorState.update_or_create(
+            {"data": door_state.model_dump()}, id_=door_state.door_name
+        )
+
     async def get_lifts(self) -> List[Lift]:
         building_map = await self.get_bulding_map()
         if building_map is None:
@@ -62,12 +77,22 @@ class RmfRepository:
             return None
         return LiftState.model_construct(**cast(dict, lift_state.data))
 
+    async def save_lift_state(self, lift_state: LiftState) -> None:
+        await ttm.LiftState.update_or_create(
+            {"data": lift_state.model_dump()}, id_=lift_state.lift_name
+        )
+
     async def get_dispensers(self) -> List[Dispenser]:
         states = await ttm.DispenserState.all()
         return [
             Dispenser.model_construct(guid=cast(dict, state.data)["guid"])
             for state in states
         ]
+
+    async def save_dispenser_state(self, dispenser_state: DispenserState) -> None:
+        await ttm.DispenserState.update_or_create(
+            {"data": dispenser_state.model_dump()}, id_=dispenser_state.guid
+        )
 
     async def get_dispenser_state(self, guid: str) -> Optional[DispenserState]:
         dispenser_state = await ttm.DispenserState.get_or_none(id_=guid)
@@ -82,11 +107,21 @@ class RmfRepository:
             for state in states
         ]
 
+    async def save_ingestor_state(self, ingestor_state: IngestorState) -> None:
+        await ttm.IngestorState.update_or_create(
+            {"data": ingestor_state.model_dump()}, id_=ingestor_state.guid
+        )
+
     async def get_ingestor_state(self, guid: str) -> Optional[IngestorState]:
         ingestor_state = await ttm.IngestorState.get_or_none(id_=guid)
         if ingestor_state is None:
             return None
         return IngestorState.model_construct(**cast(dict, ingestor_state.data))
+
+    async def save_beacon_state(self, beacon_state: BeaconState) -> None:
+        d = beacon_state.model_dump()
+        del d["id"]
+        await ttm.BeaconState.update_or_create(d, id_=beacon_state.id)
 
     async def query_users(
         self,

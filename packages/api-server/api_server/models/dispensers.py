@@ -1,3 +1,5 @@
+from typing import cast
+
 from pydantic import BaseModel
 
 from . import tortoise_models as ttm
@@ -11,9 +13,4 @@ class Dispenser(BaseModel):
 class DispenserState(rmf_dispenser_msgs.DispenserState):
     @staticmethod
     def from_tortoise(tortoise: ttm.DispenserState) -> "DispenserState":
-        return DispenserState(**tortoise.data)
-
-    async def save(self) -> None:
-        await ttm.DispenserState.update_or_create(
-            {"data": self.model_dump()}, id_=self.guid
-        )
+        return DispenserState(**cast(dict, tortoise.data))

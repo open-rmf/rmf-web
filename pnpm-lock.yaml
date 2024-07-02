@@ -27,8 +27,8 @@ importers:
         specifier: ^3.2.5
         version: 3.3.2
       pyright:
-        specifier: 1.1.354
-        version: 1.1.354
+        specifier: 1.1.369
+        version: 1.1.369
       typescript:
         specifier: ~5.4.3
         version: 5.4.5
@@ -8847,8 +8847,8 @@ packages:
   pure-rand@6.1.0:
     resolution: {integrity: sha512-bVWawvoZoBYpp6yIoQtQXHZjmz35RSVHnUOTefl8Vcjr8snTPY1wnpSPMWekcFwbxI6gtmT7rSYPFvz71ldiOA==}
 
-  pyright@1.1.354:
-    resolution: {integrity: sha512-lUojJFZqg4St+4E2WrZbqODeqLvhuRJXRDros59bJcK485hXJLlCb3DzTd/9KYfaisf2TqvDV79qhc0grwyf/w==}
+  pyright@1.1.369:
+    resolution: {integrity: sha512-K0mQzVNSN5yq+joFK0JraOlhtL2HKrubCa+SnFznkLsnoZKbmq7M8UpSSDsJKPFfevkmqOKodgGzvt27C6RJAg==}
     engines: {node: '>=14.0.0'}
     hasBin: true
 
@@ -21945,7 +21945,7 @@ snapshots:
 
   pure-rand@6.1.0: {}
 
-  pyright@1.1.354:
+  pyright@1.1.369:
     optionalDependencies:
       fsevents: 2.3.3
 

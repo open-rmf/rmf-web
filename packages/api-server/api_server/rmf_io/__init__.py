@@ -7,6 +7,5 @@ from .events import (
     rmf_events,
     task_events,
 )
-from .health_watchdog import HealthWatchdog
 from .rmf_service import RmfService, tasks_service
 from .topics import topics

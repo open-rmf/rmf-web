@@ -8,45 +8,33 @@ from api_server import models as mdl
 from api_server.models import TaskEventLog, TaskState
 from api_server.repositories import TaskRepository
 from api_server.rmf_io import task_events, tasks_service
-from api_server.test import (
-    AppFixture,
-    make_task_booking_label,
-    make_task_log,
-    make_task_state,
-)
+from api_server.test import AppFixture, make_task_log, make_task_state
 
 
 class TestTasksRoute(AppFixture):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        booking_labels = make_task_booking_label()
-        booking_labels.description["test_single"] = ""
-        booking_labels.description["test_single_2"] = ""
-        booking_labels.description["test_kv"] = "value"
-        booking_labels.description["test_label_sort"] = "zzz"
-        booking_labels.description["test_label_sort_2"] = "aaa"
-        booking_labels.description["test_label_sort_3"] = "bbb"
-        booking_labels_2 = make_task_booking_label()
-        booking_labels_2.description["test_label_sort"] = "aaa"
-        booking_labels_2.description["test_label_sort_3"] = "bbb"
-
-        task_ids = [uuid4(), uuid4()]
+        task_ids = [str(uuid4()), str(uuid4())]
         cls.task_states = [
             make_task_state(
-                task_id=f"test_{task_ids[0]}",
-                booking_labels=[
-                    "dummy_label_1",
-                    "dummy_label_2",
-                    booking_labels.json(),
+                task_id=task_ids[0],
+                labels=[
+                    "test_single",
+                    "test_single_2=",
+                    "test_kv=value",
+                    "test_label_sort=zzz",
+                    "test_label_sort_2=aaa",
+                    "test_label_sort_3=bbb",
                 ],
             ),
             make_task_state(
-                task_id=f"test_{task_ids[1]}",
-                booking_labels=[booking_labels_2.json()],
+                task_id=task_ids[1],
+                labels=["test_label_sort=aaa", "test_label_sort_3=bbb"],
             ),
         ]
         cls.task_logs = [make_task_log(task_id=f"test_{x}") for x in task_ids]
+        cls.clsSetupErr: str | None = None
 
         portal = cls.get_portal()
         repo = TaskRepository(cls.admin_user)
@@ -55,13 +43,24 @@ class TestTasksRoute(AppFixture):
         for x in cls.task_logs:
             portal.call(repo.save_task_log, x)
 
+    def setUp(self):
+        super().setUp()
+        self.assertIsNone(self.clsSetupErr)
+
     def test_get_task_state(self):
         resp = self.client.get(f"/tasks/{self.task_states[0].booking.id}/state")
         self.assertEqual(200, resp.status_code)
+        task_state = TaskState.model_validate_json(resp.content)
         self.assertEqual(
             self.task_states[0].booking.id,
-            resp.json()["booking"]["id"],
+            task_state.booking.id,
         )
+        if task_state.booking.labels is None:
+            self.fail("expected label not to be None")
+        labels = mdl.Labels.from_strings(task_state.booking.labels)
+        self.assertEqual("", labels.root["test_single"])
+        self.assertEqual("", labels.root["test_single_2"])
+        self.assertEqual("value", labels.root["test_kv"])
 
     def test_query_task_states(self):
         resp = self.client.get(f"/tasks?task_id={self.task_states[0].booking.id}")
@@ -70,85 +69,62 @@ class TestTasksRoute(AppFixture):
         self.assertEqual(1, len(results))
         self.assertEqual(self.task_states[0].booking.id, results[0]["booking"]["id"])
 
-        test_cases = [
-            ({"pickup": "Kitchen"}, [self.task_states[0].booking.id]),
-            ({"destination": "room_203"}, [self.task_states[0].booking.id]),
-            (
-                {"pickup": "Kitchen", "destination": "room_203"},
-                [self.task_states[0].booking.id],
-            ),
-            (
-                {"pickup": "Kitchen", "destination": "room_202"},
-                [],
-            ),
-        ]
-        for tc in test_cases:
-            q = "&".join(f"{k}={v}" for k, v in tc[0].items())
-            resp = self.client.get(
-                f"/tasks?task_id={self.task_states[0].booking.id}&{q}"
-            )
-            self.assertEqual(200, resp.status_code, tc)
-            results = resp.json()
-            self.assertEqual(len(tc[1]), len(results), tc)
-            for a, b in zip(tc[1], results):
-                self.assertEqual(a, b["booking"]["id"], tc)
-
     def test_query_task_states_filter_by_label(self):
         resp = self.client.get("/tasks?label=not_existing")
-        self.assertEqual(200, resp.status_code, resp.content)
-        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        self.assertEqual(200, resp.status_code)
+        results = pydantic.TypeAdapter(list[TaskState]).validate_json(resp.content)
         self.assertEqual(0, len(results))
 
         resp = self.client.get("/tasks?label=test_single")
         self.assertEqual(200, resp.status_code)
-        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        results = pydantic.TypeAdapter(list[TaskState]).validate_json(resp.content)
         self.assertEqual(1, len(results))
         self.assertEqual(self.task_states[0].booking.id, results[0].booking.id)
 
         resp = self.client.get("/tasks?label=test_single=wrong_value")
         self.assertEqual(200, resp.status_code)
-        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        results = pydantic.TypeAdapter(list[TaskState]).validate_json(resp.content)
         self.assertEqual(0, len(results))
 
         resp = self.client.get("/tasks?label=test_single_2=")
         self.assertEqual(200, resp.status_code)
-        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        results = pydantic.TypeAdapter(list[TaskState]).validate_json(resp.content)
         self.assertEqual(1, len(results))
         self.assertEqual(self.task_states[0].booking.id, results[0].booking.id)
 
         resp = self.client.get("/tasks?label=test_kv=value")
         self.assertEqual(200, resp.status_code)
-        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        results = pydantic.TypeAdapter(list[TaskState]).validate_json(resp.content)
         self.assertEqual(1, len(results))
         self.assertEqual(self.task_states[0].booking.id, results[0].booking.id)
 
         resp = self.client.get("/tasks?label=test_kv=wrong_value")
         self.assertEqual(200, resp.status_code)
-        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        results = pydantic.TypeAdapter(list[TaskState]).validate_json(resp.content)
         self.assertEqual(0, len(results))
 
         resp = self.client.get("/tasks?label=test_single,test_kv=value")
         self.assertEqual(200, resp.status_code)
-        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        results = pydantic.TypeAdapter(list[TaskState]).validate_json(resp.content)
         self.assertEqual(1, len(results))
         self.assertEqual(self.task_states[0].booking.id, results[0].booking.id)
 
         resp = self.client.get("/tasks?label=test_single,test_kv=wrong_value")
         self.assertEqual(200, resp.status_code)
-        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        results = pydantic.TypeAdapter(list[TaskState]).validate_json(resp.content)
         self.assertEqual(0, len(results))
 
     def test_query_task_states_sort_by_label(self):
         resp = self.client.get("/tasks?order_by=-label=test_label_sort")
         self.assertEqual(200, resp.status_code)
-        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        results = pydantic.TypeAdapter(list[TaskState]).validate_json(resp.content)
         self.assertEqual(2, len(results))
         for a, b in zip(self.task_states, results):
             self.assertEqual(a, b)
 
         resp = self.client.get("/tasks?order_by=label=test_label_sort")
         self.assertEqual(200, resp.status_code)
-        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        results = pydantic.TypeAdapter(list[TaskState]).validate_json(resp.content)
         self.assertEqual(2, len(results))
         for a, b in zip(self.task_states[::-1], results):
             self.assertEqual(a, b)
@@ -158,7 +134,7 @@ class TestTasksRoute(AppFixture):
             "/tasks?order_by=label=test_label_sort,label=test_label_sort_3"
         )
         self.assertEqual(200, resp.status_code)
-        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        results = pydantic.TypeAdapter(list[TaskState]).validate_json(resp.content)
         self.assertEqual(2, len(results))
         for a, b in zip(self.task_states[::-1], results):
             self.assertEqual(a, b)
@@ -168,7 +144,7 @@ class TestTasksRoute(AppFixture):
         # of sorting NULL.
         resp = self.client.get("/tasks?order_by=label=test_label_sort_not_existing")
         self.assertEqual(200, resp.status_code)
-        results = pydantic.parse_raw_as(list[mdl.TaskState], resp.content)
+        results = pydantic.TypeAdapter(list[TaskState]).validate_json(resp.content)
         self.assertEqual(2, len(results))
 
     def test_sub_task_state(self):
@@ -177,17 +153,6 @@ class TestTasksRoute(AppFixture):
             task_events.task_states.on_next(self.task_states[0])
             state = TaskState(**next(sub))
             self.assertEqual(task_id, cast(TaskState, state).booking.id)
-
-    def test_get_task_booking_label(self):
-        resp = self.client.get(f"/tasks/{self.task_states[0].booking.id}/booking_label")
-        self.assertEqual(200, resp.status_code)
-        labels = mdl.TaskBookingLabel.parse_raw(resp.content)
-        expected = make_task_booking_label()
-        for k, v in expected.description.items():
-            self.assertEqual(
-                v,
-                labels.description[k],
-            )
 
     def test_get_task_log(self):
         resp = self.client.get(
@@ -202,7 +167,7 @@ class TestTasksRoute(AppFixture):
             self.assertIsNotNone(logs.log)
             return
         self.assertEqual(1, len(logs.log))
-        log = logs.log[0]
+        log = logs.log[0]  # pylint: disable=unsubscriptable-object
         self.assertEqual(0, log.seq)
         self.assertEqual(mdl.Tier.info, log.tier)
         self.assertEqual(1636388410000, log.unix_millis_time)
@@ -217,7 +182,7 @@ class TestTasksRoute(AppFixture):
         self.assertIn("2", logs.phases)
 
         # check correct log
-        phase1 = logs.phases["1"]
+        phase1 = logs.phases["1"]  # pylint: disable=unsubscriptable-object
         phase1_log = phase1.log
         if phase1_log is None:
             self.assertIsNotNone(phase1_log)
@@ -269,9 +234,9 @@ class TestTasksRoute(AppFixture):
             mock.return_value = "{}"
             resp = self.client.post(
                 "/tasks/activity_discovery",
-                data=mdl.ActivityDiscoveryRequest(
-                    type="activitiy_discovery_request"
-                ).json(exclude_none=True),
+                content=mdl.ActivityDiscoveryRequest(
+                    type="activitiy_discovery_request",
+                ).model_dump_json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
@@ -280,9 +245,9 @@ class TestTasksRoute(AppFixture):
             mock.return_value = '{ "success": true }'
             resp = self.client.post(
                 "/tasks/activity_discovery",
-                data=mdl.ActivityDiscoveryRequest(
+                content=mdl.ActivityDiscoveryRequest(
                     type="activitiy_discovery_request"
-                ).json(exclude_none=True),
+                ).model_dump_json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
@@ -291,9 +256,9 @@ class TestTasksRoute(AppFixture):
             mock.return_value = '{ "success": True, "token": "token" }'
             resp = self.client.post(
                 "/tasks/interrupt_task",
-                data=mdl.TaskInterruptionRequest(  # type: ignore
-                    type="interrupt_task_request", task_id="task_id"
-                ).json(exclude_none=True),
+                content=mdl.TaskInterruptionRequest(
+                    type="interrupt_task_request", task_id="task_id", labels=None
+                ).model_dump_json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
@@ -302,9 +267,9 @@ class TestTasksRoute(AppFixture):
             mock.return_value = '{ "success": true }'
             resp = self.client.post(
                 "/tasks/kill_task",
-                data=mdl.TaskKillRequest(  # type: ignore
-                    type="kill_task_request", task_id="task_id"
-                ).json(exclude_none=True),
+                content=mdl.TaskKillRequest(
+                    type="kill_task_request", task_id="task_id", labels=None
+                ).model_dump_json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
@@ -313,7 +278,9 @@ class TestTasksRoute(AppFixture):
             mock.return_value = '{ "success": true }'
             resp = self.client.post(
                 "/tasks/resume_task",
-                data=mdl.TaskResumeRequest().json(exclude_none=True),  # type: ignore
+                content=mdl.TaskResumeRequest(
+                    type=None, for_task=None, for_tokens=None, labels=None
+                ).model_dump_json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
@@ -322,11 +289,9 @@ class TestTasksRoute(AppFixture):
             mock.return_value = '{ "success": true }'
             resp = self.client.post(
                 "/tasks/rewind_task",
-                data=mdl.TaskRewindRequest(
+                content=mdl.TaskRewindRequest(
                     type="rewind_task_request", task_id="task_id", phase_id=0
-                ).json(
-                    exclude_none=True
-                ),  # type: ignore
+                ).model_dump_json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
@@ -335,9 +300,12 @@ class TestTasksRoute(AppFixture):
             mock.return_value = '{ "success": True, "token": "token" }'
             resp = self.client.post(
                 "/tasks/skip_phase",
-                data=mdl.TaskPhaseSkipRequest(  # type: ignore
-                    type="skip_phase_request", task_id="task_id", phase_id=0
-                ).json(exclude_none=True),
+                content=mdl.TaskPhaseSkipRequest(
+                    type="skip_phase_request",
+                    task_id="task_id",
+                    phase_id=0,
+                    labels=None,
+                ).model_dump_json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
@@ -346,9 +314,9 @@ class TestTasksRoute(AppFixture):
             mock.return_value = "{}"
             resp = self.client.post(
                 "/tasks/task_discovery",
-                data=mdl.TaskDiscoveryRequest(type="task_discovery_request").json(
-                    exclude_none=True
-                ),
+                content=mdl.TaskDiscoveryRequest(
+                    type="task_discovery_request"
+                ).model_dump_json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
@@ -357,7 +325,9 @@ class TestTasksRoute(AppFixture):
             mock.return_value = '{ "success": True }'
             resp = self.client.post(
                 "/tasks/undo_skip_phase",
-                data=mdl.UndoPhaseSkipRequest(type="undo_phase_skip_request").json(exclude_none=True),  # type: ignore
+                content=mdl.UndoPhaseSkipRequest(
+                    type="undo_phase_skip_request",
+                ).model_dump_json(exclude_none=True),
             )
             self.assertEqual(200, resp.status_code, resp.content)
 
@@ -366,13 +336,13 @@ class TestDispatchTask(AppFixture):
     def post_task_request(self):
         return self.client.post(
             "/tasks/dispatch_task",
-            data=mdl.DispatchTaskRequest(
+            content=mdl.DispatchTaskRequest(
                 type="dispatch_task_request",
                 request=mdl.TaskRequest(
                     category="test",
                     description="description",
-                ),  # type: ignore
-            ).json(exclude_none=True),
+                ),
+            ).model_dump_json(exclude_none=True),
         )
 
     def test_success(self):

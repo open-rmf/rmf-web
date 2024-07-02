@@ -13,7 +13,9 @@ class RmfEvents:
         self.building_map = BehaviorSubject[mdl.BuildingMap | None](None)
         self.beacons = Subject[mdl.BeaconState]()
         self.delivery_alerts = Subject[mdl.DeliveryAlert]()
-        self.fire_alarm_trigger = BehaviorSubject[FireAlarmTriggerState | None](None)
+        self.fire_alarm_trigger = BehaviorSubject[mdl.FireAlarmTriggerState | None](
+            None
+        )
 
 
 rmf_events = RmfEvents()

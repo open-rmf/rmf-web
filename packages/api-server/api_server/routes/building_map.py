@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from fastapi import Depends, HTTPException
-from rx import operators as rxops
+from reactivex import operators as rxops
 
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import rmf_gateway

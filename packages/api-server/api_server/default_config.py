@@ -9,7 +9,7 @@ config = {
     # url that rmf-server is being served on.
     # When being a proxy, this must be the url that rmf-server is mounted on.
     # E.g. https://example.com/rmf/api/v1
-    "public_url": "http://localhost:8000",
+    "public_url": "",
     "cache_directory": "run/cache",  # The directory where cached files should be stored.
     "log_level": "WARNING",  # https://docs.python.org/3.8/library/logging.html#levels
     # a user that is automatically given admin privileges, note that this does not guarantee that the user exists in the identity provider.
@@ -32,13 +32,4 @@ config = {
     # e.g.
     #   Run with sim time: ["-p", "use_sim_time:=true"]
     "ros_args": [],
-    # Timezone at which the scheduler will operate in. This must be the same
-    # as the system timezone, as well as the client UI timezone. Cross-timezone
-    # scheduling is currently not supported.
-    "timezone": "UTC",
-    # FIXME Maximum number of allowed internal websocket connections. This is a
-    # temporary solution to https://github.com/open-rmf/rmf-web/issues/897. If
-    # it goes beyond this number, the server will shut down. If not defined,
-    # this number will not be enforced in any way.
-    "max_internal_websocket_connections": None,
 }

@@ -1,5 +1,4 @@
 import json
-from typing import Optional
 from uuid import uuid4
 
 from rmf_building_map_msgs.msg import Door as RmfDoor
@@ -22,18 +21,24 @@ from api_server.models import (
     Level,
     Lift,
     LiftState,
-    RobotState,
-    TaskBookingLabel,
     TaskEventLog,
     TaskFavorite,
     TaskState,
 )
+from api_server.models import tortoise_models as ttm
+from api_server.models.ros_pydantic.builtin_interfaces import Time
+from api_server.models.ros_pydantic.rmf_building_map_msgs import Graph
 
 
 def make_door(name: str = "test_door") -> Door:
     return Door(
         name=name,
+        v1_x=0,
+        v1_y=0,
+        v2_x=0,
+        v2_y=0,
         door_type=RmfDoor.DOOR_TYPE_SINGLE_SLIDING,
+        motion_range=0,
         motion_direction=1,
     )
 
@@ -45,6 +50,12 @@ def make_lift(name: str = "test_lift") -> Lift:
         doors=[
             make_door(),
         ],
+        wall_graph=Graph(name="", vertices=[], edges=[], params=[]),
+        ref_x=0,
+        ref_y=0,
+        ref_yaw=0,
+        width=0,
+        depth=0,
     )
 
 
@@ -55,14 +66,21 @@ def make_building_map():
             Level(
                 name="L1",
                 elevation=0.0,
-                doors=[make_door()],
                 images=[
                     AffineImage(
                         name="test_image",
+                        x_offset=0.0,
+                        y_offset=0.0,
+                        yaw=0.0,
+                        scale=0.0,
                         encoding="png",
                         data="http://localhost/test_image.png",
                     )
                 ],
+                places=[],
+                doors=[make_door()],
+                nav_graphs=[],
+                wall_graph=Graph(name="", vertices=[], edges=[], params=[]),
             ),
         ],
         lifts=[make_lift()],
@@ -75,6 +93,7 @@ def make_fire_alarm_trigger(trigger: bool = True):
 
 def make_door_state(name: str, mode: int = RmfDoorMode.MODE_CLOSED) -> DoorState:
     return DoorState(
+        door_time=Time(sec=0, nanosec=0),
         door_name=name,
         current_mode=DoorMode(value=mode),
     )
@@ -82,6 +101,7 @@ def make_door_state(name: str, mode: int = RmfDoorMode.MODE_CLOSED) -> DoorState
 
 def make_lift_state(name: str = "test_lift") -> LiftState:
     return LiftState(
+        lift_time=Time(sec=0, nanosec=0),
         lift_name=name or "test_lift",
         available_floors=["L1", "L2"],
         current_floor="L1",
@@ -96,56 +116,34 @@ def make_lift_state(name: str = "test_lift") -> LiftState:
 
 def make_dispenser_state(guid: str = "test_dispenser") -> DispenserState:
     return DispenserState(
+        time=Time(sec=0, nanosec=0),
         guid=guid,
         mode=RmfDispenserState.IDLE,
+        request_guid_queue=[],
+        seconds_remaining=0.0,
     )
 
 
 def make_ingestor_state(guid: str = "test_ingestor") -> IngestorState:
     return IngestorState(
+        time=Time(sec=0, nanosec=0),
         guid=guid,
         mode=RmfIngestorState.IDLE,
+        request_guid_queue=[],
+        seconds_remaining=0.0,
     )
 
 
-def make_robot_state(name: Optional[str] = None) -> RobotState:
-    robot_name = name if name is not None else str(uuid4())
-    return RobotState(
-        name=robot_name,
-        status=None,
-        task_id=None,
-        unix_millis_time=None,
-        location=None,
-        battery=None,
-        issues=None,
-        mutex_groups=None,
-    )
-
-
-def make_fleet_state(name: Optional[str] = None) -> FleetState:
-    fleet_name = name if name is not None else str(uuid4())
-    return FleetState(name=fleet_name, robots={})
+def make_fleet_state() -> FleetState:
+    return FleetState(name=str(uuid4()), robots={})
 
 
 def make_fleet_log() -> FleetLog:
     return FleetLog(name=str(uuid4()), log=[], robots={})
 
 
-def make_task_booking_label() -> TaskBookingLabel:
-    return TaskBookingLabel(
-        description={
-            "task_definition_id": "multi-delivery",
-            "unix_millis_warn_time": 1636388400000,
-            "pickup": "Kitchen",
-            "destination": "room_203",
-            "cart_id": "soda",
-        }
-    )
-
-
 def make_task_state(
-    task_id: str = "test_task",
-    booking_labels: list[str] | None = None,
+    task_id: str = "test_task", labels: list[str] | None = None
 ) -> TaskState:
     # from https://raw.githubusercontent.com/open-rmf/rmf_api_msgs/960b286d9849fc716a3043b8e1f5fb341bdf5778/rmf_api_msgs/samples/task_state/multi_dropoff_delivery.json
     sample_task = json.loads(
@@ -445,14 +443,7 @@ def make_task_state(
         """
     )
     sample_task["booking"]["id"] = task_id
-
-    if booking_labels is None:
-        booking_labels = [
-            "dummy_label_1",
-            "dummy_label_2",
-            make_task_booking_label().json(),
-        ]
-    sample_task["booking"]["labels"] = booking_labels
+    sample_task["booking"]["labels"] = labels or []
     return TaskState(**sample_task)
 
 
@@ -482,8 +473,7 @@ def make_task_favorite(
             "payload":""
          }
       },
-      "user":"stub",
-      "task_definition_id": "delivery"
+      "user":"stub"
    }
     """
     )

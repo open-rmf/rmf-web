@@ -1,27 +1,39 @@
+from pydantic import BaseModel
+
 from . import tortoise_models as ttm
 from .ros_pydantic import rmf_building_map_msgs
 
 
-class AffineImage(rmf_building_map_msgs.AffineImage):
-    data: str  # pyright: ignore [reportIncompatibleVariableOverride]
+class AffineImage(BaseModel):
+    name: str
+    x_offset: float
+    y_offset: float
+    yaw: float
+    scale: float
+    encoding: str
+    data: str
 
 
-class Level(rmf_building_map_msgs.Level):
-    images: list[AffineImage]  # pyright: ignore [reportIncompatibleVariableOverride]
+class Level(BaseModel):
+    name: str
+    elevation: float
+    images: list[AffineImage]
+    places: list[rmf_building_map_msgs.Place]
+    doors: list[rmf_building_map_msgs.Door]
+    nav_graphs: list[rmf_building_map_msgs.Graph]
+    wall_graph: rmf_building_map_msgs.Graph
 
 
-class BuildingMap(rmf_building_map_msgs.BuildingMap):
-    levels: list[Level]  # pyright: ignore [reportIncompatibleVariableOverride]
+class BuildingMap(BaseModel):
+    name: str
+    levels: list[Level]
+    lifts: list[rmf_building_map_msgs.Lift]
 
     @staticmethod
     def from_tortoise(tortoise: ttm.BuildingMap) -> "BuildingMap":
         return BuildingMap(**dict(tortoise.data))
 
-    async def save(self) -> None:
-        existing_maps = await ttm.BuildingMap.all()
-        for m in existing_maps:
-            if m.id_ != self.name:
-                await m.delete()
-        await ttm.BuildingMap.update_or_create(
-            {"data": self.model_dump()}, id_=self.name
-        )
+
+class FireAlarmTriggerState(BaseModel):
+    unix_millis_time: int
+    trigger: bool

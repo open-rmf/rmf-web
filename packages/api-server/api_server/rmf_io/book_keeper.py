@@ -12,7 +12,9 @@ from api_server.models import (
     DoorState,
     IngestorState,
     LiftState,
+    User,
 )
+from api_server.repositories import RmfRepository
 
 from .events import RmfEvents
 
@@ -32,6 +34,7 @@ class RmfBookKeeper:
         self._loop: asyncio.AbstractEventLoop
         self._pending_tasks = set()
         self._subscriptions: list[DisposableBase] = []
+        self._rmf_repo = RmfRepository(User.get_system_user())
 
     async def start(self):
         self._loop = asyncio.get_event_loop()
@@ -56,7 +59,7 @@ class RmfBookKeeper:
 
     def _record_beacon_state(self):
         async def update(beacon_state: BeaconState):
-            await beacon_state.save()
+            await self._rmf_repo.save_beacon_state(beacon_state)
             logging.debug(beacon_state.model_dump_json())
 
         self._subscriptions.append(
@@ -64,10 +67,10 @@ class RmfBookKeeper:
         )
 
     def _record_building_map(self):
-        async def update(building_map: BuildingMap):
+        async def update(building_map: BuildingMap | None):
             if not building_map:
                 return
-            await building_map.save()
+            await self._rmf_repo.save_building_map(building_map)
             logging.debug(building_map.model_dump_json())
 
         self._subscriptions.append(
@@ -76,7 +79,7 @@ class RmfBookKeeper:
 
     def _record_door_state(self):
         async def update(door_state: DoorState):
-            await door_state.save()
+            await self._rmf_repo.save_door_state(door_state)
             logging.debug(door_state.model_dump_json())
 
         self._subscriptions.append(
@@ -85,7 +88,7 @@ class RmfBookKeeper:
 
     def _record_lift_state(self):
         async def update(lift_state: LiftState):
-            await lift_state.save()
+            await self._rmf_repo.save_lift_state(lift_state)
             logging.debug(lift_state.model_dump_json())
 
         self._subscriptions.append(
@@ -94,7 +97,7 @@ class RmfBookKeeper:
 
     def _record_dispenser_state(self):
         async def update(dispenser_state: DispenserState):
-            await dispenser_state.save()
+            await self._rmf_repo.save_dispenser_state(dispenser_state)
             logging.debug(dispenser_state.model_dump_json())
 
         self._subscriptions.append(
@@ -103,7 +106,7 @@ class RmfBookKeeper:
 
     def _record_ingestor_state(self):
         async def update(ingestor_state: IngestorState):
-            await ingestor_state.save()
+            await self._rmf_repo.save_ingestor_state(ingestor_state)
             logging.debug(ingestor_state.model_dump_json())
 
         self._subscriptions.append(

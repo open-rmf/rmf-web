@@ -11,15 +11,22 @@ from tortoise.transactions import in_transaction
 
 from api_server.authenticator import user_dep
 from api_server.logging import LoggerAdapter, get_logger
-from api_server.models import Labels, LogEntry, Pagination, Phases
-from api_server.models import Status as TaskStatus
-from api_server.models import TaskEventLog, TaskRequest, TaskState, User
+from api_server.models import (
+    Labels,
+    LogEntry,
+    Pagination,
+    Phases,
+    TaskEventLog,
+    TaskRequest,
+    TaskState,
+    TaskStatus,
+    User,
+)
 from api_server.models import tortoise_models as ttm
 from api_server.models.rmf_api.log_entry import Tier
 from api_server.models.rmf_api.task_state import Category, Id, Phase
 from api_server.models.tortoise_models import TaskRequest as DbTaskRequest
 from api_server.models.tortoise_models import TaskState as DbTaskState
-from api_server.rmf_io import task_events
 
 
 class TaskRepository:
@@ -327,9 +334,6 @@ class TaskRepository:
             }
 
             await self.save_task_state(task_state)
-            # Notifies observers of the next task_state value to correctly display the title of the
-            #  logs when acknowledged by a user without reloading the page.
-            task_events.task_states.on_next(task_state)
 
     async def save_task_log(self, task_log: TaskEventLog) -> None:
         async with in_transaction():

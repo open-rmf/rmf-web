@@ -1,22 +1,28 @@
+from typing import Annotated, cast
+
 from pydantic import BaseModel, Field
 
 from . import tortoise_models as ttm
-from .ros_pydantic import rmf_building_map_msgs, rmf_lift_msgs
+from .ros_pydantic import builtin_interfaces, rmf_building_map_msgs, rmf_lift_msgs
 
 Lift = rmf_building_map_msgs.Lift
 
 
-class LiftState(rmf_lift_msgs.LiftState):
-    available_modes: list[int]  # pyright: ignore [reportIncompatibleVariableOverride]
+class LiftState(BaseModel):
+    lift_time: builtin_interfaces.Time
+    lift_name: str
+    available_floors: list[str]
+    current_floor: str
+    destination_floor: str
+    door_state: Annotated[int, Field(ge=0, le=255)]
+    motion_state: Annotated[int, Field(ge=0, le=255)]
+    available_modes: list[int]
+    current_mode: Annotated[int, Field(ge=0, le=255)]
+    session_id: str
 
     @staticmethod
     def from_tortoise(tortoise: ttm.LiftState) -> "LiftState":
-        return LiftState(**tortoise.data)
-
-    async def save(self) -> None:
-        await ttm.LiftState.update_or_create(
-            {"data": self.model_dump()}, id_=self.lift_name
-        )
+        return LiftState(**cast(dict, tortoise.data))
 
 
 class LiftRequest(BaseModel):

@@ -1,3 +1,5 @@
+from typing import cast
+
 from pydantic import BaseModel, Field
 
 from . import tortoise_models as ttm
@@ -10,12 +12,7 @@ DoorMode = rmf_door_msgs.DoorMode
 class DoorState(rmf_door_msgs.DoorState):
     @staticmethod
     def from_tortoise(tortoise: ttm.DoorState) -> "DoorState":
-        return DoorState(**tortoise.data)
-
-    async def save(self) -> None:
-        await ttm.DoorState.update_or_create(
-            {"data": self.model_dump()}, id_=self.door_name
-        )
+        return DoorState(**cast(dict, tortoise.data))
 
 
 class DoorRequest(BaseModel):

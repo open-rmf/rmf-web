@@ -131,9 +131,11 @@ async def lifespan(_app: FastIO):
 
 app = FastIO(
     title="RMF API Server",
+    lifespan=lifespan,
     socketio_connect=on_sio_connect,
     docs_url=None,
     redoc_url=None,
+    separate_input_output_schemas=False,
 )
 
 

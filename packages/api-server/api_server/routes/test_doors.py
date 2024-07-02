@@ -3,6 +3,7 @@ from uuid import uuid4
 from rmf_door_msgs.msg import DoorMode as RmfDoorMode
 
 from api_server.models import DoorState
+from api_server.repositories import RmfRepository
 from api_server.test import AppFixture, make_building_map, make_door_state
 
 
@@ -10,14 +11,15 @@ class TestDoorsRoute(AppFixture):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        rmf_repo = RmfRepository(cls.admin_user)
         cls.building_map = make_building_map()
         portal = cls.get_portal()
-        portal.call(cls.building_map.save)
+        portal.call(rmf_repo.save_building_map, cls.building_map)
 
         cls.door_states = [make_door_state(f"test_{uuid4()}")]
 
         for x in cls.door_states:
-            portal.call(x.save)
+            portal.call(rmf_repo.save_door_state, x)
 
     def test_get_doors(self):
         resp = self.client.get("/doors")

@@ -2,16 +2,14 @@ from datetime import datetime
 from typing import List, Optional, Tuple, cast
 
 from fastapi import Body, Depends, HTTPException, Path, Query
-from rx import operators as rxops
+from reactivex import operators as rxops
 
 from api_server import models as mdl
 from api_server.dependencies import (
     between_query,
-    finish_time_between_query,
     pagination_query,
-    request_time_between_query,
     sio_user,
-    start_time_between_query,
+    time_between_query,
 )
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.logging import LoggerAdapter, get_logger
@@ -92,7 +90,7 @@ async def query_task_states(
         None, description="comma separated list of task categories"
     ),
     request_time_between: Optional[Tuple[datetime, datetime]] = Depends(
-        request_time_between_query
+        time_between_query
     ),
     requester: Optional[str] = Query(
         None, description="comma separated list of requester names"
@@ -101,10 +99,10 @@ async def query_task_states(
         None, description="comma separated list of assigned robot names"
     ),
     start_time_between: Optional[Tuple[datetime, datetime]] = Depends(
-        start_time_between_query
+        time_between_query
     ),
     finish_time_between: Optional[Tuple[datetime, datetime]] = Depends(
-        finish_time_between_query
+        time_between_query
     ),
     status: Optional[str] = Query(None, description="comma separated list of statuses"),
     label: str | None = Query(
@@ -156,7 +154,7 @@ async def sub_task_state(req: SubscriptionRequest, task_id: str):
     return obs
 
 
-@router.get("/{task_id}/booking_label", response_model=mdl.TaskBookingLabel)
+@router.get("/{task_id}/booking_label", response_model=mdl.Labels)
 async def get_task_booking_label(
     task_repo: TaskRepository = Depends(TaskRepository),
     task_id: str = Path(..., description="task_id"),
@@ -170,7 +168,7 @@ async def get_task_booking_label(
             if len(label) == 0:
                 continue
 
-            booking_label = mdl.TaskBookingLabel.from_json_string(label)
+            booking_label = mdl.Labels.from_strings(label)
             if booking_label is not None:
                 return booking_label
     raise HTTPException(status_code=404)
@@ -217,8 +215,8 @@ async def post_cancel_task(
 
 @router.post(
     "/dispatch_task",
-    response_model=mdl.TaskDispatchResponseItem,
-    responses={400: {"model": mdl.TaskDispatchResponseItem1}},
+    response_model=mdl.TaskDispatchResponse,
+    responses={400: {"model": mdl.TaskDispatchResponse}},
 )
 async def post_dispatch_task(
     request: mdl.DispatchTaskRequest = Body(...),
@@ -269,12 +267,12 @@ async def post_dispatch_task(
         await tasks_service().call(request.json(exclude_none=True))
     )
     logger.info(resp)
-    if not resp.__root__.success:
+    if not resp.root.success:
         return RawJSONResponse(resp.json(), 400)
-    new_state = cast(mdl.TaskDispatchResponseItem, resp.__root__).state
+    new_state = cast(mdl.TaskDispatchResponseItem, resp.root).state
     await task_repo.save_task_state(new_state)
     await task_repo.save_task_request(new_state, request.request)
-    return resp.__root__
+    return resp.root
 
 
 @router.post(
@@ -289,12 +287,12 @@ async def post_robot_task(
     resp = mdl.RobotTaskResponse.parse_raw(
         await tasks_service().call(request.json(exclude_none=True))
     )
-    if not resp.__root__.__root__.success:
+    if not resp.root.root.success:
         return RawJSONResponse(resp.json(), 400)
     await task_repo.save_task_state(
-        cast(mdl.TaskDispatchResponseItem, resp.__root__.__root__).state
+        cast(mdl.TaskDispatchResponseItem, resp.root.root).state
     )
-    return resp.__root__
+    return resp.root
 
 
 @router.post("/interrupt_task", response_model=mdl.TaskInterruptionResponse)

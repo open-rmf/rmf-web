@@ -6,7 +6,8 @@ import os.path
 import time
 import unittest
 import unittest.mock
-from typing import Awaitable, Callable, Generator, Optional, TypeVar, Union
+from collections.abc import Generator
+from typing import Awaitable, Callable, Optional, TypeVar, Union
 from uuid import uuid4
 
 import pydantic
@@ -15,6 +16,7 @@ from tortoise import Tortoise
 
 from api_server.app import app, app_config
 from api_server.models import User
+from api_server.routes.admin import PostUsers
 
 from .mocks import patch_sio
 from .test_client import TestClient
@@ -135,8 +137,7 @@ class AppFixture(unittest.TestCase):
                     return msgs.pop(0)
 
             while True:
-                # TODO: type check is ignored because pyright is outdated
-                yield portal.call(asyncio.wait_for, wait_for_msgs(), 5)  # type: ignore
+                yield portal.call(asyncio.wait_for, wait_for_msgs(), 5)
 
         with patch_sio() as mock_sio:
             connected = False
@@ -146,11 +147,13 @@ class AppFixture(unittest.TestCase):
 
                 async def handle_resp(emit_room, msg, *_args, **_kwargs):
                     if emit_room == "subscribe" and not msg["success"]:
+                        # FIXME
+                        # pylint: disable=broad-exception-raised
                         raise Exception("Failed to subscribe")
                     if emit_room == room:
                         async with condition:
                             if isinstance(msg, pydantic.BaseModel):
-                                msg = msg.dict()
+                                msg = msg.model_dump(round_trip=True)
                             msgs.append(msg)
                             condition.notify()
 
@@ -172,9 +175,10 @@ class AppFixture(unittest.TestCase):
 
     def create_user(self, admin: bool = False):
         username = f"user_{uuid4().hex}"
+        user = PostUsers(username=username, is_admin=admin)
         resp = self.client.post(
             "/admin/users",
-            json={"username": username, "is_admin": admin},
+            content=user.model_dump_json(),
         )
         self.assertEqual(200, resp.status_code)
         return username
@@ -211,7 +215,6 @@ class AppFixture(unittest.TestCase):
             "category": "clean",
             "description": {"type": "", "zone": ""},
             "user": "",
-            "task_definition_id": "",
         }
         return self.client.post(
             "/favorite_tasks",

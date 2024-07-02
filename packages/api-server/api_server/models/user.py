@@ -48,6 +48,11 @@ class User(BaseModel):
             roles=[r.name for r in db_user.roles],
         )
 
+    @staticmethod
+    def get_system_user() -> "User":
+        """Return a dummy user to be used for system operations"""
+        return _system_user
+
     async def update_admin(self, is_admin: bool):
         ttm_user = await ttm.User.get_or_none(username=self.username)
         if ttm_user is None:
@@ -56,3 +61,6 @@ class User(BaseModel):
         ttm_user.update_from_dict({"is_admin": is_admin})
         await ttm_user.save()
         self.is_admin = is_admin
+
+
+_system_user = User(username="__system__", is_admin=True)

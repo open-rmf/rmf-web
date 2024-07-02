@@ -1,5 +1,6 @@
 import base64
 import json
+import logging
 from typing import Any, Callable, Coroutine, Optional, Protocol, Union
 
 import jwt
@@ -7,7 +8,6 @@ from fastapi import Depends, Header, HTTPException
 from fastapi.security import OpenIdConnect
 
 from .app_config import app_config
-from .logger import logger
 from .models import User
 
 
@@ -132,7 +132,7 @@ if app_config.jwt_public_key:
     )
 else:
     authenticator = StubAuthenticator()
-    logger.warning("authentication is disabled")
+    logging.warning("authentication is disabled")
 
 
 user_dep = authenticator.fastapi_dep()

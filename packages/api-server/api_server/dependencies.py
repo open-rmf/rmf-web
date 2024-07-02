@@ -2,7 +2,7 @@ from datetime import datetime
 
 from fastapi import Depends, Query
 
-from api_server import clock
+from api_server import ros_time
 
 from .fast_io import SubscriptionRequest
 from .models import Pagination, User
@@ -43,7 +43,7 @@ def between_query(
             "-60000" - Fetches logs in the last minute.
         """,
     ),
-    now: int = Depends(clock.now),
+    now: int = Depends(ros_time.now),
 ) -> tuple[int, int]:
     if between.startswith("-"):
         period = (now - int(between[1:]), now)
@@ -65,7 +65,7 @@ def time_between_query(
             "1000,2000" - Fetches logs between unix millis 1000 and 2000.
         """,
     ),
-    now: int = Depends(clock.now),
+    now: int = Depends(ros_time.now),
 ) -> tuple[datetime, datetime] | None:
     if time_between is None:
         return None
