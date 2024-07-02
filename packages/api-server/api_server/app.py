@@ -21,7 +21,6 @@ from . import gateway, ros, routes
 from .app_config import app_config
 from .authenticator import AuthenticationError, authenticator, user_dep
 from .fast_io import FastIO
-from .logger import logger
 from .models import DispenserState, DoorState, IngestorState, LiftState, User
 from .models import tortoise_models as ttm
 from .repositories import TaskRepository
@@ -39,7 +38,7 @@ async def on_sio_connect(sid: str, _environ: dict, auth: dict | None = None) -> 
         session["user"] = user
         return True
     except AuthenticationError as e:
-        logger.info(f"authentication failed: {e}")
+        logging.info(f"authentication failed: {e}")
         return False
 
 
@@ -56,7 +55,7 @@ async def shutdown():
         elif callable(cb):
             cb()
 
-    logger.info("shutdown app")
+    logging.info("shutdown app")
 
 
 @contextlib.asynccontextmanager
@@ -107,23 +106,23 @@ async def lifespan(_app: FastIO):
     await rmf_bookkeeper.start()
     shutdown_cbs.append(rmf_bookkeeper.stop())
 
-    logger.info("starting scheduler")
+    logging.info("starting scheduler")
     asyncio.create_task(_spin_scheduler())
     scheduled_tasks = await ttm.ScheduledTask.all()
     scheduled = 0
     for t in scheduled_tasks:
         user = await User.load_from_db(t.created_by)
         if user is None:
-            logger.warning(f"user [{t.created_by}] does not exist")
+            logging.warning(f"user [{t.created_by}] does not exist")
             continue
         task_repo = TaskRepository(user)
         await routes.scheduled_tasks.schedule_task(t, task_repo)
         scheduled += 1
-    logger.info(f"loaded {scheduled} tasks")
-    logger.info("successfully started scheduler")
+    logging.info(f"loaded {scheduled} tasks")
+    logging.info("successfully started scheduler")
 
     ros.spin_background()
-    logger.info("started app")
+    logging.info("started app")
 
     yield
 

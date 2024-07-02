@@ -2,13 +2,15 @@
 set -e
 shopt -s globstar
 
-RMF_BUILDING_MAP_MSGS_VER=c5e0352e2dfd3d11e4d292a1c2901cad867c1441
-RMF_INTERNAL_MSGS_VER=3690a47055ef45466cf970587d8b8e09df1a8825
-RMF_API_MSGS_VER=255c22de9b920540dcac6ce67c3c902403de8092
-RMF_ROS2_VER=bf038461b5b0fb7d4594461a724bc9e5e7cb97c6
-CODEGEN_VER=$(pipenv run datamodel-codegen --version)
+HERE="$(dirname "$0")"
 
-cd "$(dirname $0)"
+RMF_BUILDING_MAP_MSGS_VER=e26cf73ec7b1f61bbd450a4f85450e0db20d6c72
+RMF_INTERNAL_MSGS_VER=e3f2dc688dcba79d2def064bae542fa0cadfd4dc
+RMF_API_MSGS_VER=0141ab64e03bf08aba79be76b31ea02a55a3b296
+RMF_ROS2_VER=0180dc78ef7b97266d873686d93deca12602413d
+CODEGEN_VER=$($HERE/../../.venv/bin/datamodel-codegen --version)
+
+cd "$HERE"
 
 if [[ $ROS_DISTRO != 'jazzy' ]]; then
   echo 'Unable to find ros jazzy, please make sure that it is sourced.'
@@ -72,7 +74,13 @@ generate_from_json_schema() {
 
   rm -rf "$output"
   mkdir -p "$output"
-  pipenv run datamodel-codegen --disable-timestamp --input-file-type jsonschema --enum-field-as-literal one --input "$input" --output "$output"
+  pipenv run datamodel-codegen \
+    --disable-timestamp \
+    --input-file-type jsonschema \
+    --enum-field-as-literal one \
+    --output-model-type pydantic_v2.BaseModel \
+    --use-default-kwarg \
+    --input "$input" --output "$output"
   cat << EOF > "$output/version.py"
 # THIS FILE IS GENERATED
 version = {

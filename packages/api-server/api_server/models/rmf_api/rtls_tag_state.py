@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field, confloat
 from . import location_2D
 
 
-class Status2(Enum):
+class Status(Enum):
     uninitialized = "uninitialized"
     offline = "offline"
     shutdown = "shutdown"
@@ -27,34 +27,39 @@ class LocationType(Enum):
 
 
 class AssetType(BaseModel):
-    asset_type: Optional[str] = Field(None, description="type of the asset")
-    asset_subtype: Optional[str] = Field(None, description="subtype of the asset")
+    asset_type: Optional[str] = Field(default=None, description="type of the asset")
+    asset_subtype: Optional[str] = Field(
+        default=None, description="subtype of the asset"
+    )
 
 
 class Issue(BaseModel):
-    category: Optional[str] = Field(None, description="Category of the tag's issue")
+    category: Optional[str] = Field(
+        default=None, description="Category of the tag's issue"
+    )
     detail: Optional[Union[Dict[str, Any], List, str]] = Field(
-        None, description="Detailed information about the issue"
+        default=None, description="Detailed information about the issue"
     )
 
 
 class RtlsTagState(BaseModel):
     tag_id: str = Field(..., description="The ID of the rtls tag.")
-    status: Optional[Status2] = Field(
-        None, description="A simple token representing the status of the tag"
+    status: Optional[Status] = Field(
+        default=None, description="A simple token representing the status of the tag"
     )
     location_type: Optional[LocationType] = Field(
-        None, description="The type location information provided by the tag."
+        default=None, description="The type location information provided by the tag."
     )
     asset_type: Optional[AssetType] = Field(
-        None, description="The type of the tagged asset."
+        default=None, description="The type of the tagged asset."
     )
     unix_millis_time: Optional[int] = None
     location: Optional[location_2D.Location2D] = None
     battery: Optional[confloat(ge=0.0, le=1.0)] = Field(
-        None,
+        default=None,
         description="State of charge of the battery. Values range from 0.0 (depleted) to 1.0 (fully charged)",
     )
     issues: Optional[List[Issue]] = Field(
-        None, description="A list of issues with the tag that operators need to address"
+        default=None,
+        description="A list of issues with the tag that operators need to address",
     )

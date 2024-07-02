@@ -1,5 +1,5 @@
 # THIS FILE IS GENERATED
 version = {
-    "rmf_internal_msgs": "0c237e1758872917661879975d7dc0acf5fa518c",
-    "rmf_building_map_msgs": "c5e0352e2dfd3d11e4d292a1c2901cad867c1441",
+    "rmf_internal_msgs": "e3f2dc688dcba79d2def064bae542fa0cadfd4dc",
+    "rmf_building_map_msgs": "e26cf73ec7b1f61bbd450a4f85450e0db20d6c72",
 }

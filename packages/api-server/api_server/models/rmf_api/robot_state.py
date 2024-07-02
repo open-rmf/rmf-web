@@ -23,42 +23,45 @@ class Status(Enum):
 
 class MutexGroups(BaseModel):
     locked: Optional[List[str]] = Field(
-        None, description="A list of mutex groups that this robot has currently locked"
+        default=None,
+        description="A list of mutex groups that this robot has currently locked",
     )
     requesting: Optional[List[str]] = Field(
-        None,
+        default=None,
         description="A list of the mutex groups that this robot is currently requesting but has not lockd yet",
     )
 
 
 class Issue(BaseModel):
-    category: Optional[str] = Field(None, description="Category of the robot's issue")
+    category: Optional[str] = Field(
+        default=None, description="Category of the robot's issue"
+    )
     detail: Optional[Union[Dict[str, Any], List, str]] = Field(
-        None, description="Detailed information about the issue"
+        default=None, description="Detailed information about the issue"
     )
 
 
 class RobotState(BaseModel):
     name: Optional[str] = None
     status: Optional[Status] = Field(
-        None, description="A simple token representing the status of the robot"
+        default=None, description="A simple token representing the status of the robot"
     )
     task_id: Optional[str] = Field(
-        None,
+        default=None,
         description="The ID of the task this robot is currently working on. Empty string if the robot is not working on a task.",
     )
     unix_millis_time: Optional[int] = None
     location: Optional[location_2D.Location2D] = None
     battery: Optional[confloat(ge=0.0, le=1.0)] = Field(
-        None,
+        default=None,
         description="State of charge of the battery. Values range from 0.0 (depleted) to 1.0 (fully charged)",
     )
     issues: Optional[List[Issue]] = Field(
-        None,
+        default=None,
         description="A list of issues with the robot that operators need to address",
     )
     commission: Optional[commission.Commission] = None
     mutex_groups: Optional[MutexGroups] = Field(
-        None,
+        default=None,
         description="Information about the mutex groups that this robot is interacting with",
     )

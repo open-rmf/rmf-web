@@ -13,9 +13,9 @@ from . import log_entry
 class FleetLog(BaseModel):
     name: Optional[str] = None
     log: Optional[List[log_entry.LogEntry]] = Field(
-        None, description="Log for the overall fleet"
+        default=None, description="Log for the overall fleet"
     )
     robots: Optional[Dict[str, List[log_entry.LogEntry]]] = Field(
-        None,
+        default=None,
         description="Dictionary of logs for the individual robots. The keys (property names) are the robot names.",
     )

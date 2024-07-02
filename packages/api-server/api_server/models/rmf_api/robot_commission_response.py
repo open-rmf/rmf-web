@@ -5,25 +5,25 @@ from __future__ import annotations
 
 from typing import List, Optional, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, RootModel
 from typing_extensions import Literal
 
 from . import error
 
 
-class ResultItem(BaseModel):
+class Result1(BaseModel):
     success: Literal[True]
 
 
-class ResultItem1(BaseModel):
+class Result2(BaseModel):
     success: Literal[False]
     errors: Optional[List[error.Error]] = Field(
-        None, description="Any error messages explaining why the request failed"
+        default=None, description="Any error messages explaining why the request failed"
     )
 
 
-class Result(BaseModel):
-    __root__: Union[ResultItem, ResultItem1]
+class Result(RootModel[Union[Result1, Result2]]):
+    root: Union[Result1, Result2]
 
 
 class RobotCommissionResponse(BaseModel):

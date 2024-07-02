@@ -30,10 +30,10 @@ class RobotCommissionRequest(BaseModel):
     fleet: str = Field(..., description="The fleet the robot belongs to")
     commission: commission.Commission
     pending_dispatch_tasks_policy: Optional[PendingDispatchTasksPolicy] = Field(
-        None,
+        default=None,
         description="What should be done for pending dispatched tasks that were assigned to this robot? reassign: pending dispatched tasks will be reassigned to other robots in the fleet, or canceled if there are no more robots available. complete: the robot will complete its pending dispatched tasks. cancel: pending dispatched tasks will be immediately canceled. If unset, it will default to reassign.",
     )
     pending_direct_tasks_policy: Optional[PendingDirectTasksPolicy] = Field(
-        None,
+        default=None,
         description="Set the behavior for what should happen with the pending direct task assignments of a robot. complete: pending direct tasks will be completed. canceled: pending direct tasks will be immediately canceled. If unset, it will default to complete.",
     )

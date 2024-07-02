@@ -5,26 +5,28 @@ from __future__ import annotations
 
 from typing import List, Optional, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, RootModel
 from typing_extensions import Literal
 
 from . import error, task_state
 
 
-class TaskDispatchResponseItem1(BaseModel):
+class TaskDispatchResponse2(BaseModel):
     success: Optional[Literal[False]] = None
     errors: Optional[List[error.Error]] = Field(
-        None, description="Any error messages explaining why the request failed"
+        default=None, description="Any error messages explaining why the request failed"
     )
 
 
-class TaskDispatchResponseItem(BaseModel):
+class TaskDispatchResponse1(BaseModel):
     success: Literal[True]
     state: task_state.TaskState
 
 
-class TaskDispatchResponse(BaseModel):
-    __root__: Union[TaskDispatchResponseItem, TaskDispatchResponseItem1] = Field(
+class TaskDispatchResponse(
+    RootModel[Union[TaskDispatchResponse1, TaskDispatchResponse2]]
+):
+    root: Union[TaskDispatchResponse1, TaskDispatchResponse2] = Field(
         ...,
         description="Response to a task dispatch request",
         title="Task Dispatch Response",

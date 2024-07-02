@@ -15,5 +15,6 @@ class TaskInterruptionRequest(BaseModel):
     )
     task_id: str = Field(..., description="Specify the task ID to interrupt")
     labels: Optional[List[str]] = Field(
-        None, description="Labels to describe the purpose of the interruption"
+        default=None,
+        description="Labels to describe the purpose of the interruption, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.",
     )

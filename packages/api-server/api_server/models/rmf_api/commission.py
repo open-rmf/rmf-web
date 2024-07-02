@@ -10,14 +10,14 @@ from pydantic import BaseModel, Field
 
 class Commission(BaseModel):
     dispatch_tasks: Optional[bool] = Field(
-        None,
+        default=None,
         description="Should the robot accept dispatched tasks, true/false. When used in a request, leave this unset to not change the robot's current value.",
     )
     direct_tasks: Optional[bool] = Field(
-        None,
+        default=None,
         description="Should the robot accept direct task requests, true/false. When used in a request, leave this unset to not change the robot's current value.",
     )
     idle_behavior: Optional[bool] = Field(
-        None,
+        default=None,
         description="Should the robot perform its idle behavior, true/false. When used in a request, leave this unset to not change the robot's current value.",
     )

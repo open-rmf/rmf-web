@@ -3,35 +3,35 @@
 
 from __future__ import annotations
 
-from enum import Enum
 from typing import List, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, RootModel
+from typing_extensions import Literal
 
 from . import error
 
 
-class Failure(Enum):
-    boolean_False = False
+class Success(RootModel[Literal[True]]):
+    root: Literal[True] = Field(..., description="The request was successful")
 
 
-class Success(Enum):
-    boolean_True = True
+class Failure(RootModel[Literal[False]]):
+    root: Literal[False] = Field(..., description="The request failed")
 
 
-class SimpleResponseItem(BaseModel):
+class SimpleResponse1(BaseModel):
     success: Success
 
 
-class SimpleResponseItem1(BaseModel):
+class SimpleResponse2(BaseModel):
     success: Failure
     errors: List[error.Error] = Field(
         ..., description="If the request failed, these error messages will explain why"
     )
 
 
-class SimpleResponse(BaseModel):
-    __root__: Union[SimpleResponseItem, SimpleResponseItem1] = Field(
+class SimpleResponse(RootModel[Union[SimpleResponse1, SimpleResponse2]]):
+    root: Union[SimpleResponse1, SimpleResponse2] = Field(
         ...,
         description="Template for defining a response message that only indicates success and describes any errors",
         title="Simple Response",

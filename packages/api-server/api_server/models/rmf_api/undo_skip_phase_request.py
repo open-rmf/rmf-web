@@ -11,14 +11,18 @@ from typing_extensions import Literal
 
 class UndoPhaseSkipRequest(BaseModel):
     type: Optional[Literal["undo_phase_skip_request"]] = Field(
-        None, description="Indicate that this is a request to undo a phase skip request"
+        default=None,
+        description="Indicate that this is a request to undo a phase skip request",
     )
-    for_task: Optional[str] = Field(None, description="Specify the relevant task ID")
+    for_task: Optional[str] = Field(
+        default=None, description="Specify the relevant task ID"
+    )
     for_tokens: Optional[List[str]] = Field(
-        None,
+        default=None,
         description="A list of the tokens of skip requests which should be undone. The skips associated with each token will be discarded.",
-        min_items=1,
+        min_length=1,
     )
     labels: Optional[List[str]] = Field(
-        None, description="Labels describing this request"
+        default=None,
+        description="Labels describing this request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.",
     )

@@ -10,13 +10,14 @@ from pydantic import BaseModel, Field
 
 class TaskRequest(BaseModel):
     unix_millis_earliest_start_time: Optional[int] = Field(
-        None, description="(Optional) The earliest time that this task may start"
+        default=None,
+        description="(Optional) The earliest time that this task may start",
     )
     unix_millis_request_time: Optional[int] = Field(
-        None, description="(Optional) The time that this request was initiated"
+        default=None, description="(Optional) The time that this request was initiated"
     )
     priority: Optional[Dict[str, Any]] = Field(
-        None,
+        default=None,
         description="(Optional) The priority of this task. This must match a priority schema supported by a fleet.",
     )
     category: str
@@ -25,13 +26,14 @@ class TaskRequest(BaseModel):
         description="A description of the task. This must match a schema supported by a fleet for the category of this task request.",
     )
     labels: Optional[List[str]] = Field(
-        None, description="Labels to describe the purpose of the task dispatch request"
+        default=None,
+        description="Labels to describe the purpose of the task dispatch request, items can be a single value like `dashboard` or a key-value pair like `app=dashboard`, in the case of a single value, it will be interpreted as a key-value pair with an empty string value.",
     )
     requester: Optional[str] = Field(
-        None,
+        default=None,
         description="(Optional) An identifier for the entity that requested this task",
     )
     fleet_name: Optional[str] = Field(
-        None,
+        default=None,
         description="(Optional) The name of the fleet that should perform this task. If specified, other fleets will not bid for this task.",
     )
