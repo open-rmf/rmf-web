@@ -1,4 +1,4 @@
-from typing import List
+from typing import Annotated, List
 
 from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
@@ -6,13 +6,16 @@ from reactivex import operators as rxops
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import tortoise_models as ttm
 from api_server.repositories import AlertRepository
-from api_server.rmf_io import alert_events
+from api_server.rmf_io import AlertEvents
 
 router = FastIORouter(tags=["Alerts"])
 
 
 @router.sub("", response_model=ttm.AlertPydantic)
-async def sub_alerts(_req: SubscriptionRequest):
+async def sub_alerts(
+    _req: SubscriptionRequest,
+    alert_events: Annotated[AlertEvents, Depends(AlertEvents.get_instance)],
+):
     return alert_events.alerts.pipe(rxops.filter(lambda x: x is not None))
 
 
@@ -41,7 +44,9 @@ async def create_alert(
 
 @router.post("/{alert_id}", status_code=201, response_model=ttm.AlertPydantic)
 async def acknowledge_alert(
-    alert_id: str, repo: AlertRepository = Depends(AlertRepository)
+    alert_id: str,
+    repo: Annotated[AlertRepository, Depends(AlertRepository)],
+    alert_events: Annotated[AlertEvents, Depends(AlertEvents.get_instance)],
 ):
     alert = await repo.acknowledge_alert(alert_id)
     if alert is None:

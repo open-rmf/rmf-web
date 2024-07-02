@@ -1,9 +1,10 @@
 from reactivex.subject import BehaviorSubject, Subject
 
 from api_server import models as mdl
+from api_server.fast_io import StatefulDep
 
 
-class RmfEvents:
+class RmfEvents(StatefulDep):
     def __init__(self):
         self.door_states = Subject[mdl.DoorState]()
         self.lift_states = Subject[mdl.LiftState]()
@@ -17,39 +18,39 @@ class RmfEvents:
             None
         )
 
+    async def __aexit__(self, exc_type, exc_value, traceback):
+        pass
 
-rmf_events = RmfEvents()
 
-
-class TaskEvents:
+class TaskEvents(StatefulDep):
     def __init__(self):
         self.task_states = Subject[mdl.TaskState]()
         self.task_event_logs = Subject[mdl.TaskEventLog]()
 
+    async def __aexit__(self, exc_type, exc_value, traceback):
+        pass
 
-task_events = TaskEvents()
 
-
-class FleetEvents:
+class FleetEvents(StatefulDep):
     def __init__(self):
         self.fleet_states = Subject[mdl.FleetState]()
         self.fleet_logs = Subject[mdl.FleetLog]()
 
+    async def __aexit__(self, exc_type, exc_value, traceback):
+        pass
 
-fleet_events = FleetEvents()
 
-
-class AlertEvents:
+class AlertEvents(StatefulDep):
     def __init__(self):
         self.alerts = Subject()
 
+    async def __aexit__(self, exc_type, exc_value, traceback):
+        pass
 
-alert_events = AlertEvents()
 
-
-class BeaconEvents:
+class BeaconEvents(StatefulDep):
     def __init__(self):
         self.beacons = Subject()
 
-
-beacon_events = BeaconEvents()
+    async def __aexit__(self, exc_type, exc_value, traceback):
+        pass

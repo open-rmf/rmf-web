@@ -24,7 +24,14 @@ from .fast_io import FastIO
 from .models import DispenserState, DoorState, IngestorState, LiftState, User
 from .models import tortoise_models as ttm
 from .repositories import TaskRepository
-from .rmf_io import RmfBookKeeper, rmf_events
+from .rmf_io import (
+    AlertEvents,
+    BeaconEvents,
+    FleetEvents,
+    RmfBookKeeper,
+    RmfEvents,
+    TaskEvents,
+)
 from .types import is_coroutine
 
 
@@ -60,7 +67,14 @@ async def shutdown():
 
 @contextlib.asynccontextmanager
 async def lifespan(_app: FastIO):
+    stack = contextlib.AsyncExitStack()
     loop = asyncio.get_event_loop()
+
+    await stack.enter_async_context(RmfEvents.set_instance(RmfEvents()))
+    await stack.enter_async_context(TaskEvents.set_instance(TaskEvents()))
+    await stack.enter_async_context(FleetEvents.set_instance(FleetEvents()))
+    await stack.enter_async_context(AlertEvents.set_instance(AlertEvents()))
+    await stack.enter_async_context(BeaconEvents.set_instance(BeaconEvents()))
 
     await Tortoise.init(
         db_url=app_config.db_url,
@@ -127,6 +141,7 @@ async def lifespan(_app: FastIO):
     yield
 
     await shutdown()
+    await stack.aclose()
 
 
 app = FastIO(
