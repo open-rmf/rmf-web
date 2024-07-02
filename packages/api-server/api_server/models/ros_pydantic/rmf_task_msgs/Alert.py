@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,31 +8,17 @@ from ..rmf_task_msgs.AlertParameter import AlertParameter
 
 
 class Alert(pydantic.BaseModel):
-    id: str = ""  # string
-    title: str = ""  # string
-    subtitle: str = ""  # string
-    message: str = ""  # string
-    display: bool = False  # bool
-    tier: pydantic.conint(ge=0, le=255) = 0  # uint8
-    responses_available: List[str] = []  # string
-    alert_parameters: List[AlertParameter] = []  # rmf_task_msgs/AlertParameter
-    task_id: str = ""  # string
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "id",
-                "title",
-                "subtitle",
-                "message",
-                "display",
-                "tier",
-                "responses_available",
-                "alert_parameters",
-                "task_id",
-            ],
-        }
+    id: str  # string
+    title: str  # string
+    subtitle: str  # string
+    message: str  # string
+    display: bool  # bool
+    tier: Annotated[int, pydantic.Field(ge=0, le=255)]  # uint8
+    responses_available: list[str]  # string
+    alert_parameters: list[AlertParameter]  # rmf_task_msgs/AlertParameter
+    task_id: str  # string
 
 
 # # The unique ID which responses can reply to

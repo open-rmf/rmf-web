@@ -1,24 +1,16 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class ChargingAssignment(pydantic.BaseModel):
-    robot_name: str = ""  # string
-    waypoint_name: str = ""  # string
-    mode: pydantic.conint(ge=0, le=255) = 0  # uint8
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "robot_name",
-                "waypoint_name",
-                "mode",
-            ],
-        }
+    robot_name: str  # string
+    waypoint_name: str  # string
+    mode: Annotated[int, pydantic.Field(ge=0, le=255)]  # uint8
 
 
 # string robot_name

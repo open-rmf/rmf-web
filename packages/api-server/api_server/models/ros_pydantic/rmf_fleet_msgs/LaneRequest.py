@@ -1,24 +1,20 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class LaneRequest(pydantic.BaseModel):
-    fleet_name: str = ""  # string
-    open_lanes: List[pydantic.conint(ge=0, le=18446744073709551615)] = []  # uint64
-    close_lanes: List[pydantic.conint(ge=0, le=18446744073709551615)] = []  # uint64
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "fleet_name",
-                "open_lanes",
-                "close_lanes",
-            ],
-        }
+    fleet_name: str  # string
+    open_lanes: list[
+        Annotated[int, pydantic.Field(ge=0, le=18446744073709551615)]
+    ]  # uint64
+    close_lanes: list[
+        Annotated[int, pydantic.Field(ge=0, le=18446744073709551615)]
+    ]  # uint64
 
 
 #

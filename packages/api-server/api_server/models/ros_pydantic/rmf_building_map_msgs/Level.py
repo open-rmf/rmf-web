@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -11,27 +11,15 @@ from ..rmf_building_map_msgs.Place import Place
 
 
 class Level(pydantic.BaseModel):
-    name: str = ""  # string
-    elevation: float = 0  # float32
-    images: List[AffineImage] = []  # rmf_building_map_msgs/AffineImage
-    places: List[Place] = []  # rmf_building_map_msgs/Place
-    doors: List[Door] = []  # rmf_building_map_msgs/Door
-    nav_graphs: List[Graph] = []  # rmf_building_map_msgs/Graph
-    wall_graph: Graph = Graph()  # rmf_building_map_msgs/Graph
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "name",
-                "elevation",
-                "images",
-                "places",
-                "doors",
-                "nav_graphs",
-                "wall_graph",
-            ],
-        }
+    name: str  # string
+    elevation: float  # float32
+    images: list[AffineImage]  # rmf_building_map_msgs/AffineImage
+    places: list[Place]  # rmf_building_map_msgs/Place
+    doors: list[Door]  # rmf_building_map_msgs/Door
+    nav_graphs: list[Graph]  # rmf_building_map_msgs/Graph
+    wall_graph: Graph  # rmf_building_map_msgs/Graph
 
 
 # string name

@@ -1,24 +1,18 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class RobotMode(pydantic.BaseModel):
-    mode: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
-    mode_request_id: pydantic.conint(ge=0, le=18446744073709551615) = 0  # uint64
-    performing_action: str = ""  # string
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "mode",
-                "mode_request_id",
-                "performing_action",
-            ],
-        }
+    mode: Annotated[int, pydantic.Field(ge=0, le=4294967295)]  # uint32
+    mode_request_id: Annotated[
+        int, pydantic.Field(ge=0, le=18446744073709551615)
+    ]  # uint64
+    performing_action: str  # string
 
 
 # uint32 mode

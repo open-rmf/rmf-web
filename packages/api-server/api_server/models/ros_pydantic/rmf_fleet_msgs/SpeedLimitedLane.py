@@ -1,22 +1,15 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class SpeedLimitedLane(pydantic.BaseModel):
-    lane_index: pydantic.conint(ge=0, le=18446744073709551615) = 0  # uint64
-    speed_limit: float = 0  # float64
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "lane_index",
-                "speed_limit",
-            ],
-        }
+    lane_index: Annotated[int, pydantic.Field(ge=0, le=18446744073709551615)]  # uint64
+    speed_limit: float  # float64
 
 
 # # The index of the lane with a speed limit

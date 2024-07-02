@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -14,27 +14,15 @@ from ..rmf_task_msgs.TaskType import TaskType
 
 
 class TaskDescription(pydantic.BaseModel):
-    start_time: Time = Time()  # builtin_interfaces/Time
-    priority: Priority = Priority()  # rmf_task_msgs/Priority
-    task_type: TaskType = TaskType()  # rmf_task_msgs/TaskType
-    station: Station = Station()  # rmf_task_msgs/Station
-    loop: Loop = Loop()  # rmf_task_msgs/Loop
-    delivery: Delivery = Delivery()  # rmf_task_msgs/Delivery
-    clean: Clean = Clean()  # rmf_task_msgs/Clean
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "start_time",
-                "priority",
-                "task_type",
-                "station",
-                "loop",
-                "delivery",
-                "clean",
-            ],
-        }
+    start_time: Time  # builtin_interfaces/Time
+    priority: Priority  # rmf_task_msgs/Priority
+    task_type: TaskType  # rmf_task_msgs/TaskType
+    station: Station  # rmf_task_msgs/Station
+    loop: Loop  # rmf_task_msgs/Loop
+    delivery: Delivery  # rmf_task_msgs/Delivery
+    clean: Clean  # rmf_task_msgs/Clean
 
 
 # # Desired start time of a task

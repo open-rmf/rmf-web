@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,33 +8,18 @@ from ..builtin_interfaces.Time import Time
 
 
 class LiftState(pydantic.BaseModel):
-    lift_time: Time = Time()  # builtin_interfaces/Time
-    lift_name: str = ""  # string
-    available_floors: List[str] = []  # string
-    current_floor: str = ""  # string
-    destination_floor: str = ""  # string
-    door_state: pydantic.conint(ge=0, le=255) = 0  # uint8
-    motion_state: pydantic.conint(ge=0, le=255) = 0  # uint8
-    available_modes: bytes = bytes()  # uint8
-    current_mode: pydantic.conint(ge=0, le=255) = 0  # uint8
-    session_id: str = ""  # string
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "lift_time",
-                "lift_name",
-                "available_floors",
-                "current_floor",
-                "destination_floor",
-                "door_state",
-                "motion_state",
-                "available_modes",
-                "current_mode",
-                "session_id",
-            ],
-        }
+    lift_time: Time  # builtin_interfaces/Time
+    lift_name: str  # string
+    available_floors: list[str]  # string
+    current_floor: str  # string
+    destination_floor: str  # string
+    door_state: Annotated[int, pydantic.Field(ge=0, le=255)]  # uint8
+    motion_state: Annotated[int, pydantic.Field(ge=0, le=255)]  # uint8
+    available_modes: bytes  # uint8
+    current_mode: Annotated[int, pydantic.Field(ge=0, le=255)]  # uint8
+    session_id: str  # string
 
 
 # # lift_time records when the information in this message was generated

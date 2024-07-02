@@ -1,28 +1,18 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class BeaconState(pydantic.BaseModel):
-    id: str = ""  # string
-    online: bool = False  # bool
-    category: str = ""  # string
-    activated: bool = False  # bool
-    level: str = ""  # string
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "id",
-                "online",
-                "category",
-                "activated",
-                "level",
-            ],
-        }
+    id: str  # string
+    online: bool  # bool
+    category: str  # string
+    activated: bool  # bool
+    level: str  # string
 
 
 # # This message defines data from a robot beacon

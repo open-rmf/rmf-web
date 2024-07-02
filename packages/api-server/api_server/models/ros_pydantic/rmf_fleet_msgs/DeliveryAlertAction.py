@@ -1,20 +1,14 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class DeliveryAlertAction(pydantic.BaseModel):
-    value: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "value",
-            ],
-        }
+    value: Annotated[int, pydantic.Field(ge=0, le=4294967295)]  # uint32
 
 
 # uint32 value

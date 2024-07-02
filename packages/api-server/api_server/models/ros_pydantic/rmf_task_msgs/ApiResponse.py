@@ -1,24 +1,16 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class ApiResponse(pydantic.BaseModel):
-    type: pydantic.conint(ge=0, le=255) = 0  # uint8
-    json_msg: str = ""  # string
-    request_id: str = ""  # string
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "type",
-                "json_msg",
-                "request_id",
-            ],
-        }
+    type: Annotated[int, pydantic.Field(ge=0, le=255)]  # uint8
+    json_msg: str  # string
+    request_id: str  # string
 
 
 #

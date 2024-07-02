@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,21 +8,12 @@ from ..rmf_task_msgs.Assignment import Assignment
 
 
 class DispatchState(pydantic.BaseModel):
-    task_id: str = ""  # string
-    status: pydantic.conint(ge=-128, le=127) = 0  # int8
-    assignment: Assignment = Assignment()  # rmf_task_msgs/Assignment
-    errors: List[str] = []  # string
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "task_id",
-                "status",
-                "assignment",
-                "errors",
-            ],
-        }
+    task_id: str  # string
+    status: Annotated[int, pydantic.Field(ge=-128, le=127)]  # int8
+    assignment: Assignment  # rmf_task_msgs/Assignment
+    errors: list[str]  # string
 
 
 #

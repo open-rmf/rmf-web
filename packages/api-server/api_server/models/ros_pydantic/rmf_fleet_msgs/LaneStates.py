@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,19 +8,13 @@ from ..rmf_fleet_msgs.SpeedLimitedLane import SpeedLimitedLane
 
 
 class LaneStates(pydantic.BaseModel):
-    fleet_name: str = ""  # string
-    closed_lanes: List[pydantic.conint(ge=0, le=18446744073709551615)] = []  # uint64
-    speed_limits: List[SpeedLimitedLane] = []  # rmf_fleet_msgs/SpeedLimitedLane
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "fleet_name",
-                "closed_lanes",
-                "speed_limits",
-            ],
-        }
+    fleet_name: str  # string
+    closed_lanes: list[
+        Annotated[int, pydantic.Field(ge=0, le=18446744073709551615)]
+    ]  # uint64
+    speed_limits: list[SpeedLimitedLane]  # rmf_fleet_msgs/SpeedLimitedLane
 
 
 # # The name of the fleet with closed or speed limited lanes

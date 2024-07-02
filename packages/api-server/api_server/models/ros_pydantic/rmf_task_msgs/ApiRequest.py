@@ -1,22 +1,15 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class ApiRequest(pydantic.BaseModel):
-    json_msg: str = ""  # string
-    request_id: str = ""  # string
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "json_msg",
-                "request_id",
-            ],
-        }
+    json_msg: str  # string
+    request_id: str  # string
 
 
 #

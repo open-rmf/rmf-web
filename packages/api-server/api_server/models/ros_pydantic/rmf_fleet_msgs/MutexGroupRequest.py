@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,21 +8,12 @@ from ..builtin_interfaces.Time import Time
 
 
 class MutexGroupRequest(pydantic.BaseModel):
-    group: str = ""  # string
-    claimant: pydantic.conint(ge=0, le=18446744073709551615) = 0  # uint64
-    claim_time: Time = Time()  # builtin_interfaces/Time
-    mode: pydantic.conint(ge=0, le=4294967295) = 0  # uint32
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "group",
-                "claimant",
-                "claim_time",
-                "mode",
-            ],
-        }
+    group: str  # string
+    claimant: Annotated[int, pydantic.Field(ge=0, le=18446744073709551615)]  # uint64
+    claim_time: Time  # builtin_interfaces/Time
+    mode: Annotated[int, pydantic.Field(ge=0, le=4294967295)]  # uint32
 
 
 # # This message is used to attempt to claim a mutex group. It should be sent

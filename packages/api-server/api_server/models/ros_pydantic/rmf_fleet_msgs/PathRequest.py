@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,21 +8,12 @@ from ..rmf_fleet_msgs.Location import Location
 
 
 class PathRequest(pydantic.BaseModel):
-    fleet_name: str = ""  # string
-    robot_name: str = ""  # string
-    path: List[Location] = []  # rmf_fleet_msgs/Location
-    task_id: str = ""  # string
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "fleet_name",
-                "robot_name",
-                "path",
-                "task_id",
-            ],
-        }
+    fleet_name: str  # string
+    robot_name: str  # string
+    path: list[Location]  # rmf_fleet_msgs/Location
+    task_id: str  # string
 
 
 # string fleet_name

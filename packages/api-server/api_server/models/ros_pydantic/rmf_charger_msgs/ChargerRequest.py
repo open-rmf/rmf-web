@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,23 +8,13 @@ from ..builtin_interfaces.Duration import Duration
 
 
 class ChargerRequest(pydantic.BaseModel):
-    charger_name: str = ""  # string
-    fleet_name: str = ""  # string
-    robot_name: str = ""  # string
-    start_timeout: Duration = Duration()  # builtin_interfaces/Duration
-    request_id: str = ""  # string
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "charger_name",
-                "fleet_name",
-                "robot_name",
-                "start_timeout",
-                "request_id",
-            ],
-        }
+    charger_name: str  # string
+    fleet_name: str  # string
+    robot_name: str  # string
+    start_timeout: Duration  # builtin_interfaces/Duration
+    request_id: str  # string
 
 
 # # The name of the charger that should process this message

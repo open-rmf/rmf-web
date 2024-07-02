@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,19 +8,13 @@ from ..rmf_fleet_msgs.SpeedLimitedLane import SpeedLimitedLane
 
 
 class SpeedLimitRequest(pydantic.BaseModel):
-    fleet_name: str = ""  # string
-    speed_limits: List[SpeedLimitedLane] = []  # rmf_fleet_msgs/SpeedLimitedLane
-    remove_limits: List[pydantic.conint(ge=0, le=18446744073709551615)] = []  # uint64
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "fleet_name",
-                "speed_limits",
-                "remove_limits",
-            ],
-        }
+    fleet_name: str  # string
+    speed_limits: list[SpeedLimitedLane]  # rmf_fleet_msgs/SpeedLimitedLane
+    remove_limits: list[
+        Annotated[int, pydantic.Field(ge=0, le=18446744073709551615)]
+    ]  # uint64
 
 
 # # The name of the fleet

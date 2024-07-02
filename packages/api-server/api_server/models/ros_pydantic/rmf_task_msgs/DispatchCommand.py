@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,23 +8,13 @@ from ..builtin_interfaces.Time import Time
 
 
 class DispatchCommand(pydantic.BaseModel):
-    fleet_name: str = ""  # string
-    task_id: str = ""  # string
-    dispatch_id: pydantic.conint(ge=0, le=18446744073709551615) = 0  # uint64
-    timestamp: Time = Time()  # builtin_interfaces/Time
-    type: pydantic.conint(ge=0, le=255) = 0  # uint8
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "fleet_name",
-                "task_id",
-                "dispatch_id",
-                "timestamp",
-                "type",
-            ],
-        }
+    fleet_name: str  # string
+    task_id: str  # string
+    dispatch_id: Annotated[int, pydantic.Field(ge=0, le=18446744073709551615)]  # uint64
+    timestamp: Time  # builtin_interfaces/Time
+    type: Annotated[int, pydantic.Field(ge=0, le=255)]  # uint8
 
 
 # # This message is published by Task Dispatcher Node to either award or cancel a

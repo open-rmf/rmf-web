@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,19 +8,11 @@ from ..builtin_interfaces.Duration import Duration
 
 
 class BidNotice(pydantic.BaseModel):
-    request: str = ""  # string
-    task_id: str = ""  # string
-    time_window: Duration = Duration()  # builtin_interfaces/Duration
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "request",
-                "task_id",
-                "time_window",
-            ],
-        }
+    request: str  # string
+    task_id: str  # string
+    time_window: Duration  # builtin_interfaces/Duration
 
 
 # # This message is published by the Task Dispatcher node to notify all

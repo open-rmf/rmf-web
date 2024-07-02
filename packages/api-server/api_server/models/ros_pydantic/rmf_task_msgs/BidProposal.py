@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,23 +8,13 @@ from ..builtin_interfaces.Time import Time
 
 
 class BidProposal(pydantic.BaseModel):
-    fleet_name: str = ""  # string
-    expected_robot_name: str = ""  # string
-    prev_cost: float = 0  # float64
-    new_cost: float = 0  # float64
-    finish_time: Time = Time()  # builtin_interfaces/Time
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "fleet_name",
-                "expected_robot_name",
-                "prev_cost",
-                "new_cost",
-                "finish_time",
-            ],
-        }
+    fleet_name: str  # string
+    expected_robot_name: str  # string
+    prev_cost: float  # float64
+    new_cost: float  # float64
+    finish_time: Time  # builtin_interfaces/Time
 
 
 # # This message is published by a Fleet Adapter in response to a BidNotice

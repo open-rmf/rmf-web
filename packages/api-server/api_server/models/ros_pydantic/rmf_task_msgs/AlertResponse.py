@@ -1,22 +1,15 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class AlertResponse(pydantic.BaseModel):
-    id: str = ""  # string
-    response: str = ""  # string
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "id",
-                "response",
-            ],
-        }
+    id: str  # string
+    response: str  # string
 
 
 # # The unique ID of the Alert this response is for

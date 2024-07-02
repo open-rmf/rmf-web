@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,29 +8,16 @@ from ..builtin_interfaces.Time import Time
 
 
 class Location(pydantic.BaseModel):
-    t: Time = Time()  # builtin_interfaces/Time
-    x: float = 0  # float32
-    y: float = 0  # float32
-    yaw: float = 0  # float32
-    obey_approach_speed_limit: bool = False  # bool
-    approach_speed_limit: float = 0  # float32
-    level_name: str = ""  # string
-    index: pydantic.conint(ge=0, le=18446744073709551615) = 0  # uint64
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "t",
-                "x",
-                "y",
-                "yaw",
-                "obey_approach_speed_limit",
-                "approach_speed_limit",
-                "level_name",
-                "index",
-            ],
-        }
+    t: Time  # builtin_interfaces/Time
+    x: float  # float32
+    y: float  # float32
+    yaw: float  # float32
+    obey_approach_speed_limit: bool  # bool
+    approach_speed_limit: float  # float32
+    level_name: str  # string
+    index: Annotated[int, pydantic.Field(ge=0, le=18446744073709551615)]  # uint64
 
 
 # builtin_interfaces/Time t

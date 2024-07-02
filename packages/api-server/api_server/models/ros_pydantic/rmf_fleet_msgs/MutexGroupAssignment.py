@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,19 +8,11 @@ from ..builtin_interfaces.Time import Time
 
 
 class MutexGroupAssignment(pydantic.BaseModel):
-    group: str = ""  # string
-    claimant: pydantic.conint(ge=0, le=18446744073709551615) = 0  # uint64
-    claim_time: Time = Time()  # builtin_interfaces/Time
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "group",
-                "claimant",
-                "claim_time",
-            ],
-        }
+    group: str  # string
+    claimant: Annotated[int, pydantic.Field(ge=0, le=18446744073709551615)]  # uint64
+    claim_time: Time  # builtin_interfaces/Time
 
 
 # # This message maps a mutex group name to the name of an agent that is currently

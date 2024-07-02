@@ -1,24 +1,16 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class MutexGroupManualRelease(pydantic.BaseModel):
-    release_mutex_groups: List[str] = []  # string
-    fleet: str = ""  # string
-    robot: str = ""  # string
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "release_mutex_groups",
-                "fleet",
-                "robot",
-            ],
-        }
+    release_mutex_groups: list[str]  # string
+    fleet: str  # string
+    robot: str  # string
 
 
 # # This message allows operators to manually request that a robot release one or

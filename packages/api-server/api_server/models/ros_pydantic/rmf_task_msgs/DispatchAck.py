@@ -1,24 +1,16 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
 
 class DispatchAck(pydantic.BaseModel):
-    dispatch_id: pydantic.conint(ge=0, le=18446744073709551615) = 0  # uint64
-    success: bool = False  # bool
-    errors: List[str] = []  # string
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "dispatch_id",
-                "success",
-                "errors",
-            ],
-        }
+    dispatch_id: Annotated[int, pydantic.Field(ge=0, le=18446744073709551615)]  # uint64
+    success: bool  # bool
+    errors: list[str]  # string
 
 
 # # This message is published by the fleet adapter in response to a

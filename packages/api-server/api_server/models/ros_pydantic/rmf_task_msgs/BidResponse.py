@@ -1,6 +1,6 @@
 # This is a generated file, do not edit
 
-from typing import List
+from typing import Annotated
 
 import pydantic
 
@@ -8,21 +8,12 @@ from ..rmf_task_msgs.BidProposal import BidProposal
 
 
 class BidResponse(pydantic.BaseModel):
-    task_id: str = ""  # string
-    has_proposal: bool = False  # bool
-    proposal: BidProposal = BidProposal()  # rmf_task_msgs/BidProposal
-    errors: List[str] = []  # string
+    model_config = pydantic.ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "required": [
-                "task_id",
-                "has_proposal",
-                "proposal",
-                "errors",
-            ],
-        }
+    task_id: str  # string
+    has_proposal: bool  # bool
+    proposal: BidProposal  # rmf_task_msgs/BidProposal
+    errors: list[str]  # string
 
 
 # # ID of the task that is being bid on
