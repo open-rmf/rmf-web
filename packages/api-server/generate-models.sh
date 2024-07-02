@@ -94,6 +94,8 @@ EOF
 
 # generate rmf api models from json schemas
 generate_from_json_schema build/rmf_api_msgs/rmf_api_msgs/schemas api_server/models/rmf_api rmf_api_msgs $RMF_API_MSGS_VER
+# there is a bug/conflict in RobotState.commission where the field name is same as the import name
+sed -i -E '0,/(import )commission/s//\1commission as robot_commission/ ; s/commission.Commission/robot_commission.Commission/' api_server/models/rmf_api/robot_state.py
 
 # generate builtin task descriptions from json schemas
 generate_from_json_schema build/rmf_ros2/rmf_fleet_adapter/schemas api_server/models/rmf_ros2 rmf_ros2 $RMF_ROS2_VER

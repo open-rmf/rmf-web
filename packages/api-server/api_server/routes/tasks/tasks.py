@@ -97,16 +97,6 @@ async def query_task_states(
     requester: Optional[str] = Query(
         None, description="comma separated list of requester names"
     ),
-    pickup: Optional[str] = Query(
-        None,
-        description="pickup name. [deprecated] use `label` instead",
-        deprecated=True,
-    ),
-    destination: Optional[str] = Query(
-        None,
-        description="destination name, [deprecated] use `label` instead",
-        deprecated=True,
-    ),
     assigned_to: Optional[str] = Query(
         None, description="comma separated list of assigned robot names"
     ),
@@ -117,20 +107,13 @@ async def query_task_states(
         finish_time_between_query
     ),
     status: Optional[str] = Query(None, description="comma separated list of statuses"),
-    label: str
-    | None = Query(
+    label: str | None = Query(
         None,
         description="comma separated list of labels, each item must be in the form <key>=<value>, multiple items will filter tasks with all the labels",
     ),
     pagination: mdl.Pagination = Depends(pagination_query),
 ):
-    labels = (
-        mdl.Labels.from_strings(label.split(",")) if label else mdl.Labels(__root__={})
-    )
-    if pickup:
-        labels.__root__["pickup"] = pickup
-    if destination:
-        labels.__root__["destination"] = destination
+    labels = mdl.Labels.from_strings(label.split(",")) if label else mdl.Labels(root={})
 
     return await task_repo.query_task_states(
         task_id=task_id.split(",") if task_id else None,

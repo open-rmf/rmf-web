@@ -8,7 +8,8 @@ from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field, confloat
 
-from . import commission, location_2D
+from . import commission as robot_commission
+from . import location_2D
 
 
 class Status(Enum):
@@ -60,7 +61,7 @@ class RobotState(BaseModel):
         default=None,
         description="A list of issues with the robot that operators need to address",
     )
-    commission: Optional[commission.Commission] = None
+    commission: Optional[robot_commission.Commission] = None
     mutex_groups: Optional[MutexGroups] = Field(
         default=None,
         description="Information about the mutex groups that this robot is interacting with",

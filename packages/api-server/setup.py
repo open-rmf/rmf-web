@@ -24,7 +24,7 @@ setup(
         "reactivex~=4.0.4",
         "tortoise-orm~=0.20.0",
         "pyjwt[crypto]~=2.8.0",
-        "pydantic~=2.6.4",
+        "pydantic~=2.8.0",
         "schedule~=1.2.1",
         "termcolor~=2.4.0",
     ],

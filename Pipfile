@@ -11,7 +11,7 @@ coverage = "~=5.5"
 # api-server
 api-server = {editable = true, path = "./packages/api-server", extras = ["postgres"]}
 httpx = "~=0.26.0"
-datamodel-code-generator = "==0.25.4"
+datamodel-code-generator = "==0.25.7"
 requests = "~=2.25"
 websocket-client = "~=1.7.0"
 # ros-translator
