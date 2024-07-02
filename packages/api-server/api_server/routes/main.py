@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends
 
-from api_server import clock
+import api_server.ros_time
 from api_server.authenticator import user_dep
 from api_server.models import Permission, User
 from api_server.models.tortoise_models import ResourcePermission
@@ -39,4 +39,4 @@ async def get_time():
     """
     Get the current rmf time in unix milliseconds
     """
-    return clock.now()
+    return api_server.ros_time.now()

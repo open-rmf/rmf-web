@@ -1,15 +1,8 @@
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
-import pytz
 import schedule
 from schedule import Job
-from tortoise import Tortoise
-from tortoise.contrib.pydantic.creator import (
-    pydantic_model_creator,
-    pydantic_queryset_creator,
-)
 from tortoise.fields import (
     CharEnumField,
     CharField,
@@ -28,8 +21,8 @@ class ScheduledTask(Model):
     task_request = JSONField()
     created_by = CharField(255)
     schedules: ReverseRelation["ScheduledTaskSchedule"]
-    last_ran: Optional[datetime] = DatetimeField(null=True)
-    except_dates = JSONField(null=True, default=list)
+    last_ran = DatetimeField(null=True)
+    except_dates = JSONField(null=True)
 
 
 class ScheduledTaskSchedule(Model):
@@ -60,10 +53,10 @@ class ScheduledTaskSchedule(Model):
     period = CharEnumField(Period)
     at = CharField(255, null=True)
 
-    def get_id(self) -> IntField:
+    def get_id(self) -> int:
         return self._id
 
-    def to_job(self, timezone: Optional[str] = None) -> Job:
+    def to_job(self) -> Job:
         if self.every is not None:
             job = schedule.every(self.every)
         else:
@@ -72,12 +65,7 @@ class ScheduledTaskSchedule(Model):
             # schedule uses `datetime.now()`, which is tz naive
             # Assuming self.until is a datetime object with timezone information
             # Convert the timestamp to datetime without changing the timezone
-            print(f"to_job until: {self.until}")
-            print(f"to_job until timestamp: {self.until.timestamp()}")
-            print(
-                f"to_job until fromtimestamp: {datetime.fromtimestamp(self.until.timestamp())}"
-            )
-            job = job.until(datetime.fromtimestamp(self.until.timestamp()))
+            job = job.until(datetime.utcfromtimestamp(self.until.timestamp()))
 
         if self.period in (
             ScheduledTaskSchedule.Period.Monday,
@@ -101,19 +89,6 @@ class ScheduledTaskSchedule(Model):
         # Hashable value in order to tag the job with a unique identifier
         job.tag(self._id)
         if self.at is not None:
-            print(f"setting at {self.at}")
-            if timezone is not None:
-                print(f"setting at timezone {timezone}")
-                job = job.at(self.at, str(pytz.timezone(timezone)))
-            else:
-                job = job.at(self.at)
+            job = job.at(self.at)
 
         return job
-
-
-Tortoise.init_models(["api_server.models.tortoise_models.scheduled_task"], "models")
-ScheduledTaskPydantic = pydantic_model_creator(ScheduledTask)
-ScheduledTaskPydanticList = pydantic_queryset_creator(ScheduledTask)
-ScheduledTaskSchedulePydantic = pydantic_model_creator(
-    ScheduledTaskSchedule, exclude=("scheduled_task",)
-)

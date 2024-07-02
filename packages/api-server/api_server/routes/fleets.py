@@ -1,7 +1,7 @@
 from typing import List, Tuple, cast
 
 from fastapi import Depends, HTTPException
-from rx import operators as rxops
+from reactivex import operators as rxops
 
 from api_server.authenticator import user_dep
 from api_server.dependencies import between_query, sio_user
@@ -134,7 +134,7 @@ async def decommission_robot(
         await tasks_service().call(request.json(exclude_none=True))
     )
     logger.info(resp)
-    if not resp.commission.__root__.success:
+    if not resp.commission.root.success:
         logger.error(f"Failed to decommission {robot_name} of {name}")
         raise HTTPException(400, resp)
     return resp
@@ -176,7 +176,7 @@ async def recommission_robot(
         await tasks_service().call(request.json(exclude_none=True))
     )
     logger.info(resp)
-    if not resp.commission.__root__.success:
+    if not resp.commission.root.success:
         logger.error(f"Failed to recommission {robot_name} of {name}")
         raise HTTPException(400, resp)
     return resp

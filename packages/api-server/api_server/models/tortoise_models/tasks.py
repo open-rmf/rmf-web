@@ -28,22 +28,13 @@ class TaskState(Model):
     status = CharField(255, null=True, index=True)
     unix_millis_request_time = DatetimeField(null=True, index=True)
     requester = CharField(255, null=True, index=True)
-    _do_not_use_pickup = CharField(255, null=True, index=True, source_field="pickup")
-    _do_not_use_destination = CharField(
-        255, null=True, index=True, source_field="destination"
-    )
-    labels = ReverseRelation["TaskLabel"]
-    _do_not_use_unix_millis_warn_time = DatetimeField(
-        null=True, index=True, source_field="unix_millis_warn_time"
-    )
+    labels: ReverseRelation["TaskLabel"]
 
 
 class TaskLabel(Model):
     state = ForeignKeyField("models.TaskState", null=True, related_name="labels")
     label_name = CharField(255, null=False, index=True)
-    label_value_str = CharField(255, null=True, index=True)
-    label_value_num = BigIntField(null=True, index=True)
-    label_value_float = FloatField(null=True, index=True)
+    label_value = CharField(255, null=True, index=True)
 
 
 class TaskEventLog(Model):
@@ -53,36 +44,46 @@ class TaskEventLog(Model):
 
 
 class TaskEventLogLog(Model, LogMixin):
-    task: ForeignKeyRelation[TaskEventLog] = ForeignKeyField("models.TaskEventLog", related_name="log")  # type: ignore
+    task: ForeignKeyRelation[TaskEventLog] = ForeignKeyField(
+        "models.TaskEventLog", related_name="log"
+    )
 
-    class Meta:
+    class Meta:  # type: ignore
         unique_together = ("task", "seq")
 
 
 class TaskEventLogPhases(Model):
-    task: ForeignKeyRelation[TaskEventLog] = ForeignKeyField("models.TaskEventLog", related_name="phases")  # type: ignore
+    task: ForeignKeyRelation[TaskEventLog] = ForeignKeyField(
+        "models.TaskEventLog", related_name="phases"
+    )
     phase = CharField(255)
     log: ReverseRelation["TaskEventLogPhasesLog"]
     events: ReverseRelation["TaskEventLogPhasesEvents"]
 
 
 class TaskEventLogPhasesLog(Model, LogMixin):
-    phase: ForeignKeyRelation[TaskEventLogPhases] = ForeignKeyField("models.TaskEventLogPhases", related_name="log")  # type: ignore
+    phase: ForeignKeyRelation[TaskEventLogPhases] = ForeignKeyField(
+        "models.TaskEventLogPhases", related_name="log"
+    )
 
-    class Meta:
+    class Meta:  # type: ignore
         unique_together = ("id", "seq")
 
 
 class TaskEventLogPhasesEvents(Model):
-    phase: ForeignKeyRelation[TaskEventLogPhases] = ForeignKeyField("models.TaskEventLogPhases", related_name="events")  # type: ignore
+    phase: ForeignKeyRelation[TaskEventLogPhases] = ForeignKeyField(
+        "models.TaskEventLogPhases", related_name="events"
+    )
     event = CharField(255)
     log: ReverseRelation["TaskEventLogPhasesEventsLog"]
 
 
 class TaskEventLogPhasesEventsLog(Model, LogMixin):
-    event: ForeignKeyRelation[TaskEventLogPhasesEvents] = ForeignKeyField("models.TaskEventLogPhasesEvents", related_name="log")  # type: ignore
+    event: ForeignKeyRelation[TaskEventLogPhasesEvents] = ForeignKeyField(
+        "models.TaskEventLogPhasesEvents", related_name="log"
+    )
 
-    class Meta:
+    class Meta:  # type: ignore
         unique_together = ("id", "seq")
 
 
@@ -94,4 +95,3 @@ class TaskFavorite(Model):
     category = CharField(255, null=False, index=True)
     description = JSONField()
     user = CharField(255, null=False, index=True)
-    task_definition_id = CharField(255, null=True, index=True)

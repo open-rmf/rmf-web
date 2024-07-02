@@ -1,11 +1,11 @@
 from typing import List, cast
 
 from fastapi import Depends, HTTPException
-from rx import operators as rxops
+from reactivex import operators as rxops
 
 from api_server.dependencies import sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.models import Dispenser, DispenserHealth, DispenserState
+from api_server.models import Dispenser, DispenserState
 from api_server.repositories import RmfRepository
 from api_server.rmf_io import rmf_events
 
@@ -39,29 +39,4 @@ async def sub_dispenser_state(req: SubscriptionRequest, guid: str):
     dispenser_state = await get_dispenser_state(guid, RmfRepository(user))
     if dispenser_state:
         return obs.pipe(rxops.start_with(dispenser_state))
-    return obs
-
-
-@router.get("/{guid}/health", response_model=DispenserHealth)
-async def get_dispenser_health(
-    guid: str, rmf_repo: RmfRepository = Depends(RmfRepository)
-):
-    """
-    Available in socket.io
-    """
-    dispenser_health = await rmf_repo.get_dispenser_health(guid)
-    if dispenser_health is None:
-        raise HTTPException(status_code=404)
-    return dispenser_health
-
-
-@router.sub("/{guid}/health", response_model=DispenserHealth)
-async def sub_dispenser_health(req: SubscriptionRequest, guid: str):
-    user = sio_user(req)
-    obs = rmf_events.dispenser_health.pipe(
-        rxops.filter(lambda x: cast(DispenserHealth, x).id_ == guid)
-    )
-    health = await get_dispenser_health(guid, RmfRepository(user))
-    if health:
-        return obs.pipe(rxops.start_with(health))
     return obs

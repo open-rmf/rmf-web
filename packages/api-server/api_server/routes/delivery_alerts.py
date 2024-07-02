@@ -1,15 +1,10 @@
 from fastapi import Depends
-from rx import operators as rxops
+from reactivex import operators as rxops
 
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import rmf_gateway
 from api_server.logging import LoggerAdapter, get_logger
-from api_server.models.delivery_alerts import (
-    DeliveryAlert,
-    action_to_msg,
-    category_to_msg,
-    tier_to_msg,
-)
+from api_server.models.delivery_alerts import DeliveryAlert
 from api_server.rmf_io import rmf_events
 
 router = FastIORouter(tags=["DeliveryAlerts"])
@@ -41,10 +36,10 @@ async def respond_to_delivery_alert(
     logger.info(delivery_alert)
     rmf_gateway().respond_to_delivery_alert(
         alert_id=delivery_alert.id,
-        category=category_to_msg(delivery_alert.category),
-        tier=tier_to_msg(delivery_alert.tier),
+        category=delivery_alert.category.value,
+        tier=delivery_alert.tier.value,
         task_id=delivery_alert.task_id,
-        action=action_to_msg(delivery_alert.action),
+        action=delivery_alert.action.value,
         message=delivery_alert.message,
     )
     rmf_events.delivery_alerts.on_next(delivery_alert)

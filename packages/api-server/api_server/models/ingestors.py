@@ -1,10 +1,7 @@
 from pydantic import BaseModel
 
 from . import tortoise_models as ttm
-from .health import basic_health_model
 from .ros_pydantic import rmf_ingestor_msgs
-
-IngestorHealth = basic_health_model(ttm.IngestorHealth)
 
 
 class Ingestor(BaseModel):
@@ -17,4 +14,6 @@ class IngestorState(rmf_ingestor_msgs.IngestorState):
         return IngestorState(**tortoise.data)
 
     async def save(self) -> None:
-        await ttm.IngestorState.update_or_create({"data": self.dict()}, id_=self.guid)
+        await ttm.IngestorState.update_or_create(
+            {"data": self.model_dump()}, id_=self.guid
+        )

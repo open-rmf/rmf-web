@@ -1,26 +1,19 @@
-from rx.subject.behaviorsubject import BehaviorSubject
-from rx.subject.subject import Subject
+from reactivex.subject import BehaviorSubject, Subject
+
+from api_server import models as mdl
 
 
 class RmfEvents:
     def __init__(self):
-        # NOTE: the rx type hints don't actually work https://github.com/ReactiveX/RxPY/issues/514
-        self.door_states = Subject()  # DoorState
-        self.door_health = Subject()  # DoorHealth
-        self.lift_states = Subject()  # LiftState
-        self.lift_health = Subject()  # LiftHealth
-        self.dispenser_states = Subject()  # DispenserState
-        self.dispenser_health = Subject()  # DispenserHealth
-        self.ingestor_states = Subject()  # IngestorState
-        self.ingestor_health = Subject()  # IngestorHealth
-        self.fleet_states = Subject()  # FleetState
-        self.robot_health = Subject()  # RobotHealth
-        self.building_map = BehaviorSubject(None)  # Optional[BuildingMap]
-        self.beacons = Subject()  # BeaconState
-        self.delivery_alerts = Subject()  # ttm.DeliveryAlertPydantic
-        self.fire_alarm_trigger = BehaviorSubject(
-            None
-        )  # Optional[FireAlarmTriggerState]
+        self.door_states = Subject[mdl.DoorState]()
+        self.lift_states = Subject[mdl.LiftState]()
+        self.dispenser_states = Subject[mdl.DispenserState]()
+        self.ingestor_states = Subject[mdl.IngestorState]()
+        self.fleet_states = Subject[mdl.FleetState]()
+        self.building_map = BehaviorSubject[mdl.BuildingMap | None](None)
+        self.beacons = Subject[mdl.BeaconState]()
+        self.delivery_alerts = Subject[mdl.DeliveryAlert]()
+        self.fire_alarm_trigger = BehaviorSubject[FireAlarmTriggerState | None](None)
 
 
 rmf_events = RmfEvents()
@@ -28,8 +21,8 @@ rmf_events = RmfEvents()
 
 class TaskEvents:
     def __init__(self):
-        self.task_states = Subject()  # TaskState
-        self.task_event_logs = Subject()  # TaskEventLog
+        self.task_states = Subject[mdl.TaskState]()
+        self.task_event_logs = Subject[mdl.TaskEventLog]()
 
 
 task_events = TaskEvents()
@@ -37,8 +30,8 @@ task_events = TaskEvents()
 
 class FleetEvents:
     def __init__(self):
-        self.fleet_states = Subject()  # FleetState
-        self.fleet_logs = Subject()  # FleetLog
+        self.fleet_states = Subject[mdl.FleetState]()
+        self.fleet_logs = Subject[mdl.FleetLog]()
 
 
 fleet_events = FleetEvents()
@@ -46,7 +39,15 @@ fleet_events = FleetEvents()
 
 class AlertEvents:
     def __init__(self):
-        self.alerts = Subject()  # Alert
+        self.alerts = Subject()
 
 
 alert_events = AlertEvents()
+
+
+class BeaconEvents:
+    def __init__(self):
+        self.beacons = Subject()
+
+
+beacon_events = BeaconEvents()

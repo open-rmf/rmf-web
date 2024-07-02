@@ -1,6 +1,5 @@
-from enum import Enum
+from enum import StrEnum
 
-from tortoise.contrib.pydantic.creator import pydantic_model_creator
 from tortoise.fields import CharEnumField, CharField
 from tortoise.models import Model
 
@@ -10,17 +9,17 @@ class DeliveryAlert(Model):
     Custom alerts for custom delivery tasks
     """
 
-    class Category(str, Enum):
+    class Category(StrEnum):
         Missing = "missing"
         Wrong = "wrong"
         Obstructed = "obstructed"
         Cancelled = "cancelled"
 
-    class Tier(str, Enum):
+    class Tier(StrEnum):
         Warning = "warning"
         Error = "error"
 
-    class Action(str, Enum):
+    class Action(StrEnum):
         Waiting = "waiting"
         Cancel = "cancelled"
         Override = "override"
@@ -32,6 +31,3 @@ class DeliveryAlert(Model):
     task_id = CharField(255, index=True, null=True)
     action = CharEnumField(Action, index=True)
     message = CharField(255, null=True)
-
-
-DeliveryAlertPydantic = pydantic_model_creator(DeliveryAlert)

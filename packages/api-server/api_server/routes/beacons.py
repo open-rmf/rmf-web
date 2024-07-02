@@ -1,42 +1,39 @@
-from typing import List
-
 from fastapi import HTTPException
-from rx import operators as rxops
+from reactivex import operators as rxops
 
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.models import tortoise_models as ttm
+from api_server.models import BeaconState
+from api_server.models.tortoise_models import BeaconState as DbBeaconState
 from api_server.rmf_io import rmf_events
 
 router = FastIORouter(tags=["Beacons"])
 
 
-@router.sub("", response_model=ttm.BeaconStatePydantic)
+@router.sub("", response_model=BeaconState)
 async def sub_beacons(_req: SubscriptionRequest):
     return rmf_events.beacons.pipe(rxops.filter(lambda x: x is not None))
 
 
-@router.get("", response_model=List[ttm.BeaconStatePydantic])
+@router.get("", response_model=list[BeaconState])
 async def get_beacons():
-    beacons = await ttm.BeaconState.all()
-    return [await ttm.BeaconStatePydantic.from_tortoise_orm(a) for a in beacons]
+    beacons = await DbBeaconState.all()
+    return [BeaconState.model_validate(a) for a in beacons]
 
 
-@router.get("/{beacon_id}", response_model=ttm.BeaconStatePydantic)
+@router.get("/{beacon_id}", response_model=BeaconState)
 async def get_beacon(beacon_id: str):
-    beacon_state = await ttm.BeaconState.get_or_none(id=beacon_id)
+    beacon_state = await DbBeaconState.get_or_none(id=beacon_id)
     if beacon_state is None:
         raise HTTPException(404, f"Beacon with ID {beacon_id} not found")
-    beacon_state_pydantic = await ttm.BeaconStatePydantic.from_tortoise_orm(
-        beacon_state
-    )
+    beacon_state_pydantic = BeaconState.model_validate(beacon_state)
     return beacon_state_pydantic
 
 
-@router.post("", status_code=201, response_model=ttm.BeaconStatePydantic)
+@router.post("", status_code=201, response_model=BeaconState)
 async def save_beacon_state(
     beacon_id: str, online: bool, category: str, activated: bool, level: str
 ):
-    beacon_state, _ = await ttm.BeaconState.update_or_create(
+    beacon_state, _ = await DbBeaconState.update_or_create(
         {
             "online": online,
             "category": category,
@@ -47,8 +44,6 @@ async def save_beacon_state(
     )
     if beacon_state is None:
         raise HTTPException(404, f"Could not save beacon state with ID {beacon_id}")
-    beacon_state_pydantic = await ttm.BeaconStatePydantic.from_tortoise_orm(
-        beacon_state
-    )
+    beacon_state_pydantic = BeaconState.model_validate(beacon_state)
     rmf_events.beacons.on_next(beacon_state_pydantic)
     return beacon_state_pydantic

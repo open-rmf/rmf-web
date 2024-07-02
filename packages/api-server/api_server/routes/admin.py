@@ -47,7 +47,7 @@ def admin_dep(user: User = Depends(user_dep)):
 router = APIRouter(tags=["Admin"], dependencies=[Depends(admin_dep)])
 
 
-@router.get("/users", response_model=List[str])
+@router.get("/users", response_model=list[str])
 async def get_users(
     rmf_repo: RmfRepository = Depends(RmfRepository),
     pagination: Pagination = Depends(pagination_query),

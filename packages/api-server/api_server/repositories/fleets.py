@@ -21,15 +21,15 @@ class FleetRepository:
         self.logger = logger
 
     async def get_all_fleets(self) -> List[FleetState]:
-        db_states = await ttm.FleetState.all().values_list("data", flat=True)
-        return [FleetState(**s) for s in db_states]
+        db_states = await ttm.FleetState.all().values_list("data")
+        return [FleetState(**s[0]) for s in db_states]
 
     async def get_fleet_state(self, name: str) -> Optional[FleetState]:
         # TODO: enforce with authz
         result = await ttm.FleetState.get_or_none(name=name)
         if result is None:
             return None
-        return FleetState(**result.data)
+        return FleetState(**cast(dict, result.data))
 
     async def get_fleet_log(
         self, name: str, between: Tuple[int, int]

@@ -13,13 +13,7 @@ from api_server.authenticator import user_dep
 from api_server.logging import LoggerAdapter, get_logger
 from api_server.models import Labels, LogEntry, Pagination, Phases
 from api_server.models import Status as TaskStatus
-from api_server.models import (
-    TaskBookingLabel,
-    TaskEventLog,
-    TaskRequest,
-    TaskState,
-    User,
-)
+from api_server.models import TaskEventLog, TaskRequest, TaskState, User
 from api_server.models import tortoise_models as ttm
 from api_server.models.rmf_api.log_entry import Tier
 from api_server.models.rmf_api.task_state import Category, Id, Phase
@@ -48,7 +42,7 @@ class TaskRepository:
         result = await DbTaskRequest.get_or_none(id_=task_id)
         if result is None:
             return None
-        return TaskRequest(**result.request)
+        return TaskRequest.model_construct(**cast(dict, result.request))
 
     async def query_task_requests(self, task_ids: List[str]) -> List[DbTaskRequest]:
         filters = {"id___in": task_ids}
@@ -57,86 +51,55 @@ class TaskRepository:
         except FieldError as e:
             raise HTTPException(422, str(e)) from e
 
+    async def save_task_labels(
+        self, db_task_state: ttm.TaskState, labels: Labels
+    ) -> None:
+        for k, v in labels.root.items():
+            await ttm.TaskLabel.update_or_create(
+                {"label_value": v},
+                state=db_task_state,
+                label_name=k,
+            )
+
     async def save_task_state(self, task_state: TaskState) -> None:
-        task_state_dict = {
-            "data": task_state.json(),
-            "category": task_state.category.__root__ if task_state.category else None,
-            "assigned_to": task_state.assigned_to.name
-            if task_state.assigned_to
-            else None,
-            "unix_millis_start_time": task_state.unix_millis_start_time
-            and datetime.fromtimestamp(task_state.unix_millis_start_time / 1000),
-            "unix_millis_finish_time": task_state.unix_millis_finish_time
-            and datetime.fromtimestamp(task_state.unix_millis_finish_time / 1000),
-            "status": task_state.status if task_state.status else None,
-            "unix_millis_request_time": task_state.booking.unix_millis_request_time
-            and datetime.fromtimestamp(
-                task_state.booking.unix_millis_request_time / 1000
-            ),
-            "requester": task_state.booking.requester
-            if task_state.booking.requester
-            else None,
-        }
-
-        try:
-            state, created = await ttm.TaskState.update_or_create(
-                task_state_dict, id_=task_state.booking.id
-            )
-        except Exception as e:  # pylint: disable=W0703
-            # This is to catch a combination of exceptions from Tortoise ORM,
-            # especially in the case where a data race occurs when two instances
-            # of update_or_create attempts to create entries with the same task
-            # ID at the same time. The exceptions expected are DoesNotExist,
-            # IntegrityError and TransactionManagementError.
-            # This data race happens when the server attempts to record the RMF
-            # service call response and Task dispatcher's websocket push at
-            # almost the same time.
-            # FIXME: this has not been observed outside of production
-            # environment, and may be fixed upstream in updated libraries.
-            self.logger.error(
-                f"Failed to save task state of id [{task_state.booking.id}] [{e}]"
-            )
-            return
-
-        # Since this is updating an existing task state, we are done
-        if not created:
-            return
-
-        # Labels are created and saved when a new task state is first received
-        labels = task_state.booking.labels
-        booking_label = None
-        if labels is not None:
-            for l in labels:
-                validated_booking_label = TaskBookingLabel.from_json_string(l)
-                if validated_booking_label is not None:
-                    booking_label = validated_booking_label
-                    break
-        if booking_label is None:
-            return
-
-        # Here we generate the labels required for server-side sorting and
-        # filtering.
         async with in_transaction():
-            for k, v in booking_label.description.items():
-                if isinstance(v, str):
-                    await ttm.TaskLabel.create(
-                        state=state, label_name=k, label_value_str=v
-                    )
-                elif isinstance(v, int):
-                    await ttm.TaskLabel.create(
-                        state=state,
-                        label_name=k,
-                        label_value_num=v,
-                        label_value_float=v,  # also store float to make querying easier
-                    )
-                elif isinstance(v, float):
-                    exact_val = int(v) if v.is_integer else None
-                    await ttm.TaskLabel.create(
-                        state=state,
-                        label_name=k,
-                        label_value_float=v,
-                        label_value_num=exact_val,  # also store int to make querying easier
-                    )
+            db_task_state, created = await DbTaskState.update_or_create(
+                {
+                    "data": task_state.model_dump_json(),
+                    "category": (
+                        task_state.category.root if task_state.category else None
+                    ),
+                    "assigned_to": (
+                        task_state.assigned_to.name if task_state.assigned_to else None
+                    ),
+                    "unix_millis_start_time": task_state.unix_millis_start_time
+                    and datetime.fromtimestamp(
+                        task_state.unix_millis_start_time / 1000
+                    ),
+                    "unix_millis_finish_time": task_state.unix_millis_finish_time
+                    and datetime.fromtimestamp(
+                        task_state.unix_millis_finish_time / 1000
+                    ),
+                    "status": task_state.status if task_state.status else None,
+                    "unix_millis_request_time": task_state.booking.unix_millis_request_time
+                    and datetime.fromtimestamp(
+                        task_state.booking.unix_millis_request_time / 1000
+                    ),
+                    "requester": (
+                        task_state.booking.requester
+                        if task_state.booking.requester
+                        else None
+                    ),
+                },
+                id_=task_state.booking.id,
+            )
+
+            # Labels attached to a task is not expected to change in task state updates,
+            # so we can skip saving labels if it is not new. Note that if the labels were
+            # to change, the labels we stored for querying would become out of sync.
+            if created and task_state.booking.labels:
+                labels = Labels.from_strings(task_state.booking.labels)
+                await self.save_task_labels(db_task_state, labels)
 
     async def query_task_states(
         self,
@@ -145,8 +108,6 @@ class TaskRepository:
         assigned_to: list[str] | None = None,
         start_time_between: tuple[datetime, datetime] | None = None,
         finish_time_between: tuple[datetime, datetime] | None = None,
-        request_time_between: tuple[datetime, datetime] | None = None,
-        requester: list[str] | None = None,
         status: list[str] | None = None,
         label: Labels | None = None,
         pagination: Optional[Pagination] = None,
@@ -164,11 +125,6 @@ class TaskRepository:
         if finish_time_between is not None:
             filters["unix_millis_finish_time__gte"] = finish_time_between[0]
             filters["unix_millis_finish_time__lte"] = finish_time_between[1]
-        if request_time_between is not None:
-            filters["unix_millis_request_time__gte"] = request_time_between[0]
-            filters["unix_millis_request_time__lte"] = request_time_between[1]
-        if requester is not None:
-            filters["requester__in"] = requester
         if status is not None:
             valid_values = [member.value for member in TaskStatus]
             filters["status__in"] = []
@@ -185,9 +141,9 @@ class TaskRepository:
                 {
                     f"label_filter_{k}": tfuncs.Count(
                         "id_",
-                        _filter=Q(labels__label_name=k, labels__label_value_str=v),
+                        _filter=Q(labels__label_name=k, labels__label_value=v),
                     )
-                    for k, v in label.__root__.items()
+                    for k, v in label.root.items()
                 }
             )
 
@@ -206,7 +162,7 @@ class TaskRepository:
                 if order_field.startswith("label="):
                     f = order_field[6:]
                     annotations[f"label_sort_{f}"] = tfuncs.Max(
-                        "labels__label_value_str",
+                        "labels__label_value",
                         _filter=Q(labels__label_name=f),
                     )
                     order_field = f"label_sort_{f}"
@@ -226,8 +182,8 @@ class TaskRepository:
 
         try:
             # TODO: enforce with authz
-            results = await query.values_list("data", flat=True)
-            return [TaskState(**r) for r in results]
+            results = await query.values_list("data")
+            return [TaskState(**r[0]) for r in results]
         except FieldError as e:
             raise HTTPException(422, str(e)) from e
 
@@ -236,7 +192,7 @@ class TaskRepository:
         result = await DbTaskState.get_or_none(id_=task_id)
         if result is None:
             return None
-        return TaskState(**result.data)
+        return TaskState(**cast(dict, result.data))
 
     async def get_task_log(
         self, task_id: str, between: Tuple[int, int]
@@ -248,20 +204,17 @@ class TaskRepository:
             "unix_millis_time__gte": between[0],
             "unix_millis_time__lte": between[1],
         }
-        result = cast(
-            Optional[ttm.TaskEventLog],
-            await ttm.TaskEventLog.get_or_none(task_id=task_id).prefetch_related(
-                Prefetch(
-                    "log",
-                    ttm.TaskEventLogLog.filter(**between_filters),
-                ),
-                Prefetch(
-                    "phases__log", ttm.TaskEventLogPhasesLog.filter(**between_filters)
-                ),
-                Prefetch(
-                    "phases__events__log",
-                    ttm.TaskEventLogPhasesEventsLog.filter(**between_filters),
-                ),
+        result = await ttm.TaskEventLog.get_or_none(task_id=task_id).prefetch_related(
+            Prefetch(
+                "log",
+                ttm.TaskEventLogLog.filter(**between_filters),
+            ),
+            Prefetch(
+                "phases__log", ttm.TaskEventLogPhasesLog.filter(**between_filters)
+            ),
+            Prefetch(
+                "phases__events__log",
+                ttm.TaskEventLogPhasesEventsLog.filter(**between_filters),
             ),
         )
         if result is None:
@@ -275,7 +228,7 @@ class TaskRepository:
                 events[db_event.event] = [LogEntry(**dict(x)) for x in db_event.log]
             phase.events = events
             phases[db_phase.phase] = phase
-        return TaskEventLog.construct(
+        return TaskEventLog.model_construct(
             task_id=result.task_id,
             log=[LogEntry(**dict(x)) for x in result.log],
             phases=phases,
@@ -294,7 +247,7 @@ class TaskRepository:
             )[0]
             for log in logs:
                 await ttm.TaskEventLogPhasesEventsLog.create(
-                    event=db_event, **log.dict()
+                    event=db_event, **log.model_dump()
                 )
 
     async def _savePhaseLogs(
@@ -310,7 +263,7 @@ class TaskRepository:
                 for log in phase.log:
                     await ttm.TaskEventLogPhasesLog.create(
                         phase=db_phase,
-                        **log.dict(),
+                        **log.model_dump(),
                     )
             if phase.events:
                 await self._saveEventLogs(db_phase, phase.events)
@@ -328,11 +281,7 @@ class TaskRepository:
             )
 
     async def save_log_acknowledged_task_completion(
-        self,
-        task_id: str,
-        acknowledged_by: str,
-        unix_millis_acknowledged_time: int,
-        action: str = "Task completion",
+        self, task_id: str, acknowledged_by: str, unix_millis_acknowledged_time: int
     ) -> None:
         async with in_transaction():
             task_logs = await self.get_task_log(task_id, (0, sys.maxsize))
@@ -352,7 +301,7 @@ class TaskRepository:
                 seq=0,
                 tier=Tier.warning,
                 unix_millis_time=unix_millis_acknowledged_time,
-                text=f"{action} acknowledged by {acknowledged_by}",
+                text=f"Task completion acknowledged by {acknowledged_by}",
             )
             task_logs.phases = {
                 **task_logs.phases,
@@ -364,8 +313,8 @@ class TaskRepository:
             task_state.phases = {
                 **task_state.phases,
                 next_phase_key: Phase(
-                    id=Id(__root__=next_phase_key),
-                    category=Category(__root__="Task completed"),
+                    id=Id(root=next_phase_key),
+                    category=Category(root="Task completed"),
                     detail=None,
                     unix_millis_start_time=None,
                     unix_millis_finish_time=None,

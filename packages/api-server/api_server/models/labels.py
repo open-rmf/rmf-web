@@ -1,14 +1,14 @@
 from typing import Sequence
 
-from pydantic import BaseModel
+from pydantic import RootModel
 
 
-class Labels(BaseModel):
+class Labels(RootModel):
     """
     Labels for a resource.
     """
 
-    __root__: dict[str, str]
+    root: dict[str, str]
 
     @staticmethod
     def _parse_label(s: str) -> tuple[str, str]:
@@ -19,7 +19,7 @@ class Labels(BaseModel):
 
     @staticmethod
     def from_strings(labels: Sequence[str]) -> "Labels":
-        return Labels(__root__=dict(Labels._parse_label(s) for s in labels))
+        return Labels(dict(Labels._parse_label(s) for s in labels))
 
     def to_strings(self) -> list[str]:
-        return [f"{k}={v}" for k, v in self.__root__.items()]
+        return [f"{k}={v}" for k, v in self.root.items()]

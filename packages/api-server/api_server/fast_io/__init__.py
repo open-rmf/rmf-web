@@ -1,5 +1,4 @@
 import asyncio
-import logging
 from dataclasses import dataclass
 from re import Match
 from typing import (
@@ -18,14 +17,15 @@ from urllib.parse import unquote as url_unquote
 
 import pydantic
 import socketio
-import socketio.packet
 from fastapi import APIRouter, FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.routing import APIRoute
-from rx.core.observable.observable import Observable
+from pydantic import BaseModel
+from reactivex import Observable
 from starlette.routing import compile_path
 
 from .errors import *
+from .pydantic_json_serializer import PydanticJsonSerializer
 
 
 @dataclass
@@ -101,7 +101,10 @@ class FastIORouter(APIRouter):
         super().__init__(*args, **kwargs)
         self.sub_routes: List[SubRoute] = []
 
-    def include_router(self, router: "FastIORouter", **kwargs):
+    def include_router(self, router: APIRouter, **kwargs):
+        if not isinstance(router, FastIORouter):
+            raise ValueError("router must be an instance of FastIORouter")
+
         super().include_router(router, **kwargs)
         prefix = kwargs.get("prefix", "")
 
@@ -127,21 +130,6 @@ class FastIORouter(APIRouter):
         return decorator
 
 
-class FastIOPacket(socketio.packet.Packet):
-    class PacketData(pydantic.BaseModel):
-        __root__: Tuple[str, pydantic.BaseModel]
-
-    def encode(self):
-        if (
-            isinstance(self.data, list)
-            and len(self.data) == 2
-            and isinstance(self.data[1], pydantic.BaseModel)
-        ):
-            pkt_data = FastIOPacket.PacketData.construct(__root__=self.data)
-            return str(self.packet_type) + pkt_data.json(exclude_none=True)
-        return super().encode()
-
-
 class FastIO(FastAPI):
     def __init__(
         self,
@@ -156,7 +144,7 @@ class FastIO(FastAPI):
         if self.swagger_ui_oauth2_redirect_url is None:
             self.swagger_ui_oauth2_redirect_url = "docs/oauth2-redirect"
         self.sio = socketio.AsyncServer(
-            async_mode="asgi", cors_allowed_origins=[], serializer=FastIOPacket
+            async_mode="asgi", cors_allowed_origins=[], json=PydanticJsonSerializer()
         )
         self.sio.on("connect", socketio_connect)
         self.sio.on("subscribe", self._on_subscribe)
@@ -249,40 +237,12 @@ The message must be of the form:
                 return match, r
         return None
 
-    async def _add_subscription(
-        self,
-        req: SubscriptionRequest,
-        handler: Callable[[], Observable | Coroutine[Any, Any, Observable]],
-    ):
-        if "_subscriptions" in req.session and req.session["_subscriptions"].get(
-            req.room
-        ):
-            return
-
-        maybe_coro = handler()
-        if asyncio.iscoroutine(maybe_coro):
-            obs = await maybe_coro
-        else:
-            obs = maybe_coro
-        obs = cast(Observable, obs)
-
-        loop = asyncio.get_event_loop()
-
-        def on_next(data):
-            async def emit():
-                await self.sio.emit(req.room, data, to=req.sid)
-
-            loop.create_task(emit())
-
-        sub = obs.subscribe(on_next)
-        req.session.setdefault("_subscriptions", {})[req.room] = sub
-
     async def _on_subscribe(self, sid: str, data: dict):
         try:
             sub_data = self._parse_sub_data(data)
         except SubscribeError as e:
             await self.sio.emit("subscribe", {"success": False, "error": str(e)})
-            logging.info(f"{sid}: str(e)")
+            logger.info(f"{sid}: str(e)")
             return
 
         try:
@@ -298,8 +258,20 @@ The message must be of the form:
             req = SubscriptionRequest(
                 sid=sid, sio=self.sio, room=sub_data.room, session=session
             )
-            handler = lambda: route.endpoint(req, **match.groupdict())
-            await self._add_subscription(req, handler)
+            maybe_coro = route.endpoint(req, **match.groupdict())
+            if asyncio.iscoroutine(maybe_coro):
+                obs = await maybe_coro
+            else:
+                obs = maybe_coro
+            obs = cast(Observable, obs)
+
+            loop = asyncio.get_event_loop()
+
+            def on_next(data):
+                loop.create_task(self.sio.emit(sub_data.room, data, to=sid))
+
+            sub = obs.subscribe(on_next)
+            session.setdefault("_subscriptions", {})[sub_data.room] = sub
 
         except HTTPException as e:
             await self.sio.emit(

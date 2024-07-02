@@ -6,16 +6,12 @@ from api_server.authenticator import user_dep
 from api_server.models import (
     BuildingMap,
     Dispenser,
-    DispenserHealth,
     DispenserState,
     Door,
-    DoorHealth,
     DoorState,
     Ingestor,
-    IngestorHealth,
     IngestorState,
     Lift,
-    LiftHealth,
     LiftState,
     Pagination,
     User,
@@ -40,7 +36,7 @@ class RmfRepository:
         building_map = await ttm.BuildingMap.first()
         if building_map is None:
             return None
-        return BuildingMap(**building_map.data)
+        return BuildingMap.model_construct(**cast(dict, building_map.data))
 
     async def get_doors(self) -> List[Door]:
         building_map = await self.get_bulding_map()
@@ -52,13 +48,7 @@ class RmfRepository:
         door_state = await ttm.DoorState.get_or_none(id_=door_name)
         if door_state is None:
             return None
-        return DoorState(**door_state.data)
-
-    async def get_door_health(self, door_name: str) -> Optional[DoorHealth]:
-        door_health = await ttm.DoorHealth.get_or_none(id_=door_name)
-        if door_health is None:
-            return None
-        return await DoorHealth.from_tortoise(door_health)
+        return DoorState.model_construct(**cast(dict, door_state.data))
 
     async def get_lifts(self) -> List[Lift]:
         building_map = await self.get_bulding_map()
@@ -70,45 +60,33 @@ class RmfRepository:
         lift_state = await ttm.LiftState.get_or_none(id_=lift_name)
         if lift_state is None:
             return None
-        return LiftState(**lift_state.data)
-
-    async def get_lift_health(self, lift_name: str) -> Optional[LiftHealth]:
-        lift_health = await ttm.LiftHealth.get_or_none(id_=lift_name)
-        if lift_health is None:
-            return None
-        return await LiftHealth.from_tortoise(lift_health)
+        return LiftState.model_construct(**cast(dict, lift_state.data))
 
     async def get_dispensers(self) -> List[Dispenser]:
         states = await ttm.DispenserState.all()
-        return [Dispenser(guid=state.data["guid"]) for state in states]
+        return [
+            Dispenser.model_construct(guid=cast(dict, state.data)["guid"])
+            for state in states
+        ]
 
     async def get_dispenser_state(self, guid: str) -> Optional[DispenserState]:
         dispenser_state = await ttm.DispenserState.get_or_none(id_=guid)
         if dispenser_state is None:
             return None
-        return DispenserState(**dispenser_state.data)
-
-    async def get_dispenser_health(self, guid: str) -> Optional[DispenserHealth]:
-        dispenser_health = await ttm.DispenserHealth.get_or_none(id_=guid)
-        if dispenser_health is None:
-            return None
-        return await DispenserHealth.from_tortoise(dispenser_health)
+        return DispenserState.model_construct(**cast(dict, dispenser_state.data))
 
     async def get_ingestors(self) -> List[Ingestor]:
         states = await ttm.IngestorState.all()
-        return [Ingestor(guid=state.data["guid"]) for state in states]
+        return [
+            Ingestor.model_construct(guid=cast(dict, state.data)["guid"])
+            for state in states
+        ]
 
     async def get_ingestor_state(self, guid: str) -> Optional[IngestorState]:
         ingestor_state = await ttm.IngestorState.get_or_none(id_=guid)
         if ingestor_state is None:
             return None
-        return IngestorState(**ingestor_state.data)
-
-    async def get_ingestor_health(self, guid: str) -> Optional[IngestorHealth]:
-        ingestor_health = await ttm.IngestorHealth.get_or_none(id_=guid)
-        if ingestor_health is None:
-            return None
-        return await IngestorHealth.from_tortoise(ingestor_health)
+        return IngestorState.model_construct(**cast(dict, ingestor_state.data))
 
     async def query_users(
         self,
