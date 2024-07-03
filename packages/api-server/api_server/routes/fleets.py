@@ -1,4 +1,4 @@
-from typing import List, Tuple, cast
+from typing import Annotated, List, Tuple, cast
 
 from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
@@ -6,7 +6,7 @@ from reactivex import operators as rxops
 from api_server.authenticator import user_dep
 from api_server.dependencies import between_query, sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.gateway import rmf_gateway
+from api_server.gateway import RmfGateway
 from api_server.logging import LoggerAdapter, get_logger
 from api_server.models import (
     Commission,
@@ -19,7 +19,7 @@ from api_server.models import (
     User,
 )
 from api_server.repositories import FleetRepository
-from api_server.rmf_io import fleet_events, tasks_service
+from api_server.rmf_io import FleetEvents, TasksService
 
 router = FastIORouter(tags=["Fleets"])
 
@@ -46,7 +46,7 @@ async def get_fleet_state(name: str, repo: FleetRepository = Depends(FleetReposi
 async def sub_fleet_state(req: SubscriptionRequest, name: str):
     user = sio_user(req)
     repo = FleetRepository(user)
-    obs = fleet_events.fleet_states.pipe(
+    obs = FleetEvents.get_instance().fleet_states.pipe(
         rxops.filter(lambda x: cast(FleetState, x).name == name)
     )
     fleet_state = await repo.get_fleet_state(name)
@@ -72,7 +72,7 @@ async def get_fleet_log(
 
 @router.sub("/{name}/log", response_model=FleetLog)
 async def sub_fleet_log(_req: SubscriptionRequest, name: str):
-    return fleet_events.fleet_logs.pipe(
+    return FleetEvents.get_instance().fleet_logs.pipe(
         rxops.filter(lambda x: cast(FleetLog, x).name == name)
     )
 
@@ -83,8 +83,9 @@ async def decommission_robot(
     robot_name: str,
     reassign_tasks: bool,
     allow_idle_behavior: bool,
-    repo: FleetRepository = Depends(FleetRepository),
-    logger: LoggerAdapter = Depends(get_logger),
+    repo: Annotated[FleetRepository, Depends(FleetRepository)],
+    logger: Annotated[LoggerAdapter, Depends(get_logger)],
+    tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
 ):
     """
     Decommissions a robot, cancels all direct tasks, and preventing it from
@@ -131,7 +132,7 @@ async def decommission_robot(
         reassignment_log_str = "Task re-assignment requested."
     logger.info(f"Decommissioning {robot_name} of {name}. {reassignment_log_str}")
     resp = RobotCommissionResponse.parse_raw(
-        await tasks_service().call(request.json(exclude_none=True))
+        await tasks_service.call(request.json(exclude_none=True))
     )
     logger.info(resp)
     if not resp.commission.root.success:
@@ -147,9 +148,10 @@ async def decommission_robot(
 async def recommission_robot(
     name: str,
     robot_name: str,
-    repo: FleetRepository = Depends(FleetRepository),
-    user: User = Depends(user_dep),
-    logger: LoggerAdapter = Depends(get_logger),
+    repo: Annotated[FleetRepository, Depends(FleetRepository)],
+    user: Annotated[User, Depends(user_dep)],
+    logger: Annotated[LoggerAdapter, Depends(get_logger)],
+    tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
 ):
     """
     Recommissions a robot, allowing it to accept new dispatch tasks and direct
@@ -173,7 +175,7 @@ async def recommission_robot(
 
     logger.info(f"Recommissioning {robot_name} of {name} called by {user.username}")
     resp = RobotCommissionResponse.parse_raw(
-        await tasks_service().call(request.json(exclude_none=True))
+        await tasks_service.call(request.json(exclude_none=True))
     )
     logger.info(resp)
     if not resp.commission.root.success:
@@ -187,8 +189,9 @@ async def unlock_mutex_group(
     name: str,
     robot_name: str,
     mutex_group: str,
-    repo: FleetRepository = Depends(FleetRepository),
-    logger: LoggerAdapter = Depends(get_logger),
+    repo: Annotated[FleetRepository, Depends(FleetRepository)],
+    logger: Annotated[LoggerAdapter, Depends(get_logger)],
+    rmf_gateway: Annotated[RmfGateway, Depends(RmfGateway.get_instance)],
 ):
     """
     Request to manually unlock a mutex group that is currently being held by a
@@ -213,6 +216,6 @@ async def unlock_mutex_group(
     logger.info(
         f"Manual release mutex group {mutex_group} for {robot_name} of fleet {name} requested"
     )
-    rmf_gateway().manual_release_mutex_groups(
+    rmf_gateway.manual_release_mutex_groups(
         mutex_groups=[mutex_group], fleet=name, robot=robot_name
     )

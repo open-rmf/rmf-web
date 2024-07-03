@@ -1,5 +1,5 @@
 # NOTE: This will eventually replace `gateway.py``
-from typing import Any
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from websockets.exceptions import ConnectionClosed
@@ -7,7 +7,7 @@ from websockets.exceptions import ConnectionClosed
 from api_server import models as mdl
 from api_server.logging import LoggerAdapter, get_logger
 from api_server.repositories import AlertRepository, FleetRepository, TaskRepository
-from api_server.rmf_io import alert_events, fleet_events, task_events
+from api_server.rmf_io import AlertEvents, FleetEvents, TaskEvents
 
 router = APIRouter(tags=["_internal"])
 user: mdl.User = mdl.User(username="__rmf_internal__", is_admin=True)
@@ -44,6 +44,9 @@ async def process_msg(
     fleet_repo: FleetRepository,
     task_repo: TaskRepository,
     alert_repo: AlertRepository,
+    task_events: TaskEvents,
+    alert_events: AlertEvents,
+    fleet_events: FleetEvents,
     logger: LoggerAdapter,
 ) -> None:
     if "type" not in msg:
@@ -93,14 +96,26 @@ async def process_msg(
 @router.websocket("")
 async def rmf_gateway(
     websocket: WebSocket,
-    logger: LoggerAdapter = Depends(get_logger),
+    fleet_repo: Annotated[FleetRepository, Depends(FleetRepository)],
+    task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
+    alert_repo: Annotated[AlertRepository, Depends(AlertRepository)],
+    task_events: Annotated[TaskEvents, Depends(TaskEvents.get_instance)],
+    alert_events: Annotated[AlertEvents, Depends(AlertEvents.get_instance)],
+    fleet_events: Annotated[FleetEvents, Depends(FleetEvents.get_instance)],
+    logger: Annotated[LoggerAdapter, Depends(get_logger)],
 ):
-    fleet_repo = FleetRepository(user, logger)
-    task_repo = TaskRepository(user, logger)
-    alert_repo = AlertRepository(user, task_repo)
     try:
         while True:
             msg: dict[str, Any] = await websocket.receive_json()
-            await process_msg(msg, fleet_repo, task_repo, alert_repo, logger)
+            await process_msg(
+                msg,
+                fleet_repo,
+                task_repo,
+                alert_repo,
+                task_events,
+                alert_events,
+                fleet_events,
+                logger,
+            )
     except (WebSocketDisconnect, ConnectionClosed):
         logger.warning("Client websocket disconnected")

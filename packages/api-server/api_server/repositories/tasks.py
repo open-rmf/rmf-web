@@ -1,6 +1,6 @@
 import sys
 from datetime import datetime
-from typing import Dict, List, Optional, Sequence, Tuple, cast
+from typing import Annotated, Dict, List, Optional, Sequence, Tuple, cast
 
 import tortoise.functions as tfuncs
 from fastapi import Depends, HTTPException
@@ -32,8 +32,8 @@ from api_server.models.tortoise_models import TaskState as DbTaskState
 class TaskRepository:
     def __init__(
         self,
-        user: User = Depends(user_dep),
-        logger: LoggerAdapter = Depends(get_logger),
+        user: Annotated[User, Depends(user_dep)],
+        logger: Annotated[LoggerAdapter, Depends(get_logger)],
     ):
         self.user = user
         self.logger = logger

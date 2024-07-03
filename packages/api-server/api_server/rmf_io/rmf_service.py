@@ -1,19 +1,21 @@
 import asyncio
+import contextlib
 import logging
 from asyncio import Future
-from typing import Callable, Dict, Optional
 from uuid import uuid4
 
 import rclpy
 import rclpy.node
+import rclpy.publisher
 import rclpy.qos
+import rclpy.subscription
 from fastapi import HTTPException
 from rmf_task_msgs.msg import ApiRequest, ApiResponse
 
-from api_server.ros import ros_node as default_ros_node
+from api_server.fast_io.singleton_dep import SingletonDep
 
 
-class RmfService:
+class RmfService(contextlib.AbstractAsyncContextManager):
     """
     RMF uses a pseudo service protocol implmented using pub/sub. "Calling" a service
     involves publishing a request message with a request id and subscribing to a response.
@@ -25,15 +27,21 @@ class RmfService:
 
     def __init__(
         self,
-        ros_node: Callable[[], rclpy.node.Node],
+        ros_node: rclpy.node.Node,
         request_topic: str,
         response_topic: str,
     ):
         self.ros_node = ros_node
-        self._requests: Dict[str, Future] = {}
-        self._api_pub = self.ros_node().create_publisher(
+        self._request_topic = request_topic
+        self._response_topic = response_topic
+        self._api_pub: rclpy.publisher.Publisher
+        self._api_sub: rclpy.subscription.Subscription
+        self._requests: dict[str, Future] = {}
+
+    async def __aenter__(self):
+        self._api_pub = self.ros_node.create_publisher(
             ApiRequest,
-            request_topic,
+            self._request_topic,
             rclpy.qos.QoSProfile(
                 depth=10,
                 history=rclpy.qos.HistoryPolicy.KEEP_LAST,
@@ -41,9 +49,9 @@ class RmfService:
                 durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
             ),
         )
-        self._api_sub = self.ros_node().create_subscription(
+        self._api_sub = self.ros_node.create_subscription(
             ApiResponse,
-            response_topic,
+            self._response_topic,
             self._handle_response,
             rclpy.qos.QoSProfile(
                 depth=10,
@@ -53,7 +61,7 @@ class RmfService:
             ),
         )
 
-    def destroy(self):
+    async def __aexit__(self, *exc):
         """
         Unsubscribes to api responses and destroys all ros objects created by this class.
         """
@@ -87,13 +95,6 @@ class RmfService:
         fut.set_result(msg.json_msg)
 
 
-_tasks_service: Optional[RmfService] = None
-
-
-def tasks_service():
-    global _tasks_service
-    if _tasks_service is None:
-        _tasks_service = RmfService(
-            default_ros_node, "task_api_requests", "task_api_responses"
-        )
-    return _tasks_service
+class TasksService(SingletonDep, RmfService):
+    def __init__(self, ros_node: rclpy.node.Node):
+        super().__init__(ros_node, "task_api_requests", "task_api_responses")

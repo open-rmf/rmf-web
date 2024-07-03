@@ -9,6 +9,7 @@ from typing import Any, List, Optional, cast
 
 import rclpy
 import rclpy.client
+import rclpy.node
 import rclpy.qos
 from fastapi import HTTPException
 from rclpy.subscription import Subscription
@@ -33,6 +34,10 @@ from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 from rosidl_runtime_py.convert import message_to_ordereddict
 from std_msgs.msg import Bool as BoolMsg
 
+from api_server.fast_io.singleton_dep import SingletonDep
+from api_server.repositories.rmf import RmfRepository
+from api_server.rmf_io.events import RmfEvents
+
 from .models import (
     BeaconState,
     BuildingMap,
@@ -43,44 +48,26 @@ from .models import (
     IngestorState,
     LiftState,
 )
-from .repositories import CachedFilesRepository, cached_files_repo
-from .rmf_io import rmf_events
-from .ros import ros_node
+from .repositories import CachedFilesRepository
 
 
-def process_building_map(
-    rmf_building_map: RmfBuildingMap,
-    cached_files: CachedFilesRepository,
-) -> BuildingMap:
-    """
-    1. Converts a `BuildingMap` message to an ordered dict.
-    2. Saves the images into `{cache_directory}/{map_name}/`.
-    3. Change the `AffineImage` `data` field to the url of the image.
-    """
-    processed_map = message_to_ordereddict(rmf_building_map)
-
-    for i, level in enumerate(rmf_building_map.levels):
-        level: RmfLevel
-        for j, image in enumerate(level.images):
-            image = cast(RmfAffineImage, image)
-            # look at non-crypto hashes if we need more performance
-            sha1_hash = hashlib.sha1()
-            sha1_hash.update(image.data)
-            fingerprint = base64.b32encode(sha1_hash.digest()).lower().decode()
-            relpath = f"{rmf_building_map.name}/{level.name}-{image.name}.{fingerprint}.{image.encoding}"  # pylint: disable=line-too-long
-            urlpath = cached_files.add_file(cast(bytes, image.data), relpath)
-            processed_map["levels"][i]["images"][j]["data"] = urlpath
-    return BuildingMap(**processed_map)
-
-
-class RmfGateway:
+class RmfGateway(SingletonDep):
     def __init__(
         self,
         cached_files: CachedFilesRepository,
+        ros_node: rclpy.node.Node,
+        rmf_events: RmfEvents,
+        rmf_repo: RmfRepository,
         *,
         logger: Optional[logging.Logger] = None,
     ):
-        self._door_req = ros_node().create_publisher(
+        self._cached_files = cached_files
+        self._ros_node = ros_node
+        self._rmf_events = rmf_events
+        self._rmf_repo = rmf_repo
+        self._logger = logger or logging.getLogger()
+
+        self._door_req = self._ros_node.create_publisher(
             RmfDoorRequest, "adapter_door_requests", 10
         )
 
@@ -91,13 +78,17 @@ class RmfGateway:
             durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
         )
 
-        self._adapter_lift_req = ros_node().create_publisher(
+        self._adapter_lift_req = self._ros_node.create_publisher(
             RmfLiftRequest, "adapter_lift_requests", transient_qos
         )
-        self._submit_task_srv = ros_node().create_client(RmfSubmitTask, "submit_task")
-        self._cancel_task_srv = ros_node().create_client(RmfCancelTask, "cancel_task")
+        self._submit_task_srv = self._ros_node.create_client(
+            RmfSubmitTask, "submit_task"
+        )
+        self._cancel_task_srv = self._ros_node.create_client(
+            RmfCancelTask, "cancel_task"
+        )
 
-        self._delivery_alert_response = ros_node().create_publisher(
+        self._delivery_alert_response = self._ros_node.create_publisher(
             RmfDeliveryAlert,
             "delivery_alert_response",
             rclpy.qos.QoSProfile(
@@ -108,7 +99,7 @@ class RmfGateway:
             ),
         )
 
-        self._mutex_group_release = ros_node().create_publisher(
+        self._mutex_group_release = self._ros_node.create_publisher(
             RmfMutexGroupManualRelease,
             "mutex_group_manual_release",
             rclpy.qos.QoSProfile(
@@ -119,7 +110,7 @@ class RmfGateway:
             ),
         )
 
-        self._fire_alarm_trigger = ros_node().create_publisher(
+        self._fire_alarm_trigger = self._ros_node.create_publisher(
             BoolMsg,
             "fire_alarm_trigger",
             rclpy.qos.QoSProfile(
@@ -130,8 +121,6 @@ class RmfGateway:
             ),
         )
 
-        self.cached_files = cached_files
-        self.logger = logger or logging.getLogger()
         self._subscriptions: List[Subscription] = []
 
         self._subscribe_all()
@@ -148,53 +137,109 @@ class RmfGateway:
         except asyncio.TimeoutError as e:
             raise HTTPException(503, "ros service call timed out") from e
 
+    def _process_building_map(
+        self,
+        rmf_building_map: RmfBuildingMap,
+    ) -> BuildingMap:
+        """
+        1. Converts a `BuildingMap` message to an ordered dict.
+        2. Saves the images into `{cache_directory}/{map_name}/`.
+        3. Change the `AffineImage` `data` field to the url of the image.
+        """
+        processed_map = message_to_ordereddict(rmf_building_map)
+
+        for i, level in enumerate(rmf_building_map.levels):
+            level: RmfLevel
+            for j, image in enumerate(level.images):
+                image = cast(RmfAffineImage, image)
+                # look at non-crypto hashes if we need more performance
+                sha1_hash = hashlib.sha1()
+                sha1_hash.update(image.data)
+                fingerprint = base64.b32encode(sha1_hash.digest()).lower().decode()
+                relpath = f"{rmf_building_map.name}/{level.name}-{image.name}.{fingerprint}.{image.encoding}"  # pylint: disable=line-too-long
+                urlpath = self._cached_files.add_file(cast(bytes, image.data), relpath)
+                processed_map["levels"][i]["images"][j]["data"] = urlpath
+        return BuildingMap(**processed_map)
+
     def _subscribe_all(self):
-        door_states_sub = ros_node().create_subscription(
+        def handle_door_state(msg):
+            async def save(door_state: DoorState):
+                await self._rmf_repo.save_door_state(door_state)
+                self._rmf_events.door_states.on_next(door_state)
+                logging.debug("%s", door_state)
+
+            asyncio.create_task(save(DoorState.model_validate(msg)))
+
+        door_states_sub = self._ros_node.create_subscription(
             RmfDoorState,
             "door_states",
-            lambda msg: rmf_events.door_states.on_next(DoorState.from_orm(msg)),
+            handle_door_state,
             10,
         )
         self._subscriptions.append(door_states_sub)
 
-        def convert_lift_state(lift_state: RmfLiftState):
-            dic = message_to_ordereddict(lift_state)
-            return LiftState(**dic)
+        def handle_lift_state(msg):
+            async def save(lift_state: LiftState):
+                await self._rmf_repo.save_lift_state(lift_state)
+                self._rmf_events.lift_states.on_next(lift_state)
+                logging.debug("%s", lift_state)
 
-        lift_states_sub = ros_node().create_subscription(
+            dic = message_to_ordereddict(msg)
+            asyncio.create_task(save(LiftState(**dic)))
+
+        lift_states_sub = self._ros_node.create_subscription(
             RmfLiftState,
             "lift_states",
-            lambda msg: rmf_events.lift_states.on_next(
-                convert_lift_state(cast(RmfLiftState, msg))
-            ),
+            handle_lift_state,
             10,
         )
         self._subscriptions.append(lift_states_sub)
 
-        dispenser_states_sub = ros_node().create_subscription(
+        def handle_dispenser_state(msg):
+            async def save(dispenser_state: DispenserState):
+                await self._rmf_repo.save_dispenser_state(dispenser_state)
+                self._rmf_events.dispenser_states.on_next(dispenser_state)
+                logging.debug("%s", dispenser_state)
+
+            asyncio.create_task(save(DispenserState.model_validate(msg)))
+
+        dispenser_states_sub = self._ros_node.create_subscription(
             RmfDispenserState,
             "dispenser_states",
-            lambda msg: rmf_events.dispenser_states.on_next(
-                DispenserState.from_orm(msg)
-            ),
+            handle_dispenser_state,
             10,
         )
         self._subscriptions.append(dispenser_states_sub)
 
-        ingestor_states_sub = ros_node().create_subscription(
+        def handle_ingestor_state(msg):
+            async def save(ingestor_state: IngestorState):
+                await self._rmf_repo.save_ingestor_state(ingestor_state)
+                self._rmf_events.ingestor_states.on_next(ingestor_state)
+                logging.debug("%s", ingestor_state)
+
+            asyncio.create_task(save(IngestorState.model_validate(msg)))
+
+        ingestor_states_sub = self._ros_node.create_subscription(
             RmfIngestorState,
             "ingestor_states",
-            lambda msg: rmf_events.ingestor_states.on_next(IngestorState.from_orm(msg)),
+            handle_ingestor_state,
             10,
         )
         self._subscriptions.append(ingestor_states_sub)
 
-        map_sub = ros_node().create_subscription(
+        def handle_building_map(msg):
+            async def save(building_map: BuildingMap):
+                await self._rmf_repo.save_building_map(building_map)
+                self._rmf_events.building_map.on_next(building_map)
+                logging.debug("%s", building_map)
+
+            bm = self._process_building_map(cast(RmfBuildingMap, msg))
+            asyncio.create_task(save(bm))
+
+        map_sub = self._ros_node.create_subscription(
             RmfBuildingMap,
             "map",
-            lambda msg: rmf_events.building_map.on_next(
-                process_building_map(cast(RmfBuildingMap, msg), self.cached_files)
-            ),
+            handle_building_map,
             rclpy.qos.QoSProfile(
                 history=rclpy.qos.HistoryPolicy.KEEP_ALL,
                 depth=1,
@@ -204,46 +249,47 @@ class RmfGateway:
         )
         self._subscriptions.append(map_sub)
 
-        def convert_beacon_state(beacon_state: RmfBeaconState):
-            return BeaconState(
-                id=beacon_state.id,
-                online=beacon_state.online,
-                category=beacon_state.category,
-                activated=beacon_state.activated,
-                level=beacon_state.level,
-            )
+        def handle_beachandle_state(msg):
+            async def save(beachandle_state: BeaconState):
+                await self._rmf_repo.save_beacon_state(beachandle_state)
+                self._rmf_events.beacons.on_next(beachandle_state)
+                logging.debug("%s", beachandle_state)
 
-        beacon_sub = ros_node().create_subscription(
+            msg = cast(RmfBeaconState, msg)
+            bs = BeaconState(
+                id=msg.id,
+                online=msg.online,
+                category=msg.category,
+                activated=msg.activated,
+                level=msg.level,
+            )
+            asyncio.create_task(save(bs))
+
+        beachandle_sub = self._ros_node.create_subscription(
             RmfBeaconState,
-            "beacon_state",
-            lambda msg: rmf_events.beacons.on_next(
-                convert_beacon_state(cast(RmfBeaconState, msg))
-            ),
+            "beachandle_state",
+            handle_beachandle_state,
             10,
         )
-        self._subscriptions.append(beacon_sub)
+        self._subscriptions.append(beachandle_sub)
 
-        def convert_delivery_alert(delivery_alert: RmfDeliveryAlert):
-            return DeliveryAlert(
-                id=delivery_alert.id,
-                category=DeliveryAlert.Category(delivery_alert.category.value),
-                tier=DeliveryAlert.Tier(delivery_alert.tier.value),
-                task_id=delivery_alert.task_id,
-                action=DeliveryAlert.Action(delivery_alert.action.value),
-                message=delivery_alert.message,
+        def handle_delivery_alert(msg):
+            msg = cast(RmfDeliveryAlert, msg)
+            da = DeliveryAlert(
+                id=msg.id,
+                category=DeliveryAlert.Category(msg.category.value),
+                tier=DeliveryAlert.Tier(msg.tier.value),
+                task_id=msg.task_id,
+                action=DeliveryAlert.Action(msg.action.value),
+                message=msg.message,
             )
+            self._rmf_events.delivery_alerts.on_next(da)
+            logging.debug("%s", da)
 
-        def handle_delivery_alert(delivery_alert: DeliveryAlert):
-            logging.info("Received delivery alert:")
-            logging.info(delivery_alert)
-            rmf_events.delivery_alerts.on_next(delivery_alert)
-
-        delivery_alert_request_sub = ros_node().create_subscription(
+        delivery_alert_request_sub = self._ros_node.create_subscription(
             RmfDeliveryAlert,
             "delivery_alert_request",
-            lambda msg: handle_delivery_alert(
-                convert_delivery_alert(cast(RmfDeliveryAlert, msg))
-            ),
+            handle_delivery_alert,
             rclpy.qos.QoSProfile(
                 history=rclpy.qos.HistoryPolicy.KEEP_LAST,
                 depth=10,
@@ -253,18 +299,24 @@ class RmfGateway:
         )
         self._subscriptions.append(delivery_alert_request_sub)
 
-        def handle_fire_alarm_trigger(fire_alarm_trigger_msg: BoolMsg):
-            if fire_alarm_trigger_msg.data:
+        def handle_fire_alarm_trigger(msg):
+            async def save(delivery_alert: DeliveryAlert):
+                # await self._rmf_repo.(delivery_alert)
+                self._rmf_events.delivery_alerts.on_next(delivery_alert)
+                logging.debug("%s", delivery_alert)
+
+            msg = cast(BoolMsg, msg)
+            if msg.data:
                 logging.info("Fire alarm triggered")
             else:
                 logging.info("Fire alarm trigger reset")
             fire_alarm_trigger_state = FireAlarmTriggerState(
                 unix_millis_time=round(datetime.now().timestamp() * 1000),
-                trigger=fire_alarm_trigger_msg.data,
+                trigger=msg.data,
             )
-            rmf_events.fire_alarm_trigger.on_next(fire_alarm_trigger_state)
+            self._rmf_events.fire_alarm_trigger.on_next(fire_alarm_trigger_state)
 
-        fire_alarm_trigger_sub = ros_node().create_subscription(
+        fire_alarm_trigger_sub = self._ros_node.create_subscription(
             BoolMsg,
             "fire_alarm_trigger",
             handle_fire_alarm_trigger,
@@ -277,11 +329,15 @@ class RmfGateway:
         )
         self._subscriptions.append(fire_alarm_trigger_sub)
 
+    async def __aexit__(self, *exc):
+        for sub in self._subscriptions:
+            sub.destroy()
+
     def request_door(self, door_name: str, mode: int) -> None:
         msg = RmfDoorRequest(
             door_name=door_name,
-            request_time=ros_node().get_clock().now().to_msg(),
-            requester_id=ros_node().get_name(),  # FIXME: use username
+            request_time=self._ros_node.get_clock().now().to_msg(),
+            requester_id=self._ros_node.get_name(),  # FIXME: use username
             requested_mode=RmfDoorMode(
                 value=mode,
             ),
@@ -298,8 +354,8 @@ class RmfGateway:
     ):
         msg = RmfLiftRequest(
             lift_name=lift_name,
-            request_time=ros_node().get_clock().now().to_msg(),
-            session_id=ros_node().get_name(),
+            request_time=self._ros_node.get_clock().now().to_msg(),
+            session_id=self._ros_node.get_name(),
             request_type=request_type,
             destination_floor=destination,
             door_state=door_mode,
@@ -344,20 +400,3 @@ class RmfGateway:
         reset_msg = BoolMsg()
         reset_msg.data = False
         self._fire_alarm_trigger.publish(reset_msg)
-
-
-_rmf_gateway: RmfGateway
-
-
-def rmf_gateway() -> RmfGateway:
-    return _rmf_gateway
-
-
-def startup():
-    """
-    Starts subscribing to all ROS topics.
-    Must be called after the ros node is created and before spinning the it.
-    """
-    global _rmf_gateway
-    _rmf_gateway = RmfGateway(cached_files_repo)
-    return _rmf_gateway

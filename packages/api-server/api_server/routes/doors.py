@@ -1,14 +1,14 @@
-from typing import List, cast
+from typing import Annotated, List, cast
 
 from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
 
 from api_server.dependencies import sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.gateway import rmf_gateway
+from api_server.gateway import RmfGateway
 from api_server.models import Door, DoorRequest, DoorState
 from api_server.repositories import RmfRepository
-from api_server.rmf_io import rmf_events
+from api_server.rmf_io import RmfEvents
 
 router = FastIORouter(tags=["Doors"])
 
@@ -34,7 +34,7 @@ async def get_door_state(
 @router.sub("/{door_name}/state", response_model=DoorState)
 async def sub_door_state(req: SubscriptionRequest, door_name: str):
     user = sio_user(req)
-    obs = rmf_events.door_states.pipe(
+    obs = RmfEvents.get_instance().door_states.pipe(
         rxops.filter(lambda x: cast(DoorState, x).door_name == door_name)
     )
     door_state = await get_door_state(door_name, RmfRepository(user))
@@ -47,5 +47,6 @@ async def sub_door_state(req: SubscriptionRequest, door_name: str):
 def post_door_request(
     door_name: str,
     door_request: DoorRequest,
+    rmf_gateway: Annotated[RmfGateway, Depends(RmfGateway.get_instance)],
 ):
-    rmf_gateway().request_door(door_name, door_request.mode)
+    rmf_gateway.request_door(door_name, door_request.mode)

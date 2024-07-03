@@ -1,3 +1,4 @@
+from .alerts import *
 from .authz import *
 from .beacons import *
 from .building_map import *

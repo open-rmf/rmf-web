@@ -1,6 +1,5 @@
 import asyncio
 import contextlib
-import logging
 import os
 import signal
 import threading
@@ -17,21 +16,19 @@ from fastapi.openapi.docs import (
 from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
 
-from . import gateway, ros, routes
+from api_server.repositories.cached_files import CachedFilesRepository
+from api_server.repositories.rmf import RmfRepository
+from api_server.rmf_io.rmf_service import RmfService, TasksService
+
+from . import gateway, logging, ros, routes
 from .app_config import app_config
 from .authenticator import AuthenticationError, authenticator, user_dep
 from .fast_io import FastIO
+from .logging import default_logger
 from .models import DispenserState, DoorState, IngestorState, LiftState, User
 from .models import tortoise_models as ttm
 from .repositories import TaskRepository
-from .rmf_io import (
-    AlertEvents,
-    BeaconEvents,
-    FleetEvents,
-    RmfBookKeeper,
-    RmfEvents,
-    TaskEvents,
-)
+from .rmf_io import AlertEvents, BeaconEvents, FleetEvents, RmfEvents, TaskEvents
 from .types import is_coroutine
 
 
@@ -45,7 +42,7 @@ async def on_sio_connect(sid: str, _environ: dict, auth: dict | None = None) -> 
         session["user"] = user
         return True
     except AuthenticationError as e:
-        logging.info(f"authentication failed: {e}")
+        default_logger.info(f"authentication failed: {e}")
         return False
 
 
@@ -62,7 +59,7 @@ async def shutdown():
         elif callable(cb):
             cb()
 
-    logging.info("shutdown app")
+    default_logger.info("shutdown app")
 
 
 @contextlib.asynccontextmanager
@@ -70,7 +67,8 @@ async def lifespan(_app: FastIO):
     stack = contextlib.AsyncExitStack()
     loop = asyncio.get_event_loop()
 
-    await stack.enter_async_context(RmfEvents.set_instance(RmfEvents()))
+    rmf_events = RmfEvents()
+    await stack.enter_async_context(RmfEvents.set_instance(rmf_events))
     await stack.enter_async_context(TaskEvents.set_instance(TaskEvents()))
     await stack.enter_async_context(FleetEvents.set_instance(FleetEvents()))
     await stack.enter_async_context(AlertEvents.set_instance(AlertEvents()))
@@ -84,10 +82,19 @@ async def lifespan(_app: FastIO):
     await Tortoise.generate_schemas()
     shutdown_cbs.append(Tortoise.close_connections())
 
-    ros.startup()
-    shutdown_cbs.append(ros.shutdown)
-
-    gateway.startup()
+    cached_files = CachedFilesRepository(
+        f"{app_config.public_url.geturl()}/cache", app_config.cache_directory
+    )
+    await stack.enter_async_context(CachedFilesRepository.set_instance(cached_files))
+    ros_node = ros.RosNode()
+    await stack.enter_async_context(ros.RosNode.set_instance(ros_node))
+    rmf_gateway = gateway.RmfGateway(
+        cached_files, ros_node.node, rmf_events, RmfRepository(User.get_system_user())
+    )
+    await stack.enter_async_context(gateway.RmfGateway.set_instance(rmf_gateway))
+    await stack.enter_async_context(
+        TasksService.set_instance(TasksService(ros_node.node))
+    )
 
     # shutdown event is not called when the app crashes, this can cause the app to be
     # "locked up" as some dependencies like tortoise does not allow python to exit until
@@ -109,34 +116,24 @@ async def lifespan(_app: FastIO):
         {"is_admin": True}, username=app_config.builtin_admin
     )
 
-    # Order is important here
-    # 1. load states from db, this populate the sio/fast_io rooms with the latest data
-    await _load_states()
+    await _load_states(rmf_events)
 
-    # 2. start the services after loading states so that the loaded states are not
-    # used. Failing to do so will cause for example, book keeper to save the loaded states
-    # back into the db and mess up health watchdog's heartbeat system.
-
-    await rmf_bookkeeper.start()
-    shutdown_cbs.append(rmf_bookkeeper.stop())
-
-    logging.info("starting scheduler")
+    default_logger.info("starting scheduler")
     asyncio.create_task(_spin_scheduler())
     scheduled_tasks = await ttm.ScheduledTask.all()
     scheduled = 0
     for t in scheduled_tasks:
         user = await User.load_from_db(t.created_by)
         if user is None:
-            logging.warning(f"user [{t.created_by}] does not exist")
+            default_logger.warning(f"user [{t.created_by}] does not exist")
             continue
-        task_repo = TaskRepository(user)
-        await routes.scheduled_tasks.schedule_task(t, task_repo)
+        task_repo = TaskRepository(user, default_logger)
+        await routes.scheduled_tasks.schedule_task(t, task_repo, default_logger)
         scheduled += 1
-    logging.info(f"loaded {scheduled} tasks")
-    logging.info("successfully started scheduler")
+    default_logger.info(f"loaded {scheduled} tasks")
+    default_logger.info("successfully started scheduler")
 
-    ros.spin_background()
-    logging.info("started app")
+    default_logger.info("started app")
 
     yield
 
@@ -176,8 +173,6 @@ app.mount(
     StaticFiles(directory=app_config.cache_directory),
     name="cache",
 )
-
-rmf_bookkeeper = RmfBookKeeper(rmf_events)
 
 app.include_router(routes.main_router)
 app.include_router(
@@ -261,29 +256,29 @@ async def _spin_scheduler():
         await asyncio.sleep(1)
 
 
-async def _load_states():
-    logging.info("loading states from database...")
+async def _load_states(rmf_events: RmfEvents):
+    default_logger.info("loading states from database...")
 
     door_states = [DoorState.from_tortoise(x) for x in await ttm.DoorState.all()]
     for state in door_states:
         rmf_events.door_states.on_next(state)
-    logging.info(f"loaded {len(door_states)} door states")
+    default_logger.info(f"loaded {len(door_states)} door states")
 
     lift_states = [LiftState.from_tortoise(x) for x in await ttm.LiftState.all()]
     for state in lift_states:
         rmf_events.lift_states.on_next(state)
-    logging.info(f"loaded {len(lift_states)} lift states")
+    default_logger.info(f"loaded {len(lift_states)} lift states")
 
     dispenser_states = [
         DispenserState.from_tortoise(x) for x in await ttm.DispenserState.all()
     ]
     for state in dispenser_states:
         rmf_events.dispenser_states.on_next(state)
-    logging.info(f"loaded {len(dispenser_states)} dispenser states")
+    default_logger.info(f"loaded {len(dispenser_states)} dispenser states")
 
     ingestor_states = [
         IngestorState.from_tortoise(x) for x in await ttm.IngestorState.all()
     ]
     for state in ingestor_states:
         rmf_events.ingestor_states.on_next(state)
-    logging.info(f"loaded {len(ingestor_states)} ingestor states")
+    default_logger.info(f"loaded {len(ingestor_states)} ingestor states")

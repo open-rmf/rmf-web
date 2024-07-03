@@ -1,10 +1,10 @@
 from reactivex.subject import BehaviorSubject, Subject
 
 from api_server import models as mdl
-from api_server.fast_io import StatefulDep
+from api_server.fast_io import SingletonDep
 
 
-class RmfEvents(StatefulDep):
+class RmfEvents(SingletonDep):
     def __init__(self):
         self.door_states = Subject[mdl.DoorState]()
         self.lift_states = Subject[mdl.LiftState]()
@@ -22,7 +22,7 @@ class RmfEvents(StatefulDep):
         pass
 
 
-class TaskEvents(StatefulDep):
+class TaskEvents(SingletonDep):
     def __init__(self):
         self.task_states = Subject[mdl.TaskState]()
         self.task_event_logs = Subject[mdl.TaskEventLog]()
@@ -31,7 +31,7 @@ class TaskEvents(StatefulDep):
         pass
 
 
-class FleetEvents(StatefulDep):
+class FleetEvents(SingletonDep):
     def __init__(self):
         self.fleet_states = Subject[mdl.FleetState]()
         self.fleet_logs = Subject[mdl.FleetLog]()
@@ -40,7 +40,7 @@ class FleetEvents(StatefulDep):
         pass
 
 
-class AlertEvents(StatefulDep):
+class AlertEvents(SingletonDep):
     def __init__(self):
         self.alerts = Subject()
 
@@ -48,7 +48,7 @@ class AlertEvents(StatefulDep):
         pass
 
 
-class BeaconEvents(StatefulDep):
+class BeaconEvents(SingletonDep):
     def __init__(self):
         self.beacons = Subject()
 

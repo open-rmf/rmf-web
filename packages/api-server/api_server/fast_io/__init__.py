@@ -26,7 +26,7 @@ from starlette.routing import compile_path
 
 from .errors import *
 from .pydantic_json_serializer import PydanticJsonSerializer
-from .stateful_dep import StatefulDep
+from .singleton_dep import SingletonDep
 
 
 @dataclass

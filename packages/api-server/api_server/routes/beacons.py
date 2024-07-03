@@ -1,17 +1,19 @@
-from fastapi import HTTPException
+from typing import Annotated
+
+from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
 
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import BeaconState
 from api_server.models.tortoise_models import BeaconState as DbBeaconState
-from api_server.rmf_io import rmf_events
+from api_server.rmf_io import RmfEvents
 
 router = FastIORouter(tags=["Beacons"])
 
 
 @router.sub("", response_model=BeaconState)
 async def sub_beacons(_req: SubscriptionRequest):
-    return rmf_events.beacons.pipe(rxops.filter(lambda x: x is not None))
+    return RmfEvents.get_instance().beacons.pipe(rxops.filter(lambda x: x is not None))
 
 
 @router.get("", response_model=list[BeaconState])
@@ -31,8 +33,14 @@ async def get_beacon(beacon_id: str):
 
 @router.post("", status_code=201, response_model=BeaconState)
 async def save_beacon_state(
-    beacon_id: str, online: bool, category: str, activated: bool, level: str
+    beacon_id: str,
+    online: bool,
+    category: str,
+    activated: bool,
+    level: str,
+    rmf_events: Annotated[RmfEvents, Depends(RmfEvents.get_instance)],
 ):
+    # FIXME(koonpeng): this is not publishing to rmf
     beacon_state, _ = await DbBeaconState.update_or_create(
         {
             "online": online,

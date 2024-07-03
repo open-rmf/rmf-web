@@ -1,17 +1,17 @@
-from typing import Annotated, List
+from typing import Annotated
 
 from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
 
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.models import tortoise_models as ttm
+from api_server.models import Alert
 from api_server.repositories import AlertRepository
 from api_server.rmf_io import AlertEvents
 
 router = FastIORouter(tags=["Alerts"])
 
 
-@router.sub("", response_model=ttm.AlertPydantic)
+@router.sub("", response_model=Alert)
 async def sub_alerts(
     _req: SubscriptionRequest,
     alert_events: Annotated[AlertEvents, Depends(AlertEvents.get_instance)],
@@ -19,12 +19,12 @@ async def sub_alerts(
     return alert_events.alerts.pipe(rxops.filter(lambda x: x is not None))
 
 
-@router.get("", response_model=List[ttm.AlertPydantic])
+@router.get("", response_model=list[Alert])
 async def get_alerts(repo: AlertRepository = Depends(AlertRepository)):
     return await repo.get_all_alerts()
 
 
-@router.get("/{alert_id}", response_model=ttm.AlertPydantic)
+@router.get("/{alert_id}", response_model=Alert)
 async def get_alert(alert_id: str, repo: AlertRepository = Depends(AlertRepository)):
     alert = await repo.get_alert(alert_id)
     if alert is None:
@@ -32,7 +32,7 @@ async def get_alert(alert_id: str, repo: AlertRepository = Depends(AlertReposito
     return alert
 
 
-@router.post("", status_code=201, response_model=ttm.AlertPydantic)
+@router.post("", status_code=201, response_model=Alert)
 async def create_alert(
     alert_id: str, category: str, repo: AlertRepository = Depends(AlertRepository)
 ):
@@ -42,7 +42,7 @@ async def create_alert(
     return alert
 
 
-@router.post("/{alert_id}", status_code=201, response_model=ttm.AlertPydantic)
+@router.post("/{alert_id}", status_code=201, response_model=Alert)
 async def acknowledge_alert(
     alert_id: str,
     repo: Annotated[AlertRepository, Depends(AlertRepository)],

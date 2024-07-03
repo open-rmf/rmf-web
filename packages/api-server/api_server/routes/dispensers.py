@@ -7,7 +7,7 @@ from api_server.dependencies import sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import Dispenser, DispenserState
 from api_server.repositories import RmfRepository
-from api_server.rmf_io import rmf_events
+from api_server.rmf_io import RmfEvents
 
 router = FastIORouter(tags=["Dispensers"])
 
@@ -33,7 +33,7 @@ async def get_dispenser_state(
 @router.sub("/{guid}/state", response_model=DispenserState)
 async def sub_dispenser_state(req: SubscriptionRequest, guid: str):
     user = sio_user(req)
-    obs = rmf_events.dispenser_states.pipe(
+    obs = RmfEvents.get_instance().dispenser_states.pipe(
         rxops.filter(lambda x: cast(DispenserState, x).guid == guid)
     )
     dispenser_state = await get_dispenser_state(guid, RmfRepository(user))

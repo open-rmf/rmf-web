@@ -1,14 +1,15 @@
 from datetime import datetime
+from typing import Annotated
 
 from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
 
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.gateway import rmf_gateway
+from api_server.gateway import RmfGateway
 from api_server.logging import LoggerAdapter, get_logger
 from api_server.models import BuildingMap, FireAlarmTriggerState
 from api_server.repositories import RmfRepository
-from api_server.rmf_io import rmf_events
+from api_server.rmf_io import RmfEvents
 
 router = FastIORouter(tags=["Building"])
 
@@ -26,17 +27,21 @@ async def get_building_map(rmf_repo: RmfRepository = Depends(RmfRepository)):
 
 @router.sub("", response_model=BuildingMap)
 def sub_building_map(_req: SubscriptionRequest):
-    return rmf_events.building_map.pipe(rxops.filter(lambda x: x is not None))
+    return RmfEvents.get_instance().building_map.pipe(
+        rxops.filter(lambda x: x is not None)
+    )
 
 
 @router.sub("/fire_alarm_trigger", response_model=FireAlarmTriggerState)
 async def sub_fire_alarm_trigger(_req: SubscriptionRequest):
-    return rmf_events.fire_alarm_trigger.pipe(rxops.filter(lambda x: x is not None))
+    return RmfEvents.get_instance().fire_alarm_trigger.pipe(
+        rxops.filter(lambda x: x is not None)
+    )
 
 
 @router.get("/previous_fire_alarm_trigger", response_model=FireAlarmTriggerState)
 async def get_previous_fire_alarm_trigger():
-    previous_trigger = rmf_events.fire_alarm_trigger.value
+    previous_trigger = RmfEvents.get_instance().fire_alarm_trigger.value
     if previous_trigger is None:
         raise HTTPException(404, "previous fire alarm trigger not available")
     return previous_trigger
@@ -44,11 +49,12 @@ async def get_previous_fire_alarm_trigger():
 
 @router.post("/reset_fire_alarm_trigger", response_model=FireAlarmTriggerState)
 async def reset_fire_alarm_trigger(
-    logger: LoggerAdapter = Depends(get_logger),
+    logger: Annotated[LoggerAdapter, Depends(get_logger)],
+    rmf_gateway: Annotated[RmfGateway, Depends(RmfGateway.get_instance)],
 ):
     # TODO: enforce with authz
     logger.info("Fire alarm trigger reset requested")
-    rmf_gateway().reset_fire_alarm_trigger()
+    rmf_gateway.reset_fire_alarm_trigger()
     fire_alarm_trigger_state = FireAlarmTriggerState(
         unix_millis_time=round(datetime.now().timestamp() * 1000), trigger=False
     )

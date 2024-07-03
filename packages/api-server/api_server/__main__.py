@@ -5,19 +5,8 @@ import uvicorn
 import uvicorn.logging
 from uvicorn.config import LOGGING_CONFIG
 
-from .app_config import load_config
+from .app_config import app_config
 from .logging import LogfmtFormatter
-
-app_config = load_config(
-    os.environ.get(
-        "RMF_API_SERVER_CONFIG",
-        f"{os.path.dirname(__file__)}/default_config.py",
-    )
-)
-
-handler = logging.StreamHandler()
-handler.setFormatter(LogfmtFormatter())
-logging.basicConfig(level=app_config.log_level, handlers=[handler])
 
 # uvicorn access logs contains double quotes so we need to use the safer formatter
 LOGGING_CONFIG["formatters"]["logfmt"] = {"()": LogfmtFormatter}
@@ -34,8 +23,7 @@ LOGGING_CONFIG["loggers"]["uvicorn.access"]["handlers"] = ["logfmt"]
 
 
 def main():
-    # FIXME: we need to init logging before the app, better solution is to
-    # NOT use global app that init on import
+    # we need to init logging before the app so we cannot import app at top level
     from .app import app  # pylint: disable=import-outside-toplevel
 
     uvicorn.run(

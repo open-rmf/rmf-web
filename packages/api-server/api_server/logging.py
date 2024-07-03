@@ -2,11 +2,13 @@ import logging
 import typing
 from logging import LoggerAdapter
 
+from fastapi import Depends
 from fastapi.requests import HTTPConnection
 from termcolor import colored
 from termcolor._types import Color
 
-from api_server.models import User
+from .app_config import app_config
+from .models import User
 
 log_colors: dict[str, Color] = {
     "DEBUG": "grey",
@@ -41,8 +43,8 @@ class LogfmtFormatter(logging.Formatter):
         }
 
         # Add contextual information
-        if hasattr(record, "conn"):
-            record = typing.cast(_CustomLogRecord, record)
+        record = typing.cast(_CustomLogRecord, record)
+        if hasattr(record, "conn") and record.conn:
             client = record.conn.client
             fields["client"] = f"{client.host}:{client.port}" if client else "None"
             fields["user"] = record.user.username if record.user else "None"
@@ -59,10 +61,17 @@ class LogfmtFormatter(logging.Formatter):
         return colored(" ".join(logfmt_pairs), color)
 
 
+_handler = logging.StreamHandler()
+_handler.setFormatter(LogfmtFormatter())
+logging.basicConfig(level=app_config.log_level, handlers=[_handler])
+
+
 class CustomLoggerAdapter(LoggerAdapter):
     """A customized `LoggerAdapter` that adds extra contextual info like client and user"""
 
-    def __init__(self, logger: logging.Logger, conn: HTTPConnection, user: User | None):
+    def __init__(
+        self, logger: logging.Logger, conn: HTTPConnection | None, user: User | None
+    ):
         super().__init__(logger)
         self.conn = conn
         self.user = user
@@ -77,3 +86,7 @@ def get_logger(conn: HTTPConnection) -> CustomLoggerAdapter:
     # Note that user is always `None` here to avoid circular dependency if we use `user_dep`.
     # The authenticator will fill in the user instead.
     return CustomLoggerAdapter(l, conn, user=None)
+
+
+default_logger = CustomLoggerAdapter(logging.getLogger(), None, None)
+"""A default logger without no extra contextual info, use this for logging outside of a request context."""
