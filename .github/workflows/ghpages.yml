@@ -5,6 +5,7 @@ on:
   push:
     branches: ["main"]
     paths:
+      - ".github/workflows/ghpages.yml"
       - "packages/api-server/**"
 
   # Allows you to run this workflow manually from the Actions tab
@@ -33,14 +34,14 @@ jobs:
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         shell: bash
         working-directory: packages/api-server
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: bootstrap
@@ -49,7 +50,7 @@ jobs:
           package: api-server
       - name: Extract docs
         run: |
-          . /opt/rmf/install/setup.bash
+          . /opt/rmf/setup.bash
           pnpm run generate-docs
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
