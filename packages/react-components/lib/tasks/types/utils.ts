@@ -33,14 +33,6 @@ import {
 } from './custom-compose';
 import { TaskDefinition, TaskDescription } from '../create-task';
 
-export function isNonEmptyString(value: string): boolean {
-  return value.length > 0;
-}
-
-export function isPositiveNumber(value: number): boolean {
-  return value > 0;
-}
-
 function rawStringFromJsonRequest(taskRequest: TaskRequest): string | undefined {
   try {
     const requestString = JSON.stringify(taskRequest);

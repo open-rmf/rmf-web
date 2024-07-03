@@ -258,8 +258,7 @@ async def post_dispatch_task(
                 continue
 
             if cancellation_lots is None:
-                # cancellation_lots = await cancellation_lots_from_building_map(logger)
-                cancellation_lots = ["test_1", "test_2"]
+                cancellation_lots = await cancellation_lots_from_building_map(logger)
 
             if len(cancellation_lots) != 0:
                 # Populate them in the correct form

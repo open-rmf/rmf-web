@@ -1,6 +1,5 @@
 import { Autocomplete, Grid, TextField, useMediaQuery, useTheme } from '@mui/material';
 import React from 'react';
-import { isNonEmptyString } from './utils';
 import type { TaskBookingLabel } from 'api-client';
 import { TaskDefinition } from '../create-task';
 
@@ -323,11 +322,11 @@ const isDeliveryPickupTaskDescriptionValid = (
   const pickup = taskDescription.phases[0].activity.description.activities[1];
   const goToDropoff = taskDescription.phases[1].activity.description.activities[0];
   return (
-    isNonEmptyString(goToPickup.description) &&
+    goToPickup.description.length > 0 &&
     Object.keys(pickupPoints).includes(goToPickup.description) &&
     pickupPoints[goToPickup.description] === pickup.description.description.pickup_lot &&
-    isNonEmptyString(pickup.description.description.cart_id) &&
-    isNonEmptyString(goToDropoff.description) &&
+    pickup.description.description.cart_id.length > 0 &&
+    goToDropoff.description.length > 0 &&
     Object.keys(dropoffPoints).includes(goToDropoff.description)
   );
 };
@@ -346,18 +345,18 @@ const isDoubleComposeDeliveryTaskDescriptionValid = (
   const secondGoToDropoff = taskDescription.phases[4].activity.description.activities[0];
 
   return (
-    isNonEmptyString(firstGoToPickup.description) &&
+    firstGoToPickup.description.length > 0 &&
     Object.keys(pickupPoints).includes(firstGoToPickup.description) &&
     pickupPoints[firstGoToPickup.description] === firstPickup.description.description.pickup_lot &&
-    isNonEmptyString(firstPickup.description.description.cart_id) &&
-    isNonEmptyString(firstGoToDropoff.description) &&
+    firstPickup.description.description.cart_id.length > 0 &&
+    firstGoToDropoff.description.length > 0 &&
     Object.keys(dropoffPoints).includes(firstGoToDropoff.description) &&
-    isNonEmptyString(secondGoToPickup.description) &&
+    secondGoToPickup.description.length > 0 &&
     Object.keys(pickupPoints).includes(secondGoToPickup.description) &&
     pickupPoints[secondGoToPickup.description] ===
       secondPickup.description.description.pickup_lot &&
-    isNonEmptyString(secondPickup.description.description.cart_id) &&
-    isNonEmptyString(secondGoToDropoff.description) &&
+    secondPickup.description.description.cart_id.length > 0 &&
+    secondGoToDropoff.description.length > 0 &&
     Object.keys(dropoffPoints).includes(secondGoToDropoff.description)
   );
 };
@@ -371,11 +370,11 @@ const isDeliveryCustomTaskDescriptionValid = (
   const pickup = taskDescription.phases[0].activity.description.activities[1];
   const goToDropoff = taskDescription.phases[1].activity.description.activities[0];
   return (
-    isNonEmptyString(goToPickup.description) &&
-    isNonEmptyString(pickup.description.description.pickup_zone) &&
+    goToPickup.description.length > 0 &&
+    pickup.description.description.pickup_zone.length > 0 &&
     pickupZones.includes(pickup.description.description.pickup_zone) &&
-    isNonEmptyString(pickup.description.description.cart_id) &&
-    isNonEmptyString(goToDropoff.description) &&
+    pickup.description.description.cart_id.length > 0 &&
+    goToDropoff.description.length > 0 &&
     dropoffPoints.includes(goToDropoff.description)
   );
 };
@@ -919,7 +918,7 @@ export function cartCustomPickupPhaseInsertCartId(
   return phase;
 }
 
-interface DeliveryCustomProps {
+export interface DeliveryCustomProps {
   taskDesc: DeliveryCustomTaskDescription;
   pickupZones: string[];
   cartIds: string[];
