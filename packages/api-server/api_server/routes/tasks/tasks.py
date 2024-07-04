@@ -251,36 +251,44 @@ async def post_dispatch_task(
         request.request.category == "compose"
         and request.request.description is not None
         and "phases" in request.request.description
-        and len(request.request.description["phases"]) == 3
-        and "on_cancel" in request.request.description["phases"][1]
     ):
-        cancellation_lots = await cancellation_lots_from_building_map(logger)
-        if len(cancellation_lots) != 0:
-            # Populate them in the correct form
-            go_to_one_of_the_places_activity = {
-                "category": "go_to_place",
-                "description": {
-                    "one_of": [{"waypoint": name} for name in cancellation_lots],
-                    "constraints": [{"category": "prefer_same_map", "description": ""}],
-                },
-            }
-            delivery_dropoff_activity = {
-                "category": "perform_action",
-                "description": {
-                    "unix_millis_action_duration_estimate": 60000,
-                    "category": "delivery_dropoff",
-                    "description": {},
-                },
-            }
-            on_cancel_dropoff = {
-                "category": "sequence",
-                "description": [
-                    go_to_one_of_the_places_activity,
-                    delivery_dropoff_activity,
-                ],
-            }
-            # Add into task request
-            request.request.description["phases"][1]["on_cancel"] = [on_cancel_dropoff]
+        cancellation_lots = None
+        for i in range(len(request.request.description["phases"])):
+            if "on_cancel" not in request.request.description["phases"][i]:
+                continue
+
+            if cancellation_lots is None:
+                cancellation_lots = await cancellation_lots_from_building_map(logger)
+
+            if len(cancellation_lots) != 0:
+                # Populate them in the correct form
+                go_to_one_of_the_places_activity = {
+                    "category": "go_to_place",
+                    "description": {
+                        "one_of": [{"waypoint": name} for name in cancellation_lots],
+                        "constraints": [
+                            {"category": "prefer_same_map", "description": ""}
+                        ],
+                    },
+                }
+                delivery_dropoff_activity = {
+                    "category": "perform_action",
+                    "description": {
+                        "unix_millis_action_duration_estimate": 60000,
+                        "category": "delivery_dropoff",
+                        "description": {},
+                    },
+                }
+                on_cancel_dropoff = {
+                    "category": "sequence",
+                    "description": [
+                        go_to_one_of_the_places_activity,
+                        delivery_dropoff_activity,
+                    ],
+                }
+                request.request.description["phases"][i]["on_cancel"] = [
+                    on_cancel_dropoff
+                ]
 
     resp = mdl.TaskDispatchResponse.parse_raw(
         await tasks_service().call(request.json(exclude_none=True))
