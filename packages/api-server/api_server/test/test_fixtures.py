@@ -1,5 +1,6 @@
 import asyncio
 import contextlib
+import enum
 import inspect
 import os
 import os.path
@@ -83,8 +84,31 @@ with open(f"{here}/../../scripts/test.key", "br") as f:
 
 
 class AppFixture(unittest.TestCase):
+    class InitMode(enum.Enum):
+        SETUP_CLASS = enum.auto()
+        SETUP_TEST = enum.auto()
+
+    _init_mode = InitMode.SETUP_CLASS
+
+    @staticmethod
+    def reset_app_before_test(testcase: type["AppFixture"]):
+        """
+        By default, the app is setup once and remains for the entire test case,
+        use this to change it so that it resets the app and database before every test.
+
+        Example usage:
+        ```python3
+        @AppFixture.reset_app_before_test
+        class MyTest(AppFixture):
+            ...
+        ```
+        """
+        # pylint: disable=protected-access
+        testcase._init_mode = AppFixture.InitMode.SETUP_TEST
+        return testcase
+
     @classmethod
-    def setUpClass(cls):
+    def setUpApp(cls):
         async def clean_db():
             # connect to the db to drop it
             await Tortoise.init(db_url=app_config.db_url, modules={"models": []})
@@ -101,7 +125,20 @@ class AppFixture(unittest.TestCase):
         cls.client = TestClient()
         cls.client.headers["Content-Type"] = "application/json"
         cls.client.__enter__()
-        cls.addClassCleanup(cls.client.__exit__)
+
+    @classmethod
+    def setUpClass(cls):
+        if cls._init_mode == AppFixture.InitMode.SETUP_CLASS:
+            cls.setUpApp()
+            cls.addClassCleanup(cls.client.__exit__)
+
+    def setUp(self):
+        if self._init_mode == AppFixture.InitMode.SETUP_TEST:
+            self.setUpApp()
+            self.addCleanup(self.client.__exit__)
+
+        self.test_time = 0
+        self.portal = self.get_portal()
 
     @classmethod
     def get_portal(cls) -> BlockingPortal:
@@ -146,7 +183,9 @@ class AppFixture(unittest.TestCase):
 
                 async def handle_resp(emit_room, msg, *_args, **_kwargs):
                     if emit_room == "subscribe" and not msg["success"]:
-                        raise Exception("Failed to subscribe")
+                        # FIXME
+                        # pylint: disable=broad-exception-raised
+                        raise Exception("Failed to subscribe", msg)
                     if emit_room == room:
                         async with condition:
                             if isinstance(msg, pydantic.BaseModel):
@@ -166,9 +205,6 @@ class AppFixture(unittest.TestCase):
             finally:
                 if connected:
                     portal.call(on_disconnect, "test")
-
-    def setUp(self):
-        self.test_time = 0
 
     def create_user(self, admin: bool = False):
         username = f"user_{uuid4().hex}"

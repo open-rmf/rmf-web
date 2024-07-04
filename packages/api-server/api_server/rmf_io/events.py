@@ -50,3 +50,11 @@ class AlertEvents:
 
 
 alert_events = AlertEvents()
+
+
+class RioEvents:
+    def __init__(self):
+        self.rios = Subject[mdl.Rio]()
+
+
+rio_events = RioEvents()
