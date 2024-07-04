@@ -138,31 +138,47 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
   }, [rmf, alertRequest.id, alertRequest.task_id, alertRequest.tier]);
 
   return (
-    <>
-      <Dialog
-        PaperProps={{
-          style: {
-            backgroundColor:
-              alertRequest.tier === ApiServerModelsAlertsAlertRequestTier.Info
-                ? base.palette.success.dark
-                : alertRequest.tier === ApiServerModelsAlertsAlertRequestTier.Warning
-                ? base.palette.warning.dark
-                : base.palette.error.dark,
-            boxShadow: 'none',
-          },
-        }}
-        maxWidth={isScreenHeightLessThan800 ? 'xs' : 'sm'}
-        fullWidth={true}
-        open={isOpen}
-        key={alertRequest.id}
-      >
-        <DialogTitle align="center">
-          {alertRequest.title.length > 0 ? alertRequest.title : 'n/a'}
-        </DialogTitle>
-        <Divider />
-        <DialogContent>
+    <Dialog
+      PaperProps={{
+        style: {
+          backgroundColor:
+            alertRequest.tier === ApiServerModelsAlertsAlertRequestTier.Info
+              ? base.palette.success.dark
+              : alertRequest.tier === ApiServerModelsAlertsAlertRequestTier.Warning
+              ? base.palette.warning.dark
+              : base.palette.error.dark,
+          boxShadow: 'none',
+        },
+      }}
+      maxWidth={isScreenHeightLessThan800 ? 'xs' : 'sm'}
+      fullWidth={true}
+      open={isOpen}
+      key={alertRequest.id}
+    >
+      <DialogTitle align="center">
+        {alertRequest.title.length > 0 ? alertRequest.title : 'n/a'}
+      </DialogTitle>
+      <Divider />
+      <DialogContent>
+        <TextField
+          label="Subtitle"
+          id="standard-size-small"
+          size="small"
+          variant="filled"
+          sx={{
+            '& .MuiFilledInput-root': {
+              fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+            },
+          }}
+          InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
+          InputProps={{ readOnly: true, className: classes.textField }}
+          fullWidth={true}
+          margin="dense"
+          value={alertRequest.subtitle.length > 0 ? alertRequest.subtitle : 'n/a'}
+        />
+        {(alertRequest.message.length > 0 || additionalAlertMessage !== null) && (
           <TextField
-            label="Subtitle"
+            label="Message"
             id="standard-size-small"
             size="small"
             variant="filled"
@@ -174,87 +190,69 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
             InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
             InputProps={{ readOnly: true, className: classes.textField }}
             fullWidth={true}
+            multiline
+            maxRows={4}
             margin="dense"
-            value={alertRequest.subtitle.length > 0 ? alertRequest.subtitle : 'n/a'}
+            value={
+              (alertRequest.message.length > 0 ? alertRequest.message : 'n/a') +
+              '\n' +
+              (additionalAlertMessage ?? '')
+            }
           />
-          {(alertRequest.message.length > 0 || additionalAlertMessage !== null) && (
-            <TextField
-              label="Message"
-              id="standard-size-small"
-              size="small"
-              variant="filled"
-              sx={{
-                '& .MuiFilledInput-root': {
-                  fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                },
-              }}
-              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
-              InputProps={{ readOnly: true, className: classes.textField }}
-              fullWidth={true}
-              multiline
-              maxRows={4}
-              margin="dense"
-              value={
-                (alertRequest.message.length > 0 ? alertRequest.message : 'n/a') +
-                '\n' +
-                (additionalAlertMessage ?? '')
-              }
-            />
-          )}
-        </DialogContent>
-        <DialogActions>
-          {alertRequest.responses_available.map((response) => {
-            return (
-              <Button
-                size="small"
-                variant="contained"
-                autoFocus
-                key={`${alertRequest.id}-${response}`}
-                sx={{
-                  fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
-                  padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
-                }}
-                onClick={async () => {
-                  await respondToAlert(alertRequest.id, response);
-                  AppEvents.refreshAlert.next();
-                  setIsOpen(false);
-                }}
-              >
-                {response}
-              </Button>
-            );
-          })}
-          {alertRequest.task_id ? (
-            <TaskCancelButton
-              taskId={alertRequest.task_id}
+        )}
+      </DialogContent>
+      <DialogActions>
+        {alertRequest.responses_available.map((response) => {
+          return (
+            <Button
               size="small"
               variant="contained"
-              color="secondary"
-              buttonText={'Cancel task'}
+              autoFocus
+              key={`${alertRequest.id}-${response}`}
               sx={{
                 fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
                 padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
               }}
-            />
-          ) : null}
-          <Button
+              onClick={async () => {
+                await respondToAlert(alertRequest.id, response);
+                AppEvents.refreshAlert.next();
+                setIsOpen(false);
+              }}
+            >
+              {response}
+            </Button>
+          );
+        })}
+        {alertRequest.task_id ? (
+          <TaskCancelButton
+            taskId={alertRequest.task_id}
             size="small"
             variant="contained"
-            autoFocus
+            color="secondary"
+            buttonText={'Cancel task'}
             sx={{
               fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
               padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
             }}
-            onClick={() => {
-              onDismiss();
-              setIsOpen(false);
-            }}
-          >
-            Dismiss
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
+          />
+        ) : null}
+        <Button
+          size="small"
+          variant="contained"
+          autoFocus
+          sx={{
+            fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
+            padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+          }}
+          onClick={() => {
+            onDismiss();
+            setIsOpen(false);
+          }}
+        >
+          Dismiss
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 });
 
@@ -268,14 +266,11 @@ export const AlertStore = React.memo(() => {
     }
 
     const pushAlertsToBeDisplayed = async (alertRequest: AlertRequest) => {
-      console.log('push alert called');
       if (!rmf) {
         console.error('Alerts API not available');
         return;
       }
-      console.log('api exists');
       if (!alertRequest.display) {
-        console.log('not displayed');
         setOpenAlerts((prev) => {
           const filteredAlerts = Object.fromEntries(
             Object.entries(prev).filter(([key]) => key !== alertRequest.id),
@@ -294,7 +289,7 @@ export const AlertStore = React.memo(() => {
         );
       } catch (e) {
         console.log(
-          `Alert response could not be found for ${alertRequest.id}, ${(e as Error).message}`,
+          `Error retrieving alert response of ID ${alertRequest.id}, ${(e as Error).message}`,
         );
         setOpenAlerts((prev) => {
           return {
@@ -352,9 +347,7 @@ export const AlertStore = React.memo(() => {
   return (
     <>
       {Object.values(openAlerts).map((alert) => {
-        const removeThisAlert = () => {
-          removeOpenAlert(alert.id);
-        };
+        const removeThisAlert = () => removeOpenAlert(alert.id);
         return <AlertDialog key={alert.id} alertRequest={alert} onDismiss={removeThisAlert} />;
       })}
     </>

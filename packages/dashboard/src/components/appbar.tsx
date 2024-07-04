@@ -169,7 +169,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
   const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
   const [alertListAnchor, setAlertListAnchor] = React.useState<HTMLElement | null>(null);
-  const [unacknowledgedAlertsNum, setUnacknowledgedAlertsNum] = React.useState(0);
   const [unacknowledgedAlertList, setUnacknowledgedAlertList] = React.useState<AlertRequest[]>([]);
   const [openAdminActionsDialog, setOpenAdminActionsDialog] = React.useState(false);
   const [openFireAlarmTriggerResetDialog, setOpenFireAlarmTriggerResetDialog] =
@@ -203,27 +202,20 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       return;
     }
 
+    const updateUnrespondedAlerts = async () => {
+      const { data: alerts } =
+        await rmf.alertsApi.getUnrespondedAlertsAlertsUnrespondedRequestsGet();
+      // alert.display is checked to verify that the dashboard should display it
+      // in the first place
+      const alertsToBeDisplayed = alerts.filter((alert) => alert.display);
+      setUnacknowledgedAlertList(alertsToBeDisplayed.reverse());
+    };
+
     const subs: Subscription[] = [];
-    subs.push(
-      AppEvents.refreshAlert.subscribe({
-        next: () => {
-          (async () => {
-            const resp = await rmf.alertsApi.getUnrespondedAlertsAlertsUnrespondedRequestsGet();
-            const alerts = resp.data as AlertRequest[];
-            const alertsToBeDisplayed = alerts.filter((alert) => alert.display);
-            setUnacknowledgedAlertsNum(alertsToBeDisplayed.length);
-          })();
-        },
-      }),
-    );
+    subs.push(AppEvents.refreshAlert.subscribe(updateUnrespondedAlerts));
 
     // Get the initial number of unacknowledged alerts
-    (async () => {
-      const resp = await rmf.alertsApi.getUnrespondedAlertsAlertsUnrespondedRequestsGet();
-      const alerts = resp.data as AlertRequest[];
-      const alertsToBeDisplayed = alerts.filter((alert) => alert.display);
-      setUnacknowledgedAlertsNum(alertsToBeDisplayed.length);
-    })();
+    updateUnrespondedAlerts();
     return () => subs.forEach((s) => s.unsubscribe());
   }, [rmf]);
 
@@ -338,12 +330,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     if (!rmf) {
       return;
     }
-    (async () => {
-      const { data: alerts } =
-        await rmf.alertsApi.getUnrespondedAlertsAlertsUnrespondedRequestsGet();
-      const alertsToBeDisplayed = alerts.filter((alert) => alert.display);
-      setUnacknowledgedAlertList(alertsToBeDisplayed.reverse());
-    })();
     setAlertListAnchor(event.currentTarget);
   };
 
@@ -434,7 +420,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
               color="inherit"
               onClick={handleOpenAlertList}
             >
-              <Badge badgeContent={unacknowledgedAlertsNum} color="secondary">
+              <Badge badgeContent={unacknowledgedAlertList.length} color="secondary">
                 <Notifications fontSize="inherit" />
               </Badge>
             </StyledIconButton>
