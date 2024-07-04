@@ -4,7 +4,6 @@ import React from 'react';
 import { PositiveIntField } from '../../form-inputs';
 import { TaskBookingLabels } from '../booking-label';
 import { TaskDefinition } from '../create-task';
-import { isNonEmptyString, isPositiveNumber } from './utils';
 
 export const DeliveryTaskDefinition: TaskDefinition = {
   taskDefinitionId: 'delivery',
@@ -39,10 +38,10 @@ export function makeDeliveryTaskBookingLabel(
 
 function isTaskPlaceValid(place: TaskPlace): boolean {
   return (
-    isNonEmptyString(place.place) &&
-    isNonEmptyString(place.handler) &&
-    isNonEmptyString(place.payload.sku) &&
-    isPositiveNumber(place.payload.quantity)
+    place.place.length > 0 &&
+    place.handler.length > 0 &&
+    place.payload.sku.length > 0 &&
+    place.payload.quantity > 0
   );
 }
 
