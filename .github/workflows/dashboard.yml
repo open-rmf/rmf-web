@@ -11,9 +11,6 @@ on:
   push:
     branches:
       - main
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 env:
   CI: true
 jobs:
@@ -21,21 +18,27 @@ jobs:
     name: Unit Tests
     runs-on: ubuntu-22.04
     container:
-      image: ghcr.io/${{ github.repository }}/minimal-rmf
+      image: ghcr.io/${{ github.repository }}/e2e
       credentials:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
+    defaults:
+      run:
         shell: bash
         working-directory: packages/dashboard
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2
+      - name: setup python
+        run: apt update && apt install -y python3-venv python-is-python3
       - name: bootstrap
+        env:
+          NODE_OPTIONS: '--max_old_space_size=4096'
         uses: ./.github/actions/bootstrap
         with:
           package: rmf-dashboard
           skip-build: true
       - name: unit test
-        run: pnpm run test:coverage
+        run: . /rmf_demos_ws/install/setup.bash && pnpm run test:coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
