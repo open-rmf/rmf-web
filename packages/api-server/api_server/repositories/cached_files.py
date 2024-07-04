@@ -1,7 +1,6 @@
 import logging
 import os
 
-from api_server.app_config import app_config
 from api_server.fast_io.singleton_dep import SingletonDep
 
 

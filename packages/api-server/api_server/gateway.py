@@ -5,7 +5,7 @@ import base64
 import hashlib
 import logging
 from datetime import datetime
-from typing import Any, List, Optional, cast
+from typing import Any, cast
 
 import rclpy
 import rclpy.client
@@ -59,7 +59,7 @@ class RmfGateway(SingletonDep):
         rmf_events: RmfEvents,
         rmf_repo: RmfRepository,
         *,
-        logger: Optional[logging.Logger] = None,
+        logger: logging.Logger | None = None,
     ):
         self._cached_files = cached_files
         self._ros_node = ros_node
@@ -121,7 +121,7 @@ class RmfGateway(SingletonDep):
             ),
         )
 
-        self._subscriptions: List[Subscription] = []
+        self._subscriptions: list[Subscription] = []
 
         self._subscribe_all()
 
@@ -300,11 +300,6 @@ class RmfGateway(SingletonDep):
         self._subscriptions.append(delivery_alert_request_sub)
 
         def handle_fire_alarm_trigger(msg):
-            async def save(delivery_alert: DeliveryAlert):
-                # await self._rmf_repo.(delivery_alert)
-                self._rmf_events.delivery_alerts.on_next(delivery_alert)
-                logging.debug("%s", delivery_alert)
-
             msg = cast(BoolMsg, msg)
             if msg.data:
                 logging.info("Fire alarm triggered")
@@ -350,7 +345,7 @@ class RmfGateway(SingletonDep):
         destination: str,
         request_type: int,
         door_mode: int,
-        additional_session_ids: List[str],
+        additional_session_ids: list[str],
     ):
         msg = RmfLiftRequest(
             lift_name=lift_name,
@@ -386,7 +381,7 @@ class RmfGateway(SingletonDep):
 
     def manual_release_mutex_groups(
         self,
-        mutex_groups: List[str],
+        mutex_groups: list[str],
         fleet: str,
         robot: str,
     ):

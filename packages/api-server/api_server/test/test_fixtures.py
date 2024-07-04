@@ -7,7 +7,7 @@ import time
 import unittest
 import unittest.mock
 from collections.abc import Generator
-from typing import Awaitable, Callable, Optional, TypeVar, Union
+from typing import Awaitable, Callable, TypeVar
 from uuid import uuid4
 
 import pydantic
@@ -17,7 +17,6 @@ from tortoise import Tortoise
 from api_server.app import app, app_config
 from api_server.fast_io import SubscriptionResponse
 from api_server.models import User
-from api_server.rmf_io.events import RmfEvents
 from api_server.routes.admin import PostUsers
 
 from .mocks import patch_sio
@@ -58,7 +57,7 @@ def try_until(
 
 async def async_try_until(
     action: Callable[[], Awaitable[T]],
-    predicate: Union[Callable[[T], Awaitable[bool]], Callable[[T], bool]],
+    predicate: Callable[[T], Awaitable[bool]] | Callable[[T], bool],
     timeout=5,
     interval=0.5,
 ) -> T:
@@ -198,7 +197,7 @@ class AppFixture(unittest.TestCase):
         self.assertEqual(200, resp.status_code)
         return role_name
 
-    def add_permission(self, role: str, action: str, authz_grp: Optional[str] = ""):
+    def add_permission(self, role: str, action: str, authz_grp: str | None = ""):
         resp = self.client.post(
             f"/admin/roles/{role}/permissions",
             json={"action": action, "authz_grp": authz_grp},

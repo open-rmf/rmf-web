@@ -1,6 +1,6 @@
 import asyncio
 from datetime import datetime
-from typing import Optional
+from typing import Annotated
 
 import schedule
 import tortoise.transactions
@@ -22,6 +22,8 @@ from api_server.models import (
 )
 from api_server.models import tortoise_models as ttm
 from api_server.repositories import TaskRepository
+from api_server.repositories.rmf import RmfRepository
+from api_server.rmf_io.rmf_service import TasksService
 
 from .tasks import post_dispatch_task
 
@@ -34,7 +36,11 @@ class PostScheduledTaskRequest(BaseModel):
 
 
 async def schedule_task(
-    task: ttm.ScheduledTask, task_repo: TaskRepository, logger: LoggerAdapter
+    task: ttm.ScheduledTask,
+    rmf_repo: RmfRepository,
+    task_repo: TaskRepository,
+    tasks_service: TasksService,
+    logger: LoggerAdapter,
 ):
     await task.fetch_related("schedules")
     jobs: list[tuple[ttm.ScheduledTaskSchedule, schedule.Job]] = []
@@ -56,7 +62,7 @@ async def schedule_task(
     )
 
     async def run():
-        await post_dispatch_task(req, task_repo)
+        await post_dispatch_task(req, rmf_repo, task_repo, logger, tasks_service)
         task.last_ran = datetime.now()
         await task.save()
 
@@ -75,8 +81,11 @@ async def schedule_task(
 @router.post("", status_code=201, response_model=ScheduledTask)
 async def post_scheduled_task(
     scheduled_task_request: PostScheduledTaskRequest,
-    user: User = Depends(user_dep),
-    task_repo: TaskRepository = Depends(TaskRepository),
+    user: Annotated[User, Depends(user_dep)],
+    rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)],
+    task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
+    tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
+    logger: Annotated[LoggerAdapter, Depends(get_logger)],
 ):
     """
     Create a scheduled task. Below are some examples of how the schedules are represented.
@@ -108,7 +117,9 @@ async def post_scheduled_task(
             ]
             await ttm.ScheduledTaskSchedule.bulk_create(schedules)
 
-            await schedule_task(scheduled_task, task_repo)
+            await schedule_task(
+                scheduled_task, rmf_repo, task_repo, tasks_service, logger
+            )
         return ScheduledTask.model_validate(scheduled_task)
     except schedule.ScheduleError as e:
         raise HTTPException(422, str(e)) from e
@@ -116,13 +127,19 @@ async def post_scheduled_task(
 
 @router.get("", response_model=list[ScheduledTask])
 async def get_scheduled_tasks(
-    start_before: datetime = Query(
-        description="Only return scheduled tasks that start before given timestamp"
-    ),
-    until_after: datetime = Query(
-        description="Only return scheduled tasks that stop after given timestamp"
-    ),
-    pagination: Pagination = Depends(pagination_query),
+    start_before: Annotated[
+        datetime,
+        Query(
+            description="Only return scheduled tasks that start before given timestamp"
+        ),
+    ],
+    until_after: Annotated[
+        datetime,
+        Query(
+            description="Only return scheduled tasks that stop after given timestamp"
+        ),
+    ],
+    pagination: Annotated[Pagination, Depends(pagination_query)],
 ):
     q = (
         ttm.ScheduledTask.filter(
@@ -154,8 +171,10 @@ async def get_scheduled_task(task_id: int) -> ttm.ScheduledTask:
 async def del_scheduled_tasks_event(
     task_id: int,
     event_date: datetime,
-    task_repo: TaskRepository = Depends(TaskRepository),
-    logger: LoggerAdapter = Depends(get_logger),
+    rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)],
+    task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
+    tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
+    logger: Annotated[LoggerAdapter, Depends(get_logger)],
 ):
     task = await get_scheduled_task(task_id)
     if task is None:
@@ -171,15 +190,18 @@ async def del_scheduled_tasks_event(
     for sche in task.schedules:
         schedule.clear(sche.get_id())
 
-    await schedule_task(task, task_repo)
+    await schedule_task(task, rmf_repo, task_repo, tasks_service, logger)
 
 
 @router.post("/{task_id}/update", status_code=201, response_model=ScheduledTask)
 async def update_schedule_task(
     task_id: int,
     scheduled_task_request: PostScheduledTaskRequest,
-    except_date: Optional[datetime] = None,
-    task_repo: TaskRepository = Depends(TaskRepository),
+    rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)],
+    task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
+    tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
+    logger: Annotated[LoggerAdapter, Depends(get_logger)],
+    except_date: datetime | None = None,
 ):
     try:
         task = await get_scheduled_task(task_id)
@@ -205,7 +227,7 @@ async def update_schedule_task(
                 for sche in task.schedules:
                     schedule.clear(sche.get_id())
 
-                await schedule_task(task, task_repo)
+                await schedule_task(task, rmf_repo, task_repo, tasks_service, logger)
 
                 scheduled_task = await ttm.ScheduledTask.create(
                     task_request=scheduled_task_request.task_request.model_dump_json(
@@ -221,7 +243,9 @@ async def update_schedule_task(
                 ]
                 await ttm.ScheduledTaskSchedule.bulk_create(schedules)
 
-                await schedule_task(scheduled_task, task_repo)
+                await schedule_task(
+                    scheduled_task, rmf_repo, task_repo, tasks_service, logger
+                )
             else:
                 # If "except_date" is not provided, it means the entire series is being updated.
                 # In this case, we perform the following steps:
@@ -251,7 +275,7 @@ async def update_schedule_task(
 
                 await ttm.ScheduledTaskSchedule.bulk_create(schedules)
 
-                await schedule_task(task, task_repo)
+                await schedule_task(task, rmf_repo, task_repo, tasks_service, logger)
     except schedule.ScheduleError as e:
         raise HTTPException(422, str(e)) from e
 

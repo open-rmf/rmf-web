@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
@@ -39,7 +39,7 @@ async def _get_db_user(username: str) -> ttm.User:
     return user
 
 
-def admin_dep(user: User = Depends(user_dep)):
+def admin_dep(user: Annotated[User, Depends(user_dep)]):
     if not user.is_admin:
         raise HTTPException(403)
 
@@ -49,12 +49,12 @@ router = APIRouter(tags=["Admin"], dependencies=[Depends(admin_dep)])
 
 @router.get("/users", response_model=list[str])
 async def get_users(
-    rmf_repo: RmfRepository = Depends(RmfRepository),
-    pagination: Pagination = Depends(pagination_query),
-    username: Optional[str] = Query(
+    rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)],
+    pagination: Annotated[Pagination, Depends(pagination_query)],
+    username: str | None = Query(
         None, description="filters username that starts with the value"
     ),
-    is_admin: Optional[bool] = Query(None),
+    is_admin: bool | None = Query(None),
 ):
     """
     Search users
@@ -115,7 +115,7 @@ async def add_user_role(username: str, body: PostRoles):
 
 
 @router.put("/users/{username}/roles")
-async def set_user_roles(username: str, body: List[PostRoles]):
+async def set_user_roles(username: str, body: list[PostRoles]):
     """
     Set the roles of a user
     """
@@ -140,7 +140,7 @@ async def delete_user_role(username: str, role: str):
     await user.roles.remove(db_role)
 
 
-@router.get("/roles", response_model=List[str])
+@router.get("/roles", response_model=list[str])
 async def get_roles():
     """
     Get all roles
@@ -168,7 +168,7 @@ async def delete_role(role: str):
     await db_role.delete()
 
 
-@router.get("/roles/{role}/permissions", response_model=List[Permission])
+@router.get("/roles/{role}/permissions", response_model=list[Permission])
 async def get_role_permissions(role: str):
     """
     Get all permissions of a role

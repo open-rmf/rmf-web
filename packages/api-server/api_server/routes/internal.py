@@ -11,7 +11,6 @@ from api_server.repositories import AlertRepository, FleetRepository, TaskReposi
 from api_server.rmf_io import AlertEvents, FleetEvents, TaskEvents
 
 router = APIRouter(tags=["_internal"])
-user: mdl.User = mdl.User(username="__rmf_internal__", is_admin=True)
 
 
 def log_phase_has_error(phase: mdl.Phases) -> bool:
@@ -65,10 +64,7 @@ async def process_msg(
         await task_repo.save_task_state(task_state)
         task_events.task_states.on_next(task_state)
 
-        if (
-            task_state.status == mdl.TaskStatus.completed
-            or task_state.status == mdl.TaskStatus.failed
-        ):
+        if task_state.status in (mdl.TaskStatus.completed, mdl.TaskStatus.failed):
             alert = await alert_repo.create_alert(task_state.booking.id, "task")
             if alert is not None:
                 alert_events.alerts.on_next(alert)

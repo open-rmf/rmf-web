@@ -92,9 +92,7 @@ class TestRmfService(unittest.TestCase):
         while cls.client_node.get_name() not in cls.server_node.get_node_names():
             time.sleep(0.1)
 
-        cls.rmf_service = RmfService(
-            lambda: cls.client_node, "test_request", "test_response"
-        )
+        cls.rmf_service = RmfService(cls.client_node, "test_request", "test_response")
 
         cls.loop = asyncio.new_event_loop()
 

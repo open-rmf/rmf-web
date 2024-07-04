@@ -1,4 +1,4 @@
-from typing import List, cast
+from typing import Annotated, List, cast
 
 from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
@@ -12,13 +12,13 @@ router = FastIORouter(tags=["Dispensers"])
 
 
 @router.get("", response_model=List[Dispenser])
-async def get_dispensers(rmf_repo: RmfRepository = Depends(RmfRepository)):
+async def get_dispensers(rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)]):
     return await rmf_repo.get_dispensers()
 
 
 @router.get("/{guid}/state", response_model=DispenserState)
 async def get_dispenser_state(
-    guid: str, rmf_repo: RmfRepository = Depends(RmfRepository)
+    guid: str, rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)]
 ):
     """
     Available in socket.io

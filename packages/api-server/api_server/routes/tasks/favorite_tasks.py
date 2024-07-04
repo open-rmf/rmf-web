@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import List
+from typing import Annotated
 
 from fastapi import Depends, HTTPException
 from tortoise.exceptions import IntegrityError
@@ -16,7 +16,7 @@ router = FastIORouter(tags=["Tasks"])
 @router.post("")
 async def post_favorite_task(
     favorite_task: TaskFavorite,
-    user: User = Depends(user_dep),
+    user: Annotated[User, Depends(user_dep)],
 ):
     try:
         await ttm.TaskFavorite.update_or_create(
@@ -27,9 +27,9 @@ async def post_favorite_task(
                 ),
                 "priority": favorite_task.priority if favorite_task.priority else None,
                 "category": favorite_task.category,
-                "description": favorite_task.description
-                if favorite_task.description
-                else None,
+                "description": (
+                    favorite_task.description if favorite_task.description else None
+                ),
                 "user": user.username,
                 "task_definition_id": favorite_task.task_definition_id,
             },
@@ -39,27 +39,13 @@ async def post_favorite_task(
         raise HTTPException(422, str(e)) from e
 
 
-@router.get("", response_model=List[TaskFavorite])
+@router.get("", response_model=list[TaskFavorite])
 async def get_favorites_tasks(
-    user: User = Depends(user_dep),
+    user: Annotated[User, Depends(user_dep)],
 ):
     favorites_tasks = await ttm.TaskFavorite.filter(user=user.username)
     return [
-        TaskFavorite(
-            id=favorite_task.id,
-            name=favorite_task.name,
-            unix_millis_earliest_start_time=int(
-                favorite_task.unix_millis_earliest_start_time.strftime("%Y%m%d%H%M%S")
-            ),
-            priority=favorite_task.priority if favorite_task.priority else None,
-            category=favorite_task.category,
-            description=favorite_task.description
-            if favorite_task.description
-            else None,
-            user=user.username,
-            task_definition_id=favorite_task.task_definition_id,
-        )
-        for favorite_task in favorites_tasks
+        TaskFavorite.model_validate(favorite_task) for favorite_task in favorites_tasks
     ]
 
 

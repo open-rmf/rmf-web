@@ -1,6 +1,3 @@
-import logging
-import os
-
 import uvicorn
 import uvicorn.logging
 from uvicorn.config import LOGGING_CONFIG

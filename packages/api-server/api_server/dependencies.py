@@ -4,8 +4,7 @@ from fastapi import Depends, Query
 
 from api_server import ros_time
 
-from .fast_io import SubscriptionRequest
-from .models import Pagination, User
+from .models import Pagination
 
 
 def pagination_query(

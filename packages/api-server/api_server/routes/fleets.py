@@ -1,4 +1,4 @@
-from typing import Annotated, List, Tuple, cast
+from typing import Annotated, cast
 
 from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
@@ -24,15 +24,17 @@ from api_server.rmf_io import FleetEvents, TasksService
 router = FastIORouter(tags=["Fleets"])
 
 
-@router.get("", response_model=List[FleetState])
+@router.get("", response_model=list[FleetState])
 async def get_fleets(
-    repo: FleetRepository = Depends(FleetRepository),
+    repo: Annotated[FleetRepository, Depends(FleetRepository)],
 ):
     return await repo.get_all_fleets()
 
 
 @router.get("/{name}/state", response_model=FleetState)
-async def get_fleet_state(name: str, repo: FleetRepository = Depends(FleetRepository)):
+async def get_fleet_state(
+    name: str, repo: Annotated[FleetRepository, Depends(FleetRepository)]
+):
     """
     Available in socket.io
     """
@@ -58,8 +60,8 @@ async def sub_fleet_state(req: SubscriptionRequest, name: str):
 @router.get("/{name}/log", response_model=FleetLog)
 async def get_fleet_log(
     name: str,
-    repo: FleetRepository = Depends(FleetRepository),
-    between: Tuple[int, int] = Depends(between_query),
+    repo: Annotated[FleetRepository, Depends(FleetRepository)],
+    between: Annotated[tuple[int, int], Depends(between_query)],
 ):
     """
     Available in socket.io

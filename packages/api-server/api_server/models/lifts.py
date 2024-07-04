@@ -3,7 +3,7 @@ from typing import Annotated, cast
 from pydantic import BaseModel, Field
 
 from . import tortoise_models as ttm
-from .ros_pydantic import builtin_interfaces, rmf_building_map_msgs, rmf_lift_msgs
+from .ros_pydantic import builtin_interfaces, rmf_building_map_msgs
 
 Lift = rmf_building_map_msgs.Lift
 

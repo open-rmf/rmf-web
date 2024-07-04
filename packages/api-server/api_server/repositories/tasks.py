@@ -1,6 +1,6 @@
 import sys
 from datetime import datetime
-from typing import Annotated, Dict, List, Optional, Sequence, Tuple, cast
+from typing import Annotated, Sequence, cast
 
 import tortoise.functions as tfuncs
 from fastapi import Depends, HTTPException
@@ -45,13 +45,13 @@ class TaskRepository:
             {"request": task_request.model_dump_json()}, id_=task_state.booking.id
         )
 
-    async def get_task_request(self, task_id: str) -> Optional[TaskRequest]:
+    async def get_task_request(self, task_id: str) -> TaskRequest | None:
         result = await DbTaskRequest.get_or_none(id_=task_id)
         if result is None:
             return None
         return TaskRequest.model_validate(result.request)
 
-    async def query_task_requests(self, task_ids: List[str]) -> List[DbTaskRequest]:
+    async def query_task_requests(self, task_ids: list[str]) -> list[DbTaskRequest]:
         filters = {"id___in": task_ids}
         try:
             return await DbTaskRequest.filter(**filters)
@@ -120,7 +120,7 @@ class TaskRepository:
         status: Sequence[str] | None = None,
         label: Labels | None = None,
         pagination: Pagination | None = None,
-    ) -> List[TaskState]:
+    ) -> list[TaskState]:
         filters = {}
         if task_id is not None:
             filters["id___in"] = task_id
@@ -201,7 +201,7 @@ class TaskRepository:
         except FieldError as e:
             raise HTTPException(422, str(e)) from e
 
-    async def get_task_state(self, task_id: str) -> Optional[TaskState]:
+    async def get_task_state(self, task_id: str) -> TaskState | None:
         # TODO: enforce with authz
         result = await DbTaskState.get_or_none(id_=task_id)
         if result is None:
@@ -209,8 +209,8 @@ class TaskRepository:
         return TaskState(**cast(dict, result.data))
 
     async def get_task_log(
-        self, task_id: str, between: Tuple[int, int]
-    ) -> Optional[TaskEventLog]:
+        self, task_id: str, between: tuple[int, int]
+    ) -> TaskEventLog | None:
         """
         :param between: The period in unix millis to fetch.
         """
@@ -251,7 +251,7 @@ class TaskRepository:
     async def _saveEventLogs(
         self,
         db_phase: ttm.TaskEventLogPhases,
-        events: Dict[str, List[LogEntry]],
+        events: dict[str, list[LogEntry]],
     ):
         for event_id, logs in events.items():
             db_event = (
@@ -265,7 +265,7 @@ class TaskRepository:
                 )
 
     async def _savePhaseLogs(
-        self, db_task_log: ttm.TaskEventLog, phases: Dict[str, Phases]
+        self, db_task_log: ttm.TaskEventLog, phases: dict[str, Phases]
     ):
         for phase_id, phase in phases.items():
             db_phase = (

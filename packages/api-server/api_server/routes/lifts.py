@@ -13,13 +13,13 @@ router = FastIORouter(tags=["Lifts"])
 
 
 @router.get("", response_model=List[Lift])
-async def get_lifts(rmf_repo: RmfRepository = Depends(RmfRepository)):
+async def get_lifts(rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)]):
     return await rmf_repo.get_lifts()
 
 
 @router.get("/{lift_name}/state", response_model=LiftState)
 async def get_lift_state(
-    lift_name: str, rmf_repo: RmfRepository = Depends(RmfRepository)
+    lift_name: str, rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)]
 ):
     """
     Available in socket.io

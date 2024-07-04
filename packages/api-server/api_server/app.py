@@ -6,7 +6,7 @@ import threading
 from typing import Any, Callable, Coroutine, Union
 
 import schedule
-from fastapi import Depends, FastAPI
+from fastapi import Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import (
     get_redoc_html,
@@ -23,7 +23,7 @@ from api_server.rmf_io.rmf_service import TasksService
 from . import gateway, ros, routes
 from .app_config import app_config
 from .authenticator import AuthenticationError, authenticator, user_dep
-from .fast_io import FastIO, SioSession
+from .fast_io import FastIO
 from .logging import default_logger
 from .models import DispenserState, DoorState, IngestorState, LiftState, User
 from .models import tortoise_models as ttm
@@ -32,7 +32,7 @@ from .rmf_io import AlertEvents, BeaconEvents, FleetEvents, RmfEvents, TaskEvent
 from .types import is_coroutine
 
 
-async def on_sio_connect(sid: str, environ: dict, auth: dict | None = None):
+async def on_sio_connect(_sid: str, _environ: dict, auth: dict | None = None):
     token = None
     if auth:
         token = auth["token"]
@@ -90,9 +90,8 @@ async def lifespan(_app: FastIO):
         cached_files, ros_node.node, rmf_events, RmfRepository(User.get_system_user())
     )
     await stack.enter_async_context(gateway.RmfGateway.set_instance(rmf_gateway))
-    await stack.enter_async_context(
-        TasksService.set_instance(TasksService(ros_node.node))
-    )
+    tasks_service = TasksService(ros_node.node)
+    await stack.enter_async_context(TasksService.set_instance(tasks_service))
 
     # shutdown event is not called when the app crashes, this can cause the app to be
     # "locked up" as some dependencies like tortoise does not allow python to exit until
@@ -126,7 +125,13 @@ async def lifespan(_app: FastIO):
             default_logger.warning(f"user [{t.created_by}] does not exist")
             continue
         task_repo = TaskRepository(user, default_logger)
-        await routes.scheduled_tasks.schedule_task(t, task_repo, default_logger)
+        await routes.scheduled_tasks.schedule_task(
+            t,
+            RmfRepository(User.get_system_user()),
+            task_repo,
+            tasks_service,
+            default_logger,
+        )
         scheduled += 1
     default_logger.info(f"loaded {scheduled} tasks")
     default_logger.info("successfully started scheduler")

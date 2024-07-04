@@ -20,12 +20,14 @@ async def sub_alerts(
 
 
 @router.get("", response_model=list[Alert])
-async def get_alerts(repo: AlertRepository = Depends(AlertRepository)):
+async def get_alerts(repo: Annotated[AlertRepository, Depends(AlertRepository)]):
     return await repo.get_all_alerts()
 
 
 @router.get("/{alert_id}", response_model=Alert)
-async def get_alert(alert_id: str, repo: AlertRepository = Depends(AlertRepository)):
+async def get_alert(
+    alert_id: str, repo: Annotated[AlertRepository, Depends(AlertRepository)]
+):
     alert = await repo.get_alert(alert_id)
     if alert is None:
         raise HTTPException(404, f"Alert with ID {alert_id} not found")
@@ -34,7 +36,9 @@ async def get_alert(alert_id: str, repo: AlertRepository = Depends(AlertReposito
 
 @router.post("", status_code=201, response_model=Alert)
 async def create_alert(
-    alert_id: str, category: str, repo: AlertRepository = Depends(AlertRepository)
+    alert_id: str,
+    category: str,
+    repo: Annotated[AlertRepository, Depends(AlertRepository)],
 ):
     alert = await repo.create_alert(alert_id, category)
     if alert is None:

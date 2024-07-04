@@ -15,7 +15,7 @@ router = FastIORouter(tags=["Building"])
 
 
 @router.get("", response_model=BuildingMap)
-async def get_building_map(rmf_repo: RmfRepository = Depends(RmfRepository)):
+async def get_building_map(rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)]):
     """
     Available in socket.io
     """

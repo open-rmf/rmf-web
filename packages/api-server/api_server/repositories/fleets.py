@@ -1,4 +1,4 @@
-from typing import Annotated, List, Optional, Sequence, Tuple, cast
+from typing import Annotated, Sequence, cast
 
 from fastapi import Depends
 from tortoise.exceptions import IntegrityError
@@ -20,11 +20,11 @@ class FleetRepository:
         self.user = user
         self.logger = logger
 
-    async def get_all_fleets(self) -> List[FleetState]:
+    async def get_all_fleets(self) -> list[FleetState]:
         db_states = await ttm.FleetState.all().values_list("data")
         return [FleetState(**s[0]) for s in db_states]
 
-    async def get_fleet_state(self, name: str) -> Optional[FleetState]:
+    async def get_fleet_state(self, name: str) -> FleetState | None:
         # TODO: enforce with authz
         result = await ttm.FleetState.get_or_none(name=name)
         if result is None:
@@ -32,8 +32,8 @@ class FleetRepository:
         return FleetState(**cast(dict, result.data))
 
     async def get_fleet_log(
-        self, name: str, between: Tuple[int, int]
-    ) -> Optional[FleetLog]:
+        self, name: str, between: tuple[int, int]
+    ) -> FleetLog | None:
         """
         :param between: The period in unix millis to fetch.
         """
@@ -42,7 +42,7 @@ class FleetRepository:
             "unix_millis_time__lte": between[1],
         }
         result = cast(
-            Optional[ttm.FleetLog],
+            ttm.FleetLog | None,
             await ttm.FleetLog.get_or_none(name=name).prefetch_related(
                 Prefetch(
                     "log",

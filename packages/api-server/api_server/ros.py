@@ -1,6 +1,5 @@
 import os
 import threading
-from typing import override
 
 import rclpy
 import rclpy.node

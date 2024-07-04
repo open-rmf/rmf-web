@@ -42,7 +42,7 @@ async def cancellation_lots_from_building_map(
 
 @router.get("/{task_id}/request", response_model=mdl.TaskRequest)
 async def get_task_request(
-    task_repo: TaskRepository = Depends(TaskRepository),
+    task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
     task_id: str = Path(..., description="task_id"),
 ):
     result = await task_repo.get_task_request(task_id)
@@ -53,7 +53,7 @@ async def get_task_request(
 
 @router.get("/requests", response_model=list[mdl.TaskRequest])
 async def query_task_requests(
-    task_repo: TaskRepository = Depends(TaskRepository),
+    task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
     task_ids: str | None = Query(None, description="comma separated list of task ids"),
 ):
     task_id_splits = []
@@ -64,28 +64,40 @@ async def query_task_requests(
 
 @router.get("", response_model=list[mdl.TaskState])
 async def query_task_states(
-    task_repo: TaskRepository = Depends(TaskRepository),
-    task_id: str | None = Query(None, description="comma separated list of task ids"),
-    category: str | None = Query(
-        None, description="comma separated list of task categories"
-    ),
-    request_time_between: tuple[datetime, datetime] | None = Depends(
-        time_between_query
-    ),
-    requester: str | None = Query(
-        None, description="comma separated list of requester names"
-    ),
-    assigned_to: str | None = Query(
-        None, description="comma separated list of assigned robot names"
-    ),
-    start_time_between: tuple[datetime, datetime] | None = Depends(time_between_query),
-    finish_time_between: tuple[datetime, datetime] | None = Depends(time_between_query),
-    status: str | None = Query(None, description="comma separated list of statuses"),
-    label: str | None = Query(
-        None,
-        description="comma separated list of labels, each item must be in the form <key>=<value>, multiple items will filter tasks with all the labels",
-    ),
-    pagination: mdl.Pagination = Depends(pagination_query),
+    task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
+    task_id: Annotated[
+        str | None, Query(None, description="comma separated list of task ids")
+    ] = None,
+    category: Annotated[
+        str | None, Query(None, description="comma separated list of task categories")
+    ] = None,
+    request_time_between: Annotated[
+        tuple[datetime, datetime] | None, Depends(time_between_query)
+    ] = None,
+    requester: Annotated[
+        str | None, Query(None, description="comma separated list of requester names")
+    ] = None,
+    assigned_to: Annotated[
+        str | None,
+        Query(None, description="comma separated list of assigned robot names"),
+    ] = None,
+    start_time_between: Annotated[
+        tuple[datetime, datetime] | None, Depends(time_between_query)
+    ] = None,
+    finish_time_between: Annotated[
+        tuple[datetime, datetime] | None, Depends(time_between_query)
+    ] = None,
+    status: Annotated[
+        str | None, Query(None, description="comma separated list of statuses")
+    ] = None,
+    label: Annotated[
+        str | None,
+        Query(
+            None,
+            description="comma separated list of labels, each item must be in the form <key>=<value>, multiple items will filter tasks with all the labels",
+        ),
+    ] = None,
+    pagination: Annotated[mdl.Pagination | None, Depends(pagination_query)] = None,
 ):
     labels = mdl.Labels.from_strings(label.split(",")) if label else mdl.Labels(root={})
 
@@ -105,8 +117,8 @@ async def query_task_states(
 
 @router.get("/{task_id}/state", response_model=mdl.TaskState)
 async def get_task_state(
-    task_repo: TaskRepository = Depends(TaskRepository),
-    task_id: str = Path(..., description="task_id"),
+    task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
+    task_id: Annotated[str, Path(..., description="task_id")],
 ):
     """
     Available in socket.io
@@ -132,8 +144,8 @@ async def sub_task_state(req: SubscriptionRequest, task_id: str):
 
 @router.get("/{task_id}/booking_label", response_model=mdl.Labels)
 async def get_task_booking_label(
-    task_repo: TaskRepository = Depends(TaskRepository),
-    task_id: str = Path(..., description="task_id"),
+    task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
+    task_id: Annotated[str, Path(..., description="task_id")],
 ):
     state = await task_repo.get_task_state(task_id)
     if state is None:
@@ -152,9 +164,9 @@ async def get_task_booking_label(
 
 @router.get("/{task_id}/log", response_model=mdl.TaskEventLog)
 async def get_task_log(
-    task_repo: TaskRepository = Depends(TaskRepository),
-    task_id: str = Path(..., description="task_id"),
-    between: tuple[int, int] = Depends(between_query),
+    task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
+    task_id: Annotated[str, Path(..., description="task_id")],
+    between: Annotated[tuple[int, int], Depends(between_query)],
 ):
     """
     Available in socket.io
@@ -178,7 +190,9 @@ async def post_activity_discovery(
     request: Annotated[mdl.ActivityDiscoveryRequest, Body(...)],
     tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
 ):
-    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+    return RawJSONResponse(
+        await tasks_service.call(request.model_dump_json(exclude_none=True))
+    )
 
 
 @router.post("/cancel_task", response_model=mdl.TaskCancelResponse)
@@ -188,7 +202,9 @@ async def post_cancel_task(
     tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
 ):
     logger.info(request)
-    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+    return RawJSONResponse(
+        await tasks_service.call(request.model_dump_json(exclude_none=True))
+    )
 
 
 @router.post(
@@ -265,11 +281,11 @@ async def post_robot_task(
     task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
     tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
 ):
-    resp = mdl.RobotTaskResponse.parse_raw(
-        await tasks_service.call(request.json(exclude_none=True))
+    resp = mdl.RobotTaskResponse.model_validate_json(
+        await tasks_service.call(request.model_dump_json(exclude_none=True))
     )
     if not resp.root.root.success:
-        return RawJSONResponse(resp.json(), 400)
+        return RawJSONResponse(resp.model_dump_json(), 400)
     await task_repo.save_task_state(
         cast(mdl.TaskDispatchResponse1, resp.root.root).state
     )
@@ -281,7 +297,9 @@ async def post_interrupt_task(
     request: Annotated[mdl.TaskInterruptionRequest, Body(...)],
     tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
 ):
-    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+    return RawJSONResponse(
+        await tasks_service.call(request.model_dump_json(exclude_none=True))
+    )
 
 
 @router.post("/kill_task", response_model=mdl.TaskKillResponse)
@@ -289,7 +307,9 @@ async def post_kill_task(
     request: Annotated[mdl.TaskKillRequest, Body(...)],
     tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
 ):
-    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+    return RawJSONResponse(
+        await tasks_service.call(request.model_dump_json(exclude_none=True))
+    )
 
 
 @router.post("/resume_task", response_model=mdl.TaskResumeResponse)
@@ -297,7 +317,9 @@ async def post_resume_task(
     request: Annotated[mdl.TaskResumeRequest, Body(...)],
     tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
 ):
-    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+    return RawJSONResponse(
+        await tasks_service.call(request.model_dump_json(exclude_none=True))
+    )
 
 
 @router.post("/rewind_task", response_model=mdl.TaskRewindResponse)
@@ -305,7 +327,9 @@ async def post_rewind_task(
     request: Annotated[mdl.TaskRewindRequest, Body(...)],
     tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
 ):
-    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+    return RawJSONResponse(
+        await tasks_service.call(request.model_dump_json(exclude_none=True))
+    )
 
 
 @router.post("/skip_phase", response_model=mdl.SkipPhaseResponse)
@@ -313,7 +337,9 @@ async def post_skip_phase(
     request: Annotated[mdl.TaskPhaseSkipRequest, Body(...)],
     tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
 ):
-    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+    return RawJSONResponse(
+        await tasks_service.call(request.model_dump_json(exclude_none=True))
+    )
 
 
 @router.post("/task_discovery", response_model=mdl.TaskDiscovery)
@@ -321,7 +347,9 @@ async def post_task_discovery(
     request: Annotated[mdl.TaskDiscoveryRequest, Body(...)],
     tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
 ):
-    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+    return RawJSONResponse(
+        await tasks_service.call(request.model_dump_json(exclude_none=True))
+    )
 
 
 @router.post("/undo_skip_phase", response_model=mdl.UndoPhaseSkipResponse)
@@ -329,4 +357,6 @@ async def post_undo_skip_phase(
     request: Annotated[mdl.UndoPhaseSkipRequest, Body(...)],
     tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
 ):
-    return RawJSONResponse(await tasks_service.call(request.json(exclude_none=True)))
+    return RawJSONResponse(
+        await tasks_service.call(request.model_dump_json(exclude_none=True))
+    )

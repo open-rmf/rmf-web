@@ -1,14 +1,14 @@
-from typing import Dict
-
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class TaskFavorite(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     name: str
     unix_millis_earliest_start_time: int
-    priority: Dict | None
+    priority: dict | None
     category: str
-    description: Dict | None
+    description: dict | None
     user: str
     task_definition_id: str

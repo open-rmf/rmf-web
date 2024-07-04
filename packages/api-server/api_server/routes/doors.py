@@ -1,28 +1,25 @@
-from typing import Annotated, List, cast
+from typing import Annotated, cast
 
 from fastapi import Depends, HTTPException
-from reactivex import of
 from reactivex import operators as rxops
 
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import RmfGateway
 from api_server.models import Door, DoorRequest, DoorState
-from api_server.models.doors import DoorMode
-from api_server.models.ros_pydantic.builtin_interfaces.Time import Time
 from api_server.repositories import RmfRepository
 from api_server.rmf_io import RmfEvents
 
 router = FastIORouter(tags=["Doors"])
 
 
-@router.get("", response_model=List[Door])
-async def get_doors(rmf_repo: RmfRepository = Depends(RmfRepository)):
+@router.get("", response_model=list[Door])
+async def get_doors(rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)]):
     return await rmf_repo.get_doors()
 
 
 @router.get("/{door_name}/state", response_model=DoorState)
 async def get_door_state(
-    door_name: str, rmf_repo: RmfRepository = Depends(RmfRepository)
+    door_name: str, rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)]
 ):
     """
     Available in socket.io

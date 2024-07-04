@@ -1,5 +1,4 @@
 import os.path
-from typing import Optional
 
 import jwt
 from fastapi.testclient import TestClient as BaseTestClient
@@ -9,7 +8,7 @@ from api_server.app import app
 here = os.path.dirname(__file__)
 
 
-_jwt_key: Optional[str] = None
+_jwt_key: str | None = None
 
 
 def jwt_key():

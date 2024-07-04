@@ -4,7 +4,7 @@ import sys
 import urllib.parse
 from dataclasses import dataclass
 from importlib.abc import Loader
-from typing import Any, List, Optional, cast
+from typing import Any, cast
 
 
 @dataclass
@@ -16,11 +16,11 @@ class AppConfig:
     cache_directory: str
     log_level: str
     builtin_admin: str
-    jwt_public_key: Optional[str]
-    oidc_url: Optional[str]
+    jwt_public_key: str | None
+    oidc_url: str | None
     aud: str
-    iss: Optional[str]
-    ros_args: List[str]
+    iss: str | None
+    ros_args: list[str]
 
     def __post_init__(self):
         self.public_url = urllib.parse.urlparse(cast(str, self.public_url))

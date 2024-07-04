@@ -1,4 +1,4 @@
-from typing import Annotated, List, Literal, Optional, cast
+from typing import Annotated, Literal, cast
 
 from fastapi import Depends
 from tortoise.queryset import ValuesListQuery
@@ -49,13 +49,13 @@ class RmfRepository:
             {"data": building_map.model_dump()}, id_=building_map.name
         )
 
-    async def get_doors(self) -> List[Door]:
+    async def get_doors(self) -> list[Door]:
         building_map = await self.get_bulding_map()
         if building_map is None:
             return []
         return [door for level in building_map.levels for door in level.doors]
 
-    async def get_door_state(self, door_name: str) -> Optional[DoorState]:
+    async def get_door_state(self, door_name: str) -> DoorState | None:
         door_state = await ttm.DoorState.get_or_none(id_=door_name)
         if door_state is None:
             return None
@@ -66,13 +66,13 @@ class RmfRepository:
             {"data": door_state.model_dump()}, id_=door_state.door_name
         )
 
-    async def get_lifts(self) -> List[Lift]:
+    async def get_lifts(self) -> list[Lift]:
         building_map = await self.get_bulding_map()
         if building_map is None:
             return []
         return building_map.lifts
 
-    async def get_lift_state(self, lift_name: str) -> Optional[LiftState]:
+    async def get_lift_state(self, lift_name: str) -> LiftState | None:
         lift_state = await ttm.LiftState.get_or_none(id_=lift_name)
         if lift_state is None:
             return None
@@ -83,7 +83,7 @@ class RmfRepository:
             {"data": lift_state.model_dump()}, id_=lift_state.lift_name
         )
 
-    async def get_dispensers(self) -> List[Dispenser]:
+    async def get_dispensers(self) -> list[Dispenser]:
         states = await ttm.DispenserState.all()
         return [Dispenser.model_validate(state.data) for state in states]
 
@@ -92,13 +92,13 @@ class RmfRepository:
             {"data": dispenser_state.model_dump()}, id_=dispenser_state.guid
         )
 
-    async def get_dispenser_state(self, guid: str) -> Optional[DispenserState]:
+    async def get_dispenser_state(self, guid: str) -> DispenserState | None:
         dispenser_state = await ttm.DispenserState.get_or_none(id_=guid)
         if dispenser_state is None:
             return None
         return DispenserState.model_validate(dispenser_state.data)
 
-    async def get_ingestors(self) -> List[Ingestor]:
+    async def get_ingestors(self) -> list[Ingestor]:
         states = await ttm.IngestorState.all()
         return [Ingestor.model_validate(state.data) for state in states]
 
@@ -107,7 +107,7 @@ class RmfRepository:
             {"data": ingestor_state.model_dump()}, id_=ingestor_state.guid
         )
 
-    async def get_ingestor_state(self, guid: str) -> Optional[IngestorState]:
+    async def get_ingestor_state(self, guid: str) -> IngestorState | None:
         ingestor_state = await ttm.IngestorState.get_or_none(id_=guid)
         if ingestor_state is None:
             return None

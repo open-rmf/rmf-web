@@ -32,7 +32,7 @@ def py_to_ros_time(py_datetime: datetime) -> RosTime:
     )
 
 
-def convert_to_rmf_time(timestamp: int, now: RosTime) -> RosTime:
+def convert_to_rmf_time(timestamp: int, ros_now: RosTime) -> RosTime:
     """
     Given a timestamp (in seconds), convert it to rmf time. If rmf is not using simulation time,
     this simply converts to ros time format.
@@ -51,8 +51,8 @@ def convert_to_rmf_time(timestamp: int, now: RosTime) -> RosTime:
         nanosec=0,
     )
     utc_now = py_to_ros_time(datetime.now())
-    sec = ros_time.sec - utc_now.sec + now.sec
-    nanosec = ros_time.nanosec - utc_now.nanosec + now.nanosec
+    sec = ros_time.sec - utc_now.sec + ros_now.sec
+    nanosec = ros_time.nanosec - utc_now.nanosec + ros_now.nanosec
     if nanosec < 0:
         sec = sec - 1
         nanosec = 1000000000 + nanosec

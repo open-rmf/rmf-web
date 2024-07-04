@@ -2,7 +2,6 @@ import logging
 import typing
 from logging import LoggerAdapter
 
-from fastapi import Depends
 from fastapi.requests import HTTPConnection
 from termcolor import colored
 from termcolor._types import Color

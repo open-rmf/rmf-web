@@ -1,4 +1,4 @@
-from typing import List
+from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
@@ -11,15 +11,15 @@ router = APIRouter()
 
 
 @router.get("/user", response_model=User)
-async def get_user(user: User = Depends(user_dep)):
+async def get_user(user: Annotated[User, Depends(user_dep)]):
     """
     Get the currently logged in user
     """
     return user
 
 
-@router.get("/permissions", response_model=List[Permission])
-async def get_effective_permissions(user: User = Depends(user_dep)):
+@router.get("/permissions", response_model=list[Permission])
+async def get_effective_permissions(user: Annotated[User, Depends(user_dep)]):
     """
     Get the effective permissions of the current user
     """

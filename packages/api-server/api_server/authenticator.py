@@ -1,7 +1,7 @@
 import base64
 import json
 import logging
-from typing import Any, Callable, Coroutine, Optional, Protocol, Union
+from typing import Any, Callable, Coroutine, Protocol
 
 import jwt
 from fastapi import Depends, Header, HTTPException
@@ -16,9 +16,9 @@ class AuthenticationError(Exception):
 
 
 class Authenticator(Protocol):
-    async def verify_token(self, token: Optional[str]) -> User: ...
+    async def verify_token(self, token: str | None) -> User: ...
 
-    def fastapi_dep(self) -> Callable[..., Union[Coroutine[Any, Any, User], User]]: ...
+    def fastapi_dep(self) -> Callable[..., Coroutine[Any, Any, User] | User]: ...
 
 
 class JwtAuthenticator:
@@ -62,7 +62,7 @@ class JwtAuthenticator:
 
         return user
 
-    async def verify_token(self, token: Optional[str]) -> User:
+    async def verify_token(self, token: str | None) -> User:
         if not token:
             raise AuthenticationError("authentication required")
         try:
@@ -79,7 +79,7 @@ class JwtAuthenticator:
         except jwt.InvalidTokenError as e:
             raise AuthenticationError(str(e)) from e
 
-    def fastapi_dep(self) -> Callable[..., Union[Coroutine[Any, Any, User], User]]:
+    def fastapi_dep(self) -> Callable[..., Coroutine[Any, Any, User] | User]:
         async def dep(
             auth_header: str = Depends(OpenIdConnect(openIdConnectUrl=self.oidc_url)),
         ):
@@ -101,7 +101,7 @@ class StubAuthenticator(Authenticator):
     WITHOUT verifying the signature and authenticated as the user given.
     """
 
-    async def verify_token(self, token: Optional[str]):
+    async def verify_token(self, token: str | None):
         if not token:
             return User(username="stub", is_admin=True)
         # decode the jwt without verifying signature
