@@ -31,5 +31,4 @@ class SingletonDep(contextlib.AbstractAsyncContextManager):
                 cls._instance = instance
                 yield
         finally:
-            pass
             cls._instance = None

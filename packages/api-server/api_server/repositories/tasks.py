@@ -42,14 +42,14 @@ class TaskRepository:
         self, task_state: TaskState, task_request: TaskRequest
     ) -> None:
         await DbTaskRequest.update_or_create(
-            {"request": task_request.json()}, id_=task_state.booking.id
+            {"request": task_request.model_dump_json()}, id_=task_state.booking.id
         )
 
     async def get_task_request(self, task_id: str) -> Optional[TaskRequest]:
         result = await DbTaskRequest.get_or_none(id_=task_id)
         if result is None:
             return None
-        return TaskRequest.model_construct(**cast(dict, result.request))
+        return TaskRequest.model_validate(result.request)
 
     async def query_task_requests(self, task_ids: List[str]) -> List[DbTaskRequest]:
         filters = {"id___in": task_ids}
@@ -110,14 +110,16 @@ class TaskRepository:
 
     async def query_task_states(
         self,
-        task_id: list[str] | None = None,
-        category: list[str] | None = None,
-        assigned_to: list[str] | None = None,
+        task_id: Sequence[str] | None = None,
+        category: Sequence[str] | None = None,
+        assigned_to: Sequence[str] | None = None,
         start_time_between: tuple[datetime, datetime] | None = None,
         finish_time_between: tuple[datetime, datetime] | None = None,
-        status: list[str] | None = None,
+        request_time_between: tuple[datetime, datetime] | None = None,
+        requester: Sequence[str] | None = None,
+        status: Sequence[str] | None = None,
         label: Labels | None = None,
-        pagination: Optional[Pagination] = None,
+        pagination: Pagination | None = None,
     ) -> List[TaskState]:
         filters = {}
         if task_id is not None:
@@ -132,6 +134,11 @@ class TaskRepository:
         if finish_time_between is not None:
             filters["unix_millis_finish_time__gte"] = finish_time_between[0]
             filters["unix_millis_finish_time__lte"] = finish_time_between[1]
+        if request_time_between is not None:
+            filters["unix_millis_request_time__gte"] = request_time_between[0]
+            filters["unix_millis_request_time__lte"] = request_time_between[1]
+        if requester is not None:
+            filters["requester__in"] = requester
         if status is not None:
             valid_values = [member.value for member in TaskStatus]
             filters["status__in"] = []
@@ -235,7 +242,7 @@ class TaskRepository:
                 events[db_event.event] = [LogEntry(**dict(x)) for x in db_event.log]
             phase.events = events
             phases[db_phase.phase] = phase
-        return TaskEventLog.model_construct(
+        return TaskEventLog(
             task_id=result.task_id,
             log=[LogEntry(**dict(x)) for x in result.log],
             phases=phases,

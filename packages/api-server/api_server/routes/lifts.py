@@ -3,7 +3,6 @@ from typing import Annotated, List, cast
 from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
 
-from api_server.dependencies import sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import RmfGateway
 from api_server.models import Lift, LiftRequest, LiftState
@@ -33,7 +32,7 @@ async def get_lift_state(
 
 @router.sub("/{lift_name}/state", response_model=LiftState)
 async def sub_lift_state(req: SubscriptionRequest, lift_name: str):
-    user = sio_user(req)
+    user = req.user
     obs = RmfEvents.get_instance().lift_states.pipe(
         rxops.filter(lambda x: cast(LiftState, x).lift_name == lift_name)
     )

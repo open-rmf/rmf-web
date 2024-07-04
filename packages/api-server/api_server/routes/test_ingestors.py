@@ -2,6 +2,8 @@ from typing import List
 from uuid import uuid4
 
 from api_server.models import IngestorState
+from api_server.models.user import User
+from api_server.repositories.rmf import RmfRepository
 from api_server.test import AppFixture, make_ingestor_state
 
 
@@ -9,11 +11,12 @@ class TestIngestorsRoute(AppFixture):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        rmf_repo = RmfRepository(User.get_system_user())
         cls.ingestor_states = [make_ingestor_state(f"test_{uuid4()}")]
 
         portal = cls.get_portal()
         for x in cls.ingestor_states:
-            portal.call(x.save)
+            portal.call(rmf_repo.save_ingestor_state, x)
 
     def test_get_ingestors(self):
         resp = self.client.get("/ingestors")

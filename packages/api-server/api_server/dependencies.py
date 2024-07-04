@@ -25,11 +25,6 @@ def pagination_query(
     )
 
 
-# hacky way to get the sio user
-def sio_user(req: SubscriptionRequest) -> User:
-    return req.session["user"]
-
-
 def between_query(
     between: str = Query(
         "-60000",

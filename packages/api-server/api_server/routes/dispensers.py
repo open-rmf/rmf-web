@@ -3,7 +3,6 @@ from typing import List, cast
 from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
 
-from api_server.dependencies import sio_user
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import Dispenser, DispenserState
 from api_server.repositories import RmfRepository
@@ -32,7 +31,7 @@ async def get_dispenser_state(
 
 @router.sub("/{guid}/state", response_model=DispenserState)
 async def sub_dispenser_state(req: SubscriptionRequest, guid: str):
-    user = sio_user(req)
+    user = req.user
     obs = RmfEvents.get_instance().dispenser_states.pipe(
         rxops.filter(lambda x: cast(DispenserState, x).guid == guid)
     )

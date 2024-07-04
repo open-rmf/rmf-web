@@ -1,8 +1,6 @@
 from tortoise.fields import (
-    BigIntField,
     CharField,
     DatetimeField,
-    FloatField,
     ForeignKeyField,
     ForeignKeyRelation,
     JSONField,
@@ -25,6 +23,7 @@ class TaskState(Model):
     assigned_to = CharField(255, null=True, index=True)
     unix_millis_start_time = DatetimeField(null=True, index=True)
     unix_millis_finish_time = DatetimeField(null=True, index=True)
+    unix_millis_request_time = DatetimeField(null=True, index=True)
     status = CharField(255, null=True, index=True)
     unix_millis_request_time = DatetimeField(null=True, index=True)
     requester = CharField(255, null=True, index=True)

@@ -28,10 +28,7 @@ async def get_effective_permissions(user: User = Depends(user_dep)):
         .distinct()
         .values("authz_grp", "action")
     )
-    return [
-        Permission.construct(authz_grp=p["authz_grp"], action=p["action"])
-        for p in perms
-    ]
+    return [Permission(authz_grp=p["authz_grp"], action=p["action"]) for p in perms]
 
 
 @router.get("/time", response_model=int)

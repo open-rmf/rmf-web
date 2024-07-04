@@ -2,6 +2,8 @@ from typing import List
 from uuid import uuid4
 
 from api_server.models import DispenserState
+from api_server.models.user import User
+from api_server.repositories.rmf import RmfRepository
 from api_server.test import AppFixture, make_dispenser_state
 
 
@@ -9,11 +11,12 @@ class TestDispensersRoute(AppFixture):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        rmf_repo = RmfRepository(User.get_system_user())
         cls.dispenser_states = [make_dispenser_state(f"test_{uuid4()}")]
 
         portal = cls.get_portal()
         for x in cls.dispenser_states:
-            portal.call(x.save)
+            portal.call(rmf_repo.save_dispenser_state, x)
 
     def test_get_dispensers(self):
         resp = self.client.get("/dispensers")

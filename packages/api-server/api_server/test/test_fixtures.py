@@ -15,7 +15,9 @@ from anyio.abc import BlockingPortal
 from tortoise import Tortoise
 
 from api_server.app import app, app_config
+from api_server.fast_io import SubscriptionResponse
 from api_server.models import User
+from api_server.rmf_io.events import RmfEvents
 from api_server.routes.admin import PostUsers
 
 from .mocks import patch_sio
@@ -159,11 +161,18 @@ class AppFixture(unittest.TestCase):
 
                 mock_sio.emit.side_effect = handle_resp
 
+                mock_scope = {"type": "websocket"}
                 portal.call(
-                    on_sio_connect, "test", {}, {"token": self.client.token(user)}
+                    on_sio_connect,
+                    "test",
+                    mock_scope,
+                    {"token": self.client.token(user)},
                 )
                 connected = True
-                portal.call(on_subscribe, "test", {"room": room})
+                resp: SubscriptionResponse = portal.call(
+                    on_subscribe, "test", {"room": room}
+                )
+                self.assertTrue(resp.success, resp.error)
 
                 yield gen()
             finally:

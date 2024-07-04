@@ -6,7 +6,7 @@ import threading
 from typing import Any, Callable, Coroutine, Union
 
 import schedule
-from fastapi import Depends
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import (
     get_redoc_html,
@@ -18,12 +18,12 @@ from tortoise import Tortoise
 
 from api_server.repositories.cached_files import CachedFilesRepository
 from api_server.repositories.rmf import RmfRepository
-from api_server.rmf_io.rmf_service import RmfService, TasksService
+from api_server.rmf_io.rmf_service import TasksService
 
-from . import gateway, logging, ros, routes
+from . import gateway, ros, routes
 from .app_config import app_config
 from .authenticator import AuthenticationError, authenticator, user_dep
-from .fast_io import FastIO
+from .fast_io import FastIO, SioSession
 from .logging import default_logger
 from .models import DispenserState, DoorState, IngestorState, LiftState, User
 from .models import tortoise_models as ttm
@@ -32,18 +32,16 @@ from .rmf_io import AlertEvents, BeaconEvents, FleetEvents, RmfEvents, TaskEvent
 from .types import is_coroutine
 
 
-async def on_sio_connect(sid: str, _environ: dict, auth: dict | None = None) -> bool:
-    session = await app.sio.get_session(sid)
+async def on_sio_connect(sid: str, environ: dict, auth: dict | None = None):
     token = None
     if auth:
         token = auth["token"]
     try:
         user = await authenticator.verify_token(token)
-        session["user"] = user
-        return True
+        return user
     except AuthenticationError as e:
         default_logger.info(f"authentication failed: {e}")
-        return False
+        return None
 
 
 # will be called in reverse order on app shutdown
@@ -149,6 +147,8 @@ app = FastIO(
     redoc_url=None,
     separate_input_output_schemas=False,
 )
+if app.swagger_ui_oauth2_redirect_url is None:
+    app.swagger_ui_oauth2_redirect_url = "docs/oauth2-redirect"
 
 
 app.add_middleware(
@@ -259,7 +259,7 @@ async def _spin_scheduler():
 async def _load_states(rmf_events: RmfEvents):
     default_logger.info("loading states from database...")
 
-    door_states = [DoorState.from_tortoise(x) for x in await ttm.DoorState.all()]
+    door_states = [DoorState.model_validate(x) for x in await ttm.DoorState.all()]
     for state in door_states:
         rmf_events.door_states.on_next(state)
     default_logger.info(f"loaded {len(door_states)} door states")
@@ -270,14 +270,14 @@ async def _load_states(rmf_events: RmfEvents):
     default_logger.info(f"loaded {len(lift_states)} lift states")
 
     dispenser_states = [
-        DispenserState.from_tortoise(x) for x in await ttm.DispenserState.all()
+        DispenserState.model_validate(x) for x in await ttm.DispenserState.all()
     ]
     for state in dispenser_states:
         rmf_events.dispenser_states.on_next(state)
     default_logger.info(f"loaded {len(dispenser_states)} dispenser states")
 
     ingestor_states = [
-        IngestorState.from_tortoise(x) for x in await ttm.IngestorState.all()
+        IngestorState.model_validate(x) for x in await ttm.IngestorState.all()
     ]
     for state in ingestor_states:
         rmf_events.ingestor_states.on_next(state)

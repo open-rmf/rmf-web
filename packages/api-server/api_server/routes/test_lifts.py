@@ -2,7 +2,8 @@ from uuid import uuid4
 
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 
-from api_server.models import LiftState
+from api_server.models import LiftState, User
+from api_server.repositories import RmfRepository
 from api_server.test import AppFixture, make_building_map, make_lift_state
 
 
@@ -10,13 +11,14 @@ class TestLiftsRoute(AppFixture):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        rmf_repo = RmfRepository(User.get_system_user())
         cls.building_map = make_building_map()
         portal = cls.get_portal()
-        portal.call(cls.building_map.save)
+        portal.call(rmf_repo.save_building_map, cls.building_map)
 
         cls.lift_states = [make_lift_state(f"test_{uuid4()}")]
         for x in cls.lift_states:
-            portal.call(x.save)
+            portal.call(rmf_repo.save_lift_state, x)
 
     def test_get_lifts(self):
         resp = self.client.get("/lifts")

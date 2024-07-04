@@ -1,6 +1,7 @@
-from typing import Annotated, List, Optional, cast
+from typing import Annotated, List, Literal, Optional, cast
 
 from fastapi import Depends
+from tortoise.queryset import ValuesListQuery
 
 from api_server.authenticator import user_dep
 from api_server.models import (
@@ -33,11 +34,11 @@ class RmfRepository:
                 filter_params[k] = v
         return filter_params
 
-    async def get_bulding_map(self) -> Optional[BuildingMap]:
+    async def get_bulding_map(self) -> BuildingMap | None:
         building_map = await ttm.BuildingMap.first()
         if building_map is None:
             return None
-        return BuildingMap(**cast(dict, building_map.data))
+        return BuildingMap.model_validate(building_map.data)
 
     async def save_building_map(self, building_map: BuildingMap) -> None:
         existing_maps = await ttm.BuildingMap.all()
@@ -58,7 +59,7 @@ class RmfRepository:
         door_state = await ttm.DoorState.get_or_none(id_=door_name)
         if door_state is None:
             return None
-        return DoorState.model_construct(**cast(dict, door_state.data))
+        return DoorState.model_validate(door_state.data)
 
     async def save_door_state(self, door_state: DoorState) -> None:
         await ttm.DoorState.update_or_create(
@@ -75,7 +76,7 @@ class RmfRepository:
         lift_state = await ttm.LiftState.get_or_none(id_=lift_name)
         if lift_state is None:
             return None
-        return LiftState.model_construct(**cast(dict, lift_state.data))
+        return LiftState.model_validate(lift_state.data)
 
     async def save_lift_state(self, lift_state: LiftState) -> None:
         await ttm.LiftState.update_or_create(
@@ -84,10 +85,7 @@ class RmfRepository:
 
     async def get_dispensers(self) -> List[Dispenser]:
         states = await ttm.DispenserState.all()
-        return [
-            Dispenser.model_construct(guid=cast(dict, state.data)["guid"])
-            for state in states
-        ]
+        return [Dispenser.model_validate(state.data) for state in states]
 
     async def save_dispenser_state(self, dispenser_state: DispenserState) -> None:
         await ttm.DispenserState.update_or_create(
@@ -98,14 +96,11 @@ class RmfRepository:
         dispenser_state = await ttm.DispenserState.get_or_none(id_=guid)
         if dispenser_state is None:
             return None
-        return DispenserState.model_construct(**cast(dict, dispenser_state.data))
+        return DispenserState.model_validate(dispenser_state.data)
 
     async def get_ingestors(self) -> List[Ingestor]:
         states = await ttm.IngestorState.all()
-        return [
-            Ingestor.model_construct(guid=cast(dict, state.data)["guid"])
-            for state in states
-        ]
+        return [Ingestor.model_validate(state.data) for state in states]
 
     async def save_ingestor_state(self, ingestor_state: IngestorState) -> None:
         await ttm.IngestorState.update_or_create(
@@ -116,7 +111,7 @@ class RmfRepository:
         ingestor_state = await ttm.IngestorState.get_or_none(id_=guid)
         if ingestor_state is None:
             return None
-        return IngestorState.model_construct(**cast(dict, ingestor_state.data))
+        return IngestorState.model_validate(ingestor_state.data)
 
     async def save_beacon_state(self, beacon_state: BeaconState) -> None:
         d = beacon_state.model_dump()
@@ -127,17 +122,17 @@ class RmfRepository:
         self,
         pagination: Pagination,
         *,
-        username: Optional[str] = None,
-        is_admin: Optional[bool] = None,
-    ) -> List[str]:
+        username: str | None = None,
+        is_admin: bool | None = None,
+    ) -> tuple[str]:
         filter_params = {}
         if username is not None:
             filter_params["username__istartswith"] = username
         if is_admin is not None:
             filter_params["is_admin"] = is_admin
-        return cast(
-            List[str],
-            await add_pagination(
+        return await cast(
+            ValuesListQuery[Literal[True]],
+            add_pagination(
                 ttm.User.filter(**filter_params),
                 pagination,
             ).values_list("username", flat=True),

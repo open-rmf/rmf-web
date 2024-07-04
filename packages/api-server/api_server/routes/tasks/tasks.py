@@ -1,16 +1,11 @@
 from datetime import datetime
-from typing import Annotated, List, Optional, Tuple, cast
+from typing import Annotated, cast
 
 from fastapi import Body, Depends, HTTPException, Path, Query
 from reactivex import operators as rxops
 
 from api_server import models as mdl
-from api_server.dependencies import (
-    between_query,
-    pagination_query,
-    sio_user,
-    time_between_query,
-)
+from api_server.dependencies import between_query, pagination_query, time_between_query
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.logging import LoggerAdapter, default_logger, get_logger
 from api_server.repositories import RmfRepository, TaskRepository
@@ -23,7 +18,7 @@ router = FastIORouter(tags=["Tasks"])
 
 async def cancellation_lots_from_building_map(
     logger: LoggerAdapter, rmf_repo: RmfRepository
-) -> List[str]:
+) -> list[str]:
     building_map = None
     try:
         building_map = await get_building_map(rmf_repo)
@@ -56,56 +51,36 @@ async def get_task_request(
     return result
 
 
-@router.get("/requests", response_model=List[Optional[mdl.TaskRequest]])
+@router.get("/requests", response_model=list[mdl.TaskRequest])
 async def query_task_requests(
     task_repo: TaskRepository = Depends(TaskRepository),
-    task_ids: Optional[str] = Query(
-        None, description="comma separated list of task ids"
-    ),
+    task_ids: str | None = Query(None, description="comma separated list of task ids"),
 ):
     task_id_splits = []
     if task_ids is not None:
         task_id_splits = task_ids.split(",")
-    valid_task_requests = await task_repo.query_task_requests(task_id_splits)
-
-    valid_task_request_map = {}
-    for valid_req in valid_task_requests:
-        valid_task_request_map[valid_req.id_] = mdl.TaskRequest(**valid_req.request)
-
-    return_requests = []
-    for id_query in task_id_splits:
-        if id_query in valid_task_request_map:
-            return_requests.append(valid_task_request_map[id_query])
-        else:
-            return_requests.append(None)
-    return return_requests
+    return await task_repo.query_task_requests(task_id_splits)
 
 
-@router.get("", response_model=List[mdl.TaskState])
+@router.get("", response_model=list[mdl.TaskState])
 async def query_task_states(
     task_repo: TaskRepository = Depends(TaskRepository),
-    task_id: Optional[str] = Query(
-        None, description="comma separated list of task ids"
-    ),
-    category: Optional[str] = Query(
+    task_id: str | None = Query(None, description="comma separated list of task ids"),
+    category: str | None = Query(
         None, description="comma separated list of task categories"
     ),
-    request_time_between: Optional[Tuple[datetime, datetime]] = Depends(
+    request_time_between: tuple[datetime, datetime] | None = Depends(
         time_between_query
     ),
-    requester: Optional[str] = Query(
+    requester: str | None = Query(
         None, description="comma separated list of requester names"
     ),
-    assigned_to: Optional[str] = Query(
+    assigned_to: str | None = Query(
         None, description="comma separated list of assigned robot names"
     ),
-    start_time_between: Optional[Tuple[datetime, datetime]] = Depends(
-        time_between_query
-    ),
-    finish_time_between: Optional[Tuple[datetime, datetime]] = Depends(
-        time_between_query
-    ),
-    status: Optional[str] = Query(None, description="comma separated list of statuses"),
+    start_time_between: tuple[datetime, datetime] | None = Depends(time_between_query),
+    finish_time_between: tuple[datetime, datetime] | None = Depends(time_between_query),
+    status: str | None = Query(None, description="comma separated list of statuses"),
     label: str | None = Query(
         None,
         description="comma separated list of labels, each item must be in the form <key>=<value>, multiple items will filter tasks with all the labels",
@@ -144,7 +119,7 @@ async def get_task_state(
 
 @router.sub("/{task_id}/state", response_model=mdl.TaskState)
 async def sub_task_state(req: SubscriptionRequest, task_id: str):
-    user = sio_user(req)
+    user = req.user
     task_repo = TaskRepository(user, default_logger)
     obs = TaskEvents.get_instance().task_states.pipe(
         rxops.filter(lambda x: cast(mdl.TaskState, x).booking.id == task_id)
@@ -179,7 +154,7 @@ async def get_task_booking_label(
 async def get_task_log(
     task_repo: TaskRepository = Depends(TaskRepository),
     task_id: str = Path(..., description="task_id"),
-    between: Tuple[int, int] = Depends(between_query),
+    between: tuple[int, int] = Depends(between_query),
 ):
     """
     Available in socket.io

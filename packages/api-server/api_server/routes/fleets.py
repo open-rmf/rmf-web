@@ -4,7 +4,7 @@ from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
 
 from api_server.authenticator import user_dep
-from api_server.dependencies import between_query, sio_user
+from api_server.dependencies import between_query
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import RmfGateway
 from api_server.logging import LoggerAdapter, get_logger
@@ -44,8 +44,8 @@ async def get_fleet_state(name: str, repo: FleetRepository = Depends(FleetReposi
 
 @router.sub("/{name}/state", response_model=FleetState)
 async def sub_fleet_state(req: SubscriptionRequest, name: str):
-    user = sio_user(req)
-    repo = FleetRepository(user)
+    user = req.user
+    repo = FleetRepository(user, req.logger)
     obs = FleetEvents.get_instance().fleet_states.pipe(
         rxops.filter(lambda x: cast(FleetState, x).name == name)
     )
@@ -131,8 +131,8 @@ async def decommission_robot(
     if reassign_tasks:
         reassignment_log_str = "Task re-assignment requested."
     logger.info(f"Decommissioning {robot_name} of {name}. {reassignment_log_str}")
-    resp = RobotCommissionResponse.parse_raw(
-        await tasks_service.call(request.json(exclude_none=True))
+    resp = RobotCommissionResponse.model_validate_json(
+        await tasks_service.call(request.model_dump_json(exclude_none=True))
     )
     logger.info(resp)
     if not resp.commission.root.success:
@@ -174,8 +174,8 @@ async def recommission_robot(
     )
 
     logger.info(f"Recommissioning {robot_name} of {name} called by {user.username}")
-    resp = RobotCommissionResponse.parse_raw(
-        await tasks_service.call(request.json(exclude_none=True))
+    resp = RobotCommissionResponse.model_validate_json(
+        await tasks_service.call(request.model_dump_json(exclude_none=True))
     )
     logger.info(resp)
     if not resp.commission.root.success:

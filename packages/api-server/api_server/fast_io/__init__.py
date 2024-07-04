@@ -1,32 +1,32 @@
 import asyncio
-import logging
 from dataclasses import dataclass
 from re import Match
-from typing import (
-    Any,
-    Callable,
-    Coroutine,
-    Dict,
-    List,
-    Optional,
-    Tuple,
-    Type,
-    Union,
-    cast,
-)
+from typing import Any, Callable, Coroutine, TypedDict, cast
 from urllib.parse import unquote as url_unquote
 
 import pydantic
 import socketio
 from fastapi import APIRouter, FastAPI
 from fastapi.exceptions import HTTPException
+from fastapi.requests import HTTPConnection
 from fastapi.routing import APIRoute
-from reactivex import Observable
+from reactivex import Observable, of
+from reactivex.abc import DisposableBase
 from starlette.routing import compile_path
+
+from api_server.logging import LoggerAdapter, get_logger
+from api_server.models.user import User
 
 from .errors import *
 from .pydantic_json_serializer import PydanticJsonSerializer
 from .singleton_dep import SingletonDep
+
+
+class SioSession(TypedDict):
+    environ: dict
+    user: User
+    subscriptions: dict[str, DisposableBase]
+    logger: LoggerAdapter
 
 
 @dataclass
@@ -34,7 +34,15 @@ class SubscriptionRequest:
     sid: str
     sio: socketio.AsyncServer
     room: str
-    session: Dict[Any, Any]
+    user: User
+    environ: dict
+    logger: LoggerAdapter
+
+
+@dataclass
+class SubscriptionResponse:
+    success: bool
+    error: str = ""
 
 
 @dataclass
@@ -47,21 +55,21 @@ class SubRoute:
         self,
         path: str,
         endpoint: Callable[
-            [SubscriptionRequest], Union[Observable, Coroutine[Any, Any, Observable]]
+            [SubscriptionRequest], Observable | Coroutine[Any, Any, Observable]
         ],
         *,
-        response_model: Optional[Type[pydantic.BaseModel]] = None,
+        response_model: type[pydantic.BaseModel] | None = None,
     ):
         self.path = path
         self.endpoint = endpoint
         self.path_regex, self.path_format, self.param_convertors = compile_path(path)
         self.response_model = response_model
 
-    def matches(self, path: str) -> Optional[Match]:
+    def matches(self, path: str) -> Match | None:
         return self.path_regex.match(path)
 
 
-OnSubscribe = Callable[..., Union[Observable, Coroutine[Any, Any, Observable]]]
+OnSubscribe = Callable[..., Observable | Coroutine[Any, Any, Observable]]
 
 
 class FastIORouter(APIRouter):
@@ -100,26 +108,23 @@ class FastIORouter(APIRouter):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.sub_routes: List[SubRoute] = []
+        self.sub_routes: list[SubRoute] = []
 
     def include_router(self, router: APIRouter, **kwargs):
-        if not isinstance(router, FastIORouter):
-            raise ValueError("router must be an instance of FastIORouter")
-
         super().include_router(router, **kwargs)
-        prefix = kwargs.get("prefix", "")
 
-        for r in router.sub_routes:
-            self.sub_routes.append(
-                SubRoute(
-                    prefix + router.prefix + r.path,
-                    r.endpoint,
+        if isinstance(router, FastIORouter):
+            prefix = kwargs.get("prefix", "")
+
+            for r in router.sub_routes:
+                self.sub_routes.append(
+                    SubRoute(
+                        prefix + router.prefix + r.path,
+                        r.endpoint,
+                    )
                 )
-            )
 
-    def sub(
-        self, path: str, *, response_model: Optional[Type[pydantic.BaseModel]] = None
-    ):
+    def sub(self, path: str, *, response_model: type[pydantic.BaseModel] | None = None):
         """
         Registers a socket.io endpoint which handles subscriptions.
         """
@@ -136,22 +141,22 @@ class FastIO(FastAPI):
         self,
         *args,
         socketio_path: str = "/socket.io",
-        socketio_connect: Optional[
-            Callable[[str, dict, Optional[dict]], Coroutine[Any, Any, bool]]
-        ] = None,
+        socketio_connect: (
+            Callable[[str, dict, dict | None], Coroutine[Any, Any, User | None]] | None
+        ) = None,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
-        if self.swagger_ui_oauth2_redirect_url is None:
-            self.swagger_ui_oauth2_redirect_url = "docs/oauth2-redirect"
+        self._socketio_connect = socketio_connect
+
         self.sio = socketio.AsyncServer(
             async_mode="asgi", cors_allowed_origins=[], json=PydanticJsonSerializer()
         )
-        self.sio.on("connect", socketio_connect)
+        self.sio.on("connect", self._on_connect)
         self.sio.on("subscribe", self._on_subscribe)
         self.sio.on("unsubscribe", self._on_unsubscribe)
         self.sio.on("disconnect", self._on_disconnect)
-        self._sub_routes: List[SubRoute] = []
+        self._sub_routes: list[SubRoute] = []
 
         self._sio_route = APIRoute(
             socketio_path,
@@ -231,20 +236,37 @@ The message must be of the form:
 
     def _match_routes(
         self, sub_data: SubscriptionData
-    ) -> Optional[Tuple[Match, SubRoute]]:
+    ) -> tuple[Match, SubRoute] | None:
         for r in self._sub_routes:
             match = r.matches(sub_data.room)
             if match:
                 return match, r
         return None
 
+    async def _on_connect(self, sid: str, environ: dict, auth: dict | None):
+        logger = get_logger(HTTPConnection(environ))
+        user = (
+            await self._socketio_connect(sid, environ, auth)
+            if self._socketio_connect
+            else None
+        )
+        if user is None:
+            return False
+
+        async with self.sio.session(sid) as session:
+            session: SioSession
+            session["environ"] = environ
+            session["user"] = user
+            session["subscriptions"] = {}
+            session["logger"] = logger
+
+        return True
+
     async def _on_subscribe(self, sid: str, data: dict):
         try:
             sub_data = self._parse_sub_data(data)
         except SubscribeError as e:
-            await self.sio.emit("subscribe", {"success": False, "error": str(e)})
-            logging.info(f"{sid}: str(e)")
-            return
+            return SubscriptionResponse(success=False, error=str(e))
 
         try:
             result = self._match_routes(sub_data)
@@ -255,9 +277,14 @@ The message must be of the form:
                 return
             match, route = result
 
-            session: Dict[Any, Any] = await self.sio.get_session(sid)
+            session: SioSession = await self.sio.get_session(sid)
             req = SubscriptionRequest(
-                sid=sid, sio=self.sio, room=sub_data.room, session=session
+                sid=sid,
+                sio=self.sio,
+                room=sub_data.room,
+                user=session["user"],
+                environ=session["environ"],
+                logger=session["logger"],
             )
             maybe_coro = route.endpoint(req, **match.groupdict())
             if asyncio.iscoroutine(maybe_coro):
@@ -272,32 +299,32 @@ The message must be of the form:
                 loop.create_task(self.sio.emit(sub_data.room, data, to=sid))
 
             sub = obs.subscribe(on_next)
-            session.setdefault("_subscriptions", {})[sub_data.room] = sub
+            session.setdefault("subscriptions", {})[sub_data.room] = sub
 
         except HTTPException as e:
-            await self.sio.emit(
-                "subscribe", {"success": False, "error": f"{e.status_code} {e.detail}"}
+            return SubscriptionResponse(
+                success=False, error=f"{e.status_code} {e.detail}"
             )
 
-        await self.sio.emit("subscribe", {"success": True}, sid)
+        return SubscriptionResponse(success=True)
 
     async def _on_unsubscribe(self, sid: str, data: dict):
         try:
             sub_data = self._parse_sub_data(data)
             async with self.sio.session(sid) as session:
-                session: Dict[Any, Any]
-                sub = session["_subscriptions"].get(sub_data.room)
+                session: dict[Any, Any]
+                sub = session["subscriptions"].get(sub_data.room)
                 if sub is None:
                     raise SubscribeError("not subscribed to topic")
                 sub.dispose()
-                del session["_subscriptions"][sub_data.room]
+                del session["subscriptions"][sub_data.room]
                 await self.sio.emit("unsubscribe", {"success": True})
         except SubscribeError as e:
             await self.sio.emit("unsubscribe", {"success": False, "error": str(e)})
 
     async def _on_disconnect(self, sid: str):
         async with self.sio.session(sid) as session:
-            subs = session.get("_subscriptions")
+            subs = session.get("subscriptions")
             if subs is None:
                 return
             for s in subs.values():

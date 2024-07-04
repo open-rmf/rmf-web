@@ -1,4 +1,4 @@
-from typing import List, Optional, Sequence, Tuple, cast
+from typing import Annotated, List, Optional, Sequence, Tuple, cast
 
 from fastapi import Depends
 from tortoise.exceptions import IntegrityError
@@ -14,8 +14,8 @@ from api_server.models import tortoise_models as ttm
 class FleetRepository:
     def __init__(
         self,
-        user: User = Depends(user_dep),
-        logger: LoggerAdapter = Depends(get_logger),
+        user: Annotated[User, Depends(user_dep)],
+        logger: Annotated[LoggerAdapter, Depends(get_logger)],
     ):
         self.user = user
         self.logger = logger
@@ -59,7 +59,7 @@ class FleetRepository:
         for db_robot in result.robots:
             robot = [LogEntry(**dict(db_log)) for db_log in db_robot.log]
             robots[db_robot.name] = robot
-        return FleetLog.construct(
+        return FleetLog(
             name=result.name,
             log=[LogEntry(**dict(db_log)) for db_log in result.log],
             robots=robots,
@@ -68,7 +68,7 @@ class FleetRepository:
     async def save_fleet_state(self, fleet_state: FleetState) -> None:
         await ttm.FleetState.update_or_create(
             {
-                "data": fleet_state.json(),
+                "data": fleet_state.model_dump_json(),
             },
             name=fleet_state.name,
         )

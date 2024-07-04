@@ -6,6 +6,7 @@ from websockets.exceptions import ConnectionClosed
 
 from api_server import models as mdl
 from api_server.logging import LoggerAdapter, get_logger
+from api_server.models.user import User
 from api_server.repositories import AlertRepository, FleetRepository, TaskRepository
 from api_server.rmf_io import AlertEvents, FleetEvents, TaskEvents
 
@@ -96,14 +97,20 @@ async def process_msg(
 @router.websocket("")
 async def rmf_gateway(
     websocket: WebSocket,
-    fleet_repo: Annotated[FleetRepository, Depends(FleetRepository)],
-    task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
-    alert_repo: Annotated[AlertRepository, Depends(AlertRepository)],
     task_events: Annotated[TaskEvents, Depends(TaskEvents.get_instance)],
     alert_events: Annotated[AlertEvents, Depends(AlertEvents.get_instance)],
     fleet_events: Annotated[FleetEvents, Depends(FleetEvents.get_instance)],
     logger: Annotated[LoggerAdapter, Depends(get_logger)],
 ):
+    # We must resolve some dependencies manually because:
+    # 1. `user_dep` uses `OpenIdConnect` which does not work for websocket
+    # 2. Even if it works, the _internal route has no authentication
+    user = User.get_system_user()
+    fleet_repo = FleetRepository(user, logger)
+    task_repo = TaskRepository(user, logger)
+    alert_repo = AlertRepository(user, task_repo)
+
+    await websocket.accept()
     try:
         while True:
             msg: dict[str, Any] = await websocket.receive_json()
