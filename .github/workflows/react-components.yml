@@ -8,22 +8,26 @@ on:
   push:
     branches:
       - main
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 env:
   CI: true
 jobs:
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-22.04
+    container:
+      image: ghcr.io/${{ github.repository }}/minimal-rmf
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     defaults:
       run:
         shell: bash
         working-directory: packages/react-components
-    env:
-      BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-      BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-      BROWSERSTACK_BUILD: ${{ github.head_ref }}:${{ github.event.number }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: bootstrap
         uses: ./.github/actions/bootstrap
         with:
