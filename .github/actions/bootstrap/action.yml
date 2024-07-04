@@ -22,7 +22,7 @@ runs:
       shell: bash
       run: |
         curl -fsSL https://raw.githubusercontent.com/pnpm/get.pnpm.io/main/install.sh | env PNPM_VERSION=8.6.12 bash - && \
-        source /root/.bashrc && \
+        source $HOME/.bashrc && \
         pnpm env use --global 16
     - name: Install pipenv
       run: pip3 install pipenv
