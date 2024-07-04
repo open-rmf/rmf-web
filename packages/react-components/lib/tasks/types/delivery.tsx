@@ -1,4 +1,3 @@
-import { isNonEmptyString, isPositiveNumber } from './utils';
 import { Autocomplete, Grid, TextField, useTheme } from '@mui/material';
 import { PositiveIntField } from '../../form-inputs';
 import React from 'react';
@@ -40,10 +39,10 @@ export function makeDeliveryTaskBookingLabel(
 
 function isTaskPlaceValid(place: TaskPlace): boolean {
   return (
-    isNonEmptyString(place.place) &&
-    isNonEmptyString(place.handler) &&
-    isNonEmptyString(place.payload.sku) &&
-    isPositiveNumber(place.payload.quantity)
+    place.place.length > 0 &&
+    place.handler.length > 0 &&
+    place.payload.sku.length > 0 &&
+    place.payload.quantity > 0
   );
 }
 

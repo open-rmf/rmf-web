@@ -8,10 +8,13 @@ import {
   DeliveryAreaPickupTaskDefinition,
   DeliveryPickupTaskDefinition,
   DeliverySequentialLotPickupTaskDefinition,
+  DoubleComposeDeliveryTaskDefinition,
   makeDeliveryPickupTaskShortDescription,
   makeDeliveryCustomTaskShortDescription,
   makeDefaultDeliveryCustomTaskDescription,
   makeDefaultDeliveryPickupTaskDescription,
+  makeDefaultDoubleComposeDeliveryTaskDescription,
+  makeDoubleComposeDeliveryTaskShortDescription,
 } from './delivery-custom';
 import { getTaskBookingLabelFromTaskRequest } from '../task-booking-label-utils';
 import {
@@ -29,14 +32,6 @@ import {
   makeCustomComposeTaskShortDescription,
 } from './custom-compose';
 import { TaskDefinition, TaskDescription } from '../create-task';
-
-export function isNonEmptyString(value: string): boolean {
-  return value.length > 0;
-}
-
-export function isPositiveNumber(value: number): boolean {
-  return value > 0;
-}
 
 function rawStringFromJsonRequest(taskRequest: TaskRequest): string | undefined {
   try {
@@ -77,6 +72,11 @@ export function getShortDescription(
     case DeliverySequentialLotPickupTaskDefinition.taskDefinitionId:
     case DeliveryAreaPickupTaskDefinition.taskDefinitionId:
       return makeDeliveryCustomTaskShortDescription(taskRequest.description, taskDisplayName);
+    case DoubleComposeDeliveryTaskDefinition.taskDefinitionId:
+      return makeDoubleComposeDeliveryTaskShortDescription(
+        taskRequest.description,
+        taskDisplayName,
+      );
     case CustomComposeTaskDefinition.taskDefinitionId:
       return makeCustomComposeTaskShortDescription(taskRequest.description);
     default:
@@ -94,6 +94,8 @@ export function getDefaultTaskDefinition(taskDefinitionId: string): TaskDefiniti
       return DeliverySequentialLotPickupTaskDefinition;
     case DeliveryAreaPickupTaskDefinition.taskDefinitionId:
       return DeliveryAreaPickupTaskDefinition;
+    case DoubleComposeDeliveryTaskDefinition.taskDefinitionId:
+      return DoubleComposeDeliveryTaskDefinition;
     case DeliveryTaskDefinition.taskDefinitionId:
       return DeliveryTaskDefinition;
     case PatrolTaskDefinition.taskDefinitionId:
@@ -115,6 +117,8 @@ export function getDefaultTaskDescription(
     case DeliverySequentialLotPickupTaskDefinition.taskDefinitionId:
     case DeliveryAreaPickupTaskDefinition.taskDefinitionId:
       return makeDefaultDeliveryCustomTaskDescription(taskDefinitionId);
+    case DoubleComposeDeliveryTaskDefinition.taskDefinitionId:
+      return makeDefaultDoubleComposeDeliveryTaskDescription();
     case DeliveryTaskDefinition.taskDefinitionId:
       return makeDefaultDeliveryTaskDescription();
     case PatrolTaskDefinition.taskDefinitionId:

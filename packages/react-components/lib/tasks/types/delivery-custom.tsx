@@ -1,6 +1,5 @@
 import { Autocomplete, Grid, TextField, useMediaQuery, useTheme } from '@mui/material';
 import React from 'react';
-import { isNonEmptyString } from './utils';
 import type { TaskBookingLabel } from 'api-client';
 import { TaskDefinition } from '../create-task';
 
@@ -19,6 +18,12 @@ export const DeliverySequentialLotPickupTaskDefinition: TaskDefinition = {
 export const DeliveryAreaPickupTaskDefinition: TaskDefinition = {
   taskDefinitionId: 'delivery_area_pickup',
   taskDisplayName: 'Delivery - Area pick up',
+  requestCategory: 'compose',
+};
+
+export const DoubleComposeDeliveryTaskDefinition: TaskDefinition = {
+  taskDefinitionId: 'double-compose-delivery',
+  taskDisplayName: 'Double Compose Delivery',
   requestCategory: 'compose',
 };
 
@@ -60,7 +65,7 @@ interface CartCustomPickupPhase {
   };
 }
 
-interface CartPickupPhase {
+export interface CartPickupPhase {
   activity: {
     category: string;
     description: {
@@ -103,7 +108,7 @@ interface OnCancelDropoff {
   ];
 }
 
-interface DeliveryWithCancellationPhase {
+export interface DeliveryWithCancellationPhase {
   activity: {
     category: string;
     description: {
@@ -140,6 +145,18 @@ export interface DeliveryPickupTaskDescription {
   ];
 }
 
+export interface DoubleComposeDeliveryTaskDescription {
+  category: string;
+  phases: [
+    first_pickup_phase: CartPickupPhase,
+    first_delivery_phase: DeliveryWithCancellationPhase,
+    first_dropoff_phase: CartDropoffPhase,
+    second_pickup_phase: CartPickupPhase,
+    second_delivery_phase: DeliveryWithCancellationPhase,
+    second_dropoff_phase: CartDropoffPhase,
+  ];
+}
+
 export function makeDeliveryPickupTaskBookingLabel(
   task_description: DeliveryPickupTaskDescription,
 ): TaskBookingLabel {
@@ -170,6 +187,28 @@ export function makeDeliveryCustomTaskBookingLabel(
   };
 }
 
+export function makeDoubleComposeDeliveryTaskBookingLabel(
+  task_description: DoubleComposeDeliveryTaskDescription,
+): TaskBookingLabel {
+  const firstPickupDescription =
+    task_description.phases[0].activity.description.activities[1].description.description;
+  const secondPickupDescription =
+    task_description.phases[3].activity.description.activities[1].description.description;
+
+  const pickups = `${firstPickupDescription.pickup_lot}(1), ${secondPickupDescription.pickup_lot}(2)`;
+  const dropoffs = `${task_description.phases[1].activity.description.activities[0].description}(1), ${task_description.phases[4].activity.description.activities[0].description}(2)`;
+  const cartIds = `${firstPickupDescription.pickup_lot}(1), ${secondPickupDescription.cart_id}(2)`;
+
+  return {
+    description: {
+      task_definition_id: task_description.category,
+      pickup: pickups,
+      destination: dropoffs,
+      cart_id: cartIds,
+    },
+  };
+}
+
 export function makeDeliveryPickupTaskShortDescription(
   desc: DeliveryPickupTaskDescription,
   taskDisplayName: string | undefined,
@@ -196,6 +235,43 @@ export function makeDeliveryPickupTaskShortDescription(
   }
 
   return '[Unknown] delivery pickup task';
+}
+
+export function makeDoubleComposeDeliveryTaskShortDescription(
+  desc: DoubleComposeDeliveryTaskDescription,
+  taskDisplayName: string | undefined,
+): string {
+  try {
+    const firstGoToPickup: GoToPlaceActivity = desc.phases[0].activity.description.activities[0];
+    const firstPickup: LotPickupActivity = desc.phases[0].activity.description.activities[1];
+    const firstCartId = firstPickup.description.description.cart_id;
+    const firstGoToDropoff: GoToPlaceActivity = desc.phases[1].activity.description.activities[0];
+
+    const secondGoToPickup: GoToPlaceActivity = desc.phases[3].activity.description.activities[0];
+    const secondPickup: LotPickupActivity = desc.phases[3].activity.description.activities[1];
+    const secondCartId = secondPickup.description.description.cart_id;
+    const secondGoToDropoff: GoToPlaceActivity = desc.phases[4].activity.description.activities[0];
+
+    return `[${
+      taskDisplayName ?? DeliveryPickupTaskDefinition.taskDisplayName
+    }] payload [${firstCartId}] from [${firstGoToPickup.description}] to [${
+      firstGoToDropoff.description
+    }], then payload [${secondCartId}] from [${secondGoToPickup.description}] to [${
+      secondGoToDropoff.description
+    }]`;
+  } catch (e) {
+    try {
+      const descriptionString = JSON.stringify(desc);
+      console.error(descriptionString);
+      return descriptionString;
+    } catch (e) {
+      console.error(
+        `Failed to parse task description of double compose delivery task: ${(e as Error).message}`,
+      );
+    }
+  }
+
+  return '[Unknown] double compose delivery task';
 }
 
 export function makeDeliveryCustomTaskShortDescription(
@@ -246,12 +322,42 @@ const isDeliveryPickupTaskDescriptionValid = (
   const pickup = taskDescription.phases[0].activity.description.activities[1];
   const goToDropoff = taskDescription.phases[1].activity.description.activities[0];
   return (
-    isNonEmptyString(goToPickup.description) &&
+    goToPickup.description.length > 0 &&
     Object.keys(pickupPoints).includes(goToPickup.description) &&
     pickupPoints[goToPickup.description] === pickup.description.description.pickup_lot &&
-    isNonEmptyString(pickup.description.description.cart_id) &&
-    isNonEmptyString(goToDropoff.description) &&
+    pickup.description.description.cart_id.length > 0 &&
+    goToDropoff.description.length > 0 &&
     Object.keys(dropoffPoints).includes(goToDropoff.description)
+  );
+};
+
+const isDoubleComposeDeliveryTaskDescriptionValid = (
+  taskDescription: DoubleComposeDeliveryTaskDescription,
+  pickupPoints: Record<string, string>,
+  dropoffPoints: Record<string, string>,
+): boolean => {
+  const firstGoToPickup = taskDescription.phases[0].activity.description.activities[0];
+  const firstPickup = taskDescription.phases[0].activity.description.activities[1];
+  const firstGoToDropoff = taskDescription.phases[1].activity.description.activities[0];
+
+  const secondGoToPickup = taskDescription.phases[3].activity.description.activities[0];
+  const secondPickup = taskDescription.phases[3].activity.description.activities[1];
+  const secondGoToDropoff = taskDescription.phases[4].activity.description.activities[0];
+
+  return (
+    firstGoToPickup.description.length > 0 &&
+    Object.keys(pickupPoints).includes(firstGoToPickup.description) &&
+    pickupPoints[firstGoToPickup.description] === firstPickup.description.description.pickup_lot &&
+    firstPickup.description.description.cart_id.length > 0 &&
+    firstGoToDropoff.description.length > 0 &&
+    Object.keys(dropoffPoints).includes(firstGoToDropoff.description) &&
+    secondGoToPickup.description.length > 0 &&
+    Object.keys(pickupPoints).includes(secondGoToPickup.description) &&
+    pickupPoints[secondGoToPickup.description] ===
+      secondPickup.description.description.pickup_lot &&
+    secondPickup.description.description.cart_id.length > 0 &&
+    secondGoToDropoff.description.length > 0 &&
+    Object.keys(dropoffPoints).includes(secondGoToDropoff.description)
   );
 };
 
@@ -264,47 +370,45 @@ const isDeliveryCustomTaskDescriptionValid = (
   const pickup = taskDescription.phases[0].activity.description.activities[1];
   const goToDropoff = taskDescription.phases[1].activity.description.activities[0];
   return (
-    isNonEmptyString(goToPickup.description) &&
-    isNonEmptyString(pickup.description.description.pickup_zone) &&
+    goToPickup.description.length > 0 &&
+    pickup.description.description.pickup_zone.length > 0 &&
     pickupZones.includes(pickup.description.description.pickup_zone) &&
-    isNonEmptyString(pickup.description.description.cart_id) &&
-    isNonEmptyString(goToDropoff.description) &&
+    pickup.description.description.cart_id.length > 0 &&
+    goToDropoff.description.length > 0 &&
     dropoffPoints.includes(goToDropoff.description)
   );
 };
 
-export function deliveryInsertPickup(
-  taskDescription: DeliveryPickupTaskDescription,
+export function cartPickupPhaseInsertPickup(
+  phase: CartPickupPhase,
   pickupPlace: string,
   pickupLot: string,
-): DeliveryPickupTaskDescription {
-  taskDescription.phases[0].activity.description.activities[0].description = pickupPlace;
-  taskDescription.phases[0].activity.description.activities[1].description.description.pickup_lot =
-    pickupLot;
-  return taskDescription;
+): CartPickupPhase {
+  phase.activity.description.activities[0].description = pickupPlace;
+  phase.activity.description.activities[1].description.description.pickup_lot = pickupLot;
+  return phase;
 }
 
-export function deliveryInsertCartId(
-  taskDescription: DeliveryPickupTaskDescription,
+export function cartPickupPhaseInsertCartId(
+  phase: CartPickupPhase,
   cartId: string,
-): DeliveryPickupTaskDescription {
-  taskDescription.phases[0].activity.description.activities[1].description.description.cart_id =
-    cartId;
-  return taskDescription;
+): CartPickupPhase {
+  phase.activity.description.activities[1].description.description.cart_id = cartId;
+  return phase;
 }
 
-export function deliveryInsertDropoff(
-  taskDescription: DeliveryPickupTaskDescription,
+export function deliveryPhaseInsertDropoff(
+  phase: DeliveryWithCancellationPhase,
   dropoffPlace: string,
-): DeliveryPickupTaskDescription {
-  taskDescription.phases[1].activity.description.activities[0].description = dropoffPlace;
-  return taskDescription;
+): DeliveryWithCancellationPhase {
+  phase.activity.description.activities[0].description = dropoffPlace;
+  return phase;
 }
 
-export function deliveryInsertOnCancel(
-  taskDescription: DeliveryPickupTaskDescription,
+export function deliveryPhaseInsertOnCancel(
+  phase: DeliveryWithCancellationPhase,
   onCancelPlaces: string[],
-): DeliveryPickupTaskDescription {
+): DeliveryWithCancellationPhase {
   const goToOneOfThePlaces: GoToOneOfThePlacesActivity = {
     category: 'go_to_place',
     description: {
@@ -333,8 +437,8 @@ export function deliveryInsertOnCancel(
     category: 'sequence',
     description: [goToOneOfThePlaces, deliveryDropoff],
   };
-  taskDescription.phases[1].on_cancel = [onCancelDropoff];
-  return taskDescription;
+  phase.on_cancel = [onCancelDropoff];
+  return phase;
 }
 
 interface DeliveryPickupTaskFormProps {
@@ -372,15 +476,23 @@ export function DeliveryPickupTaskForm({
           value={taskDesc.phases[0].activity.description.activities[0].description}
           onInputChange={(_ev, newValue) => {
             const pickupLot = pickupPoints[newValue] ?? '';
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryInsertPickup(newTaskDesc, newValue, pickupLot);
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[0] = cartPickupPhaseInsertPickup(
+              newTaskDesc.phases[0],
+              newValue,
+              pickupLot,
+            );
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
             const place = (ev.target as HTMLInputElement).value;
             const pickupLot = pickupPoints[place] ?? '';
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryInsertPickup(newTaskDesc, place, pickupLot);
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[0] = cartPickupPhaseInsertPickup(
+              newTaskDesc.phases[0],
+              place,
+              pickupLot,
+            );
             onInputChange(newTaskDesc);
           }}
           sx={{
@@ -415,13 +527,16 @@ export function DeliveryPickupTaskForm({
           }
           getOptionLabel={(option) => option}
           onInputChange={(_ev, newValue) => {
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryInsertCartId(newTaskDesc, newValue);
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[0] = cartPickupPhaseInsertCartId(newTaskDesc.phases[0], newValue);
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryInsertCartId(newTaskDesc, (ev.target as HTMLInputElement).value);
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[0] = cartPickupPhaseInsertCartId(
+              newTaskDesc.phases[0],
+              (ev.target as HTMLInputElement).value,
+            );
             onInputChange(newTaskDesc);
           }}
           sx={{
@@ -452,13 +567,16 @@ export function DeliveryPickupTaskForm({
           options={Object.keys(dropoffPoints).sort()}
           value={taskDesc.phases[1].activity.description.activities[0].description}
           onInputChange={(_ev, newValue) => {
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryInsertDropoff(newTaskDesc, newValue);
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[1] = deliveryPhaseInsertDropoff(newTaskDesc.phases[1], newValue);
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryInsertDropoff(newTaskDesc, (ev.target as HTMLInputElement).value);
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[1] = deliveryPhaseInsertDropoff(
+              newTaskDesc.phases[1],
+              (ev.target as HTMLInputElement).value,
+            );
             onInputChange(newTaskDesc);
           }}
           sx={{
@@ -486,71 +604,321 @@ export function DeliveryPickupTaskForm({
   );
 }
 
-export function deliveryCustomInsertPickup(
-  taskDescription: DeliveryCustomTaskDescription,
+interface DoubleComposeDeliveryTaskFormProps {
+  taskDesc: DoubleComposeDeliveryTaskDescription;
+  pickupPoints: Record<string, string>;
+  cartIds: string[];
+  dropoffPoints: Record<string, string>;
+  onChange(taskDesc: DoubleComposeDeliveryTaskDescription): void;
+  onValidate(valid: boolean): void;
+}
+
+export function DoubleComposeDeliveryTaskForm({
+  taskDesc,
+  pickupPoints = {},
+  cartIds = [],
+  dropoffPoints = {},
+  onChange,
+  onValidate,
+}: DoubleComposeDeliveryTaskFormProps): React.JSX.Element {
+  const theme = useTheme();
+  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
+  const onInputChange = (desc: DoubleComposeDeliveryTaskDescription) => {
+    onValidate(isDoubleComposeDeliveryTaskDescriptionValid(desc, pickupPoints, dropoffPoints));
+    onChange(desc);
+  };
+
+  return (
+    <Grid container spacing={theme.spacing(2)} justifyContent="left" alignItems="center">
+      <Grid item xs={5}>
+        <Autocomplete
+          id="first-pickup-location"
+          freeSolo
+          fullWidth
+          options={Object.keys(pickupPoints).sort()}
+          value={taskDesc.phases[0].activity.description.activities[0].description}
+          onInputChange={(_ev, newValue) => {
+            const pickupLot = pickupPoints[newValue] ?? '';
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[0] = cartPickupPhaseInsertPickup(
+              newTaskDesc.phases[0],
+              newValue,
+              pickupLot,
+            );
+            onInputChange(newTaskDesc);
+          }}
+          onBlur={(ev) => {
+            const place = (ev.target as HTMLInputElement).value;
+            const pickupLot = pickupPoints[place] ?? '';
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[0] = cartPickupPhaseInsertPickup(
+              newTaskDesc.phases[0],
+              place,
+              pickupLot,
+            );
+            onInputChange(newTaskDesc);
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
+              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+            },
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Cart pickup (1)"
+              required
+              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
+              error={
+                !Object.keys(pickupPoints).includes(
+                  taskDesc.phases[0].activity.description.activities[0].description,
+                )
+              }
+            />
+          )}
+        />
+      </Grid>
+      <Grid item xs={5}>
+        <Autocomplete
+          id="first-dropoff-location"
+          freeSolo
+          fullWidth
+          options={Object.keys(dropoffPoints).sort()}
+          value={taskDesc.phases[1].activity.description.activities[0].description}
+          onInputChange={(_ev, newValue) => {
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[1] = deliveryPhaseInsertDropoff(newTaskDesc.phases[1], newValue);
+            onInputChange(newTaskDesc);
+          }}
+          onBlur={(ev) => {
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[1] = deliveryPhaseInsertDropoff(
+              newTaskDesc.phases[1],
+              (ev.target as HTMLInputElement).value,
+            );
+            onInputChange(newTaskDesc);
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
+              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+            },
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Cart dropoff (1)"
+              required
+              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
+              error={
+                !Object.keys(dropoffPoints).includes(
+                  taskDesc.phases[1].activity.description.activities[0].description,
+                )
+              }
+            />
+          )}
+        />
+      </Grid>
+      <Grid item xs={2}>
+        <Autocomplete
+          id="first-cart-id"
+          freeSolo
+          fullWidth
+          options={cartIds}
+          value={
+            taskDesc.phases[0].activity.description.activities[1].description.description.cart_id
+          }
+          getOptionLabel={(option) => option}
+          onInputChange={(_ev, newValue) => {
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[0] = cartPickupPhaseInsertCartId(newTaskDesc.phases[0], newValue);
+            onInputChange(newTaskDesc);
+          }}
+          onBlur={(ev) => {
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[0] = cartPickupPhaseInsertCartId(
+              newTaskDesc.phases[0],
+              (ev.target as HTMLInputElement).value,
+            );
+            onInputChange(newTaskDesc);
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
+              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+            },
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Cart ID (1)"
+              required
+              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
+              error={
+                taskDesc.phases[0].activity.description.activities[1].description.description
+                  .cart_id.length === 0
+              }
+            />
+          )}
+        />
+      </Grid>
+      <Grid item xs={5}>
+        <Autocomplete
+          id="second-pickup-location"
+          freeSolo
+          fullWidth
+          options={Object.keys(pickupPoints).sort()}
+          value={taskDesc.phases[3].activity.description.activities[0].description}
+          onInputChange={(_ev, newValue) => {
+            const pickupLot = pickupPoints[newValue] ?? '';
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[3] = cartPickupPhaseInsertPickup(
+              newTaskDesc.phases[3],
+              newValue,
+              pickupLot,
+            );
+            onInputChange(newTaskDesc);
+          }}
+          onBlur={(ev) => {
+            const place = (ev.target as HTMLInputElement).value;
+            const pickupLot = pickupPoints[place] ?? '';
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[3] = cartPickupPhaseInsertPickup(
+              newTaskDesc.phases[3],
+              place,
+              pickupLot,
+            );
+            onInputChange(newTaskDesc);
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
+              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+            },
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Cart pickup (2)"
+              required
+              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
+              error={
+                !Object.keys(pickupPoints).includes(
+                  taskDesc.phases[3].activity.description.activities[0].description,
+                )
+              }
+            />
+          )}
+        />
+      </Grid>
+      <Grid item xs={5}>
+        <Autocomplete
+          id="second-dropoff-location"
+          freeSolo
+          fullWidth
+          options={Object.keys(dropoffPoints).sort()}
+          value={taskDesc.phases[4].activity.description.activities[0].description}
+          onInputChange={(_ev, newValue) => {
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[4] = deliveryPhaseInsertDropoff(newTaskDesc.phases[4], newValue);
+            onInputChange(newTaskDesc);
+          }}
+          onBlur={(ev) => {
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[4] = deliveryPhaseInsertDropoff(
+              newTaskDesc.phases[4],
+              (ev.target as HTMLInputElement).value,
+            );
+            onInputChange(newTaskDesc);
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
+              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+            },
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Cart dropoff (2)"
+              required
+              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
+              error={
+                !Object.keys(dropoffPoints).includes(
+                  taskDesc.phases[4].activity.description.activities[0].description,
+                )
+              }
+            />
+          )}
+        />
+      </Grid>
+      <Grid item xs={2}>
+        <Autocomplete
+          id="second-cart-id"
+          freeSolo
+          fullWidth
+          options={cartIds}
+          value={
+            taskDesc.phases[3].activity.description.activities[1].description.description.cart_id
+          }
+          getOptionLabel={(option) => option}
+          onInputChange={(_ev, newValue) => {
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[3] = cartPickupPhaseInsertCartId(newTaskDesc.phases[3], newValue);
+            onInputChange(newTaskDesc);
+          }}
+          onBlur={(ev) => {
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[3] = cartPickupPhaseInsertCartId(
+              newTaskDesc.phases[3],
+              (ev.target as HTMLInputElement).value,
+            );
+            onInputChange(newTaskDesc);
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
+              fontSize: isScreenHeightLessThan800 ? 14 : 20,
+            },
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Cart ID (2)"
+              required
+              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
+              error={
+                taskDesc.phases[3].activity.description.activities[1].description.description
+                  .cart_id.length === 0
+              }
+            />
+          )}
+        />
+      </Grid>
+    </Grid>
+  );
+}
+
+export function cartCustomPickupPhaseInsertPickup(
+  phase: CartCustomPickupPhase,
   pickupPlace: string,
   pickupZone: string,
-): DeliveryCustomTaskDescription {
-  taskDescription.phases[0].activity.description.activities[0].description = pickupPlace;
-  taskDescription.phases[0].activity.description.activities[1].description.description.pickup_zone =
-    pickupZone;
-  return taskDescription;
+): CartCustomPickupPhase {
+  phase.activity.description.activities[0].description = pickupPlace;
+  phase.activity.description.activities[1].description.description.pickup_zone = pickupZone;
+  return phase;
 }
 
-export function deliveryCustomInsertCartId(
-  taskDescription: DeliveryCustomTaskDescription,
+export function cartCustomPickupPhaseInsertCartId(
+  phase: CartCustomPickupPhase,
   cartId: string,
-): DeliveryCustomTaskDescription {
-  taskDescription.phases[0].activity.description.activities[1].description.description.cart_id =
-    cartId;
-  return taskDescription;
+): CartCustomPickupPhase {
+  phase.activity.description.activities[1].description.description.cart_id = cartId;
+  return phase;
 }
 
-export function deliveryCustomInsertDropoff(
-  taskDescription: DeliveryCustomTaskDescription,
-  dropoffPlace: string,
-): DeliveryCustomTaskDescription {
-  taskDescription.phases[1].activity.description.activities[0].description = dropoffPlace;
-  return taskDescription;
-}
-
-export function deliveryCustomInsertOnCancel(
-  taskDescription: DeliveryCustomTaskDescription,
-  onCancelPlaces: string[],
-): DeliveryCustomTaskDescription {
-  const goToOneOfThePlaces: GoToOneOfThePlacesActivity = {
-    category: 'go_to_place',
-    description: {
-      one_of: onCancelPlaces.map((placeName) => {
-        return {
-          waypoint: placeName,
-        };
-      }),
-      constraints: [
-        {
-          category: 'prefer_same_map',
-          description: '',
-        },
-      ],
-    },
-  };
-  const deliveryDropoff: DropoffActivity = {
-    category: 'perform_action',
-    description: {
-      unix_millis_action_duration_estimate: 60000,
-      category: 'delivery_dropoff',
-      description: {},
-    },
-  };
-  const onCancelDropoff: OnCancelDropoff = {
-    category: 'sequence',
-    description: [goToOneOfThePlaces, deliveryDropoff],
-  };
-  taskDescription.phases[1].on_cancel = [onCancelDropoff];
-  return taskDescription;
-}
-
-interface DeliveryCustomProps {
+export interface DeliveryCustomProps {
   taskDesc: DeliveryCustomTaskDescription;
   pickupZones: string[];
   cartIds: string[];
@@ -584,14 +952,22 @@ export function DeliveryCustomTaskForm({
           options={pickupZones.sort()}
           value={taskDesc.phases[0].activity.description.activities[0].description}
           onInputChange={(_ev, newValue) => {
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryCustomInsertPickup(newTaskDesc, newValue, newValue);
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[0] = cartCustomPickupPhaseInsertPickup(
+              newTaskDesc.phases[0],
+              newValue,
+              newValue,
+            );
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
             const zone = (ev.target as HTMLInputElement).value;
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryCustomInsertPickup(newTaskDesc, zone, zone);
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[0] = cartCustomPickupPhaseInsertPickup(
+              newTaskDesc.phases[0],
+              zone,
+              zone,
+            );
             onInputChange(newTaskDesc);
           }}
           sx={{
@@ -626,14 +1002,17 @@ export function DeliveryCustomTaskForm({
           }
           getOptionLabel={(option) => option}
           onInputChange={(_ev, newValue) => {
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryCustomInsertCartId(newTaskDesc, newValue);
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[0] = cartCustomPickupPhaseInsertCartId(
+              newTaskDesc.phases[0],
+              newValue,
+            );
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryCustomInsertCartId(
-              newTaskDesc,
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[0] = cartCustomPickupPhaseInsertCartId(
+              newTaskDesc.phases[0],
               (ev.target as HTMLInputElement).value,
             );
             onInputChange(newTaskDesc);
@@ -666,14 +1045,14 @@ export function DeliveryCustomTaskForm({
           options={dropoffPoints.sort()}
           value={taskDesc.phases[1].activity.description.activities[0].description}
           onInputChange={(_ev, newValue) => {
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryCustomInsertDropoff(newTaskDesc, newValue);
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[1] = deliveryPhaseInsertDropoff(newTaskDesc.phases[1], newValue);
             onInputChange(newTaskDesc);
           }}
           onBlur={(ev) => {
-            let newTaskDesc = { ...taskDesc };
-            newTaskDesc = deliveryCustomInsertDropoff(
-              newTaskDesc,
+            const newTaskDesc = { ...taskDesc };
+            newTaskDesc.phases[1] = deliveryPhaseInsertDropoff(
+              newTaskDesc.phases[1],
               (ev.target as HTMLInputElement).value,
             );
             onInputChange(newTaskDesc);
@@ -707,6 +1086,124 @@ export function makeDefaultDeliveryPickupTaskDescription(): DeliveryPickupTaskDe
   return {
     category: 'delivery_pickup',
     phases: [
+      {
+        activity: {
+          category: 'sequence',
+          description: {
+            activities: [
+              {
+                category: 'go_to_place',
+                description: '',
+              },
+              {
+                category: 'perform_action',
+                description: {
+                  unix_millis_action_duration_estimate: 60000,
+                  category: 'delivery_pickup',
+                  description: {
+                    cart_id: '',
+                    pickup_lot: '',
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+      {
+        activity: {
+          category: 'sequence',
+          description: {
+            activities: [
+              {
+                category: 'go_to_place',
+                description: '',
+              },
+            ],
+          },
+        },
+        on_cancel: [],
+      },
+      {
+        activity: {
+          category: 'sequence',
+          description: {
+            activities: [
+              {
+                category: 'perform_action',
+                description: {
+                  unix_millis_action_duration_estimate: 60000,
+                  category: 'delivery_dropoff',
+                  description: {},
+                },
+              },
+            ],
+          },
+        },
+      },
+    ],
+  };
+}
+
+export function makeDefaultDoubleComposeDeliveryTaskDescription(): DoubleComposeDeliveryTaskDescription {
+  return {
+    category: 'delivery_pickup',
+    phases: [
+      {
+        activity: {
+          category: 'sequence',
+          description: {
+            activities: [
+              {
+                category: 'go_to_place',
+                description: '',
+              },
+              {
+                category: 'perform_action',
+                description: {
+                  unix_millis_action_duration_estimate: 60000,
+                  category: 'delivery_pickup',
+                  description: {
+                    cart_id: '',
+                    pickup_lot: '',
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+      {
+        activity: {
+          category: 'sequence',
+          description: {
+            activities: [
+              {
+                category: 'go_to_place',
+                description: '',
+              },
+            ],
+          },
+        },
+        on_cancel: [],
+      },
+      {
+        activity: {
+          category: 'sequence',
+          description: {
+            activities: [
+              {
+                category: 'perform_action',
+                description: {
+                  unix_millis_action_duration_estimate: 60000,
+                  category: 'delivery_dropoff',
+                  description: {},
+                },
+              },
+            ],
+          },
+        },
+      },
       {
         activity: {
           category: 'sequence',
