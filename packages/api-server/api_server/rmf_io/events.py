@@ -64,3 +64,11 @@ class BeaconEvents:
 @singleton_dep
 def get_beacon_events():
     return BeaconEvents()
+
+
+class RioEvents:
+    def __init__(self):
+        self.rios = Subject[mdl.Rio]()
+
+
+rio_events = RioEvents()

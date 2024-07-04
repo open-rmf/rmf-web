@@ -140,6 +140,7 @@ class AppFixture(unittest.TestCase):
             self.setUpApp()
             self.addCleanup(self.client.__exit__)
 
+        self.test_time = 0
         self.portal = self.get_portal()
 
     @classmethod
@@ -186,7 +187,7 @@ class AppFixture(unittest.TestCase):
                     if emit_room == "subscribe" and not msg["success"]:
                         # FIXME
                         # pylint: disable=broad-exception-raised
-                        raise Exception("Failed to subscribe")
+                        raise Exception("Failed to subscribe", msg)
                     if emit_room == room:
                         async with condition:
                             if isinstance(msg, pydantic.BaseModel):
