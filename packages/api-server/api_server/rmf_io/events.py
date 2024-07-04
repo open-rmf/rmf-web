@@ -1,6 +1,8 @@
 from rx.subject.behaviorsubject import BehaviorSubject
 from rx.subject.subject import Subject
 
+import api_server.models as mdl
+
 
 class RmfEvents:
     def __init__(self):
@@ -54,7 +56,7 @@ alert_events = AlertEvents()
 
 class RioEvents:
     def __init__(self):
-        self.rios = Subject[mdl.Rio]()
+        self.rios = Subject()
 
 
 rio_events = RioEvents()

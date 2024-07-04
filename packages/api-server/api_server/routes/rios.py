@@ -26,7 +26,7 @@ async def query_rios(
         filters["type__in"] = type_.split(",")
 
     rios = await DbRio.filter(**filters)
-    return [Rio.model_validate(x) for x in rios]
+    return rios
 
 
 @router.sub("", response_model=Rio)
@@ -36,7 +36,7 @@ async def sub_rio(_req: SubscriptionRequest):
 
 @router.put("", response_model=None)
 async def put_rio(rio: Rio, resp: Response):
-    rio_dict = rio.model_dump()
+    rio_dict = rio.dict()
     del rio_dict["id"]
     _, created = await DbRio.update_or_create(rio_dict, id=rio.id)
     if created:
