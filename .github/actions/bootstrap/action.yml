@@ -11,13 +11,19 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: pnpm/action-setup@v2.2.2
-      with:
-        version: '9.4.0'
-    - uses: actions/setup-node@v2
-      with:
-        node-version: '16'
-        cache: 'pnpm'
+    # - uses: pnpm/action-setup@v2.2.2
+    #   with:
+    #     version: '8.6.12'
+    # - uses: actions/setup-node@v2
+    #   with:
+    #     node-version: '16'
+    #     cache: 'pnpm'
+    - name: Install pnpm and setup node manually
+      shell: bash
+      run: |
+        curl -fsSL https://raw.githubusercontent.com/pnpm/get.pnpm.io/main/install.sh | env PNPM_VERSION=8.6.12 bash - && \
+        source /root/.bashrc && \
+        pnpm env use --global 16
     - name: Install pipenv
       run: pip3 install pipenv
       shell: bash
