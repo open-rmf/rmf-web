@@ -4,6 +4,7 @@ from .events import (
     TaskEvents,
     alert_events,
     fleet_events,
+    rio_events,
     rmf_events,
     task_events,
 )

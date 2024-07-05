@@ -51,3 +51,11 @@ class AlertEvents:
 
 
 alert_events = AlertEvents()
+
+
+class RioEvents:
+    def __init__(self):
+        self.rios = Subject()
+
+
+rio_events = RioEvents()
