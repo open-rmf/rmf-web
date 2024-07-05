@@ -28,6 +28,7 @@ class AlertResponse(BaseModel):
                     self.unix_millis_response_time / 1000
                 ),
                 "response": self.response,
+                "data": self.json(),
             },
             id=self.id,
         )

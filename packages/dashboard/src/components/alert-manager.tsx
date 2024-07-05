@@ -215,7 +215,6 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
               }}
               onClick={async () => {
                 await respondToAlert(alertRequest.id, response);
-                AppEvents.refreshAlert.next();
                 setIsOpen(false);
               }}
             >
@@ -297,7 +296,6 @@ export const AlertManager = React.memo(() => {
             [alertRequest.id]: alertRequest,
           };
         });
-        AppEvents.refreshAlert.next();
         return;
       }
     };
@@ -305,18 +303,9 @@ export const AlertManager = React.memo(() => {
     const subs: Subscription[] = [];
 
     subs.push(
-      rmf.alertRequestsObsStore.subscribe(
-        async (alertRequest) => await pushAlertsToBeDisplayed(alertRequest),
+      rmf.alertRequestsObsStore.subscribe((alertRequest) =>
+        AppEvents.alertListOpenedAlert.next(alertRequest),
       ),
-    );
-
-    subs.push(
-      AppEvents.alertListOpenedAlert.subscribe(async (alertRequest) => {
-        if (!alertRequest) {
-          return;
-        }
-        await pushAlertsToBeDisplayed(alertRequest);
-      }),
     );
 
     subs.push(
@@ -326,7 +315,15 @@ export const AlertManager = React.memo(() => {
             Object.entries(prev).filter(([key]) => key !== alertResponse.id),
           );
         });
-        AppEvents.refreshAlert.next();
+      }),
+    );
+
+    subs.push(
+      AppEvents.alertListOpenedAlert.subscribe(async (alertRequest) => {
+        if (!alertRequest) {
+          return;
+        }
+        await pushAlertsToBeDisplayed(alertRequest);
       }),
     );
 

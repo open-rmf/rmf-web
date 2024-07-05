@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from api_server.exceptions import AlreadyExistsError, InvalidInputError, NotFoundError
-from api_server.models import AlertRequest, AlertResponse
+from api_server.models import AlertRequest, AlertResponse, Pagination
 from api_server.models import tortoise_models as ttm
 
 
@@ -51,6 +51,7 @@ class AlertRepository:
                 alert_response_model.unix_millis_response_time / 1000
             ),
             response=response,
+            data=alert_response_model.json(),
             alert_request=alert,
         )
         return alert_response_model
@@ -78,8 +79,11 @@ class AlertRepository:
         alert_models = [AlertRequest.from_tortoise(alert) for alert in task_id_alerts]
         return alert_models
 
-    async def get_unresponded_alerts(self) -> List[AlertRequest]:
-        unresponded_alerts = await ttm.AlertRequest.filter(
-            alert_response=None, response_expected=True
-        )
+    async def get_unresponded_alerts(
+        self, pagination: Optional[Pagination]
+    ) -> List[AlertRequest]:
+        query = ttm.AlertRequest.filter(alert_response=None, response_expected=True)
+        if pagination:
+            query = query.limit(pagination.limit).offset(pagination.offset)
+        unresponded_alerts = await query.all()
         return [AlertRequest.from_tortoise(alert) for alert in unresponded_alerts]

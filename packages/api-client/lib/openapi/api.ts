@@ -1841,6 +1841,31 @@ export interface MutexGroups {
 /**
  *
  * @export
+ * @interface Pagination
+ */
+export interface Pagination {
+  /**
+   *
+   * @type {number}
+   * @memberof Pagination
+   */
+  limit: number;
+  /**
+   *
+   * @type {number}
+   * @memberof Pagination
+   */
+  offset: number;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof Pagination
+   */
+  order_by: Array<string>;
+}
+/**
+ *
+ * @export
  * @interface Param
  */
 export interface Param {
@@ -5033,10 +5058,12 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
     /**
      * Returns the list of alert IDs that have yet to be responded to, while a response was required.
      * @summary Get Unresponded Alerts
+     * @param {Pagination} [pagination]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getUnrespondedAlertsAlertsUnrespondedRequestsGet: async (
+      pagination?: Pagination,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/alerts/unresponded_requests`;
@@ -5051,6 +5078,8 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = {
@@ -5058,6 +5087,11 @@ export const AlertsApiAxiosParamCreator = function (configuration?: Configuratio
         ...headersFromBaseOptions,
         ...options.headers,
       };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        pagination,
+        localVarRequestOptions,
+        configuration,
+      );
 
       return {
         url: toPathString(localVarUrlObj),
@@ -5199,14 +5233,19 @@ export const AlertsApiFp = function (configuration?: Configuration) {
     /**
      * Returns the list of alert IDs that have yet to be responded to, while a response was required.
      * @summary Get Unresponded Alerts
+     * @param {Pagination} [pagination]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getUnrespondedAlertsAlertsUnrespondedRequestsGet(
+      pagination?: Pagination,
       options?: AxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<AlertRequest>>> {
       const localVarAxiosArgs =
-        await localVarAxiosParamCreator.getUnrespondedAlertsAlertsUnrespondedRequestsGet(options);
+        await localVarAxiosParamCreator.getUnrespondedAlertsAlertsUnrespondedRequestsGet(
+          pagination,
+          options,
+        );
       return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
     },
     /**
@@ -5306,14 +5345,16 @@ export const AlertsApiFactory = function (
     /**
      * Returns the list of alert IDs that have yet to be responded to, while a response was required.
      * @summary Get Unresponded Alerts
+     * @param {Pagination} [pagination]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getUnrespondedAlertsAlertsUnrespondedRequestsGet(
+      pagination?: Pagination,
       options?: any,
     ): AxiosPromise<Array<AlertRequest>> {
       return localVarFp
-        .getUnrespondedAlertsAlertsUnrespondedRequestsGet(options)
+        .getUnrespondedAlertsAlertsUnrespondedRequestsGet(pagination, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -5410,13 +5451,17 @@ export class AlertsApi extends BaseAPI {
   /**
    * Returns the list of alert IDs that have yet to be responded to, while a response was required.
    * @summary Get Unresponded Alerts
+   * @param {Pagination} [pagination]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AlertsApi
    */
-  public getUnrespondedAlertsAlertsUnrespondedRequestsGet(options?: AxiosRequestConfig) {
+  public getUnrespondedAlertsAlertsUnrespondedRequestsGet(
+    pagination?: Pagination,
+    options?: AxiosRequestConfig,
+  ) {
     return AlertsApiFp(this.configuration)
-      .getUnrespondedAlertsAlertsUnrespondedRequestsGet(options)
+      .getUnrespondedAlertsAlertsUnrespondedRequestsGet(pagination, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

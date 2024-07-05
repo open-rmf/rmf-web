@@ -242,6 +242,9 @@ export default {
         description:
           'Returns the list of alert IDs that have yet to be responded to, while a\nresponse was required.',
         operationId: 'get_unresponded_alerts_alerts_unresponded_requests_get',
+        requestBody: {
+          content: { 'application/json': { schema: { $ref: '#/components/schemas/Pagination' } } },
+        },
         responses: {
           '200': {
             description: 'Successful Response',
@@ -253,6 +256,12 @@ export default {
                   items: { $ref: '#/components/schemas/AlertRequest' },
                 },
               },
+            },
+          },
+          '422': {
+            description: 'Validation Error',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/HTTPValidationError' } },
             },
           },
         },
@@ -3468,6 +3477,16 @@ export default {
             description:
               'A list of the mutex groups that this robot is currently requesting but has not lockd yet',
           },
+        },
+      },
+      Pagination: {
+        title: 'Pagination',
+        required: ['limit', 'offset', 'order_by'],
+        type: 'object',
+        properties: {
+          limit: { title: 'Limit', type: 'integer' },
+          offset: { title: 'Offset', type: 'integer' },
+          order_by: { title: 'Order By', type: 'array', items: { type: 'string' } },
         },
       },
       Param: {

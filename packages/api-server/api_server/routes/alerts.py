@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import Depends, HTTPException
 from tortoise.exceptions import IntegrityError
@@ -6,7 +6,7 @@ from tortoise.exceptions import IntegrityError
 from api_server.exceptions import AlreadyExistsError, InvalidInputError, NotFoundError
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import rmf_gateway
-from api_server.models import AlertRequest, AlertResponse
+from api_server.models import AlertRequest, AlertResponse, Pagination
 from api_server.repositories import AlertRepository
 from api_server.rmf_io import alert_events
 
@@ -107,9 +107,12 @@ async def get_alerts_of_task(
 
 
 @router.get("/unresponded_requests", response_model=List[AlertRequest])
-async def get_unresponded_alerts(repo: AlertRepository = Depends(AlertRepository)):
+async def get_unresponded_alerts(
+    repo: AlertRepository = Depends(AlertRepository),
+    pagination: Optional[Pagination] = None,
+):
     """
     Returns the list of alert IDs that have yet to be responded to, while a
     response was required.
     """
-    return await repo.get_unresponded_alerts()
+    return await repo.get_unresponded_alerts(pagination)

@@ -212,7 +212,8 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     };
 
     const subs: Subscription[] = [];
-    subs.push(AppEvents.refreshAlert.subscribe(updateUnrespondedAlerts));
+    subs.push(rmf.alertRequestsObsStore.subscribe(updateUnrespondedAlerts));
+    subs.push(rmf.alertResponsesObsStore.subscribe(updateUnrespondedAlerts));
 
     // Get the initial number of unacknowledged alerts
     updateUnrespondedAlerts();

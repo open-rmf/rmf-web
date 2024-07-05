@@ -13,6 +13,7 @@ class AlertResponse(Model):
     id = CharField(255, pk=True)
     response_time = DatetimeField(null=False, index=True)
     response = CharField(255, null=False, index=True)
+    data = JSONField()
     alert_request = OneToOneField(
         "models.AlertRequest", null=False, related_name="alert_response"
     )
