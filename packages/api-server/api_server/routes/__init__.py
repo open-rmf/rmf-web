@@ -10,4 +10,5 @@ from .ingestors import router as ingestors_router
 from .internal import router as internal_router
 from .lifts import router as lifts_router
 from .main import router as main_router
+from .rios import router as rios_router
 from .tasks import *
