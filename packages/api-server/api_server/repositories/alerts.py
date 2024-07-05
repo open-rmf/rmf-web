@@ -1,40 +1,16 @@
 from datetime import datetime
 from typing import List
 
+from api_server.exceptions import AlreadyExistsError, InvalidInputError, NotFoundError
 from api_server.models import AlertRequest, AlertResponse
 from api_server.models import tortoise_models as ttm
-
-
-class AlertAlreadyExistsError(Exception):
-    """
-    Raised when an alert ID already exists and there is a conflict.
-    """
-
-
-class AlertNotFoundError(Exception):
-    """
-    Raised when an alert is not found.
-    """
-
-
-class InvalidAlertResponseError(Exception):
-    """
-    Raised when a response does not match any of the available responses in the
-    alert.
-    """
-
-
-class AlertResponseNotFoundError(Exception):
-    """
-    Raised when an alert response is not found.
-    """
 
 
 class AlertRepository:
     async def create_new_alert(self, alert: AlertRequest) -> AlertRequest:
         exists = await ttm.AlertRequest.exists(id=alert.id)
         if exists:
-            raise AlertAlreadyExistsError(f"Alert with ID {alert.id} already exists")
+            raise AlreadyExistsError(f"Alert with ID {alert.id} already exists")
 
         await ttm.AlertRequest.create(
             id=alert.id,
@@ -47,7 +23,7 @@ class AlertRepository:
     async def get_alert(self, alert_id: str) -> AlertRequest:
         alert = await ttm.AlertRequest.get_or_none(id=alert_id)
         if alert is None:
-            raise AlertNotFoundError(f"Alert with ID {alert_id} does not exists")
+            raise NotFoundError(f"Alert with ID {alert_id} does not exists")
 
         alert_model = AlertRequest.from_tortoise(alert)
         return alert_model
@@ -55,11 +31,11 @@ class AlertRepository:
     async def create_response(self, alert_id: str, response: str) -> AlertResponse:
         alert = await ttm.AlertRequest.get_or_none(id=alert_id)
         if alert is None:
-            raise AlertNotFoundError(f"Alert with ID {alert_id} does not exists")
+            raise NotFoundError(f"Alert with ID {alert_id} does not exists")
 
         alert_model = AlertRequest.from_tortoise(alert)
         if response not in alert_model.responses_available:
-            raise InvalidAlertResponseError(
+            raise InvalidInputError(
                 f"Response [{response}] is not a response option of alert with ID {alert_model.id}"
             )
 
@@ -76,9 +52,7 @@ class AlertRepository:
     async def get_alert_response(self, alert_id: str) -> AlertResponse:
         response = await ttm.AlertResponse.get_or_none(id=alert_id)
         if response is None:
-            raise AlertResponseNotFoundError(
-                f"Response to alert with ID {alert_id} does not exists"
-            )
+            raise NotFoundError(f"Response to alert with ID {alert_id} does not exists")
 
         response_model = AlertResponse.from_tortoise(response)
         return response_model

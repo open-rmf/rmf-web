@@ -3,16 +3,11 @@ from typing import List
 from fastapi import Depends, HTTPException
 from tortoise.exceptions import IntegrityError
 
+from api_server.exceptions import AlreadyExistsError, InvalidInputError, NotFoundError
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import rmf_gateway
 from api_server.models import AlertRequest, AlertResponse
-from api_server.repositories import (
-    AlertAlreadyExistsError,
-    AlertNotFoundError,
-    AlertRepository,
-    AlertResponseNotFoundError,
-    InvalidAlertResponseError,
-)
+from api_server.repositories import AlertRepository
 from api_server.rmf_io import alert_events
 
 router = FastIORouter(tags=["Alerts"])
@@ -34,7 +29,7 @@ async def create_new_alert(
         created_alert = await repo.create_new_alert(alert)
     except IntegrityError as e:
         raise HTTPException(400, e) from e
-    except AlertAlreadyExistsError as e:
+    except AlreadyExistsError as e:
         raise HTTPException(409, str(e)) from e
 
     alert_events.alert_requests.on_next(created_alert)
@@ -48,7 +43,7 @@ async def get_alert(alert_id: str, repo: AlertRepository = Depends(AlertReposito
     """
     try:
         alert_model = await repo.get_alert(alert_id)
-    except AlertNotFoundError as e:
+    except NotFoundError as e:
         raise HTTPException(404, str(e)) from e
 
     return alert_model
@@ -73,9 +68,9 @@ async def respond_to_alert(
         alert_response_model = await repo.create_response(alert_id, response)
     except IntegrityError as e:
         raise HTTPException(400, e) from e
-    except AlertNotFoundError as e:
+    except NotFoundError as e:
         raise HTTPException(404, str(e)) from e
-    except InvalidAlertResponseError as e:
+    except InvalidInputError as e:
         raise HTTPException(400, str(e)) from e
 
     alert_events.alert_responses.on_next(alert_response_model)
@@ -92,7 +87,7 @@ async def get_alert_response(
     """
     try:
         response_model = await repo.get_alert_response(alert_id)
-    except AlertResponseNotFoundError as e:
+    except NotFoundError as e:
         raise HTTPException(404, str(e)) from e
 
     return response_model

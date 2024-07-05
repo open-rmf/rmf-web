@@ -10,13 +10,9 @@ from websockets.exceptions import ConnectionClosed
 
 from api_server import models as mdl
 from api_server.app_config import app_config
+from api_server.exceptions import AlreadyExistsError
 from api_server.logging import LoggerAdapter, get_logger
-from api_server.repositories import (
-    AlertAlreadyExistsError,
-    AlertRepository,
-    FleetRepository,
-    TaskRepository,
-)
+from api_server.repositories import AlertRepository, FleetRepository, TaskRepository
 from api_server.rmf_io import alert_events, fleet_events, task_events
 
 router = APIRouter(tags=["_internal"])
@@ -93,7 +89,7 @@ async def process_msg(
             )
             try:
                 created_alert = await alert_repo.create_new_alert(alert_request)
-            except AlertAlreadyExistsError as e:
+            except AlreadyExistsError as e:
                 logger.error(e)
                 return
             alert_events.alert_requests.on_next(created_alert)
@@ -122,7 +118,7 @@ async def process_msg(
             )
             try:
                 created_alert = await alert_repo.create_new_alert(alert_request)
-            except AlertAlreadyExistsError as e:
+            except AlreadyExistsError as e:
                 logger.error(e)
                 return
             alert_events.alert_requests.on_next(created_alert)
