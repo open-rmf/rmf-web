@@ -1,8 +1,6 @@
 from rx.subject.behaviorsubject import BehaviorSubject
 from rx.subject.subject import Subject
 
-import api_server.models as mdl
-
 
 class RmfEvents:
     def __init__(self):

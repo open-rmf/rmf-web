@@ -183,8 +183,6 @@ class AppFixture(unittest.TestCase):
 
                 async def handle_resp(emit_room, msg, *_args, **_kwargs):
                     if emit_room == "subscribe" and not msg["success"]:
-                        # FIXME
-                        # pylint: disable=broad-exception-raised
                         raise Exception("Failed to subscribe", msg)
                     if emit_room == room:
                         async with condition:
