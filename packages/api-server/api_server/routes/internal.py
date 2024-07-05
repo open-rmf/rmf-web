@@ -101,7 +101,7 @@ async def process_msg(
             errorMessage = ""
             if (
                 task_state.dispatch is not None
-                and task_state.dispatch.status == mdl.Status1.failed_to_assign
+                and task_state.dispatch.status == mdl.DispatchStatus.failed_to_assign
             ):
                 errorMessage += "Failed to assign\n"
                 if task_state.dispatch.errors is not None:

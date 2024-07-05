@@ -256,7 +256,7 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
   );
 });
 
-export const AlertStore = React.memo(() => {
+export const AlertManager = React.memo(() => {
   const rmf = React.useContext(RmfAppContext);
   const [openAlerts, setOpenAlerts] = React.useState<Record<string, AlertRequest>>({});
 

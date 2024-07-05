@@ -289,8 +289,7 @@ class RmfGateway:
             )
 
         def handle_alert(alert: AlertRequest):
-            logging.info("Received alert:")
-            logging.info(alert)
+            logging.info(f"Received alert: {alert}")
             alert_events.alert_requests.on_next(alert)
 
         alert_sub = ros_node().create_subscription(
@@ -314,8 +313,7 @@ class RmfGateway:
             )
 
         def handle_alert_response(alert_response: AlertResponse):
-            logging.info("Received alert response:")
-            logging.info(alert_response)
+            logging.info(f"Received alert response: {alert_response}")
             alert_events.alert_responses.on_next(alert_response)
 
         alert_response_sub = ros_node().create_subscription(
