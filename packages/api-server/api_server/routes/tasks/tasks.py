@@ -66,20 +66,20 @@ async def query_task_requests(
 async def query_task_states(
     task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
     task_id: Annotated[
-        str | None, Query(None, description="comma separated list of task ids")
+        str | None, Query(description="comma separated list of task ids")
     ] = None,
     category: Annotated[
-        str | None, Query(None, description="comma separated list of task categories")
+        str | None, Query(description="comma separated list of task categories")
     ] = None,
     request_time_between: Annotated[
         tuple[datetime, datetime] | None, Depends(time_between_query)
     ] = None,
     requester: Annotated[
-        str | None, Query(None, description="comma separated list of requester names")
+        str | None, Query(description="comma separated list of requester names")
     ] = None,
     assigned_to: Annotated[
         str | None,
-        Query(None, description="comma separated list of assigned robot names"),
+        Query(description="comma separated list of assigned robot names"),
     ] = None,
     start_time_between: Annotated[
         tuple[datetime, datetime] | None, Depends(time_between_query)
@@ -88,12 +88,11 @@ async def query_task_states(
         tuple[datetime, datetime] | None, Depends(time_between_query)
     ] = None,
     status: Annotated[
-        str | None, Query(None, description="comma separated list of statuses")
+        str | None, Query(description="comma separated list of statuses")
     ] = None,
     label: Annotated[
         str | None,
         Query(
-            None,
             description="comma separated list of labels, each item must be in the form <key>=<value>, multiple items will filter tasks with all the labels",
         ),
     ] = None,

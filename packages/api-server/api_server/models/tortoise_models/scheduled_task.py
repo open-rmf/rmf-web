@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import Enum
+from zoneinfo import ZoneInfo
 
 import schedule
 from schedule import Job
@@ -16,13 +17,24 @@ from tortoise.fields import (
 )
 from tortoise.models import Model
 
+from api_server.app_config import app_config
+
 
 class ScheduledTask(Model):
     task_request = JSONField()
     created_by = CharField(255)
     schedules: ReverseRelation["ScheduledTaskSchedule"]
     last_ran = DatetimeField(null=True)
-    except_dates = JSONField(null=True)
+    except_dates = JSONField(null=True, default=list)
+    """A list of date in the form YYYY-mm-dd.
+     
+    Tasks should be skipped on those dates. The dates must always be stored in the server timezone.
+    """
+
+    @staticmethod
+    def format_except_date(dt: datetime) -> str:
+        """Formats the datetime as a str suitable to be stored in the except_dates field"""
+        return dt.astimezone(ZoneInfo(app_config.timezone)).strftime("%Y-%m-%d")
 
 
 class ScheduledTaskSchedule(Model):

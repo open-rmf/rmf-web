@@ -1,13 +1,16 @@
 import asyncio
 from datetime import datetime
-from typing import Annotated
+from typing import Annotated, cast
+from zoneinfo import ZoneInfo
 
+import pydantic
 import schedule
 import tortoise.transactions
 from fastapi import Depends, HTTPException, Query
 from pydantic import BaseModel
 from tortoise.expressions import Q
 
+from api_server.app_config import app_config
 from api_server.authenticator import user_dep
 from api_server.dependencies import pagination_query
 from api_server.fast_io import FastIORouter
@@ -33,6 +36,13 @@ router = FastIORouter(tags=["Tasks"])
 class PostScheduledTaskRequest(BaseModel):
     task_request: TaskRequest
     schedules: list[ScheduledTaskSchedule]
+    except_dates: list[datetime] = pydantic.Field(default=[])
+    tz: str | None = None
+    """Timezone of the schedules, if omitted, the server timezone will be used
+    
+    Note that this does not affect the `start_from` param, it will always use the
+    timezone specified on the param.
+    """
 
 
 async def schedule_task(
@@ -108,6 +118,7 @@ async def post_scheduled_task(
                     exclude_none=True
                 ),
                 created_by=user.username,
+                except_dates=scheduled_task_request.except_dates,
             )
             schedules = [
                 ttm.ScheduledTaskSchedule(
@@ -117,10 +128,12 @@ async def post_scheduled_task(
             ]
             await ttm.ScheduledTaskSchedule.bulk_create(schedules)
 
+            await scheduled_task.fetch_related("schedules")
             await schedule_task(
                 scheduled_task, rmf_repo, task_repo, tasks_service, logger
             )
-        return ScheduledTask.model_validate(scheduled_task)
+
+            return ScheduledTask.model_validate(scheduled_task)
     except schedule.ScheduleError as e:
         raise HTTPException(422, str(e)) from e
 
@@ -155,7 +168,7 @@ async def get_scheduled_tasks(
     if pagination.order_by:
         q.order_by(*pagination.order_by)
     results = await q
-    await ttm.ScheduledTask.fetch_for_list(results)
+    await ttm.ScheduledTask.fetch_for_list(results, "schedules")
     return [ScheduledTask.model_validate(x) for x in results]
 
 
@@ -167,30 +180,36 @@ async def get_scheduled_task(task_id: int) -> ttm.ScheduledTask:
     return task
 
 
-@router.put("/{task_id}/clear")
-async def del_scheduled_tasks_event(
+def convert_timezone_from(to_convert: datetime, reference: datetime):
+    tz = reference.tzinfo or ZoneInfo(app_config.timezone)
+    return to_convert.astimezone(tz)
+
+
+class AddExceptDateRequest(BaseModel):
+    except_date: datetime
+
+
+@router.post(
+    "/{task_id}/except_date",
+    description="Skip tasks on the excepted date",
+    status_code=201,
+)
+async def add_except_date(
     task_id: int,
-    event_date: datetime,
-    rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)],
-    task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
-    tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
+    data: AddExceptDateRequest,
     logger: Annotated[LoggerAdapter, Depends(get_logger)],
 ):
     task = await get_scheduled_task(task_id)
-    if task is None:
-        raise HTTPException(404)
 
-    event_date_str = event_date.isoformat()
-    if not isinstance(task.except_dates, list):
-        logger.error(f"task.except_dates is not a list: {type(task.except_dates)}")
-        raise HTTPException(500)
-    task.except_dates.append(event_date_str[:10])
-    await task.save()
-
-    for sche in task.schedules:
-        schedule.clear(sche.get_id())
-
-    await schedule_task(task, rmf_repo, task_repo, tasks_service, logger)
+    new_except_date = ttm.ScheduledTask.format_except_date(data.except_date)
+    exists = next(
+        (True for x in task.except_dates if x == new_except_date),
+        False,
+    )
+    if not exists:
+        cast(list[str], task.except_dates).append(new_except_date)
+        await task.save()
+        logger.info(f"added except date {new_except_date} to task {task_id}")
 
 
 @router.post("/{task_id}/update", status_code=201, response_model=ScheduledTask)

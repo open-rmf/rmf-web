@@ -21,6 +21,7 @@ class AppConfig:
     aud: str
     iss: str | None
     ros_args: list[str]
+    timezone: str
 
     def __post_init__(self):
         self.public_url = urllib.parse.urlparse(cast(str, self.public_url))

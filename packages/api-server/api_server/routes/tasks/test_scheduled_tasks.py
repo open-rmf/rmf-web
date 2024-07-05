@@ -18,16 +18,14 @@ class TestScheduledTasksRoute(AppFixture):
                     "period": "day",
                     "start_from": 1000,
                     "until": task_until,
+                    "at": "00:00",
                 },
-                {
-                    "period": "day",
-                    "start_from": 0,
-                    "until": 999,
-                },
+                {"period": "day", "start_from": 0, "until": 999, "at": "00:00"},
                 {
                     "period": "monday",
                     "start_from": 1000,
                     "until": task_until,
+                    "at": "00:00",
                 },
             ],
         }
@@ -46,6 +44,7 @@ class TestScheduledTasksRoute(AppFixture):
                     "period": "day",
                     "start_from": 2000,
                     "until": task_until,
+                    "at": "00:00",
                 },
             ],
         }
@@ -210,10 +209,11 @@ class TestScheduledTasksRoute(AppFixture):
         # delete a single event from this schedule, for 0800 GMT+8 11th February 2124,
         # which is 0000 UTC 11th February 2124.
         schedule_task_id = scheduled_task["id"]
-        params = {"event_date": "2124-02-11T00:00:00+00:00"}
-        self.client.put(
-            f"/scheduled_tasks/{schedule_task_id}/clear?{urlencode(params)}"
+        resp = self.client.post(
+            f"/scheduled_tasks/{schedule_task_id}/except_date",
+            json={"except_date": "2124-02-11T00:00:00+00:00"},
         )
+        self.assertEqual(201, resp.status_code, resp.json())
 
         # check the same scheduled task
         resp = self.client.get(f"/scheduled_tasks/{schedule_task_id}")
@@ -229,10 +229,11 @@ class TestScheduledTasksRoute(AppFixture):
 
         # delete a single event from this schedule, for 0800 GMT+8 12th February 2124
         schedule_task_id = scheduled_task["id"]
-        params = {"event_date": "2124-02-12T08:00:00+08:00"}
-        self.client.put(
-            f"/scheduled_tasks/{schedule_task_id}/clear?{urlencode(params)}"
+        resp = self.client.post(
+            f"/scheduled_tasks/{schedule_task_id}/except_date",
+            json={"except_date": "2124-02-12T08:00:00+08:00"},
         )
+        self.assertEqual(201, resp.status_code, resp.json())
 
         # check the same scheduled task
         resp = self.client.get(f"/scheduled_tasks/{schedule_task_id}")
@@ -275,10 +276,11 @@ class TestScheduledTasksRoute(AppFixture):
         # delete a single event from this schedule, for 0801 GMT+8 11th February 2124,
         # which is 0001 UTC 11th February 2124.
         schedule_task_id = scheduled_task["id"]
-        params = {"event_date": "2124-02-11T00:01:00+00:00"}
-        self.client.put(
-            f"/scheduled_tasks/{schedule_task_id}/clear?{urlencode(params)}"
+        resp = self.client.post(
+            f"/scheduled_tasks/{schedule_task_id}/except_date",
+            json={"except_date": "2124-02-11T00:01:00+00:00"},
         )
+        self.assertEqual(201, resp.status_code, resp.json())
 
         # check the same scheduled task
         resp = self.client.get(f"/scheduled_tasks/{schedule_task_id}")
@@ -294,10 +296,11 @@ class TestScheduledTasksRoute(AppFixture):
 
         # delete a single event from this schedule, for 0801 GMT+8 12th February 2124
         schedule_task_id = scheduled_task["id"]
-        params = {"event_date": "2124-02-12T08:01:00+08:00"}
-        self.client.put(
-            f"/scheduled_tasks/{schedule_task_id}/clear?{urlencode(params)}"
+        resp = self.client.post(
+            f"/scheduled_tasks/{schedule_task_id}/except_date",
+            json={"except_date": "2124-02-12T08:01:00+08:00"},
         )
+        self.assertEqual(201, resp.status_code, resp.json())
 
         # check the same scheduled task
         resp = self.client.get(f"/scheduled_tasks/{schedule_task_id}")
@@ -336,10 +339,11 @@ class TestScheduledTasksRoute(AppFixture):
         # delete a single event from this schedule, for 0759 GMT+8 11th February 2124,
         # which is 2359 UTC 10th February 2124.
         schedule_task_id = scheduled_task["id"]
-        params = {"event_date": "2124-02-10T23:59:00+00:00"}
-        self.client.put(
-            f"/scheduled_tasks/{schedule_task_id}/clear?{urlencode(params)}"
+        resp = self.client.post(
+            f"/scheduled_tasks/{schedule_task_id}/except_date",
+            json={"except_date": "2124-02-10T23:59:00+00:00"},
         )
+        self.assertEqual(201, resp.status_code, resp.json())
 
         # check the same scheduled task
         resp = self.client.get(f"/scheduled_tasks/{schedule_task_id}")
@@ -356,10 +360,11 @@ class TestScheduledTasksRoute(AppFixture):
 
         # delete a single event from this schedule, for 0759 GMT+8 12th February 2124
         schedule_task_id = scheduled_task["id"]
-        params = {"event_date": "2124-02-12T07:59:00+08:00"}
-        self.client.put(
-            f"/scheduled_tasks/{schedule_task_id}/clear?{urlencode(params)}"
+        resp = self.client.post(
+            f"/scheduled_tasks/{schedule_task_id}/except_date",
+            json={"except_date": "2124-02-12T07:59:00+08:00"},
         )
+        self.assertEqual(201, resp.status_code, resp.json())
 
         # check the same scheduled task
         resp = self.client.get(f"/scheduled_tasks/{schedule_task_id}")
@@ -399,10 +404,11 @@ class TestScheduledTasksRoute(AppFixture):
         # delete a single event from this schedule, for 0000 GMT+8 13th February 2124,
         # which is 1600 UTC 12th February 2124.
         schedule_task_id = scheduled_task["id"]
-        params = {"event_date": "2124-02-12T16:00:00+00:00"}
-        self.client.put(
-            f"/scheduled_tasks/{schedule_task_id}/clear?{urlencode(params)}"
+        resp = self.client.post(
+            f"/scheduled_tasks/{schedule_task_id}/except_date",
+            json={"except_date": "2124-02-12T16:00:00+00:00"},
         )
+        self.assertEqual(201, resp.status_code, resp.json())
 
         # check the same scheduled task
         resp = self.client.get(f"/scheduled_tasks/{schedule_task_id}")
@@ -419,10 +425,11 @@ class TestScheduledTasksRoute(AppFixture):
 
         # delete a single event from this schedule, for 0000 GMT+8 14th February 2124
         schedule_task_id = scheduled_task["id"]
-        params = {"event_date": "2124-02-14T00:00:00+08:00"}
-        self.client.put(
-            f"/scheduled_tasks/{schedule_task_id}/clear?{urlencode(params)}"
+        resp = self.client.post(
+            f"/scheduled_tasks/{schedule_task_id}/except_date",
+            json={"except_date": "2124-02-14T00:00:00+08:00"},
         )
+        self.assertEqual(201, resp.status_code, resp.json())
 
         # check the same scheduled task
         resp = self.client.get(f"/scheduled_tasks/{schedule_task_id}")
