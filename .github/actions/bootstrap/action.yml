@@ -31,7 +31,7 @@ runs:
     # This is only a temporary measure for deployment CI while we migrate to Jazzy and Noble on main
     - name: Setup minimal RMF on Humble
       run: |
-        mkdir -p /minimal_rmf && cd /rmf \
+        mkdir -p /minimal_rmf && cd /minimal_rmf \
         && curl -sL https://github.com/open-rmf/rmf_internal_msgs/archive/refs/heads/main.tar.gz -o rmf_internal_msgs.tar.gz \
         && curl -sL https://github.com/open-rmf/rmf_building_map_msgs/archive/refs/heads/main.tar.gz -o rmf_building_map_msgs.tar.gz \
         && mkdir -p /minimal_rmf/src/rmf/rmf_internal_msgs && tar zxf rmf_internal_msgs.tar.gz -C /minimal_rmf/src/rmf/rmf_internal_msgs --strip-components=1 && rm rmf_internal_msgs.tar.gz \
