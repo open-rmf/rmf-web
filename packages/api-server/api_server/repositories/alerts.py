@@ -14,9 +14,10 @@ class AlertRepository:
 
         await ttm.AlertRequest.create(
             id=alert.id,
-            data=alert.json(),
+            request_time=datetime.fromtimestamp(alert.unix_millis_alert_time / 1000),
             response_expected=(len(alert.responses_available) > 0),
             task_id=alert.task_id,
+            data=alert.json(),
         )
         return alert
 
@@ -45,7 +46,12 @@ class AlertRepository:
             response=response,
         )
         await ttm.AlertResponse.create(
-            id=alert_id, alert_request=alert, data=alert_response_model.json()
+            id=alert_id,
+            response_time=datetime.fromtimestamp(
+                alert_response_model.unix_millis_response_time / 1000
+            ),
+            response=response,
+            alert_request=alert,
         )
         return alert_response_model
 

@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
@@ -23,7 +24,10 @@ class AlertResponse(BaseModel):
     async def save(self) -> None:
         await ttm.AlertResponse.update_or_create(
             {
-                "data": self.json(),
+                "response_time": datetime.fromtimestamp(
+                    self.unix_millis_response_time / 1000
+                ),
+                "response": self.response,
             },
             id=self.id,
         )
@@ -53,9 +57,12 @@ class AlertRequest(BaseModel):
     async def save(self) -> None:
         await ttm.AlertRequest.update_or_create(
             {
-                "data": self.json(),
+                "request_time": datetime.fromtimestamp(
+                    self.unix_millis_alert_time / 1000
+                ),
                 "response_expected": (len(self.responses_available) > 0),
                 "task_id": self.task_id,
+                "data": self.json(),
             },
             id=self.id,
         )
