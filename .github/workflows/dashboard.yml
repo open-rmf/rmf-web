@@ -38,7 +38,7 @@ jobs:
           package: rmf-dashboard
           skip-build: true
       - name: unit test
-        run: . /minimal_rmf/install/setup.bash && pnpm run test:coverage
+        run: . /rmf_demos_ws/install/setup.bash && pnpm run test:coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:

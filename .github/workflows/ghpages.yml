@@ -51,7 +51,7 @@ jobs:
           package: api-server
       - name: Extract docs
         run: |
-          . /minimal_rmf/install/setup.bash
+          . /rmf_demos_ws/install/setup.bash
           pipenv run python3 scripts/extract_docs.py -o docs
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1

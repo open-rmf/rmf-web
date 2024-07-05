@@ -31,9 +31,20 @@ jobs:
         uses: ./.github/actions/bootstrap
         with:
           package: api-server
+      # This is only a temporary measure for deployment CI while we migrate to Jazzy and Noble on main
+      - name: Setup minimal RMF on Humble
+        run: |
+          mkdir -p minimal_rmf && cd minimal_rmf \
+          && curl -sL https://github.com/open-rmf/rmf_internal_msgs/archive/refs/heads/main.tar.gz -o rmf_internal_msgs.tar.gz \
+          && curl -sL https://github.com/open-rmf/rmf_building_map_msgs/archive/refs/heads/main.tar.gz -o rmf_building_map_msgs.tar.gz \
+          && mkdir -p src/rmf/rmf_internal_msgs && tar zxf rmf_internal_msgs.tar.gz -C src/rmf/rmf_internal_msgs --strip-components=1 && rm rmf_internal_msgs.tar.gz \
+          && mkdir -p src/rmf/rmf_building_map_msgs && tar zxf rmf_building_map_msgs.tar.gz -C src/rmf/rmf_building_map_msgs --strip-components=1 && rm rmf_building_map_msgs.tar.gz
+          . /rmf_demos_ws/install/setup.bash
+          colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+        shell: bash
       - name: tests
         run: |
-          . /minimal_rmf/install/setup.bash
+          . minimal_rmf/install/setup.bash
           pnpm run lint
           pnpm run test:cov
           pipenv run python -m coverage xml
@@ -41,3 +52,4 @@ jobs:
         uses: codecov/codecov-action@v1
         with:
           flags: api-server
+
