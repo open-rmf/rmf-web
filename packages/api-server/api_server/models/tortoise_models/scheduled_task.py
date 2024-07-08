@@ -101,6 +101,6 @@ class ScheduledTaskSchedule(Model):
         # Hashable value in order to tag the job with a unique identifier
         job.tag(self._id)
         if self.at is not None:
-            job = job.at(self.at)
+            job = job.at(self.at, tz=app_config.timezone)
 
         return job

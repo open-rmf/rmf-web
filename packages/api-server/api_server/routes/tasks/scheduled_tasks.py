@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime
+from datetime import date, datetime
 from typing import Annotated, cast
 from zoneinfo import ZoneInfo
 
@@ -75,20 +75,29 @@ async def schedule_task(
         request=TaskRequest(**task.task_request),
     )
 
-    async def run():
+    async def run(j: schedule.Job):
+        logger.info(f"starting task {task.pk}")
+        task_to_run = await ttm.ScheduledTask.get_or_none(id=task.pk)
+        if task_to_run is None:
+            logger.warning(
+                f"failed to run scheduled task {task.pk}: scheduled task does not exist"
+            )
+            return
+
+        # check if we should skip this run
+        except_dates = [date.fromisoformat(x) for x in task_to_run.except_dates]
+        # `next_run` contains the expected time it should run, we use that over `datetime.now`
+        # in case of delays in the scheduler.
+        if j.next_run and j.next_run.date() in except_dates:
+            logger.info(f"skipping task {task.pk} because it is in the except_dates")
+            return
+
         await post_dispatch_task(req, rmf_repo, task_repo, logger, tasks_service)
-        task.last_ran = datetime.now()
+        task.last_ran = datetime.now(tz=ZoneInfo(app_config.timezone))
         await task.save()
 
-    def do():
-        logger.info(f"starting task {task.pk}")
-        datetime_to_iso = datetime.now().isoformat()
-        if datetime_to_iso[:10] in task.except_dates:
-            return
-        asyncio.get_event_loop().create_task(run())
-
     for _, j in jobs:
-        j.do(do)
+        j.do(asyncio.create_task, run(j))
     logger.info(f"scheduled task [{task.pk}]")
 
 
