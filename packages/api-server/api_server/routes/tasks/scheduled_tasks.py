@@ -5,6 +5,7 @@ from zoneinfo import ZoneInfo
 
 import pydantic
 import schedule
+import tortoise.timezone
 import tortoise.transactions
 from fastapi import Depends, HTTPException, Query
 from pydantic import BaseModel
@@ -36,7 +37,10 @@ router = FastIORouter(tags=["Tasks"])
 class PostScheduledTaskRequest(BaseModel):
     task_request: TaskRequest
     schedules: list[ScheduledTaskSchedule]
-    except_dates: list[datetime] = pydantic.Field(default=[])
+    except_dates: list[datetime] = pydantic.Field(
+        default=[],
+        description="A list of dates which the schedule should be skipped, this is based on the server date. The time portion will be discarded, it is only used to convert the date to the server timezone.",
+    )
     tz: str | None = None
     """Timezone of the schedules, if omitted, the server timezone will be used
     
@@ -118,7 +122,10 @@ async def post_scheduled_task(
                     exclude_none=True
                 ),
                 created_by=user.username,
-                except_dates=scheduled_task_request.except_dates,
+                except_dates=[
+                    ttm.ScheduledTask.format_except_date(x)
+                    for x in scheduled_task_request.except_dates
+                ],
             )
             schedules = [
                 ttm.ScheduledTaskSchedule(
@@ -133,7 +140,7 @@ async def post_scheduled_task(
                 scheduled_task, rmf_repo, task_repo, tasks_service, logger
             )
 
-            return ScheduledTask.model_validate(scheduled_task)
+            return scheduled_task
     except schedule.ScheduleError as e:
         raise HTTPException(422, str(e)) from e
 
@@ -212,7 +219,7 @@ async def add_except_date(
         logger.info(f"added except date {new_except_date} to task {task_id}")
 
 
-@router.post("/{task_id}/update", status_code=201, response_model=ScheduledTask)
+@router.post("/{task_id}/update", status_code=200, response_model=ScheduledTask)
 async def update_schedule_task(
     task_id: int,
     scheduled_task_request: PostScheduledTaskRequest,
@@ -220,81 +227,32 @@ async def update_schedule_task(
     task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
     tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
     logger: Annotated[LoggerAdapter, Depends(get_logger)],
-    except_date: datetime | None = None,
 ):
+    task = await get_scheduled_task(task_id)
     try:
-        task = await get_scheduled_task(task_id)
-        if task is None:
-            raise HTTPException(404)
-        # If "except_date" is provided, it means a single event is being updated.
-        # In this case, we perform the following steps:
-        #   1. Add the "except_date" to the list of exception dates for the task.
-        #   2. Clear all existing schedules associated with the task.
-        #   3. Create a new scheduled task with the requested data from the schedule form.
-
         async with tortoise.transactions.in_transaction():
-            if except_date:
-                event_date_str = except_date.isoformat()
-                if not isinstance(task.except_dates, list):
-                    logger.error(
-                        f"task.except_dates is not a list: {type(task.except_dates)}"
-                    )
-                    raise HTTPException(500)
-                task.except_dates.append(event_date_str[:10])
-                await task.save()
+            task.task_request = scheduled_task_request.task_request.model_dump(
+                round_trip=True
+            )
+            task.except_dates = [
+                ttm.ScheduledTask.format_except_date(x)
+                for x in scheduled_task_request.except_dates
+            ]
+            await task.save()
 
-                for sche in task.schedules:
-                    schedule.clear(sche.get_id())
+            for sche in task.schedules:
+                schedule.clear(sche.get_id())
+                await sche.delete()
 
-                await schedule_task(task, rmf_repo, task_repo, tasks_service, logger)
+            new_schedules = [
+                ttm.ScheduledTaskSchedule(scheduled_task=task, **x.model_dump())
+                for x in scheduled_task_request.schedules
+            ]
 
-                scheduled_task = await ttm.ScheduledTask.create(
-                    task_request=scheduled_task_request.task_request.model_dump_json(
-                        exclude_none=True
-                    ),
-                    created_by=task.created_by,
-                )
-                schedules = [
-                    ttm.ScheduledTaskSchedule(
-                        scheduled_task=scheduled_task, **x.model_dump()
-                    )
-                    for x in scheduled_task_request.schedules
-                ]
-                await ttm.ScheduledTaskSchedule.bulk_create(schedules)
+            await ttm.ScheduledTaskSchedule.bulk_create(new_schedules)
 
-                await schedule_task(
-                    scheduled_task, rmf_repo, task_repo, tasks_service, logger
-                )
-            else:
-                # If "except_date" is not provided, it means the entire series is being updated.
-                # In this case, we perform the following steps:
-                #   1. Update the task with the requested data from the schedule form and clear exception dates.
-                #   2. Clear all existing schedules associated with the task.
-                #   3. Delete all existing schedules associated with the task.
-                #   4. Create new schedules based on the requested data.
-                task.update_from_dict(
-                    {
-                        "task_request": scheduled_task_request.task_request.model_dump_json(
-                            exclude_none=True
-                        ),
-                        "except_dates": [],
-                    }
-                )
-
-                for sche in task.schedules:
-                    schedule.clear(sche.get_id())
-                for sche in task.schedules:
-                    await sche.delete()
-
-                await task.save()
-                schedules = [
-                    ttm.ScheduledTaskSchedule(scheduled_task=task, **x.model_dump())
-                    for x in scheduled_task_request.schedules
-                ]
-
-                await ttm.ScheduledTaskSchedule.bulk_create(schedules)
-
-                await schedule_task(task, rmf_repo, task_repo, tasks_service, logger)
+            await schedule_task(task, rmf_repo, task_repo, tasks_service, logger)
+            return task
     except schedule.ScheduleError as e:
         raise HTTPException(422, str(e)) from e
 

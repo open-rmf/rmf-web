@@ -1,6 +1,13 @@
-from datetime import datetime, timedelta
+from copy import deepcopy
+from datetime import date, datetime, timedelta
 from urllib.parse import urlencode
 
+from api_server.models import TaskRequest
+from api_server.models.tasks import ScheduledTask, ScheduledTaskSchedule
+from api_server.routes.tasks.scheduled_tasks import (
+    PostScheduledTaskRequest,
+    update_schedule_task,
+)
 from api_server.test import AppFixture
 
 
@@ -446,827 +453,252 @@ class TestScheduledTasksRoute(AppFixture):
         self.client.delete(f"/scheduled_tasks/{schedule_task_id}")
 
     def test_edit_scheduled_task(self):
-        scheduled_date_str = "2124-02-10T16:00:00+08:00"
-        task_request = {
-            "category": "test_category",
-            "description": "test_description",
-        }
+        scheduled_date = datetime.fromisoformat("2124-02-10T16:00:00+08:00")
+        task_request = TaskRequest(
+            category="test_category",
+            description="test_description",
+        )
         task_schedules = [
-            {
-                "period": "day",
-                "start_from": scheduled_date_str,
-                "at": "16:00",
-            }
+            ScheduledTaskSchedule(
+                period=ScheduledTaskSchedule.Period.Day,
+                start_from=scheduled_date,
+                at="16:00",
+            )
         ]
 
-        scheduled_task_description = {
-            "task_request": task_request,
-            "schedules": task_schedules,
-        }
-        resp = self.client.post("/scheduled_tasks", json=scheduled_task_description)
-        self.assertEqual(201, resp.status_code, resp.json())
-        scheduled_task = resp.json()
-        self.assertEqual(len(scheduled_task["schedules"]), 1, scheduled_task)
-        schedule_task_id = scheduled_task["id"]
-        schedules = scheduled_task["schedules"]
-
-        # update task description
-        updated_task_request = {
-            "category": "test_category_updated",
-            "description": "test_description_updated",
-        }
-        scheduled_task_description["task_request"] = updated_task_request
+        scheduled_task_description = PostScheduledTaskRequest(
+            task_request=task_request,
+            schedules=task_schedules,
+        )
         resp = self.client.post(
-            f"/scheduled_tasks/{schedule_task_id}/update",
-            json=scheduled_task_description,
+            "/scheduled_tasks", content=scheduled_task_description.model_dump_json()
         )
         self.assertEqual(201, resp.status_code, resp.json())
+        scheduled_task = ScheduledTask.model_validate_json(resp.content)
+        self.assertEqual(len(scheduled_task.schedules), 1, scheduled_task)
+        schedule_task_id = scheduled_task.id
+        schedules = scheduled_task.schedules
+
+        # update task description
+        updated_task_request = TaskRequest(
+            category="test_category_updated",
+            description="test_description_updated",
+        )
+        scheduled_task_description.task_request = updated_task_request
+        resp = self.client.post(
+            f"/scheduled_tasks/{schedule_task_id}/update",
+            content=scheduled_task_description.model_dump_json(),
+        )
+        self.assertEqual(200, resp.status_code, resp.json())
 
         # compare updated scheduled task description
         resp = self.client.get(f"/scheduled_tasks/{schedule_task_id}")
         self.assertEqual(200, resp.status_code, resp.json())
-        updated_scheduled_task = resp.json()
+        updated_scheduled_task = ScheduledTask.model_validate_json(resp.content)
+        self.assertEqual(updated_scheduled_task.id, schedule_task_id)
         self.assertEqual(
-            updated_scheduled_task["task_request"],
+            updated_scheduled_task.task_request,
             updated_task_request,
             updated_scheduled_task,
         )
         self.assertEqual(
-            updated_scheduled_task["schedules"], schedules, updated_scheduled_task
+            updated_scheduled_task.schedules, schedules, updated_scheduled_task
         )
 
         # update task schedules in UTC
-        updated_scheduled_date_str = "2124-02-10T12:00:00+00:00"
+        updated_scheduled_date = datetime.fromisoformat("2124-02-10T12:00:00+00:00")
         updated_task_schedules = [
-            {
-                "period": "day",
-                "start_from": updated_scheduled_date_str,
-                "at": "20:00",
-            }
+            ScheduledTaskSchedule(
+                period=ScheduledTaskSchedule.Period.Day,
+                start_from=updated_scheduled_date,
+                at="20:00",
+            )
         ]
-        scheduled_task_description["schedules"] = updated_task_schedules
+        scheduled_task_description.schedules = updated_task_schedules
         resp = self.client.post(
             f"/scheduled_tasks/{schedule_task_id}/update",
-            json=scheduled_task_description,
+            content=scheduled_task_description.model_dump_json(),
         )
-        self.assertEqual(201, resp.status_code, resp.json())
+        self.assertEqual(200, resp.status_code, resp.json())
 
         # compare updated scheduled task schedules
         resp = self.client.get(f"/scheduled_tasks/{schedule_task_id}")
         self.assertEqual(200, resp.status_code, resp.json())
-        updated_scheduled_task = resp.json()
+        updated_scheduled_task = ScheduledTask.model_validate_json(resp.content)
         self.assertEqual(
-            updated_scheduled_task["task_request"],
+            updated_scheduled_task.task_request,
             updated_task_request,
             updated_scheduled_task,
         )
         self.assertNotEqual(
-            updated_scheduled_task["schedules"], schedules, updated_scheduled_task
+            updated_scheduled_task.schedules, schedules, updated_scheduled_task
         )
         self.assertEqual(
-            len(updated_scheduled_task["schedules"]), 1, updated_scheduled_task
+            len(updated_scheduled_task.schedules), 1, updated_scheduled_task
         )
-        updated_schedule = updated_scheduled_task["schedules"][0]
+        updated_schedule = updated_scheduled_task.schedules[0]
         self.assertEqual(
-            updated_schedule["start_from"], updated_scheduled_date_str, updated_schedule
-        )
-        self.assertEqual(updated_schedule["at"], "20:00", updated_schedule)
-
-        # update task schedules in GMT+8
-        updated_scheduled_date_str = "2124-02-10T21:00:00+08:00"
-        updated_task_schedules = [
-            {
-                "period": "day",
-                "start_from": updated_scheduled_date_str,
-                "at": "21:00",
-            }
-        ]
-        scheduled_task_description["schedules"] = updated_task_schedules
-        resp = self.client.post(
-            f"/scheduled_tasks/{schedule_task_id}/update",
-            json=scheduled_task_description,
-        )
-        self.assertEqual(201, resp.status_code, resp.json())
-
-        # compare updated scheduled task schedules
-        resp = self.client.get(f"/scheduled_tasks/{schedule_task_id}")
-        self.assertEqual(200, resp.status_code, resp.json())
-        updated_scheduled_task = resp.json()
-        self.assertEqual(
-            updated_scheduled_task["task_request"],
-            updated_task_request,
-            updated_scheduled_task,
-        )
-        self.assertNotEqual(
-            updated_scheduled_task["schedules"], schedules, updated_scheduled_task
-        )
-        self.assertEqual(
-            len(updated_scheduled_task["schedules"]), 1, updated_scheduled_task
-        )
-        updated_schedule = updated_scheduled_task["schedules"][0]
-
-        # Start from dates are saved as UTC
-        updated_scheduled_date_utc_str = "2124-02-10T13:00:00+00:00"
-        self.assertEqual(
-            updated_schedule["start_from"],
-            updated_scheduled_date_utc_str,
+            updated_schedule.start_from,
+            # server should always return in server time
+            datetime.fromisoformat("2124-02-10T20:00:00+08:00"),
             updated_schedule,
         )
-        self.assertEqual(updated_schedule["at"], "21:00", updated_schedule)
+        self.assertEqual(updated_schedule.at, "20:00", updated_schedule)
+
+        # update task schedules in GMT+8
+        updated_scheduled_date = datetime.fromisoformat("2124-02-10T21:00:00+08:00")
+        updated_task_schedules = [
+            ScheduledTaskSchedule(
+                period=ScheduledTaskSchedule.Period.Day,
+                start_from=updated_scheduled_date,
+                at="21:00",
+            )
+        ]
+        scheduled_task_description.schedules = updated_task_schedules
+        resp = self.client.post(
+            f"/scheduled_tasks/{schedule_task_id}/update",
+            content=scheduled_task_description.model_dump_json(),
+        )
+        self.assertEqual(200, resp.status_code, resp.json())
+
+        # compare updated scheduled task schedules
+        resp = self.client.get(f"/scheduled_tasks/{schedule_task_id}")
+        self.assertEqual(200, resp.status_code, resp.json())
+        updated_scheduled_task = ScheduledTask.model_validate_json(resp.content)
+        self.assertEqual(
+            updated_scheduled_task.task_request,
+            updated_task_request,
+            updated_scheduled_task,
+        )
+        self.assertEqual(
+            len(updated_scheduled_task.schedules), 1, updated_scheduled_task
+        )
+        self.assertEqual(
+            updated_scheduled_task.schedules[0].start_from,
+            # server should always return in server time
+            datetime.fromisoformat("2124-02-10T21:00:00+08:00"),
+            updated_schedule,
+        )
+        updated_schedule = updated_scheduled_task.schedules[0]
 
         # cleanup
         self.client.delete(f"/scheduled_tasks/{schedule_task_id}")
 
     def test_edit_scheduled_task_event(self):
-        scheduled_date_str = "2124-02-10T10:00:00+08:00"
-        task_request = {
-            "category": "test_category",
-            "description": "test_description",
-        }
+        scheduled_date = datetime.fromisoformat("2124-02-10T10:00:00+08:00")
+        task_request = TaskRequest(
+            category="test_category",
+            description="test_description",
+        )
         task_schedules = [
-            {
-                "period": "day",
-                "start_from": scheduled_date_str,
-                "at": "10:00",
-            }
+            ScheduledTaskSchedule(
+                period=ScheduledTaskSchedule.Period.Day,
+                start_from=scheduled_date,
+                at="10:00",
+            )
         ]
 
-        scheduled_task_description = {
-            "task_request": task_request,
-            "schedules": task_schedules,
-        }
-        resp = self.client.post("/scheduled_tasks", json=scheduled_task_description)
-        self.assertEqual(201, resp.status_code, resp.json())
-        scheduled_task = resp.json()
-        self.assertEqual(len(scheduled_task["schedules"]), 1, scheduled_task)
-        schedule_task_id = scheduled_task["id"]
-        schedules = scheduled_task["schedules"]
-
-        # update task description, with except date on 12th GMT+8
-        except_scheduled_date_str = "2124-02-12T10:00:00+08:00"
-        updated_task_request = {
-            "category": "test_category_updated",
-            "description": "test_description_updated",
-        }
-        scheduled_task_description["task_request"] = updated_task_request
-
-        # this will be accompanied by an until date of 23:59 12th GMT+8, which
-        # will be saved as 15:59 12th UTC
-        # FIXME this should come in as client dashboard's time zone
-        until_str_utc = "2124-02-12T15:59:59+00:00"
-        updated_task_schedule = task_schedules[0]
-        updated_task_schedule["until"] = until_str_utc
-        scheduled_task_description["schedules"][0] = updated_task_schedule
-
-        params = {"except_date": except_scheduled_date_str}
+        scheduled_task_description = PostScheduledTaskRequest(
+            task_request=task_request,
+            schedules=task_schedules,
+        )
         resp = self.client.post(
-            f"/scheduled_tasks/{schedule_task_id}/update?{urlencode(params)}",
-            json=scheduled_task_description,
+            "/scheduled_tasks", content=scheduled_task_description.model_dump_json()
         )
         self.assertEqual(201, resp.status_code, resp.json())
+        scheduled_task = ScheduledTask.model_validate_json(resp.content)
+        self.assertEqual(len(scheduled_task.schedules), 1, scheduled_task)
+        schedule_task_id = scheduled_task.id
 
-        # since we have an except_date, the original schedule should not change
-        # except an additional except_date
-        resp = self.client.get(f"/scheduled_tasks/{schedule_task_id}")
-        self.assertEqual(200, resp.status_code, resp.json())
-        updated_scheduled_task = resp.json()
-        self.assertEqual(
-            updated_scheduled_task["task_request"], task_request, updated_scheduled_task
+        # update task description, with except date on 12th UTC, which will be 13th GMT+8
+        updated_task_request = TaskRequest(
+            category="test_category_updated",
+            description="test_description_updated",
         )
-        self.assertEqual(
-            updated_scheduled_task["schedules"], schedules, updated_scheduled_task
-        )
-        self.assertEqual(
-            len(updated_scheduled_task["except_dates"]), 1, updated_scheduled_task
-        )
-        self.assertEqual(
-            updated_scheduled_task["except_dates"][0],
-            "2124-02-12",
-            updated_scheduled_task,
-        )
-
-        # The new schedule task for that single event should just be a single index increment
-        # This scheduled task with a single event should have the
-        # - updated task description
-        # - no except dates
-        # - correct start_from date
-        # - correct until date in UTC
-        new_scheduled_task_id = schedule_task_id + 1
-        resp = self.client.get(f"/scheduled_tasks/{new_scheduled_task_id}")
-        self.assertEqual(200, resp.status_code, resp.json())
-        updated_scheduled_task = resp.json()
-        self.assertEqual(
-            updated_scheduled_task["task_request"],
-            updated_task_request,
-            updated_scheduled_task,
-        )
-        self.assertEqual(
-            len(updated_scheduled_task["except_dates"]), 0, updated_scheduled_task
-        )
-        single_event_schedules = updated_scheduled_task["schedules"]
-        self.assertEqual(len(single_event_schedules), 1, single_event_schedules)
-        self.assertEqual(
-            single_event_schedules[0]["at"],
-            updated_task_schedule["at"],
-            single_event_schedules,
-        )
-        self.assertEqual(
-            single_event_schedules[0]["period"],
-            updated_task_schedule["period"],
-            single_event_schedules,
-        )
-        self.assertIsNotNone(single_event_schedules[0]["until"])
-        # until date is saved in UTC
-        self.assertEqual(
-            single_event_schedules[0]["until"], until_str_utc, single_event_schedules[0]
-        )
-
-        # cleanup
-        self.client.delete(f"/scheduled_tasks/{schedule_task_id}")
-        self.client.delete(f"/scheduled_tasks/{new_scheduled_task_id}")
-
-    def test_edit_scheduled_task_event_at_eight_am(self):
-        scheduled_date_str = "2124-02-10T08:00:00+08:00"
-        task_request = {
-            "category": "test_category",
-            "description": "test_description",
-        }
-        task_schedules = [
-            {
-                "period": "day",
-                "start_from": scheduled_date_str,
-                "at": "08:00",
-            }
+        scheduled_task_description.task_request = updated_task_request
+        scheduled_task_description.except_dates = [
+            datetime.fromisoformat("2124-02-12T16:00:00+00:00")
         ]
 
-        scheduled_task_description = {
-            "task_request": task_request,
-            "schedules": task_schedules,
-        }
-        resp = self.client.post("/scheduled_tasks", json=scheduled_task_description)
-        self.assertEqual(201, resp.status_code, resp.json())
-        scheduled_task = resp.json()
-        self.assertEqual(len(scheduled_task["schedules"]), 1, scheduled_task)
-        schedule_task_id = scheduled_task["id"]
-        schedules = scheduled_task["schedules"]
-
-        # update task description, with except date on 12th GMT+8
-        except_scheduled_date_str = "2124-02-12T08:00:00+08:00"
-        updated_task_request = {
-            "category": "test_category_updated",
-            "description": "test_description_updated",
-        }
-        scheduled_task_description["task_request"] = updated_task_request
-
-        # this will be accompanied by an until date of 23:59 12th GMT+8, which
-        # will be saved as 15:59 12th UTC
-        # FIXME this should come in as client dashboard's time zone
-        until_str_utc = "2124-02-12T15:59:59+00:00"
+        # this will be accompanied by an until date of 23:59 12th UTC
+        until = datetime.fromisoformat("2124-02-12T23:59:59+00:00")
         updated_task_schedule = task_schedules[0]
-        updated_task_schedule["until"] = until_str_utc
-        scheduled_task_description["schedules"][0] = updated_task_schedule
+        updated_task_schedule.until = until
+        scheduled_task_description.schedules[0] = updated_task_schedule
 
-        params = {"except_date": except_scheduled_date_str}
-        resp = self.client.post(
-            f"/scheduled_tasks/{schedule_task_id}/update?{urlencode(params)}",
-            json=scheduled_task_description,
-        )
-        self.assertEqual(201, resp.status_code, resp.json())
-
-        # since we have an except_date, the original schedule should not change
-        # except an additional except_date
-        resp = self.client.get(f"/scheduled_tasks/{schedule_task_id}")
-        self.assertEqual(200, resp.status_code, resp.json())
-        updated_scheduled_task = resp.json()
-        self.assertEqual(
-            updated_scheduled_task["task_request"], task_request, updated_scheduled_task
-        )
-        self.assertEqual(
-            updated_scheduled_task["schedules"], schedules, updated_scheduled_task
-        )
-        self.assertEqual(
-            len(updated_scheduled_task["except_dates"]), 1, updated_scheduled_task
-        )
-        self.assertEqual(
-            updated_scheduled_task["except_dates"][0],
-            "2124-02-12",
-            updated_scheduled_task,
-        )
-
-        # The new schedule task for that single event should just be a single index increment
-        # This scheduled task with a single event should have the
-        # - updated task description
-        # - no except dates
-        # - correct start_from date
-        # - correct until date
-        new_scheduled_task_id = schedule_task_id + 1
-        resp = self.client.get(f"/scheduled_tasks/{new_scheduled_task_id}")
-        self.assertEqual(200, resp.status_code, resp.json())
-        updated_scheduled_task = resp.json()
-        self.assertEqual(
-            updated_scheduled_task["task_request"],
-            updated_task_request,
-            updated_scheduled_task,
-        )
-        self.assertEqual(
-            len(updated_scheduled_task["except_dates"]), 0, updated_scheduled_task
-        )
-        single_event_schedules = updated_scheduled_task["schedules"]
-        self.assertEqual(len(single_event_schedules), 1, single_event_schedules)
-        self.assertEqual(
-            single_event_schedules[0]["at"],
-            updated_task_schedule["at"],
-            single_event_schedules,
-        )
-        self.assertEqual(
-            single_event_schedules[0]["period"],
-            updated_task_schedule["period"],
-            single_event_schedules,
-        )
-        self.assertIsNotNone(single_event_schedules[0]["until"])
-        # until date is saved in UTC
-        self.assertEqual(
-            single_event_schedules[0]["until"], until_str_utc, single_event_schedules[0]
-        )
-
-        # cleanup
-        self.client.delete(f"/scheduled_tasks/{schedule_task_id}")
-        self.client.delete(f"/scheduled_tasks/{new_scheduled_task_id}")
-
-    def test_edit_scheduled_task_event_after_eight_am(self):
-        scheduled_date_str = "2124-02-11T09:00:00+08:00"
-        task_request = {
-            "category": "test_category",
-            "description": "test_description",
-        }
-        task_schedules = [
-            {
-                "period": "day",
-                "start_from": scheduled_date_str,
-                "at": "09:00",
-            }
-        ]
-
-        scheduled_task_description = {
-            "task_request": task_request,
-            "schedules": task_schedules,
-        }
-        resp = self.client.post("/scheduled_tasks", json=scheduled_task_description)
-        self.assertEqual(201, resp.status_code, resp.json())
-        scheduled_task = resp.json()
-        self.assertEqual(len(scheduled_task["schedules"]), 1, scheduled_task)
-        schedule_task_id = scheduled_task["id"]
-        schedules = scheduled_task["schedules"]
-
-        # update task description, with except date on 14th GMT+8
-        except_scheduled_date_str = "2124-02-14T09:00:00+08:00"
-        updated_task_request = {
-            "category": "test_category_updated",
-            "description": "test_description_updated",
-        }
-        scheduled_task_description["task_request"] = updated_task_request
-
-        # this will be accompanied by an until date of 23:59 14th GMT+8, which
-        # will be saved as 15:59 14th UTC
-        # FIXME this should come in as client dashboard's time zone
-        until_str_utc = "2124-02-14T15:59:59+00:00"
-        updated_task_schedule = task_schedules[0]
-        updated_task_schedule["until"] = until_str_utc
-        scheduled_task_description["schedules"][0] = updated_task_schedule
-
-        params = {"except_date": except_scheduled_date_str}
-        resp = self.client.post(
-            f"/scheduled_tasks/{schedule_task_id}/update?{urlencode(params)}",
-            json=scheduled_task_description,
-        )
-        self.assertEqual(201, resp.status_code, resp.json())
-
-        # since we have an except_date, the original schedule should not change
-        # except an additional except_date
-        resp = self.client.get(f"/scheduled_tasks/{schedule_task_id}")
-        self.assertEqual(200, resp.status_code, resp.json())
-        updated_scheduled_task = resp.json()
-        self.assertEqual(
-            updated_scheduled_task["task_request"], task_request, updated_scheduled_task
-        )
-        self.assertEqual(
-            updated_scheduled_task["schedules"], schedules, updated_scheduled_task
-        )
-        self.assertEqual(
-            len(updated_scheduled_task["except_dates"]), 1, updated_scheduled_task
-        )
-        self.assertEqual(
-            updated_scheduled_task["except_dates"][0],
-            "2124-02-14",
-            updated_scheduled_task,
-        )
-
-        # The new schedule task for that single event should just be a single index increment
-        # This scheduled task with a single event should have the
-        # - updated task description
-        # - no except dates
-        # - correct start_from date
-        # - correct until date in UTC
-        new_scheduled_task_id = schedule_task_id + 1
-        resp = self.client.get(f"/scheduled_tasks/{new_scheduled_task_id}")
-        self.assertEqual(200, resp.status_code, resp.json())
-        updated_scheduled_task = resp.json()
-        self.assertEqual(
-            updated_scheduled_task["task_request"],
-            updated_task_request,
-            updated_scheduled_task,
-        )
-        self.assertEqual(
-            len(updated_scheduled_task["except_dates"]), 0, updated_scheduled_task
-        )
-        single_event_schedules = updated_scheduled_task["schedules"]
-        self.assertEqual(len(single_event_schedules), 1, single_event_schedules)
-        self.assertEqual(
-            single_event_schedules[0]["at"],
-            updated_task_schedule["at"],
-            single_event_schedules,
-        )
-        self.assertEqual(
-            single_event_schedules[0]["period"],
-            updated_task_schedule["period"],
-            single_event_schedules,
-        )
-        self.assertIsNotNone(single_event_schedules[0]["until"])
-        # until date is saved in UTC
-        self.assertEqual(
-            single_event_schedules[0]["until"], until_str_utc, single_event_schedules[0]
-        )
-
-        # cleanup
-        self.client.delete(f"/scheduled_tasks/{schedule_task_id}")
-        self.client.delete(f"/scheduled_tasks/{new_scheduled_task_id}")
-
-    def test_edit_scheduled_task_event_before_eight_am(self):
-        scheduled_date_str = "2124-02-16T07:00:00+08:00"
-        task_request = {
-            "category": "test_category",
-            "description": "test_description",
-        }
-        task_schedules = [
-            {
-                "period": "day",
-                "start_from": scheduled_date_str,
-                "at": "07:00",
-            }
-        ]
-
-        scheduled_task_description = {
-            "task_request": task_request,
-            "schedules": task_schedules,
-        }
-        resp = self.client.post("/scheduled_tasks", json=scheduled_task_description)
-        self.assertEqual(201, resp.status_code, resp.json())
-        scheduled_task = resp.json()
-        self.assertEqual(len(scheduled_task["schedules"]), 1, scheduled_task)
-        schedule_task_id = scheduled_task["id"]
-        schedules = scheduled_task["schedules"]
-
-        # update task description, with except date on 18th GMT+8
-        except_scheduled_date_str = "2124-02-18T07:00:00+08:00"
-        updated_task_request = {
-            "category": "test_category_updated",
-            "description": "test_description_updated",
-        }
-        scheduled_task_description["task_request"] = updated_task_request
-
-        # this will be accompanied by an until date of 23:59 18th GMT+8, which
-        # will be saved as 15:59 18th UTC
-        # FIXME this should come in as client dashboard's time zone
-        until_str_utc = "2124-02-18T15:59:59+00:00"
-        updated_task_schedule = task_schedules[0]
-        updated_task_schedule["until"] = until_str_utc
-        scheduled_task_description["schedules"][0] = updated_task_schedule
-
-        params = {"except_date": except_scheduled_date_str}
-        resp = self.client.post(
-            f"/scheduled_tasks/{schedule_task_id}/update?{urlencode(params)}",
-            json=scheduled_task_description,
-        )
-        self.assertEqual(201, resp.status_code, resp.json())
-
-        # since we have an except_date, the original schedule should not change
-        # except an additional except_date
-        resp = self.client.get(f"/scheduled_tasks/{schedule_task_id}")
-        self.assertEqual(200, resp.status_code, resp.json())
-        updated_scheduled_task = resp.json()
-        self.assertEqual(
-            updated_scheduled_task["task_request"], task_request, updated_scheduled_task
-        )
-        self.assertEqual(
-            updated_scheduled_task["schedules"], schedules, updated_scheduled_task
-        )
-        self.assertEqual(
-            len(updated_scheduled_task["except_dates"]), 1, updated_scheduled_task
-        )
-        self.assertEqual(
-            updated_scheduled_task["except_dates"][0],
-            "2124-02-18",
-            updated_scheduled_task,
-        )
-
-        # The new schedule task for that single event should just be a single index increment
-        # This scheduled task with a single event should have the
-        # - updated task description
-        # - no except dates
-        # - correct start_from date
-        # - correct until date in UTC
-        new_scheduled_task_id = schedule_task_id + 1
-        resp = self.client.get(f"/scheduled_tasks/{new_scheduled_task_id}")
-        self.assertEqual(200, resp.status_code, resp.json())
-        updated_scheduled_task = resp.json()
-        self.assertEqual(
-            updated_scheduled_task["task_request"],
-            updated_task_request,
-            updated_scheduled_task,
-        )
-        self.assertEqual(
-            len(updated_scheduled_task["except_dates"]), 0, updated_scheduled_task
-        )
-        single_event_schedules = updated_scheduled_task["schedules"]
-        self.assertEqual(len(single_event_schedules), 1, single_event_schedules)
-        self.assertEqual(
-            single_event_schedules[0]["at"],
-            updated_task_schedule["at"],
-            single_event_schedules,
-        )
-        self.assertEqual(
-            single_event_schedules[0]["period"],
-            updated_task_schedule["period"],
-            single_event_schedules,
-        )
-        self.assertIsNotNone(single_event_schedules[0]["until"])
-        # until date is saved in UTC
-        self.assertEqual(
-            single_event_schedules[0]["until"], until_str_utc, single_event_schedules[0]
-        )
-
-        # cleanup
-        self.client.delete(f"/scheduled_tasks/{schedule_task_id}")
-        self.client.delete(f"/scheduled_tasks/{new_scheduled_task_id}")
-
-    def test_edit_scheduled_task_event_at_local_midnight(self):
-        scheduled_date_str = "2124-02-16T00:00:00+08:00"
-        task_request = {
-            "category": "test_category",
-            "description": "test_description",
-        }
-        task_schedules = [
-            {
-                "period": "day",
-                "start_from": scheduled_date_str,
-                "at": "00:00",
-            }
-        ]
-
-        scheduled_task_description = {
-            "task_request": task_request,
-            "schedules": task_schedules,
-        }
-        resp = self.client.post("/scheduled_tasks", json=scheduled_task_description)
-        self.assertEqual(201, resp.status_code, resp.json())
-        scheduled_task = resp.json()
-        self.assertEqual(len(scheduled_task["schedules"]), 1, scheduled_task)
-        schedule_task_id = scheduled_task["id"]
-        schedules = scheduled_task["schedules"]
-
-        # update task description, with except date on 18th GMT+8
-        except_scheduled_date_str = "2124-02-18T00:00:00+08:00"
-        updated_task_request = {
-            "category": "test_category_updated",
-            "description": "test_description_updated",
-        }
-        scheduled_task_description["task_request"] = updated_task_request
-
-        # this will be accompanied by an until date of 23:59 18th GMT+8, which
-        # will be saved as 15:59 18th UTC
-        # FIXME this should come in as client dashboard's time zone
-        until_str_utc = "2124-02-18T15:59:59+00:00"
-        updated_task_schedule = task_schedules[0]
-        updated_task_schedule["until"] = until_str_utc
-        scheduled_task_description["schedules"][0] = updated_task_schedule
-
-        params = {"except_date": except_scheduled_date_str}
-        resp = self.client.post(
-            f"/scheduled_tasks/{schedule_task_id}/update?{urlencode(params)}",
-            json=scheduled_task_description,
-        )
-        self.assertEqual(201, resp.status_code, resp.json())
-
-        # since we have an except_date, the original schedule should not change
-        # except an additional except_date
-        resp = self.client.get(f"/scheduled_tasks/{schedule_task_id}")
-        self.assertEqual(200, resp.status_code, resp.json())
-        updated_scheduled_task = resp.json()
-        self.assertEqual(
-            updated_scheduled_task["task_request"], task_request, updated_scheduled_task
-        )
-        self.assertEqual(
-            updated_scheduled_task["schedules"], schedules, updated_scheduled_task
-        )
-        self.assertEqual(
-            len(updated_scheduled_task["except_dates"]), 1, updated_scheduled_task
-        )
-        self.assertEqual(
-            updated_scheduled_task["except_dates"][0],
-            "2124-02-18",
-            updated_scheduled_task,
-        )
-
-        # The new schedule task for that single event should just be a single index increment
-        # This scheduled task with a single event should have the
-        # - updated task description
-        # - no except dates
-        # - correct start_from date
-        # - correct until date in UTC
-        new_scheduled_task_id = schedule_task_id + 1
-        resp = self.client.get(f"/scheduled_tasks/{new_scheduled_task_id}")
-        self.assertEqual(200, resp.status_code, resp.json())
-        updated_scheduled_task = resp.json()
-        self.assertEqual(
-            updated_scheduled_task["task_request"],
-            updated_task_request,
-            updated_scheduled_task,
-        )
-        self.assertEqual(
-            len(updated_scheduled_task["except_dates"]), 0, updated_scheduled_task
-        )
-        single_event_schedules = updated_scheduled_task["schedules"]
-        self.assertEqual(len(single_event_schedules), 1, single_event_schedules)
-        self.assertEqual(
-            single_event_schedules[0]["at"],
-            updated_task_schedule["at"],
-            single_event_schedules,
-        )
-        self.assertEqual(
-            single_event_schedules[0]["period"],
-            updated_task_schedule["period"],
-            single_event_schedules,
-        )
-        self.assertIsNotNone(single_event_schedules[0]["until"])
-        # until date is saved in UTC
-        self.assertEqual(
-            single_event_schedules[0]["until"], until_str_utc, single_event_schedules[0]
-        )
-
-        # cleanup
-        self.client.delete(f"/scheduled_tasks/{schedule_task_id}")
-        self.client.delete(f"/scheduled_tasks/{new_scheduled_task_id}")
-
-    def test_edit_scheduled_task_after_edit_scheduled_task_event(self):
-        scheduled_date_str = "2124-02-11T09:00:00+08:00"
-        task_request = {
-            "category": "test_category",
-            "description": "test_description",
-        }
-        task_schedules = [
-            {
-                "period": "day",
-                "start_from": scheduled_date_str,
-                "at": "09:00",
-            }
-        ]
-
-        scheduled_task_description = {
-            "task_request": task_request,
-            "schedules": task_schedules,
-        }
-        resp = self.client.post("/scheduled_tasks", json=scheduled_task_description)
-        self.assertEqual(201, resp.status_code, resp.json())
-        scheduled_task = resp.json()
-        self.assertEqual(len(scheduled_task["schedules"]), 1, scheduled_task)
-        schedule_task_id = scheduled_task["id"]
-        schedules = scheduled_task["schedules"]
-
-        # update task description, with except date on 14th GMT+8
-        except_scheduled_date_str = "2124-02-14T09:00:00+08:00"
-        updated_task_request = {
-            "category": "test_category_updated",
-            "description": "test_description_updated",
-        }
-        scheduled_task_description["task_request"] = updated_task_request
-
-        # this will be accompanied by an until date of 23:59 14th GMT+8, which
-        # will be saved as 15:59 14th UTC
-        # FIXME this should come in as client dashboard's time zone
-        until_str_utc = "2124-02-14T15:59:59+00:00"
-        updated_task_schedule = task_schedules[0]
-        updated_task_schedule["until"] = until_str_utc
-        scheduled_task_description["schedules"][0] = updated_task_schedule
-
-        params = {"except_date": except_scheduled_date_str}
-        resp = self.client.post(
-            f"/scheduled_tasks/{schedule_task_id}/update?{urlencode(params)}",
-            json=scheduled_task_description,
-        )
-        self.assertEqual(201, resp.status_code, resp.json())
-
-        # since we have an except_date, the original schedule should not change
-        # except an additional except_date
-        resp = self.client.get(f"/scheduled_tasks/{schedule_task_id}")
-        self.assertEqual(200, resp.status_code, resp.json())
-        updated_scheduled_task = resp.json()
-        self.assertEqual(
-            updated_scheduled_task["task_request"], task_request, updated_scheduled_task
-        )
-        self.assertEqual(
-            updated_scheduled_task["schedules"], schedules, updated_scheduled_task
-        )
-        self.assertEqual(
-            len(updated_scheduled_task["except_dates"]), 1, updated_scheduled_task
-        )
-        self.assertEqual(
-            updated_scheduled_task["except_dates"][0],
-            "2124-02-14",
-            updated_scheduled_task,
-        )
-
-        # The new schedule task for that single event should just be a single index increment
-        # This scheduled task with a single event should have the
-        # - updated task description
-        # - no except dates
-        # - correct start_from date
-        # - correct until date in UTC
-        new_scheduled_task_id = schedule_task_id + 1
-        resp = self.client.get(f"/scheduled_tasks/{new_scheduled_task_id}")
-        self.assertEqual(200, resp.status_code, resp.json())
-        updated_scheduled_task = resp.json()
-        self.assertEqual(
-            updated_scheduled_task["task_request"],
-            updated_task_request,
-            updated_scheduled_task,
-        )
-        self.assertEqual(
-            len(updated_scheduled_task["except_dates"]), 0, updated_scheduled_task
-        )
-        single_event_schedules = updated_scheduled_task["schedules"]
-        self.assertEqual(len(single_event_schedules), 1, single_event_schedules)
-        self.assertEqual(
-            single_event_schedules[0]["at"],
-            updated_task_schedule["at"],
-            single_event_schedules,
-        )
-        self.assertEqual(
-            single_event_schedules[0]["period"],
-            updated_task_schedule["period"],
-            single_event_schedules,
-        )
-        self.assertIsNotNone(single_event_schedules[0]["until"])
-        # until date is saved in UTC
-        self.assertEqual(
-            single_event_schedules[0]["until"], until_str_utc, single_event_schedules[0]
-        )
-
-        # update original task schedules in GMT+8
-        updated_scheduled_date_str = "2124-02-11T14:00:00+08:00"
-        updated_task_schedules = [
-            {
-                "period": "day",
-                "start_from": updated_scheduled_date_str,
-                "at": "14:00",
-            }
-        ]
-        scheduled_task_description["schedules"] = updated_task_schedules
         resp = self.client.post(
             f"/scheduled_tasks/{schedule_task_id}/update",
-            json=scheduled_task_description,
+            content=scheduled_task_description.model_dump_json(),
         )
-        self.assertEqual(201, resp.status_code, resp.json())
+        self.assertEqual(200, resp.status_code, resp.json())
 
         # compare updated scheduled task schedules
         resp = self.client.get(f"/scheduled_tasks/{schedule_task_id}")
         self.assertEqual(200, resp.status_code, resp.json())
-        updated_scheduled_task = resp.json()
+        updated_scheduled_task = ScheduledTask.model_validate_json(resp.content)
         self.assertEqual(
-            updated_scheduled_task["task_request"],
+            updated_scheduled_task.task_request,
             updated_task_request,
             updated_scheduled_task,
         )
-        self.assertNotEqual(
-            updated_scheduled_task["schedules"], schedules, updated_scheduled_task
+        self.assertEqual(
+            updated_scheduled_task.schedules,
+            scheduled_task_description.schedules,
+            updated_scheduled_task,
         )
         self.assertEqual(
-            len(updated_scheduled_task["schedules"]), 1, updated_scheduled_task
+            len(updated_scheduled_task.except_dates), 1, updated_scheduled_task
         )
-        updated_schedule = updated_scheduled_task["schedules"][0]
-        # when editing an entire schedule, the exempted dates are ignored, so it will be empty
         self.assertEqual(
-            len(updated_scheduled_task["except_dates"]), 0, updated_scheduled_task
+            updated_scheduled_task.except_dates[0],
+            date.fromisoformat("2124-02-13"),
+            updated_scheduled_task,
         )
 
-        # FIXME Start from dates are saved as UTC
-        updated_scheduled_date_utc_str = "2124-02-11T06:00:00+00:00"
-        self.assertEqual(
-            updated_schedule["start_from"],
-            updated_scheduled_date_utc_str,
-            updated_schedule,
+        # update task description, with except date on 12th GMT+8
+        updated_task_request = TaskRequest(
+            category="test_category_updated",
+            description="test_description_updated",
         )
-        self.assertEqual(updated_schedule["at"], "14:00", updated_schedule)
+        scheduled_task_description.task_request = updated_task_request
+        scheduled_task_description.except_dates = [
+            datetime.fromisoformat("2124-02-12T07:59:00+08:00")
+        ]
+
+        # this will be accompanied by an until date of 23:59 12th GMT+8
+        until = datetime.fromisoformat("2124-02-12T23:59:59+00:00")
+        updated_task_schedule = task_schedules[0]
+        updated_task_schedule.until = until
+        scheduled_task_description.schedules[0] = updated_task_schedule
+
+        resp = self.client.post(
+            f"/scheduled_tasks/{schedule_task_id}/update",
+            content=scheduled_task_description.model_dump_json(),
+        )
+        self.assertEqual(200, resp.status_code, resp.json())
+
+        # compare updated scheduled task schedules
+        resp = self.client.get(f"/scheduled_tasks/{schedule_task_id}")
+        self.assertEqual(200, resp.status_code, resp.json())
+        updated_scheduled_task = ScheduledTask.model_validate_json(resp.content)
+        self.assertEqual(
+            updated_scheduled_task.task_request,
+            updated_task_request,
+            updated_scheduled_task,
+        )
+        self.assertEqual(
+            updated_scheduled_task.schedules,
+            scheduled_task_description.schedules,
+            updated_scheduled_task,
+        )
+        self.assertEqual(
+            len(updated_scheduled_task.except_dates), 1, updated_scheduled_task
+        )
+        self.assertEqual(
+            updated_scheduled_task.except_dates[0],
+            date.fromisoformat("2124-02-12"),
+            updated_scheduled_task,
+        )
 
         # cleanup
         self.client.delete(f"/scheduled_tasks/{schedule_task_id}")
-        self.client.delete(f"/scheduled_tasks/{new_scheduled_task_id}")
