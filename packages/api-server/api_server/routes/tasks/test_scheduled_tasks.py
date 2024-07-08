@@ -1,15 +1,42 @@
+import asyncio
+import unittest
+import unittest.mock
 from datetime import date, datetime, timedelta
+from zoneinfo import ZoneInfo
+
+import schedule
+from freezegun import freeze_time
 
 from api_server.models import TaskRequest
 from api_server.models.tasks import ScheduledTask, ScheduledTaskSchedule
 from api_server.routes.tasks.scheduled_tasks import PostScheduledTaskRequest
+from api_server.routes.tasks.tasks import post_dispatch_task
 from api_server.test import AppFixture
 
 
 class TestScheduledTasksRoute(AppFixture):
-    def test_scheduled_task_crud(self):
-        task_until = (datetime.now() + timedelta(days=30)).timestamp()
+    def setUp(self):
+        super().setUp()
+        self.serverTz = ZoneInfo("Asia/Singapore")
+        self._patcher = unittest.mock.patch(
+            "api_server.routes.tasks.scheduled_tasks.post_dispatch_task"
+        )
+        self.dispatch_task_mock = self._patcher.start()
+        self.addCleanup(lambda: self._patcher.stop())
 
+    def run_pending_jobs(self):
+        async def run():
+            before = asyncio.all_tasks()
+            schedule.run_pending()
+            after = asyncio.all_tasks()
+            job_tasks = after.difference(before)
+            for x in job_tasks:
+                await x
+
+        self.portal.call(run)
+
+    def test_scheduled_task_crud(self):
+        task_until = datetime(1971, 1, 1, tzinfo=ZoneInfo("UTC")).timestamp()
         scheduled_task = {
             "task_request": {
                 "category": "test",
@@ -18,23 +45,32 @@ class TestScheduledTasksRoute(AppFixture):
             "schedules": [
                 {
                     "period": "day",
-                    "start_from": 1000,
-                    "until": task_until,
                     "at": "00:00",
                 },
-                {"period": "day", "start_from": 0, "until": 999, "at": "00:00"},
                 {
-                    "period": "monday",
-                    "start_from": 1000,
-                    "until": task_until,
-                    "at": "00:00",
+                    "period": "day",
+                    "at": "00:02",
                 },
             ],
+            "start_from": "1970-01-01T16:30:00+00:00",
+            "until": task_until,
         }
-        resp = self.client.post("/scheduled_tasks", json=scheduled_task)
+        with freeze_time(datetime.fromtimestamp(0)):
+            resp = self.client.post("/scheduled_tasks", json=scheduled_task)
         self.assertEqual(201, resp.status_code, resp.json())
         task1 = resp.json()
-        self.assertEqual(len(task1["schedules"]), 3, task1)
+        self.assertEqual(len(task1["schedules"]), 2, task1)
+
+        # first run should be at 1970-01-02T00:00:00+08:00
+        with freeze_time(datetime(1970, 1, 1, 23, 59, 59, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.dispatch_task_mock.assert_not_called()
+        with freeze_time(datetime(1970, 1, 2, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.dispatch_task_mock.assert_called_once()
+        with freeze_time(datetime(1970, 1, 2, 1, 0, 0, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.assertEqual(2, self.dispatch_task_mock.call_count)
 
         scheduled_task_2 = {
             "task_request": {
@@ -44,20 +80,22 @@ class TestScheduledTasksRoute(AppFixture):
             "schedules": [
                 {
                     "period": "day",
-                    "start_from": 2000,
-                    "until": task_until,
                     "at": "00:00",
                 },
             ],
+            "start_from": 1000,
+            "until": task_until,
         }
-        resp = self.client.post("/scheduled_tasks", json=scheduled_task_2)
+        with freeze_time(datetime.fromtimestamp(0)):
+            resp = self.client.post("/scheduled_tasks", json=scheduled_task_2)
         self.assertEqual(201, resp.status_code, resp.json())
         task2 = resp.json()
         self.assertEqual(len(task2["schedules"]), 1, task2)
 
         # check each task id only appears once
+        start_before = datetime.fromisoformat("1970-01-01T16:30:00+00:00").timestamp()
         resp = self.client.get(
-            f"/scheduled_tasks?start_before=2000&until_after={task_until}"
+            f"/scheduled_tasks?start_before={start_before}&until_after={task_until}"
         )
         self.assertEqual(200, resp.status_code)
         task_ids = [x["id"] for x in resp.json()]
@@ -71,12 +109,12 @@ class TestScheduledTasksRoute(AppFixture):
         )
         self.assertEqual(200, resp.status_code, resp.json())
         tasks = {x["id"]: x for x in resp.json()}
-        self.assertIn(task1["id"], tasks)
+        self.assertNotIn(task1["id"], tasks)
         # task2 starts after `start_before`` so should not be included
-        self.assertNotIn(task2["id"], tasks)
+        self.assertIn(task2["id"], tasks)
 
         resp = self.client.get(
-            f"/scheduled_tasks?start_before=2000&until_after={task_until}"
+            f"/scheduled_tasks?start_before={start_before}&until_after={task_until}"
         )
         self.assertEqual(200, resp.status_code, resp.json())
         after = resp.json()
@@ -145,14 +183,10 @@ class TestScheduledTasksRoute(AppFixture):
                 "category": "test",
                 "description": "test",
             },
-            "schedules": [
-                {
-                    "period": "day",
-                }
-            ],
+            "schedules": [{"period": "day", "at": "00:00"}],
         }
         resp = self.client.post("/scheduled_tasks", json=scheduled_task)
-        self.assertEqual(201, resp.status_code)
+        self.assertEqual(201, resp.status_code, resp.json())
         task = resp.json()
 
         resp = self.client.get("/scheduled_tasks?start_before=0&until_after=0")
@@ -448,7 +482,6 @@ class TestScheduledTasksRoute(AppFixture):
         self.client.delete(f"/scheduled_tasks/{schedule_task_id}")
 
     def test_edit_scheduled_task(self):
-        scheduled_date = datetime.fromisoformat("2124-02-10T16:00:00+08:00")
         task_request = TaskRequest(
             category="test_category",
             description="test_description",
@@ -456,13 +489,13 @@ class TestScheduledTasksRoute(AppFixture):
         task_schedules = [
             ScheduledTaskSchedule(
                 period=ScheduledTaskSchedule.Period.Day,
-                start_from=scheduled_date,
                 at="16:00",
             )
         ]
 
         scheduled_task_description = PostScheduledTaskRequest(
             task_request=task_request,
+            start_from=datetime.fromisoformat("2124-02-10T16:00:00+08:00"),
             schedules=task_schedules,
         )
         resp = self.client.post(
@@ -505,10 +538,10 @@ class TestScheduledTasksRoute(AppFixture):
         updated_task_schedules = [
             ScheduledTaskSchedule(
                 period=ScheduledTaskSchedule.Period.Day,
-                start_from=updated_scheduled_date,
                 at="20:00",
             )
         ]
+        scheduled_task_description.start_from = updated_scheduled_date
         scheduled_task_description.schedules = updated_task_schedules
         resp = self.client.post(
             f"/scheduled_tasks/{schedule_task_id}/update",
@@ -533,23 +566,15 @@ class TestScheduledTasksRoute(AppFixture):
         )
         updated_schedule = updated_scheduled_task.schedules[0]
         self.assertEqual(
-            updated_schedule.start_from,
-            # server should always return in server time
-            datetime.fromisoformat("2124-02-10T20:00:00+08:00"),
-            updated_schedule,
+            updated_scheduled_task.start_from,
+            datetime.fromisoformat("2124-02-10T12:00:00+00:00"),
+            updated_scheduled_task.start_from,
         )
         self.assertEqual(updated_schedule.at, "20:00", updated_schedule)
 
         # update task schedules in GMT+8
         updated_scheduled_date = datetime.fromisoformat("2124-02-10T21:00:00+08:00")
-        updated_task_schedules = [
-            ScheduledTaskSchedule(
-                period=ScheduledTaskSchedule.Period.Day,
-                start_from=updated_scheduled_date,
-                at="21:00",
-            )
-        ]
-        scheduled_task_description.schedules = updated_task_schedules
+        scheduled_task_description.start_from = updated_scheduled_date
         resp = self.client.post(
             f"/scheduled_tasks/{schedule_task_id}/update",
             content=scheduled_task_description.model_dump_json(),
@@ -569,9 +594,8 @@ class TestScheduledTasksRoute(AppFixture):
             len(updated_scheduled_task.schedules), 1, updated_scheduled_task
         )
         self.assertEqual(
-            updated_scheduled_task.schedules[0].start_from,
-            # server should always return in server time
-            datetime.fromisoformat("2124-02-10T21:00:00+08:00"),
+            updated_scheduled_task.start_from,
+            updated_scheduled_date,
             updated_schedule,
         )
         updated_schedule = updated_scheduled_task.schedules[0]
@@ -580,7 +604,6 @@ class TestScheduledTasksRoute(AppFixture):
         self.client.delete(f"/scheduled_tasks/{schedule_task_id}")
 
     def test_edit_scheduled_task_event(self):
-        scheduled_date = datetime.fromisoformat("2124-02-10T10:00:00+08:00")
         task_request = TaskRequest(
             category="test_category",
             description="test_description",
@@ -588,13 +611,13 @@ class TestScheduledTasksRoute(AppFixture):
         task_schedules = [
             ScheduledTaskSchedule(
                 period=ScheduledTaskSchedule.Period.Day,
-                start_from=scheduled_date,
                 at="10:00",
             )
         ]
 
         scheduled_task_description = PostScheduledTaskRequest(
             task_request=task_request,
+            start_from=datetime.fromisoformat("2124-02-10T10:00:00+08:00"),
             schedules=task_schedules,
         )
         resp = self.client.post(
@@ -616,10 +639,10 @@ class TestScheduledTasksRoute(AppFixture):
         ]
 
         # this will be accompanied by an until date of 23:59 12th UTC
-        until = datetime.fromisoformat("2124-02-12T23:59:59+00:00")
         updated_task_schedule = task_schedules[0]
-        updated_task_schedule.until = until
         scheduled_task_description.schedules[0] = updated_task_schedule
+        until = datetime.fromisoformat("2124-02-12T23:59:59+00:00")
+        scheduled_task_description.until = until
 
         resp = self.client.post(
             f"/scheduled_tasks/{schedule_task_id}/update",
@@ -661,10 +684,10 @@ class TestScheduledTasksRoute(AppFixture):
         ]
 
         # this will be accompanied by an until date of 23:59 12th GMT+8
-        until = datetime.fromisoformat("2124-02-12T23:59:59+00:00")
         updated_task_schedule = task_schedules[0]
-        updated_task_schedule.until = until
         scheduled_task_description.schedules[0] = updated_task_schedule
+        until = datetime.fromisoformat("2124-02-12T23:59:59+00:00")
+        scheduled_task_description.until = until
 
         resp = self.client.post(
             f"/scheduled_tasks/{schedule_task_id}/update",

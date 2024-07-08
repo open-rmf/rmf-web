@@ -23,8 +23,6 @@ class ScheduledTaskSchedule(BaseModel):
         Minute = "minute"
 
     every: int | None = None
-    start_from: datetime | None = None
-    until: datetime | None = None
     period: Period
     at: str
 
@@ -37,4 +35,6 @@ class ScheduledTask(BaseModel):
     created_by: str
     schedules: TortoiseReverseRelation[ScheduledTaskSchedule]
     last_ran: datetime | None = None
+    start_from: datetime | None = None
+    until: datetime | None = None
     except_dates: list[date] = Field(default=[])

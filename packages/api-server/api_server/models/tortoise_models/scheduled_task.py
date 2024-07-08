@@ -24,7 +24,9 @@ class ScheduledTask(Model):
     task_request = JSONField()
     created_by = CharField(255)
     schedules: ReverseRelation["ScheduledTaskSchedule"]
-    last_ran = DatetimeField(null=True)
+    last_ran: datetime | None = DatetimeField(null=True)  # type: ignore
+    start_from: datetime | None = DatetimeField(null=True)  # type: ignore
+    until: datetime | None = DatetimeField(null=True)  # type: ignore
     except_dates = JSONField(null=True, default=list)
     """A list of date in the form YYYY-mm-dd.
      
@@ -35,6 +37,10 @@ class ScheduledTask(Model):
     def format_except_date(dt: datetime) -> str:
         """Formats the datetime as a str suitable to be stored in the except_dates field"""
         return dt.astimezone(ZoneInfo(app_config.timezone)).strftime("%Y-%m-%d")
+
+    async def to_jobs(self):
+        await self.fetch_related("schedules")
+        return [x.to_job(self) for x in self.schedules]
 
 
 class ScheduledTaskSchedule(Model):
@@ -60,24 +66,22 @@ class ScheduledTaskSchedule(Model):
         "models.ScheduledTask", related_name="schedules"
     )
     every = SmallIntField(null=True)
-    start_from = DatetimeField(null=True)
-    until = DatetimeField(null=True)
     period = CharEnumField(Period)
-    at = CharField(255, null=True)
+    at = CharField(255)
 
     def get_id(self) -> int:
         return self._id
 
-    def to_job(self) -> Job:
+    def to_job(self, scheduled_task: ScheduledTask) -> Job:
         if self.every is not None:
             job = schedule.every(self.every)
         else:
             job = schedule.every()
-        if self.until is not None:
+        if scheduled_task.until is not None:
             # schedule uses `datetime.now()`, which is tz naive
             # Assuming self.until is a datetime object with timezone information
             # Convert the timestamp to datetime without changing the timezone
-            job = job.until(datetime.utcfromtimestamp(self.until.timestamp()))
+            job = job.until(datetime.fromtimestamp(scheduled_task.until.timestamp()))
 
         if self.period in (
             ScheduledTaskSchedule.Period.Monday,
@@ -100,7 +104,6 @@ class ScheduledTaskSchedule(Model):
 
         # Hashable value in order to tag the job with a unique identifier
         job.tag(self._id)
-        if self.at is not None:
-            job = job.at(self.at, tz=app_config.timezone)
+        job = job.at(self.at, tz=app_config.timezone)
 
         return job

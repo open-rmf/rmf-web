@@ -66,7 +66,7 @@ class AlertRepository:
             return acknowledged_alert_pydantic
 
         ack_time = datetime.now()
-        epoch = datetime.utcfromtimestamp(0)
+        epoch = datetime.fromtimestamp(0)
         ack_unix_millis = round((ack_time - epoch).total_seconds() * 1000)
         new_id = f"{alert_id}__{ack_unix_millis}"
 

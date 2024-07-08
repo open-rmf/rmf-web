@@ -14,5 +14,6 @@ httpx = "~=0.26.0"
 datamodel-code-generator = "==0.25.7"
 requests = "~=2.25"
 websocket-client = "~=1.7.0"
+freezegun = "~=1.5.1"
 # ros-translator
 ros-translator = {editable = true, path = "./packages/ros-translator"}

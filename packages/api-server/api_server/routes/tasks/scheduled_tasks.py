@@ -37,16 +37,12 @@ router = FastIORouter(tags=["Tasks"])
 class PostScheduledTaskRequest(BaseModel):
     task_request: TaskRequest
     schedules: list[ScheduledTaskSchedule]
+    start_from: datetime | None = None
+    until: datetime | None = None
     except_dates: list[datetime] = pydantic.Field(
         default=[],
         description="A list of dates which the schedule should be skipped, this is based on the server date. The time portion will be discarded, it is only used to convert the date to the server timezone.",
     )
-    tz: str | None = None
-    """Timezone of the schedules, if omitted, the server timezone will be used
-    
-    Note that this does not affect the `start_from` param, it will always use the
-    timezone specified on the param.
-    """
 
 
 async def schedule_task(
@@ -56,13 +52,7 @@ async def schedule_task(
     tasks_service: TasksService,
     logger: LoggerAdapter,
 ):
-    await task.fetch_related("schedules")
-    jobs: list[tuple[ttm.ScheduledTaskSchedule, schedule.Job]] = []
-    for sche in task.schedules:
-        try:
-            jobs.append((sche, sche.to_job()))
-        except schedule.ScheduleValueError:
-            pass
+    jobs = await task.to_jobs()
     if len(jobs) == 0:
         # don't allow creating scheduled tasks that never runs
         raise HTTPException(422, "Task is never going to run")
@@ -76,7 +66,7 @@ async def schedule_task(
     )
 
     async def run(j: schedule.Job):
-        logger.info(f"starting task {task.pk}")
+        # fetch the task from db again in case the schedule changed
         task_to_run = await ttm.ScheduledTask.get_or_none(id=task.pk)
         if task_to_run is None:
             logger.warning(
@@ -85,6 +75,13 @@ async def schedule_task(
             return
 
         # check if we should skip this run
+        if (
+            task_to_run.start_from is not None
+            and task_to_run.start_from > datetime.now(tz=ZoneInfo(app_config.timezone))
+        ):
+            logger.info(f"skipping task {task.pk} because it is before start_from")
+            return
+
         except_dates = [date.fromisoformat(x) for x in task_to_run.except_dates]
         # `next_run` contains the expected time it should run, we use that over `datetime.now`
         # in case of delays in the scheduler.
@@ -92,12 +89,13 @@ async def schedule_task(
             logger.info(f"skipping task {task.pk} because it is in the except_dates")
             return
 
+        logger.info(f"starting task {task.pk}")
         await post_dispatch_task(req, rmf_repo, task_repo, logger, tasks_service)
         task.last_ran = datetime.now(tz=ZoneInfo(app_config.timezone))
         await task.save()
 
-    for _, j in jobs:
-        j.do(asyncio.create_task, run(j))
+    for j in jobs:
+        j.do(lambda inner_j: asyncio.create_task(run(inner_j)), j)
     logger.info(f"scheduled task [{task.pk}]")
 
 
@@ -131,6 +129,8 @@ async def post_scheduled_task(
                     exclude_none=True
                 ),
                 created_by=user.username,
+                start_from=scheduled_task_request.start_from,
+                until=scheduled_task_request.until,
                 except_dates=[
                     ttm.ScheduledTask.format_except_date(x)
                     for x in scheduled_task_request.except_dates
@@ -172,9 +172,8 @@ async def get_scheduled_tasks(
 ):
     q = (
         ttm.ScheduledTask.filter(
-            Q(schedules__start_from__lte=start_before)
-            | Q(schedules__start_from__isnull=True),
-            Q(schedules__until__gte=until_after) | Q(schedules__until__isnull=True),
+            Q(start_from__lte=start_before) | Q(start_from__isnull=True),
+            Q(until__gte=until_after) | Q(until__isnull=True),
         )
         .prefetch_related("schedules")
         .distinct()
@@ -243,6 +242,8 @@ async def update_schedule_task(
             task.task_request = scheduled_task_request.task_request.model_dump(
                 round_trip=True
             )
+            task.start_from = scheduled_task_request.start_from
+            task.until = scheduled_task_request.until
             task.except_dates = [
                 ttm.ScheduledTask.format_except_date(x)
                 for x in scheduled_task_request.except_dates
