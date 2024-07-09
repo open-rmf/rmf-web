@@ -38,9 +38,9 @@ class ScheduledTask(Model):
         """Formats the datetime as a str suitable to be stored in the except_dates field"""
         return dt.astimezone(ZoneInfo(app_config.timezone)).strftime("%Y-%m-%d")
 
-    async def to_jobs(self):
+    async def to_jobs(self, scheduler: schedule.Scheduler):
         await self.fetch_related("schedules")
-        return [x.to_job(self) for x in self.schedules]
+        return [x.to_job(self, scheduler) for x in self.schedules]
 
 
 class ScheduledTaskSchedule(Model):
@@ -72,11 +72,13 @@ class ScheduledTaskSchedule(Model):
     def get_id(self) -> int:
         return self._id
 
-    def to_job(self, scheduled_task: ScheduledTask) -> Job:
+    def to_job(
+        self, scheduled_task: ScheduledTask, scheduler: schedule.Scheduler
+    ) -> Job:
         if self.every is not None:
-            job = schedule.every(self.every)
+            job = scheduler.every(self.every)
         else:
-            job = schedule.every()
+            job = scheduler.every()
         if scheduled_task.until is not None:
             # schedule uses `datetime.now()`, which is tz naive
             # Assuming self.until is a datetime object with timezone information

@@ -4,9 +4,12 @@ import unittest.mock
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
+import pydantic
 import schedule
 from freezegun import freeze_time
 
+from api_server.app import app
+from api_server.app_config import app_config
 from api_server.models import TaskRequest
 from api_server.models.tasks import ScheduledTask, ScheduledTaskSchedule
 from api_server.routes.tasks.scheduled_tasks import PostScheduledTaskRequest
@@ -15,150 +18,119 @@ from api_server.test import AppFixture
 
 
 class TestScheduledTasksRoute(AppFixture):
-    def setUp(self):
-        super().setUp()
-        self.serverTz = ZoneInfo("Asia/Singapore")
-        self._patcher = unittest.mock.patch(
-            "api_server.routes.tasks.scheduled_tasks.post_dispatch_task"
-        )
-        self.dispatch_task_mock = self._patcher.start()
-        self.addCleanup(lambda: self._patcher.stop())
-
-    def run_pending_jobs(self):
-        async def run():
-            before = asyncio.all_tasks()
-            schedule.run_pending()
-            after = asyncio.all_tasks()
-            job_tasks = after.difference(before)
-            for x in job_tasks:
-                await x
-
-        self.portal.call(run)
-
     def test_scheduled_task_crud(self):
-        task_until = datetime(1971, 1, 1, tzinfo=ZoneInfo("UTC")).timestamp()
-        scheduled_task = {
-            "task_request": {
-                "category": "test",
-                "description": "test",
-            },
-            "schedules": [
-                {
-                    "period": "day",
-                    "at": "00:00",
-                },
-                {
-                    "period": "day",
-                    "at": "00:02",
-                },
-            ],
-            "start_from": "1970-01-01T16:30:00+00:00",
-            "until": task_until,
-        }
-        with freeze_time(datetime.fromtimestamp(0)):
-            resp = self.client.post("/scheduled_tasks", json=scheduled_task)
-        self.assertEqual(201, resp.status_code, resp.json())
-        task1 = resp.json()
-        self.assertEqual(len(task1["schedules"]), 2, task1)
+        task_until = datetime.now() + timedelta(days=30)
 
-        # first run should be at 1970-01-02T00:00:00+08:00
-        with freeze_time(datetime(1970, 1, 1, 23, 59, 59, tzinfo=self.serverTz)):
-            self.run_pending_jobs()
-            self.dispatch_task_mock.assert_not_called()
-        with freeze_time(datetime(1970, 1, 2, tzinfo=self.serverTz)):
-            self.run_pending_jobs()
-            self.dispatch_task_mock.assert_called_once()
-        with freeze_time(datetime(1970, 1, 2, 1, 0, 0, tzinfo=self.serverTz)):
-            self.run_pending_jobs()
-            self.assertEqual(2, self.dispatch_task_mock.call_count)
-
-        scheduled_task_2 = {
-            "task_request": {
-                "category": "test",
-                "description": "test",
-            },
-            "schedules": [
-                {
-                    "period": "day",
-                    "at": "00:00",
-                },
+        scheduled_task = PostScheduledTaskRequest(
+            task_request=TaskRequest(
+                category="test",
+                description="test",
+            ),
+            schedules=[
+                ScheduledTaskSchedule(
+                    period=ScheduledTaskSchedule.Period.Day,
+                    at="00:00",
+                ),
+                ScheduledTaskSchedule(
+                    period=ScheduledTaskSchedule.Period.Monday,
+                    at="00:00",
+                ),
             ],
-            "start_from": 1000,
-            "until": task_until,
-        }
-        with freeze_time(datetime.fromtimestamp(0)):
-            resp = self.client.post("/scheduled_tasks", json=scheduled_task_2)
+            start_from=datetime.fromtimestamp(1000),
+            until=task_until,
+        )
+        resp = self.client.post(
+            "/scheduled_tasks", content=scheduled_task.model_dump_json()
+        )
         self.assertEqual(201, resp.status_code, resp.json())
-        task2 = resp.json()
-        self.assertEqual(len(task2["schedules"]), 1, task2)
+        task1 = ScheduledTask.model_validate_json(resp.content)
+        self.assertEqual(len(task1.schedules), 2, task1)
+
+        scheduled_task_2 = PostScheduledTaskRequest(
+            task_request=TaskRequest(
+                category="test",
+                description="test",
+            ),
+            schedules=[
+                ScheduledTaskSchedule(
+                    period=ScheduledTaskSchedule.Period.Day,
+                    at="00:00",
+                ),
+            ],
+            start_from=datetime.fromtimestamp(2000),
+            until=task_until,
+        )
+        resp = self.client.post(
+            "/scheduled_tasks", content=scheduled_task_2.model_dump_json()
+        )
+        self.assertEqual(201, resp.status_code, resp.json())
+        task2 = ScheduledTask.model_validate_json(resp.content)
+        self.assertEqual(len(task2.schedules), 1, task2)
 
         # check each task id only appears once
-        start_before = datetime.fromisoformat("1970-01-01T16:30:00+00:00").timestamp()
+        until_after = task_until.timestamp()
         resp = self.client.get(
-            f"/scheduled_tasks?start_before={start_before}&until_after={task_until}"
+            f"/scheduled_tasks?start_before=2000&until_after={until_after}"
         )
         self.assertEqual(200, resp.status_code)
-        task_ids = [x["id"] for x in resp.json()]
-        unique_ids = set(task_ids)
+        ScheduledTaskList = pydantic.TypeAdapter(list[ScheduledTask])
+        results = ScheduledTaskList.validate_json(resp.content)
+        unique_ids = set(x.id for x in results)
         self.assertEqual(
-            len(task_ids), len(unique_ids), "one or more task appears multiple times"
+            len(results), len(unique_ids), "one or more task appears multiple times"
         )
+        self.assertIn(task1.id, unique_ids)
+        self.assertIn(task2.id, unique_ids)
 
         resp = self.client.get(
-            f"/scheduled_tasks?start_before=1000&until_after={task_until}"
+            f"/scheduled_tasks?start_before=1000&until_after={until_after}"
         )
         self.assertEqual(200, resp.status_code, resp.json())
-        tasks = {x["id"]: x for x in resp.json()}
-        self.assertNotIn(task1["id"], tasks)
+        results = ScheduledTaskList.validate_json(resp.content)
+        task_ids = [x.id for x in results]
+        self.assertIn(task1.id, task_ids)
         # task2 starts after `start_before`` so should not be included
-        self.assertIn(task2["id"], tasks)
+        self.assertNotIn(task2.id, task_ids)
 
         resp = self.client.get(
-            f"/scheduled_tasks?start_before={start_before}&until_after={task_until}"
+            f"/scheduled_tasks?start_before=2000&until_after={until_after+1}"
         )
         self.assertEqual(200, resp.status_code, resp.json())
-        after = resp.json()
-        tasks = {x["id"]: x for x in after}
-        self.assertIn(task1["id"], tasks)
-        self.assertIn(task2["id"], tasks)
-
-        resp = self.client.get(
-            f"/scheduled_tasks?start_before=2000&until_after={task_until+1}"
-        )
-        self.assertEqual(200, resp.status_code, resp.json())
-        after = resp.json()
-        tasks = {x["id"]: x for x in after}
+        results = ScheduledTaskList.validate_json(resp.content)
+        task_ids = [x.id for x in results]
         # neither task should be returned as they stop before `until_after`
-        self.assertNotIn(task1["id"], tasks)
-        self.assertNotIn(task2["id"], tasks)
+        self.assertNotIn(task1.id, task_ids)
+        self.assertNotIn(task2.id, task_ids)
 
-        resp = self.client.get(f"/scheduled_tasks/{task1['id']}")
+        resp = self.client.get(f"/scheduled_tasks/{task1.id}")
         self.assertEqual(200, resp.status_code)
-        resp = self.client.get(f"/scheduled_tasks/{task2['id']}")
+        resp = self.client.get(f"/scheduled_tasks/{task2.id}")
         self.assertEqual(200, resp.status_code)
 
-        resp = self.client.delete(f"/scheduled_tasks/{task1['id']}")
+        resp = self.client.delete(f"/scheduled_tasks/{task1.id}")
         self.assertEqual(200, resp.status_code)
-        resp = self.client.get(f"/scheduled_tasks/{task1['id']}")
+        resp = self.client.get(f"/scheduled_tasks/{task1.id}")
         self.assertEqual(404, resp.status_code)
         resp = self.client.get(
             f"/scheduled_tasks?start_before=2000&until_after={task_until}"
         )
-        tasks = {x["id"]: x for x in resp.json()}
-        self.assertNotIn(task1["id"], tasks)
+        results = ScheduledTaskList.validate_json(resp.content)
+        task_ids = [x.id for x in results]
+        self.assertNotIn(task1.id, task_ids)
         # task 2 should not be deleted
-        self.assertIn(task2["id"], tasks)
+        self.assertIn(task2.id, task_ids)
 
-        resp = self.client.delete(f"/scheduled_tasks/{task2['id']}")
+        resp = self.client.delete(f"/scheduled_tasks/{task2.id}")
         self.assertEqual(200, resp.status_code)
-        resp = self.client.get(f"/scheduled_tasks/{task2['id']}")
+        resp = self.client.get(f"/scheduled_tasks/{task2.id}")
         self.assertEqual(404, resp.status_code)
         resp = self.client.get(
             f"/scheduled_tasks?start_before=2000&until_after={task_until}"
         )
-        tasks = {x["id"]: x for x in resp.json()}
-        self.assertNotIn(task1["id"], tasks)
-        self.assertNotIn(task2["id"], tasks)
+        results = ScheduledTaskList.validate_json(resp.content)
+        task_ids = [x.id for x in results]
+        self.assertNotIn(task1.id, task_ids)
+        self.assertNotIn(task2.id, task_ids)
 
     def test_cannot_create_task_that_never_runs(self):
         scheduled_task = {
@@ -720,3 +692,287 @@ class TestScheduledTasksRoute(AppFixture):
 
         # cleanup
         self.client.delete(f"/scheduled_tasks/{schedule_task_id}")
+
+
+class TestScheduledTaskExecution(AppFixture):
+    def setUp(self):
+        super().setUp()
+        self.scheduler = schedule.Scheduler()
+        app.dependency_overrides[schedule.Scheduler] = lambda: self.scheduler
+
+        self.serverTz = ZoneInfo(app_config.timezone)
+        self._patcher = unittest.mock.patch(
+            "api_server.routes.tasks.scheduled_tasks.post_dispatch_task"
+        )
+        self.dispatch_task_mock = self._patcher.start()
+
+    def tearDown(self):
+        self._patcher.stop()
+        app.dependency_overrides = {}
+
+    def run_pending_jobs(self):
+        async def run():
+            before = asyncio.all_tasks()
+            self.scheduler.run_pending()
+            after = asyncio.all_tasks()
+            job_tasks = after.difference(before)
+            for x in job_tasks:
+                await x
+
+        self.portal.call(run)
+
+    def test_schedule_runs_at_midnight(self):
+        scheduled_task = PostScheduledTaskRequest(
+            task_request=TaskRequest(
+                category="test",
+                description="test",
+            ),
+            schedules=[
+                ScheduledTaskSchedule(
+                    period=ScheduledTaskSchedule.Period.Day,
+                    at="00:00",
+                ),
+                ScheduledTaskSchedule(
+                    period=ScheduledTaskSchedule.Period.Monday,
+                    at="00:00",
+                ),
+            ],
+        )
+
+        # server time is Asia/Singapore, which would be 1970-01-01T07:30:00+07:30.
+        # The first run would be in 1970-01-02T00:00:00+07:30
+        with freeze_time(datetime.fromtimestamp(0)):
+            resp = self.client.post(
+                "/scheduled_tasks", content=scheduled_task.model_dump_json()
+            )
+            self.assertEqual(201, resp.status_code, resp.json())
+        with freeze_time(datetime(1970, 1, 1, 23, 59, 59, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.dispatch_task_mock.assert_not_called()
+        with freeze_time(datetime(1970, 1, 2, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.dispatch_task_mock.assert_called_once()
+        dt = datetime.fromtimestamp(0, tz=self.serverTz)
+        days_to_next_monday = (7 - dt.weekday()) % 7
+        next_monday = dt + timedelta(days=days_to_next_monday)
+        with freeze_time(next_monday):
+            self.run_pending_jobs()
+            # Both the daily and every monday schedule should be called.
+            self.assertEqual(self.dispatch_task_mock.call_count, 3)
+
+    def test_schedule_runs_start_from(self):
+        scheduled_task = PostScheduledTaskRequest(
+            task_request=TaskRequest(
+                category="test",
+                description="test",
+            ),
+            schedules=[
+                ScheduledTaskSchedule(
+                    period=ScheduledTaskSchedule.Period.Day,
+                    at="00:00",
+                ),
+            ],
+            start_from=datetime(1970, 1, 3, tzinfo=self.serverTz),
+        )
+
+        with freeze_time(datetime.fromtimestamp(0)):
+            resp = self.client.post(
+                "/scheduled_tasks", content=scheduled_task.model_dump_json()
+            )
+            self.assertEqual(201, resp.status_code, resp.json())
+        with freeze_time(datetime(1970, 1, 2, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            # 1970-01-02 is before the start_from
+            self.dispatch_task_mock.assert_not_called()
+        with freeze_time(datetime(1970, 1, 3, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.dispatch_task_mock.assert_called_once()
+
+    def test_schedule_runs_start_from_utc(self):
+        scheduled_task = PostScheduledTaskRequest(
+            task_request=TaskRequest(
+                category="test",
+                description="test",
+            ),
+            schedules=[
+                ScheduledTaskSchedule(
+                    period=ScheduledTaskSchedule.Period.Day,
+                    at="00:00",
+                ),
+            ],
+            start_from=datetime(1970, 1, 3, tzinfo=ZoneInfo("UTC")),
+        )
+
+        with freeze_time(datetime.fromtimestamp(0)):
+            resp = self.client.post(
+                "/scheduled_tasks", content=scheduled_task.model_dump_json()
+            )
+            self.assertEqual(201, resp.status_code, resp.json())
+        with freeze_time(datetime(1970, 1, 2, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            # 1970-01-02 is before the start_from
+            self.dispatch_task_mock.assert_not_called()
+        with freeze_time(datetime(1970, 1, 3, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            # still should not be called because start_from is 1970-01-03T07:30+07:30
+            # when converted to server time
+            self.dispatch_task_mock.assert_not_called()
+        with freeze_time(datetime(1970, 1, 4, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.dispatch_task_mock.assert_called_once()
+
+    def test_schedule_runs_until(self):
+        scheduled_task = PostScheduledTaskRequest(
+            task_request=TaskRequest(
+                category="test",
+                description="test",
+            ),
+            schedules=[
+                ScheduledTaskSchedule(
+                    period=ScheduledTaskSchedule.Period.Day,
+                    at="00:00",
+                ),
+            ],
+            until=datetime(1970, 1, 2, tzinfo=self.serverTz),
+        )
+
+        with freeze_time(datetime.fromtimestamp(0)):
+            resp = self.client.post(
+                "/scheduled_tasks", content=scheduled_task.model_dump_json()
+            )
+            self.assertEqual(201, resp.status_code, resp.json())
+        with freeze_time(datetime(1970, 1, 2, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.dispatch_task_mock.assert_called_once()
+        with freeze_time(datetime(1970, 1, 3, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            # schedule should have stopped
+            self.dispatch_task_mock.assert_called_once()
+
+    def test_schedule_runs_until_utc(self):
+        scheduled_task = PostScheduledTaskRequest(
+            task_request=TaskRequest(
+                category="test",
+                description="test",
+            ),
+            schedules=[
+                ScheduledTaskSchedule(
+                    period=ScheduledTaskSchedule.Period.Day,
+                    at="00:00",
+                ),
+            ],
+            until=datetime(1970, 1, 1, 16, 30, tzinfo=ZoneInfo("UTC")),
+        )
+
+        with freeze_time(datetime.fromtimestamp(0)):
+            resp = self.client.post(
+                "/scheduled_tasks", content=scheduled_task.model_dump_json()
+            )
+            self.assertEqual(201, resp.status_code, resp.json())
+        with freeze_time(datetime(1970, 1, 2, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            # `until` when converted to server time is 1970-01-02T00:00+07:30
+            # so it should still be called
+            self.dispatch_task_mock.assert_called_once()
+        with freeze_time(datetime(1970, 1, 3, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            # schedule should have stopped
+            self.dispatch_task_mock.assert_called_once()
+
+    def test_schedule_runs_except_date(self):
+        scheduled_task = PostScheduledTaskRequest(
+            task_request=TaskRequest(
+                category="test",
+                description="test",
+            ),
+            schedules=[
+                ScheduledTaskSchedule(
+                    period=ScheduledTaskSchedule.Period.Day,
+                    at="00:00",
+                ),
+            ],
+            except_dates=[datetime(1970, 1, 3, tzinfo=self.serverTz)],
+        )
+
+        with freeze_time(datetime.fromtimestamp(0)):
+            resp = self.client.post(
+                "/scheduled_tasks", content=scheduled_task.model_dump_json()
+            )
+            self.assertEqual(201, resp.status_code, resp.json())
+        with freeze_time(datetime(1970, 1, 2, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.dispatch_task_mock.assert_called_once()
+        with freeze_time(datetime(1970, 1, 3, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.dispatch_task_mock.assert_called_once()
+        with freeze_time(datetime(1970, 1, 4, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.assertEqual(self.dispatch_task_mock.call_count, 2)
+
+    def test_schedule_runs_except_date_utc(self):
+        scheduled_task = PostScheduledTaskRequest(
+            task_request=TaskRequest(
+                category="test",
+                description="test",
+            ),
+            schedules=[
+                ScheduledTaskSchedule(
+                    period=ScheduledTaskSchedule.Period.Day,
+                    at="00:00",
+                ),
+            ],
+            # this will be 1970-01-03 on server time
+            except_dates=[datetime(1970, 1, 2, 16, 30, tzinfo=ZoneInfo("UTC"))],
+        )
+
+        with freeze_time(datetime.fromtimestamp(0)):
+            resp = self.client.post(
+                "/scheduled_tasks", content=scheduled_task.model_dump_json()
+            )
+            self.assertEqual(201, resp.status_code, resp.json())
+        with freeze_time(datetime(1970, 1, 2, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.dispatch_task_mock.assert_called_once()
+        with freeze_time(datetime(1970, 1, 3, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.dispatch_task_mock.assert_called_once()
+        with freeze_time(datetime(1970, 1, 4, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.assertEqual(self.dispatch_task_mock.call_count, 2)
+
+    def test_schedule_runs_except_date_multiple(self):
+        scheduled_task = PostScheduledTaskRequest(
+            task_request=TaskRequest(
+                category="test",
+                description="test",
+            ),
+            schedules=[
+                ScheduledTaskSchedule(
+                    period=ScheduledTaskSchedule.Period.Day,
+                    at="00:00",
+                ),
+            ],
+            except_dates=[
+                datetime(1970, 1, 4, tzinfo=self.serverTz),
+                # this will be 1970-01-03 on server time
+                datetime(1970, 1, 2, 16, 30, tzinfo=ZoneInfo("UTC")),
+            ],
+        )
+
+        with freeze_time(datetime.fromtimestamp(0)):
+            resp = self.client.post(
+                "/scheduled_tasks", content=scheduled_task.model_dump_json()
+            )
+            self.assertEqual(201, resp.status_code, resp.json())
+        with freeze_time(datetime(1970, 1, 2, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.dispatch_task_mock.assert_called_once()
+        with freeze_time(datetime(1970, 1, 3, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.dispatch_task_mock.assert_called_once()
+        with freeze_time(datetime(1970, 1, 4, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.dispatch_task_mock.assert_called_once()
+        with freeze_time(datetime(1970, 1, 5, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.assertEqual(self.dispatch_task_mock.call_count, 2)

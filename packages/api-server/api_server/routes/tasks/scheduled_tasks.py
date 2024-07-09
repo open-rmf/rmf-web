@@ -50,9 +50,10 @@ async def schedule_task(
     rmf_repo: RmfRepository,
     task_repo: TaskRepository,
     tasks_service: TasksService,
+    scheduler: schedule.Scheduler,
     logger: LoggerAdapter,
 ):
-    jobs = await task.to_jobs()
+    jobs = await task.to_jobs(scheduler)
     if len(jobs) == 0:
         # don't allow creating scheduled tasks that never runs
         raise HTTPException(422, "Task is never going to run")
@@ -106,6 +107,7 @@ async def post_scheduled_task(
     rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)],
     task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
     tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
+    scheduler: Annotated[schedule.Scheduler, Depends(schedule.Scheduler)],
     logger: Annotated[LoggerAdapter, Depends(get_logger)],
 ):
     """
@@ -146,7 +148,7 @@ async def post_scheduled_task(
 
             await scheduled_task.fetch_related("schedules")
             await schedule_task(
-                scheduled_task, rmf_repo, task_repo, tasks_service, logger
+                scheduled_task, rmf_repo, task_repo, tasks_service, scheduler, logger
             )
 
             return scheduled_task
@@ -234,6 +236,7 @@ async def update_schedule_task(
     rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)],
     task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
     tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
+    scheduler: Annotated[schedule.Scheduler, Depends(schedule.Scheduler)],
     logger: Annotated[LoggerAdapter, Depends(get_logger)],
 ):
     task = await get_scheduled_task(task_id)
@@ -251,7 +254,7 @@ async def update_schedule_task(
             await task.save()
 
             for sche in task.schedules:
-                schedule.clear(sche.get_id())
+                scheduler.clear(sche.get_id())
                 await sche.delete()
 
             new_schedules = [
@@ -261,16 +264,20 @@ async def update_schedule_task(
 
             await ttm.ScheduledTaskSchedule.bulk_create(new_schedules)
 
-            await schedule_task(task, rmf_repo, task_repo, tasks_service, logger)
+            await schedule_task(
+                task, rmf_repo, task_repo, tasks_service, scheduler, logger
+            )
             return task
     except schedule.ScheduleError as e:
         raise HTTPException(422, str(e)) from e
 
 
 @router.delete("/{task_id}")
-async def del_scheduled_tasks(task_id: int):
+async def del_scheduled_tasks(
+    task_id: int, scheduler: Annotated[schedule.Scheduler, Depends(schedule.Scheduler)]
+):
     async with tortoise.transactions.in_transaction():
         task = await get_scheduled_task(task_id)
         for sche in task.schedules:
-            schedule.clear(sche.get_id())
+            scheduler.clear(sche.get_id())
         await task.delete()
