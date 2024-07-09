@@ -26,7 +26,6 @@ from api_server.models import (
 )
 from api_server.models import tortoise_models as ttm
 from api_server.repositories import TaskRepository
-from api_server.repositories.rmf import RmfRepository
 from api_server.rmf_io.rmf_service import RmfService, get_tasks_service
 
 from .tasks import post_dispatch_task
@@ -47,7 +46,6 @@ class PostScheduledTaskRequest(BaseModel):
 
 async def schedule_task(
     task: ttm.ScheduledTask,
-    rmf_repo: RmfRepository,
     task_repo: TaskRepository,
     tasks_service: RmfService,
     scheduler: schedule.Scheduler,
@@ -91,7 +89,7 @@ async def schedule_task(
             return
 
         logger.info(f"starting task {task.pk}")
-        await post_dispatch_task(req, rmf_repo, task_repo, logger, tasks_service)
+        await post_dispatch_task(req, task_repo, logger, tasks_service)
         task.last_ran = datetime.now(tz=ZoneInfo(app_config.timezone))
         await task.save()
 
@@ -104,7 +102,6 @@ async def schedule_task(
 async def post_scheduled_task(
     scheduled_task_request: PostScheduledTaskRequest,
     user: Annotated[User, Depends(user_dep)],
-    rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)],
     task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
     tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
     scheduler: Annotated[schedule.Scheduler, Depends(schedule.Scheduler)],
@@ -148,7 +145,7 @@ async def post_scheduled_task(
 
             await scheduled_task.fetch_related("schedules")
             await schedule_task(
-                scheduled_task, rmf_repo, task_repo, tasks_service, scheduler, logger
+                scheduled_task, task_repo, tasks_service, scheduler, logger
             )
 
             return scheduled_task
@@ -233,7 +230,6 @@ async def add_except_date(
 async def update_schedule_task(
     task_id: int,
     scheduled_task_request: PostScheduledTaskRequest,
-    rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)],
     task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
     tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
     scheduler: Annotated[schedule.Scheduler, Depends(schedule.Scheduler)],
@@ -264,9 +260,7 @@ async def update_schedule_task(
 
             await ttm.ScheduledTaskSchedule.bulk_create(new_schedules)
 
-            await schedule_task(
-                task, rmf_repo, task_repo, tasks_service, scheduler, logger
-            )
+            await schedule_task(task, task_repo, tasks_service, scheduler, logger)
             return task
     except schedule.ScheduleError as e:
         raise HTTPException(422, str(e)) from e

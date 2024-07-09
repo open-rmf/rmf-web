@@ -36,7 +36,7 @@ async def cancellation_lots_from_building_map(
                 # behavior lot, instead of substring matching.
                 if "emergency" in node.name.lower():
                     cancellation_lots.append(node.name)
-    logger.info(f"Cancellation lots found: {cancellation_lots}")
+    logger.debug(f"Cancellation lots found: {cancellation_lots}")
     return cancellation_lots
 
 
@@ -197,10 +197,8 @@ async def post_activity_discovery(
 @router.post("/cancel_task", response_model=mdl.TaskCancelResponse)
 async def post_cancel_task(
     request: Annotated[mdl.CancelTaskRequest, Body(...)],
-    logger: Annotated[LoggerAdapter, Depends(get_logger)],
     tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
 ):
-    logger.info(request)
     return RawJSONResponse(
         await tasks_service.call(request.model_dump_json(exclude_none=True))
     )
@@ -213,55 +211,15 @@ async def post_cancel_task(
 )
 async def post_dispatch_task(
     request: Annotated[mdl.DispatchTaskRequest, Body(...)],
-    rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)],
     task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
     logger: Annotated[LoggerAdapter, Depends(get_logger)],
     tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
 ):
-    # FIXME: In order to accommodate changing cancellation lots over time, and
-    # avoiding updating all the saved scheduled tasks in the database, we only
-    # insert cancellation lots as part of the cancellation behavior before
-    # dispatching.
-    # Check if request even has cancellation behavior.
-    if (
-        request.request.category == "compose"
-        and request.request.description is not None
-        and "phases" in request.request.description
-        and len(request.request.description["phases"]) == 3
-        and "on_cancel" in request.request.description["phases"][1]
-    ):
-        cancellation_lots = await cancellation_lots_from_building_map(logger, rmf_repo)
-        if len(cancellation_lots) != 0:
-            # Populate them in the correct form
-            go_to_one_of_the_places_activity = {
-                "category": "go_to_place",
-                "description": {
-                    "one_of": [{"waypoint": name} for name in cancellation_lots],
-                    "constraints": [{"category": "prefer_same_map", "description": ""}],
-                },
-            }
-            delivery_dropoff_activity = {
-                "category": "perform_action",
-                "description": {
-                    "unix_millis_action_duration_estimate": 60000,
-                    "category": "delivery_dropoff",
-                    "description": {},
-                },
-            }
-            on_cancel_dropoff = {
-                "category": "sequence",
-                "description": [
-                    go_to_one_of_the_places_activity,
-                    delivery_dropoff_activity,
-                ],
-            }
-            # Add into task request
-            request.request.description["phases"][1]["on_cancel"] = [on_cancel_dropoff]
-
+    logger.debug("dispatching task to rmf %s", request)
     resp = mdl.TaskDispatchResponse.model_validate_json(
         await tasks_service.call(request.model_dump_json(exclude_none=True))
     )
-    logger.info(resp)
+    logger.debug("rmf response %s", resp)
     if not resp.root.success:
         return RawJSONResponse(resp.model_dump_json(), 400)
     new_state = cast(mdl.TaskDispatchResponse1, resp.root).state

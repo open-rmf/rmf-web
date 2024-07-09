@@ -17,7 +17,6 @@ from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
 
 from api_server.repositories.cached_files import get_cached_file_repo
-from api_server.repositories.rmf import RmfRepository
 from api_server.rmf_io.events import (
     get_alert_events,
     get_beacon_events,
@@ -127,7 +126,6 @@ async def lifespan(_app: FastIO):
         task_repo = TaskRepository(user, default_logger)
         await routes.scheduled_tasks.schedule_task(
             t,
-            RmfRepository(User.get_system_user()),
             task_repo,
             get_tasks_service(),
             get_scheduler(),
