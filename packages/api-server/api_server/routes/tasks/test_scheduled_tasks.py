@@ -13,7 +13,6 @@ from api_server.app_config import app_config
 from api_server.models import TaskRequest
 from api_server.models.tasks import ScheduledTask, ScheduledTaskSchedule
 from api_server.routes.tasks.scheduled_tasks import PostScheduledTaskRequest
-from api_server.routes.tasks.tasks import post_dispatch_task
 from api_server.test import AppFixture
 
 

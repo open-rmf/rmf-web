@@ -1,7 +1,7 @@
 import unittest
 from uuid import uuid4
 
-from api_server.rmf_io import RmfEvents
+from api_server.rmf_io import get_rmf_events
 from api_server.test.test_data import make_door_state
 from api_server.test.test_fixtures import AppFixture
 

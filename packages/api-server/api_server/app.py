@@ -16,10 +16,7 @@ from fastapi.openapi.docs import (
 from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
 
-from api_server.repositories.cached_files import (
-    CachedFilesRepository,
-    get_cached_file_repo,
-)
+from api_server.repositories.cached_files import get_cached_file_repo
 from api_server.repositories.rmf import RmfRepository
 from api_server.rmf_io.events import (
     get_alert_events,
@@ -39,7 +36,7 @@ from .logging import default_logger
 from .models import DispenserState, DoorState, IngestorState, LiftState, User
 from .models import tortoise_models as ttm
 from .repositories import TaskRepository
-from .rmf_io import AlertEvents, BeaconEvents, FleetEvents, RmfEvents, TaskEvents
+from .rmf_io import RmfEvents
 from .types import is_coroutine
 
 
@@ -90,9 +87,6 @@ async def lifespan(_app: FastIO):
     await Tortoise.generate_schemas()
     shutdown_cbs.append(Tortoise.close_connections())
 
-    cached_files = CachedFilesRepository(
-        f"{app_config.public_url.geturl()}/cache", app_config.cache_directory
-    )
     await stack.enter_async_context(get_cached_file_repo)
     await stack.enter_async_context(ros.get_ros_node)
     await stack.enter_async_context(gateway.get_rmf_gateway)

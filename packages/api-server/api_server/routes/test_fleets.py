@@ -1,5 +1,5 @@
 from api_server.models import FleetLog, FleetLogUpdate, FleetState, FleetStateUpdate
-from api_server.rmf_io.events import FleetEvents
+from api_server.rmf_io.events import get_fleet_events
 from api_server.test import AppFixture, make_fleet_log, make_fleet_state
 
 
@@ -38,7 +38,7 @@ class TestFleetsRoute(AppFixture):
         with self.client.websocket_connect("/_internal") as ws, self.subscribe_sio(
             f"/fleets/{fleet_log.name}/log"
         ) as sub:
-            FleetEvents.get_instance().fleet_logs.on_next(fleet_log)
+            get_fleet_events().fleet_logs.on_next(fleet_log)
 
             ws.send_text(
                 FleetLogUpdate(

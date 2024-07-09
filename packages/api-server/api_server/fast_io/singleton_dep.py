@@ -11,15 +11,15 @@ class SingletonDep(Generic[T], contextlib.AbstractAsyncContextManager):
         factory: (
             Callable[[], T]
             | Callable[[], Coroutine[Any, Any, T]]
-            | Callable[[], contextlib.AbstractContextManager]
-            | Callable[[], contextlib.AbstractAsyncContextManager]
+            | Callable[[], contextlib.AbstractContextManager[T]]
+            | Callable[[], contextlib.AbstractAsyncContextManager[T]]
         ),
     ):
         self.factory = factory
         self.instance: T | None = None
         self.context: (
-            contextlib.AbstractContextManager
-            | contextlib.AbstractAsyncContextManager
+            contextlib.AbstractContextManager[T]
+            | contextlib.AbstractAsyncContextManager[T]
             | None
         ) = None
 
@@ -43,7 +43,7 @@ class SingletonDep(Generic[T], contextlib.AbstractAsyncContextManager):
             await self.context.__aexit__(None, None, None)
         self.instance = None
 
-    def __call__(self):
+    def __call__(self) -> T:
         if self.instance is None:
             raise AssertionError(
                 f"{self.factory.__name__} is not set, is the context entered?"
@@ -51,7 +51,14 @@ class SingletonDep(Generic[T], contextlib.AbstractAsyncContextManager):
         return self.instance
 
 
-def singleton_dep(f: Callable[[], T | Coroutine[Any, Any, T]]) -> SingletonDep:
+def singleton_dep(
+    f: (
+        Callable[[], T]
+        | Callable[[], Coroutine[Any, Any, T]]
+        | Callable[[], contextlib.AbstractContextManager[T]]
+        | Callable[[], contextlib.AbstractAsyncContextManager[T]]
+    )
+) -> SingletonDep[T]:
     """A function decorator define stateful FastAPI dependencies
 
     FastAPI relies heavily on global objects for dependencies that must perist between

@@ -1,8 +1,7 @@
 from reactivex.subject import BehaviorSubject, Subject
 
 from api_server import models as mdl
-from api_server.fast_io import SingletonDep, singleton_dep
-from api_server.models.alerts import Alert
+from api_server.fast_io import singleton_dep
 
 
 class RmfEvents:
