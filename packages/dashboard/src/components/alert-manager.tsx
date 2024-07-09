@@ -303,9 +303,18 @@ export const AlertManager = React.memo(() => {
     const subs: Subscription[] = [];
 
     subs.push(
-      rmf.alertRequestsObsStore.subscribe((alertRequest) =>
-        AppEvents.alertListOpenedAlert.next(alertRequest),
-      ),
+      rmf.alertRequestsObsStore.subscribe((alertRequest) => {
+        if (!alertRequest.display) {
+          setOpenAlerts((prev) => {
+            const filteredAlerts = Object.fromEntries(
+              Object.entries(prev).filter(([key]) => key !== alertRequest.id),
+            );
+            return filteredAlerts;
+          });
+          return;
+        }
+        AppEvents.pushAlert.next(alertRequest);
+      }),
     );
 
     subs.push(
@@ -319,7 +328,7 @@ export const AlertManager = React.memo(() => {
     );
 
     subs.push(
-      AppEvents.alertListOpenedAlert.subscribe(async (alertRequest) => {
+      AppEvents.pushAlert.subscribe(async (alertRequest) => {
         if (!alertRequest) {
           return;
         }

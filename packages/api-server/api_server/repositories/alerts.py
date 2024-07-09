@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List
 
 from api_server.exceptions import AlreadyExistsError, InvalidInputError, NotFoundError
 from api_server.models import AlertRequest, AlertResponse, Pagination
@@ -80,7 +80,7 @@ class AlertRepository:
         return alert_models
 
     async def get_unresponded_alerts(
-        self, pagination: Optional[Pagination]
+        self, pagination: Pagination | None
     ) -> List[AlertRequest]:
         query = ttm.AlertRequest.filter(alert_response=None, response_expected=True)
         if pagination:

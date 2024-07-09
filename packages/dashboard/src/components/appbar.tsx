@@ -335,7 +335,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   };
 
   const openAlertDialog = (alert: AlertRequest) => {
-    AppEvents.alertListOpenedAlert.next(alert);
+    AppEvents.pushAlert.next(alert);
   };
 
   const timeDistance = (time: number) => {
