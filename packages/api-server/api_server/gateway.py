@@ -31,12 +31,17 @@ from rmf_fleet_msgs.msg import MutexGroupManualRelease as RmfMutexGroupManualRel
 from rmf_ingestor_msgs.msg import IngestorState as RmfIngestorState
 from rmf_lift_msgs.msg import LiftRequest as RmfLiftRequest
 from rmf_lift_msgs.msg import LiftState as RmfLiftState
+from rmf_task_msgs.msg import Alert as RmfAlert
+from rmf_task_msgs.msg import AlertResponse as RmfAlertResponse
 from rmf_task_msgs.srv import CancelTask as RmfCancelTask
 from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 from rosidl_runtime_py.convert import message_to_ordereddict
 from std_msgs.msg import Bool as BoolMsg
 
 from .models import (
+    AlertParameter,
+    AlertRequest,
+    AlertResponse,
     BeaconState,
     BuildingMap,
     DeliveryAlert,
@@ -48,7 +53,7 @@ from .models import (
 )
 from .models.delivery_alerts import action_from_msg, category_from_msg, tier_from_msg
 from .repositories import CachedFilesRepository, cached_files_repo
-from .rmf_io import rmf_events
+from .rmf_io import alert_events, rmf_events
 from .ros import ros_node
 
 
@@ -99,6 +104,17 @@ class RmfGateway:
         self._delivery_alert_response = ros_node().create_publisher(
             RmfDeliveryAlert,
             "delivery_alert_response",
+            rclpy.qos.QoSProfile(
+                history=rclpy.qos.HistoryPolicy.KEEP_LAST,
+                depth=10,
+                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
+                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
+            ),
+        )
+
+        self._alert_response = ros_node().create_publisher(
+            RmfAlertResponse,
+            "alert_response",
             rclpy.qos.QoSProfile(
                 history=rclpy.qos.HistoryPolicy.KEEP_LAST,
                 depth=10,
@@ -248,6 +264,71 @@ class RmfGateway:
         )
         self._subscriptions.append(delivery_alert_request_sub)
 
+        def convert_alert(alert: RmfAlert):
+            tier = AlertRequest.Tier.Info
+            if alert.tier == RmfAlert.TIER_WARNING:
+                tier = AlertRequest.Tier.Warning
+            elif alert.tier == RmfAlert.TIER_ERROR:
+                tier = AlertRequest.Tier.Error
+
+            parameters = []
+            for p in alert.alert_parameters:
+                parameters.append(AlertParameter(name=p.name, value=p.value))
+
+            return AlertRequest(
+                id=alert.id,
+                unix_millis_alert_time=round(datetime.now().timestamp() * 1000),
+                title=alert.title,
+                subtitle=alert.subtitle,
+                message=alert.message,
+                display=alert.display,
+                tier=tier,
+                responses_available=alert.responses_available,
+                alert_parameters=parameters,
+                task_id=alert.task_id if len(alert.task_id) > 0 else None,
+            )
+
+        def handle_alert(alert: AlertRequest):
+            logging.info(f"Received alert: {alert}")
+            alert_events.alert_requests.on_next(alert)
+
+        alert_sub = ros_node().create_subscription(
+            RmfAlert,
+            "alert",
+            lambda msg: handle_alert(convert_alert(msg)),
+            rclpy.qos.QoSProfile(
+                history=rclpy.qos.HistoryPolicy.KEEP_LAST,
+                depth=10,
+                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
+                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
+            ),
+        )
+        self._subscriptions.append(alert_sub)
+
+        def convert_alert_response(alert_response: RmfAlertResponse):
+            return AlertResponse(
+                id=alert_response.id,
+                unix_millis_response_time=round(datetime.now().timestamp() * 1000),
+                response=alert_response.response,
+            )
+
+        def handle_alert_response(alert_response: AlertResponse):
+            logging.info(f"Received alert response: {alert_response}")
+            alert_events.alert_responses.on_next(alert_response)
+
+        alert_response_sub = ros_node().create_subscription(
+            RmfAlertResponse,
+            "alert_response",
+            lambda msg: handle_alert_response(convert_alert_response(msg)),
+            rclpy.qos.QoSProfile(
+                history=rclpy.qos.HistoryPolicy.KEEP_LAST,
+                depth=10,
+                reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
+                durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
+            ),
+        )
+        self._subscriptions.append(alert_response_sub)
+
         def handle_fire_alarm_trigger(fire_alarm_trigger_msg: BoolMsg):
             if fire_alarm_trigger_msg.data:
                 logging.info("Fire alarm triggered")
@@ -329,6 +410,12 @@ class RmfGateway:
         msg.action = RmfDeliveryAlertAction(value=action)
         msg.message = message
         self._delivery_alert_response.publish(msg)
+
+    def respond_to_alert(self, alert_id: str, response: str):
+        msg = RmfAlertResponse()
+        msg.id = alert_id
+        msg.response = response
+        self._alert_response.publish(msg)
 
     def manual_release_mutex_groups(
         self,

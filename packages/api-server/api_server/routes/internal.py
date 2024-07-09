@@ -1,13 +1,16 @@
 # NOTE: This will eventually replace `gateway.py``
 import logging
 import os
+from datetime import datetime
 from typing import Any, Dict
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from websockets.exceptions import ConnectionClosed
 
 from api_server import models as mdl
 from api_server.app_config import app_config
+from api_server.exceptions import AlreadyExistsError
 from api_server.logging import LoggerAdapter, get_logger
 from api_server.repositories import AlertRepository, FleetRepository, TaskRepository
 from api_server.rmf_io import alert_events, fleet_events, task_events
@@ -49,37 +52,11 @@ class ConnectionManager:
 connection_manager = ConnectionManager()
 
 
-def log_phase_has_error(phase: mdl.Phases) -> bool:
-    if phase.log:
-        for log in phase.log:
-            if log.tier == mdl.Tier.error:
-                return True
-    if phase.events:
-        for _, event_logs in phase.events.items():
-            for event_log in event_logs:
-                if event_log.tier == mdl.Tier.error:
-                    return True
-    return False
-
-
-def task_log_has_error(task_log: mdl.TaskEventLog) -> bool:
-    if task_log.log:
-        for log in task_log.log:
-            if log.tier == mdl.Tier.error:
-                return True
-
-    if task_log.phases:
-        for _, phase in task_log.phases.items():
-            if log_phase_has_error(phase):
-                return True
-    return False
-
-
 async def process_msg(
     msg: Dict[str, Any],
+    alert_repo: AlertRepository,
     fleet_repo: FleetRepository,
     task_repo: TaskRepository,
-    alert_repo: AlertRepository,
     logger: LoggerAdapter,
 ) -> None:
     if "type" not in msg:
@@ -97,23 +74,59 @@ async def process_msg(
         await task_repo.save_task_state(task_state)
         task_events.task_states.on_next(task_state)
 
-        if (
-            task_state.status == mdl.Status.completed
-            or task_state.status == mdl.Status.failed
-        ):
-            alert = await alert_repo.create_alert(task_state.booking.id, "task")
-            if alert is not None:
-                alert_events.alerts.on_next(alert)
+        if task_state.status == mdl.Status.completed:
+            alert_request = mdl.AlertRequest(
+                id=str(uuid4()),
+                unix_millis_alert_time=round(datetime.now().timestamp() * 1000),
+                title="Task completed",
+                subtitle=f"ID: {task_state.booking.id}",
+                message="",
+                display=True,
+                tier=mdl.AlertRequest.Tier.Info,
+                responses_available=["Acknowledge"],
+                alert_parameters=[],
+                task_id=task_state.booking.id,
+            )
+            try:
+                created_alert = await alert_repo.create_new_alert(alert_request)
+            except AlreadyExistsError as e:
+                logger.error(e)
+                return
+            alert_events.alert_requests.on_next(created_alert)
+        elif task_state.status == mdl.Status.failed:
+            errorMessage = ""
+            if (
+                task_state.dispatch is not None
+                and task_state.dispatch.status == mdl.DispatchStatus.failed_to_assign
+            ):
+                errorMessage += "Failed to assign\n"
+                if task_state.dispatch.errors is not None:
+                    for error in task_state.dispatch.errors:
+                        errorMessage += error.json() + "\n"
+
+            alert_request = mdl.AlertRequest(
+                id=str(uuid4()),
+                unix_millis_alert_time=round(datetime.now().timestamp() * 1000),
+                title="Task failed",
+                subtitle=f"ID: {task_state.booking.id}",
+                message=errorMessage,
+                display=True,
+                tier=mdl.AlertRequest.Tier.Error,
+                responses_available=["Acknowledge"],
+                alert_parameters=[],
+                task_id=task_state.booking.id,
+            )
+            try:
+                created_alert = await alert_repo.create_new_alert(alert_request)
+            except AlreadyExistsError as e:
+                logger.error(e)
+                return
+            alert_events.alert_requests.on_next(created_alert)
 
     elif payload_type == "task_log_update":
         task_log = mdl.TaskEventLog(**msg["data"])
         await task_repo.save_task_log(task_log)
         task_events.task_event_logs.on_next(task_log)
-
-        if task_log_has_error(task_log):
-            alert = await alert_repo.create_alert(task_log.task_id, "task")
-            if alert is not None:
-                alert_events.alerts.on_next(alert)
 
     elif payload_type == "fleet_state_update":
         fleet_state = mdl.FleetState(**msg["data"])
@@ -132,13 +145,13 @@ async def rmf_gateway(
     logger: LoggerAdapter = Depends(get_logger),
 ):
     await connection_manager.connect(websocket)
+    alert_repo = AlertRepository()
     fleet_repo = FleetRepository(user, logger)
     task_repo = TaskRepository(user, logger)
-    alert_repo = AlertRepository(user, task_repo)
     try:
         while True:
             msg: Dict[str, Any] = await websocket.receive_json()
-            await process_msg(msg, fleet_repo, task_repo, alert_repo, logger)
+            await process_msg(msg, alert_repo, fleet_repo, task_repo, logger)
     except (WebSocketDisconnect, ConnectionClosed):
         connection_manager.disconnect(websocket)
         logger.warning("Client websocket disconnected")

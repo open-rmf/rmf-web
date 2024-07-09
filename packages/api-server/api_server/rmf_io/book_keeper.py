@@ -7,6 +7,8 @@ from rx.core.typing import Disposable
 from rx.subject.subject import Subject
 
 from api_server.models import (
+    AlertRequest,
+    AlertResponse,
     BeaconState,
     BuildingMap,
     DispenserHealth,
@@ -21,7 +23,7 @@ from api_server.models import (
 )
 from api_server.models.health import BaseBasicHealth
 
-from .events import RmfEvents
+from .events import AlertEvents, RmfEvents
 
 
 class RmfBookKeeperEvents:
@@ -33,8 +35,10 @@ class RmfBookKeeper:
     def __init__(
         self,
         rmf_events: RmfEvents,
+        alert_events: AlertEvents,
     ):
-        self.rmf = rmf_events
+        self.rmf_events = rmf_events
+        self.alert_events = alert_events
         self.bookkeeper_events = RmfBookKeeperEvents()
         self._loop: asyncio.AbstractEventLoop
         self._pending_tasks = set()
@@ -52,6 +56,8 @@ class RmfBookKeeper:
         self._record_dispenser_health()
         self._record_ingestor_state()
         self._record_ingestor_health()
+        self._record_alert_request()
+        self._record_alert_response()
 
     async def stop(self):
         for sub in self._subscriptions:
@@ -81,7 +87,7 @@ class RmfBookKeeper:
             logging.debug(json.dumps(beacon_state.dict()))
 
         self._subscriptions.append(
-            self.rmf.beacons.subscribe(lambda x: self._create_task(update(x)))
+            self.rmf_events.beacons.subscribe(lambda x: self._create_task(update(x)))
         )
 
     def _record_building_map(self):
@@ -92,7 +98,9 @@ class RmfBookKeeper:
             logging.debug(json.dumps(building_map.dict()))
 
         self._subscriptions.append(
-            self.rmf.building_map.subscribe(lambda x: self._create_task(update(x)))
+            self.rmf_events.building_map.subscribe(
+                lambda x: self._create_task(update(x))
+            )
         )
 
     def _record_door_state(self):
@@ -101,7 +109,9 @@ class RmfBookKeeper:
             logging.debug(json.dumps(door_state.dict()))
 
         self._subscriptions.append(
-            self.rmf.door_states.subscribe(lambda x: self._create_task(update(x)))
+            self.rmf_events.door_states.subscribe(
+                lambda x: self._create_task(update(x))
+            )
         )
 
     def _record_door_health(self):
@@ -110,7 +120,9 @@ class RmfBookKeeper:
             self._report_health(health)
 
         self._subscriptions.append(
-            self.rmf.door_health.subscribe(lambda x: self._create_task(update(x)))
+            self.rmf_events.door_health.subscribe(
+                lambda x: self._create_task(update(x))
+            )
         )
 
     def _record_lift_state(self):
@@ -119,7 +131,9 @@ class RmfBookKeeper:
             logging.debug(lift_state.json())
 
         self._subscriptions.append(
-            self.rmf.lift_states.subscribe(lambda x: self._create_task(update(x)))
+            self.rmf_events.lift_states.subscribe(
+                lambda x: self._create_task(update(x))
+            )
         )
 
     def _record_lift_health(self):
@@ -128,7 +142,9 @@ class RmfBookKeeper:
             self._report_health(health)
 
         self._subscriptions.append(
-            self.rmf.lift_health.subscribe(lambda x: self._create_task(update(x)))
+            self.rmf_events.lift_health.subscribe(
+                lambda x: self._create_task(update(x))
+            )
         )
 
     def _record_dispenser_state(self):
@@ -137,7 +153,9 @@ class RmfBookKeeper:
             logging.debug(dispenser_state.json())
 
         self._subscriptions.append(
-            self.rmf.dispenser_states.subscribe(lambda x: self._create_task(update(x)))
+            self.rmf_events.dispenser_states.subscribe(
+                lambda x: self._create_task(update(x))
+            )
         )
 
     def _record_dispenser_health(self):
@@ -146,7 +164,9 @@ class RmfBookKeeper:
             self._report_health(health)
 
         self._subscriptions.append(
-            self.rmf.dispenser_health.subscribe(lambda x: self._create_task(update(x)))
+            self.rmf_events.dispenser_health.subscribe(
+                lambda x: self._create_task(update(x))
+            )
         )
 
     def _record_ingestor_state(self):
@@ -155,7 +175,9 @@ class RmfBookKeeper:
             logging.debug(ingestor_state.json())
 
         self._subscriptions.append(
-            self.rmf.ingestor_states.subscribe(lambda x: self._create_task(update(x)))
+            self.rmf_events.ingestor_states.subscribe(
+                lambda x: self._create_task(update(x))
+            )
         )
 
     def _record_ingestor_health(self):
@@ -164,5 +186,29 @@ class RmfBookKeeper:
             self._report_health(health)
 
         self._subscriptions.append(
-            self.rmf.ingestor_health.subscribe(lambda x: self._create_task(update(x)))
+            self.rmf_events.ingestor_health.subscribe(
+                lambda x: self._create_task(update(x))
+            )
+        )
+
+    def _record_alert_request(self):
+        async def update(alert_request: AlertRequest):
+            await alert_request.save()
+            logging.debug(json.dumps(alert_request.dict()))
+
+        self._subscriptions.append(
+            self.alert_events.alert_requests.subscribe(
+                lambda x: self._create_task(update(x))
+            )
+        )
+
+    def _record_alert_response(self):
+        async def update(alert_response: AlertResponse):
+            await alert_response.save()
+            logging.debug(json.dumps(alert_response.dict()))
+
+        self._subscriptions.append(
+            self.alert_events.alert_responses.subscribe(
+                lambda x: self._create_task(update(x))
+            )
         )
