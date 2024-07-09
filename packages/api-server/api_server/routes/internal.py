@@ -9,6 +9,7 @@ from api_server.logging import LoggerAdapter, get_logger
 from api_server.models.user import User
 from api_server.repositories import AlertRepository, FleetRepository, TaskRepository
 from api_server.rmf_io import AlertEvents, FleetEvents, TaskEvents
+from api_server.rmf_io.events import get_alert_events, get_fleet_events, get_task_events
 
 router = APIRouter(tags=["_internal"])
 
@@ -93,9 +94,9 @@ async def process_msg(
 @router.websocket("")
 async def rmf_gateway(
     websocket: WebSocket,
-    task_events: Annotated[TaskEvents, Depends(TaskEvents.get_instance)],
-    alert_events: Annotated[AlertEvents, Depends(AlertEvents.get_instance)],
-    fleet_events: Annotated[FleetEvents, Depends(FleetEvents.get_instance)],
+    task_events: Annotated[TaskEvents, Depends(get_task_events)],
+    alert_events: Annotated[AlertEvents, Depends(get_alert_events)],
+    fleet_events: Annotated[FleetEvents, Depends(get_fleet_events)],
     logger: Annotated[LoggerAdapter, Depends(get_logger)],
 ):
     # We must resolve some dependencies manually because:

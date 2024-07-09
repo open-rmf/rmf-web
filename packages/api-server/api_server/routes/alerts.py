@@ -7,6 +7,7 @@ from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import Alert
 from api_server.repositories import AlertRepository
 from api_server.rmf_io import AlertEvents
+from api_server.rmf_io.events import get_alert_events
 
 router = FastIORouter(tags=["Alerts"])
 
@@ -14,7 +15,7 @@ router = FastIORouter(tags=["Alerts"])
 @router.sub("", response_model=Alert)
 async def sub_alerts(
     _req: SubscriptionRequest,
-    alert_events: Annotated[AlertEvents, Depends(AlertEvents.get_instance)],
+    alert_events: Annotated[AlertEvents, Depends(get_alert_events)],
 ):
     return alert_events.alerts.pipe(rxops.filter(lambda x: x is not None))
 
@@ -50,7 +51,7 @@ async def create_alert(
 async def acknowledge_alert(
     alert_id: str,
     repo: Annotated[AlertRepository, Depends(AlertRepository)],
-    alert_events: Annotated[AlertEvents, Depends(AlertEvents.get_instance)],
+    alert_events: Annotated[AlertEvents, Depends(get_alert_events)],
 ):
     alert = await repo.acknowledge_alert(alert_id)
     if alert is None:

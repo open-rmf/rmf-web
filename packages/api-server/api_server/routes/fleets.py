@@ -6,7 +6,7 @@ from reactivex import operators as rxops
 from api_server.authenticator import user_dep
 from api_server.dependencies import between_query
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.gateway import RmfGateway
+from api_server.gateway import RmfGateway, get_rmf_gateway
 from api_server.logging import LoggerAdapter, get_logger
 from api_server.models import (
     Commission,
@@ -19,7 +19,9 @@ from api_server.models import (
     User,
 )
 from api_server.repositories import FleetRepository
-from api_server.rmf_io import FleetEvents, TasksService
+from api_server.rmf_io import get_tasks_service
+from api_server.rmf_io.events import get_fleet_events
+from api_server.rmf_io.rmf_service import RmfService
 
 router = FastIORouter(tags=["Fleets"])
 
@@ -48,7 +50,7 @@ async def get_fleet_state(
 async def sub_fleet_state(req: SubscriptionRequest, name: str):
     user = req.user
     repo = FleetRepository(user, req.logger)
-    obs = FleetEvents.get_instance().fleet_states.pipe(
+    obs = get_fleet_events().fleet_states.pipe(
         rxops.filter(lambda x: cast(FleetState, x).name == name)
     )
     fleet_state = await repo.get_fleet_state(name)
@@ -74,7 +76,7 @@ async def get_fleet_log(
 
 @router.sub("/{name}/log", response_model=FleetLog)
 async def sub_fleet_log(_req: SubscriptionRequest, name: str):
-    return FleetEvents.get_instance().fleet_logs.pipe(
+    return get_fleet_events().fleet_logs.pipe(
         rxops.filter(lambda x: cast(FleetLog, x).name == name)
     )
 
@@ -87,7 +89,7 @@ async def decommission_robot(
     allow_idle_behavior: bool,
     repo: Annotated[FleetRepository, Depends(FleetRepository)],
     logger: Annotated[LoggerAdapter, Depends(get_logger)],
-    tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
+    tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
 ):
     """
     Decommissions a robot, cancels all direct tasks, and preventing it from
@@ -153,7 +155,7 @@ async def recommission_robot(
     repo: Annotated[FleetRepository, Depends(FleetRepository)],
     user: Annotated[User, Depends(user_dep)],
     logger: Annotated[LoggerAdapter, Depends(get_logger)],
-    tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
+    tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
 ):
     """
     Recommissions a robot, allowing it to accept new dispatch tasks and direct
@@ -193,7 +195,7 @@ async def unlock_mutex_group(
     mutex_group: str,
     repo: Annotated[FleetRepository, Depends(FleetRepository)],
     logger: Annotated[LoggerAdapter, Depends(get_logger)],
-    rmf_gateway: Annotated[RmfGateway, Depends(RmfGateway.get_instance)],
+    rmf_gateway: Annotated[RmfGateway, Depends(get_rmf_gateway)],
 ):
     """
     Request to manually unlock a mutex group that is currently being held by a

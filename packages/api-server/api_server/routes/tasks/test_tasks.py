@@ -8,7 +8,8 @@ from api_server import models as mdl
 from api_server.logging import default_logger
 from api_server.models import TaskEventLog, TaskState
 from api_server.repositories import TaskRepository
-from api_server.rmf_io import TaskEvents, TasksService
+from api_server.rmf_io import get_tasks_service
+from api_server.rmf_io.events import get_task_events
 from api_server.test import AppFixture, make_task_log, make_task_state
 
 
@@ -151,7 +152,7 @@ class TestTasksRoute(AppFixture):
     def test_sub_task_state(self):
         task_id = self.task_states[0].booking.id
         with self.subscribe_sio(f"/tasks/{task_id}/state") as sub:
-            TaskEvents.get_instance().task_states.on_next(self.task_states[0])
+            get_task_events().task_states.on_next(self.task_states[0])
             state = TaskState(**next(sub))
             self.assertEqual(task_id, cast(TaskState, state).booking.id)
 
@@ -226,12 +227,12 @@ class TestTasksRoute(AppFixture):
     def test_sub_task_log(self):
         task_id = self.task_logs[0].task_id
         with self.subscribe_sio(f"/tasks/{task_id}/log") as sub:
-            TaskEvents.get_instance().task_event_logs.on_next(self.task_logs[0])
+            get_task_events().task_event_logs.on_next(self.task_logs[0])
             log = TaskEventLog(**next(sub))
             self.assertEqual(task_id, cast(TaskEventLog, log).task_id)
 
     def test_activity_discovery(self):
-        with patch.object(TasksService.get_instance(), "call") as mock:
+        with patch.object(get_tasks_service(), "call") as mock:
             mock.return_value = "{}"
             resp = self.client.post(
                 "/tasks/activity_discovery",
@@ -242,7 +243,7 @@ class TestTasksRoute(AppFixture):
             self.assertEqual(200, resp.status_code, resp.content)
 
     def test_cancel_task(self):
-        with patch.object(TasksService.get_instance(), "call") as mock:
+        with patch.object(get_tasks_service(), "call") as mock:
             mock.return_value = '{ "success": true }'
             resp = self.client.post(
                 "/tasks/activity_discovery",
@@ -253,7 +254,7 @@ class TestTasksRoute(AppFixture):
             self.assertEqual(200, resp.status_code, resp.content)
 
     def test_interrupt_task(self):
-        with patch.object(TasksService.get_instance(), "call") as mock:
+        with patch.object(get_tasks_service(), "call") as mock:
             mock.return_value = '{ "success": True, "token": "token" }'
             resp = self.client.post(
                 "/tasks/interrupt_task",
@@ -264,7 +265,7 @@ class TestTasksRoute(AppFixture):
             self.assertEqual(200, resp.status_code, resp.content)
 
     def test_kill_task(self):
-        with patch.object(TasksService.get_instance(), "call") as mock:
+        with patch.object(get_tasks_service(), "call") as mock:
             mock.return_value = '{ "success": true }'
             resp = self.client.post(
                 "/tasks/kill_task",
@@ -275,7 +276,7 @@ class TestTasksRoute(AppFixture):
             self.assertEqual(200, resp.status_code, resp.content)
 
     def test_resume_task(self):
-        with patch.object(TasksService.get_instance(), "call") as mock:
+        with patch.object(get_tasks_service(), "call") as mock:
             mock.return_value = '{ "success": true }'
             resp = self.client.post(
                 "/tasks/resume_task",
@@ -286,7 +287,7 @@ class TestTasksRoute(AppFixture):
             self.assertEqual(200, resp.status_code, resp.content)
 
     def test_rewind_task(self):
-        with patch.object(TasksService.get_instance(), "call") as mock:
+        with patch.object(get_tasks_service(), "call") as mock:
             mock.return_value = '{ "success": true }'
             resp = self.client.post(
                 "/tasks/rewind_task",
@@ -297,7 +298,7 @@ class TestTasksRoute(AppFixture):
             self.assertEqual(200, resp.status_code, resp.content)
 
     def test_skip_phase(self):
-        with patch.object(TasksService.get_instance(), "call") as mock:
+        with patch.object(get_tasks_service(), "call") as mock:
             mock.return_value = '{ "success": True, "token": "token" }'
             resp = self.client.post(
                 "/tasks/skip_phase",
@@ -311,7 +312,7 @@ class TestTasksRoute(AppFixture):
             self.assertEqual(200, resp.status_code, resp.content)
 
     def test_task_discovery(self):
-        with patch.object(TasksService.get_instance(), "call") as mock:
+        with patch.object(get_tasks_service(), "call") as mock:
             mock.return_value = "{}"
             resp = self.client.post(
                 "/tasks/task_discovery",
@@ -322,7 +323,7 @@ class TestTasksRoute(AppFixture):
             self.assertEqual(200, resp.status_code, resp.content)
 
     def test_undo_skip_phase(self):
-        with patch.object(TasksService.get_instance(), "call") as mock:
+        with patch.object(get_tasks_service(), "call") as mock:
             mock.return_value = '{ "success": True }'
             resp = self.client.post(
                 "/tasks/undo_skip_phase",
@@ -348,7 +349,7 @@ class TestDispatchTask(AppFixture):
 
     def test_success(self):
         task_id = str(uuid4())
-        with patch.object(TasksService.get_instance(), "call") as mock:
+        with patch.object(get_tasks_service(), "call") as mock:
             mock.return_value = f'{{ "success": true, "state": {{ "booking": {{ "id": "{task_id}" }} }} }}'
             resp = self.post_task_request()
             self.assertEqual(200, resp.status_code, resp.content)
@@ -360,7 +361,7 @@ class TestDispatchTask(AppFixture):
 
     def test_task_request_exist(self):
         task_id = str(uuid4())
-        with patch.object(TasksService.get_instance(), "call") as mock:
+        with patch.object(get_tasks_service(), "call") as mock:
             mock.return_value = f'{{ "success": true, "state": {{ "booking": {{ "id": "{task_id}" }} }} }}'
             resp = self.post_task_request()
             self.assertEqual(200, resp.status_code, resp.content)
@@ -373,7 +374,7 @@ class TestDispatchTask(AppFixture):
 
     def test_fail_with_multiple_errors(self):
         # fails with multiple errors
-        with patch.object(TasksService.get_instance(), "call") as mock:
+        with patch.object(get_tasks_service(), "call") as mock:
             mock.return_value = """{
                 "success": false,
                 "errors": [
@@ -387,7 +388,7 @@ class TestDispatchTask(AppFixture):
 
     def test_fail_with_no_errors(self):
         # fails with multiple errors
-        with patch.object(TasksService.get_instance(), "call") as mock:
+        with patch.object(get_tasks_service(), "call") as mock:
             mock.return_value = """{
                 "success": false
             }

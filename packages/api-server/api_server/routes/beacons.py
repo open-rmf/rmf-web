@@ -6,14 +6,14 @@ from reactivex import operators as rxops
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import BeaconState
 from api_server.models.tortoise_models import BeaconState as DbBeaconState
-from api_server.rmf_io import RmfEvents
+from api_server.rmf_io import RmfEvents, get_rmf_events
 
 router = FastIORouter(tags=["Beacons"])
 
 
 @router.sub("", response_model=BeaconState)
 async def sub_beacons(_req: SubscriptionRequest):
-    return RmfEvents.get_instance().beacons.pipe(rxops.filter(lambda x: x is not None))
+    return get_rmf_events().beacons.pipe(rxops.filter(lambda x: x is not None))
 
 
 @router.get("", response_model=list[BeaconState])
@@ -38,7 +38,7 @@ async def save_beacon_state(
     category: str,
     activated: bool,
     level: str,
-    rmf_events: Annotated[RmfEvents, Depends(RmfEvents.get_instance)],
+    rmf_events: Annotated[RmfEvents, Depends(get_rmf_events)],
 ):
     # FIXME(koonpeng): this is not publishing to rmf
     beacon_state, _ = await DbBeaconState.update_or_create(

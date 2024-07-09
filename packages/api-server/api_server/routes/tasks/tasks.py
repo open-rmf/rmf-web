@@ -10,7 +10,7 @@ from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.logging import LoggerAdapter, default_logger, get_logger
 from api_server.repositories import RmfRepository, TaskRepository
 from api_server.response import RawJSONResponse
-from api_server.rmf_io import TaskEvents, TasksService
+from api_server.rmf_io import RmfService, get_task_events, get_tasks_service
 from api_server.routes.building_map import get_building_map
 
 router = FastIORouter(tags=["Tasks"])
@@ -132,7 +132,7 @@ async def get_task_state(
 async def sub_task_state(req: SubscriptionRequest, task_id: str):
     user = req.user
     task_repo = TaskRepository(user, default_logger)
-    obs = TaskEvents.get_instance().task_states.pipe(
+    obs = get_task_events().task_states.pipe(
         rxops.filter(lambda x: cast(mdl.TaskState, x).booking.id == task_id)
     )
     current_state = await get_task_state(task_repo, task_id)
@@ -179,7 +179,7 @@ async def get_task_log(
 
 @router.sub("/{task_id}/log", response_model=mdl.TaskEventLog)
 async def sub_task_log(_req: SubscriptionRequest, task_id: str):
-    return TaskEvents.get_instance().task_event_logs.pipe(
+    return get_task_events().task_event_logs.pipe(
         rxops.filter(lambda x: cast(mdl.TaskEventLog, x).task_id == task_id)
     )
 
@@ -187,7 +187,7 @@ async def sub_task_log(_req: SubscriptionRequest, task_id: str):
 @router.post("/activity_discovery", response_model=mdl.ActivityDiscovery)
 async def post_activity_discovery(
     request: Annotated[mdl.ActivityDiscoveryRequest, Body(...)],
-    tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
+    tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
 ):
     return RawJSONResponse(
         await tasks_service.call(request.model_dump_json(exclude_none=True))
@@ -198,7 +198,7 @@ async def post_activity_discovery(
 async def post_cancel_task(
     request: Annotated[mdl.CancelTaskRequest, Body(...)],
     logger: Annotated[LoggerAdapter, Depends(get_logger)],
-    tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
+    tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
 ):
     logger.info(request)
     return RawJSONResponse(
@@ -216,7 +216,7 @@ async def post_dispatch_task(
     rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)],
     task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
     logger: Annotated[LoggerAdapter, Depends(get_logger)],
-    tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
+    tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
 ):
     # FIXME: In order to accommodate changing cancellation lots over time, and
     # avoiding updating all the saved scheduled tasks in the database, we only
@@ -278,7 +278,7 @@ async def post_dispatch_task(
 async def post_robot_task(
     request: Annotated[mdl.RobotTaskRequest, Body(...)],
     task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
-    tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
+    tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
 ):
     resp = mdl.RobotTaskResponse.model_validate_json(
         await tasks_service.call(request.model_dump_json(exclude_none=True))
@@ -294,7 +294,7 @@ async def post_robot_task(
 @router.post("/interrupt_task", response_model=mdl.TaskInterruptionResponse)
 async def post_interrupt_task(
     request: Annotated[mdl.TaskInterruptionRequest, Body(...)],
-    tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
+    tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
 ):
     return RawJSONResponse(
         await tasks_service.call(request.model_dump_json(exclude_none=True))
@@ -304,7 +304,7 @@ async def post_interrupt_task(
 @router.post("/kill_task", response_model=mdl.TaskKillResponse)
 async def post_kill_task(
     request: Annotated[mdl.TaskKillRequest, Body(...)],
-    tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
+    tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
 ):
     return RawJSONResponse(
         await tasks_service.call(request.model_dump_json(exclude_none=True))
@@ -314,7 +314,7 @@ async def post_kill_task(
 @router.post("/resume_task", response_model=mdl.TaskResumeResponse)
 async def post_resume_task(
     request: Annotated[mdl.TaskResumeRequest, Body(...)],
-    tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
+    tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
 ):
     return RawJSONResponse(
         await tasks_service.call(request.model_dump_json(exclude_none=True))
@@ -324,7 +324,7 @@ async def post_resume_task(
 @router.post("/rewind_task", response_model=mdl.TaskRewindResponse)
 async def post_rewind_task(
     request: Annotated[mdl.TaskRewindRequest, Body(...)],
-    tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
+    tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
 ):
     return RawJSONResponse(
         await tasks_service.call(request.model_dump_json(exclude_none=True))
@@ -334,7 +334,7 @@ async def post_rewind_task(
 @router.post("/skip_phase", response_model=mdl.SkipPhaseResponse)
 async def post_skip_phase(
     request: Annotated[mdl.TaskPhaseSkipRequest, Body(...)],
-    tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
+    tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
 ):
     return RawJSONResponse(
         await tasks_service.call(request.model_dump_json(exclude_none=True))
@@ -344,7 +344,7 @@ async def post_skip_phase(
 @router.post("/task_discovery", response_model=mdl.TaskDiscovery)
 async def post_task_discovery(
     request: Annotated[mdl.TaskDiscoveryRequest, Body(...)],
-    tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
+    tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
 ):
     return RawJSONResponse(
         await tasks_service.call(request.model_dump_json(exclude_none=True))
@@ -354,7 +354,7 @@ async def post_task_discovery(
 @router.post("/undo_skip_phase", response_model=mdl.UndoPhaseSkipResponse)
 async def post_undo_skip_phase(
     request: Annotated[mdl.UndoPhaseSkipRequest, Body(...)],
-    tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
+    tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
 ):
     return RawJSONResponse(
         await tasks_service.call(request.model_dump_json(exclude_none=True))

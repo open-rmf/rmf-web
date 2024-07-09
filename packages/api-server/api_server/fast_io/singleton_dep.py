@@ -1,34 +1,68 @@
 import contextlib
-from typing import Any, Self
+from asyncio import iscoroutine
+from typing import Any, Callable, Coroutine, Generic, TypeVar
+
+T = TypeVar("T")
 
 
-class SingletonDep(contextlib.AbstractAsyncContextManager):
-    """A helper base class to define stateful FastAPI dependencies
+class SingletonDep(Generic[T], contextlib.AbstractAsyncContextManager):
+    def __init__(
+        self,
+        factory: (
+            Callable[[], T]
+            | Callable[[], Coroutine[Any, Any, T]]
+            | Callable[[], contextlib.AbstractContextManager]
+            | Callable[[], contextlib.AbstractAsyncContextManager]
+        ),
+    ):
+        self.factory = factory
+        self.instance: T | None = None
+        self.context: (
+            contextlib.AbstractContextManager
+            | contextlib.AbstractAsyncContextManager
+            | None
+        ) = None
+
+    async def __aenter__(self):
+        result = self.factory()
+        if isinstance(result, contextlib.AbstractContextManager):
+            self.context = result
+            self.instance = self.context.__enter__()
+        elif isinstance(result, contextlib.AbstractAsyncContextManager):
+            self.context = result
+            self.instance = self.context.__aenter__()
+        elif iscoroutine(result):
+            self.instance = await result
+        else:
+            self.instance = result
+
+    async def __aexit__(self, exc_type, exc_value, traceback):
+        if isinstance(self.context, contextlib.AbstractContextManager):
+            self.context.__exit__(None, None, None)
+        elif isinstance(self.context, contextlib.AbstractAsyncContextManager):
+            await self.context.__aexit__(None, None, None)
+        self.instance = None
+
+    def __call__(self):
+        if self.instance is None:
+            raise AssertionError(
+                f"{self.factory.__name__} is not set, is the context entered?"
+            )
+        return self.instance
+
+
+def singleton_dep(f: Callable[[], T | Coroutine[Any, Any, T]]) -> SingletonDep:
+    """A function decorator define stateful FastAPI dependencies
 
     FastAPI relies heavily on global objects for dependencies that must perist between
     requests. A simple implementation would be init the dependency at app startup and
     use save it in a global variable, but the issue is that it can cause issues in tests
     where the app will startup and shutdown multiple times.
 
-    SingletonDep helps manage the lifecycle of such dependencies, subclass should
-    implement cleanup logic in the __aexit__ method, during app startup, `set_instance`
-    should be called which returns an async context.
+    singleton_dep helps manage the lifecycle of such dependencies, it should be used
+    to decorate a function that return an instance of the dependency, singleton_dep
+    will convert that to an async context manager, which when entered, will call
+    the underlying function and cache the result.
     """
 
-    _instance: Any | None = None
-
-    @classmethod
-    def get_instance(cls) -> Self:
-        if cls._instance is None:
-            raise AssertionError(f"{cls.__name__} is not set, is the context entered?")
-        return cls._instance
-
-    @classmethod
-    @contextlib.asynccontextmanager
-    async def set_instance(cls, instance: Self):
-        try:
-            async with instance:
-                cls._instance = instance
-                yield
-        finally:
-            cls._instance = None
+    return SingletonDep(f)

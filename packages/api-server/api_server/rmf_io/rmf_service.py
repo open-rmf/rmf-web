@@ -12,10 +12,11 @@ import rclpy.subscription
 from fastapi import HTTPException
 from rmf_task_msgs.msg import ApiRequest, ApiResponse
 
-from api_server.fast_io.singleton_dep import SingletonDep
+from api_server.fast_io import singleton_dep
+from api_server.ros import get_ros_node
 
 
-class RmfService(contextlib.AbstractAsyncContextManager):
+class RmfService(contextlib.AbstractContextManager):
     """
     RMF uses a pseudo service protocol implmented using pub/sub. "Calling" a service
     involves publishing a request message with a request id and subscribing to a response.
@@ -38,7 +39,7 @@ class RmfService(contextlib.AbstractAsyncContextManager):
         self._api_sub: rclpy.subscription.Subscription
         self._requests: dict[str, Future] = {}
 
-    async def __aenter__(self):
+    def __enter__(self):
         self._api_pub = self.ros_node.create_publisher(
             ApiRequest,
             self._request_topic,
@@ -60,8 +61,9 @@ class RmfService(contextlib.AbstractAsyncContextManager):
                 durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
             ),
         )
+        return self
 
-    async def __aexit__(self, *exc):
+    def __exit__(self, *exc):
         """
         Unsubscribes to api responses and destroys all ros objects created by this class.
         """
@@ -95,6 +97,6 @@ class RmfService(contextlib.AbstractAsyncContextManager):
         fut.set_result(msg.json_msg)
 
 
-class TasksService(SingletonDep, RmfService):
-    def __init__(self, ros_node: rclpy.node.Node):
-        super().__init__(ros_node, "task_api_requests", "task_api_responses")
+@singleton_dep
+def get_tasks_service():
+    return RmfService(get_ros_node(), "task_api_requests", "task_api_responses")

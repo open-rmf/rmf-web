@@ -4,10 +4,10 @@ from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
 
 from api_server.fast_io import FastIORouter, SubscriptionRequest
-from api_server.gateway import RmfGateway
+from api_server.gateway import RmfGateway, get_rmf_gateway
 from api_server.models import Lift, LiftRequest, LiftState
 from api_server.repositories import RmfRepository
-from api_server.rmf_io import RmfEvents
+from api_server.rmf_io import get_rmf_events
 
 router = FastIORouter(tags=["Lifts"])
 
@@ -33,7 +33,7 @@ async def get_lift_state(
 @router.sub("/{lift_name}/state", response_model=LiftState)
 async def sub_lift_state(req: SubscriptionRequest, lift_name: str):
     user = req.user
-    obs = RmfEvents.get_instance().lift_states.pipe(
+    obs = get_rmf_events().lift_states.pipe(
         rxops.filter(lambda x: cast(LiftState, x).lift_name == lift_name)
     )
     lift_state = await get_lift_state(lift_name, RmfRepository(user))
@@ -46,7 +46,7 @@ async def sub_lift_state(req: SubscriptionRequest, lift_name: str):
 def post_lift_request(
     lift_name: str,
     lift_request: LiftRequest,
-    rmf_gateway: Annotated[RmfGateway, Depends(RmfGateway.get_instance)],
+    rmf_gateway: Annotated[RmfGateway, Depends(get_rmf_gateway)],
 ):
     rmf_gateway.request_lift(
         lift_name,

@@ -2,14 +2,14 @@ from datetime import datetime, timezone
 
 from builtin_interfaces.msg import Time as RosTime
 
-from .ros import RosNode
+from .ros import get_ros_node
 
 
 def now() -> int:
     """
     Return current unix time in millis
     """
-    ros_time = RosNode.get_instance().node.get_clock().now()
+    ros_time = get_ros_node().get_clock().now()
     return ros_time.nanoseconds // 1000000
 
 

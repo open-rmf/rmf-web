@@ -16,9 +16,20 @@ from fastapi.openapi.docs import (
 from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
 
-from api_server.repositories.cached_files import CachedFilesRepository
+from api_server.repositories.cached_files import (
+    CachedFilesRepository,
+    get_cached_file_repo,
+)
 from api_server.repositories.rmf import RmfRepository
-from api_server.rmf_io.rmf_service import TasksService
+from api_server.rmf_io.events import (
+    get_alert_events,
+    get_beacon_events,
+    get_fleet_events,
+    get_rmf_events,
+    get_task_events,
+)
+from api_server.rmf_io.rmf_service import get_tasks_service
+from api_server.scheduler import get_scheduler
 
 from . import gateway, ros, routes
 from .app_config import app_config
@@ -65,12 +76,11 @@ async def lifespan(_app: FastIO):
     stack = contextlib.AsyncExitStack()
     loop = asyncio.get_event_loop()
 
-    rmf_events = RmfEvents()
-    await stack.enter_async_context(RmfEvents.set_instance(rmf_events))
-    await stack.enter_async_context(TaskEvents.set_instance(TaskEvents()))
-    await stack.enter_async_context(FleetEvents.set_instance(FleetEvents()))
-    await stack.enter_async_context(AlertEvents.set_instance(AlertEvents()))
-    await stack.enter_async_context(BeaconEvents.set_instance(BeaconEvents()))
+    await stack.enter_async_context(get_rmf_events)
+    await stack.enter_async_context(get_task_events)
+    await stack.enter_async_context(get_fleet_events)
+    await stack.enter_async_context(get_alert_events)
+    await stack.enter_async_context(get_beacon_events)
 
     await Tortoise.init(
         db_url=app_config.db_url,
@@ -83,15 +93,10 @@ async def lifespan(_app: FastIO):
     cached_files = CachedFilesRepository(
         f"{app_config.public_url.geturl()}/cache", app_config.cache_directory
     )
-    await stack.enter_async_context(CachedFilesRepository.set_instance(cached_files))
-    ros_node = ros.RosNode()
-    await stack.enter_async_context(ros.RosNode.set_instance(ros_node))
-    rmf_gateway = gateway.RmfGateway(
-        cached_files, ros_node.node, rmf_events, RmfRepository(User.get_system_user())
-    )
-    await stack.enter_async_context(gateway.RmfGateway.set_instance(rmf_gateway))
-    tasks_service = TasksService(ros_node.node)
-    await stack.enter_async_context(TasksService.set_instance(tasks_service))
+    await stack.enter_async_context(get_cached_file_repo)
+    await stack.enter_async_context(ros.get_ros_node)
+    await stack.enter_async_context(gateway.get_rmf_gateway)
+    await stack.enter_async_context(get_tasks_service)
 
     # shutdown event is not called when the app crashes, this can cause the app to be
     # "locked up" as some dependencies like tortoise does not allow python to exit until
@@ -113,9 +118,10 @@ async def lifespan(_app: FastIO):
         {"is_admin": True}, username=app_config.builtin_admin
     )
 
-    await _load_states(rmf_events)
+    await _load_states(get_rmf_events())
 
     default_logger.info("starting scheduler")
+    await stack.enter_async_context(get_scheduler)
     asyncio.create_task(_spin_scheduler())
     scheduled_tasks = await ttm.ScheduledTask.all()
     scheduled = 0
@@ -129,7 +135,8 @@ async def lifespan(_app: FastIO):
             t,
             RmfRepository(User.get_system_user()),
             task_repo,
-            tasks_service,
+            get_tasks_service(),
+            get_scheduler(),
             default_logger,
         )
         scheduled += 1

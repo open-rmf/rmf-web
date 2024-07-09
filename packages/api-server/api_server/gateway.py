@@ -34,9 +34,12 @@ from rmf_task_msgs.srv import SubmitTask as RmfSubmitTask
 from rosidl_runtime_py.convert import message_to_ordereddict
 from std_msgs.msg import Bool as BoolMsg
 
-from api_server.fast_io.singleton_dep import SingletonDep
+from api_server.fast_io.singleton_dep import singleton_dep
+from api_server.models.user import User
+from api_server.repositories.cached_files import get_cached_file_repo
 from api_server.repositories.rmf import RmfRepository
-from api_server.rmf_io.events import RmfEvents
+from api_server.rmf_io.events import RmfEvents, get_rmf_events
+from api_server.ros import get_ros_node
 
 from .models import (
     BeaconState,
@@ -51,7 +54,7 @@ from .models import (
 from .repositories import CachedFilesRepository
 
 
-class RmfGateway(SingletonDep):
+class RmfGateway:
     def __init__(
         self,
         cached_files: CachedFilesRepository,
@@ -395,3 +398,13 @@ class RmfGateway(SingletonDep):
         reset_msg = BoolMsg()
         reset_msg.data = False
         self._fire_alarm_trigger.publish(reset_msg)
+
+
+@singleton_dep
+def get_rmf_gateway():
+    return RmfGateway(
+        get_cached_file_repo(),
+        get_ros_node(),
+        get_rmf_events(),
+        RmfRepository(User.get_system_user()),
+    )

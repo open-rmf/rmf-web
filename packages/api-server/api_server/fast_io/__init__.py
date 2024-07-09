@@ -19,7 +19,7 @@ from api_server.models.user import User
 
 from .errors import *
 from .pydantic_json_serializer import PydanticJsonSerializer
-from .singleton_dep import SingletonDep
+from .singleton_dep import SingletonDep, singleton_dep
 
 
 class SioSession(TypedDict):

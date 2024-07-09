@@ -1,10 +1,11 @@
 import logging
 import os
 
-from api_server.fast_io.singleton_dep import SingletonDep
+from api_server.app_config import app_config
+from api_server.fast_io import singleton_dep
 
 
-class CachedFilesRepository(SingletonDep):
+class CachedFilesRepository:
     def __init__(
         self,
         base_url: str,
@@ -22,9 +23,6 @@ class CachedFilesRepository(SingletonDep):
     async def __aenter__(self):
         os.makedirs(self.directory, exist_ok=True)
 
-    async def __aexit__(self, *exc):
-        pass
-
     def add_file(self, data: bytes, path: str) -> str:
         """
         Parameters:
@@ -40,3 +38,11 @@ class CachedFilesRepository(SingletonDep):
         logging.info(f'saved new file "{filepath}"')
         urlpath = f"{self.base_url}/{path}"
         return urlpath
+
+
+@singleton_dep
+def get_cached_file_repo():
+    os.makedirs(app_config.cache_directory, exist_ok=True)
+    return CachedFilesRepository(
+        f"{app_config.public_url.geturl()}/cache", app_config.cache_directory
+    )

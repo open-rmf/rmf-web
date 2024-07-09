@@ -6,7 +6,7 @@ from reactivex import operators as rxops
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.models import Ingestor, IngestorState
 from api_server.repositories import RmfRepository
-from api_server.rmf_io import RmfEvents
+from api_server.rmf_io import get_rmf_events
 
 router = FastIORouter(tags=["Ingestors"])
 
@@ -32,7 +32,7 @@ async def get_ingestor_state(
 @router.sub("/{guid}/state", response_model=IngestorState)
 async def sub_ingestor_state(req: SubscriptionRequest, guid: str):
     user = req.user
-    obs = RmfEvents.get_instance().ingestor_states.pipe(
+    obs = get_rmf_events().ingestor_states.pipe(
         rxops.filter(lambda x: cast(IngestorState, x).guid == guid)
     )
     ingestor_state = await get_ingestor_state(guid, RmfRepository(user))

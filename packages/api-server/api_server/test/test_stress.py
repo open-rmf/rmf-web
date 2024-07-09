@@ -15,7 +15,7 @@ class TestStress(AppFixture):
         this is running.
         """
         door_state = make_door_state(f"test_{uuid4()}")
-        RmfEvents.get_instance().door_states.on_next(door_state)
+        get_rmf_events().door_states.on_next(door_state)
 
         while True:
             with self.subscribe_sio(f"/doors/{door_state.door_name}/state") as sub:

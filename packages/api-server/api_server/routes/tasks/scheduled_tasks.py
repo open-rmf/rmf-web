@@ -27,7 +27,7 @@ from api_server.models import (
 from api_server.models import tortoise_models as ttm
 from api_server.repositories import TaskRepository
 from api_server.repositories.rmf import RmfRepository
-from api_server.rmf_io.rmf_service import TasksService
+from api_server.rmf_io.rmf_service import RmfService, get_tasks_service
 
 from .tasks import post_dispatch_task
 
@@ -49,7 +49,7 @@ async def schedule_task(
     task: ttm.ScheduledTask,
     rmf_repo: RmfRepository,
     task_repo: TaskRepository,
-    tasks_service: TasksService,
+    tasks_service: RmfService,
     scheduler: schedule.Scheduler,
     logger: LoggerAdapter,
 ):
@@ -106,7 +106,7 @@ async def post_scheduled_task(
     user: Annotated[User, Depends(user_dep)],
     rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)],
     task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
-    tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
+    tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
     scheduler: Annotated[schedule.Scheduler, Depends(schedule.Scheduler)],
     logger: Annotated[LoggerAdapter, Depends(get_logger)],
 ):
@@ -235,7 +235,7 @@ async def update_schedule_task(
     scheduled_task_request: PostScheduledTaskRequest,
     rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)],
     task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
-    tasks_service: Annotated[TasksService, Depends(TasksService.get_instance)],
+    tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
     scheduler: Annotated[schedule.Scheduler, Depends(schedule.Scheduler)],
     logger: Annotated[LoggerAdapter, Depends(get_logger)],
 ):
