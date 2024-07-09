@@ -400,9 +400,6 @@ class RmfGateway:
         self._fire_alarm_trigger.publish(reset_msg)
 
 
-asd = get_ros_node()
-
-
 @singleton_dep
 def get_rmf_gateway():
     return RmfGateway(

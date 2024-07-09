@@ -93,6 +93,8 @@ class TestRmfService(unittest.TestCase):
             time.sleep(0.1)
 
         cls.rmf_service = RmfService(cls.client_node, "test_request", "test_response")
+        cls.rmf_service.__enter__()
+        cls.addClassCleanup(cls.rmf_service.__exit__)
 
         cls.loop = asyncio.new_event_loop()
 

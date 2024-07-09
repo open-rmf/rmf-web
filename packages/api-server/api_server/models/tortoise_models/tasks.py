@@ -1,4 +1,5 @@
 from tortoise.fields import (
+    BigIntField,
     CharField,
     DatetimeField,
     ForeignKeyField,
@@ -89,8 +90,9 @@ class TaskEventLogPhasesEventsLog(Model, LogMixin):
 class TaskFavorite(Model):
     id = CharField(255, pk=True, source_field="id")
     name = CharField(255, null=False, index=True)
-    unix_millis_earliest_start_time = DatetimeField(null=True, index=True)
+    unix_millis_earliest_start_time = BigIntField(null=True, index=True)
     priority = JSONField(null=True)
     category = CharField(255, null=False, index=True)
     description = JSONField()
     user = CharField(255, null=False, index=True)
+    task_definition_id = CharField(255, null=True, index=True)

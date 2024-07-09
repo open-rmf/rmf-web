@@ -472,12 +472,13 @@ def make_task_favorite(
             "payload":""
          }
       },
-      "user":"stub"
+      "user":"stub",
+      "task_definition_id": "delivery"
    }
     """
     )
     sample_favorite_task["id"] = favorite_task_id
-    return TaskFavorite(**sample_favorite_task)
+    return TaskFavorite.model_validate(sample_favorite_task)
 
 
 def make_task_log(task_id: str) -> TaskEventLog:

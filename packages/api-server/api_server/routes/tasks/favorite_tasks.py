@@ -22,9 +22,7 @@ async def post_favorite_task(
         await ttm.TaskFavorite.update_or_create(
             {
                 "name": favorite_task.name,
-                "unix_millis_earliest_start_time": datetime.fromtimestamp(
-                    favorite_task.unix_millis_earliest_start_time / 1000
-                ),
+                "unix_millis_earliest_start_time": favorite_task.unix_millis_earliest_start_time,
                 "priority": favorite_task.priority if favorite_task.priority else None,
                 "category": favorite_task.category,
                 "description": (
