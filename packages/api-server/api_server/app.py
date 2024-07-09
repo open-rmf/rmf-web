@@ -79,6 +79,7 @@ async def lifespan(_app: FastIO):
     await stack.enter_async_context(get_alert_events)
     await stack.enter_async_context(get_beacon_events)
     await stack.enter_async_context(get_rio_events)
+    await stack.enter_async_context(get_alert_events)
 
     await Tortoise.init(
         db_url=app_config.db_url,

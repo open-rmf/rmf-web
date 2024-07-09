@@ -14,7 +14,7 @@ import { rmfDark, rmfLight } from 'react-components';
 import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
 import { AppController, AppControllerContext, SettingsContext } from './app-contexts';
 import AppBar from './appbar';
-import { AlertStore } from './alert-store';
+import { AlertManager } from './alert-manager';
 import { AppEvents } from './app-events';
 import { DeliveryAlertStore } from './delivery-alert-store';
 
@@ -93,7 +93,7 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
       )}
       <SettingsContext.Provider value={settings}>
         <AppControllerContext.Provider value={appController}>
-          <AlertStore />
+          <AlertManager />
           <DeliveryAlertStore />
           <Grid
             container

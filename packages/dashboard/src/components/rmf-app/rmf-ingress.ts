@@ -1,7 +1,8 @@
 import {
   AdminApi,
   AlertsApi,
-  Alert,
+  AlertRequest,
+  AlertResponse,
   BeaconState,
   BeaconsApi,
   BuildingApi,
@@ -243,8 +244,12 @@ export class RmfIngress {
     return this._taskStateObsStore[taskId];
   }
 
-  alertObsStore: Observable<Alert> = this._convertSioToRxObs((handler) =>
-    this._sioClient.subscribeAlerts(handler),
+  alertRequestsObsStore: Observable<AlertRequest> = this._convertSioToRxObs((handler) =>
+    this._sioClient.subscribeAlertRequests(handler),
+  );
+
+  alertResponsesObsStore: Observable<AlertResponse> = this._convertSioToRxObs((handler) =>
+    this._sioClient.subscribeAlertResponses(handler),
   );
 
   deliveryAlertObsStore: Observable<DeliveryAlert> = this._convertSioToRxObs((handler) =>

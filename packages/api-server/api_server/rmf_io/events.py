@@ -48,7 +48,8 @@ def get_fleet_events():
 
 class AlertEvents:
     def __init__(self):
-        self.alerts = Subject()
+        self.alert_requests = Subject()
+        self.alert_responses = Subject()
 
 
 @singleton_dep

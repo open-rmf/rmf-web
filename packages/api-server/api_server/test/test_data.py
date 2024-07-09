@@ -9,6 +9,7 @@ from rmf_lift_msgs.msg import LiftState as RmfLiftState
 
 from api_server.models import (
     AffineImage,
+    AlertRequest,
     BuildingMap,
     DispenserState,
     Door,
@@ -733,3 +734,18 @@ def make_task_log(task_id: str) -> TaskEventLog:
     )
     sample.task_id = task_id
     return sample
+
+
+def make_alert_request(alert_id: str, responses: list[str]) -> AlertRequest:
+    return AlertRequest(
+        id=alert_id,
+        unix_millis_alert_time=0,
+        title="test_title",
+        subtitle="test_subtitle",
+        message="test_message",
+        display=True,
+        tier=AlertRequest.Tier.Info,
+        responses_available=responses,
+        alert_parameters=[],
+        task_id=None,
+    )
