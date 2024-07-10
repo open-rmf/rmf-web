@@ -3,7 +3,7 @@ import {
   ApiServerModelsDeliveryAlertsDeliveryAlertCategory as DeliveryAlertCategory,
   ApiServerModelsDeliveryAlertsDeliveryAlertTier as DeliveryAlertTier,
   DeliveryAlert,
-  TaskState,
+  TaskStateOutput as TaskState,
 } from 'api-client';
 import React from 'react';
 import { Button, TextField, Tooltip, Theme, Divider, useMediaQuery } from '@mui/material';
@@ -96,7 +96,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
               deliveryAlert.category,
               deliveryAlert.tier,
               deliveryAlert.task_id ?? '',
-              DeliveryAlertAction.Cancelled,
+              DeliveryAlertAction.Cancel,
               deliveryAlert.message ?? '',
             );
           } catch (e) {
@@ -120,7 +120,7 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
       case DeliveryAlertAction.Resume: {
         return ' - [Resumed]';
       }
-      case DeliveryAlertAction.Cancelled: {
+      case DeliveryAlertAction.Cancel: {
         return ' - [Cancelled]';
       }
       case DeliveryAlertAction.Waiting:
@@ -624,8 +624,8 @@ export const DeliveryAlertStore = React.memo(() => {
               alert.deliveryAlert.category !== DeliveryAlertCategory.Obstructed
                 ? onResume
                 : alert.deliveryAlert.message && alert.deliveryAlert.message.includes(' latch ')
-                ? onResume
-                : undefined
+                  ? onResume
+                  : undefined
             }
             onClose={() => removeDeliveryAlertDialog(alert.deliveryAlert.id)}
             key={alert.deliveryAlert.id}
