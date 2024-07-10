@@ -1,4 +1,4 @@
-from enum import StrEnum
+from enum import Enum
 
 from tortoise.fields import CharEnumField, CharField
 from tortoise.models import Model
@@ -9,17 +9,17 @@ class DeliveryAlert(Model):
     Custom alerts for custom delivery tasks
     """
 
-    class Category(StrEnum):
+    class Category(str, Enum):
         Missing = "missing"
         Wrong = "wrong"
         Obstructed = "obstructed"
         Cancelled = "cancelled"
 
-    class Tier(StrEnum):
+    class Tier(str, Enum):
         Warning = "warning"
         Error = "error"
 
-    class Action(StrEnum):
+    class Action(str, Enum):
         Waiting = "waiting"
         Cancel = "cancelled"
         Override = "override"

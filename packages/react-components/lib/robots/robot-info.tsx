@@ -27,7 +27,7 @@ const StyledDiv = styled('div')(() => ({
   },
 }));
 
-type TaskStatus = Required<TaskState>['status'];
+type TaskStatus = NonNullable<TaskState['status']>;
 
 export interface RobotInfoProps {
   robotName: string;

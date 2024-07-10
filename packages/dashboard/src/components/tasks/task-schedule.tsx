@@ -9,10 +9,7 @@ import {
   SchedulerProps,
 } from '@aldabil/react-scheduler/types';
 import { Button, Typography } from '@mui/material';
-import {
-  ApiServerModelsTortoiseModelsScheduledTaskScheduledTask as ScheduledTask,
-  ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf as ApiSchedule,
-} from 'api-client';
+import { ScheduledTask, ScheduledTaskScheduleOutput as ApiSchedule } from 'api-client';
 import React from 'react';
 import {
   ConfirmationDialog,
@@ -173,7 +170,7 @@ export const TaskSchedule = () => {
           if (eventScope === EventScopes.CURRENT) {
             setScheduleToEdit(scheduleWithSelectedDay(task.schedules, exceptDateRef.current));
           } else {
-            setScheduleToEdit(apiScheduleToSchedule(task.schedules));
+            setScheduleToEdit(apiScheduleToSchedule(task));
           }
           AppEvents.refreshTaskSchedule.next();
           scheduler.close();
@@ -241,7 +238,9 @@ export const TaskSchedule = () => {
       if (eventScope === EventScopes.CURRENT) {
         const eventDate = toISOStringWithTimezone(exceptDateRef.current);
         console.debug(`Deleting schedule id ${task.id}, event date ${eventDate}`);
-        await rmf.tasksApi.delScheduledTasksEventScheduledTasksTaskIdClearPut(task.id, eventDate);
+        await rmf.tasksApi.addExceptDateScheduledTasksTaskIdExceptDatePost(task.id, {
+          except_date: eventDate,
+        });
       } else {
         console.debug(`Deleting schedule with id ${task.id}`);
         await rmf.tasksApi.delScheduledTasksScheduledTasksTaskIdDelete(task.id);

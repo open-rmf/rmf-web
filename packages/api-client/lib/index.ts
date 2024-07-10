@@ -10,7 +10,7 @@ import {
   IngestorState,
   LiftState,
   TaskEventLog,
-  TaskState,
+  TaskStateOutput,
 } from './openapi';
 
 // type Alert = TortoiseContribPydanticCreatorApiServerModelsTortoiseModelsAlertsAlertLeaf;
@@ -92,8 +92,8 @@ export class SioClient {
     return this.subscribe<FleetState>(`/fleets/${name}/state`, listener);
   }
 
-  subscribeTaskState(taskId: string, listener: Listener<TaskState>): Subscription {
-    return this.subscribe<TaskState>(`/tasks/${taskId}/state`, listener);
+  subscribeTaskState(taskId: string, listener: Listener<TaskStateOutput>): Subscription {
+    return this.subscribe<TaskStateOutput>(`/tasks/${taskId}/state`, listener);
   }
 
   subscribeTaskLogs(taskId: string, listener: Listener<TaskEventLog>): Subscription {

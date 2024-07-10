@@ -1,6 +1,6 @@
 import { Box, Dialog, DialogContent, DialogTitle, Divider, Grid, Typography } from '@mui/material';
 import { CardContent, useTheme } from '@mui/material';
-import { TaskEventLog, TaskState } from 'api-client';
+import { TaskEventLog, TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
 import { RmfAppContext } from '../rmf-app';
 import { TaskInfo } from 'react-components';

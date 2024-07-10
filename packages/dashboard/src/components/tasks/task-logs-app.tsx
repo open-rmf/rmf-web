@@ -1,5 +1,5 @@
 import { CardContent } from '@mui/material';
-import { TaskEventLog, TaskState } from 'api-client';
+import { TaskEventLog, TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
 import { AppEvents } from '../app-events';
 import { createMicroApp } from '../micro-app';

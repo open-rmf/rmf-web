@@ -1,4 +1,4 @@
-from enum import StrEnum
+from enum import Enum
 
 from tortoise.fields import BigIntField, CharEnumField, CharField
 from tortoise.models import Model
@@ -9,7 +9,7 @@ class Alert(Model):
     General alert that can be triggered by events.
     """
 
-    class Category(StrEnum):
+    class Category(str, Enum):
         Default = "default"
         Task = "task"
         Fleet = "fleet"

@@ -1,16 +1,15 @@
 from datetime import date, datetime
-from enum import StrEnum
+from enum import Enum
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import Field
 
+from .base import PydanticModel
 from .rmf_api.task_request import TaskRequest
 from .tortoise_support import TortoiseReverseRelation
 
 
-class ScheduledTaskSchedule(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    class Period(StrEnum):
+class ScheduledTaskSchedule(PydanticModel):
+    class Period(str, Enum):
         Monday = "monday"
         Tuesday = "tuesday"
         Wednesday = "wednesday"
@@ -27,9 +26,7 @@ class ScheduledTaskSchedule(BaseModel):
     at: str
 
 
-class ScheduledTask(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class ScheduledTask(PydanticModel):
     id: int
     task_request: TaskRequest
     created_by: str

@@ -200,6 +200,9 @@ export function parseDestination(state?: TaskState, request?: TaskRequest): stri
       }
 
       const charging_place = charge_event_name?.split('[place:')[1].split(']')[0];
+      if (!charging_place) {
+        throw Error('Cannot find charging place');
+      }
       return charging_place;
     } catch (e) {
       console.error(`Failed to parse charging point from task state: ${(e as Error).message}`);

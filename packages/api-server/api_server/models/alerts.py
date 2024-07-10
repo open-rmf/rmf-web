@@ -1,11 +1,8 @@
-from pydantic import BaseModel, ConfigDict
+from .base import PydanticModel
+from .tortoise_models.alerts import Alert as DbAlert
 
-from api_server.models.tortoise_models.alerts import Alert as DbAlert
 
-
-class Alert(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class Alert(PydanticModel):
     id: str
     original_id: str
     category: DbAlert.Category

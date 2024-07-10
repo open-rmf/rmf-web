@@ -53,7 +53,7 @@ const StyledTimeLine = styled((props: TimeLinePropsWithRef) => <Timeline {...pro
 );
 
 function NestedEvents(
-  eventStates: { [key: string]: EventState } | undefined,
+  eventStates: { [key: string]: EventState } | undefined | null,
   eventId: number | undefined,
 ) {
   if (eventStates !== undefined && eventStates !== null && eventId !== undefined) {

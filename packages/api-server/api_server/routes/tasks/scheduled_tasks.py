@@ -27,6 +27,7 @@ from api_server.models import (
 from api_server.models import tortoise_models as ttm
 from api_server.repositories import TaskRepository
 from api_server.rmf_io.rmf_service import RmfService, get_tasks_service
+from api_server.scheduler import get_scheduler
 
 from .tasks import post_dispatch_task
 
@@ -104,7 +105,7 @@ async def post_scheduled_task(
     user: Annotated[User, Depends(user_dep)],
     task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
     tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
-    scheduler: Annotated[schedule.Scheduler, Depends(schedule.Scheduler)],
+    scheduler: Annotated[schedule.Scheduler, Depends(get_scheduler)],
     logger: Annotated[LoggerAdapter, Depends(get_logger)],
 ):
     """
@@ -232,7 +233,7 @@ async def update_schedule_task(
     scheduled_task_request: PostScheduledTaskRequest,
     task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
     tasks_service: Annotated[RmfService, Depends(get_tasks_service)],
-    scheduler: Annotated[schedule.Scheduler, Depends(schedule.Scheduler)],
+    scheduler: Annotated[schedule.Scheduler, Depends(get_scheduler)],
     logger: Annotated[LoggerAdapter, Depends(get_logger)],
 ):
     task = await get_scheduled_task(task_id)
@@ -268,7 +269,7 @@ async def update_schedule_task(
 
 @router.delete("/{task_id}")
 async def del_scheduled_tasks(
-    task_id: int, scheduler: Annotated[schedule.Scheduler, Depends(schedule.Scheduler)]
+    task_id: int, scheduler: Annotated[schedule.Scheduler, Depends(get_scheduler)]
 ):
     async with tortoise.transactions.in_transaction():
         task = await get_scheduled_task(task_id)

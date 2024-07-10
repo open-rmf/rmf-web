@@ -1,5 +1,5 @@
 import { Box, CardContent, Typography } from '@mui/material';
-import { RobotState, TaskState } from 'api-client';
+import { RobotState, TaskStateOutput } from 'api-client';
 import React from 'react';
 import { RobotInfo } from 'react-components';
 import { EMPTY, combineLatest, mergeMap, of, switchMap, throttleTime } from 'rxjs';
@@ -11,7 +11,7 @@ export const RobotInfoApp = createMicroApp('Robot Info', () => {
   const rmf = React.useContext(RmfAppContext);
 
   const [robotState, setRobotState] = React.useState<RobotState | null>(null);
-  const [taskState, setTaskState] = React.useState<TaskState | null>(null);
+  const [taskState, setTaskState] = React.useState<TaskStateOutput | null>(null);
   React.useEffect(() => {
     if (!rmf) {
       return;
@@ -64,9 +64,13 @@ export const RobotInfoApp = createMicroApp('Robot Info', () => {
       {robotState ? (
         <RobotInfo
           robotName={robotState.name || 'unknown'}
-          assignedTask={robotState.task_id}
-          battery={robotState.battery && +robotState.battery.toFixed(2)}
-          estFinishTime={taskState?.unix_millis_finish_time}
+          assignedTask={robotState.task_id || undefined}
+          battery={robotState.battery != null ? +robotState.battery.toFixed(2) : undefined}
+          estFinishTime={
+            taskState?.unix_millis_finish_time != null
+              ? taskState.unix_millis_finish_time
+              : undefined
+          }
           taskProgress={taskProgress}
           taskStatus={taskState?.status}
         />

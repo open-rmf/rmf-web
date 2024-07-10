@@ -1,4 +1,4 @@
-import { PostScheduledTaskRequest, TaskRequest, TaskState } from 'api-client';
+import { PostScheduledTaskRequest, TaskRequest, TaskStateOutput as TaskState } from 'api-client';
 import { ajv, getTaskBookingLabelFromTaskState, Schedule } from 'react-components';
 import schema from 'api-client/dist/schema';
 
@@ -115,18 +115,16 @@ export const toApiSchedule = (
   const start = schedule.startOn;
   const apiSchedules: PostScheduledTaskRequest['schedules'] = [];
   const date = new Date(start);
-  const start_from = start.toISOString();
-  const until = schedule.until?.toISOString();
   const hours = date.getHours().toString().padStart(2, '0');
   const minutes = date.getMinutes().toString().padStart(2, '0');
   const at = `${hours}:${minutes}`;
-  schedule.days[0] && apiSchedules.push({ period: 'monday', start_from, at, until });
-  schedule.days[1] && apiSchedules.push({ period: 'tuesday', start_from, at, until });
-  schedule.days[2] && apiSchedules.push({ period: 'wednesday', start_from, at, until });
-  schedule.days[3] && apiSchedules.push({ period: 'thursday', start_from, at, until });
-  schedule.days[4] && apiSchedules.push({ period: 'friday', start_from, at, until });
-  schedule.days[5] && apiSchedules.push({ period: 'saturday', start_from, at, until });
-  schedule.days[6] && apiSchedules.push({ period: 'sunday', start_from, at, until });
+  schedule.days[0] && apiSchedules.push({ period: 'monday', at });
+  schedule.days[1] && apiSchedules.push({ period: 'tuesday', at });
+  schedule.days[2] && apiSchedules.push({ period: 'wednesday', at });
+  schedule.days[3] && apiSchedules.push({ period: 'thursday', at });
+  schedule.days[4] && apiSchedules.push({ period: 'friday', at });
+  schedule.days[5] && apiSchedules.push({ period: 'saturday', at });
+  schedule.days[6] && apiSchedules.push({ period: 'sunday', at });
   return {
     task_request: taskRequest,
     schedules: apiSchedules,

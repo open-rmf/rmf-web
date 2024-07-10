@@ -1,11 +1,11 @@
 import {
-  ApiServerModelsTortoiseModelsAlertsAlertLeaf as Alert,
+  Alert,
   Dispenser,
   Door,
   Ingestor,
   Level,
   Lift,
-  TaskState,
+  TaskStateOutput as TaskState,
 } from 'api-client';
 import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs';
 import { Vector3 } from 'three';

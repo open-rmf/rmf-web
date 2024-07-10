@@ -149,7 +149,6 @@ app = FastIO(
     socketio_connect=on_sio_connect,
     docs_url=None,
     redoc_url=None,
-    separate_input_output_schemas=False,
 )
 if app.swagger_ui_oauth2_redirect_url is None:
     app.swagger_ui_oauth2_redirect_url = "docs/oauth2-redirect"

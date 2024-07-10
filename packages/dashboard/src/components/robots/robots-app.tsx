@@ -1,5 +1,5 @@
 import { TableContainer } from '@mui/material';
-import { TaskState } from 'api-client';
+import { TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
 import { RobotDataGridTable, RobotTableData } from 'react-components';
 import { AppEvents } from '../app-events';
@@ -53,19 +53,21 @@ export const RobotsApp = createMicroApp('Robots', () => {
           return {
             ...prev,
             [fleet.name]: fleet.robots
-              ? Object.entries(fleet.robots).map<RobotTableData>(([name, robot]) => ({
-                  fleet: fleet.name || '',
-                  name,
-                  battery: robot.battery && +robot.battery.toFixed(2),
-                  status: robot.status,
-                  estFinishTime:
-                    robot.task_id && tasks[robot.task_id]
-                      ? tasks[robot.task_id].unix_millis_finish_time
-                      : undefined,
-                  lastUpdateTime: robot.unix_millis_time ? robot.unix_millis_time : undefined,
-                  level: robot.location?.map || 'N/A',
-                  commission: robot.commission,
-                }))
+              ? Object.entries(fleet.robots).map<RobotTableData>(([name, robot]) => {
+                  const estFinishTime = robot.task_id
+                    ? tasks[robot.task_id].unix_millis_finish_time
+                    : null;
+                  return {
+                    fleet: fleet.name || '',
+                    name,
+                    battery: robot.battery ? +robot.battery.toFixed(2) : undefined,
+                    status: robot.status || undefined,
+                    estFinishTime: estFinishTime || undefined,
+                    lastUpdateTime: robot.unix_millis_time ? robot.unix_millis_time : undefined,
+                    level: robot.location?.map || 'N/A',
+                    commission: robot.commission || undefined,
+                  };
+                })
               : [],
           };
         });

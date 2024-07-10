@@ -844,37 +844,75 @@ export interface DoorState {
 /**
  *
  * @export
- * @interface EventState
+ * @interface EventStateInput
  */
-export interface EventState {
+export interface EventStateInput {
   /**
    *
    * @type {number}
-   * @memberof EventState
+   * @memberof EventStateInput
    */
   id: number;
   /**
    *
-   * @type {ApiServerModelsRmfApiTaskStateStatus}
-   * @memberof EventState
+   * @type {StatusInput}
+   * @memberof EventStateInput
    */
-  status?: ApiServerModelsRmfApiTaskStateStatus | null;
+  status?: StatusInput | null;
   /**
    *
    * @type {string}
-   * @memberof EventState
+   * @memberof EventStateInput
    */
   name?: string | null;
   /**
    *
    * @type {Detail}
-   * @memberof EventState
+   * @memberof EventStateInput
    */
   detail?: Detail | null;
   /**
    *
    * @type {Array<number>}
-   * @memberof EventState
+   * @memberof EventStateInput
+   */
+  deps?: Array<number> | null;
+}
+
+/**
+ *
+ * @export
+ * @interface EventStateOutput
+ */
+export interface EventStateOutput {
+  /**
+   *
+   * @type {number}
+   * @memberof EventStateOutput
+   */
+  id: number;
+  /**
+   *
+   * @type {ApiServerModelsRmfApiTaskStateStatus}
+   * @memberof EventStateOutput
+   */
+  status?: ApiServerModelsRmfApiTaskStateStatus | null;
+  /**
+   *
+   * @type {string}
+   * @memberof EventStateOutput
+   */
+  name?: string | null;
+  /**
+   *
+   * @type {Detail}
+   * @memberof EventStateOutput
+   */
+  detail?: Detail | null;
+  /**
+   *
+   * @type {Array<number>}
+   * @memberof EventStateOutput
    */
   deps?: Array<number> | null;
 }
@@ -1568,67 +1606,134 @@ export interface Permission {
 /**
  *
  * @export
- * @interface Phase
+ * @interface PhaseInput
  */
-export interface Phase {
+export interface PhaseInput {
   /**
    *
    * @type {number}
-   * @memberof Phase
+   * @memberof PhaseInput
    */
   id: number;
   /**
    * The category of this task or phase
    * @type {string}
-   * @memberof Phase
+   * @memberof PhaseInput
    */
   category?: string;
   /**
    *
    * @type {Detail}
-   * @memberof Phase
+   * @memberof PhaseInput
    */
   detail?: Detail | null;
   /**
    *
    * @type {number}
-   * @memberof Phase
+   * @memberof PhaseInput
    */
   unix_millis_start_time?: number | null;
   /**
    *
    * @type {number}
-   * @memberof Phase
+   * @memberof PhaseInput
    */
   unix_millis_finish_time?: number | null;
   /**
    * An estimate, in milliseconds, of how long the subject will take to complete
    * @type {number}
-   * @memberof Phase
+   * @memberof PhaseInput
    */
   original_estimate_millis?: number;
   /**
    * An estimate, in milliseconds, of how long the subject will take to complete
    * @type {number}
-   * @memberof Phase
+   * @memberof PhaseInput
    */
   estimate_millis?: number;
   /**
    *
    * @type {number}
-   * @memberof Phase
+   * @memberof PhaseInput
    */
   final_event_id?: number;
   /**
    *
-   * @type {{ [key: string]: EventState; }}
-   * @memberof Phase
+   * @type {{ [key: string]: EventStateInput; }}
+   * @memberof PhaseInput
    */
-  events?: { [key: string]: EventState } | null;
+  events?: { [key: string]: EventStateInput } | null;
   /**
    *
    * @type {{ [key: string]: SkipPhaseRequest; }}
-   * @memberof Phase
+   * @memberof PhaseInput
+   */
+  skip_requests?: { [key: string]: SkipPhaseRequest } | null;
+}
+/**
+ *
+ * @export
+ * @interface PhaseOutput
+ */
+export interface PhaseOutput {
+  /**
+   *
+   * @type {number}
+   * @memberof PhaseOutput
+   */
+  id: number;
+  /**
+   * The category of this task or phase
+   * @type {string}
+   * @memberof PhaseOutput
+   */
+  category?: string;
+  /**
+   *
+   * @type {Detail}
+   * @memberof PhaseOutput
+   */
+  detail?: Detail | null;
+  /**
+   *
+   * @type {number}
+   * @memberof PhaseOutput
+   */
+  unix_millis_start_time?: number | null;
+  /**
+   *
+   * @type {number}
+   * @memberof PhaseOutput
+   */
+  unix_millis_finish_time?: number | null;
+  /**
+   * An estimate, in milliseconds, of how long the subject will take to complete
+   * @type {number}
+   * @memberof PhaseOutput
+   */
+  original_estimate_millis?: number;
+  /**
+   * An estimate, in milliseconds, of how long the subject will take to complete
+   * @type {number}
+   * @memberof PhaseOutput
+   */
+  estimate_millis?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PhaseOutput
+   */
+  final_event_id?: number;
+  /**
+   *
+   * @type {{ [key: string]: EventStateOutput; }}
+   * @memberof PhaseOutput
+   */
+  events?: { [key: string]: EventStateOutput } | null;
+  /**
+   *
+   * @type {{ [key: string]: SkipPhaseRequest; }}
+   * @memberof PhaseOutput
    */
   skip_requests?: { [key: string]: SkipPhaseRequest } | null;
 }
@@ -1734,10 +1839,10 @@ export interface PostScheduledTaskRequest {
   task_request: TaskRequest;
   /**
    *
-   * @type {Array<ScheduledTaskSchedule>}
+   * @type {Array<ScheduledTaskScheduleInput>}
    * @memberof PostScheduledTaskRequest
    */
-  schedules: Array<ScheduledTaskSchedule>;
+  schedules: Array<ScheduledTaskScheduleInput>;
   /**
    *
    * @type {string}
@@ -1973,25 +2078,50 @@ export interface RobotTaskRequest {
 /**
  * Response to a robot task request
  * @export
- * @interface RobotTaskResponse
+ * @interface RobotTaskResponseInput
  */
-export interface RobotTaskResponse {
+export interface RobotTaskResponseInput {
   /**
    *
    * @type {boolean}
-   * @memberof RobotTaskResponse
+   * @memberof RobotTaskResponseInput
    */
   success: boolean | null;
   /**
    *
-   * @type {TaskState}
-   * @memberof RobotTaskResponse
+   * @type {TaskStateInput}
+   * @memberof RobotTaskResponseInput
    */
-  state: TaskState;
+  state: TaskStateInput;
   /**
    *
    * @type {Array<Error>}
-   * @memberof RobotTaskResponse
+   * @memberof RobotTaskResponseInput
+   */
+  errors?: Array<Error> | null;
+}
+/**
+ * Response to a robot task request
+ * @export
+ * @interface RobotTaskResponseOutput
+ */
+export interface RobotTaskResponseOutput {
+  /**
+   *
+   * @type {boolean}
+   * @memberof RobotTaskResponseOutput
+   */
+  success: boolean | null;
+  /**
+   *
+   * @type {TaskStateOutput}
+   * @memberof RobotTaskResponseOutput
+   */
+  state: TaskStateOutput;
+  /**
+   *
+   * @type {Array<Error>}
+   * @memberof RobotTaskResponseOutput
    */
   errors?: Array<Error> | null;
 }
@@ -2021,57 +2151,83 @@ export interface ScheduledTask {
   created_by: string;
   /**
    *
-   * @type {Array<ScheduledTaskSchedule>}
+   * @type {Array<ScheduledTaskScheduleOutput>}
    * @memberof ScheduledTask
    */
-  schedules: Array<ScheduledTaskSchedule>;
+  schedules: Array<ScheduledTaskScheduleOutput>;
   /**
    *
    * @type {string}
    * @memberof ScheduledTask
    */
-  last_ran?: string | null;
+  last_ran: string | null;
   /**
    *
    * @type {string}
    * @memberof ScheduledTask
    */
-  start_from?: string | null;
+  start_from: string | null;
   /**
    *
    * @type {string}
    * @memberof ScheduledTask
    */
-  until?: string | null;
+  until: string | null;
   /**
    *
    * @type {Array<string>}
    * @memberof ScheduledTask
    */
-  except_dates?: Array<string>;
+  except_dates: Array<string>;
 }
 /**
  *
  * @export
- * @interface ScheduledTaskSchedule
+ * @interface ScheduledTaskScheduleInput
  */
-export interface ScheduledTaskSchedule {
+export interface ScheduledTaskScheduleInput {
   /**
    *
    * @type {number}
-   * @memberof ScheduledTaskSchedule
+   * @memberof ScheduledTaskScheduleInput
    */
   every?: number | null;
   /**
    *
    * @type {Period}
-   * @memberof ScheduledTaskSchedule
+   * @memberof ScheduledTaskScheduleInput
    */
   period: Period;
   /**
    *
    * @type {string}
-   * @memberof ScheduledTaskSchedule
+   * @memberof ScheduledTaskScheduleInput
+   */
+  at: string;
+}
+
+/**
+ *
+ * @export
+ * @interface ScheduledTaskScheduleOutput
+ */
+export interface ScheduledTaskScheduleOutput {
+  /**
+   *
+   * @type {number}
+   * @memberof ScheduledTaskScheduleOutput
+   */
+  every: number | null;
+  /**
+   *
+   * @type {Period}
+   * @memberof ScheduledTaskScheduleOutput
+   */
+  period: Period;
+  /**
+   *
+   * @type {string}
+   * @memberof ScheduledTaskScheduleOutput
    */
   at: string;
 }
@@ -2196,6 +2352,29 @@ export type Status2 = (typeof Status2)[keyof typeof Status2];
 /**
  *
  * @export
+ * @enum {string}
+ */
+
+export const StatusInput = {
+  Uninitialized: 'uninitialized',
+  Blocked: 'blocked',
+  Error: 'error',
+  Failed: 'failed',
+  Queued: 'queued',
+  Standby: 'standby',
+  Underway: 'underway',
+  Delayed: 'delayed',
+  Skipped: 'skipped',
+  Canceled: 'canceled',
+  Killed: 'killed',
+  Completed: 'completed',
+} as const;
+
+export type StatusInput = (typeof StatusInput)[keyof typeof StatusInput];
+
+/**
+ *
+ * @export
  * @interface Task
  */
 export interface Task {
@@ -2286,48 +2465,42 @@ export type TaskDiscoveryRequestTypeEnum =
   (typeof TaskDiscoveryRequestTypeEnum)[keyof typeof TaskDiscoveryRequestTypeEnum];
 
 /**
- * Response to a task dispatch request
- * @export
- * @interface TaskDispatchResponse
- */
-export interface TaskDispatchResponse {
-  /**
-   *
-   * @type {boolean}
-   * @memberof TaskDispatchResponse
-   */
-  success: boolean | null;
-  /**
-   *
-   * @type {TaskState}
-   * @memberof TaskDispatchResponse
-   */
-  state: TaskState;
-  /**
-   *
-   * @type {Array<Error>}
-   * @memberof TaskDispatchResponse
-   */
-  errors?: Array<Error> | null;
-}
-/**
  *
  * @export
- * @interface TaskDispatchResponse1
+ * @interface TaskDispatchResponse1Input
  */
-export interface TaskDispatchResponse1 {
+export interface TaskDispatchResponse1Input {
   /**
    *
    * @type {boolean}
-   * @memberof TaskDispatchResponse1
+   * @memberof TaskDispatchResponse1Input
    */
   success: boolean;
   /**
    *
-   * @type {TaskState}
-   * @memberof TaskDispatchResponse1
+   * @type {TaskStateInput}
+   * @memberof TaskDispatchResponse1Input
    */
-  state: TaskState;
+  state: TaskStateInput;
+}
+/**
+ *
+ * @export
+ * @interface TaskDispatchResponse1Output
+ */
+export interface TaskDispatchResponse1Output {
+  /**
+   *
+   * @type {boolean}
+   * @memberof TaskDispatchResponse1Output
+   */
+  success: boolean;
+  /**
+   *
+   * @type {TaskStateOutput}
+   * @memberof TaskDispatchResponse1Output
+   */
+  state: TaskStateOutput;
 }
 /**
  *
@@ -2345,6 +2518,56 @@ export interface TaskDispatchResponse2 {
    *
    * @type {Array<Error>}
    * @memberof TaskDispatchResponse2
+   */
+  errors?: Array<Error> | null;
+}
+/**
+ * Response to a task dispatch request
+ * @export
+ * @interface TaskDispatchResponseInput
+ */
+export interface TaskDispatchResponseInput {
+  /**
+   *
+   * @type {boolean}
+   * @memberof TaskDispatchResponseInput
+   */
+  success: boolean | null;
+  /**
+   *
+   * @type {TaskStateInput}
+   * @memberof TaskDispatchResponseInput
+   */
+  state: TaskStateInput;
+  /**
+   *
+   * @type {Array<Error>}
+   * @memberof TaskDispatchResponseInput
+   */
+  errors?: Array<Error> | null;
+}
+/**
+ * Response to a task dispatch request
+ * @export
+ * @interface TaskDispatchResponseOutput
+ */
+export interface TaskDispatchResponseOutput {
+  /**
+   *
+   * @type {boolean}
+   * @memberof TaskDispatchResponseOutput
+   */
+  success: boolean | null;
+  /**
+   *
+   * @type {TaskStateOutput}
+   * @memberof TaskDispatchResponseOutput
+   */
+  state: TaskStateOutput;
+  /**
+   *
+   * @type {Array<Error>}
+   * @memberof TaskDispatchResponseOutput
    */
   errors?: Array<Error> | null;
 }
@@ -2745,112 +2968,235 @@ export interface TaskRewindResponse {
 /**
  *
  * @export
- * @interface TaskState
+ * @interface TaskStateInput
  */
-export interface TaskState {
+export interface TaskStateInput {
   /**
    *
    * @type {Booking}
-   * @memberof TaskState
+   * @memberof TaskStateInput
    */
   booking: Booking;
   /**
    * The category of this task or phase
    * @type {string}
-   * @memberof TaskState
+   * @memberof TaskStateInput
    */
   category?: string;
   /**
    *
    * @type {Detail}
-   * @memberof TaskState
+   * @memberof TaskStateInput
    */
   detail?: Detail | null;
   /**
    *
    * @type {number}
-   * @memberof TaskState
+   * @memberof TaskStateInput
    */
   unix_millis_start_time?: number | null;
   /**
    *
    * @type {number}
-   * @memberof TaskState
+   * @memberof TaskStateInput
    */
   unix_millis_finish_time?: number | null;
   /**
    * An estimate, in milliseconds, of how long the subject will take to complete
    * @type {number}
-   * @memberof TaskState
+   * @memberof TaskStateInput
    */
   original_estimate_millis?: number;
   /**
    * An estimate, in milliseconds, of how long the subject will take to complete
    * @type {number}
-   * @memberof TaskState
+   * @memberof TaskStateInput
    */
   estimate_millis?: number;
   /**
    *
    * @type {AssignedTo}
-   * @memberof TaskState
+   * @memberof TaskStateInput
    */
   assigned_to?: AssignedTo | null;
   /**
    *
-   * @type {ApiServerModelsRmfApiTaskStateStatus}
-   * @memberof TaskState
+   * @type {StatusInput}
+   * @memberof TaskStateInput
    */
-  status?: ApiServerModelsRmfApiTaskStateStatus | null;
+  status?: StatusInput | null;
   /**
    *
    * @type {Dispatch}
-   * @memberof TaskState
+   * @memberof TaskStateInput
    */
   dispatch?: Dispatch | null;
   /**
    *
-   * @type {{ [key: string]: Phase; }}
-   * @memberof TaskState
+   * @type {{ [key: string]: PhaseInput; }}
+   * @memberof TaskStateInput
    */
-  phases?: { [key: string]: Phase } | null;
+  phases?: { [key: string]: PhaseInput } | null;
   /**
    *
    * @type {Array<number>}
-   * @memberof TaskState
+   * @memberof TaskStateInput
    */
   completed?: Array<number> | null;
   /**
    *
    * @type {number}
-   * @memberof TaskState
+   * @memberof TaskStateInput
    */
   active?: number;
   /**
    *
    * @type {Array<number>}
-   * @memberof TaskState
+   * @memberof TaskStateInput
    */
   pending?: Array<number> | null;
   /**
    *
    * @type {{ [key: string]: Interruption; }}
-   * @memberof TaskState
+   * @memberof TaskStateInput
    */
   interruptions?: { [key: string]: Interruption } | null;
   /**
    *
    * @type {Cancellation}
-   * @memberof TaskState
+   * @memberof TaskStateInput
    */
   cancellation?: Cancellation | null;
   /**
    *
    * @type {Killed}
-   * @memberof TaskState
+   * @memberof TaskStateInput
    */
   killed?: Killed | null;
 }
+
+/**
+ *
+ * @export
+ * @interface TaskStateOutput
+ */
+export interface TaskStateOutput {
+  /**
+   *
+   * @type {Booking}
+   * @memberof TaskStateOutput
+   */
+  booking: Booking;
+  /**
+   * The category of this task or phase
+   * @type {string}
+   * @memberof TaskStateOutput
+   */
+  category?: string;
+  /**
+   *
+   * @type {Detail}
+   * @memberof TaskStateOutput
+   */
+  detail?: Detail | null;
+  /**
+   *
+   * @type {number}
+   * @memberof TaskStateOutput
+   */
+  unix_millis_start_time?: number | null;
+  /**
+   *
+   * @type {number}
+   * @memberof TaskStateOutput
+   */
+  unix_millis_finish_time?: number | null;
+  /**
+   * An estimate, in milliseconds, of how long the subject will take to complete
+   * @type {number}
+   * @memberof TaskStateOutput
+   */
+  original_estimate_millis?: number;
+  /**
+   * An estimate, in milliseconds, of how long the subject will take to complete
+   * @type {number}
+   * @memberof TaskStateOutput
+   */
+  estimate_millis?: number;
+  /**
+   *
+   * @type {AssignedTo}
+   * @memberof TaskStateOutput
+   */
+  assigned_to?: AssignedTo | null;
+  /**
+   *
+   * @type {ApiServerModelsRmfApiTaskStateStatus}
+   * @memberof TaskStateOutput
+   */
+  status?: ApiServerModelsRmfApiTaskStateStatus | null;
+  /**
+   *
+   * @type {Dispatch}
+   * @memberof TaskStateOutput
+   */
+  dispatch?: Dispatch | null;
+  /**
+   *
+   * @type {{ [key: string]: PhaseOutput; }}
+   * @memberof TaskStateOutput
+   */
+  phases?: { [key: string]: PhaseOutput } | null;
+  /**
+   *
+   * @type {Array<number>}
+   * @memberof TaskStateOutput
+   */
+  completed?: Array<number> | null;
+  /**
+   *
+   * @type {number}
+   * @memberof TaskStateOutput
+   */
+  active?: number;
+  /**
+   *
+   * @type {Array<number>}
+   * @memberof TaskStateOutput
+   */
+  pending?: Array<number> | null;
+  /**
+   *
+   * @type {{ [key: string]: Interruption; }}
+   * @memberof TaskStateOutput
+   */
+  interruptions?: { [key: string]: Interruption } | null;
+  /**
+   *
+   * @type {Cancellation}
+   * @memberof TaskStateOutput
+   */
+  cancellation?: Cancellation | null;
+  /**
+   *
+   * @type {Killed}
+   * @memberof TaskStateOutput
+   */
+  killed?: Killed | null;
+}
+
+/**
+ *
+ * @export
+ * @enum {string}
+ */
+
+export const TierInput = {
+  NUMBER_0: 0,
+  NUMBER_1: 1,
+} as const;
+
+export type TierInput = (typeof TierInput)[keyof typeof TierInput];
 
 /**
  *
@@ -6520,7 +6866,7 @@ export const DeliveryAlertsApiAxiosParamCreator = function (configuration?: Conf
      * @summary Respond To Delivery Alert
      * @param {string} deliveryAlertId
      * @param {ApiServerModelsDeliveryAlertsDeliveryAlertCategory} category
-     * @param {ApiServerModelsDeliveryAlertsDeliveryAlertTier} tier
+     * @param {TierInput} tier
      * @param {string} taskId
      * @param {Action} action
      * @param {string} message
@@ -6531,7 +6877,7 @@ export const DeliveryAlertsApiAxiosParamCreator = function (configuration?: Conf
     respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost: async (
       deliveryAlertId: string,
       category: ApiServerModelsDeliveryAlertsDeliveryAlertCategory,
-      tier: ApiServerModelsDeliveryAlertsDeliveryAlertTier,
+      tier: TierInput,
       taskId: string,
       action: Action,
       message: string,
@@ -6641,7 +6987,7 @@ export const DeliveryAlertsApiFp = function (configuration?: Configuration) {
      * @summary Respond To Delivery Alert
      * @param {string} deliveryAlertId
      * @param {ApiServerModelsDeliveryAlertsDeliveryAlertCategory} category
-     * @param {ApiServerModelsDeliveryAlertsDeliveryAlertTier} tier
+     * @param {TierInput} tier
      * @param {string} taskId
      * @param {Action} action
      * @param {string} message
@@ -6652,7 +6998,7 @@ export const DeliveryAlertsApiFp = function (configuration?: Configuration) {
     async respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
       deliveryAlertId: string,
       category: ApiServerModelsDeliveryAlertsDeliveryAlertCategory,
-      tier: ApiServerModelsDeliveryAlertsDeliveryAlertTier,
+      tier: TierInput,
       taskId: string,
       action: Action,
       message: string,
@@ -6702,7 +7048,7 @@ export const DeliveryAlertsApiFactory = function (
      * @summary Respond To Delivery Alert
      * @param {string} deliveryAlertId
      * @param {ApiServerModelsDeliveryAlertsDeliveryAlertCategory} category
-     * @param {ApiServerModelsDeliveryAlertsDeliveryAlertTier} tier
+     * @param {TierInput} tier
      * @param {string} taskId
      * @param {Action} action
      * @param {string} message
@@ -6713,7 +7059,7 @@ export const DeliveryAlertsApiFactory = function (
     respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
       deliveryAlertId: string,
       category: ApiServerModelsDeliveryAlertsDeliveryAlertCategory,
-      tier: ApiServerModelsDeliveryAlertsDeliveryAlertTier,
+      tier: TierInput,
       taskId: string,
       action: Action,
       message: string,
@@ -6748,7 +7094,7 @@ export class DeliveryAlertsApi extends BaseAPI {
    * @summary Respond To Delivery Alert
    * @param {string} deliveryAlertId
    * @param {ApiServerModelsDeliveryAlertsDeliveryAlertCategory} category
-   * @param {ApiServerModelsDeliveryAlertsDeliveryAlertTier} tier
+   * @param {TierInput} tier
    * @param {string} taskId
    * @param {Action} action
    * @param {string} message
@@ -6760,7 +7106,7 @@ export class DeliveryAlertsApi extends BaseAPI {
   public respondToDeliveryAlertDeliveryAlertsDeliveryAlertIdResponsePost(
     deliveryAlertId: string,
     category: ApiServerModelsDeliveryAlertsDeliveryAlertCategory,
-    tier: ApiServerModelsDeliveryAlertsDeliveryAlertTier,
+    tier: TierInput,
     taskId: string,
     action: Action,
     message: string,
@@ -10655,7 +11001,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
       taskId: string,
       authorization?: string | null,
       options?: RawAxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskState>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskStateOutput>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.getTaskStateTasksTaskIdStateGet(
         taskId,
         authorization,
@@ -10749,7 +11095,9 @@ export const TasksApiFp = function (configuration?: Configuration) {
       dispatchTaskRequest: DispatchTaskRequest,
       authorization?: string | null,
       options?: RawAxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskDispatchResponse>> {
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskDispatchResponseOutput>
+    > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.postDispatchTaskTasksDispatchTaskPost(
           dispatchTaskRequest,
@@ -10938,7 +11286,9 @@ export const TasksApiFp = function (configuration?: Configuration) {
       robotTaskRequest: RobotTaskRequest,
       authorization?: string | null,
       options?: RawAxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RobotTaskResponse>> {
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<RobotTaskResponseOutput>
+    > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.postRobotTaskTasksRobotTaskPost(
         robotTaskRequest,
         authorization,
@@ -11144,7 +11494,7 @@ export const TasksApiFp = function (configuration?: Configuration) {
       orderBy?: string | null,
       authorization?: string | null,
       options?: RawAxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskState>>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<TaskStateOutput>>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.queryTaskStatesTasksGet(
         taskId,
         category,
@@ -11407,7 +11757,7 @@ export const TasksApiFactory = function (
       taskId: string,
       authorization?: string | null,
       options?: any,
-    ): AxiosPromise<TaskState> {
+    ): AxiosPromise<TaskStateOutput> {
       return localVarFp
         .getTaskStateTasksTaskIdStateGet(taskId, authorization, options)
         .then((request) => request(axios, basePath));
@@ -11462,7 +11812,7 @@ export const TasksApiFactory = function (
       dispatchTaskRequest: DispatchTaskRequest,
       authorization?: string | null,
       options?: any,
-    ): AxiosPromise<TaskDispatchResponse> {
+    ): AxiosPromise<TaskDispatchResponseOutput> {
       return localVarFp
         .postDispatchTaskTasksDispatchTaskPost(dispatchTaskRequest, authorization, options)
         .then((request) => request(axios, basePath));
@@ -11564,7 +11914,7 @@ export const TasksApiFactory = function (
       robotTaskRequest: RobotTaskRequest,
       authorization?: string | null,
       options?: any,
-    ): AxiosPromise<RobotTaskResponse> {
+    ): AxiosPromise<RobotTaskResponseOutput> {
       return localVarFp
         .postRobotTaskTasksRobotTaskPost(robotTaskRequest, authorization, options)
         .then((request) => request(axios, basePath));
@@ -11684,7 +12034,7 @@ export const TasksApiFactory = function (
       orderBy?: string | null,
       authorization?: string | null,
       options?: any,
-    ): AxiosPromise<Array<TaskState>> {
+    ): AxiosPromise<Array<TaskStateOutput>> {
       return localVarFp
         .queryTaskStatesTasksGet(
           taskId,

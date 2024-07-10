@@ -11,7 +11,7 @@
 // import { TaskSummary as RmfTaskSummary } from 'rmf-models';
 import {
   TaskEventLog,
-  TaskState,
+  TaskStateOutput as TaskState,
   //Phases,
   //LogEntry,
   //Tier,

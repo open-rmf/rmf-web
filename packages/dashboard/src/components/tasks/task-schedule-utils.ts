@@ -1,8 +1,5 @@
 import { ProcessedEvent } from '@aldabil/react-scheduler/types';
-import {
-  ApiServerModelsTortoiseModelsScheduledTaskScheduledTask as ScheduledTask,
-  ApiServerModelsTortoiseModelsScheduledTaskScheduledTaskScheduleLeaf as ApiSchedule,
-} from 'api-client';
+import { ScheduledTask, ScheduledTaskScheduleOutput as ApiSchedule } from 'api-client';
 import {
   addMinutes,
   endOfDay,
@@ -61,8 +58,8 @@ export const scheduleToEvents = (
   cur.setHours(hours);
   cur.setMinutes(minutes);
 
-  const scheStartFrom = schedule.start_from ? startOfMinute(new Date(schedule.start_from)) : null;
-  const scheUntil = schedule.until ? endOfMinute(new Date(schedule.until)) : null;
+  const scheStartFrom = task.start_from ? startOfMinute(new Date(task.start_from)) : null;
+  const scheUntil = task.until ? endOfMinute(new Date(task.until)) : null;
 
   let period = 8.64e7; // 1 day
   switch (schedule.period) {
@@ -150,12 +147,12 @@ export const scheduleWithSelectedDay = (scheduleTask: ApiSchedule[], date: Date)
   };
 };
 
-export const apiScheduleToSchedule = (scheduleTask: ApiSchedule[]): Schedule => {
+export const apiScheduleToSchedule = (scheduleTask: ScheduledTask): Schedule => {
   const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
   const daysArray: RecurringDays = [false, false, false, false, false, false, false];
 
-  for (const schedule of scheduleTask) {
+  for (const schedule of scheduleTask.schedules) {
     const dayIndex = daysOfWeek.indexOf(schedule.period.toLowerCase());
     if (dayIndex === -1) {
       throw new Error(`Invalid day: ${schedule}`);
@@ -165,10 +162,10 @@ export const apiScheduleToSchedule = (scheduleTask: ApiSchedule[]): Schedule => 
   }
 
   return {
-    startOn: scheduleTask[0].start_from ? new Date(scheduleTask[0].start_from) : new Date(),
+    startOn: scheduleTask.start_from ? new Date(scheduleTask.start_from) : new Date(),
     days: daysArray,
-    until: scheduleTask[0].until ? endOfMinute(new Date(scheduleTask[0].until)) : undefined,
-    at: scheduleTask[0].start_from ? new Date(scheduleTask[0].start_from) : new Date(),
+    until: scheduleTask.until ? endOfMinute(new Date(scheduleTask.until)) : undefined,
+    at: scheduleTask.schedules[0].at ? new Date(scheduleTask.schedules[0].at) : new Date(),
   };
 };
 

@@ -17,7 +17,7 @@ import { makeStyles, createStyles } from '@mui/styles';
 import {
   ApiServerModelsRmfApiTaskStateStatus as Status,
   TaskBookingLabel,
-  TaskState,
+  TaskStateOutput as TaskState,
 } from 'api-client';
 import { base, getTaskBookingLabelFromTaskState } from 'react-components';
 import { TaskInspector } from './task-inspector';
@@ -50,7 +50,7 @@ const LinearProgressWithLabel = (props: LinearProgressProps & { value: number })
   );
 };
 
-const setTaskDialogColor = (taskStatus: Status | undefined) => {
+const setTaskDialogColor = (taskStatus: Status | undefined | null) => {
   if (!taskStatus) {
     return base.palette.background.default;
   }

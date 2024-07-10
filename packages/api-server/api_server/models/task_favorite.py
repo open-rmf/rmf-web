@@ -1,9 +1,7 @@
-from pydantic import BaseModel, ConfigDict
+from .base import PydanticModel
 
 
-class TaskFavorite(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class TaskFavorite(PydanticModel):
     id: str
     name: str
     unix_millis_earliest_start_time: int

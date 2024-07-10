@@ -17,7 +17,11 @@ import { makeStyles, createStyles } from '@mui/styles';
 import React from 'react';
 import { RmfAppContext } from '../rmf-app';
 import { RobotTableData, base } from 'react-components';
-import { RobotState, ApiServerModelsRmfApiRobotStateStatus as Status, TaskState } from 'api-client';
+import {
+  RobotState,
+  ApiServerModelsRmfApiRobotStateStatus as Status,
+  TaskStateOutput as TaskState,
+} from 'api-client';
 import { EMPTY, combineLatest, mergeMap, of } from 'rxjs';
 import { TaskInspector } from '../tasks/task-inspector';
 import {
@@ -46,7 +50,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const setTaskDialogColor = (robotStatus: Status | undefined) => {
+const setTaskDialogColor = (robotStatus: Status | undefined | null) => {
   if (!robotStatus) {
     return base.palette.background.default;
   }

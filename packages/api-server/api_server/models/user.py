@@ -1,13 +1,10 @@
 from fastapi import HTTPException
-from pydantic import BaseModel, ConfigDict
 
 from . import tortoise_models as ttm
+from .base import PydanticModel
 
 
-class User(BaseModel):
-    model_config = ConfigDict(
-        json_schema_extra={"required": ["username", "is_admin", "roles"]}
-    )
+class User(PydanticModel):
     username: str
     is_admin: bool = False
     roles: list[str] = []

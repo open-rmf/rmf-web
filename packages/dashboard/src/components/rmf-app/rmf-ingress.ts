@@ -1,8 +1,8 @@
 import {
   AdminApi,
   AlertsApi,
-  ApiServerModelsTortoiseModelsAlertsAlertLeaf,
-  ApiServerModelsTortoiseModelsBeaconsBeaconStateLeaf as BeaconState,
+  Alert,
+  BeaconState,
   BeaconsApi,
   BuildingApi,
   BuildingMap,
@@ -27,7 +27,7 @@ import {
   SioClient,
   Subscription as SioSubscription,
   TasksApi,
-  TaskState,
+  TaskStateOutput as TaskState,
 } from 'api-client';
 import axios from 'axios';
 import { Authenticator } from 'rmf-auth';
@@ -38,8 +38,6 @@ import {
   DefaultTrajectoryManager,
   RobotTrajectoryManager,
 } from '../../managers/robot-trajectory-manager';
-
-type Alert = ApiServerModelsTortoiseModelsAlertsAlertLeaf;
 
 export class RmfIngress {
   // This should be private because socketio does not support "replaying" subscription. If

@@ -1,20 +1,18 @@
 import React from 'react';
 import {
   ApiServerModelsRmfApiLogEntryTier as Tier,
-  ApiServerModelsTortoiseModelsAlertsAlertLeaf,
+  Alert,
   LogEntry,
   ApiServerModelsRmfApiTaskStateStatus as Status,
-  Status1,
+  Status2 as DispatchTaskStatus,
   TaskEventLog,
-  TaskState,
+  TaskStateOutput as TaskState,
 } from 'api-client';
 import { AppControllerContext } from '../app-contexts';
 import { RmfAppContext } from '../rmf-app';
 import { AlertContent, AlertDialog } from 'react-components';
 import { base } from 'react-components';
 import { TaskInspector } from './task-inspector';
-
-type Alert = ApiServerModelsTortoiseModelsAlertsAlertLeaf;
 
 interface TaskAlert extends TaskEventLog {
   title: string;
@@ -89,7 +87,7 @@ export function TaskAlertDialog({ alert, removeAlert }: TaskAlertDialogProps): J
     ];
 
     // Second field would be any dispatch errors
-    if (state.dispatch && state.dispatch.status === Status1.FailedToAssign) {
+    if (state.dispatch && state.dispatch.status === DispatchTaskStatus.FailedToAssign) {
       let errors = '';
       if (state.dispatch.errors) {
         for (const error of state.dispatch.errors) {

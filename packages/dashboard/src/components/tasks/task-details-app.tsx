@@ -1,5 +1,5 @@
 import { Button, CardContent, Grid, Typography, useTheme } from '@mui/material';
-import { TaskState } from 'api-client';
+import { TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
 import { TaskInfo } from 'react-components';
 // import { UserProfileContext } from 'rmf-auth';
