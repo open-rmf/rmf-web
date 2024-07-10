@@ -13,6 +13,7 @@ from api_server.app_config import app_config
 from api_server.models import TaskRequest
 from api_server.models.tasks import ScheduledTask, ScheduledTaskSchedule
 from api_server.routes.tasks.scheduled_tasks import PostScheduledTaskRequest
+from api_server.scheduler import get_scheduler
 from api_server.test import AppFixture
 
 
@@ -697,7 +698,7 @@ class TestScheduledTaskExecution(AppFixture):
     def setUp(self):
         super().setUp()
         self.scheduler = schedule.Scheduler()
-        app.dependency_overrides[schedule.Scheduler] = lambda: self.scheduler
+        app.dependency_overrides[get_scheduler] = lambda: self.scheduler
 
         self.serverTz = ZoneInfo(app_config.timezone)
         self._patcher = unittest.mock.patch(
