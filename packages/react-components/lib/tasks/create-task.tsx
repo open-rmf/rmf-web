@@ -595,7 +595,6 @@ export function CreateTaskForm({
           <DoubleComposeDeliveryTaskForm
             taskDesc={taskRequest.description as DoubleComposeDeliveryTaskDescription}
             pickupPoints={pickupPoints}
-            cartIds={cartIds}
             dropoffPoints={dropoffPoints}
             onChange={(desc: DoubleComposeDeliveryTaskDescription) => {
               desc.category = taskRequest.description.category;

@@ -241,11 +241,9 @@ export function makeDoubleComposeDeliveryTaskShortDescription(
 ): string {
   try {
     const firstGoToPickup: GoToPlaceActivity = desc.phases[0].activity.description.activities[0];
-    const firstPickup: LotPickupActivity = desc.phases[0].activity.description.activities[1];
     const firstGoToDropoff: GoToPlaceActivity = desc.phases[1].activity.description.activities[0];
 
     const secondGoToPickup: GoToPlaceActivity = desc.phases[3].activity.description.activities[0];
-    const secondPickup: LotPickupActivity = desc.phases[3].activity.description.activities[1];
     const secondGoToDropoff: GoToPlaceActivity = desc.phases[4].activity.description.activities[0];
 
     return `[${taskDisplayName ?? DeliveryPickupTaskDefinition.taskDisplayName}] from [${
@@ -599,7 +597,6 @@ export function DeliveryPickupTaskForm({
 interface DoubleComposeDeliveryTaskFormProps {
   taskDesc: DoubleComposeDeliveryTaskDescription;
   pickupPoints: Record<string, string>;
-  cartIds: string[];
   dropoffPoints: Record<string, string>;
   onChange(taskDesc: DoubleComposeDeliveryTaskDescription): void;
   onValidate(valid: boolean): void;
@@ -608,7 +605,6 @@ interface DoubleComposeDeliveryTaskFormProps {
 export function DoubleComposeDeliveryTaskForm({
   taskDesc,
   pickupPoints = {},
-  cartIds = [],
   dropoffPoints = {},
   onChange,
   onValidate,

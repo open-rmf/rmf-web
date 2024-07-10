@@ -662,12 +662,11 @@ describe('Custom deliveries', () => {
 
     const description: DoubleComposeDeliveryTaskDescription =
       makeDefaultDoubleComposeDeliveryTaskDescription();
-    let firstPickupPhase = cartPickupPhaseInsertPickup(
+    const firstPickupPhase = cartPickupPhaseInsertPickup(
       description.phases[0],
       'test_first_pickup_place',
       'test_first_pickup_lot',
     );
-    firstPickupPhase = cartPickupPhaseInsertCartId(firstPickupPhase, 'test_first_cart_id');
     let firstDeliveryPhase = deliveryPhaseInsertDropoff(
       description.phases[1],
       'test_first_dropoff_place',
@@ -677,12 +676,11 @@ describe('Custom deliveries', () => {
       'test_waypoint_2',
       'test_waypoint_3',
     ]);
-    let secondPickupPhase = cartPickupPhaseInsertPickup(
+    const secondPickupPhase = cartPickupPhaseInsertPickup(
       description.phases[3],
       'test_second_pickup_place',
       'test_second_pickup_lot',
     );
-    secondPickupPhase = cartPickupPhaseInsertCartId(secondPickupPhase, 'test_second_cart_id');
     let secondDeliveryPhase = deliveryPhaseInsertDropoff(
       description.phases[4],
       'test_second_dropoff_place',
