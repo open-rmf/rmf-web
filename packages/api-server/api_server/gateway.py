@@ -280,10 +280,10 @@ class RmfGateway:
             msg = cast(RmfDeliveryAlert, msg)
             da = DeliveryAlert(
                 id=msg.id,
-                category=DeliveryAlert.Category(msg.category.value),
-                tier=DeliveryAlert.Tier(msg.tier.value),
+                category=DeliveryAlert.Category.from_rmf_value(msg.category.value),
+                tier=DeliveryAlert.Tier.from_rmf_value(msg.tier.value),
                 task_id=msg.task_id,
-                action=DeliveryAlert.Action(msg.action.value),
+                action=DeliveryAlert.Action.from_rmf_value(msg.action.value),
                 message=msg.message,
             )
             self._rmf_events.delivery_alerts.on_next(da)

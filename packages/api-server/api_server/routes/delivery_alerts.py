@@ -40,10 +40,10 @@ async def respond_to_delivery_alert(
     logger.info(delivery_alert)
     rmf_gateway.respond_to_delivery_alert(
         alert_id=delivery_alert.id,
-        category=delivery_alert.category.value,
-        tier=delivery_alert.tier.value,
+        category=delivery_alert.category.to_rmf_value(),
+        tier=delivery_alert.tier.to_rmf_value(),
         task_id=delivery_alert.task_id,
-        action=delivery_alert.action.value,
+        action=delivery_alert.action.to_rmf_value(),
         message=delivery_alert.message,
     )
     rmf_events.delivery_alerts.on_next(delivery_alert)
