@@ -975,3 +975,82 @@ class TestScheduledTaskExecution(AppFixture):
         with freeze_time(datetime(1970, 1, 5, tzinfo=self.serverTz)):
             self.run_pending_jobs()
             self.assertEqual(self.dispatch_task_mock.call_count, 2)
+
+    def test_schedule_delete_before_run(self):
+        scheduled_task = PostScheduledTaskRequest(
+            task_request=TaskRequest(
+                category="test",
+                description="test",
+            ),
+            schedules=[
+                ScheduledTaskSchedule(
+                    period=ScheduledTaskSchedule.Period.Day,
+                    at="00:00",
+                ),
+            ],
+        )
+
+        with freeze_time(datetime.fromtimestamp(0)):
+            resp = self.client.post(
+                "/scheduled_tasks", content=scheduled_task.model_dump_json()
+            )
+            self.assertEqual(201, resp.status_code, resp.json())
+            scheduled_task = ScheduledTask.model_validate_json(resp.content)
+        with freeze_time(datetime(1970, 1, 1, 23, 59, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.dispatch_task_mock.assert_not_called()
+        self.client.delete(f"/scheduled_tasks/{scheduled_task.id}")
+        with freeze_time(datetime(1970, 1, 2, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.dispatch_task_mock.assert_not_called()
+
+    def test_schedule_update_before_run(self):
+        scheduled_task_req = PostScheduledTaskRequest(
+            task_request=TaskRequest(
+                category="test",
+                description="test",
+            ),
+            schedules=[
+                ScheduledTaskSchedule(
+                    period=ScheduledTaskSchedule.Period.Day,
+                    at="01:00",
+                ),
+            ],
+        )
+
+        with freeze_time(datetime.fromtimestamp(0)):
+            resp = self.client.post(
+                "/scheduled_tasks", content=scheduled_task_req.model_dump_json()
+            )
+            self.assertEqual(201, resp.status_code, resp.json())
+            scheduled_task = ScheduledTask.model_validate_json(resp.content)
+        scheduled_task_req.schedules[0].at = "00:00"
+        scheduled_task_req.start_from = datetime(1970, 1, 3, tzinfo=self.serverTz)
+        scheduled_task_req.until = datetime(1970, 1, 5, tzinfo=self.serverTz)
+        scheduled_task_req.except_dates = [datetime(1970, 1, 4, tzinfo=self.serverTz)]
+        with freeze_time(datetime(1970, 1, 1, 23, 59, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.dispatch_task_mock.assert_not_called()
+            resp = self.client.post(
+                f"/scheduled_tasks/{scheduled_task.id}/update",
+                content=scheduled_task_req.model_dump_json(),
+            )
+            self.assertEqual(200, resp.status_code, resp.json())
+        # before start from
+        with freeze_time(datetime(1970, 1, 2, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.dispatch_task_mock.assert_not_called()
+        with freeze_time(datetime(1970, 1, 3, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.dispatch_task_mock.assert_called_once()
+        # except date
+        with freeze_time(datetime(1970, 1, 4, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.dispatch_task_mock.assert_called_once()
+        with freeze_time(datetime(1970, 1, 5, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.assertEqual(self.dispatch_task_mock.call_count, 2)
+        # after until time
+        with freeze_time(datetime(1970, 1, 6, tzinfo=self.serverTz)):
+            self.run_pending_jobs()
+            self.assertEqual(self.dispatch_task_mock.call_count, 2)
