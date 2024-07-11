@@ -4,7 +4,7 @@ import { WorkcellMarker } from './workcell-marker';
 
 describe('WorkcellMarker', () => {
   it('triggers onClick callback when button is clicked', () => {
-    const mockOnClick = jasmine.createSpy();
+    const mockOnClick = jest.fn();
 
     const root = render(
       <svg>

@@ -1,18 +1,9 @@
 import { InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
-import {
-  Box,
-  Stack,
-  SxProps,
-  Theme,
-  Tooltip,
-  Typography,
-  styled,
-  useMediaQuery,
-} from '@mui/material';
+import { Box, Stack, Tooltip, Typography, styled } from '@mui/material';
 import {
   DataGrid,
   GridCellParams,
-  GridColDef,
+  GridColumns,
   GridEventListener,
   GridFilterModel,
   GridRowParams,
@@ -70,7 +61,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     backgroundColor: theme.palette.warning.main,
     color: theme.palette.getContrastText(theme.palette.warning.main),
   },
-}));
+})) as typeof DataGrid;
 
 function isTaskOutdated(taskState: TaskState): boolean {
   if (
@@ -118,13 +109,9 @@ export interface TableDataGridState {
   setSortFields: React.Dispatch<React.SetStateAction<SortFields>>;
 }
 
-const TaskRequester = (requester: string | null, sx: SxProps<Theme>): JSX.Element => {
+const TaskRequester = (requester: string | undefined | null): JSX.Element => {
   if (!requester) {
-    return (
-      <Typography variant="body1" sx={sx}>
-        n/a
-      </Typography>
-    );
+    return <Typography variant="body1">n/a</Typography>;
   }
 
   /** When a task is created as scheduled,
@@ -136,21 +123,17 @@ const TaskRequester = (requester: string | null, sx: SxProps<Theme>): JSX.Elemen
     <Stack direction="row" alignItems="center" gap={1}>
       {requester.includes('scheduled') ? (
         <>
-          <Tooltip title="User scheduled" sx={sx}>
+          <Tooltip title="User scheduled">
             <ScheduleIcon />
           </Tooltip>
-          <Typography variant="body1" sx={sx}>
-            {requester.split('__')[0]}
-          </Typography>
+          <Typography variant="body1">{requester.split('__')[0]}</Typography>
         </>
       ) : (
         <>
-          <Tooltip title="User submitted" sx={sx}>
+          <Tooltip title="User submitted">
             <UserIcon />
           </Tooltip>
-          <Typography variant="body1" sx={sx}>
-            {requester}
-          </Typography>
+          <Typography variant="body1">{requester}</Typography>
         </>
       )}
     </Stack>
@@ -165,11 +148,6 @@ export function TaskDataGridTable({
   setFilterFields,
   setSortFields,
 }: TableDataGridState): JSX.Element {
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
-  const sxProp: SxProps<Theme> = {
-    fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
-  };
-
   const handleEvent: GridEventListener<'rowClick'> = (
     params: GridRowParams,
     event: MuiMouseEvent,
@@ -188,20 +166,21 @@ export function TaskDataGridTable({
     (operator) => operator.value === 'onOrAfter' || operator.value === 'onOrBefore',
   );
 
-  const columns: GridColDef[] = [
+  const columns: GridColumns<TaskData> = [
     {
       field: 'unix_millis_request_time',
       headerName: 'Date',
       width: 150,
       editable: false,
       renderCell: (cellValues) => {
+        if (!cellValues.row.state.booking.unix_millis_request_time) {
+          return 'n/a';
+        }
         const date = new Date(cellValues.row.state.booking.unix_millis_request_time);
         const day = date.toLocaleDateString(undefined, { day: 'numeric' });
         const month = date.toLocaleDateString(undefined, { month: 'short' });
         const year = date.toLocaleDateString(undefined, { year: 'numeric' });
-        return cellValues.row.state.booking.unix_millis_request_time
-          ? `${day} ${month} ${year}`
-          : 'n/a';
+        return `${day} ${month} ${year}`;
       },
       flex: 1,
       filterOperators: getMinimalDateOperators,
@@ -212,7 +191,7 @@ export function TaskDataGridTable({
       headerName: 'Requester',
       width: 150,
       editable: false,
-      renderCell: (cellValues) => TaskRequester(cellValues.row.state.booking.requester, sxProp),
+      renderCell: (cellValues) => TaskRequester(cellValues.row.state.booking.requester),
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,
@@ -222,9 +201,9 @@ export function TaskDataGridTable({
       headerName: 'Pickup',
       width: 150,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) => {
-        if (params.row.requestLabel && params.row.requestLabel.description.pickup) {
-          return params.row.requestLabel.description.pickup;
+      valueGetter: (params) => {
+        if (params.row.requestLabel && params.row.requestLabel.pickup) {
+          return params.row.requestLabel.pickup;
         }
         return 'n/a';
       },
@@ -237,9 +216,9 @@ export function TaskDataGridTable({
       headerName: 'Destination',
       width: 150,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) => {
-        if (params.row.requestLabel && params.row.requestLabel.description.destination) {
-          return params.row.requestLabel.description.destination;
+      valueGetter: (params) => {
+        if (params.row.requestLabel && params.row.requestLabel.destination) {
+          return params.row.requestLabel.destination;
         }
         return 'n/a';
       },
@@ -252,7 +231,7 @@ export function TaskDataGridTable({
       headerName: 'Robot',
       width: 100,
       editable: false,
-      valueGetter: (params: GridValueGetterParams) =>
+      valueGetter: (params) =>
         params.row.state.assigned_to ? params.row.state.assigned_to.name : 'n/a',
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
@@ -291,9 +270,9 @@ export function TaskDataGridTable({
       editable: false,
       renderCell: (cellValues) => {
         let warnDateTime: Date | undefined = undefined;
-        if (cellValues.row.requestLabel?.description.unix_millis_warn_time) {
+        if (cellValues.row.requestLabel?.unix_millis_warn_time) {
           const warnMillisNum = parseInt(
-            cellValues.row.requestLabel.description.unix_millis_warn_time as string,
+            cellValues.row.requestLabel.unix_millis_warn_time as string,
           );
           if (!Number.isNaN(warnMillisNum)) {
             warnDateTime = new Date(warnMillisNum);
@@ -391,9 +370,6 @@ export function TaskDataGridTable({
         loading={tasks.isLoading}
         pageSize={tasks.pageSize}
         rowsPerPageOptions={[10]}
-        sx={sxProp}
-        autoPageSize={isScreenHeightLessThan800}
-        density={isScreenHeightLessThan800 ? 'compact' : 'standard'}
         pagination
         paginationMode="server"
         filterMode="server"
@@ -450,6 +426,7 @@ export function TaskDataGridTable({
           }
           return '';
         }}
+        disableVirtualization={true}
       />
     </div>
   );

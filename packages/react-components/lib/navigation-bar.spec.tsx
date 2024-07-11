@@ -5,7 +5,7 @@ import { NavigationBar } from './navigation-bar';
 
 describe('Banner Tab', () => {
   it('renders correctly', () => {
-    const mockOnTabChange = jasmine.createSpy();
+    const mockOnTabChange = jest.fn();
     render(
       <NavigationBar onTabChange={mockOnTabChange} value={'building'}>
         <Tab

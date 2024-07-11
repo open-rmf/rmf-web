@@ -23,8 +23,8 @@ describe('AcknowledgeAndCloseAlertDialog', () => {
         },
       ];
     };
-    const acknowledge = jasmine.createSpy();
-    const dismiss = jasmine.createSpy();
+    const acknowledge = jest.fn();
+    const dismiss = jest.fn();
     const root = render(
       <ThemeProvider theme={theme}>
         <AlertDialog
@@ -61,8 +61,8 @@ describe('AcknowledgeAndCloseAlertDialog', () => {
         },
       ];
     };
-    const acknowledge = jasmine.createSpy();
-    const close = jasmine.createSpy();
+    const acknowledge = jest.fn();
+    const close = jest.fn();
     const root = render(
       <ThemeProvider theme={theme}>
         <AlertDialog

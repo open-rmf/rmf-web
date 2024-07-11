@@ -7,7 +7,7 @@ import { makeLift, makeLiftState } from './test-utils.spec';
 
 describe('Lift request form', () => {
   it('destination is required', () => {
-    const mockOnClose = jasmine.createSpy();
+    const mockOnClose = jest.fn();
     const lift = makeLift();
     const liftState = makeLiftState();
     render(

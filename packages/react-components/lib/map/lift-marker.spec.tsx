@@ -85,7 +85,7 @@ describe('LiftMarker', () => {
   });
 
   it('trigger onClick event', () => {
-    const mockOnClick = jasmine.createSpy();
+    const mockOnClick = jest.fn();
     const root = render(
       <svg>
         <LiftMarker

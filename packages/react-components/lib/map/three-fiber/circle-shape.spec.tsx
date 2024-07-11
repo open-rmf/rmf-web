@@ -9,7 +9,7 @@ describe('CircleShape', () => {
   it('should render a circle and a line correctly', () => {
     const position = new Vector3(1, 1, 0);
     const rotation = new Euler(0, 0, Math.PI / 4);
-    const onRobotClick = jasmine.createSpy();
+    const onRobotClick = jest.fn();
     const robot = makeRobotData({
       name: 'test_robot_1',
       inConflict: false,

@@ -26,7 +26,7 @@ describe('TransferList', () => {
   });
 
   it('transfers correct items', () => {
-    const spy = jasmine.createSpy();
+    const spy = jest.fn();
     const root = render(<TransferList leftItems={left} rightItems={right} onTransfer={spy} />);
     fireEvent.click(root.getByText('one'));
     fireEvent.click(root.getByLabelText('move selected right', { selector: 'button' }));

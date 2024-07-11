@@ -16,8 +16,8 @@ describe('Mutex group table', () => {
         requestedBy: ['fleet1/robot2'],
       },
     ];
-    const group1Click = jasmine.createSpy();
-    const group2Click = jasmine.createSpy();
+    const group1Click = jest.fn();
+    const group2Click = jest.fn();
     const root = render(
       <MutexGroupTable
         mutexGroups={mutexGroups}

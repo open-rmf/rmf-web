@@ -39,7 +39,7 @@ describe('RobotMarker', () => {
   });
 
   it('trigger onClick event', async () => {
-    const onClick = jasmine.createSpy();
+    const onClick = jest.fn();
     const root = await render(
       <RobotMarker cx={0} cy={0} r={1} color="#000000" onClick={onClick} data-testid="marker" />,
     );

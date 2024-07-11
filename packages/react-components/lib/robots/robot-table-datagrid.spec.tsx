@@ -32,7 +32,7 @@ describe('RobotTable', () => {
   });
 
   it('onRobotClick is called when row is clicked', () => {
-    const onRobotClick = jasmine.createSpy();
+    const onRobotClick = jest.fn();
     const root = render(
       <RobotDataGridTable
         robots={[{ fleet: 'test_fleet', name: 'test_robot' }]}
