@@ -197,14 +197,12 @@ export function makeDoubleComposeDeliveryTaskBookingLabel(
 
   const pickups = `${firstPickupDescription.pickup_lot}(1), ${secondPickupDescription.pickup_lot}(2)`;
   const dropoffs = `${task_description.phases[1].activity.description.activities[0].description}(1), ${task_description.phases[4].activity.description.activities[0].description}(2)`;
-  const cartIds = `${firstPickupDescription.pickup_lot}(1), ${secondPickupDescription.cart_id}(2)`;
 
   return {
     description: {
       task_definition_id: task_description.category,
       pickup: pickups,
       destination: dropoffs,
-      cart_id: cartIds,
     },
   };
 }
@@ -243,20 +241,14 @@ export function makeDoubleComposeDeliveryTaskShortDescription(
 ): string {
   try {
     const firstGoToPickup: GoToPlaceActivity = desc.phases[0].activity.description.activities[0];
-    const firstPickup: LotPickupActivity = desc.phases[0].activity.description.activities[1];
-    const firstCartId = firstPickup.description.description.cart_id;
     const firstGoToDropoff: GoToPlaceActivity = desc.phases[1].activity.description.activities[0];
 
     const secondGoToPickup: GoToPlaceActivity = desc.phases[3].activity.description.activities[0];
-    const secondPickup: LotPickupActivity = desc.phases[3].activity.description.activities[1];
-    const secondCartId = secondPickup.description.description.cart_id;
     const secondGoToDropoff: GoToPlaceActivity = desc.phases[4].activity.description.activities[0];
 
-    return `[${
-      taskDisplayName ?? DeliveryPickupTaskDefinition.taskDisplayName
-    }] payload [${firstCartId}] from [${firstGoToPickup.description}] to [${
-      firstGoToDropoff.description
-    }], then payload [${secondCartId}] from [${secondGoToPickup.description}] to [${
+    return `[${taskDisplayName ?? DeliveryPickupTaskDefinition.taskDisplayName}] from [${
+      firstGoToPickup.description
+    }] to [${firstGoToDropoff.description}], then from [${secondGoToPickup.description}] to [${
       secondGoToDropoff.description
     }]`;
   } catch (e) {
@@ -348,14 +340,12 @@ const isDoubleComposeDeliveryTaskDescriptionValid = (
     firstGoToPickup.description.length > 0 &&
     Object.keys(pickupPoints).includes(firstGoToPickup.description) &&
     pickupPoints[firstGoToPickup.description] === firstPickup.description.description.pickup_lot &&
-    firstPickup.description.description.cart_id.length > 0 &&
     firstGoToDropoff.description.length > 0 &&
     Object.keys(dropoffPoints).includes(firstGoToDropoff.description) &&
     secondGoToPickup.description.length > 0 &&
     Object.keys(pickupPoints).includes(secondGoToPickup.description) &&
     pickupPoints[secondGoToPickup.description] ===
       secondPickup.description.description.pickup_lot &&
-    secondPickup.description.description.cart_id.length > 0 &&
     secondGoToDropoff.description.length > 0 &&
     Object.keys(dropoffPoints).includes(secondGoToDropoff.description)
   );
@@ -607,7 +597,6 @@ export function DeliveryPickupTaskForm({
 interface DoubleComposeDeliveryTaskFormProps {
   taskDesc: DoubleComposeDeliveryTaskDescription;
   pickupPoints: Record<string, string>;
-  cartIds: string[];
   dropoffPoints: Record<string, string>;
   onChange(taskDesc: DoubleComposeDeliveryTaskDescription): void;
   onValidate(valid: boolean): void;
@@ -616,7 +605,6 @@ interface DoubleComposeDeliveryTaskFormProps {
 export function DoubleComposeDeliveryTaskForm({
   taskDesc,
   pickupPoints = {},
-  cartIds = [],
   dropoffPoints = {},
   onChange,
   onValidate,
@@ -630,7 +618,7 @@ export function DoubleComposeDeliveryTaskForm({
 
   return (
     <Grid container spacing={theme.spacing(2)} justifyContent="left" alignItems="center">
-      <Grid item xs={5}>
+      <Grid item xs={6}>
         <Autocomplete
           id="first-pickup-location"
           freeSolo
@@ -679,7 +667,7 @@ export function DoubleComposeDeliveryTaskForm({
           )}
         />
       </Grid>
-      <Grid item xs={5}>
+      <Grid item xs={6}>
         <Autocomplete
           id="first-dropoff-location"
           freeSolo
@@ -720,50 +708,7 @@ export function DoubleComposeDeliveryTaskForm({
           )}
         />
       </Grid>
-      <Grid item xs={2}>
-        <Autocomplete
-          id="first-cart-id"
-          freeSolo
-          fullWidth
-          options={cartIds}
-          value={
-            taskDesc.phases[0].activity.description.activities[1].description.description.cart_id
-          }
-          getOptionLabel={(option) => option}
-          onInputChange={(_ev, newValue) => {
-            const newTaskDesc = { ...taskDesc };
-            newTaskDesc.phases[0] = cartPickupPhaseInsertCartId(newTaskDesc.phases[0], newValue);
-            onInputChange(newTaskDesc);
-          }}
-          onBlur={(ev) => {
-            const newTaskDesc = { ...taskDesc };
-            newTaskDesc.phases[0] = cartPickupPhaseInsertCartId(
-              newTaskDesc.phases[0],
-              (ev.target as HTMLInputElement).value,
-            );
-            onInputChange(newTaskDesc);
-          }}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
-              fontSize: isScreenHeightLessThan800 ? 14 : 20,
-            },
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Cart ID (1)"
-              required
-              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
-              error={
-                taskDesc.phases[0].activity.description.activities[1].description.description
-                  .cart_id.length === 0
-              }
-            />
-          )}
-        />
-      </Grid>
-      <Grid item xs={5}>
+      <Grid item xs={6}>
         <Autocomplete
           id="second-pickup-location"
           freeSolo
@@ -812,7 +757,7 @@ export function DoubleComposeDeliveryTaskForm({
           )}
         />
       </Grid>
-      <Grid item xs={5}>
+      <Grid item xs={6}>
         <Autocomplete
           id="second-dropoff-location"
           freeSolo
@@ -848,49 +793,6 @@ export function DoubleComposeDeliveryTaskForm({
                 !Object.keys(dropoffPoints).includes(
                   taskDesc.phases[4].activity.description.activities[0].description,
                 )
-              }
-            />
-          )}
-        />
-      </Grid>
-      <Grid item xs={2}>
-        <Autocomplete
-          id="second-cart-id"
-          freeSolo
-          fullWidth
-          options={cartIds}
-          value={
-            taskDesc.phases[3].activity.description.activities[1].description.description.cart_id
-          }
-          getOptionLabel={(option) => option}
-          onInputChange={(_ev, newValue) => {
-            const newTaskDesc = { ...taskDesc };
-            newTaskDesc.phases[3] = cartPickupPhaseInsertCartId(newTaskDesc.phases[3], newValue);
-            onInputChange(newTaskDesc);
-          }}
-          onBlur={(ev) => {
-            const newTaskDesc = { ...taskDesc };
-            newTaskDesc.phases[3] = cartPickupPhaseInsertCartId(
-              newTaskDesc.phases[3],
-              (ev.target as HTMLInputElement).value,
-            );
-            onInputChange(newTaskDesc);
-          }}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              height: isScreenHeightLessThan800 ? '3rem' : '3.5rem',
-              fontSize: isScreenHeightLessThan800 ? 14 : 20,
-            },
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Cart ID (2)"
-              required
-              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 14 : 20 } }}
-              error={
-                taskDesc.phases[3].activity.description.activities[1].description.description
-                  .cart_id.length === 0
               }
             />
           )}
