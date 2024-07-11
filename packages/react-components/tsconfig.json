@@ -16,6 +16,5 @@
     "isolatedModules": true,
     "jsx": "react"
   },
-  "include": ["lib/"],
-  "exclude": ["**/*.spec.*", "**/*.stories.*"]
+  "include": ["lib/"]
 }
