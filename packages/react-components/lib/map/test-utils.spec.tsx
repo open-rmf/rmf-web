@@ -1,7 +1,6 @@
 import type { BuildingMap, GraphNode } from 'api-client';
 import { Place } from '../place';
-import { RobotData } from './robots-overlay';
-import { TrajectoryData } from './trajectories-overlay';
+import { RobotData } from './three-fiber';
 import { RawKnot, RawVelocity, Trajectory } from './trajectory';
 
 export const officeMap: BuildingMap = {
@@ -363,6 +362,7 @@ export function makeRobotData(robot: Partial<RobotData> = {}): RobotData {
     model: 'test_model',
     footprint: 1,
     color: '#00a000',
+    scale: 1,
     ...robot,
   };
 }
@@ -388,16 +388,6 @@ export function makeTrajectory(traj?: Partial<Trajectory>): Trajectory {
     ],
     shape: 'circle',
     ...traj,
-  };
-}
-
-export function makeTrajectoryData(trajData: Partial<TrajectoryData> = {}): TrajectoryData {
-  return {
-    trajectory: makeTrajectory(),
-    color: '#00a000',
-    conflict: false,
-    loopAnimation: true,
-    ...trajData,
   };
 }
 

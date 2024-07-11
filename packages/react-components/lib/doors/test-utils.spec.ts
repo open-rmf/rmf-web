@@ -1,6 +1,5 @@
 import type { Door, DoorMode, DoorState } from 'api-client';
 import { Door as RmfDoor, DoorMode as RmfDoorMode } from 'rmf-models';
-import { DoorData } from './utils';
 
 export function makeDoor(door?: Partial<Door>): Door {
   return {
@@ -74,8 +73,4 @@ export const doorStates: Record<string, DoorState> = {
     door_name: 'door_with_a_really_long_name',
     current_mode: { value: RmfDoorMode.MODE_UNKNOWN },
   }),
-};
-
-export const makeDoorsData = (): DoorData[] => {
-  return doors.map((door) => ({ door, level: 'L1' }));
 };

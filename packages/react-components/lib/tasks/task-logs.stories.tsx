@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import { TaskLogs, TaskLogsProps } from './task-logs';
 import { makeTaskLog } from './test-data.spec';
@@ -6,9 +6,9 @@ import { makeTaskLog } from './test-data.spec';
 export default {
   title: 'Tasks/Logs',
   component: TaskLogs,
-} as Meta;
+} satisfies Meta;
 
-export const Logs: Story<TaskLogsProps> = (args) => {
+export const Logs: StoryFn<TaskLogsProps> = (args) => {
   return <TaskLogs {...args} />;
 };
 

@@ -1,10 +1,9 @@
 import type { AffineImage, Door, Location2D } from 'api-client';
+import { Graph, Level } from 'api-client';
 import L from 'leaflet';
-import { Door as RmfDoor } from 'rmf-models';
+import { GraphNode, Door as RmfDoor } from 'rmf-models';
+import { Box3, Euler, Vector3 } from 'three';
 import { fromRmfCoords, fromRmfYaw } from '../utils';
-import { Level, Graph } from 'api-client';
-import { Box3, Vector3, Euler } from 'three';
-import { GraphNode } from 'rmf-models';
 
 export function viewBoxFromLeafletBounds(bounds: L.LatLngBoundsExpression): string {
   const lbounds = bounds instanceof L.LatLngBounds ? bounds : new L.LatLngBounds(bounds);
@@ -69,7 +68,7 @@ interface WallSegment {
   width: number;
   height: number;
   depth: number;
-  rot: THREE.Euler;
+  rot: Euler;
 }
 
 const distance = (v1: GraphNode, v2: GraphNode) => Math.hypot(v2.x - v1.x, v2.y - v1.y);
@@ -104,9 +103,7 @@ export const graphToWalls = (graph: Graph): WallSegment[] => {
   return walls;
 };
 
-export const findSceneBoundingBoxFromThreeFiber = (
-  level: Level | undefined,
-): THREE.Box3 | undefined => {
+export const findSceneBoundingBoxFromThreeFiber = (level: Level | undefined): Box3 | undefined => {
   if (!level) {
     return;
   }

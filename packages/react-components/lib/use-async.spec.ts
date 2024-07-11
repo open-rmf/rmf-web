@@ -5,28 +5,26 @@ describe('useAsync', () => {
   it('resolves if component is still mounted', async () => {
     const hook = renderHook(() => useAsync());
     const safeAsync = hook.result.current;
-    await expectAsync(safeAsync(Promise.resolve(true))).toBeResolvedTo(true);
+    await expect(safeAsync(Promise.resolve(true))).resolves.toBe(true);
   });
 
   it('throws if component is unmounted', async () => {
     const hook = renderHook(() => useAsync(true));
     const safeAsync = hook.result.current;
     hook.unmount();
-    await expectAsync(safeAsync(Promise.resolve(true))).toBeRejected();
+    await expect(safeAsync(Promise.resolve(true))).rejects.toThrow();
   });
 
   it('throws original error when promise is rejected', async () => {
     const hook = renderHook(() => useAsync(true));
     const safeAsync = hook.result.current;
-    await expectAsync(safeAsync(Promise.reject('test error'))).toBeRejectedWith('test error');
+    await expect(safeAsync(Promise.reject('test error'))).rejects.toBe('test error');
   });
 
   it('referentially equal across renders', async () => {
     const hook = renderHook(() => useAsync(true));
-    const { rerender } = renderHook((props) => useAsync(props.throwOnUnmounted), {
-      initialProps: { throwOnUnmounted: true },
-    });
-    expect(rerender).toBeDefined();
-    expect(hook.result.current[0]).toBe(hook.result.current[1]);
+    const first = hook.result.current;
+    hook.rerender();
+    expect(hook.result.current).toBe(first);
   });
 });

@@ -1,13 +1,13 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import { LogoButton } from './logo-button';
 
 export default {
   title: 'Logo Button',
   component: LogoButton,
-} as Meta;
+} satisfies Meta;
 
-export const Default: Story = () => {
+export const Default: StoryFn = () => {
   return <LogoButton src="/assets/roshealth-logo-white.png" />;
 };
 

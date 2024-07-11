@@ -1,21 +1,24 @@
+import { Meta } from '@storybook/react';
 import React from 'react';
-import { storiesOf } from '@storybook/react';
-import { MutexGroupData, MutexGroupTable } from './mutex-group-table';
+import { MutexGroupTable } from './mutex-group-table';
 
-// Define the stories
-storiesOf('Components/MutexGroupTable', module).add('Default', () => {
-  const mutexGroups: MutexGroupData[] = [
-    {
-      name: 'group1',
-      lockedBy: 'fleet1/robot1',
-      requestedBy: ['fleet1/robot2', 'fleet2/robot1'],
-    },
-    {
-      name: 'group2',
-      lockedBy: 'fleet1/robot1',
-      requestedBy: ['fleet1/robot2'],
-    },
-  ];
+export default {
+  title: 'MutexGroupTable',
+} satisfies Meta;
 
-  return <MutexGroupTable mutexGroups={mutexGroups} />;
-});
+export function Default() {
+  <MutexGroupTable
+    mutexGroups={[
+      {
+        name: 'group1',
+        lockedBy: 'fleet1/robot1',
+        requestedBy: ['fleet1/robot2', 'fleet2/robot1'],
+      },
+      {
+        name: 'group2',
+        lockedBy: 'fleet1/robot1',
+        requestedBy: ['fleet1/robot2'],
+      },
+    ]}
+  />;
+}

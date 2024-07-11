@@ -7,7 +7,6 @@ describe('Tasks table', () => {
   const tasks: Tasks = {
     isLoading: false,
     data: [],
-    requests: {},
     total: 0,
     page: 1,
     pageSize: 10,
@@ -29,6 +28,7 @@ describe('Tasks table', () => {
         onPageChange={mockAddMoreRows}
         onPageSizeChange={mockAddMoreRows}
         setFilterFields={() => setFilterFields}
+        setSortFields={() => {}}
       />,
     );
   });

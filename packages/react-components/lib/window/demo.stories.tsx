@@ -1,5 +1,5 @@
 import { Typography, useTheme } from '@mui/material';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import { makeLayout } from './test-utils.spec';
 import { Window } from './window';
@@ -7,11 +7,11 @@ import { WindowContainer, WindowContainerProps } from './window-container';
 
 export default {
   title: 'Window/Demo',
-} as Meta;
+} satisfies Meta;
 
 const defaultLayout = makeLayout();
 
-export const Demo: Story<WindowContainerProps> = () => {
+export const Demo: StoryFn<WindowContainerProps> = () => {
   const [layout, setLayout] = React.useState(defaultLayout);
   const [designMode, setDesignMode] = React.useState(true);
   const counter = React.useRef(defaultLayout.length - 1);

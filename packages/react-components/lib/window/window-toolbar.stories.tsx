@@ -1,5 +1,5 @@
 import { IconButton } from '@mui/material';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import OpenInFullIcon from '../icons/OpenInFull';
 import { WindowToolbar, WindowToolbarProps } from './window-toolbar';
@@ -12,9 +12,9 @@ export default {
       defaultValue: 'Example',
     },
   },
-} as Meta;
+} satisfies Meta;
 
-export const Toolbar: Story<WindowToolbarProps> = (args) => {
+export const Toolbar: StoryFn<WindowToolbarProps> = (args) => {
   return (
     <WindowToolbar {...args}>
       <IconButton color="inherit">

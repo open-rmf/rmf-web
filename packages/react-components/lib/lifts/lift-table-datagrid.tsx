@@ -19,7 +19,6 @@ import { LiftControls } from './lift-controls';
 export interface LiftTableData {
   index: number;
   name: string;
-  mode: number;
   currentFloor?: string;
   destinationFloor?: string;
   doorState: number;
@@ -145,8 +144,8 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
                   ? 2
                   : 4
                 : isScreenHeightLessThan800
-                ? 0.4
-                : 2,
+                  ? 0.4
+                  : 2,
             fontWeight: 'bold',
             fontSize: isScreenHeightLessThan800 ? 10 : 16,
             display: 'inline-block',
@@ -179,14 +178,6 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
       width: 90,
       valueGetter: (params: GridValueGetterParams) => params.row.name,
       flex: 1,
-      filterable: true,
-    },
-    {
-      field: 'mode',
-      headerName: 'Mode',
-      width: 90,
-      flex: 1,
-      renderCell: modeState,
       filterable: true,
     },
     {

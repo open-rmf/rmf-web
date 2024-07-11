@@ -32,9 +32,9 @@ describe('TransferList', () => {
     fireEvent.click(root.getByLabelText('move selected right', { selector: 'button' }));
     const newLeft: string[] = spy.calls.mostRecent().args[0];
     const newRight: string[] = spy.calls.mostRecent().args[1];
-    expect(newLeft).toHaveSize(1);
+    expect(newLeft).toHaveLength(1);
     expect(newLeft).not.toContain('one');
-    expect(newRight).toHaveSize(3);
+    expect(newRight).toHaveLength(3);
     expect(newRight).toContain('one');
   });
 });

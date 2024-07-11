@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import { makeTrajectory } from './test-utils.spec';
 import { TrajectoryMarker, TrajectoryMarkerProps } from './trajectory-marker';
@@ -18,11 +18,11 @@ export default {
       },
     },
   },
-} as Meta;
+} satisfies Meta;
 
 const trajectory = makeTrajectory();
 
-export const Basic: Story<Omit<TrajectoryMarkerProps, 'trajectory'>> = (args) => {
+export const Basic: StoryFn<Omit<TrajectoryMarkerProps, 'trajectory'>> = (args) => {
   return (
     <svg viewBox="-2 -2 16 16" width={400} height={400}>
       <TrajectoryMarker trajectory={trajectory} {...args} />

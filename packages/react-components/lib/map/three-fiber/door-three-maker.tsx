@@ -1,8 +1,8 @@
-import React from 'react';
-import { CubeMaker } from './cube-maker';
-import { Door as DoorModel } from 'rmf-models';
-import { Euler } from 'three';
 import { ThreeEvent } from '@react-three/fiber';
+import React from 'react';
+import { Door as DoorModel } from 'rmf-models';
+import { Euler, Mesh } from 'three';
+import { CubeMaker } from './cube-maker';
 
 const distance = (v1_x: number, v1_y: number, v2_x: number, v2_y: number) =>
   Math.hypot(v2_x - v1_x, v2_y - v1_y);
@@ -12,7 +12,7 @@ const midPoint = (v1_x: number, v1_y: number, v2_x: number, v2_y: number) => [
 ];
 
 interface DoorThreeMakerProps {
-  meshRef: React.Ref<THREE.Mesh>;
+  meshRef: React.Ref<Mesh>;
   door: DoorModel;
   height: number;
   color: string;

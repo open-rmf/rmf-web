@@ -1,6 +1,6 @@
-import { Euler, Mesh } from 'three';
-import React from 'react';
 import { MeshProps, ThreeEvent } from '@react-three/fiber';
+import React from 'react';
+import { Euler, Mesh } from 'three';
 
 export interface CubeProps {
   position: number[];
@@ -21,7 +21,7 @@ export const CubeMaker = (
       position={[position[0], position[1], position[2]]}
       rotation={rot}
       scale={[size[0], size[1], size[2]]}
-      ref={meshRef || null}
+      ref={meshRef}
       onClick={(ev: ThreeEvent<MouseEvent>) => onDoorClick && onDoorClick(ev)}
     >
       <planeGeometry />

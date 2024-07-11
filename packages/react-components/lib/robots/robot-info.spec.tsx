@@ -27,7 +27,7 @@ describe('RobotInfo', () => {
         if (!node) {
           return false;
         }
-        const hasText = (node) => node.textContent === new Date(0).toLocaleString();
+        const hasText = (node: Element) => node.textContent === new Date(0).toLocaleString();
         const nodeHasText = hasText(node);
         const childrenDontHaveText = Array.from(node.children).every((child) => !hasText(child));
         return nodeHasText && childrenDontHaveText;

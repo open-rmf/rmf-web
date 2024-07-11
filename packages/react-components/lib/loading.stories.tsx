@@ -1,5 +1,5 @@
 import { Button, Typography } from '@mui/material';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import { Loading, LoadingProps } from './loading';
 
@@ -11,9 +11,9 @@ export default {
       defaultValue: false,
     },
   },
-} as Meta;
+} satisfies Meta;
 
-export const LoadingButton: Story<LoadingProps> = (args) => {
+export const LoadingButton: StoryFn<LoadingProps> = (args) => {
   return (
     <>
       <Button variant="contained" disabled={args.loading}>

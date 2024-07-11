@@ -1,5 +1,5 @@
 import { Button, Paper, Typography } from '@mui/material';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import { ConfirmationDialog, ConfirmationDialogProps } from './confirmation-dialog';
 
@@ -9,9 +9,9 @@ export default {
   argTypes: {
     onClose: { actions: 'close' },
   },
-} as Meta;
+} satisfies Meta;
 
-export const Default: Story<ConfirmationDialogProps> = (args) => {
+export const Default: StoryFn<ConfirmationDialogProps> = (args) => {
   return (
     <ConfirmationDialog
       {...args}

@@ -1,15 +1,15 @@
 import {
+  RenderResult,
   act,
   cleanup,
-  render as render_,
-  RenderResult,
   fireEvent,
+  render as render_,
   waitFor,
 } from '@testing-library/react';
 import React from 'react';
 import { RobotMarker } from './robot-marker';
-import { RobotData } from './robots-overlay';
 import { makeRobotData } from './test-utils.spec';
+import { RobotData } from './three-fiber';
 
 describe('RobotMarker', () => {
   async function render(Component: JSX.Element): Promise<RenderResult> {

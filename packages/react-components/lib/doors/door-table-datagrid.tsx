@@ -12,12 +12,10 @@ import React from 'react';
 import { DoorState } from 'api-client';
 import { DoorMode } from 'rmf-models';
 import { doorModeToString, doorTypeToString } from './door-utils';
-import { HealthStatus, healthStatusToOpMode } from '../utils';
 
 export interface DoorTableData {
   index: number;
   doorName: string;
-  opMode: string;
   levelName: string;
   doorType: number;
   doorState?: DoorState;
@@ -41,49 +39,6 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
     if (onDoorClick) {
       onDoorClick(event, params.row);
     }
-  };
-
-  const OpModeState = (params: GridCellParams): React.ReactNode => {
-    const opModeStateLabelStyle: SxProps = (() => {
-      const unknown = {
-        color: theme.palette.action.disabledBackground,
-      };
-      const online = {
-        color: theme.palette.success.main,
-      };
-      const unstable = {
-        color: theme.palette.warning.main,
-      };
-      const offline = {
-        color: theme.palette.error.main,
-      };
-
-      switch (params.row.opMode) {
-        case HealthStatus.Healthy:
-          return online;
-        case HealthStatus.Unhealthy:
-          return unstable;
-        case HealthStatus.Dead:
-          return offline;
-        default:
-          return unknown;
-      }
-    })();
-
-    return (
-      <Box component="div" sx={opModeStateLabelStyle}>
-        <Typography
-          data-testid="op-mode-state"
-          component="p"
-          sx={{
-            fontWeight: 'bold',
-            fontSize: isScreenHeightLessThan800 ? 10 : 16,
-          }}
-        >
-          {healthStatusToOpMode(params.row.opMode)}
-        </Typography>
-      </Box>
-    );
   };
 
   const DoorState = (params: GridCellParams): React.ReactNode => {
@@ -170,16 +125,6 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
       valueGetter: (params: GridValueGetterParams) => params.row.doorName,
       flex: 1,
       filterable: true,
-    },
-    {
-      field: 'opMode',
-      headerName: 'Op. Mode',
-      width: 150,
-      editable: false,
-      flex: 1,
-      renderCell: OpModeState,
-      filterable: true,
-      sortable: false,
     },
     {
       field: 'levelName',

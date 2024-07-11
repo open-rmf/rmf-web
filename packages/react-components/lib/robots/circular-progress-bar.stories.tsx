@@ -1,5 +1,5 @@
 import { Typography } from '@mui/material';
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import {
   CircularProgressBar as CircularProgressBar_,
@@ -9,9 +9,9 @@ import {
 export default {
   title: 'Robots/Circular Progress Bar',
   component: CircularProgressBar_,
-} as Meta;
+} satisfies Meta;
 
-export const CircularProgressBar: Story<CircularProgressBarProps> = (args) => {
+export const CircularProgressBar: StoryFn<CircularProgressBarProps> = (args) => {
   return (
     <>
       <CircularProgressBar_ {...args}>

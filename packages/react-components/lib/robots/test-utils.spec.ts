@@ -1,6 +1,6 @@
 import type { RobotState } from 'api-client';
 
-export function makeRobot(robotState?: Partial<RobotState>): Required<RobotState> {
+export function makeRobot(robotState?: Partial<RobotState>): RobotState {
   return {
     name: 'test',
     battery: 1,
@@ -9,6 +9,8 @@ export function makeRobot(robotState?: Partial<RobotState>): Required<RobotState
     task_id: 'test_task_id',
     issues: [],
     unix_millis_time: 0,
+    mutex_groups: { locked: [], requesting: [] },
+    commission: { dispatch_tasks: true, direct_tasks: true, idle_behavior: true },
     ...robotState,
   };
 }

@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
 import { SimpleInfo } from '../lib';
 import { styled } from '@mui/material';
@@ -30,9 +30,9 @@ export default {
       name: 'Number Value',
     },
   },
-} as Meta;
+} satisfies Meta;
 
-export const SimpleData: Story = ({
+export const SimpleData: StoryFn = ({
   stringDisplayName,
   stringValue,
   numberDisplayName,
@@ -58,7 +58,7 @@ SimpleData.args = {
   numberValue: 0,
 };
 
-export const Array: Story = (args) => {
+export const Array: StoryFn = (args) => {
   return (
     <InfoCardRoot className={classes.background}>
       <SimpleInfo infoData={[{ name: 'strings', value: ['hello', 'world'] }]} {...args} />
