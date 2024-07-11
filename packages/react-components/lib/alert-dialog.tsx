@@ -1,29 +1,18 @@
-import * as React from 'react';
 import {
   Box,
   Button,
+  Divider,
   LinearProgress,
   LinearProgressProps,
   TextField,
-  Theme,
   Typography,
-  Divider,
-  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { makeStyles, createStyles } from '@mui/styles';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    textField: {
-      background: theme.palette.background.default,
-      pointerEvents: 'none',
-    },
-  }),
-);
+import * as React from 'react';
 
 export interface AlertContent {
   title: string;
@@ -51,6 +40,7 @@ export interface DialogAlertProps {
 }
 
 export const AlertDialog = React.memo((props: DialogAlertProps) => {
+  const theme = useTheme();
   const LinearProgressWithLabel = (props: LinearProgressProps & { value: number }) => {
     return (
       <Box component="div" sx={{ display: 'flex', alignItems: 'center' }}>
@@ -77,15 +67,13 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
               size="small"
               variant="filled"
               sx={{
-                '& .MuiFilledInput-root': {
-                  fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                },
+                background: theme.palette.background.default,
+                pointerEvents: 'none',
               }}
-              InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
-              InputProps={{ readOnly: true, className: classes.textField }}
+              InputProps={{ readOnly: true }}
               fullWidth={true}
               multiline
-              maxRows={isScreenHeightLessThan800 ? 5 : 10}
+              maxRows={10}
               margin="dense"
               value={message.value}
             />
@@ -105,10 +93,8 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
     alertContents,
     backgroundColor,
   } = props;
-  const classes = useStyles();
   const [isOpen, setIsOpen] = React.useState(true);
   const [acknowledged, setAcknowledged] = React.useState(acknowledgedBy !== undefined);
-  const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
 
   return (
     <Dialog
@@ -118,15 +104,12 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
           boxShadow: 'none',
         },
       }}
-      maxWidth={isScreenHeightLessThan800 ? 'xs' : 'sm'}
+      maxWidth="sm"
       fullWidth={true}
       open={isOpen}
       key={title}
     >
-      <DialogTitle
-        align="center"
-        sx={{ fontSize: isScreenHeightLessThan800 ? '1.2rem' : '1.5rem' }}
-      >
+      <DialogTitle align="center" sx={{ fontSize: '1.5rem' }}>
         {title}
       </DialogTitle>
       <Divider />
@@ -135,7 +118,7 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
           <Typography variant="body2" fontWeight="bold" ml={3} mt={1}>
             Task progress
           </Typography>
-          <Box component="div" width={isScreenHeightLessThan800 ? 0.9 : 0.95} ml={3}>
+          <Box component="div" width={0.95} ml={3}>
             <LinearProgressWithLabel value={progress} />
           </Box>
         </>
@@ -151,8 +134,8 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
             disabled={false}
             autoFocus
             sx={{
-              fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
-              padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+              fontSize: '1rem',
+              padding: '6px 12px',
             }}
           >
             Inspect
@@ -165,8 +148,8 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
             disabled={true}
             autoFocus
             sx={{
-              fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
-              padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+              fontSize: '1rem',
+              padding: '6px 12px',
             }}
           >
             {acknowledgedBy ? `Acknowledged by ${acknowledgedBy}` : 'Acknowledged'}
@@ -182,8 +165,8 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
             disabled={false}
             autoFocus
             sx={{
-              fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
-              padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+              fontSize: '1rem',
+              padding: '6px 12px',
             }}
           >
             Acknowledge
@@ -198,8 +181,8 @@ export const AlertDialog = React.memo((props: DialogAlertProps) => {
           }}
           autoFocus
           sx={{
-            fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1rem',
-            padding: isScreenHeightLessThan800 ? '4px 8px' : '6px 12px',
+            fontSize: '1rem',
+            padding: '6px 12px',
           }}
         >
           {acknowledged ? 'Close' : 'Dismiss'}

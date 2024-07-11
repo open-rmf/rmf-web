@@ -1,3 +1,4 @@
+import { ArrowCircleDown, ArrowCircleUp } from '@mui/icons-material';
 import {
   Button,
   styled,
@@ -8,8 +9,10 @@ import {
   TableProps,
   TableRow,
 } from '@mui/material';
-import { ArrowCircleDown, ArrowCircleUp } from '@mui/icons-material';
-import { ApiServerModelsRmfApiTaskStateStatus as Status, TaskState } from 'api-client';
+import {
+  ApiServerModelsRmfApiTaskStateStatus as Status,
+  TaskStateOutput as TaskState,
+} from 'api-client';
 import clsx from 'clsx';
 import React from 'react';
 

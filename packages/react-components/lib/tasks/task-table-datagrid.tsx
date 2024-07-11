@@ -1,33 +1,33 @@
-import {
-  DataGrid,
-  getGridDateOperators,
-  getGridStringOperators,
-  GridColDef,
-  GridEventListener,
-  GridValueGetterParams,
-  MuiEvent,
-  GridRowParams,
-  GridCellParams,
-  GridFilterModel,
-  GridSortModel,
-} from '@mui/x-data-grid';
+import { InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
 import {
   Box,
-  styled,
   Stack,
-  Typography,
-  Tooltip,
-  useMediaQuery,
   SxProps,
   Theme,
+  Tooltip,
+  Typography,
+  styled,
+  useMediaQuery,
 } from '@mui/material';
-import * as React from 'react';
 import {
-  TaskState,
+  DataGrid,
+  GridCellParams,
+  GridColDef,
+  GridEventListener,
+  GridFilterModel,
+  GridRowParams,
+  GridSortModel,
+  GridValueGetterParams,
+  MuiEvent,
+  getGridDateOperators,
+  getGridStringOperators,
+} from '@mui/x-data-grid';
+import {
   ApiServerModelsRmfApiTaskStateStatus as Status,
-  TaskBookingLabel,
+  TaskStateOutput as TaskState,
 } from 'api-client';
-import { InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
+import * as React from 'react';
+import { TaskBookingLabels } from './booking-label';
 import { getTaskBookingLabelFromTaskState } from './task-booking-label-utils';
 
 const classes = {
@@ -96,7 +96,7 @@ export interface Tasks {
 
 interface TaskData {
   state: TaskState;
-  requestLabel: TaskBookingLabel | null;
+  requestLabel: TaskBookingLabels | null;
 }
 
 export interface FilterFields {

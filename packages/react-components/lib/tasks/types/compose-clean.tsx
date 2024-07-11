@@ -1,6 +1,6 @@
 import { Autocomplete, TextField } from '@mui/material';
 import React from 'react';
-import type { TaskBookingLabel } from 'api-client';
+import { TaskBookingLabels } from '../booking-label';
 import { TaskDefinition } from '../create-task';
 
 export const ComposeCleanTaskDefinition: TaskDefinition = {
@@ -43,13 +43,11 @@ export interface ComposeCleanTaskDescription {
 
 export function makeComposeCleanTaskBookingLabel(
   task_description: ComposeCleanTaskDescription,
-): TaskBookingLabel {
+): TaskBookingLabels {
   return {
-    description: {
-      task_definition_id: ComposeCleanTaskDefinition.taskDefinitionId,
-      destination:
-        task_description.phases[0].activity.description.activities[1].description.description.zone,
-    },
+    task_definition_id: ComposeCleanTaskDefinition.taskDefinitionId,
+    destination:
+      task_description.phases[0].activity.description.activities[1].description.description.zone,
   };
 }
 

@@ -1,9 +1,9 @@
-import { isNonEmptyString, isPositiveNumber } from './utils';
 import { Autocomplete, Grid, TextField, useTheme } from '@mui/material';
-import { PositiveIntField } from '../../form-inputs';
 import React from 'react';
-import type { TaskBookingLabel } from 'api-client';
+import { PositiveIntField } from '../../form-inputs';
+import { TaskBookingLabels } from '../booking-label';
 import { TaskDefinition } from '../create-task';
+import { isNonEmptyString, isPositiveNumber } from './utils';
 
 export const DeliveryTaskDefinition: TaskDefinition = {
   taskDefinitionId: 'delivery',
@@ -27,14 +27,12 @@ export interface DeliveryTaskDescription {
 
 export function makeDeliveryTaskBookingLabel(
   task_description: DeliveryTaskDescription,
-): TaskBookingLabel {
+): TaskBookingLabels {
   return {
-    description: {
-      task_definition_id: DeliveryTaskDefinition.taskDefinitionId,
-      pickup: task_description.pickup.place,
-      destination: task_description.dropoff.place,
-      cart_id: task_description.pickup.payload.sku,
-    },
+    task_definition_id: DeliveryTaskDefinition.taskDefinitionId,
+    pickup: task_description.pickup.place,
+    destination: task_description.dropoff.place,
+    cart_id: task_description.pickup.payload.sku,
   };
 }
 

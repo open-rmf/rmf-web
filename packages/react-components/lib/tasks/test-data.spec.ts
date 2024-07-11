@@ -1,4 +1,4 @@
-import type { TaskEventLog, TaskRequest, TaskState } from 'api-client';
+import type { TaskEventLog, TaskRequest, TaskStateOutput as TaskState } from 'api-client';
 
 export function makeTaskState(taskId: string): TaskState {
   const state = JSON.parse(`{

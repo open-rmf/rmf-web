@@ -1,8 +1,8 @@
 import { Autocomplete, Grid, TextField, useMediaQuery, useTheme } from '@mui/material';
 import React from 'react';
-import { isNonEmptyString } from './utils';
-import type { TaskBookingLabel } from 'api-client';
+import { TaskBookingLabels } from '../booking-label';
 import { TaskDefinition } from '../create-task';
+import { isNonEmptyString } from './utils';
 
 export const DeliveryPickupTaskDefinition: TaskDefinition = {
   taskDefinitionId: 'delivery_pickup',
@@ -142,31 +142,27 @@ export interface DeliveryPickupTaskDescription {
 
 export function makeDeliveryPickupTaskBookingLabel(
   task_description: DeliveryPickupTaskDescription,
-): TaskBookingLabel {
+): TaskBookingLabels {
   const pickupDescription =
     task_description.phases[0].activity.description.activities[1].description.description;
   return {
-    description: {
-      task_definition_id: task_description.category,
-      pickup: pickupDescription.pickup_lot,
-      destination: task_description.phases[1].activity.description.activities[0].description,
-      cart_id: pickupDescription.cart_id,
-    },
+    task_definition_id: task_description.category,
+    pickup: pickupDescription.pickup_lot,
+    destination: task_description.phases[1].activity.description.activities[0].description,
+    cart_id: pickupDescription.cart_id,
   };
 }
 
 export function makeDeliveryCustomTaskBookingLabel(
   task_description: DeliveryCustomTaskDescription,
-): TaskBookingLabel {
+): TaskBookingLabels {
   const pickupDescription =
     task_description.phases[0].activity.description.activities[1].description.description;
   return {
-    description: {
-      task_definition_id: task_description.category,
-      pickup: pickupDescription.pickup_zone,
-      destination: task_description.phases[1].activity.description.activities[0].description,
-      cart_id: pickupDescription.cart_id,
-    },
+    task_definition_id: task_description.category,
+    pickup: pickupDescription.pickup_zone,
+    destination: task_description.phases[1].activity.description.activities[0].description,
+    cart_id: pickupDescription.cart_id,
   };
 }
 

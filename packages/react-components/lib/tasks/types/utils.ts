@@ -1,34 +1,37 @@
 import { TaskRequest } from 'api-client';
+import { TaskDefinition, TaskDescription } from '../create-task';
 import {
-  PatrolTaskDefinition,
-  makePatrolTaskShortDescription,
-  makeDefaultPatrolTaskDescription,
-} from './patrol';
-import {
-  DeliveryAreaPickupTaskDefinition,
-  DeliveryPickupTaskDefinition,
-  DeliverySequentialLotPickupTaskDefinition,
-  makeDeliveryPickupTaskShortDescription,
-  makeDeliveryCustomTaskShortDescription,
-  makeDefaultDeliveryCustomTaskDescription,
-  makeDefaultDeliveryPickupTaskDescription,
-} from './delivery-custom';
-import { getTaskBookingLabelFromTaskRequest } from '../task-booking-label-utils';
+  getTaskBookingLabelFromTaskRequest,
+  getTaskDefinitionId,
+} from '../task-booking-label-utils';
 import {
   ComposeCleanTaskDefinition,
   makeComposeCleanTaskShortDescription,
   makeDefaultComposeCleanTaskDescription,
 } from './compose-clean';
 import {
-  DeliveryTaskDefinition,
-  makeDeliveryTaskShortDescription,
-  makeDefaultDeliveryTaskDescription,
-} from './delivery';
-import {
   CustomComposeTaskDefinition,
   makeCustomComposeTaskShortDescription,
 } from './custom-compose';
-import { TaskDefinition, TaskDescription } from '../create-task';
+import {
+  DeliveryTaskDefinition,
+  makeDefaultDeliveryTaskDescription,
+  makeDeliveryTaskShortDescription,
+} from './delivery';
+import {
+  DeliveryAreaPickupTaskDefinition,
+  DeliveryPickupTaskDefinition,
+  DeliverySequentialLotPickupTaskDefinition,
+  makeDefaultDeliveryCustomTaskDescription,
+  makeDefaultDeliveryPickupTaskDescription,
+  makeDeliveryCustomTaskShortDescription,
+  makeDeliveryPickupTaskShortDescription,
+} from './delivery-custom';
+import {
+  PatrolTaskDefinition,
+  makeDefaultPatrolTaskDescription,
+  makePatrolTaskShortDescription,
+} from './patrol';
 
 export function isNonEmptyString(value: string): boolean {
   return value.length > 0;
@@ -64,7 +67,10 @@ export function getShortDescription(
     return rawStringFromJsonRequest(taskRequest);
   }
 
-  const taskDefinitionId = bookingLabel.description.task_definition_id;
+  const taskDefinitionId = getTaskDefinitionId(bookingLabel);
+  if (!taskDefinitionId) {
+    return undefined;
+  }
   switch (taskDefinitionId) {
     case PatrolTaskDefinition.taskDefinitionId:
       return makePatrolTaskShortDescription(taskRequest.description, taskDisplayName);

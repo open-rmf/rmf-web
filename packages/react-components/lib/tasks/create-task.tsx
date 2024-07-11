@@ -34,15 +34,21 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { DatePicker, TimePicker, DateTimePicker } from '@mui/x-date-pickers';
-import type { TaskBookingLabel, TaskFavorite, TaskRequest } from 'api-client';
+import { DatePicker, DateTimePicker, TimePicker } from '@mui/x-date-pickers';
+import type { TaskFavorite, TaskRequest } from 'api-client';
 import React from 'react';
 import { Loading } from '..';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
+import { TaskBookingLabels } from './booking-label';
 import {
+  getTaskBookingLabelFromTaskRequest,
+  getTaskDefinitionId,
+  serializeTaskBookingLabel,
+} from './task-booking-label-utils';
+import {
+  ComposeCleanTaskDefinition,
   ComposeCleanTaskDescription,
   ComposeCleanTaskForm,
-  ComposeCleanTaskDefinition,
   makeComposeCleanTaskBookingLabel,
 } from './types/compose-clean';
 import {
@@ -58,15 +64,15 @@ import {
   makeDeliveryTaskBookingLabel,
 } from './types/delivery';
 import {
-  DeliveryCustomTaskForm,
+  DeliveryAreaPickupTaskDefinition,
   DeliveryCustomTaskDescription,
+  DeliveryCustomTaskForm,
+  DeliveryPickupTaskDefinition,
   DeliveryPickupTaskDescription,
   DeliveryPickupTaskForm,
+  DeliverySequentialLotPickupTaskDefinition,
   makeDeliveryCustomTaskBookingLabel,
   makeDeliveryPickupTaskBookingLabel,
-  DeliveryPickupTaskDefinition,
-  DeliverySequentialLotPickupTaskDefinition,
-  DeliveryAreaPickupTaskDefinition,
 } from './types/delivery-custom';
 import {
   makePatrolTaskBookingLabel,
@@ -75,10 +81,6 @@ import {
   PatrolTaskForm,
 } from './types/patrol';
 import { getDefaultTaskDescription, getTaskRequestCategory } from './types/utils';
-import {
-  getTaskBookingLabelFromTaskRequest,
-  serializeTaskBookingLabel,
-} from './task-booking-label-utils';
 
 export interface TaskDefinition {
   taskDefinitionId: string;
@@ -408,13 +410,10 @@ export function CreateTaskForm({
     requestTask ?? defaultTaskRequest,
   );
   const initialBookingLabel = requestTask ? getTaskBookingLabelFromTaskRequest(requestTask) : null;
-  const [taskDefinitionId, setTaskDefinitionId] = React.useState<string>(
-    initialBookingLabel &&
-      initialBookingLabel.description.task_definition_id &&
-      typeof initialBookingLabel.description.task_definition_id === 'string'
-      ? initialBookingLabel.description.task_definition_id
-      : tasksToDisplay[0].taskDefinitionId,
-  );
+  const [taskDefinitionId, setTaskDefinitionId] = React.useState<string>(() => {
+    const fromLabel = initialBookingLabel && getTaskDefinitionId(initialBookingLabel);
+    return fromLabel || tasksToDisplay[0].taskDefinitionId;
+  });
 
   const [submitting, setSubmitting] = React.useState(false);
   const [formFullyFilled, setFormFullyFilled] = React.useState(requestTask !== undefined || false);
@@ -455,8 +454,8 @@ export function CreateTaskForm({
     ? getTaskBookingLabelFromTaskRequest(requestTask)
     : undefined;
   let existingWarnTime: Date | null = null;
-  if (existingBookingLabel && existingBookingLabel.description.unix_millis_warn_time) {
-    const warnTimeInt = parseInt(existingBookingLabel.description.unix_millis_warn_time as string);
+  if (existingBookingLabel && existingBookingLabel.unix_millis_warn_time) {
+    const warnTimeInt = parseInt(existingBookingLabel.unix_millis_warn_time);
     if (!Number.isNaN(warnTimeInt)) {
       existingWarnTime = new Date(warnTimeInt);
     }
@@ -650,7 +649,7 @@ export function CreateTaskForm({
 
     // Generate booking label for each task
     try {
-      let requestBookingLabel: TaskBookingLabel | null = null;
+      let requestBookingLabel: TaskBookingLabels | null = null;
       switch (taskDefinitionId) {
         case DeliveryPickupTaskDefinition.taskDefinitionId:
           requestBookingLabel = makeDeliveryPickupTaskBookingLabel(request.description);
@@ -682,13 +681,10 @@ export function CreateTaskForm({
       }
 
       if (warnTime !== null) {
-        requestBookingLabel.description.unix_millis_warn_time = `${warnTime.valueOf()}`;
+        requestBookingLabel.unix_millis_warn_time = `${warnTime.valueOf()}`;
       }
 
-      const labelString = serializeTaskBookingLabel(requestBookingLabel);
-      if (labelString) {
-        request.labels = [labelString];
-      }
+      request.labels = serializeTaskBookingLabel(requestBookingLabel);
       console.log(`labels: ${request.labels}`);
     } catch (e) {
       console.error('Failed to generate string for task request label');

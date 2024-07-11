@@ -1,6 +1,6 @@
 import { Grid, TextField, useTheme } from '@mui/material';
 import React from 'react';
-import type { TaskBookingLabel } from 'api-client';
+import { TaskBookingLabels } from '../booking-label';
 import { TaskDefinition } from '../create-task';
 
 export const CustomComposeTaskDefinition: TaskDefinition = {
@@ -11,11 +11,9 @@ export const CustomComposeTaskDefinition: TaskDefinition = {
 
 export type CustomComposeTaskDescription = string;
 
-export function makeCustomComposeTaskBookingLabel(): TaskBookingLabel {
+export function makeCustomComposeTaskBookingLabel(): TaskBookingLabels {
   return {
-    description: {
-      task_definition_id: CustomComposeTaskDefinition.taskDefinitionId,
-    },
+    task_definition_id: CustomComposeTaskDefinition.taskDefinitionId,
   };
 }
 

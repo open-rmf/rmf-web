@@ -14,8 +14,8 @@ import {
 } from '@mui/material';
 import React from 'react';
 import { PositiveIntField } from '../../form-inputs';
+import { TaskBookingLabels } from '../booking-label';
 import { TaskDefinition } from '../create-task';
-import type { TaskBookingLabel } from 'api-client';
 
 export const PatrolTaskDefinition: TaskDefinition = {
   taskDefinitionId: 'patrol',
@@ -30,12 +30,10 @@ export interface PatrolTaskDescription {
 
 export function makePatrolTaskBookingLabel(
   task_description: PatrolTaskDescription,
-): TaskBookingLabel {
+): TaskBookingLabels {
   return {
-    description: {
-      task_definition_id: PatrolTaskDefinition.taskDefinitionId,
-      destination: task_description.places[task_description.places.length - 1],
-    },
+    task_definition_id: PatrolTaskDefinition.taskDefinitionId,
+    destination: task_description.places[task_description.places.length - 1],
   };
 }
 

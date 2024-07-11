@@ -1,5 +1,5 @@
 import { Divider, Grid, Paper, PaperProps, styled, Typography, useTheme } from '@mui/material';
-import type { EventState, TaskEventLog } from 'api-client';
+import type { EventStateOutput as EventState, TaskEventLog } from 'api-client';
 import React from 'react';
 
 type EventStatus = Required<EventState>['status'];

@@ -16,10 +16,10 @@ import {
 import { styled } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import {
-  EventState,
-  Phase,
+  EventStateOutput as EventState,
+  PhaseOutput as Phase,
   ApiServerModelsRmfApiTaskStateStatus as Status,
-  TaskState,
+  TaskStateOutput as TaskState,
 } from 'api-client';
 import React from 'react';
 

@@ -1,5 +1,5 @@
 import { Button, Divider, Grid, styled, Typography, useTheme } from '@mui/material';
-import type { TaskState } from 'api-client';
+import type { TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
 import { CircularProgressBar } from './circular-progress-bar';
 import { LinearProgressBar } from './linear-progress-bar';
