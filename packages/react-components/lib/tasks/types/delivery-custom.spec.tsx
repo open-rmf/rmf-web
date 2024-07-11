@@ -489,7 +489,7 @@ describe('Custom deliveries', () => {
                     "unix_millis_action_duration_estimate": 60000,
                     "category": "delivery_pickup",
                     "description": {
-                      "cart_id": "test_first_cart_id",
+                      "cart_id": "",
                       "pickup_lot": "test_first_pickup_lot"
                     }
                   }
@@ -580,7 +580,7 @@ describe('Custom deliveries', () => {
                     "unix_millis_action_duration_estimate": 60000,
                     "category": "delivery_pickup",
                     "description": {
-                      "cart_id": "test_second_cart_id",
+                      "cart_id": "",
                       "pickup_lot": "test_second_pickup_lot"
                     }
                   }
