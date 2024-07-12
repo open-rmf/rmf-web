@@ -1,26 +1,32 @@
 /* This is a generated file, do not edit */
 
-import { DispatchRequest } from '../../rmf_task_msgs/msg/DispatchRequest';
-
 export class DispatchAck {
   static readonly FullTypeName = 'rmf_task_msgs/msg/DispatchAck';
 
-  dispatch_request: DispatchRequest;
+  dispatch_id: number;
   success: boolean;
+  errors: string[];
 
   constructor(fields: Partial<DispatchAck> = {}) {
-    this.dispatch_request = fields.dispatch_request || new DispatchRequest();
+    this.dispatch_id = fields.dispatch_id || 0;
     this.success = fields.success || false;
+    this.errors = fields.errors || [];
   }
 
   static validate(obj: Record<string, unknown>): void {
-    try {
-      DispatchRequest.validate(obj['dispatch_request'] as Record<string, unknown>);
-    } catch (e) {
-      throw new Error('in "dispatch_request":\n  ' + (e as Error).message);
+    if (typeof obj['dispatch_id'] !== 'number') {
+      throw new Error('expected "dispatch_id" to be "number"');
     }
     if (typeof obj['success'] !== 'boolean') {
       throw new Error('expected "success" to be "boolean"');
+    }
+    if (!Array.isArray(obj['errors'])) {
+      throw new Error('expected "errors" to be an array');
+    }
+    for (const [i, v] of obj['errors'].entries()) {
+      if (typeof v !== 'string') {
+        throw new Error(`expected index ${i} of "errors" to be "string"`);
+      }
     }
   }
 }
@@ -28,12 +34,14 @@ export class DispatchAck {
 /*
 # This message is published by the fleet adapter in response to a
 # DispatchRequest message. It indicates whether the requested task addition or
-# cancellation was successful. 
+# cancellation was successful.
 
-# The DispatchRequest message received by the Fleet Adapter
-DispatchRequest dispatch_request
+# The ID of the DispatchRequest that is being responded to
+uint64 dispatch_id
 
 # True if the addition or cancellation operation was successful
 bool success
+
+string[] errors
 
 */

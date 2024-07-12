@@ -25,7 +25,7 @@
     "@emotion/styled": "^11.9.3",
     "@fontsource/roboto": "^4.3.0",
     "@mui/icons-material": "^5.8.3",
-    "@mui/lab": "5.0.0-alpha.86",
+    "@mui/lab": "5.0.0-alpha.172",
     "api-client": "workspace:*",
     "eventemitter3": "^4.0.7",
     "keycloak-js": "^11.0.2"

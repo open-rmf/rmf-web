@@ -1,4 +1,5 @@
-import { act, renderHook, RenderHookResult } from '@testing-library/react';
+import { renderHook, RenderHookResult } from '@testing-library/react';
+import { act } from 'react';
 import { StackNavigatorDispatch, useStackNavigator } from '../lib';
 
 describe('useStackNavigator', () => {

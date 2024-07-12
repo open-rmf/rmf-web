@@ -33,24 +33,22 @@ const classes = {
   timelineRoot: 'timeline-root',
 };
 
-const StyledTimeLine = styled((props: TimeLinePropsWithRef) => <Timeline {...props} />)(
-  ({ theme }) => ({
-    [`& .${classes.paper}`]: {
-      padding: theme.spacing(1),
-      marginTop: theme.spacing(1),
-      width: '200px',
-      overflow: 'auto',
-      display: 'inline-block',
-      maxHeight: '95%',
-    },
-    [`& .${classes.secondaryTail}`]: {
-      backgroundColor: theme.palette.secondary.main,
-    },
-    [`&.${classes.timelineRoot}`]: {
-      padding: '6px 0px',
-    },
-  }),
-);
+const StyledTimeLine = styled(Timeline)(({ theme }) => ({
+  [`& .${classes.paper}`]: {
+    padding: theme.spacing(1),
+    marginTop: theme.spacing(1),
+    width: '200px',
+    overflow: 'auto',
+    display: 'inline-block',
+    maxHeight: '95%',
+  },
+  [`& .${classes.secondaryTail}`]: {
+    backgroundColor: theme.palette.secondary.main,
+  },
+  [`&.${classes.timelineRoot}`]: {
+    padding: '6px 0px',
+  },
+}));
 
 function NestedEvents(
   eventStates: { [key: string]: EventState } | undefined | null,

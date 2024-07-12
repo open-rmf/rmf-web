@@ -245,6 +245,7 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
             sortModel: [{ field: 'name', sort: 'asc' }],
           },
         }}
+        disableVirtualization={true}
       />
     </div>
   );

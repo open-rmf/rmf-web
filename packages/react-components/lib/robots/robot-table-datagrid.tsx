@@ -183,6 +183,7 @@ export function RobotDataGridTable({ onRobotClick, robots }: RobotDataGridTableP
           sortModel: [{ field: 'name', sort: 'asc' }],
         },
       }}
+      disableVirtualization={true}
     />
   );
 }

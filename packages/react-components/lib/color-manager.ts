@@ -1,3 +1,6 @@
+// FIXME(koonpeng): 'crc' and 'node-vibrant' are designed for node,
+// although the features that we use works on the browser, importing these causes
+// typescript to import @types/node, causing some type inaccuracies in the codebase.
 import { crc32 } from 'crc';
 import Vibrant from 'node-vibrant';
 import React from 'react';

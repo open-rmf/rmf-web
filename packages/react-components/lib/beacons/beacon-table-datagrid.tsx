@@ -131,6 +131,7 @@ export function BeaconDataGridTable({ beacons }: BeaconDataGridTableProps): JSX.
       localeText={{
         noRowsLabel: 'No beacons available.',
       }}
+      disableVirtualization={true}
     />
   );
 }

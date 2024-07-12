@@ -20,10 +20,7 @@ rmf_server_ver=$(getVersion .)
 
 cat << EOF > lib/version.ts
 // THIS FILE IS GENERATED
-import { version as rmfModelVer } from 'rmf-models';
-
 export const version = {
-  rmfModels: rmfModelVer,
   rmfServer: '$rmf_server_ver',
   openapiGenerator: '$openapi_generator_ver',
 };

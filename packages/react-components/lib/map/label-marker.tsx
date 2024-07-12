@@ -207,7 +207,7 @@ const StyledLabelContainer = styled((props: LabelContainerProps) => <LabelContai
   }),
 );
 
-const Text: React.FC<React.PropsWithRef<React.SVGProps<SVGTextElement>>> = React.forwardRef(
+const Text = React.forwardRef(
   ({ children, ...otherProps }: React.SVGProps<SVGTextElement>, ref: React.Ref<SVGTextElement>) => {
     return (
       <text

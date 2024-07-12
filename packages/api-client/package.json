@@ -15,7 +15,6 @@
   "dependencies": {
     "@types/debug": "^4.1.5",
     "debug": "^4.2.0",
-    "rmf-models": "workspace:*",
     "socket.io-client": "^3.1.3"
   },
   "devDependencies": {

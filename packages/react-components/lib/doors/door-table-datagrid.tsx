@@ -193,6 +193,7 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
             sortModel: [{ field: 'doorName', sort: 'asc' }],
           },
         }}
+        disableVirtualization={true}
       />
     </div>
   );
