@@ -5,13 +5,12 @@ import {
   CircularProgress,
   createTheme,
   CssBaseline,
-  GlobalStyles,
   Grid,
   Snackbar,
 } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import React from 'react';
-import { rmfDark, rmfDarkLeaflet, rmfLight } from 'react-components';
+import { rmfDark, rmfLight } from 'react-components';
 import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
 import { AppController, AppControllerContext, SettingsContext } from './app-contexts';
 import AppBar from './appbar';
@@ -84,7 +83,6 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {settings.themeMode === ThemeMode.RmfDark && <GlobalStyles styles={rmfDarkLeaflet} />}
       {openLoadingBackdrop && (
         <Backdrop
           sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}

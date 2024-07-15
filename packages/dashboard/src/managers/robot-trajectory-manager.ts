@@ -52,6 +52,17 @@ export interface TrajectoryResponse {
   error?: string;
 }
 
+export interface TrajectoryData extends React.PropsWithRef<{}> {
+  trajectory: Trajectory;
+  color: string;
+  conflict?: boolean;
+  loopAnimation?: boolean;
+  /**
+   * default: 1
+   */
+  animationScale?: number;
+}
+
 export type Conflict = number[];
 
 export interface RobotTrajectoryManager {
