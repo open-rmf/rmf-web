@@ -3,8 +3,25 @@ import { LiftState } from 'api-client';
 import { Text, Line } from '@react-three/drei';
 import { BufferGeometry, BufferAttribute, Vector3, Euler } from 'three';
 import { LiftState as RmfLiftState } from 'rmf-models';
-import { getLiftModeText } from '../lift-marker';
 import { ThreeEvent } from '@react-three/fiber';
+
+// Gets the text to insert to the lift, the text depend on the current mode, motion state and the
+// current and destination floor of the lift.
+export const getLiftModeText = (liftState: LiftState): string => {
+  if (!liftState.current_mode) {
+    return 'UNKNOWN';
+  }
+  switch (liftState.current_mode) {
+    case RmfLiftState.MODE_FIRE:
+      return 'FIRE!';
+    case RmfLiftState.MODE_EMERGENCY:
+      return 'EMERGENCY!';
+    case RmfLiftState.MODE_OFFLINE:
+      return 'OFFLINE';
+    default:
+      return 'NORMAL';
+  }
+};
 
 interface LiftMakerProps {
   x: number;

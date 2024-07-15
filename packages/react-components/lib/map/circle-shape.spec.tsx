@@ -2,8 +2,19 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { CircleShape } from './circle-shape';
 import { Euler, Vector3 } from 'three';
-import { makeRobotData } from '../test-utils.spec';
+import { RobotData } from './robot-three-maker';
 import { Canvas } from '@react-three/fiber';
+
+export function makeRobotData(robot: Partial<RobotData> = {}): RobotData {
+  return {
+    fleet: 'test_fleet',
+    name: 'test_robot',
+    model: 'test_model',
+    footprint: 1,
+    color: '#00a000',
+    ...robot,
+  };
+}
 
 describe('CircleShape', () => {
   it('should render a circle and a line correctly', () => {
