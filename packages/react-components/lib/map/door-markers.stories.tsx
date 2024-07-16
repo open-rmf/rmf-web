@@ -1,7 +1,8 @@
 import { Meta, StoryFn } from '@storybook/react';
 import type { DoorState } from 'api-client';
 import React from 'react';
-import { Door as RmfDoor, DoorMode as RmfDoorMode } from 'rmf-models';
+import { Door as RmfDoor } from 'rmf-models/ros/rmf_building_map_msgs/msg';
+import { DoorMode as RmfDoorMode } from 'rmf-models/ros/rmf_door_msgs/msg';
 import { makeDoorState } from '../doors/test-utils.spec';
 import { DoorMarker } from './door-marker';
 

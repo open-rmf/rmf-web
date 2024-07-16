@@ -1,4 +1,7 @@
-import { LiftRequest as RmfLiftRequest, LiftState as RmfLiftState } from 'rmf-models';
+import {
+  LiftRequest as RmfLiftRequest,
+  LiftState as RmfLiftState,
+} from 'rmf-models/ros/rmf_lift_msgs/msg';
 
 export function liftModeToString(liftMode?: number): string {
   if (liftMode === undefined) {

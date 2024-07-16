@@ -2,7 +2,7 @@ import React from 'react';
 import { LiftState } from 'api-client';
 import { Text, Line } from '@react-three/drei';
 import { BufferGeometry, BufferAttribute, Vector3, Euler } from 'three';
-import { LiftState as RmfLiftState } from 'rmf-models';
+import { LiftState as RmfLiftState } from 'rmf-models/ros/rmf_lift_msgs/msg';
 import { getLiftModeText } from '../lift-marker';
 import { ThreeEvent } from '@react-three/fiber';
 

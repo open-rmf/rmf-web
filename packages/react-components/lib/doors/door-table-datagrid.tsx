@@ -10,7 +10,7 @@ import {
 import { Box, Button, SxProps, Typography, useTheme, useMediaQuery } from '@mui/material';
 import React from 'react';
 import { DoorState } from 'api-client';
-import { DoorMode } from 'rmf-models';
+import { DoorMode } from 'rmf-models/ros/rmf_door_msgs/msg';
 import { doorModeToString, doorTypeToString } from './door-utils';
 
 export interface DoorTableData {

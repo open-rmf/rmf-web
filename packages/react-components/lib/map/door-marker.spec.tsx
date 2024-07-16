@@ -1,6 +1,6 @@
 import { cleanup, render, fireEvent } from '@testing-library/react';
 import React from 'react';
-import { Door as RmfDoor } from 'rmf-models';
+import { Door as RmfDoor } from 'rmf-models/ros/rmf_building_map_msgs/msg';
 import { allDoorModes, allDoorTypes } from '../doors/test-utils.spec';
 import { DoorMarker } from './door-marker';
 

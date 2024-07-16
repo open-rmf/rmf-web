@@ -1,5 +1,5 @@
 import { ApiServerModelsRmfApiRobotStateStatus as Status2 } from 'api-client';
-import { RobotMode as RmfRobotMode } from 'rmf-models';
+import { RobotMode as RmfRobotMode } from 'rmf-models/ros/rmf_fleet_msgs/msg';
 
 /**
  * Returns a uniquely identifiable string representing a robot.

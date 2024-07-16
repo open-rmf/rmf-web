@@ -1,6 +1,6 @@
 import { ThreeEvent } from '@react-three/fiber';
 import React from 'react';
-import { Door as DoorModel } from 'rmf-models';
+import { Door as DoorModel } from 'rmf-models/ros/rmf_building_map_msgs/msg';
 import { Euler, Mesh } from 'three';
 import { CubeMaker } from './cube-maker';
 

@@ -2,7 +2,7 @@ import { styled } from '@mui/material';
 import type { LiftState } from 'api-client';
 import clsx from 'clsx';
 import React from 'react';
-import { LiftState as RmfLiftState } from 'rmf-models';
+import { LiftState as RmfLiftState } from 'rmf-models/ros/rmf_lift_msgs/msg';
 
 // Gets the text to insert to the lift, the text depend on the current mode, motion state and the
 // current and destination floor of the lift.
