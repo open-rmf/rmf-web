@@ -6,25 +6,14 @@ import {
   Divider,
   TextField,
   useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { RmfAppContext } from './rmf-app';
 import { getApiErrorMessage } from './utils';
 import { doorStateToString, liftModeToString, LiftTableData, base } from 'react-components';
 import { Lift } from 'api-client';
-import { LiftState as RmfLiftState } from 'rmf-models';
-import { makeStyles, createStyles } from '@mui/styles';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    textField: {
-      background: theme.palette.background.default,
-      '&:hover': {
-        backgroundColor: theme.palette.background.default,
-      },
-    },
-  }),
-);
+import { LiftState as RmfLiftState } from 'rmf-models/ros/rmf_lift_msgs/msg';
 
 interface LiftSummaryProps {
   onClose: () => void;
@@ -33,18 +22,17 @@ interface LiftSummaryProps {
 
 export const LiftSummary = ({ onClose, lift }: LiftSummaryProps): JSX.Element => {
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
-  const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
   const [liftData, setLiftData] = React.useState<LiftTableData>({
     index: 0,
     name: '',
-    mode: RmfLiftState.MODE_UNKNOWN,
     currentFloor: '',
     destinationFloor: '',
     doorState: 0,
     motionState: 0,
     sessionId: '',
     lift: lift,
+    liftState: undefined,
   });
 
   React.useEffect(() => {
@@ -58,7 +46,6 @@ export const LiftSummary = ({ onClose, lift }: LiftSummaryProps): JSX.Element =>
           setLiftData({
             index: -1,
             name: lift.name,
-            mode: liftState.current_mode,
             currentFloor: liftState.current_floor,
             destinationFloor: liftState.destination_floor,
             doorState: liftState.door_state,
@@ -77,6 +64,9 @@ export const LiftSummary = ({ onClose, lift }: LiftSummaryProps): JSX.Element =>
   }, [rmf, lift]);
 
   const [isOpen, setIsOpen] = React.useState(true);
+
+  const theme = useTheme();
+
   return (
     <Dialog
       PaperProps={{
@@ -138,7 +128,7 @@ export const LiftSummary = ({ onClose, lift }: LiftSummaryProps): JSX.Element =>
                 id="standard-size-small"
                 size="small"
                 variant="filled"
-                InputProps={{ readOnly: true, className: classes.textField }}
+                InputProps={{ readOnly: true }}
                 fullWidth={true}
                 multiline
                 maxRows={4}
@@ -147,6 +137,10 @@ export const LiftSummary = ({ onClose, lift }: LiftSummaryProps): JSX.Element =>
                 sx={{
                   '& .MuiFilledInput-root': {
                     fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                  },
+                  background: theme.palette.background.default,
+                  '&:hover': {
+                    backgroundColor: theme.palette.background.default,
                   },
                 }}
               />
