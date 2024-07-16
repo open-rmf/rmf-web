@@ -5,7 +5,7 @@ import * as {{ pkg }} from '../../{{ pkg }}';
 {% endfor %}
 
 export class {{ msg.name }} {
-  static readonly FullTypeName = '{{ msg.full_type_name }}';
+  static readonly FullTypeName = '{{ msg.type_name }}';
 
 {% for const in msg.constants %}
   static readonly {{ const.name }} = {{ const.value }};
@@ -13,9 +13,9 @@ export class {{ msg.name }} {
 
 {% for m in msg.members %}
 {% if m.type.is_typed_array %}
-  {{ m.name }}: {{ m.type.full_type }} | number[];
+  {{ m.name }}: {{ m.type.type }} | number[];
 {% else %}
-  {{ m.name }}: {{ m.type.full_type }};
+  {{ m.name }}: {{ m.type.type }};
 {% endif %}
 {% endfor %}
 
@@ -29,8 +29,8 @@ export class {{ msg.name }} {
 {% for m in msg.members %}
 {% if m.type.is_array %}
 {% if m.type.is_typed_array %}
-    if (!(obj['{{ m.name }}'] instanceof {{ m.type.full_type }}) && !Array.isArray(obj['{{ m.name }}'])) {
-      throw new Error('expected "{{ m.name }}" to be "{{ m.type.full_type }}" or an array');
+    if (!(obj['{{ m.name }}'] instanceof {{ m.type.type }}) && !Array.isArray(obj['{{ m.name }}'])) {
+      throw new Error('expected "{{ m.name }}" to be "{{ m.type.type }}" or an array');
     }
 {% else %}
     if (!Array.isArray(obj['{{ m.name }}'])) {
@@ -53,18 +53,20 @@ export class {{ msg.name }} {
           throw new Error(`expected index ${i} of "{{ m.name }}" to be "number"`);
         }
       }
+    } else if (!(obj['{{ m.name }}'] instanceof {{ m.type.type }})) {
+      throw new Error('"{{ m.name }}" must be either an array of number or {{ m.type.type }}');
     }
 {% else %}
-{% if m.type.is_primitive %}
+{% if m.type.elem_type.is_primitive %}
     for (const [i, v] of obj['{{ m.name }}'].entries()) {
-      if (typeof v !== '{{ m.type.element_type.full_type }}') {
-        throw new Error(`expected index ${i} of "{{ m.name }}" to be "{{ m.type.element_type.full_type }}"`);
+      if (typeof v !== '{{ m.type.elem_type.type }}') {
+        throw new Error(`expected index ${i} of "{{ m.name }}" to be "{{ m.type.elem_type.type }}"`);
       }
     }
 {% else %}
     for (const [i, v] of obj['{{ m.name }}'].entries()) {
       try {
-        {{ m.type.elem_type.full_type }}.validate(v)
+        {{ m.type.elem_type.type }}.validate(v)
       } catch (e) {
         throw new Error(`in index ${i} of "{{ m.name }}":\n  ` + (e as Error).message);
       }
@@ -73,12 +75,12 @@ export class {{ msg.name }} {
 {% endif %}
 {% else %}
 {% if m.type.is_primitive %}
-    if (typeof obj['{{ m.name }}'] !== '{{ m.type.full_type }}') {
-      throw new Error('expected "{{ m.name }}" to be "{{ m.type.full_type }}"');
+    if (typeof obj['{{ m.name }}'] !== '{{ m.type.type }}') {
+      throw new Error('expected "{{ m.name }}" to be "{{ m.type.type }}"');
     }
 {% else %}
     try {
-      {{ m.type.full_type }}.validate(obj['{{ m.name }}'] as Record<string, unknown>);
+      {{ m.type.type }}.validate(obj['{{ m.name }}'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "{{ m.name }}":\n  ' + (e as Error).message);
     }

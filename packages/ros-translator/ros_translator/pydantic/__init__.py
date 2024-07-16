@@ -151,12 +151,6 @@ def generate_modules(pkgs: Sequence[str], outdir: str):
         pkg_outdir = joinp(outdir, pkg_index.pkg_name)
         makedirs(pkg_outdir, exist_ok=True)
         generate_init(pkg_index.root_ns, outdir)
-        # with open(joinp(pkg_outdir, "__init__.py"), "w", encoding="utf-8") as f:
-        #     for msg in (
-        #         roslib.get_message(msg_type)
-        #         for msg_type, _ in pkg_index.root_ns.all_messages()
-        #     ):
-        #         f.write(f"from .{msg.name} import {msg.name}\n")
         generate_messages(roslib, pkg_index.pkg_name, outdir)
 
 

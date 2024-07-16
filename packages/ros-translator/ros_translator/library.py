@@ -238,8 +238,10 @@ class RosLibrary(Generic[TypeT]):
             idl.response_message.structure.namespaced_type
         )
         dependencies = set(
-            *self._get_msg_dependencies(idl.request_message),
-            *self._get_msg_dependencies(idl.response_message),
+            (
+                *self._get_msg_dependencies(idl.request_message),
+                *self._get_msg_dependencies(idl.response_message),
+            )
         )
         return Service(
             name=idl.namespaced_type.name,

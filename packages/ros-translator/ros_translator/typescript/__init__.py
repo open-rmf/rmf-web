@@ -5,7 +5,7 @@ from os.path import join as joinp
 from typing import Sequence
 
 from jinja2 import Environment, FileSystemLoader
-from ros_translator.library import Message, RosLibrary, Service
+from ros_translator.library import Message, Namespace, RosLibrary, Service
 from rosidl_parser.definition import (
     AbstractSequence,
     AbstractString,
@@ -84,7 +84,6 @@ TYPED_ARRAY_TYPES = {
 class JsType:
     def __init__(self, ros_type: AbstractType):
         self.type: str
-        self.full_type: str
         self.elem_type: JsType
         self.ros_type = ros_type
         self.is_primitive: bool = False
@@ -96,29 +95,25 @@ class JsType:
 
         if isinstance(ros_type, BasicType):
             self.type = PRIMITIVE_TYPES[ros_type.typename]
-            self.full_type = self.type
             self.is_primitive = True
             self.default_value = PRIMITIVE_TYPES_DEFAULT_VALUES[ros_type.typename]
         elif isinstance(ros_type, AbstractString):
             self.type = "string"
-            self.full_type = self.type
             self.is_primitive = True
             self.default_value = "''"
         elif isinstance(ros_type, NamespacedType):
-            self.type = ros_type.name
-            self.full_type = ".".join(ros_type.namespaces) + f".{ros_type.name}"
-            self.default_value = f"new {self.full_type}()"
+            self.type = ".".join(ros_type.namespaces) + f".{ros_type.name}"
+            self.default_value = f"new {self.type}()"
         elif isinstance(ros_type, AbstractSequence) or isinstance(ros_type, Array):
             self.is_array = True
             self.elem_type = JsType(ros_type.value_type)
             if isinstance(self.elem_type.ros_type, BasicType):
                 self.type = TYPED_ARRAY_TYPES[self.elem_type.ros_type.typename]
                 self.is_typed_array = True
-                self.default_value = f"new {self.type}()"
+                self.default_value = f"new {self.type}(0)"
             else:
-                self.type = f"Array<{self.elem_type.full_type}>"
+                self.type = f"Array<{self.elem_type.type}>"
                 self.default_value = "[]"
-            self.full_type = self.type
             if isinstance(ros_type, BoundedSequence):
                 self.is_bounded = True
                 self.array_size = ros_type.maximum_size
@@ -144,6 +139,21 @@ def generate_service(srv: Service, dstdir: str):
     template.stream(srv=srv).dump(output_fpath)
 
 
+def generate_index(namespace: Namespace, dstdir: str):
+    with open(joinp(dstdir, namespace.full_name, "index.ts"), "w") as f:
+        for m in namespace.messages.values():
+            name = m.structure.namespaced_type.name
+            f.write(f"export * from './{name}';\n")
+        for s in namespace.services.values():
+            name = s.namespaced_type.name
+            f.write(f"export * from './{name}';\n")
+        for n in namespace.namespaces.values():
+            f.write(f"export * as {n.name} from './{n.name}';\n")
+
+    for n in namespace.namespaces.values():
+        generate_index(n, dstdir)
+
+
 def generate_modules(pkgs: Sequence[str], dstdir: str):
     roslib = RosLibrary(type_processor=JsType)
     all_pkgs = set((*pkgs, *roslib.get_all_package_dependencies(*pkgs)))
@@ -165,25 +175,12 @@ def generate_modules(pkgs: Sequence[str], dstdir: str):
     for srv in all_services:
         generate_service(srv, dstdir)
 
-
-def generate_index(dstdir: str):
-    for dirpath, dirnames, filenames in os.walk(dstdir):
-        with open(joinp(dirpath, "index.ts"), mode="w") as f:
-            f.write(
-                "\n".join(
-                    f"export * from './{os.path.splitext(m)[0]}'"
-                    for m in filenames
-                    if m != "index.ts"
-                )
-            )
-            f.write("\n\n")
-            f.write("\n".join(f"export * as {m} from './{m}'" for m in dirnames))
-            f.write("\n")
+    print("Generating index")
+    for p in all_pkg_index:
+        generate_index(p.root_ns, dstdir)
 
 
 def generate(pkgs: Sequence[str], outdir: str):
     print("Generating typescript interfaces")
     generate_modules(pkgs, outdir)
-    print("Generating index")
-    generate_index(outdir)
     print("Successfully generated typings")
