@@ -1,5 +1,6 @@
 import React from 'react';
-import * as RmfModels from 'rmf-models';
+import { DispenserState as RmfDispenserState } from 'rmf-models/ros/rmf_dispenser_msgs/msg';
+import { IngestorState as RmfIngestorState } from 'rmf-models/ros/rmf_ingestor_msgs/msg';
 import { FleetState, SioClient, Ingestor, Dispenser, Subscription } from 'api-client';
 import { RmfIngress } from '../components/rmf-app/rmf-ingress';
 
@@ -45,7 +46,7 @@ export const useFleetStateRef = (sioClient: SioClient | undefined, fleets: Fleet
 };
 
 export const useIngestorStatesRef = (sioClient: SioClient | undefined, ingestors: Ingestor[]) => {
-  const ingestorStatesRef = React.useRef<Record<string, RmfModels.IngestorState>>({});
+  const ingestorStatesRef = React.useRef<Record<string, RmfIngestorState>>({});
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = ingestors.map((d) =>
@@ -65,7 +66,7 @@ export const useDispenserStatesRef = (
   sioClient: SioClient | undefined,
   dispensers: Dispenser[],
 ) => {
-  const dispenserStatesRef = React.useRef<Record<string, RmfModels.DispenserState>>({});
+  const dispenserStatesRef = React.useRef<Record<string, RmfDispenserState>>({});
   React.useEffect(() => {
     if (!sioClient) return;
     const subs = dispensers.map((d) =>

@@ -8,12 +8,12 @@ import {
   Divider,
   TextField,
   useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { makeStyles, createStyles } from '@mui/styles';
 import {
   ApiServerModelsRmfApiTaskStateStatus as Status,
   TaskBookingLabel,
@@ -23,17 +23,6 @@ import { base, getTaskBookingLabelFromTaskState } from 'react-components';
 import { TaskInspector } from './task-inspector';
 import { RmfAppContext } from '../rmf-app';
 import { TaskCancelButton } from './task-cancellation';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    textField: {
-      background: theme.palette.background.default,
-      '&:hover': {
-        backgroundColor: theme.palette.background.default,
-      },
-    },
-  }),
-);
 
 const LinearProgressWithLabel = (props: LinearProgressProps & { value: number }) => {
   return (
@@ -77,7 +66,6 @@ export interface TaskSummaryProps {
 
 export const TaskSummary = React.memo((props: TaskSummaryProps) => {
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
-  const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
 
   const { onClose, task } = props;
@@ -153,6 +141,8 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
       },
     ];
 
+    const theme = useTheme();
+
     return (
       <>
         {contents.map((message, index) => (
@@ -162,7 +152,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
               id="standard-size-small"
               size="small"
               variant="filled"
-              InputProps={{ readOnly: true, className: classes.textField }}
+              InputProps={{ readOnly: true }}
               fullWidth={true}
               multiline
               maxRows={4}
@@ -171,6 +161,10 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
               sx={{
                 '& .MuiFilledInput-root': {
                   fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                },
+                background: theme.palette.background.default,
+                '&:hover': {
+                  backgroundColor: theme.palette.background.default,
                 },
               }}
             />

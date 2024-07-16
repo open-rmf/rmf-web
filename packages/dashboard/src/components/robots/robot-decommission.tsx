@@ -13,18 +13,7 @@ import { RobotState } from 'api-client';
 import React from 'react';
 import { AppControllerContext } from '../app-contexts';
 import { RmfAppContext } from '../rmf-app';
-import { makeStyles, createStyles } from '@mui/styles';
 import { ConfirmationDialog } from 'react-components';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    enableHover: {
-      '&.Mui-disabled': {
-        pointerEvents: 'auto',
-      },
-    },
-  }),
-);
 
 export interface RobotDecommissionButtonProp extends Omit<ButtonProps, 'onClick' | 'autoFocus'> {
   fleet: string;
@@ -36,7 +25,6 @@ export function RobotDecommissionButton({
   robotState,
   ...otherProps
 }: RobotDecommissionButtonProp): JSX.Element {
-  const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
   const appController = React.useContext(AppControllerContext);
   const [reassignTasks, setReassignTasks] = React.useState(true);
@@ -163,7 +151,15 @@ export function RobotDecommissionButton({
         </Button>
       ) : (
         <Tooltip title={`Robot from fleet ${fleet} cannot be decommissioned/recommissioned.`}>
-          <Button disabled className={classes['enableHover']} {...otherProps}>
+          <Button
+            disabled
+            sx={{
+              '&.Mui-disabled': {
+                pointerEvents: 'auto',
+              },
+            }}
+            {...otherProps}
+          >
             {'Decommission'}
           </Button>
         </Tooltip>
