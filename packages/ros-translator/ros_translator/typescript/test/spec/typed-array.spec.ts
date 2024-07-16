@@ -1,4 +1,4 @@
-import { TypedArray } from '../out';
+import { TypedArray } from '../out/ros_translator_test_msgs/msg/TypedArray';
 
 it('success with typed array', () => {
   expect(() =>

@@ -1,17 +1,17 @@
 /* This is a generated file, do not edit */
 
-import { SpeedLimitedLane } from '../../rmf_fleet_msgs/msg/SpeedLimitedLane';
+import * as rmf_fleet_msgs from '../../rmf_fleet_msgs';
 
 export class LaneStates {
-  static readonly FullTypeName = 'rmf_fleet_msgs/msg/LaneStates';
+  static readonly FullTypeName = '';
 
   fleet_name: string;
   closed_lanes: BigUint64Array | number[];
-  speed_limits: SpeedLimitedLane[];
+  speed_limits: Array<rmf_fleet_msgs.msg.SpeedLimitedLane>;
 
   constructor(fields: Partial<LaneStates> = {}) {
     this.fleet_name = fields.fleet_name || '';
-    this.closed_lanes = fields.closed_lanes || [];
+    this.closed_lanes = fields.closed_lanes || new BigUint64Array(0);
     this.speed_limits = fields.speed_limits || [];
   }
 
@@ -28,13 +28,15 @@ export class LaneStates {
           throw new Error(`expected index ${i} of "closed_lanes" to be "number"`);
         }
       }
+    } else if (!(obj['closed_lanes'] instanceof BigUint64Array)) {
+      throw new Error('"closed_lanes" must be either an array of number or BigUint64Array');
     }
     if (!Array.isArray(obj['speed_limits'])) {
       throw new Error('expected "speed_limits" to be an array');
     }
     for (const [i, v] of obj['speed_limits'].entries()) {
       try {
-        SpeedLimitedLane.validate(v);
+        rmf_fleet_msgs.msg.SpeedLimitedLane.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "speed_limits":\n  ` + (e as Error).message);
       }
@@ -42,14 +44,4 @@ export class LaneStates {
   }
 }
 
-/*
-# The name of the fleet with closed or speed limited lanes
-string fleet_name
-
-# The indices of the lanes that are currently closed
-uint64[] closed_lanes
-
-# Lanes that have speed limits
-SpeedLimitedLane[] speed_limits
-
-*/
+export default LaneStates;

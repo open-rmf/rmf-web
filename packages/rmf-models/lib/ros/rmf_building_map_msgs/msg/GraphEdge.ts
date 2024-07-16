@@ -1,16 +1,16 @@
 /* This is a generated file, do not edit */
 
-import { Param } from '../../rmf_building_map_msgs/msg/Param';
+import * as rmf_building_map_msgs from '../../rmf_building_map_msgs';
 
 export class GraphEdge {
-  static readonly FullTypeName = 'rmf_building_map_msgs/msg/GraphEdge';
+  static readonly FullTypeName = '';
 
   static readonly EDGE_TYPE_BIDIRECTIONAL = 0;
   static readonly EDGE_TYPE_UNIDIRECTIONAL = 1;
 
   v1_idx: number;
   v2_idx: number;
-  params: Param[];
+  params: Array<rmf_building_map_msgs.msg.Param>;
   edge_type: number;
 
   constructor(fields: Partial<GraphEdge> = {}) {
@@ -32,7 +32,7 @@ export class GraphEdge {
     }
     for (const [i, v] of obj['params'].entries()) {
       try {
-        Param.validate(v);
+        rmf_building_map_msgs.msg.Param.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "params":\n  ` + (e as Error).message);
       }
@@ -43,15 +43,4 @@ export class GraphEdge {
   }
 }
 
-/*
-uint32 v1_idx
-uint32 v2_idx
-Param[] params
-
-# when edge_type is UNIDIRECTIONAL, it means v1 -> v2
-# when edge_type is BIDIRECTIONAL, it means v1 <-> v2
-uint8 edge_type
-uint8 EDGE_TYPE_BIDIRECTIONAL=0
-uint8 EDGE_TYPE_UNIDIRECTIONAL=1
-
-*/
+export default GraphEdge;

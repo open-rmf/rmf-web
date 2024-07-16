@@ -1,14 +1,20 @@
-import argparse
-import sys
-from copy import copy
+import os
 from os import makedirs
-from os.path import basename, dirname, exists
+from os.path import dirname
 from os.path import join as joinp
-from typing import List, Sequence
+from typing import Sequence
 
-import jinja2
 from jinja2 import Environment, FileSystemLoader
-from ros_translator.library import Message, PostProcessors, RosLibrary, Service
+from ros_translator.library import Message, Namespace, RosLibrary, Service
+from rosidl_parser.definition import (
+    AbstractSequence,
+    AbstractString,
+    AbstractType,
+    Array,
+    BasicType,
+    BoundedSequence,
+    NamespacedType,
+)
 
 template_loader = FileSystemLoader(searchpath=joinp(dirname(__file__), "templates"))
 template_env = Environment(loader=template_loader)
@@ -18,11 +24,11 @@ template_env.keep_trailing_newline = True
 
 # These types does not need a 'new' keyword
 PRIMITIVE_TYPES = {
-    "bool": "boolean",
-    "byte": "number",
+    "boolean": "boolean",
+    "octet": "number",
     "char": "number",
-    "float32": "number",
-    "float64": "number",
+    "float": "number",
+    "double": "number",
     "int8": "number",
     "int16": "number",
     "int32": "number",
@@ -42,11 +48,11 @@ PRIMITIVE_JS_TYPES = [
 ]
 
 PRIMITIVE_TYPES_DEFAULT_VALUES = {
-    "bool": "false",
-    "byte": "0",
+    "boolean": "false",
+    "octet": "0",
     "char": "0",
-    "float32": "0",
-    "float64": "0",
+    "float": "0",
+    "double": "0",
     "int8": "0",
     "int16": "0",
     "int32": "0",
@@ -61,9 +67,9 @@ PRIMITIVE_TYPES_DEFAULT_VALUES = {
 
 TYPED_ARRAY_TYPES = {
     "char": "Uint8Array",
-    "byte": "Uint8Array",
-    "float32": "Float32Array",
-    "float64": "Float64Array",
+    "octet": "Uint8Array",
+    "float": "Float32Array",
+    "double": "Float64Array",
     "int8": "Int8Array",
     "int16": "Int16Array",
     "int32": "Int32Array",
@@ -76,104 +82,105 @@ TYPED_ARRAY_TYPES = {
 
 
 class JsType:
-    def __init__(self, ros_type):
-        self.type = None
-        self.base_type = None
-        self.is_primitive = False
-        self.is_typed_array = False
-        self.is_array = False
-        self.default_value = None
-        if hasattr(ros_type, "is_array") and ros_type.is_array:
-            self.type = TYPED_ARRAY_TYPES.get(ros_type.type)
-            self.default_value = "[]"
-            if self.type is None:
-                if ros_type.is_primitive_type():
-                    self.type = f"{PRIMITIVE_TYPES[ros_type.type]}[]"
-                else:
-                    self.type = f"{ros_type.type}[]"
-                self.is_array = True
-                ros_element_type = copy(ros_type)
-                ros_element_type.is_array = False
-                self.element_type = JsType(ros_element_type)
-            else:
+    def __init__(self, ros_type: AbstractType):
+        self.type: str
+        self.elem_type: JsType
+        self.ros_type = ros_type
+        self.is_primitive: bool = False
+        self.is_typed_array: bool = False
+        self.is_array: bool = False
+        self.is_bounded: bool = False
+        self.array_size: int
+        self.default_value: str
+
+        if isinstance(ros_type, BasicType):
+            self.type = PRIMITIVE_TYPES[ros_type.typename]
+            self.is_primitive = True
+            self.default_value = PRIMITIVE_TYPES_DEFAULT_VALUES[ros_type.typename]
+        elif isinstance(ros_type, AbstractString):
+            self.type = "string"
+            self.is_primitive = True
+            self.default_value = "''"
+        elif isinstance(ros_type, NamespacedType):
+            self.type = ".".join(ros_type.namespaces) + f".{ros_type.name}"
+            self.default_value = f"new {self.type}()"
+        elif isinstance(ros_type, AbstractSequence) or isinstance(ros_type, Array):
+            self.is_array = True
+            self.elem_type = JsType(ros_type.value_type)
+            if isinstance(self.elem_type.ros_type, BasicType):
+                self.type = TYPED_ARRAY_TYPES[self.elem_type.ros_type.typename]
                 self.is_typed_array = True
-            self.base_type = self.type[: len(self.type) - 2]
-        else:
-            self.type = PRIMITIVE_TYPES.get(ros_type.type)
-            if ros_type.is_primitive_type():
-                self.default_value = PRIMITIVE_TYPES_DEFAULT_VALUES[ros_type.type]
+                self.default_value = f"new {self.type}(0)"
             else:
-                self.default_value = f"new {ros_type.type}()"
-            if self.type is None:
-                self.type = ros_type.type
-            self.base_type = self.type
-        self.is_primitive = self.base_type in PRIMITIVE_JS_TYPES
+                self.type = f"Array<{self.elem_type.type}>"
+                self.default_value = "[]"
+            if isinstance(ros_type, BoundedSequence):
+                self.is_bounded = True
+                self.array_size = ros_type.maximum_size
+            if isinstance(ros_type, Array):
+                self.array_size = ros_type.size
+        else:
+            raise ValueError(f"{type(ros_type)} is not supported")
 
 
-def augment_message(msg: Message):
-    for f in msg.spec.fields:
-        f.js_type = JsType(f.type)
-    return msg
+def generate_message(msg: Message, dstdir: str):
+    template = template_env.get_template("ts-definition.j2")
+    output_fpath = joinp(dstdir, f"{msg.full_type_name}.ts")
+    makedirs(dirname(output_fpath), exist_ok=True)
+    print(f"Generating model {msg.full_type_name}")  # type: ignore
+    template.stream(msg=msg).dump(output_fpath)
+
+
+def generate_service(srv: Service, dstdir: str):
+    generate_message(srv.request, dstdir)
+    generate_message(srv.response, dstdir)
+    output_fpath = joinp(dstdir, f"{srv.full_type_name}.ts")
+    template = template_env.get_template("srv-ts-definition.j2")
+    template.stream(srv=srv).dump(output_fpath)
+
+
+def generate_index(namespace: Namespace, dstdir: str):
+    with open(joinp(dstdir, namespace.full_name, "index.ts"), "w") as f:
+        for m in namespace.messages.values():
+            name = m.structure.namespaced_type.name
+            f.write(f"export * from './{name}';\n")
+        for s in namespace.services.values():
+            name = s.namespaced_type.name
+            f.write(f"export * from './{name}';\n")
+        for n in namespace.namespaces.values():
+            f.write(f"export * as {n.name} from './{n.name}';\n")
+
+    for n in namespace.namespaces.values():
+        generate_index(n, dstdir)
 
 
 def generate_modules(pkgs: Sequence[str], dstdir: str):
-    roslib = RosLibrary(post_processors=PostProcessors(message=augment_message))
-    all_pkgs = roslib.get_all_dependent_packages(*pkgs)
+    roslib = RosLibrary(type_processor=JsType)
+    all_pkgs = set((*pkgs, *roslib.get_all_package_dependencies(*pkgs)))
     all_pkg_index = [roslib.get_package_index(p) for p in all_pkgs]
-    all_messages: List[Message] = []
-    for p in all_pkg_index:
-        all_messages.extend((roslib.get_message(m) for m in p.messages))
-
-    all_services: List[Service] = []
-    for p in all_pkg_index:
-        all_services.extend((roslib.get_service(s) for s in p.services))
-
-    template = template_env.get_template("ts-definition.j2")
-    modules = []
+    all_messages = [
+        roslib.get_message(name)
+        for p in all_pkg_index
+        for name, _ in p.root_ns.all_messages()
+    ]
+    all_services = [
+        roslib.get_service(name)
+        for p in all_pkg_index
+        for name, _ in p.root_ns.all_services()
+    ]
 
     for msg in all_messages:
-        if not isinstance(msg.spec, str):
-            base_type = msg.spec.base_type
-            pkg_name = base_type.pkg_name
-            output_fpath = joinp(
-                dstdir, pkg_name, msg.rel_dir, f"{msg.spec.base_type.type}.ts"
-            )
+        generate_message(msg, dstdir)
 
-            if not exists(dirname(output_fpath)):
-                makedirs(dirname(output_fpath))
-
-            print(f"Generating model {base_type}")
-            template.stream(msg=msg).dump(output_fpath)
-            modules.append(f"./{pkg_name}/{msg.rel_dir}/{base_type.type}")
-
-    template = template_env.get_template("srv-ts-definition.j2")
     for srv in all_services:
-        if not isinstance(srv.spec, str):
-            output_fpath = joinp(
-                dstdir, srv.spec.pkg_name, srv.rel_dir, f"{srv.spec.srv_name}.ts"
-            )
+        generate_service(srv, dstdir)
 
-            if not exists(dirname(output_fpath)):
-                makedirs(dirname(output_fpath))
-
-            print(f"Generating model {srv.full_type}")
-            template.stream(srv=srv).dump(output_fpath)
-            modules.append(f"./{srv.spec.pkg_name}/{srv.rel_dir}/{srv.spec.srv_name}")
-    return modules
-
-
-def generate_index(modules, dstdir):
-    template = template_env.get_template("index.j2")
-
-    output_fpath = joinp(dstdir, "index.ts")
-    template.stream(
-        modules=modules,
-    ).dump(output_fpath)
+    print("Generating index")
+    for p in all_pkg_index:
+        generate_index(p.root_ns, dstdir)
 
 
 def generate(pkgs: Sequence[str], outdir: str):
     print("Generating typescript interfaces")
-    modules = generate_modules(pkgs, outdir)
-    print("Generating index")
-    generate_index(modules, outdir)
+    generate_modules(pkgs, outdir)
     print("Successfully generated typings")

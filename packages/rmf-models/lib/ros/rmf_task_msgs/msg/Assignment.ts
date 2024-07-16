@@ -1,7 +1,7 @@
 /* This is a generated file, do not edit */
 
 export class Assignment {
-  static readonly FullTypeName = 'rmf_task_msgs/msg/Assignment';
+  static readonly FullTypeName = '';
 
   is_assigned: boolean;
   fleet_name: string;
@@ -26,9 +26,4 @@ export class Assignment {
   }
 }
 
-/*
-bool is_assigned
-string fleet_name
-string expected_robot_name
-
-*/
+export default Assignment;

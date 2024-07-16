@@ -12,7 +12,7 @@ import React from 'react';
 import { Lift } from 'api-client';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import { LiftState as LiftStateModel } from 'rmf-models';
+import { LiftState as LiftStateModel } from 'rmf-models/ros/rmf_lift_msgs/msg';
 import { doorStateToString, liftModeToString, motionStateToString } from './lift-utils';
 import { LiftControls } from './lift-controls';
 

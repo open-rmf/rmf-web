@@ -1,24 +1,24 @@
 /* This is a generated file, do not edit */
 
-import { Time } from '../../builtin_interfaces/msg/Time';
-import { DoorMode } from '../../rmf_door_msgs/msg/DoorMode';
+import * as rmf_door_msgs from '../../rmf_door_msgs';
+import * as builtin_interfaces from '../../builtin_interfaces';
 
 export class DoorState {
-  static readonly FullTypeName = 'rmf_door_msgs/msg/DoorState';
+  static readonly FullTypeName = '';
 
-  door_time: Time;
+  door_time: builtin_interfaces.msg.Time;
   door_name: string;
-  current_mode: DoorMode;
+  current_mode: rmf_door_msgs.msg.DoorMode;
 
   constructor(fields: Partial<DoorState> = {}) {
-    this.door_time = fields.door_time || new Time();
+    this.door_time = fields.door_time || new builtin_interfaces.msg.Time();
     this.door_name = fields.door_name || '';
-    this.current_mode = fields.current_mode || new DoorMode();
+    this.current_mode = fields.current_mode || new rmf_door_msgs.msg.DoorMode();
   }
 
   static validate(obj: Record<string, unknown>): void {
     try {
-      Time.validate(obj['door_time'] as Record<string, unknown>);
+      builtin_interfaces.msg.Time.validate(obj['door_time'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "door_time":\n  ' + (e as Error).message);
     }
@@ -26,16 +26,11 @@ export class DoorState {
       throw new Error('expected "door_name" to be "string"');
     }
     try {
-      DoorMode.validate(obj['current_mode'] as Record<string, unknown>);
+      rmf_door_msgs.msg.DoorMode.validate(obj['current_mode'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "current_mode":\n  ' + (e as Error).message);
     }
   }
 }
 
-/*
-builtin_interfaces/Time door_time
-string door_name
-DoorMode current_mode
-
-*/
+export default DoorState;

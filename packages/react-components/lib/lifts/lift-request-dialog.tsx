@@ -3,7 +3,7 @@ import TextField from '@mui/material/TextField';
 import React from 'react';
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { requestDoorModeToString, requestModeToString } from './lift-utils';
-import { LiftRequest as RmfLiftRequest } from 'rmf-models';
+import { LiftRequest as RmfLiftRequest } from 'rmf-models/ros/rmf_lift_msgs/msg';
 
 const classes = {
   closeButton: 'lift-request-close-button',

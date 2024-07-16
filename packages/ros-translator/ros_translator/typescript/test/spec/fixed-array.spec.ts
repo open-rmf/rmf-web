@@ -1,4 +1,4 @@
-import { FixedArray } from '../out';
+import { FixedArray } from '../out/ros_translator_test_msgs/msg/FixedArray';
 
 it('success with valid object', () => {
   expect(() =>

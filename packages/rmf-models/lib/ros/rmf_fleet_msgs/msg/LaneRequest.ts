@@ -1,7 +1,7 @@
 /* This is a generated file, do not edit */
 
 export class LaneRequest {
-  static readonly FullTypeName = 'rmf_fleet_msgs/msg/LaneRequest';
+  static readonly FullTypeName = '';
 
   fleet_name: string;
   open_lanes: BigUint64Array | number[];
@@ -9,8 +9,8 @@ export class LaneRequest {
 
   constructor(fields: Partial<LaneRequest> = {}) {
     this.fleet_name = fields.fleet_name || '';
-    this.open_lanes = fields.open_lanes || [];
-    this.close_lanes = fields.close_lanes || [];
+    this.open_lanes = fields.open_lanes || new BigUint64Array(0);
+    this.close_lanes = fields.close_lanes || new BigUint64Array(0);
   }
 
   static validate(obj: Record<string, unknown>): void {
@@ -26,6 +26,8 @@ export class LaneRequest {
           throw new Error(`expected index ${i} of "open_lanes" to be "number"`);
         }
       }
+    } else if (!(obj['open_lanes'] instanceof BigUint64Array)) {
+      throw new Error('"open_lanes" must be either an array of number or BigUint64Array');
     }
     if (!(obj['close_lanes'] instanceof BigUint64Array) && !Array.isArray(obj['close_lanes'])) {
       throw new Error('expected "close_lanes" to be "BigUint64Array" or an array');
@@ -36,14 +38,10 @@ export class LaneRequest {
           throw new Error(`expected index ${i} of "close_lanes" to be "number"`);
         }
       }
+    } else if (!(obj['close_lanes'] instanceof BigUint64Array)) {
+      throw new Error('"close_lanes" must be either an array of number or BigUint64Array');
     }
   }
 }
 
-/*
-
-string fleet_name
-uint64[] open_lanes
-uint64[] close_lanes
-
-*/
+export default LaneRequest;

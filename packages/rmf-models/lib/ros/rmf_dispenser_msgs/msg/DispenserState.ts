@@ -1,22 +1,22 @@
 /* This is a generated file, do not edit */
 
-import { Time } from '../../builtin_interfaces/msg/Time';
+import * as builtin_interfaces from '../../builtin_interfaces';
 
 export class DispenserState {
-  static readonly FullTypeName = 'rmf_dispenser_msgs/msg/DispenserState';
+  static readonly FullTypeName = '';
 
   static readonly IDLE = 0;
   static readonly BUSY = 1;
   static readonly OFFLINE = 2;
 
-  time: Time;
+  time: builtin_interfaces.msg.Time;
   guid: string;
   mode: number;
-  request_guid_queue: string[];
+  request_guid_queue: Array<string>;
   seconds_remaining: number;
 
   constructor(fields: Partial<DispenserState> = {}) {
-    this.time = fields.time || new Time();
+    this.time = fields.time || new builtin_interfaces.msg.Time();
     this.guid = fields.guid || '';
     this.mode = fields.mode || 0;
     this.request_guid_queue = fields.request_guid_queue || [];
@@ -25,7 +25,7 @@ export class DispenserState {
 
   static validate(obj: Record<string, unknown>): void {
     try {
-      Time.validate(obj['time'] as Record<string, unknown>);
+      builtin_interfaces.msg.Time.validate(obj['time'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "time":\n  ' + (e as Error).message);
     }
@@ -49,22 +49,4 @@ export class DispenserState {
   }
 }
 
-/*
-builtin_interfaces/Time time
-
-# A unique ID for this workcell
-string guid
-
-# Different basic modes that the workcell could be in
-int32 mode
-int32 IDLE=0
-int32 BUSY=1
-int32 OFFLINE=2
-
-# Queued up requests that are being handled by this workcell
-string[] request_guid_queue
-
-# below are custom workcell message fields
-float32 seconds_remaining
-
-*/
+export default DispenserState;

@@ -1,9 +1,9 @@
 /* This is a generated file, do not edit */
 
-import { AlertParameter } from '../../rmf_task_msgs/msg/AlertParameter';
+import * as rmf_task_msgs from '../../rmf_task_msgs';
 
 export class Alert {
-  static readonly FullTypeName = 'rmf_task_msgs/msg/Alert';
+  static readonly FullTypeName = '';
 
   static readonly TIER_INFO = 0;
   static readonly TIER_WARNING = 1;
@@ -15,8 +15,8 @@ export class Alert {
   message: string;
   display: boolean;
   tier: number;
-  responses_available: string[];
-  alert_parameters: AlertParameter[];
+  responses_available: Array<string>;
+  alert_parameters: Array<rmf_task_msgs.msg.AlertParameter>;
   task_id: string;
 
   constructor(fields: Partial<Alert> = {}) {
@@ -63,7 +63,7 @@ export class Alert {
     }
     for (const [i, v] of obj['alert_parameters'].entries()) {
       try {
-        AlertParameter.validate(v);
+        rmf_task_msgs.msg.AlertParameter.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "alert_parameters":\n  ` + (e as Error).message);
       }
@@ -74,34 +74,4 @@ export class Alert {
   }
 }
 
-/*
-# The unique ID which responses can reply to
-string id
-
-# Title, subtitle and message to be displayed on any frontend
-string title
-string subtitle
-string message
-
-# Whether this alert should be displayed on any frontend, default
-# as true
-bool display true
-
-# The severity tier of this alert
-uint8 tier
-uint8 TIER_INFO=0
-uint8 TIER_WARNING=1
-uint8 TIER_ERROR=2
-
-# Responses available for this alert. If no responses are expected
-# this field can be left empty
-string[] responses_available
-
-# Parameters that may be useful for custom interactions
-AlertParameter[] alert_parameters
-
-# The task ID that is involved in this alert. If no task is involved
-# this string can be left empty
-string task_id
-
-*/
+export default Alert;

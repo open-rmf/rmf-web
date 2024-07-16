@@ -1,12 +1,12 @@
 /* This is a generated file, do not edit */
 
-import { DispatchState } from '../../rmf_task_msgs/msg/DispatchState';
+import * as rmf_task_msgs from '../../rmf_task_msgs';
 
 export class DispatchStates {
-  static readonly FullTypeName = 'rmf_task_msgs/msg/DispatchStates';
+  static readonly FullTypeName = '';
 
-  active: DispatchState[];
-  finished: DispatchState[];
+  active: Array<rmf_task_msgs.msg.DispatchState>;
+  finished: Array<rmf_task_msgs.msg.DispatchState>;
 
   constructor(fields: Partial<DispatchStates> = {}) {
     this.active = fields.active || [];
@@ -19,7 +19,7 @@ export class DispatchStates {
     }
     for (const [i, v] of obj['active'].entries()) {
       try {
-        DispatchState.validate(v);
+        rmf_task_msgs.msg.DispatchState.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "active":\n  ` + (e as Error).message);
       }
@@ -29,7 +29,7 @@ export class DispatchStates {
     }
     for (const [i, v] of obj['finished'].entries()) {
       try {
-        DispatchState.validate(v);
+        rmf_task_msgs.msg.DispatchState.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "finished":\n  ` + (e as Error).message);
       }
@@ -37,13 +37,4 @@ export class DispatchStates {
   }
 }
 
-/*
-# States of tasks that are currently in the process of being dispatched
-DispatchState[] active
-
-# States of tasks that have recently finished being dispatched. This may mean
-# the task was assigned or it may mean it failed to be dispatched or was
-# canceled before the dispatch took place.
-DispatchState[] finished
-
-*/
+export default DispatchStates;

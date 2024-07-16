@@ -362,7 +362,7 @@ importers:
         version: link:../rmf-auth
       rmf-models:
         specifier: workspace:*
-        version: link:../rmf-models
+        version: link:../rmf-models/dist
       rxjs:
         specifier: ^7.5.5
         version: 7.8.1
@@ -557,7 +557,7 @@ importers:
         version: 1.8.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       rmf-models:
         specifier: workspace:*
-        version: link:../rmf-models
+        version: link:../rmf-models/dist
       shallowequal:
         specifier: ^1.1.0
         version: 1.1.0
@@ -824,6 +824,7 @@ importers:
       typescript:
         specifier: ~5.4.3
         version: 5.4.5
+    publishDirectory: dist
 
   packages/ros-translator:
     devDependencies:

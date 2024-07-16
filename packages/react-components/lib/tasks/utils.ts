@@ -1,5 +1,5 @@
 import type { TaskRequest, TaskStateOutput as TaskState } from 'api-client';
-import { TaskType as RmfTaskType } from 'rmf-models';
+import { TaskType as RmfTaskType } from 'rmf-models/ros/rmf_task_msgs/msg';
 
 export function taskTypeToStr(taskType: number): string {
   switch (taskType) {

@@ -1,7 +1,7 @@
 /* This is a generated file, do not edit */
 
 export class ChargerCancel {
-  static readonly FullTypeName = 'rmf_charger_msgs/msg/ChargerCancel';
+  static readonly FullTypeName = '';
 
   charger_name: string;
   request_id: string;
@@ -21,12 +21,4 @@ export class ChargerCancel {
   }
 }
 
-/*
-string charger_name  # the charger that should process this message
-
-# A unique ID for each request. It is advised that you prefix this
-# with the sender's node name. This is used for error tracking
-# later on
-string request_id
-
-*/
+export default ChargerCancel;

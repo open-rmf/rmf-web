@@ -1,6 +1,6 @@
 import type { AffineImage, Door, Location2D } from 'api-client';
 import { Graph, Level } from 'api-client';
-import { GraphNode, Door as RmfDoor } from 'rmf-models';
+import { GraphNode, Door as RmfDoor } from 'rmf-models/ros/rmf_building_map_msgs/msg';
 import { Box3, Euler, Vector3 } from 'three';
 import { fromRmfCoords, fromRmfYaw } from '../utils';
 

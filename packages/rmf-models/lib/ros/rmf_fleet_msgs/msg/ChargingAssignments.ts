@@ -1,12 +1,12 @@
 /* This is a generated file, do not edit */
 
-import { ChargingAssignment } from '../../rmf_fleet_msgs/msg/ChargingAssignment';
+import * as rmf_fleet_msgs from '../../rmf_fleet_msgs';
 
 export class ChargingAssignments {
-  static readonly FullTypeName = 'rmf_fleet_msgs/msg/ChargingAssignments';
+  static readonly FullTypeName = '';
 
   fleet_name: string;
-  assignments: ChargingAssignment[];
+  assignments: Array<rmf_fleet_msgs.msg.ChargingAssignment>;
 
   constructor(fields: Partial<ChargingAssignments> = {}) {
     this.fleet_name = fields.fleet_name || '';
@@ -22,7 +22,7 @@ export class ChargingAssignments {
     }
     for (const [i, v] of obj['assignments'].entries()) {
       try {
-        ChargingAssignment.validate(v);
+        rmf_fleet_msgs.msg.ChargingAssignment.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "assignments":\n  ` + (e as Error).message);
       }
@@ -30,8 +30,4 @@ export class ChargingAssignments {
   }
 }
 
-/*
-string fleet_name
-ChargingAssignment[] assignments
-
-*/
+export default ChargingAssignments;

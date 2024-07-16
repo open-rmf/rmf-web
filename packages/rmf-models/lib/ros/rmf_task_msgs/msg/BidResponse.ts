@@ -1,19 +1,19 @@
 /* This is a generated file, do not edit */
 
-import { BidProposal } from '../../rmf_task_msgs/msg/BidProposal';
+import * as rmf_task_msgs from '../../rmf_task_msgs';
 
 export class BidResponse {
-  static readonly FullTypeName = 'rmf_task_msgs/msg/BidResponse';
+  static readonly FullTypeName = '';
 
   task_id: string;
   has_proposal: boolean;
-  proposal: BidProposal;
-  errors: string[];
+  proposal: rmf_task_msgs.msg.BidProposal;
+  errors: Array<string>;
 
   constructor(fields: Partial<BidResponse> = {}) {
     this.task_id = fields.task_id || '';
     this.has_proposal = fields.has_proposal || false;
-    this.proposal = fields.proposal || new BidProposal();
+    this.proposal = fields.proposal || new rmf_task_msgs.msg.BidProposal();
     this.errors = fields.errors || [];
   }
 
@@ -25,7 +25,7 @@ export class BidResponse {
       throw new Error('expected "has_proposal" to be "boolean"');
     }
     try {
-      BidProposal.validate(obj['proposal'] as Record<string, unknown>);
+      rmf_task_msgs.msg.BidProposal.validate(obj['proposal'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "proposal":\n  ' + (e as Error).message);
     }
@@ -40,17 +40,4 @@ export class BidResponse {
   }
 }
 
-/*
-# ID of the task that is being bid on
-string task_id
-
-# True if this response contains a proposal
-bool has_proposal
-
-# The proposal of this response, if has_proposal is true
-BidProposal proposal
-
-# Any errors related to this bid
-string[] errors
-
-*/
+export default BidResponse;

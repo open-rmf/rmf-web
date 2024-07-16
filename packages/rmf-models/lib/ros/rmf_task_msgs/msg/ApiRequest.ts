@@ -1,7 +1,7 @@
 /* This is a generated file, do not edit */
 
 export class ApiRequest {
-  static readonly FullTypeName = 'rmf_task_msgs/msg/ApiRequest';
+  static readonly FullTypeName = '';
 
   json_msg: string;
   request_id: string;
@@ -21,12 +21,4 @@ export class ApiRequest {
   }
 }
 
-/*
-
-# The JSON message that represents the request
-string json_msg
-
-# The unique ID assigned to this request
-string request_id
-
-*/
+export default ApiRequest;

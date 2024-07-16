@@ -1,22 +1,22 @@
 /* This is a generated file, do not edit */
 
-import { Time } from '../../builtin_interfaces/msg/Time';
+import * as builtin_interfaces from '../../builtin_interfaces';
 
 export class BidProposal {
-  static readonly FullTypeName = 'rmf_task_msgs/msg/BidProposal';
+  static readonly FullTypeName = '';
 
   fleet_name: string;
   expected_robot_name: string;
   prev_cost: number;
   new_cost: number;
-  finish_time: Time;
+  finish_time: builtin_interfaces.msg.Time;
 
   constructor(fields: Partial<BidProposal> = {}) {
     this.fleet_name = fields.fleet_name || '';
     this.expected_robot_name = fields.expected_robot_name || '';
     this.prev_cost = fields.prev_cost || 0;
     this.new_cost = fields.new_cost || 0;
-    this.finish_time = fields.finish_time || new Time();
+    this.finish_time = fields.finish_time || new builtin_interfaces.msg.Time();
   }
 
   static validate(obj: Record<string, unknown>): void {
@@ -33,30 +33,11 @@ export class BidProposal {
       throw new Error('expected "new_cost" to be "number"');
     }
     try {
-      Time.validate(obj['finish_time'] as Record<string, unknown>);
+      builtin_interfaces.msg.Time.validate(obj['finish_time'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "finish_time":\n  ' + (e as Error).message);
     }
   }
 }
 
-/*
-# This message is published by a Fleet Adapter in response to a BidNotice
-# message.
-
-# The name of the Fleet Adapter publishing this message
-string fleet_name
-
-# The name of the robot in the fleet which will potentially execute the task
-string expected_robot_name
-
-# The overall cost of task assignments prior to accommodating the new task
-float64 prev_cost
-
-# The overall cost of task assignments after accommodating the new task
-float64 new_cost
-
-# The estimated finish time of the new task
-builtin_interfaces/Time finish_time
-
-*/
+export default BidProposal;

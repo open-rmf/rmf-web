@@ -1,7 +1,7 @@
 /* This is a generated file, do not edit */
 
 export class BeaconState {
-  static readonly FullTypeName = 'rmf_fleet_msgs/msg/BeaconState';
+  static readonly FullTypeName = '';
 
   id: string;
   online: boolean;
@@ -36,13 +36,4 @@ export class BeaconState {
   }
 }
 
-/*
-# This message defines data from a robot beacon
-
-string id 
-bool online
-string category
-bool activated
-string level
-
-*/
+export default BeaconState;

@@ -1,9 +1,9 @@
 /* This is a generated file, do not edit */
 
-import { Time } from '../../builtin_interfaces/msg/Time';
+import * as builtin_interfaces from '../../builtin_interfaces';
 
 export class LiftState {
-  static readonly FullTypeName = 'rmf_lift_msgs/msg/LiftState';
+  static readonly FullTypeName = '';
 
   static readonly DOOR_CLOSED = 0;
   static readonly DOOR_MOVING = 1;
@@ -19,9 +19,9 @@ export class LiftState {
   static readonly MODE_OFFLINE = 4;
   static readonly MODE_EMERGENCY = 5;
 
-  lift_time: Time;
+  lift_time: builtin_interfaces.msg.Time;
   lift_name: string;
-  available_floors: string[];
+  available_floors: Array<string>;
   current_floor: string;
   destination_floor: string;
   door_state: number;
@@ -31,21 +31,21 @@ export class LiftState {
   session_id: string;
 
   constructor(fields: Partial<LiftState> = {}) {
-    this.lift_time = fields.lift_time || new Time();
+    this.lift_time = fields.lift_time || new builtin_interfaces.msg.Time();
     this.lift_name = fields.lift_name || '';
     this.available_floors = fields.available_floors || [];
     this.current_floor = fields.current_floor || '';
     this.destination_floor = fields.destination_floor || '';
     this.door_state = fields.door_state || 0;
     this.motion_state = fields.motion_state || 0;
-    this.available_modes = fields.available_modes || [];
+    this.available_modes = fields.available_modes || new Uint8Array(0);
     this.current_mode = fields.current_mode || 0;
     this.session_id = fields.session_id || '';
   }
 
   static validate(obj: Record<string, unknown>): void {
     try {
-      Time.validate(obj['lift_time'] as Record<string, unknown>);
+      builtin_interfaces.msg.Time.validate(obj['lift_time'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "lift_time":\n  ' + (e as Error).message);
     }
@@ -81,6 +81,8 @@ export class LiftState {
           throw new Error(`expected index ${i} of "available_modes" to be "number"`);
         }
       }
+    } else if (!(obj['available_modes'] instanceof Uint8Array)) {
+      throw new Error('"available_modes" must be either an array of number or Uint8Array');
     }
     if (typeof obj['current_mode'] !== 'number') {
       throw new Error('expected "current_mode" to be "number"');
@@ -91,40 +93,4 @@ export class LiftState {
   }
 }
 
-/*
-# lift_time records when the information in this message was generated
-builtin_interfaces/Time lift_time
-
-string lift_name
-
-string[] available_floors
-string current_floor
-string destination_floor
-
-uint8 door_state
-uint8 DOOR_CLOSED=0
-uint8 DOOR_MOVING=1
-uint8 DOOR_OPEN=2
-
-uint8 motion_state
-uint8 MOTION_STOPPED=0
-uint8 MOTION_UP=1
-uint8 MOTION_DOWN=2
-uint8 MOTION_UNKNOWN=3
-
-# We can only set human or agv mode, but we can read other modes: fire, etc.
-uint8[] available_modes
-uint8 current_mode
-uint8 MODE_UNKNOWN=0
-uint8 MODE_HUMAN=1
-uint8 MODE_AGV=2
-uint8 MODE_FIRE=3
-uint8 MODE_OFFLINE=4
-uint8 MODE_EMERGENCY=5
-# we can add more "read-only" modes as we come across more of them.
-
-# this field records the session_id that has been granted control of the lift
-# until it sends a request with a request_type of REQUEST_END_SESSION
-string session_id
-
-*/
+export default LiftState;

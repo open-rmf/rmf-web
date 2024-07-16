@@ -1,5 +1,5 @@
 import type { Dispenser, DispenserState } from 'api-client';
-import { DispenserState as RmfDispenserState } from 'rmf-models';
+import { DispenserState as RmfDispenserState } from 'rmf-models/ros/rmf_dispenser_msgs/msg';
 
 export function allStateModes(): number[] {
   return [RmfDispenserState.IDLE, RmfDispenserState.OFFLINE, RmfDispenserState.BUSY, -1];

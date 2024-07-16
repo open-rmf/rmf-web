@@ -1,11 +1,11 @@
 /* This is a generated file, do not edit */
 
-import { MutexGroupAssignment } from '../../rmf_fleet_msgs/msg/MutexGroupAssignment';
+import * as rmf_fleet_msgs from '../../rmf_fleet_msgs';
 
 export class MutexGroupStates {
-  static readonly FullTypeName = 'rmf_fleet_msgs/msg/MutexGroupStates';
+  static readonly FullTypeName = '';
 
-  assignments: MutexGroupAssignment[];
+  assignments: Array<rmf_fleet_msgs.msg.MutexGroupAssignment>;
 
   constructor(fields: Partial<MutexGroupStates> = {}) {
     this.assignments = fields.assignments || [];
@@ -17,7 +17,7 @@ export class MutexGroupStates {
     }
     for (const [i, v] of obj['assignments'].entries()) {
       try {
-        MutexGroupAssignment.validate(v);
+        rmf_fleet_msgs.msg.MutexGroupAssignment.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "assignments":\n  ` + (e as Error).message);
       }
@@ -25,8 +25,4 @@ export class MutexGroupStates {
   }
 }
 
-/*
-# A map of all the current mutex group assignments
-MutexGroupAssignment[] assignments
-
-*/
+export default MutexGroupStates;

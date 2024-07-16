@@ -1,4 +1,5 @@
-import { Door as RmfDoor, DoorMode as RmfDoorMode } from 'rmf-models';
+import { Door as RmfDoor } from 'rmf-models/ros/rmf_building_map_msgs/msg';
+import { DoorMode as RmfDoorMode } from 'rmf-models/ros/rmf_door_msgs/msg';
 
 export enum DoorType {
   SingleSwing = RmfDoor.DOOR_TYPE_SINGLE_SWING,

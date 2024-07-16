@@ -1,20 +1,17 @@
 /* This is a generated file, do not edit */
 
-import { AffineImage } from '../../rmf_building_map_msgs/msg/AffineImage';
-import { Place } from '../../rmf_building_map_msgs/msg/Place';
-import { Door } from '../../rmf_building_map_msgs/msg/Door';
-import { Graph } from '../../rmf_building_map_msgs/msg/Graph';
+import * as rmf_building_map_msgs from '../../rmf_building_map_msgs';
 
 export class Level {
-  static readonly FullTypeName = 'rmf_building_map_msgs/msg/Level';
+  static readonly FullTypeName = '';
 
   name: string;
   elevation: number;
-  images: AffineImage[];
-  places: Place[];
-  doors: Door[];
-  nav_graphs: Graph[];
-  wall_graph: Graph;
+  images: Array<rmf_building_map_msgs.msg.AffineImage>;
+  places: Array<rmf_building_map_msgs.msg.Place>;
+  doors: Array<rmf_building_map_msgs.msg.Door>;
+  nav_graphs: Array<rmf_building_map_msgs.msg.Graph>;
+  wall_graph: rmf_building_map_msgs.msg.Graph;
 
   constructor(fields: Partial<Level> = {}) {
     this.name = fields.name || '';
@@ -23,7 +20,7 @@ export class Level {
     this.places = fields.places || [];
     this.doors = fields.doors || [];
     this.nav_graphs = fields.nav_graphs || [];
-    this.wall_graph = fields.wall_graph || new Graph();
+    this.wall_graph = fields.wall_graph || new rmf_building_map_msgs.msg.Graph();
   }
 
   static validate(obj: Record<string, unknown>): void {
@@ -38,7 +35,7 @@ export class Level {
     }
     for (const [i, v] of obj['images'].entries()) {
       try {
-        AffineImage.validate(v);
+        rmf_building_map_msgs.msg.AffineImage.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "images":\n  ` + (e as Error).message);
       }
@@ -48,7 +45,7 @@ export class Level {
     }
     for (const [i, v] of obj['places'].entries()) {
       try {
-        Place.validate(v);
+        rmf_building_map_msgs.msg.Place.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "places":\n  ` + (e as Error).message);
       }
@@ -58,7 +55,7 @@ export class Level {
     }
     for (const [i, v] of obj['doors'].entries()) {
       try {
-        Door.validate(v);
+        rmf_building_map_msgs.msg.Door.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "doors":\n  ` + (e as Error).message);
       }
@@ -68,26 +65,17 @@ export class Level {
     }
     for (const [i, v] of obj['nav_graphs'].entries()) {
       try {
-        Graph.validate(v);
+        rmf_building_map_msgs.msg.Graph.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "nav_graphs":\n  ` + (e as Error).message);
       }
     }
     try {
-      Graph.validate(obj['wall_graph'] as Record<string, unknown>);
+      rmf_building_map_msgs.msg.Graph.validate(obj['wall_graph'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "wall_graph":\n  ' + (e as Error).message);
     }
   }
 }
 
-/*
-string name
-float32 elevation
-AffineImage[] images
-Place[] places
-Door[] doors
-Graph[] nav_graphs
-Graph wall_graph
-
-*/
+export default Level;

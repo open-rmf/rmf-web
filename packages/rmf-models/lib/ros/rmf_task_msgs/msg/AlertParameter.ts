@@ -1,7 +1,7 @@
 /* This is a generated file, do not edit */
 
 export class AlertParameter {
-  static readonly FullTypeName = 'rmf_task_msgs/msg/AlertParameter';
+  static readonly FullTypeName = '';
 
   name: string;
   value: string;
@@ -21,9 +21,4 @@ export class AlertParameter {
   }
 }
 
-/*
-# Generic key-value pair to be used in Alert
-string name
-string value
-
-*/
+export default AlertParameter;
