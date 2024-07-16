@@ -1,4 +1,4 @@
-import { Nested } from '../out';
+import { Nested } from '../out/ros_translator_test_msgs/msg/Nested';
 
 it('success with valid object', () => {
   expect(() =>
