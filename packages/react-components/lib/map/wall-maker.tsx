@@ -1,7 +1,7 @@
 import React from 'react';
 import { Graph } from 'api-client';
 import { CubeMaker } from './cube-maker';
-import { graphToWalls } from '../utils';
+import { graphToWalls } from './utils';
 
 interface WallProps {
   wallGraph: Graph;
