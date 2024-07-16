@@ -182,5 +182,8 @@
       "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|cjs|ts|tsx)$",
       "^.+\\.module\\.(css|sass|scss)$"
     ]
+  },
+  "dependencies": {
+    "react-error-boundary": "^4.0.13"
   }
 }

@@ -16,7 +16,7 @@ import {
   TextThreeRendering,
 } from 'react-components';
 import { ErrorBoundary } from 'react-error-boundary';
-import { Door as DoorModel } from 'rmf-models';
+import { Door as DoorModel } from 'rmf-models/ros/rmf_door_msgs/msg';
 import { EMPTY, merge, scan, Subscription, switchMap, throttleTime } from 'rxjs';
 import { Box3, TextureLoader, Vector3 } from 'three';
 import appConfig from '../app-config';
@@ -201,8 +201,8 @@ export const MapApp = styled(
     const defaultZoom = isScreenHeightLessThan800
       ? resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL
       : resourceManager?.defaultZoom
-      ? resourceManager.defaultZoom * 2
-      : DEFAULT_ZOOM_LEVEL;
+        ? resourceManager.defaultZoom * 2
+        : DEFAULT_ZOOM_LEVEL;
     const [zoom, setZoom] = React.useState<number>(defaultZoom);
     const [sceneBoundingBox, setSceneBoundingBox] = React.useState<Box3 | undefined>(undefined);
     const [distance, setDistance] = React.useState<number>(0);
