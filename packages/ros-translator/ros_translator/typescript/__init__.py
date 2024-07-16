@@ -1,4 +1,3 @@
-import os
 from os import makedirs
 from os.path import dirname
 from os.path import join as joinp
@@ -26,15 +25,12 @@ template_env.keep_trailing_newline = True
 PRIMITIVE_TYPES = {
     "boolean": "boolean",
     "octet": "number",
-    "char": "number",
     "float": "number",
     "double": "number",
     "int8": "number",
     "int16": "number",
     "int32": "number",
     "int64": "number",
-    "string": "string",
-    "wstring": "string",
     "uint8": "number",
     "uint16": "number",
     "uint32": "number",
@@ -50,15 +46,12 @@ PRIMITIVE_JS_TYPES = [
 PRIMITIVE_TYPES_DEFAULT_VALUES = {
     "boolean": "false",
     "octet": "0",
-    "char": "0",
     "float": "0",
     "double": "0",
     "int8": "0",
     "int16": "0",
     "int32": "0",
     "int64": "0",
-    "string": "''",
-    "wstring": "''",
     "uint8": "0",
     "uint16": "0",
     "uint32": "0",
@@ -66,7 +59,6 @@ PRIMITIVE_TYPES_DEFAULT_VALUES = {
 }
 
 TYPED_ARRAY_TYPES = {
-    "char": "Uint8Array",
     "octet": "Uint8Array",
     "float": "Float32Array",
     "double": "Float64Array",
