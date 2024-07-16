@@ -87,7 +87,7 @@ export default class ResourceManager {
     this.pickupZones = resources.pickupZones || [];
     this.defaultZoom = resources.defaultZoom ?? 5;
     this.defaultRobotZoom = resources.defaultRobotZoom ?? 40;
-    this.attributionPrefix = resources.attributionPrefix || 'OSRC-SG';
+    this.attributionPrefix = resources.attributionPrefix || 'Open-RMF';
     this.cartIds = resources.cartIds || [];
     this.loggedInDisplayLevel = resources.loggedInDisplayLevel;
   }
