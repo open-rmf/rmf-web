@@ -1,13 +1,13 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
-import { CreateUserDialog, CreateUserDialogProps } from '../../components/admin/create-user-dialog';
+import { CreateUserDialog, CreateUserDialogProps } from './create-user-dialog';
 
 export default {
   title: 'Admin/Create User Dialog',
   component: CreateUserDialog,
-} as Meta;
+} satisfies Meta;
 
-export const Default: Story<CreateUserDialogProps> = (args) => {
+export const Default: StoryFn<CreateUserDialogProps> = (args) => {
   return (
     <CreateUserDialog
       {...args}

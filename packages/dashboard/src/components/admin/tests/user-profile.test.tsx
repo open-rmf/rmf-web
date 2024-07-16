@@ -25,8 +25,8 @@ describe('UserProfileCard', () => {
       />,
     );
 
-    userEvent.click(root.getByLabelText('more actions'));
-    userEvent.click(root.getByRole('menuitem', { name: 'Admin' }));
+    await userEvent.click(root.getByLabelText('more actions'));
+    await userEvent.click(root.getByRole('menuitem', { name: 'Admin' }));
     await waitFor(() => true); // let async effects run
     expect(makeAdmin).toHaveBeenCalledWith(true);
   });

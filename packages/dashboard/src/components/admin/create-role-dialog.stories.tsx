@@ -1,13 +1,12 @@
-import { Meta, Story } from '@storybook/react';
-import React from 'react';
-import { CreateRoleDialog, CreateRoleDialogProps } from '../../components/admin/create-role-dialog';
+import { Meta, StoryFn } from '@storybook/react';
+import { CreateRoleDialog, CreateRoleDialogProps } from './create-role-dialog';
 
 export default {
   title: 'Admin/Create Role Dialog',
   component: CreateRoleDialog,
-} as Meta;
+} satisfies Meta;
 
-export const Default: Story<CreateRoleDialogProps> = (args) => {
+export const Default: StoryFn<CreateRoleDialogProps> = (args) => {
   return (
     <CreateRoleDialog
       {...args}

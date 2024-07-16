@@ -1,14 +1,13 @@
-import { Meta, Story } from '@storybook/react';
-import React from 'react';
-import { RoleListCard, RoleListCardProps } from '../../components/admin/role-list-card';
-import { RmfAction } from '../../components/permissions';
+import { Meta, StoryFn } from '@storybook/react';
+import { RoleListCard, RoleListCardProps } from './role-list-card';
+import { RmfAction } from '../permissions';
 
 export default {
   title: 'Admin/Role List Card',
   component: RoleListCard,
-} as Meta;
+} satisfies Meta;
 
-export const Default: Story<RoleListCardProps> = (args) => {
+export const Default: StoryFn<RoleListCardProps> = (args) => {
   return (
     <RoleListCard
       {...args}

@@ -1,7 +1,7 @@
-import { Meta, Story } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react';
 import { User } from 'api-client';
 import React from 'react';
-import { UserProfileCard, UserProfileCardProps } from '../../components/admin/user-profile';
+import { UserProfileCard, UserProfileCardProps } from './user-profile';
 
 export default {
   title: 'Admin/User Profile Card',
@@ -13,9 +13,9 @@ export default {
       },
     },
   },
-} as Meta;
+} satisfies Meta;
 
-export const Default: Story<UserProfileCardProps> = (args) => {
+export const Default: StoryFn<UserProfileCardProps> = (args) => {
   const [user, setUser] = React.useState<User>({
     username: 'example',
     is_admin: false,

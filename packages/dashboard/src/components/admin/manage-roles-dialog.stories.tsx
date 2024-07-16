@@ -1,18 +1,17 @@
-import { Meta, Story } from '@storybook/react';
-import React from 'react';
-import { ManageRolesCard } from '../../components/admin/manage-roles-dialog';
-import { RoleListCardProps } from '../../components/admin/role-list-card';
+import { Meta, StoryFn } from '@storybook/react';
+import { ManageRolesCard } from './manage-roles-dialog';
+import { RoleListCardProps } from './role-list-card';
 
 export default {
   title: 'Admin/Manage Roles Card',
-} as Meta;
+} satisfies Meta;
 
 const allRoles: string[] = [];
 for (let i = 0; i < 5; i++) {
   allRoles.push(`role${i}`);
 }
 
-export const Default: Story<RoleListCardProps> = (args) => {
+export const Default: StoryFn<RoleListCardProps> = (args) => {
   return (
     <ManageRolesCard
       assignedRoles={['role1']}
