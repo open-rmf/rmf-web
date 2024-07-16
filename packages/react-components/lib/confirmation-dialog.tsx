@@ -77,6 +77,7 @@ export function ConfirmationDialog({
             {cancelText}
           </Button>
           <Button
+            aria-label="Confirm"
             variant="contained"
             type="submit"
             color="primary"

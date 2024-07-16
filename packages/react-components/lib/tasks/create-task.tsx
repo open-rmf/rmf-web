@@ -891,6 +891,14 @@ export function CreateTaskForm({
       return;
     }
     try {
+      const isNameAlreadyExists = favoritesTasks.some(
+        (task) => task.name === favoriteTaskBuffer.name,
+      );
+
+      if (isNameAlreadyExists) {
+        throw new Error('The name of the favorite task already exists.');
+      }
+
       setSavingFavoriteTask(true);
       await submitFavoriteTask(favoriteTaskBuffer);
       setSavingFavoriteTask(false);
@@ -1128,6 +1136,7 @@ export function CreateTaskForm({
           </DialogContent>
           <DialogActions>
             <Button
+              aria-label="Cancel button"
               variant="outlined"
               disabled={submitting}
               className={classes.actionBtn}
@@ -1176,6 +1185,7 @@ export function CreateTaskForm({
           {!callToDeleteFavoriteTask && (
             <TextField
               size="small"
+              id="favorite-input"
               value={favoriteTaskBuffer.name}
               onChange={(e) =>
                 setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: e.target.value })
