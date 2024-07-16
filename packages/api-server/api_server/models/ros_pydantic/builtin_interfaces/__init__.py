@@ -1,2 +1,1 @@
-from .Duration import Duration
-from .Time import Time
+from . import msg

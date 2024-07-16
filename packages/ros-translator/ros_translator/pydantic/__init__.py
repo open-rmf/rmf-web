@@ -5,7 +5,7 @@ from os.path import join as joinp
 from typing import Sequence
 
 from jinja2 import Environment, FileSystemLoader
-from ros_translator.library import Namespace, RosLibrary
+from ros_translator.library import Message, Namespace, RosLibrary
 from rosidl_parser.definition import (
     AbstractSequence,
     AbstractString,
@@ -73,7 +73,7 @@ class PydanticType:
         elif isinstance(ros_type, AbstractString):
             self.typename = "str"
         elif isinstance(ros_type, NamespacedType):
-            self.typename = ".".join(ros_type.namespaced_name())
+            self.typename = "_".join(ros_type.namespaced_name())
         elif isinstance(ros_type, AbstractSequence) or isinstance(ros_type, Array):
             self.elem_type = PydanticType(ros_type.value_type)
             self.typename = self._get_array_type(ros_type, self.elem_type.typename)
@@ -95,6 +95,29 @@ class PydanticType:
             raise ValueError(f"{type(ros_type)} is not supported")
 
 
+def relative_import(base: Message, to: Message) -> str:
+    base_ns = list(base.idl.structure.namespaced_type.namespaces)
+    to_ns = list(to.idl.structure.namespaced_type.namespaces)
+    common: list[str] = []
+    relative = ""
+    for a, b in zip(base_ns, to_ns):
+        if a == b:
+            common.append(a)
+            continue
+        if a is None:
+            relative = "." + ".".join(to_ns[len(common) :])
+            break
+        else:
+            relative = (
+                "."
+                + "." * (len(base_ns) - len(common))
+                + ".".join(to_ns[len(common) :])
+            )
+            break
+    full_alias = to.full_type_name.replace("/", "_")
+    return f"from {relative}.{to.name} import {to.name} as {full_alias}"
+
+
 def generate_messages(roslib: RosLibrary, pkg: str, outdir: str):
     template = template_env.get_template("msg.j2")
     pkg_index = roslib.get_package_index(pkg)
@@ -102,9 +125,8 @@ def generate_messages(roslib: RosLibrary, pkg: str, outdir: str):
         msg = roslib.get_message(msg_type)
         outpath = joinp(outdir, f"{msg.full_type_name}.py")
         os.makedirs(os.path.dirname(outpath), exist_ok=True)
-        depth = msg.full_type_name.count("/") + 1
         print(outpath)
-        template.stream(msg=msg, depth=depth).dump(outpath)
+        template.stream(msg=msg, relative_import=relative_import).dump(outpath)
 
 
 def generate_init(namespace: Namespace, outdir: str):

@@ -25,8 +25,8 @@ from api_server.models import (
     TaskFavorite,
     TaskState,
 )
-from api_server.models.ros_pydantic.builtin_interfaces import Time
-from api_server.models.ros_pydantic.rmf_building_map_msgs import Graph
+from api_server.models.ros_pydantic.builtin_interfaces.msg import Time
+from api_server.models.ros_pydantic.rmf_building_map_msgs.msg import Graph
 
 
 def make_door(name: str = "test_door") -> Door:

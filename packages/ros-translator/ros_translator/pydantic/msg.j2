@@ -3,8 +3,8 @@
 from typing import Annotated
 
 import pydantic
-{% for pkg in msg.package_dependencies() %}
-from {% for _ in range(depth) %}.{% endfor %} import {{ pkg }}
+{% for m in msg.dependencies %}
+{{ relative_import(msg, m) }}
 {% endfor %}
 
 

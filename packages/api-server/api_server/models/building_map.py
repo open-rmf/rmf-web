@@ -18,16 +18,16 @@ class Level(BaseModel):
     name: str
     elevation: float
     images: list[AffineImage]
-    places: list[rmf_building_map_msgs.Place]
-    doors: list[rmf_building_map_msgs.Door]
-    nav_graphs: list[rmf_building_map_msgs.Graph]
-    wall_graph: rmf_building_map_msgs.Graph
+    places: list[rmf_building_map_msgs.msg.Place]
+    doors: list[rmf_building_map_msgs.msg.Door]
+    nav_graphs: list[rmf_building_map_msgs.msg.Graph]
+    wall_graph: rmf_building_map_msgs.msg.Graph
 
 
 class BuildingMap(BaseModel):
     name: str
     levels: list[Level]
-    lifts: list[rmf_building_map_msgs.Lift]
+    lifts: list[rmf_building_map_msgs.msg.Lift]
 
     @staticmethod
     def from_tortoise(tortoise: ttm.BuildingMap) -> "BuildingMap":
