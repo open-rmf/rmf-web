@@ -1,7 +1,7 @@
 import { BuildingMap } from 'api-client';
 import React from 'react';
 import { DoorDataGridTable, DoorTableData } from 'react-components';
-import { DoorMode as RmfDoorMode } from 'rmf-models';
+import { DoorMode as RmfDoorMode } from 'rmf-models/ros/rmf_door_msgs/msg/DoorMode';
 import { throttleTime } from 'rxjs';
 import { AppEvents } from './app-events';
 import { createMicroApp } from './micro-app';
@@ -30,8 +30,6 @@ export const DoorsApp = createMicroApp('Doors', () => {
     buildingMap?.levels.map((level) =>
       level.doors.map(async (door, i) => {
         try {
-          const { data } = await rmf.doorsApi.getDoorHealthDoorsDoorNameHealthGet(door.name);
-          const { health_status } = data;
           const sub = rmf
             .getDoorStateObs(door.name)
             .pipe(throttleTime(3000, undefined, { leading: true, trailing: true }))
@@ -42,7 +40,6 @@ export const DoorsApp = createMicroApp('Doors', () => {
                   [door.name]: {
                     index: doorIndex++,
                     doorName: door.name,
-                    opMode: health_status ? health_status : 'N/A',
                     levelName: level.name,
                     doorType: door.door_type,
                     doorState: doorState,
