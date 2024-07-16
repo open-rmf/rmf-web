@@ -1,7 +1,7 @@
 /* This is a generated file, do not edit */
 
 export class SpeedLimitedLane {
-  static readonly FullTypeName = 'rmf_fleet_msgs/msg/SpeedLimitedLane';
+  static readonly FullTypeName = '';
 
   lane_index: number;
   speed_limit: number;
@@ -21,10 +21,4 @@ export class SpeedLimitedLane {
   }
 }
 
-/*
-# The index of the lane with a speed limit
-uint64 lane_index
-
-# The imposed speed limit for the lane
-float64 speed_limit
-*/
+export default SpeedLimitedLane;

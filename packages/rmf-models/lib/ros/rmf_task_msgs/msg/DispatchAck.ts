@@ -1,11 +1,11 @@
 /* This is a generated file, do not edit */
 
 export class DispatchAck {
-  static readonly FullTypeName = 'rmf_task_msgs/msg/DispatchAck';
+  static readonly FullTypeName = '';
 
   dispatch_id: number;
   success: boolean;
-  errors: string[];
+  errors: Array<string>;
 
   constructor(fields: Partial<DispatchAck> = {}) {
     this.dispatch_id = fields.dispatch_id || 0;
@@ -31,17 +31,4 @@ export class DispatchAck {
   }
 }
 
-/*
-# This message is published by the fleet adapter in response to a
-# DispatchRequest message. It indicates whether the requested task addition or
-# cancellation was successful.
-
-# The ID of the DispatchRequest that is being responded to
-uint64 dispatch_id
-
-# True if the addition or cancellation operation was successful
-bool success
-
-string[] errors
-
-*/
+export default DispatchAck;

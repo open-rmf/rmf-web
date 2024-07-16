@@ -1,7 +1,7 @@
 /* This is a generated file, do not edit */
 
 export class Place {
-  static readonly FullTypeName = 'rmf_building_map_msgs/msg/Place';
+  static readonly FullTypeName = '';
 
   name: string;
   x: number;
@@ -41,12 +41,4 @@ export class Place {
   }
 }
 
-/*
-string name
-float32 x
-float32 y
-float32 yaw
-float32 position_tolerance
-float32 yaw_tolerance
-
-*/
+export default Place;

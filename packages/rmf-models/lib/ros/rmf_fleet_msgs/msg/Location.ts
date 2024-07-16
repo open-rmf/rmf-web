@@ -1,11 +1,11 @@
 /* This is a generated file, do not edit */
 
-import { Time } from '../../builtin_interfaces/msg/Time';
+import * as builtin_interfaces from '../../builtin_interfaces';
 
 export class Location {
-  static readonly FullTypeName = 'rmf_fleet_msgs/msg/Location';
+  static readonly FullTypeName = '';
 
-  t: Time;
+  t: builtin_interfaces.msg.Time;
   x: number;
   y: number;
   yaw: number;
@@ -15,7 +15,7 @@ export class Location {
   index: number;
 
   constructor(fields: Partial<Location> = {}) {
-    this.t = fields.t || new Time();
+    this.t = fields.t || new builtin_interfaces.msg.Time();
     this.x = fields.x || 0;
     this.y = fields.y || 0;
     this.yaw = fields.yaw || 0;
@@ -27,7 +27,7 @@ export class Location {
 
   static validate(obj: Record<string, unknown>): void {
     try {
-      Time.validate(obj['t'] as Record<string, unknown>);
+      builtin_interfaces.msg.Time.validate(obj['t'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "t":\n  ' + (e as Error).message);
     }
@@ -55,17 +55,4 @@ export class Location {
   }
 }
 
-/*
-builtin_interfaces/Time t
-float32 x
-float32 y
-float32 yaw
-
-bool obey_approach_speed_limit false
-# Speed limit of the lane leading to this waypoint in m/s
-float32 approach_speed_limit
-
-string level_name
-uint64 index
-
-*/
+export default Location;

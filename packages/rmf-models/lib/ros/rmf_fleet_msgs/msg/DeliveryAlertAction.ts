@@ -1,7 +1,7 @@
 /* This is a generated file, do not edit */
 
 export class DeliveryAlertAction {
-  static readonly FullTypeName = 'rmf_fleet_msgs/msg/DeliveryAlertAction';
+  static readonly FullTypeName = '';
 
   static readonly WAITING = 0;
   static readonly CANCEL = 1;
@@ -21,11 +21,4 @@ export class DeliveryAlertAction {
   }
 }
 
-/*
-uint32 value
-uint32 WAITING=0
-uint32 CANCEL=1
-uint32 OVERRIDE=2
-uint32 RESUME=3
-
-*/
+export default DeliveryAlertAction;

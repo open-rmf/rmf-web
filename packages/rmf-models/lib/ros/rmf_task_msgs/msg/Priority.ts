@@ -1,7 +1,7 @@
 /* This is a generated file, do not edit */
 
 export class Priority {
-  static readonly FullTypeName = 'rmf_task_msgs/msg/Priority';
+  static readonly FullTypeName = '';
 
   value: number;
 
@@ -16,6 +16,4 @@ export class Priority {
   }
 }
 
-/*
-uint64 value 0
-*/
+export default Priority;

@@ -1,11 +1,11 @@
 /* This is a generated file, do not edit */
 
-import { Dock } from '../../rmf_fleet_msgs/msg/Dock';
+import * as rmf_fleet_msgs from '../../rmf_fleet_msgs';
 
 export class DockSummary {
-  static readonly FullTypeName = 'rmf_fleet_msgs/msg/DockSummary';
+  static readonly FullTypeName = '';
 
-  docks: Dock[];
+  docks: Array<rmf_fleet_msgs.msg.Dock>;
 
   constructor(fields: Partial<DockSummary> = {}) {
     this.docks = fields.docks || [];
@@ -17,7 +17,7 @@ export class DockSummary {
     }
     for (const [i, v] of obj['docks'].entries()) {
       try {
-        Dock.validate(v);
+        rmf_fleet_msgs.msg.Dock.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "docks":\n  ` + (e as Error).message);
       }
@@ -25,6 +25,4 @@ export class DockSummary {
   }
 }
 
-/*
-Dock[] docks
-*/
+export default DockSummary;

@@ -1,14 +1,14 @@
 /* This is a generated file, do not edit */
 
-import { Param } from '../../rmf_building_map_msgs/msg/Param';
+import * as rmf_building_map_msgs from '../../rmf_building_map_msgs';
 
 export class GraphNode {
-  static readonly FullTypeName = 'rmf_building_map_msgs/msg/GraphNode';
+  static readonly FullTypeName = '';
 
   x: number;
   y: number;
   name: string;
-  params: Param[];
+  params: Array<rmf_building_map_msgs.msg.Param>;
 
   constructor(fields: Partial<GraphNode> = {}) {
     this.x = fields.x || 0;
@@ -32,7 +32,7 @@ export class GraphNode {
     }
     for (const [i, v] of obj['params'].entries()) {
       try {
-        Param.validate(v);
+        rmf_building_map_msgs.msg.Param.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "params":\n  ` + (e as Error).message);
       }
@@ -40,10 +40,4 @@ export class GraphNode {
   }
 }
 
-/*
-float32 x
-float32 y
-string name
-Param[] params
-
-*/
+export default GraphNode;

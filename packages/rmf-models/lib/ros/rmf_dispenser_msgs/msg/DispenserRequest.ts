@@ -1,19 +1,19 @@
 /* This is a generated file, do not edit */
 
-import { Time } from '../../builtin_interfaces/msg/Time';
-import { DispenserRequestItem } from '../../rmf_dispenser_msgs/msg/DispenserRequestItem';
+import * as rmf_dispenser_msgs from '../../rmf_dispenser_msgs';
+import * as builtin_interfaces from '../../builtin_interfaces';
 
 export class DispenserRequest {
-  static readonly FullTypeName = 'rmf_dispenser_msgs/msg/DispenserRequest';
+  static readonly FullTypeName = '';
 
-  time: Time;
+  time: builtin_interfaces.msg.Time;
   request_guid: string;
   target_guid: string;
   transporter_type: string;
-  items: DispenserRequestItem[];
+  items: Array<rmf_dispenser_msgs.msg.DispenserRequestItem>;
 
   constructor(fields: Partial<DispenserRequest> = {}) {
-    this.time = fields.time || new Time();
+    this.time = fields.time || new builtin_interfaces.msg.Time();
     this.request_guid = fields.request_guid || '';
     this.target_guid = fields.target_guid || '';
     this.transporter_type = fields.transporter_type || '';
@@ -22,7 +22,7 @@ export class DispenserRequest {
 
   static validate(obj: Record<string, unknown>): void {
     try {
-      Time.validate(obj['time'] as Record<string, unknown>);
+      builtin_interfaces.msg.Time.validate(obj['time'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "time":\n  ' + (e as Error).message);
     }
@@ -40,7 +40,7 @@ export class DispenserRequest {
     }
     for (const [i, v] of obj['items'].entries()) {
       try {
-        DispenserRequestItem.validate(v);
+        rmf_dispenser_msgs.msg.DispenserRequestItem.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "items":\n  ` + (e as Error).message);
       }
@@ -48,17 +48,4 @@ export class DispenserRequest {
   }
 }
 
-/*
-builtin_interfaces/Time time
-
-# A unique ID for this request
-string request_guid
-
-# The unique name of the dispenser that this request is aimed at
-string target_guid
-
-# below are custom workcell message fields
-string transporter_type
-DispenserRequestItem[] items
-
-*/
+export default DispenserRequest;

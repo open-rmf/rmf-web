@@ -1,21 +1,20 @@
 /* This is a generated file, do not edit */
 
-import { RobotMode } from '../../rmf_fleet_msgs/msg/RobotMode';
-import { ModeParameter } from '../../rmf_fleet_msgs/msg/ModeParameter';
+import * as rmf_fleet_msgs from '../../rmf_fleet_msgs';
 
 export class ModeRequest {
-  static readonly FullTypeName = 'rmf_fleet_msgs/msg/ModeRequest';
+  static readonly FullTypeName = '';
 
   fleet_name: string;
   robot_name: string;
-  mode: RobotMode;
+  mode: rmf_fleet_msgs.msg.RobotMode;
   task_id: string;
-  parameters: ModeParameter[];
+  parameters: Array<rmf_fleet_msgs.msg.ModeParameter>;
 
   constructor(fields: Partial<ModeRequest> = {}) {
     this.fleet_name = fields.fleet_name || '';
     this.robot_name = fields.robot_name || '';
-    this.mode = fields.mode || new RobotMode();
+    this.mode = fields.mode || new rmf_fleet_msgs.msg.RobotMode();
     this.task_id = fields.task_id || '';
     this.parameters = fields.parameters || [];
   }
@@ -28,7 +27,7 @@ export class ModeRequest {
       throw new Error('expected "robot_name" to be "string"');
     }
     try {
-      RobotMode.validate(obj['mode'] as Record<string, unknown>);
+      rmf_fleet_msgs.msg.RobotMode.validate(obj['mode'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "mode":\n  ' + (e as Error).message);
     }
@@ -40,7 +39,7 @@ export class ModeRequest {
     }
     for (const [i, v] of obj['parameters'].entries()) {
       try {
-        ModeParameter.validate(v);
+        rmf_fleet_msgs.msg.ModeParameter.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "parameters":\n  ` + (e as Error).message);
       }
@@ -48,15 +47,4 @@ export class ModeRequest {
   }
 }
 
-/*
-string fleet_name
-string robot_name
-RobotMode mode
-
-# task_id must be copied into future RobotState messages
-string task_id
-
-# Some mode changes require parameters. For example, the name of a dock.
-ModeParameter[] parameters
-
-*/
+export default ModeRequest;

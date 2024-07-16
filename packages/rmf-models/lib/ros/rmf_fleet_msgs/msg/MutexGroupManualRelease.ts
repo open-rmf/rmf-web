@@ -1,9 +1,9 @@
 /* This is a generated file, do not edit */
 
 export class MutexGroupManualRelease {
-  static readonly FullTypeName = 'rmf_fleet_msgs/msg/MutexGroupManualRelease';
+  static readonly FullTypeName = '';
 
-  release_mutex_groups: string[];
+  release_mutex_groups: Array<string>;
   fleet: string;
   robot: string;
 
@@ -31,17 +31,4 @@ export class MutexGroupManualRelease {
   }
 }
 
-/*
-# This message allows operators to manually request that a robot release one or
-# more mutex groups that it is currently holding.
-
-# Name of the mutex groups to release
-string[] release_mutex_groups
-
-# The name of the fleet that the robot belongs to
-string fleet
-
-# The name of the robot that needs to release the mutex groups
-string robot
-
-*/
+export default MutexGroupManualRelease;

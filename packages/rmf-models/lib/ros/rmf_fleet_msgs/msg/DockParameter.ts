@@ -1,13 +1,13 @@
 /* This is a generated file, do not edit */
 
-import { Location } from '../../rmf_fleet_msgs/msg/Location';
+import * as rmf_fleet_msgs from '../../rmf_fleet_msgs';
 
 export class DockParameter {
-  static readonly FullTypeName = 'rmf_fleet_msgs/msg/DockParameter';
+  static readonly FullTypeName = '';
 
   start: string;
   finish: string;
-  path: Location[];
+  path: Array<rmf_fleet_msgs.msg.Location>;
 
   constructor(fields: Partial<DockParameter> = {}) {
     this.start = fields.start || '';
@@ -27,7 +27,7 @@ export class DockParameter {
     }
     for (const [i, v] of obj['path'].entries()) {
       try {
-        Location.validate(v);
+        rmf_fleet_msgs.msg.Location.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "path":\n  ` + (e as Error).message);
       }
@@ -35,13 +35,4 @@ export class DockParameter {
   }
 }
 
-/*
-# The name of the waypoint where the docking begins
-string start
-
-# The name of the waypoint where the docking ends
-string finish
-
-# The points in the docking path
-Location[] path
-*/
+export default DockParameter;

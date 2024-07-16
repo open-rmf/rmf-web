@@ -1,87 +1,66 @@
 /* This is a generated file, do not edit */
 
-import { Time } from '../../builtin_interfaces/msg/Time';
-import { Priority } from '../../rmf_task_msgs/msg/Priority';
-import { TaskType } from '../../rmf_task_msgs/msg/TaskType';
-import { Station } from '../../rmf_task_msgs/msg/Station';
-import { Loop } from '../../rmf_task_msgs/msg/Loop';
-import { Delivery } from '../../rmf_task_msgs/msg/Delivery';
-import { Clean } from '../../rmf_task_msgs/msg/Clean';
+import * as builtin_interfaces from '../../builtin_interfaces';
+import * as rmf_task_msgs from '../../rmf_task_msgs';
 
 export class TaskDescription {
-  static readonly FullTypeName = 'rmf_task_msgs/msg/TaskDescription';
+  static readonly FullTypeName = '';
 
-  start_time: Time;
-  priority: Priority;
-  task_type: TaskType;
-  station: Station;
-  loop: Loop;
-  delivery: Delivery;
-  clean: Clean;
+  start_time: builtin_interfaces.msg.Time;
+  priority: rmf_task_msgs.msg.Priority;
+  task_type: rmf_task_msgs.msg.TaskType;
+  station: rmf_task_msgs.msg.Station;
+  loop: rmf_task_msgs.msg.Loop;
+  delivery: rmf_task_msgs.msg.Delivery;
+  clean: rmf_task_msgs.msg.Clean;
 
   constructor(fields: Partial<TaskDescription> = {}) {
-    this.start_time = fields.start_time || new Time();
-    this.priority = fields.priority || new Priority();
-    this.task_type = fields.task_type || new TaskType();
-    this.station = fields.station || new Station();
-    this.loop = fields.loop || new Loop();
-    this.delivery = fields.delivery || new Delivery();
-    this.clean = fields.clean || new Clean();
+    this.start_time = fields.start_time || new builtin_interfaces.msg.Time();
+    this.priority = fields.priority || new rmf_task_msgs.msg.Priority();
+    this.task_type = fields.task_type || new rmf_task_msgs.msg.TaskType();
+    this.station = fields.station || new rmf_task_msgs.msg.Station();
+    this.loop = fields.loop || new rmf_task_msgs.msg.Loop();
+    this.delivery = fields.delivery || new rmf_task_msgs.msg.Delivery();
+    this.clean = fields.clean || new rmf_task_msgs.msg.Clean();
   }
 
   static validate(obj: Record<string, unknown>): void {
     try {
-      Time.validate(obj['start_time'] as Record<string, unknown>);
+      builtin_interfaces.msg.Time.validate(obj['start_time'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "start_time":\n  ' + (e as Error).message);
     }
     try {
-      Priority.validate(obj['priority'] as Record<string, unknown>);
+      rmf_task_msgs.msg.Priority.validate(obj['priority'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "priority":\n  ' + (e as Error).message);
     }
     try {
-      TaskType.validate(obj['task_type'] as Record<string, unknown>);
+      rmf_task_msgs.msg.TaskType.validate(obj['task_type'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "task_type":\n  ' + (e as Error).message);
     }
     try {
-      Station.validate(obj['station'] as Record<string, unknown>);
+      rmf_task_msgs.msg.Station.validate(obj['station'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "station":\n  ' + (e as Error).message);
     }
     try {
-      Loop.validate(obj['loop'] as Record<string, unknown>);
+      rmf_task_msgs.msg.Loop.validate(obj['loop'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "loop":\n  ' + (e as Error).message);
     }
     try {
-      Delivery.validate(obj['delivery'] as Record<string, unknown>);
+      rmf_task_msgs.msg.Delivery.validate(obj['delivery'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "delivery":\n  ' + (e as Error).message);
     }
     try {
-      Clean.validate(obj['clean'] as Record<string, unknown>);
+      rmf_task_msgs.msg.Clean.validate(obj['clean'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "clean":\n  ' + (e as Error).message);
     }
   }
 }
 
-/*
-# Desired start time of a task
-builtin_interfaces/Time start_time
-
-# Priority of the task
-Priority priority
-
-# Task type
-TaskType task_type
-
-# The corresponding field for the above TaskType should be populated
-Station station
-Loop loop
-Delivery delivery
-Clean clean
-
-*/
+export default TaskDescription;

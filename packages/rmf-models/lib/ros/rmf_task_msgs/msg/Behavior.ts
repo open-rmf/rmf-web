@@ -1,12 +1,12 @@
 /* This is a generated file, do not edit */
 
-import { BehaviorParameter } from '../../rmf_task_msgs/msg/BehaviorParameter';
+import * as rmf_task_msgs from '../../rmf_task_msgs';
 
 export class Behavior {
-  static readonly FullTypeName = 'rmf_task_msgs/msg/Behavior';
+  static readonly FullTypeName = '';
 
   name: string;
-  parameters: BehaviorParameter[];
+  parameters: Array<rmf_task_msgs.msg.BehaviorParameter>;
 
   constructor(fields: Partial<Behavior> = {}) {
     this.name = fields.name || '';
@@ -22,7 +22,7 @@ export class Behavior {
     }
     for (const [i, v] of obj['parameters'].entries()) {
       try {
-        BehaviorParameter.validate(v);
+        rmf_task_msgs.msg.BehaviorParameter.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "parameters":\n  ` + (e as Error).message);
       }
@@ -30,8 +30,4 @@ export class Behavior {
   }
 }
 
-/*
-string name
-BehaviorParameter[] parameters
-
-*/
+export default Behavior;

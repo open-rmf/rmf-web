@@ -1,15 +1,14 @@
 /* This is a generated file, do not edit */
 
-import { Door } from '../../rmf_building_map_msgs/msg/Door';
-import { Graph } from '../../rmf_building_map_msgs/msg/Graph';
+import * as rmf_building_map_msgs from '../../rmf_building_map_msgs';
 
 export class Lift {
-  static readonly FullTypeName = 'rmf_building_map_msgs/msg/Lift';
+  static readonly FullTypeName = '';
 
   name: string;
-  levels: string[];
-  doors: Door[];
-  wall_graph: Graph;
+  levels: Array<string>;
+  doors: Array<rmf_building_map_msgs.msg.Door>;
+  wall_graph: rmf_building_map_msgs.msg.Graph;
   ref_x: number;
   ref_y: number;
   ref_yaw: number;
@@ -20,7 +19,7 @@ export class Lift {
     this.name = fields.name || '';
     this.levels = fields.levels || [];
     this.doors = fields.doors || [];
-    this.wall_graph = fields.wall_graph || new Graph();
+    this.wall_graph = fields.wall_graph || new rmf_building_map_msgs.msg.Graph();
     this.ref_x = fields.ref_x || 0;
     this.ref_y = fields.ref_y || 0;
     this.ref_yaw = fields.ref_yaw || 0;
@@ -45,13 +44,13 @@ export class Lift {
     }
     for (const [i, v] of obj['doors'].entries()) {
       try {
-        Door.validate(v);
+        rmf_building_map_msgs.msg.Door.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "doors":\n  ` + (e as Error).message);
       }
     }
     try {
-      Graph.validate(obj['wall_graph'] as Record<string, unknown>);
+      rmf_building_map_msgs.msg.Graph.validate(obj['wall_graph'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "wall_graph":\n  ' + (e as Error).message);
     }
@@ -73,19 +72,4 @@ export class Lift {
   }
 }
 
-/*
-string name
-string[] levels
-Door[] doors
-Graph wall_graph
-
-# (ref_x, ref_y, ref_yaw) is a "reference orientation" of the lift cabin
-# which can be used to align floors.
-float32 ref_x
-float32 ref_y
-float32 ref_yaw
-
-# width and depth of the cabin
-float32 width
-float32 depth
-*/
+export default Lift;

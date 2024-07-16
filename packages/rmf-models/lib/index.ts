@@ -2,7 +2,7 @@ import {
   AffineImage as RmfAffineImage,
   BuildingMap as RmfBuildingMap,
   Level as RmfLevel,
-} from './ros';
+} from './ros/rmf_building_map_msgs/msg';
 
 export * from './ros';
 
@@ -17,11 +17,5 @@ export interface Level extends Omit<RmfLevel, 'images'> {
 export interface BuildingMap extends Omit<RmfBuildingMap, 'levels'> {
   levels: Level[];
 }
-
-export { DispenserHealth } from './tortoise/dispenser-health';
-export { DoorHealth } from './tortoise/door-health';
-export { IngestorHealth } from './tortoise/ingestor-health';
-export { LiftHealth } from './tortoise/lift-health';
-export { RobotHealth } from './tortoise/robot-health';
 
 export * from './version';

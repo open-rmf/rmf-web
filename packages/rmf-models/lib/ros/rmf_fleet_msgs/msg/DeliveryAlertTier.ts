@@ -1,7 +1,7 @@
 /* This is a generated file, do not edit */
 
 export class DeliveryAlertTier {
-  static readonly FullTypeName = 'rmf_fleet_msgs/msg/DeliveryAlertTier';
+  static readonly FullTypeName = '';
 
   static readonly WARNING = 0;
   static readonly ERROR = 1;
@@ -19,9 +19,4 @@ export class DeliveryAlertTier {
   }
 }
 
-/*
-uint32 value
-uint32 WARNING=0
-uint32 ERROR=1
-
-*/
+export default DeliveryAlertTier;

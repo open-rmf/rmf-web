@@ -1,18 +1,18 @@
 /* This is a generated file, do not edit */
 
-import { SpeedLimitedLane } from '../../rmf_fleet_msgs/msg/SpeedLimitedLane';
+import * as rmf_fleet_msgs from '../../rmf_fleet_msgs';
 
 export class SpeedLimitRequest {
-  static readonly FullTypeName = 'rmf_fleet_msgs/msg/SpeedLimitRequest';
+  static readonly FullTypeName = '';
 
   fleet_name: string;
-  speed_limits: SpeedLimitedLane[];
+  speed_limits: Array<rmf_fleet_msgs.msg.SpeedLimitedLane>;
   remove_limits: BigUint64Array | number[];
 
   constructor(fields: Partial<SpeedLimitRequest> = {}) {
     this.fleet_name = fields.fleet_name || '';
     this.speed_limits = fields.speed_limits || [];
-    this.remove_limits = fields.remove_limits || [];
+    this.remove_limits = fields.remove_limits || new BigUint64Array(0);
   }
 
   static validate(obj: Record<string, unknown>): void {
@@ -24,7 +24,7 @@ export class SpeedLimitRequest {
     }
     for (const [i, v] of obj['speed_limits'].entries()) {
       try {
-        SpeedLimitedLane.validate(v);
+        rmf_fleet_msgs.msg.SpeedLimitedLane.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "speed_limits":\n  ` + (e as Error).message);
       }
@@ -38,18 +38,10 @@ export class SpeedLimitRequest {
           throw new Error(`expected index ${i} of "remove_limits" to be "number"`);
         }
       }
+    } else if (!(obj['remove_limits'] instanceof BigUint64Array)) {
+      throw new Error('"remove_limits" must be either an array of number or BigUint64Array');
     }
   }
 }
 
-/*
-# The name of the fleet
-string fleet_name
-
-# The lanes to impose speed limits upon.
-SpeedLimitedLane[] speed_limits
-
-# The indices of lanes to remove speed limits
-uint64[] remove_limits
-
-*/
+export default SpeedLimitRequest;

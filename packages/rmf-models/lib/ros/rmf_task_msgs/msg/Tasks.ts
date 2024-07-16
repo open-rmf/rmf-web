@@ -1,11 +1,11 @@
 /* This is a generated file, do not edit */
 
-import { TaskSummary } from '../../rmf_task_msgs/msg/TaskSummary';
+import * as rmf_task_msgs from '../../rmf_task_msgs';
 
 export class Tasks {
-  static readonly FullTypeName = 'rmf_task_msgs/msg/Tasks';
+  static readonly FullTypeName = '';
 
-  tasks: TaskSummary[];
+  tasks: Array<rmf_task_msgs.msg.TaskSummary>;
 
   constructor(fields: Partial<Tasks> = {}) {
     this.tasks = fields.tasks || [];
@@ -17,7 +17,7 @@ export class Tasks {
     }
     for (const [i, v] of obj['tasks'].entries()) {
       try {
-        TaskSummary.validate(v);
+        rmf_task_msgs.msg.TaskSummary.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "tasks":\n  ` + (e as Error).message);
       }
@@ -25,7 +25,4 @@ export class Tasks {
   }
 }
 
-/*
-TaskSummary[] tasks
-
-*/
+export default Tasks;

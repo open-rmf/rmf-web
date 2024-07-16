@@ -1,14 +1,14 @@
 /* This is a generated file, do not edit */
 
 export class ClosedLanes {
-  static readonly FullTypeName = 'rmf_fleet_msgs/msg/ClosedLanes';
+  static readonly FullTypeName = '';
 
   fleet_name: string;
   closed_lanes: BigUint64Array | number[];
 
   constructor(fields: Partial<ClosedLanes> = {}) {
     this.fleet_name = fields.fleet_name || '';
-    this.closed_lanes = fields.closed_lanes || [];
+    this.closed_lanes = fields.closed_lanes || new BigUint64Array(0);
   }
 
   static validate(obj: Record<string, unknown>): void {
@@ -24,13 +24,10 @@ export class ClosedLanes {
           throw new Error(`expected index ${i} of "closed_lanes" to be "number"`);
         }
       }
+    } else if (!(obj['closed_lanes'] instanceof BigUint64Array)) {
+      throw new Error('"closed_lanes" must be either an array of number or BigUint64Array');
     }
   }
 }
 
-/*
-
-string fleet_name
-uint64[] closed_lanes
-
-*/
+export default ClosedLanes;
