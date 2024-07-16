@@ -5,11 +5,11 @@ from pydantic import BaseModel, Field
 from . import tortoise_models as ttm
 from .ros_pydantic import builtin_interfaces, rmf_building_map_msgs
 
-Lift = rmf_building_map_msgs.Lift
+Lift = rmf_building_map_msgs.msg.Lift
 
 
 class LiftState(BaseModel):
-    lift_time: builtin_interfaces.Time
+    lift_time: builtin_interfaces.msg.Time
     lift_name: str
     available_floors: list[str]
     current_floor: str

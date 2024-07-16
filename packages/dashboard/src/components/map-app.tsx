@@ -28,7 +28,7 @@ import { createMicroApp } from './micro-app';
 import { RmfAppContext } from './rmf-app';
 import { RobotSummary } from './robots/robot-summary';
 import { CameraControl, Door, LayersController, Lifts, RobotThree } from './three-fiber';
-import { TrajectoryData } from './trajectories-overlay';
+import { TrajectoryData } from '../managers/robot-trajectory-manager';
 
 const debug = Debug('MapApp');
 

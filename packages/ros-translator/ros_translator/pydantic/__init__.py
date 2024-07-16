@@ -5,7 +5,7 @@ from os.path import join as joinp
 from typing import Sequence
 
 from jinja2 import Environment, FileSystemLoader
-from ros_translator.library import Member, Message, Namespace, PackageIndex, RosLibrary
+from ros_translator.library import Message, Namespace, RosLibrary
 from rosidl_parser.definition import (
     AbstractSequence,
     AbstractString,
@@ -25,15 +25,12 @@ template_env.keep_trailing_newline = True
 PRIMITIVE_TYPES = {
     "boolean": "bool",
     "octet": "Annotated[int, pydantic.Field(ge=0, le=255)]",
-    "char": "Annotated[int, pydantic.Field(ge=0, le=255)]",
     "float": "float",
     "double": "float",
     "int8": "Annotated[int, pydantic.Field(ge=-128, le=127)]",
     "int16": "Annotated[int, pydantic.Field(ge=-32768, le=32767)]",
     "int32": "Annotated[int, pydantic.Field(ge=-2147483648, le=2147483647)]",
     "int64": "int",
-    "string": "str",
-    "wstring": "str",
     "uint8": "Annotated[int, pydantic.Field(ge=0, le=255)]",
     "uint16": "Annotated[int, pydantic.Field(ge=0, le=65535)]",
     "uint32": "Annotated[int, pydantic.Field(ge=0, le=4294967295)]",
@@ -43,15 +40,12 @@ PRIMITIVE_TYPES = {
 DEFAULT_VALUES = {
     "boolean": "False",
     "octet": "0",
-    "char": "0",
     "float": "0",
     "double": "0",
     "int8": "0",
     "int16": "0",
     "int32": "0",
     "int64": "0",
-    "string": '""',
-    "wstring": '""',
     "uint8": "0",
     "uint16": "0",
     "uint32": "0",
@@ -59,13 +53,11 @@ DEFAULT_VALUES = {
 }
 
 ARRAY_TYPES = {
-    "char": "bytes",
-    "byte": "bytes",
+    "octet": "bytes",
     "uint8": "bytes",
 }
 
 DEFAULT_ARRAY_VALUES = {
-    "char": "bytes()",
     "octet": "bytes()",
     "uint8": "bytes()",
 }
@@ -73,51 +65,57 @@ DEFAULT_ARRAY_VALUES = {
 
 class PydanticType:
     typename: str
-    default_value: str
+    elem_type: "PydanticType"
 
     def __init__(self, ros_type: AbstractType):
-        if isinstance(ros_type, AbstractSequence) or isinstance(ros_type, Array):
-            self._init_array_type(ros_type)
-            return
-
         if isinstance(ros_type, BasicType):
             self.typename = PRIMITIVE_TYPES[ros_type.typename]
-            self.default_value = DEFAULT_VALUES[ros_type.typename]
         elif isinstance(ros_type, AbstractString):
             self.typename = "str"
-            self.default_value = ""
         elif isinstance(ros_type, NamespacedType):
-            self.typename = ".".join(ros_type.namespaced_name())
-            self.default_value = f"{ros_type.name}()"
+            self.typename = "_".join(ros_type.namespaced_name())
+        elif isinstance(ros_type, AbstractSequence) or isinstance(ros_type, Array):
+            self.elem_type = PydanticType(ros_type.value_type)
+            self.typename = self._get_array_type(ros_type, self.elem_type.typename)
+            return
         else:
             raise ValueError(f"{type(ros_type)} is not supported")
 
-    def _get_array_type(self, ros_type: AbstractSequence | Array, elem_type: str):
+    def _get_array_type(self, ros_type: AbstractSequence | Array, elem_typename: str):
+        if elem_typename in ARRAY_TYPES:
+            return ARRAY_TYPES[elem_typename]
+
         if isinstance(ros_type, BoundedSequence):
-            return f"Annotated[list[{elem_type}], pydantic.Field(max_length={ros_type.maximum_size})]"
+            return f"Annotated[list[{elem_typename}], pydantic.Field(max_length={ros_type.maximum_size})]"
         elif isinstance(ros_type, UnboundedSequence):
-            return f"list[{elem_type}]"
+            return f"list[{elem_typename}]"
         elif isinstance(ros_type, Array):
-            return f"Annotated[list[{elem_type}], pydantic.Field(min_length={ros_type.size}, max_length={ros_type.size})]"
+            return f"Annotated[list[{elem_typename}], pydantic.Field(min_length={ros_type.size}, max_length={ros_type.size})]"
         else:
             raise ValueError(f"{type(ros_type)} is not supported")
 
-    def _init_array_type(self, ros_type: AbstractSequence | Array):
-        if isinstance(ros_type.value_type, BasicType):
-            if ros_type.value_type.typename in ARRAY_TYPES:
-                self.typename = ARRAY_TYPES[ros_type.value_type.typename]
-                self.default_value = DEFAULT_ARRAY_VALUES[ros_type.value_type.typename]
-            else:
-                self.typename = self._get_array_type(
-                    ros_type, PRIMITIVE_TYPES[ros_type.value_type.typename]
-                )
-                self.default_value = "[]"
-        elif isinstance(ros_type.value_type, NamespacedType):
-            elem_type = ".".join(ros_type.value_type.namespaced_name())
-            self.typename = self._get_array_type(ros_type, elem_type)
-            self.default_value = "[]"
+
+def relative_import(base: Message, to: Message) -> str:
+    base_ns = list(base.idl.structure.namespaced_type.namespaces)
+    to_ns = list(to.idl.structure.namespaced_type.namespaces)
+    common: list[str] = []
+    relative = ""
+    for a, b in zip(base_ns, to_ns):
+        if a == b:
+            common.append(a)
+            continue
+        if a is None:
+            relative = "." + ".".join(to_ns[len(common) :])
+            break
         else:
-            raise ValueError(f"{type(ros_type.value_type)} is not supported")
+            relative = (
+                "."
+                + "." * (len(base_ns) - len(common))
+                + ".".join(to_ns[len(common) :])
+            )
+            break
+    full_alias = to.full_type_name.replace("/", "_")
+    return f"from {relative}.{to.name} import {to.name} as {full_alias}"
 
 
 def generate_messages(roslib: RosLibrary, pkg: str, outdir: str):
@@ -127,9 +125,8 @@ def generate_messages(roslib: RosLibrary, pkg: str, outdir: str):
         msg = roslib.get_message(msg_type)
         outpath = joinp(outdir, f"{msg.full_type_name}.py")
         os.makedirs(os.path.dirname(outpath), exist_ok=True)
-        depth = msg.full_type_name.count("/") + 1
         print(outpath)
-        template.stream(msg=msg, depth=depth).dump(outpath)
+        template.stream(msg=msg, relative_import=relative_import).dump(outpath)
 
 
 def generate_init(namespace: Namespace, outdir: str):
@@ -150,8 +147,8 @@ def generate_modules(pkgs: Sequence[str], outdir: str):
     for pkg_index in all_pkg_index:
         pkg_outdir = joinp(outdir, pkg_index.pkg_name)
         makedirs(pkg_outdir, exist_ok=True)
-        generate_init(pkg_index.root_ns, outdir)
         generate_messages(roslib, pkg_index.pkg_name, outdir)
+        generate_init(pkg_index.root_ns, outdir)
 
 
 def generate(pkgs: Sequence[str], outdir: str):
