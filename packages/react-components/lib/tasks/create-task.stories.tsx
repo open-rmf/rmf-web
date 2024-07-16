@@ -9,16 +9,8 @@ export default {
   component: CreateTaskForm,
 } satisfies Meta;
 
-function makeTasks(): TaskRequest[] {
-  const tasks: TaskRequest[] = [];
-  for (let i = 0; i < 100; i++) {
-    tasks.push(makeTaskRequest());
-  }
-  return tasks;
-}
-
 export const CreateTask: StoryFn<CreateTaskFormProps> = (args) => {
-  return <CreateTaskForm {...args} open tasksFromFile={makeTasks}></CreateTaskForm>;
+  return <CreateTaskForm {...args} open></CreateTaskForm>;
 };
 
 CreateTask.args = {

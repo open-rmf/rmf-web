@@ -60,7 +60,6 @@ import {
 } from './app-contexts';
 import { AppEvents } from './app-events';
 import { RmfAppContext } from './rmf-app';
-import { parseTasksFile } from './tasks/utils';
 import { Subscription } from 'rxjs';
 import { formatDistance } from 'date-fns';
 import { styled } from '@mui/system';
@@ -263,37 +262,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     },
     [rmf],
   );
-
-  const uploadFileInputRef = React.useRef<HTMLInputElement>(null);
-  const tasksFromFile = (): Promise<TaskRequest[]> => {
-    return new Promise((res) => {
-      const fileInputEl = uploadFileInputRef.current;
-      if (!fileInputEl) {
-        return [];
-      }
-      let taskFiles: TaskRequest[];
-      const listener = async () => {
-        try {
-          if (!fileInputEl.files || fileInputEl.files.length === 0) {
-            return res([]);
-          }
-          try {
-            taskFiles = parseTasksFile(await fileInputEl.files[0].text());
-          } catch (err) {
-            showAlert('error', (err as Error).message, 5000);
-            return res([]);
-          }
-          // only submit tasks when all tasks are error free
-          return res(taskFiles);
-        } finally {
-          fileInputEl.removeEventListener('input', listener);
-          fileInputEl.value = '';
-        }
-      };
-      fileInputEl.addEventListener('input', listener);
-      fileInputEl.click();
-    });
-  };
 
   //#region 'Favorite Task'
   React.useEffect(() => {
@@ -626,7 +594,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
           submitTasks={submitTasks}
           submitFavoriteTask={submitFavoriteTask}
           deleteFavoriteTask={deleteFavoriteTask}
-          tasksFromFile={tasksFromFile}
           onSuccess={() => {
             console.log('Dispatch task requested');
             setOpenCreateTaskForm(false);

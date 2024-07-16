@@ -301,7 +301,6 @@ export interface CreateTaskFormProps
   // requestTask is provided only when editing a schedule
   requestTask?: TaskRequest;
   submitTasks?(tasks: TaskRequest[], schedule: Schedule | null): Promise<void>;
-  tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
   onSuccess?(tasks: TaskRequest[]): void;
   onFail?(error: Error, tasks: TaskRequest[]): void;
   onSuccessFavoriteTask?(message: string, favoriteTask: TaskFavorite): void;
@@ -332,7 +331,6 @@ export function CreateTaskForm({
   scheduleToEdit,
   requestTask,
   submitTasks,
-  tasksFromFile,
   onClose,
   onSuccess,
   onFail,

@@ -10526,7 +10526,9 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string | null} [assignedTo] comma separated list of assigned robot names
      * @param {string | null} [status] comma separated list of statuses
      * @param {string | null} [label] comma separated list of labels, each item must be in the form &lt;key&gt;&#x3D;&lt;value&gt;, multiple items will filter tasks with all the labels
-     * @param {string} [timeBetween]          The period of request time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {string} [requestTimeBetween]          The period of request time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {string} [startTimeBetween]          The period of start time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {string} [finishTimeBetween]          The period of finish time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
      * @param {number | null} [limit] defaults to 100
      * @param {number | null} [offset] defaults to 0
      * @param {string | null} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -10541,7 +10543,9 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       assignedTo?: string | null,
       status?: string | null,
       label?: string | null,
-      timeBetween?: string,
+      requestTimeBetween?: string,
+      startTimeBetween?: string,
+      finishTimeBetween?: string,
       limit?: number | null,
       offset?: number | null,
       orderBy?: string | null,
@@ -10584,8 +10588,16 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
         localVarQueryParameter['label'] = label;
       }
 
-      if (timeBetween !== undefined) {
-        localVarQueryParameter['time_between'] = timeBetween;
+      if (requestTimeBetween !== undefined) {
+        localVarQueryParameter['request_time_between'] = requestTimeBetween;
+      }
+
+      if (startTimeBetween !== undefined) {
+        localVarQueryParameter['start_time_between'] = startTimeBetween;
+      }
+
+      if (finishTimeBetween !== undefined) {
+        localVarQueryParameter['finish_time_between'] = finishTimeBetween;
       }
 
       if (limit !== undefined) {
@@ -11473,7 +11485,9 @@ export const TasksApiFp = function (configuration?: Configuration) {
      * @param {string | null} [assignedTo] comma separated list of assigned robot names
      * @param {string | null} [status] comma separated list of statuses
      * @param {string | null} [label] comma separated list of labels, each item must be in the form &lt;key&gt;&#x3D;&lt;value&gt;, multiple items will filter tasks with all the labels
-     * @param {string} [timeBetween]          The period of request time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {string} [requestTimeBetween]          The period of request time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {string} [startTimeBetween]          The period of start time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {string} [finishTimeBetween]          The period of finish time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
      * @param {number | null} [limit] defaults to 100
      * @param {number | null} [offset] defaults to 0
      * @param {string | null} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -11488,7 +11502,9 @@ export const TasksApiFp = function (configuration?: Configuration) {
       assignedTo?: string | null,
       status?: string | null,
       label?: string | null,
-      timeBetween?: string,
+      requestTimeBetween?: string,
+      startTimeBetween?: string,
+      finishTimeBetween?: string,
       limit?: number | null,
       offset?: number | null,
       orderBy?: string | null,
@@ -11502,7 +11518,9 @@ export const TasksApiFp = function (configuration?: Configuration) {
         assignedTo,
         status,
         label,
-        timeBetween,
+        requestTimeBetween,
+        startTimeBetween,
+        finishTimeBetween,
         limit,
         offset,
         orderBy,
@@ -12013,7 +12031,9 @@ export const TasksApiFactory = function (
      * @param {string | null} [assignedTo] comma separated list of assigned robot names
      * @param {string | null} [status] comma separated list of statuses
      * @param {string | null} [label] comma separated list of labels, each item must be in the form &lt;key&gt;&#x3D;&lt;value&gt;, multiple items will filter tasks with all the labels
-     * @param {string} [timeBetween]          The period of request time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {string} [requestTimeBetween]          The period of request time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {string} [startTimeBetween]          The period of start time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {string} [finishTimeBetween]          The period of finish time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
      * @param {number | null} [limit] defaults to 100
      * @param {number | null} [offset] defaults to 0
      * @param {string | null} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -12028,7 +12048,9 @@ export const TasksApiFactory = function (
       assignedTo?: string | null,
       status?: string | null,
       label?: string | null,
-      timeBetween?: string,
+      requestTimeBetween?: string,
+      startTimeBetween?: string,
+      finishTimeBetween?: string,
       limit?: number | null,
       offset?: number | null,
       orderBy?: string | null,
@@ -12043,7 +12065,9 @@ export const TasksApiFactory = function (
           assignedTo,
           status,
           label,
-          timeBetween,
+          requestTimeBetween,
+          startTimeBetween,
+          finishTimeBetween,
           limit,
           offset,
           orderBy,
@@ -12578,7 +12602,9 @@ export class TasksApi extends BaseAPI {
    * @param {string | null} [assignedTo] comma separated list of assigned robot names
    * @param {string | null} [status] comma separated list of statuses
    * @param {string | null} [label] comma separated list of labels, each item must be in the form &lt;key&gt;&#x3D;&lt;value&gt;, multiple items will filter tasks with all the labels
-   * @param {string} [timeBetween]          The period of request time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+   * @param {string} [requestTimeBetween]          The period of request time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+   * @param {string} [startTimeBetween]          The period of start time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+   * @param {string} [finishTimeBetween]          The period of finish time to fetch, in unix millis.          This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
    * @param {number | null} [limit] defaults to 100
    * @param {number | null} [offset] defaults to 0
    * @param {string | null} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -12594,7 +12620,9 @@ export class TasksApi extends BaseAPI {
     assignedTo?: string | null,
     status?: string | null,
     label?: string | null,
-    timeBetween?: string,
+    requestTimeBetween?: string,
+    startTimeBetween?: string,
+    finishTimeBetween?: string,
     limit?: number | null,
     offset?: number | null,
     orderBy?: string | null,
@@ -12609,7 +12637,9 @@ export class TasksApi extends BaseAPI {
         assignedTo,
         status,
         label,
-        timeBetween,
+        requestTimeBetween,
+        startTimeBetween,
+        finishTimeBetween,
         limit,
         offset,
         orderBy,

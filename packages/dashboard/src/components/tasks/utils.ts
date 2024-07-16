@@ -1,20 +1,5 @@
 import { PostScheduledTaskRequest, TaskRequest, TaskStateOutput as TaskState } from 'api-client';
-import { ajv, getTaskBookingLabelFromTaskState, Schedule } from 'react-components';
-import schema from 'api-client/dist/schema';
-
-export function parseTasksFile(contents: string): TaskRequest[] {
-  const obj = JSON.parse(contents) as unknown[];
-  if (!Array.isArray(obj)) {
-    throw new Error('Expected an array of tasks');
-  }
-
-  const errIdx = obj.findIndex((req) => !ajv.validate(schema.components.schemas.TaskRequest, req));
-  if (errIdx !== -1) {
-    const errors = ajv.errors!;
-    throw new Error(`Validation error on item ${errIdx + 1}: ${errors[0].message}`);
-  }
-  return obj;
-}
+import { getTaskBookingLabelFromTaskState, Schedule } from 'react-components';
 
 export function exportCsvFull(timestamp: Date, allTasks: TaskState[]) {
   const columnSeparator = ';';

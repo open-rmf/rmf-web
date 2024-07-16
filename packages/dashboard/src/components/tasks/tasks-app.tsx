@@ -13,7 +13,7 @@ import {
   Tooltip,
   useMediaQuery,
 } from '@mui/material';
-import { TaskRequest, TaskState } from 'api-client';
+import { TaskRequest, TaskStateInput as TaskState } from 'api-client';
 import React from 'react';
 import {
   FilterFields,
@@ -191,8 +191,8 @@ export const TasksApp = React.memo(
             filterColumn && filterColumn === 'id_' ? filterValue : undefined,
             filterColumn && filterColumn === 'category' ? filterValue : undefined,
             filterColumn && filterColumn === 'requester' ? filterValue : undefined,
-            filterColumn && filterColumn === 'label=pickup' ? filterValue : undefined,
-            filterColumn && filterColumn === 'label=destination' ? filterValue : undefined,
+            // filterColumn && filterColumn === 'label=pickup' ? filterValue : undefined,
+            // filterColumn && filterColumn === 'label=destination' ? filterValue : undefined,
             filterColumn && filterColumn === 'assigned_to' ? filterValue : undefined,
             filterColumn && filterColumn === 'status' ? filterValue : undefined,
             undefined,
@@ -256,8 +256,6 @@ export const TasksApp = React.memo(
         do {
           queries = (
             await rmf.tasksApi.queryTaskStatesTasksGet(
-              undefined,
-              undefined,
               undefined,
               undefined,
               undefined,

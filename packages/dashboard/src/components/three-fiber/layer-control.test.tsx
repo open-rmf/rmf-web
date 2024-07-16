@@ -348,6 +348,7 @@ describe('LayersController', () => {
     ];
 
     const onChangeMock = jest.fn();
+    const handleFullViewMock = jest.fn();
     const handleZoomInMock = jest.fn();
     const handleZoomOutMock = jest.fn();
 
@@ -363,6 +364,7 @@ describe('LayersController', () => {
         onChange={onChangeMock}
         levels={levels}
         currentLevel={levels[0]}
+        handleFullView={handleFullViewMock}
         handleZoomIn={handleZoomInMock}
         handleZoomOut={handleZoomOutMock}
       />,

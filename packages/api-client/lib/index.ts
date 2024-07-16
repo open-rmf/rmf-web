@@ -4,6 +4,7 @@ import {
   Alert,
   BeaconState,
   BuildingMap,
+  DeliveryAlert,
   DispenserState,
   DoorState,
   FleetState,
@@ -102,6 +103,10 @@ export class SioClient {
 
   subscribeAlerts(listener: Listener<Alert>): Subscription {
     return this.subscribe<Alert>(`/alerts`, listener);
+  }
+
+  subscribeDeliveryAlerts(listener: Listener<DeliveryAlert>): Subscription {
+    return this.subscribe<DeliveryAlert>('/delivery_alerts', listener);
   }
 }
 

@@ -886,17 +886,43 @@ export default {
               'comma separated list of labels, each item must be in the form <key>=<value>, multiple items will filter tasks with all the labels',
           },
           {
-            name: 'time_between',
+            name: 'request_time_between',
             in: 'query',
             required: false,
             schema: {
               type: 'string',
               description:
                 '\n        The period of request time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n        ',
-              title: 'Time Between',
+              title: 'Request Time Between',
             },
             description:
               '\n        The period of request time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n        ',
+          },
+          {
+            name: 'start_time_between',
+            in: 'query',
+            required: false,
+            schema: {
+              type: 'string',
+              description:
+                '\n        The period of start time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n        ',
+              title: 'Start Time Between',
+            },
+            description:
+              '\n        The period of start time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n        ',
+          },
+          {
+            name: 'finish_time_between',
+            in: 'query',
+            required: false,
+            schema: {
+              type: 'string',
+              description:
+                '\n        The period of finish time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n        ',
+              title: 'Finish Time Between',
+            },
+            description:
+              '\n        The period of finish time to fetch, in unix millis.\n\n        This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n        ',
           },
           {
             name: 'limit',
