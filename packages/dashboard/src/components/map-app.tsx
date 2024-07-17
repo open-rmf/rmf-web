@@ -28,7 +28,7 @@ import { createMicroApp } from './micro-app';
 import { RmfAppContext } from './rmf-app';
 import { RobotSummary } from './robots/robot-summary';
 import { CameraControl, Door, LayersController, Lifts, RobotThree } from './three-fiber';
-import { TrajectoryData } from './trajectories-overlay';
+import { TrajectoryData } from '../managers/robot-trajectory-manager';
 
 const debug = Debug('MapApp');
 
@@ -201,8 +201,8 @@ export const MapApp = styled(
     const defaultZoom = isScreenHeightLessThan800
       ? resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL
       : resourceManager?.defaultZoom
-      ? resourceManager.defaultZoom * 2
-      : DEFAULT_ZOOM_LEVEL;
+        ? resourceManager.defaultZoom * 2
+        : DEFAULT_ZOOM_LEVEL;
     const [zoom, setZoom] = React.useState<number>(defaultZoom);
     const [sceneBoundingBox, setSceneBoundingBox] = React.useState<Box3 | undefined>(undefined);
     const [distance, setDistance] = React.useState<number>(0);
