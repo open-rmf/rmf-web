@@ -1,7 +1,6 @@
 import sys
 from datetime import datetime
 from typing import Annotated, Sequence, cast
-from zoneinfo import ZoneInfo
 
 import tortoise.functions as tfuncs
 from fastapi import Depends, HTTPException
@@ -24,8 +23,6 @@ from api_server.models import (
     User,
 )
 from api_server.models import tortoise_models as ttm
-from api_server.models.rmf_api.log_entry import Tier
-from api_server.models.rmf_api.task_state import Category, Id, Phase
 from api_server.models.tortoise_models import TaskRequest as DbTaskRequest
 from api_server.models.tortoise_models import TaskState as DbTaskState
 
@@ -297,60 +294,6 @@ class TaskRepository:
                 tier=log.tier.name,
                 text=log.text,
             )
-
-    async def save_log_acknowledged_task_completion(
-        self, task_id: str, acknowledged_by: str, unix_millis_acknowledged_time: int
-    ) -> None:
-        async with in_transaction():
-            task_logs = await self.get_task_log(
-                task_id,
-                (
-                    datetime.fromtimestamp(0, tz=ZoneInfo("UTC")),
-                    datetime.fromtimestamp(sys.maxsize / 1000, tz=ZoneInfo("UTC")),
-                ),
-            )
-            task_state = await self.get_task_state(task_id=task_id)
-            # A try could be used here to avoid using so many "ands"
-            # but the configured lint suggests comparing that no value is None
-            if task_logs and task_state and task_logs.phases and task_state.phases:
-                # The next phase key value matches in both `task_logs` and `task_state`.
-                #   It is the same whether it is obtained from `task_logs` or from `task_state`.
-                #   In this case, it is obtained from `task_logs` and is also used to assign the next
-                #   phase in `task_state`.
-                next_phase_key = str(int(list(task_logs.phases)[-1]) + 1)
-            else:
-                raise ValueError("Phases can't be null")
-
-            event = LogEntry(
-                seq=0,
-                tier=Tier.warning,
-                unix_millis_time=unix_millis_acknowledged_time,
-                text=f"Task completion acknowledged by {acknowledged_by}",
-            )
-            task_logs.phases = {
-                **task_logs.phases,
-                next_phase_key: Phases(log=[], events={"0": [event]}),
-            }
-
-            await self.save_task_log(task_logs)
-
-            task_state.phases = {
-                **task_state.phases,
-                next_phase_key: Phase(
-                    id=Id(root=next_phase_key),
-                    category=Category(root="Task completed"),
-                    detail=None,
-                    unix_millis_start_time=None,
-                    unix_millis_finish_time=None,
-                    original_estimate_millis=None,
-                    estimate_millis=None,
-                    final_event_id=None,
-                    events=None,
-                    skip_requests=None,
-                ),
-            }
-
-            await self.save_task_state(task_state)
 
     async def save_task_log(self, task_log: TaskEventLog) -> None:
         async with in_transaction():

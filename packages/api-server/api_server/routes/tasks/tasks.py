@@ -169,7 +169,8 @@ async def get_task_log(
     task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
     task_id: Annotated[str, Path(..., description="task_id")],
     between: Annotated[
-        tuple[datetime, datetime] | None, Depends(time_between_query("between"))
+        tuple[datetime, datetime] | None,
+        Depends(time_between_query("between", default="-60000")),
     ],
 ):
     """

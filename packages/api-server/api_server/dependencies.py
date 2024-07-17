@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Annotated
 from zoneinfo import ZoneInfo
 
 from fastapi import Depends, Query
