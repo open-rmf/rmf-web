@@ -1,6 +1,7 @@
 import sys
 from datetime import datetime
 from typing import Annotated, Sequence, cast
+from zoneinfo import ZoneInfo
 
 import tortoise.functions as tfuncs
 from fastapi import Depends, HTTPException
@@ -209,15 +210,18 @@ class TaskRepository:
         return TaskState(**cast(dict, result.data))
 
     async def get_task_log(
-        self, task_id: str, between: tuple[int, int]
+        self, task_id: str, between: tuple[datetime, datetime] | None
     ) -> TaskEventLog | None:
         """
         :param between: The period in unix millis to fetch.
         """
-        between_filters = {
-            "unix_millis_time__gte": between[0],
-            "unix_millis_time__lte": between[1],
-        }
+        if between:
+            between_filters = {
+                "unix_millis_time__gte": between[0].timestamp() * 1000,
+                "unix_millis_time__lte": between[1].timestamp() * 1000,
+            }
+        else:
+            between_filters = {}
         result = await ttm.TaskEventLog.get_or_none(task_id=task_id).prefetch_related(
             Prefetch(
                 "log",
@@ -298,7 +302,13 @@ class TaskRepository:
         self, task_id: str, acknowledged_by: str, unix_millis_acknowledged_time: int
     ) -> None:
         async with in_transaction():
-            task_logs = await self.get_task_log(task_id, (0, sys.maxsize))
+            task_logs = await self.get_task_log(
+                task_id,
+                (
+                    datetime.fromtimestamp(0, tz=ZoneInfo("UTC")),
+                    datetime.fromtimestamp(sys.maxsize / 1000, tz=ZoneInfo("UTC")),
+                ),
+            )
             task_state = await self.get_task_state(task_id=task_id)
             # A try could be used here to avoid using so many "ands"
             # but the configured lint suggests comparing that no value is None

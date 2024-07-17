@@ -1,4 +1,6 @@
 from datetime import datetime
+from typing import Annotated
+from zoneinfo import ZoneInfo
 
 from fastapi import Depends, Query
 
@@ -24,41 +26,19 @@ def pagination_query(
     )
 
 
-def between_query(
-    between: str = Query(
-        "-60000",
-        description="""
-        The period of time to fetch, in unix millis.
-
-        This can be either a comma separated string or a string prefixed with '-' to fetch the last X millis.
-
-        Example:
-            "1000,2000" - Fetches logs between unix millis 1000 and 2000.
-            "-60000" - Fetches logs in the last minute.
-        """,
-    ),
-    now: int = Depends(ros_time.now),
-) -> tuple[int, int]:
-    if between.startswith("-"):
-        period = (now - int(between[1:]), now)
-    else:
-        parts = between.split(",")
-        period = (int(parts[0]), int(parts[1]))
-    return period
-
-
-def time_between_query(alias: str):
+def time_between_query(alias: str, *, default: str | None = None):
     def dep(
-        time_between: str = Query(
-            None,
+        time_between: str | None = Query(
+            default,
             alias=alias,
             description="""
             The period of request time to fetch, in unix millis.
 
-            This must be a comma separated string, 'X,Y' to fetch between X millis and Y millis inclusive.
+            This can be either a comma separated string or a string prefixed with '-' to fetch the last X millis.
 
             Example:
-                "1000,2000" - Fetches logs between unix millis 1000 and 2000.
+                "1000,2000" - Fetch resources between unix millis 1000 and 2000.
+                "-60000" - Fetch resources in the last minute.
             """,
         ),
         now: int = Depends(ros_time.now),
@@ -66,9 +46,10 @@ def time_between_query(alias: str):
         if time_between is None:
             return None
         if time_between.startswith("-"):
-            # Cap at 0 millis
             period = (
-                datetime.fromtimestamp(0),
+                datetime.fromtimestamp(
+                    (now - int(time_between[1:])) / 1000, tz=ZoneInfo("UTC")
+                ),
                 datetime.fromtimestamp(now / 1000),
             )
         else:

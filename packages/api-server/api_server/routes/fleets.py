@@ -1,10 +1,11 @@
+from datetime import datetime
 from typing import Annotated, cast
 
 from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
 
 from api_server.authenticator import user_dep
-from api_server.dependencies import between_query
+from api_server.dependencies import time_between_query
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import RmfGateway, get_rmf_gateway
 from api_server.logging import LoggerAdapter, get_logger
@@ -63,7 +64,10 @@ async def sub_fleet_state(req: SubscriptionRequest, name: str):
 async def get_fleet_log(
     name: str,
     repo: Annotated[FleetRepository, Depends(FleetRepository)],
-    between: Annotated[tuple[int, int], Depends(between_query)],
+    between: Annotated[
+        tuple[datetime, datetime] | None,
+        Depends(time_between_query("between", default="-60000")),
+    ],
 ):
     """
     Available in socket.io

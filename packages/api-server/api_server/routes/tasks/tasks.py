@@ -5,7 +5,7 @@ from fastapi import Body, Depends, HTTPException, Path, Query
 from reactivex import operators as rxops
 
 from api_server import models as mdl
-from api_server.dependencies import between_query, pagination_query, time_between_query
+from api_server.dependencies import pagination_query, time_between_query
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.logging import LoggerAdapter, default_logger, get_logger
 from api_server.repositories import RmfRepository, TaskRepository
@@ -168,7 +168,9 @@ async def get_task_booking_label(
 async def get_task_log(
     task_repo: Annotated[TaskRepository, Depends(TaskRepository)],
     task_id: Annotated[str, Path(..., description="task_id")],
-    between: Annotated[tuple[int, int], Depends(between_query)],
+    between: Annotated[
+        tuple[datetime, datetime] | None, Depends(time_between_query("between"))
+    ],
 ):
     """
     Available in socket.io
