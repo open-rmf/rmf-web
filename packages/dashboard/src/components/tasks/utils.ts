@@ -47,7 +47,7 @@ export function exportCsvMinimal(timestamp: Date, allTasks: TaskState[]) {
   ];
   csvContent += keys.join(columnSeparator) + rowSeparator;
   allTasks.forEach((task) => {
-    let requestLabel = getTaskBookingLabelFromTaskState(task);
+    let taskBookingLabels = getTaskBookingLabelFromTaskState(task);
 
     const values = [
       // Date
@@ -57,10 +57,10 @@ export function exportCsvMinimal(timestamp: Date, allTasks: TaskState[]) {
       // Requester
       task.booking.requester ? task.booking.requester : 'n/a',
       // Pickup
-      requestLabel && requestLabel.description.pickup ? requestLabel.description.pickup : 'n/a',
+      taskBookingLabels && 'pickup' in taskBookingLabels ? taskBookingLabels['pickup'] : 'n/a',
       // Destination
-      requestLabel && requestLabel.description.destination
-        ? requestLabel.description.destination
+      taskBookingLabels && 'destination' in taskBookingLabels
+        ? taskBookingLabels['destination']
         : 'n/a',
       // Robot
       task.assigned_to ? task.assigned_to.name : 'n/a',

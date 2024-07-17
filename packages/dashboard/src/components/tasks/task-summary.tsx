@@ -16,10 +16,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import {
   ApiServerModelsRmfApiTaskStateStatus as Status,
-  TaskBookingLabel,
   TaskStateOutput as TaskState,
 } from 'api-client';
-import { base, getTaskBookingLabelFromTaskState } from 'react-components';
+import { base, getTaskBookingLabelFromTaskState, TaskBookingLabels } from 'react-components';
 import { TaskInspector } from './task-inspector';
 import { RmfAppContext } from '../rmf-app';
 import { TaskCancelButton } from './task-cancellation';
@@ -72,7 +71,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
 
   const [openTaskDetailsLogs, setOpenTaskDetailsLogs] = React.useState(false);
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
-  const [label, setLabel] = React.useState<TaskBookingLabel | null>(null);
+  const [labels, setLabels] = React.useState<TaskBookingLabels | null>(null);
   const [isOpen, setIsOpen] = React.useState(true);
 
   const taskProgress = React.useMemo(() => {
@@ -99,11 +98,11 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
       return;
     }
     const sub = rmf.getTaskStateObs(task.booking.id).subscribe((subscribedTask) => {
-      const requestLabel = getTaskBookingLabelFromTaskState(subscribedTask);
-      if (requestLabel) {
-        setLabel(requestLabel);
+      const taskBookingLabels = getTaskBookingLabelFromTaskState(subscribedTask);
+      if (taskBookingLabels) {
+        setLabels(taskBookingLabels);
       } else {
-        setLabel(null);
+        setLabels(null);
       }
       setTaskState(subscribedTask);
     });
@@ -117,22 +116,6 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
         value: taskState ? taskState.booking.id : 'n/a.',
       },
       {
-        title: 'Task definition ID',
-        value: label?.description.task_definition_id ?? 'n/a',
-      },
-      {
-        title: 'Pickup',
-        value: label?.description.pickup ?? 'n/a',
-      },
-      {
-        title: 'Cart ID',
-        value: label?.description.cart_id ?? 'n/a',
-      },
-      {
-        title: 'Dropoff',
-        value: label?.description.destination ?? 'n/a',
-      },
-      {
         title: 'Est. end time',
         value:
           taskState && taskState.unix_millis_finish_time
@@ -140,6 +123,14 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
             : 'n/a',
       },
     ];
+    if (labels) {
+      for (const key in labels) {
+        contents.push({
+          title: key,
+          value: labels['key'],
+        });
+      }
+    }
 
     const theme = useTheme();
 

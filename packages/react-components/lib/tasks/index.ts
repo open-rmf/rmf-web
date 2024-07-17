@@ -1,3 +1,4 @@
+export * from './booking-label';
 export * from './create-task';
 export * from './types';
 export * from './task-info';
