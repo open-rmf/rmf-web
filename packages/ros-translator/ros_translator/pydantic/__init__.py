@@ -98,24 +98,15 @@ class PydanticType:
 def relative_import(base: Message, to: Message) -> str:
     base_ns = list(base.idl.structure.namespaced_type.namespaces)
     to_ns = list(to.idl.structure.namespaced_type.namespaces)
-    common: list[str] = []
-    relative = ""
+    i = 0
     for a, b in zip(base_ns, to_ns):
-        if a == b:
-            common.append(a)
-            continue
-        if a is None:
-            relative = "." + ".".join(to_ns[len(common) :])
+        if a != b:
             break
-        else:
-            relative = (
-                "."
-                + "." * (len(base_ns) - len(common))
-                + ".".join(to_ns[len(common) :])
-            )
-            break
+        i += 1
+    print(i, base_ns, to_ns)
+    relative = "." * (len(base_ns) - i) + ".".join((*to_ns[i:], to.name))
     full_alias = to.full_type_name.replace("/", "_")
-    return f"from {relative}.{to.name} import {to.name} as {full_alias}"
+    return f"from .{relative} import {to.name} as {full_alias}"
 
 
 def generate_messages(roslib: RosLibrary, pkg: str, outdir: str):
