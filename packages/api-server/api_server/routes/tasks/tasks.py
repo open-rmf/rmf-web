@@ -5,13 +5,7 @@ from fastapi import Body, Depends, HTTPException, Path, Query
 from reactivex import operators as rxops
 
 from api_server import models as mdl
-from api_server.dependencies import (
-    between_query,
-    finish_time_between_query,
-    pagination_query,
-    request_time_between_query,
-    start_time_between_query,
-)
+from api_server.dependencies import between_query, pagination_query, time_between_query
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.logging import LoggerAdapter, default_logger, get_logger
 from api_server.repositories import RmfRepository, TaskRepository
@@ -78,7 +72,8 @@ async def query_task_states(
         str | None, Query(description="comma separated list of task categories")
     ] = None,
     request_time_between: Annotated[
-        tuple[datetime, datetime] | None, Depends(request_time_between_query)
+        tuple[datetime, datetime] | None,
+        Depends(time_between_query("request_time_between")),
     ] = None,
     requester: Annotated[
         str | None, Query(description="comma separated list of requester names")
@@ -88,10 +83,12 @@ async def query_task_states(
         Query(description="comma separated list of assigned robot names"),
     ] = None,
     start_time_between: Annotated[
-        tuple[datetime, datetime] | None, Depends(start_time_between_query)
+        tuple[datetime, datetime] | None,
+        Depends(time_between_query("start_time_between")),
     ] = None,
     finish_time_between: Annotated[
-        tuple[datetime, datetime] | None, Depends(finish_time_between_query)
+        tuple[datetime, datetime] | None,
+        Depends(time_between_query("finish_time_between")),
     ] = None,
     status: Annotated[
         str | None, Query(description="comma separated list of statuses")

@@ -47,94 +47,36 @@ def between_query(
     return period
 
 
-def request_time_between_query(
-    request_time_between: str = Query(
-        None,
-        description="""
-        The period of request time to fetch, in unix millis.
+def time_between_query(alias: str):
+    def dep(
+        time_between: str = Query(
+            None,
+            alias=alias,
+            description="""
+            The period of request time to fetch, in unix millis.
 
-        This must be a comma separated string, 'X,Y' to fetch between X millis and Y millis inclusive.
+            This must be a comma separated string, 'X,Y' to fetch between X millis and Y millis inclusive.
 
-        Example:
-            "1000,2000" - Fetches logs between unix millis 1000 and 2000.
-        """,
-    ),
-    now: int = Depends(ros_time.now),
-) -> tuple[datetime, datetime] | None:
-    if request_time_between is None:
-        return None
-    if request_time_between.startswith("-"):
-        # Cap at 0 millis
-        period = (
-            datetime.fromtimestamp(0),
-            datetime.fromtimestamp(now / 1000),
-        )
-    else:
-        parts = request_time_between.split(",")
-        period = (
-            datetime.fromtimestamp(int(parts[0]) / 1000),
-            datetime.fromtimestamp(int(parts[1]) / 1000),
-        )
-    return period
+            Example:
+                "1000,2000" - Fetches logs between unix millis 1000 and 2000.
+            """,
+        ),
+        now: int = Depends(ros_time.now),
+    ) -> tuple[datetime, datetime] | None:
+        if time_between is None:
+            return None
+        if time_between.startswith("-"):
+            # Cap at 0 millis
+            period = (
+                datetime.fromtimestamp(0),
+                datetime.fromtimestamp(now / 1000),
+            )
+        else:
+            parts = time_between.split(",")
+            period = (
+                datetime.fromtimestamp(int(parts[0]) / 1000),
+                datetime.fromtimestamp(int(parts[1]) / 1000),
+            )
+        return period
 
-
-def start_time_between_query(
-    start_time_between: str = Query(
-        None,
-        description="""
-        The period of start time to fetch, in unix millis.
-
-        This must be a comma separated string, 'X,Y' to fetch between X millis and Y millis inclusive.
-
-        Example:
-            "1000,2000" - Fetches logs between unix millis 1000 and 2000.
-        """,
-    ),
-    now: int = Depends(ros_time.now),
-) -> tuple[datetime, datetime] | None:
-    if start_time_between is None:
-        return None
-    if start_time_between.startswith("-"):
-        # Cap at 0 millis
-        period = (
-            datetime.fromtimestamp(0),
-            datetime.fromtimestamp(now / 1000),
-        )
-    else:
-        parts = start_time_between.split(",")
-        period = (
-            datetime.fromtimestamp(int(parts[0]) / 1000),
-            datetime.fromtimestamp(int(parts[1]) / 1000),
-        )
-    return period
-
-
-def finish_time_between_query(
-    finish_time_between: str = Query(
-        None,
-        description="""
-        The period of finish time to fetch, in unix millis.
-
-        This must be a comma separated string, 'X,Y' to fetch between X millis and Y millis inclusive.
-
-        Example:
-            "1000,2000" - Fetches logs between unix millis 1000 and 2000.
-        """,
-    ),
-    now: int = Depends(ros_time.now),
-) -> tuple[datetime, datetime] | None:
-    if finish_time_between is None:
-        return None
-    if finish_time_between.startswith("-"):
-        # Cap at 0 millis
-        period = (
-            datetime.fromtimestamp(0),
-            datetime.fromtimestamp(now / 1000),
-        )
-    else:
-        parts = finish_time_between.split(",")
-        period = (
-            datetime.fromtimestamp(int(parts[0]) / 1000),
-            datetime.fromtimestamp(int(parts[1]) / 1000),
-        )
-    return period
+    return dep
