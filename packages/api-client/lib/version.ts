@@ -1,5 +1,5 @@
 // THIS FILE IS GENERATED
 export const version = {
-  rmfServer: 'b57de8c2caef03a2f57bb1bf1a71c3dc5dcfbeda',
+  rmfServer: '4fe30cc47dcabe4d029fafc04f6d7feb52a11021',
   openapiGenerator: '',
 };

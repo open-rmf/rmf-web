@@ -890,39 +890,39 @@ export default {
             in: 'query',
             required: false,
             schema: {
-              type: 'string',
+              anyOf: [{ type: 'string' }, { type: 'null' }],
               description:
-                '\n            The period of request time to fetch, in unix millis.\n\n            This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n            Example:\n                "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            ',
+                '\n            The period of request time to fetch, in unix millis.\n\n            This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n            Example:\n                "1000,2000" - Fetch resources between unix millis 1000 and 2000.\n                "-60000" - Fetch resources in the last minute.\n            ',
               title: 'Request Time Between',
             },
             description:
-              '\n            The period of request time to fetch, in unix millis.\n\n            This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n            Example:\n                "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            ',
+              '\n            The period of request time to fetch, in unix millis.\n\n            This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n            Example:\n                "1000,2000" - Fetch resources between unix millis 1000 and 2000.\n                "-60000" - Fetch resources in the last minute.\n            ',
           },
           {
             name: 'start_time_between',
             in: 'query',
             required: false,
             schema: {
-              type: 'string',
+              anyOf: [{ type: 'string' }, { type: 'null' }],
               description:
-                '\n            The period of request time to fetch, in unix millis.\n\n            This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n            Example:\n                "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            ',
+                '\n            The period of request time to fetch, in unix millis.\n\n            This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n            Example:\n                "1000,2000" - Fetch resources between unix millis 1000 and 2000.\n                "-60000" - Fetch resources in the last minute.\n            ',
               title: 'Start Time Between',
             },
             description:
-              '\n            The period of request time to fetch, in unix millis.\n\n            This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n            Example:\n                "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            ',
+              '\n            The period of request time to fetch, in unix millis.\n\n            This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n            Example:\n                "1000,2000" - Fetch resources between unix millis 1000 and 2000.\n                "-60000" - Fetch resources in the last minute.\n            ',
           },
           {
             name: 'finish_time_between',
             in: 'query',
             required: false,
             schema: {
-              type: 'string',
+              anyOf: [{ type: 'string' }, { type: 'null' }],
               description:
-                '\n            The period of request time to fetch, in unix millis.\n\n            This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n            Example:\n                "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            ',
+                '\n            The period of request time to fetch, in unix millis.\n\n            This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n            Example:\n                "1000,2000" - Fetch resources between unix millis 1000 and 2000.\n                "-60000" - Fetch resources in the last minute.\n            ',
               title: 'Finish Time Between',
             },
             description:
-              '\n            The period of request time to fetch, in unix millis.\n\n            This must be a comma separated string, \'X,Y\' to fetch between X millis and Y millis inclusive.\n\n            Example:\n                "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            ',
+              '\n            The period of request time to fetch, in unix millis.\n\n            This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n            Example:\n                "1000,2000" - Fetch resources between unix millis 1000 and 2000.\n                "-60000" - Fetch resources in the last minute.\n            ',
           },
           {
             name: 'limit',
@@ -1078,14 +1078,14 @@ export default {
             in: 'query',
             required: false,
             schema: {
-              type: 'string',
+              anyOf: [{ type: 'string' }, { type: 'null' }],
               description:
-                '\n        The period of time to fetch, in unix millis.\n\n        This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            "-60000" - Fetches logs in the last minute.\n        ',
+                '\n            The period of request time to fetch, in unix millis.\n\n            This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n            Example:\n                "1000,2000" - Fetch resources between unix millis 1000 and 2000.\n                "-60000" - Fetch resources in the last minute.\n            ',
               default: '-60000',
               title: 'Between',
             },
             description:
-              '\n        The period of time to fetch, in unix millis.\n\n        This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            "-60000" - Fetches logs in the last minute.\n        ',
+              '\n            The period of request time to fetch, in unix millis.\n\n            This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n            Example:\n                "1000,2000" - Fetch resources between unix millis 1000 and 2000.\n                "-60000" - Fetch resources in the last minute.\n            ',
           },
           {
             name: 'authorization',
@@ -2113,14 +2113,14 @@ export default {
             in: 'query',
             required: false,
             schema: {
-              type: 'string',
+              anyOf: [{ type: 'string' }, { type: 'null' }],
               description:
-                '\n        The period of time to fetch, in unix millis.\n\n        This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            "-60000" - Fetches logs in the last minute.\n        ',
+                '\n            The period of request time to fetch, in unix millis.\n\n            This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n            Example:\n                "1000,2000" - Fetch resources between unix millis 1000 and 2000.\n                "-60000" - Fetch resources in the last minute.\n            ',
               default: '-60000',
               title: 'Between',
             },
             description:
-              '\n        The period of time to fetch, in unix millis.\n\n        This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n        Example:\n            "1000,2000" - Fetches logs between unix millis 1000 and 2000.\n            "-60000" - Fetches logs in the last minute.\n        ',
+              '\n            The period of request time to fetch, in unix millis.\n\n            This can be either a comma separated string or a string prefixed with \'-\' to fetch the last X millis.\n\n            Example:\n                "1000,2000" - Fetch resources between unix millis 1000 and 2000.\n                "-60000" - Fetch resources in the last minute.\n            ',
           },
           {
             name: 'authorization',

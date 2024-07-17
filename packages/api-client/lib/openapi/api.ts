@@ -7853,14 +7853,14 @@ export const FleetsApiAxiosParamCreator = function (configuration?: Configuratio
      * Available in socket.io
      * @summary Get Fleet Log
      * @param {string} name
-     * @param {string} [between]          The period of time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
+     * @param {string | null} [between]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
      * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getFleetLogFleetsNameLogGet: async (
       name: string,
-      between?: string,
+      between?: string | null,
       authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
@@ -8164,14 +8164,14 @@ export const FleetsApiFp = function (configuration?: Configuration) {
      * Available in socket.io
      * @summary Get Fleet Log
      * @param {string} name
-     * @param {string} [between]          The period of time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
+     * @param {string | null} [between]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
      * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getFleetLogFleetsNameLogGet(
       name: string,
-      between?: string,
+      between?: string | null,
       authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FleetLog>> {
@@ -8373,14 +8373,14 @@ export const FleetsApiFactory = function (
      * Available in socket.io
      * @summary Get Fleet Log
      * @param {string} name
-     * @param {string} [between]          The period of time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
+     * @param {string | null} [between]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
      * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getFleetLogFleetsNameLogGet(
       name: string,
-      between?: string,
+      between?: string | null,
       authorization?: string | null,
       options?: any,
     ): AxiosPromise<FleetLog> {
@@ -8512,7 +8512,7 @@ export class FleetsApi extends BaseAPI {
    * Available in socket.io
    * @summary Get Fleet Log
    * @param {string} name
-   * @param {string} [between]          The period of time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
+   * @param {string | null} [between]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
    * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
@@ -8520,7 +8520,7 @@ export class FleetsApi extends BaseAPI {
    */
   public getFleetLogFleetsNameLogGet(
     name: string,
-    between?: string,
+    between?: string | null,
     authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
@@ -9625,14 +9625,14 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      * Available in socket.io
      * @summary Get Task Log
      * @param {string} taskId task_id
-     * @param {string} [between]          The period of time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
+     * @param {string | null} [between]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
      * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getTaskLogTasksTaskIdLogGet: async (
       taskId: string,
-      between?: string,
+      between?: string | null,
       authorization?: string | null,
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
@@ -10526,9 +10526,9 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
      * @param {string | null} [assignedTo] comma separated list of assigned robot names
      * @param {string | null} [status] comma separated list of statuses
      * @param {string | null} [label] comma separated list of labels, each item must be in the form &lt;key&gt;&#x3D;&lt;value&gt;, multiple items will filter tasks with all the labels
-     * @param {string} [requestTimeBetween]              The period of request time to fetch, in unix millis.              This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.              Example:                 \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
-     * @param {string} [startTimeBetween]              The period of request time to fetch, in unix millis.              This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.              Example:                 \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
-     * @param {string} [finishTimeBetween]              The period of request time to fetch, in unix millis.              This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.              Example:                 \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {string | null} [requestTimeBetween]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
+     * @param {string | null} [startTimeBetween]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
+     * @param {string | null} [finishTimeBetween]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
      * @param {number | null} [limit] defaults to 100
      * @param {number | null} [offset] defaults to 0
      * @param {string | null} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -10543,9 +10543,9 @@ export const TasksApiAxiosParamCreator = function (configuration?: Configuration
       assignedTo?: string | null,
       status?: string | null,
       label?: string | null,
-      requestTimeBetween?: string,
-      startTimeBetween?: string,
-      finishTimeBetween?: string,
+      requestTimeBetween?: string | null,
+      startTimeBetween?: string | null,
+      finishTimeBetween?: string | null,
       limit?: number | null,
       offset?: number | null,
       orderBy?: string | null,
@@ -10941,14 +10941,14 @@ export const TasksApiFp = function (configuration?: Configuration) {
      * Available in socket.io
      * @summary Get Task Log
      * @param {string} taskId task_id
-     * @param {string} [between]          The period of time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
+     * @param {string | null} [between]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
      * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getTaskLogTasksTaskIdLogGet(
       taskId: string,
-      between?: string,
+      between?: string | null,
       authorization?: string | null,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TaskEventLog>> {
@@ -11485,9 +11485,9 @@ export const TasksApiFp = function (configuration?: Configuration) {
      * @param {string | null} [assignedTo] comma separated list of assigned robot names
      * @param {string | null} [status] comma separated list of statuses
      * @param {string | null} [label] comma separated list of labels, each item must be in the form &lt;key&gt;&#x3D;&lt;value&gt;, multiple items will filter tasks with all the labels
-     * @param {string} [requestTimeBetween]              The period of request time to fetch, in unix millis.              This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.              Example:                 \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
-     * @param {string} [startTimeBetween]              The period of request time to fetch, in unix millis.              This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.              Example:                 \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
-     * @param {string} [finishTimeBetween]              The period of request time to fetch, in unix millis.              This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.              Example:                 \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {string | null} [requestTimeBetween]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
+     * @param {string | null} [startTimeBetween]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
+     * @param {string | null} [finishTimeBetween]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
      * @param {number | null} [limit] defaults to 100
      * @param {number | null} [offset] defaults to 0
      * @param {string | null} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -11502,9 +11502,9 @@ export const TasksApiFp = function (configuration?: Configuration) {
       assignedTo?: string | null,
       status?: string | null,
       label?: string | null,
-      requestTimeBetween?: string,
-      startTimeBetween?: string,
-      finishTimeBetween?: string,
+      requestTimeBetween?: string | null,
+      startTimeBetween?: string | null,
+      finishTimeBetween?: string | null,
       limit?: number | null,
       offset?: number | null,
       orderBy?: string | null,
@@ -11731,14 +11731,14 @@ export const TasksApiFactory = function (
      * Available in socket.io
      * @summary Get Task Log
      * @param {string} taskId task_id
-     * @param {string} [between]          The period of time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
+     * @param {string | null} [between]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
      * @param {string | null} [authorization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getTaskLogTasksTaskIdLogGet(
       taskId: string,
-      between?: string,
+      between?: string | null,
       authorization?: string | null,
       options?: any,
     ): AxiosPromise<TaskEventLog> {
@@ -12031,9 +12031,9 @@ export const TasksApiFactory = function (
      * @param {string | null} [assignedTo] comma separated list of assigned robot names
      * @param {string | null} [status] comma separated list of statuses
      * @param {string | null} [label] comma separated list of labels, each item must be in the form &lt;key&gt;&#x3D;&lt;value&gt;, multiple items will filter tasks with all the labels
-     * @param {string} [requestTimeBetween]              The period of request time to fetch, in unix millis.              This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.              Example:                 \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
-     * @param {string} [startTimeBetween]              The period of request time to fetch, in unix millis.              This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.              Example:                 \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
-     * @param {string} [finishTimeBetween]              The period of request time to fetch, in unix millis.              This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.              Example:                 \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+     * @param {string | null} [requestTimeBetween]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
+     * @param {string | null} [startTimeBetween]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
+     * @param {string | null} [finishTimeBetween]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
      * @param {number | null} [limit] defaults to 100
      * @param {number | null} [offset] defaults to 0
      * @param {string | null} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -12048,9 +12048,9 @@ export const TasksApiFactory = function (
       assignedTo?: string | null,
       status?: string | null,
       label?: string | null,
-      requestTimeBetween?: string,
-      startTimeBetween?: string,
-      finishTimeBetween?: string,
+      requestTimeBetween?: string | null,
+      startTimeBetween?: string | null,
+      finishTimeBetween?: string | null,
       limit?: number | null,
       offset?: number | null,
       orderBy?: string | null,
@@ -12268,7 +12268,7 @@ export class TasksApi extends BaseAPI {
    * Available in socket.io
    * @summary Get Task Log
    * @param {string} taskId task_id
-   * @param {string} [between]          The period of time to fetch, in unix millis.          This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.          Example:             \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.             \&quot;-60000\&quot; - Fetches logs in the last minute.
+   * @param {string | null} [between]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
    * @param {string | null} [authorization]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
@@ -12276,7 +12276,7 @@ export class TasksApi extends BaseAPI {
    */
   public getTaskLogTasksTaskIdLogGet(
     taskId: string,
-    between?: string,
+    between?: string | null,
     authorization?: string | null,
     options?: RawAxiosRequestConfig,
   ) {
@@ -12602,9 +12602,9 @@ export class TasksApi extends BaseAPI {
    * @param {string | null} [assignedTo] comma separated list of assigned robot names
    * @param {string | null} [status] comma separated list of statuses
    * @param {string | null} [label] comma separated list of labels, each item must be in the form &lt;key&gt;&#x3D;&lt;value&gt;, multiple items will filter tasks with all the labels
-   * @param {string} [requestTimeBetween]              The period of request time to fetch, in unix millis.              This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.              Example:                 \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
-   * @param {string} [startTimeBetween]              The period of request time to fetch, in unix millis.              This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.              Example:                 \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
-   * @param {string} [finishTimeBetween]              The period of request time to fetch, in unix millis.              This must be a comma separated string, \&#39;X,Y\&#39; to fetch between X millis and Y millis inclusive.              Example:                 \&quot;1000,2000\&quot; - Fetches logs between unix millis 1000 and 2000.
+   * @param {string | null} [requestTimeBetween]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
+   * @param {string | null} [startTimeBetween]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
+   * @param {string | null} [finishTimeBetween]              The period of request time to fetch, in unix millis.              This can be either a comma separated string or a string prefixed with \&#39;-\&#39; to fetch the last X millis.              Example:                 \&quot;1000,2000\&quot; - Fetch resources between unix millis 1000 and 2000.                 \&quot;-60000\&quot; - Fetch resources in the last minute.
    * @param {number | null} [limit] defaults to 100
    * @param {number | null} [offset] defaults to 0
    * @param {string | null} [orderBy] common separated list of fields to order by, prefix with \&#39;-\&#39; to sort descendingly.
@@ -12620,9 +12620,9 @@ export class TasksApi extends BaseAPI {
     assignedTo?: string | null,
     status?: string | null,
     label?: string | null,
-    requestTimeBetween?: string,
-    startTimeBetween?: string,
-    finishTimeBetween?: string,
+    requestTimeBetween?: string | null,
+    startTimeBetween?: string | null,
+    finishTimeBetween?: string | null,
     limit?: number | null,
     offset?: number | null,
     orderBy?: string | null,
