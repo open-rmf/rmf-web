@@ -103,7 +103,6 @@ def relative_import(base: Message, to: Message) -> str:
         if a != b:
             break
         i += 1
-    print(i, base_ns, to_ns)
     relative = "." * (len(base_ns) - i) + ".".join((*to_ns[i:], to.name))
     full_alias = to.full_type_name.replace("/", "_")
     return f"from .{relative} import {to.name} as {full_alias}"
