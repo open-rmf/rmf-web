@@ -1,5 +1,4 @@
-from datetime import datetime
-from zoneinfo import ZoneInfo
+from datetime import datetime, timezone
 
 from fastapi import Depends, Query
 
@@ -47,15 +46,15 @@ def time_between_query(alias: str, *, default: str | None = None):
         if time_between.startswith("-"):
             period = (
                 datetime.fromtimestamp(
-                    (now - int(time_between[1:])) / 1000, tz=ZoneInfo("UTC")
+                    (now - int(time_between[1:])) / 1000, timezone.utc
                 ),
-                datetime.fromtimestamp(now / 1000),
+                datetime.fromtimestamp(now / 1000, timezone.utc),
             )
         else:
             parts = time_between.split(",")
             period = (
-                datetime.fromtimestamp(int(parts[0]) / 1000),
-                datetime.fromtimestamp(int(parts[1]) / 1000),
+                datetime.fromtimestamp(int(parts[0]) / 1000, timezone.utc),
+                datetime.fromtimestamp(int(parts[1]) / 1000, timezone.utc),
             )
         return period
 

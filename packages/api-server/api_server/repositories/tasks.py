@@ -1,5 +1,4 @@
-import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Annotated, Sequence, cast
 
 import tortoise.functions as tfuncs
@@ -79,16 +78,17 @@ class TaskRepository:
                     ),
                     "unix_millis_start_time": task_state.unix_millis_start_time
                     and datetime.fromtimestamp(
-                        task_state.unix_millis_start_time / 1000
+                        task_state.unix_millis_start_time / 1000, timezone.utc
                     ),
                     "unix_millis_finish_time": task_state.unix_millis_finish_time
                     and datetime.fromtimestamp(
-                        task_state.unix_millis_finish_time / 1000
+                        task_state.unix_millis_finish_time / 1000, timezone.utc
                     ),
                     "status": task_state.status if task_state.status else None,
                     "unix_millis_request_time": task_state.booking.unix_millis_request_time
                     and datetime.fromtimestamp(
-                        task_state.booking.unix_millis_request_time / 1000
+                        task_state.booking.unix_millis_request_time / 1000,
+                        timezone.utc,
                     ),
                     "requester": (
                         task_state.booking.requester
