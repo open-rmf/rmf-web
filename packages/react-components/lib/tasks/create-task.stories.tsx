@@ -1,8 +1,6 @@
 import { Meta, StoryFn } from '@storybook/react';
-import type { TaskRequest } from 'api-client';
 import React from 'react';
 import { CreateTaskForm, CreateTaskFormProps } from './create-task';
-import { makeTaskRequest } from './test-data.spec';
 
 export default {
   title: 'Tasks/Create Task',

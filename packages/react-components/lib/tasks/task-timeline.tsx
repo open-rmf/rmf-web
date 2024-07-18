@@ -8,7 +8,6 @@ import {
   TimelineDotProps,
   TimelineItem,
   TimelineOppositeContent,
-  TimelineProps,
   TimelineSeparator,
   TreeItem,
   TreeView,
@@ -22,10 +21,6 @@ import {
   TaskStateOutput as TaskState,
 } from 'api-client';
 import React from 'react';
-
-interface TimeLinePropsWithRef extends TimelineProps {
-  ref?: React.RefObject<HTMLUListElement>;
-}
 
 const classes = {
   paper: 'timeline-paper',
