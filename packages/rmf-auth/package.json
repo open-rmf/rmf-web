@@ -28,6 +28,7 @@
     "@mui/lab": "5.0.0-alpha.172",
     "api-client": "workspace:*",
     "eventemitter3": "^4.0.7",
+    "jest-environment-jsdom": "^29.7.0",
     "keycloak-js": "^11.0.2"
   },
   "devDependencies": {
