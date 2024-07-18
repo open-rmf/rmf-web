@@ -202,7 +202,7 @@ class RmfGateway:
             RmfDoorState,
             "door_states",
             handle_door_state,
-            10,
+            100,
         )
         self._subscriptions.append(door_states_sub)
 
@@ -277,11 +277,11 @@ class RmfGateway:
         )
         self._subscriptions.append(map_sub)
 
-        def handle_beachandle_state(msg):
-            async def save(beachandle_state: BeaconState):
-                await self._rmf_repo.save_beacon_state(beachandle_state)
-                self._rmf_events.beacons.on_next(beachandle_state)
-                logging.debug("%s", beachandle_state)
+        def handle_beacon_state(msg):
+            async def save(beacon_state: BeaconState):
+                await self._rmf_repo.save_beacon_state(beacon_state)
+                self._rmf_events.beacons.on_next(beacon_state)
+                logging.debug("%s", beacon_state)
 
             msg = cast(RmfBeaconState, msg)
             bs = BeaconState(
@@ -293,13 +293,13 @@ class RmfGateway:
             )
             self._loop.create_task(save(bs))
 
-        beachandle_sub = self._ros_node.create_subscription(
+        beacon_sub = self._ros_node.create_subscription(
             RmfBeaconState,
-            "beachandle_state",
-            handle_beachandle_state,
-            10,
+            "beacon_state",
+            handle_beacon_state,
+            100,
         )
-        self._subscriptions.append(beachandle_sub)
+        self._subscriptions.append(beacon_sub)
 
         def handle_delivery_alert(msg):
             msg = cast(RmfDeliveryAlert, msg)
