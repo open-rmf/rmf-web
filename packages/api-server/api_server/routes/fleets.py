@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Annotated, cast
+from typing import Annotated
 
 from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
@@ -51,9 +51,7 @@ async def get_fleet_state(
 async def sub_fleet_state(req: SubscriptionRequest, name: str):
     user = req.user
     repo = FleetRepository(user, req.logger)
-    obs = get_fleet_events().fleet_states.pipe(
-        rxops.filter(lambda x: cast(FleetState, x).name == name)
-    )
+    obs = get_fleet_events().fleet_states.pipe(rxops.filter(lambda x: x.name == name))
     fleet_state = await repo.get_fleet_state(name)
     if fleet_state:
         return obs.pipe(rxops.start_with(fleet_state))
@@ -80,9 +78,7 @@ async def get_fleet_log(
 
 @router.sub("/{name}/log", response_model=FleetLog)
 async def sub_fleet_log(_req: SubscriptionRequest, name: str):
-    return get_fleet_events().fleet_logs.pipe(
-        rxops.filter(lambda x: cast(FleetLog, x).name == name)
-    )
+    return get_fleet_events().fleet_logs.pipe(rxops.filter(lambda x: x.name == name))
 
 
 @router.post("/{name}/decommission", response_model=RobotCommissionResponse)

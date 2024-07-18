@@ -1,4 +1,4 @@
-from typing import Annotated, cast
+from typing import Annotated
 
 from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
@@ -34,7 +34,7 @@ async def get_door_state(
 async def sub_door_state(req: SubscriptionRequest, door_name: str):
     user = req.user
     obs = get_rmf_events().door_states.pipe(
-        rxops.filter(lambda x: cast(DoorState, x).door_name == door_name)
+        rxops.filter(lambda x: x.door_name == door_name)
     )
     door_state = await get_door_state(door_name, RmfRepository(user))
     if door_state:

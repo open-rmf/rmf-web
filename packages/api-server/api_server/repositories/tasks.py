@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Annotated, Sequence, cast
+from typing import Annotated, Sequence
 
 import tortoise.functions as tfuncs
 from fastapi import Depends, HTTPException
@@ -204,7 +204,7 @@ class TaskRepository:
         result = await DbTaskState.get_or_none(id_=task_id)
         if result is None:
             return None
-        return TaskState(**cast(dict, result.data))
+        return TaskState.model_validate(result.data)
 
     async def get_task_log(
         self, task_id: str, between: tuple[datetime, datetime] | None

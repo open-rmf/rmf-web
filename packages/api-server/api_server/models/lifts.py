@@ -1,4 +1,4 @@
-from typing import Annotated, cast
+from typing import Annotated
 
 from pydantic import BaseModel, Field
 
@@ -22,7 +22,7 @@ class LiftState(BaseModel):
 
     @staticmethod
     def from_tortoise(tortoise: ttm.LiftState) -> "LiftState":
-        return LiftState(**cast(dict, tortoise.data))
+        return LiftState.model_validate(tortoise.data)
 
 
 class LiftRequest(BaseModel):

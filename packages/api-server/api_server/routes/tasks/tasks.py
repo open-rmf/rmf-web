@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Annotated, cast
+from typing import Annotated, TypeGuard
 
 from fastapi import Body, Depends, HTTPException, Path, Query
 from reactivex import operators as rxops
@@ -136,7 +136,7 @@ async def sub_task_state(req: SubscriptionRequest, task_id: str):
     user = req.user
     task_repo = TaskRepository(user, default_logger)
     obs = get_task_events().task_states.pipe(
-        rxops.filter(lambda x: cast(mdl.TaskState, x).booking.id == task_id)
+        rxops.filter(lambda x: x.booking.id == task_id)
     )
     current_state = await get_task_state(task_repo, task_id)
     if current_state:
@@ -186,7 +186,7 @@ async def get_task_log(
 @router.sub("/{task_id}/log", response_model=mdl.TaskEventLog)
 async def sub_task_log(_req: SubscriptionRequest, task_id: str):
     return get_task_events().task_event_logs.pipe(
-        rxops.filter(lambda x: cast(mdl.TaskEventLog, x).task_id == task_id)
+        rxops.filter(lambda x: x.task_id == task_id)
     )
 
 
@@ -210,6 +210,12 @@ async def post_cancel_task(
     )
 
 
+def is_task_dispatch_response_success(
+    root: mdl.TaskDispatchResponse1 | mdl.TaskDispatchResponse2,
+) -> TypeGuard[mdl.TaskDispatchResponse1]:
+    return bool(root.success)
+
+
 @router.post(
     "/dispatch_task",
     response_model=mdl.TaskDispatchResponse,
@@ -226,12 +232,11 @@ async def post_dispatch_task(
         await tasks_service.call(request.model_dump_json(exclude_none=True))
     )
     logger.debug("rmf response %s", resp)
-    if not resp.root.success:
+    if not is_task_dispatch_response_success(resp.root):
         return RawJSONResponse(resp.model_dump_json(), 400)
-    new_state = cast(mdl.TaskDispatchResponse1, resp.root).state
-    await task_repo.save_task_state(new_state)
-    await task_repo.save_task_request(new_state, request.request)
-    return resp.root
+    await task_repo.save_task_state(resp.root.state)
+    await task_repo.save_task_request(resp.root.state, request.request)
+    return resp
 
 
 @router.post(
@@ -247,12 +252,10 @@ async def post_robot_task(
     resp = mdl.RobotTaskResponse.model_validate_json(
         await tasks_service.call(request.model_dump_json(exclude_none=True))
     )
-    if not resp.root.root.success:
+    if not is_task_dispatch_response_success(resp.root.root):
         return RawJSONResponse(resp.model_dump_json(), 400)
-    await task_repo.save_task_state(
-        cast(mdl.TaskDispatchResponse1, resp.root.root).state
-    )
-    return resp.root
+    await task_repo.save_task_state(resp.root.root.state)
+    return resp
 
 
 @router.post("/interrupt_task", response_model=mdl.TaskInterruptionResponse)
