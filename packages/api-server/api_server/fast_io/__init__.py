@@ -14,7 +14,7 @@ from reactivex import Observable
 from reactivex.abc import DisposableBase
 from starlette.routing import compile_path
 
-from api_server.logging import LoggerAdapter, get_logger
+from api_server.logging import LoggerAdapter, default_logger, get_logger
 from api_server.models.user import User
 
 from .errors import *
@@ -244,7 +244,10 @@ The message must be of the form:
         return None
 
     async def _on_connect(self, sid: str, environ: dict, auth: dict | None = None):
-        logger = get_logger(HTTPConnection(environ))
+        if "asgi.scope" in environ:
+            logger = get_logger(HTTPConnection(environ["asgi.scope"]))
+        else:
+            logger = default_logger
         user = (
             await self._socketio_connect(sid, environ, auth)
             if self._socketio_connect
