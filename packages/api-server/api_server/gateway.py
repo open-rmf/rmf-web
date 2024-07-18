@@ -167,7 +167,7 @@ class RmfGateway:
             RmfDoorState,
             "door_states",
             lambda msg: rmf_events.door_states.on_next(DoorState.from_orm(msg)),
-            10,
+            100,
         )
         self._subscriptions.append(door_states_sub)
 
@@ -229,7 +229,7 @@ class RmfGateway:
             RmfBeaconState,
             "beacon_state",
             lambda msg: rmf_events.beacons.on_next(convert_beacon_state(msg)),
-            10,
+            100,
         )
         self._subscriptions.append(beacon_sub)
 
