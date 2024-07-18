@@ -9,3 +9,4 @@ source install/setup.bash
 popd
 
 ros_translator/typescript/test/test.sh
+ros_translator/pydantic/test/test.sh

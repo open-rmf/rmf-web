@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated, Sequence, cast
 
 from fastapi import Depends
@@ -32,15 +33,18 @@ class FleetRepository:
         return FleetState(**cast(dict, result.data))
 
     async def get_fleet_log(
-        self, name: str, between: tuple[int, int]
+        self, name: str, between: tuple[datetime, datetime] | None
     ) -> FleetLog | None:
         """
         :param between: The period in unix millis to fetch.
         """
-        between_filters = {
-            "unix_millis_time__gte": between[0],
-            "unix_millis_time__lte": between[1],
-        }
+        if between:
+            between_filters = {
+                "unix_millis_time__gte": between[0].timestamp() * 1000,
+                "unix_millis_time__lte": between[1].timestamp() * 1000,
+            }
+        else:
+            between_filters = {}
         result = cast(
             ttm.FleetLog | None,
             await ttm.FleetLog.get_or_none(name=name).prefetch_related(

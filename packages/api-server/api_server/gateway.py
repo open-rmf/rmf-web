@@ -61,6 +61,7 @@ class RmfGateway:
         ros_node: rclpy.node.Node,
         rmf_events: RmfEvents,
         rmf_repo: RmfRepository,
+        loop: asyncio.AbstractEventLoop,
         *,
         logger: logging.Logger | None = None,
     ):
@@ -68,6 +69,7 @@ class RmfGateway:
         self._ros_node = ros_node
         self._rmf_events = rmf_events
         self._rmf_repo = rmf_repo
+        self._loop = loop
         self._logger = logger or logging.getLogger()
 
         self._door_req = self._ros_node.create_publisher(
@@ -171,7 +173,7 @@ class RmfGateway:
                 self._rmf_events.door_states.on_next(door_state)
                 logging.debug("%s", door_state)
 
-            asyncio.create_task(save(DoorState.model_validate(msg)))
+            self._loop.create_task(save(DoorState.model_validate(msg)))
 
         door_states_sub = self._ros_node.create_subscription(
             RmfDoorState,
@@ -188,7 +190,7 @@ class RmfGateway:
                 logging.debug("%s", lift_state)
 
             dic = message_to_ordereddict(msg)
-            asyncio.create_task(save(LiftState(**dic)))
+            self._loop.create_task(save(LiftState(**dic)))
 
         lift_states_sub = self._ros_node.create_subscription(
             RmfLiftState,
@@ -204,7 +206,7 @@ class RmfGateway:
                 self._rmf_events.dispenser_states.on_next(dispenser_state)
                 logging.debug("%s", dispenser_state)
 
-            asyncio.create_task(save(DispenserState.model_validate(msg)))
+            self._loop.create_task(save(DispenserState.model_validate(msg)))
 
         dispenser_states_sub = self._ros_node.create_subscription(
             RmfDispenserState,
@@ -220,7 +222,7 @@ class RmfGateway:
                 self._rmf_events.ingestor_states.on_next(ingestor_state)
                 logging.debug("%s", ingestor_state)
 
-            asyncio.create_task(save(IngestorState.model_validate(msg)))
+            self._loop.create_task(save(IngestorState.model_validate(msg)))
 
         ingestor_states_sub = self._ros_node.create_subscription(
             RmfIngestorState,
@@ -237,7 +239,7 @@ class RmfGateway:
                 logging.debug("%s", building_map)
 
             bm = self._process_building_map(cast(RmfBuildingMap, msg))
-            asyncio.create_task(save(bm))
+            self._loop.create_task(save(bm))
 
         map_sub = self._ros_node.create_subscription(
             RmfBuildingMap,
@@ -266,7 +268,7 @@ class RmfGateway:
                 activated=msg.activated,
                 level=msg.level,
             )
-            asyncio.create_task(save(bs))
+            self._loop.create_task(save(bs))
 
         beachandle_sub = self._ros_node.create_subscription(
             RmfBeaconState,
@@ -407,4 +409,5 @@ def get_rmf_gateway():
         get_ros_node(),
         get_rmf_events(),
         RmfRepository(User.get_system_user()),
+        asyncio.get_event_loop(),
     )

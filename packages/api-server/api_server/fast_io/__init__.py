@@ -10,7 +10,7 @@ from fastapi import APIRouter, FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.requests import HTTPConnection
 from fastapi.routing import APIRoute
-from reactivex import Observable, of
+from reactivex import Observable
 from reactivex.abc import DisposableBase
 from starlette.routing import compile_path
 
@@ -243,7 +243,7 @@ The message must be of the form:
                 return match, r
         return None
 
-    async def _on_connect(self, sid: str, environ: dict, auth: dict | None):
+    async def _on_connect(self, sid: str, environ: dict, auth: dict | None = None):
         logger = get_logger(HTTPConnection(environ))
         user = (
             await self._socketio_connect(sid, environ, auth)
