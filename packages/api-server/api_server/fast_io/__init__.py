@@ -243,7 +243,7 @@ The message must be of the form:
                 return match, r
         return None
 
-    async def _on_connect(self, sid: str, environ: dict, auth: dict | None):
+    async def _on_connect(self, sid: str, environ: dict, auth: dict | None = None):
         logger = get_logger(HTTPConnection(environ))
         user = (
             await self._socketio_connect(sid, environ, auth)
