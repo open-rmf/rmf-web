@@ -55,7 +55,7 @@ describe('AppBar', () => {
     expect(root.getByLabelText('user-btn')).toBeTruthy();
   });
 
-  test('logout is triggered when logout button is clicked', () => {
+  test('logout is triggered when logout button is clicked', async () => {
     const authenticator = new StubAuthenticator('test');
     const appConfig: AppConfig = {
       authenticator,
@@ -78,8 +78,9 @@ describe('AppBar', () => {
       </AppConfigContext.Provider>,
     );
     userEvent.click(root.getByLabelText('user-btn'));
+    await expect(waitFor(() => root.getByText('Logout'))).resolves.not.toThrow();
     userEvent.click(root.getByText('Logout'));
-    expect(spy).toHaveBeenCalledTimes(1);
+    await expect(waitFor(() => expect(spy).toHaveBeenCalledTimes(1))).resolves.not.toThrow();
   });
 
   test('uses headerLogo from logo resources manager', async () => {
