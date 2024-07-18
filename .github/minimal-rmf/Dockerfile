@@ -3,6 +3,8 @@ FROM $BASE_IMAGE
 ARG BRANCH=main
 ARG ROS_DISTRO=jazzy
 
+ENV REACT_APP_TRAJECTORY_SERVER=ws://localhost:8006
+
 ### build minimal rmf
 
 RUN apt update && apt install -y curl
