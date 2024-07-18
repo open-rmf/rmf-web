@@ -10,7 +10,7 @@ from fastapi import APIRouter, FastAPI
 from fastapi.exceptions import HTTPException
 from fastapi.requests import HTTPConnection
 from fastapi.routing import APIRoute
-from reactivex import Observable, of
+from reactivex import Observable
 from reactivex.abc import DisposableBase
 from starlette.routing import compile_path
 
