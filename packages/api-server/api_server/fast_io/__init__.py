@@ -244,10 +244,7 @@ The message must be of the form:
         return None
 
     async def _on_connect(self, sid: str, environ: dict, auth: dict | None = None):
-        if "asgi.scope" in environ:
-            logger = get_logger(HTTPConnection(environ["asgi.scope"]))
-        else:
-            logger = default_logger
+        logger = get_logger(HTTPConnection(environ["asgi.scope"]))
         user = (
             await self._socketio_connect(sid, environ, auth)
             if self._socketio_connect

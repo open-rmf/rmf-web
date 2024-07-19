@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Annotated, Sequence, cast
+from typing import Annotated, Sequence
 
 from fastapi import Depends
 from tortoise.exceptions import IntegrityError
@@ -30,7 +30,7 @@ class FleetRepository:
         result = await ttm.FleetState.get_or_none(name=name)
         if result is None:
             return None
-        return FleetState(**cast(dict, result.data))
+        return FleetState.model_validate(result.data)
 
     async def get_fleet_log(
         self, name: str, between: tuple[datetime, datetime] | None
@@ -45,17 +45,12 @@ class FleetRepository:
             }
         else:
             between_filters = {}
-        result = cast(
-            ttm.FleetLog | None,
-            await ttm.FleetLog.get_or_none(name=name).prefetch_related(
-                Prefetch(
-                    "log",
-                    ttm.FleetLogLog.filter(**between_filters),
-                ),
-                Prefetch(
-                    "robots__log", ttm.FleetLogRobotsLog.filter(**between_filters)
-                ),
+        result = await ttm.FleetLog.get_or_none(name=name).prefetch_related(
+            Prefetch(
+                "log",
+                ttm.FleetLogLog.filter(**between_filters),
             ),
+            Prefetch("robots__log", ttm.FleetLogRobotsLog.filter(**between_filters)),
         )
         if result is None:
             return None

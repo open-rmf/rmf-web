@@ -1,4 +1,4 @@
-from typing import List, TypeVar, cast
+from typing import TypeVar, cast
 
 from tortoise.expressions import Subquery
 from tortoise.models import Model as TortoiseModel
@@ -50,9 +50,9 @@ class Enforcer:
         return resource.filter(authz_grp__in=Subquery(permissions))
 
     @staticmethod
-    async def get_effective_permissions(user: User, authz_grp: str) -> List[str]:
+    async def get_effective_permissions(user: User, authz_grp: str) -> list[str]:
         return cast(
-            List[str],
+            list[str],
             await ttm.ResourcePermission.filter(
                 authz_grp=authz_grp, role__name__in=user.roles
             ).values_list("action", flat=True),

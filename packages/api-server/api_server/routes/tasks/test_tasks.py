@@ -1,4 +1,3 @@
-from typing import cast
 from unittest.mock import patch
 from uuid import uuid4
 
@@ -154,7 +153,7 @@ class TestTasksRoute(AppFixture):
         with self.subscribe_sio(f"/tasks/{task_id}/state") as sub:
             get_task_events().task_states.on_next(self.task_states[0])
             state = TaskState(**next(sub))
-            self.assertEqual(task_id, cast(TaskState, state).booking.id)
+            self.assertEqual(task_id, state.booking.id)
 
     def test_get_task_log(self):
         resp = self.client.get(
@@ -229,7 +228,7 @@ class TestTasksRoute(AppFixture):
         with self.subscribe_sio(f"/tasks/{task_id}/log") as sub:
             get_task_events().task_event_logs.on_next(self.task_logs[0])
             log = TaskEventLog(**next(sub))
-            self.assertEqual(task_id, cast(TaskEventLog, log).task_id)
+            self.assertEqual(task_id, log.task_id)
 
     def test_activity_discovery(self):
         with patch.object(get_tasks_service(), "call") as mock:
