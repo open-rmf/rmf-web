@@ -127,7 +127,7 @@ export const TaskSummary = React.memo((props: TaskSummaryProps) => {
       for (const key in labels) {
         contents.push({
           title: key,
-          value: labels['key'],
+          value: labels[key],
         });
       }
     }
