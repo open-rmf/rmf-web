@@ -270,10 +270,8 @@ export function TaskDataGridTable({
       editable: false,
       renderCell: (cellValues) => {
         let warnDateTime: Date | undefined = undefined;
-        if (cellValues.row.requestLabel?.unix_millis_warn_time) {
-          const warnMillisNum = parseInt(
-            cellValues.row.requestLabel.unix_millis_warn_time as string,
-          );
+        if (cellValues.row.requestLabel && 'unix_millis_warn_time' in cellValues.row.requestLabel) {
+          const warnMillisNum = parseInt(cellValues.row.requestLabel['unix_millis_warn_time']);
           if (!Number.isNaN(warnMillisNum)) {
             warnDateTime = new Date(warnMillisNum);
           }
@@ -407,9 +405,9 @@ export function TaskDataGridTable({
             }
 
             let warnDateTime: Date | undefined = undefined;
-            if (params.row.requestLabel?.description.unix_millis_warn_time) {
+            if (params.row.requestLabel && 'unix_millis_warn_time' in params.row.requestLabel) {
               const warnMillisNum = parseInt(
-                params.row.requestLabel.description.unix_millis_warn_time as string,
+                params.row.requestLabel.description['unix_millis_warn_time'],
               );
               if (!Number.isNaN(warnMillisNum)) {
                 warnDateTime = new Date(warnMillisNum);
