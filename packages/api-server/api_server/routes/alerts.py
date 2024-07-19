@@ -15,8 +15,8 @@ router = FastIORouter(tags=["Alerts"])
 @router.sub("", response_model=Alert)
 async def sub_alerts(
     _req: SubscriptionRequest,
-    alert_events: Annotated[AlertEvents, Depends(get_alert_events)],
 ):
+    alert_events = get_alert_events()
     return alert_events.alerts.pipe(rxops.filter(lambda x: x is not None))
 
 
