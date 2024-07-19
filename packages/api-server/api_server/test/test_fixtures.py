@@ -200,7 +200,7 @@ class AppFixture(unittest.TestCase):
                 portal.call(
                     on_sio_connect,
                     "test",
-                    mock_scope,
+                    {"asgi": mock_scope},
                     {"token": self.client.token(user)},
                 )
                 connected = True
