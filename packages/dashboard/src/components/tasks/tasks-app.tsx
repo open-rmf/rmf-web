@@ -187,13 +187,18 @@ export const TasksApp = React.memo(
         }
 
         (async () => {
+          let labelFilter: string | undefined = undefined;
+          if (filterColumn && filterColumn.startsWith('label=')) {
+            labelFilter = `${filterColumn.substring(6)}=${filterValue}`;
+          }
+
           const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
             filterColumn && filterColumn === 'id_' ? filterValue : undefined,
             filterColumn && filterColumn === 'category' ? filterValue : undefined,
             filterColumn && filterColumn === 'requester' ? filterValue : undefined,
             filterColumn && filterColumn === 'assigned_to' ? filterValue : undefined,
             filterColumn && filterColumn === 'status' ? filterValue : undefined,
-            filterColumn && filterColumn.startsWith('label=') ? filterValue : undefined,
+            labelFilter,
             filterColumn && filterColumn === 'unix_millis_request_time' ? filterValue : undefined,
             filterColumn && filterColumn === 'unix_millis_start_time' ? filterValue : undefined,
             filterColumn && filterColumn === 'unix_millis_finish_time' ? filterValue : undefined,
