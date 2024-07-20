@@ -1,5 +1,4 @@
 import { waitFor } from '@testing-library/react';
-import { act } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { StubAuthenticator, UserProfile, UserProfileContext } from 'rmf-auth';
@@ -16,6 +15,7 @@ import {
 import AppBar from '../appbar';
 import { render } from '../tests/test-utils';
 import { makeMockAppController } from './mock-app-controller';
+import { TaskResourceManager } from '../../managers/resource-manager-tasks';
 
 describe('AppBar', () => {
   let appController: AppController;
@@ -55,7 +55,7 @@ describe('AppBar', () => {
     expect(root.getByLabelText('user-btn')).toBeTruthy();
   });
 
-  test('logout is triggered when logout button is clicked', () => {
+  test('logout is triggered when logout button is clicked', async () => {
     const authenticator = new StubAuthenticator('test');
     const appConfig: AppConfig = {
       authenticator,
@@ -78,15 +78,25 @@ describe('AppBar', () => {
       </AppConfigContext.Provider>,
     );
     userEvent.click(root.getByLabelText('user-btn'));
+    await expect(waitFor(() => root.getByText('Logout'))).resolves.not.toThrow();
     userEvent.click(root.getByText('Logout'));
-    expect(spy).toHaveBeenCalledTimes(1);
+    await expect(waitFor(() => expect(spy).toHaveBeenCalledTimes(1))).resolves.not.toThrow();
   });
 
   test('uses headerLogo from logo resources manager', async () => {
     const robotResourcesMgr = new RobotResourceManager({});
     const logoResourcesMgr = new LogoResourceManager({});
+    const taskResourceMgr = new TaskResourceManager([]);
     logoResourcesMgr.getHeaderLogoPath = () => Promise.resolve('/test-logo.png');
-    const resourceMgr: ResourceManager = { robots: robotResourcesMgr, logos: logoResourcesMgr };
+    const resourceMgr: ResourceManager = {
+      robots: robotResourcesMgr,
+      logos: logoResourcesMgr,
+      tasks: taskResourceMgr,
+      helpLink: 'testHelpLink',
+      reportIssue: 'testReportIssue',
+      defaultZoom: 5,
+      defaultRobotZoom: 50,
+    };
 
     const root = render(
       <ResourcesContext.Provider value={resourceMgr}>

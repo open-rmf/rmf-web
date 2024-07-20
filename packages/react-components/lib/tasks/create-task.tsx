@@ -301,7 +301,6 @@ export interface CreateTaskFormProps
   // requestTask is provided only when editing a schedule
   requestTask?: TaskRequest;
   submitTasks?(tasks: TaskRequest[], schedule: Schedule | null): Promise<void>;
-  tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
   onSuccess?(tasks: TaskRequest[]): void;
   onFail?(error: Error, tasks: TaskRequest[]): void;
   onSuccessFavoriteTask?(message: string, favoriteTask: TaskFavorite): void;
@@ -332,7 +331,6 @@ export function CreateTaskForm({
   scheduleToEdit,
   requestTask,
   submitTasks,
-  tasksFromFile,
   onClose,
   onSuccess,
   onFail,
@@ -454,8 +452,8 @@ export function CreateTaskForm({
     ? getTaskBookingLabelFromTaskRequest(requestTask)
     : undefined;
   let existingWarnTime: Date | null = null;
-  if (existingBookingLabel && existingBookingLabel.unix_millis_warn_time) {
-    const warnTimeInt = parseInt(existingBookingLabel.unix_millis_warn_time);
+  if (existingBookingLabel && 'unix_millis_warn_time' in existingBookingLabel) {
+    const warnTimeInt = parseInt(existingBookingLabel['unix_millis_warn_time']);
     if (!Number.isNaN(warnTimeInt)) {
       existingWarnTime = new Date(warnTimeInt);
     }
@@ -681,7 +679,7 @@ export function CreateTaskForm({
       }
 
       if (warnTime !== null) {
-        requestBookingLabel.unix_millis_warn_time = `${warnTime.valueOf()}`;
+        requestBookingLabel['unix_millis_warn_time'] = `${warnTime.valueOf()}`;
       }
 
       request.labels = serializeTaskBookingLabel(requestBookingLabel);

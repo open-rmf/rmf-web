@@ -176,14 +176,9 @@ export const getScheduledTaskTitle = (
   const taskBookingLabel = getTaskBookingLabelFromTaskRequest(task.task_request);
 
   let remappedTaskName: string | undefined = undefined;
-  if (
-    supportedTasks &&
-    taskBookingLabel &&
-    taskBookingLabel.description.task_definition_id &&
-    typeof taskBookingLabel.description.task_definition_id === 'string'
-  ) {
+  if (supportedTasks && taskBookingLabel && 'task_definition_id' in taskBookingLabel) {
     for (const s of supportedTasks) {
-      if (s.taskDefinitionId === taskBookingLabel.description.task_definition_id) {
+      if (s.taskDefinitionId === taskBookingLabel['task_definition_id']) {
         remappedTaskName = s.taskDisplayName;
       }
     }

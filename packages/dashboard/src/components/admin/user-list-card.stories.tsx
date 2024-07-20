@@ -1,12 +1,11 @@
-import { Meta, Story } from '@storybook/react';
-import React from 'react';
+import { Meta, StoryFn } from '@storybook/react';
 import { MemoryRouter } from 'react-router';
-import { UserListCard, UserListCardProps } from '../../components/admin/user-list-card';
+import { UserListCard, UserListCardProps } from './user-list-card';
 
 export default {
   title: 'Admin/User List Card',
   component: UserListCard,
-} as Meta;
+} satisfies Meta;
 
 const users: string[] = [];
 for (let i = 0; i < 100; i++) {
@@ -18,7 +17,7 @@ async function searchUsers(search: string, limit: number, offset: number) {
   return users.filter((u) => u.startsWith(search)).slice(offset, offset + limit);
 }
 
-export const Default: Story<UserListCardProps> = (args) => {
+export const Default: StoryFn<UserListCardProps> = (args) => {
   return (
     <MemoryRouter>
       <UserListCard

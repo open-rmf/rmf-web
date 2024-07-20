@@ -12,8 +12,8 @@ import {
   Theme,
   Typography,
   useMediaQuery,
+  useTheme,
 } from '@mui/material';
-import { makeStyles, createStyles } from '@mui/styles';
 import React from 'react';
 import { RmfAppContext } from '../rmf-app';
 import { RobotTableData, base } from 'react-components';
@@ -38,17 +38,6 @@ import {
 } from '@mui/icons-material';
 import { TaskCancelButton } from '../tasks/task-cancellation';
 import { RobotDecommissionButton } from './robot-decommission';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    textField: {
-      background: theme.palette.background.default,
-      '&:hover': {
-        backgroundColor: theme.palette.background.default,
-      },
-    },
-  }),
-);
 
 const setTaskDialogColor = (robotStatus: Status | undefined | null) => {
   if (!robotStatus) {
@@ -115,7 +104,6 @@ const showBatteryIcon = (robot: RobotState, robotBattery: number) => {
 
 export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) => {
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
-  const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
 
   const [isOpen, setIsOpen] = React.useState(true);
@@ -233,6 +221,8 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
       });
     }
 
+    const theme = useTheme();
+
     return (
       <>
         {contents.map((message, index) => (
@@ -242,7 +232,7 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
               id="standard-size-small"
               size="small"
               variant="filled"
-              InputProps={{ readOnly: true, className: classes.textField }}
+              InputProps={{ readOnly: true }}
               fullWidth={true}
               multiline
               maxRows={4}
@@ -251,6 +241,10 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
               sx={{
                 '& .MuiFilledInput-root': {
                   fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
+                },
+                background: theme.palette.background.default,
+                '&:hover': {
+                  backgroundColor: theme.palette.background.default,
                 },
               }}
             />

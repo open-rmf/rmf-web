@@ -1,5 +1,4 @@
-import { Meta, Story } from '@storybook/react';
-import React from 'react';
+import { Meta, StoryFn } from '@storybook/react';
 import { LoginCard as LoginCard_, LoginPage as LoginPage_ } from '.';
 import { LoginCardProps } from './login-card';
 
@@ -16,12 +15,12 @@ export default {
       },
     },
   },
-} as Meta;
+} satisfies Meta;
 
-export const LoginCard: Story<LoginCardProps> = (args) => (
+export const LoginCard: StoryFn<LoginCardProps> = (args) => (
   <LoginCard_ {...args} logo="/resources/ros-health.png" />
 );
 
-export const LoginPage: Story<LoginCardProps> = (args) => (
+export const LoginPage: StoryFn<LoginCardProps> = (args) => (
   <LoginPage_ {...args} logo="/resources/ros-health.png" />
 );

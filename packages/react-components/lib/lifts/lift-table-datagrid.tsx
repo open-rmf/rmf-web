@@ -9,10 +9,10 @@ import {
 } from '@mui/x-data-grid';
 import { Box, SxProps, Typography, useTheme, useMediaQuery } from '@mui/material';
 import React from 'react';
-import { Lift } from 'api-client';
+import { Lift, LiftState } from 'api-client';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import { LiftState as LiftStateModel } from 'rmf-models/ros/rmf_lift_msgs/msg';
+import { LiftState as RmfLiftState } from 'rmf-models/ros/rmf_lift_msgs/msg';
 import { doorStateToString, liftModeToString, motionStateToString } from './lift-utils';
 import { LiftControls } from './lift-controls';
 
@@ -25,6 +25,7 @@ export interface LiftTableData {
   motionState: number;
   sessionId?: string;
   lift: Lift;
+  liftState?: LiftState;
   onRequestSubmit?(
     event: React.FormEvent,
     doorState: number,
@@ -51,7 +52,7 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
     }
   };
 
-  const modeState = (params: GridCellParams): React.ReactNode => {
+  const ModeState = (params: GridCellParams): React.ReactNode => {
     const modeStateLabelStyle: SxProps = (() => {
       const unknown = {
         color: theme.palette.action.disabledBackground,
@@ -66,16 +67,20 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
         color: theme.palette.error.main,
       };
 
-      switch (params.row.mode) {
-        case LiftStateModel.MODE_AGV:
+      if (!params.row.liftState) {
+        return unknown;
+      }
+
+      switch (params.row.liftState.current_mode) {
+        case RmfLiftState.MODE_AGV:
           return agv;
-        case LiftStateModel.MODE_HUMAN:
+        case RmfLiftState.MODE_HUMAN:
           return human;
-        case LiftStateModel.MODE_FIRE:
-        case LiftStateModel.MODE_OFFLINE:
-        case LiftStateModel.MODE_EMERGENCY:
+        case RmfLiftState.MODE_FIRE:
+        case RmfLiftState.MODE_OFFLINE:
+        case RmfLiftState.MODE_EMERGENCY:
           return unstable;
-        case LiftStateModel.MODE_UNKNOWN:
+        case RmfLiftState.MODE_UNKNOWN:
         default:
           return unknown;
       }
@@ -91,7 +96,7 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
             fontSize: isScreenHeightLessThan800 ? 10 : 16,
           }}
         >
-          {liftModeToString(params.row.mode).toUpperCase()}
+          {liftModeToString(params.row.liftState?.current_mode).toUpperCase()}
         </Typography>
       </Box>
     );
@@ -114,15 +119,15 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
 
     const doorStateLabelStyle: SxProps = (() => {
       switch (params.row?.doorState) {
-        case LiftStateModel.DOOR_OPEN:
+        case RmfLiftState.DOOR_OPEN:
           return {
             color: theme.palette.success.main,
           };
-        case LiftStateModel.DOOR_CLOSED:
+        case RmfLiftState.DOOR_CLOSED:
           return {
             color: theme.palette.error.main,
           };
-        case LiftStateModel.DOOR_MOVING:
+        case RmfLiftState.DOOR_MOVING:
           return {
             color: theme.palette.warning.main,
           };
@@ -139,7 +144,7 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
           component="p"
           sx={{
             marginRight:
-              params.row?.doorState === LiftStateModel.DOOR_OPEN
+              params.row?.doorState === RmfLiftState.DOOR_OPEN
                 ? isScreenHeightLessThan800
                   ? 2
                   : 4
@@ -178,6 +183,14 @@ export function LiftDataGridTable({ lifts, onLiftClick }: LiftDataGridTableProps
       width: 90,
       valueGetter: (params: GridValueGetterParams) => params.row.name,
       flex: 1,
+      filterable: true,
+    },
+    {
+      field: 'opMode',
+      headerName: 'Op. Mode',
+      width: 90,
+      flex: 1,
+      renderCell: ModeState,
       filterable: true,
     },
     {

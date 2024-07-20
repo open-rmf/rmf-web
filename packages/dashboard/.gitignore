@@ -25,7 +25,7 @@
 
 npm-debug.log*
 web_server.log
-yarn-debug.log*
-yarn-error.log*
 
 /.rmf
+
+*storybook.log

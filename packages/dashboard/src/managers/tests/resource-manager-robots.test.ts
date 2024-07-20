@@ -47,6 +47,7 @@ describe('The correct operation of the getIconPath method of the RobotResourceMa
       icons: {
         testFleet: '',
       },
+      scale: 0.4,
       places: {},
     };
     const icon = await manager.getIconPath('testFleet');
@@ -62,6 +63,7 @@ describe('The correct operation of the getIconPath method of the RobotResourceMa
         testFleet: '/fleet',
         testModel: '/model',
       },
+      scale: 0.4,
       places: {},
     };
     const icon = await manager.getIconPath('testFleet', 'testModel');

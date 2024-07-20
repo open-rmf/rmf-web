@@ -13,7 +13,7 @@ import {
   Tooltip,
   useMediaQuery,
 } from '@mui/material';
-import { TaskRequest, TaskState } from 'api-client';
+import { TaskStateInput as TaskState } from 'api-client';
 import React from 'react';
 import {
   FilterFields,
@@ -187,15 +187,18 @@ export const TasksApp = React.memo(
         }
 
         (async () => {
+          let labelFilter: string | undefined = undefined;
+          if (filterColumn && filterColumn.startsWith('label=')) {
+            labelFilter = `${filterColumn.substring(6)}=${filterValue}`;
+          }
+
           const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
             filterColumn && filterColumn === 'id_' ? filterValue : undefined,
             filterColumn && filterColumn === 'category' ? filterValue : undefined,
             filterColumn && filterColumn === 'requester' ? filterValue : undefined,
-            filterColumn && filterColumn === 'label=pickup' ? filterValue : undefined,
-            filterColumn && filterColumn === 'label=destination' ? filterValue : undefined,
             filterColumn && filterColumn === 'assigned_to' ? filterValue : undefined,
             filterColumn && filterColumn === 'status' ? filterValue : undefined,
-            undefined,
+            labelFilter,
             filterColumn && filterColumn === 'unix_millis_request_time' ? filterValue : undefined,
             filterColumn && filterColumn === 'unix_millis_start_time' ? filterValue : undefined,
             filterColumn && filterColumn === 'unix_millis_finish_time' ? filterValue : undefined,
@@ -207,27 +210,10 @@ export const TasksApp = React.memo(
           const results = resp.data as TaskState[];
           const newTasks = results.slice(0, GET_LIMIT);
 
-          // NOTE(ac): we are not using getAllTaskRequests here to prevent
-          // adding it into the dependency list.
-          const taskIds: string[] = newTasks.map((task) => task.booking.id);
-          const taskIdsQuery = taskIds.join(',');
-          const taskRequests = (await rmf.tasksApi.queryTaskRequestsTasksRequestsGet(taskIdsQuery))
-            .data;
-
-          const taskRequestMap: Record<string, TaskRequest> = {};
-          let requestIndex = 0;
-          for (const id of taskIds) {
-            if (requestIndex < taskRequests.length && taskRequests[requestIndex]) {
-              taskRequestMap[id] = taskRequests[requestIndex];
-            }
-            ++requestIndex;
-          }
-
           setTasksState((old) => ({
             ...old,
             isLoading: false,
             data: newTasks,
-            requests: taskRequestMap,
             total:
               results.length === GET_LIMIT
                 ? tasksState.page * GET_LIMIT + 1
@@ -256,8 +242,6 @@ export const TasksApp = React.memo(
         do {
           queries = (
             await rmf.tasksApi.queryTaskStatesTasksGet(
-              undefined,
-              undefined,
               undefined,
               undefined,
               undefined,

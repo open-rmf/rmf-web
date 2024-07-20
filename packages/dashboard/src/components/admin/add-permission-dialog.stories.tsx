@@ -1,16 +1,12 @@
-import { Meta, Story } from '@storybook/react';
-import React from 'react';
-import {
-  AddPermissionDialog,
-  AddPermissionDialogProps,
-} from '../../components/admin/add-permission-dialog';
+import { Meta, StoryFn } from '@storybook/react';
+import { AddPermissionDialog, AddPermissionDialogProps } from './add-permission-dialog';
 
 export default {
   title: 'Admin/Add Permission Dialog',
   component: AddPermissionDialog,
-} as Meta;
+} satisfies Meta;
 
-export const Default: Story<AddPermissionDialogProps> = (args) => {
+export const Default: StoryFn<AddPermissionDialogProps> = (args) => {
   return (
     <AddPermissionDialog
       {...args}

@@ -6,18 +6,7 @@ import { AppEvents } from '../app-events';
 import { RmfAppContext } from '../rmf-app';
 import { UserProfile, UserProfileContext } from 'rmf-auth';
 import { Enforcer } from '../permissions';
-import { makeStyles, createStyles } from '@mui/styles';
 import { ConfirmationDialog } from 'react-components';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    enableHover: {
-      '&.Mui-disabled': {
-        pointerEvents: 'auto',
-      },
-    },
-  }),
-);
 
 export interface TaskCancelButtonProp extends ButtonProps {
   taskId: string | null;
@@ -29,7 +18,6 @@ export function TaskCancelButton({
   buttonText,
   ...otherProps
 }: TaskCancelButtonProp): JSX.Element {
-  const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
   const appController = React.useContext(AppControllerContext);
   const profile: UserProfile | null = React.useContext(UserProfileContext);
@@ -85,7 +73,15 @@ export function TaskCancelButton({
         </Button>
       ) : taskCancellable && !userCanCancelTask ? (
         <Tooltip title="You don't have permission to cancel tasks.">
-          <Button disabled className={classes['enableHover']} {...otherProps}>
+          <Button
+            disabled
+            sx={{
+              '&.Mui-disabled': {
+                pointerEvents: 'auto',
+              },
+            }}
+            {...otherProps}
+          >
             {buttonText ?? 'Cancel Task'}
           </Button>
         </Tooltip>
@@ -97,7 +93,15 @@ export function TaskCancelButton({
               : `Task cannot be cancelled.`
           }
         >
-          <Button disabled className={classes['enableHover']} {...otherProps}>
+          <Button
+            disabled
+            sx={{
+              '&.Mui-disabled': {
+                pointerEvents: 'auto',
+              },
+            }}
+            {...otherProps}
+          >
             {buttonText ?? 'Cancel Task'}
           </Button>
         </Tooltip>

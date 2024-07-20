@@ -16,7 +16,7 @@ import {
   TextThreeRendering,
 } from 'react-components';
 import { ErrorBoundary } from 'react-error-boundary';
-import { Door as DoorModel } from 'rmf-models';
+import { Door as DoorModel } from 'rmf-models/ros/rmf_building_map_msgs/msg';
 import { EMPTY, merge, scan, Subscription, switchMap, throttleTime } from 'rxjs';
 import { Box3, TextureLoader, Vector3 } from 'three';
 import appConfig from '../app-config';

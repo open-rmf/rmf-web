@@ -2,7 +2,7 @@ import { TableContainer } from '@mui/material';
 import { BuildingMap, Lift } from 'api-client';
 import React from 'react';
 import { LiftDataGridTable, LiftTableData } from 'react-components';
-import { LiftRequest as RmfLiftRequest } from 'rmf-models';
+import { LiftRequest as RmfLiftRequest } from 'rmf-models/ros/rmf_lift_msgs/msg';
 import { throttleTime } from 'rxjs';
 import { AppEvents } from './app-events';
 import { LiftSummary } from './lift-summary';
@@ -53,6 +53,7 @@ export const LiftsApp = createMicroApp('Lifts', () => {
                     motionState: liftState.motion_state,
                     sessionId: liftState.session_id,
                     lift: lift,
+                    liftState: liftState,
                     onRequestSubmit: async (_ev, doorState, requestType, destination) => {
                       let fleet_session_ids: string[] = [];
                       if (requestType === RmfLiftRequest.REQUEST_END_SESSION) {

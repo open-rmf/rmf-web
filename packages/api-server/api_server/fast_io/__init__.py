@@ -14,7 +14,7 @@ from reactivex import Observable
 from reactivex.abc import DisposableBase
 from starlette.routing import compile_path
 
-from api_server.logging import LoggerAdapter, get_logger
+from api_server.logging import LoggerAdapter, default_logger, get_logger
 from api_server.models.user import User
 
 from .errors import *

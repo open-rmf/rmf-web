@@ -20,5 +20,5 @@ export function getTaskBookingLabelFromTaskRequest(
 }
 
 export function getTaskDefinitionId(labels: TaskBookingLabels): string | null {
-  return labels.task_definition_id || null;
+  return labels['task_definition_id'] || null;
 }

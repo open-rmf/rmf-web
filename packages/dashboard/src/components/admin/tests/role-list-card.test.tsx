@@ -10,9 +10,9 @@ describe('Role List', () => {
     await expect(waitFor(() => root.getByText('role2'))).resolves.not.toThrow();
   });
 
-  it('opens create role dialog when button is clicked', () => {
+  it('opens create role dialog when button is clicked', async () => {
     const root = render(<RoleListCard />);
-    userEvent.click(root.getByLabelText('create role'));
+    await userEvent.click(root.getByLabelText('create role'));
     expect(() => root.getByText('Create Role')).not.toThrow();
   });
 });
