@@ -2,7 +2,7 @@ import pydantic
 
 from api_server.models import Rio
 from api_server.models.tortoise_models import Rio as DbRio
-from api_server.rmf_io import rio_events
+from api_server.rmf_io import get_rio_events
 from api_server.test import AppFixture
 
 
@@ -35,7 +35,7 @@ class TestRiosRoute(AppFixture):
 
     def test_sub_rios(self):
         with self.subscribe_sio("/rios") as sub:
-            rio_events.rios.on_next(
+            get_rio_events().rios.on_next(
                 Rio(id="test_rio", type="test_type", data={"battery": 1})
             )
             rio = Rio(**next(sub))

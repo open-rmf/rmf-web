@@ -21,6 +21,7 @@ from api_server.rmf_io.events import (
     get_alert_events,
     get_beacon_events,
     get_fleet_events,
+    get_rio_events,
     get_rmf_events,
     get_task_events,
 )
@@ -77,6 +78,7 @@ async def lifespan(_app: FastIO):
     await stack.enter_async_context(get_fleet_events)
     await stack.enter_async_context(get_alert_events)
     await stack.enter_async_context(get_beacon_events)
+    await stack.enter_async_context(get_rio_events)
 
     await Tortoise.init(
         db_url=app_config.db_url,

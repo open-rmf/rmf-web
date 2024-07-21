@@ -71,4 +71,6 @@ class RioEvents:
         self.rios = Subject[mdl.Rio]()
 
 
-rio_events = RioEvents()
+@singleton_dep
+def get_rio_events():
+    return RioEvents()
