@@ -17,7 +17,7 @@ class AlertRepository:
             request_time=datetime.fromtimestamp(alert.unix_millis_alert_time / 1000),
             response_expected=(len(alert.responses_available) > 0),
             task_id=alert.task_id,
-            data=alert.json(),
+            data=alert.model_dump(),
         )
         return alert
 
@@ -30,6 +30,13 @@ class AlertRepository:
         return alert_model
 
     async def create_response(self, alert_id: str, response: str) -> AlertResponse:
+        existing_response = await ttm.AlertResponse.get_or_none(id=alert_id)
+        if existing_response is not None:
+            existing_response_model = AlertResponse.from_tortoise(existing_response)
+            raise AlreadyExistsError(
+                f"Alert with ID {alert_id} already has a response of {existing_response_model.response}"
+            )
+
         alert = await ttm.AlertRequest.get_or_none(id=alert_id)
         if alert is None:
             raise NotFoundError(f"Alert with ID {alert_id} does not exists")
@@ -51,7 +58,7 @@ class AlertRepository:
                 alert_response_model.unix_millis_response_time / 1000
             ),
             response=response,
-            data=alert_response_model.json(),
+            data=alert_response_model.model_dump(),
             alert_request=alert,
         )
         return alert_response_model

@@ -79,6 +79,8 @@ async def respond_to_alert(
         alert_response_model = await repo.create_response(alert_id, response)
     except IntegrityError as e:
         raise HTTPException(400, e) from e
+    except AlreadyExistsError as e:
+        raise HTTPException(409, str(e)) from e
     except NotFoundError as e:
         raise HTTPException(404, str(e)) from e
     except InvalidInputError as e:
