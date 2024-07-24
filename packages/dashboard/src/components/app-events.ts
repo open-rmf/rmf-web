@@ -1,5 +1,5 @@
 import {
-  Alert,
+  AlertRequest,
   Dispenser,
   Door,
   Ingestor,
@@ -21,8 +21,7 @@ export const AppEvents = {
   refreshTaskApp: new Subject<void>(),
   refreshFavoriteTasks: new Subject<void>(),
   refreshTaskSchedule: new Subject<void>(),
-  refreshAlert: new Subject<void>(),
-  alertListOpenedAlert: new Subject<Alert | null>(),
+  pushAlert: new Subject<AlertRequest | null>(),
   disabledLayers: new ReplaySubject<Record<string, boolean>>(),
   zoom: new BehaviorSubject<number | null>(null),
   cameraPosition: new BehaviorSubject<Vector3 | null>(null),
