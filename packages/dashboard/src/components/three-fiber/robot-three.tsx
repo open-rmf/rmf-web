@@ -24,8 +24,8 @@ export const RobotThree = ({ robot, robotLocation, onRobotClick, robotLabel }: R
     const loadFont = async () => {
       try {
         const newFontPath =
-          process.env.PUBLIC_URL && process.env.PUBLIC_URL.length > 0
-            ? `${process.env.PUBLIC_URL}/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff`
+          import.meta.env.BASE_URL && import.meta.env.BASE_URL.length > 0
+            ? `${import.meta.env.BASE_URL}/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff`
             : '/roboto-v18-KFOmCnqEu92Fr1Mu4mxM.woff';
 
         if (await fontPathExists(newFontPath)) {

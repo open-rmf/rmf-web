@@ -5,7 +5,6 @@ import { RobotResource, RobotResourceManager } from './resource-manager-robots';
 import { TaskResource, TaskResourceManager } from './resource-manager-tasks';
 
 const debug = Debug('ResourceManager');
-const ResourceFile = 'resources/main.json';
 
 export interface ResourceConfigurationsType {
   robots?: Record<string, RobotResource>; // Record<FleetName, RobotResource>
@@ -35,23 +34,6 @@ export default class ResourceManager {
   cartIds?: string[];
   loggedInDisplayLevel?: string;
   tasks: TaskResourceManager;
-
-  /**
-   * Gets the default resource manager using the embedded resource file (aka "assets/resources/main.json").
-   */
-  static defaultResourceManager = async (): Promise<ResourceManager | undefined> => {
-    try {
-      // need to use interpolate string to make webpack resolve import at run time and for
-      // typescript to not attempt to typecheck it.
-      const resources = (await import(
-        /* webpackMode: "eager" */ `../assets/${ResourceFile}`
-      )) as ResourceConfigurationsType;
-      return new ResourceManager(resources);
-    } catch {
-      debug('failed to load resource file');
-      return new ResourceManager({});
-    }
-  };
 
   constructor(resources: ResourceConfigurationsType) {
     this.robots = new RobotResourceManager(resources.robots || {});

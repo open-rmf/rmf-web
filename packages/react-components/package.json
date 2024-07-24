@@ -2,9 +2,10 @@
   "name": "react-components",
   "version": "0.0.1",
   "description": "",
-  "main": "dist/index.js",
+  "type": "module",
+  "main": "lib/index.ts",
   "scripts": {
-    "build": "tsc --build",
+    "build": "tsc",
     "build:storybook": "storybook build",
     "build:watch": "tsc --build --watch",
     "clean": "tsc --build --clean",

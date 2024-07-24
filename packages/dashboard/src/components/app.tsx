@@ -4,20 +4,20 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import React from 'react';
 import 'react-grid-layout/css/styles.css';
-import { Route, Routes, Navigate } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { LoginPage, PrivateRoute } from 'rmf-auth';
 import appConfig from '../app-config';
 import ResourceManager from '../managers/resource-manager';
 import { DashboardRoute, LoginRoute, RobotsRoute, TasksRoute } from '../util/url';
 import { AppBase } from './app-base';
 import { ResourcesContext } from './app-contexts';
+import { AppEvents } from './app-events';
 import './app.css';
 import { dashboardWorkspace } from './dashboard';
 import { RmfApp } from './rmf-app';
 import { robotsWorkspace } from './robots/robots-workspace';
 import { tasksWorkspace } from './tasks/tasks-workspace';
 import { Workspace } from './workspace';
-import { AppEvents } from './app-events';
 
 export default function App(): JSX.Element | null {
   const authenticator = appConfig.authenticator;
@@ -53,7 +53,7 @@ export default function App(): JSX.Element | null {
    */
   React.useEffect(() => {
     (async () => {
-      const appResources = await appConfig.appResourcesFactory();
+      const appResources = new ResourceManager({});
       if (!appResources) {
         setAppReady(true);
       } else {

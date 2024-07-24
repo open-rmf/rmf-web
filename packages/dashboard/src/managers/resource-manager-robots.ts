@@ -47,7 +47,7 @@ export class RobotResourceManager {
     }
 
     try {
-      return (await import(/* webpackMode: "eager" */ `../assets/resources${iconPath}`)).default;
+      return (await import(`../assets/resources${iconPath}`)).default;
     } catch {
       debug(`failed to load icon for "${fleetName}/${robotModel}" (failed to load icon module)`);
       return null;

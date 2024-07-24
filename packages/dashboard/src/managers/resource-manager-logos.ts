@@ -24,7 +24,7 @@ export class LogoResourceManager {
     const logoIcon = this.logos[logoName].icons[logoName];
 
     try {
-      return (await import(/* webpackMode: "eager" */ `../assets/resources${logoIcon}`)).default;
+      return (await import(`../assets/resources${logoIcon}`)).default;
     } catch {
       debug(`failed to load icon for "${logoName}"`);
       return null;
@@ -40,8 +40,7 @@ export class LogoResourceManager {
     if (themeIcon) return themeIcon;
     debug('using default header logo');
 
-    const defaultLogoFileName = 'defaultLogo.png';
-    return (await import(/* webpackMode: "eager" */ `../assets/${defaultLogoFileName}`)).default;
+    return (await import('../assets/defaultLogo.png')).default;
   };
 
   get all(): Record<string, LogoResource> {

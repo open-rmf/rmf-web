@@ -1,6 +1,7 @@
 {
   "name": "rmf-dashboard",
   "version": "0.0.1",
+  "type": "module",
   "private": true,
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
@@ -58,6 +59,7 @@
     "@types/react-dom": "^18.2.6",
     "@types/react-grid-layout": "^1.3.2",
     "@types/three": "^0.166.0",
+    "@vitejs/plugin-react-swc": "^3.7.0",
     "ajv": "^8.10.0",
     "api-client": "workspace:*",
     "api-server": "file:../api-server",
@@ -127,6 +129,7 @@
     "terser-webpack-plugin": "^5.2.5",
     "three": "^0.166.1",
     "typescript": "~5.4.3",
+    "vite": "^5.3.4",
     "webpack": "^5.91.0",
     "webpack-dev-server": "^4.6.0",
     "webpack-manifest-plugin": "^4.0.2",
