@@ -1,6 +1,5 @@
 import { Circle, Line } from '@react-three/drei';
 import { MeshProps, ThreeEvent } from '@react-three/fiber';
-import React from 'react';
 import { Euler, Vector3 } from 'three';
 import { RobotData } from './robot-three-maker';
 

@@ -5,7 +5,7 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc --build && cp package.json dist/"
+    "build": "tsc --build && cp package.json dist"
   },
   "repository": {
     "type": "git",

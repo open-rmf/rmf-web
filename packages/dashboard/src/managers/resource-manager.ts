@@ -1,10 +1,7 @@
-import Debug from 'debug';
 import { DispenserResourceManager, RawDispenserResource } from './resource-manager-dispensers';
 import { LogoResource, LogoResourceManager } from './resource-manager-logos';
 import { RobotResource, RobotResourceManager } from './resource-manager-robots';
 import { TaskResource, TaskResourceManager } from './resource-manager-tasks';
-
-const debug = Debug('ResourceManager');
 
 export interface ResourceConfigurationsType {
   robots?: Record<string, RobotResource>; // Record<FleetName, RobotResource>

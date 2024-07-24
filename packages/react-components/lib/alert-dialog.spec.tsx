@@ -1,6 +1,5 @@
 import { ThemeProvider, createTheme } from '@mui/material';
 import { fireEvent, render } from '@testing-library/react';
-import React from 'react';
 import { AlertContent, AlertDialog } from './alert-dialog';
 
 const theme = createTheme();

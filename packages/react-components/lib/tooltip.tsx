@@ -1,5 +1,4 @@
 import { Tooltip as MuiTooltip, styled } from '@mui/material';
-import React from 'react';
 
 export interface TooltipProps {
   title: string;

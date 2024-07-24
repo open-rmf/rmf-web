@@ -311,7 +311,7 @@ export const TaskSchedule = () => {
             }}
           />
         )}
-        viewerExtraComponent={(fields, event) => {
+        viewerExtraComponent={(_fields, event) => {
           return <Typography variant="caption">{event.title}</Typography>;
         }}
         onSelectedDateChange={setSelectedDate}

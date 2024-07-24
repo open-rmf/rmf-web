@@ -1,6 +1,5 @@
 import { Typography } from '@mui/material';
 import { Meta, StoryFn } from '@storybook/react';
-import React from 'react';
 import {
   CircularProgressBar as CircularProgressBar_,
   CircularProgressBarProps,

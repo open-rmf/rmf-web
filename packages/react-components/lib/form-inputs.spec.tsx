@@ -1,6 +1,5 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { PositiveIntField } from './form-inputs';
 
 describe('PositiveIntField', () => {

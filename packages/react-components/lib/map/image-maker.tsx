@@ -1,4 +1,3 @@
-import React from 'react';
 import { Level } from 'api-client';
 import { useLoader } from '@react-three/fiber';
 import { Texture, TextureLoader } from 'three';

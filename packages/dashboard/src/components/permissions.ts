@@ -12,7 +12,7 @@ export function getActionText(action: string): string {
 }
 
 export class Enforcer {
-  static canCancelTask(profile: UserProfile): boolean {
+  static canCancelTask(_profile: UserProfile): boolean {
     // if (profile.user.is_admin) {
     //   return true;
     // }

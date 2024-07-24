@@ -1,7 +1,6 @@
 import { IconButton, Tab, Toolbar, Typography } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { cleanup, render, screen } from '@testing-library/react';
-import React from 'react';
 import { NavigationBar } from '../lib/navigation-bar';
 import { HeaderBar } from './header-bar';
 

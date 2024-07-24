@@ -107,7 +107,7 @@ export const TasksApp = React.memo(
         typography: 'MuiTypography-root',
         button: 'MuiButton-text',
       };
-      const StyledDiv = styled('div')(({ theme }) => ({
+      const StyledDiv = styled('div')(() => ({
         [`& .${classes.typography}`]: {
           fontSize: isScreenHeightLessThan800 ? '0.7rem' : 'inherit',
         },

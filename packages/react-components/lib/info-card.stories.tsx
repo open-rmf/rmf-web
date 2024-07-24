@@ -1,5 +1,4 @@
 import { Meta, StoryFn } from '@storybook/react';
-import React from 'react';
 import { SimpleInfo } from '../lib';
 import { styled } from '@mui/material';
 

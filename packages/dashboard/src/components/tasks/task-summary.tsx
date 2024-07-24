@@ -3,7 +3,6 @@ import {
   Box,
   LinearProgress,
   LinearProgressProps,
-  Theme,
   Typography,
   Divider,
   TextField,

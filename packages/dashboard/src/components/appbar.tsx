@@ -35,7 +35,7 @@ import {
   Typography,
   useMediaQuery,
 } from '@mui/material';
-import { AlertRequest, FireAlarmTriggerState, TaskFavorite, TaskRequest } from 'api-client';
+import { AlertRequest, FireAlarmTriggerState, TaskFavorite } from 'api-client';
 import React from 'react';
 import {
   AppBarTab,

@@ -1,5 +1,4 @@
 import { render } from '@testing-library/react';
-import React from 'react';
 import { TaskLogs } from './task-logs';
 import { makeTaskLog } from './test-data.spec';
 

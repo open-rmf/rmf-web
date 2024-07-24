@@ -1,6 +1,5 @@
 import { IconButton } from '@mui/material';
 import { Meta, StoryFn } from '@storybook/react';
-import React from 'react';
 import OpenInFullIcon from '../icons/OpenInFull';
 import { WindowToolbar, WindowToolbarProps } from './window-toolbar';
 

@@ -8,12 +8,10 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { Theme } from '@mui/material/styles';
 import { RmfAppContext } from './rmf-app';
 import { getApiErrorMessage } from './utils';
 import { doorStateToString, liftModeToString, LiftTableData, base } from 'react-components';
 import { Lift } from 'api-client';
-import { LiftState as RmfLiftState } from 'rmf-models/ros/rmf_lift_msgs/msg';
 
 interface LiftSummaryProps {
   onClose: () => void;

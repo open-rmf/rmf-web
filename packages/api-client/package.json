@@ -3,9 +3,10 @@
   "version": "0.0.1",
   "description": "",
   "type": "module",
-  "main": "lib/index.ts",
+  "main": "dist/lib/index.js",
+  "browser": "lib/index.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --build",
     "prepack": "pnpm run clean && pnpm run --filter {.}... build && pnpm run lint",
     "lint": "eslint --max-warnings 0 lib",
     "test": "jasmine"

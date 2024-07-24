@@ -1,6 +1,5 @@
 import { render, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { getActionText, RmfAction } from '../../permissions';
 import { PermissionsCard } from '../permissions-card';
 

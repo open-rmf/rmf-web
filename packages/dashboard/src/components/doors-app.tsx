@@ -28,7 +28,7 @@ export const DoorsApp = createMicroApp('Doors', () => {
 
     let doorIndex = 0;
     buildingMap?.levels.map((level) =>
-      level.doors.map(async (door, i) => {
+      level.doors.map(async (door) => {
         try {
           const sub = rmf
             .getDoorStateObs(door.name)

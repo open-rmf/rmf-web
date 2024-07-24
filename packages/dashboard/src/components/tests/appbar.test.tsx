@@ -59,7 +59,6 @@ describe('AppBar', () => {
     const authenticator = new StubAuthenticator('test');
     const appConfig: AppConfig = {
       authenticator,
-      appResourcesFactory: jest.fn(),
       rmfServerUrl: '',
       trajServerUrl: '',
     };

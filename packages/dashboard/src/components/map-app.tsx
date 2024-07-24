@@ -491,7 +491,7 @@ export const MapApp = styled(
           disabledLayers={disabledLayers}
           levels={buildingMap.levels}
           currentLevel={currentLevel}
-          onChange={(event: ChangeEvent<HTMLInputElement>, value: string) => {
+          onChange={(_event: ChangeEvent<HTMLInputElement>, value: string) => {
             AppEvents.levelSelect.next(
               buildingMap.levels.find((l: Level) => l.name === value) || buildingMap.levels[0],
             );
@@ -582,7 +582,7 @@ export const MapApp = styled(
                 />
               ))}
           {buildingMap.lifts.length > 0
-            ? buildingMap.lifts.map((lift, i) =>
+            ? buildingMap.lifts.map((lift) =>
                 lift.doors.map((door, i) => (
                   <React.Fragment key={`${door.name}${i}`}>
                     {!disabledLayers['Doors labels'] && (
@@ -595,7 +595,7 @@ export const MapApp = styled(
                         height={8}
                         elevation={currentLevel.elevation}
                         lift={lift}
-                        onDoorClick={(_ev, door) => {
+                        onDoorClick={(_ev) => {
                           setOpenLiftSummary(true);
                           setSelectedLift(lift);
                         }}

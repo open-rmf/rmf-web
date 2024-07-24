@@ -1,5 +1,4 @@
 import { cleanup, render, RenderResult, screen } from '@testing-library/react';
-import React from 'react';
 import { TaskDataGridTable, Tasks, FilterFields } from './task-table-datagrid';
 import { makeTaskState } from './test-data.spec';
 

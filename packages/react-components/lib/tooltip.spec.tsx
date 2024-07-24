@@ -1,6 +1,5 @@
 import { Typography } from '@mui/material';
 import { fireEvent, render, screen } from '@testing-library/react';
-import React from 'react';
 import Tooltip from './tooltip';
 
 describe('Tooltip', () => {

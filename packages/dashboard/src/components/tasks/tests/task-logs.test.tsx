@@ -1,4 +1,3 @@
-import React from 'react';
 import { render } from '../../tests/test-utils';
 import { TaskLogs } from '../task-logs';
 import { makeTaskLog, makeTaskState } from './make-tasks';

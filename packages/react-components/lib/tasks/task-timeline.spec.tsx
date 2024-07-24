@@ -1,5 +1,4 @@
 import { render } from '@testing-library/react';
-import React from 'react';
 import { TaskTimeline } from './task-timeline';
 import { makeTaskState } from './test-data.spec';
 

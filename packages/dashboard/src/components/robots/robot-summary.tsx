@@ -9,7 +9,6 @@ import {
   LinearProgress,
   LinearProgressProps,
   TextField,
-  Theme,
   Typography,
   useMediaQuery,
   useTheme,

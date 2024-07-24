@@ -1,4 +1,3 @@
-import React from 'react';
 import { styled, TableCellProps, TableCell } from '@mui/material';
 
 const commonStyles = {

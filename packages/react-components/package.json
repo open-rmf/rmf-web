@@ -5,17 +5,11 @@
   "type": "module",
   "main": "lib/index.ts",
   "scripts": {
-    "build": "tsc",
-    "build:storybook": "storybook build",
-    "build:watch": "tsc --build --watch",
-    "clean": "tsc --build --clean",
-    "lint": "eslint --max-warnings 0 lib",
-    "prepack": "pnpm run clean && pnpm run lint && pnpm run --filter {.}... build && pnpm run test",
-    "start": "pnpm run --filter {.}^... build && storybook dev -p 6006",
+    "lint": "tsc && eslint --max-warnings 0 lib",
+    "prepack": "pnpm run lint && jest",
+    "start": "storybook dev -p 6006",
     "test": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "test:coverage": "jest --coverage"
   },
   "author": "koonpeng@openrobotics.org",
   "license": "Apache-2.0",

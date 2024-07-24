@@ -1,5 +1,4 @@
 import { cleanup, render, screen, fireEvent } from '@testing-library/react';
-import React from 'react';
 import { LogoButton } from './logo-button';
 
 describe('LogoButton', () => {
