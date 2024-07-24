@@ -1046,12 +1046,13 @@ export function CreateTaskForm({
                   console.debug(`TimePicker: ${date}`);
                   if (!isNaN(date.valueOf())) {
                     setSchedule((prev) => {
-                      const startOn = prev.startOn;
+                      const startOn = new Date(prev.startOn);
                       startOn.setHours(date.getHours());
                       startOn.setMinutes(date.getMinutes());
                       startOn.setSeconds(0);
                       startOn.setMilliseconds(0);
-                      console.debug(`TimePicker setSchedule: ${date}`);
+                      console.debug(`TimePicker setSchedule date: ${date}`);
+                      console.debug(`TimePicker setSchedule startOn: ${startOn}`);
                       return { ...prev, at: date, startOn };
                     });
                   }
