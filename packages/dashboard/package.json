@@ -28,13 +28,10 @@
     "@babel/preset-react": "^7.24.1",
     "@babel/preset-typescript": "^7.24.1",
     "@fontsource/roboto": "^4.3.0",
-    "@fortawesome/fontawesome-svg-core": "^1.2.30",
-    "@fortawesome/free-solid-svg-icons": "^5.14.0",
-    "@fortawesome/react-fontawesome": "^0.1.11",
     "@mui/icons-material": "^5.8.3",
     "@mui/material": "^5.8.3",
     "@mui/system": "^5.8.3",
-    "@mui/x-date-pickers": "^5.0.20",
+    "@mui/x-date-pickers": "^6.19.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@react-three/drei": "^9.103.0",
     "@react-three/fiber": "^8.16.1",
@@ -130,7 +127,7 @@
     "webpack": "^5.91.0",
     "webpack-dev-server": "^4.6.0",
     "webpack-manifest-plugin": "^4.0.2",
-    "workbox-webpack-plugin": "^6.4.1"
+    "workbox-webpack-plugin": "^6.6.0"
   },
   "browserslist": {
     "production": [
