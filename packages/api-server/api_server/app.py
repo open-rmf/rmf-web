@@ -5,7 +5,6 @@ import signal
 import threading
 from typing import Any, Callable, Coroutine, Union
 
-import schedule
 from fastapi import Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import (
@@ -118,7 +117,6 @@ async def lifespan(_app: FastIO):
 
     default_logger.info("starting scheduler")
     await stack.enter_async_context(get_scheduler)
-    asyncio.create_task(_spin_scheduler())
     scheduled_tasks = await ttm.ScheduledTask.all()
     scheduled = 0
     for t in scheduled_tasks:
@@ -255,12 +253,6 @@ async def redoc_html():
         title=app.title + " - ReDoc",
         redoc_js_url=f"{app_config.public_url.geturl()}/static/redoc.standalone.js",
     )
-
-
-async def _spin_scheduler():
-    while True:
-        schedule.run_pending()
-        await asyncio.sleep(1)
 
 
 async def _load_states(rmf_events: RmfEvents):
