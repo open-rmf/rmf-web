@@ -2,11 +2,13 @@ from .events import (
     AlertEvents,
     BeaconEvents,
     FleetEvents,
+    RioEvents,
     RmfEvents,
     TaskEvents,
     get_alert_events,
     get_beacon_events,
     get_fleet_events,
+    get_rio_events,
     get_rmf_events,
     get_task_events,
 )
