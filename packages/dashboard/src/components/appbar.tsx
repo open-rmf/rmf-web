@@ -315,7 +315,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
 
   return (
     <>
-      <HeaderBar>
+      <HeaderBar sx={{ height: 64 }}>
         <LogoButton src={resources.logos.header} alt="logo" />
         <NavigationBar value={tabValue}>
           <StyledAppBarTab
