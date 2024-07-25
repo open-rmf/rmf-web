@@ -19,8 +19,14 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { Door as DoorModel } from 'rmf-models/ros/rmf_building_map_msgs/msg';
 import { EMPTY, merge, scan, Subscription, switchMap, throttleTime } from 'rxjs';
 import { Box3, TextureLoader, Vector3 } from 'three';
-import appConfig from '../app-config';
-import { AppControllerContext, ResourcesContext } from './app-contexts';
+import {
+  AppConfigContext,
+  AuthenticatorContext,
+  FleetResource,
+  ResourcesContext,
+} from '../app-config';
+import { TrajectoryData } from '../managers/robot-trajectory-manager';
+import { AppControllerContext } from './app-contexts';
 import { AppEvents } from './app-events';
 import { DoorSummary } from './door-summary';
 import { LiftSummary } from './lift-summary';
@@ -28,7 +34,6 @@ import { createMicroApp } from './micro-app';
 import { RmfAppContext } from './rmf-app';
 import { RobotSummary } from './robots/robot-summary';
 import { CameraControl, Door, LayersController, Lifts, RobotThree } from './three-fiber';
-import { TrajectoryData } from '../managers/robot-trajectory-manager';
 
 const debug = Debug('MapApp');
 
@@ -37,8 +42,6 @@ const TrajectoryUpdateInterval = 2000;
 // of the whole app when it changes.
 const colorManager = new ColorManager();
 
-const DEFAULT_ZOOM_LEVEL = 20;
-const DEFAULT_ROBOT_ZOOM_LEVEL = 6;
 const DEFAULT_ROBOT_SCALE = 0.003;
 
 function getRobotId(fleetName: string, robotName: string): string {
@@ -47,6 +50,9 @@ function getRobotId(fleetName: string, robotName: string): string {
 
 export const MapApp = styled(
   createMicroApp('Map', () => {
+    const appConfig = React.useContext(AppConfigContext);
+    const authenticator = React.useContext(AuthenticatorContext);
+    const resources = React.useContext(ResourcesContext);
     const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
     const rmf = React.useContext(RmfAppContext);
     const resourceManager = React.useContext(ResourcesContext);
@@ -103,7 +109,7 @@ export const MapApp = styled(
             duration: trajectoryTime,
             trim: true,
           },
-          token: appConfig.authenticator.token,
+          token: authenticator.token,
         });
         const flatConflicts = resp.conflicts.flatMap((c) => c);
 
@@ -161,7 +167,7 @@ export const MapApp = styled(
       const handleBuildingMap = (newMap: BuildingMap) => {
         setBuildingMap(newMap);
         const loggedInDisplayLevel = AppEvents.justLoggedIn.value
-          ? levelByName(newMap, resourceManager?.loggedInDisplayLevel)
+          ? levelByName(newMap, appConfig.defaultMapLevel)
           : undefined;
         const currentLevel =
           loggedInDisplayLevel || AppEvents.levelSelect.value || newMap.levels[0];
@@ -199,10 +205,8 @@ export const MapApp = styled(
     // settings, we will double it for anything that is operating within modern
     // resolution settings.
     const defaultZoom = isScreenHeightLessThan800
-      ? resourceManager?.defaultZoom || DEFAULT_ZOOM_LEVEL
-      : resourceManager?.defaultZoom
-        ? resourceManager.defaultZoom * 2
-        : DEFAULT_ZOOM_LEVEL;
+      ? appConfig.defaultZoom
+      : appConfig.defaultZoom * 2;
     const [zoom, setZoom] = React.useState<number>(defaultZoom);
     const [sceneBoundingBox, setSceneBoundingBox] = React.useState<Box3 | undefined>(undefined);
     const [distance, setDistance] = React.useState<number>(0);
@@ -264,20 +268,24 @@ export const MapApp = styled(
           return;
         }
         const promises = Object.values(fleets).flatMap((fleetState) => {
-          const robotKey = fleetState.robots && Object.keys(fleetState.robots);
-          const fleetName = fleetState.name ? fleetState.name : '';
-          return robotKey?.map(async (r) => {
+          if (!fleetState.name || !fleetState.robots) {
+            return null;
+          }
+          const robotKey = Object.keys(fleetState.robots);
+          const fleetName = fleetState.name;
+          return robotKey.map(async (r) => {
             const robotId = getRobotId(fleetName, r);
+            const fleetResource: FleetResource | undefined = resources.fleets[fleetName];
             if (robotId in robotsStore) return;
             robotsStore[robotId] = {
               fleet: fleetName,
               name: r,
               // no model name
               model: '',
-              scale: resourceManager?.robots.getRobotIconScale(fleetName, r) || DEFAULT_ROBOT_SCALE,
+              scale: fleetResource.default.scale || DEFAULT_ROBOT_SCALE,
               footprint: 0.5,
               color: await colorManager.robotPrimaryColor(fleetName, r, ''),
-              iconPath: (await resourceManager?.robots.getIconPath(fleetName, r)) || undefined,
+              iconPath: fleetResource.default.icon || undefined,
             };
           });
         });
@@ -406,7 +414,7 @@ export const MapApp = styled(
 
           const size = newSceneBoundingBox.getSize(new Vector3());
           const distance = Math.max(size.x, size.y, size.z) * 0.7;
-          const newZoom = resourceManager?.defaultRobotZoom ?? DEFAULT_ROBOT_ZOOM_LEVEL;
+          const newZoom = appConfig.defaultRobotZoom;
           AppEvents.resetCamera.next([
             robotLocation[0],
             robotLocation[1],
@@ -445,7 +453,7 @@ export const MapApp = styled(
 
           const size = newSceneBoundingBox.getSize(new Vector3());
           const distance = Math.max(size.x, size.y, size.z) * 0.7;
-          const newZoom = resourceManager?.defaultRobotZoom ?? DEFAULT_ROBOT_ZOOM_LEVEL;
+          const newZoom = appConfig.defaultRobotZoom;
           AppEvents.resetCamera.next([
             (doorInfo.v1_x + doorInfo.v2_x) / 2,
             (doorInfo.v1_y + doorInfo.v2_y) / 2,
@@ -464,7 +472,7 @@ export const MapApp = styled(
 
           const size = sceneBoundingBox.getSize(new Vector3());
           const distance = Math.max(size.x, size.y, size.z) * 0.7;
-          const newZoom = resourceManager?.defaultRobotZoom ?? DEFAULT_ROBOT_ZOOM_LEVEL;
+          const newZoom = appConfig.defaultRobotZoom;
           AppEvents.resetCamera.next([lift.ref_x, lift.ref_y, distance, newZoom]);
         }),
       );
@@ -474,7 +482,7 @@ export const MapApp = styled(
           sub.unsubscribe();
         }
       };
-    }, [robotLocations, resourceManager?.defaultRobotZoom, sceneBoundingBox, buildingMap]);
+    }, [robotLocations, sceneBoundingBox, buildingMap]);
 
     React.useEffect(() => {
       if (!sceneBoundingBox) {
@@ -503,7 +511,7 @@ export const MapApp = styled(
             const center = sceneBoundingBox.getCenter(new Vector3());
             const size = sceneBoundingBox.getSize(new Vector3());
             const distance = Math.max(size.x, size.y, size.z) * 0.7;
-            const newZoom = defaultZoom || DEFAULT_ZOOM_LEVEL;
+            const newZoom = defaultZoom;
             AppEvents.resetCamera.next([center.x, center.y, center.z + distance, newZoom]);
           }}
           handleZoomIn={() => AppEvents.zoomIn.next()}
@@ -521,7 +529,7 @@ export const MapApp = styled(
           }}
         >
           <Typography variant="caption" display="block">
-            {resourceManager?.attributionPrefix}
+            {appConfig.attributionPrefix}
           </Typography>
         </Box>
         <Canvas

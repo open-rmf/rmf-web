@@ -1,15 +1,15 @@
 import { Scheduler } from '@aldabil/react-scheduler';
-import { DayProps } from '@aldabil/react-scheduler/views/Day';
-import { MonthProps } from '@aldabil/react-scheduler/views/Month';
-import { WeekProps } from '@aldabil/react-scheduler/views/Week';
 import {
   CellRenderedProps,
   ProcessedEvent,
   SchedulerHelpers,
   SchedulerProps,
 } from '@aldabil/react-scheduler/types';
+import { DayProps } from '@aldabil/react-scheduler/views/Day';
+import { MonthProps } from '@aldabil/react-scheduler/views/Month';
+import { WeekProps } from '@aldabil/react-scheduler/views/Week';
 import { Button, Typography } from '@mui/material';
-import { ScheduledTask, ScheduledTaskScheduleOutput as ApiSchedule } from 'api-client';
+import { ScheduledTaskScheduleOutput as ApiSchedule, ScheduledTask } from 'api-client';
 import React from 'react';
 import {
   ConfirmationDialog,
@@ -18,13 +18,13 @@ import {
   EventEditDeletePopup,
   Schedule,
 } from 'react-components';
+import { UserProfileContext } from 'rmf-auth';
+import { allowedTasks } from '../../app-config';
 import { useCreateTaskFormData } from '../../hooks/useCreateTaskForm';
 import useGetUsername from '../../hooks/useFetchUser';
-import { AppControllerContext, ResourcesContext } from '../app-contexts';
-import { UserProfileContext } from 'rmf-auth';
+import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { RmfAppContext } from '../rmf-app';
-import { toApiSchedule } from './utils';
 import {
   apiScheduleToSchedule,
   getScheduledTaskTitle,
@@ -32,6 +32,7 @@ import {
   scheduleWithSelectedDay,
   toISOStringWithTimezone,
 } from './task-schedule-utils';
+import { toApiSchedule } from './utils';
 
 enum EventScopes {
   ALL = 'all',
@@ -66,7 +67,6 @@ const disablingCellsWithoutEvents = (
 
 export const TaskSchedule = () => {
   const rmf = React.useContext(RmfAppContext);
-  const taskResourcesContext = React.useContext(ResourcesContext)?.tasks;
   const { showAlert } = React.useContext(AppControllerContext);
   const profile = React.useContext(UserProfileContext);
 
@@ -134,7 +134,7 @@ export const TaskSchedule = () => {
       return tasks.flatMap((t: ScheduledTask) =>
         t.schedules.flatMap<ProcessedEvent>((s: ApiSchedule) => {
           const events = scheduleToEvents(params.start, params.end, s, t, getEventId, () =>
-            getScheduledTaskTitle(t, taskResourcesContext?.tasks),
+            getScheduledTaskTitle(t, allowedTasks),
           );
           events.forEach((ev) => {
             eventsMap.current[Number(ev.event_id)] = t;
@@ -144,7 +144,7 @@ export const TaskSchedule = () => {
         }),
       );
     },
-    [rmf, taskResourcesContext],
+    [rmf, allowedTasks],
   );
 
   const CustomCalendarEditor = ({ scheduler, value, onChange }: CustomCalendarEditorProps) => {
@@ -319,7 +319,7 @@ export const TaskSchedule = () => {
       {openCreateTaskForm && (
         <CreateTaskForm
           user={username ? username : 'unknown user'}
-          tasksToDisplay={taskResourcesContext?.tasks}
+          tasksToDisplay={allowedTasks}
           patrolWaypoints={waypointNames}
           cleaningZones={cleaningZoneNames}
           pickupPoints={pickupPoints}

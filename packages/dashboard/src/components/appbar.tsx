@@ -1,14 +1,14 @@
 import {
   AccountCircle,
-  AdminPanelSettings,
   AddOutlined,
+  AdminPanelSettings,
   Help,
+  // Settings,
+  Warning as Issue,
   LocalFireDepartment,
   Logout,
   Notifications,
   Report,
-  // Settings,
-  Warning as Issue,
 } from '@mui/icons-material';
 import {
   Badge,
@@ -35,7 +35,9 @@ import {
   Typography,
   useMediaQuery,
 } from '@mui/material';
+import { styled } from '@mui/system';
 import { AlertRequest, FireAlarmTriggerState, TaskFavorite } from 'api-client';
+import { formatDistance } from 'date-fns';
 import React from 'react';
 import {
   AppBarTab,
@@ -45,27 +47,23 @@ import {
   HeaderBar,
   LogoButton,
   NavigationBar,
-  useAsync,
 } from 'react-components';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { UserProfileContext } from 'rmf-auth';
-import { logoSize } from '../managers/resource-manager';
-import { ThemeMode } from '../settings';
-import { DashboardRoute, RobotsRoute, TasksRoute } from '../util/url';
+import { Subscription } from 'rxjs';
 import {
   AppConfigContext,
-  AppControllerContext,
+  AuthenticatorContext,
   ResourcesContext,
-  SettingsContext,
-} from './app-contexts';
+  allowedTasks,
+} from '../app-config';
+import { useCreateTaskFormData } from '../hooks/useCreateTaskForm';
+import useGetUsername from '../hooks/useFetchUser';
+import { DashboardRoute, RobotsRoute, TasksRoute } from '../util/url';
+import { AppControllerContext, SettingsContext } from './app-contexts';
 import { AppEvents } from './app-events';
 import { RmfAppContext } from './rmf-app';
-import { Subscription } from 'rxjs';
-import { formatDistance } from 'date-fns';
-import { styled } from '@mui/system';
-import { useCreateTaskFormData } from '../hooks/useCreateTaskForm';
 import { toApiSchedule } from './tasks/utils';
-import useGetUsername from '../hooks/useFetchUser';
 
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
   fontSize: theme.spacing(4), // spacing = 8
@@ -93,31 +91,11 @@ function AppSettings() {
       <FormLabel id="theme-label">Theme</FormLabel>
       <RadioGroup row aria-labelledby="theme-label">
         <FormControlLabel
-          value={ThemeMode.Default}
+          value={'default'}
           control={<Radio />}
           label="Default"
-          checked={settings.themeMode === ThemeMode.Default}
-          onChange={() =>
-            appController.updateSettings({ ...settings, themeMode: ThemeMode.Default })
-          }
-        />
-        <FormControlLabel
-          value={ThemeMode.RmfLight}
-          control={<Radio />}
-          label="RMF Light"
-          checked={settings.themeMode === ThemeMode.RmfLight}
-          onChange={() =>
-            appController.updateSettings({ ...settings, themeMode: ThemeMode.RmfLight })
-          }
-        />
-        <FormControlLabel
-          value={ThemeMode.RmfDark}
-          control={<Radio />}
-          label="RMF Dark"
-          checked={settings.themeMode === ThemeMode.RmfDark}
-          onChange={() =>
-            appController.updateSettings({ ...settings, themeMode: ThemeMode.RmfDark })
-          }
+          checked={settings.themeMode === 'default'}
+          onChange={() => appController.updateSettings({ ...settings, themeMode: 'default' })}
         />
       </RadioGroup>
     </FormControl>
@@ -133,6 +111,8 @@ export interface AppBarProps {
 }
 
 export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.ReactElement => {
+  const appConfig = React.useContext(AppConfigContext);
+  const authenticator = React.useContext(AuthenticatorContext);
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
 
   const [largerResolution, setLargerResolution] = React.useState(false);
@@ -152,18 +132,13 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   }, [isScreenHeightLessThan800]);
 
   const rmf = React.useContext(RmfAppContext);
-  const resourceManager = React.useContext(ResourcesContext);
+  const resources = React.useContext(ResourcesContext);
   const { showAlert } = React.useContext(AppControllerContext);
   const navigate = useNavigate();
   const location = useLocation();
   const tabValue = React.useMemo(() => locationToTabValue(location.pathname), [location]);
-  const logoResourcesContext = React.useContext(ResourcesContext)?.logos;
-  const taskResourcesContext = React.useContext(ResourcesContext)?.tasks;
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-  const { authenticator } = React.useContext(AppConfigContext);
   const profile = React.useContext(UserProfileContext);
-  const safeAsync = useAsync();
-  const [brandingIconPath, setBrandingIconPath] = React.useState<string>('');
   const [settingsAnchor, setSettingsAnchor] = React.useState<HTMLElement | null>(null);
   const [openCreateTaskForm, setOpenCreateTaskForm] = React.useState(false);
   const [favoritesTasks, setFavoritesTasks] = React.useState<TaskFavorite[]>([]);
@@ -176,7 +151,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
     FireAlarmTriggerState | undefined
   >(undefined);
 
-  const curTheme = React.useContext(SettingsContext).themeMode;
   const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames } =
     useCreateTaskFormData(rmf);
   const username = useGetUsername(rmf);
@@ -188,13 +162,6 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       console.error(`error logging out: ${(e as Error).message}`);
     }
   }
-
-  React.useEffect(() => {
-    if (!logoResourcesContext) return;
-    (async () => {
-      setBrandingIconPath(await safeAsync(logoResourcesContext.getHeaderLogoPath(curTheme)));
-    })();
-  }, [logoResourcesContext, safeAsync, curTheme]);
 
   React.useEffect(() => {
     if (!rmf) {
@@ -349,7 +316,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
   return (
     <>
       <HeaderBar>
-        <LogoButton src={brandingIconPath} alt="logo" sx={{ width: logoSize }} />
+        <LogoButton src={resources.logos.header} alt="logo" />
         <NavigationBar value={tabValue}>
           <StyledAppBarTab
             label="Map"
@@ -467,7 +434,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
               id="show-help-btn"
               aria-label="help"
               color="inherit"
-              onClick={() => window.open(resourceManager?.helpLink, '_blank')}
+              onClick={() => window.open(appConfig.helpLink, '_blank')}
             >
               <Help fontSize="inherit" />
             </StyledIconButton>
@@ -477,7 +444,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
               id="show-warning-btn"
               aria-label="warning"
               color="inherit"
-              onClick={() => window.open(resourceManager?.reportIssue, '_blank')}
+              onClick={() => window.open(appConfig.reportIssue, '_blank')}
             >
               <Issue fontSize="inherit" />
             </StyledIconButton>
@@ -556,11 +523,11 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
       {openCreateTaskForm && (
         <CreateTaskForm
           user={username ? username : 'unknown user'}
-          tasksToDisplay={taskResourcesContext?.tasks}
+          tasksToDisplay={allowedTasks}
           patrolWaypoints={waypointNames}
           cleaningZones={cleaningZoneNames}
-          pickupZones={resourceManager?.pickupZones}
-          cartIds={resourceManager?.cartIds}
+          pickupZones={appConfig.pickupZones}
+          cartIds={appConfig.cartIds}
           pickupPoints={pickupPoints}
           dropoffPoints={dropoffPoints}
           favoritesTasks={favoritesTasks}

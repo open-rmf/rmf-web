@@ -2,20 +2,11 @@ import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { StubAuthenticator, UserProfile, UserProfileContext } from 'rmf-auth';
-import { AppConfig } from '../../app-config';
-import ResourceManager from '../../managers/resource-manager';
-import { LogoResourceManager } from '../../managers/resource-manager-logos';
-import { RobotResourceManager } from '../../managers/resource-manager-robots';
-import {
-  AppConfigContext,
-  AppController,
-  AppControllerContext,
-  ResourcesContext,
-} from '../app-contexts';
+import { AuthenticatorContext, Resources, ResourcesContext } from '../../app-config';
+import { AppController, AppControllerContext } from '../app-contexts';
 import AppBar from '../appbar';
 import { render } from '../tests/test-utils';
 import { makeMockAppController } from './mock-app-controller';
-import { TaskResourceManager } from '../../managers/resource-manager-tasks';
 
 describe('AppBar', () => {
   let appController: AppController;
@@ -57,24 +48,19 @@ describe('AppBar', () => {
 
   test('logout is triggered when logout button is clicked', async () => {
     const authenticator = new StubAuthenticator('test');
-    const appConfig: AppConfig = {
-      authenticator,
-      rmfServerUrl: '',
-      trajServerUrl: '',
-    };
     const spy = jest.spyOn(authenticator, 'logout').mockImplementation(() => undefined as any);
     const profile: UserProfile = {
       user: { username: 'test', is_admin: false, roles: [] },
       permissions: [],
     };
     const root = render(
-      <AppConfigContext.Provider value={appConfig}>
+      <AuthenticatorContext.Provider value={authenticator}>
         <Base>
           <UserProfileContext.Provider value={profile}>
             <AppBar />
           </UserProfileContext.Provider>
         </Base>
-      </AppConfigContext.Provider>,
+      </AuthenticatorContext.Provider>,
     );
     userEvent.click(root.getByLabelText('user-btn'));
     await expect(waitFor(() => root.getByText('Logout'))).resolves.not.toThrow();
@@ -83,22 +69,15 @@ describe('AppBar', () => {
   });
 
   test('uses headerLogo from logo resources manager', async () => {
-    const robotResourcesMgr = new RobotResourceManager({});
-    const logoResourcesMgr = new LogoResourceManager({});
-    const taskResourceMgr = new TaskResourceManager([]);
-    logoResourcesMgr.getHeaderLogoPath = () => Promise.resolve('/test-logo.png');
-    const resourceMgr: ResourceManager = {
-      robots: robotResourcesMgr,
-      logos: logoResourcesMgr,
-      tasks: taskResourceMgr,
-      helpLink: 'testHelpLink',
-      reportIssue: 'testReportIssue',
-      defaultZoom: 5,
-      defaultRobotZoom: 50,
+    const resources: Resources = {
+      fleets: {},
+      logos: {
+        header: '/test-logo.png',
+      },
     };
 
     const root = render(
-      <ResourcesContext.Provider value={resourceMgr}>
+      <ResourcesContext.Provider value={resources}>
         <Base>
           <AppBar />
         </Base>

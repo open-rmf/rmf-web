@@ -10,12 +10,11 @@ import {
 } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import React from 'react';
-import { rmfDark, rmfLight } from 'react-components';
-import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
-import { AppController, AppControllerContext, SettingsContext } from './app-contexts';
-import AppBar from './appbar';
+import { loadSettings, saveSettings, Settings } from '../settings';
 import { AlertManager } from './alert-manager';
+import { AppController, AppControllerContext, SettingsContext } from './app-contexts';
 import { AppEvents } from './app-events';
+import AppBar from './appbar';
 import { DeliveryAlertStore } from './delivery-alert-store';
 
 const DefaultAlertDuration = 2000;
@@ -45,10 +44,6 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
 
   const theme = React.useMemo(() => {
     switch (settings.themeMode) {
-      case ThemeMode.RmfLight:
-        return rmfLight;
-      case ThemeMode.RmfDark:
-        return rmfDark;
       default:
         return defaultTheme;
     }
