@@ -520,7 +520,8 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
                 </MenuItem>
                 <Divider />
                 <MenuItem
-                  disabled={!profile.user.is_admin}
+                  // FIXME: reinstate after authz is implemented properly
+                  // disabled={!profile.user.is_admin}
                   id="admin-action-btn"
                   onClick={() => {
                     setOpenAdminActionsDialog(true);
