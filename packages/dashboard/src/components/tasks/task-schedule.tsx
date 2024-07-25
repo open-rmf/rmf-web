@@ -21,7 +21,6 @@ import {
 import { useCreateTaskFormData } from '../../hooks/useCreateTaskForm';
 import useGetUsername from '../../hooks/useFetchUser';
 import { AppControllerContext, ResourcesContext } from '../app-contexts';
-import { UserProfileContext } from 'rmf-auth';
 import { AppEvents } from '../app-events';
 import { RmfAppContext } from '../rmf-app';
 import { toApiSchedule } from './utils';
@@ -68,7 +67,6 @@ export const TaskSchedule = () => {
   const rmf = React.useContext(RmfAppContext);
   const taskResourcesContext = React.useContext(ResourcesContext)?.tasks;
   const { showAlert } = React.useContext(AppControllerContext);
-  const profile = React.useContext(UserProfileContext);
 
   const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames } =
     useCreateTaskFormData(rmf);
@@ -180,7 +178,6 @@ export const TaskSchedule = () => {
           currentValue={EventScopes.CURRENT}
           allValue={EventScopes.ALL}
           value={value}
-          isAdmin={profile ? profile.user.is_admin : false}
           onChange={onChange}
         />
       </ConfirmationDialog>
@@ -366,7 +363,6 @@ export const TaskSchedule = () => {
             currentValue={EventScopes.CURRENT}
             allValue={EventScopes.ALL}
             value={eventScope}
-            isAdmin={profile ? profile.user.is_admin : false}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
               setEventScope(event.target.value)
             }
