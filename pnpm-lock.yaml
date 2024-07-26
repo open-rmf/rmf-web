@@ -434,6 +434,9 @@ importers:
       '@types/react-window':
         specifier: ^1.8.5
         version: 1.8.8
+      '@vitest/coverage-v8':
+        specifier: ^2.0.4
+        version: 2.0.4(vitest@2.0.4(@types/node@20.14.12)(jsdom@24.1.1(canvas@2.11.2))(terser@5.31.3))
       concurrently:
         specifier: ^8.2.2
         version: 8.2.2
