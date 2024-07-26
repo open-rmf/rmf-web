@@ -9,9 +9,7 @@ const config: StorybookConfig = {
     '@storybook/addon-interactions',
   ],
   framework: '@storybook/react-vite',
-  docs: {
-    autodocs: 'tag',
-  },
+  docs: {},
   swc: () => ({
     jsc: {
       transform: {
