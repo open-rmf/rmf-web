@@ -126,6 +126,7 @@ pnpm run start
   * Don't forget to update the API client with the newly added changes with [these instructions](packages/api-client/README.md/#generating-rest-api-client).
 * Check out the latest API definitions [here](https://open-rmf.github.io/rmf-web/), or visit `/docs` relative to your running server's url, e.g. `http://localhost:8000/docs`.
 * Develop the frontend without launching any Open-RMF components using [storybook](packages/dashboard/README.md/#storybook).
+* For integration with new devices/infrastructure, check out [Robot Interaction Objects (RIO)](https://github.com/open-rmf/rmf-web/wiki/Robot-Interaction-Objects-(RIO)).
 * Update documentation alongside development, and update the [`ros2multirobotbook`](https://osrf.github.io/ros2multirobotbook) where necessary.
 
 # Configuration
