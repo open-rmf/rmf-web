@@ -2,14 +2,13 @@
   "name": "api-client",
   "version": "0.0.1",
   "description": "",
-  "type": "module",
   "main": "dist/lib/index.js",
   "browser": "lib/index.ts",
   "scripts": {
     "build": "tsc --build",
     "prepack": "pnpm run clean && pnpm run --filter {.}... build && pnpm run lint",
     "lint": "eslint --max-warnings 0 lib",
-    "test": "jasmine"
+    "test": "vitest"
   },
   "author": "koonpeng@openrobotics.org",
   "license": "Apache-2.0",
@@ -20,13 +19,11 @@
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.13.1",
-    "@types/jasmine": "^3.8.2",
     "@typescript-eslint/eslint-plugin": "^7.5.0",
     "@typescript-eslint/parser": "^7.5.0",
     "eslint": "^8.57.0",
-    "jasmine": "^3.6.6",
-    "ts-node": "^9.1.1",
-    "typescript": "~5.4.3"
+    "typescript": "~5.4.3",
+    "vitest": "^2.0.4"
   },
   "peerDependencies": {
     "axios": "^1.6.8"
