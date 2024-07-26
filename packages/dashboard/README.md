@@ -151,6 +151,14 @@ export const robotsWorkspace: WorkspaceState = {
 
 ### Custom tab(s)
 
+With the dashboard configuration parameter `customTabs: true`, 2 custom tabs would be available on the App bar. These custom tabs allow users to create a custom layout of desired micro-apps, if a custom workflow is desired.
+
+These custom layouts will be cached locally on the browser's machine, where it can be brought up again.
+
+To edit a custom tab, click onto the wand icon on the right end of the App bar, and proceed to add, resize, move or remove micro-apps from the layout.
+
+![](https://github.com/open-rmf/rmf-web/blob/media/custom-tabs.gif)
+
 ### Environment Variables
 
 The default launch script with `pnpm start` launches only the backend servers without any simulation instances from `rmf_demos`. For local development, the launch script `pnpm run start:sim` launches a headless simulation instance on top of all the backend servers.
