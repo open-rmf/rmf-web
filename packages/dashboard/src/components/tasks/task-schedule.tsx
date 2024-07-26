@@ -18,7 +18,6 @@ import {
   EventEditDeletePopup,
   Schedule,
 } from 'react-components';
-import { UserProfileContext } from 'rmf-auth';
 import { allowedTasks } from '../../app-config';
 import { useCreateTaskFormData } from '../../hooks/useCreateTaskForm';
 import useGetUsername from '../../hooks/useFetchUser';
@@ -68,7 +67,6 @@ const disablingCellsWithoutEvents = (
 export const TaskSchedule = () => {
   const rmf = React.useContext(RmfAppContext);
   const { showAlert } = React.useContext(AppControllerContext);
-  const profile = React.useContext(UserProfileContext);
 
   const { waypointNames, pickupPoints, dropoffPoints, cleaningZoneNames } =
     useCreateTaskFormData(rmf);
@@ -180,7 +178,6 @@ export const TaskSchedule = () => {
           currentValue={EventScopes.CURRENT}
           allValue={EventScopes.ALL}
           value={value}
-          isAdmin={profile ? profile.user.is_admin : false}
           onChange={onChange}
         />
       </ConfirmationDialog>
@@ -366,7 +363,6 @@ export const TaskSchedule = () => {
             currentValue={EventScopes.CURRENT}
             allValue={EventScopes.ALL}
             value={eventScope}
-            isAdmin={profile ? profile.user.is_admin : false}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
               setEventScope(event.target.value)
             }

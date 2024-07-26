@@ -13,7 +13,6 @@ describe('EventEditDeletePopup', () => {
         currentValue={currentValue}
         allValue={allValue}
         value={value}
-        isAdmin={true}
         onChange={onChange}
       />,
     );
