@@ -39,6 +39,8 @@ This folder obtained must contain at its root a JSON file calling `main.json`, w
 * `defaultRobotZoom`, the zoom level when the map's view is centered on a robot, whenever a task row or robot row is clicked, default value as `40` (the higher the value, the larger the robot icon appears in the map view)
 * `attributionPrefix`, the attribution text on the right bottom corner of the map, default as `OSRF`
 * `loggedInDisplayLevel`, the name of the map level to be displayed whenever a user logs in or the page is refreshed, defaults to the first level in the building map
+* `customTabs`, whether to display and use custom tabs for customized layouts, defaults to false
+* `adminTab`, whether to display the admin tab (only accessible by admins), to manage groups and permissions, defaults to false
 
 Custom fields can also be easily added and used in the dashboard, some examples,
 * `pickupZones`, this is a custom field implemented to allow a custom list of pickup zones to be used in a task form dropdown list
@@ -84,7 +86,9 @@ Here is another example `main.json`,
   "defaultZoom": 10,
   "defaultRobotZoom": 50,
   "attributionPrefix": "insert-attribution-prefix-here",
-  "loggedInDisplayLevel": "default_display_level_name_in_building_map"
+  "loggedInDisplayLevel": "default_display_level_name_in_building_map",
+  "customTabs": true,
+  "adminTab": true
 }
 ```
 
