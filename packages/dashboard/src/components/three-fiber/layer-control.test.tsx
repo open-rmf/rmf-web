@@ -1,4 +1,5 @@
-import { render, fireEvent } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 import { LayersController } from './layers-controller';
 
 describe('LayersController', () => {
@@ -346,10 +347,10 @@ describe('LayersController', () => {
       },
     ];
 
-    const onChangeMock = jest.fn();
-    const handleFullViewMock = jest.fn();
-    const handleZoomInMock = jest.fn();
-    const handleZoomOutMock = jest.fn();
+    const onChangeMock = vi.fn();
+    const handleFullViewMock = vi.fn();
+    const handleZoomInMock = vi.fn();
+    const handleZoomOutMock = vi.fn();
 
     const disabledLayers = {
       Layer1: false,

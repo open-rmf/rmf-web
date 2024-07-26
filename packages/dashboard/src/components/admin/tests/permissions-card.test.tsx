@@ -1,6 +1,7 @@
-import { render, waitFor, fireEvent } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { getActionText, RmfAction } from '../../permissions';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { RmfAction, getActionText } from '../../permissions';
 import { PermissionsCard } from '../permissions-card';
 
 // TODO(AA): To remove after
@@ -42,7 +43,7 @@ describe('PermissionsCard', () => {
   });
 
   it('calls removePermission when button is clicked', async () => {
-    const removePermission = jest.fn();
+    const removePermission = vi.fn();
     const { getByText } = render(
       <PermissionsCard
         getPermissions={() => [{ action: RmfAction.TaskRead, authz_grp: 'test_group' }]}

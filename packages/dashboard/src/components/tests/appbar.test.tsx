@@ -2,6 +2,7 @@ import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { StubAuthenticator, UserProfile, UserProfileContext } from 'rmf-auth';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { AuthenticatorContext, Resources, ResourcesContext } from '../../app-config';
 import { AppController, AppControllerContext } from '../app-contexts';
 import AppBar from '../appbar';
@@ -48,7 +49,7 @@ describe('AppBar', () => {
 
   test('logout is triggered when logout button is clicked', async () => {
     const authenticator = new StubAuthenticator('test');
-    const spy = jest.spyOn(authenticator, 'logout').mockImplementation(() => undefined as any);
+    const spy = vi.spyOn(authenticator, 'logout').mockImplementation(() => undefined as any);
     const profile: UserProfile = {
       user: { username: 'test', is_admin: false, roles: [] },
       permissions: [],
