@@ -5,7 +5,7 @@ describe('EventEditDeletePopup', () => {
   const currentValue = 'current';
   const allValue = 'all';
   const value = 'current';
-  const onChange = jest.fn();
+  const onChange = vi.fn();
 
   it('handles onChange event', () => {
     const { getByLabelText } = render(

@@ -13,14 +13,14 @@ describe('Tasks table', () => {
 
   tasks.data = [makeTaskState('task_0'), makeTaskState('task_1')];
   let root: RenderResult;
-  let mockAddMoreRows: ReturnType<typeof jest.fn>;
+  let mockAddMoreRows: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     const setFilterFields: FilterFields = {
       model: undefined,
     };
 
-    mockAddMoreRows = jest.fn();
+    mockAddMoreRows = vi.fn();
     root = render(
       <TaskDataGridTable
         tasks={tasks}

@@ -31,7 +31,7 @@ describe('RobotTable', () => {
   });
 
   it('onRobotClick is called when row is clicked', () => {
-    const onRobotClick = jest.fn();
+    const onRobotClick = vi.fn();
     const root = render(
       <RobotDataGridTable
         robots={[{ fleet: 'test_fleet', name: 'test_robot' }]}

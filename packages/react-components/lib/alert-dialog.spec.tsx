@@ -22,8 +22,8 @@ describe('AcknowledgeAndCloseAlertDialog', () => {
         },
       ];
     };
-    const acknowledge = jest.fn();
-    const dismiss = jest.fn();
+    const acknowledge = vi.fn();
+    const dismiss = vi.fn();
     const root = render(
       <ThemeProvider theme={theme}>
         <AlertDialog
@@ -60,8 +60,8 @@ describe('AcknowledgeAndCloseAlertDialog', () => {
         },
       ];
     };
-    const acknowledge = jest.fn();
-    const close = jest.fn();
+    const acknowledge = vi.fn();
+    const close = vi.fn();
     const root = render(
       <ThemeProvider theme={theme}>
         <AlertDialog

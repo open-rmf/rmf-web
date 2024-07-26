@@ -6,7 +6,7 @@ import { makeLift, makeLiftState } from './test-utils.spec';
 
 describe('Lift request form', () => {
   it('destination is required', async () => {
-    const mockOnClose = jest.fn();
+    const mockOnClose = vi.fn();
     const lift = makeLift();
     const liftState = makeLiftState();
     render(

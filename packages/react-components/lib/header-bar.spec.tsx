@@ -6,7 +6,7 @@ import { HeaderBar } from './header-bar';
 
 describe('Header Bar', () => {
   it('renders correctly', () => {
-    const mockOnTabChange = jest.fn();
+    const mockOnTabChange = vi.fn();
     render(
       <HeaderBar>
         <NavigationBar onTabChange={mockOnTabChange} value={'building'}>
