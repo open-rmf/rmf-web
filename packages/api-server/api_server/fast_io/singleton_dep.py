@@ -30,7 +30,7 @@ class SingletonDep(Generic[T], contextlib.AbstractAsyncContextManager):
             self.instance = self.context.__enter__()
         elif isinstance(result, contextlib.AbstractAsyncContextManager):
             self.context = result
-            self.instance = self.context.__aenter__()
+            self.instance = await self.context.__aenter__()
         elif iscoroutine(result):
             self.instance = await result
         else:

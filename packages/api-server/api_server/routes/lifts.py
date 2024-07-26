@@ -1,4 +1,4 @@
-from typing import Annotated, List, cast
+from typing import Annotated
 
 from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
@@ -12,7 +12,7 @@ from api_server.rmf_io import get_rmf_events
 router = FastIORouter(tags=["Lifts"])
 
 
-@router.get("", response_model=List[Lift])
+@router.get("", response_model=list[Lift])
 async def get_lifts(rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)]):
     return await rmf_repo.get_lifts()
 
@@ -34,7 +34,7 @@ async def get_lift_state(
 async def sub_lift_state(req: SubscriptionRequest, lift_name: str):
     user = req.user
     obs = get_rmf_events().lift_states.pipe(
-        rxops.filter(lambda x: cast(LiftState, x).lift_name == lift_name)
+        rxops.filter(lambda x: x.lift_name == lift_name)
     )
     lift_state = await get_lift_state(lift_name, RmfRepository(user))
     if lift_state:

@@ -1,4 +1,4 @@
-from typing import Annotated, List, cast
+from typing import Annotated
 
 from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
@@ -11,7 +11,7 @@ from api_server.rmf_io import get_rmf_events
 router = FastIORouter(tags=["Dispensers"])
 
 
-@router.get("", response_model=List[Dispenser])
+@router.get("", response_model=list[Dispenser])
 async def get_dispensers(rmf_repo: Annotated[RmfRepository, Depends(RmfRepository)]):
     return await rmf_repo.get_dispensers()
 
@@ -32,9 +32,7 @@ async def get_dispenser_state(
 @router.sub("/{guid}/state", response_model=DispenserState)
 async def sub_dispenser_state(req: SubscriptionRequest, guid: str):
     user = req.user
-    obs = get_rmf_events().dispenser_states.pipe(
-        rxops.filter(lambda x: cast(DispenserState, x).guid == guid)
-    )
+    obs = get_rmf_events().dispenser_states.pipe(rxops.filter(lambda x: x.guid == guid))
     dispenser_state = await get_dispenser_state(guid, RmfRepository(user))
     if dispenser_state:
         return obs.pipe(rxops.start_with(dispenser_state))

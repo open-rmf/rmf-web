@@ -1,7 +1,7 @@
 /* This is a generated file, do not edit */
 
 export class ModeParameter {
-  static readonly FullTypeName = 'rmf_fleet_msgs/msg/ModeParameter';
+  static readonly FullTypeName = '';
 
   name: string;
   value: string;
@@ -21,8 +21,4 @@ export class ModeParameter {
   }
 }
 
-/*
-string name
-string value
-
-*/
+export default ModeParameter;

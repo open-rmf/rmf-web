@@ -1,21 +1,21 @@
 /* This is a generated file, do not edit */
 
-import { Time } from '../../builtin_interfaces/msg/Time';
+import * as builtin_interfaces from '../../builtin_interfaces';
 
 export class DispenserResult {
-  static readonly FullTypeName = 'rmf_dispenser_msgs/msg/DispenserResult';
+  static readonly FullTypeName = '';
 
   static readonly ACKNOWLEDGED = 0;
   static readonly SUCCESS = 1;
   static readonly FAILED = 2;
 
-  time: Time;
+  time: builtin_interfaces.msg.Time;
   request_guid: string;
   source_guid: string;
   status: number;
 
   constructor(fields: Partial<DispenserResult> = {}) {
-    this.time = fields.time || new Time();
+    this.time = fields.time || new builtin_interfaces.msg.Time();
     this.request_guid = fields.request_guid || '';
     this.source_guid = fields.source_guid || '';
     this.status = fields.status || 0;
@@ -23,7 +23,7 @@ export class DispenserResult {
 
   static validate(obj: Record<string, unknown>): void {
     try {
-      Time.validate(obj['time'] as Record<string, unknown>);
+      builtin_interfaces.msg.Time.validate(obj['time'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "time":\n  ' + (e as Error).message);
     }
@@ -39,21 +39,4 @@ export class DispenserResult {
   }
 }
 
-/*
-builtin_interfaces/Time time
-
-# A unique ID for the request which this result is for
-string request_guid
-
-# The unique ID of the workcell that this result was sent from
-string source_guid
-
-# Different basic result statuses
-uint8 status
-uint8 ACKNOWLEDGED=0
-uint8 SUCCESS=1
-uint8 FAILED=2
-
-# below are custom workcell message fields
-
-*/
+export default DispenserResult;

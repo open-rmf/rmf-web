@@ -1,7 +1,7 @@
 /* This is a generated file, do not edit */
 
 export class ChargingAssignment {
-  static readonly FullTypeName = 'rmf_fleet_msgs/msg/ChargingAssignment';
+  static readonly FullTypeName = '';
 
   static readonly MODE_CHARGE = 0;
   static readonly MODE_WAIT = 1;
@@ -29,12 +29,4 @@ export class ChargingAssignment {
   }
 }
 
-/*
-string robot_name
-string waypoint_name
-uint8 mode
-
-uint8 MODE_CHARGE = 0
-uint8 MODE_WAIT = 1
-
-*/
+export default ChargingAssignment;

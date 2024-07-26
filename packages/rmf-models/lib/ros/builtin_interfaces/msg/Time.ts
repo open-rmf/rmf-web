@@ -1,7 +1,7 @@
 /* This is a generated file, do not edit */
 
 export class Time {
-  static readonly FullTypeName = 'builtin_interfaces/msg/Time';
+  static readonly FullTypeName = '';
 
   sec: number;
   nanosec: number;
@@ -21,14 +21,4 @@ export class Time {
   }
 }
 
-/*
-# This message communicates ROS Time defined here:
-# https://design.ros2.org/articles/clock_and_time.html
-
-# The seconds component, valid over all int32 values.
-int32 sec
-
-# The nanoseconds component, valid in the range [0, 1e9).
-uint32 nanosec
-
-*/
+export default Time;

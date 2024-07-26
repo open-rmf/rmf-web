@@ -1,7 +1,7 @@
 /* This is a generated file, do not edit */
 
 export class AlertResponse {
-  static readonly FullTypeName = 'rmf_task_msgs/msg/AlertResponse';
+  static readonly FullTypeName = '';
 
   id: string;
   response: string;
@@ -21,12 +21,4 @@ export class AlertResponse {
   }
 }
 
-/*
-# The unique ID of the Alert this response is for
-string id
-
-# This response must be one of the available options
-# in the Alert.
-string response
-
-*/
+export default AlertResponse;

@@ -1,7 +1,7 @@
 /* This is a generated file, do not edit */
 
 export class InterruptRequest {
-  static readonly FullTypeName = 'rmf_fleet_msgs/msg/InterruptRequest';
+  static readonly FullTypeName = '';
 
   static readonly TYPE_INTERRUPT = 0;
   static readonly TYPE_RESUME = 1;
@@ -9,7 +9,7 @@ export class InterruptRequest {
   fleet_name: string;
   robot_name: string;
   interrupt_id: string;
-  labels: string[];
+  labels: Array<string>;
   type: number;
 
   constructor(fields: Partial<InterruptRequest> = {}) {
@@ -44,14 +44,4 @@ export class InterruptRequest {
   }
 }
 
-/*
-string fleet_name
-string robot_name
-string interrupt_id
-string[] labels
-uint8 type
-
-uint8 TYPE_INTERRUPT = 0
-uint8 TYPE_RESUME = 1
-
-*/
+export default InterruptRequest;

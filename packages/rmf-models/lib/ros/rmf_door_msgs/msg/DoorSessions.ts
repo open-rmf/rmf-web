@@ -1,12 +1,12 @@
 /* This is a generated file, do not edit */
 
-import { Session } from '../../rmf_door_msgs/msg/Session';
+import * as rmf_door_msgs from '../../rmf_door_msgs';
 
 export class DoorSessions {
-  static readonly FullTypeName = 'rmf_door_msgs/msg/DoorSessions';
+  static readonly FullTypeName = '';
 
   door_name: string;
-  sessions: Session[];
+  sessions: Array<rmf_door_msgs.msg.Session>;
 
   constructor(fields: Partial<DoorSessions> = {}) {
     this.door_name = fields.door_name || '';
@@ -22,7 +22,7 @@ export class DoorSessions {
     }
     for (const [i, v] of obj['sessions'].entries()) {
       try {
-        Session.validate(v);
+        rmf_door_msgs.msg.Session.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "sessions":\n  ` + (e as Error).message);
       }
@@ -30,9 +30,4 @@ export class DoorSessions {
   }
 }
 
-/*
-
-string door_name
-Session[] sessions
-
-*/
+export default DoorSessions;

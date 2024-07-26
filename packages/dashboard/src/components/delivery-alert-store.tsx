@@ -6,26 +6,16 @@ import {
   TaskStateOutput as TaskState,
 } from 'api-client';
 import React from 'react';
-import { Button, TextField, Tooltip, Theme, Divider, useMediaQuery } from '@mui/material';
+import { Button, TextField, Tooltip, Theme, Divider, useMediaQuery, useTheme } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { makeStyles, createStyles } from '@mui/styles';
 import { base } from 'react-components';
 import { AppControllerContext } from './app-contexts';
 import { RmfAppContext } from './rmf-app';
 import { TaskInspector } from './tasks/task-inspector';
 import { TaskCancelButton } from './tasks/task-cancellation';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    textField: {
-      background: theme.palette.background.default,
-      pointerEvents: 'none',
-    },
-  }),
-);
 
 const categoryToText = (category: DeliveryAlertCategory): string => {
   switch (category) {
@@ -57,7 +47,6 @@ interface DeliveryWarningDialogProps {
 
 const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => {
   const { deliveryAlert, taskState, onOverride, onResume, onClose } = props;
-  const classes = useStyles();
   const [isOpen, setIsOpen] = React.useState(true);
   const [actionTaken, setActionTaken] = React.useState(!onOverride && !onResume);
   const [newTaskState, setNewTaskState] = React.useState<TaskState | null>(null);
@@ -130,6 +119,8 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
     }
   };
 
+  const theme = useTheme();
+
   return (
     <>
       <Dialog
@@ -158,9 +149,11 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
               '& .MuiFilledInput-root': {
                 fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
               },
+              background: theme.palette.background.default,
+              pointerEvents: 'none',
             }}
             InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
-            InputProps={{ readOnly: true, className: classes.textField }}
+            InputProps={{ readOnly: true }}
             fullWidth={true}
             margin="dense"
             value={
@@ -178,9 +171,11 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
               '& .MuiFilledInput-root': {
                 fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
               },
+              background: theme.palette.background.default,
+              pointerEvents: 'none',
             }}
             InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
-            InputProps={{ readOnly: true, className: classes.textField }}
+            InputProps={{ readOnly: true }}
             fullWidth={true}
             margin="dense"
             value={categoryToText(deliveryAlert.category)}
@@ -194,9 +189,11 @@ const DeliveryWarningDialog = React.memo((props: DeliveryWarningDialogProps) => 
               '& .MuiFilledInput-root': {
                 fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
               },
+              background: theme.palette.background.default,
+              pointerEvents: 'none',
             }}
             InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
-            InputProps={{ readOnly: true, className: classes.textField }}
+            InputProps={{ readOnly: true }}
             fullWidth={true}
             multiline
             maxRows={4}
@@ -330,10 +327,11 @@ interface DeliveryErrorDialogProps {
 
 const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
   const { deliveryAlert, taskState, onClose } = props;
-  const classes = useStyles();
   const [isOpen, setIsOpen] = React.useState(true);
   const [openTaskInspector, setOpenTaskInspector] = React.useState(false);
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
+
+  const theme = useTheme();
 
   return (
     <>
@@ -361,9 +359,11 @@ const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
               '& .MuiFilledInput-root': {
                 fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
               },
+              background: theme.palette.background.default,
+              pointerEvents: 'none',
             }}
             InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
-            InputProps={{ readOnly: true, className: classes.textField }}
+            InputProps={{ readOnly: true }}
             fullWidth={true}
             margin="dense"
             value={deliveryAlert.task_id ?? 'n/a'}
@@ -377,9 +377,11 @@ const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
               '& .MuiFilledInput-root': {
                 fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
               },
+              background: theme.palette.background.default,
+              pointerEvents: 'none',
             }}
             InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
-            InputProps={{ readOnly: true, className: classes.textField }}
+            InputProps={{ readOnly: true }}
             fullWidth={true}
             margin="dense"
             value={categoryToText(deliveryAlert.category)}
@@ -393,9 +395,11 @@ const DeliveryErrorDialog = React.memo((props: DeliveryErrorDialogProps) => {
               '& .MuiFilledInput-root': {
                 fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
               },
+              background: theme.palette.background.default,
+              pointerEvents: 'none',
             }}
             InputLabelProps={{ style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 } }}
-            InputProps={{ readOnly: true, className: classes.textField }}
+            InputProps={{ readOnly: true }}
             fullWidth={true}
             multiline
             maxRows={4}

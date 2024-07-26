@@ -1,4 +1,4 @@
-import { BoundedSequence } from '../out';
+import { BoundedSequence } from '../out/ros_translator_test_msgs/msg/BoundedSequence';
 
 it('success with length === capacity', () => {
   expect(() =>

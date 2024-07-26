@@ -9,6 +9,7 @@ from rmf_lift_msgs.msg import LiftState as RmfLiftState
 
 from api_server.models import (
     AffineImage,
+    AlertRequest,
     BuildingMap,
     DispenserState,
     Door,
@@ -25,8 +26,8 @@ from api_server.models import (
     TaskFavorite,
     TaskState,
 )
-from api_server.models.ros_pydantic.builtin_interfaces import Time
-from api_server.models.ros_pydantic.rmf_building_map_msgs import Graph
+from api_server.models.ros_pydantic.builtin_interfaces.msg import Time
+from api_server.models.ros_pydantic.rmf_building_map_msgs.msg import Graph
 
 
 def make_door(name: str = "test_door") -> Door:
@@ -733,3 +734,18 @@ def make_task_log(task_id: str) -> TaskEventLog:
     )
     sample.task_id = task_id
     return sample
+
+
+def make_alert_request(alert_id: str, responses: list[str]) -> AlertRequest:
+    return AlertRequest(
+        id=alert_id,
+        unix_millis_alert_time=0,
+        title="test_title",
+        subtitle="test_subtitle",
+        message="test_message",
+        display=True,
+        tier=AlertRequest.Tier.Info,
+        responses_available=responses,
+        alert_parameters=[],
+        task_id=None,
+    )

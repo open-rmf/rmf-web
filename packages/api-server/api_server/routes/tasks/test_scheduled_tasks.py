@@ -1,7 +1,7 @@
 import asyncio
 import unittest
 import unittest.mock
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 import pydantic
@@ -800,7 +800,7 @@ class TestScheduledTaskExecution(AppFixture):
                     at="00:00",
                 ),
             ],
-            start_from=datetime(1970, 1, 3, tzinfo=ZoneInfo("UTC")),
+            start_from=datetime(1970, 1, 3, tzinfo=timezone.utc),
         )
 
         with freeze_time(datetime.fromtimestamp(0)):
@@ -861,7 +861,7 @@ class TestScheduledTaskExecution(AppFixture):
                     at="00:00",
                 ),
             ],
-            until=datetime(1970, 1, 1, 16, 30, tzinfo=ZoneInfo("UTC")),
+            until=datetime(1970, 1, 1, 16, 30, tzinfo=timezone.utc),
         )
 
         with freeze_time(datetime.fromtimestamp(0)):
@@ -922,7 +922,7 @@ class TestScheduledTaskExecution(AppFixture):
                 ),
             ],
             # this will be 1970-01-03 on server time
-            except_dates=[datetime(1970, 1, 2, 16, 30, tzinfo=ZoneInfo("UTC"))],
+            except_dates=[datetime(1970, 1, 2, 16, 30, tzinfo=timezone.utc)],
         )
 
         with freeze_time(datetime.fromtimestamp(0)):
@@ -955,7 +955,7 @@ class TestScheduledTaskExecution(AppFixture):
             except_dates=[
                 datetime(1970, 1, 4, tzinfo=self.serverTz),
                 # this will be 1970-01-03 on server time
-                datetime(1970, 1, 2, 16, 30, tzinfo=ZoneInfo("UTC")),
+                datetime(1970, 1, 2, 16, 30, tzinfo=timezone.utc),
             ],
         )
 

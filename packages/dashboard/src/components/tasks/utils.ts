@@ -1,20 +1,5 @@
 import { PostScheduledTaskRequest, TaskRequest, TaskStateOutput as TaskState } from 'api-client';
-import { ajv, getTaskBookingLabelFromTaskState, Schedule } from 'react-components';
-import schema from 'api-client/dist/schema';
-
-export function parseTasksFile(contents: string): TaskRequest[] {
-  const obj = JSON.parse(contents) as unknown[];
-  if (!Array.isArray(obj)) {
-    throw new Error('Expected an array of tasks');
-  }
-
-  const errIdx = obj.findIndex((req) => !ajv.validate(schema.components.schemas.TaskRequest, req));
-  if (errIdx !== -1) {
-    const errors = ajv.errors!;
-    throw new Error(`Validation error on item ${errIdx + 1}: ${errors[0].message}`);
-  }
-  return obj;
-}
+import { getTaskBookingLabelFromTaskState, Schedule } from 'react-components';
 
 export function exportCsvFull(timestamp: Date, allTasks: TaskState[]) {
   const columnSeparator = ';';
@@ -62,7 +47,7 @@ export function exportCsvMinimal(timestamp: Date, allTasks: TaskState[]) {
   ];
   csvContent += keys.join(columnSeparator) + rowSeparator;
   allTasks.forEach((task) => {
-    let requestLabel = getTaskBookingLabelFromTaskState(task);
+    let taskBookingLabels = getTaskBookingLabelFromTaskState(task);
 
     const values = [
       // Date
@@ -72,10 +57,10 @@ export function exportCsvMinimal(timestamp: Date, allTasks: TaskState[]) {
       // Requester
       task.booking.requester ? task.booking.requester : 'n/a',
       // Pickup
-      requestLabel && requestLabel.description.pickup ? requestLabel.description.pickup : 'n/a',
+      taskBookingLabels && 'pickup' in taskBookingLabels ? taskBookingLabels['pickup'] : 'n/a',
       // Destination
-      requestLabel && requestLabel.description.destination
-        ? requestLabel.description.destination
+      taskBookingLabels && 'destination' in taskBookingLabels
+        ? taskBookingLabels['destination']
         : 'n/a',
       // Robot
       task.assigned_to ? task.assigned_to.name : 'n/a',

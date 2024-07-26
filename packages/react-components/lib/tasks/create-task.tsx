@@ -34,7 +34,8 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { DatePicker, DateTimePicker, TimePicker } from '@mui/x-date-pickers';
+import { DatePicker, DateTimePicker } from '@mui/x-date-pickers';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import type { TaskFavorite, TaskRequest } from 'api-client';
 import React from 'react';
 import { Loading } from '..';
@@ -301,7 +302,6 @@ export interface CreateTaskFormProps
   // requestTask is provided only when editing a schedule
   requestTask?: TaskRequest;
   submitTasks?(tasks: TaskRequest[], schedule: Schedule | null): Promise<void>;
-  tasksFromFile?(): Promise<TaskRequest[]> | TaskRequest[];
   onSuccess?(tasks: TaskRequest[]): void;
   onFail?(error: Error, tasks: TaskRequest[]): void;
   onSuccessFavoriteTask?(message: string, favoriteTask: TaskFavorite): void;
@@ -332,7 +332,6 @@ export function CreateTaskForm({
   scheduleToEdit,
   requestTask,
   submitTasks,
-  tasksFromFile,
   onClose,
   onSuccess,
   onFail,
@@ -454,8 +453,8 @@ export function CreateTaskForm({
     ? getTaskBookingLabelFromTaskRequest(requestTask)
     : undefined;
   let existingWarnTime: Date | null = null;
-  if (existingBookingLabel && existingBookingLabel.unix_millis_warn_time) {
-    const warnTimeInt = parseInt(existingBookingLabel.unix_millis_warn_time);
+  if (existingBookingLabel && 'unix_millis_warn_time' in existingBookingLabel) {
+    const warnTimeInt = parseInt(existingBookingLabel['unix_millis_warn_time']);
     if (!Number.isNaN(warnTimeInt)) {
       existingWarnTime = new Date(warnTimeInt);
     }
@@ -681,7 +680,7 @@ export function CreateTaskForm({
       }
 
       if (warnTime !== null) {
-        requestBookingLabel.unix_millis_warn_time = `${warnTime.valueOf()}`;
+        requestBookingLabel['unix_millis_warn_time'] = `${warnTime.valueOf()}`;
       }
 
       request.labels = serializeTaskBookingLabel(requestBookingLabel);
@@ -874,23 +873,9 @@ export function CreateTaskForm({
                   </Grid>
                   <Grid item xs={isScreenHeightLessThan800 ? 6 : 7}>
                     <DateTimePicker
-                      inputFormat={'MM/dd/yyyy HH:mm'}
                       value={new Date()}
                       onChange={() => 0}
                       label="Start Time"
-                      renderInput={(props) => (
-                        <TextField
-                          {...props}
-                          InputLabelProps={{
-                            style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 },
-                          }}
-                          sx={{
-                            '& .MuiInputBase-input': {
-                              fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                            },
-                          }}
-                        />
-                      )}
                       disabled
                     />
                   </Grid>
@@ -907,25 +892,11 @@ export function CreateTaskForm({
                   <Grid item xs={isScreenHeightLessThan800 ? 5 : 4}>
                     <DateTimePicker
                       disabled={warnTime === null}
-                      inputFormat={'MM/dd/yyyy HH:mm'}
                       value={warnTime}
                       onChange={(date) => {
                         setWarnTime(date);
                       }}
                       label="Warn Time"
-                      renderInput={(props) => (
-                        <TextField
-                          {...props}
-                          InputLabelProps={{
-                            style: { fontSize: isScreenHeightLessThan800 ? 16 : 20 },
-                          }}
-                          sx={{
-                            '& .MuiInputBase-input': {
-                              fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                            },
-                          }}
-                        />
-                      )}
                     />
                   </Grid>
                 </Grid>
@@ -1062,18 +1033,6 @@ export function CreateTaskForm({
                   });
                 }}
                 label="Start On"
-                renderInput={(props) => (
-                  <TextField
-                    {...props}
-                    size="small"
-                    fullWidth
-                    sx={{
-                      '& .MuiInputBase-input': {
-                        fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                      },
-                    }}
-                  />
-                )}
               />
             </Grid>
             <Grid item xs={6}>
@@ -1087,29 +1046,18 @@ export function CreateTaskForm({
                   console.debug(`TimePicker: ${date}`);
                   if (!isNaN(date.valueOf())) {
                     setSchedule((prev) => {
-                      const startOn = prev.startOn;
+                      const startOn = new Date(prev.startOn);
                       startOn.setHours(date.getHours());
                       startOn.setMinutes(date.getMinutes());
                       startOn.setSeconds(0);
                       startOn.setMilliseconds(0);
-                      console.debug(`TimePicker setSchedule: ${date}`);
+                      console.debug(`TimePicker setSchedule date: ${date}`);
+                      console.debug(`TimePicker setSchedule startOn: ${startOn}`);
                       return { ...prev, at: date, startOn };
                     });
                   }
                 }}
                 label="At"
-                renderInput={(props) => (
-                  <TextField
-                    {...props}
-                    fullWidth
-                    size="small"
-                    sx={{
-                      '& .MuiInputBase-input': {
-                        fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                      },
-                    }}
-                  />
-                )}
               />
             </Grid>
             <Grid item xs={12}>
@@ -1171,17 +1119,6 @@ export function CreateTaskForm({
                       });
                     }}
                     disabled={scheduleUntilValue !== ScheduleUntilValue.ON}
-                    renderInput={(props) => (
-                      <TextField
-                        {...props}
-                        fullWidth
-                        sx={{
-                          '& .MuiInputBase-input': {
-                            fontSize: isScreenHeightLessThan800 ? '0.8rem' : '1.15',
-                          },
-                        }}
-                      />
-                    )}
                   />
                 </Grid>
               </RadioGroup>

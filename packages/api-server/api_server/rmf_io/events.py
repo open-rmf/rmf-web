@@ -48,7 +48,8 @@ def get_fleet_events():
 
 class AlertEvents:
     def __init__(self):
-        self.alerts = Subject()
+        self.alert_requests = Subject()
+        self.alert_responses = Subject()
 
 
 @singleton_dep
@@ -64,3 +65,13 @@ class BeaconEvents:
 @singleton_dep
 def get_beacon_events():
     return BeaconEvents()
+
+
+class RioEvents:
+    def __init__(self):
+        self.rios = Subject[mdl.Rio]()
+
+
+@singleton_dep
+def get_rio_events():
+    return RioEvents()

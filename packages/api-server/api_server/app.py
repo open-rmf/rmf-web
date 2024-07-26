@@ -5,7 +5,6 @@ import signal
 import threading
 from typing import Any, Callable, Coroutine, Union
 
-import schedule
 from fastapi import Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import (
@@ -21,6 +20,7 @@ from api_server.rmf_io.events import (
     get_alert_events,
     get_beacon_events,
     get_fleet_events,
+    get_rio_events,
     get_rmf_events,
     get_task_events,
 )
@@ -77,6 +77,8 @@ async def lifespan(_app: FastIO):
     await stack.enter_async_context(get_fleet_events)
     await stack.enter_async_context(get_alert_events)
     await stack.enter_async_context(get_beacon_events)
+    await stack.enter_async_context(get_rio_events)
+    await stack.enter_async_context(get_alert_events)
 
     await Tortoise.init(
         db_url=app_config.db_url,
@@ -115,7 +117,6 @@ async def lifespan(_app: FastIO):
 
     default_logger.info("starting scheduler")
     await stack.enter_async_context(get_scheduler)
-    asyncio.create_task(_spin_scheduler())
     scheduled_tasks = await ttm.ScheduledTask.all()
     scheduled = 0
     for t in scheduled_tasks:
@@ -220,6 +221,7 @@ app.include_router(
 app.include_router(
     routes.fleets_router, prefix="/fleets", dependencies=[Depends(user_dep)]
 )
+app.include_router(routes.rios_router, prefix="/rios", dependencies=[Depends(user_dep)])
 app.include_router(
     routes.admin_router, prefix="/admin", dependencies=[Depends(user_dep)]
 )
@@ -251,12 +253,6 @@ async def redoc_html():
         title=app.title + " - ReDoc",
         redoc_js_url=f"{app_config.public_url.geturl()}/static/redoc.standalone.js",
     )
-
-
-async def _spin_scheduler():
-    while True:
-        schedule.run_pending()
-        await asyncio.sleep(1)
 
 
 async def _load_states(rmf_events: RmfEvents):

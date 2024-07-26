@@ -1,21 +1,21 @@
 /* This is a generated file, do not edit */
 
-import { Time } from '../../builtin_interfaces/msg/Time';
+import * as builtin_interfaces from '../../builtin_interfaces';
 
 export class Session {
-  static readonly FullTypeName = 'rmf_door_msgs/msg/Session';
+  static readonly FullTypeName = '';
 
-  request_time: Time;
+  request_time: builtin_interfaces.msg.Time;
   requester_id: string;
 
   constructor(fields: Partial<Session> = {}) {
-    this.request_time = fields.request_time || new Time();
+    this.request_time = fields.request_time || new builtin_interfaces.msg.Time();
     this.requester_id = fields.requester_id || '';
   }
 
   static validate(obj: Record<string, unknown>): void {
     try {
-      Time.validate(obj['request_time'] as Record<string, unknown>);
+      builtin_interfaces.msg.Time.validate(obj['request_time'] as Record<string, unknown>);
     } catch (e) {
       throw new Error('in "request_time":\n  ' + (e as Error).message);
     }
@@ -25,9 +25,4 @@ export class Session {
   }
 }
 
-/*
-
-builtin_interfaces/Time request_time
-string requester_id
-
-*/
+export default Session;

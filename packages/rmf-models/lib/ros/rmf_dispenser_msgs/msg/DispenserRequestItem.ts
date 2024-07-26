@@ -1,7 +1,7 @@
 /* This is a generated file, do not edit */
 
 export class DispenserRequestItem {
-  static readonly FullTypeName = 'rmf_dispenser_msgs/msg/DispenserRequestItem';
+  static readonly FullTypeName = '';
 
   type_guid: string;
   quantity: number;
@@ -26,9 +26,4 @@ export class DispenserRequestItem {
   }
 }
 
-/*
-string type_guid
-int32 quantity
-string compartment_name
-
-*/
+export default DispenserRequestItem;

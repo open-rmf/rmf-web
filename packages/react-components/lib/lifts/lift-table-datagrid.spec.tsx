@@ -1,7 +1,7 @@
-import React from 'react';
 import { render } from '@testing-library/react';
+import React from 'react';
+import { LiftState as RmfLiftState } from 'rmf-models/ros/rmf_lift_msgs/msg';
 import { LiftDataGridTable, LiftTableData } from './lift-table-datagrid';
-import { LiftState as RmfLiftState } from 'rmf-models';
 import { makeLift } from './test-utils.spec';
 
 describe('LiftDataGridTable', () => {

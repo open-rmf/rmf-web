@@ -2,11 +2,11 @@ from pydantic import BaseModel, Field
 
 from .ros_pydantic import rmf_building_map_msgs, rmf_door_msgs
 
-Door = rmf_building_map_msgs.Door
-DoorMode = rmf_door_msgs.DoorMode
+Door = rmf_building_map_msgs.msg.Door
+DoorMode = rmf_door_msgs.msg.DoorMode
 
 
-DoorState = rmf_door_msgs.DoorState
+DoorState = rmf_door_msgs.msg.DoorState
 
 
 class DoorRequest(BaseModel):

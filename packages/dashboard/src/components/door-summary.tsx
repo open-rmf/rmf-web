@@ -1,29 +1,11 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogTitle, Divider, TextField } from '@mui/material';
-import { Theme } from '@mui/material/styles';
-import { Door as DoorModel } from 'rmf-models';
+import { Dialog, DialogContent, DialogTitle, Divider, TextField, useTheme } from '@mui/material';
+import { Door as DoorModel } from 'rmf-models/ros/rmf_building_map_msgs/msg';
+import { doorModeToOpModeString } from 'react-components';
 import { RmfAppContext } from './rmf-app';
 import { getApiErrorMessage } from './utils';
-import {
-  doorModeToString,
-  DoorTableData,
-  doorTypeToString,
-  healthStatusToOpMode,
-  base,
-} from 'react-components';
+import { doorModeToString, DoorTableData, doorTypeToString, base } from 'react-components';
 import { Level } from 'api-client';
-import { makeStyles, createStyles } from '@mui/styles';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    textField: {
-      background: theme.palette.background.default,
-      '&:hover': {
-        backgroundColor: theme.palette.background.default,
-      },
-    },
-  }),
-);
 
 interface DoorSummaryProps {
   onClose: () => void;
@@ -32,12 +14,10 @@ interface DoorSummaryProps {
 }
 
 export const DoorSummary = ({ onClose, door, level }: DoorSummaryProps): JSX.Element => {
-  const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
   const [doorData, setDoorData] = React.useState<DoorTableData>({
     index: 0,
     doorName: '',
-    opMode: '',
     levelName: '',
     doorType: 0,
     doorState: undefined,
@@ -50,13 +30,10 @@ export const DoorSummary = ({ onClose, door, level }: DoorSummaryProps): JSX.Ele
 
     const fetchDataForDoor = async () => {
       try {
-        const { data } = await rmf.doorsApi.getDoorHealthDoorsDoorNameHealthGet(door.name);
-        const { health_status } = data;
         const sub = rmf.getDoorStateObs(door.name).subscribe((doorState) => {
           setDoorData({
             index: 0,
             doorName: door.name,
-            opMode: health_status ? health_status : 'N/A',
             levelName: level.name,
             doorType: door.door_type,
             doorState: doorState,
@@ -72,6 +49,9 @@ export const DoorSummary = ({ onClose, door, level }: DoorSummaryProps): JSX.Ele
   }, [rmf, level, door]);
 
   const [isOpen, setIsOpen] = React.useState(true);
+
+  const theme = useTheme();
+
   return (
     <Dialog
       PaperProps={{
@@ -102,7 +82,7 @@ export const DoorSummary = ({ onClose, door, level }: DoorSummaryProps): JSX.Ele
               displayLabel = 'Name';
               break;
             case 'opMode':
-              displayValue = healthStatusToOpMode(value);
+              displayValue = doorModeToOpModeString(value.current_mode);
               displayLabel = 'Op. Mode';
               break;
             case 'levelName':
@@ -126,7 +106,13 @@ export const DoorSummary = ({ onClose, door, level }: DoorSummaryProps): JSX.Ele
                 id="standard-size-small"
                 size="small"
                 variant="filled"
-                InputProps={{ readOnly: true, className: classes.textField }}
+                sx={{
+                  background: theme.palette.background.default,
+                  '&:hover': {
+                    backgroundColor: theme.palette.background.default,
+                  },
+                }}
+                InputProps={{ readOnly: true }}
                 fullWidth={true}
                 multiline
                 maxRows={4}

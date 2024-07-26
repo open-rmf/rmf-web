@@ -118,7 +118,7 @@ def augment_message(msg: Message):
 
 def generate_modules(pkgs: Sequence[str], dstdir: str):
     roslib = RosLibrary(post_processors=PostProcessors(message=augment_message))
-    all_pkgs = roslib.get_all_dependent_packages(*pkgs)
+    all_pkgs = roslib.get_all_package_dependencies(*pkgs)
     all_pkg_index = [roslib.get_package_index(p) for p in all_pkgs]
     all_messages: List[Message] = []
     for p in all_pkg_index:

@@ -1,7 +1,7 @@
 /* This is a generated file, do not edit */
 
 export class BehaviorParameter {
-  static readonly FullTypeName = 'rmf_task_msgs/msg/BehaviorParameter';
+  static readonly FullTypeName = '';
 
   name: string;
   value: string;
@@ -21,8 +21,4 @@ export class BehaviorParameter {
   }
 }
 
-/*
-string name
-string value
-
-*/
+export default BehaviorParameter;

@@ -5,17 +5,16 @@ import {
   CircularProgress,
   createTheme,
   CssBaseline,
-  GlobalStyles,
   Grid,
   Snackbar,
 } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import React from 'react';
-import { rmfDark, rmfDarkLeaflet, rmfLight } from 'react-components';
+import { rmfDark, rmfLight } from 'react-components';
 import { loadSettings, saveSettings, Settings, ThemeMode } from '../settings';
 import { AppController, AppControllerContext, SettingsContext } from './app-contexts';
 import AppBar from './appbar';
-import { AlertStore } from './alert-store';
+import { AlertManager } from './alert-manager';
 import { AppEvents } from './app-events';
 import { DeliveryAlertStore } from './delivery-alert-store';
 
@@ -84,7 +83,6 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {settings.themeMode === ThemeMode.RmfDark && <GlobalStyles styles={rmfDarkLeaflet} />}
       {openLoadingBackdrop && (
         <Backdrop
           sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -95,7 +93,7 @@ export function AppBase({ children }: React.PropsWithChildren<{}>): JSX.Element 
       )}
       <SettingsContext.Provider value={settings}>
         <AppControllerContext.Provider value={appController}>
-          <AlertStore />
+          <AlertManager />
           <DeliveryAlertStore />
           <Grid
             container

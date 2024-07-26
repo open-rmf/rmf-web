@@ -1,14 +1,13 @@
 /* This is a generated file, do not edit */
 
-import { Level } from '../../rmf_building_map_msgs/msg/Level';
-import { Lift } from '../../rmf_building_map_msgs/msg/Lift';
+import * as rmf_building_map_msgs from '../../rmf_building_map_msgs';
 
 export class BuildingMap {
-  static readonly FullTypeName = 'rmf_building_map_msgs/msg/BuildingMap';
+  static readonly FullTypeName = '';
 
   name: string;
-  levels: Level[];
-  lifts: Lift[];
+  levels: Array<rmf_building_map_msgs.msg.Level>;
+  lifts: Array<rmf_building_map_msgs.msg.Lift>;
 
   constructor(fields: Partial<BuildingMap> = {}) {
     this.name = fields.name || '';
@@ -25,7 +24,7 @@ export class BuildingMap {
     }
     for (const [i, v] of obj['levels'].entries()) {
       try {
-        Level.validate(v);
+        rmf_building_map_msgs.msg.Level.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "levels":\n  ` + (e as Error).message);
       }
@@ -35,7 +34,7 @@ export class BuildingMap {
     }
     for (const [i, v] of obj['lifts'].entries()) {
       try {
-        Lift.validate(v);
+        rmf_building_map_msgs.msg.Lift.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "lifts":\n  ` + (e as Error).message);
       }
@@ -43,9 +42,4 @@ export class BuildingMap {
   }
 }
 
-/*
-string name
-Level[] levels
-Lift[] lifts
-
-*/
+export default BuildingMap;

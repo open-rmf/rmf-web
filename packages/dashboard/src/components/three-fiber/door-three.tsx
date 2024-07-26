@@ -1,26 +1,28 @@
 import { ThreeEvent } from '@react-three/fiber';
+import { Mesh } from 'three';
 import { DoorState, Lift, LiftState } from 'api-client';
 import React from 'react';
 import { DoorThreeMaker } from 'react-components';
-import { DoorMode, Door as DoorModel } from 'rmf-models';
+import { Door as RmfDoor } from 'rmf-models/ros/rmf_building_map_msgs/msg';
+import { DoorMode as RmfDoorMode } from 'rmf-models/ros/rmf_door_msgs/msg';
 import { throttleTime } from 'rxjs';
 import { RmfAppContext } from '../rmf-app';
 
 interface DoorProps {
-  door: DoorModel;
+  door: RmfDoor;
   opacity: number;
   height: number;
   elevation: number;
   lift?: Lift;
-  onDoorClick?: (ev: ThreeEvent<MouseEvent>, door: DoorModel) => void;
+  onDoorClick?: (ev: ThreeEvent<MouseEvent>, door: RmfDoor) => void;
 }
 
-function toDoorMode(liftState: LiftState): DoorMode {
+function toDoorMode(liftState: LiftState): RmfDoorMode {
   return { value: liftState.door_state };
 }
 
 export const Door = React.memo(({ ...doorProps }: DoorProps): JSX.Element => {
-  const ref = React.useRef<THREE.Mesh>(null!);
+  const ref = React.useRef<Mesh>(null!);
   const { door, lift, onDoorClick } = doorProps;
   const rmf = React.useContext(RmfAppContext);
   const [doorState, setDoorState] = React.useState<DoorState | null>(null);
@@ -48,13 +50,13 @@ export const Door = React.memo(({ ...doorProps }: DoorProps): JSX.Element => {
       doorStateValue = toDoorMode(liftState).value;
     }
     switch (doorStateValue) {
-      case DoorMode.MODE_CLOSED:
+      case RmfDoorMode.MODE_CLOSED:
         setColor('red');
         return;
-      case DoorMode.MODE_MOVING:
+      case RmfDoorMode.MODE_MOVING:
         setColor('orange');
         return;
-      case DoorMode.MODE_OPEN:
+      case RmfDoorMode.MODE_OPEN:
       default:
         setColor('green');
         return;

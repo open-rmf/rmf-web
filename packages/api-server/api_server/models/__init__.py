@@ -9,6 +9,7 @@ from .ingestors import *
 from .labels import *
 from .lifts import *
 from .pagination import *
+from .rio import *
 from .rmf_api.activity_discovery_request import ActivityDiscoveryRequest
 from .rmf_api.activity_discovery_response import ActivityDiscovery
 from .rmf_api.cancel_task_request import CancelTaskRequest
@@ -48,6 +49,7 @@ from .rmf_api.task_log_response import TaskLogResponse
 from .rmf_api.task_log_update import TaskEventLogUpdate
 from .rmf_api.task_request import TaskRequest
 from .rmf_api.task_state import Status as TaskStatus
+from .rmf_api.task_state import Status2 as DispatchStatus
 from .rmf_api.task_state import TaskState
 from .rmf_api.task_state_update import TaskStateUpdate
 from .rmf_api.undo_skip_phase_request import UndoPhaseSkipRequest

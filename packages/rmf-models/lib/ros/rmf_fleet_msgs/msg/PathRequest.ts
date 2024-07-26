@@ -1,13 +1,13 @@
 /* This is a generated file, do not edit */
 
-import { Location } from '../../rmf_fleet_msgs/msg/Location';
+import * as rmf_fleet_msgs from '../../rmf_fleet_msgs';
 
 export class PathRequest {
-  static readonly FullTypeName = 'rmf_fleet_msgs/msg/PathRequest';
+  static readonly FullTypeName = '';
 
   fleet_name: string;
   robot_name: string;
-  path: Location[];
+  path: Array<rmf_fleet_msgs.msg.Location>;
   task_id: string;
 
   constructor(fields: Partial<PathRequest> = {}) {
@@ -29,7 +29,7 @@ export class PathRequest {
     }
     for (const [i, v] of obj['path'].entries()) {
       try {
-        Location.validate(v);
+        rmf_fleet_msgs.msg.Location.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "path":\n  ` + (e as Error).message);
       }
@@ -40,12 +40,4 @@ export class PathRequest {
   }
 }
 
-/*
-string fleet_name
-string robot_name
-Location[] path
-
-# task_id must be copied into future RobotState messages
-string task_id
-
-*/
+export default PathRequest;

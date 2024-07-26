@@ -1,12 +1,12 @@
 /* This is a generated file, do not edit */
 
-import { RobotState } from '../../rmf_fleet_msgs/msg/RobotState';
+import * as rmf_fleet_msgs from '../../rmf_fleet_msgs';
 
 export class FleetState {
-  static readonly FullTypeName = 'rmf_fleet_msgs/msg/FleetState';
+  static readonly FullTypeName = '';
 
   name: string;
-  robots: RobotState[];
+  robots: Array<rmf_fleet_msgs.msg.RobotState>;
 
   constructor(fields: Partial<FleetState> = {}) {
     this.name = fields.name || '';
@@ -22,7 +22,7 @@ export class FleetState {
     }
     for (const [i, v] of obj['robots'].entries()) {
       try {
-        RobotState.validate(v);
+        rmf_fleet_msgs.msg.RobotState.validate(v);
       } catch (e) {
         throw new Error(`in index ${i} of "robots":\n  ` + (e as Error).message);
       }
@@ -30,8 +30,4 @@ export class FleetState {
   }
 }
 
-/*
-string name
-RobotState[] robots
-
-*/
+export default FleetState;

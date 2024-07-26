@@ -8,21 +8,30 @@ source ../../scripts/rmf-helpers.sh
 usage() {
   echo "Usage: generate-models.sh"
   echo "Options:"
-  echo "  --rmf-tag <tag-or-branch>"
+  echo "  --rmf-internal-msgs <tag-or-branch>"
+  echo "  --rmf-building-map-msgs <tag-or-branch>"
   echo "  --rmf-server-ver <version> If not provided, use the git sha of the current commit"
 }
 
-options=$(getopt -o '' -l rmf-tag:,rmf-server-ver: -- "$@")
+options=$(getopt -o '' -l help,rmf-internal-msgs:,rmf-building-map-msgs:,rmf-server-ver: -- "$@")
 eval set -- "$options"
 while true; do
   case "$1" in
-    --rmf-tag)
+    --rmf-internal-msgs)
       shift
-      rmf_tag=$1
+      rmf_internal_msgs=$1
+      ;;
+    --rmf-building-map-msgs)
+      shift
+      rmf_building_map_msgs=$1
       ;;
     --rmf-server-ver)
       shift
       rmf_server_ver=$1
+      ;;
+    --help)
+      usage
+      exit 1
       ;;
     --)
       shift
@@ -32,24 +41,26 @@ while true; do
   shift
 done
 
-if [[ -z $rmf_tag ]]; then
-  rmf_tag='main'
+if [[ -z $rmf_internal_msgs ]]; then
+  usage
+  exit 1
+fi
+if [[ -z $rmf_building_map_msgs ]]; then
+  usage
+  exit 1
 fi
 if [[ -z $rmf_server_ver ]]; then
   rmf_server_ver=$(getVersion .)
 fi
 
-build_and_source_rmf_msgs "$rmf_tag"
+build_and_source_rmf_msgs "$rmf_internal_msgs" "$rmf_building_map_msgs"
 node generate-models.js "${rmf_msgs[@]}"
-
-rmf_internal_msgs_ver=$(getVersion "build/rmf/src/rmf_internal_msgs")
-rmf_building_map_msgs_ver=$(getVersion "build/rmf/src/rmf_building_map_msgs")
 
 cat << EOF > lib/version.ts
 // THIS FILE IS GENERATED
 export const version = {
-  rmf_internal_msgs: '$rmf_internal_msgs_ver',
-  rmf_building_map_msgs: '$rmf_building_map_msgs_ver',
+  rmf_internal_msgs: '$rmf_building_map_msgs',
+  rmf_building_map_msgs: '$rmf_building_map_msgs',
   rmf_server: '$rmf_server_ver',
 };
 

@@ -1,7 +1,7 @@
 /* This is a generated file, do not edit */
 
 export class Clean {
-  static readonly FullTypeName = 'rmf_task_msgs/msg/Clean';
+  static readonly FullTypeName = '';
 
   start_waypoint: string;
 
@@ -16,10 +16,4 @@ export class Clean {
   }
 }
 
-/*
-# The name of the waypoint where the robot should begin its pre-configured
-# cleaning job.
-string start_waypoint
-
-
-*/
+export default Clean;

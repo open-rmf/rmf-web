@@ -9,9 +9,19 @@ import {
 } from '@mui/x-data-grid';
 import { Box, Button, SxProps, Typography, useTheme, useMediaQuery } from '@mui/material';
 import React from 'react';
-import { DoorState } from 'api-client';
-import { DoorMode } from 'rmf-models';
+import { DoorMode, DoorState } from 'api-client';
+import { DoorMode as RmfDoorMode } from 'rmf-models/ros/rmf_door_msgs/msg';
 import { doorModeToString, doorTypeToString } from './door-utils';
+
+export function doorModeToOpModeString(mode: DoorMode): string {
+  switch (mode.value) {
+    case RmfDoorMode.MODE_OFFLINE:
+      return 'OFFLINE';
+    case RmfDoorMode.MODE_UNKNOWN:
+      return 'UNKNOWN';
+  }
+  return 'ONLINE';
+}
 
 export interface DoorTableData {
   index: number;
@@ -31,6 +41,48 @@ export interface DoorDataGridTableProps {
 export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps): JSX.Element {
   const theme = useTheme();
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
+
+  const OpModeState = (params: GridCellParams): React.ReactNode => {
+    const opModeStateLabelStyle: SxProps = (() => {
+      const unknown = {
+        color: theme.palette.action.disabledBackground,
+      };
+      const online = {
+        color: theme.palette.success.main,
+      };
+      const offline = {
+        color: theme.palette.error.main,
+      };
+
+      if (!params.row.doorState) {
+        return unknown;
+      }
+
+      switch (params.row.doorState.current_mode.value) {
+        case RmfDoorMode.MODE_OFFLINE:
+          return offline;
+        case RmfDoorMode.MODE_UNKNOWN:
+          return unknown;
+        default:
+          return online;
+      }
+    })();
+
+    return (
+      <Box component="div" sx={opModeStateLabelStyle}>
+        <Typography
+          data-testid="op-mode-state"
+          component="p"
+          sx={{
+            fontWeight: 'bold',
+            fontSize: 14,
+          }}
+        >
+          {doorModeToOpModeString(params.row.doorState.current_mode)}
+        </Typography>
+      </Box>
+    );
+  };
 
   const handleEvent: GridEventListener<'rowClick'> = (
     params: GridRowParams,
@@ -57,11 +109,11 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
       };
 
       switch (params.row.doorState.current_mode.value) {
-        case DoorMode.MODE_OPEN:
+        case RmfDoorMode.MODE_OPEN:
           return open;
-        case DoorMode.MODE_CLOSED:
+        case RmfDoorMode.MODE_CLOSED:
           return closed;
-        case DoorMode.MODE_MOVING:
+        case RmfDoorMode.MODE_MOVING:
           return moving;
         default:
           return disabled;
@@ -125,6 +177,16 @@ export function DoorDataGridTable({ doors, onDoorClick }: DoorDataGridTableProps
       valueGetter: (params: GridValueGetterParams) => params.row.doorName,
       flex: 1,
       filterable: true,
+    },
+    {
+      field: 'opMode',
+      headerName: 'Op. Mode',
+      width: 150,
+      editable: false,
+      flex: 1,
+      renderCell: OpModeState,
+      filterable: true,
+      sortable: false,
     },
     {
       field: 'levelName',

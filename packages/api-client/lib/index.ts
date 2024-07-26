@@ -1,9 +1,11 @@
 import Debug from 'debug';
 import { io, Socket } from 'socket.io-client';
 import {
-  Alert,
+  AlertRequest,
+  AlertResponse,
   BeaconState,
   BuildingMap,
+  DeliveryAlert,
   DispenserState,
   DoorState,
   FleetState,
@@ -100,8 +102,16 @@ export class SioClient {
     return this.subscribe<TaskEventLog>(`/tasks/${taskId}/log`, listener);
   }
 
-  subscribeAlerts(listener: Listener<Alert>): Subscription {
-    return this.subscribe<Alert>(`/alerts`, listener);
+  subscribeAlertRequests(listener: Listener<AlertRequest>): Subscription {
+    return this.subscribe<AlertRequest>(`/alerts/requests`, listener);
+  }
+
+  subscribeAlertResponses(listener: Listener<AlertResponse>): Subscription {
+    return this.subscribe<AlertResponse>(`/alerts/responses`, listener);
+  }
+
+  subscribeDeliveryAlerts(listener: Listener<DeliveryAlert>): Subscription {
+    return this.subscribe<DeliveryAlert>('/delivery_alerts', listener);
   }
 }
 

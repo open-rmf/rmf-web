@@ -1,7 +1,7 @@
 /* This is a generated file, do not edit */
 
 export class AffineImage {
-  static readonly FullTypeName = 'rmf_building_map_msgs/msg/AffineImage';
+  static readonly FullTypeName = '';
 
   name: string;
   x_offset: number;
@@ -18,7 +18,7 @@ export class AffineImage {
     this.yaw = fields.yaw || 0;
     this.scale = fields.scale || 0;
     this.encoding = fields.encoding || '';
-    this.data = fields.data || [];
+    this.data = fields.data || new Uint8Array(0);
   }
 
   static validate(obj: Record<string, unknown>): void {
@@ -49,17 +49,10 @@ export class AffineImage {
           throw new Error(`expected index ${i} of "data" to be "number"`);
         }
       }
+    } else if (!(obj['data'] instanceof Uint8Array)) {
+      throw new Error('"data" must be either an array of number or Uint8Array');
     }
   }
 }
 
-/*
-string name
-float32 x_offset
-float32 y_offset
-float32 yaw
-float32 scale
-string encoding
-uint8[] data
-
-*/
+export default AffineImage;

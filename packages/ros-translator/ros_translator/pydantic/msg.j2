@@ -3,20 +3,17 @@
 from typing import Annotated
 
 import pydantic
-{% for dep_msg in msg.dependent_types %}
-from ..{{ dep_msg.spec.base_type.pkg_name }}.{{ dep_msg.spec.base_type.type }} import {{ dep_msg.spec.base_type.type }}
+{% for m in msg.dependencies %}
+{{ relative_import(msg, m) }}
 {% endfor %}
 
 
-class {{ msg.spec.base_type.type }}(pydantic.BaseModel):
+class {{ msg.name }}(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(from_attributes=True)
 
-{% for field in msg.spec.fields %}
-    {{ field.name }}: {{ field.pydantic_type.type }} # {% if field.type.pkg_name %}{{ field.type.pkg_name }}/{% endif %}{{ field.type.type }}
+{% for m in msg.members %}
+    {{ m.name }}: {{ m.type.typename }}
 {% endfor %}
-{% if not msg.spec.fields %}
+{% if not msg.members %}
     pass
 {% endif %}
-
-
-{{ msg.commented_raw -}}

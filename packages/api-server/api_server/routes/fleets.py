@@ -1,10 +1,11 @@
-from typing import Annotated, cast
+from datetime import datetime
+from typing import Annotated
 
 from fastapi import Depends, HTTPException
 from reactivex import operators as rxops
 
 from api_server.authenticator import user_dep
-from api_server.dependencies import between_query
+from api_server.dependencies import time_between_query
 from api_server.fast_io import FastIORouter, SubscriptionRequest
 from api_server.gateway import RmfGateway, get_rmf_gateway
 from api_server.logging import LoggerAdapter, get_logger
@@ -50,9 +51,7 @@ async def get_fleet_state(
 async def sub_fleet_state(req: SubscriptionRequest, name: str):
     user = req.user
     repo = FleetRepository(user, req.logger)
-    obs = get_fleet_events().fleet_states.pipe(
-        rxops.filter(lambda x: cast(FleetState, x).name == name)
-    )
+    obs = get_fleet_events().fleet_states.pipe(rxops.filter(lambda x: x.name == name))
     fleet_state = await repo.get_fleet_state(name)
     if fleet_state:
         return obs.pipe(rxops.start_with(fleet_state))
@@ -63,7 +62,10 @@ async def sub_fleet_state(req: SubscriptionRequest, name: str):
 async def get_fleet_log(
     name: str,
     repo: Annotated[FleetRepository, Depends(FleetRepository)],
-    between: Annotated[tuple[int, int], Depends(between_query)],
+    between: Annotated[
+        tuple[datetime, datetime] | None,
+        Depends(time_between_query("between", default="-60000")),
+    ],
 ):
     """
     Available in socket.io
@@ -76,9 +78,7 @@ async def get_fleet_log(
 
 @router.sub("/{name}/log", response_model=FleetLog)
 async def sub_fleet_log(_req: SubscriptionRequest, name: str):
-    return get_fleet_events().fleet_logs.pipe(
-        rxops.filter(lambda x: cast(FleetLog, x).name == name)
-    )
+    return get_fleet_events().fleet_logs.pipe(rxops.filter(lambda x: x.name == name))
 
 
 @router.post("/{name}/decommission", response_model=RobotCommissionResponse)

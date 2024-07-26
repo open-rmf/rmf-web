@@ -1,7 +1,7 @@
 /* This is a generated file, do not edit */
 
 export class TaskType {
-  static readonly FullTypeName = 'rmf_task_msgs/msg/TaskType';
+  static readonly FullTypeName = '';
 
   static readonly TYPE_STATION = 0;
   static readonly TYPE_LOOP = 1;
@@ -23,14 +23,4 @@ export class TaskType {
   }
 }
 
-/*
-uint32 type
-uint32 TYPE_STATION=0
-uint32 TYPE_LOOP=1
-uint32 TYPE_DELIVERY=2
-uint32 TYPE_CHARGE_BATTERY=3
-uint32 TYPE_CLEAN=4
-uint32 TYPE_PATROL=5
-
-
-*/
+export default TaskType;

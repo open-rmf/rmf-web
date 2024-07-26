@@ -6,18 +6,7 @@ import { AppEvents } from '../app-events';
 import { RmfAppContext } from '../rmf-app';
 import { UserProfile, UserProfileContext } from 'rmf-auth';
 import { Enforcer } from '../permissions';
-import { makeStyles, createStyles } from '@mui/styles';
 import { ConfirmationDialog } from 'react-components';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    enableHover: {
-      '&.Mui-disabled': {
-        pointerEvents: 'auto',
-      },
-    },
-  }),
-);
 
 export interface TaskCancelButtonProp extends ButtonProps {
   taskId: string | null;
@@ -29,7 +18,6 @@ export function TaskCancelButton({
   buttonText,
   ...otherProps
 }: TaskCancelButtonProp): JSX.Element {
-  const classes = useStyles();
   const rmf = React.useContext(RmfAppContext);
   const appController = React.useContext(AppControllerContext);
   const profile: UserProfile | null = React.useContext(UserProfileContext);
@@ -41,14 +29,18 @@ export function TaskCancelButton({
     if (!rmf || !taskId) {
       return;
     }
-    const sub = rmf.getTaskStateObs(taskId).subscribe(setTaskState);
+    const sub = rmf.getTaskStateObs(taskId).subscribe((state) => {
+      setTaskState(state);
+    });
     return () => sub.unsubscribe();
   }, [rmf, taskId]);
 
-  const taskCancellable =
-    taskState &&
-    taskState.status &&
-    !['canceled', 'killed', 'completed', 'failed'].includes(taskState.status);
+  const isTaskCancellable = (state: TaskState | null) => {
+    return (
+      state && state.status && !['canceled', 'killed', 'completed', 'failed'].includes(state.status)
+    );
+  };
+
   const userCanCancelTask = profile && Enforcer.canCancelTask(profile);
 
   function capitalizeFirstLetter(status: string): string {
@@ -79,13 +71,21 @@ export function TaskCancelButton({
 
   return (
     <>
-      {taskCancellable && userCanCancelTask ? (
+      {isTaskCancellable(taskState) && userCanCancelTask ? (
         <Button onClick={() => setOpenConfirmDialog(true)} autoFocus {...otherProps}>
           {buttonText ?? 'Cancel Task'}
         </Button>
-      ) : taskCancellable && !userCanCancelTask ? (
+      ) : isTaskCancellable(taskState) && !userCanCancelTask ? (
         <Tooltip title="You don't have permission to cancel tasks.">
-          <Button disabled className={classes['enableHover']} {...otherProps}>
+          <Button
+            disabled
+            sx={{
+              '&.Mui-disabled': {
+                pointerEvents: 'auto',
+              },
+            }}
+            {...otherProps}
+          >
             {buttonText ?? 'Cancel Task'}
           </Button>
         </Tooltip>
@@ -97,7 +97,15 @@ export function TaskCancelButton({
               : `Task cannot be cancelled.`
           }
         >
-          <Button disabled className={classes['enableHover']} {...otherProps}>
+          <Button
+            disabled
+            sx={{
+              '&.Mui-disabled': {
+                pointerEvents: 'auto',
+              },
+            }}
+            {...otherProps}
+          >
             {buttonText ?? 'Cancel Task'}
           </Button>
         </Tooltip>

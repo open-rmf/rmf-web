@@ -1,5 +1,6 @@
 import type { Lift, LiftState } from 'api-client';
-import { Door as RmfDoor, LiftState as RmfLiftState } from 'rmf-models';
+import { Door as RmfDoor } from 'rmf-models/ros/rmf_building_map_msgs/msg';
+import { LiftState as RmfLiftState } from 'rmf-models/ros/rmf_lift_msgs/msg';
 
 export function allLiftMotion(): number[] {
   return [
