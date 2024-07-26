@@ -50,7 +50,6 @@
     "three": "^0.166.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.6",
     "@fontsource/roboto": "^4.3.0",
     "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
     "@storybook/addon-essentials": "^8.2.6",
