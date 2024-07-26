@@ -21,7 +21,7 @@
     "@mui/material": "^5.8.3",
     "@mui/system": "^5.8.3",
     "@mui/x-data-grid": "^5.12.1",
-    "@mui/x-date-pickers": "^5.0.20",
+    "@mui/x-date-pickers": "^6.19.0",
     "@react-three/drei": "^9.103.0",
     "@react-three/fiber": "^8.16.1",
     "@types/crc": "^3.4.0",
