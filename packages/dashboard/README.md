@@ -106,6 +106,51 @@ In case you want to modify the source of your resources. You can rerun the comma
 pnpm run setup
 ```
 
+### Micro-apps
+
+The dashboard comes with many different micro-apps, each serving a different purpose when interacting with an Open-RMF deployment. The dashboard uses events to pipe information between micro-apps, for example clicking onto a task row in the Task app, will center the map onto the robot that the task was assigned to.
+
+Here are the available apps,
+* Robots
+* Map
+* Doors
+* Lifts
+* Mutex Groups
+* Tasks
+* Beacons
+* Robot Info
+* Task Details
+* Task Logs
+
+### Workspace (tab) layouts
+
+Each workspace (tab) allows users to define how the layout of micro-apps should be. By modifying the `WorkspaceState` of the workspace, micro-apps can be resized, moved, added or removed.
+
+Here is an example workspace state,
+
+```typescript
+export const robotsWorkspace: WorkspaceState = {
+  layout: [
+    { i: 'robots', x: 0, y: 0, w: 7, h: 3 },
+    { i: 'map', x: 8, y: 0, w: 5, h: 9 },
+    { i: 'doors', x: 0, y: 0, w: 7, h: 3 },
+    { i: 'lifts', x: 0, y: 0, w: 7, h: 3 },
+    { i: 'beacons', x: 0, y: 0, w: 7, h: 3 },
+    { i: 'mutexGroups', x: 8, y: 0, w: 5, h: 3 },
+  ],
+  windows: [
+    { key: 'robots', appName: 'Robots' },
+    { key: 'map', appName: 'Map' },
+    { key: 'doors', appName: 'Doors' },
+    { key: 'lifts', appName: 'Lifts' },
+    { key: 'beacons', appName: 'Beacons' },
+    { key: 'mutexGroups', appName: 'Mutex Groups' },
+  ],
+};
+```
+
+### Custom tab(s)
+
 ### Environment Variables
 
 The default launch script with `pnpm start` launches only the backend servers without any simulation instances from `rmf_demos`. For local development, the launch script `pnpm run start:sim` launches a headless simulation instance on top of all the backend servers.
