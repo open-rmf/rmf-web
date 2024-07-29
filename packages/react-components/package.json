@@ -6,7 +6,7 @@
   "main": "lib/index.ts",
   "scripts": {
     "lint": "tsc --build && eslint --max-warnings 0 lib",
-    "prepack": "pnpm run lint && jest",
+    "prepack": "pnpm run lint && vitest --run",
     "start": "storybook dev -p 6006",
     "test": "vitest",
     "test:coverage": "vitest --coverage"
