@@ -30,7 +30,7 @@ import { AppControllerContext } from './app-contexts';
 import { AppEvents } from './app-events';
 import { DoorSummary } from './door-summary';
 import { LiftSummary } from './lift-summary';
-import { createMicroApp } from './micro-app';
+import { createMicroApp, MicroAppProps } from './micro-app';
 import { RmfAppContext } from './rmf-app';
 import { RobotSummary } from './robots/robot-summary';
 import { CameraControl, Door, LayersController, Lifts, RobotThree } from './three-fiber';
@@ -48,7 +48,7 @@ function getRobotId(fleetName: string, robotName: string): string {
   return `${fleetName}/${robotName}`;
 }
 
-export const MapApp = styled(
+export const MapApp: React.ComponentType<MicroAppProps> = styled(
   createMicroApp('Map', () => {
     const appConfig = React.useContext(AppConfigContext);
     const authenticator = React.useContext(AuthenticatorContext);
@@ -282,10 +282,10 @@ export const MapApp = styled(
               name: r,
               // no model name
               model: '',
-              scale: fleetResource.default.scale || DEFAULT_ROBOT_SCALE,
+              scale: fleetResource?.default.scale || DEFAULT_ROBOT_SCALE,
               footprint: 0.5,
               color: await colorManager.robotPrimaryColor(fleetName, r, ''),
-              iconPath: fleetResource.default.icon || undefined,
+              iconPath: fleetResource?.default.icon || undefined,
             };
           });
         });

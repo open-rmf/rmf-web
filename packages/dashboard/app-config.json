@@ -1,6 +1,6 @@
 {
   "rmfServerUrl": "http://localhost:8000",
-  "trajectoryServerUrl": "ws://localhos:8006",
+  "trajectoryServerUrl": "ws://localhost:8006",
   "auth": {
     "provider": "stub"
   },
