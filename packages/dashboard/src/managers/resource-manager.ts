@@ -85,7 +85,7 @@ export default class ResourceManager {
     this.helpLink = resources.helpLink || 'https://osrf.github.io/ros2multirobotbook/rmf-core.html';
     this.reportIssue = resources.reportIssue || 'https://github.com/open-rmf/rmf-web/issues';
     this.pickupZones = resources.pickupZones || [];
-    this.defaultZoom = resources.defaultZoom ?? 5;
+    this.defaultZoom = resources.defaultZoom ?? 20;
     this.defaultRobotZoom = resources.defaultRobotZoom ?? 40;
     this.attributionPrefix = resources.attributionPrefix || 'OSRC-SG';
     this.cartIds = resources.cartIds || [];

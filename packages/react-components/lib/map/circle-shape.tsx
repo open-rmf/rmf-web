@@ -23,8 +23,8 @@ export const CircleShape = ({
 }: CircleShapeProps): JSX.Element => {
   const SCALED_RADIUS = 0.7;
 
-  const rotatedX = position.x + SCALED_RADIUS * Math.cos(rotation.z - Math.PI / 2);
-  const rotatedY = position.y + SCALED_RADIUS * Math.sin(rotation.z - Math.PI / 2);
+  const rotatedX = position.x + SCALED_RADIUS * Math.cos(rotation.z);
+  const rotatedY = position.y + SCALED_RADIUS * Math.sin(rotation.z);
 
   return (
     <>
