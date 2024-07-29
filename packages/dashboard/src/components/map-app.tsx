@@ -1,4 +1,7 @@
+import type { StyledComponent } from '@emotion/styled';
 import { Box, styled, Typography, useMediaQuery } from '@mui/material';
+import type { Theme } from '@mui/material/styles';
+import type { MUIStyledCommonProps } from '@mui/system';
 import { Line } from '@react-three/drei';
 import { Canvas, useLoader } from '@react-three/fiber';
 import { BuildingMap, FleetState, Level, Lift } from 'api-client';
@@ -48,7 +51,7 @@ function getRobotId(fleetName: string, robotName: string): string {
   return `${fleetName}/${robotName}`;
 }
 
-export const MapApp: React.ComponentType<MicroAppProps> = styled(
+export const MapApp: StyledComponent<MicroAppProps & MUIStyledCommonProps<Theme>, {}, {}> = styled(
   createMicroApp('Map', () => {
     const appConfig = React.useContext(AppConfigContext);
     const authenticator = React.useContext(AuthenticatorContext);

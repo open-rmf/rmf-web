@@ -8,7 +8,11 @@ Follow the build instructions [here](../../README.md/#launching).
 
 ## Configuration
 
+Before building the dashboard, you must configure it according to the deployment. All the configurations is on `app-config.json`, the default configuration is for running the api-server and dashboard locally.
+
 ### (Optional) Import external resources.
+
+The `resources` option in the app config allows configuring various assets used by the dashboard. At the moment, it mainly allows configuring the header logo and robot icons.
 
 This allows for build-time configurations of the dashboard.
 
