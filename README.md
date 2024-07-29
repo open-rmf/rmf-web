@@ -23,7 +23,7 @@ We currently support [Ubuntu 24.04](https://releases.ubuntu.com/noble/), [ROS 2 
 Install pnpm and nodejs
 ```bash
 curl -fsSL https://get.pnpm.io/install.sh | bash -
-pnpm env use --global 20
+pnpm env use --global lts
 ```
 
 For Debian/Ubuntu systems,
