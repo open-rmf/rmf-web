@@ -71,7 +71,7 @@ importers:
         version: 5.4.5
       vitest:
         specifier: ^2.0.4
-        version: 2.0.4(@types/node@20.14.12)(jsdom@24.1.1)(terser@5.31.3)
+        version: 2.0.4(@types/node@20.14.12)(jsdom@24.1.1(canvas@2.11.2))(terser@5.31.3)
 
   packages/api-server:
     devDependencies:
@@ -240,7 +240,7 @@ importers:
         version: 5.3.5(@types/node@20.14.12)(terser@5.31.3)
       vitest:
         specifier: ^2.0.4
-        version: 2.0.4(@types/node@20.14.12)(jsdom@24.1.1)(terser@5.31.3)
+        version: 2.0.4(@types/node@20.14.12)(jsdom@24.1.1(canvas@2.11.2))(terser@5.31.3)
 
   packages/dashboard-e2e:
     devDependencies:
@@ -490,7 +490,7 @@ importers:
         version: 7.16.0(eslint@8.57.0)(typescript@5.4.5)
       vitest:
         specifier: ^2.0.4
-        version: 2.0.4(@types/node@20.14.12)(jsdom@24.1.1)(terser@5.31.3)
+        version: 2.0.4(@types/node@20.14.12)(jsdom@24.1.1(canvas@2.11.2))(terser@5.31.3)
 
   packages/rmf-auth:
     dependencies:
@@ -7982,34 +7982,6 @@ packages:
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
 
-  vite@5.3.4:
-    resolution: {integrity: sha512-Cw+7zL3ZG9/NZBB8C+8QbQZmR54GwqIz+WMI4b3JgdYJvX+ny9AjJXqkGQlDXSXRP9rP0B4tbciRMOVEKulVOA==}
-    engines: {node: ^18.0.0 || >=20.0.0}
-    hasBin: true
-    peerDependencies:
-      '@types/node': ^18.0.0 || >=20.0.0
-      less: '*'
-      lightningcss: ^1.21.0
-      sass: '*'
-      stylus: '*'
-      sugarss: '*'
-      terser: ^5.4.0
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      less:
-        optional: true
-      lightningcss:
-        optional: true
-      sass:
-        optional: true
-      stylus:
-        optional: true
-      sugarss:
-        optional: true
-      terser:
-        optional: true
-
   vite@5.3.5:
     resolution: {integrity: sha512-MdjglKR6AQXQb9JGiS7Rc2wC6uMjcm7Go/NHNO63EwiJXfuk9PgqiP/n5IDJCziMkfw9n4Ubp7lttNwz+8ZVKA==}
     engines: {node: ^18.0.0 || >=20.0.0}
@@ -11087,7 +11059,7 @@ snapshots:
       '@jest/globals': 29.7.0
       '@types/jest': 29.5.12
       jest: 29.7.0(@types/node@20.14.12)
-      vitest: 2.0.4(@types/node@20.14.12)(jsdom@24.1.1)(terser@5.31.3)
+      vitest: 2.0.4(@types/node@20.14.12)(jsdom@24.1.1(canvas@2.11.2))(terser@5.31.3)
 
   '@testing-library/jest-dom@6.4.6(@jest/globals@29.7.0)(@types/jest@29.5.12)(jest@29.7.0(@types/node@20.14.10)(babel-plugin-macros@3.1.0)(ts-node@9.1.1(typescript@5.4.5)))(vitest@2.0.4(@types/node@20.14.10))':
     dependencies:
@@ -11608,7 +11580,7 @@ snapshots:
       std-env: 3.7.0
       test-exclude: 7.0.1
       tinyrainbow: 1.2.0
-      vitest: 2.0.4(@types/node@20.14.12)(jsdom@24.1.1)(terser@5.31.3)
+      vitest: 2.0.4(@types/node@20.14.12)(jsdom@24.1.1(canvas@2.11.2))(terser@5.31.3)
     transitivePeerDependencies:
       - supports-color
 
@@ -17604,7 +17576,7 @@ snapshots:
       debug: 4.3.5
       pathe: 1.1.2
       tinyrainbow: 1.2.0
-      vite: 5.3.4(@types/node@20.14.10)
+      vite: 5.3.5(@types/node@20.14.10)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -17622,7 +17594,7 @@ snapshots:
       debug: 4.3.5
       pathe: 1.1.2
       tinyrainbow: 1.2.0
-      vite: 5.3.4(@types/node@20.14.12)(terser@5.31.3)
+      vite: 5.3.5(@types/node@20.14.12)(terser@5.31.3)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -17633,7 +17605,7 @@ snapshots:
       - supports-color
       - terser
 
-  vite@5.3.4(@types/node@20.14.10):
+  vite@5.3.5(@types/node@20.14.10):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.4.39
@@ -17642,16 +17614,6 @@ snapshots:
       '@types/node': 20.14.10
       fsevents: 2.3.3
     optional: true
-
-  vite@5.3.4(@types/node@20.14.12)(terser@5.31.3):
-    dependencies:
-      esbuild: 0.21.5
-      postcss: 8.4.39
-      rollup: 4.19.0
-    optionalDependencies:
-      '@types/node': 20.14.12
-      fsevents: 2.3.3
-      terser: 5.31.3
 
   vite@5.3.5(@types/node@20.14.12)(terser@5.31.3):
     dependencies:
@@ -17681,7 +17643,7 @@ snapshots:
       tinybench: 2.8.0
       tinypool: 1.0.0
       tinyrainbow: 1.2.0
-      vite: 5.3.4(@types/node@20.14.10)
+      vite: 5.3.5(@types/node@20.14.10)
       vite-node: 2.0.4(@types/node@20.14.10)
       why-is-node-running: 2.3.0
     optionalDependencies:
@@ -17696,7 +17658,7 @@ snapshots:
       - terser
     optional: true
 
-  vitest@2.0.4(@types/node@20.14.12)(jsdom@24.1.1)(terser@5.31.3):
+  vitest@2.0.4(@types/node@20.14.12)(jsdom@24.1.1(canvas@2.11.2))(terser@5.31.3):
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@vitest/expect': 2.0.4
@@ -17714,7 +17676,7 @@ snapshots:
       tinybench: 2.8.0
       tinypool: 1.0.0
       tinyrainbow: 1.2.0
-      vite: 5.3.4(@types/node@20.14.12)(terser@5.31.3)
+      vite: 5.3.5(@types/node@20.14.12)(terser@5.31.3)
       vite-node: 2.0.4(@types/node@20.14.12)(terser@5.31.3)
       why-is-node-running: 2.3.0
     optionalDependencies:
