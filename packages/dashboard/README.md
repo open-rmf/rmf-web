@@ -12,6 +12,12 @@ Follow the build instructions [here](../../README.md/#launching).
 
 This allows for build-time configurations of the dashboard.
 
+For dashboard resources for `rmf_demos` simulation worlds, check out the `rmf-web-dashboard-resources` branch of `rmf_demos`.
+
+```bash
+git clone https://github.com/open-rmf/rmf_demos -b rmf-web-dashboard-resources
+```
+
 This process can be done manually, or to use the helpful command,
 
 ```bash
