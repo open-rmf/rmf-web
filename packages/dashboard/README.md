@@ -10,7 +10,18 @@ Follow the build instructions [here](../../README.md/#launching).
 
 ### (Optional) Import external resources.
 
+This allows for build-time configurations of the dashboard.
+
+For dashboard resources for `rmf_demos` simulation worlds, check out the `rmf-web-dashboard-resources` branch of `rmf_demos`.
+
 ```bash
+git clone https://github.com/open-rmf/rmf_demos -b rmf-web-dashboard-resources
+```
+
+This process can be done manually, or to use the helpful command,
+
+```bash
+cd rmf-web/packages/dashboard
 pnpm run setup
 ```
 
@@ -20,21 +31,74 @@ You have two options, import a specific folder with assets from a repository (li
 
 In the case of choosing to obtain the data from a repository, you must define: (1) The repository URL and (2) the folder within the repository. In case of choosing to obtain the data from a local directory, the absolute path must be defined.
 
-This folder obtained must contain at its root a JSON file calling `main.json`, with the _RmfDashboard_ actors (robots, dispensers, etc.) and the path to their corresponding resources. E.g.:
+This folder obtained must contain at its root a JSON file calling `main.json`, with
+* `robots`, where each fleet of robots can have different
+  * `icons`, path to the icon image
+  * `scale`, the scale of the icon in meters/pixel, for the size to be rendered accurately in the map
+* `dispensers`, where each dispenser can define its own
+  * `icons`, path to the icon image
+  * `location`, x, y, yaw, and level
+* `logos`, where named logos can be defined, most prominently `headerLogo` for the dashboard, default to Open-RMF logo
+* `helpLink`, changes the link of the help button on the `appbar`, defaults to the [`ros2multirobotbook`](https://osrf.github.io/ros2multirobotbook/rmf-core.html)
+* `reportIssue`, changes the link of the issue button on the `appbar`, defaults to [rmf-web issues](https://github.com/open-rmf/rmf-web/issues)
+* `defaultZoom`, the default zoom level of the map whenever the page is refreshed and the map is rendered, default value as `5` (the higher the value, the larger the entities appear in the map view)
+* `defaultRobotZoom`, the zoom level when the map's view is centered on a robot, whenever a task row or robot row is clicked, default value as `40` (the higher the value, the larger the robot icon appears in the map view)
+* `attributionPrefix`, the attribution text on the right bottom corner of the map, default as `OSRF`
+* `loggedInDisplayLevel`, the name of the map level to be displayed whenever a user logs in or the page is refreshed, defaults to the first level in the building map
+* `customTabs`, whether to display and use custom tabs for customized layouts, defaults to false
+* `adminTab`, whether to display the admin tab (only accessible by admins), to manage groups and permissions, defaults to false
+
+Custom fields can also be easily added and used in the dashboard, some examples,
+* `pickupZones`, this is a custom field implemented to allow a custom list of pickup zones to be used in a task form dropdown list
+* `cartIds`, this is a custom field implemented to allow a custom list of cart IDs to be used in a task form dropdown list
+
+An example directory structure can be found in `rmf_demos`, under the branch [`rmf-web-dashboard-resources`](https://github.com/open-rmf/rmf_demos/tree/rmf-web-dashboard-resources/rmf_demos_dashboard_resources/office)
+
+Here is another example `main.json`,
 
 ```json
 {
-  "robots":
-    "tinyRobot" <fleet>: {
+  "robots": {
+    "tinyRobot": {
       "icons": {
-        "tinyRobot"<fleet>: "/robots/tinyRobot/tinyRobot.png",
-        "model1"<model>: "/robots/tinyRobot/model1.png"
+        "tinyRobot": "/robots/tinyRobot/tinyRobot.png",
+        "model1": "/robots/tinyRobot/model1.png"
+      },
+      "scale": 0.004
+    }
+  },
+  "dispensers": {
+    "coke_dispenser": {
+      "icons":{
+        "coke_dispenser": "/icons/fridge.png"
+      },
+      "location": {
+        "x":16.85,
+        "y":-4.8,
+        "yaw":0,
+        "level_name":"L1"
+      }
+    },
+  },
+  "logos":{
+    "headerLogo":{
+      "icons":{
+        "headerLogo":"/icons/headerLogo.png"
       }
     }
+  },
+  "helpLink": "insert-help-link-here",
+  "reportIssue": "insert-report-issue-link-here",
+  "defaultZoom": 10,
+  "defaultRobotZoom": 50,
+  "attributionPrefix": "insert-attribution-prefix-here",
+  "loggedInDisplayLevel": "default_display_level_name_in_building_map",
+  "customTabs": true,
+  "adminTab": true
 }
 ```
 
-Obs: the algorithm will check the robot's icons in this order:
+Note, the algorithm will check the robot's icons in this order:
 
 1. Icon exists for a model; if not exists
 2. Icon exists for a fleet; if not exists
@@ -47,6 +111,59 @@ In case you want to modify the source of your resources. You can rerun the comma
 ```bash
 pnpm run setup
 ```
+
+### Micro-apps
+
+The dashboard comes with many different micro-apps, each serving a different purpose when interacting with an Open-RMF deployment. The dashboard uses events to pipe information between micro-apps, for example clicking onto a task row in the Task app, will center the map onto the robot that the task was assigned to.
+
+Here are the available apps,
+* Robots
+* Map
+* Doors
+* Lifts
+* Mutex Groups
+* Tasks
+* Beacons
+* Robot Info
+* Task Details
+* Task Logs
+
+### Workspace (tab) layouts
+
+Each workspace (tab) allows users to define how the layout of micro-apps should be. By modifying the `WorkspaceState` of the workspace, micro-apps can be resized, moved, added or removed.
+
+Here is an example workspace state,
+
+```typescript
+export const robotsWorkspace: WorkspaceState = {
+  layout: [
+    { i: 'robots', x: 0, y: 0, w: 7, h: 3 },
+    { i: 'map', x: 8, y: 0, w: 5, h: 9 },
+    { i: 'doors', x: 0, y: 0, w: 7, h: 3 },
+    { i: 'lifts', x: 0, y: 0, w: 7, h: 3 },
+    { i: 'beacons', x: 0, y: 0, w: 7, h: 3 },
+    { i: 'mutexGroups', x: 8, y: 0, w: 5, h: 3 },
+  ],
+  windows: [
+    { key: 'robots', appName: 'Robots' },
+    { key: 'map', appName: 'Map' },
+    { key: 'doors', appName: 'Doors' },
+    { key: 'lifts', appName: 'Lifts' },
+    { key: 'beacons', appName: 'Beacons' },
+    { key: 'mutexGroups', appName: 'Mutex Groups' },
+  ],
+};
+```
+
+### Custom tab(s)
+
+With the dashboard configuration parameter `customTabs: true`, 2 custom tabs would be available on the App bar. These custom tabs allow users to create a custom layout of desired micro-apps, if a custom workflow is desired.
+
+These custom layouts will be cached locally on the browser's machine, where it can be brought up again.
+
+To edit a custom tab, click onto the wand icon on the right end of the App bar, and proceed to add, resize, move or remove micro-apps from the layout.
+
+![](https://github.com/open-rmf/rmf-web/blob/media/custom-tabs.gif)
 
 ### Environment Variables
 

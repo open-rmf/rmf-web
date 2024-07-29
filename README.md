@@ -1,8 +1,8 @@
-[![Nightly](https://github.com/open-rmf/rmf-web/actions/workflows/nightly.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/nightly.yml) [![react-components](https://github.com/open-rmf/rmf-web/workflows/react-components/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Areact-components+branch%3Amain) [![dashboard](https://github.com/open-rmf/rmf-web/workflows/dashboard/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Adashboard+branch%3Amain) [![api-server](https://github.com/open-rmf/rmf-web/workflows/api-server/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Aapi-server+branch%3Amain) [![rmf-auth](https://github.com/open-rmf/rmf-web/actions/workflows/rmf-auth.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/rmf-auth.yml) [![ros-translator](https://github.com/open-rmf/rmf-web/actions/workflows/ros-translator.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/ros-translator.yml) [![api-client](https://github.com/open-rmf/rmf-web/actions/workflows/api-client.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/api-client.yml) [![codecov](https://codecov.io/gh/open-rmf/rmf-web/branch/main/graph/badge.svg)](https://codecov.io/gh/open-rmf/rmf-web)
+[![Nightly](https://github.com/open-rmf/rmf-web/actions/workflows/nightly.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/nightly.yml) [![Dashboard End-to-End](https://github.com/open-rmf/rmf-web/actions/workflows/dashboard-e2e.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/dashboard-e2e.yml) [![react-components](https://github.com/open-rmf/rmf-web/workflows/react-components/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Areact-components+branch%3Amain) [![dashboard](https://github.com/open-rmf/rmf-web/workflows/dashboard/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Adashboard+branch%3Amain) [![api-server](https://github.com/open-rmf/rmf-web/workflows/api-server/badge.svg)](https://github.com/open-rmf/rmf-web/actions?query=workflow%3Aapi-server+branch%3Amain) [![rmf-auth](https://github.com/open-rmf/rmf-web/actions/workflows/rmf-auth.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/rmf-auth.yml) [![ros-translator](https://github.com/open-rmf/rmf-web/actions/workflows/ros-translator.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/ros-translator.yml) [![api-client](https://github.com/open-rmf/rmf-web/actions/workflows/api-client.yml/badge.svg)](https://github.com/open-rmf/rmf-web/actions/workflows/api-client.yml) [![codecov](https://codecov.io/gh/open-rmf/rmf-web/branch/main/graph/badge.svg)](https://codecov.io/gh/open-rmf/rmf-web)
 
 # RMF Web
 
-![](https://github.com/open-rmf/rmf-web/blob/media/dashboard_office_world.gif)
+![](https://github.com/open-rmf/rmf-web/blob/media/dashboard1.0-office-world.gif)
 
 Open-RMF Web is a collection of packages that provide a web-based interface for users to visualize and control all aspects of Open-RMF deployments.
 
@@ -18,29 +18,17 @@ Open-RMF Web is a collection of packages that provide a web-based interface for 
 
 ### Prerequisites
 
-We currently support [Ubuntu 22.04](https://releases.ubuntu.com/jammy/), [ROS 2 Humble](https://docs.ros.org/en/humble/index.html) and Open-RMF's [22.09](https://github.com/open-rmf/rmf/releases/tag/22.09) release. Other distributions may work as well, but is not guaranteed.
-
-Install [nodejs](https://nodejs.org/en/download/package-manager/) >= 16,
-```bash
-sudo apt update && sudo apt install curl
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
-nvm install 16
-```
+We currently support [Ubuntu 24.04](https://releases.ubuntu.com/noble/), [ROS 2 Jazzy](https://docs.ros.org/en/jazzy/index.html) and Open-RMF's [22.09](https://github.com/open-rmf/rmf/releases/tag/22.09) release. Other distributions may work as well, but is not guaranteed.
 
 Install pnpm and nodejs
 ```bash
 curl -fsSL https://get.pnpm.io/install.sh | bash -
-pnpm env use --global 16
+pnpm env use --global lts
 ```
 
-Install pipenv
+For Debian/Ubuntu systems,
 ```bash
-pip3 install pipenv
-```
-
-For Debian/Ubuntu systems, you may need to install `python3-venv` first.
-```bash
-sudo apt install python3-venv
+sudo apt install python3-pip python3-venv
 ```
 
 ### Installing Open-RMF
@@ -69,7 +57,7 @@ pnpm install -w --filter <package>...
 Source Open-RMF and launch the dashboard in development mode,
 ```bash
 # For binary installation
-source /opt/ros/humble/setup.bash
+source /opt/ros/jazzy/setup.bash
 
 # For source build
 source /path/to/workspace/install/setup.bash
@@ -86,6 +74,24 @@ Ensure that the fleet adapters in the Open-RMF deployment is configured to use t
 
 ```bash
 ros2 launch rmf_demos_gz office.launch.xml server_uri:="http://localhost:8000/_internal"
+```
+
+### Launching for development
+
+For development purposes, it might be useful to start all the individual components separately,
+
+```bash
+# Start the dashboard in dev, this monitors for changes in the dashboard package and performs rebuilds. A browser refresh is required after all automated builds.
+cd packages/dashboard
+pnpm run start:react
+
+# Start react-components in dev, this monitors for changes in react-components, which will in turn trigger a re-build in dashboard.
+cd packages/react-components
+pnpm run build:watch
+
+# Start the API server, this will need to be restarted for any changes to be reflected
+cd packages/api-server
+pnpm run start
 ```
 
 ### Optimized build
@@ -106,7 +112,7 @@ This only serves the frontend, the API server can be started manually to work wi
 ```bash
 # source Open-RMF before proceeding
 cd packages/api-server
-pnpm start
+pnpm run start
 ```
 
 # Contribution guide
@@ -118,12 +124,15 @@ pnpm start
 * When introducing API changes with [`api-server`](packages/api-server),
   * If the new changes are to be used externally (outside of the web packages, with other Open-RMF packages for example), make changes to [`rmf_api_msgs`](https://github.com/open-rmf/rmf_api_msgs), before generating the required models using [this script](packages/api-server/generate-models.sh) with modified commit hashes.
   * Don't forget to update the API client with the newly added changes with [these instructions](packages/api-client/README.md/#generating-rest-api-client).
-* Check out the latest API definitions [here](https://open-rmf.github.io/rmf-web/docs/api-server), or visit `/docs` relative to your running server's url, e.g. `http://localhost:8000/docs`.
+* Check out the latest API definitions [here](https://open-rmf.github.io/rmf-web/), or visit `/docs` relative to your running server's url, e.g. `http://localhost:8000/docs`.
 * Develop the frontend without launching any Open-RMF components using [storybook](packages/dashboard/README.md/#storybook).
+* For integration with new devices/infrastructure, check out [Robot Interaction Objects (RIO)](https://github.com/open-rmf/rmf-web/wiki/Robot-Interaction-Objects-(RIO)).
+* Update documentation alongside development, and update the [`ros2multirobotbook`](https://osrf.github.io/ros2multirobotbook) where necessary.
 
 # Configuration
 
-See the [rmf-dashboard](packages/dashboard/README.md#configuration) docs.
+* See the [rmf-dashboard](packages/dashboard/README.md#configuration) docs for the frontend build-time and run-time configurations.
+* See the [api-server](packages/api-server/README.md#configuration) docs for API server run-time configurations.
 
 # Troubleshooting
 
