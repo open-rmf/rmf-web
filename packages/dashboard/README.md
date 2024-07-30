@@ -17,7 +17,14 @@ The `resources` option in the app config allows configuring various assets used 
 ```json
   "resources": {
     "default": {
-      "fleets": {},
+      "fleets": {
+        "tinyRobot": {
+          "default": {
+            "icon": "https://raw.githubusercontent.com/open-rmf/rmf_demos/rmf-web-dashboard-resources/rmf_demos_dashboard_resources/office/icons/tinyRobot.png",
+            "scale": 0.00123
+          }
+        }
+      },
       "logos": {
         "header": "/resources/defaultLogo.png"
       }
