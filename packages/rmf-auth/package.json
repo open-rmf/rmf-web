@@ -28,7 +28,7 @@
     "@mui/lab": "5.0.0-alpha.86",
     "api-client": "workspace:*",
     "eventemitter3": "^4.0.7",
-    "keycloak-js": "^11.0.2"
+    "keycloak-js": "^23.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.18.6",
