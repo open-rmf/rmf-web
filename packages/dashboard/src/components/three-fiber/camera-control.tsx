@@ -1,7 +1,7 @@
 import { AppEvents } from '../app-events';
 import { Subscription } from 'rxjs';
 import { useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import React, { useEffect, useRef } from 'react';
 import { MOUSE, Vector3 } from 'three';
 

@@ -1,5 +1,4 @@
 import { render, fireEvent } from '@testing-library/react';
-import React from 'react';
 
 import { WorkcellPanel } from './workcell-panel';
 import { makeDispenser, makeDispenserState } from './test-utils.spec';

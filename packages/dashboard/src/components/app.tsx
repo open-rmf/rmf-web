@@ -4,24 +4,23 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import React from 'react';
 import 'react-grid-layout/css/styles.css';
-import { Route, Routes, Navigate } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { LoginPage, PrivateRoute } from 'rmf-auth';
-import appConfig from '../app-config';
-import ResourceManager from '../managers/resource-manager';
+import { AppConfigContext, AuthenticatorContext, ResourcesContext } from '../app-config';
 import { DashboardRoute, LoginRoute, RobotsRoute, TasksRoute } from '../util/url';
 import { AppBase } from './app-base';
-import { ResourcesContext } from './app-contexts';
+import { SettingsContext } from './app-contexts';
+import { AppEvents } from './app-events';
 import './app.css';
 import { dashboardWorkspace } from './dashboard';
 import { RmfApp } from './rmf-app';
 import { robotsWorkspace } from './robots/robots-workspace';
 import { tasksWorkspace } from './tasks/tasks-workspace';
 import { Workspace } from './workspace';
-import { AppEvents } from './app-events';
 
 export default function App(): JSX.Element | null {
-  const authenticator = appConfig.authenticator;
-  const [authInitialized, setAuthInitialized] = React.useState(!!appConfig.authenticator.user);
+  const authenticator = React.useContext(AuthenticatorContext);
+  const [authInitialized, setAuthInitialized] = React.useState(!!authenticator.user);
   const [user, setUser] = React.useState<string | null>(authenticator.user || null);
 
   React.useEffect(() => {
@@ -45,28 +44,14 @@ export default function App(): JSX.Element | null {
     };
   }, [authenticator]);
 
-  const resourceManager = React.useRef<ResourceManager | undefined>(undefined);
-  const [appReady, setAppReady] = React.useState(false);
-
-  /**
-   * TODO: If resource loading gets too long we should add a loading screen.
-   */
-  React.useEffect(() => {
-    (async () => {
-      const appResources = await appConfig.appResourcesFactory();
-      if (!appResources) {
-        setAppReady(true);
-      } else {
-        resourceManager.current = appResources;
-        setAppReady(true);
-      }
-    })();
-  }, []);
+  const appConfig = React.useContext(AppConfigContext);
+  const settings = React.useContext(SettingsContext);
+  const resources = appConfig.resources[settings.themeMode] || appConfig.resources.default;
 
   const loginRedirect = React.useMemo(() => <Navigate to={LoginRoute} />, []);
 
-  return authInitialized && appReady ? (
-    <ResourcesContext.Provider value={resourceManager.current}>
+  return authInitialized ? (
+    <ResourcesContext.Provider value={resources}>
       {user ? (
         <RmfApp>
           <AppBase>

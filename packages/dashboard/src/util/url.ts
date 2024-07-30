@@ -1,7 +1,7 @@
 export const BasePath =
-  process.env.PUBLIC_URL === undefined || process.env.PUBLIC_URL === '/'
+  import.meta.env.BASE_URL === undefined || import.meta.env.BASE_URL === '/'
     ? ''
-    : process.env.PUBLIC_URL;
+    : import.meta.env.BASE_URL;
 /**
  * Add /* after /admin to avoid the warning
  * <Routes> (or called `useRoutes()`) at "/admin"

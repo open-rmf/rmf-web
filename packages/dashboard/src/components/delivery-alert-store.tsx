@@ -6,7 +6,7 @@ import {
   TaskStateOutput as TaskState,
 } from 'api-client';
 import React from 'react';
-import { Button, TextField, Tooltip, Theme, Divider, useMediaQuery, useTheme } from '@mui/material';
+import { Button, TextField, Tooltip, Divider, useMediaQuery, useTheme } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';

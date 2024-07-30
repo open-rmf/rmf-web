@@ -1,11 +1,10 @@
 import { Tab } from '@mui/material';
 import { cleanup, render, screen } from '@testing-library/react';
-import React from 'react';
 import { NavigationBar } from './navigation-bar';
 
 describe('Banner Tab', () => {
   it('renders correctly', () => {
-    const mockOnTabChange = jest.fn();
+    const mockOnTabChange = vi.fn();
     render(
       <NavigationBar onTabChange={mockOnTabChange} value={'building'}>
         <Tab

@@ -1,54 +1,106 @@
+import React from 'react';
+import { TaskDefinition, getDefaultTaskDefinition } from 'react-components';
 import { Authenticator, KeycloakAuthenticator, StubAuthenticator } from 'rmf-auth';
-import ResourceManager from './managers/resource-manager';
+import appConfigJson from '../app-config.json';
 import { BasePath } from './util/url';
 
-export interface AppConfig {
-  authenticator: Authenticator;
-  trajServerUrl: string;
-  rmfServerUrl: string;
-  appResourcesFactory: () => Promise<ResourceManager | undefined>;
+export interface RobotResource {
+  icon?: string;
+  scale?: number;
 }
 
-export const appConfig: AppConfig = (() => {
-  const trajServer = process.env.REACT_APP_TRAJECTORY_SERVER;
-  if (!trajServer) {
-    throw new Error('REACT_APP_TRAJECTORY_SERVER env variable is needed but not defined');
-  }
+export interface FleetResource {
+  default: RobotResource;
+}
 
-  const authenticator = (() => {
-    if (!process.env.REACT_APP_AUTH_PROVIDER) {
+export interface LogoResource {
+  header: string;
+}
+
+export interface Resources {
+  fleets: Record<string, FleetResource>;
+  logos: LogoResource;
+}
+
+export interface TaskResource {
+  taskDefinitionId: string;
+  displayName?: string;
+}
+
+export interface StubAuthConfig {
+  provider: 'stub';
+}
+
+export interface KeycloakAuthConfig {
+  provider: 'keycloak';
+  config: {
+    url: string;
+    realm: string;
+    clientId: string;
+  };
+}
+
+export interface AuthConfig {
+  provider: string;
+}
+
+export interface AppConfig {
+  rmfServerUrl: string;
+  trajectoryServerUrl: string;
+  auth: KeycloakAuthConfig | StubAuthConfig;
+  helpLink: string;
+  reportIssue: string;
+  pickupZones: string[];
+  defaultZoom: number;
+  defaultRobotZoom: number;
+  attributionPrefix: string;
+  defaultMapLevel: string;
+  allowedTasks: TaskResource[];
+  resources: Record<string, Resources> & Record<'default', Resources>;
+  // FIXME(koonpeng): this is used for very specific tasks, should be removed when mission
+  // system is implemented.
+  cartIds: string[];
+}
+
+// we specifically don't export app config to force consumers to use the context.
+const appConfig: AppConfig = appConfigJson as AppConfig;
+
+export const AppConfigContext = React.createContext(appConfig);
+
+const authenticator: Authenticator = (() => {
+  switch (appConfig.auth.provider) {
+    case 'keycloak':
+      if (!import.meta.env.VITE_KEYCLOAK_CONFIG) {
+        throw new Error('missing VITE_KEYCLOAK_CONFIG');
+      }
+      return new KeycloakAuthenticator(
+        appConfig.auth.config,
+        `${window.location.origin}${BasePath}/silent-check-sso.html`,
+      );
+    case 'stub':
       return new StubAuthenticator();
-    }
-    // it is important that we do not do any processing on REACT_APP_AUTH_PROVIDER so that webpack
-    // can remove dead code, we DO NOT want the output to have the stub authenticator even if
-    // it is not used.
-    const provider = process.env.REACT_APP_AUTH_PROVIDER;
-    switch (provider) {
-      case 'keycloak':
-        if (!process.env.REACT_APP_KEYCLOAK_CONFIG) {
-          throw new Error('missing REACT_APP_KEYCLOAK_CONFIG');
-        }
-        return new KeycloakAuthenticator(
-          JSON.parse(process.env.REACT_APP_KEYCLOAK_CONFIG),
-          `${window.location.origin}${BasePath}/silent-check-sso.html`,
-        );
-      case 'stub':
-        return new StubAuthenticator();
-      default:
-        throw new Error(`unknown auth provider "${provider}"`);
-    }
-  })();
-
-  if (!process.env.REACT_APP_RMF_SERVER) {
-    throw new Error('REACT_APP_RMF_SERVER is required');
+    default:
+      throw new Error('unknown auth provider');
   }
-
-  return {
-    authenticator,
-    appResourcesFactory: ResourceManager.defaultResourceManager,
-    trajServerUrl: trajServer,
-    rmfServerUrl: process.env.REACT_APP_RMF_SERVER,
-  } as AppConfig;
 })();
 
-export default appConfig;
+export const AuthenticatorContext = React.createContext(authenticator);
+
+export const ResourcesContext = React.createContext<Resources>(appConfig.resources.default);
+
+// FIXME(koonepng): This should be fully definition in app config when the dashboard actually
+// supports configurating all the fields.
+export const allowedTasks: TaskDefinition[] = appConfig.allowedTasks.map((taskResource) => {
+  const defaultTaskDefinition = getDefaultTaskDefinition(taskResource.taskDefinitionId);
+  if (!defaultTaskDefinition) {
+    throw Error(`Invalid tasks configured for dashboard: [${taskResource.taskDefinitionId}]`);
+  }
+  if (taskResource.displayName !== undefined) {
+    return {
+      ...defaultTaskDefinition,
+      taskDisplayName: taskResource.displayName,
+    };
+  } else {
+    return defaultTaskDefinition;
+  }
+});

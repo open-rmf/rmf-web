@@ -1,8 +1,4 @@
-export enum ThemeMode {
-  Default,
-  RmfLight,
-  RmfDark,
-}
+export type ThemeMode = 'default';
 
 export interface Settings {
   themeMode: ThemeMode;
@@ -22,6 +18,6 @@ export function loadSettings(): Settings {
 
 export function defaultSettings(): Settings {
   return {
-    themeMode: ThemeMode.Default,
+    themeMode: 'default',
   };
 }

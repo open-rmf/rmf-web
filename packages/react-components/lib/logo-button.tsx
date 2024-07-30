@@ -1,6 +1,5 @@
 import { ButtonBase, ButtonBaseProps, styled } from '@mui/material';
 import clsx from 'clsx';
-import React from 'react';
 
 const classes = {
   logoBtn: 'logo-button-root',

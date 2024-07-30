@@ -1,3 +1,4 @@
+import type {} from '@emotion/styled';
 import CloseIcon from '@mui/icons-material/Close';
 import { Grid, IconButton, Paper, PaperProps, styled, useTheme } from '@mui/material';
 import React from 'react';

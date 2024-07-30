@@ -1,4 +1,3 @@
-import React from 'react';
 import { LiftState } from 'api-client';
 import { Text, Line } from '@react-three/drei';
 import { BufferGeometry, BufferAttribute, Vector3, Euler } from 'three';

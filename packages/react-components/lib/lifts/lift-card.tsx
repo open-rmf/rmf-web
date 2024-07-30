@@ -10,7 +10,6 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import React from 'react';
 import { LiftState } from 'rmf-models/ros/rmf_lift_msgs/msg';
 import { doorStateToString, motionStateToString } from './lift-utils';
 

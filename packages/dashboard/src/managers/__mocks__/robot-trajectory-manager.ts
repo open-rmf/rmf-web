@@ -27,7 +27,7 @@ export default class FakeTrajectoryManager implements RobotTrajectoryManager {
     };
   }
 
-  serverTime(request: TimeRequest): Promise<TimeResponse> {
+  serverTime(_request: TimeRequest): Promise<TimeResponse> {
     throw new Error('Method not implemented.');
   }
 

@@ -1,11 +1,12 @@
+import { beforeEach, describe, it, vi } from 'vitest';
 import { SioClient } from '.';
 
 describe('subscriptions', () => {
-  let sioClient: SioClient;
+  let sioClient;
 
   beforeEach(() => {
-    sioClient = new SioClient({ autoConnect: false });
-    spyOn(sioClient.sio, 'emit');
+    sioClient = new SioClient('', { autoConnect: false });
+    vi.spyOn(sioClient.sio, 'emit');
   });
 
   it('dummy', () => {

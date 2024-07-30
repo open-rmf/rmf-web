@@ -1,4 +1,4 @@
-import { Button, ButtonProps, Theme, Tooltip, Typography } from '@mui/material';
+import { Button, ButtonProps, Tooltip, Typography } from '@mui/material';
 import { TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
 import { AppControllerContext } from '../app-contexts';

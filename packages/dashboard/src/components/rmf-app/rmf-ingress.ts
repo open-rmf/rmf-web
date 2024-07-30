@@ -1,39 +1,39 @@
 import {
   AdminApi,
-  AlertsApi,
   AlertRequest,
   AlertResponse,
+  AlertsApi,
   BeaconState,
   BeaconsApi,
   BuildingApi,
   BuildingMap,
   Configuration,
   DefaultApi,
-  DeliveryAlertsApi,
   DeliveryAlert,
+  DeliveryAlertsApi,
   Dispenser,
-  DispensersApi,
   DispenserState,
+  DispensersApi,
   Door,
-  DoorsApi,
   DoorState,
-  FleetsApi,
+  DoorsApi,
   FleetState,
+  FleetsApi,
   Ingestor,
-  IngestorsApi,
   IngestorState,
+  IngestorsApi,
   Lift,
-  LiftsApi,
   LiftState,
+  LiftsApi,
   SioClient,
   Subscription as SioSubscription,
-  TasksApi,
   TaskStateOutput as TaskState,
+  TasksApi,
 } from 'api-client';
 import axios from 'axios';
 import { Authenticator } from 'rmf-auth';
-import { map, Observable, shareReplay } from 'rxjs';
-import appConfig from '../../app-config';
+import { Observable, map, shareReplay } from 'rxjs';
+import { AppConfig } from '../../app-config';
 import { NegotiationStatusManager } from '../../managers/negotiation-status-manager';
 import {
   DefaultTrajectoryManager,
@@ -61,7 +61,7 @@ export class RmfIngress {
   negotiationStatusManager: NegotiationStatusManager;
   trajectoryManager: RobotTrajectoryManager;
 
-  constructor(authenticator: Authenticator) {
+  constructor(appConfig: AppConfig, authenticator: Authenticator) {
     if (!authenticator.user) {
       throw new Error(
         'user is undefined, RmfIngress should only be initialized after the authenticator is ready',
@@ -127,7 +127,7 @@ export class RmfIngress {
     this.adminApi = new AdminApi(apiConfig, undefined, axiosInst);
     this.deliveryAlertsApi = new DeliveryAlertsApi(apiConfig, undefined, axiosInst);
 
-    const ws = new WebSocket(appConfig.trajServerUrl);
+    const ws = new WebSocket(appConfig.trajectoryServerUrl);
     this.trajectoryManager = new DefaultTrajectoryManager(ws, authenticator);
     this.negotiationStatusManager = new NegotiationStatusManager(ws, authenticator);
   }

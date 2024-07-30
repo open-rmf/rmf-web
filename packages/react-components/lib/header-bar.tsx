@@ -20,9 +20,15 @@ export const HeaderBar = ({
   position = 'static',
   className,
   children,
+  ...otherProps
 }: HeaderBarProps): React.ReactElement => {
   return (
-    <StyledAppBar id={id} position={position} className={clsx(classes.root, className)}>
+    <StyledAppBar
+      id={id}
+      position={position}
+      className={clsx(classes.root, className)}
+      {...otherProps}
+    >
       {children}
     </StyledAppBar>
   );

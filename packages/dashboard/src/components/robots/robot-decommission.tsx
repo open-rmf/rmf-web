@@ -4,7 +4,6 @@ import {
   Checkbox,
   FormGroup,
   FormControlLabel,
-  Theme,
   Tooltip,
   Typography,
 } from '@mui/material';

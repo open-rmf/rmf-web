@@ -59,7 +59,7 @@ export class ColorManager {
     return `hsl(${hue}, ${saturation}%, ${luminance}%)`;
   }
 
-  private _robotColorFromId(fleet: string, name: string, model: string): string {
+  private _robotColorFromId(_fleet: string, name: string, model: string): string {
     const modelHash = _hash(model);
     const nameHash = _hash(name);
     return ColorManager._getLightColor(modelHash, nameHash);

@@ -1,13 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { LiftRequestDialog } from './lift-request-dialog';
 import { requestDoorModes, requestModes } from './lift-utils';
 import { makeLift, makeLiftState } from './test-utils.spec';
 
 describe('Lift request form', () => {
   it('destination is required', async () => {
-    const mockOnClose = jest.fn();
+    const mockOnClose = vi.fn();
     const lift = makeLift();
     const liftState = makeLiftState();
     render(

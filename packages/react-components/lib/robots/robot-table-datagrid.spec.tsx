@@ -1,6 +1,5 @@
 import { fireEvent, render } from '@testing-library/react';
 import { ApiServerModelsRmfApiRobotStateStatus as RobotStatus } from 'api-client';
-import React from 'react';
 import { RobotDataGridTable, RobotTableData } from './robot-table-datagrid';
 import { makeRobot } from './test-utils.spec';
 
@@ -32,7 +31,7 @@ describe('RobotTable', () => {
   });
 
   it('onRobotClick is called when row is clicked', () => {
-    const onRobotClick = jest.fn();
+    const onRobotClick = vi.fn();
     const root = render(
       <RobotDataGridTable
         robots={[{ fleet: 'test_fleet', name: 'test_robot' }]}

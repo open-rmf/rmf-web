@@ -1,6 +1,5 @@
 import { Meta } from '@storybook/react';
 import { ApiServerModelsRmfApiRobotStateStatus as RobotStatus } from 'api-client';
-import React from 'react';
 import { RobotDataGridTable } from './robot-table-datagrid';
 
 export default {

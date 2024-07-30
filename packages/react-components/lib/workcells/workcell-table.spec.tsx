@@ -1,5 +1,4 @@
 import { render } from '@testing-library/react';
-import React from 'react';
 import { DispenserState as RmfDispenserState } from 'rmf-models/ros/rmf_dispenser_msgs/msg';
 import { makeDispenser, makeDispenserState } from './test-utils.spec';
 import { WorkcellTable } from './workcell-table';

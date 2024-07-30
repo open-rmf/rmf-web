@@ -1,5 +1,4 @@
 import { render, fireEvent } from '@testing-library/react';
-import React from 'react';
 import { TransferList } from './transfer-list';
 
 describe('TransferList', () => {
@@ -26,12 +25,13 @@ describe('TransferList', () => {
   });
 
   it('transfers correct items', () => {
-    const spy = jest.fn();
+    const spy = vi.fn();
     const root = render(<TransferList leftItems={left} rightItems={right} onTransfer={spy} />);
     fireEvent.click(root.getByText('one'));
     fireEvent.click(root.getByLabelText('move selected right', { selector: 'button' }));
-    const newLeft: string[] = spy.mock.lastCall[0];
-    const newRight: string[] = spy.mock.lastCall[1];
+    expect(spy).toHaveBeenCalled();
+    const newLeft: string[] = spy.mock.lastCall![0];
+    const newRight: string[] = spy.mock.lastCall![1];
     expect(newLeft).toHaveLength(1);
     expect(newLeft).not.toContain('one');
     expect(newRight).toHaveLength(3);

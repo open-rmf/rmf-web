@@ -1,4 +1,3 @@
-import React from 'react';
 import { render } from '@testing-library/react';
 import { BeaconDataGridTable } from './beacon-table-datagrid';
 import { makeBeaconState } from './test-utils.spec';

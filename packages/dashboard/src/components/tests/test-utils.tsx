@@ -1,4 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
+import '@testing-library/dom';
 import { render as render_, RenderOptions as RenderOptions_ } from '@testing-library/react';
 import React from 'react';
 import { rmfLight } from 'react-components';

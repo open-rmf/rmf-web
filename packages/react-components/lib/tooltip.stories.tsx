@@ -1,6 +1,5 @@
 import { Typography } from '@mui/material';
 import { Meta, StoryFn } from '@storybook/react';
-import React from 'react';
 import { Tooltip } from './tooltip';
 
 export default {

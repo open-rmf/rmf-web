@@ -20,7 +20,6 @@ import {
   ApiServerModelsRmfApiTaskStateStatus as Status,
   TaskStateOutput as TaskState,
 } from 'api-client';
-import React from 'react';
 
 const classes = {
   paper: 'timeline-paper',

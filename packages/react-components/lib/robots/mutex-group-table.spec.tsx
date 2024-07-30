@@ -1,5 +1,4 @@
 import { fireEvent, render } from '@testing-library/react';
-import React from 'react';
 import { MutexGroupData, MutexGroupTable } from './mutex-group-table';
 
 describe('Mutex group table', () => {
@@ -16,8 +15,8 @@ describe('Mutex group table', () => {
         requestedBy: ['fleet1/robot2'],
       },
     ];
-    const group1Click = jest.fn();
-    const group2Click = jest.fn();
+    const group1Click = vi.fn();
+    const group2Click = vi.fn();
     const root = render(
       <MutexGroupTable
         mutexGroups={mutexGroups}

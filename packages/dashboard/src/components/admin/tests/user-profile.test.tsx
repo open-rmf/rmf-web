@@ -1,6 +1,6 @@
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
+import { describe, expect, it, vi } from 'vitest';
 import { UserProfileCard } from '../user-profile';
 
 describe('UserProfileCard', () => {
@@ -17,7 +17,7 @@ describe('UserProfileCard', () => {
   });
 
   it('calls makeAdmin when checkbox is clicked', async () => {
-    const makeAdmin = jest.fn();
+    const makeAdmin = vi.fn();
     const root = render(
       <UserProfileCard
         user={{ username: 'test', is_admin: false, roles: [] }}

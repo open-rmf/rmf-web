@@ -1,5 +1,5 @@
-import React from 'react';
-import { styled, TableCellProps, TableCell } from '@mui/material';
+import type {} from '@emotion/styled';
+import { TableCell, TableCellProps, styled } from '@mui/material';
 
 const commonStyles = {
   overflow: 'hidden',

@@ -1,11 +1,6 @@
 import { AlertProps } from '@mui/material';
 import React from 'react';
-import appConfig, { AppConfig } from '../app-config';
-import ResourceManager from '../managers/resource-manager';
 import { defaultSettings, Settings } from '../settings';
-
-/* Declares the ResourcesContext which contains the resources used on the app*/
-export const ResourcesContext = React.createContext<ResourceManager | undefined>(undefined);
 
 export const SettingsContext = React.createContext(defaultSettings());
 
@@ -28,5 +23,3 @@ export const AppControllerContext = React.createContext<AppController>({
   showAlert: () => {},
   setExtraAppbarIcons: () => {},
 });
-
-export const AppConfigContext = React.createContext<AppConfig>(appConfig);

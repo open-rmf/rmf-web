@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { EventEditDeletePopup } from './task-schedule-event-edit-delete-popup';
 
@@ -6,7 +5,7 @@ describe('EventEditDeletePopup', () => {
   const currentValue = 'current';
   const allValue = 'all';
   const value = 'current';
-  const onChange = jest.fn();
+  const onChange = vi.fn();
 
   it('handles onChange event', () => {
     const { getByLabelText } = render(

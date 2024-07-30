@@ -1,6 +1,6 @@
 import { render, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
+import { describe, expect, it, vi } from 'vitest';
 import { ManageRolesCard, ManageRolesDialog } from '../manage-roles-dialog';
 
 describe('ManageRolesCard', () => {
@@ -21,7 +21,7 @@ describe('ManageRolesCard', () => {
 
 describe('ManageRolesDialog', () => {
   it('it triggers cb when dialog is submitted', async () => {
-    const saveRoles = jest.fn(async () => {});
+    const saveRoles = vi.fn(async () => {});
     const root = render(
       <ManageRolesDialog
         open={true}

@@ -17,7 +17,7 @@ export default {
 export const NavBar: StoryFn = () => {
   const [value, setValue] = React.useState('building');
 
-  const onTabChange = (event: React.ChangeEvent<unknown>, newValue: string) => {
+  const onTabChange = (_event: React.ChangeEvent<unknown>, newValue: string) => {
     setValue(newValue);
   };
 
@@ -75,7 +75,7 @@ export const FullHeaderBar: StoryFn = () => {
 
   const [value, setValue] = React.useState('building');
 
-  const onTabChange = (event: React.ChangeEvent<unknown>, newValue: string) => {
+  const onTabChange = (_event: React.ChangeEvent<unknown>, newValue: string) => {
     setValue(newValue);
   };
 

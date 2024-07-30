@@ -1,5 +1,4 @@
 import { Meta, StoryFn } from '@storybook/react';
-import React from 'react';
 import { TaskTimeline, TaskTimelineProps } from './task-timeline';
 import { makeTaskState } from './test-data.spec';
 

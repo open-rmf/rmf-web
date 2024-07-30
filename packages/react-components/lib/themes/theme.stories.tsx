@@ -1,6 +1,5 @@
 import { styled, Paper, Typography } from '@mui/material';
 import { Meta, StoryFn } from '@storybook/react';
-import React from 'react';
 
 export default {
   title: 'Theme',
