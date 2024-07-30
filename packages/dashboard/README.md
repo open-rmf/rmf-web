@@ -36,6 +36,8 @@ In the above config, the header logo will be on absolute url `/resources/default
 
 For testing, it is convenient to put the resources in the `public` folder and they will be served by the vite dev server.
 
+For dashboard resources for `rmf_demos` simulation worlds, check out the [rmf-web-dashboard-resources](https://github.com/open-rmf/rmf_demos/tree/rmf-web-dashboard-resources) branch of `rmf_demos`.
+
 ### Micro-apps
 
 The dashboard comes with many different micro-apps, each serving a different purpose when interacting with an Open-RMF deployment. The dashboard uses events to pipe information between micro-apps, for example clicking onto a task row in the Task app, will center the map onto the robot that the task was assigned to.
