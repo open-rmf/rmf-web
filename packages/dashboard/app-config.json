@@ -33,5 +33,7 @@
       }
     }
   },
+  "customTabs": false,
+  "adminTab": false,
   "cartIds": []
 }
