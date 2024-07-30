@@ -1,4 +1,4 @@
-import robotoFont from '@fontsource/roboto/files/roboto-latin-400-normal.woff2';
+import robotoFont from '@fontsource/roboto/files/roboto-latin-400-normal.woff';
 import { ThreeEvent } from '@react-three/fiber';
 import { Lift, LiftState } from 'api-client';
 import React from 'react';
