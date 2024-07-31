@@ -59,7 +59,14 @@ import {
 } from '../app-config';
 import { useCreateTaskFormData } from '../hooks/useCreateTaskForm';
 import useGetUsername from '../hooks/useFetchUser';
-import { DashboardRoute, RobotsRoute, TasksRoute } from '../util/url';
+import {
+  AdminRoute,
+  CustomRoute1,
+  CustomRoute2,
+  DashboardRoute,
+  RobotsRoute,
+  TasksRoute,
+} from '../util/url';
 import { AppControllerContext, SettingsContext } from './app-contexts';
 import { AppEvents } from './app-events';
 import { RmfAppContext } from './rmf-app';
@@ -336,6 +343,30 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             aria-label="Tasks"
             onTabClick={() => navigate(TasksRoute)}
           />
+          {appConfig.customTabs && (
+            <>
+              <StyledAppBarTab
+                label="Custom 1"
+                value="custom1"
+                aria-label="Custom 1"
+                onTabClick={() => navigate(CustomRoute1)}
+              />
+              <StyledAppBarTab
+                label="Custom 2"
+                value="custom2"
+                aria-label="Custom 2"
+                onTabClick={() => navigate(CustomRoute2)}
+              />
+            </>
+          )}
+          {appConfig.adminTab && profile?.user.is_admin && (
+            <StyledAppBarTab
+              label="Admin"
+              value="admin"
+              aria-label="Admin"
+              onTabClick={() => navigate(AdminRoute)}
+            />
+          )}
         </NavigationBar>
         <Toolbar variant="dense" sx={{ textAlign: 'right', flexGrow: -1 }}>
           <StyledAppBarButton

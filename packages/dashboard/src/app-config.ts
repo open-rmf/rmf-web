@@ -57,6 +57,8 @@ export interface AppConfig {
   defaultMapLevel: string;
   allowedTasks: TaskResource[];
   resources: Record<string, Resources> & Record<'default', Resources>;
+  customTabs: boolean;
+  adminTab: boolean;
   // FIXME(koonpeng): this is used for very specific tasks, should be removed when mission
   // system is implemented.
   cartIds: string[];
