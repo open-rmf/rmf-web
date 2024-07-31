@@ -30,7 +30,7 @@ export class KeycloakAuthenticator
    */
   constructor(config: Keycloak.KeycloakConfig | string, silentCheckSsoRedirectUri?: string) {
     super();
-    this._inst = Keycloak(config);
+    this._inst = new Keycloak(config);
     this._silentCheckSsoRedirectUri = silentCheckSsoRedirectUri;
   }
 
