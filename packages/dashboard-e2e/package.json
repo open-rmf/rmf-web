@@ -1,6 +1,6 @@
 {
   "name": "rmf-dashboard-e2e",
-  "description": "",
+  "description": "End-to-end testing with the Open-RMF dashboard",
   "main": "index.js",
   "directories": {
     "test": "tests"

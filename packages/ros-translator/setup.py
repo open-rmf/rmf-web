@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 setup(
     name="ros_translator",
     description="Translates ros interface definitions to other formats",
-    version="0.0.1",
+    version="1.0.0",
     packages=find_packages(exclude=["tests"]),
     package_data={
         "ros_translator": ["typescript/templates/*", "pydantic/*.j2"],
