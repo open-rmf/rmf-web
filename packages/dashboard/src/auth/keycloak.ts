@@ -1,6 +1,6 @@
 import Debug from 'debug';
 import EventEmitter from 'eventemitter3';
-import Keycloak, { KeycloakInstance } from 'keycloak-js';
+import Keycloak from 'keycloak-js';
 
 import { Authenticator, AuthenticatorEventType } from './authenticator';
 
@@ -31,7 +31,7 @@ export class KeycloakAuthenticator
    */
   constructor(config: Keycloak.KeycloakConfig | string, silentCheckSsoRedirectUri?: string) {
     super();
-    this._inst = Keycloak(config);
+    this._inst = new Keycloak(config);
     this._silentCheckSsoRedirectUri = silentCheckSsoRedirectUri;
   }
 
@@ -118,7 +118,7 @@ export class KeycloakAuthenticator
   }
 
   private _initialized = false;
-  private _inst: KeycloakInstance;
+  private _inst: Keycloak;
   private _silentCheckSsoRedirectUri?: string;
   private _user?: string;
   private _isAdmin = false;

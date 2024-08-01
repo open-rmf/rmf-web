@@ -1,8 +1,8 @@
 import React from 'react';
 import { getDefaultTaskDefinition, TaskDefinition } from 'react-components';
-import { Authenticator, KeycloakAuthenticator, StubAuthenticator } from 'rmf-auth';
 
 import appConfigJson from '../app-config.json';
+import { Authenticator, KeycloakAuthenticator, StubAuthenticator } from './auth';
 import { BasePath } from './util/url';
 
 export interface RobotResource {

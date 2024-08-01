@@ -2,8 +2,8 @@ import { Button, ButtonProps, Tooltip, Typography } from '@mui/material';
 import { TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog } from 'react-components';
-import { UserProfile, UserProfileContext } from 'rmf-auth';
 
+import { UserProfile, UserProfileContext } from '../../auth';
 import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { Enforcer } from '../permissions';

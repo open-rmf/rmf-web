@@ -31,10 +31,10 @@ import {
   TaskStateOutput as TaskState,
 } from 'api-client';
 import axios from 'axios';
-import { Authenticator } from 'rmf-auth';
 import { map, Observable, shareReplay } from 'rxjs';
 
 import { AppConfig } from '../../app-config';
+import { Authenticator } from '../../auth';
 import { NegotiationStatusManager } from '../../managers/negotiation-status-manager';
 import {
   DefaultTrajectoryManager,
