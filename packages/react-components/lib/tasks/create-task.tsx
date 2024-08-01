@@ -372,7 +372,7 @@ export function CreateTaskForm({
       if (req === null) {
         console.error(`Failed to create task request for definition ID: [${definitionId}]`);
       }
-      if (desc && req) {
+      if (desc !== undefined && req !== null) {
         validTasks.push(supportedTask);
 
         if (!defaultTaskDescription && !defaultTaskRequest) {
