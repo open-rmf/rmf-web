@@ -1,7 +1,7 @@
 import { Box, Divider, Grid, Paper, Typography, useTheme } from '@mui/material';
 import {
-  EventStateOutput as EventState,
   ApiServerModelsRmfApiTaskStateStatus as Status,
+  EventStateOutput as EventState,
   TaskEventLog,
   TaskStateOutput as TaskState,
 } from 'api-client';

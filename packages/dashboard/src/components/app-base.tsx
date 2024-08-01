@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import React from 'react';
+
 import { loadSettings, saveSettings, Settings } from '../settings';
 import { AlertManager } from './alert-manager';
 import { AppController, AppControllerContext, SettingsContext } from './app-contexts';

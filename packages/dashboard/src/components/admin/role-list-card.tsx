@@ -1,3 +1,7 @@
+import AddIcon from '@mui/icons-material/AddCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import SecurityIcon from '@mui/icons-material/Security';
 import {
   Accordion,
   AccordionDetails,
@@ -9,16 +13,13 @@ import {
   Divider,
   Grid,
   IconButton,
-  Typography,
   styled,
+  Typography,
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/AddCircle';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import SecurityIcon from '@mui/icons-material/Security';
 import { Permission } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog, Loading, useAsync } from 'react-components';
+
 import { AppControllerContext } from '../app-contexts';
 import { CreateRoleDialog, CreateRoleDialogProps } from './create-role-dialog';
 import { PermissionsCard, PermissionsCardProps } from './permissions-card';

@@ -1,6 +1,7 @@
 import { BeaconState } from 'api-client';
 import React from 'react';
 import { BeaconDataGridTable } from 'react-components';
+
 import { createMicroApp } from './micro-app';
 import { RmfAppContext } from './rmf-app';
 

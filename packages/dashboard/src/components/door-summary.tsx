@@ -1,11 +1,12 @@
-import React from 'react';
 import { Dialog, DialogContent, DialogTitle, Divider, TextField, useTheme } from '@mui/material';
-import { Door as DoorModel } from 'rmf-models/ros/rmf_building_map_msgs/msg';
+import { Level } from 'api-client';
+import React from 'react';
 import { doorModeToOpModeString } from 'react-components';
+import { base, doorModeToString, DoorTableData, doorTypeToString } from 'react-components';
+import { Door as DoorModel } from 'rmf-models/ros/rmf_building_map_msgs/msg';
+
 import { RmfAppContext } from './rmf-app';
 import { getApiErrorMessage } from './utils';
-import { doorModeToString, DoorTableData, doorTypeToString, base } from 'react-components';
-import { Level } from 'api-client';
 
 interface DoorSummaryProps {
   onClose: () => void;

@@ -3,8 +3,8 @@ import {
   AlertRequest,
   AlertResponse,
   AlertsApi,
-  BeaconState,
   BeaconsApi,
+  BeaconState,
   BuildingApi,
   BuildingMap,
   Configuration,
@@ -12,27 +12,28 @@ import {
   DeliveryAlert,
   DeliveryAlertsApi,
   Dispenser,
-  DispenserState,
   DispensersApi,
+  DispenserState,
   Door,
-  DoorState,
   DoorsApi,
-  FleetState,
+  DoorState,
   FleetsApi,
+  FleetState,
   Ingestor,
-  IngestorState,
   IngestorsApi,
+  IngestorState,
   Lift,
-  LiftState,
   LiftsApi,
+  LiftState,
   SioClient,
   Subscription as SioSubscription,
-  TaskStateOutput as TaskState,
   TasksApi,
+  TaskStateOutput as TaskState,
 } from 'api-client';
 import axios from 'axios';
 import { Authenticator } from 'rmf-auth';
-import { Observable, map, shareReplay } from 'rxjs';
+import { map, Observable, shareReplay } from 'rxjs';
+
 import { AppConfig } from '../../app-config';
 import { NegotiationStatusManager } from '../../managers/negotiation-status-manager';
 import {

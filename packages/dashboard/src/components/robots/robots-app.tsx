@@ -2,6 +2,7 @@ import { TableContainer } from '@mui/material';
 import { TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
 import { RobotDataGridTable, RobotTableData } from 'react-components';
+
 import { AppEvents } from '../app-events';
 import { createMicroApp } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';

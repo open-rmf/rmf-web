@@ -1,6 +1,7 @@
 import React from 'react';
-import { TaskDefinition, getDefaultTaskDefinition } from 'react-components';
+import { getDefaultTaskDefinition, TaskDefinition } from 'react-components';
 import { Authenticator, KeycloakAuthenticator, StubAuthenticator } from 'rmf-auth';
+
 import appConfigJson from '../app-config.json';
 import { BasePath } from './util/url';
 

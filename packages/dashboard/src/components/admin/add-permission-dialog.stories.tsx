@@ -1,4 +1,5 @@
 import { Meta, StoryFn } from '@storybook/react';
+
 import { AddPermissionDialog, AddPermissionDialogProps } from './add-permission-dialog';
 
 export default {

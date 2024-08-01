@@ -1,9 +1,10 @@
 import { TableContainer, Typography } from '@mui/material';
 import React from 'react';
 import { ConfirmationDialog, MutexGroupData, MutexGroupTable } from 'react-components';
-import { AppControllerContext } from './../app-contexts';
+
 import { createMicroApp } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
+import { AppControllerContext } from './../app-contexts';
 
 const RefreshMutexGroupTableInterval = 5000;
 
@@ -75,11 +76,6 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
             for (const requesting of robot.mutex_groups.requesting) {
               if (updatedMutexGroups[requesting]) {
                 updatedMutexGroups[requesting].requestedBy.push(robotIdentifier);
-              } else if (
-                updatedMutexGroups[requesting] &&
-                !updatedMutexGroups[requesting].requestedBy
-              ) {
-                updatedMutexGroups[requesting].requestedBy = [robotIdentifier];
               } else {
                 updatedMutexGroups[requesting] = {
                   name: requesting,

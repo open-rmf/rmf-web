@@ -2,10 +2,11 @@ import { Box, Dialog, DialogContent, DialogTitle, Divider, Grid, Typography } fr
 import { CardContent, useTheme } from '@mui/material';
 import { TaskEventLog, TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
-import { RmfAppContext } from '../rmf-app';
 import { TaskInfo } from 'react-components';
-import { TaskLogs } from './task-logs';
+
+import { RmfAppContext } from '../rmf-app';
 import { TaskCancelButton } from './task-cancellation';
+import { TaskLogs } from './task-logs';
 
 export interface TableDataGridState {
   task: TaskState | null;

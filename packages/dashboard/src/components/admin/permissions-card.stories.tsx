@@ -1,5 +1,6 @@
 import { Meta, StoryFn } from '@storybook/react';
 import { Permission } from 'api-client';
+
 import { PermissionsCard, PermissionsCardProps } from './permissions-card';
 
 export default {

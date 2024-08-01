@@ -2,7 +2,8 @@ import { Box, CardContent, Typography } from '@mui/material';
 import { RobotState, TaskStateOutput } from 'api-client';
 import React from 'react';
 import { RobotInfo } from 'react-components';
-import { EMPTY, combineLatest, mergeMap, of, switchMap, throttleTime } from 'rxjs';
+import { combineLatest, EMPTY, mergeMap, of, switchMap, throttleTime } from 'rxjs';
+
 import { AppEvents } from '../app-events';
 import { createMicroApp } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';

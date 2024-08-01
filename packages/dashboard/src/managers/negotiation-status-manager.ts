@@ -1,6 +1,7 @@
+import { Authenticator } from 'rmf-auth';
+
 import { Trajectory } from './robot-trajectory-manager';
 import TrajectorySocketManager from './trajectory-socket-manager';
-import { Authenticator } from 'rmf-auth';
 
 export enum NegotiationState {
   NOT_RESOLVED = 0,
@@ -151,7 +152,7 @@ export class NegotiationStatusManager extends TrajectorySocketManager {
 
   removeOldConflicts(): void {
     const retainCount = 50;
-    let resolved: string[] = [];
+    const resolved: string[] = [];
 
     for (const [version, status] of Object.entries(this._conflicts)) {
       if (status.resolved & ResolveState.RESOLVED) resolved.push(version);

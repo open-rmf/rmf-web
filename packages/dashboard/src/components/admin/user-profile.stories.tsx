@@ -1,6 +1,7 @@
 import { Meta, StoryFn } from '@storybook/react';
 import { User } from 'api-client';
 import React from 'react';
+
 import { UserProfileCard, UserProfileCardProps } from './user-profile';
 
 export default {

@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { StubAuthenticator, UserProfile, UserProfileContext } from 'rmf-auth';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
+
 import { AuthenticatorContext, Resources, ResourcesContext } from '../../app-config';
 import { AppController, AppControllerContext } from '../app-contexts';
 import AppBar from '../appbar';

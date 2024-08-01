@@ -1,4 +1,16 @@
 import {
+  Battery0Bar,
+  Battery1Bar,
+  Battery2Bar,
+  Battery3Bar,
+  Battery4Bar,
+  Battery5Bar,
+  Battery6Bar,
+  BatteryChargingFull,
+  BatteryFull,
+  BatteryUnknown,
+} from '@mui/icons-material';
+import {
   Box,
   Dialog,
   DialogActions,
@@ -13,29 +25,18 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import React from 'react';
-import { RmfAppContext } from '../rmf-app';
-import { RobotTableData, base } from 'react-components';
 import {
-  RobotState,
   ApiServerModelsRmfApiRobotStateStatus as Status,
+  RobotState,
   TaskStateOutput as TaskState,
 } from 'api-client';
-import { EMPTY, combineLatest, mergeMap, of } from 'rxjs';
-import { TaskInspector } from '../tasks/task-inspector';
-import {
-  Battery0Bar,
-  Battery1Bar,
-  Battery2Bar,
-  Battery3Bar,
-  Battery4Bar,
-  Battery5Bar,
-  Battery6Bar,
-  BatteryFull,
-  BatteryChargingFull,
-  BatteryUnknown,
-} from '@mui/icons-material';
+import React from 'react';
+import { base, RobotTableData } from 'react-components';
+import { combineLatest, EMPTY, mergeMap, of } from 'rxjs';
+
+import { RmfAppContext } from '../rmf-app';
 import { TaskCancelButton } from '../tasks/task-cancellation';
+import { TaskInspector } from '../tasks/task-inspector';
 import { RobotDecommissionButton } from './robot-decommission';
 
 const setTaskDialogColor = (robotStatus: Status | undefined | null) => {

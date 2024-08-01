@@ -1,12 +1,4 @@
 import {
-  AlertRequest,
-  ApiServerModelsAlertsAlertRequestTier,
-  LogEntry,
-  TaskEventLog,
-  ApiServerModelsRmfApiLogEntryTier as LogEntryTier,
-} from 'api-client';
-import { AppEvents } from './app-events';
-import {
   Button,
   Dialog,
   DialogActions,
@@ -17,11 +9,20 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
+import {
+  AlertRequest,
+  ApiServerModelsAlertsAlertRequestTier,
+  ApiServerModelsRmfApiLogEntryTier as LogEntryTier,
+  LogEntry,
+  TaskEventLog,
+} from 'api-client';
 import React from 'react';
 import { base } from 'react-components';
-import { AppControllerContext } from './app-contexts';
-import { RmfAppContext } from './rmf-app';
 import { Subscription } from 'rxjs';
+
+import { AppControllerContext } from './app-contexts';
+import { AppEvents } from './app-events';
+import { RmfAppContext } from './rmf-app';
 import { TaskCancelButton } from './tasks/task-cancellation';
 
 interface AlertDialogProps {
@@ -64,18 +65,18 @@ const AlertDialog = React.memo((props: AlertDialogProps) => {
   };
 
   const getErrorLogEntries = (logs: TaskEventLog) => {
-    let errorLogs: LogEntry[] = [];
+    const errorLogs: LogEntry[] = [];
     if (logs.log) {
       errorLogs.concat(logs.log.filter((entry) => entry.tier === LogEntryTier.Error));
     }
 
     if (logs.phases) {
-      for (let phase of Object.values(logs.phases)) {
+      for (const phase of Object.values(logs.phases)) {
         if (phase.log) {
           errorLogs.concat(phase.log.filter((entry) => entry.tier === LogEntryTier.Error));
         }
         if (phase.events) {
-          for (let eventLogs of Object.values(phase.events)) {
+          for (const eventLogs of Object.values(phase.events)) {
             errorLogs.concat(eventLogs.filter((entry) => entry.tier === LogEntryTier.Error));
           }
         }

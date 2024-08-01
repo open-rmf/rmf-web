@@ -1,3 +1,6 @@
+import { SvgIconComponent } from '@mui/icons-material';
+import AccountIcon from '@mui/icons-material/AccountCircle';
+import SecurityIcon from '@mui/icons-material/Security';
 import {
   Drawer,
   DrawerProps,
@@ -5,14 +8,11 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Toolbar,
   styled,
+  Toolbar,
 } from '@mui/material';
-import { SvgIconComponent } from '@mui/icons-material';
-import AccountIcon from '@mui/icons-material/AccountCircle';
-import SecurityIcon from '@mui/icons-material/Security';
 import React from 'react';
-import { RouteProps, useNavigate, useLocation } from 'react-router';
+import { RouteProps, useLocation, useNavigate } from 'react-router';
 
 export type AdminDrawerValues = 'Users' | 'Roles';
 

@@ -1,6 +1,7 @@
 import { Meta, StoryFn } from '@storybook/react';
-import { RoleListCard, RoleListCardProps } from './role-list-card';
+
 import { RmfAction } from '../permissions';
+import { RoleListCard, RoleListCardProps } from './role-list-card';
 
 export default {
   title: 'Admin/Role List Card',

@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Dialog,
   DialogContent,
@@ -8,10 +7,12 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
+import { Lift } from 'api-client';
+import React from 'react';
+import { base, doorStateToString, liftModeToString, LiftTableData } from 'react-components';
+
 import { RmfAppContext } from './rmf-app';
 import { getApiErrorMessage } from './utils';
-import { doorStateToString, liftModeToString, LiftTableData, base } from 'react-components';
-import { Lift } from 'api-client';
 
 interface LiftSummaryProps {
   onClose: () => void;

@@ -47,7 +47,7 @@ export function exportCsvMinimal(timestamp: Date, allTasks: TaskState[]) {
   ];
   csvContent += keys.join(columnSeparator) + rowSeparator;
   allTasks.forEach((task) => {
-    let taskBookingLabels = getTaskBookingLabelFromTaskState(task);
+    const taskBookingLabels = getTaskBookingLabelFromTaskState(task);
 
     const values = [
       // Date

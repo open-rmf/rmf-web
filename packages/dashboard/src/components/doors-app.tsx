@@ -3,6 +3,7 @@ import React from 'react';
 import { DoorDataGridTable, DoorTableData } from 'react-components';
 import { DoorMode as RmfDoorMode } from 'rmf-models/ros/rmf_door_msgs/msg/DoorMode';
 import { throttleTime } from 'rxjs';
+
 import { AppEvents } from './app-events';
 import { createMicroApp } from './micro-app';
 import { RmfAppContext } from './rmf-app';

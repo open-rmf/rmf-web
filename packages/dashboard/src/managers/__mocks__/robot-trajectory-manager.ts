@@ -1,4 +1,5 @@
 import Debug from 'debug';
+
 import {
   RobotTrajectoryManager,
   TimeRequest,

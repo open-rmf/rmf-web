@@ -1,4 +1,5 @@
 import { vi } from 'vitest';
+
 import { AppController } from '../app-contexts';
 
 export function makeMockAppController(): AppController {

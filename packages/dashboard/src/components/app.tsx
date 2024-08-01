@@ -2,10 +2,13 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import React from 'react';
 import 'react-grid-layout/css/styles.css';
+import './app.css';
+
+import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { LoginPage, PrivateRoute } from 'rmf-auth';
+
 import { AppConfigContext, AuthenticatorContext, ResourcesContext } from '../app-config';
 import {
   AdminRoute,
@@ -20,7 +23,6 @@ import { AdminRouter } from './admin';
 import { AppBase } from './app-base';
 import { SettingsContext } from './app-contexts';
 import { AppEvents } from './app-events';
-import './app.css';
 import { dashboardWorkspace } from './dashboard';
 import { RmfApp } from './rmf-app';
 import { robotsWorkspace } from './robots/robots-workspace';
