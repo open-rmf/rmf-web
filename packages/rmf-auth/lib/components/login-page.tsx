@@ -1,5 +1,6 @@
 import { styled } from '@mui/material';
 import React from 'react';
+
 import { LoginCard, LoginCardProps } from './login-card';
 
 const prefix = 'login-page';

@@ -2,6 +2,7 @@
 
 import { Configuration, DefaultApi, Permission, User } from 'api-client';
 import React from 'react';
+
 import Authenticator from '../authenticator';
 
 export interface UserProfile {

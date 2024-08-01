@@ -1,6 +1,7 @@
 import Debug from 'debug';
 import EventEmitter from 'eventemitter3';
 import Keycloak, { KeycloakInstance } from 'keycloak-js';
+
 import { Authenticator, AuthenticatorEventType } from './authenticator';
 
 const debug = Debug('authenticator');

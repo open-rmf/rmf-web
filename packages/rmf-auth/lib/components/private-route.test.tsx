@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
-
 import React from 'react';
 import { Router } from 'react-router-dom';
+
 import { PrivateRoute } from './private-route';
 
 describe('PrivateRoute', () => {
