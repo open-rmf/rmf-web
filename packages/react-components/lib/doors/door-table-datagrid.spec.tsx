@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react';
 import { Door as RmfDoor } from 'rmf-models/ros/rmf_building_map_msgs/msg';
 import { DoorMode as RmfDoorMode } from 'rmf-models/ros/rmf_door_msgs/msg';
+
 import { DoorDataGridTable, DoorTableData } from './door-table-datagrid';
 import { makeDoorState } from './test-utils.spec';
 

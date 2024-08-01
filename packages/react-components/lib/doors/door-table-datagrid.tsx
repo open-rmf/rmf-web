@@ -1,16 +1,17 @@
+import { Box, Button, SxProps, Typography, useMediaQuery, useTheme } from '@mui/material';
 import {
   DataGrid,
+  GridCellParams,
   GridColDef,
   GridEventListener,
   GridRowParams,
   GridValueGetterParams,
-  GridCellParams,
   MuiEvent,
 } from '@mui/x-data-grid';
-import { Box, Button, SxProps, Typography, useTheme, useMediaQuery } from '@mui/material';
-import React from 'react';
 import { DoorMode, DoorState } from 'api-client';
+import React from 'react';
 import { DoorMode as RmfDoorMode } from 'rmf-models/ros/rmf_door_msgs/msg';
+
 import { doorModeToString, doorTypeToString } from './door-utils';
 
 export function doorModeToOpModeString(mode: DoorMode): string {

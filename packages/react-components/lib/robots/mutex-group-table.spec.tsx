@@ -1,4 +1,5 @@
 import { fireEvent, render } from '@testing-library/react';
+
 import { MutexGroupData, MutexGroupTable } from './mutex-group-table';
 
 describe('Mutex group table', () => {

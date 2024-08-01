@@ -1,13 +1,14 @@
-import { IconButton, Toolbar, Typography, styled } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import TabContext from '@mui/lab/TabContext';
 import TabPanel from '@mui/lab/TabPanel';
+import { IconButton, styled, Toolbar, Typography } from '@mui/material';
 import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
+
 import { HeaderBar } from '../lib/header-bar';
+import { AppBarTab } from './appbar-tab';
 import { LogoButton } from './logo-button';
 import { NavigationBar } from './navigation-bar';
-import { AppBarTab } from './appbar-tab';
 
 export default {
   title: 'Header Bar',

@@ -1,4 +1,5 @@
 import type { TaskRequest, TaskStateOutput as TaskState } from 'api-client';
+
 import { TaskBookingLabels } from './booking-label';
 
 export function serializeTaskBookingLabel(labels: TaskBookingLabels): string[] {

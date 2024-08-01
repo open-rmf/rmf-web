@@ -1,6 +1,8 @@
+import 'react-grid-layout/css/styles.css';
+
 import React from 'react';
 import { default as GridLayout_, Layout as WindowLayout, WidthProvider } from 'react-grid-layout';
-import 'react-grid-layout/css/styles.css';
+
 import { WindowManagerStateContext } from './context';
 import { WindowProps } from './window';
 

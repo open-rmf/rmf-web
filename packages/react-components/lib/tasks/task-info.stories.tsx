@@ -1,5 +1,6 @@
 import { Paper } from '@mui/material';
 import { Meta, StoryFn } from '@storybook/react';
+
 import { TaskInfo, TaskInfoProps } from './task-info';
 import { makeTaskState } from './test-data.spec';
 

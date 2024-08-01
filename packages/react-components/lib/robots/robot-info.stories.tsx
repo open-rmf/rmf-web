@@ -1,4 +1,5 @@
 import { Meta, StoryFn } from '@storybook/react';
+
 import { RobotInfo, RobotInfoProps } from './robot-info';
 
 export default {

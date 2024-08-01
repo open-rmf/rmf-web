@@ -1,4 +1,5 @@
 import { createTheme } from '@mui/material/styles';
+
 import commonTheme from './common-theme';
 
 const base = createTheme({

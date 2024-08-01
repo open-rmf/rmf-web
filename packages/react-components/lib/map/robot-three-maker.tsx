@@ -2,9 +2,10 @@ import { Html, Text } from '@react-three/drei';
 import { MeshProps, ThreeEvent, useLoader } from '@react-three/fiber';
 import React from 'react';
 import { Color, Euler, Texture, TextureLoader, Vector3 } from 'three';
+
 import { CircleShape } from './circle-shape';
-import { TextThreeRendering } from './text-maker';
 import { debounce } from './shape-three-rendering';
+import { TextThreeRendering } from './text-maker';
 
 export interface RobotData {
   fleet: string;

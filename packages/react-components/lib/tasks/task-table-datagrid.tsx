@@ -1,7 +1,9 @@
 import { InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
-import { Box, Stack, Tooltip, Typography, styled } from '@mui/material';
+import { Box, Stack, styled, Tooltip, Typography } from '@mui/material';
 import {
   DataGrid,
+  getGridDateOperators,
+  getGridStringOperators,
   GridCellParams,
   GridColumns,
   GridEventListener,
@@ -10,14 +12,13 @@ import {
   GridSortModel,
   GridValueGetterParams,
   MuiEvent,
-  getGridDateOperators,
-  getGridStringOperators,
 } from '@mui/x-data-grid';
 import {
   ApiServerModelsRmfApiTaskStateStatus as Status,
   TaskStateOutput as TaskState,
 } from 'api-client';
 import * as React from 'react';
+
 import { TaskBookingLabels } from './booking-label';
 import { getTaskBookingLabelFromTaskState } from './task-booking-label-utils';
 

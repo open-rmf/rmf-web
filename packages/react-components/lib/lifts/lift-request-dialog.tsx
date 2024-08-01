@@ -1,9 +1,10 @@
 import { Autocomplete, styled } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import React from 'react';
+import { LiftRequest as RmfLiftRequest } from 'rmf-models/ros/rmf_lift_msgs/msg';
+
 import { ConfirmationDialog, ConfirmationDialogProps } from '../confirmation-dialog';
 import { requestDoorModeToString, requestModeToString } from './lift-utils';
-import { LiftRequest as RmfLiftRequest } from 'rmf-models/ros/rmf_lift_msgs/msg';
 
 const classes = {
   closeButton: 'lift-request-close-button',

@@ -15,9 +15,9 @@ import {
 import { styled } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import {
+  ApiServerModelsRmfApiTaskStateStatus as Status,
   EventStateOutput as EventState,
   PhaseOutput as Phase,
-  ApiServerModelsRmfApiTaskStateStatus as Status,
   TaskStateOutput as TaskState,
 } from 'api-client';
 

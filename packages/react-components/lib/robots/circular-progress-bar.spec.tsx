@@ -1,4 +1,5 @@
 import { cleanup, render } from '@testing-library/react';
+
 import { CircularProgressBar } from './circular-progress-bar';
 
 describe('Circular Progress Bar', () => {

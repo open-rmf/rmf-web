@@ -1,6 +1,7 @@
-import { Meta, StoryFn } from '@storybook/react';
-import { SimpleInfo } from '../lib';
 import { styled } from '@mui/material';
+import { Meta, StoryFn } from '@storybook/react';
+
+import { SimpleInfo } from '../lib';
 
 const classes = {
   background: 'info-card-root',

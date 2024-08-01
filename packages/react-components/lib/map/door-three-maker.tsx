@@ -2,6 +2,7 @@ import { ThreeEvent } from '@react-three/fiber';
 import React from 'react';
 import { Door as DoorModel } from 'rmf-models/ros/rmf_building_map_msgs/msg';
 import { Euler, Mesh } from 'three';
+
 import { CubeMaker } from './cube-maker';
 
 const distance = (v1_x: number, v1_y: number, v2_x: number, v2_y: number) =>

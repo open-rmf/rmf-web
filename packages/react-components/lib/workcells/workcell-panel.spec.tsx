@@ -1,7 +1,7 @@
-import { render, fireEvent } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 
-import { WorkcellPanel } from './workcell-panel';
 import { makeDispenser, makeDispenserState } from './test-utils.spec';
+import { WorkcellPanel } from './workcell-panel';
 
 function renderWorkcellPanel() {
   const dispensers = [makeDispenser({ guid: 'test_dispenser' })];

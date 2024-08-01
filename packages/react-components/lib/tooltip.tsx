@@ -1,4 +1,4 @@
-import { Tooltip as MuiTooltip, styled } from '@mui/material';
+import { styled, Tooltip as MuiTooltip } from '@mui/material';
 
 export interface TooltipProps {
   title: string;

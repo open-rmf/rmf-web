@@ -1,5 +1,5 @@
 import type {} from '@emotion/styled';
-import { TableCell, TableCellProps, styled } from '@mui/material';
+import { styled, TableCell, TableCellProps } from '@mui/material';
 
 const commonStyles = {
   overflow: 'hidden',

@@ -1,7 +1,7 @@
 import { Meta, StoryFn } from '@storybook/react';
 
-import { WorkcellPanel } from './workcell-panel';
 import { makeDispenser, makeDispenserState } from './test-utils.spec';
+import { WorkcellPanel } from './workcell-panel';
 
 export default {
   title: 'Workcell Panel',

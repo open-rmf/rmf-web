@@ -1,5 +1,6 @@
 import { cleanup, render, RenderResult, screen } from '@testing-library/react';
-import { TaskDataGridTable, Tasks, FilterFields } from './task-table-datagrid';
+
+import { FilterFields, TaskDataGridTable, Tasks } from './task-table-datagrid';
 import { makeTaskState } from './test-data.spec';
 
 describe('Tasks table', () => {

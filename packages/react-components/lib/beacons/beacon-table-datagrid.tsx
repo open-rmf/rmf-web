@@ -1,6 +1,6 @@
+import { Box, SxProps, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { DataGrid, GridCellParams, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import { BeaconState } from 'api-client';
-import { DataGrid, GridColDef, GridValueGetterParams, GridCellParams } from '@mui/x-data-grid';
-import { Box, SxProps, Typography, useTheme, useMediaQuery } from '@mui/material';
 import React from 'react';
 
 export interface BeaconDataGridTableProps {

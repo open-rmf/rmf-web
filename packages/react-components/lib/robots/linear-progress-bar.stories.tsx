@@ -1,5 +1,6 @@
 import { LinearProgressProps } from '@mui/material';
 import { Meta, StoryFn } from '@storybook/react';
+
 import { LinearProgressBar as LinearProgressBar_ } from './linear-progress-bar';
 
 export default {

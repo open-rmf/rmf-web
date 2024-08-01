@@ -1,3 +1,5 @@
+import ViewListIcon from '@mui/icons-material/ViewList';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import {
   Card,
   CardProps,
@@ -5,15 +7,14 @@ import {
   Grid,
   IconButton,
   Paper,
-  Typography,
   styled,
+  Typography,
 } from '@mui/material';
-import ViewListIcon from '@mui/icons-material/ViewList';
-import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import type { Dispenser, Ingestor } from 'api-client';
 import React from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeGrid, GridChildComponentProps } from 'react-window';
+
 import { Workcell, WorkcellState } from '.';
 import { WorkcellTable } from './workcell-table';
 

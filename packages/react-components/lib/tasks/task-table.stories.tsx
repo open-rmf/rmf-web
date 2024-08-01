@@ -1,6 +1,7 @@
 import { Paper, TableContainer, TablePagination } from '@mui/material';
 import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
+
 import { TaskTable, TaskTableProps } from './task-table';
 import { makeTaskState } from './test-data.spec';
 

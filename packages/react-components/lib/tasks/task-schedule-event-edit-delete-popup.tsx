@@ -1,5 +1,5 @@
-import React from 'react';
 import { FormControl, FormControlLabel, Radio, RadioGroup } from '@mui/material';
+import React from 'react';
 
 interface EventEditDeletePopupProps {
   currentValue: string;

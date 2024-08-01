@@ -1,5 +1,5 @@
-import { Level } from 'api-client';
 import { useLoader } from '@react-three/fiber';
+import { Level } from 'api-client';
 import { Texture, TextureLoader } from 'three';
 
 export interface ImageThreeProps {

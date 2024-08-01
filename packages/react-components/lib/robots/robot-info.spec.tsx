@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+
 import { RobotInfo } from './robot-info';
 
 describe('RobotInfo', () => {

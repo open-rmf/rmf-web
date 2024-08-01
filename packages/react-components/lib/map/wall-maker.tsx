@@ -1,4 +1,5 @@
 import { Graph } from 'api-client';
+
 import { CubeMaker } from './cube-maker';
 import { graphToWalls } from './utils';
 

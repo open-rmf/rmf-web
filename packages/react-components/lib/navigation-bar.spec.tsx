@@ -1,5 +1,6 @@
 import { Tab } from '@mui/material';
 import { cleanup, render, screen } from '@testing-library/react';
+
 import { NavigationBar } from './navigation-bar';
 
 describe('Banner Tab', () => {

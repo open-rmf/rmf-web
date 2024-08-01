@@ -1,20 +1,21 @@
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import { Box, SxProps, Typography, useMediaQuery, useTheme } from '@mui/material';
 import {
   DataGrid,
+  GridCellParams,
   GridColDef,
   GridEventListener,
   GridRowParams,
   GridValueGetterParams,
-  GridCellParams,
   MuiEvent,
 } from '@mui/x-data-grid';
-import { Box, SxProps, Typography, useTheme, useMediaQuery } from '@mui/material';
-import React from 'react';
 import { Lift, LiftState } from 'api-client';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import React from 'react';
 import { LiftState as RmfLiftState } from 'rmf-models/ros/rmf_lift_msgs/msg';
-import { doorStateToString, liftModeToString, motionStateToString } from './lift-utils';
+
 import { LiftControls } from './lift-controls';
+import { doorStateToString, liftModeToString, motionStateToString } from './lift-utils';
 
 export interface LiftTableData {
   index: number;

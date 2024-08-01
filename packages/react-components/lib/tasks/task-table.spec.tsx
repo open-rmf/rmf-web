@@ -1,4 +1,5 @@
-import { render, fireEvent } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
+
 import { TaskTable } from './task-table';
 import { makeTaskState } from './test-data.spec';
 
