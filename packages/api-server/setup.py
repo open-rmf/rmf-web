@@ -5,7 +5,7 @@ package_name = "api_server"
 setup(
     name=package_name,
     description="Open-RMF API server",
-    version="1.0.0",
+    version="0.1.0",
     packages=find_packages(exclude=["tests"]),
     author="Teo Koon Peng",
     author_email="koonpeng@openrobotics.org",

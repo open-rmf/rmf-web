@@ -1,6 +1,6 @@
 {
   "name": "react-components",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Reusable react components for building Open-RMF frontends",
   "type": "module",
   "main": "lib/index.ts",
