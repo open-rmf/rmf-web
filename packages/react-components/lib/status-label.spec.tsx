@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+
 import { StatusLabel } from './status-label';
 
 describe('variant === unknown', () => {

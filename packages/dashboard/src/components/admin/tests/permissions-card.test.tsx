@@ -1,7 +1,8 @@
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { RmfAction, getActionText } from '../../permissions';
+
+import { getActionText, RmfAction } from '../../permissions';
 import { PermissionsCard } from '../permissions-card';
 
 // TODO(AA): To remove after

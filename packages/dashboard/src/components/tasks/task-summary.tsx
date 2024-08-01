@@ -1,11 +1,10 @@
-import React from 'react';
 import {
   Box,
+  Divider,
   LinearProgress,
   LinearProgressProps,
-  Typography,
-  Divider,
   TextField,
+  Typography,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
@@ -17,10 +16,12 @@ import {
   ApiServerModelsRmfApiTaskStateStatus as Status,
   TaskStateOutput as TaskState,
 } from 'api-client';
+import React from 'react';
 import { base, getTaskBookingLabelFromTaskState, TaskBookingLabels } from 'react-components';
-import { TaskInspector } from './task-inspector';
+
 import { RmfAppContext } from '../rmf-app';
 import { TaskCancelButton } from './task-cancellation';
+import { TaskInspector } from './task-inspector';
 
 const LinearProgressWithLabel = (props: LinearProgressProps & { value: number }) => {
   return (

@@ -1,4 +1,5 @@
 import { Meta, StoryFn } from '@storybook/react';
+
 import { LogoButton } from './logo-button';
 
 export default {

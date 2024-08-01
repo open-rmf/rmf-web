@@ -1,9 +1,11 @@
 import EventEmitter from 'eventemitter3';
+
 import { Authenticator, AuthenticatorEventType } from './authenticator';
 
 export class StubAuthenticator
   extends EventEmitter<AuthenticatorEventType>
-  implements Authenticator {
+  implements Authenticator
+{
   readonly user: string;
 
   readonly token?: string;

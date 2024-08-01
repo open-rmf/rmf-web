@@ -1,4 +1,5 @@
-import { Route, Routes, Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
+
 import { AdminDrawer } from './drawer';
 import { RoleListPage } from './role-list-page';
 import { UserListPage } from './user-list-page';

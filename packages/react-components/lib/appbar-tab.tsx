@@ -1,4 +1,4 @@
-import { Tab, TabProps, styled } from '@mui/material';
+import { styled, Tab, TabProps } from '@mui/material';
 
 const StyledTab = styled((props: TabProps) => <Tab {...props} />)(({ theme }) => ({
   color: theme.palette.primary.contrastText,

@@ -4,6 +4,7 @@
 import { crc32 } from 'crc';
 import Vibrant from 'node-vibrant';
 import React from 'react';
+
 import { robotHash } from './robots';
 
 function _hash(s: string): number {

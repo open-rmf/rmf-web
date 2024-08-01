@@ -1,8 +1,8 @@
-import { LiftState } from 'api-client';
-import { Text, Line } from '@react-three/drei';
-import { BufferGeometry, BufferAttribute, Vector3, Euler } from 'three';
-import { LiftState as RmfLiftState } from 'rmf-models/ros/rmf_lift_msgs/msg';
+import { Line, Text } from '@react-three/drei';
 import { ThreeEvent } from '@react-three/fiber';
+import { LiftState } from 'api-client';
+import { LiftState as RmfLiftState } from 'rmf-models/ros/rmf_lift_msgs/msg';
+import { BufferAttribute, BufferGeometry, Euler, Vector3 } from 'three';
 
 // Gets the text to insert to the lift, the text depend on the current mode,
 // motion state and the current and destination floor of the lift.

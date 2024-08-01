@@ -1,4 +1,4 @@
-import { styled, Paper, Typography } from '@mui/material';
+import { Paper, styled, Typography } from '@mui/material';
 import { Meta, StoryFn } from '@storybook/react';
 
 export default {

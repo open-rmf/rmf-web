@@ -7,8 +7,8 @@ import {
   MenuItem,
   styled,
   Tab,
-  Tabs,
   TableContainer,
+  Tabs,
   Toolbar,
   Tooltip,
   useMediaQuery,
@@ -23,6 +23,7 @@ import {
   Tasks,
   Window,
 } from 'react-components';
+
 import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';

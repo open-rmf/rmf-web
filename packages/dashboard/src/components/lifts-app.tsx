@@ -4,6 +4,7 @@ import React from 'react';
 import { LiftDataGridTable, LiftTableData } from 'react-components';
 import { LiftRequest as RmfLiftRequest } from 'rmf-models/ros/rmf_lift_msgs/msg';
 import { throttleTime } from 'rxjs';
+
 import { AppEvents } from './app-events';
 import { LiftSummary } from './lift-summary';
 import { createMicroApp } from './micro-app';
@@ -55,9 +56,13 @@ export const LiftsApp = createMicroApp('Lifts', () => {
                     lift: lift,
                     liftState: liftState,
                     onRequestSubmit: async (_ev, doorState, requestType, destination) => {
-                      let fleet_session_ids: string[] = [];
+                      if (!rmf) {
+                        console.error('rmf ingress is undefined');
+                        return;
+                      }
+                      const fleet_session_ids: string[] = [];
                       if (requestType === RmfLiftRequest.REQUEST_END_SESSION) {
-                        const fleets = (await rmf?.fleetsApi.getFleetsFleetsGet()).data;
+                        const fleets = (await rmf.fleetsApi.getFleetsFleetsGet()).data;
                         for (const fleet of fleets) {
                           if (!fleet.robots) {
                             continue;

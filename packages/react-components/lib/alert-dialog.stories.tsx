@@ -1,5 +1,6 @@
 import { Meta, StoryFn } from '@storybook/react';
 import React from 'react';
+
 import { AlertContent, AlertDialog, DialogAlertProps } from './alert-dialog';
 
 const buildAlertDialogContent = (): AlertContent[] => {

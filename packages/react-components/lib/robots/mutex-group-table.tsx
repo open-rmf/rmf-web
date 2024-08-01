@@ -1,12 +1,12 @@
+import { useMediaQuery } from '@mui/material';
 import {
   DataGrid,
   GridColDef,
   GridEventListener,
+  GridRowParams,
   GridValueGetterParams,
   MuiEvent,
-  GridRowParams,
 } from '@mui/x-data-grid';
-import { useMediaQuery } from '@mui/material';
 import * as React from 'react';
 
 export interface MutexGroupData {

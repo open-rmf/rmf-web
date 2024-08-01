@@ -1,3 +1,5 @@
+import AddIcon from '@mui/icons-material/AddCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Button,
   IconButton,
@@ -12,12 +14,11 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/AddCircle';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { styled } from '@mui/material';
 import { Permission } from 'api-client';
 import React from 'react';
-import { styled } from '@mui/material';
 import { Loading, useAsync } from 'react-components';
+
 import { AppControllerContext } from '../app-contexts';
 import { getActionText } from '../permissions';
 import { AddPermissionDialog, AddPermissionDialogProps } from './add-permission-dialog';

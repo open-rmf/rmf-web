@@ -6,6 +6,7 @@
   "scripts": {
     "build": "vite build",
     "build-storybook": "storybook build",
+    "lint": "tsc --build && eslint --max-warnings 0 src",
     "start": "concurrently npm:start:rmf-server npm:start:react",
     "start:airport": "RMF_DASHBOARD_DEMO_MAP=airport_terminal.launch.xml pnpm run start:sim",
     "start:clinic": "RMF_DASHBOARD_DEMO_MAP=clinic.launch.xml pnpm run start:sim",

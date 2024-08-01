@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+
 import { LiftRequestDialog } from './lift-request-dialog';
 import { requestDoorModes, requestModes } from './lift-utils';
 import { makeLift, makeLiftState } from './test-utils.spec';

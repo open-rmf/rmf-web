@@ -4,6 +4,7 @@ import { Lift, LiftState } from 'api-client';
 import React from 'react';
 import { LiftThreeMaker } from 'react-components';
 import { throttleTime } from 'rxjs';
+
 import { RmfAppContext } from '../rmf-app';
 
 interface LiftsProps {

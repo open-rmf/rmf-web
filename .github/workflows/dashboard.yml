@@ -36,6 +36,8 @@ jobs:
         with:
           package: rmf-dashboard
           skip-build: true
+      - name: lint
+        run: pnpm lint
       - name: unit test
         run: pnpm run test:coverage
       - name: Upload coverage to Codecov

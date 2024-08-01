@@ -3,12 +3,12 @@ import {
   AddOutlined,
   AdminPanelSettings,
   Help,
-  // Settings,
-  Warning as Issue,
   LocalFireDepartment,
   Logout,
   Notifications,
   Report,
+  // Settings,
+  Warning as Issue,
 } from '@mui/icons-material';
 import {
   Badge,
@@ -51,11 +51,12 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom';
 import { UserProfileContext } from 'rmf-auth';
 import { Subscription } from 'rxjs';
+
 import {
+  allowedTasks,
   AppConfigContext,
   AuthenticatorContext,
   ResourcesContext,
-  allowedTasks,
 } from '../app-config';
 import { useCreateTaskFormData } from '../hooks/useCreateTaskForm';
 import useGetUsername from '../hooks/useFetchUser';

@@ -1,5 +1,6 @@
 import { styled } from '@mui/material';
 import { Meta, StoryFn } from '@storybook/react';
+
 import { ErrorOverlay } from './error-overlay';
 import { SimpleInfo, SimpleInfoProps } from './simple-info';
 

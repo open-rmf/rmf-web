@@ -1,6 +1,7 @@
-import { Divider, Typography, styled, useTheme } from '@mui/material';
+import { Divider, styled, Typography, useTheme } from '@mui/material';
 import type { TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
+
 import { TaskTimeline } from './task-timeline';
 
 const classes = {

@@ -22,6 +22,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { Door as DoorModel } from 'rmf-models/ros/rmf_building_map_msgs/msg';
 import { EMPTY, merge, scan, Subscription, switchMap, throttleTime } from 'rxjs';
 import { Box3, TextureLoader, Vector3 } from 'three';
+
 import {
   AppConfigContext,
   AuthenticatorContext,
@@ -97,7 +98,6 @@ export const MapApp: StyledComponent<MicroAppProps & MUIStyledCommonProps<Theme>
         return;
       }
 
-      let interval: number;
       let cancel = false;
 
       const updateTrajectory = async () => {
@@ -140,7 +140,7 @@ export const MapApp: StyledComponent<MicroAppProps & MUIStyledCommonProps<Theme>
       };
 
       updateTrajectory();
-      interval = window.setInterval(updateTrajectory, TrajectoryUpdateInterval);
+      const interval = window.setInterval(updateTrajectory, TrajectoryUpdateInterval);
       debug(`created trajectory update interval ${interval}`);
 
       return () => {
@@ -351,7 +351,7 @@ export const MapApp: StyledComponent<MicroAppProps & MUIStyledCommonProps<Theme>
             ];
 
             setCurrentLevelOfRobots((prevState) => {
-              if (!robotState.location?.map && prevState.hasOwnProperty(robotName)) {
+              if (!robotState.location?.map && prevState.robotName) {
                 console.warn(`Map: Fail to update robot level for ${robotId} (missing map)`);
                 const updatedState = { ...prevState };
                 delete updatedState[robotName];

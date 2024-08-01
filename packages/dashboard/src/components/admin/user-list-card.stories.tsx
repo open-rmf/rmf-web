@@ -1,5 +1,6 @@
 import { Meta, StoryFn } from '@storybook/react';
 import { MemoryRouter } from 'react-router';
+
 import { UserListCard, UserListCardProps } from './user-list-card';
 
 export default {

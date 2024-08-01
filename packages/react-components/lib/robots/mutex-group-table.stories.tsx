@@ -1,4 +1,5 @@
 import { Meta } from '@storybook/react';
+
 import { MutexGroupTable } from './mutex-group-table';
 
 export default {

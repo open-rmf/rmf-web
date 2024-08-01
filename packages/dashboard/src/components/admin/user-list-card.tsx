@@ -1,3 +1,7 @@
+import AccountIcon from '@mui/icons-material/AccountCircle';
+import AddIcon from '@mui/icons-material/AddCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SearchIcon from '@mui/icons-material/Search';
 import {
   Button,
   Card,
@@ -5,6 +9,7 @@ import {
   CardProps,
   IconButton,
   InputAdornment,
+  styled,
   Table,
   TableBody,
   TableCell,
@@ -14,15 +19,11 @@ import {
   TableRow,
   TextField,
   Typography,
-  styled,
 } from '@mui/material';
-import AccountIcon from '@mui/icons-material/AccountCircle';
-import AddIcon from '@mui/icons-material/AddCircle';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SearchIcon from '@mui/icons-material/Search';
 import React from 'react';
 import { ConfirmationDialog, Loading, useAsync } from 'react-components';
 import { useNavigate } from 'react-router';
+
 import { AppControllerContext } from '../app-contexts';
 import { CreateUserDialog, CreateUserDialogProps } from './create-user-dialog';
 

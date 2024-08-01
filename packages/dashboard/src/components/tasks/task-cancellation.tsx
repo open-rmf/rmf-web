@@ -1,12 +1,13 @@
 import { Button, ButtonProps, Tooltip, Typography } from '@mui/material';
 import { TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
+import { ConfirmationDialog } from 'react-components';
+import { UserProfile, UserProfileContext } from 'rmf-auth';
+
 import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
-import { RmfAppContext } from '../rmf-app';
-import { UserProfile, UserProfileContext } from 'rmf-auth';
 import { Enforcer } from '../permissions';
-import { ConfirmationDialog } from 'react-components';
+import { RmfAppContext } from '../rmf-app';
 
 export interface TaskCancelButtonProp extends ButtonProps {
   taskId: string | null;

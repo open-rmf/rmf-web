@@ -1,7 +1,7 @@
-import { ChangeEvent } from 'react';
-import { Level } from 'api-client';
-import { AppEvents } from '../app-events';
-import React from 'react';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import LayersIcon from '@mui/icons-material/Layers';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import {
   Box,
   Checkbox,
@@ -13,10 +13,11 @@ import {
   TextField,
   useMediaQuery,
 } from '@mui/material';
-import LayersIcon from '@mui/icons-material/Layers';
-import ZoomInIcon from '@mui/icons-material/ZoomIn';
-import ZoomOutIcon from '@mui/icons-material/ZoomOut';
-import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import { Level } from 'api-client';
+import { ChangeEvent } from 'react';
+import React from 'react';
+
+import { AppEvents } from '../app-events';
 
 interface LayersControllerProps {
   disabledLayers: Record<string, boolean>;

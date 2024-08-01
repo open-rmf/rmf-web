@@ -1,4 +1,5 @@
 import { LiftState as RmfLiftState } from 'rmf-models/ros/rmf_lift_msgs/msg';
+
 import { LiftDataGridTable, LiftTableData } from './lift-table-datagrid';
 import { makeLift } from './test-utils.spec';
 

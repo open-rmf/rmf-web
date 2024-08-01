@@ -1,11 +1,12 @@
 import { ThreeEvent } from '@react-three/fiber';
-import { Mesh } from 'three';
 import { DoorState, Lift, LiftState } from 'api-client';
 import React from 'react';
 import { DoorThreeMaker } from 'react-components';
 import { Door as RmfDoor } from 'rmf-models/ros/rmf_building_map_msgs/msg';
 import { DoorMode as RmfDoorMode } from 'rmf-models/ros/rmf_door_msgs/msg';
 import { throttleTime } from 'rxjs';
+import { Mesh } from 'three';
+
 import { RmfAppContext } from '../rmf-app';
 
 interface DoorProps {

@@ -1,4 +1,5 @@
 import type { BuildingMap, GraphNode } from 'api-client';
+
 import { Place } from '../place';
 import { RobotData } from './robot-three-maker';
 

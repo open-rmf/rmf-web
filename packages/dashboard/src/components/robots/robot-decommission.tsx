@@ -2,17 +2,18 @@ import {
   Button,
   ButtonProps,
   Checkbox,
-  FormGroup,
   FormControlLabel,
+  FormGroup,
   Tooltip,
   Typography,
 } from '@mui/material';
-import { AppEvents } from '../app-events';
 import { RobotState } from 'api-client';
 import React from 'react';
-import { AppControllerContext } from '../app-contexts';
-import { RmfAppContext } from '../rmf-app';
 import { ConfirmationDialog } from 'react-components';
+
+import { AppControllerContext } from '../app-contexts';
+import { AppEvents } from '../app-events';
+import { RmfAppContext } from '../rmf-app';
 
 export interface RobotDecommissionButtonProp extends Omit<ButtonProps, 'onClick' | 'autoFocus'> {
   fleet: string;

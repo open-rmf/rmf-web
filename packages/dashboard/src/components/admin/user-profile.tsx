@@ -1,7 +1,9 @@
+import AccountIcon from '@mui/icons-material/AccountCircle';
+import MoreIcon from '@mui/icons-material/MoreVert';
 import {
   Card,
-  CardProps,
   CardHeader,
+  CardProps,
   Checkbox,
   FormControlLabel,
   IconButton,
@@ -9,11 +11,10 @@ import {
   MenuItem,
   styled,
 } from '@mui/material';
-import AccountIcon from '@mui/icons-material/AccountCircle';
-import MoreIcon from '@mui/icons-material/MoreVert';
 import { User } from 'api-client';
 import React from 'react';
 import { useAsync } from 'react-components';
+
 import { AppControllerContext } from '../app-contexts';
 
 const classes = {

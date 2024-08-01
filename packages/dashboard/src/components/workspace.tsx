@@ -3,6 +3,7 @@ import DesignModeIcon from '@mui/icons-material/AutoFixNormal';
 import { Box, Fab, IconButton, Menu, MenuItem, Typography, useTheme } from '@mui/material';
 import React from 'react';
 import { WindowContainer, WindowLayout } from 'react-components';
+
 import { AppControllerContext } from './app-contexts';
 import { AppRegistry } from './app-registry';
 

@@ -4,6 +4,7 @@ import React from 'react';
 import { TaskInfo } from 'react-components';
 // import { UserProfileContext } from 'rmf-auth';
 import { of, switchMap } from 'rxjs';
+
 import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { createMicroApp } from '../micro-app';

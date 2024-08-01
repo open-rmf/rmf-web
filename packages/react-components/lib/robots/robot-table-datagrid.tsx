@@ -1,15 +1,16 @@
+import { Box, SxProps, Typography, useMediaQuery, useTheme } from '@mui/material';
 import {
   DataGrid,
+  GridCellParams,
   GridColDef,
   GridEventListener,
+  GridRowParams,
   GridValueGetterParams,
   MuiEvent,
-  GridRowParams,
-  GridCellParams,
 } from '@mui/x-data-grid';
-import { Box, SxProps, Typography, useTheme, useMediaQuery } from '@mui/material';
-import * as React from 'react';
 import { ApiServerModelsRmfApiRobotStateStatus as Status, Commission } from 'api-client';
+import * as React from 'react';
+
 import { robotStatusToUpperCase } from './utils';
 
 export interface RobotTableData {

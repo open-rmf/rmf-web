@@ -11,6 +11,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { LiftState } from 'rmf-models/ros/rmf_lift_msgs/msg';
+
 import { doorStateToString, motionStateToString } from './lift-utils';
 
 export interface LiftCardProps extends CardProps {

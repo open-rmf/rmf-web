@@ -1,9 +1,11 @@
+import 'react-grid-layout/css/styles.css';
+
 import type {} from '@emotion/styled';
 import CloseIcon from '@mui/icons-material/Close';
 import { Grid, IconButton, Paper, PaperProps, styled, useTheme } from '@mui/material';
 import React from 'react';
 import { Layout } from 'react-grid-layout';
-import 'react-grid-layout/css/styles.css';
+
 import { WindowManagerStateContext } from './context';
 import { WindowToolbar } from './window-toolbar';
 

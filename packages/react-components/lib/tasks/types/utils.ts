@@ -1,4 +1,5 @@
 import { TaskRequest } from 'api-client';
+
 import { TaskDefinition, TaskDescription } from '../create-task';
 import {
   getTaskBookingLabelFromTaskRequest,
@@ -28,9 +29,9 @@ import {
   makeDeliveryPickupTaskShortDescription,
 } from './delivery-custom';
 import {
-  PatrolTaskDefinition,
   makeDefaultPatrolTaskDescription,
   makePatrolTaskShortDescription,
+  PatrolTaskDefinition,
 } from './patrol';
 
 export function isNonEmptyString(value: string): boolean {

@@ -1,5 +1,6 @@
 import { Button, Paper, Typography } from '@mui/material';
 import { Meta, StoryFn } from '@storybook/react';
+
 import { ConfirmationDialog, ConfirmationDialogProps } from './confirmation-dialog';
 
 export default {

@@ -1,6 +1,7 @@
 import { Card, CardContent, CardProps, Grid, SxProps, Typography, useTheme } from '@mui/material';
 import React from 'react';
 import { DoorMode } from 'rmf-models/ros/rmf_door_msgs/msg';
+
 import { doorModeToString, doorTypeToString } from './door-utils';
 
 export interface DoorCardProps extends CardProps {

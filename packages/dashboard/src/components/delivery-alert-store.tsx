@@ -1,3 +1,8 @@
+import { Button, Divider, TextField, Tooltip, useMediaQuery, useTheme } from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 import {
   Action as DeliveryAlertAction,
   ApiServerModelsDeliveryAlertsDeliveryAlertCategory as DeliveryAlertCategory,
@@ -6,16 +11,12 @@ import {
   TaskStateOutput as TaskState,
 } from 'api-client';
 import React from 'react';
-import { Button, TextField, Tooltip, Divider, useMediaQuery, useTheme } from '@mui/material';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
 import { base } from 'react-components';
+
 import { AppControllerContext } from './app-contexts';
 import { RmfAppContext } from './rmf-app';
-import { TaskInspector } from './tasks/task-inspector';
 import { TaskCancelButton } from './tasks/task-cancellation';
+import { TaskInspector } from './tasks/task-inspector';
 
 const categoryToText = (category: DeliveryAlertCategory): string => {
   switch (category) {

@@ -1,4 +1,5 @@
-import { render, fireEvent } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
+
 import { EventEditDeletePopup } from './task-schedule-event-edit-delete-popup';
 
 describe('EventEditDeletePopup', () => {
