@@ -5,6 +5,7 @@ import { render as render_, RenderOptions as RenderOptions_ } from '@testing-lib
 import React from 'react';
 import { rmfLight } from 'react-components';
 import { MemoryRouter } from 'react-router';
+
 import { UserProfile, UserProfileContext } from '../../auth';
 
 export const superUser: UserProfile = {
