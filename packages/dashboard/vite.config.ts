@@ -41,11 +41,16 @@ const injectGlobals: Plugin = {
   },
 };
 
+function booleanToString(b: boolean | null | undefined) {
+  return b ? 'true' : 'false';
+}
+
 // https://vitejs.dev/config/
 export default defineConfig({
   define: {
     APP_CONFIG_AUTH_PROVIDER: `'${appConfig.auth.provider}'`,
-    APP_CONFIG_RMF_SERVER_URL: `'${appConfig.rmfServerUrl}'`,
+    APP_CONFIG_ENABLE_CUSTOM_TABS: `${booleanToString(appConfig.adminTab)}`,
+    APP_CONFIG_ENABLE_ADMIN_TAB: `${booleanToString(appConfig.adminTab)}`,
   },
   plugins: [injectGlobals, react()],
   test: {

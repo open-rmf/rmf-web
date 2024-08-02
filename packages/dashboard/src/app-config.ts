@@ -52,8 +52,6 @@ export interface AppConfig {
   defaultMapLevel: string;
   allowedTasks: TaskResource[];
   resources: Record<string, Resources> & Record<'default', Resources>;
-  customTabs?: boolean;
-  adminTab?: boolean;
   // FIXME(koonpeng): this is used for very specific tasks, should be removed when mission
   // system is implemented.
   cartIds: string[];
@@ -63,6 +61,10 @@ export interface AppConfigJson extends AppConfig {
   // these will be injected as global variables
   rmfServerUrl: string;
   trajectoryServerUrl: string;
+
+  // these will be injected as defines and potentially be tree shaken out
+  customTabs?: boolean;
+  adminTab?: boolean;
 }
 
 // we specifically don't export app config to force consumers to use the context.
