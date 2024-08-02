@@ -41,13 +41,7 @@ export interface KeycloakAuthConfig {
   };
 }
 
-export interface AuthConfig {
-  provider: string;
-}
-
 export interface AppConfig {
-  rmfServerUrl: string;
-  trajectoryServerUrl: string;
   auth: KeycloakAuthConfig | StubAuthConfig;
   helpLink: string;
   reportIssue: string;
@@ -65,22 +59,28 @@ export interface AppConfig {
   cartIds: string[];
 }
 
+export interface AppConfigJson extends AppConfig {
+  // these will be injected as global variables
+  rmfServerUrl: string;
+  trajectoryServerUrl: string;
+}
+
 // we specifically don't export app config to force consumers to use the context.
 const appConfig: AppConfig = appConfigJson as AppConfig;
 
 export const AppConfigContext = React.createContext(appConfig);
 
 const authenticator: Authenticator = (() => {
-  switch (appConfig.auth.provider) {
-    case 'keycloak':
-      return new KeycloakAuthenticator(
-        appConfig.auth.config,
-        `${window.location.origin}${BasePath}/silent-check-sso.html`,
-      );
-    case 'stub':
-      return new StubAuthenticator();
-    default:
-      throw new Error('unknown auth provider');
+  // must use if statement instead of switch for vite tree shaking to work
+  if (APP_CONFIG_AUTH_PROVIDER === 'keycloak') {
+    return new KeycloakAuthenticator(
+      (appConfig.auth as KeycloakAuthConfig).config,
+      `${window.location.origin}${BasePath}/silent-check-sso.html`,
+    );
+  } else if (APP_CONFIG_AUTH_PROVIDER === 'stub') {
+    return new StubAuthenticator();
+  } else {
+    throw new Error('unknown auth provider');
   }
 })();
 
