@@ -1,5 +1,6 @@
 import Debug from 'debug';
 import { io, Socket } from 'socket.io-client';
+
 import {
   AlertRequest,
   AlertResponse,
@@ -14,8 +15,6 @@ import {
   TaskEventLog,
   TaskStateOutput,
 } from './openapi';
-
-// type Alert = TortoiseContribPydanticCreatorApiServerModelsTortoiseModelsAlertsAlertLeaf;
 
 const debug = Debug('rmf-client');
 

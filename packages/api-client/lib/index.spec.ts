@@ -1,4 +1,5 @@
 import { beforeEach, describe, it, vi } from 'vitest';
+
 import { SioClient } from '.';
 
 describe('subscriptions', () => {
