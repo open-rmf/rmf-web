@@ -96,32 +96,38 @@ export default function App(): JSX.Element | null {
                 }
               />
 
-              <Route
-                path={CustomRoute1}
-                element={
-                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-                    <ManagedWorkspace key="custom1" workspaceId="custom1" />
-                  </PrivateRoute>
-                }
-              />
+              {APP_CONFIG_ENABLE_CUSTOM_TABS && (
+                <Route
+                  path={CustomRoute1}
+                  element={
+                    <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
+                      <ManagedWorkspace key="custom1" workspaceId="custom1" />
+                    </PrivateRoute>
+                  }
+                />
+              )}
 
-              <Route
-                path={CustomRoute2}
-                element={
-                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-                    <ManagedWorkspace key="custom2" workspaceId="custom2" />
-                  </PrivateRoute>
-                }
-              />
+              {APP_CONFIG_ENABLE_CUSTOM_TABS && (
+                <Route
+                  path={CustomRoute2}
+                  element={
+                    <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
+                      <ManagedWorkspace key="custom2" workspaceId="custom2" />
+                    </PrivateRoute>
+                  }
+                />
+              )}
 
-              <Route
-                path={AdminRoute}
-                element={
-                  <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
-                    <AdminRouter />
-                  </PrivateRoute>
-                }
-              />
+              {APP_CONFIG_ENABLE_ADMIN_TAB && (
+                <Route
+                  path={AdminRoute}
+                  element={
+                    <PrivateRoute unauthorizedComponent={loginRedirect} user={user}>
+                      <AdminRouter />
+                    </PrivateRoute>
+                  }
+                />
+              )}
             </Routes>
           </AppBase>
         </RmfApp>
