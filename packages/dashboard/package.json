@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "vite build",
+    "build": "pnpm run --filter {.}^... build && vite build",
     "build-storybook": "storybook build",
     "lint": "tsc --build && eslint --max-warnings 0 src",
     "start": "concurrently npm:start:rmf-server npm:start:react",
