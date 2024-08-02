@@ -58,8 +58,8 @@ export interface AppConfig {
   defaultMapLevel: string;
   allowedTasks: TaskResource[];
   resources: Record<string, Resources> & Record<'default', Resources>;
-  customTabs: boolean;
-  adminTab: boolean;
+  customTabs?: boolean;
+  adminTab?: boolean;
   // FIXME(koonpeng): this is used for very specific tasks, should be removed when mission
   // system is implemented.
   cartIds: string[];
@@ -73,9 +73,6 @@ export const AppConfigContext = React.createContext(appConfig);
 const authenticator: Authenticator = (() => {
   switch (appConfig.auth.provider) {
     case 'keycloak':
-      if (!import.meta.env.VITE_KEYCLOAK_CONFIG) {
-        throw new Error('missing VITE_KEYCLOAK_CONFIG');
-      }
       return new KeycloakAuthenticator(
         appConfig.auth.config,
         `${window.location.origin}${BasePath}/silent-check-sso.html`,
