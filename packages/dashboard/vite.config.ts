@@ -39,12 +39,15 @@ function booleanToString(b: boolean | null | undefined) {
   return b ? 'true' : 'false';
 }
 
+const buildConfig = appConfig.buildConfig;
+
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: buildConfig.baseUrl,
   define: {
-    APP_CONFIG_AUTH_PROVIDER: `'${appConfig.buildConfig.authProvider}'`,
-    APP_CONFIG_ENABLE_CUSTOM_TABS: `${booleanToString(appConfig.buildConfig.customTabs)}`,
-    APP_CONFIG_ENABLE_ADMIN_TAB: `${booleanToString(appConfig.buildConfig.adminTab)}`,
+    APP_CONFIG_AUTH_PROVIDER: `'${buildConfig.authProvider}'`,
+    APP_CONFIG_ENABLE_CUSTOM_TABS: `${booleanToString(buildConfig.customTabs)}`,
+    APP_CONFIG_ENABLE_ADMIN_TAB: `${booleanToString(buildConfig.adminTab)}`,
   },
   plugins: [injectGlobals, react()],
   test: {

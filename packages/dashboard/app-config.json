@@ -33,6 +33,7 @@
   },
   "cartIds": [],
   "buildConfig": {
+    "baseUrl": "/",
     "authProvider": "stub",
     "customTabs": false,
     "adminTab": false

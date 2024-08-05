@@ -56,6 +56,7 @@ export interface RuntimeConfig {
 
 // these will be injected as defines and potentially be tree shaken out
 export interface BuildConfig {
+  baseUrl: string;
   authProvider: 'keycloak' | 'stub';
   customTabs?: boolean;
   adminTab?: boolean;
