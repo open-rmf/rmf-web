@@ -138,7 +138,7 @@ export default function App(): JSX.Element | null {
             element={
               <LoginPage
                 title={'Dashboard'}
-                logo="assets/defaultLogo.png"
+                logo={resources.logos.header}
                 onLoginClick={() =>
                   authenticator.login(`${window.location.origin}${DashboardRoute}`)
                 }
