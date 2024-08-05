@@ -120,7 +120,9 @@ def generate_messages(roslib: RosLibrary, pkg: str, outdir: str):
 
 
 def generate_init(namespace: Namespace, outdir: str):
-    with open(joinp(outdir, namespace.full_name, "__init__.py"), mode="w") as f:
+    with open(
+        joinp(outdir, namespace.full_name, "__init__.py"), mode="w", encoding="utf8"
+    ) as f:
         for m in namespace.messages.values():
             name = m.structure.namespaced_type.name
             f.write(f"from .{name} import {name}\n")
@@ -139,6 +141,9 @@ def generate_modules(pkgs: Sequence[str], outdir: str):
         makedirs(pkg_outdir, exist_ok=True)
         generate_messages(roslib, pkg_index.pkg_name, outdir)
         generate_init(pkg_index.root_ns, outdir)
+
+    with open(joinp(outdir, "__init__.py"), mode="w", encoding="utf8"):
+        pass
 
 
 def generate(pkgs: Sequence[str], outdir: str):
