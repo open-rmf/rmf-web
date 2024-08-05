@@ -31,9 +31,9 @@ import {
   TaskStateOutput as TaskState,
 } from 'api-client';
 import axios from 'axios';
-import { Authenticator } from 'rmf-auth';
 import { map, Observable, shareReplay } from 'rxjs';
 
+import { Authenticator } from '../../auth';
 import { NegotiationStatusManager } from '../../managers/negotiation-status-manager';
 import {
   DefaultTrajectoryManager,

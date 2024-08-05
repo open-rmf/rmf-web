@@ -7,9 +7,9 @@ import './app.css';
 
 import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { LoginPage, PrivateRoute } from 'rmf-auth';
 
 import { AppConfigContext, AuthenticatorContext, ResourcesContext } from '../app-config';
+import { LoginPage, PrivateRoute } from '../auth';
 import {
   AdminRoute,
   CustomRoute1,

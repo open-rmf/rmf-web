@@ -49,7 +49,6 @@ import {
   NavigationBar,
 } from 'react-components';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { UserProfileContext } from 'rmf-auth';
 import { Subscription } from 'rxjs';
 
 import {
@@ -58,6 +57,7 @@ import {
   AuthenticatorContext,
   ResourcesContext,
 } from '../app-config';
+import { UserProfileContext } from '../auth';
 import { useCreateTaskFormData } from '../hooks/useCreateTaskForm';
 import useGetUsername from '../hooks/useFetchUser';
 import {

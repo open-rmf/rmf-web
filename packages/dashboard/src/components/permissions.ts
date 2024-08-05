@@ -1,5 +1,5 @@
 // import { Task } from 'api-client';
-import { UserProfile } from 'rmf-auth';
+import { UserProfile } from '../auth';
 
 export enum RmfAction {
   TaskRead = 'task_read',

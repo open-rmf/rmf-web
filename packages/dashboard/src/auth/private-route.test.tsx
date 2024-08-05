@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { createMemoryHistory, MemoryHistory } from 'history';
-import React from 'react';
 import { Router } from 'react-router-dom';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { PrivateRoute } from './private-route';
 
@@ -13,7 +13,7 @@ describe('PrivateRoute', () => {
     history.push('/private');
   });
 
-  test('renders unauthorizedComponent when unauthenticated', () => {
+  it('renders unauthorizedComponent when unauthenticated', () => {
     const root = render(
       <Router location={history.location} navigator={history}>
         <PrivateRoute path="/private" unauthorizedComponent="test" user={null} />
@@ -22,7 +22,7 @@ describe('PrivateRoute', () => {
     expect(() => root.getByText('test')).not.toThrow();
   });
 
-  test('renders children when authenticated', () => {
+  it('renders children when authenticated', () => {
     const root = render(
       <Router location={history.location} navigator={history}>
         <PrivateRoute path="/private" user="test" unauthorizedComponent="unauthorized">
