@@ -24,17 +24,11 @@ const injectGlobals: Plugin = {
   transformIndexHtml: {
     order: 'pre', // must be injected before the app
     handler: () => {
-      const globals = {
-        RMF_SERVER_URL: appConfig.rmfServerUrl,
-        TRAJECTORY_SERVER_URL: appConfig.trajectoryServerUrl,
-      };
       return [
         {
           tag: 'script',
           injectTo: 'head',
-          children: Object.entries(globals)
-            .map(([k, v]) => `const ${k}='${v}'`)
-            .join(';'),
+          children: `const APP_CONFIG=${JSON.stringify(appConfig)}`,
         },
       ];
     },
@@ -48,9 +42,9 @@ function booleanToString(b: boolean | null | undefined) {
 // https://vitejs.dev/config/
 export default defineConfig({
   define: {
-    APP_CONFIG_AUTH_PROVIDER: `'${appConfig.auth.provider}'`,
-    APP_CONFIG_ENABLE_CUSTOM_TABS: `${booleanToString(appConfig.adminTab)}`,
-    APP_CONFIG_ENABLE_ADMIN_TAB: `${booleanToString(appConfig.adminTab)}`,
+    APP_CONFIG_AUTH_PROVIDER: `'${appConfig.buildConfig.authProvider}'`,
+    APP_CONFIG_ENABLE_CUSTOM_TABS: `${booleanToString(appConfig.buildConfig.customTabs)}`,
+    APP_CONFIG_ENABLE_ADMIN_TAB: `${booleanToString(appConfig.buildConfig.adminTab)}`,
   },
   plugins: [injectGlobals, react()],
   test: {

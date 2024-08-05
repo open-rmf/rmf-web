@@ -33,6 +33,7 @@ import {
 import axios from 'axios';
 import { map, Observable, shareReplay } from 'rxjs';
 
+import { AppConfig } from '../../app-config';
 import { Authenticator } from '../../auth';
 import { NegotiationStatusManager } from '../../managers/negotiation-status-manager';
 import {
@@ -61,7 +62,7 @@ export class RmfIngress {
   negotiationStatusManager: NegotiationStatusManager;
   trajectoryManager: RobotTrajectoryManager;
 
-  constructor(authenticator: Authenticator) {
+  constructor(appConfig: AppConfig, authenticator: Authenticator) {
     if (!authenticator.user) {
       throw new Error(
         'user is undefined, RmfIngress should only be initialized after the authenticator is ready',
@@ -70,7 +71,7 @@ export class RmfIngress {
 
     this._sioClient = (() => {
       const token = authenticator.token;
-      const url = new URL(RMF_SERVER_URL);
+      const url = new URL(appConfig.rmfServerUrl);
       const path = url.pathname === '/' ? '' : url.pathname;
 
       const options: ConstructorParameters<typeof SioClient>[1] = {
@@ -111,7 +112,7 @@ export class RmfIngress {
     );
     const apiConfig = new Configuration({
       accessToken: authenticator.token,
-      basePath: RMF_SERVER_URL,
+      basePath: appConfig.rmfServerUrl,
     });
 
     this.beaconsApi = new BeaconsApi(apiConfig, undefined, axiosInst);
@@ -127,7 +128,7 @@ export class RmfIngress {
     this.adminApi = new AdminApi(apiConfig, undefined, axiosInst);
     this.deliveryAlertsApi = new DeliveryAlertsApi(apiConfig, undefined, axiosInst);
 
-    const ws = new WebSocket(TRAJECTORY_SERVER_URL);
+    const ws = new WebSocket(appConfig.trajectoryServerUrl);
     this.trajectoryManager = new DefaultTrajectoryManager(ws, authenticator);
     this.negotiationStatusManager = new NegotiationStatusManager(ws, authenticator);
   }

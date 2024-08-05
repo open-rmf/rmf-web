@@ -1,7 +1,6 @@
 import React from 'react';
 import { getDefaultTaskDefinition, TaskDefinition } from 'react-components';
 
-import appConfigJson from '../app-config.json';
 import { Authenticator, KeycloakAuthenticator, StubAuthenticator } from './auth';
 import { BasePath } from './util/url';
 
@@ -28,21 +27,18 @@ export interface TaskResource {
   displayName?: string;
 }
 
-export interface StubAuthConfig {
-  provider: 'stub';
-}
+export interface StubAuthConfig {}
 
 export interface KeycloakAuthConfig {
-  provider: 'keycloak';
-  config: {
-    url: string;
-    realm: string;
-    clientId: string;
-  };
+  url: string;
+  realm: string;
+  clientId: string;
 }
 
-export interface AppConfig {
-  auth: KeycloakAuthConfig | StubAuthConfig;
+export interface RuntimeConfig {
+  rmfServerUrl: string;
+  trajectoryServerUrl: string;
+  authConfig: KeycloakAuthConfig | StubAuthConfig;
   helpLink: string;
   reportIssue: string;
   pickupZones: string[];
@@ -57,26 +53,26 @@ export interface AppConfig {
   cartIds: string[];
 }
 
-export interface AppConfigJson extends AppConfig {
-  // these will be injected as global variables
-  rmfServerUrl: string;
-  trajectoryServerUrl: string;
-
-  // these will be injected as defines and potentially be tree shaken out
+// these will be injected as defines and potentially be tree shaken out
+export interface BuildConfig {
+  authProvider: 'keycloak' | 'stub';
   customTabs?: boolean;
   adminTab?: boolean;
 }
 
-// we specifically don't export app config to force consumers to use the context.
-const appConfig: AppConfig = appConfigJson as AppConfig;
+export interface AppConfig extends RuntimeConfig {
+  buildConfig: BuildConfig;
+}
 
-export const AppConfigContext = React.createContext(appConfig);
+declare const APP_CONFIG: AppConfig;
+
+export const AppConfigContext = React.createContext(APP_CONFIG);
 
 const authenticator: Authenticator = (() => {
   // must use if statement instead of switch for vite tree shaking to work
   if (APP_CONFIG_AUTH_PROVIDER === 'keycloak') {
     return new KeycloakAuthenticator(
-      (appConfig.auth as KeycloakAuthConfig).config,
+      APP_CONFIG.authConfig as KeycloakAuthConfig,
       `${window.location.origin}${BasePath}/silent-check-sso.html`,
     );
   } else if (APP_CONFIG_AUTH_PROVIDER === 'stub') {
@@ -88,11 +84,11 @@ const authenticator: Authenticator = (() => {
 
 export const AuthenticatorContext = React.createContext(authenticator);
 
-export const ResourcesContext = React.createContext<Resources>(appConfig.resources.default);
+export const ResourcesContext = React.createContext<Resources>(APP_CONFIG.resources.default);
 
 // FIXME(koonepng): This should be fully definition in app config when the dashboard actually
 // supports configurating all the fields.
-export const allowedTasks: TaskDefinition[] = appConfig.allowedTasks.map((taskResource) => {
+export const allowedTasks: TaskDefinition[] = APP_CONFIG.allowedTasks.map((taskResource) => {
   const defaultTaskDefinition = getDefaultTaskDefinition(taskResource.taskDefinitionId);
   if (!defaultTaskDefinition) {
     throw Error(`Invalid tasks configured for dashboard: [${taskResource.taskDefinitionId}]`);
