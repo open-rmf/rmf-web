@@ -1,6 +1,7 @@
 import React from 'react';
 import { getDefaultTaskDefinition, TaskDefinition } from 'react-components';
 
+import testConfig from '../app-config.json';
 import { Authenticator, KeycloakAuthenticator, StubAuthenticator } from './auth';
 import { BasePath } from './util/url';
 
@@ -66,7 +67,17 @@ export interface AppConfig extends RuntimeConfig {
 
 declare const APP_CONFIG: AppConfig;
 
-export const AppConfigContext = React.createContext(APP_CONFIG);
+const appConfig: AppConfig = (() => {
+  if (import.meta.env.PROD) {
+    return APP_CONFIG;
+  } else {
+    // globals cannot be injected in tests so we need a fallback, this should be
+    // removed by terser in prod builds.
+    return testConfig as AppConfig;
+  }
+})();
+
+export const AppConfigContext = React.createContext(appConfig);
 
 const authenticator: Authenticator = (() => {
   // must use if statement instead of switch for vite tree shaking to work
@@ -84,11 +95,11 @@ const authenticator: Authenticator = (() => {
 
 export const AuthenticatorContext = React.createContext(authenticator);
 
-export const ResourcesContext = React.createContext<Resources>(APP_CONFIG.resources.default);
+export const ResourcesContext = React.createContext<Resources>(appConfig.resources.default);
 
 // FIXME(koonepng): This should be fully definition in app config when the dashboard actually
 // supports configurating all the fields.
-export const allowedTasks: TaskDefinition[] = APP_CONFIG.allowedTasks.map((taskResource) => {
+export const allowedTasks: TaskDefinition[] = appConfig.allowedTasks.map((taskResource) => {
   const defaultTaskDefinition = getDefaultTaskDefinition(taskResource.taskDefinitionId);
   if (!defaultTaskDefinition) {
     throw Error(`Invalid tasks configured for dashboard: [${taskResource.taskDefinitionId}]`);
