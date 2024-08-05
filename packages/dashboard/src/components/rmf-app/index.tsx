@@ -1,7 +1,7 @@
 import React from 'react';
-import { UserProfileProvider } from 'rmf-auth';
 
 import { AppConfigContext, AuthenticatorContext } from '../../app-config';
+import { UserProfileProvider } from '../../auth';
 import { RmfIngress } from './rmf-ingress';
 
 export * from './rmf-ingress';

@@ -5,7 +5,6 @@ on:
       - '.github/workflows/dashboard.yml'
       - 'packages/dashboard/**'
       - 'packages/react-components/**'
-      - 'packages/rmf-auth/**'
       - 'packages/rmf-models/**'
       - 'packages/api-client/**'
   push:

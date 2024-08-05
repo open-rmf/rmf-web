@@ -1,10 +1,10 @@
 import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { StubAuthenticator, UserProfile, UserProfileContext } from 'rmf-auth';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AuthenticatorContext, Resources, ResourcesContext } from '../../app-config';
+import { StubAuthenticator, UserProfile, UserProfileContext } from '../../auth';
 import { AppController, AppControllerContext } from '../app-contexts';
 import AppBar from '../appbar';
 import { render } from '../tests/test-utils';
@@ -24,7 +24,7 @@ describe('AppBar', () => {
     appController = makeMockAppController();
   });
 
-  test('renders with navigation bar', () => {
+  it('renders with navigation bar', () => {
     const root = render(
       <Base>
         <AppBar />
@@ -33,7 +33,7 @@ describe('AppBar', () => {
     expect(root.getAllByRole('tablist').length > 0).toBeTruthy();
   });
 
-  test('user button is shown when there is an authenticated user', () => {
+  it('user button is shown when there is an authenticated user', () => {
     const profile: UserProfile = {
       user: { username: 'test', is_admin: false, roles: [] },
       permissions: [],
@@ -48,7 +48,7 @@ describe('AppBar', () => {
     expect(root.getByLabelText('user-btn')).toBeTruthy();
   });
 
-  test('logout is triggered when logout button is clicked', async () => {
+  it('logout is triggered when logout button is clicked', async () => {
     const authenticator = new StubAuthenticator('test');
     const spy = vi.spyOn(authenticator, 'logout').mockImplementation(() => undefined as any);
     const profile: UserProfile = {
@@ -70,7 +70,7 @@ describe('AppBar', () => {
     await expect(waitFor(() => expect(spy).toHaveBeenCalledTimes(1))).resolves.not.toThrow();
   });
 
-  test('uses headerLogo from logo resources manager', async () => {
+  it('uses headerLogo from logo resources manager', async () => {
     const resources: Resources = {
       fleets: {},
       logos: {

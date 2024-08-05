@@ -1,5 +1,4 @@
-import { Authenticator } from 'rmf-auth';
-
+import { Authenticator } from '../auth';
 import { Trajectory } from './robot-trajectory-manager';
 import TrajectorySocketManager from './trajectory-socket-manager';
 
