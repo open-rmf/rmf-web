@@ -344,7 +344,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
             aria-label="Tasks"
             onTabClick={() => navigate(TasksRoute)}
           />
-          {appConfig.customTabs && (
+          {APP_CONFIG_ENABLE_CUSTOM_TABS && (
             <>
               <StyledAppBarTab
                 label="Custom 1"
@@ -360,7 +360,7 @@ export const AppBar = React.memo(({ extraToolbarItems }: AppBarProps): React.Rea
               />
             </>
           )}
-          {appConfig.adminTab && profile?.user.is_admin && (
+          {APP_CONFIG_ENABLE_ADMIN_TAB && profile?.user.is_admin && (
             <StyledAppBarTab
               label="Admin"
               value="admin"

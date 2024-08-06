@@ -27,8 +27,8 @@
       "prettier --write"
     ],
     "**/*.py": [
-      ".venv/bin/isort",
-      ".venv/bin/black"
+      ".venv/bin/pipenv run isort",
+      ".venv/bin/pipenv run black"
     ]
   },
   "overrides": {

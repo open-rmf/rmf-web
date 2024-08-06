@@ -1,7 +1,7 @@
 import React from 'react';
 import { getDefaultTaskDefinition, TaskDefinition } from 'react-components';
 
-import appConfigJson from '../app-config.json';
+import testConfig from '../app-config.json';
 import { Authenticator, KeycloakAuthenticator, StubAuthenticator } from './auth';
 import { BasePath } from './util/url';
 
@@ -28,27 +28,18 @@ export interface TaskResource {
   displayName?: string;
 }
 
-export interface StubAuthConfig {
-  provider: 'stub';
-}
+export interface StubAuthConfig {}
 
 export interface KeycloakAuthConfig {
-  provider: 'keycloak';
-  config: {
-    url: string;
-    realm: string;
-    clientId: string;
-  };
+  url: string;
+  realm: string;
+  clientId: string;
 }
 
-export interface AuthConfig {
-  provider: string;
-}
-
-export interface AppConfig {
+export interface RuntimeConfig {
   rmfServerUrl: string;
   trajectoryServerUrl: string;
-  auth: KeycloakAuthConfig | StubAuthConfig;
+  authConfig: KeycloakAuthConfig | StubAuthConfig;
   helpLink: string;
   reportIssue: string;
   pickupZones: string[];
@@ -58,32 +49,48 @@ export interface AppConfig {
   defaultMapLevel: string;
   allowedTasks: TaskResource[];
   resources: Record<string, Resources> & Record<'default', Resources>;
-  customTabs: boolean;
-  adminTab: boolean;
   // FIXME(koonpeng): this is used for very specific tasks, should be removed when mission
   // system is implemented.
   cartIds: string[];
 }
 
-// we specifically don't export app config to force consumers to use the context.
-const appConfig: AppConfig = appConfigJson as AppConfig;
+// these will be injected as defines and potentially be tree shaken out
+export interface BuildConfig {
+  baseUrl: string;
+  authProvider: 'keycloak' | 'stub';
+  customTabs?: boolean;
+  adminTab?: boolean;
+}
+
+export interface AppConfig extends RuntimeConfig {
+  buildConfig: BuildConfig;
+}
+
+declare const APP_CONFIG: AppConfig;
+
+const appConfig: AppConfig = (() => {
+  if (import.meta.env.PROD) {
+    return APP_CONFIG;
+  } else {
+    // globals cannot be injected in tests so we need a fallback, this should be
+    // removed by terser in prod builds.
+    return testConfig as AppConfig;
+  }
+})();
 
 export const AppConfigContext = React.createContext(appConfig);
 
 const authenticator: Authenticator = (() => {
-  switch (appConfig.auth.provider) {
-    case 'keycloak':
-      if (!import.meta.env.VITE_KEYCLOAK_CONFIG) {
-        throw new Error('missing VITE_KEYCLOAK_CONFIG');
-      }
-      return new KeycloakAuthenticator(
-        appConfig.auth.config,
-        `${window.location.origin}${BasePath}/silent-check-sso.html`,
-      );
-    case 'stub':
-      return new StubAuthenticator();
-    default:
-      throw new Error('unknown auth provider');
+  // must use if statement instead of switch for vite tree shaking to work
+  if (APP_CONFIG_AUTH_PROVIDER === 'keycloak') {
+    return new KeycloakAuthenticator(
+      APP_CONFIG.authConfig as KeycloakAuthConfig,
+      `${window.location.origin}${BasePath}/silent-check-sso.html`,
+    );
+  } else if (APP_CONFIG_AUTH_PROVIDER === 'stub') {
+    return new StubAuthenticator();
+  } else {
+    throw new Error('unknown auth provider');
   }
 })();
 
