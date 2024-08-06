@@ -44,6 +44,9 @@ const buildConfig = appConfig.buildConfig;
 // https://vitejs.dev/config/
 export default defineConfig({
   base: buildConfig.baseUrl,
+  build: {
+    minify: false,
+  },
   define: {
     APP_CONFIG_AUTH_PROVIDER: `'${buildConfig.authProvider}'`,
     APP_CONFIG_ENABLE_CUSTOM_TABS: `${booleanToString(buildConfig.customTabs)}`,
