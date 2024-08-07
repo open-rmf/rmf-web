@@ -2,8 +2,10 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "definitions": {
         "BuildConfig": {
+            "description": "These will be injected at build time, they CANNOT be changed after the bundle is built.",
             "properties": {
                 "adminTab": {
+                    "description": "Whether the admin tab should be enabled, defaults to false.",
                     "type": "boolean"
                 },
                 "authProvider": {
@@ -14,15 +16,28 @@
                     "type": "string"
                 },
                 "baseUrl": {
+                    "description": "The base url that the app is served from, this MUST end with a slash.",
                     "type": "string"
                 },
                 "customTabs": {
+                    "description": "Whether custom tabs should be enabled, defaults to false.",
                     "type": "boolean"
                 }
             },
             "required": [
                 "authProvider",
                 "baseUrl"
+            ],
+            "type": "object"
+        },
+        "FleetResource": {
+            "properties": {
+                "default": {
+                    "$ref": "#/definitions/RobotResource"
+                }
+            },
+            "required": [
+                "default"
             ],
             "type": "object"
         },
@@ -48,6 +63,7 @@
         "LogoResource": {
             "properties": {
                 "header": {
+                    "description": "Path to an image to be used as the logo on the app bar.",
                     "type": "string"
                 }
             },
@@ -56,27 +72,13 @@
             ],
             "type": "object"
         },
-        "Record<\"default\",Resources>": {
-            "properties": {
-                "default": {
-                    "$ref": "#/definitions/Resources"
-                }
-            },
-            "required": [
-                "default"
-            ],
-            "type": "object"
-        },
-        "Record<string,FleetResource>": {
-            "type": "object"
-        },
-        "Record<string,Resources>": {
-            "type": "object"
-        },
         "Resources": {
             "properties": {
                 "fleets": {
-                    "$ref": "#/definitions/Record<string,FleetResource>"
+                    "additionalProperties": {
+                        "$ref": "#/definitions/FleetResource"
+                    },
+                    "type": "object"
                 },
                 "logos": {
                     "$ref": "#/definitions/LogoResource"
@@ -88,15 +90,37 @@
             ],
             "type": "object"
         },
+        "RobotResource": {
+            "properties": {
+                "icon": {
+                    "description": "Path to an image to be used as the robot's icon.",
+                    "type": "string"
+                },
+                "scale": {
+                    "description": "Scale of the image to match the robot's dimensions.",
+                    "type": "number"
+                }
+            },
+            "type": "object"
+        },
         "StubAuthConfig": {
             "type": "object"
         },
         "TaskResource": {
+            "description": "Configuration for task definitions.",
             "properties": {
                 "displayName": {
+                    "description": "Configure the display name for the task definition.",
                     "type": "string"
                 },
                 "taskDefinitionId": {
+                    "description": "The task definition to configure.",
+                    "enum": [
+                        "compose-clean",
+                        "custom_compose",
+                        "delivery",
+                        "patrol"
+                    ],
                     "type": "string"
                 }
             },
@@ -108,12 +132,14 @@
     },
     "properties": {
         "allowedTasks": {
+            "description": "List of allowed tasks that can be requested",
             "items": {
                 "$ref": "#/definitions/TaskResource"
             },
             "type": "array"
         },
         "attributionPrefix": {
+            "description": "Branding to be shown on the corner of the map.",
             "type": "string"
         },
         "authConfig": {
@@ -124,7 +150,8 @@
                 {
                     "$ref": "#/definitions/KeycloakAuthConfig"
                 }
-            ]
+            ],
+            "description": "Config for the authentication provider."
         },
         "buildConfig": {
             "$ref": "#/definitions/BuildConfig"
@@ -136,40 +163,53 @@
             "type": "array"
         },
         "defaultMapLevel": {
+            "description": "The default level to be selected when the map is initially loaded.",
             "type": "string"
         },
         "defaultRobotZoom": {
+            "description": "The default zoom level when a robot is focused on the map.",
             "type": "number"
         },
         "defaultZoom": {
+            "description": "The default zoom level when the map is initially loaded.",
             "type": "number"
         },
         "helpLink": {
+            "description": "Url to be linked for the \"help\" button.",
             "type": "string"
         },
         "pickupZones": {
+            "description": "List of available pickup zones used for delivery tasks.",
             "items": {
                 "type": "string"
             },
             "type": "array"
         },
         "reportIssue": {
+            "description": "Url to be linked for the \"report issue\" button.",
             "type": "string"
         },
         "resources": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/Record<string,Resources>"
-                },
-                {
-                    "$ref": "#/definitions/Record<\"default\",Resources>"
+            "additionalProperties": {
+                "$ref": "#/definitions/Resources"
+            },
+            "description": "Set various resources (icons, logo etc) used. Different resource can be used based on the theme, `default` is always required.",
+            "properties": {
+                "default": {
+                    "$ref": "#/definitions/Resources"
                 }
-            ]
+            },
+            "required": [
+                "default"
+            ],
+            "type": "object"
         },
         "rmfServerUrl": {
+            "description": "Url of the RMF api server.",
             "type": "string"
         },
         "trajectoryServerUrl": {
+            "description": "Url of the RMF trajectory server.",
             "type": "string"
         }
     },

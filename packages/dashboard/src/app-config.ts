@@ -5,25 +5,47 @@ import testConfig from '../app-config.json';
 import { Authenticator, KeycloakAuthenticator, StubAuthenticator } from './auth';
 
 export interface RobotResource {
+  /**
+   * Path to an image to be used as the robot's icon.
+   */
   icon?: string;
+
+  /**
+   * Scale of the image to match the robot's dimensions.
+   */
   scale?: number;
 }
 
 export interface FleetResource {
+  // TODO(koonpeng): configure robot resources based on robot model, this will require https://github.com/open-rmf/rmf_api_msgs/blob/main/rmf_api_msgs/schemas/robot_state.json to expose the robot model.
+  // [robotModel: string]: RobotResource;
   default: RobotResource;
 }
 
 export interface LogoResource {
+  /**
+   * Path to an image to be used as the logo on the app bar.
+   */
   header: string;
 }
 
 export interface Resources {
-  fleets: Record<string, FleetResource>;
+  fleets: { [fleetName: string]: FleetResource };
   logos: LogoResource;
 }
 
+/**
+ * Configuration for task definitions.
+ */
 export interface TaskResource {
-  taskDefinitionId: string;
+  /**
+   * The task definition to configure.
+   */
+  taskDefinitionId: 'patrol' | 'delivery' | 'compose-clean' | 'custom_compose';
+
+  /**
+   * Configure the display name for the task definition.
+   */
   displayName?: string;
 }
 
@@ -35,29 +57,96 @@ export interface KeycloakAuthConfig {
   clientId: string;
 }
 
+/**
+ * These config are exposed as a global variable. They can be changed after the bundle is built.
+ * To do so, use a placeholder value like `__RMF_SERVER_URL__` and do a search and replace on
+ * `index.html` before serving it.
+ */
 export interface RuntimeConfig {
+  /**
+   * Url of the RMF api server.
+   */
   rmfServerUrl: string;
+
+  /**
+   * Url of the RMF trajectory server.
+   */
   trajectoryServerUrl: string;
+
+  /**
+   * Config for the authentication provider.
+   */
   authConfig: KeycloakAuthConfig | StubAuthConfig;
+
+  /**
+   * Url to be linked for the "help" button.
+   */
   helpLink: string;
+
+  /**
+   * Url to be linked for the "report issue" button.
+   */
   reportIssue: string;
-  pickupZones: string[];
+
+  /**
+   * List of available pickup zones used for delivery tasks.
+   */
+  pickupZones: string[]; // FIXME(koonpeng): Should be part of task definition
+
+  /**
+   * The default zoom level when the map is initially loaded.
+   */
   defaultZoom: number;
+
+  /**
+   * The default zoom level when a robot is focused on the map.
+   */
   defaultRobotZoom: number;
+
+  /**
+   * Branding to be shown on the corner of the map.
+   */
   attributionPrefix: string;
+
+  /**
+   * The default level to be selected when the map is initially loaded.
+   */
   defaultMapLevel: string;
+
+  /**
+   * List of allowed tasks that can be requested
+   */
   allowedTasks: TaskResource[];
-  resources: Record<string, Resources> & Record<'default', Resources>;
+
+  /**
+   * Set various resources (icons, logo etc) used. Different resource can be used based on the theme, `default` is always required.
+   */
+  resources: { [theme: string]: Resources; default: Resources };
+
   // FIXME(koonpeng): this is used for very specific tasks, should be removed when mission
   // system is implemented.
   cartIds: string[];
 }
 
-// these will be injected as defines and potentially be tree shaken out
+/**
+ * These will be injected at build time, they CANNOT be changed after the bundle is built.
+ */
 export interface BuildConfig {
+  /**
+   * The base url that the app is served from, this MUST end with a slash.
+   */
   baseUrl: string;
+
   authProvider: 'keycloak' | 'stub';
+
+  /**
+   * Whether custom tabs should be enabled, defaults to false.
+   */
   customTabs?: boolean;
+
+  /**
+   * Whether the admin tab should be enabled, defaults to false.
+   */
   adminTab?: boolean;
 }
 
