@@ -3,7 +3,6 @@ import { getDefaultTaskDefinition, TaskDefinition } from 'react-components';
 
 import testConfig from '../app-config.json';
 import { Authenticator, KeycloakAuthenticator, StubAuthenticator } from './auth';
-import { BasePath } from './util/url';
 
 export interface RobotResource {
   icon?: string;
@@ -85,7 +84,7 @@ const authenticator: Authenticator = (() => {
   if (APP_CONFIG_AUTH_PROVIDER === 'keycloak') {
     return new KeycloakAuthenticator(
       APP_CONFIG.authConfig as KeycloakAuthConfig,
-      `${window.location.origin}${BasePath}/silent-check-sso.html`,
+      `${import.meta.env.BASE_URL}silent-check-sso.html`,
     );
   } else if (APP_CONFIG_AUTH_PROVIDER === 'stub') {
     return new StubAuthenticator();
