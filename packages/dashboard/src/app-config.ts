@@ -18,7 +18,7 @@ export interface LogoResource {
 }
 
 export interface Resources {
-  fleets: Record<string, FleetResource>;
+  fleets: { [fleetName: string]: FleetResource };
   logos: LogoResource;
 }
 
@@ -47,7 +47,7 @@ export interface RuntimeConfig {
   attributionPrefix: string;
   defaultMapLevel: string;
   allowedTasks: TaskResource[];
-  resources: Record<string, Resources> & Record<'default', Resources>;
+  resources: { [theme: string]: Resources; default: Resources };
   // FIXME(koonpeng): this is used for very specific tasks, should be removed when mission
   // system is implemented.
   cartIds: string[];

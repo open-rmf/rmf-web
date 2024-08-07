@@ -26,6 +26,17 @@
             ],
             "type": "object"
         },
+        "FleetResource": {
+            "properties": {
+                "default": {
+                    "$ref": "#/definitions/RobotResource"
+                }
+            },
+            "required": [
+                "default"
+            ],
+            "type": "object"
+        },
         "KeycloakAuthConfig": {
             "properties": {
                 "clientId": {
@@ -56,27 +67,13 @@
             ],
             "type": "object"
         },
-        "Record<\"default\",Resources>": {
-            "properties": {
-                "default": {
-                    "$ref": "#/definitions/Resources"
-                }
-            },
-            "required": [
-                "default"
-            ],
-            "type": "object"
-        },
-        "Record<string,FleetResource>": {
-            "type": "object"
-        },
-        "Record<string,Resources>": {
-            "type": "object"
-        },
         "Resources": {
             "properties": {
                 "fleets": {
-                    "$ref": "#/definitions/Record<string,FleetResource>"
+                    "additionalProperties": {
+                        "$ref": "#/definitions/FleetResource"
+                    },
+                    "type": "object"
                 },
                 "logos": {
                     "$ref": "#/definitions/LogoResource"
@@ -86,6 +83,17 @@
                 "fleets",
                 "logos"
             ],
+            "type": "object"
+        },
+        "RobotResource": {
+            "properties": {
+                "icon": {
+                    "type": "string"
+                },
+                "scale": {
+                    "type": "number"
+                }
+            },
             "type": "object"
         },
         "StubAuthConfig": {
@@ -157,14 +165,18 @@
             "type": "string"
         },
         "resources": {
-            "allOf": [
-                {
-                    "$ref": "#/definitions/Record<string,Resources>"
-                },
-                {
-                    "$ref": "#/definitions/Record<\"default\",Resources>"
+            "additionalProperties": {
+                "$ref": "#/definitions/Resources"
+            },
+            "properties": {
+                "default": {
+                    "$ref": "#/definitions/Resources"
                 }
-            ]
+            },
+            "required": [
+                "default"
+            ],
+            "type": "object"
         },
         "rmfServerUrl": {
             "type": "string"
