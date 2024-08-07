@@ -60,7 +60,7 @@ export interface KeycloakAuthConfig {
 /**
  * These config are exposed as a global variable. They can be changed after the bundle is built.
  * To do so, use a placeholder value like `__RMF_SERVER_URL__` and do a search and replace on
- * `index.html` before serving.
+ * `index.html` before serving it.
  */
 export interface RuntimeConfig {
   /**
@@ -104,7 +104,7 @@ export interface RuntimeConfig {
   defaultRobotZoom: number;
 
   /**
-   * Branding to be shown on the order of the map.
+   * Branding to be shown on the corner of the map.
    */
   attributionPrefix: string;
 
