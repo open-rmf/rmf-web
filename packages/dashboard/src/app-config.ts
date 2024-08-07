@@ -119,8 +119,7 @@ export interface RuntimeConfig {
   allowedTasks: TaskResource[];
 
   /**
-   * Set various resources (icons, logo etc) used. Different resource can be used based on
-   * the theme, `default` is always required.
+   * Set various resources (icons, logo etc) used. Different resource can be used based on the theme, `default` is always required.
    */
   resources: { [theme: string]: Resources; default: Resources };
 

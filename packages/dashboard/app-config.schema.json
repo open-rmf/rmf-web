@@ -190,7 +190,7 @@
             "additionalProperties": {
                 "$ref": "#/definitions/Resources"
             },
-            "description": "Set various resources (icons, logo etc) used. Different resource can be used based on\nthe theme, `default` is always required.",
+            "description": "Set various resources (icons, logo etc) used. Different resource can be used based on the theme, `default` is always required.",
             "properties": {
                 "default": {
                     "$ref": "#/definitions/Resources"
