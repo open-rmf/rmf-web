@@ -132,9 +132,21 @@ export interface RuntimeConfig {
  * These will be injected at build time, they CANNOT be changed after the bundle is built.
  */
 export interface BuildConfig {
+  /**
+   * The base url that the app is served from, this MUST end with a slash.
+   */
   baseUrl: string;
+
   authProvider: 'keycloak' | 'stub';
+
+  /**
+   * Whether custom tabs should be enabled, defaults to false.
+   */
   customTabs?: boolean;
+
+  /**
+   * Whether the admin tab should be enabled, defaults to false.
+   */
   adminTab?: boolean;
 }
 

@@ -5,6 +5,7 @@
             "description": "These will be injected at build time, they CANNOT be changed after the bundle is built.",
             "properties": {
                 "adminTab": {
+                    "description": "Whether the admin tab should be enabled, defaults to false.",
                     "type": "boolean"
                 },
                 "authProvider": {
@@ -15,9 +16,11 @@
                     "type": "string"
                 },
                 "baseUrl": {
+                    "description": "The base url that the app is served from, this MUST end with a slash.",
                     "type": "string"
                 },
                 "customTabs": {
+                    "description": "Whether custom tabs should be enabled, defaults to false.",
                     "type": "boolean"
                 }
             },
@@ -136,7 +139,7 @@
             "type": "array"
         },
         "attributionPrefix": {
-            "description": "Branding to be shown on the order of the map.",
+            "description": "Branding to be shown on the corner of the map.",
             "type": "string"
         },
         "authConfig": {
