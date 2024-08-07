@@ -17,7 +17,7 @@ export interface RobotResource {
 }
 
 export interface FleetResource {
-  // TODO(koonpeng): configure robot resources based on robot model.
+  // TODO(koonpeng): configure robot resources based on robot model, this will require https://github.com/open-rmf/rmf_api_msgs/blob/main/rmf_api_msgs/schemas/robot_state.json to expose the robot model.
   // [robotModel: string]: RobotResource;
   default: RobotResource;
 }
