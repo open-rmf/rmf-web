@@ -59,8 +59,8 @@ export class RmfIngress {
   alertsApi: AlertsApi;
   adminApi: AdminApi;
   deliveryAlertsApi: DeliveryAlertsApi;
-  negotiationStatusManager: NegotiationStatusManager;
-  trajectoryManager: RobotTrajectoryManager;
+  negotiationStatusManager?: NegotiationStatusManager;
+  trajectoryManager?: RobotTrajectoryManager;
 
   constructor(appConfig: AppConfig, authenticator: Authenticator) {
     if (!authenticator.user) {
@@ -128,9 +128,17 @@ export class RmfIngress {
     this.adminApi = new AdminApi(apiConfig, undefined, axiosInst);
     this.deliveryAlertsApi = new DeliveryAlertsApi(apiConfig, undefined, axiosInst);
 
-    const ws = new WebSocket(appConfig.trajectoryServerUrl);
-    this.trajectoryManager = new DefaultTrajectoryManager(ws, authenticator);
-    this.negotiationStatusManager = new NegotiationStatusManager(ws, authenticator);
+    try {
+      const ws = new WebSocket(appConfig.trajectoryServerUrl);
+      this.trajectoryManager = new DefaultTrajectoryManager(ws, authenticator);
+      this.negotiationStatusManager = new NegotiationStatusManager(ws, authenticator);
+    } catch (e) {
+      const errorMessage = `Failed to connect to trajectory server at [${appConfig.trajectoryServerUrl}], ${
+        (e as Error).message
+      }`;
+      console.error(errorMessage);
+      return;
+    }
   }
 
   private _convertSioToRxObs<T>(
