@@ -62,7 +62,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
 
   useEffect(() => {
     const controls = new OrbitControls(camera, gl.domElement);
-    controls.target = new Vector3(0, 0, -1000);
+    controls.target = new Vector3(0, 0, -10000);
     controls.enableRotate = false;
     controls.enableDamping = false;
     controls.enableZoom = true;
