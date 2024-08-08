@@ -35,4 +35,4 @@ RUN pnpm config -g set 'node-mirror:release' https://nodejs.org/dist && pnpm env
 RUN npm install --global serve
 ENV PATH "$(npm bin -g):$PATH"
 
-ENTRYPOINT serve -s /opt/dashboard/
+ENTRYPOINT ['/bin/bash serve -s /opt/dashboard/']
