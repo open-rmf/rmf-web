@@ -32,6 +32,7 @@ ENV PATH "$PNPM_HOME:$PATH"
 # nodejs seems to have changed the official mirror, the default in pnpm is very slow now
 RUN pnpm config -g set 'node-mirror:release' https://nodejs.org/dist && pnpm env use --global lts
 
-RUN npm i -S serve
+RUN npm install --global serve
+ENV PATH "$(npm bin -g):$PATH"
 
 ENTRYPOINT serve -s /opt/dashboard/
