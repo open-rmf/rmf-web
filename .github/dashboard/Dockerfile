@@ -4,8 +4,6 @@ ARG BRANCH=main
 
 ### Build dashboard
 
-RUN apt update && apt install -y curl
-
 # fetch sources
 RUN mkdir -p /ws \
   && curl -L https://github.com/open-rmf/rmf-web/archive/$BRANCH.tar.gz -o rmf_web.tar.gz \
@@ -23,6 +21,8 @@ RUN cd /ws/packages/dashboard \
 
 FROM docker.io/ubuntu:24.04
 COPY --from=0 /ws/packages/dashboard/dist /opt/dashboard
+
+RUN apt update && apt install -y curl
 
 RUN curl -fsSL https://get.pnpm.io/install.sh | bash -
 # shell runs in non-interactive mode, which does not source .bashrc so we need to set the PATH manually
