@@ -44,6 +44,7 @@ jobs:
         with:
           flags: dashboard
   build-docker-image:
+    # needs: unit-tests
     name: Push Docker images to GitHub Packages
     runs-on: ubuntu-24.04
     steps:
