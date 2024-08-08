@@ -4,6 +4,8 @@ ARG BRANCH=main
 
 ### Build dashboard
 
+RUN apt update && apt install -y curl
+
 # fetch sources
 RUN mkdir -p /ws \
   && curl -L https://github.com/open-rmf/rmf-web/archive/$BRANCH.tar.gz -o rmf_web.tar.gz \
