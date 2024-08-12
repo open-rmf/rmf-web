@@ -21,5 +21,6 @@ RUN rm -rf \
     /var/lib/apt/lists \
     /dist
 
-WORKDIR /ws/packages/api-server
-ENTRYPOINT ["bash", "-c", ". /opt/ros/$ROS_DISTRO/setup.bash && pnpm start"]
+# WORKDIR /ws/packages/api-server
+# ENTRYPOINT ["bash", "-c", ". /opt/ros/$ROS_DISTRO/setup.bash && pnpm start"]
+ENTRYPOINT ["bash"]
