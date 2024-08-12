@@ -547,7 +547,7 @@ export const MapApp: StyledComponent<MicroAppProps & MUIStyledCommonProps<Theme>
           }}
           orthographic={true}
         >
-          <CameraControl zoom={zoom} sceneBoundingBox={sceneBoundingBox} />
+          <CameraControl zoom={zoom} />
           {!disabledLayers['Pickup & Dropoff waypoints'] &&
             waypoints
               .filter((waypoint) => waypoint.pickupHandler || waypoint.dropoffHandler)

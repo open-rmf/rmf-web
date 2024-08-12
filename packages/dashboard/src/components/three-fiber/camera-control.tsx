@@ -1,36 +1,25 @@
 import { useFrame, useThree } from '@react-three/fiber';
 import React, { useEffect, useRef } from 'react';
 import { Subscription } from 'rxjs';
-import { Box3, MOUSE, Sphere, Vector3 } from 'three';
+import { MOUSE, Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import { AppEvents } from '../app-events';
 
 const DEFAULT_ZOOM_IN_CONSTANT = 1.2;
 const DEFAULT_ZOOM_OUT_CONSTANT = 0.8;
-const DEFAULT_CAMERA_TARGET = -10000;
-const DEFAULT_CAMERA_TARGET_MULTIPLIER = -50;
 
 interface CameraControlProps {
   zoom: number;
-  sceneBoundingBox?: Box3;
 }
 
-export const CameraControl: React.FC<CameraControlProps> = ({ zoom, sceneBoundingBox }) => {
+export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
   const { camera, gl } = useThree();
   const controlsRef = useRef<OrbitControls | null>(null);
 
-  const cameraTarget = React.useMemo(() => {
-    if (!sceneBoundingBox) {
-      return DEFAULT_CAMERA_TARGET;
-    }
-    const boundingSphere = sceneBoundingBox.getBoundingSphere(new Sphere());
-    return DEFAULT_CAMERA_TARGET_MULTIPLIER * 2 * boundingSphere.radius;
-  }, [sceneBoundingBox]);
-
   useEffect(() => {
     const controls = new OrbitControls(camera, gl.domElement);
-    controls.target = new Vector3(0, 0, cameraTarget);
+    controls.target = new Vector3(0, 0, -Number.MAX_SAFE_INTEGER);
     controls.enableRotate = false;
     controls.enableDamping = false;
     controls.enableZoom = true;
@@ -90,7 +79,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({ zoom, sceneBoundin
       gl.domElement.removeEventListener('wheel', handleScroll);
       controls.dispose();
     };
-  }, [camera, gl.domElement, cameraTarget]);
+  }, [camera, gl.domElement]);
 
   useEffect(() => {
     camera.zoom = zoom;
