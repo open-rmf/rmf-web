@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react';
 
-import { LoginPage } from '../pages/login-page';
+import { LoginPage } from './login-page';
 
 export default {
   title: 'Login',

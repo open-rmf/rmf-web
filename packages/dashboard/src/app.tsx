@@ -9,14 +9,18 @@ import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { AppConfigContext, AuthenticatorContext, ResourcesContext } from './app-config';
-import { AdminRouter } from './components/admin';
-import { AppBase } from './components/app-base';
-import { SettingsContext } from './components/app-contexts';
-import { AppEvents } from './components/app-events';
-import { PrivateRoute } from './components/private-route';
-import { RmfApp } from './components/rmf-app';
-import { ManagedWorkspace, Workspace, WorkspaceState } from './components/workspace';
-import { LoginPage } from './pages/login-page';
+import {
+  AdminRouter,
+  AppBase,
+  AppEvents,
+  ManagedWorkspace,
+  PrivateRoute,
+  RmfApp,
+  SettingsContext,
+  Workspace,
+  WorkspaceState,
+} from './components';
+import { LoginPage } from './pages';
 import {
   AdminRoute,
   CustomRoute1,
