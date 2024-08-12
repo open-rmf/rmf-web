@@ -1,38 +1,68 @@
 import { useFrame, useThree } from '@react-three/fiber';
 import React, { useEffect, useRef } from 'react';
 import { Subscription } from 'rxjs';
-import { MOUSE, Vector3 } from 'three';
+import { Box3, MOUSE, Sphere, Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import { AppEvents } from '../app-events';
 
 const DEFAULT_ZOOM_IN_CONSTANT = 1.2;
 const DEFAULT_ZOOM_OUT_CONSTANT = 0.8;
+const DEFAULT_CAMERA_TARGET = -10000;
+const DEFAULT_CAMERA_TARGET_MULTIPLIER = -50;
 
 interface CameraControlProps {
   zoom: number;
+  sceneBoundingBox?: Box3;
 }
 
-export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
+export const CameraControl: React.FC<CameraControlProps> = ({ zoom, sceneBoundingBox }) => {
   const { camera, gl } = useThree();
   const controlsRef = useRef<OrbitControls | null>(null);
 
+  const cameraTarget = React.useMemo(() => {
+    if (!sceneBoundingBox) {
+      return DEFAULT_CAMERA_TARGET;
+    }
+    const boundingSphere = sceneBoundingBox.getBoundingSphere(new Sphere());
+    return DEFAULT_CAMERA_TARGET_MULTIPLIER * 2 * boundingSphere.radius;
+  }, [sceneBoundingBox]);
+
   useEffect(() => {
+    const controls = new OrbitControls(camera, gl.domElement);
+    controls.target = new Vector3(0, 0, cameraTarget);
+    controls.enableRotate = false;
+    controls.enableDamping = false;
+    controls.enableZoom = true;
+    controls.mouseButtons = {
+      LEFT: MOUSE.PAN,
+      MIDDLE: undefined,
+      RIGHT: undefined,
+    };
+    controlsRef.current = controls;
+
     const subs: Subscription[] = [];
     subs.push(
       AppEvents.zoomIn.subscribe(() => {
-        AppEvents.zoom.next(camera.zoom * DEFAULT_ZOOM_IN_CONSTANT);
+        const newZoom = camera.zoom * DEFAULT_ZOOM_IN_CONSTANT;
+        camera.zoom = newZoom;
+        AppEvents.zoom.next(newZoom);
+        camera.updateProjectionMatrix();
       }),
     );
     subs.push(
       AppEvents.zoomOut.subscribe(() => {
-        AppEvents.zoom.next(camera.zoom * DEFAULT_ZOOM_OUT_CONSTANT);
+        const newZoom = camera.zoom * DEFAULT_ZOOM_OUT_CONSTANT;
+        camera.zoom = newZoom;
+        AppEvents.zoom.next(newZoom);
+        camera.updateProjectionMatrix();
       }),
     );
     subs.push(
       AppEvents.resetCamera.subscribe((data) => {
         camera.position.set(data[0], data[1], data[2]);
         camera.zoom = data[3];
+        AppEvents.zoom.next(data[3]);
         camera.updateProjectionMatrix();
       }),
     );
@@ -58,22 +88,12 @@ export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
         sub.unsubscribe();
       }
       gl.domElement.removeEventListener('wheel', handleScroll);
+      controls.dispose();
     };
-  }, [camera, gl.domElement]);
+  }, [camera, gl.domElement, cameraTarget]);
 
   useEffect(() => {
-    const controls = new OrbitControls(camera, gl.domElement);
-    controls.target = new Vector3(0, 0, -10000);
-    controls.enableRotate = false;
-    controls.enableDamping = false;
-    controls.enableZoom = true;
     camera.zoom = zoom;
-    controls.mouseButtons = {
-      LEFT: MOUSE.PAN,
-      MIDDLE: undefined,
-      RIGHT: undefined,
-    };
-
     if (AppEvents.cameraPosition.value) {
       camera.position.set(
         AppEvents.cameraPosition.value.x,
@@ -81,13 +101,7 @@ export const CameraControl: React.FC<CameraControlProps> = ({ zoom }) => {
         AppEvents.cameraPosition.value.z,
       );
     }
-
-    controlsRef.current = controls;
-
-    return () => {
-      controls.dispose();
-    };
-  }, [camera, gl.domElement, zoom]);
+  }, [camera, zoom]);
 
   useFrame(() => {
     if (controlsRef.current) {
