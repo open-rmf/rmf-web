@@ -33,7 +33,7 @@ import {
 import axios from 'axios';
 import { map, Observable, shareReplay } from 'rxjs';
 
-import { AppConfig } from '../components/app-config';
+import { AppConfig } from '../app-config';
 import { Authenticator } from './authenticator';
 import { NegotiationStatusManager } from './negotiation-status-manager';
 import { DefaultTrajectoryManager, RobotTrajectoryManager } from './robot-trajectory-manager';

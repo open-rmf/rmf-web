@@ -8,9 +8,9 @@ import './app.css';
 import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
+import { AppConfigContext, AuthenticatorContext, ResourcesContext } from './app-config';
 import { AdminRouter } from './components/admin';
 import { AppBase } from './components/app-base';
-import { AppConfigContext, AuthenticatorContext, ResourcesContext } from './components/app-config';
 import { SettingsContext } from './components/app-contexts';
 import { AppEvents } from './components/app-events';
 import { PrivateRoute } from './components/private-route';

@@ -1,7 +1,7 @@
 import { AlertProps } from '@mui/material';
 import React from 'react';
 
-import { defaultSettings, Settings } from '../settings';
+import { defaultSettings, Settings } from '../services/settings';
 
 export const SettingsContext = React.createContext(defaultSettings());
 

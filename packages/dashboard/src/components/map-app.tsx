@@ -28,12 +28,12 @@ import {
   AuthenticatorContext,
   FleetResource,
   ResourcesContext,
-} from './app-config';
+} from '../app-config';
+import { TrajectoryData } from '../services/robot-trajectory-manager';
 import { AppControllerContext } from './app-contexts';
 import { AppEvents } from './app-events';
 import { DoorSummary } from './door-summary';
 import { LiftSummary } from './lift-summary';
-import { TrajectoryData } from '../services/robot-trajectory-manager';
 import { createMicroApp, MicroAppProps } from './micro-app';
 import { RmfAppContext } from './rmf-app';
 import { RobotSummary } from './robots/robot-summary';

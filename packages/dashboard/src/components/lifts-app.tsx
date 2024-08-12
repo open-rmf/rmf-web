@@ -5,11 +5,11 @@ import { LiftDataGridTable, LiftTableData } from 'react-components';
 import { LiftRequest as RmfLiftRequest } from 'rmf-models/ros/rmf_lift_msgs/msg';
 import { throttleTime } from 'rxjs';
 
+import { getApiErrorMessage } from '../utils/api';
 import { AppEvents } from './app-events';
 import { LiftSummary } from './lift-summary';
 import { createMicroApp } from './micro-app';
 import { RmfAppContext } from './rmf-app';
-import { getApiErrorMessage } from '../utils';
 
 export const LiftsApp = createMicroApp('Lifts', () => {
   const rmf = React.useContext(RmfAppContext);

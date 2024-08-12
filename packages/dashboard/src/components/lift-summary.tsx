@@ -11,8 +11,8 @@ import { Lift } from 'api-client';
 import React from 'react';
 import { base, doorStateToString, liftModeToString, LiftTableData } from 'react-components';
 
+import { getApiErrorMessage } from '../utils/api';
 import { RmfAppContext } from './rmf-app';
-import { getApiErrorMessage } from '../utils';
 
 interface LiftSummaryProps {
   onClose: () => void;

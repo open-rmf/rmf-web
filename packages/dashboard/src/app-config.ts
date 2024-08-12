@@ -1,8 +1,10 @@
 import React from 'react';
 import { getDefaultTaskDefinition, TaskDefinition } from 'react-components';
 
-import testConfig from '../../app-config.json';
-import { Authenticator, KeycloakAuthenticator, StubAuthenticator } from '../auth';
+import testConfig from '../app-config.json';
+import { Authenticator } from './services/authenticator';
+import { KeycloakAuthenticator } from './services/keycloak';
+import { StubAuthenticator } from './services/stub-authenticator';
 
 export interface RobotResource {
   /**

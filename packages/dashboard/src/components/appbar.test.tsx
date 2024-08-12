@@ -3,11 +3,13 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { StubAuthenticator, UserProfile, UserProfileContext } from '../auth';
+import { AuthenticatorContext, Resources, ResourcesContext } from '../app-config';
+import { UserProfile } from '../services/authenticator';
+import { StubAuthenticator } from '../services/stub-authenticator';
 import { render } from '../utils/test-utils.test';
-import { AuthenticatorContext, Resources, ResourcesContext } from './app-config';
 import { AppController, AppControllerContext } from './app-contexts';
 import AppBar from './appbar';
+import { UserProfileContext } from './user-profile-provider';
 
 function makeMockAppController(): AppController {
   return {

@@ -3,11 +3,12 @@ import { TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog } from 'react-components';
 
-import { UserProfile, UserProfileContext } from '../auth';
+import { UserProfile } from '../../services/authenticator';
+import { Enforcer } from '../../services/permissions';
 import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
-import { Enforcer } from '../../services/permissions';
 import { RmfAppContext } from '../rmf-app';
+import { UserProfileContext } from '../user-profile-provider';
 
 export interface TaskCancelButtonProp extends ButtonProps {
   taskId: string | null;
