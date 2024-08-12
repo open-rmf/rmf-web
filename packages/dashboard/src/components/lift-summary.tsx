@@ -12,7 +12,7 @@ import React from 'react';
 import { base, doorStateToString, liftModeToString, LiftTableData } from 'react-components';
 
 import { RmfAppContext } from './rmf-app';
-import { getApiErrorMessage } from './utils';
+import { getApiErrorMessage } from '../utils';
 
 interface LiftSummaryProps {
   onClose: () => void;

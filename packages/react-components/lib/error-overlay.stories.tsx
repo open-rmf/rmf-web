@@ -1,5 +1,5 @@
 import { styled } from '@mui/material';
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 
 import { ErrorOverlay } from './error-overlay';
 import { SimpleInfo, SimpleInfoProps } from './simple-info';
@@ -8,6 +8,8 @@ export default {
   title: 'Error Overlay',
   component: ErrorOverlay,
 } satisfies Meta;
+
+type Story = StoryObj<typeof ErrorOverlay>;
 
 const classes = {
   container: 'simple-info-testcomponent',
@@ -34,12 +36,10 @@ function TestComponent() {
   return <SimpleInfo_ infoData={data} overrideStyle={classes} />;
 }
 
-export const ErrorOverlayPanel: StoryFn = (args) => {
-  return (
-    <>
-      <ErrorOverlay errorMsg={'This is an error message'} {...args}>
-        <TestComponent />
-      </ErrorOverlay>
-    </>
-  );
+export const ErrorOverlayPanel: Story = {
+  render: (args) => (
+    <ErrorOverlay errorMsg={'This is an error message'} {...args}>
+      <TestComponent />
+    </ErrorOverlay>
+  ),
 };

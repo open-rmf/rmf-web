@@ -1,20 +1,23 @@
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 
-import { CreateUserDialog, CreateUserDialogProps } from './create-user-dialog';
+import { CreateUserDialog } from './create-user-dialog';
 
 export default {
   title: 'Admin/Create User Dialog',
   component: CreateUserDialog,
 } satisfies Meta;
 
-export const Default: StoryFn<CreateUserDialogProps> = (args) => {
-  return (
+type Story = StoryObj<typeof CreateUserDialog>;
+
+export const Default: Story = {
+  storyName: 'Create User Dialog',
+  render: (args) => (
     <CreateUserDialog
       {...args}
       open={true}
       createUser={() => new Promise((res) => setTimeout(res, 100))}
     />
-  );
+  ),
 };
 
 Default.storyName = 'Create User Dialog';

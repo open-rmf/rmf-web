@@ -6,7 +6,7 @@ import { base, doorModeToString, DoorTableData, doorTypeToString } from 'react-c
 import { Door as DoorModel } from 'rmf-models/ros/rmf_building_map_msgs/msg';
 
 import { RmfAppContext } from './rmf-app';
-import { getApiErrorMessage } from './utils';
+import { getApiErrorMessage } from '../utils/api';
 
 interface DoorSummaryProps {
   onClose: () => void;

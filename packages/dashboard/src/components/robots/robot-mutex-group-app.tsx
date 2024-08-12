@@ -4,7 +4,7 @@ import { ConfirmationDialog, MutexGroupData, MutexGroupTable } from 'react-compo
 
 import { createMicroApp } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
-import { AppControllerContext } from './../app-contexts';
+import { AppControllerContext } from '../app-contexts';
 
 const RefreshMutexGroupTableInterval = 5000;
 

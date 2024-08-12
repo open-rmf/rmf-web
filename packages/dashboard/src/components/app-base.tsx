@@ -11,8 +11,8 @@ import {
 import { ThemeProvider } from '@mui/material/styles';
 import React from 'react';
 
-import { loadSettings, saveSettings, Settings } from '../settings';
 import { AlertManager } from './alert-manager';
+import { loadSettings, saveSettings, Settings } from '../settings';
 import { AppController, AppControllerContext, SettingsContext } from './app-contexts';
 import { AppEvents } from './app-events';
 import AppBar from './appbar';

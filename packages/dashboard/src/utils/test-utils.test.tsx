@@ -6,7 +6,7 @@ import React from 'react';
 import { rmfLight } from 'react-components';
 import { MemoryRouter } from 'react-router';
 
-import { UserProfile, UserProfileContext } from '../../auth';
+import { UserProfile, UserProfileContext } from '../auth';
 
 export const superUser: UserProfile = {
   user: {

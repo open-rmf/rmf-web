@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { CreateRoleDialog } from '../create-role-dialog';
+import { CreateRoleDialog } from './create-role-dialog';
 
 describe('CreateRoleDialog', () => {
   it('calls createRole when form is submitted', async () => {

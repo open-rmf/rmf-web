@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 
-import { UserListCard } from '../user-list-card';
+import { UserListCard } from './user-list-card';
 
 describe('UserListCard', () => {
   it('opens delete dialog when button is clicked', async () => {

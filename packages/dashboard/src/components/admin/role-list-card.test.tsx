@@ -2,7 +2,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
-import { RoleListCard } from '../role-list-card';
+import { RoleListCard } from './role-list-card';
 
 describe('Role List', () => {
   it('renders list of roles', async () => {

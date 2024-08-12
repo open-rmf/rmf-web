@@ -20,10 +20,10 @@ import React from 'react';
 import { base } from 'react-components';
 import { Subscription } from 'rxjs';
 
+import { TaskCancelButton } from './tasks/task-cancellation';
 import { AppControllerContext } from './app-contexts';
 import { AppEvents } from './app-events';
 import { RmfAppContext } from './rmf-app';
-import { TaskCancelButton } from './tasks/task-cancellation';
 
 interface AlertDialogProps {
   alertRequest: AlertRequest;

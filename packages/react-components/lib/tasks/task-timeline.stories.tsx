@@ -1,6 +1,6 @@
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 
-import { TaskTimeline, TaskTimelineProps } from './task-timeline';
+import { TaskTimeline } from './task-timeline';
 import { makeTaskState } from './test-data.spec';
 
 export default {
@@ -8,10 +8,10 @@ export default {
   component: TaskTimeline,
 } satisfies Meta;
 
-export const Timeline: StoryFn<TaskTimelineProps> = (args) => {
-  return <TaskTimeline {...args}></TaskTimeline>;
-};
+type Story = StoryObj<typeof TaskTimeline>;
 
-Timeline.args = {
-  taskState: makeTaskState('task'),
+export const Timeline: Story = {
+  args: {
+    taskState: makeTaskState('task'),
+  },
 };

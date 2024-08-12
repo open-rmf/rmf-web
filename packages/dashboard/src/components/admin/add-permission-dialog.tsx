@@ -4,7 +4,7 @@ import React from 'react';
 import { ConfirmationDialog, useAsync } from 'react-components';
 
 import { AppControllerContext } from '../app-contexts';
-import { getActionText, RmfAction } from '../permissions';
+import { getActionText, RmfAction } from '../../services/permissions';
 
 export interface AddPermissionDialogProps {
   open: boolean;

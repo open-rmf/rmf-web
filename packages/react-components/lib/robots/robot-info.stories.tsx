@@ -1,23 +1,22 @@
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 
-import { RobotInfo, RobotInfoProps } from './robot-info';
+import { RobotInfo } from './robot-info';
 
 export default {
   title: 'Robots/Detailed Info',
   component: RobotInfo,
 } satisfies Meta;
 
-export const Default: StoryFn<RobotInfoProps> = (args) => {
-  return <RobotInfo {...args}></RobotInfo>;
-};
+type Story = StoryObj<typeof RobotInfo>;
 
-Default.storyName = 'Detailed Info';
-
-Default.args = {
-  robotName: 'Robot Name',
-  assignedTask: 'mytask',
-  battery: 0.5,
-  taskProgress: 0.5,
-  taskStatus: 'underway',
-  estFinishTime: Date.now(),
+export const Default: Story = {
+  storyName: 'Detailed Info',
+  args: {
+    robotName: 'Robot Name',
+    assignedTask: 'mytask',
+    battery: 0.5,
+    taskProgress: 0.5,
+    taskStatus: 'underway',
+    estFinishTime: Date.now(),
+  },
 };

@@ -1,8 +1,8 @@
 import { it, Mock, vi } from 'vitest';
 
-import { render } from '../../tests/test-utils';
-import { TaskLogs } from '../task-logs';
-import { makeTaskLog, makeTaskState } from './make-tasks';
+import { render } from '../../utils/test-utils.test';
+import { makeTaskLog, makeTaskState } from './make-tasks.test';
+import { TaskLogs } from './task-logs';
 
 it('renders without crashing', async () => {
   URL.createObjectURL = vi.fn();

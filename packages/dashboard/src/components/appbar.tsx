@@ -56,10 +56,14 @@ import {
   AppConfigContext,
   AuthenticatorContext,
   ResourcesContext,
-} from '../app-config';
+} from './app-config';
+import { AppControllerContext, SettingsContext } from './app-contexts';
+import { AppEvents } from './app-events';
 import { UserProfileContext } from '../auth';
 import { useCreateTaskFormData } from '../hooks/useCreateTaskForm';
 import useGetUsername from '../hooks/useFetchUser';
+import { RmfAppContext } from './rmf-app';
+import { toApiSchedule } from './tasks/utils';
 import {
   AdminRoute,
   CustomRoute1,
@@ -67,11 +71,7 @@ import {
   DashboardRoute,
   RobotsRoute,
   TasksRoute,
-} from '../util/url';
-import { AppControllerContext, SettingsContext } from './app-contexts';
-import { AppEvents } from './app-events';
-import { RmfAppContext } from './rmf-app';
-import { toApiSchedule } from './tasks/utils';
+} from '../utils/url';
 
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
   fontSize: theme.spacing(4), // spacing = 8

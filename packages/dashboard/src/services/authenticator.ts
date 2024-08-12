@@ -1,9 +1,15 @@
+import { Permission, User } from 'api-client';
 import EventEmitter from 'eventemitter3';
 
 export type AuthenticatorEventType = {
   userChanged: [string | null];
   tokenRefresh: null;
 };
+
+export interface UserProfile {
+  user: User;
+  permissions: Permission[];
+}
 
 export interface Authenticator extends EventEmitter<AuthenticatorEventType> {
   readonly user?: string;

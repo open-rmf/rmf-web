@@ -1,12 +1,8 @@
-import { Configuration, DefaultApi, Permission, User } from 'api-client';
+import { Configuration, DefaultApi } from 'api-client';
 import React from 'react';
 
-import Authenticator from './authenticator';
-
-export interface UserProfile {
-  user: User;
-  permissions: Permission[];
-}
+import { UserProfile } from '../services/authenticator';
+import Authenticator from '../services/authenticator';
 
 export const UserProfileContext = React.createContext<UserProfile | null>(null);
 

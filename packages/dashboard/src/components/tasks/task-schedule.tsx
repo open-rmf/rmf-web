@@ -19,7 +19,7 @@ import {
   Schedule,
 } from 'react-components';
 
-import { allowedTasks } from '../../app-config';
+import { allowedTasks } from '../app-config';
 import { useCreateTaskFormData } from '../../hooks/useCreateTaskForm';
 import useGetUsername from '../../hooks/useFetchUser';
 import { AppControllerContext } from '../app-contexts';

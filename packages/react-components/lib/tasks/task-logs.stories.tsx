@@ -1,6 +1,6 @@
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 
-import { TaskLogs, TaskLogsProps } from './task-logs';
+import { TaskLogs } from './task-logs';
 import { makeTaskLog } from './test-data.spec';
 
 export default {
@@ -8,14 +8,12 @@ export default {
   component: TaskLogs,
 } satisfies Meta;
 
-export const Logs: StoryFn<TaskLogsProps> = (args) => {
-  return <TaskLogs {...args} />;
-};
+type Story = StoryObj<typeof TaskLogs>;
 
-const taskLog = makeTaskLog('task');
-
-Logs.args = {
-  taskLog,
-  eventName: (_phaseId, eventId) => `Event ${eventId}`,
-  eventStatus: () => 'completed',
+export const Logs: Story = {
+  args: {
+    taskLog: makeTaskLog('task'),
+    eventName: (_phaseId, eventId) => `Event ${eventId}`,
+    eventStatus: () => 'completed',
+  },
 };

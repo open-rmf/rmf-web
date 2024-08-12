@@ -20,7 +20,7 @@ import React from 'react';
 import { Loading, useAsync } from 'react-components';
 
 import { AppControllerContext } from '../app-contexts';
-import { getActionText } from '../permissions';
+import { getActionText } from '../../services/permissions';
 import { AddPermissionDialog, AddPermissionDialogProps } from './add-permission-dialog';
 
 const prefix = 'permissions-card';

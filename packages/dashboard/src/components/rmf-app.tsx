@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { AppConfigContext, AuthenticatorContext } from '../../app-config';
-import { UserProfileProvider } from '../../auth';
-import { RmfIngress } from './rmf-ingress';
+import { RmfIngress } from '../services/rmf-ingress';
+import { AppConfigContext, AuthenticatorContext } from './app-config';
+import { UserProfileProvider } from './user-profile-provider';
 
-export * from './rmf-ingress';
+export * from '../services/rmf-ingress';
 
 export const RmfAppContext = React.createContext<RmfIngress | undefined>(undefined);
 
