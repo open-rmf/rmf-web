@@ -1,18 +1,18 @@
 import React from 'react';
 
-import { RmfIngress } from '../components/rmf-app';
+import { RmfApi } from '../services/rmf-api';
 
-const useGetUsername = (rmf: RmfIngress | undefined) => {
+const useGetUsername = (rmfApi: RmfApi | undefined) => {
   const [username, setUsername] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    if (!rmf) {
+    if (!rmfApi) {
       return;
     }
 
     const fetchUsername = async () => {
       try {
-        const user = (await rmf.defaultApi.getUserUserGet()).data;
+        const user = (await rmfApi.defaultApi.getUserUserGet()).data;
         setUsername(user.username);
       } catch (e) {
         console.log(`error getting username: ${(e as Error).message}`);
@@ -20,7 +20,7 @@ const useGetUsername = (rmf: RmfIngress | undefined) => {
     };
 
     fetchUsername();
-  }, [rmf]);
+  }, [rmfApi]);
 
   return username;
 };

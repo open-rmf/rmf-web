@@ -27,7 +27,7 @@ import {
 import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { MicroAppProps } from '../micro-app';
-import { RmfAppContext } from '../rmf-app';
+import { RmfApiContext } from '../rmf-dashboard';
 import { TaskSchedule } from './task-schedule';
 import { TaskSummary } from './task-summary';
 import { exportCsvFull, exportCsvMinimal } from './utils';
@@ -84,7 +84,7 @@ export const TasksApp = React.memo(
       { onClose, children, ...otherProps }: React.PropsWithChildren<MicroAppProps>,
       ref: React.Ref<HTMLDivElement>,
     ) => {
-      const rmf = React.useContext(RmfAppContext);
+      const rmfApi = React.useContext(RmfApiContext);
       const appController = React.useContext(AppControllerContext);
       const [autoRefresh, setAutoRefresh] = React.useState(true);
       const [refreshTaskAppCount, setRefreshTaskAppCount] = React.useState(0);
@@ -146,7 +146,7 @@ export const TasksApp = React.memo(
       // TODO: parameterize this variable
       const GET_LIMIT = 10;
       React.useEffect(() => {
-        if (!rmf) {
+        if (!rmfApi) {
           return;
         }
 
@@ -193,7 +193,7 @@ export const TasksApp = React.memo(
             labelFilter = `${filterColumn.substring(6)}=${filterValue}`;
           }
 
-          const resp = await rmf.tasksApi.queryTaskStatesTasksGet(
+          const resp = await rmfApi.tasksApi.queryTaskStatesTasksGet(
             filterColumn && filterColumn === 'id_' ? filterValue : undefined,
             filterColumn && filterColumn === 'category' ? filterValue : undefined,
             filterColumn && filterColumn === 'requester' ? filterValue : undefined,
@@ -222,7 +222,7 @@ export const TasksApp = React.memo(
           }));
         })();
       }, [
-        rmf,
+        rmfApi,
         refreshTaskAppCount,
         tasksState.page,
         filterFields.model,
@@ -231,7 +231,7 @@ export const TasksApp = React.memo(
       ]);
 
       const getPastMonthTasks = async (timestamp: Date) => {
-        if (!rmf) {
+        if (!rmfApi) {
           return [];
         }
 
@@ -242,7 +242,7 @@ export const TasksApp = React.memo(
         let queryIndex = 0;
         do {
           queries = (
-            await rmf.tasksApi.queryTaskStatesTasksGet(
+            await rmfApi.tasksApi.queryTaskStatesTasksGet(
               undefined,
               undefined,
               undefined,

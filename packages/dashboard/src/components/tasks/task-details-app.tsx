@@ -9,27 +9,27 @@ import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { createMicroApp } from '../micro-app';
 // import { Enforcer } from '../permissions';
-import { RmfAppContext } from '../rmf-app';
+import { RmfApiContext } from '../rmf-dashboard';
 
 export const TaskDetailsApp = createMicroApp('Task Details', () => {
   const theme = useTheme();
-  const rmf = React.useContext(RmfAppContext);
+  const rmfApi = React.useContext(RmfApiContext);
   const appController = React.useContext(AppControllerContext);
 
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
   React.useEffect(() => {
-    if (!rmf) {
+    if (!rmfApi) {
       return;
     }
     const sub = AppEvents.taskSelect
       .pipe(
         switchMap((selectedTask) =>
-          selectedTask ? rmf.getTaskStateObs(selectedTask.booking.id) : of(null),
+          selectedTask ? rmfApi.getTaskStateObs(selectedTask.booking.id) : of(null),
         ),
       )
       .subscribe(setTaskState);
     return () => sub.unsubscribe();
-  }, [rmf]);
+  }, [rmfApi]);
 
   // const profile = React.useContext(UserProfileContext);
   const taskCancellable =
@@ -43,10 +43,10 @@ export const TaskDetailsApp = createMicroApp('Task Details', () => {
       return;
     }
     try {
-      if (!rmf) {
+      if (!rmfApi) {
         throw new Error('tasks api not available');
       }
-      await rmf.tasksApi?.postCancelTaskTasksCancelTaskPost({
+      await rmfApi.tasksApi?.postCancelTaskTasksCancelTaskPost({
         type: 'cancel_task_request',
         task_id: taskState.booking.id,
       });
@@ -55,7 +55,7 @@ export const TaskDetailsApp = createMicroApp('Task Details', () => {
     } catch (e) {
       appController.showAlert('error', `Failed to cancel task: ${(e as Error).message}`);
     }
-  }, [appController, taskState, rmf]);
+  }, [appController, taskState, rmfApi]);
 
   return (
     <Grid container direction="column" wrap="nowrap" height="100%">

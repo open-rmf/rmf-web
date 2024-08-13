@@ -4,7 +4,7 @@ import { TaskEventLog, TaskStateOutput as TaskState } from 'api-client';
 import React from 'react';
 import { TaskInfo } from 'react-components';
 
-import { RmfAppContext } from '../rmf-app';
+import { RmfApiContext } from '../rmf-dashboard';
 import { TaskCancelButton } from './task-cancellation';
 import { TaskLogs } from './task-logs';
 
@@ -15,23 +15,23 @@ export interface TableDataGridState {
 
 export function TaskInspector({ task, onClose }: TableDataGridState): JSX.Element {
   const theme = useTheme();
-  const rmf = React.useContext(RmfAppContext);
+  const rmfApi = React.useContext(RmfApiContext);
 
   const [taskState, setTaskState] = React.useState<TaskState | null>(null);
   const [taskLogs, setTaskLogs] = React.useState<TaskEventLog | null>(null);
   const [isOpen, setIsOpen] = React.useState(true);
 
   React.useEffect(() => {
-    if (!rmf || !task) {
+    if (!rmfApi || !task) {
       setTaskState(null);
       setTaskLogs(null);
       return;
     }
-    const sub = rmf.getTaskStateObs(task.booking.id).subscribe((subscribedTask) => {
+    const sub = rmfApi.getTaskStateObs(task.booking.id).subscribe((subscribedTask) => {
       (async () => {
         try {
           const logs = (
-            await rmf.tasksApi.getTaskLogTasksTaskIdLogGet(
+            await rmfApi.tasksApi.getTaskLogTasksTaskIdLogGet(
               subscribedTask.booking.id,
               `0,${Number.MAX_SAFE_INTEGER}`,
             )
@@ -45,7 +45,7 @@ export function TaskInspector({ task, onClose }: TableDataGridState): JSX.Elemen
       })();
     });
     return () => sub.unsubscribe();
-  }, [rmf, task]);
+  }, [rmfApi, task]);
 
   return (
     <>

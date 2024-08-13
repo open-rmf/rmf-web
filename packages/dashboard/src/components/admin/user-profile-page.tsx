@@ -6,7 +6,7 @@ import { useAsync } from 'react-components';
 import { useParams } from 'react-router';
 
 import { getApiErrorMessage } from '../../utils/api';
-import { RmfAppContext } from '../rmf-app';
+import { RmfApiContext } from '../rmf-dashboard';
 import { ManageRolesCard } from './manage-roles-dialog';
 import { adminPageClasses, AdminPageContainer } from './page-css';
 import { UserProfileCard } from './user-profile';
@@ -14,7 +14,7 @@ import { UserProfileCard } from './user-profile';
 export function UserProfilePage(): JSX.Element | null {
   const { username } = useParams();
   const safeAsync = useAsync();
-  const { adminApi } = React.useContext(RmfAppContext) || {};
+  const { adminApi } = React.useContext(RmfApiContext) || {};
   const [user, setUser] = React.useState<User | undefined>(undefined);
   const [notFound, setNotFound] = React.useState(false);
 

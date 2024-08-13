@@ -31,18 +31,14 @@ import {
   TaskStateOutput as TaskState,
 } from 'api-client';
 import axios from 'axios';
-import { map, Observable, shareReplay } from 'rxjs';
+import { EMPTY, map, Observable, of, shareReplay, switchAll, switchMap } from 'rxjs';
 
-import { AppConfig } from '../app-config';
 import { Authenticator } from './authenticator';
 import { NegotiationStatusManager } from './negotiation-status-manager';
 import { DefaultTrajectoryManager, RobotTrajectoryManager } from './robot-trajectory-manager';
 
-export class RmfIngress {
-  // This should be private because socketio does not support "replaying" subscription. If
-  // subscription is made before the one made by the observables, the replays will not work
-  // correctly.
-  private _sioClient: SioClient;
+export class RmfApi {
+  private _sioClient: Observable<SioClient | null>;
 
   beaconsApi: BeaconsApi;
   buildingApi: BuildingApi;
@@ -59,27 +55,18 @@ export class RmfIngress {
   negotiationStatusManager?: NegotiationStatusManager;
   trajectoryManager?: RobotTrajectoryManager;
 
-  constructor(appConfig: AppConfig, authenticator: Authenticator) {
-    if (!authenticator.user) {
-      throw new Error(
-        'user is undefined, RmfIngress should only be initialized after the authenticator is ready',
-      );
-    }
-
-    this._sioClient = (() => {
-      const token = authenticator.token;
-      const url = new URL(appConfig.rmfServerUrl);
-      const path = url.pathname === '/' ? '' : url.pathname;
-
-      const options: ConstructorParameters<typeof SioClient>[1] = {
-        path: `${path}/socket.io`,
-      };
-      if (token) {
-        options.auth = { token };
-      }
-      return new SioClient(url.origin, options);
-    })();
-    this._sioClient.sio.on('error', console.error);
+  constructor(
+    private apiServerUrl: string,
+    trajectoryServerUrl: string,
+    private authenticator: Authenticator,
+  ) {
+    // This ensures that old connections are disconnected. `this._makeSioClient` returns an
+    // observable of `SioClient` that disconnects when it is unsubscribed. `switchAll` will
+    // unsubscribe and switch to the new observable when the user changes.
+    this._sioClient = new Observable<Observable<SioClient | null>>((subscriber) => {
+      subscriber.next(this._makeSioClient());
+      this.authenticator.on('userChanged', () => subscriber.next(this._makeSioClient()));
+    }).pipe(switchAll(), shareReplay(1));
 
     // the axios swagger generator is bugged, it does not properly attach the token so we have
     // to manually add them.
@@ -109,7 +96,7 @@ export class RmfIngress {
     );
     const apiConfig = new Configuration({
       accessToken: authenticator.token,
-      basePath: appConfig.rmfServerUrl,
+      basePath: apiServerUrl,
     });
 
     this.beaconsApi = new BeaconsApi(apiConfig, undefined, axiosInst);
@@ -126,11 +113,11 @@ export class RmfIngress {
     this.deliveryAlertsApi = new DeliveryAlertsApi(apiConfig, undefined, axiosInst);
 
     try {
-      const ws = new WebSocket(appConfig.trajectoryServerUrl);
+      const ws = new WebSocket(trajectoryServerUrl);
       this.trajectoryManager = new DefaultTrajectoryManager(ws, authenticator);
       this.negotiationStatusManager = new NegotiationStatusManager(ws, authenticator);
     } catch (e) {
-      const errorMessage = `Failed to connect to trajectory server at [${appConfig.trajectoryServerUrl}], ${
+      const errorMessage = `Failed to connect to trajectory server at [${trajectoryServerUrl}], ${
         (e as Error).message
       }`;
       console.error(errorMessage);
@@ -138,29 +125,63 @@ export class RmfIngress {
     }
   }
 
-  private _convertSioToRxObs<T>(
-    sioSubscribe: (handler: (data: T) => void) => SioSubscription,
-  ): Observable<T> {
-    return new Observable<T>((subscriber) => {
-      let sioSub: SioSubscription | null = null;
-      const onConnect = () => {
-        sioSub = sioSubscribe(subscriber.next.bind(subscriber));
+  private _makeSioClient(): Observable<SioClient | null> {
+    if (!this.authenticator.user) {
+      return of(null);
+    }
+
+    return new Observable((subscriber) => {
+      const url = new URL(this.apiServerUrl);
+      const path = url.pathname === '/' ? '' : url.pathname;
+      const options: ConstructorParameters<typeof SioClient>[1] = {
+        path: `${path}/socket.io`,
       };
-      onConnect();
-      this._sioClient.sio.on('connect', onConnect);
-      return () => {
-        sioSub && this._sioClient.unsubscribe(sioSub);
-        this._sioClient.sio.off('connect', onConnect);
+      options.auth = async (cb) => {
+        await this.authenticator.refreshToken();
+        if (this.authenticator.token) {
+          cb({ token: this.authenticator.token });
+        } else {
+          cb({});
+        }
       };
-    }).pipe(shareReplay(1));
+      const sioClient = new SioClient(url.origin, options);
+      sioClient.sio.on('error', console.error);
+      subscriber.next(sioClient);
+      return () => sioClient.sio.disconnect();
+    });
   }
 
-  buildingMapObs: Observable<BuildingMap> = this._convertSioToRxObs((handler) =>
-    this._sioClient.subscribeBuildingMap(handler),
+  private _convertSioToRxObs<T>(
+    sioSubscribe: (sioClient: SioClient, handler: (data: T) => void) => SioSubscription,
+  ): Observable<T> {
+    return this._sioClient.pipe(
+      switchMap((sioClient) => {
+        if (!sioClient) {
+          return EMPTY;
+        }
+        return new Observable<T>((subscriber) => {
+          let sioSub: SioSubscription | null = null;
+          const onConnect = () => {
+            sioSub = sioSubscribe(sioClient, subscriber.next.bind(subscriber));
+          };
+          onConnect();
+          sioClient.sio.on('connect', onConnect);
+          return () => {
+            sioSub && sioClient.unsubscribe(sioSub);
+            sioClient.sio.off('connect', onConnect);
+          };
+        });
+      }),
+      shareReplay(1),
+    );
+  }
+
+  buildingMapObs: Observable<BuildingMap> = this._convertSioToRxObs((sioClient, handler) =>
+    sioClient.subscribeBuildingMap(handler),
   );
 
-  beaconsObsStore: Observable<BeaconState> = this._convertSioToRxObs((handler) =>
-    this._sioClient.subscribeBeaconState(handler),
+  beaconsObsStore: Observable<BeaconState> = this._convertSioToRxObs((sioClient, handler) =>
+    sioClient.subscribeBeaconState(handler),
   );
 
   doorsObs: Observable<Door[]> = this.buildingMapObs.pipe(
@@ -170,8 +191,8 @@ export class RmfIngress {
   private _doorStateObsStore: Record<string, Observable<DoorState>> = {};
   getDoorStateObs(name: string): Observable<DoorState> {
     if (!this._doorStateObsStore[name]) {
-      this._doorStateObsStore[name] = this._convertSioToRxObs((handler) =>
-        this._sioClient.subscribeDoorState(name, handler),
+      this._doorStateObsStore[name] = this._convertSioToRxObs((sioClient, handler) =>
+        sioClient.subscribeDoorState(name, handler),
       );
     }
     return this._doorStateObsStore[name];
@@ -182,8 +203,8 @@ export class RmfIngress {
   private _liftStateObsStore: Record<string, Observable<LiftState>> = {};
   getLiftStateObs(name: string): Observable<LiftState> {
     if (!this._liftStateObsStore[name]) {
-      this._liftStateObsStore[name] = this._convertSioToRxObs((handler) =>
-        this._sioClient.subscribeLiftState(name, handler),
+      this._liftStateObsStore[name] = this._convertSioToRxObs((sioClient, handler) =>
+        sioClient.subscribeLiftState(name, handler),
       );
     }
     return this._liftStateObsStore[name];
@@ -199,8 +220,8 @@ export class RmfIngress {
   private _dispenserStateObsStore: Record<string, Observable<DispenserState>> = {};
   getDispenserStateObs(guid: string): Observable<DispenserState> {
     if (!this._dispenserStateObsStore[guid]) {
-      this._dispenserStateObsStore[guid] = this._convertSioToRxObs((handler) =>
-        this._sioClient.subscribeDispenserState(guid, handler),
+      this._dispenserStateObsStore[guid] = this._convertSioToRxObs((sioClient, handler) =>
+        sioClient.subscribeDispenserState(guid, handler),
       );
     }
     return this._dispenserStateObsStore[guid];
@@ -216,8 +237,8 @@ export class RmfIngress {
   private _ingestorStateObsStore: Record<string, Observable<IngestorState>> = {};
   getIngestorStateObs(guid: string): Observable<IngestorState> {
     if (!this._ingestorStateObsStore[guid]) {
-      this._ingestorStateObsStore[guid] = this._convertSioToRxObs((handler) =>
-        this._sioClient.subscribeIngestorState(guid, handler),
+      this._ingestorStateObsStore[guid] = this._convertSioToRxObs((sioClient, handler) =>
+        sioClient.subscribeIngestorState(guid, handler),
       );
     }
     return this._ingestorStateObsStore[guid];
@@ -233,8 +254,8 @@ export class RmfIngress {
   private _fleetStateObsStore: Record<string, Observable<FleetState>> = {};
   getFleetStateObs(name: string): Observable<FleetState> {
     if (!this._fleetStateObsStore[name]) {
-      this._fleetStateObsStore[name] = this._convertSioToRxObs((handler) =>
-        this._sioClient.subscribeFleetState(name, handler),
+      this._fleetStateObsStore[name] = this._convertSioToRxObs((sioClient, handler) =>
+        sioClient.subscribeFleetState(name, handler),
       );
     }
     return this._fleetStateObsStore[name];
@@ -243,22 +264,22 @@ export class RmfIngress {
   private _taskStateObsStore: Record<string, Observable<TaskState>> = {};
   getTaskStateObs(taskId: string): Observable<TaskState> {
     if (!this._taskStateObsStore[taskId]) {
-      this._taskStateObsStore[taskId] = this._convertSioToRxObs((handler) =>
-        this._sioClient.subscribeTaskState(taskId, handler),
+      this._taskStateObsStore[taskId] = this._convertSioToRxObs((sioClient, handler) =>
+        sioClient.subscribeTaskState(taskId, handler),
       );
     }
     return this._taskStateObsStore[taskId];
   }
 
-  alertRequestsObsStore: Observable<AlertRequest> = this._convertSioToRxObs((handler) =>
-    this._sioClient.subscribeAlertRequests(handler),
+  alertRequestsObsStore: Observable<AlertRequest> = this._convertSioToRxObs((sioClient, handler) =>
+    sioClient.subscribeAlertRequests(handler),
   );
 
-  alertResponsesObsStore: Observable<AlertResponse> = this._convertSioToRxObs((handler) =>
-    this._sioClient.subscribeAlertResponses(handler),
+  alertResponsesObsStore: Observable<AlertResponse> = this._convertSioToRxObs(
+    (sioClient, handler) => sioClient.subscribeAlertResponses(handler),
   );
 
-  deliveryAlertObsStore: Observable<DeliveryAlert> = this._convertSioToRxObs((handler) =>
-    this._sioClient.subscribeDeliveryAlerts(handler),
+  deliveryAlertObsStore: Observable<DeliveryAlert> = this._convertSioToRxObs((sioClient, handler) =>
+    sioClient.subscribeDeliveryAlerts(handler),
   );
 }

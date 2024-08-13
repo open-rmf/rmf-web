@@ -35,7 +35,7 @@ import { AppEvents } from './app-events';
 import { DoorSummary } from './door-summary';
 import { LiftSummary } from './lift-summary';
 import { createMicroApp, MicroAppProps } from './micro-app';
-import { RmfAppContext } from './rmf-app';
+import { RmfApiContext } from './rmf-dashboard';
 import { RobotSummary } from './robots/robot-summary';
 import { CameraControl, Door, LayersController, Lifts, RobotThree } from './three-fiber';
 
@@ -58,7 +58,7 @@ export const MapApp: StyledComponent<MicroAppProps & MUIStyledCommonProps<Theme>
     const authenticator = React.useContext(AuthenticatorContext);
     const resources = React.useContext(ResourcesContext);
     const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
-    const rmf = React.useContext(RmfAppContext);
+    const rmfApi = React.useContext(RmfApiContext);
     const resourceManager = React.useContext(ResourcesContext);
     const { showAlert } = React.useContext(AppControllerContext);
     const [currentLevel, setCurrentLevel] = React.useState<Level | undefined>(undefined);
@@ -92,7 +92,7 @@ export const MapApp: StyledComponent<MicroAppProps & MUIStyledCommonProps<Theme>
     const [trajectories, setTrajectories] = React.useState<TrajectoryData[]>([]);
     const trajectoryTime = 300000;
     const trajectoryAnimScale = trajectoryTime / (0.9 * TrajectoryUpdateInterval);
-    const trajManager = rmf?.trajectoryManager;
+    const trajManager = rmfApi?.trajectoryManager;
     React.useEffect(() => {
       if (!currentLevel) {
         return;
@@ -151,7 +151,7 @@ export const MapApp: StyledComponent<MicroAppProps & MUIStyledCommonProps<Theme>
     }, [trajManager, currentLevel, trajectoryTime, trajectoryAnimScale]);
 
     React.useEffect(() => {
-      if (!rmf) {
+      if (!rmfApi) {
         return;
       }
 
@@ -185,7 +185,7 @@ export const MapApp: StyledComponent<MicroAppProps & MUIStyledCommonProps<Theme>
 
       (async () => {
         try {
-          const newMap = (await rmf.buildingApi.getBuildingMapBuildingMapGet()).data;
+          const newMap = (await rmfApi.buildingApi.getBuildingMapBuildingMapGet()).data;
           handleBuildingMap(newMap);
         } catch (e) {
           console.log(`failed to get building map: ${(e as Error).message}`);
@@ -193,15 +193,15 @@ export const MapApp: StyledComponent<MicroAppProps & MUIStyledCommonProps<Theme>
       })();
 
       const subs: Subscription[] = [];
-      subs.push(rmf.buildingMapObs.subscribe((newMap) => handleBuildingMap(newMap)));
-      subs.push(rmf.fleetsObs.subscribe(setFleets));
+      subs.push(rmfApi.buildingMapObs.subscribe((newMap) => handleBuildingMap(newMap)));
+      subs.push(rmfApi.fleetsObs.subscribe(setFleets));
 
       return () => {
         for (const sub of subs) {
           sub.unsubscribe();
         }
       };
-    }, [rmf, resourceManager]);
+    }, [rmfApi, resourceManager]);
 
     const [imageUrl, setImageUrl] = React.useState<string | null>(null);
     // Since the configurable zoom level is for supporting the lowest resolution
@@ -314,16 +314,16 @@ export const MapApp: StyledComponent<MicroAppProps & MUIStyledCommonProps<Theme>
     >({});
     // updates the robot location
     React.useEffect(() => {
-      if (!rmf) {
+      if (!rmfApi) {
         return;
       }
-      const sub = rmf.fleetsObs
+      const sub = rmfApi.fleetsObs
         .pipe(
           switchMap((fleets) =>
             merge(
               ...fleets.map((f) =>
                 f.name
-                  ? rmf
+                  ? rmfApi
                       .getFleetStateObs(f.name)
                       .pipe(throttleTime(500, undefined, { leading: true, trailing: true }))
                   : EMPTY,
@@ -366,7 +366,7 @@ export const MapApp: StyledComponent<MicroAppProps & MUIStyledCommonProps<Theme>
           });
         });
       return () => sub.unsubscribe();
-    }, [rmf, robotLocations]);
+    }, [rmfApi, robotLocations]);
 
     //Accumulate values over time to persist between tabs
     React.useEffect(() => {

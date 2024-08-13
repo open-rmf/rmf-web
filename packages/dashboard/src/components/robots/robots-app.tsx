@@ -5,26 +5,26 @@ import { RobotDataGridTable, RobotTableData } from 'react-components';
 
 import { AppEvents } from '../app-events';
 import { createMicroApp } from '../micro-app';
-import { RmfAppContext } from '../rmf-app';
+import { RmfApiContext } from '../rmf-dashboard';
 import { RobotSummary } from './robot-summary';
 
 const RefreshRobotTableInterval = 10000;
 
 export const RobotsApp = createMicroApp('Robots', () => {
-  const rmf = React.useContext(RmfAppContext);
+  const rmfApi = React.useContext(RmfApiContext);
 
   const [robots, setRobots] = React.useState<Record<string, RobotTableData[]>>({});
   const [openRobotSummary, setOpenRobotSummary] = React.useState(false);
   const [selectedRobot, setSelectedRobot] = React.useState<RobotTableData>();
 
   React.useEffect(() => {
-    if (!rmf) {
+    if (!rmfApi) {
       console.error('Unable to get latest robot information, fleets API unavailable');
       return;
     }
 
     const refreshRobotTable = async () => {
-      const fleets = (await rmf.fleetsApi.getFleetsFleetsGet()).data;
+      const fleets = (await rmfApi.fleetsApi.getFleetsFleetsGet()).data;
       for (const fleet of fleets) {
         // fetch active tasks
         const taskIds = fleet.robots
@@ -38,7 +38,7 @@ export const RobotsApp = createMicroApp('Robots', () => {
 
         const tasks =
           taskIds.length > 0
-            ? (await rmf.tasksApi.queryTaskStatesTasksGet(taskIds.join(','))).data.reduce(
+            ? (await rmfApi.tasksApi.queryTaskStatesTasksGet(taskIds.join(','))).data.reduce(
                 (acc, task) => {
                   acc[task.booking.id] = task;
                   return acc;
@@ -93,7 +93,7 @@ export const RobotsApp = createMicroApp('Robots', () => {
       clearInterval(refreshInterval);
       sub.unsubscribe();
     };
-  }, [rmf]);
+  }, [rmfApi]);
 
   return (
     <TableContainer>

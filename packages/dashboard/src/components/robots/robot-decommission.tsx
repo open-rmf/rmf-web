@@ -13,7 +13,7 @@ import { ConfirmationDialog } from 'react-components';
 
 import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
-import { RmfAppContext } from '../rmf-app';
+import { RmfApiContext } from '../rmf-dashboard';
 
 export interface RobotDecommissionButtonProp extends Omit<ButtonProps, 'onClick' | 'autoFocus'> {
   fleet: string;
@@ -25,7 +25,7 @@ export function RobotDecommissionButton({
   robotState,
   ...otherProps
 }: RobotDecommissionButtonProp): JSX.Element {
-  const rmf = React.useContext(RmfAppContext);
+  const rmfApi = React.useContext(RmfApiContext);
   const appController = React.useContext(AppControllerContext);
   const [reassignTasks, setReassignTasks] = React.useState(true);
   const [allowIdleBehavior, setAllowIdleBehavior] = React.useState(false);
@@ -60,10 +60,10 @@ export function RobotDecommissionButton({
       return;
     }
     try {
-      if (!rmf) {
+      if (!rmfApi) {
         throw new Error('fleets api not available');
       }
-      const resp = await rmf.fleetsApi?.decommissionRobotFleetsNameDecommissionPost(
+      const resp = await rmfApi.fleetsApi?.decommissionRobotFleetsNameDecommissionPost(
         fleet,
         robotState.name,
         reassignTasks,
@@ -109,17 +109,17 @@ export function RobotDecommissionButton({
     }
     resetDecommissionConfiguration();
     AppEvents.refreshRobotApp.next();
-  }, [appController, fleet, robotState, reassignTasks, allowIdleBehavior, rmf]);
+  }, [appController, fleet, robotState, reassignTasks, allowIdleBehavior, rmfApi]);
 
   const handleRecommission = React.useCallback<React.MouseEventHandler>(async () => {
     if (!robotState || !robotState.name) {
       return;
     }
     try {
-      if (!rmf) {
+      if (!rmfApi) {
         throw new Error('fleets api not available');
       }
-      const resp = await rmf.fleetsApi?.recommissionRobotFleetsNameRecommissionPost(
+      const resp = await rmfApi.fleetsApi?.recommissionRobotFleetsNameRecommissionPost(
         fleet,
         robotState.name,
       );
@@ -141,7 +141,7 @@ export function RobotDecommissionButton({
     }
     resetDecommissionConfiguration();
     AppEvents.refreshRobotApp.next();
-  }, [appController, fleet, robotState, rmf]);
+  }, [appController, fleet, robotState, rmfApi]);
 
   return (
     <>

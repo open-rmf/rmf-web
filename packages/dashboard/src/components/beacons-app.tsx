@@ -3,19 +3,19 @@ import React from 'react';
 import { BeaconDataGridTable } from 'react-components';
 
 import { createMicroApp } from './micro-app';
-import { RmfAppContext } from './rmf-app';
+import { RmfApiContext } from './rmf-dashboard';
 
 export const BeaconsApp = createMicroApp('Beacons', () => {
-  const rmf = React.useContext(RmfAppContext);
+  const rmfApi = React.useContext(RmfApiContext);
   const [beacons, setBeacons] = React.useState<Record<string, BeaconState>>({});
 
   React.useEffect(() => {
-    if (!rmf) {
+    if (!rmfApi) {
       return;
     }
 
     (async () => {
-      const { data } = await rmf.beaconsApi.getBeaconsBeaconsGet();
+      const { data } = await rmfApi.beaconsApi.getBeaconsBeaconsGet();
       for (const state of data) {
         setBeacons((prev) => {
           return {
@@ -26,7 +26,7 @@ export const BeaconsApp = createMicroApp('Beacons', () => {
       }
     })();
 
-    const sub = rmf.beaconsObsStore.subscribe(async (beaconState) => {
+    const sub = rmfApi.beaconsObsStore.subscribe(async (beaconState) => {
       setBeacons((prev) => {
         return {
           ...prev,
@@ -35,7 +35,7 @@ export const BeaconsApp = createMicroApp('Beacons', () => {
       });
     });
     return () => sub.unsubscribe();
-  }, [rmf]);
+  }, [rmfApi]);
 
   return <BeaconDataGridTable beacons={Object.values(beacons)} />;
 });

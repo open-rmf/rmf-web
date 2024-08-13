@@ -4,12 +4,12 @@ import { ConfirmationDialog, MutexGroupData, MutexGroupTable } from 'react-compo
 
 import { AppControllerContext } from '../app-contexts';
 import { createMicroApp } from '../micro-app';
-import { RmfAppContext } from '../rmf-app';
+import { RmfApiContext } from '../rmf-dashboard';
 
 const RefreshMutexGroupTableInterval = 5000;
 
 export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
-  const rmf = React.useContext(RmfAppContext);
+  const rmfApi = React.useContext(RmfApiContext);
   const appController = React.useContext(AppControllerContext);
 
   const [mutexGroups, setMutexGroups] = React.useState<Record<string, MutexGroupData>>({});
@@ -40,13 +40,13 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
   };
 
   React.useEffect(() => {
-    if (!rmf) {
+    if (!rmfApi) {
       console.error('Unable to get latest robot information, fleets API unavailable');
       return;
     }
 
     const refreshMutexGroupTable = async () => {
-      const fleets = (await rmf.fleetsApi.getFleetsFleetsGet()).data;
+      const fleets = (await rmfApi.fleetsApi.getFleetsFleetsGet()).data;
       const updatedMutexGroups: Record<string, MutexGroupData> = {};
       for (const fleet of fleets) {
         if (!fleet.name || !fleet.robots) {
@@ -112,7 +112,7 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
     return () => {
       clearInterval(refreshInterval);
     };
-  }, [rmf]);
+  }, [rmfApi]);
 
   const handleUnlockMutexGroup = React.useCallback<React.MouseEventHandler>(async () => {
     if (!selectedMutexGroup || !selectedMutexGroup.lockedBy) {
@@ -125,11 +125,11 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
     }
 
     try {
-      if (!rmf) {
+      if (!rmfApi) {
         throw new Error('fleets api not available');
       }
 
-      await rmf.fleetsApi?.unlockMutexGroupFleetsNameUnlockMutexGroupPost(
+      await rmfApi.fleetsApi?.unlockMutexGroupFleetsNameUnlockMutexGroupPost(
         fleet,
         robot,
         selectedMutexGroup.name,
@@ -147,7 +147,7 @@ export const MutexGroupsApp = createMicroApp('Mutex Groups', () => {
       );
     }
     setSelectedMutexGroup(null);
-  }, [selectedMutexGroup, rmf, appController]);
+  }, [selectedMutexGroup, rmfApi, appController]);
 
   return (
     <TableContainer>

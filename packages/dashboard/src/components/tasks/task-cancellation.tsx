@@ -7,7 +7,7 @@ import { UserProfile } from '../../services/authenticator';
 import { Enforcer } from '../../services/permissions';
 import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
-import { RmfAppContext } from '../rmf-app';
+import { RmfApiContext } from '../rmf-dashboard';
 import { UserProfileContext } from '../user-profile-provider';
 
 export interface TaskCancelButtonProp extends ButtonProps {
@@ -20,7 +20,7 @@ export function TaskCancelButton({
   buttonText,
   ...otherProps
 }: TaskCancelButtonProp): JSX.Element {
-  const rmf = React.useContext(RmfAppContext);
+  const rmfApi = React.useContext(RmfApiContext);
   const appController = React.useContext(AppControllerContext);
   const profile: UserProfile | null = React.useContext(UserProfileContext);
 
@@ -28,14 +28,14 @@ export function TaskCancelButton({
   const [openConfirmDialog, setOpenConfirmDialog] = React.useState(false);
 
   React.useEffect(() => {
-    if (!rmf || !taskId) {
+    if (!rmfApi || !taskId) {
       return;
     }
-    const sub = rmf.getTaskStateObs(taskId).subscribe((state) => {
+    const sub = rmfApi.getTaskStateObs(taskId).subscribe((state) => {
       setTaskState(state);
     });
     return () => sub.unsubscribe();
-  }, [rmf, taskId]);
+  }, [rmfApi, taskId]);
 
   const isTaskCancellable = (state: TaskState | null) => {
     return (
@@ -54,10 +54,10 @@ export function TaskCancelButton({
       return;
     }
     try {
-      if (!rmf) {
+      if (!rmfApi) {
         throw new Error('tasks api not available');
       }
-      await rmf.tasksApi?.postCancelTaskTasksCancelTaskPost({
+      await rmfApi.tasksApi?.postCancelTaskTasksCancelTaskPost({
         type: 'cancel_task_request',
         task_id: taskState.booking.id,
         labels: profile ? [profile.user.username] : undefined,
@@ -69,7 +69,7 @@ export function TaskCancelButton({
       appController.showAlert('error', `Failed to cancel task: ${(e as Error).message}`);
     }
     setOpenConfirmDialog(false);
-  }, [appController, taskState, rmf, profile]);
+  }, [appController, taskState, rmfApi, profile]);
 
   return (
     <>

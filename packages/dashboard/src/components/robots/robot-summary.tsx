@@ -34,7 +34,7 @@ import React from 'react';
 import { base, RobotTableData } from 'react-components';
 import { combineLatest, EMPTY, mergeMap, of } from 'rxjs';
 
-import { RmfAppContext } from '../rmf-app';
+import { RmfApiContext } from '../rmf-dashboard';
 import { TaskCancelButton } from '../tasks/task-cancellation';
 import { TaskInspector } from '../tasks/task-inspector';
 import { RobotDecommissionButton } from './robot-decommission';
@@ -104,7 +104,7 @@ const showBatteryIcon = (robot: RobotState, robotBattery: number) => {
 
 export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) => {
   const isScreenHeightLessThan800 = useMediaQuery('(max-height:800px)');
-  const rmf = React.useContext(RmfAppContext);
+  const rmfApi = React.useContext(RmfApiContext);
 
   const [isOpen, setIsOpen] = React.useState(true);
   const [robotState, setRobotState] = React.useState<RobotState | null>(null);
@@ -114,15 +114,17 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
   const [navigationDestination, setNavigationDestination] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    if (!rmf) {
+    if (!rmfApi) {
       return;
     }
-    const sub = rmf
+    const sub = rmfApi
       .getFleetStateObs(robot.fleet)
       .pipe(
         mergeMap((fleetState) => {
           const robotState = fleetState?.robots?.[robot.name];
-          const taskObs = robotState?.task_id ? rmf.getTaskStateObs(robotState.task_id) : of(null);
+          const taskObs = robotState?.task_id
+            ? rmfApi.getTaskStateObs(robotState.task_id)
+            : of(null);
           return robotState ? combineLatest([of(robotState), taskObs]) : EMPTY;
         }),
       )
@@ -131,7 +133,7 @@ export const RobotSummary = React.memo(({ onClose, robot }: RobotSummaryProps) =
         setTaskState(taskState);
       });
     return () => sub.unsubscribe();
-  }, [rmf, robot.fleet, robot.name]);
+  }, [rmfApi, robot.fleet, robot.name]);
 
   const taskProgress = React.useMemo(() => {
     if (

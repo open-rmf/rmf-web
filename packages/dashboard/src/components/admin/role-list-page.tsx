@@ -1,13 +1,13 @@
 import React from 'react';
 
 import { getApiErrorMessage } from '../../utils/api';
-import { RmfAppContext } from '../rmf-app';
+import { RmfApiContext } from '../rmf-dashboard';
 import { adminPageClasses, AdminPageContainer } from './page-css';
 import { RoleListCard } from './role-list-card';
 
 export function RoleListPage(): JSX.Element | null {
-  const rmfIngress = React.useContext(RmfAppContext);
-  const adminApi = rmfIngress?.adminApi;
+  const rmfApi = React.useContext(RmfApiContext);
+  const adminApi = rmfApi?.adminApi;
 
   if (!adminApi) return null;
 
