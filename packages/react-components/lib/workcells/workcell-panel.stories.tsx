@@ -1,4 +1,4 @@
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 
 import { makeDispenser, makeDispenserState } from './test-utils.spec';
 import { WorkcellPanel } from './workcell-panel';
@@ -7,6 +7,8 @@ export default {
   title: 'Workcell Panel',
   component: WorkcellPanel,
 } satisfies Meta;
+
+type Story = StoryObj<typeof WorkcellPanel>;
 
 const dispensers = [
   makeDispenser({ guid: 'test_dispenser' }),
@@ -26,20 +28,17 @@ const ingestors = [
   makeDispenser({ guid: 'test_ingestor5' }),
 ];
 
-export const WorkcellPanelStory: StoryFn = (args) => {
-  return (
-    <WorkcellPanel
-      dispensers={dispensers}
-      ingestors={ingestors}
-      workcellStates={{
-        test_dispenser: makeDispenserState({ guid: 'test_dispenser' }),
-        test_dispenser1: makeDispenserState({ guid: 'test_dispenser1' }),
-        test_dispenser3: makeDispenserState({ guid: 'test_dispenser3' }),
-        test_ingestor: makeDispenserState({ guid: 'test_ingestor' }),
-        test_ingestor2: makeDispenserState({ guid: 'test_ingestor2' }),
-        test_ingestor4: makeDispenserState({ guid: 'test_ingestor4' }),
-      }}
-      {...args}
-    />
-  );
+export const WorkcellPanelStory: Story = {
+  args: {
+    dispensers,
+    ingestors,
+    workcellStates: {
+      test_dispenser: makeDispenserState({ guid: 'test_dispenser' }),
+      test_dispenser1: makeDispenserState({ guid: 'test_dispenser1' }),
+      test_dispenser3: makeDispenserState({ guid: 'test_dispenser3' }),
+      test_ingestor: makeDispenserState({ guid: 'test_ingestor' }),
+      test_ingestor2: makeDispenserState({ guid: 'test_ingestor2' }),
+      test_ingestor4: makeDispenserState({ guid: 'test_ingestor4' }),
+    },
+  },
 };

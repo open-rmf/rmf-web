@@ -1,12 +1,14 @@
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 import { MemoryRouter } from 'react-router';
 
-import { UserListCard, UserListCardProps } from './user-list-card';
+import { UserListCard } from './user-list-card';
 
 export default {
   title: 'Admin/User List Card',
   component: UserListCard,
 } satisfies Meta;
+
+type Story = StoryObj<typeof UserListCard>;
 
 const users: string[] = [];
 for (let i = 0; i < 100; i++) {
@@ -18,8 +20,9 @@ async function searchUsers(search: string, limit: number, offset: number) {
   return users.filter((u) => u.startsWith(search)).slice(offset, offset + limit);
 }
 
-export const Default: StoryFn<UserListCardProps> = (args) => {
-  return (
+export const Default: Story = {
+  storyName: 'User List Card',
+  render: (args) => (
     <MemoryRouter>
       <UserListCard
         {...args}
@@ -28,7 +31,5 @@ export const Default: StoryFn<UserListCardProps> = (args) => {
         createUser={() => new Promise((res) => setTimeout(res, 100))}
       />
     </MemoryRouter>
-  );
+  ),
 };
-
-Default.storyName = 'User List Card';

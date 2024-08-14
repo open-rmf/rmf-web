@@ -5,8 +5,8 @@ import React from 'react';
 import { useAsync } from 'react-components';
 import { useParams } from 'react-router';
 
+import { getApiErrorMessage } from '../../utils/api';
 import { RmfAppContext } from '../rmf-app';
-import { getApiErrorMessage } from '../utils';
 import { ManageRolesCard } from './manage-roles-dialog';
 import { adminPageClasses, AdminPageContainer } from './page-css';
 import { UserProfileCard } from './user-profile';

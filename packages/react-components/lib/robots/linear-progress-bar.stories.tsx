@@ -1,17 +1,16 @@
-import { LinearProgressProps } from '@mui/material';
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 
-import { LinearProgressBar as LinearProgressBar_ } from './linear-progress-bar';
+import { LinearProgressBar } from './linear-progress-bar';
 
 export default {
   title: 'Robots/Linear Progress Bar',
-  component: LinearProgressBar_,
+  component: LinearProgressBar,
 } satisfies Meta;
 
-export const LinearProgressBar: StoryFn<LinearProgressProps & { value: number }> = (args) => {
-  return <LinearProgressBar_ {...args} />;
-};
+type Story = StoryObj<typeof LinearProgressBar>;
 
-LinearProgressBar.args = {
-  value: 100,
+export const Default: Story = {
+  args: {
+    value: 100,
+  },
 };

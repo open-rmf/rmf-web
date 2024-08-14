@@ -1,7 +1,7 @@
 import { Button, Paper, Typography } from '@mui/material';
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 
-import { ConfirmationDialog, ConfirmationDialogProps } from './confirmation-dialog';
+import { ConfirmationDialog } from './confirmation-dialog';
 
 export default {
   title: 'Dialog/Confirmation Dialog',
@@ -11,8 +11,11 @@ export default {
   },
 } satisfies Meta;
 
-export const Default: StoryFn<ConfirmationDialogProps> = (args) => {
-  return (
+type Story = StoryObj<typeof ConfirmationDialog>;
+
+export const Default: Story = {
+  storyName: 'Confirmation Dialog',
+  render: (args) => (
     <ConfirmationDialog
       {...args}
       open={true}
@@ -26,7 +29,5 @@ export const Default: StoryFn<ConfirmationDialogProps> = (args) => {
         <Typography>Content</Typography>
       </Paper>
     </ConfirmationDialog>
-  );
+  ),
 };
-
-Default.storyName = 'Confirmation Dialog';

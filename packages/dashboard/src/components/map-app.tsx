@@ -29,7 +29,7 @@ import {
   FleetResource,
   ResourcesContext,
 } from '../app-config';
-import { TrajectoryData } from '../managers/robot-trajectory-manager';
+import { TrajectoryData } from '../services/robot-trajectory-manager';
 import { AppControllerContext } from './app-contexts';
 import { AppEvents } from './app-events';
 import { DoorSummary } from './door-summary';

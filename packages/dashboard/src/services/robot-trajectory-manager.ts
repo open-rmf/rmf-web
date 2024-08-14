@@ -1,6 +1,6 @@
 import { Knot } from 'react-components';
 
-import { Authenticator } from '../auth';
+import { Authenticator } from './authenticator';
 import TrajectorySocketManager from './trajectory-socket-manager';
 
 // RawVelocity received from server is in this format (x, y, theta)

@@ -2,9 +2,9 @@ import { TableContainer, Typography } from '@mui/material';
 import React from 'react';
 import { ConfirmationDialog, MutexGroupData, MutexGroupTable } from 'react-components';
 
+import { AppControllerContext } from '../app-contexts';
 import { createMicroApp } from '../micro-app';
 import { RmfAppContext } from '../rmf-app';
-import { AppControllerContext } from './../app-contexts';
 
 const RefreshMutexGroupTableInterval = 5000;
 

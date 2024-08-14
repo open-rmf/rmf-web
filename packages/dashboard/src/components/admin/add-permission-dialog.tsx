@@ -3,8 +3,8 @@ import { Permission } from 'api-client';
 import React from 'react';
 import { ConfirmationDialog, useAsync } from 'react-components';
 
+import { getActionText, RmfAction } from '../../services/permissions';
 import { AppControllerContext } from '../app-contexts';
-import { getActionText, RmfAction } from '../permissions';
 
 export interface AddPermissionDialogProps {
   open: boolean;

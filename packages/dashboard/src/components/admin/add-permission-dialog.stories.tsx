@@ -1,21 +1,22 @@
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 
-import { AddPermissionDialog, AddPermissionDialogProps } from './add-permission-dialog';
+import { AddPermissionDialog } from './add-permission-dialog';
 
 export default {
   title: 'Admin/Add Permission Dialog',
   component: AddPermissionDialog,
 } satisfies Meta;
 
-export const Default: StoryFn<AddPermissionDialogProps> = (args) => {
-  return (
+type Story = StoryObj<typeof AddPermissionDialog>;
+
+export const Default: Story = {
+  storyName: 'Add Permission Dialog',
+  render: (args) => (
     <AddPermissionDialog
       {...args}
       open={true}
       setOpen={() => {}}
       savePermission={() => new Promise((res) => setTimeout(res, 100))}
     />
-  );
+  ),
 };
-
-Default.storyName = 'Add Permission Dialog';

@@ -1,7 +1,7 @@
 import { Paper } from '@mui/material';
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 
-import { TaskInfo, TaskInfoProps } from './task-info';
+import { TaskInfo } from './task-info';
 import { makeTaskState } from './test-data.spec';
 
 export default {
@@ -9,14 +9,16 @@ export default {
   component: TaskInfo,
 } satisfies Meta;
 
-export const Default: StoryFn<TaskInfoProps> = (args) => {
-  return (
+type Story = StoryObj<typeof TaskInfo>;
+
+export const Default: Story = {
+  storyName: 'Task Info',
+  args: {
+    task: makeTaskState('task'),
+  },
+  render: (args) => (
     <Paper style={{ padding: '1rem' }}>
       <TaskInfo {...args}></TaskInfo>
     </Paper>
-  );
-};
-Default.storyName = 'Task Info';
-Default.args = {
-  task: makeTaskState('task'),
+  ),
 };
