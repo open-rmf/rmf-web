@@ -20,12 +20,29 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push
+      - name: Build and push minimal-rmf
         uses: docker/build-push-action@v5
         with:
           push: true
           tags: ghcr.io/${{ github.repository }}/minimal-rmf
           context: .github/minimal-rmf
+      - name: Build and push dashboard
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          build-args: |
+            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf
+          tags: ghcr.io/${{ github.repository }}/dashboard
+          context: .github/dashboard
+      - name: Build and push api-server
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          build-args: |
+            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf
+            ROS_DISTRO=jazzy
+          tags: ghcr.io/${{ github.repository }}/api-server
+          context: .github/api-server
   # dashboard-e2e:
   #   strategy:
   #     matrix:

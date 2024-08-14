@@ -20,9 +20,6 @@ RUN rm -rf \
     /var/lib/apt/lists \
     /dist
 
-# WORKDIR /ws/packages/api-server
-# ENTRYPOINT ["bash", "-c", ". /opt/rmf/setup.bash && pnpm start"]
-
 ### Set up minimal image
 FROM docker.io/library/ros:$ROS_DISTRO-ros-core
 
@@ -44,8 +41,6 @@ COPY --from=base /ws /ws
 RUN rm -rf \
     /var/lib/apt/lists \
     /dist
-
-# ENTRYPOINT ["bash", "-c", ". /opt/ros/$ROS_DISTRO/setup.bash && rmf_api_server"]
 
 ENV RMF_API_SERVER_CONFIG /ws/packages/api-server/sqlite_local_config.py
 WORKDIR /ws/packages/api-server

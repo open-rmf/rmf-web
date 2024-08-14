@@ -6,7 +6,8 @@
 
 Open-RMF Web is a collection of packages that provide a web-based interface for users to visualize and control all aspects of Open-RMF deployments.
 
-- [Getting started](#getting-started)
+- [Quick start with docker](#quick-start-with-docker)
+- [Getting started from source](#getting-started-from-source)
 - [API server](packages/api-server)
 - [API client](packages/api-client)
 - [Dashboard](packages/dashboard)
@@ -14,7 +15,31 @@ Open-RMF Web is a collection of packages that provide a web-based interface for 
 - [Contribution guide](#contribution-guide)
 - [Roadmap](https://github.com/open-rmf/rmf-web/wiki/Open-RMF-Web-Dashboard)
 
-# Getting started
+# Quick start with docker
+
+Start the dashboard with host network access. The dashboard will then accessible on `localhost:3000` by default.
+
+```bash
+docker run \
+  --network host \
+  -it \
+  ghcr.io/open-rmf/rmf-web/dashboard:latest
+```
+
+Start the API server with host network access, and set up the correct `ROS_DOMAIN_ID` and ROS 2 RMW implementation that will be used in the rest of the Open-RMF system. The API server will use the default port at `localhost:8000`.
+
+```bash
+docker run \
+  --network host \
+  -it \
+  -e ROS_DOMAIN_ID=<ROS_DOMAIN_ID> \
+  -e RMW_IMPLEMENTATION=<RMW_IMPLEMENTATION> \
+  ghcr.io/open-rmf/rmf-web/api-server:latest
+```
+
+Users can also [configure the API server](packages/api-server/README.md/#configuration) using a mounted configuration file and setting the environment variable `RMF_API_SERVER_CONFIG`. In the default scenario, the API server will use an internal non-persistent database.
+
+# Getting started from source
 
 ### Prerequisites
 
@@ -56,7 +81,7 @@ You may also install dependencies for only a subset of the packages
 pnpm install -w --filter <package>...
 ```
 
-### Launching
+### Launching for development
 
 Source Open-RMF and launch the dashboard in development mode,
 
@@ -81,18 +106,14 @@ Ensure that the fleet adapters in the Open-RMF deployment is configured to use t
 ros2 launch rmf_demos_gz office.launch.xml server_uri:="http://localhost:8000/_internal"
 ```
 
-### Launching for development
+### Launching for development separately
 
-For development purposes, it might be useful to start all the individual components separately,
+When developing individual components, it may be useful to start the dashboard and api-server separately,
 
 ```bash
 # Start the dashboard in dev, this monitors for changes in the dashboard package and performs rebuilds. A browser refresh is required after all automated builds.
 cd packages/dashboard
 pnpm run start:react
-
-# Start react-components in dev, this monitors for changes in react-components, which will in turn trigger a re-build in dashboard.
-cd packages/react-components
-pnpm run build:watch
 
 # Start the API server, this will need to be restarted for any changes to be reflected
 cd packages/api-server
