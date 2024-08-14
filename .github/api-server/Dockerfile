@@ -1,7 +1,8 @@
 ARG BASE_IMAGE
 FROM $BASE_IMAGE as base
-ARG BRANCH=main
-ARG ROS_DISTRO=jazzy
+
+ARG BRANCH="main"
+ARG ROS_DISTRO="jazzy"
 
 # fetch sources
 RUN mkdir -p /ws \
