@@ -13,7 +13,7 @@ Open-RMF Web is a collection of packages that provide a web-based interface for 
 - [Dashboard](packages/dashboard)
 - [Configuration](#configuration)
 - [Contribution guide](#contribution-guide)
-- [Roadmap](https://github.com/open-rmf/rmf-web/wiki/Open-RMF-Web-Dashboard)
+- [Roadmap](https://github.com/orgs/open-rmf/projects/10)
 
 # Quick start with docker
 
