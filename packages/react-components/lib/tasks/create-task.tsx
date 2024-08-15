@@ -30,13 +30,14 @@ import {
   RadioGroup,
   styled,
   TextField,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
 import { DatePicker, DateTimePicker } from '@mui/x-date-pickers';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import type { TaskFavorite, TaskRequest } from 'api-client';
+import type { Priority, TaskFavorite, TaskRequest } from 'api-client';
 import React from 'react';
 
 import { Loading } from '..';
@@ -194,6 +195,29 @@ function FavoriteTask({
   );
 }
 
+function createTaskPriority(prioritize: boolean): Priority {
+  return { type: 'binary', value: prioritize ? 1 : 0 };
+}
+
+function getDefaultTaskPriority(): Priority {
+  return createTaskPriority(false);
+}
+
+// FIXME(ac): This method of parsing is crude, and will be fixed using schemas
+// when we migrate to jsonforms.
+function parseTaskPriority(priority: Priority): boolean {
+  if (
+    typeof priority == 'object' &&
+    'type' in priority &&
+    priority['type'] === 'binary' &&
+    'value' in priority &&
+    typeof priority['value'] == 'number'
+  ) {
+    return (priority['value'] as number) > 0;
+  }
+  return false;
+}
+
 function getDefaultTaskRequest(taskDefinitionId: string): TaskRequest | null {
   const category = getTaskRequestCategory(taskDefinitionId);
   const description = getDefaultTaskDescription(taskDefinitionId);
@@ -213,7 +237,7 @@ function getDefaultTaskRequest(taskDefinitionId: string): TaskRequest | null {
       description,
       unix_millis_earliest_start_time: 0,
       unix_millis_request_time: Date.now(),
-      priority: { type: 'binary', value: 0 },
+      priority: getDefaultTaskPriority,
       requester: '',
     };
   }
@@ -785,6 +809,15 @@ export function CreateTaskForm({
     }
   };
 
+  const handlePriorityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTaskRequest((prev) => {
+      return {
+        ...prev,
+        priority: createTaskPriority(event.target.checked),
+      };
+    });
+  };
+
   return (
     <>
       <StyledDialog
@@ -873,12 +906,19 @@ export function CreateTaskForm({
                     </TextField>
                   </Grid>
                   <Grid item xs={isScreenHeightLessThan800 ? 6 : 7}>
-                    <DateTimePicker
-                      value={new Date()}
-                      onChange={() => 0}
-                      label="Start Time"
-                      disabled
-                    />
+                    <Tooltip title="Prioritized tasks will added to the front of the task execution queue">
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={
+                              taskRequest.priority ? parseTaskPriority(taskRequest.priority) : false
+                            }
+                            onChange={handlePriorityChange}
+                          />
+                        }
+                        label="Prioritize"
+                      />
+                    </Tooltip>
                   </Grid>
                   <Grid item xs={1}>
                     <Checkbox
