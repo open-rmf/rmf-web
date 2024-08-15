@@ -27,6 +27,7 @@ import { AppEvents } from '../app-events';
 import { RmfAppContext } from '../rmf-app';
 import {
   apiScheduleToSchedule,
+  getScheduledTaskColor,
   getScheduledTaskTitle,
   scheduleToEvents,
   scheduleWithSelectedDay,
@@ -132,8 +133,14 @@ export const TaskSchedule = () => {
       eventsMap.current = {};
       return tasks.flatMap((t: ScheduledTask) =>
         t.schedules.flatMap<ProcessedEvent>((s: ApiSchedule) => {
-          const events = scheduleToEvents(params.start, params.end, s, t, getEventId, () =>
-            getScheduledTaskTitle(t, allowedTasks),
+          const events = scheduleToEvents(
+            params.start,
+            params.end,
+            s,
+            t,
+            getEventId,
+            () => getScheduledTaskTitle(t, allowedTasks),
+            () => getScheduledTaskColor(t, allowedTasks),
           );
           events.forEach((ev) => {
             eventsMap.current[Number(ev.event_id)] = t;
