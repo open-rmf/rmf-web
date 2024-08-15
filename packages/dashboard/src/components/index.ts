@@ -3,6 +3,7 @@ export * from './app-base';
 export * from './app-contexts';
 export * from './app-events';
 export * from './login-card';
+export * from './map-app';
 export * from './private-route';
 export * from './rmf-dashboard';
 export * from './workspace';

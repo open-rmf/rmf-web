@@ -20,8 +20,8 @@ import {
 } from 'react-components';
 
 import { allowedTasks } from '../../app-config';
-import { useCreateTaskFormData } from '../../hooks/useCreateTaskForm';
-import useGetUsername from '../../hooks/useFetchUser';
+import { useCreateTaskFormData } from '../../hooks/use-create-task-form';
+import useGetUsername from '../../hooks/use-fetch-user';
 import { AppControllerContext } from '../app-contexts';
 import { AppEvents } from '../app-events';
 import { RmfApiContext } from '../rmf-dashboard';

@@ -1,26 +1,46 @@
-import React from 'react';
-import { Window } from 'react-components';
+import React, { Suspense } from 'react';
+import { Window, WindowProps } from 'react-components';
 
-export interface MicroAppProps {
-  key: string;
-  onClose?: () => void;
+import { Settings } from '../services/settings';
+import { SettingsContext } from './app-contexts';
+
+export type MicroAppProps = Omit<WindowProps, 'title' | 'children'>;
+
+export interface MicroAppManifest {
+  appId: string;
+  displayName: string;
+  Component: React.ComponentType<any>;
 }
 
-export function createMicroApp(
-  title: string,
-  Component: React.ComponentType<{}>,
-): React.ComponentType<MicroAppProps> {
-  return React.memo(
-    React.forwardRef(
-      (
-        { children, ...otherProps }: React.PropsWithChildren<MicroAppProps>,
-        ref: React.Ref<HTMLDivElement>,
-      ) => (
-        <Window ref={ref} title={title} {...otherProps}>
-          <Component />
-          {children}
+/**
+ * Creates a micro app from a component. The component must be loaded using dynamic import.
+ * Note that the map should be created in a different module than the component.
+ *
+ * Example:
+ * ```ts
+ * createMicroApp('Map', 'Map', () => import('./map'), config);
+ * ```
+ */
+export function createMicroApp<P>(
+  appId: string,
+  displayName: string,
+  loadComponent: () => Promise<{ default: React.ComponentType<P> }>,
+  props: (settings: Settings) => React.PropsWithoutRef<P> & React.Attributes,
+): MicroAppManifest {
+  const LazyComponent = React.lazy(loadComponent);
+  return {
+    appId,
+    displayName,
+    Component: React.forwardRef((microAppProps: MicroAppProps, ref: React.Ref<HTMLDivElement>) => {
+      const settings = React.useContext(SettingsContext);
+      return (
+        <Window ref={ref} title={displayName} {...microAppProps}>
+          {/* TODO(koonpeng): Implement fallback */}
+          <Suspense fallback={null}>
+            <LazyComponent {...props(settings)} />
+          </Suspense>
         </Window>
-      ),
-    ),
-  );
+      );
+    }),
+  };
 }

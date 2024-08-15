@@ -158,7 +158,7 @@ export interface AppConfig extends RuntimeConfig {
 
 declare const APP_CONFIG: AppConfig;
 
-const appConfig: AppConfig = (() => {
+export const appConfig: AppConfig = (() => {
   if (import.meta.env.PROD) {
     return APP_CONFIG;
   } else {
@@ -168,9 +168,7 @@ const appConfig: AppConfig = (() => {
   }
 })();
 
-export const AppConfigContext = React.createContext(appConfig);
-
-const authenticator: Authenticator = (() => {
+export const authenticator: Authenticator = (() => {
   // must use if statement instead of switch for vite tree shaking to work
   if (APP_CONFIG_AUTH_PROVIDER === 'keycloak') {
     return new KeycloakAuthenticator(
@@ -183,8 +181,6 @@ const authenticator: Authenticator = (() => {
     throw new Error('unknown auth provider');
   }
 })();
-
-export const AuthenticatorContext = React.createContext(authenticator);
 
 export const ResourcesContext = React.createContext<Resources>(appConfig.resources.default);
 

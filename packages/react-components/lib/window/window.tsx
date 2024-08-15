@@ -1,5 +1,3 @@
-import 'react-grid-layout/css/styles.css';
-
 import type {} from '@emotion/styled';
 import CloseIcon from '@mui/icons-material/Close';
 import { Grid, IconButton, Paper, PaperProps, styled, useTheme } from '@mui/material';
@@ -10,9 +8,7 @@ import { WindowManagerStateContext } from './context';
 import { WindowToolbar } from './window-toolbar';
 
 export interface WindowProps extends PaperProps {
-  key: string;
   title: string;
-  // children: React.ReactChildren;
   'data-grid'?: Layout;
   toolbar?: React.ReactNode;
   onClose?: () => void;

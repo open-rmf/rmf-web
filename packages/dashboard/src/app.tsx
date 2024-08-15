@@ -2,26 +2,28 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import 'react-grid-layout/css/styles.css';
 import './app.css';
 
 import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { AppConfigContext, AuthenticatorContext, ResourcesContext } from './app-config';
+import { appConfig, ResourcesContext } from './app-config';
 import {
   AdminRouter,
   AppBase,
   AppEvents,
-  ManagedWorkspace,
+  createMapApp,
   PrivateRoute,
   RmfDashboard,
   SettingsContext,
+  StaticWorkspace,
   Workspace,
   WorkspaceState,
 } from './components';
+import { MicroAppManifest } from './components/micro-app';
 import { LoginPage } from './pages';
 import KeycloakAuthenticator from './services/keycloak';
+import StubAuthenticator from './services/stub-authenticator';
 import {
   AdminRoute,
   CustomRoute1,
@@ -32,51 +34,63 @@ import {
   TasksRoute,
 } from './utils/url';
 
-const dashboardWorkspace: WorkspaceState = {
-  layout: [{ i: 'map', x: 0, y: 0, w: 12, h: 12 }],
-  windows: [{ key: 'map', appName: 'Map' }],
+const mapApp = createMapApp({
+  attributionPrefix: appConfig.attributionPrefix,
+  defaultMapLevel: appConfig.defaultMapLevel,
+  defaultRobotZoom: appConfig.defaultRobotZoom,
+  defaultZoom: appConfig.defaultZoom,
+});
+
+const appRegistry = [mapApp];
+
+const homeWorkspace: WorkspaceState = {
+  windows: {
+    map: {
+      layout: { x: 0, y: 0, w: 12, h: 6 },
+      component: mapApp.Component,
+    },
+  },
 };
 
-const robotsWorkspace: WorkspaceState = {
-  layout: [
-    { i: 'robots', x: 0, y: 0, w: 7, h: 4 },
-    { i: 'map', x: 8, y: 0, w: 5, h: 8 },
-    { i: 'doors', x: 0, y: 0, w: 7, h: 4 },
-    { i: 'lifts', x: 0, y: 0, w: 7, h: 4 },
-    { i: 'mutexGroups', x: 8, y: 0, w: 5, h: 4 },
-  ],
-  windows: [
-    { key: 'robots', appName: 'Robots' },
-    { key: 'map', appName: 'Map' },
-    { key: 'doors', appName: 'Doors' },
-    { key: 'lifts', appName: 'Lifts' },
-    { key: 'mutexGroups', appName: 'Mutex Groups' },
-  ],
-};
+// const robotsWorkspace: WorkspaceState = {
+//   layout: [
+//     { i: 'robots', x: 0, y: 0, w: 7, h: 4 },
+//     { i: 'map', x: 8, y: 0, w: 5, h: 8 },
+//     { i: 'doors', x: 0, y: 0, w: 7, h: 4 },
+//     { i: 'lifts', x: 0, y: 0, w: 7, h: 4 },
+//     { i: 'mutexGroups', x: 8, y: 0, w: 5, h: 4 },
+//   ],
+//   windows: [
+//     { key: 'robots', appName: 'Robots' },
+//     { key: 'map', appName: 'Map' },
+//     { key: 'doors', appName: 'Doors' },
+//     { key: 'lifts', appName: 'Lifts' },
+//     { key: 'mutexGroups', appName: 'Mutex Groups' },
+//   ],
+// };
 
-const tasksWorkspace: WorkspaceState = {
-  layout: [
-    { i: 'tasks', x: 0, y: 0, w: 7, h: 12 },
-    { i: 'map', x: 8, y: 0, w: 5, h: 12 },
-  ],
-  windows: [
-    { key: 'tasks', appName: 'Tasks' },
-    { key: 'map', appName: 'Map' },
-  ],
-};
+// const tasksWorkspace: WorkspaceState = {
+//   layout: [
+//     { i: 'tasks', x: 0, y: 0, w: 7, h: 12 },
+//     { i: 'map', x: 8, y: 0, w: 5, h: 12 },
+//   ],
+//   windows: [
+//     { key: 'tasks', appName: 'Tasks' },
+//     { key: 'map', appName: 'Map' },
+//   ],
+// };
 
 export default function App() {
   return (
     <RmfDashboard
       apiServerUrl="http://localhost:8000"
       trajectoryServerUrl="http://localhost:8006"
-      authenticator={
-        new KeycloakAuthenticator({
-          url: 'http://localhost:8080',
-          realm: 'master',
-          clientId: 'rmf-dashboard',
-        })
-      }
+      authenticator={new StubAuthenticator()}
+      helpLink={appConfig.helpLink}
+      reportIssueLink={appConfig.reportIssue}
+      pickupZones={appConfig.pickupZones}
+      cartIds={appConfig.cartIds}
+      tabs={[{ name: 'Map', route: '', element: <StaticWorkspace initialState={homeWorkspace} /> }]}
     />
   );
 }

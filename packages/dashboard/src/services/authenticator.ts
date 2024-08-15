@@ -1,5 +1,8 @@
 import { Permission, User } from 'api-client';
 import EventEmitter from 'eventemitter3';
+import React from 'react';
+
+export const AuthenticatorContext = React.createContext<Authenticator | null>(null);
 
 export type AuthenticatorEventType = {
   userChanged: [string | null];

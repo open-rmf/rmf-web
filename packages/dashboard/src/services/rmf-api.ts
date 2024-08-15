@@ -112,6 +112,53 @@ export class RmfApi {
     this.adminApi = new AdminApi(apiConfig, undefined, axiosInst);
     this.deliveryAlertsApi = new DeliveryAlertsApi(apiConfig, undefined, axiosInst);
 
+    this.buildingMapObs = this._convertSioToRxObs((sioClient, handler) =>
+      sioClient.subscribeBuildingMap(handler),
+    );
+
+    this.beaconsObsStore = this._convertSioToRxObs((sioClient, handler) =>
+      sioClient.subscribeBeaconState(handler),
+    );
+
+    this.doorsObs = this.buildingMapObs.pipe(
+      map((buildingMap) => buildingMap.levels.flatMap((level) => level.doors)),
+    );
+
+    this.liftsObs = this.buildingMapObs.pipe(map((buildingMap) => buildingMap.lifts));
+
+    this.dispensersObs = new Observable<Dispenser[]>((subscriber) => {
+      (async () => {
+        const dispensers = (await this.dispensersApi.getDispensersDispensersGet()).data;
+        subscriber.next(dispensers);
+      })();
+    }).pipe(shareReplay(1));
+
+    this.ingestorsObs = new Observable<Ingestor[]>((subscriber) => {
+      (async () => {
+        const ingestors = (await this.ingestorsApi.getIngestorsIngestorsGet()).data;
+        subscriber.next(ingestors);
+      })();
+    }).pipe(shareReplay(1));
+
+    this.fleetsObs = new Observable<FleetState[]>((subscriber) => {
+      (async () => {
+        const fleets = (await this.fleetsApi.getFleetsFleetsGet()).data;
+        subscriber.next(fleets);
+      })();
+    }).pipe(shareReplay(1));
+
+    this.alertRequestsObsStore = this._convertSioToRxObs((sioClient, handler) =>
+      sioClient.subscribeAlertRequests(handler),
+    );
+
+    this.alertResponsesObsStore = this._convertSioToRxObs((sioClient, handler) =>
+      sioClient.subscribeAlertResponses(handler),
+    );
+
+    this.deliveryAlertObsStore = this._convertSioToRxObs((sioClient, handler) =>
+      sioClient.subscribeDeliveryAlerts(handler),
+    );
+
     try {
       const ws = new WebSocket(trajectoryServerUrl);
       this.trajectoryManager = new DefaultTrajectoryManager(ws, authenticator);
@@ -176,17 +223,9 @@ export class RmfApi {
     );
   }
 
-  buildingMapObs: Observable<BuildingMap> = this._convertSioToRxObs((sioClient, handler) =>
-    sioClient.subscribeBuildingMap(handler),
-  );
-
-  beaconsObsStore: Observable<BeaconState> = this._convertSioToRxObs((sioClient, handler) =>
-    sioClient.subscribeBeaconState(handler),
-  );
-
-  doorsObs: Observable<Door[]> = this.buildingMapObs.pipe(
-    map((buildingMap) => buildingMap.levels.flatMap((level) => level.doors)),
-  );
+  buildingMapObs: Observable<BuildingMap>;
+  beaconsObsStore: Observable<BeaconState>;
+  doorsObs: Observable<Door[]>;
 
   private _doorStateObsStore: Record<string, Observable<DoorState>> = {};
   getDoorStateObs(name: string): Observable<DoorState> {
@@ -198,8 +237,7 @@ export class RmfApi {
     return this._doorStateObsStore[name];
   }
 
-  liftsObs: Observable<Lift[]> = this.buildingMapObs.pipe(map((buildingMap) => buildingMap.lifts));
-
+  liftsObs: Observable<Lift[]>;
   private _liftStateObsStore: Record<string, Observable<LiftState>> = {};
   getLiftStateObs(name: string): Observable<LiftState> {
     if (!this._liftStateObsStore[name]) {
@@ -210,13 +248,7 @@ export class RmfApi {
     return this._liftStateObsStore[name];
   }
 
-  dispensersObs: Observable<Dispenser[]> = new Observable<Dispenser[]>((subscriber) => {
-    (async () => {
-      const dispensers = (await this.dispensersApi.getDispensersDispensersGet()).data;
-      subscriber.next(dispensers);
-    })();
-  }).pipe(shareReplay(1));
-
+  dispensersObs: Observable<Dispenser[]>;
   private _dispenserStateObsStore: Record<string, Observable<DispenserState>> = {};
   getDispenserStateObs(guid: string): Observable<DispenserState> {
     if (!this._dispenserStateObsStore[guid]) {
@@ -227,13 +259,7 @@ export class RmfApi {
     return this._dispenserStateObsStore[guid];
   }
 
-  ingestorsObs: Observable<Ingestor[]> = new Observable<Ingestor[]>((subscriber) => {
-    (async () => {
-      const ingestors = (await this.ingestorsApi.getIngestorsIngestorsGet()).data;
-      subscriber.next(ingestors);
-    })();
-  }).pipe(shareReplay(1));
-
+  ingestorsObs: Observable<Ingestor[]>;
   private _ingestorStateObsStore: Record<string, Observable<IngestorState>> = {};
   getIngestorStateObs(guid: string): Observable<IngestorState> {
     if (!this._ingestorStateObsStore[guid]) {
@@ -244,13 +270,7 @@ export class RmfApi {
     return this._ingestorStateObsStore[guid];
   }
 
-  fleetsObs: Observable<FleetState[]> = new Observable<FleetState[]>((subscriber) => {
-    (async () => {
-      const fleets = (await this.fleetsApi.getFleetsFleetsGet()).data;
-      subscriber.next(fleets);
-    })();
-  }).pipe(shareReplay(1));
-
+  fleetsObs: Observable<FleetState[]>;
   private _fleetStateObsStore: Record<string, Observable<FleetState>> = {};
   getFleetStateObs(name: string): Observable<FleetState> {
     if (!this._fleetStateObsStore[name]) {
@@ -271,15 +291,7 @@ export class RmfApi {
     return this._taskStateObsStore[taskId];
   }
 
-  alertRequestsObsStore: Observable<AlertRequest> = this._convertSioToRxObs((sioClient, handler) =>
-    sioClient.subscribeAlertRequests(handler),
-  );
-
-  alertResponsesObsStore: Observable<AlertResponse> = this._convertSioToRxObs(
-    (sioClient, handler) => sioClient.subscribeAlertResponses(handler),
-  );
-
-  deliveryAlertObsStore: Observable<DeliveryAlert> = this._convertSioToRxObs((sioClient, handler) =>
-    sioClient.subscribeDeliveryAlerts(handler),
-  );
+  alertRequestsObsStore: Observable<AlertRequest>;
+  alertResponsesObsStore: Observable<AlertResponse>;
+  deliveryAlertObsStore: Observable<DeliveryAlert>;
 }
