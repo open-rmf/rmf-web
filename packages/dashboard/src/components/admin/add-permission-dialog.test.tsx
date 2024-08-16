@@ -2,8 +2,8 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { RmfAction } from '../../permissions';
-import { AddPermissionDialog } from '../add-permission-dialog';
+import { RmfAction } from '../../services/permissions';
+import { AddPermissionDialog } from './add-permission-dialog';
 
 describe('AddPermissionDialog', () => {
   it('calls savePermission when form is submitted', async () => {

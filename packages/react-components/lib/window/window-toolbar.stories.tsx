@@ -1,8 +1,8 @@
 import { IconButton } from '@mui/material';
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 
 import OpenInFullIcon from '../icons/OpenInFull';
-import { WindowToolbar, WindowToolbarProps } from './window-toolbar';
+import { WindowToolbar } from './window-toolbar';
 
 export default {
   title: 'Window/Toolbar',
@@ -14,12 +14,14 @@ export default {
   },
 } satisfies Meta;
 
-export const Toolbar: StoryFn<WindowToolbarProps> = (args) => {
-  return (
+type Story = StoryObj<typeof WindowToolbar>;
+
+export const Toolbar: Story = {
+  render: (args) => (
     <WindowToolbar {...args}>
       <IconButton color="inherit">
         <OpenInFullIcon />
       </IconButton>
     </WindowToolbar>
-  );
+  ),
 };

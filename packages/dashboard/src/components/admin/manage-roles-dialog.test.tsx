@@ -2,7 +2,7 @@ import { render, waitFor, waitForElementToBeRemoved } from '@testing-library/rea
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { ManageRolesCard, ManageRolesDialog } from '../manage-roles-dialog';
+import { ManageRolesCard, ManageRolesDialog } from './manage-roles-dialog';
 
 describe('ManageRolesCard', () => {
   it('shows dialog when add/remove is clicked', async () => {

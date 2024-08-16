@@ -1,4 +1,4 @@
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 
 import { AdminDrawer } from './drawer';
 
@@ -12,8 +12,8 @@ export default {
   },
 } satisfies Meta;
 
-export const Default: StoryFn<{}> = (args) => {
-  return <AdminDrawer {...args} />;
-};
+type Story = StoryObj<typeof AdminDrawer>;
 
-Default.storyName = 'Drawer';
+export const Default: Story = {
+  storyName: 'Drawer',
+};

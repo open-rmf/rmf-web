@@ -2,8 +2,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { getActionText, RmfAction } from '../../permissions';
-import { PermissionsCard } from '../permissions-card';
+import { getActionText, RmfAction } from '../../services/permissions';
+import { PermissionsCard } from './permissions-card';
 
 // TODO(AA): To remove after
 // https://github.com/testing-library/react-testing-library/issues/1216

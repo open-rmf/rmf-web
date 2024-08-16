@@ -1,4 +1,4 @@
-import { Authenticator } from '../auth';
+import { Authenticator } from './authenticator';
 import { Trajectory } from './robot-trajectory-manager';
 import TrajectorySocketManager from './trajectory-socket-manager';
 

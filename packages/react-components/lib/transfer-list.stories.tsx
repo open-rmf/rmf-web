@@ -1,8 +1,8 @@
 import { Paper } from '@mui/material';
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
 
-import { TransferList, TransferListProps } from './transfer-list';
+import { TransferList } from './transfer-list';
 
 export default {
   title: 'Transfer List',
@@ -29,6 +29,8 @@ export default {
   },
 } satisfies Meta;
 
+type Story = StoryObj<typeof TransferList>;
+
 const numbers: Record<string, number> = {
   one: 1,
   two: 2,
@@ -40,24 +42,25 @@ const numbers: Record<string, number> = {
   eight: 8,
 };
 
-export const TransferListStory: StoryFn<TransferListProps> = (args) => {
-  const [leftItems, setLeftItems] = React.useState(['one', 'two', 'three', 'four']);
-  const [rightItems, setRightItems] = React.useState(['five', 'six', 'seven', 'eight']);
-  return (
-    <Paper style={{ width: '100%', height: 250 }}>
-      <TransferList
-        {...args}
-        leftItems={leftItems}
-        rightItems={rightItems}
-        onTransfer={(left, right) => {
-          left.sort((a, b) => numbers[a] - numbers[b]);
-          setLeftItems(left);
-          right.sort((a, b) => numbers[a] - numbers[b]);
-          setRightItems(right);
-        }}
-      ></TransferList>
-    </Paper>
-  );
+export const TransferListStory: Story = {
+  storyName: 'Transfer List',
+  render: (args) => {
+    const [leftItems, setLeftItems] = React.useState(['one', 'two', 'three', 'four']);
+    const [rightItems, setRightItems] = React.useState(['five', 'six', 'seven', 'eight']);
+    return (
+      <Paper style={{ width: '100%', height: 250 }}>
+        <TransferList
+          {...args}
+          leftItems={leftItems}
+          rightItems={rightItems}
+          onTransfer={(left, right) => {
+            left.sort((a, b) => numbers[a] - numbers[b]);
+            setLeftItems(left);
+            right.sort((a, b) => numbers[a] - numbers[b]);
+            setRightItems(right);
+          }}
+        ></TransferList>
+      </Paper>
+    );
+  },
 };
-
-TransferListStory.storyName = 'Transfer List';

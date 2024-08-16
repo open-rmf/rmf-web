@@ -1,27 +1,23 @@
 import { Typography } from '@mui/material';
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 
-import {
-  CircularProgressBar as CircularProgressBar_,
-  CircularProgressBarProps,
-} from './circular-progress-bar';
+import { CircularProgressBar } from './circular-progress-bar';
 
 export default {
   title: 'Robots/Circular Progress Bar',
-  component: CircularProgressBar_,
+  component: CircularProgressBar,
 } satisfies Meta;
 
-export const CircularProgressBar: StoryFn<CircularProgressBarProps> = (args) => {
-  return (
-    <>
-      <CircularProgressBar_ {...args}>
-        <Typography variant="h6">{args.progress}%</Typography>
-      </CircularProgressBar_>
-    </>
-  );
-};
+type Story = StoryObj<typeof CircularProgressBar>;
 
-CircularProgressBar.args = {
-  progress: 70,
-  strokeColor: 'green',
+export const Default: Story = {
+  args: {
+    progress: 70,
+    strokeColor: 'green',
+  },
+  render: (args) => (
+    <CircularProgressBar {...args}>
+      <Typography variant="h6">{args.progress}%</Typography>
+    </CircularProgressBar>
+  ),
 };

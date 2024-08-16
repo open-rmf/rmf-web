@@ -33,13 +33,10 @@ import {
 import axios from 'axios';
 import { map, Observable, shareReplay } from 'rxjs';
 
-import { AppConfig } from '../../app-config';
-import { Authenticator } from '../../auth';
-import { NegotiationStatusManager } from '../../managers/negotiation-status-manager';
-import {
-  DefaultTrajectoryManager,
-  RobotTrajectoryManager,
-} from '../../managers/robot-trajectory-manager';
+import { AppConfig } from '../app-config';
+import { Authenticator } from './authenticator';
+import { NegotiationStatusManager } from './negotiation-status-manager';
+import { DefaultTrajectoryManager, RobotTrajectoryManager } from './robot-trajectory-manager';
 
 export class RmfIngress {
   // This should be private because socketio does not support "replaying" subscription. If

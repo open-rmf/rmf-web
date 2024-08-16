@@ -1,5 +1,5 @@
 import { styled } from '@mui/material';
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 
 import { SimpleInfo } from '../lib';
 
@@ -16,6 +16,7 @@ const InfoCardRoot = styled('div')(({ theme }) => ({
 
 export default {
   title: 'Simple Info',
+  component: SimpleInfo,
   argTypes: {
     stringDisplayName: {
       name: 'String Display Name',
@@ -32,36 +33,20 @@ export default {
   },
 } satisfies Meta;
 
-export const SimpleData: StoryFn = ({
-  stringDisplayName,
-  stringValue,
-  numberDisplayName,
-  numberValue,
-  ...args
-}) => {
-  return (
+type Story = StoryObj<typeof SimpleInfo>;
+
+export const StringData: Story = {
+  render: (args) => (
     <InfoCardRoot className={classes.background}>
-      <SimpleInfo
-        infoData={[
-          { name: stringDisplayName, value: stringValue },
-          { name: numberDisplayName, value: numberValue },
-        ]}
-        {...args}
-      />
+      <SimpleInfo {...args} infoData={[{ name: 'string', value: 'value' }]} />
     </InfoCardRoot>
-  );
-};
-SimpleData.args = {
-  stringDisplayName: 'string',
-  stringValue: 'value',
-  numberDisplayName: 'number',
-  numberValue: 0,
+  ),
 };
 
-export const Array: StoryFn = (args) => {
-  return (
+export const ArrayData: Story = {
+  render: (args) => (
     <InfoCardRoot className={classes.background}>
-      <SimpleInfo infoData={[{ name: 'strings', value: ['hello', 'world'] }]} {...args} />
+      <SimpleInfo {...args} infoData={[{ name: 'strings', value: ['hello', 'world'] }]} />
     </InfoCardRoot>
-  );
+  ),
 };

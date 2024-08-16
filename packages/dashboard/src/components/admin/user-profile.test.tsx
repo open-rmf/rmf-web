@@ -2,7 +2,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { UserProfileCard } from '../user-profile';
+import { UserProfileCard } from './user-profile';
 
 describe('UserProfileCard', () => {
   it('renders username', () => {

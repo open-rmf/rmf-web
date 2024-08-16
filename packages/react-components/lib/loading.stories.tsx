@@ -1,7 +1,7 @@
 import { Button, Typography } from '@mui/material';
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 
-import { Loading, LoadingProps } from './loading';
+import { Loading } from './loading';
 
 export default {
   title: 'Loading',
@@ -13,8 +13,10 @@ export default {
   },
 } satisfies Meta;
 
-export const LoadingButton: StoryFn<LoadingProps> = (args) => {
-  return (
+type Story = StoryObj<typeof Loading>;
+
+export const LoadingButton: Story = {
+  render: (args) => (
     <>
       <Button variant="contained" disabled={args.loading}>
         <Loading {...args} size="1.5em" hideChildren>
@@ -25,5 +27,5 @@ export const LoadingButton: StoryFn<LoadingProps> = (args) => {
         Use the storybook controls to change loading state
       </Typography>
     </>
-  );
+  ),
 };

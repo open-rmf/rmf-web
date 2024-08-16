@@ -1,7 +1,7 @@
 import React from 'react';
 
+import { getApiErrorMessage } from '../../utils/api';
 import { RmfAppContext } from '../rmf-app';
-import { getApiErrorMessage } from '../utils';
 import { adminPageClasses, AdminPageContainer } from './page-css';
 import { RoleListCard } from './role-list-card';
 

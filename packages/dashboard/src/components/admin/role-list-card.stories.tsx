@@ -1,15 +1,18 @@
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 
-import { RmfAction } from '../permissions';
-import { RoleListCard, RoleListCardProps } from './role-list-card';
+import { RmfAction } from '../../services/permissions';
+import { RoleListCard } from './role-list-card';
 
 export default {
   title: 'Admin/Role List Card',
   component: RoleListCard,
 } satisfies Meta;
 
-export const Default: StoryFn<RoleListCardProps> = (args) => {
-  return (
+type Story = StoryObj<typeof RoleListCard>;
+
+export const Default: Story = {
+  storyName: 'Role List Card',
+  render: (args) => (
     <RoleListCard
       {...args}
       getRoles={async () => {
@@ -26,7 +29,5 @@ export const Default: StoryFn<RoleListCardProps> = (args) => {
       createRole={() => new Promise((res) => setTimeout(res, 100))}
       deleteRole={() => new Promise((res) => setTimeout(res, 100))}
     />
-  );
+  ),
 };
-
-Default.storyName = 'Role List Card';

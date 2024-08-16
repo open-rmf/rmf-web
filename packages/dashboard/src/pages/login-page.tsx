@@ -1,6 +1,6 @@
 import { styled } from '@mui/material';
 
-import { LoginCard, LoginCardProps } from './login-card';
+import { LoginCard, LoginCardProps } from '../components';
 
 const prefix = 'login-page';
 const classes = {
