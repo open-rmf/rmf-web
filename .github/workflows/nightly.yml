@@ -50,6 +50,9 @@ jobs:
       - name: Load image
         run: |
           docker load --input /tmp/minimal-rmf.tar
+      - name: Tag image
+        run: |
+          docker image tag ghcr.io/${{ github.repository }}/minimal-rmf:latest ghcr.io/${{ github.repository }}/minimal-rmf:local
       - uses: actions/checkout@v4
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -64,7 +67,7 @@ jobs:
         with:
           push: true
           build-args: |
-            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:latest
+            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:local
           tags: ghcr.io/${{ github.repository }}/dashboard
           context: .github/dashboard
       - name: Build and push api-server
@@ -72,7 +75,7 @@ jobs:
         with:
           push: true
           build-args: |
-            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:latest
+            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:local
             ROS_DISTRO=jazzy
           tags: ghcr.io/${{ github.repository }}/api-server
           context: .github/api-server
