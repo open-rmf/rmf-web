@@ -3,14 +3,16 @@
  * For that RMF needs to support task discovery and UI schemas https://github.com/open-rmf/rmf_api_msgs/issues/32.
  */
 
+import BoltIcon from '@mui/icons-material/Bolt';
 import UpdateIcon from '@mui/icons-material/Create';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import SaveIcon from '@mui/icons-material/Save';
+import SendIcon from '@mui/icons-material/Send';
+import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
 import {
   Box,
   Button,
-  Checkbox,
   Chip,
   Dialog,
   DialogActions,
@@ -31,6 +33,7 @@ import {
   Radio,
   RadioGroup,
   styled,
+  Switch,
   TextField,
   Tooltip,
   Typography,
@@ -86,6 +89,7 @@ import {
   PatrolTaskForm,
 } from './types/patrol';
 import { getDefaultTaskDescription, getTaskRequestCategory } from './types/utils';
+import { textTransform } from '@mui/system';
 
 export interface TaskDefinition {
   taskDefinitionId: string;
@@ -487,7 +491,7 @@ export function CreateTaskForm({
     }
   }
   const [warnTime, setWarnTime] = React.useState<Date | null>(existingWarnTime);
-  const handleWarnTimeCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleWarnTimeSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       setWarnTime(new Date());
     } else {
@@ -811,11 +815,18 @@ export function CreateTaskForm({
     }
   };
 
-  const handlePriorityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePriorityClick = () => {
     setTaskRequest((prev) => {
+      if (!prev.priority || !parseTaskPriority(prev.priority)) {
+        return {
+          ...prev,
+          priority: createTaskPriority(true),
+        };
+      }
+
       return {
         ...prev,
-        priority: createTaskPriority(event.target.checked),
+        priority: createTaskPriority(false),
       };
     });
   };
@@ -877,7 +888,7 @@ export function CreateTaskForm({
 
               <Grid>
                 <Grid container spacing={theme.spacing(2)} alignItems="center">
-                  <Grid item xs={11}>
+                  <Grid item xs={12}>
                     <TextField
                       select
                       id="task-type"
@@ -908,78 +919,11 @@ export function CreateTaskForm({
                     </TextField>
                   </Grid>
                   <Grid item xs={1}>
-                    {callToUpdateFavoriteTask ? (
-                      <Tooltip title="Confirm edits for favorite task">
-                        <IconButton
-                          edge="end"
-                          aria-label="update"
-                          onClick={() => {
-                            !callToUpdateFavoriteTask &&
-                              setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
-                            setOpenFavoriteDialog(true);
-                          }}
-                          // FIXME: Favorite tasks are disabled for custom compose
-                          // tasks for now, as it will require a re-write of
-                          // FavoriteTask's pydantic model with better typing.
-                          disabled={
-                            taskDefinitionId === CustomComposeTaskDefinition.taskDefinitionId
-                          }
-                        >
-                          <SaveIcon transform={`scale(${isScreenHeightLessThan800 ? 0.7 : 1})`} />
-                        </IconButton>
-                      </Tooltip>
-                    ) : (
-                      <Tooltip title="Save as favorite task">
-                        <IconButton
-                          edge="end"
-                          aria-label="update"
-                          onClick={() => {
-                            !callToUpdateFavoriteTask &&
-                              setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
-                            setOpenFavoriteDialog(true);
-                          }}
-                          // FIXME: Favorite tasks are disabled for custom compose
-                          // tasks for now, as it will require a re-write of
-                          // FavoriteTask's pydantic model with better typing.
-                          disabled={
-                            taskDefinitionId === CustomComposeTaskDefinition.taskDefinitionId
-                          }
-                        >
-                          <FavoriteBorder
-                            transform={`scale(${isScreenHeightLessThan800 ? 0.7 : 1})`}
-                          />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                  </Grid>
-                  {/* <Grid item xs={1}>
-                  </Grid> */}
-                  <Grid item xs={isScreenHeightLessThan800 ? 6 : 7}>
-                    <Tooltip title="Prioritized tasks will added to the front of the task execution queue">
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={
-                              taskRequest.priority ? parseTaskPriority(taskRequest.priority) : false
-                            }
-                            onChange={handlePriorityChange}
-                          />
-                        }
-                        label="Prioritize"
-                      />
+                    <Tooltip title="Ongoing tasks where estimated finish times are past their specified warning times will be flagged.">
+                      <Switch checked={warnTime !== null} onChange={handleWarnTimeSwitchChange} />
                     </Tooltip>
                   </Grid>
-                  <Grid item xs={1}>
-                    <Checkbox
-                      checked={warnTime !== null}
-                      onChange={handleWarnTimeCheckboxChange}
-                      inputProps={{ 'aria-label': 'controlled' }}
-                      sx={{
-                        '& .MuiSvgIcon-root': { fontSize: isScreenHeightLessThan800 ? 22 : 32 },
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={isScreenHeightLessThan800 ? 5 : 4}>
+                  <Grid item xs={8}>
                     <DateTimePicker
                       disabled={warnTime === null}
                       value={warnTime}
@@ -987,7 +931,23 @@ export function CreateTaskForm({
                         setWarnTime(date);
                       }}
                       label="Warn Time"
+                      sx={{ marginLeft: theme.spacing(1) }}
                     />
+                  </Grid>
+                  <Grid container xs={3} justifyContent="flex-end" alignItems="center">
+                    <Tooltip title="Prioritized tasks will added to the front of the task execution queue">
+                      <Chip
+                        icon={<BoltIcon />}
+                        label="Prioritize"
+                        color="primary"
+                        variant={
+                          !taskRequest.priority || !parseTaskPriority(taskRequest.priority)
+                            ? 'outlined'
+                            : 'filled'
+                        }
+                        onClick={handlePriorityClick}
+                      />
+                    </Tooltip>
                   </Grid>
                 </Grid>
                 <Divider
@@ -999,6 +959,26 @@ export function CreateTaskForm({
               </Grid>
             </Grid>
           </DialogContent>
+          <DialogActions>
+            <Button
+              aria-label="Save as a favorite task"
+              variant={callToUpdateFavoriteTask ? 'contained' : 'outlined'}
+              color="primary"
+              size={isScreenHeightLessThan800 ? 'small' : 'medium'}
+              startIcon={callToUpdateFavoriteTask ? <SaveIcon /> : <FavoriteBorder />}
+              onClick={() => {
+                !callToUpdateFavoriteTask &&
+                  setFavoriteTaskBuffer({ ...favoriteTaskBuffer, name: '', id: '' });
+                setOpenFavoriteDialog(true);
+              }}
+              // FIXME: Favorite tasks are disabled for custom compose
+              // tasks for now, as it will require a re-write of
+              // FavoriteTask's pydantic model with better typing.
+              disabled={taskDefinitionId === CustomComposeTaskDefinition.taskDefinitionId}
+            >
+              {callToUpdateFavoriteTask ? `Confirm edits` : 'Save as a favorite task'}
+            </Button>
+          </DialogActions>
           <DialogActions>
             <Button
               variant="outlined"
@@ -1016,6 +996,7 @@ export function CreateTaskForm({
               className={classes.actionBtn}
               onClick={() => setOpenSchedulingDialog(true)}
               size={isScreenHeightLessThan800 ? 'small' : 'medium'}
+              startIcon={<ScheduleSendIcon />}
             >
               {scheduleToEdit ? 'Edit schedule' : 'Add to Schedule'}
             </Button>
@@ -1028,6 +1009,7 @@ export function CreateTaskForm({
               aria-label="Submit Now"
               onClick={handleSubmitNow}
               size={isScreenHeightLessThan800 ? 'small' : 'medium'}
+              startIcon={<SendIcon />}
             >
               <Loading
                 hideChildren
