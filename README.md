@@ -17,12 +17,13 @@ Open-RMF Web is a collection of packages that provide a web-based interface for 
 
 # Quick start with docker
 
+These docker images are useful when trying out [`rmf_demos`](https://github.com/open-rmf/rmf_demos).
+
 Start the dashboard with host network access. The dashboard will then accessible on `localhost:3000` by default.
 
 ```bash
 docker run \
-  --network host \
-  -it \
+  --network host -it --rm \
   ghcr.io/open-rmf/rmf-web/dashboard:latest
 ```
 
@@ -30,8 +31,7 @@ Start the API server with host network access, and set up the correct `ROS_DOMAI
 
 ```bash
 docker run \
-  --network host \
-  -it \
+  --network host -it --rm \
   -e ROS_DOMAIN_ID=<ROS_DOMAIN_ID> \
   -e RMW_IMPLEMENTATION=<RMW_IMPLEMENTATION> \
   ghcr.io/open-rmf/rmf-web/api-server:latest
@@ -100,7 +100,7 @@ This starts up the API server (by default at port 8000) which sets up endpoints 
 
 If presented with a login screen, use `user=admin password=admin`.
 
-Ensure that the fleet adapters in the Open-RMF deployment is configured to use the endpoints of the API server. By default it is `http://localhost:8000/_internal`. Launching a simulation from `rmf_demos_gz` for example, the command would be,
+Ensure that the fleet adapters in the Open-RMF deployment is configured to use the endpoints of the API server. By default it is `http://localhost:8000/_internal`. Launching a simulation from [`rmf_demos_gz`](https://github.com/open-rmf/rmf_demos) for example, the command would be,
 
 ```bash
 ros2 launch rmf_demos_gz office.launch.xml server_uri:="http://localhost:8000/_internal"

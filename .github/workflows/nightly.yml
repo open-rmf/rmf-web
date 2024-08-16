@@ -1,14 +1,19 @@
 name: Nightly
+# on:
+#   schedule:
+#     # 2am SGT
+#     - cron: '0 18 * * *'
 on:
-  schedule:
-    # 2am SGT
-    - cron: '0 18 * * *'
+  pull_request:
+  push:
+    branches:
+      - main
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  build-docker-images:
-    name: Push Docker images to GitHub Packages
+  build-minimal-rmf-docker-images:
+    name: Push minimal-rmf Docker image to GitHub Packages
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -26,12 +31,40 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}/minimal-rmf
           context: .github/minimal-rmf
+          outputs: type=docker,dest=/tmp/minimal-rmf.tar
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: minimal-rmf
+          path: /tmp/minimal-rmf.tar
+  build-docker-images:
+    needs: build-minimal-rmf-docker-images
+    name: Push Docker images to GitHub Packages
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: minimal-rmf
+          path: /tmp
+      - name: Load image
+        run: |
+          docker load --input /tmp/minimal-rmf.tar
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to docker
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push dashboard
         uses: docker/build-push-action@v5
         with:
           push: true
           build-args: |
-            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf
+            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:latest
           tags: ghcr.io/${{ github.repository }}/dashboard
           context: .github/dashboard
       - name: Build and push api-server
@@ -39,7 +72,7 @@ jobs:
         with:
           push: true
           build-args: |
-            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf
+            BASE_IMAGE=ghcr.io/${{ github.repository }}/minimal-rmf:latest
             ROS_DISTRO=jazzy
           tags: ghcr.io/${{ github.repository }}/api-server
           context: .github/api-server
