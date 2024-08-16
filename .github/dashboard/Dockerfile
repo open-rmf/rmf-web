@@ -13,7 +13,8 @@ RUN mkdir -p /ws \
 RUN cd /ws \
   && pnpm install --filter rmf-dashboard...
 
-# build
+# replace configs and build
+COPY app-config.json /ws/packages/dashboard/app-config.json
 RUN cd /ws/packages/dashboard \
   && pnpm run build
 
