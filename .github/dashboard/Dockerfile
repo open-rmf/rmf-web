@@ -35,4 +35,6 @@ RUN pnpm config -g set 'node-mirror:release' https://nodejs.org/dist && pnpm env
 RUN npm install --global serve
 ENV PATH "$(npm bin -g):$PATH"
 
+COPY 99-inject-env.sh /docker-entrypoint.d
+
 ENTRYPOINT ["bash", "-c", "npx serve -s /opt/dashboard"]
