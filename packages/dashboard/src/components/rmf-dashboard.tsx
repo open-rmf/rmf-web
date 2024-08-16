@@ -62,7 +62,14 @@ export interface RmfDashboardProps {
    */
   reportIssueLink: string;
 
+  /**
+   * Set various resources (icons, logo etc) used. Different resource can be used based on the theme, `default` is always required.
+   */
   resources: Resources;
+
+  /**
+   * List of allowed tasks that can be requested
+   */
   tasks: TaskRegistryInput;
 
   /**
