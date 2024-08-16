@@ -1,4 +1,4 @@
-import { Tab, Typography } from '@mui/material';
+import { Container, Tab, Typography } from '@mui/material';
 import React, { startTransition, useTransition } from 'react';
 import { getDefaultTaskDefinition, LocalizationProvider } from 'react-components';
 import { RouterProvider } from 'react-router';
@@ -179,7 +179,7 @@ export function RmfDashboard({
         helpLink={helpLink}
         reportIssueLink={reportIssueLink}
       ></AppBar>
-      {!pendingTransition && <RouterProvider router={router} />}
+      <Container>{!pendingTransition && <RouterProvider router={router} />}</Container>
     </AllThemProviders>
   );
 }
