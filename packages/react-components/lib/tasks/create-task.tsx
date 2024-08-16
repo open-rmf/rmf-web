@@ -42,7 +42,7 @@ import {
 } from '@mui/material';
 import { DatePicker, DateTimePicker } from '@mui/x-date-pickers';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import type { Priority, TaskFavorite, TaskRequest } from 'api-client';
+import type { TaskFavorite, TaskRequest } from 'api-client';
 import React from 'react';
 
 import { Loading } from '..';
@@ -89,7 +89,7 @@ import {
   PatrolTaskForm,
 } from './types/patrol';
 import { getDefaultTaskDescription, getTaskRequestCategory } from './types/utils';
-import { textTransform } from '@mui/system';
+import { createTaskPriority, getDefaultTaskPriority, parseTaskPriority } from './utils';
 
 export interface TaskDefinition {
   taskDefinitionId: string;
@@ -199,29 +199,6 @@ function FavoriteTask({
       </ListItem>
     </>
   );
-}
-
-function createTaskPriority(prioritize: boolean): Priority {
-  return { type: 'binary', value: prioritize ? 1 : 0 };
-}
-
-function getDefaultTaskPriority(): Priority {
-  return createTaskPriority(false);
-}
-
-// FIXME(ac): This method of parsing is crude, and will be fixed using schemas
-// when we migrate to jsonforms.
-function parseTaskPriority(priority: Priority): boolean {
-  if (
-    typeof priority == 'object' &&
-    'type' in priority &&
-    priority['type'] === 'binary' &&
-    'value' in priority &&
-    typeof priority['value'] == 'number'
-  ) {
-    return (priority['value'] as number) > 0;
-  }
-  return false;
 }
 
 function getDefaultTaskRequest(taskDefinitionId: string): TaskRequest | null {
@@ -659,10 +636,8 @@ export function CreateTaskForm({
       return;
     }
 
-    const requester = scheduling ? `${user}__scheduled` : user;
-
     const request = { ...taskRequest };
-    request.requester = requester;
+    request.requester = user;
     request.unix_millis_request_time = Date.now();
 
     if (taskDefinitionId === CustomComposeTaskDefinition.taskDefinitionId) {
@@ -712,6 +687,10 @@ export function CreateTaskForm({
 
       if (warnTime !== null) {
         requestBookingLabel['unix_millis_warn_time'] = `${warnTime.valueOf()}`;
+      }
+
+      if (scheduling) {
+        requestBookingLabel['scheduled'] = 'true';
       }
 
       request.labels = serializeTaskBookingLabel(requestBookingLabel);

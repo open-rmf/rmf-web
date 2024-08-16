@@ -1,4 +1,4 @@
-import { InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
+import { Bolt, InsertInvitation as ScheduleIcon, Person as UserIcon } from '@mui/icons-material/';
 import { Box, Stack, styled, Tooltip, Typography } from '@mui/material';
 import {
   DataGrid,
@@ -21,6 +21,7 @@ import * as React from 'react';
 
 import { TaskBookingLabels } from './booking-label';
 import { getTaskBookingLabelFromTaskState } from './task-booking-label-utils';
+import { parseTaskPriority } from './utils';
 
 const classes = {
   taskActiveCell: 'MuiDataGrid-cell-active-cell',
@@ -110,33 +111,32 @@ export interface TableDataGridState {
   setSortFields: React.Dispatch<React.SetStateAction<SortFields>>;
 }
 
-const TaskRequester = (requester: string | undefined | null): JSX.Element => {
+const TaskRequester = (
+  requester: string | undefined | null,
+  scheduled: boolean,
+  prioritized: boolean,
+): JSX.Element => {
   if (!requester) {
     return <Typography variant="body1">n/a</Typography>;
   }
 
-  /** When a task is created as scheduled,
-   we save the requester as USERNAME__scheduled.
-   Therefore, we remove the __schedule because the different icon is enough indicator to know
-   if the task was adhoc or scheduled.
-  */
   return (
     <Stack direction="row" alignItems="center" gap={1}>
-      {requester.includes('scheduled') ? (
-        <>
-          <Tooltip title="User scheduled">
-            <ScheduleIcon />
-          </Tooltip>
-          <Typography variant="body1">{requester.split('__')[0]}</Typography>
-        </>
+      {prioritized ? (
+        <Tooltip title="User prioritized">
+          <Bolt />
+        </Tooltip>
+      ) : null}
+      {scheduled ? (
+        <Tooltip title="User scheduled">
+          <ScheduleIcon />
+        </Tooltip>
       ) : (
-        <>
-          <Tooltip title="User submitted">
-            <UserIcon />
-          </Tooltip>
-          <Typography variant="body1">{requester}</Typography>
-        </>
+        <Tooltip title="User submitted">
+          <UserIcon />
+        </Tooltip>
       )}
+      <Typography variant="body1">{requester}</Typography>
     </Stack>
   );
 };
@@ -192,7 +192,19 @@ export function TaskDataGridTable({
       headerName: 'Requester',
       width: 150,
       editable: false,
-      renderCell: (cellValues) => TaskRequester(cellValues.row.state.booking.requester),
+      renderCell: (cellValues) => {
+        let prioritized = false;
+        if (cellValues.row.state.booking.priority) {
+          prioritized = parseTaskPriority(cellValues.row.state.booking.priority);
+        }
+
+        let scheduled = false;
+        if (cellValues.row.requestLabel && 'scheduled' in cellValues.row.requestLabel) {
+          scheduled = cellValues.row.requestLabel.scheduled === 'true';
+        }
+
+        return TaskRequester(cellValues.row.state.booking.requester, scheduled, prioritized);
+      },
       flex: 1,
       filterOperators: getMinimalStringFilterOperators,
       filterable: true,
