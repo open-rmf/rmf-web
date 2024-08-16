@@ -19,13 +19,18 @@ Open-RMF Web is a collection of packages that provide a web-based interface for 
 
 These docker images are useful when trying out [`rmf_demos`](https://github.com/open-rmf/rmf_demos).
 
-Start the dashboard with host network access. The dashboard will then accessible on `localhost:3000` by default.
+Start the dashboard with host network access, `RMF_SERVER_URL` and `TRAJECTORY_SERVER_URL` configured accordingly. The dashboard will then accessible on `localhost:3000` by default.
 
 ```bash
 docker run \
   --network host -it --rm \
+  -e RMF_SERVER_URL=http://localhost:8000 \
+  -e TRAJECTORY_SERVER_URL=ws://localhost:8006 \
   ghcr.io/open-rmf/rmf-web/dashboard:latest
 ```
+
+> **Note**
+> The values provided for `RMF_SERVER_URL` and `TRAJECTORY_SERVER_URL` are default values when running the API server and `rmf_demos`, and can be modified to suit different setups.
 
 Start the API server with host network access, and set up the correct `ROS_DOMAIN_ID` and ROS 2 RMW implementation that will be used in the rest of the Open-RMF system. The API server will use the default port at `localhost:8000`.
 
@@ -37,7 +42,8 @@ docker run \
   ghcr.io/open-rmf/rmf-web/api-server:latest
 ```
 
-Users can also [configure the API server](packages/api-server/README.md/#configuration) using a mounted configuration file and setting the environment variable `RMF_API_SERVER_CONFIG`. In the default scenario, the API server will use an internal non-persistent database.
+> **Note**
+> Users can also [configure the API server](packages/api-server/README.md/#configuration) using a mounted configuration file and setting the environment variable `RMF_API_SERVER_CONFIG`. In the default scenario, the API server will use an internal non-persistent database.
 
 # Getting started from source
 
