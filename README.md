@@ -6,15 +6,46 @@
 
 Open-RMF Web is a collection of packages that provide a web-based interface for users to visualize and control all aspects of Open-RMF deployments.
 
-- [Getting started](#getting-started)
+- [Quick start with docker](#quick-start-with-docker)
+- [Getting started from source](#getting-started-from-source)
 - [API server](packages/api-server)
 - [API client](packages/api-client)
 - [Dashboard](packages/dashboard)
 - [Configuration](#configuration)
 - [Contribution guide](#contribution-guide)
-- [Roadmap](https://github.com/open-rmf/rmf-web/wiki/Open-RMF-Web-Dashboard)
+- [Roadmap](https://github.com/orgs/open-rmf/projects/10)
 
-# Getting started
+# Quick start with docker
+
+These docker images are useful when trying out [`rmf_demos`](https://github.com/open-rmf/rmf_demos).
+
+Start the dashboard with host network access, `RMF_SERVER_URL` and `TRAJECTORY_SERVER_URL` configured accordingly. The dashboard will then accessible on `localhost:3000` by default.
+
+```bash
+docker run \
+  --network host -it --rm \
+  -e RMF_SERVER_URL=http://localhost:8000 \
+  -e TRAJECTORY_SERVER_URL=ws://localhost:8006 \
+  ghcr.io/open-rmf/rmf-web/dashboard:latest
+```
+
+> **Note**
+> The values provided for `RMF_SERVER_URL` and `TRAJECTORY_SERVER_URL` are default values when running the API server and `rmf_demos`, and can be modified to suit different setups.
+
+Start the API server with host network access, and set up the correct `ROS_DOMAIN_ID` and ROS 2 RMW implementation that will be used in the rest of the Open-RMF system. The API server will use the default port at `localhost:8000`.
+
+```bash
+docker run \
+  --network host -it --rm \
+  -e ROS_DOMAIN_ID=<ROS_DOMAIN_ID> \
+  -e RMW_IMPLEMENTATION=<RMW_IMPLEMENTATION> \
+  ghcr.io/open-rmf/rmf-web/api-server:latest
+```
+
+> **Note**
+> Users can also [configure the API server](packages/api-server/README.md/#configuration) using a mounted configuration file and setting the environment variable `RMF_API_SERVER_CONFIG`. In the default scenario, the API server will use an internal non-persistent database.
+
+# Getting started from source
 
 ### Prerequisites
 
@@ -56,7 +87,7 @@ You may also install dependencies for only a subset of the packages
 pnpm install -w --filter <package>...
 ```
 
-### Launching
+### Launching for development
 
 Source Open-RMF and launch the dashboard in development mode,
 
@@ -75,24 +106,20 @@ This starts up the API server (by default at port 8000) which sets up endpoints 
 
 If presented with a login screen, use `user=admin password=admin`.
 
-Ensure that the fleet adapters in the Open-RMF deployment is configured to use the endpoints of the API server. By default it is `http://localhost:8000/_internal`. Launching a simulation from `rmf_demos_gz` for example, the command would be,
+Ensure that the fleet adapters in the Open-RMF deployment is configured to use the endpoints of the API server. By default it is `http://localhost:8000/_internal`. Launching a simulation from [`rmf_demos_gz`](https://github.com/open-rmf/rmf_demos) for example, the command would be,
 
 ```bash
 ros2 launch rmf_demos_gz office.launch.xml server_uri:="http://localhost:8000/_internal"
 ```
 
-### Launching for development
+### Launching for development separately
 
-For development purposes, it might be useful to start all the individual components separately,
+When developing individual components, it may be useful to start the dashboard and api-server separately,
 
 ```bash
 # Start the dashboard in dev, this monitors for changes in the dashboard package and performs rebuilds. A browser refresh is required after all automated builds.
 cd packages/dashboard
 pnpm run start:react
-
-# Start react-components in dev, this monitors for changes in react-components, which will in turn trigger a re-build in dashboard.
-cd packages/react-components
-pnpm run build:watch
 
 # Start the API server, this will need to be restarted for any changes to be reflected
 cd packages/api-server
